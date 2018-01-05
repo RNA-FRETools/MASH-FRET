@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/ITASL/!svn/ver/9/trunc/Release/runtime32
+END
+SIFImport.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/ITASL/!svn/ver/4/trunc/Release/runtime32/SIFImport.mexw32
+END
+opencv_ffmpeg243.dll
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/ITASL/!svn/ver/4/trunc/Release/runtime32/opencv_ffmpeg243.dll
+END
+opencv_highgui243.dll
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/ITASL/!svn/ver/4/trunc/Release/runtime32/opencv_highgui243.dll
+END
+opencv_core243.dll
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/ITASL/!svn/ver/4/trunc/Release/runtime32/opencv_core243.dll
+END
+TrackPoints.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/ITASL/!svn/ver/8/trunc/Release/runtime32/TrackPoints.mexw32
+END
+SPEImport.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/ITASL/!svn/ver/4/trunc/Release/runtime32/SPEImport.mexw32
+END
+ConvertToAVI.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/ITASL/!svn/ver/4/trunc/Release/runtime32/ConvertToAVI.mexw32
+END
+FilterArray.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/ITASL/!svn/ver/4/trunc/Release/runtime32/FilterArray.mexw32
+END
+libfftw3-3.dll
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/ITASL/!svn/ver/4/trunc/Release/runtime32/libfftw3-3.dll
+END
+ITASL32.dll
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/ITASL/!svn/ver/9/trunc/Release/runtime32/ITASL32.dll
+END
+AVIImport.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/ITASL/!svn/ver/4/trunc/Release/runtime32/AVIImport.mexw32
+END
+FileImport.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/ITASL/!svn/ver/4/trunc/Release/runtime32/FileImport.mexw32
+END

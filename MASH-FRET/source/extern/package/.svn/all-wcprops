@@ -1,0 +1,143 @@
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/ITASL/!svn/ver/6/trunc/Release/package
+END
+TrackPoints.c
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/ITASL/!svn/ver/6/trunc/Release/package/TrackPoints.c
+END
+TrackPoints.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/ITASL/!svn/ver/6/trunc/Release/package/TrackPoints.mexw32
+END
+type_def.h
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/ITASL/!svn/ver/1/trunc/Release/package/type_def.h
+END
+TrackPoints.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/ITASL/!svn/ver/6/trunc/Release/package/TrackPoints.mexw64
+END
+FileImport.c
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/ITASL/!svn/ver/2/trunc/Release/package/FileImport.c
+END
+AVIImport.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/ITASL/!svn/ver/2/trunc/Release/package/AVIImport.c
+END
+SIFImport.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/ITASL/!svn/ver/2/trunc/Release/package/SIFImport.c
+END
+FileImport.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/ITASL/!svn/ver/2/trunc/Release/package/FileImport.mexw32
+END
+AVIImport.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/ITASL/!svn/ver/2/trunc/Release/package/AVIImport.mexw32
+END
+SIFImport.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/ITASL/!svn/ver/2/trunc/Release/package/SIFImport.mexw32
+END
+FileImport.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/ITASL/!svn/ver/2/trunc/Release/package/FileImport.mexw64
+END
+AVIimport.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/ITASL/!svn/ver/2/trunc/Release/package/AVIimport.mexw64
+END
+SPEImport.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/ITASL/!svn/ver/2/trunc/Release/package/SPEImport.c
+END
+ConvertToAVI.c
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/ITASL/!svn/ver/2/trunc/Release/package/ConvertToAVI.c
+END
+SIFimport.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/ITASL/!svn/ver/2/trunc/Release/package/SIFimport.mexw64
+END
+ITASL_Extra.h
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/ITASL/!svn/ver/6/trunc/Release/package/ITASL_Extra.h
+END
+FilterArray.c
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/ITASL/!svn/ver/1/trunc/Release/package/FilterArray.c
+END
+SPEImport.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/ITASL/!svn/ver/2/trunc/Release/package/SPEImport.mexw32
+END
+ConvertToAVI.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/ITASL/!svn/ver/2/trunc/Release/package/ConvertToAVI.mexw32
+END
+FilterArray.mexw32
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/ITASL/!svn/ver/2/trunc/Release/package/FilterArray.mexw32
+END
+SPEImport.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/ITASL/!svn/ver/2/trunc/Release/package/SPEImport.mexw64
+END
+ConvertToAVI.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/ITASL/!svn/ver/2/trunc/Release/package/ConvertToAVI.mexw64
+END
+FilterArray.mexw64
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/ITASL/!svn/ver/2/trunc/Release/package/FilterArray.mexw64
+END

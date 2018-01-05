@@ -1,0 +1,124 @@
+function updateImgAxes(h_fig)
+% Update image data of the movie frame displayed on axes_movie: apply
+% background correction if exist and show spots by circling them in red if
+% the Spotfinder tool has been used.
+%
+% Requires external fucntions: getFrame, updateBgCorr, updateSF.
+
+h = guidata(h_fig);
+p = h.param.movPr;
+
+frameCurNb = h.movie.frameCurNb;
+bgCorr = isfield(p, 'bgCorr') && ...
+    ~isempty(p.bgCorr);
+SFapply = isfield(p, 'SFres') && ...
+    ~isempty(p.SFres);
+SFall = p.SF_all;
+trsfApply = isfield(p, 'coordTrsf') && ...
+    ~isempty(p.coordTrsf);
+[dat ok] = getFrames([h.movie.path h.movie.file], frameCurNb, ...
+    {h.movie.speCursor, [h.movie.pixelX h.movie.pixelY], ...
+    h.movie.framesTot}, h_fig);
+
+if ~ok
+    return;
+end
+
+frameCur = dat.frameCur;
+
+% Apply background corrections if exist
+if bgCorr
+    avBg = p.movBg_one;
+    if ~avBg
+        img = updateBgCorr(frameCur, h_fig);
+        frameCur = img;
+    else % Apply only if the bg-corrected frame is displayed
+        if avBg == frameCurNb
+            img = updateBgCorr(frameCur, h_fig);
+            frameCur = img;
+        end
+    end
+end
+nChan = p.nChan;
+spots = [];
+
+if SFapply
+    frameSF = p.SFres{1,1}(3);
+    if (~SFall && frameCurNb == frameSF) || SFall
+        h.param.movPr = p;
+        guidata(h_fig, h);
+        updateSF(frameCur, false, h_fig);
+        h = guidata(h_fig);
+        p = h.param.movPr;
+        for i = 1:nChan
+            if ~isempty(p.SFres{2,i})
+                spots = [spots;p.SFres{2,i}(:,1:2)];
+            end
+        end
+    end
+elseif trsfApply
+    for i = 1:nChan
+        if ~isempty(p.coordTrsf) && ...
+                size(p.coordTrsf,2) >= 2*i
+            spots = [spots;p.coordTrsf(:,2*i-1:2*i)];
+        end
+    end
+end
+
+if p.perSec
+    frameCur = frameCur/h.movie.cyctime;
+end
+h.movie.frameCur = frameCur;
+
+cla(h.axes_movie);
+
+set(0, 'CurrentFigure', h.figure_MASH);
+zoom on;
+
+h.imageMov = imagesc([0.5 h.movie.pixelX-0.5], [0.5 h.movie.pixelY-0.5],...
+    frameCur, 'Parent', h.axes_movie);
+
+set(h.axes_movie, 'NextPlot', 'add');
+
+
+for i = 1:size(spots,1)
+    plot(h.axes_movie, spots(i,1), spots(i,2), 'or', 'MarkerSize', 10);
+end
+    
+for i = 1:size(h.movie.split,2)
+    plot(h.axes_movie, [h.movie.split(i) h.movie.split(i)], ...
+        [0 h.movie.pixelY], '--w', 'LineWidth', 2);
+end
+set(h.axes_movie, 'NextPlot', 'replace');
+
+if get(h.togglebutton_target, 'Value')
+    set(0, 'CurrentFigure', h_fig);
+    zoom off;
+    set(h.imageMov, 'ButtonDownFcn', {@pointITT, h_fig});
+else
+    set(h.axes_movie, 'ButtonDownFcn', {});
+    set(0, 'CurrentFigure', h_fig);
+    zoom on;
+end
+
+set(h.axes_movie, 'NextPlot', 'replacechildren', 'DataAspectRatio', ...
+    [1 1 1], 'DataAspectRatioMode', 'manual', 'PlotBoxAspectRatio', ...
+    [1 1 1], 'PlotBoxAspectRatioMode', 'auto');
+
+if isfield(h, 'colorbar') && ishandle(h.colorbar)
+    colorbar(h.colorbar, 'delete');
+end
+
+h.colorbar = colorbar('peer', h.axes_movie, 'EastOutside', 'Units', ...
+    'normalized');
+if p.perSec
+    ylabel(h.colorbar, 'intensity(counts /pix /s)');
+else
+    ylabel(h.colorbar, 'intensity(counts /pix)');
+end
+% pos = get(h.colorbar, 'Position');
+% set(h.colorbar, 'Position', [pos(1:3) 11*pos(4)/12]);
+drawnow;
+
+h.param.movPr = p;
+guidata(h_fig, h);
