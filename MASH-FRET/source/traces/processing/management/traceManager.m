@@ -1,6 +1,16 @@
+% traceManager(h_fig)
+%
+% Enables trace selection upon visual inspection or defined criteria 
+% "h_fig" >> 
+
+% Created the ??th of ???? 201? by Mélodie C.A.S. Hadzic
+% Last update: the 5rd of January 2018 by Richard Börner
+% >> include FRET-S-Histogram
+% >> include inverse selection button
+% >> restructured dat2.hist, dat2.iv and dat1.lim
 
 function traceManager(h_fig)
-    
+   
     h = guidata(h_fig);
     h.tm.ud = false;
     guidata(h_fig,h);
@@ -59,7 +69,7 @@ function openMngrTool(h_fig)
     h_but = 22; w_but = 45;
     h_txt = 14;
     w_pan = wFig - 2*mg;
-    w_pop = 100;
+    w_pop = 120; % RB 2018-01-03: adpat width of popupmenu for FRET-S-Histogram 
 
     h_pan_all = mg_ttl + 3*mg + mg_big + 2*h_edit + 2*h_txt + h_but;
     h_pan_sgl = hFig - mg_win - 3*mg - h_pan_all;
@@ -115,6 +125,7 @@ function openMngrTool(h_fig)
     
     yNext = yNext - h_edit;
     
+    % RB 2017-12-15: update str_plot 
     h.tm.popupmenu_axes1 = uicontrol('Style', 'popupmenu', 'Parent', ...
         h.tm.uipanel_overall, 'String', {'none'}, 'Units', 'pixels', ...
         'Position', [xNext yNext w_pop h_edit], 'BackgroundColor', ...
@@ -131,6 +142,7 @@ function openMngrTool(h_fig)
     
     yNext = yNext - h_edit;
     
+    % RB 2017-12-15: update str_plot 
     h.tm.popupmenu_axes2 = uicontrol('Style', 'popupmenu', 'Parent', ...
         h.tm.uipanel_overall, 'Units', 'pixels', 'String', {'none'}, ...
         'Position', [xNext yNext w_pop h_edit], 'BackgroundColor', ...
@@ -171,6 +183,7 @@ function openMngrTool(h_fig)
     xNext = xNext + mg + w_axes1;
     yNext = mg;
     
+    
     h.tm.axes_ovrAll_2 = axes('Parent', h.tm.uipanel_overall, 'Units', ...
         'pixels', 'FontUnits', 'pixels', 'FontSize', fntS, ...
         'ActivePositionProperty', 'OuterPosition', 'GridLineStyle', ':',...
@@ -205,9 +218,36 @@ function openMngrTool(h_fig)
         'Callback', {@edit_xlim_up_Callback, h_fig}, 'String', '1', ...
         'BackgroundColor', [1 1 1], 'TooltipString', ...
         'upper interval value');
-    
-    
-    %% panel overview
+   
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+   % RB 2018-01-05 to do: include y-axes control for FRET-S-Histogram
+   %     yNext = h_pan_all - mg_ttl - mg - h_edit;
+   %     
+   %     h.tm.edit_xlim_low = uicontrol('Style', 'edit', 'Parent', ...
+   %         h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit],
+   %         ... 'Callback', {@edit_xlim_low_Callback, h_fig}, 'String', '0',
+   %         ... 'BackgroundColor', [1 1 1], 'TooltipString', ... 'lower
+   %         interval value');
+   %
+   %     xNext = xNext + mg + w_edit;
+   %
+   %     h.tm.edit_nbiv = uicontrol('Style', 'edit', 'Parent', ...
+   %         h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit],
+   %         ... 'Callback', {@edit_nbiv_Callback, h_fig}, 'String', '200',
+   %         ... 'BackgroundColor', [1 1 1], 'TooltipString', 'number of
+   %         interval');
+   %
+   %     xNext = xNext + mg + w_edit;
+   %
+   %     h.tm.edit_xlim_up = uicontrol('Style', 'edit', 'Parent', ...
+   %         h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit],
+   %         ... 'Callback', {@edit_xlim_up_Callback, h_fig}, 'String', '1',
+   %         ... 'BackgroundColor', [1 1 1], 'TooltipString', ... 'upper
+   %         interval value');
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+   
+   
+    %% TM panel overview
     
     if nb_mol <= nb_mol_disp || nb_mol_disp == 0
         min_step = 1;
@@ -231,6 +271,20 @@ function openMngrTool(h_fig)
         'FontSize', fntS, 'String', 'Check all', 'TooltipString', ...
         'Include all molecules', 'Position', [xNext yNext w_pop h_edit],...
         'Callback', {@checkbox_all_Callback, h_fig}, 'Value', 1);
+    
+    % RB 2018-01-05: new pushbotton to inverse the selcetion of individual
+    % molecules
+    
+    xNext = xNext + w_pop ;
+    
+    h.tm.pushbutton_inverse = uicontrol('Style', 'pushbutton', 'Parent', ...
+        h.tm.uipanel_overview, 'Units', 'pixels', 'FontWeight', 'bold', ...
+        'String', 'Invert Selection', 'Position', [xNext yNext w_pop h_but], ...
+        'TooltipString', 'Invert selection of all molecules', 'Callback', ...
+        {@pushbutton_all_inverse_Callback, h_fig}, 'FontUnits', 'pixels', ...
+        'FontSize', fntS);
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     xNext = w_pan - mg - w_but;
 
@@ -561,9 +615,10 @@ function plotDataTm(h_fig)
     end
 end
 
-
+% RB 2018-01-03: adapted for FRET-S-histograms
 function pushbutton_update_Callback(obj, evd, h_fig)
     
+    % get guidata
     h = guidata(h_fig);
     p = h.param.ttPr;
     proj = p.curr_proj;
@@ -571,6 +626,7 @@ function pushbutton_update_Callback(obj, evd, h_fig)
 
     m = p;
     
+    % get variables from the indiviudal project `proj`
     nChan = p.proj{proj}.nb_channel;
     exc = p.proj{proj}.excitations;
     chanExc = p.proj{proj}.chanExc;
@@ -586,6 +642,7 @@ function pushbutton_update_Callback(obj, evd, h_fig)
     rate = p.proj{proj}.frame_rate;
     nPix = p.proj{proj}.pix_intgr(2);
     
+    % allocate cells
     def_niv = 200;
     dat1.trace = cell(1,nChan*nExc+nFRET+nS);
     dat1.lim = dat1.trace;
@@ -604,8 +661,10 @@ function pushbutton_update_Callback(obj, evd, h_fig)
     else
         dat1.xlabel = 'frame number';
     end
-    dat2.hist = dat1.trace;
-    dat2.iv = dat1.trace;
+    %dat2.hist = dat1.trace; %old
+    %dat2.iv = dat1.trace; %old
+    dat2.hist = cell(1,nChan*nExc+nFRET+nS+nFRET); % RB 2018-01-03:
+    dat2.iv = dat2.hist; % RB 2018-01-03:
     
     global intensities;
         
@@ -615,9 +674,9 @@ function pushbutton_update_Callback(obj, evd, h_fig)
     if err
         return;
     end
-    h = guidata(h_fig);
+    h = guidata(h_fig); % update:  get current guidata 
     h.barData.prev_var = h.barData.curr_var;
-    guidata(h_fig, h);
+    guidata(h_fig, h); % update: set current guidata 
     % ---------------------------------------------------------------------
     
     clr = p.proj{proj}.colours;
@@ -629,6 +688,7 @@ function pushbutton_update_Callback(obj, evd, h_fig)
             dtaPrm = [];
         end
         m = plotSubImg(i, m, []);
+       
         [m opt] = resetMol(i, m);
         if strcmp(opt, 'ttBg') || strcmp(opt, 'ttPr')
             m = bgCorr(i, m);
@@ -716,8 +776,8 @@ function pushbutton_update_Callback(obj, evd, h_fig)
                 Iden = sum(sum(intensities(incl, ...
                     (nChan*(i-1)+1):nChan*i,:),2),3);
                 S_tr = Inum./Iden;
-                S_tr(S_tr == Inf) = 1000000;
-                S_tr(S_tr == -Inf) = -1000000;
+                S_tr(S_tr == Inf) = 1000000; % prevent for Inf
+                S_tr(S_tr == -Inf) = -1000000; % prevent for Inf
                 dat1.trace{ind} = [dat1.trace{ind}; ...
                     reshape(S_tr, [numel(S_tr) 1])];
                 dat1.color{ind} = clr{3}(n,:);
@@ -735,23 +795,66 @@ function pushbutton_update_Callback(obj, evd, h_fig)
     disp('data successfully concatenated !');
     loading_bar('close', h_fig);
     
-    for ind = 1:size(dat1.trace,2)
-        if ind <= nChan*nExc
-            dat1.lim{ind} = [min(dat1.trace{ind}) max(dat1.trace{ind})];
-        else
-            dat1.lim{ind} = [-0.2 1.2];
-        end
-        dat1.niv(ind) = def_niv;
-
-        bin = (dat1.lim{ind}(2) - dat1.lim{ind}(1)) / dat1.niv(ind);
-        iv = (dat1.lim{ind}(1) - bin):bin:(dat1.lim{ind}(2) + bin);
-        [dat2.hist{ind}, dat2.iv{ind}] = hist(dat1.trace{ind}, iv);
+    % RB 2018-01-04: adapted for FRET-S-Histogram, hist2 is rather slow
+    % RB 2018-01-05: hist2 replaced by hist2D
+    % loading bar parameters-----------------------------------------------
+    err = loading_bar('init', h_fig , (nChan*nExc+nFRET+nS+nFRET), ...
+        'Histogram data ...');
+    if err
+        return;
     end
+    h = guidata(h_fig);
+    h.barData.prev_var = h.barData.curr_var;
+    guidata(h_fig, h);
+    % ---------------------------------------------------------------------
     
-    str_plot = {};
+    % RB 2018-01-04: adapted for FRET-S-Histogram
+    ES = []; % local array
+    for ind = 1:(size(dat1.trace,2)+nFRET) % counts for nChan*nExc Intensity channels, nFRET channles, nS channels and nFRET ES histograms
+        dat1.niv(ind) = def_niv;
+        if ind <= nChan*nExc % intensity histogram 1D 
+            dat1.lim{ind} = [min(dat1.trace{ind}) max(dat1.trace{ind})];
+            bin = (dat1.lim{ind}(2) - dat1.lim{ind}(1)) / dat1.niv(ind);
+            iv = (dat1.lim{ind}(1) - bin):bin:(dat1.lim{ind}(2) + bin);
+            [dat2.hist{ind}, dat2.iv{ind}] = hist(dat1.trace{ind}, iv); % HISTOGRAM replaces hist since 2015! 
+        elseif ind <= (nChan*nExc + nFRET + nS) % FRET and S histogram 1D
+            dat1.lim{ind} = [-0.2 1.2];
+            bin = (dat1.lim{ind}(2) - dat1.lim{ind}(1)) / dat1.niv(ind);
+            iv = (dat1.lim{ind}(1) - bin):bin:(dat1.lim{ind}(2) + bin);
+            [dat2.hist{ind}, dat2.iv{ind}] = hist(dat1.trace{ind}, iv); % HISTOGRAM replaces hist since 2015! 
+        else  % FRET-S histogram 2D, adapted from getTDPmat.m
+            dat1.lim{ind} = [-0.2 1.2; -0.2 1.2];
+            %binx = (dat1.lim{ind}(2,2) - dat1.lim{ind}(2,1)) / dat1.niv(ind);
+            %biny = (dat1.lim{ind}(1,2) - dat1.lim{ind}(1,1)) / dat1.niv(ind);
+            %ivx = (dat1.lim{ind}(2,1) - binx):binx:(dat1.lim{ind}(2,2) + binx);
+            %ivy = (dat1.lim{ind}(1,1) - biny):biny:(dat1.lim{ind}(1,2) + biny);
+            ES = [dat1.trace{ind-nFRET-nS},dat1.trace{ind-nS}]; % build [N-by-2] or ' ... '[2-by-N] data matrix.']
+            %[dat2.hist{ind},o,o,dat2.iv{ind}] = hist2(ES, [ivx;ivy]); % hist2 by MCASH rather slow
+            binEdges_minmaxN_xy = [dat1.lim{ind}(1,1) dat1.lim{ind}(1,2) dat1.niv(ind); dat1.lim{ind}(2,1) dat1.lim{ind}(2,2) dat1.niv(ind)];
+            [dat2.hist{ind},dat2.iv{ind}(1,:),dat2.iv{ind}(2,:)] = hist2D(ES, binEdges_minmaxN_xy); % hist2D by tudima at zahoo dot com, inlcuded in \traces\processing\management
+        end
+        
+        % old from MCASH
+        %bin = (dat1.lim{ind}(2) - dat1.lim{ind}(1)) / dat1.niv(ind);
+        %iv = (dat1.lim{ind}(1) - bin):bin:(dat1.lim{ind}(2) + bin);
+        %[dat2.hist{ind}, dat2.iv{ind}] = hist(dat1.trace{ind}, iv); % HISTOGRAM replaces hist since 2015! 
+        
+        % loading bar update-----------------------------------
+        err = loading_bar('update', h_fig);
+        % -----------------------------------------------------
 
-    for l = 1:nExc
-        for c = 1:nChan
+        if err
+            return;
+        end
+    end
+    disp('data successfully histogrammed !');
+    loading_bar('close', h_fig);
+    
+    str_plot = {}; % string for popup menu
+
+    % String for Intensity Channels in popup menu
+    for l = 1:nExc % number of excitation channels
+        for c = 1:nChan % number of emission channels
             clr_bg_c = sprintf('rgb(%i,%i,%i)', ...
                 round(clr{1}{l,c}(1:3)*255));
             clr_fbt_c = sprintf('rgb(%i,%i,%i)', ...
@@ -762,8 +865,11 @@ function pushbutton_update_Callback(obj, evd, h_fig)
                 clr_bg_c ';color: ' clr_fbt_c ';"> ' labels{c} ...
                 ' at ' num2str(exc(l)) 'nm</span></html>']];
             dat1.ylabel{size(str_plot,2)} = ['counts' str_extra];
+            dat2.ylabel{size(str_plot,2)} = 'freq. counts'; % RB 2018-01-04
+            dat2.xlabel{size(str_plot,2)} = ['counts' str_extra]; % RB 2018-01-04
         end
     end
+    % String for FRET Channels in popup menu
     for n = 1:nFRET
         clr_bg_f = sprintf('rgb(%i,%i,%i)', ...
             round(clr{2}(n,1:3)*255));
@@ -774,7 +880,10 @@ function pushbutton_update_Callback(obj, evd, h_fig)
             clr_bg_f ';color: ' clr_fbt_f ';">FRET ' labels{FRET(n,1)} ...
             '>' labels{FRET(n,2)} '</span></html>']];
         dat1.ylabel{size(str_plot,2)} = 'FRET';
+        dat2.ylabel{size(str_plot,2)} = 'freq. counts'; % RB 2018-01-04
+        dat2.xlabel{size(str_plot,2)} = 'FRET'; % RB 2018-01-04
     end
+    % String for Stoichiometry Channels in popup menu
     for n = 1:nS
         clr_bg_s = sprintf('rgb(%i,%i,%i)', ...
             round(clr{3}(n,1:3)*255));
@@ -785,30 +894,66 @@ function pushbutton_update_Callback(obj, evd, h_fig)
             clr_bg_s ';color: ' clr_fbt_s ';">S ' labels{S(n)} ...
             '</span></html>']];
         dat1.ylabel{size(str_plot,2)} = 'S';
+        dat2.ylabel{size(str_plot,2)} = 'freq. counts'; % RB 2018-01-04
+        dat2.xlabel{size(str_plot,2)} = 'S'; % RB 2018-01-04
     end
-    
+    % String for all Intensity Channels in popup menu 
     if nChan > 1 || nExc > 1
         str_plot = [str_plot 'all intensity traces'];
         dat1.ylabel{size(str_plot,2)} = ['counts' str_extra];
+        % no dat2.xlabel{size(str_plot,2)} = ['counts' str_extra]; % RB 2018-01-04
     end
+    % String for all FRET Channels in popup menu
     if nFRET > 1
         str_plot = [str_plot 'all FRET traces'];
         dat1.ylabel{size(str_plot,2)} = 'FRET';
+        % no dat2.xlabel{size(str_plot,2)} = 'FRET'; % RB 2018-01-04
     end
+    % String for all Stoichiometry Channels in popup menu
     if nS > 1
         str_plot = [str_plot 'all S traces'];
         dat1.ylabel{size(str_plot,2)} = 'S';
+        % no dat2.xlabel{size(str_plot,2)} = 'S'; % RB 2018-01-04
     end
+    % String for all FRET and Stoichiometry Channels in popup menu
     if nFRET > 0 && nS > 0
         str_plot = [str_plot 'all FRET & S traces'];
         dat1.ylabel{size(str_plot,2)} = 'FRET or S';
+        % no dat2.xlabel{size(str_plot,2)} = 'FRET or S'; % RB 2018-01-04
     end
-    
-    set(h.tm.popupmenu_axes1, 'String', str_plot);
-    set(h.tm.popupmenu_axes2, 'String', str_plot(1:(nChan*nExc+nFRET+nS)));
+    % String for Stoichiometry-FRET Channels in popup menu
+    % RB 2017-12-15: str_plot including FRET-S-histograms in popupmenu (only corresponding SToichiometry FRET values e.g. FRET:Cy3->Cy5 and S:Cy3->Cy5 not FRET:Cy3->Cy5 and S:Cy3->Cy7 etc.)   )
+    for n = 1:nFRET
+        clr_bg_s = sprintf('rgb(%i,%i,%i)', ...
+            round(clr{3}(n,1:3)*255));
+        clr_bg_e = sprintf('rgb(%i,%i,%i)', ...
+            round(clr{2}(n,1:3)*255));
+        clr_fbt_s = sprintf('rgb(%i,%i,%i)', ...
+            [255 255 255]*sum(double( ...
+            clr{3}(n,1:3) <= 0.5)));
+        clr_fbt_e = sprintf('rgb(%i,%i,%i)', ...
+            [255 255 255]*sum(double( ...
+            clr{2}(n,1:3) <= 0.5)));
+        str_plot =  [str_plot ['<html><span style= "background-color: '...
+            clr_bg_e ';color: ' clr_fbt_e ';">FRET ' labels{FRET(n,1)} ...
+            '>' labels{FRET(n,2)} '</span>-<span style= "background-color: '...
+            clr_bg_s ';color: ' clr_fbt_s ';">S ' labels{S(n)} ...
+            '</span></html>']];
+        % no dat1.ylabel{nChan*nExc+nFRET+nS+n} = 'FRET or S'; % RB 2018-01-04
+        dat2.ylabel{nChan*nExc+nFRET+nS+n} = 'S'; % RB 2018-01-04: change index as str_plot and str_plot2 are different
+        dat2.xlabel{nChan*nExc+nFRET+nS+n} = 'E'; % RB 2018-01-04: change index as str_plot and str_plot2 are different
+    end
+   
+    % RB 2018-01-03: new variable to expand popupmenu entries
+    str_plot2 = {}; % string for popup menu
+    str_plot2 = [str_plot(1:(nChan*nExc+nFRET+nS)) [str_plot((size(str_plot,2)-nFRET+1):size(str_plot,2))]];
+        
+    % RB 2017-12-15: str_plot including FRET-S-histograms in popupmenu of axes 2 
+    set(h.tm.popupmenu_axes1, 'String', str_plot(1:(size(str_plot,2)-nFRET*nS)));
+    set(h.tm.popupmenu_axes2, 'String', str_plot2()); 
 
-    set(h.tm.axes_ovrAll_2, 'UserData', dat2);
     set(h.tm.axes_ovrAll_1, 'UserData', dat1);
+    set(h.tm.axes_ovrAll_2, 'UserData', dat2);
     
     plot2 = get(h.tm.popupmenu_axes2, 'Value');
     
@@ -820,7 +965,7 @@ function pushbutton_update_Callback(obj, evd, h_fig)
     
 end
 
-
+% RB 2018-01-03: adapted for FRET-S-histograms
 function plotData_overall(h_fig)
 
 warning('off','MATLAB:hg:EraseModeIgnored');
@@ -874,7 +1019,8 @@ warning('off','MATLAB:hg:EraseModeIgnored');
         set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
         for l = 1:nExc
             for c = 1:nChan
-                ind = (l-1)+c;
+                %ind = (l-1)+c; % RB 2018-01-03: indizes/colour bug solved
+                ind = 2*(l-1)+c;
                 plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{ind}, ...
                     'Color', dat1.color{ind}, 'EraseMode', 'background');
                 min_y = min([min_y min(dat1.trace{ind})]);
@@ -934,7 +1080,7 @@ warning('off','MATLAB:hg:EraseModeIgnored');
             x_axis = x_axis*rate;
         end
         set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
-        for n = 1:nFRET+nS
+        for n = 1:(nFRET+nS)
             ind = nChan*nExc+n;
             plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{ind}, ...
                 'Color', dat1.color{ind}, 'EraseMode', 'background');
@@ -945,29 +1091,58 @@ warning('off','MATLAB:hg:EraseModeIgnored');
         xlabel(h.tm.axes_ovrAll_1, dat1.xlabel);
         ylabel(h.tm.axes_ovrAll_1, dat1.ylabel{plot1});
     end
-
-    xlim(h.tm.axes_ovrAll_2, [dat1.lim{plot2}(1),dat1.lim{plot2}(2)]);
-    ylim(h.tm.axes_ovrAll_2, 'auto');
     
-    bar(h.tm.axes_ovrAll_2, dat2.iv{plot2}, dat2.hist{plot2}, ...
-        'FaceColor', dat1.color{plot2}, 'EdgeColor', ...
+    % RB 2017-12-15: implement FRET-S-histograms in plot2
+    if plot2 <= nChan*nExc+nFRET+nS
+        bar(h.tm.axes_ovrAll_2, dat2.iv{plot2}, dat2.hist{plot2}, ...
+            'FaceColor', dat1.color{plot2}, 'EdgeColor', ...
         dat1.color{plot2});
     
-    xlabel(h.tm.axes_ovrAll_2, dat1.ylabel{plot2});
-    ylabel(h.tm.axes_ovrAll_2, 'freq. counts');
+        xlabel(h.tm.axes_ovrAll_2, dat2.xlabel{plot2});
+        ylabel(h.tm.axes_ovrAll_2, dat2.ylabel{plot2}); % RB 2018-01-04:
+        
+        xlim(h.tm.axes_ovrAll_2, [dat1.lim{plot2}(1),dat1.lim{plot2}(2)]);
+        ylim(h.tm.axes_ovrAll_2, 'auto');
+    else  % draw FRET-S histogram
+        cla(h.tm.axes_ovrAll_2);
+        %lim = [-0.2 1.2; -0.2,1.2];
+        imagesc(dat1.lim{plot2}(1,:),dat1.lim{plot2}(1,:),dat2.hist{plot2}, 'Parent', h.tm.axes_ovrAll_2);
+        set(h.tm.axes_ovrAll_2,'CLim',[min(min(dat2.hist{plot2})) max(max(dat2.hist{plot2}))]);
+        
+        xlabel(h.tm.axes_ovrAll_2, dat2.xlabel{plot2});
+        ylabel(h.tm.axes_ovrAll_2, dat2.ylabel{plot2});
+        
+        xlim(h.tm.axes_ovrAll_2, dat1.lim{plot2}(1,:));
+        ylim(h.tm.axes_ovrAll_2, dat1.lim{plot2}(2,:));
+    end
 end
 
 
 function popupmenu_axes_Callback(obj, evd, h_fig)
 
     h = guidata(h_fig);
-
+    p = h.param.ttPr;
+    proj = p.curr_proj;
+    nChan = p.proj{proj}.nb_channel;
+    nExc = p.proj{proj}.nb_excitations;
+    FRET = p.proj{proj}.FRET;
+    nFRET = size(FRET,1);
+    S = p.proj{proj}.S;
+    nS = size(S,1);
+    
     if obj == h.tm.popupmenu_axes2
         plot2 = get(obj, 'Value');
-        dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
-        set(h.tm.edit_xlim_low, 'String', dat1.lim{plot2}(1));
-        set(h.tm.edit_xlim_up, 'String', dat1.lim{plot2}(2));
-        set(h.tm.edit_nbiv, 'String', dat1.niv(plot2));
+        if plot2 <= nChan*nExc+nFRET+nS
+            dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
+            set(h.tm.edit_xlim_low, 'String', dat1.lim{plot2}(1));
+            set(h.tm.edit_xlim_up, 'String', dat1.lim{plot2}(2));
+            set(h.tm.edit_nbiv, 'String', dat1.niv(plot2));
+        else %% double check RB 2018-01-04
+            dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
+            set(h.tm.edit_xlim_low, 'String',  dat1.lim{plot2}(1,1));
+            set(h.tm.edit_xlim_up, 'String', dat1.lim{plot2}(1,2));
+            set(h.tm.edit_nbiv, 'String', dat1.niv(plot2));
+        end
     end
     
     plotData_overall(h_fig);
@@ -992,24 +1167,47 @@ function menu_export_Callback(obj, evd, h_fig)
 
 end
 
-
+% RB 2018-01-04: adapted for FRET-S-histograms
 function edit_xlim_low_Callback(obj, evd, h_fig)
 
     h = guidata(h_fig);
     xlim_low = str2num(get(obj, 'String'));
     xlim_up = str2num(get(h.tm.edit_xlim_up, 'String'));
     
+    p = h.param.ttPr;
+    proj = p.curr_proj;
+    nChan = p.proj{proj}.nb_channel;
+    nExc = p.proj{proj}.nb_excitations;
+    FRET = p.proj{proj}.FRET;
+    nFRET = size(FRET,1);
+    S = p.proj{proj}.S;
+    nS = size(S,1);
+    
+    ES = [];
     if xlim_low < xlim_up
         dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
         dat2 = get(h.tm.axes_ovrAll_2, 'UserData');
         plot2 = get(h.tm.popupmenu_axes2, 'Value');
         
-        dat1.lim{plot2} = [xlim_low xlim_up];
+        if plot2 <= nChan*nExc+nFRET+nS
+            dat1.lim{plot2} = [xlim_low xlim_up];
         
-        bin = (dat1.lim{plot2}(2) - dat1.lim{plot2}(1)) / dat1.niv(plot2);
-        iv = (dat1.lim{plot2}(1) - bin):bin:(dat1.lim{plot2}(2) + bin);
-        [dat2.hist{plot2}, dat2.iv{plot2}] = hist(dat1.trace{plot2}, iv);
+            bin = (dat1.lim{plot2}(2) - dat1.lim{plot2}(1)) / dat1.niv(plot2);
+            iv = (dat1.lim{plot2}(1) - bin):bin:(dat1.lim{plot2}(2) + bin);
+            [dat2.hist{plot2}, dat2.iv{plot2}] = hist(dat1.trace{plot2}, iv);
         
+        else%% double check RB 2018-01-04
+            dat1.lim{plot2} = [xlim_low xlim_up; xlim_low xlim_up];
+            
+            %binx = (dat1.lim{plot2}(2,2) - dat1.lim{plot2}(2,1)) / dat1.niv(plot2);
+            %biny = (dat1.lim{plot2}(1,2) - dat1.lim{plot2}(1,1)) / dat1.niv(plot2);
+            %ivx = (dat1.lim{plot2}(2,1) - binx):binx:(dat1.lim{plot2}(2,2) + binx);
+            %ivy = (dat1.lim{plot2}(1,1) - biny):biny:(dat1.lim{plot2}(1,2) + biny);
+            ES = [dat1.trace{plot2-nFRET-nS},dat1.trace{plot2-nS}]; % build [N-by-2] or ' ... '[2-by-N] data matrix.']
+            %[dat2.hist{plot2},o,o,dat2.iv{plot2}] = hist2(ES, [ivx;ivy]); % hist2 by MCASH
+            binEdges_minmaxN_xy = [dat1.lim{plot2}(1,1) dat1.lim{plot2}(1,2) dat1.niv(plot2); dat1.lim{plot2}(2,1) dat1.lim{plot2}(2,2) dat1.niv(plot2)];
+            [dat2.hist{plot2},dat2.iv{plot2}(1,:),dat2.iv{plot2}(2,:)] = hist2D(ES, binEdges_minmaxN_xy); % hist2D by tudima at zahoo dot com, inlcuded in \traces\processing\management
+        end
         set(h.tm.axes_ovrAll_1, 'UserData', dat1);
         set(h.tm.axes_ovrAll_2, 'UserData', dat2);
         
@@ -1023,23 +1221,48 @@ function edit_xlim_low_Callback(obj, evd, h_fig)
     
 end
 
-
+% RB 2018-01-04: adapted for FRET-S-histograms
 function edit_xlim_up_Callback(obj, evd, h_fig)
 
     h = guidata(h_fig);
     xlim_up = str2num(get(obj, 'String'));
     xlim_low = str2num(get(h.tm.edit_xlim_low, 'String'));
     
+    p = h.param.ttPr;
+    proj = p.curr_proj;
+    nChan = p.proj{proj}.nb_channel;
+    nExc = p.proj{proj}.nb_excitations;
+    FRET = p.proj{proj}.FRET;
+    nFRET = size(FRET,1);
+    S = p.proj{proj}.S;
+    nS = size(S,1);
+    
+    ES = [];
     if xlim_low < xlim_up
         dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
         dat2 = get(h.tm.axes_ovrAll_2, 'UserData');
         plot2 = get(h.tm.popupmenu_axes2, 'Value');
         
-        dat1.lim{plot2} = [xlim_low xlim_up];
+        if plot2 <= nChan*nExc+nFRET+nS
+            dat1.lim{plot2} = [xlim_low xlim_up];
         
-        bin = (dat1.lim{plot2}(2) - dat1.lim{plot2}(1)) / dat1.niv(plot2);
-        iv = (dat1.lim{plot2}(1) - bin):bin:(dat1.lim{plot2}(2) + bin);
-        [dat2.hist{plot2}, dat2.iv{plot2}] = hist(dat1.trace{plot2}, iv);
+            bin = (dat1.lim{plot2}(2) - dat1.lim{plot2}(1)) / dat1.niv(plot2);
+            iv = (dat1.lim{plot2}(1) - bin):bin:(dat1.lim{plot2}(2) + bin);
+            [dat2.hist{plot2}, dat2.iv{plot2}] = hist(dat1.trace{plot2}, iv);
+        
+        else%% double check RB 2018-01-04
+            dat1.lim{plot2} = [xlim_low xlim_up; xlim_low xlim_up];
+            
+            %binx = (dat1.lim{plot2}(2,2) - dat1.lim{plot2}(2,1)) / dat1.niv(plot2);
+            %biny = (dat1.lim{plot2}(1,2) - dat1.lim{plot2}(1,1)) / dat1.niv(plot2);
+            %ivx = (dat1.lim{plot2}(2,1) - binx):binx:(dat1.lim{plot2}(2,2) + binx);
+            %ivy = (dat1.lim{plot2}(1,1) - biny):biny:(dat1.lim{plot2}(1,2) + biny);
+            ES = [dat1.trace{plot2-nFRET-nS},dat1.trace{plot2-nS}]; % build [N-by-2] or ' ... '[2-by-N] data matrix.']
+            %[dat2.hist{plot2},o,o,dat2.iv{plot2}] = hist2(ES, [ivx;ivy]); % hist2 by MCASH
+            binEdges_minmaxN_xy = [dat1.lim{plot2}(1,1) dat1.lim{plot2}(1,2) dat1.niv(plot2); dat1.lim{plot2}(2,1) dat1.lim{plot2}(2,2) dat1.niv(plot2)];
+            [dat2.hist{plot2},dat2.iv{plot2}(1,:),dat2.iv{plot2}(2,:)] = hist2D(ES, binEdges_minmaxN_xy); % hist2D by tudima at zahoo dot com, inlcuded in \traces\processing\management
+     
+        end
         
         set(h.tm.axes_ovrAll_1, 'UserData', dat1);
         set(h.tm.axes_ovrAll_2, 'UserData', dat2);
@@ -1054,7 +1277,7 @@ function edit_xlim_up_Callback(obj, evd, h_fig)
 
 end
 
-
+% RB 2018-01-04: adapted for FRET-S-histograms
 function edit_nbiv_Callback(obj, evd, h_fig)
     
     h = guidata(h_fig);
@@ -1063,16 +1286,34 @@ function edit_nbiv_Callback(obj, evd, h_fig)
         nbiv = 1;
     end
     
+    p = h.param.ttPr;
+    proj = p.curr_proj;
+    nChan = p.proj{proj}.nb_channel;
+    nExc = p.proj{proj}.nb_excitations;
+    FRET = p.proj{proj}.FRET;
+    nFRET = size(FRET,1);
+    S = p.proj{proj}.S;
+    nS = size(S,1);
+    
     dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
     dat2 = get(h.tm.axes_ovrAll_2, 'UserData');
     plot2 = get(h.tm.popupmenu_axes2, 'Value');
 
     dat1.niv(plot2) = nbiv;
+   
+    ES = [];
+    if plot2 <= nChan*nExc+nFRET+nS
+        bin = (dat1.lim{plot2}(2) - dat1.lim{plot2}(1)) / dat1.niv(plot2);
+        iv = (dat1.lim{plot2}(1) - bin):bin:(dat1.lim{plot2}(2) + bin);
+        [dat2.hist{plot2}, dat2.iv{plot2}] = hist(dat1.trace{plot2}, iv);
+    else%% double check RB 2018-01-05
+        ES = [dat1.trace{plot2-nFRET-nS},dat1.trace{plot2-nS}]; % build [N-by-2] or ' ... '[2-by-N] data matrix.']
+        binEdges_minmaxN_xy = [dat1.lim{plot2}(1,1) dat1.lim{plot2}(1,2) dat1.niv(plot2); dat1.lim{plot2}(2,1) dat1.lim{plot2}(2,2) dat1.niv(plot2)];
+        dat2.iv{plot2}=[]; % delete cell array content to avoid dimension mismatch in cells after changing the number of bins
+        [dat2.hist{plot2},dat2.iv{plot2}(1,:),dat2.iv{plot2}(2,:)] = hist2D(ES, binEdges_minmaxN_xy); % hist2D by tudima at zahoo dot com, inlcuded in \traces\processing\management
 
-    bin = (dat1.lim{plot2}(2) - dat1.lim{plot2}(1)) / dat1.niv(plot2);
-    iv = (dat1.lim{plot2}(1) - bin):bin:(dat1.lim{plot2}(2) + bin);
-    [dat2.hist{plot2}, dat2.iv{plot2}] = hist(dat1.trace{plot2}, iv);
-
+    end
+        
     set(h.tm.axes_ovrAll_1, 'UserData', dat1);
     set(h.tm.axes_ovrAll_2, 'UserData', dat2);
     
@@ -1094,6 +1335,16 @@ function checkbox_all_Callback(obj, evd, h_fig)
 
 end
 
+% RB 2018-01-05: new pushbotton to invert the selcetion of individual molecules
+function pushbutton_all_inverse_Callback(obj, evd, h_fig)
+    
+    h = guidata(h_fig);
+    
+    h.tm.molValid = ~h.tm.molValid;
+    
+    guidata(h_fig, h);
+    plotDataTm(h_fig);
+end 
 
 function figure_traceMngr(obj, evd, h_fig)
 
