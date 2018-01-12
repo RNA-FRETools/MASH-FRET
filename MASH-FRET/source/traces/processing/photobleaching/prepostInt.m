@@ -19,25 +19,30 @@ for i = 1:nFRET
     chan_D = FRET(i,1);
     chan_A = FRET(i,2);
     
-    I_pre = p.proj{proj}.intensities_DTA(stop-1, ...
-        (mol-1)*nChan+1:mol*nChan,exc);
-    I_post = p.proj{proj}.intensities_DTA(stop, ...
-        (mol-1)*nChan+1:mol*nChan,exc);
-    
-    if I_pre(chan_D) ~= I_post(chan_D) % is donor intensity equal before and after the cutoff 
-        if apply_pbGamma
-            gamma = (I_pre(chan_A)-I_post(chan_A))/(I_post(chan_D)-I_pre(chan_D));
-            p.proj{proj}.curr{mol}{5}{3}(i) = round(gamma,2);
-            
-            p.proj{proj}.FRET_DTA(:,((mol-1)*nFRET+1):mol*nFRET) = NaN;
-            p.proj{proj}.intensities_DTA(:,((mol-1)*nChan+1):mol*nChan,:) = NaN;
+    try
+        I_pre = p.proj{proj}.intensities_DTA(stop-1, ...
+            (mol-1)*nChan+1:mol*nChan,exc);
+        I_post = p.proj{proj}.intensities_DTA(stop, ...
+            (mol-1)*nChan+1:mol*nChan,exc);
+        
+        if I_pre(chan_D) ~= I_post(chan_D) % is donor intensity equal before and after the cutoff
+            if apply_pbGamma
+                gamma = (I_pre(chan_A)-I_post(chan_A))/(I_post(chan_D)-I_pre(chan_D));
+                p.proj{proj}.curr{mol}{5}{3}(i) = round(gamma,2);
+                
+                p.proj{proj}.FRET_DTA(:,((mol-1)*nFRET+1):mol*nFRET) = NaN;
+                p.proj{proj}.intensities_DTA(:,((mol-1)*nChan+1):mol*nChan,:) = NaN;
+            end
+            p.proj{proj}.curr{mol}{5}{5}(i,7) = 1; % donor intensities are different (-> check image)
+        else
+            p.proj{proj}.curr{mol}{5}{4}(1) = 0; % deactivate the pb based gamma corr checkbox
+            p.proj{proj}.curr{mol}{5}{5}(i,7) = 0; % donor intensities are the same (-> cross image)
+            %updateActPan('the donor intensity before and after the photobleaching cutoff is identical, cannot determine gamma factor, falling back to previous value', ...
+            %    h_fig, 'error');
         end
-        p.proj{proj}.curr{mol}{5}{5}(i,7) = 1; % donor intensities are different (-> check image)
-    else
+    catch
         p.proj{proj}.curr{mol}{5}{4}(1) = 0; % deactivate the pb based gamma corr checkbox
         p.proj{proj}.curr{mol}{5}{5}(i,7) = 0; % donor intensities are the same (-> cross image)
-        %updateActPan('the donor intensity before and after the photobleaching cutoff is identical, cannot determine gamma factor, falling back to previous value', ...
-        %    h_fig, 'error');
     end
 end
 
