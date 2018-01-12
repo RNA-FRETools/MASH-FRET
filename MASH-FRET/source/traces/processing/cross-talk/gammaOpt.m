@@ -159,10 +159,10 @@ if ~isempty(p.proj)
     acc = p.proj{proj}.curr{mol}{5}{4}(2);
     if p.proj{proj}.curr{mol}{5}{5}(acc,7) == 1
         [icon, ~, alpha] = imread('check.png');
-        set(h.gpo.checkbox_pbGamma, 'Enable', 'on')
+        set(h.gpo.checkbox_showCutoff, 'Enable', 'on')
     else
         [icon, ~, alpha] = imread('notdefined.png');
-        set(h.gpo.checkbox_pbGamma, 'Enable', 'off')
+        set(h.gpo.checkbox_showCutoff, 'Enable', 'off')
     end
     image(icon, 'alphaData', alpha)
     set(gca, 'visible', 'off')
