@@ -10,7 +10,7 @@ if ~isempty(p.proj)
     end
     
     % reset traces according to changes in parameters
-    [p opt2] = resetMol(mol, p);
+    [p, opt2] = resetMol(mol, p);
     
     p = plotSubImg(mol, p, axes_molImg);
 
@@ -57,9 +57,21 @@ if ~isempty(p.proj)
         p = discrTraces(h_fig, mol, p);
     end
     
+    % added by FS, 8.1.2018
+    if strcmp(opt2, 'gamma') || strcmp(opt2, 'DTA') || ...
+            strcmp(opt2, 'debleach') || ... 
+            strcmp(opt2, 'denoise') || strcmp(opt2, 'corr') || ...
+            strcmp(opt2, 'ttBg') || strcmp(opt2, 'ttPr')
+        p = calcCutoffGamma(mol, p);
+        p = prepostInt(h_fig, mol, p);
+        p = discrTraces(h_fig, mol, p);
+    end
+
     proj = p.curr_proj;
     
-    if (strcmp(opt2, 'plot') || strcmp(opt2, 'DTA') || ...
+    % added "strcmp(opt2, 'gamma')"    FS, 8.1.2018
+    if (strcmp(opt2, 'gamma') || strcmp(opt2, 'plot') ||  ...
+            strcmp(opt2, 'DTA') || ...
             strcmp(opt2, 'debleach') || strcmp(opt2, 'denoise') || ...
             strcmp(opt2, 'corr') || strcmp(opt2, 'ttBg') || ...
             strcmp(opt2, 'ttPr')) && ~isempty(axes)

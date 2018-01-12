@@ -1,5 +1,5 @@
 function varargout = MASH(varargin)
-% Last Modified by GUIDE v2.5 28-Jun-2017 10:27:30
+% Last Modified by GUIDE v2.5 08-Jan-2018 15:00:57
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -2761,6 +2761,34 @@ if ~isempty(p.proj)
     ud_cross(h.figure_MASH);
 end
 
+% FS added 8.1.2018
+function pushbutton_optGamma_Callback(obj, evd, h)
+gammaOpt(h.figure_MASH);
+
+
+
+% FS added 8.1.2018, last modified 11.1.2018
+function checkbox_pbGamma_Callback(obj, evd, h)
+p = h.param.ttPr;
+if ~isempty(p.proj)
+    val = get(obj, 'Value');
+    proj = p.curr_proj;
+    mol = p.curr_mol(proj);
+    toFRET = p.proj{proj}.curr{mol}{4}{1}(2);
+    if toFRET == 1  % if DTA applied to bottom traces, deactivate pb gamma calculation
+        val = 0;
+    end
+    p.proj{proj}.curr{mol}{5}{4}(1) = val; % pb based gamma corr checkbox 
+    p.proj{proj}.curr{mol}{5}{5}(1) = val; % show cutoff checkbox
+    h.param.ttPr = p;
+    guidata(h.figure_MASH, h);
+    updateFields(h.figure_MASH, 'ttPr');
+    % get updated handle (updated in updateFields)
+    % h = guidata(h_fig) is called at the beginning of the next function (updateFields is the last function),
+    % but here the handle is still needed for the next line
+    h = guidata(h.figure_MASH);
+    set(obj, 'Value', h.param.ttPr.proj{proj}.curr{mol}{5}{4}(1)) % updates the pb Gamma checkbox
+end
 
 
 function pushbutton_applyAll_corr_Callback(obj, evd, h)

@@ -208,6 +208,18 @@ for i = 1:nFRET
     mol{5}{3} = [mol{5}{3} 1];
 end
 
+% gamma correction via photobleaching, added by FS, 9.1.2018; 
+% last updated on 10.1.3018
+mol{5}{4}(1) = 0;  % photobleaching based gamma correction checkbox
+mol{5}{4}(2) = 1;  % current acceptor
+
+% gamma correction via photobleaching, added by FS, 9.1.2018
+% nFRET x 4 matrix; columns are 'pbGamma checkbox', 'threshold', 
+% 'extra substract', 'min. cutoff frame', 'start frame', 'stop frame'
+% and 'prepostdiff' (i.e is there a difference in the intensity of the donor before and after the cutoff)
+mol{5}{5} = [zeros(nFRET,1), 1000*ones(nFRET,1) ...
+    zeros(nFRET,1), 100*ones(nFRET,1), ones(nFRET,1), nFrames*ones(nFRET,1), zeros(nFRET,1)];
+
 def.mol = adjustVal(def.mol, mol);
 
 % set quantum yield & additional factors to 1

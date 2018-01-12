@@ -44,6 +44,12 @@ elseif ~(~isempty(prm_prev{4}) && ...
     if nS > 0
         p.proj{proj}.S_DTA(:,((m-1)*nS+1):m*nS) = NaN;
     end
+
+% added by FS, 8.1.2018 (check if anything changed in the gamma correction panel, => opt = 'gamma' for updateTraces    
+elseif ~isequal(prm_curr{5}, prm_prev{5})
+    opt = 'gamma';
+    p.proj{proj}.intensities_DTA(:,((m-1)*nC+1):m*nC,:) = NaN;
+    p.proj{proj}.FRET_DTA(:,((m-1)*nF+1):m*nF) = NaN;
 else
     opt = 'plot';
 end
