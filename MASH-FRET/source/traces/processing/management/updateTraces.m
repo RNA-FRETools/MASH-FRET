@@ -1,5 +1,9 @@
 function p = updateTraces(h_fig, opt1, mol, p, axes)
 
+proj = p.curr_proj;
+FRET = p.proj{proj}.FRET;
+nFRET = size(FRET,1);
+
 if ~isempty(p.proj)
 
     % update images
@@ -58,13 +62,13 @@ if ~isempty(p.proj)
     end
     
     % added by FS, 8.1.2018
-    if strcmp(opt2, 'gamma') || strcmp(opt2, 'DTA') || ...
+    if (strcmp(opt2, 'gamma') || strcmp(opt2, 'DTA') || ...
             strcmp(opt2, 'debleach') || ... 
             strcmp(opt2, 'denoise') || strcmp(opt2, 'corr') || ...
-            strcmp(opt2, 'ttBg') || strcmp(opt2, 'ttPr')
-        p = calcCutoffGamma(mol, p);
-        p = prepostInt(h_fig, mol, p);
-        p = discrTraces(h_fig, mol, p);
+            strcmp(opt2, 'ttBg') || strcmp(opt2, 'ttPr')) && nFRET > 0
+            p = calcCutoffGamma(mol, p);
+            p = prepostInt(h_fig, mol, p);
+            p = discrTraces(h_fig, mol, p);
     end
 
     proj = p.curr_proj;

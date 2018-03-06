@@ -810,7 +810,7 @@ function pushbutton_update_Callback(obj, evd, h_fig)
     
     % RB 2018-01-04: adapted for FRET-S-Histogram
     ES = []; % local array
-    for ind = 1:(size(dat1.trace,2)+nFRET) % counts for nChan*nExc Intensity channels, nFRET channles, nS channels and nFRET ES histograms
+    for ind = 1:(size(dat1.trace,2)+nS) % counts for nChan*nExc Intensity channels, nFRET channles, nS channels and nFRET ES histograms
         dat1.niv(ind) = def_niv;
         if ind <= nChan*nExc % intensity histogram 1D 
             dat1.lim{ind} = [min(dat1.trace{ind}) max(dat1.trace{ind})];
@@ -923,7 +923,7 @@ function pushbutton_update_Callback(obj, evd, h_fig)
     end
     % String for Stoichiometry-FRET Channels in popup menu
     % RB 2017-12-15: str_plot including FRET-S-histograms in popupmenu (only corresponding SToichiometry FRET values e.g. FRET:Cy3->Cy5 and S:Cy3->Cy5 not FRET:Cy3->Cy5 and S:Cy3->Cy7 etc.)   )
-    for n = 1:nFRET
+    for n = 1:nS
         clr_bg_s = sprintf('rgb(%i,%i,%i)', ...
             round(clr{3}(n,1:3)*255));
         clr_bg_e = sprintf('rgb(%i,%i,%i)', ...
