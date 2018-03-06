@@ -4,6 +4,7 @@ function buildModel(h_fig)
 %
 % Requires external files: setContPan.m
 %                          updateMov.m
+% To be checked 2018-03-06
 
 h = guidata(h_fig);
 
