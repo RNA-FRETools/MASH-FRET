@@ -13,8 +13,9 @@ else
     K = 57.7;
 end
 
-offset = 0;
+offset = 0; % offset implemented in camera noise model. Do not change!
 
 
-dat = offset + dat*eta*K;
+dat = offset + dat*eta*K; % offset implemented in camera noise model. Do not change!
+
 

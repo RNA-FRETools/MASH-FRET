@@ -65,7 +65,8 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         matGauss = p.matGauss;
         expT = 1/p.rate; % exposure time
         aDim = p.pixDim; % pixel dimension
-        [~, sat] = Saturation(p.bitnr);
+        %[~, sat] = Saturation(p.bitnr);
+        sat = 2^p.bitnr-1;
         
         % Background
         bgType = p.bgType; % fluorescent background type
@@ -220,17 +221,19 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
 
             % add noisy fluorescent background trace
             % I_bg = I_bt + bg
-            % exp decay of background, to check
+            % exp decay of background, to check, ok!
             if bgDec
                 bg_don{m} = img_bg_don(ceil(crd(m,2)), ...
                     ceil(crd(m,1)))*(amp*exp(-expT*(1:numel(I_don_bt{m}))/cst)+1);
                 bg_acc{m} = img_bg_acc(ceil(crd(m,4)), ...
                     ceil(crd(m,3))-round(res_x/2))* ...
                     (amp*exp(-expT*(1:numel(I_acc_bt{m}))/cst)+1);
+                
                 if camNoiseInd~=2 % no Poisson noise for pure Gaussian noise
                     bg_don{m} = random('poiss', bg_don{m});
                     bg_acc{m} = random('poiss', bg_acc{m});
                 end
+                
                 if strcmp(bgDec_dir{1},'increase')
                     I_don_bg = I_don_bt{m} + (bg_don{m}(end:-1:1))';
                 else
@@ -252,17 +255,17 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                         ceil(crd(m,3))-round(res_x/2)), ...
                         size(I_acc_bt{m})));
                 else
-                    I_don_bg = I_don_bt + repmat(img_bg_don( ...
-                        ceil(coord(n,2)),ceil(coord(n,1))), ...
-                        size(I_don_bt));
-                    I_acc_bg = I_acc_bt + repmat(img_bg_acc( ...
-                        ceil(coord(n,4)),ceil(coord(n,3))- ...
-                        round(res_x/2)),size(I_acc_bt));
+                    I_don_bg = I_don_bt{m} + repmat(img_bg_don( ...
+                        ceil(crd(m,2)),ceil(crd(m,1))), ...
+                        size(I_don_bt{m}));
+                    I_acc_bg = I_acc_bt{m} + repmat(img_bg_acc( ...
+                        ceil(crd(m,4)),ceil(crd(m,3))- ...
+                        round(res_x/2)),size(I_acc_bt{m}));
                 end
             end
-            I_don_plot{m} = I_don_bg;
-            I_acc_plot{m} = I_acc_bg;
-            
+            I_don_plot{m} = I_don_bg; % this cell array contains all simulated donor traces
+            I_acc_plot{m} = I_acc_bg; % this cell array contains all simulated acceptor traces
+
             % define Point-Spread-Function (PSF) for each simulated molecule
             if psf
                     if size(o_psf,1)>1
@@ -281,10 +284,9 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                     p_acc.sig(m,1:2) = [o_psf2 o_psf2];
             end
         end
-        
-        
+
         % Export SMV
-        if isMov || isAvi % sira(movie) or avi file 
+        if isMov || isAvi % sira(movie/video) or avi file 
             
             % open blank movie file
             if isMov
@@ -293,7 +295,8 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                 
                 f = fopen([pName fName_mov], 'w');
                 
-                % SIRA header 
+                % SIRA header for Version MASH-FRET movie processing
+                % version > 1.003.37
                 figname = get(h_fig, 'Name');
                 vers = figname(length('MASH smFRET '):end);
                 fprintf(f, ['MASH smFRET exported binary graphic Version: ' ...
@@ -324,7 +327,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                 % initialise images
                 img_don = zeros(res_y,round(res_x/2));
                 img_acc = zeros(res_y,res_x-round(res_x/2));
-                img_bg_i = img_bg;
+                img_bg_i = img_bg; % transfer background image to each frame of the movie/video
                 
                 % build noisy + PSF convoluted sm fluorescence image
                 if psf
@@ -361,6 +364,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                 
                 img = [img_don img_acc];
                 
+                % add noisy fluorescent background image 
                 if camNoiseInd~=2
                     img_bg_i = random('poiss', img_bg_i);
                 end
@@ -397,6 +401,21 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                             img = phtn2arb(img); % transfer function with eta=1, as detection efficiency already applied above
                         end
                         
+%                         % old version
+%                         % comment: Indeed, one can first transfer the number of simulated PC to EC and add Poisson noise. This looks great, but is entirely wrong if the transfer function (overall gain is not adapted). The transfer function for a CCD does not account for the EM gain g, but for the readout analog-to-digital conversion factor s. Please consider this carefully. 
+%                          I_th = arb2phtn(noisePrm(1));
+%                          eta = noisePrm(2);
+%                         
+%                         %  add noise for photoelectrons in PC
+%                         img = phtn2arb(img);
+%                         % cam_bg_img = noisePrm(1)*ones(size(img));
+%                         img = random('poiss', eta*img + I_th);
+%                         
+%                         % convert to PC (conversion yields basically wrong ec or ic as the conversion factor photons to imagecounts is only valid for N, NExpN and PGN model)
+%                         if strcmp(op_u, 'photons')
+%                             img = arbn2phtn(img); % transfer function with eta=1, as detection efficiency already applied above
+%                         end
+                        
                     case 'norm' % Gaussian, Normal or N-model from Börner et al. 2017
                         % PC are not Poisson distributed here.
                         % model parameters
@@ -423,9 +442,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                         end
 
                     case 'user'  % User defined or NExpN-model from Börner et al. 2017
-                        % convert to EC
-                        img = phtn2arb(img);
-                        
+                       
                         % model parameters
                         I_th = noisePrm(1);
                         A = noisePrm(2);
@@ -434,10 +451,12 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                         a = noisePrm(6);
                         sig0 = noisePrm(4);
                         
+                        % convert to EC
+                        img = phtn2arb(img);
+                        
                         % calculate noise distribution and add noise
-
                         %cam_bg_img = noisePrm(1)*ones(size(img));
-                        img = rand_NexpN(img+cam_bg_img, noisePrm(2), ...
+                        img = rand_NexpN(img+I_th, noisePrm(2), ...
                             noisePrm(5), noisePrm(3), noisePrm(6), ...
                             noisePrm(4));
                         
@@ -489,8 +508,11 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                 % Correction of out-of-range values.
                 % Due to noise calculated values out of the detection range 0 <= 0I <= bitrate. 
                 
-                if strcmp(op_u, 'electron')
-                    sat = phtn2arb(sat);
+%                 if strcmp(op_u, 'electron')
+%                     sat = phtn2arb(sat);
+%                 end
+                if strcmp(op_u, 'photons')
+                    sat = arb2phtn(sat);
                 end
                 
                 img(img<0) = 0;
@@ -748,7 +770,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                 % Correction of out-of-range values.
                 % Due to noise calculated values out of the detection range 0 <= 0I <= bitrate. 
 
-                I_don_plot{m}(I_don_plo{m}t<0) = 0;
+                I_don_plot{m}(I_don_plot{m}<0) = 0;
                 I_don_plot{m}(I_don_plot{m}>sat) = sat;
 
                 I_acc_plot{m}(I_acc_plot{m}<0) = 0;

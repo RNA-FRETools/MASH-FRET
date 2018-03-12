@@ -407,10 +407,15 @@ end
 % Correction of out-of-range values.
 % Due to noise calculated values out of the detection range 0 <= 0I <= bitrate. 
 
-[~, sat] = Saturation(bitnr);
+%[~, sat] = Saturation(bitnr);
+sat = 2^bitnr-1;
 % if strcmp(opUnits, 'electron')
 %     sat = phtn2arb(sat);
 % end
+
+if strcmp(opUnits, 'photons')
+    sat = arb2phtn(sat);
+end
 
 img(img<0) = 0;
 img(img>sat) = sat;
@@ -421,9 +426,14 @@ I_don_plot(I_don_plot>sat) = sat;
 I_acc_plot(I_acc_plot<0) = 0;
 I_acc_plot(I_acc_plot>sat) = sat;
 
-% Plot first trace
-if nbMol > 0 % at least one trace must be simulated.
+% Histogram first trace
 
+[~,edges] = histcounts([I_don_plot, I_acc_plot]);
+[I_don_plot_hist,don_edges] = histcounts(I_don_plot,edges);
+[I_acc_plot_hist] = histcounts(I_acc_plot,edges);
+
+if nbMol > 0 % at least one trace must be simulated.
+    % Plot first trace    
     if ~(isempty(get(get(h.axes_example, 'XLabel'), 'String')) && ...
             isempty(get(get(h.axes_example, 'YLabel'), 'String')))
         fntS_y = get(get(h.axes_example, 'YLabel'), 'FontSize');
@@ -451,27 +461,28 @@ if nbMol > 0 % at least one trace must be simulated.
     grid(h.axes_example, 'on');
     ylim(h.axes_example, 'auto');
     
+    % plot histogram of first trace
     if ~(isempty(get(get(h.axes_example_hist, 'XLabel'), 'String')) && ...
             isempty(get(get(h.axes_example_hist, 'YLabel'), 'String')))
         fntS_y = get(get(h.axes_example_hist, 'YLabel'), 'FontSize');
         fntS_x = get(get(h.axes_example_hist, 'XLabel'), 'FontSize');
     end
 
-    plot(h.axes_example_hist, rate*(0:size(I_don_plot,1))', [I_don_plot(1); ...
-        I_don_plot], '-b', rate*(0:size(I_acc_plot,1))', ...
-        [I_acc_plot(1);I_acc_plot], '-r');
-    set(h.axes_example_hist, 'XLim', [0 size(I_don_plot,1)*rate], ...
-        'FontUnits', 'normalized');
-
+    bar(h.axes_example_hist,don_edges(1:size(don_edges,2)-1),I_don_plot_hist);
+    set(h.axes_example_hist,'yscale','log'); 
+    hold on;
+    bar(h.axes_example_hist,don_edges(1:size(don_edges,2)-1),I_acc_plot_hist,'FaceColor','red');
+    hold off;
+    
     if isempty(get(get(h.axes_example_hist, 'XLabel'), 'String')) && ...
             isempty(get(get(h.axes_example_hist, 'YLabel'), 'String'))
-        xlabel(h.axes_example_hist, 'time (sec)', 'FontUnits', 'normalized');
-        ylabel(h.axes_example_hist, [opUnits ' counts'], 'FontUnits', ...
+        xlabel(h.axes_example_hist, [opUnits ' counts'], 'FontUnits', 'normalized');
+        ylabel(h.axes_example_hist, 'frequency', 'FontUnits', ...
             'normalized');
     else
-        xlabel(h.axes_example_hist, 'time (sec)', 'FontUnits', 'normalized', ...
+        xlabel(h.axes_example_hist, [opUnits ' counts'], 'FontUnits', 'normalized', ...
             'FontSize', fntS_x);
-        ylabel(h.axes_example_hist, [opUnits ' counts'], 'FontUnits', ...
+        ylabel(h.axes_example_hist, 'frequency', 'FontUnits', ...
             'normalized', 'FontSize', fntS_y);
     end
     legend(h.axes_example_hist, 'donor', 'acceptor');
