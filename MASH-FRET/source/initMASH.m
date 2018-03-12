@@ -43,6 +43,8 @@ hold off;
 
 h.figure_actPan = actionPanel(obj);
 
+% Update handles structure
+
 guidata(obj, h);
 
 % Initialization of parameters

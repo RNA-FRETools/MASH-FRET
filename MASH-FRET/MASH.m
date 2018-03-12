@@ -33,7 +33,10 @@ while issep
         pname = pname(possep+1:end);
     end
 end
-figName = strrep(pname,'_',' ');
+%figName = strrep(pname,'_',' '); % Versioning with folder structure 2018-03-07
+
+version_number = '2.01'; % Versioning without folder structure %2018-03-07
+figName = sprintf('%s %s','MASHsmFRET', version_number);
 
 % check for proper Matlab version
 mtlbDat = ver;
@@ -141,6 +144,12 @@ end
 
 %% Simulations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Last update: 7th of March 2018 by Richard Börner
+%
+% Comments adapted for Boerner et al 2017
+% Noise models adapted for Boerner et al 2017.
+% Simulation default parameters adapted for Boerner et al 2017.
+
 % Kinetic model
 
 function edit_nbStates_Callback(obj, evd, h)
@@ -236,8 +245,13 @@ end
 
 
 function pushbutton_startSim_Callback(obj, evd, h)
+% Make sure all Parameters are updated.
 updateFields(h.figure_MASH, 'sim');
+
+% Simulate trajectories and initialize movie simulation
 buildModel(h.figure_MASH);
+
+% Make sure all Parameters are updated.
 updateFields(h.figure_MASH, 'sim');
 
 
@@ -557,20 +571,25 @@ else
     updateFields(h.figure_MASH, 'sim');
 end
 
-
+% Choose from five different noise modells for the camera SNR
+% characteristics
 function popupmenu_noiseType_Callback(obj, evd, h)
 switch get(obj, 'Value')
-    case 1 % Poissonian
+    case 1 % Poisson or P-model from Börner et al. 2017
         noiseType = 'poiss';
-    case 2 % Gaussian
+    case 2 % Gaussian, Normal or N-model from Börner et al. 2017
         noiseType = 'norm';
-    case 3 % User defined
+    case 3 % User defined or NExpN-model from Börner et al. 2017
         noiseType = 'user';
-    case 4 % None
+    case 4 % None, no camera noise but possible camera offset value
         noiseType = 'none';
+    case 5 % Hirsch or PGN- Model from Hirsch et al. 2011
+        noiseType = 'hirsch';
 end
+
 h.param.sim.noiseType = noiseType;
 guidata(h.figure_MASH, h);
+
 updateFields(h.figure_MASH, 'sim');
 
 
@@ -582,14 +601,14 @@ ind = get(h.popupmenu_noiseType, 'Value');
 
 switch ind
     
-    case 1 % Poissonian, I_0
+    case 1 % Poisson, dark current or camera offset value
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan('Dark count of the CCD camera must be >= 0', ...
+            setContPan('Dark counts or offset of the CCD camera must be >= 0', ...
                 'error', h.figure_MASH);
         else
             set(obj, 'BackgroundColor', [1 1 1]);
-            h.param.sim.camNoise(1,1) = val;
+            h.param.sim.camNoise(ind,1) = val;
             guidata(h.figure_MASH, h);
             updateFields(h.figure_MASH, 'sim');
         end
@@ -606,7 +625,7 @@ switch ind
             updateFields(h.figure_MASH, 'sim');
         end
         
-    case 3 % User defined, I_0
+    case 3 % User defined, with dark current or camera offset value
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
             setContPan('Dark count of the CCD camera must be >= 0', ...
@@ -618,7 +637,29 @@ switch ind
             updateFields(h.figure_MASH, 'sim');
         end
         
-    case 3 % None, none
+    case 4 % None, dark current or camera offset value
+        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
+            set(obj, 'BackgroundColor', [1 0.75 0.75]);
+            setContPan('Dark counts of the CCD camera must be >= 0', ...
+                'error', h.figure_MASH);
+        else
+            set(obj, 'BackgroundColor', [1 1 1]);
+            h.param.sim.camNoise(ind,1) = val;
+            guidata(h.figure_MASH, h);
+            updateFields(h.figure_MASH, 'sim');
+        end   
+            
+    case 5 % Hirsch or PGN-model, g
+      	if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
+            set(obj, 'BackgroundColor', [1 0.75 0.75]);
+            setContPan('EM register gain must be >= 0', ...
+                'error', h.figure_MASH);
+        else
+            set(obj, 'BackgroundColor', [1 1 1]);
+            h.param.sim.camNoise(ind,1) = val;
+            guidata(h.figure_MASH, h);
+            updateFields(h.figure_MASH, 'sim');
+        end   
 end
 
 
@@ -629,8 +670,18 @@ set(obj, 'String', num2str(val));
 ind = get(h.popupmenu_noiseType, 'Value');
 
 switch ind
-    case 1 % Poissonian, none
-        
+    case 1 % Poissonian, total detection efficiency
+        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
+                val >= 0 && val <= 1)
+            set(obj, 'BackgroundColor', [1 0.75 0.75]);
+            setContPan(['Total Detection Efficiency must be comprised ' ...
+                'between 0 and 1'], 'error', h.figure_MASH);
+        else
+            set(obj, 'BackgroundColor', [1 1 1]);
+            h.param.sim.camNoise(ind,2) = val;
+            guidata(h.figure_MASH, h);
+            updateFields(h.figure_MASH, 'sim');
+        end
     case 2 % Gaussian, s_d
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -644,7 +695,7 @@ switch ind
             updateFields(h.figure_MASH, 'sim');
         end
 
-    case 3 % User defined, A
+    case 3 % User, A
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
             setContPan('Gaussian/Exponential relative amplitude must be >= 0', ...
@@ -657,6 +708,18 @@ switch ind
         end
         
     case 4 % None, none
+        
+    case 5 % Hirsch or PGN-model, s_d, read-out-noise
+        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
+            set(obj, 'BackgroundColor', [1 0.75 0.75]);
+            setContPan('The read-out-noise must be >= 0', ...
+                'error', h.figure_MASH);
+        else
+            set(obj, 'BackgroundColor', [1 1 1]);
+            h.param.sim.camNoise(ind,2) = val;
+            guidata(h.figure_MASH, h);
+            updateFields(h.figure_MASH, 'sim');
+        end  
 end
 
 
@@ -672,7 +735,7 @@ switch ind
     case 2 % Gaussian, mu_y.dark
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan('Dark count of the CCD camera must be >= 0', ...
+            setContPan('Dark count or offset of the CCD camera must be >= 0', ...
                 'error', h.figure_MASH);
         else
             set(obj, 'BackgroundColor', [1 1 1]);
@@ -681,10 +744,10 @@ switch ind
             updateFields(h.figure_MASH, 'sim');
         end
 
-    case 3 % User defined, tau
+    case 3 % User defined, tau_CIC
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan('Exponential decay constant must be >= 0', ...
+            setContPan('CIC Exponential decay constant must be >= 0', ...
                 'error', h.figure_MASH);
         else
             set(obj, 'BackgroundColor', [1 1 1]);
@@ -694,6 +757,18 @@ switch ind
         end
         
     case 4 % None, none
+        
+    case 5 % Hirsch or PGN-model
+        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
+            set(obj, 'BackgroundColor', [1 0.75 0.75]);
+            setContPan('Dark count or offset of the CCD camera must be >= 0', ...
+                'error', h.figure_MASH);
+        else
+            set(obj, 'BackgroundColor', [1 1 1]);
+            h.param.sim.camNoise(ind,3) = val;
+            guidata(h.figure_MASH, h);
+            updateFields(h.figure_MASH, 'sim');
+        end
 end
 
 
@@ -732,6 +807,18 @@ switch ind
         end
         
     case 4 % None, none
+        
+    case 5 % Hirsch or PGN-model
+        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
+            set(obj, 'BackgroundColor', [1 0.75 0.75]);
+            setContPan('CIC contribution must be >= 0', ...
+                'error', h.figure_MASH);
+        else
+            set(obj, 'BackgroundColor', [1 1 1]);
+            h.param.sim.camNoise(ind,4) = val;
+            guidata(h.figure_MASH, h);
+            updateFields(h.figure_MASH, 'sim');
+        end
 end
 
 
@@ -747,18 +834,20 @@ switch ind
     case 2 % Gaussian, mu_rho.stat (none)
         
     case 3 % User defined, c
-%         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val > 0)
-%             set(obj, 'BackgroundColor', [1 0.75 0.75]);
-%             setContPan('Gaussian width exponent must be > 0', ...
-%                 'error', h.figure_MASH);
-%         else
-%             set(obj, 'BackgroundColor', [1 1 1]);
-%             h.param.sim.camNoise(ind,5)= val;
-%             guidata(h.figure_MASH, h);
-%             updateFields(h.figure_MASH, 'sim');
-%         end
         
     case 4 % None, none
+        
+    case 5 % Hirsch or PGN-model
+        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val > 0)
+            set(obj, 'BackgroundColor', [1 0.75 0.75]);
+            setContPan('Analog-to-Digital factor must be > 0', ...
+                'error', h.figure_MASH);
+        else
+            set(obj, 'BackgroundColor', [1 1 1]);
+            h.param.sim.camNoise(ind,5)= val;
+            guidata(h.figure_MASH, h);
+            updateFields(h.figure_MASH, 'sim');
+        end
 end
 
 
@@ -775,7 +864,7 @@ switch ind
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
                 val >= 0 && val <= 1)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan(['Total Quantum Efficiency must be comprised ' ...
+            setContPan(['Total Detection Efficiency must be comprised ' ...
                 'between 0 and 1'], 'error', h.figure_MASH);
         else
             set(obj, 'BackgroundColor', [1 1 1]);
@@ -797,6 +886,19 @@ switch ind
 %         end
 
     case 4 % None, none
+        
+    case 5 % Hirsch or PGN-model
+        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
+                val >= 0 && val <= 1)
+            set(obj, 'BackgroundColor', [1 0.75 0.75]);
+            setContPan(['Total Detection Efficiency must be comprised ' ...
+                'between 0 and 1'], 'error', h.figure_MASH);
+        else
+            set(obj, 'BackgroundColor', [1 1 1]);
+            h.param.sim.camNoise(ind,6) = val;
+            guidata(h.figure_MASH, h);
+            updateFields(h.figure_MASH, 'sim');
+        end
 end
 
 

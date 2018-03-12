@@ -14,3 +14,4 @@ offset = 0;
 
 dat = (dat - offset)/(K*eta);
 
+%check

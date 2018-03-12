@@ -1,6 +1,15 @@
 function [maxSNR, saturation_intensity] = Saturation(bitnr)
-% by Danny Kowerko
-% bitnr = 14;
+
+% What?
+%
+% Requires external files: 
+%
+% Created the dd of mmmm aaaa by Danny Kowerko
+% Last update: 7th of March 2018 by Richard Börner
+%
+% Comments adapted for Boerner et al 2017
+
+% bitnr = 14; default
 
 jj=1;
 x1 = 2^(bitnr-1):(2^(bitnr+2)-2^(bitnr-1))/1000:2^(bitnr+2);
@@ -14,6 +23,8 @@ end
 % loglog(x1,y1,'o');
 [ maxSNR, maxSNR_idx] = (max(y1));
 saturation_intensity = x1(maxSNR_idx);
+
+% controls
 % disp('saturation')
 % disp(maxSNR); 
 % disp('saturation intensity')

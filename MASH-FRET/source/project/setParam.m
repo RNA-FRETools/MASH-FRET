@@ -1,9 +1,17 @@
 function ok = setParam(h_fig)
+
 % Initialize MASH parameters from the file default_param.ini
 % "h_fig" >> MASH figure handle
-
+%
 % Requires external function: adjustParam
+%
+% Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
 % Last update: 5th of February 2014 by Mélodie C.A.S Hadzic
+% Last update: 12th of December 2017 by Richard Börner
+% Last update: 7th of March 2018 by Richard Börner
+%
+% Comments adapted for Boerner et al 2017
+% Simulation default parameters adapted for Boerner et al 2017.
 
 h = guidata(h_fig);
 h.param = [];
@@ -67,23 +75,23 @@ if ~isfield(h.param, 'gath')
 end
 h.param.gath = setParamGath(h.param.gath);
 
-
+% Simulation pannel (default parameters for SMV simulations)
 function p = setParamSim(p_input)
 p = p_input;
 
 nChan = 2;
 
 % general parameters
-p.nbStates = adjustParam('nbStates', 2, p_input);
-p.molNb = adjustParam('molNb', 100, p_input);
-p.nbFrames = adjustParam('nbFrames', 4000, p_input);
-p.rate = adjustParam('rate', 1, p_input);
-p.bleach = adjustParam('bleach', 0, p_input);
-p.bleach_t = adjustParam('bleach_t', p.nbFrames/p.rate, p_input);
-p.bitnr = adjustParam('bitnr', 14, p_input);
+p.nbStates = adjustParam('nbStates', 2, p_input); % nb of FRET states
+p.molNb = adjustParam('molNb', 100, p_input); % nb of simulated molecules 
+p.nbFrames = adjustParam('nbFrames', 4000, p_input); % nb of video frames
+p.rate = adjustParam('rate', 10, p_input); % frame rate (s-1)
+p.bleach = adjustParam('bleach', 0, p_input); % fluorophore bleaching (0/1)
+p.bleach_t = adjustParam('bleach_t', p.nbFrames/p.rate, p_input); % bleaching decay time (s-1)
+p.bitnr = adjustParam('bitnr', 14, p_input); % bit rate
 
 % molecule parameters
-kx = [  0   0.1   0.1   0.1   0.1
+kx = [  0   0.1   0.1   0.1   0.1 % transition state rates (s-1), for up to 5 states
       0.1     0   0.1   0.1   0.1
       0.1   0.1     0   0.1   0.1
       0.1   0.1   0.1     0   0.1
@@ -91,13 +99,13 @@ kx = [  0   0.1   0.1   0.1   0.1
 p.kx = adjustParam('kx', kx, p_input);
 val = round((1:p.nbStates)/(3*p.nbStates/2)*10)/10;
 p.stateVal = adjustParam('stateVal', val, p_input);
-p.FRETw = adjustParam('FRETw', zeros(1,p.nbStates), p_input);
-p.gamma = adjustParam('gamma', 1, p_input);
-p.gammaW = adjustParam('gammaW', 0, p_input);
-p.totInt = adjustParam('totInt', arb2phtn(1000), p_input);
-p.totInt_width = adjustParam('totInt_width', 0, p_input);
-p.coord = adjustParam('coord', [], p_input);
-p.molPrm = adjustParam('molPrm', [], p_input);
+p.FRETw = adjustParam('FRETw', zeros(1,p.nbStates), p_input); % FRET width for heterogenous broadening
+p.gamma = adjustParam('gamma', 1, p_input); % gamma factor (correction for different quantum yields and detection efficiencies of the fluorophors)
+p.gammaW = adjustParam('gammaW', 0, p_input); % gamma width for molecule variations
+p.totInt = adjustParam('totInt', arb2phtn(1000), p_input); % total emitted intennsity 
+p.totInt_width = adjustParam('totInt_width', 0, p_input); % total emitted Intensity width for heterogenous broadening
+p.coord = adjustParam('coord', [], p_input); % only allocation of sm coordinates
+p.molPrm = adjustParam('molPrm', [], p_input); % only allocation of sm parameters
 
 % setup parameters
 p.bgInt_don = adjustParam('bgInt_don', 0, p_input);
@@ -107,7 +115,7 @@ if strcmp(p.noiseType,'poiss')
     p.noiseType = 'none';
 end
 p.movDim = adjustParam('movDim', [256 256], p_input);
-p.bgType = adjustParam('bgType', 1, p_input);
+p.bgType = adjustParam('bgType', 1, p_input); % 1: constant, 2: TIRF profile, 3: patterned 
 p.TIRFdim = adjustParam('TIRFdim', [floor(p.movDim(1)/(2*nChan)) ...
     p.movDim(2)/2], p_input);
 p.pixDim = adjustParam('pixDim', 0.53, p_input);
@@ -120,17 +128,24 @@ if size(p.PSFw,2)~=2
     p.PSFw = repmat(p.PSFw(1,:),[1,2]);
 end
 
-% camera noise
-camNoise = [100  0       0  0 0     0      %  I_th /   /    /   /    /
-            57.7 0.067 113  0 0     0.95   %  K    s_d my.d s_q mr.s eta
-            979  0.143  54 16 0.402 0      %  I_0  A   tau  sig c    a
-              0   0      0  0 0     0   ]; %  /    /   /    /   /    /  ]
+% camera noise default values
+camNoise = [113  0.95    0  0 0     0      %  mu.d /   /    /   /    /      % default P- or Poisson Model
+            57.7 0.067 113  0 0     0.95   %  K    s_d mu.d s_q mr.s eta    % default N- or Gaussian Model
+            106.9  0.02  205 16 0.402 0      %  I_0  A   tau  sig c    a      % default NexpN or Exp.-CIC Model
+            113  0       0  0 0     0      %  mu.d /   /    /   /    /      % default no noise but camera offset
+            300  0.067 113  0.067 5.199 0.95 ];%  g    s_d mu.d CIC s    eta    % default PGN- or Hirsch Model 
+        
 p.camNoise = adjustParam('camNoise', camNoise, p_input);
 
-p.btD = adjustParam('btD', 0.07, p_input);
-p.btA = adjustParam('btA', 0, p_input);
-p.deD = adjustParam('deD', 0, p_input);
-p.deA = adjustParam('deA', 0, p_input);
+% instrumental imperfections
+p.btD = adjustParam('btD', 0.07, p_input);  % default bleedthrough D excitation D emmission in A channel
+p.btA = adjustParam('btA', 0, p_input);     % default bleedthrough A excitation A emmission in D channel
+p.deD = adjustParam('deD', 0, p_input);     % default direct excitation of D after A excitation
+p.deA = adjustParam('deA', 0.03, p_input);  % default direct excitation of A after D excitation
+
+% defocsing/focal drift/chromatic aberation
+%p.taudefocus
+%p.defocus_z
 
 % other parameters
 p.intUnits = adjustParam('intUnits', 'electron', p_input);
@@ -149,7 +164,7 @@ p.prmFile = adjustParam('prmFile', [], p_input);
 p.molPrm = adjustParam('molPrm', [], p_input);
 p.matGauss = cell(1,4);
 
-
+% Movie processing pannel
 
 function p = setParamMov(p_input)
 p = p_input;
@@ -296,6 +311,7 @@ p.chanExc = adjustParam('chanExc', chanExc, p_input);
 p.labels_def = adjustParam('labels_def', labels, p_input);
 p.labels = adjustParam('labels', labels, p_input);
 
+% Trace processing pannel
 
 function p = setParamTT(p_input)
 p = p_input;
@@ -326,7 +342,7 @@ p.proj = {};
 p.curr_proj = 0;
 p.curr_mol = [];
 
-
+% Themodynamics processing pannel
 function p = setParamThm(p_input)
 p = p_input;
 p.proj = {};
@@ -354,6 +370,7 @@ colList = [1 0 0 % red
            0.5 1 1]; % pastel blue
 p.colList = adjustParam('colList', colList, p_input);
 
+% Kinetics processing pannel
 
 function p = setParamTDP(p_input)
 p = p_input;
