@@ -129,7 +129,7 @@ if size(p.PSFw,2)~=2
 end
 
 % camera noise default values
-camNoise = [113  0.95    0  0 0     0      %  mu.d /   /    /   /    /      % default P- or Poisson Model
+camNoise = [113  0.95    0.95  0 0     0      %  mu.d /   /    /   /    /      % default P- or Poisson Model
             57.7 0.067 113  0 0     0.95   %  K    s_d mu.d s_q mr.s eta    % default N- or Gaussian Model
             106.9  0.02  205 16 0.402 0      %  I_0  A   tau  sig c    a      % default NexpN or Exp.-CIC Model
             113  0       0  0 0     0      %  mu.d /   /    /   /    /      % default no noise but camera offset
