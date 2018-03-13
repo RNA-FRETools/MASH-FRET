@@ -14,7 +14,9 @@ If you use MASH-FRET in your work please cite ...
 
 ... for the simulation tool:
 
-R. Börner*, D. Kowerko*, M. C.A.S. Hadzic*, S.L.B.König, M.Ritter, R.K.O.Sigel, "Simulations of Camera-Based Single-Molecule Fluorescence Experiments" *PLoS One* **2017**, accepted. (DOI:)
+R. Börner*, D. Kowerko*, M. C.A.S. Hadzic*, S.L.B.König, M.Ritter, R.K.O.Sigel, "Simulations of Camera-Based Single-Molecule Fluorescence Experiments" *PLoS One* **2017**, accepted. (DOI:) 
+
+Supporting Information for parameter optimization and SM localization method comparison (http://skinner.informatik.tu-chemnitz.de:9081/#/)
 
 ... for the state transition analyzing tool:
 
@@ -43,3 +45,9 @@ MASH was developed with MATLAB 7.12 (R2011a) and operating system Windows 7. The
 ## Usage
 
 For information about the different modules in MASH-FRET please visit our [Wiki page](https://github.com/fdsteffen/mash-fret/wiki).
+
+## External links
+
+http://skinner.informatik.tu-chemnitz.de:9081/#/
+
+http://www.chem.uzh.ch/en/sigel/research/software.html
