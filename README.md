@@ -1,23 +1,11 @@
 # MASH-FRET
-MASH-FRET is a modular toolkit to process surface-immobilized single molecules
+A modular toolkit to process surface-immobilized single molecules
 
-## Table of contents
-1. [Installation](#install)
-1. [Simulation](#introduction)
-1. [Movie Processing](#paragraph1)
-  1. [Trace processing](#subparagraph1)
-1. [Trace processing](#subparagraph1)    
-1. [Histogram analysis](#paragraph2)
-1. [Dwell time analysis](#paragraph3)
+If you use MASH-FRET in your work please cite:
 
-## Installation <a name="install"></a>
+R. Börner, D. Kowerko, M.C.A.S. Hadzic, S.L.B.König, M.Ritter, R.K.O.Sigel, *J. Phys.Chem.B* **2018**, submitted.
 
-## Simulation <a name="simulation"></a>
+## About MASH-FRET
 
-## Movie processing <a name="movie-proc"></a>
+## Installation
 
-### Trace processing <a name="trace-proc"></a>
-
-## Histogram processing <a name="hist-proc"></a>
-
-## Dwell time analysis <a name="dT-proc"></a>
