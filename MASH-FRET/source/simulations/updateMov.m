@@ -1,9 +1,15 @@
 function updateMov(h_fig)
+
 % updateMov create and plot the intensity-time traces of one donor and
-% acceptor according to the simulated discretise FRET time course and to
+% acceptor according to the simulated discretised FRET time course and to
 % the background/noise intensity.
 %
 % Requires external file: setContPan.m
+%
+% Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
+% Last update: 7th of March 2018 by Richard Börner
+%
+% Comments adapted for Boerner et al 2017
 
 h = guidata(h_fig);
 
@@ -110,6 +116,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                 I_sum = random('norm', totInt, Itot_w);
             end
             I_sum(I_sum<0) = 0;
+            
             if impPrm && isfield(molPrm, 'gamma');
                 g_mol = random('norm', molPrm.gamma(n), molPrm.gammaW(n));
             else
@@ -125,13 +132,16 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             Idon_id{size(Idon_id,2)}(Idon_id{size(Idon_id,2)}==2*I_sum) ...
                 = 0;
             
+            % inverse gamma correction for the different quantum and detection efficiencies of donor and acceptor 
             % Idon_exp = Idon_id/gamma
             Idon{size(Idon,2)+1} = Idon_id{size(Idon_id,2)}/g_mol;
         end
     end
+    
     discr_seq(excl) = [];
     discr(excl) = [];
     coord(excl,:) = [];
+    
     if ~isempty(matGauss{1})
         matGauss{1}(excl) = [];
     end
@@ -145,6 +155,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
     guidata(h_fig, h);
 
     setSimCoordTable(h.param.sim.coord, h.uitable_simCoord);
+    
     
     plotExample(h_fig);
     

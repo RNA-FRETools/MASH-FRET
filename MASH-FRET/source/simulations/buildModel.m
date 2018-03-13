@@ -23,6 +23,8 @@ end
 %     return;
 % end
 
+%  Parameter initialization
+
 n_max = h.param.sim.molNb;
 bleach = h.param.sim.bleach;
 expT = 1/h.param.sim.rate;
@@ -209,6 +211,8 @@ h.results.sim.mix = mix;
 h.results.sim.discr_seq = discr_seq;
 h.results.sim.dt_final = dt_final;
 guidata(h_fig,h);
+
+% Start acutal intensity trajectory and SMV simulation
 
 updateMov(h_fig);
 

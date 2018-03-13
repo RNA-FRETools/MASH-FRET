@@ -12,6 +12,9 @@ function [imgGauss,matGauss] = getImgGauss(lim, p, volume, varargin)
 
     % build multiple 2D gaussians function
     % A*exp(-0.5*(((X-x_0)/o_x).^2) - 0.5*(((Y-y_0)/o_y).^2))
+    
+    % build 3D gaussian function for focal drift and chromatic aberation
+    % A*exp(-0.5*(((X-x_0)/o_x).^2) - 0.5*(((Y-y_0)/o_y).^2)- 0.5*(((Z-z_0)/o_z).^2))
     mltp_gauss_str = [];
     nGauss = size(p.amp,1);
     
@@ -22,15 +25,19 @@ function [imgGauss,matGauss] = getImgGauss(lim, p, volume, varargin)
 
     for g = 1:nGauss
         I_0 = p.amp(g,1);
-        x_0 = p.mu(g,1);
+        x_0 = p.mu(g,1); % PSF coordinates
         y_0 = p.mu(g,2);
+        %z_0 = p.mu(g,3);
+        
         o_x = p.sig(g,1); % PSF widths mormalised to pixel units.
         o_y = p.sig(g,2);
+        %o_z = p.sig(g,3);
         
         if ~isMat
             if volume
                 mltp_gauss_str = [];
                 A = 1/(2*pi*o_x*o_y);
+                %A = 1/(2*pi*o_x*o_y*o_z)
             else
                 A = 1;
             end
@@ -38,12 +45,19 @@ function [imgGauss,matGauss] = getImgGauss(lim, p, volume, varargin)
             if isempty(mltp_gauss_str)
                 mltp_gauss_str = sprintf(['%d*exp(-((X-%d).^2)/(2*(%d^2))-' ...
                     '((Y-%d).^2)/(2*(%d^2)))'], A, x_0, o_x, y_0, o_y);
+                % mltp_gauss_str = sprintf(['%d*exp(-((X-%d).^2)/(2*(%d^2))-' ...
+                %    '((Y-%d).^2)/(2*(%d^2)))-((Z-%d).^2)/(2*(%d^2)))'], A, x_0, o_x, y_0, o_y, z_0, o_z);
 
             else
                 mltp_gauss_str = sprintf(['%s + ' ...
                     '%d*exp(-((X-%d).^2)/(2*(%d^2)) - ' ...
                     '((Y-%d).^2)/(2*(%d^2)))'], mltp_gauss_str, A, x_0, ...
                     o_x, y_0, o_y);
+                % mltp_gauss_str = sprintf(['%s + ' ...
+                %    '%d*exp(-((X-%d).^2)/(2*(%d^2)) - ' ...
+                %    '((Y-%d).^2)/(2*(%d^2)))-((Z-%d).^2)/(2*(%d^2)))'], mltp_gauss_str, A, x_0, ...
+                %    o_x, y_0, o_y, z_0, o_z);
+
             end
         end
 
@@ -94,6 +108,7 @@ function [imgGauss,matGauss] = getImgGauss(lim, p, volume, varargin)
         end
         
     end
+    
     if ~volume
         mltp_gauss = @(X,Y) eval(mltp_gauss_str);
         [X_pix,Y_pix] = meshgrid(lim.x(1):lim.x(2),lim.y(1):lim.y(2));
