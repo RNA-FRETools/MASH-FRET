@@ -1,3 +1,4 @@
+![alt text](https://github.com/fdsteffen/mash-fret/blob/FS/doc/images/mash-fret_logo.png) 
 # MASH-FRET
 A modular toolkit to process surface-immobilized single molecules
 
