@@ -6,7 +6,7 @@ This is MASHsmFRET MATLAB Package - A modular toolkit to process surface-immobil
 
 License: MIT
 
-MASH was developed by Mélodie C.A.-S. Hadzic (University of Zürich, melodie.hadzic@chem.uzh.ch) and Danny Kowerko (Technical University of Chemnitz, danny.kowerko@informatik.tu-chemnitz.de). MASH was further developed and is currently taken care of by by Fabio D. Steffen (University of Zürich, fabio.steffen@uzh.ch) and Richard Börner (University of Zürich, richard.boerner@chem.uzh.ch). 
+MASH was developed by **Mélodie C.A.-S. Hadzic** (University of Zürich, melodie.hadzic@chem.uzh.ch) and Danny Kowerko (Technical University of Chemnitz, danny.kowerko@informatik.tu-chemnitz.de). MASH was further developed and is currently taken care of by by Fabio D. Steffen (University of Zürich, fabio.steffen@uzh.ch) and Richard Börner (University of Zürich, richard.boerner@chem.uzh.ch). 
 
 For more information please contact rnafretools@uzh.ch
 
@@ -36,7 +36,7 @@ Your developers (Mélodie, Danny, Richard and Fabio)
 
 Download the folder "MASH-FRET" into the directory of your choice. Then within MATLAB go to file >> Set path... and add the directory containing "MASH-FRET" to the list (if it isn't already). That's it.
 
-# Dependencies
+## Dependencies
 
 MASH was developed with MATLAB 7.12 (R2011a) and operating system Windows 7. The compatibility was further tested on Windows 8, 8.1 and 10 with MATLAB 7.12 (R2011a) to 9.2 (R2017a).
 
