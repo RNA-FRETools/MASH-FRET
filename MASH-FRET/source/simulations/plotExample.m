@@ -276,7 +276,7 @@ switch noiseType
 %     Pdark = @(nic,noe,nie,g,f,r) (P(nie,G(noe,nie,g))*N(f*nic,noe,r))*(f*nic);      
 
     case 'poiss' % Poisson or P-model from Börner et al. 2017
-        % convert camera offset in photon count
+        % convert camera offset in photon counts
         I_th = arb2phtn(noisePrm(1));
         eta = noisePrm(2); 
         
@@ -301,7 +301,8 @@ switch noiseType
         sig_q = noisePrm(4);
         eta = noisePrm(6);
         
-        % add dark count and convert to EC, Gaussian center
+        % convert photon signal to EC and add dark counts, Gaussian center
+        % same as arbtophtn
         mu_y_img = K*eta*img + mu_y_dark; 
         mu_y_I_don = K*eta*I_don_plot + mu_y_dark;
         mu_y_I_acc = K*eta*I_acc_plot + mu_y_dark;
@@ -326,22 +327,22 @@ switch noiseType
     case 'user' % User defined or NExpN-model from Börner et al. 2017
         
         % model parameters
-        I_th = noisePrm(1);
-        A = noisePrm(2);
-        tau = noisePrm(3);
-        sig0 = noisePrm(4);
-        wG = noisePrm(5);
-        a = noisePrm(6);
+        I_th = noisePrm(1); % Dark counts or offset
+        A = noisePrm(2); % CIC contribution
+        tau = noisePrm(3); % CIC decay
+        sig0 = noisePrm(4); % read-out noise width
+        K = noisePrm(5); % Overall system gain
+        eta = noisePrm(6); % Total detection efficiency
 
         % convert to EC
-        img = phtn2arb(img);
-        I_don_plot = phtn2arb(I_don_plot);
-        I_acc_plot = phtn2arb(I_acc_plot);
-        
+        img = phtn2arb(img, K, eta);
+        I_don_plot = phtn2arb(I_don_plot, K, eta);
+        I_acc_plot = phtn2arb(I_acc_plot, K, eta);
+
         % calculate noise distribution and add noise
-        img = rand_NexpN(img+I_th, A, wG, tau, a, sig0);
-        I_don_plot = rand_NexpN(I_don_plot+I_th, A, wG, tau, a, sig0);
-        I_acc_plot = rand_NexpN(I_acc_plot+I_th, A, wG, tau, a, sig0);
+        img = rand_NexpN(img+I_th, A, tau, sig0);
+        I_don_plot = rand_NexpN(I_don_plot+I_th, A, tau, sig0);
+        I_acc_plot = rand_NexpN(I_acc_plot+I_th, A, tau, sig0);
         
         if strcmp(opUnits, 'photon')
             img = arb2phtn(img);
@@ -390,6 +391,8 @@ switch noiseType
         I_don_plot = random('norm', I_don_plot/s + mu_y_dark, s_d*g/s);
         I_acc_plot = random('norm', I_acc_plot/s + mu_y_dark, s_d*g/s);
         
+        % Gausian read-out noise
+%        img = conv(img_G,img_g)
 %         % calculate noise distribution and add noise, old
 %         img = rand_NexpN(img+I_th, A, wG, tau, a, sig0);
 %         I_don_plot = rand_NexpN(I_don_plot+I_th, A, wG, tau, a, sig0);
@@ -407,8 +410,8 @@ end
 % Correction of out-of-range values.
 % Due to noise calculated values out of the detection range 0 <= 0I <= bitrate. 
 
-%[~, sat] = Saturation(bitnr);
-sat = 2^bitnr-1;
+[~, sat] = Saturation(bitnr);
+%sat = 2^bitnr-1;
 % if strcmp(opUnits, 'electron')
 %     sat = phtn2arb(sat);
 % end

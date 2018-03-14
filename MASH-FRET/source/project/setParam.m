@@ -130,8 +130,8 @@ end
 
 % camera noise default values
 camNoise = [113  0.95    0.95  0 0     0      %  mu.d /   /    /   /    /      % default P- or Poisson Model
-            57.7 0.067 113  0 0     0.95   %  K    s_d mu.d s_q mr.s eta    % default N- or Gaussian Model
-            106.9  0.02  205 16 0.402 0      %  I_0  A   tau  sig c    a      % default NexpN or Exp.-CIC Model
+            57.7 0.067 113  0 0     0.95   %  K s_d mu.d s_q mr.s eta    % default N- or Gaussian Model
+            106.9  0.02  205 16 57.7 0.95      %  I_0 A_CIC tau_CIC sig_d K  eta      % default NexpN or Exp.-CIC Model
             113  0       0  0 0     0      %  mu.d /   /    /   /    /      % default no noise but camera offset
             300  0.067 113  0.067 5.199 0.95 ];%  g    s_d mu.d CIC s    eta    % default PGN- or Hirsch Model 
         
@@ -141,7 +141,7 @@ p.camNoise = adjustParam('camNoise', camNoise, p_input);
 p.btD = adjustParam('btD', 0.07, p_input);  % default bleedthrough D excitation D emmission in A channel
 p.btA = adjustParam('btA', 0, p_input);     % default bleedthrough A excitation A emmission in D channel
 p.deD = adjustParam('deD', 0, p_input);     % default direct excitation of D after A excitation
-p.deA = adjustParam('deA', 0.03, p_input);  % default direct excitation of A after D excitation
+p.deA = adjustParam('deA', 0.02, p_input);  % default direct excitation of A after D excitation
 
 % defocsing/focal drift/chromatic aberation
 %p.taudefocus

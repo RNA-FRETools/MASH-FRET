@@ -17,37 +17,30 @@ function dat = rand_NexpN(varargin)
 %
 % Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
 % Last update: the 4th of June 2014 by Mélodie C.A.S Hadzic
-% Last update: 7th of March 2018 by Richard Börner for Börner et al.
+% Last update: 7th of March 2018 by Richard Börner for Boerner et al.
 %
 % Comments adapted for Boerner et al 2017
 
-if nargin < 6
+if nargin < 4
     N = 4000;
     dat = zeros(1,N);
     A = 0.03;
-    expnt = 0.405;
     tau = 54;
-    a = 0;
     sig0 = 16;
 else
     dat = varargin{1};
     A = varargin{2};
-    expnt = varargin{3};
-    tau = varargin{4};
-    a = varargin{5};
-    sig0 = varargin{6};
+    tau = varargin{3};
+    sig0 = varargin{4};
 end
 
 dat_val = unique(dat(:));
 
 for i = 1:numel(dat_val)
     
-    % in pc
+    % in ec
     mu = dat_val(i);
-    
-    %first model, old
-%     o = sig0 + a*(mu^expnt);
-    % second model, Boerner et al 2017
+   
     o = sig0;
     
     if o > 0
