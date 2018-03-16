@@ -220,6 +220,14 @@ if strcmp(opt, 'sim') || strcmp(opt, 'all')
             'String', '');
     end
     
+    if 1
+        set(h.edit_simzdec, 'String', num2str(p.zDec), 'Enable', 'on');
+        set(h.edit_simz0_A, 'String', num2str(p.z0Dec), 'Enable', 'on');
+    else
+        set([h.edit_simz h.edit_simz0], 'Enable', 'off', ...
+            'String', '');
+    end
+    
     % camera noise
 %     camNoise = [113  0.95       0  0 0     0      %  my.d /   /    /   /    /      % default P- or Poisson Model
 %             57.7 0.067 113  0 0     0.95   %  K    s_d my.d s_q mr.s eta    % default N- or Gaussian Model

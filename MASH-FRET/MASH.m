@@ -1,5 +1,5 @@
 function varargout = MASH(varargin)
-% Last Modified by GUIDE v2.5 08-Jan-2018 15:00:57
+% Last Modified by GUIDE v2.5 16-Mar-2018 10:37:15
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -571,6 +571,35 @@ else
     updateFields(h.figure_MASH, 'sim');
 end
 
+function edit_simzdec_Callback(obj, evd, h)
+val = str2num(get(obj, 'String'));
+set(obj, 'String', num2str(val));
+if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
+    set(obj, 'BackgroundColor', [1 0.75 0.75]);
+    setContPan('Defocus of acceptor channel should be >= 0', ...
+        'error', h.figure_MASH);
+else
+    set(obj, 'BackgroundColor', [1 1 1]);
+    h.param.sim.zDec = val;
+    guidata(h.figure_MASH, h);
+    updateFields(h.figure_MASH, 'sim');
+end
+
+
+function edit_simz0_A_Callback(obj, evd, h)
+val = str2num(get(obj, 'String'));
+set(obj, 'String', num2str(val));
+if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
+    set(obj, 'BackgroundColor', [1 0.75 0.75]);
+    setContPan('Defocus time decay should be >= 0', ...
+        'error', h.figure_MASH);
+else
+    set(obj, 'BackgroundColor', [1 1 1]);
+    h.param.sim.z0Dec = val;
+    guidata(h.figure_MASH, h);
+    updateFields(h.figure_MASH, 'sim');
+end
+
 % Choose from five different noise modells for the camera SNR
 % characteristics
 function popupmenu_noiseType_Callback(obj, evd, h)
@@ -600,7 +629,6 @@ set(obj, 'String', num2str(val));
 ind = get(h.popupmenu_noiseType, 'Value');
 
 switch ind
-    
     case 1 % Poisson, dark current or camera offset value
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);

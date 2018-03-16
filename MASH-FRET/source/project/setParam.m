@@ -128,12 +128,16 @@ if size(p.PSFw,2)~=2
     p.PSFw = repmat(p.PSFw(1,:),[1,2]);
 end
 
+% defocsing/focal drift/chromatic aberation
+p.zDec = adjustParam('zDec', 0, p_input); % defocusing
+p.z0Dec = adjustParam('z0Dec', 0, p_input); % lateral chromatic aberration
+
 % camera noise default values
-camNoise = [113  0.95    0.95  0 0     0      %  mu.d /   /    /   /    /      % default P- or Poisson Model
-            57.7 0.067 113  0 0     0.95   %  K s_d mu.d s_q mr.s eta    % default N- or Gaussian Model
-            106.9  0.02  205 16 57.7 0.95      %  I_0 A_CIC tau_CIC sig_d K  eta      % default NexpN or Exp.-CIC Model
-            113  0       0  0 0     0      %  mu.d /   /    /   /    /      % default no noise but camera offset
-            300  0.067 113  0.067 5.199 0.95 ];%  g    s_d mu.d CIC s    eta    % default PGN- or Hirsch Model 
+camNoise = [113 0.95 0 0 0 0      %  mu.d /   /    /   /    /      % default P- or Poisson Model
+            57.8 0.067 113 0 0 0.95   %  K s_d mu.d s_q mr.s eta    % default N- or Gaussian Model
+            106.9 0.02 205 16 57.7 0.95      %  I_0 A_CIC tau_CIC sig_d K  eta      % default NexpN or Exp.-CIC Model
+            113 0 0 0 0 0      %  mu.d /   /    /   /    /      % default no noise but camera offset
+            300 0.067 113 0.067 5.199 0.95];%  g    s_d mu.d CIC s    eta    % default PGN- or Hirsch Model 
         
 p.camNoise = adjustParam('camNoise', camNoise, p_input);
 
@@ -143,9 +147,6 @@ p.btA = adjustParam('btA', 0, p_input);     % default bleedthrough A excitation 
 p.deD = adjustParam('deD', 0, p_input);     % default direct excitation of D after A excitation
 p.deA = adjustParam('deA', 0.02, p_input);  % default direct excitation of A after D excitation
 
-% defocsing/focal drift/chromatic aberation
-%p.taudefocus
-%p.defocus_z
 
 % other parameters
 p.intUnits = adjustParam('intUnits', 'electron', p_input);

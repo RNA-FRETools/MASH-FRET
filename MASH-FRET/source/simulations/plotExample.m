@@ -44,6 +44,10 @@ expDec = h.param.sim.bgDec; % exponentially decreasing BG (0/1)
 amp = h.param.sim.ampDec; % exponential amplitude
 cst = h.param.sim.cstDec; % exponential time decay constant
 
+% Defocusing and lateral chromatic aberration
+z0 = h.param.sim.z0Dec;
+z_dec = h.param.sim.zDec; 
+
 % camera noise
 noiseType = h.param.sim.noiseType;
 switch noiseType
