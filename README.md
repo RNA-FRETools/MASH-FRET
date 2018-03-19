@@ -24,11 +24,11 @@ Mélodie C. A. S. Hadzic*, D. Kowerko, R. Börner, S. Zelger-Paulus, R.K.O. Sige
 
 and 
 
-Mélodie C. A. S. Hadzic*, R. Börner*, D. Kowerko, S.L.B.König, R.K.O. Sigel, "Assessment of State Identification and State Transition Detection Exemplified on Fluorescence Intensity-Based sm-FRET Data." **2017**, under review. (DOI:10.1371/journal.pone.0084157)
+Mélodie C. A. S. Hadzic*, R. Börner*, D. Kowerko, S.L.B.König, R.K.O. Sigel, "Assessment of State Identification and State Transition Detection Exemplified on Fluorescence Intensity-Based sm-FRET Data." **2017**, under review. (DOI:)
 
 ... for the bootstraping algorythm BOBA FRET:
 
-S.L.B.König, Mélodie C. A. S. Hadzic*, Erica Fiorini, R. Börner*, D. Kowerko*, Wolf U. Blanckenhorn, R.K.O. Sigel, Börner, Richard; Kowerko, Danny; ; Sigel, Roland Karl Oliver "BOBA FRET: bootstrap-based analysis of single-molecule FRET data" *PLoS One* **2013**, 8(12):e84157. (DOI: )
+S.L.B.König, Mélodie C. A. S. Hadzic*, Erica Fiorini, R. Börner*, D. Kowerko*, Wolf U. Blanckenhorn, R.K.O. Sigel, Börner, Richard; Kowerko, Danny; ; Sigel, Roland Karl Oliver "BOBA FRET: bootstrap-based analysis of single-molecule FRET data" *PLoS One* **2013**, 8(12):e84157. (DOI:10.1371/journal.pone.0084157)
 
 Happy MASHing!
 
