@@ -1182,19 +1182,21 @@ end
 
 
 % added by FS, 19.3.2018
-if saveGam
-    curs = strfind(name_mol, '_mol');
-    if ~isempty(curs)
-        name = name_mol(1:(curs-1));
-    else
-        name = name_mol;
+if saveTr
+    if saveGam
+        curs = strfind(name_mol, '_mol');
+        if ~isempty(curs)
+            name = name_mol(1:(curs-1));
+        else
+            name = name_mol;
+        end
+        f = fopen([pname_xp name '.gam'], 'Wt');
+        fmt = repmat('%0.3f\t', nFRET);
+        fmt(end) = 'n';
+        gammaAll(isnan(gammaAll)) = [];
+        fprintf(f, fmt, gammaAll);
+        fclose(f);
     end
-    f = fopen([pname_xp name '.gam'], 'Wt');
-    fmt = repmat('%0.3f\t', nFRET);
-    fmt(end) = 'n';
-    gammaAll(isnan(gammaAll)) = [];
-    fprintf(f, fmt, gammaAll);
-    fclose(f);
 end
 
 
