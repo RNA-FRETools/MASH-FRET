@@ -1,4 +1,4 @@
-# ![alt text](https://github.com/fdsteffen/mash-fret/blob/master/doc/images/mash-fret_logo.png) MASH-FRET 
+# ![](https://github.com/fdsteffen/mash-fret/blob/master/doc/images/mash-fret_logo.png) MASH-FRET 
 
 ## About MASH-FRET
 
