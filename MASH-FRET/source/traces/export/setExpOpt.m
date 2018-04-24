@@ -41,6 +41,7 @@ def.traces{2}(2) = double(nFRET>0); % export FRET
 def.traces{2}(3) = double(nS>0); % export S
 def.traces{2}(4) = double(nChan>1 | nS>0 | nFRET>0); % all in one file
 def.traces{2}(5) = 1; % parameters (in external file)
+def.traces{2}(6) = 1; % gamma factors, added by FS, 4.4.2018
 
 opt.traces = adjustVal(opt.traces, def.traces);
 

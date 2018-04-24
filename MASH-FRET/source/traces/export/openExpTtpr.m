@@ -1134,6 +1134,7 @@ if strcmp(opt, 'tr') || strcmp(opt, 'all')
     set(h.optExpTr.checkbox_trS, 'Value', prm.traces{2}(3));
     set(h.optExpTr.checkbox_trAll, 'Value', prm.traces{2}(4));
     set(h.optExpTr.popupmenu_trPrm, 'Value', prm.traces{2}(5));
+    set(h.optExpTr.checkbox_gam, 'Value', prm.traces{2}(6));  % added by FS, 4.4.2017
     
     if prm.traces{1}(1)
         set(h.optExpTr.radiobutton_saveTr, 'FontWeight', 'bold');
