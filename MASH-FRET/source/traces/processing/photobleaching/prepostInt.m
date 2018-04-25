@@ -12,6 +12,8 @@ nFRET = size(FRET,1);
 stop = curr_mol{5}{5}(1,6);
 chanExc = p.proj{proj}.chanExc;
 excOrder = p.proj{proj}.excitations;
+nExc = p.proj{proj}.nb_excitations;
+
 
 % determine DTA intensities prior to and after the calculated cutoff
 for i = 1:nFRET
@@ -20,9 +22,9 @@ for i = 1:nFRET
     chan_A = FRET(i,2);
     
     try
-        I_pre = p.proj{proj}.intensities_DTA(stop-3, ...
+        I_pre = p.proj{proj}.intensities_DTA(stop/nExc-3, ...
             (mol-1)*nChan+1:mol*nChan,exc);
-        I_post = p.proj{proj}.intensities_DTA(stop+3, ...
+        I_post = p.proj{proj}.intensities_DTA(stop/nExc+3, ...
             (mol-1)*nChan+1:mol*nChan,exc);
         
         if I_pre(chan_D) ~= I_post(chan_D) % is donor intensity equal before and after the cutoff

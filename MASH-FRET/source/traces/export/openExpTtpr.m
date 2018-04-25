@@ -40,10 +40,10 @@ w_med = 90;
 w_big = 110;
 h_txt = 14;
 
-hPan_tr =   8*h_edit + 2*h_txt + 9*mg + 3*mg/2;
+hPan_tr =   9*h_edit + 2*h_txt + 9*mg + 3*mg/2;
 hPan_hist = 6*h_edit + 2*h_txt + 6*mg + 3*mg/2;
 hPan_dt =   6*h_edit +   h_txt + 7*mg + 2*mg/2;
-hPan_fig =  9*h_edit +   h_but + 8*mg + 4*mg/2;
+hPan_fig =  10*h_edit +   h_but + 8*mg + 4*mg/2;
 
 hFig = h_txt + h_but + max([(hPan_tr+hPan_hist),(hPan_dt+hPan_fig)]) + ...
     5*mg;
@@ -143,13 +143,23 @@ h.optExpTr.checkbox_trS = uicontrol('Style', 'checkbox', 'Units', ...
     {@checkbox_trS_Callback, h_fig}, 'Position', ...
     [xNext yNext w_full_sub h_edit]);
 
-yNext = yNext - mg - h_edit;
+yNext = yNext - mg/2 - h_edit;
 
 h.optExpTr.checkbox_trAll = uicontrol('Style', 'checkbox', 'Units', ...
     'pixels', 'Parent', h.optExpTr.uipanel_traces, 'String', ...
     'all traces in one file', 'Callback', ...
     {@checkbox_trAll_Callback, h_fig}, 'Position', ...
     [xNext yNext w_full_sub h_edit]);
+
+% added by FS, 19.3.2018
+yNext = yNext - mg/2 - h_edit;
+
+h.optExpTr.checkbox_gam = uicontrol('Style', 'checkbox', 'Units', ...
+    'pixels', 'Parent', h.optExpTr.uipanel_traces, 'String', ...
+    'gamma factors', 'Callback', ...
+    {@checkbox_gam_Callback, h_fig}, 'Position', ...
+    [xNext yNext w_full_sub h_edit]);
+
 
 xNext = mg;
 yNext = yNext - mg - h_edit;
@@ -412,7 +422,7 @@ h.optExpTr.uipanel_fig = uipanel('Parent', h.optExpTr.figure_optExpTr, ...
     [xNext yNext wPan hPan_fig]);
 
 xNext = mg;
-yNext = hPan_tr - 2*mg - h_edit;
+yNext = hPan_tr - 3*mg - h_edit;
 
 h.optExpTr.radiobutton_saveFig = uicontrol('Style', 'radiobutton', ...
     'Units', 'pixels', 'Parent', h.optExpTr.uipanel_fig, 'String', ...
@@ -1016,6 +1026,15 @@ guidata(h_fig, h);
 ud_optExpTr('tr', h_fig);
 
 
+% added by FS, 17.3.2018
+function checkbox_gam_Callback(obj, evd, h_fig)
+val = get(obj, 'Value');
+h = guidata(h_fig);
+h.param.ttPr.proj{h.param.ttPr.curr_proj}.exp.traces{2}(6) = val;
+guidata(h_fig, h);
+ud_optExpTr('dt', h_fig);
+
+
 function popupmenu_trPrm_Callback(obj, evd, h_fig)
 val = get(obj, 'Value');
 h = guidata(h_fig);
@@ -1115,6 +1134,7 @@ if strcmp(opt, 'tr') || strcmp(opt, 'all')
     set(h.optExpTr.checkbox_trS, 'Value', prm.traces{2}(3));
     set(h.optExpTr.checkbox_trAll, 'Value', prm.traces{2}(4));
     set(h.optExpTr.popupmenu_trPrm, 'Value', prm.traces{2}(5));
+    set(h.optExpTr.checkbox_gam, 'Value', prm.traces{2}(6));  % added by FS, 4.4.2017
     
     if prm.traces{1}(1)
         set(h.optExpTr.radiobutton_saveTr, 'FontWeight', 'bold');

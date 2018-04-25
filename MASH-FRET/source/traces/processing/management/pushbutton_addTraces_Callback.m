@@ -12,6 +12,28 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
     end
     p = h.param.ttPr;
     p.proj = [p.proj dat];
+    
+    % load gamma factor file if it exists; added by FS, 28.3.2018
+    [o,o,fext] = fileparts(fname{1});
+    if ~strcmp(fext, '.mash') % if ASCII file and not MASH project is loaded
+            [fnameGamma,pnameGamma,~] = uigetfile({'*.gam', 'Gamma factors (*.gam)'; '*.*', ...
+    'All files(*.*)'}, 'Select gamma factor file', defPth, 'MultiSelect', 'on');
+        if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
+            if ~iscell(fnameGamma)
+                fnameGamma = {fnameGamma};
+            end
+            gammasCell = cell(1,length(fnameGamma));
+            for f = 1:length(fnameGamma)
+                filename = [pnameGamma fnameGamma{f}];
+                fileID = fopen(filename,'r');
+                formatSpec = '%f';
+                gammasCell{f} = fscanf(fileID,formatSpec);
+            end
+            gammas = cell2mat(gammasCell');
+        end
+    end
+
+
     for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
         p.curr_mol(i) = 1;
         p.defProjPrm = setDefPrm_traces(p,i);
@@ -42,12 +64,52 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
             p.proj{i}.prm = p.proj{i}.prmTT;
             p.proj{i} = rmfield(p.proj{i}, 'prmTT');
         end
+        
+        % added by FS, 28.3.2018
+        if ~strcmp(fext, '.mash')
+            if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
+                if length(gammas) ~= nMol
+                    updateActPan('number of gamma factors does not match the number of ASCII files loaded. Set all gamma factors to 1.', h.figure_MASH, 'error');
+                    fnameGamma = []; % set to empty (will not try to import any gamma factors from file)
+                end    
+            end
+        end
+        
         for n = 1:nMol % set current param. for all mol.
             if n > size(p.proj{i}.prm,2)
                 p.proj{i}.prm{n} = {};
             end
             p.proj{i}.curr{n} = adjustVal(p.proj{i}.prm{n}, ...
                 p.proj{i}.def.mol);
+            
+            % added by FS, 28.3.2018
+            % assign gamma value (assignment only works if number of values in .gam file equals the number of loaded restructured ASCII files)
+            if ~strcmp(fext, '.mash') % if ASCII file and not MASH project is loaded
+                if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
+                    % set the gamma factor from the .gam file 
+                    % (FRET is calculated on the spot based on imported and corrected
+                    % intensities)
+                    p.proj{i}.curr{n}{5}{3} = gammas(n);
+                    p.proj{i}.prm{n}{5}{3} = gammas(n);
+                    
+                    % Cross talk and filter corrections 
+                    % set all correction factors to 0 if restructured ASCII
+                    % files are loaded, since the factors have already been
+                    % applied
+                    nChan = p.proj{i}.nb_channel;
+                    nExc = p.proj{i}.nb_excitations;
+                    for l = 1:nExc
+                        for c = 1:nChan
+                            % bleedthrough
+                            p.proj{i}.curr{n}{5}{1}{l,c} = zeros(1,nChan-1);
+                            % direct excitation
+                            if ~isempty(p.proj{i}.curr{n}{5}{2}{1,c})
+                                p.proj{i}.curr{n}{5}{2}{l,c} = zeros(1,nExc-1);
+                            end
+                        end
+                    end
+                end
+            end
             
             % if the molecule parameter "window size" does not belong to 
             % the background correction parameters

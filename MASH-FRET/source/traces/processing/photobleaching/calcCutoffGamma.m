@@ -17,12 +17,12 @@ I_den = p.proj{proj}.intensities_denoise(:, ...
 lastData = sum(double(~isnan(I_den(:,1,1))));
 
 for i = 1:nFRET
-    chan = FRET(:,2); % the acceptor channel
+    chan = FRET(i,2); % the acceptor channel
     start = ceil(curr_mol{5}{5}(i,5)/nExc);
     if start == 0
         start = 1;
     end
-    ex = FRET(:,1);
+    ex = FRET(i,1);
     trace = I_den(:,chan(i),ex(i));
     nbFrames = numel(trace);
     trace = trace(start:nbFrames,:);

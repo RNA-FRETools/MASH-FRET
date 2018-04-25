@@ -7,7 +7,7 @@ p = h.param.ttPr;
 
 % figure dimensions and position
 wFig = 445;
-hFig = 100;
+hFig = 125;
 prev_u = get(h_fig, 'Units');
 set(h_fig, 'Units', 'pixels');
 posFig = get(h_fig, 'Position');
@@ -30,7 +30,7 @@ h_but = 22;
 h_txt = 14;
 w_pan = wFig - 2*mg;
 w_pop = 120;
-h_pan_all = mg_ttl + 1*mg + 1*mg_big + 1*h_edit + 1*h_txt + 0*h_but;
+h_pan_all = mg_ttl + 1*mg + 1*mg_big + 2*h_edit + 1*h_txt + 0*h_but;
 
 % string and value of gamma correction popupmenu 
 acc_str = get(h.popupmenu_gammaFRET, 'String');
@@ -67,6 +67,16 @@ h.gpo.checkbox_showCutoff = uicontrol('Style', 'checkbox', 'Parent', ...
     'Value', showCutoff,...
     'TooltipString', 'show the photobleaching cutoff for the gamma correction',...
     'Callback', {@checkbox_showCutoff, h_fig});
+
+% pushbutton load gamma factors
+yNext = h_pan_all - mg_ttl - h_txt - 2*h_edit - mg_big;
+h.gpo.pushbutton_loadGamma = uicontrol('Style', 'pushbutton', 'Parent', ...
+    h.gpo.uipanel_photobleach, 'Units', 'pixels',...
+    'Position', [xNext yNext 2/3*w_pop h_edit], ...
+    'String', 'load gamma',...
+    'Value', showCutoff,...
+    'TooltipString', 'load gamma factor file',...
+    'Callback', {@pushbutton_loadGamma, h_fig});
 
 % check icon axis
 xNext = mg + 3/4*w_pop;
@@ -199,6 +209,62 @@ if ~isempty(p.proj)
     guidata(h_fig, h)
     updateFields(h_fig, 'ttPr');
 end
+end
+
+% load gamma factor file, added by FS, 24.4.2018
+function pushbutton_loadGamma(~, ~, h_fig)
+h = guidata(h_fig);
+p = h.param.ttPr;
+defPth = h.folderRoot;
+
+% load gamma factor file if it exists
+[fnameGamma,pnameGamma,~] = uigetfile({'*.gam', 'Gamma factors (*.gam)'; '*.*', ...
+    'All files(*.*)'}, 'Select gamma factor file', defPth, 'MultiSelect', 'off');
+if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
+    if ~iscell(fnameGamma)
+        fnameGamma = {fnameGamma};
+    end
+    gammasCell = cell(1,length(fnameGamma));
+    for f = 1:length(fnameGamma)
+        filename = [pnameGamma fnameGamma{f}];
+        fileID = fopen(filename,'r');
+        formatSpec = '%f';
+        gammasCell{f} = fscanf(fileID,formatSpec);
+    end
+    gammas = cell2mat(gammasCell');
+end
+
+% check if number of molecules is the same in the project and the .gam file
+proj = p.curr_proj;
+nMol = numel(p.proj{proj}.coord_incl);
+if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
+    if length(gammas) ~= nMol
+        updateActPan('number of gamma factors does not match the number of ASCII files loaded. Set all gamma factors to 1.', h.figure_MASH, 'error');
+        fnameGamma = []; % set to empty (will not try to import any gamma factors from file)
+    end
+end
+
+% set the gamma factors
+for n = 1:nMol
+    % assign gamma value (assignment only works if number of values in .gam file equals the number of loaded restructured ASCII files)
+    if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
+        % set the gamma factor from the .gam file
+        % (FRET is calculated on the spot based on imported and corrected
+        % intensities)
+        p.proj{proj}.curr{n}{5}{3} = gammas(n);
+        p.proj{proj}.prm{n}{5}{3} = gammas(n);
+    end
+end
+
+% update the parameters (adapted from pushbutton_addTraces_Callback.m)
+h.param.ttPr = p;
+guidata(h.figure_MASH, h);
+ud_TTprojPrm(h.figure_MASH);
+ud_trSetTbl(h.figure_MASH);
+updateFields(h.figure_MASH, 'ttPr');
+
+% close figure
+close(gcf)
 end
 
 % threshold (adapted from edit_photoblParam_01_Callback in MASH.m)

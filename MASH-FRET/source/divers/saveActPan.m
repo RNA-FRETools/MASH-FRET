@@ -9,7 +9,10 @@ function saveActPan(actions, h_fig)
 h = guidata(h_fig);
 
 if isfield(h, 'folderRoot')
-    pname = h.folderRoot;
+    pname = [h.folderRoot '/log'];
+    if ~exist(pname, 'dir')
+        mkdir(pname)
+    end
 else
     pname = pwd;
 end

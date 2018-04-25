@@ -97,6 +97,7 @@ if saveTr
     saveTr_S = ~~xp.traces{2}(3) & nS > 0;
     allInOne = ~~xp.traces{2}(4);
     savePrm = xp.traces{2}(5);
+    saveGam = xp.traces{2}(6);  % added by FS, 19.3.2018
     if savePrm == 1 % external file
         pname_xp = setCorrectPath([pname 'parameters'], h_fig);
     end
@@ -199,6 +200,7 @@ h.barData.prev_var = h.barData.curr_var;
 guidata(h_fig, h);
 % -------------------------------------------------------------------------
 
+gammaAll = NaN(nMol,nFRET);  % added by FS, 19.3.2018
 n = 0;
 try
     for m = 1:nMol
@@ -698,6 +700,16 @@ try
                     str = [str '\nParameters saved to file: ' fname_xp ...
                         '\n in folder: ' pname_xp];
                 end
+                % added by FS, 19.3.2018
+                if saveGam
+                    for i = 1:nFRET
+                        if fromTT
+                            gammaAll(m,i) = p.proj{proj}.prm{m}{5}{3}(i);
+                        else
+                            gammaAll(m,i) = 1;
+                        end
+                    end
+                end
             end
 
 
@@ -1167,7 +1179,27 @@ catch err
     end
     return;
 end
-    
+
+
+% added by FS, 19.3.2018
+if saveTr
+    if saveGam
+        curs = strfind(name_mol, '_mol');
+        if ~isempty(curs)
+            name = name_mol(1:(curs-1));
+        else
+            name = name_mol;
+        end
+        f = fopen([pname_xp name '.gam'], 'Wt');
+        fmt = repmat('%0.3f\t', nFRET);
+        fmt(end) = 'n';
+        gammaAll(isnan(gammaAll)) = [];
+        fprintf(f, fmt, gammaAll);
+        fclose(f);
+    end
+end
+
+
 %% Traces (complement)
 
 if saveTr
