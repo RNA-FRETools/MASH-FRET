@@ -18,6 +18,11 @@ function traceManager(h_fig)
     p = h.param.ttPr;
     proj = p.curr_proj;
     
+    % molecule tags, added by FS, 24.4.2018
+    h.tm.molTagNames = p.proj{proj}.molTagNames;
+    h.tm.molTag = p.proj{proj}.molTag;
+    guidata(h_fig, h);
+    
     global intensities;
     intensities = nan(size(p.proj{proj}.intensities));
     
@@ -30,14 +35,27 @@ end
 
 
 function loadData2Mngr(h_fig)
-
+    
     openMngrTool(h_fig);
     h = guidata(h_fig);
+     
     pushbutton_update_Callback(h.tm.pushbutton_update, [], h_fig);
     plotDataTm(h_fig);
     
 end
 
+% define colors for tag names; added by FS, 24.4.2018
+function str_lst = colorTagNames(h_fig)
+h = guidata(h_fig);
+colorlist = {'transparent', '#4298B5', '#DD5F32', '#92B06A', '#ADC4CC', '#E19D29'};
+str_lst = cell(1,length(h.tm.molTagNames));
+str_lst{1} = h.tm.molTagNames{1};
+ 
+for k = 2:length(h.tm.molTagNames)
+    str_lst{k} = ['<html><body  bgcolor="' colorlist{k} '">' ...
+        '<font color="white">' h.tm.molTagNames{k} '</font></body></html>'];
+end
+end
 
 function openMngrTool(h_fig)
     
@@ -46,7 +64,7 @@ function openMngrTool(h_fig)
     proj = p.curr_proj;
     nb_mol = numel(p.proj{proj}.coord_incl);
     
-    wFig = 800;
+    wFig = 900;
     hFig = 800;
     prev_u = get(h_fig, 'Units');
     set(h_fig, 'Units', 'pixels');
@@ -69,7 +87,7 @@ function openMngrTool(h_fig)
     h_but = 22; w_but = 45;
     h_txt = 14;
     w_pan = wFig - 2*mg;
-    w_pop = 120; % RB 2018-01-03: adpat width of popupmenu for FRET-S-Histogram 
+    w_pop = 120; % RB 2018-01-03: adapt width of popupmenu for FRET-S-Histogram 
 
     h_pan_all = mg_ttl + 3*mg + mg_big + 2*h_edit + 2*h_txt + h_but;
     h_pan_sgl = hFig - mg_win - 3*mg - h_pan_all;
@@ -91,12 +109,17 @@ function openMngrTool(h_fig)
     
     h.tm.molValid = p.proj{proj}.coord_incl;
     
-    
     h.tm.figure_traceMngr = figure('Visible', 'on', 'Units', 'pixels', ...
         'Position', pos_fig, 'Color', [0.94 0.94 0.94], ...
         'CloseRequestFcn', {@figure_traceMngr, h_fig}, 'NumberTitle', ...
-        'off', 'Name', [get(h_fig, 'Name') ' - Trace manager'], ...
-        'WindowStyle', 'modal');
+        'off', 'Name', [get(h_fig, 'Name') ' - Trace manager']);
+    
+    % add debugging mode where all other windows are not deactivated
+    % added by FS, 24.4.2018
+    debugMode = 1;
+    if ~debugMode
+        set(h.tm.figure_traceMngr, 'WindowStyle', 'modal')
+    end
     
     xNext = mg;
     yNext = hFig - mg_win - mg - h_pan_all;
@@ -275,14 +298,48 @@ function openMngrTool(h_fig)
     % RB 2018-01-05: new pushbotton to inverse the selcetion of individual
     % molecules
     
-    xNext = xNext + w_pop ;
+    xNext = xNext + 2/3*w_pop ;
     
     h.tm.pushbutton_inverse = uicontrol('Style', 'pushbutton', 'Parent', ...
         h.tm.uipanel_overview, 'Units', 'pixels', 'FontWeight', 'bold', ...
-        'String', 'Invert Selection', 'Position', [xNext yNext w_pop h_but], ...
+        'String', 'Invert Selection', 'Position', [xNext yNext 4/5*w_pop h_but], ...
         'TooltipString', 'Invert selection of all molecules', 'Callback', ...
         {@pushbutton_all_inverse_Callback, h_fig}, 'FontUnits', 'pixels', ...
         'FontSize', fntS);
+    
+    
+    % edit box to define a molecule tag, added by FS, 24.4.2018
+    xNext = xNext + w_pop;
+    h.tm.edit_molTag = uicontrol('Style', 'edit', 'Parent', ...
+        h.tm.uipanel_overview, 'Units', 'pixels', ...
+        'String', 'define a new tag', 'Position', [xNext yNext w_pop h_but], ...
+        'Callback', {@edit_addMolTag_Callback, h_fig}, ...
+        'FontUnits', 'pixels', ...
+        'FontSize', fntS);
+    
+
+    % popup menu to select molecule tag, added by FS, 24.4.2018
+    xNext = xNext + w_pop + mg;
+    str_lst = colorTagNames(h_fig);
+    h.tm.popup_molTag = uicontrol('Style', 'popup', 'Parent', ...
+        h.tm.uipanel_overview, 'Units', 'pixels', ...
+        'String', str_lst, ...
+        'Position', [xNext yNext w_pop h_but], ...
+        'TooltipString', 'select a molecule tag', ...
+        'FontUnits', 'pixels', ...
+        'FontSize', fntS);
+    
+    % popup menu to select molecule tag, added by FS, 24.4.2018
+    xNext = xNext + w_pop + mg;
+    h.tm.pushbutton_deleteMolTag = uicontrol('Style', 'pushbutton', 'Parent', ...
+        h.tm.uipanel_overview, 'Units', 'pixels', ...
+        'String', 'delete tag', ...
+        'Position', [xNext yNext 1/2*w_pop h_but], ...
+        'TooltipString', 'select a molecule tag', ...
+        'Callback', {@pushbutton_deleteMolTag_Callback, h_fig}, ...    
+        'FontUnits', 'pixels', ...
+        'FontSize', fntS);
+    
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
@@ -369,9 +426,11 @@ function updatePanel_single(h_fig, nb_mol_disp)
 
     mg = 1/12;
     ht_line = (1-2*mg)/nb_mol_disp;
-    wd_cb = 1/25;
+    %wd_cb = 1/25;
+    wd_cb = 1/15;
     wd_axes_tt = 5/8;
     wd_axes_hist = 2/16;
+    w_pop = 1/15;
     
     fntS = get(h.tm.axes_ovrAll_1, 'FontSize');
     
@@ -400,6 +459,29 @@ function updatePanel_single(h_fig, nb_mol_disp)
             'Value', h.tm.molValid(i), 'Callback', ...
             {@checkbox_molNb_Callback, h_fig}, 'FontSize', 12, ...
             'BackgroundColor', 0.05*[mod(i,2) mod(i,2) mod(i,2)]+0.85);
+        
+        
+        % added by FS, 24.4.2018
+        str_lst = colorTagNames(h_fig);
+        if h.tm.molTag(i) > length(str_lst)
+            val = 1;
+        else
+            val = h.tm.molTag(i);
+        end
+        h.tm.popup_molNb(i) = uicontrol('Style', 'popup', ...
+            'Parent', h.tm.uipanel_overview, 'Units', 'normalized', ...
+            'Position', [x_next y_next w_pop ht_line], 'String',  str_lst, ...
+            'Value', val, 'Callback', ...
+            {@popup_molTag_Callback, h_fig, i}, ...
+            'BackgroundColor', 0.05*[mod(i,2) mod(i,2) mod(i,2)]+0.85);
+        % deactivate the popupmenu if the molecule is not selected
+        % added by FS, 24.4.2018
+        if h.tm.molValid(i) == 0
+            set(h.tm.popup_molNb(i), 'Enable', 'off')
+        else
+            set(h.tm.popup_molNb(i), 'Enable', 'on')
+        end
+        
         
         y_next = y_next + ht_line*(1-1/(1+isBot)) + 0.01*ht_line;
         x_next = x_next + wd_cb;
@@ -443,6 +525,15 @@ function updatePanel_single(h_fig, nb_mol_disp)
 end
 
 
+function update_popups(h_fig, nb_mol_disp)
+h = guidata(h_fig);
+for i = nb_mol_disp:-1:1
+    % added by FS, 25.4.2018
+    str_lst = colorTagNames(h_fig);
+    set(h.tm.popup_molNb(i), 'String', str_lst)
+end
+end
+
 function checkbox_molNb_Callback(obj, evd, h_fig)
 
     h = guidata(h_fig);
@@ -467,7 +558,30 @@ function checkbox_molNb_Callback(obj, evd, h_fig)
         set([h.tm.axes_frettt(ind_h), h.tm.axes_hist(ind_h)], 'Color', ...
             shad);
     end
+    
+    % deactivate the popupmenu if the molecule is not selected
+    % added by FS, 24.4.2018
+    if h.tm.molValid(mol) == 0
+        set(h.tm.popup_molNb(ind_h), 'Enable', 'off', 'Value', 1)
+        h.tm.molTag(mol) = 1;
+        guidata(h_fig, h)
+    else
+        set(h.tm.popup_molNb(ind_h), 'Enable', 'on')
+    end
 
+end
+
+% added by FS, 24.4.2018, modified by FS, 25.5.2018
+function popup_molTag_Callback(obj, evd, h_fig, ~)
+    % the molecule is passed directly to the callback, since the string
+    % variable is already occupied with the molecule tags
+    h = guidata(h_fig);
+    pos_slider = round(get(h.tm.slider, 'Value'));
+    max_slider = get(h.tm.slider, 'Max');
+    cb = get(obj, 'Callback');
+    mol = max_slider-pos_slider+cb{3};
+    h.tm.molTag(mol) = get(obj, 'Value');
+    guidata(h_fig, h);
 end
 
 
@@ -525,8 +639,30 @@ function slider_Callback(obj, evd, h_fig)
             0.05*[mod(max_slider-pos_slider+i,2) ...
             mod(max_slider-pos_slider+i,2) ...
             mod(max_slider-pos_slider+i,2)]+0.85);
+        
+        
+        % added by FS, 24.4.2018
+        str_lst = colorTagNames(h_fig);
+        if h.tm.molTag(max_slider-pos_slider+i) > length(str_lst)
+            val = 1;
+        else
+            val = h.tm.molTag(max_slider-pos_slider+i);
+        end
+        set(h.tm.popup_molNb(i), 'String', ...
+            str_lst, 'Value', ...
+            val, 'BackgroundColor', ...
+            0.05*[mod(max_slider-pos_slider+i,2) ...
+            mod(max_slider-pos_slider+i,2) ...
+            mod(max_slider-pos_slider+i,2)]+0.85);
+        % deactivate the popupmenu if the molecule is not selected
+        % added by FS, 24.4.2018
+        if h.tm.molValid(max_slider-pos_slider+i) == 0
+            set(h.tm.popup_molNb(i), 'Enable', 'off')
+        else
+            set(h.tm.popup_molNb(i), 'Enable', 'on')
+        end
     end
-    
+   
     plotDataTm(h_fig);
 
 end
@@ -1160,6 +1296,10 @@ function menu_export_Callback(obj, evd, h_fig)
         h = guidata(h_fig);
         h.param.ttPr.proj{h.param.ttPr.curr_proj}.coord_incl = ...
             h.tm.molValid;
+        h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTag = ...
+            h.tm.molTag; % added by FS, 24.4.2018
+        h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTagNames = ...
+            h.tm.molTagNames; % added by FS, 24.4.2018
         h.tm.ud = true;
         guidata(h_fig,h);
         uiresume(h.tm.figure_traceMngr);
@@ -1330,6 +1470,21 @@ function checkbox_all_Callback(obj, evd, h_fig)
     else
         h.tm.molValid = false(size(h.tm.molValid));
     end
+    
+    % deactivate the popupmenu if the molecule is not selected
+    % added by FS, 25.4.2018
+    pos_slider = round(get(h.tm.slider, 'Value'));
+    max_slider = get(h.tm.slider, 'Max');
+    nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
+    for i = nb_mol_disp:-1:1
+        if h.tm.molValid(max_slider-pos_slider+i) == 0
+            set(h.tm.popup_molNb(i), 'Enable', 'off', 'Value', 1)
+            h.tm.molTag(max_slider-pos_slider+i) = 1;
+        else
+            set(h.tm.popup_molNb(i), 'Enable', 'on')
+        end
+    end
+    
     guidata(h_fig, h);
     plotDataTm(h_fig);
 
@@ -1342,9 +1497,56 @@ function pushbutton_all_inverse_Callback(obj, evd, h_fig)
     
     h.tm.molValid = ~h.tm.molValid;
     
+    % deactivate the popupmenu if the molecule is not selected
+    % added by FS, 25.4.2018
+    pos_slider = round(get(h.tm.slider, 'Value'));
+    max_slider = get(h.tm.slider, 'Max');
+    nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
+    for i = nb_mol_disp:-1:1
+        if h.tm.molValid(max_slider-pos_slider+i) == 0
+            set(h.tm.popup_molNb(i), 'Enable', 'off', 'Value', 1)
+            h.tm.molTag(max_slider-pos_slider+i) = 1;
+        else
+            set(h.tm.popup_molNb(i), 'Enable', 'on')
+        end
+    end
+    
     guidata(h_fig, h);
     plotDataTm(h_fig);
 end 
+
+
+% added by FS, 24.4.2018
+function edit_addMolTag_Callback(obj, evd, h_fig)
+    h = guidata(h_fig);
+    if ~strcmp(obj.String, 'define a new tag') && ~ismember(obj.String, h.tm.molTagNames)
+        h.tm.molTagNames{end+1} = obj.String;
+        guidata(h_fig, h);
+        str_lst = colorTagNames(h_fig);
+        set(h.tm.popup_molTag, 'String', str_lst);
+        nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
+        guidata(h_fig, h);
+        update_popups(h_fig, nb_mol_disp)
+    end
+end
+
+% added by FS, 24.4.2018
+function pushbutton_deleteMolTag_Callback(obj, evd, h_fig)
+    h = guidata(h_fig);
+    selectMolTag = get(h.tm.popup_molTag, 'Value');
+    if selectMolTag ~= 1
+        h.tm.molTagNames(selectMolTag) = [];
+        guidata(h_fig, h);
+        str_lst = colorTagNames(h_fig);
+        set(h.tm.popup_molTag, 'Value', 1);
+        set(h.tm.popup_molTag, 'String', str_lst);
+        nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
+        guidata(h_fig, h);
+        update_popups(h_fig, nb_mol_disp)
+    end
+end
+
+
 
 function figure_traceMngr(obj, evd, h_fig)
 

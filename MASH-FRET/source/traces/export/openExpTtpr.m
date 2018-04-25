@@ -542,9 +542,20 @@ yNext = mg;
 
 h.optExpTr.checkbox_molValid = uicontrol('Style', 'checkbox', 'Units', ...
     'pixels', 'Parent', h.optExpTr.figure_optExpTr, 'String', ...
-    'save only selected molecules', 'FontSize', 10, 'Callback', ...
+    'save sel. mol. only', 'FontSize', 8, 'Callback', ...
     {@checkbox_molValid_Callback, h_fig}, 'Position', ...
     [xNext yNext w_full_pan h_but]);
+
+% popup for exporting tagged molecules individually; 
+% added by FS, 24.4.2018
+xNext = mg + 2/3*w_full_pan;
+str_lst = colorTagNames(h_fig);
+molTagStr = [str_lst, 'all selected'];
+h.optExpTr.popup_molTagged = uicontrol('Style', 'popup', 'Units', ...
+    'pixels', 'Parent', h.optExpTr.figure_optExpTr, 'String', molTagStr,...
+    'Value', length(molTagStr), 'Callback', ...
+    {@popup_molTagged_Callback, h_fig}, 'Position', ...
+    [xNext yNext 1/2*w_full_pan h_but]);
 
 xNext = wFig - 3*w_but - 3*mg;
 yNext = mg;
@@ -572,6 +583,21 @@ set(h.optExpTr.figure_optExpTr, 'Visible', 'on');
 
 guidata(h_fig, h);
 ud_optExpTr('all', h_fig);
+
+
+% define colors for tag names; added by FS, 24.4.2018
+function str_lst = colorTagNames(h_fig)
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+colorlist = {'transparent', '#4298B5', '#DD5F32', '#92B06A', '#ADC4CC', '#E19D29'};
+str_lst = cell(1,length(p.proj{proj}.molTagNames));
+str_lst{1} = p.proj{proj}.molTagNames{1};
+ 
+for k = 2:length(p.proj{proj}.molTagNames)
+    str_lst{k} = ['<html><body  bgcolor="' colorlist{k} '">' ...
+        '<font color="white">' p.proj{proj}.molTagNames{k} '</font></body></html>'];
+end
 
 
 function radiobutton_saveFig_Callback(obj, evd, h_fig)
@@ -1057,6 +1083,16 @@ h = guidata(h_fig);
 h.param.ttPr.proj{h.param.ttPr.curr_proj}.exp.mol_valid = val;
 guidata(h_fig, h);
 ud_optExpTr('all', h_fig);
+
+
+% added by FS, 24.4.2018
+function popup_molTagged_Callback(obj, evd, h_fig)
+val = get(obj, 'Value');
+h = guidata(h_fig);
+h.param.ttPr.proj{h.param.ttPr.curr_proj}.exp.mol_TagVal = val;
+guidata(h_fig, h);
+ud_optExpTr('all', h_fig);
+
 
 
 function pushbutton_infos_Callback(obj, evd, h_fig)
