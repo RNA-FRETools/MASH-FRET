@@ -76,6 +76,9 @@ s.dt_pname = adjustParam('dt_pname', [], s_in);
 s.dt_fname = adjustParam('dt_fname', [], s_in);
 s.dt = adjustParam('dt', {}, s_in);
 
+% molecule tags; added by FS, 24.4.2018
+s.molTag = adjustParam('molTag', ones(1,size(s.intensities,2)/s.nb_channel), s_in);
+s.molTagNames = adjustParam('molTagNames', {'unlabeled', 'static', 'dynamic'}, s_in);
 
 %% check movie entries
 

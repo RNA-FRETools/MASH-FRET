@@ -78,5 +78,10 @@ if ~isempty(I)
     s.bool_intensities = true(size(I,1), size(I,2)/p.nChan);
     
     s.colours = p.itg_clr; % plot colours
+    
+    % added by FS, 24.4.2018
+    s.molTag = ones(1,size(I,2)/p.nChan);
+    s.molTagNames = {'unlabeled', 'static', 'dynamic'};
+
 end
 

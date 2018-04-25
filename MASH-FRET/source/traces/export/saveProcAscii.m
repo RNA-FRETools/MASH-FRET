@@ -13,6 +13,15 @@ if fromTT && xp.mol_valid
 else
     mol_incl = true(1,nMol);
 end
+
+% added by FS, 24.4.2018
+mol_TagVal = h.param.ttPr.proj{h.param.ttPr.curr_proj}.exp.mol_TagVal;
+if mol_TagVal > length(p.proj{proj}.molTagNames)
+    mol_incl_tag = mol_incl;
+else
+    mol_incl_tag = p.proj{proj}.molTag == mol_TagVal;
+end
+
 exc = p.proj{proj}.excitations;
 chanExc = p.proj{proj}.chanExc;
 labels = p.proj{proj}.labels;
@@ -28,7 +37,8 @@ rate = p.proj{proj}.frame_rate;
 
 FRET = p.proj{proj}.FRET;
 S = p.proj{proj}.S;
-N = numel(find(mol_incl));
+%N = numel(find(mol_incl));
+N = numel(find(mol_incl & mol_incl_tag)); % added by FS, 24.4. 2018
 nFRET = size(FRET,1);
 nS = size(S,1);
 nExc = numel(exc);
@@ -175,7 +185,8 @@ if saveFig
         p_fig.isBot = 0;
         p_fig.botChan = 0;
     end
-    [o,m_ind,o] = find(mol_incl);
+    %[o,m_ind,o] = find(mol_incl);
+    [o,m_ind,o] = find(mol_incl & mol_incl_tag); % added by FS, 25.4.2018
     m_start = m_ind(1);
     m_end = m_ind(end);
     if figFmt==1 %pdf
@@ -202,7 +213,7 @@ guidata(h_fig, h);
 n = 0;
 try
     for m = 1:nMol
-        if mol_incl(m)
+        if mol_incl(m) && mol_incl_tag(m)  % added by FS, 24.4.2018
             n = n + 1;
             str = ['export data of molecule n:°' num2str(m) '(' ...
                 num2str(n) ' on ' num2str(N) '):'];
