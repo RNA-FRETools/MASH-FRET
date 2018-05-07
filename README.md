@@ -2,11 +2,11 @@
 
 ## About MASH-FRET
 
-This is MASHsmFRET MATLAB Package - A modular toolkit to process surface-immobilized single molecule data.
+This is the MASH-FRET MATLAB Package - A modular toolkit to process surface-immobilized single molecule data.
 
-License: MIT
+License: GPLv3
 
-MASH was developed by **Mélodie C.A.-S. Hadzic** (University of Zürich, melodie.hadzic@chem.uzh.ch) and Danny Kowerko (Technical University of Chemnitz, danny.kowerko@informatik.tu-chemnitz.de). MASH was further developed and is currently taken care of by by Fabio D. Steffen (University of Zürich, fabio.steffen@uzh.ch) and Richard Börner (University of Zürich, richard.boerner@chem.uzh.ch). 
+MASH was developed by **Mélodie C.A.-S. Hadzic** (University of Zürich, melodie.hadzic@chem.uzh.ch) and Danny Kowerko (Technical University of Chemnitz, danny.kowerko@informatik.tu-chemnitz.de). MASH was further developed and is currently taken care of by Fabio D. Steffen (University of Zürich, fabio.steffen@uzh.ch) and Richard Börner (University of Zürich, richard.boerner@chem.uzh.ch). 
 
 For more information please contact rnafretools@uzh.ch
 
