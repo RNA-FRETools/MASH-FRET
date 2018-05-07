@@ -7,7 +7,7 @@ p = h.param.ttPr;
 
 % figure dimensions and position
 wFig = 445;
-hFig = 125;
+hFig = 135;
 prev_u = get(h_fig, 'Units');
 set(h_fig, 'Units', 'pixels');
 posFig = get(h_fig, 'Position');
@@ -30,7 +30,7 @@ h_but = 22;
 h_txt = 14;
 w_pan = wFig - 2*mg;
 w_pop = 120;
-h_pan_all = mg_ttl + 1*mg + 1*mg_big + 2*h_edit + 1*h_txt + 0*h_but;
+h_pan_all = mg_ttl + 2*mg + 1*mg_big + 2*h_edit + 1*h_txt + 0*h_but;
 
 % string and value of gamma correction popupmenu 
 acc_str = get(h.popupmenu_gammaFRET, 'String');
@@ -69,14 +69,25 @@ h.gpo.checkbox_showCutoff = uicontrol('Style', 'checkbox', 'Parent', ...
     'Callback', {@checkbox_showCutoff, h_fig});
 
 % pushbutton load gamma factors
-yNext = h_pan_all - mg_ttl - h_txt - 2*h_edit - mg_big;
+yNext = h_pan_all - mg_ttl - h_txt - 2*h_edit - mg_big - mg;
 h.gpo.pushbutton_loadGamma = uicontrol('Style', 'pushbutton', 'Parent', ...
     h.gpo.uipanel_photobleach, 'Units', 'pixels',...
     'Position', [xNext yNext 2/3*w_pop h_edit], ...
     'String', 'load gamma',...
     'Value', showCutoff,...
     'TooltipString', 'load gamma factor file',...
-    'Callback', {@pushbutton_loadGamma, h_fig});
+    'Callback', {@pushbutton_loadGamma_Callback, h_fig});
+
+% pushbutton compute gamma factor
+yNext = h_pan_all - mg_ttl - h_txt - 2*h_edit - mg_big - mg;
+xNext = 2*mg + w_pop;
+h.gpo.pushbutton_computeGamma = uicontrol('Style', 'pushbutton', 'Parent', ...
+    h.gpo.uipanel_photobleach, 'Units', 'pixels',...
+    'Position', [xNext yNext w_edit h_edit], ...
+    'String', ['compute ' char(hex2dec('3B3'))],...
+    'Value', showCutoff,...
+    'TooltipString', 'compute ',...
+    'Callback', {@pushbutton_computeGamma_Callback, h_fig});
 
 % check icon axis
 xNext = mg + 3/4*w_pop;
@@ -170,9 +181,13 @@ if ~isempty(p.proj)
     if p.proj{proj}.curr{mol}{5}{5}(acc,7) == 1
         [icon, ~, alpha] = imread('check.png');
         set(h.gpo.checkbox_showCutoff, 'Enable', 'on')
+        set(h.gpo.pushbutton_computeGamma, 'Enable', 'on')
+        drawCutoff(h_fig,1)
     else
         [icon, ~, alpha] = imread('notdefined.png');
         set(h.gpo.checkbox_showCutoff, 'Enable', 'off')
+        set(h.gpo.pushbutton_computeGamma, 'Enable', 'off')
+        drawCutoff(h_fig,0)
     end
     image(icon, 'alphaData', alpha)
     set(gca, 'visible', 'off')
@@ -212,14 +227,14 @@ end
 end
 
 % load gamma factor file, added by FS, 24.4.2018
-function pushbutton_loadGamma(~, ~, h_fig)
+function pushbutton_loadGamma_Callback(~, ~, h_fig)
 h = guidata(h_fig);
 p = h.param.ttPr;
 defPth = h.folderRoot;
 
 % load gamma factor file if it exists
 [fnameGamma,pnameGamma,~] = uigetfile({'*.gam', 'Gamma factors (*.gam)'; '*.*', ...
-    'All files(*.*)'}, 'Select gamma factor file', defPth, 'MultiSelect', 'off');
+    'All files(*.*)'}, 'Select gamma factor file', defPth, 'MultiSelect', 'on');
 if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
     if ~iscell(fnameGamma)
         fnameGamma = {fnameGamma};
@@ -233,6 +248,7 @@ if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
     end
     gammas = cell2mat(gammasCell');
 end
+
 
 % check if number of molecules is the same in the project and the .gam file
 proj = p.curr_proj;
@@ -396,3 +412,29 @@ if ~isempty(p.proj)
 end
 end
 
+% draw the cutoff line; added by FS, 26.4.2018
+function drawCutoff(h_fig, drawIt)
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+mol = p.curr_mol(proj);
+acc = p.proj{proj}.curr{mol}{5}{4}(2);
+p.proj{proj}.curr{mol}{5}{5}(acc,1) = drawIt;
+set(h.gpo.checkbox_showCutoff, 'Value', drawIt)
+h.param.ttPr = p;
+guidata(h_fig, h)
+updateFields(h_fig, 'ttPr');
+end
+
+% compute the gamma factor; added by FS, 26.4.2018
+function pushbutton_computeGamma_Callback(obj, ~, h_fig)
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+mol = p.curr_mol(proj);
+h.param.ttPr.proj{proj}.curr{mol}{5}{4}(1) = 1;
+guidata(h_fig, h)
+updateFields(h_fig, 'ttPr');
+set(h.checkbox_pbGamma, 'Value', h.param.ttPr.proj{proj}.curr{mol}{5}{4}(1))
+close(gcf)
+end

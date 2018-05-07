@@ -48,6 +48,8 @@ if ~isempty(p)
         if curr_fret>=1
             set(h.edit_gammaCorr, 'Enable', 'on', 'String', ...
                 num2str(p_panel{3}(curr_fret)));
+            % update the gamm correction checkbox when changing to different molecules; added by FS, 26.4.2018
+            set(h.checkbox_pbGamma, 'Value', h.param.ttPr.proj{proj}.curr{mol}{5}{4}(1))
         end
     else
         set(h.edit_gammaCorr, 'String', '');

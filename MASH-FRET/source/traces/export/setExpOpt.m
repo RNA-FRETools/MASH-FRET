@@ -11,6 +11,7 @@ nS = size(p_proj.S,1);
 
 def.process = 1;
 def.mol_valid = 1;
+def.mol_TagVal = length(p_proj.molTagNames); % added by FS, 26.4.2018
 
 if ~isfield(opt, 'process')
     opt.process = def.process;
@@ -29,6 +30,10 @@ if ~isfield(opt, 'dt')
 end
 if ~isfield(opt, 'fig')
     opt.fig= [];
+end
+% add field "mol_TagVal" to p.proj{proj}.exp structure; added by FS, 26.4.2018
+if ~isfield(opt, 'mol_TagVal')
+    opt.mol_TagVal = def.mol_TagVal;
 end
 
 %% trace files
