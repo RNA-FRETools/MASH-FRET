@@ -234,7 +234,7 @@ defPth = h.folderRoot;
 
 % load gamma factor file if it exists
 [fnameGamma,pnameGamma,~] = uigetfile({'*.gam', 'Gamma factors (*.gam)'; '*.*', ...
-    'All files(*.*)'}, 'Select gamma factor file', defPth, 'MultiSelect', 'off');
+    'All files(*.*)'}, 'Select gamma factor file', defPth, 'MultiSelect', 'on');
 if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
     if ~iscell(fnameGamma)
         fnameGamma = {fnameGamma};

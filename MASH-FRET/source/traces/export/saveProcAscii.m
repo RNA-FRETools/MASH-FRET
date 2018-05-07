@@ -188,6 +188,10 @@ if saveFig
     end
     %[o,m_ind,o] = find(mol_incl);
     [o,m_ind,o] = find(mol_incl & mol_incl_tag); % added by FS, 25.4.2018
+    if isempty(m_ind) % error message if no molecules with specified tag are found; added by FS, 26.4.2018
+        updateActPan('No molecules with the specified tag are found', h_fig, 'error');
+        return
+    end
     m_start = m_ind(1);
     m_end = m_ind(end);
     if figFmt==1 %pdf
