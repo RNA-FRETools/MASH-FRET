@@ -46,8 +46,8 @@ if ~isempty(p.proj);
             guidata(h.figure_MASH,h);
             
             figname = get(h.figure_MASH, 'Name');
-            a = strfind(figname, 'MASH smFRET ');
-            b = a + numel('MASH smFRET ');
+            a = strfind(figname, 'MASH-FRET ');
+            b = a + numel('MASH-FRET ');
             vers = figname(b:end);
             dat.MASH_version = vers;
             

@@ -8,8 +8,8 @@ s = s_in;
 s.date_creation = adjustParam('date_creation', datestr(now), s_in);
 s.date_last_modif = adjustParam('date_last_modif', s.date_creation, s_in);
 figname = get(h_fig, 'Name');
-a = strfind(figname, 'MASH smFRET ');
-b = a + numel('MASH smFRET ');
+a = strfind(figname, 'MASH-FRET ');
+b = a + numel('MASH-FRET ');
 s.MASH_version = adjustParam('MASH_version', figname(b:end), s_in);
 s.proj_file = fname;
 

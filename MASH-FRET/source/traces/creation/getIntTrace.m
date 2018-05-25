@@ -94,16 +94,23 @@ switch fFormat
             if isempty(strfind(tline, 'SIRA exported binary graphic'))
                 if isempty(strfind(tline, ...
                         'MASH smFRET exported binary graphic'))
+                if isempty(strfind(tline, ...
+                        'MASH-FRET exported binary graphic'))
                     fclose(f);
                     errordlg('Not a SIRA graphic file.');
                     return;
+                end
                 end
             end
             is_os = false; % intensity offset for each frame
             is_sgl = false; % data written in single precision
             if ~isempty(tline)
+                vers = tline(length(['MASH-FRET exported binary graphic ' ...
+                    'Version: ']):end);
+                if isempty(vers)
                 vers = tline(length(['MASH smFRET exported binary graphic ' ...
                     'Version: ']):end);
+                end
                 if str2num(vers(1:end-3)) == 1.003
                     subvers = getValueFromStr('1.003.', vers);
                     if subvers>=39
@@ -112,8 +119,10 @@ switch fFormat
                     if subvers>=41
                         is_sgl = true;
                     end
-                elseif str2num(vers) > 1.003
+                else
+                %elseif str2num(vers) > 1.003
                     is_os = true;
+                    is_sgl = true;
                 end
             end
             if is_sgl

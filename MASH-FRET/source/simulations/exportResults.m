@@ -298,8 +298,8 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                 % SIRA header for Version MASH-FRET movie processing
                 % version > 1.003.37
                 figname = get(h_fig, 'Name');
-                vers = figname(length('MASH smFRET '):end);
-                fprintf(f, ['MASH smFRET exported binary graphic Version: ' ...
+                vers = figname(length('MASH-FRET '):end);
+                fprintf(f, ['MASH-FRET exported binary graphic Version: ' ...
                     '%s\r'], vers);
                 fwrite(f, double(expT), 'double');
                 fwrite(f, single(res_x), 'single');

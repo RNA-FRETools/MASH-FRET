@@ -37,8 +37,8 @@ if ~isempty(I)
     s.date_last_modif = s.date_creation;
     
     figname = get(h_fig, 'Name');
-    a = strfind(figname, 'MASH smFRET ');
-    b = a + numel('MASH smFRET ');
+    a = strfind(figname, 'MASH-FRET ');
+    b = a + numel('MASH-FRET ');
     vers = figname(b:end);
     s.MASH_version = vers;
     

@@ -15,8 +15,12 @@ is_sgl = false; % data written in single precision
 if isempty(tline)
     vers = 'older than 1.001';
 else
-    vers = tline(length(['MASH smFRET exported binary graphic ' ...
+    vers = tline(length(['MASH-FRET exported binary graphic ' ...
         'Version: ']):end);
+    if isempty(vers)
+        vers = tline(length(['MASH smFRET exported binary graphic ' ...
+        'Version: ']):end);
+    end
     if isempty(vers)
         vers = 'older than 1.003.37';
     else
@@ -28,7 +32,8 @@ else
             if subvers>=41
                 is_sgl = true;
             end
-        elseif str2num(vers) > 1.003
+        %elseif str2num(vers)) > 1.003
+        else
             is_os = true;
             is_sgl = true;
         end
@@ -174,7 +179,7 @@ else
                     pleaseWait('close', h_fig);
                     updateActPan('Out of memory, no file loaded.', h_fig);
                 else
-                    disp('Error: ut of memory, no file loaded.');
+                    disp('Error: out of memory, no file loaded.');
                 end
 
                 error('MATLAB:nomem', 'Memory too small for file size.');
