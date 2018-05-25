@@ -6,7 +6,7 @@ This is the MASH-FRET MATLAB Package - A modular toolkit to process surface-immo
 
 License: GPLv3
 
-MASH was developed by **Mélodie C.A.-S. Hadzic** (University of Zürich, melodie.hadzic@chem.uzh.ch) and Danny Kowerko (Technical University of Chemnitz, danny.kowerko@informatik.tu-chemnitz.de). MASH was further developed and is currently taken care of by Fabio D. Steffen (University of Zürich, fabio.steffen@uzh.ch) and Richard Börner (University of Zürich, richard.boerner@chem.uzh.ch). 
+MASH was developed by **Mélodie C.A.-S. Hadzic** (University of Zürich, melodie.hadzic@chem.uzh.ch) and Danny Kowerko (Technical University of Chemnitz, danny.kowerko@informatik.tu-chemnitz.de). MASH was further developed and is currently taken care of by Fabio D. Steffen (University of Zürich, fabio.steffen@chem.uzh.ch) and Richard Börner (University of Zürich, richard.boerner@chem.uzh.ch). 
 
 For more information please contact rnafretools@uzh.ch
 
@@ -40,11 +40,11 @@ Download the folder "MASH-FRET" into the directory of your choice. Then within M
 
 ## Dependencies
 
-MASH was developed with MATLAB 7.12 (R2011a) and operating system Windows 7. The compatibility was further tested on Windows 8, 8.1 and 10 with MATLAB 7.12 (R2011a) to 9.2 (R2017a).
+MASH was developed with MATLAB 7.12 (R2011a) and operating system Windows 7. The compatibility was further tested on Windows 8, 8.1 and 10 with MATLAB 7.12 (R2011a) to 9.3 (R2017b).
 
 ## Usage
 
-For information about the different modules in MASH-FRET please visit our [Wiki page](https://github.com/fdsteffen/mash-fret/wiki).
+For information about the different modules in MASH-FRET please visit our [Wiki page](https://github.com/RNA-FRETools/MASH-FRET/wiki).
 
 ## External links
 
