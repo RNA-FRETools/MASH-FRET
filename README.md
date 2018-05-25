@@ -8,27 +8,27 @@ License: GPLv3
 
 MASH was developed by **Mélodie C.A.-S. Hadzic** (University of Zürich, melodie.hadzic@chem.uzh.ch) and Danny Kowerko (Technical University of Chemnitz, danny.kowerko@informatik.tu-chemnitz.de). MASH was further developed and is currently taken care of by Fabio D. Steffen (University of Zürich, fabio.steffen@chem.uzh.ch) and Richard Börner (University of Zürich, richard.boerner@chem.uzh.ch). 
 
-For more information please contact richard.boerner@chem.uzh.ch (or rnafretools@chem.uzh.ch).
+For more information please contact rnafretools@chem.uzh.ch.
 
 If you use MASH-FRET in your work please cite ...
 
 ... for the simulation tool:
 
-R. Börner*, D. Kowerko*, M. C.A.S. Hadzic*, S.L.B.König, M.Ritter, R.K.O.Sigel, "Simulations of Camera-Based Single-Molecule Fluorescence Experiments" *PLoS One* **2017**, accepted. (DOI:) 
+R. Börner*, D. Kowerko*, M. C.A.S. Hadzic*, S.L.B.König, M.Ritter, R.K.O.Sigel, "Simulations of Camera-Based Single-Molecule Fluorescence Experiments" *PLoS One* **2018**, *13*, e0195277. http://dx.doi.org/10.1371/journal.pone.0195277 
 
 Supporting Information for parameter optimization and SM localization method comparison (http://skinner.informatik.tu-chemnitz.de:9081/#/)
 
-... for the state transition analyzing tool:
+... for the model selection and state transition analyzing toolbox:
 
-Mélodie C. A. S. Hadzic*, D. Kowerko, R. Börner, S. Zelger-Paulus, R.K.O. Sigel, "Detailed analysis of complex single molecule FRET data with the software MASH" *Proc. SPIE* **2016**, 9711:971119. (DOI:10.1117/12.2211191)
+Mélodie C. A. S. Hadzic*, D. Kowerko, R. Börner, S. Zelger-Paulus, R.K.O. Sigel, "Detailed analysis of complex single molecule FRET data with the software MASH" *Proc. SPIE* **2016**, *9711*, 971119. http://dx.doi.org/10.1117/12.2211191
 
 and 
 
-Mélodie C. A. S. Hadzic*, R. Börner*, D. Kowerko, S.L.B.König, R.K.O. Sigel, "Assessment of State Identification and State Transition Detection Exemplified on Fluorescence Intensity-Based sm-FRET Data." **2017**, under review. (DOI:)
+Mélodie C. A. S. Hadzic*, R. Börner, D. Kowerko, S.L.B.König, R.K.O. Sigel, "Reliable State Identification and State Transition Detection in Fluorescence Intensity-Based Single-Molecule FRET Data" *J. Phys. Chem. B* **2018**, just accepted. http://dx.doi.org/10.1021/acs.jpcb.7b12483
 
 ... for the bootstraping algorythm BOBA FRET:
 
-S.L.B.König, Mélodie C. A. S. Hadzic*, Erica Fiorini, R. Börner*, D. Kowerko*, Wolf U. Blanckenhorn, R.K.O. Sigel, Börner, Richard; Kowerko, Danny; ; Sigel, Roland Karl Oliver "BOBA FRET: bootstrap-based analysis of single-molecule FRET data" *PLoS One* **2013**, 8(12):e84157. (DOI:10.1371/journal.pone.0084157)
+S.L.B.König, Mélodie C. A. S. Hadzic*, Erica Fiorini, R. Börner, D. Kowerko, Wolf U. Blanckenhorn, R.K.O. Sigel, "BOBA FRET: bootstrap-based analysis of single-molecule FRET data" *PLoS One* **2013**, *8*(12), e84157. http://dx.doi.org/10.1371/journal.pone.0084157
 
 Happy MASHing!
 
