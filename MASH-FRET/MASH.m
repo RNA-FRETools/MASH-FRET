@@ -35,7 +35,11 @@ while issep
 end
 %figName = strrep(pname,'_',' '); % Versioning with folder structure 2018-03-07
 
-version_number = '1.1.0'; % Versioning without folder structure %2018-03-07
+%----------------
+% version number
+version_number = '1.1.1'; % Versioning without folder structure %2018-03-07
+%----------------
+
 figName = sprintf('%s %s','MASH-FRET', version_number);
 
 % check for proper Matlab version
