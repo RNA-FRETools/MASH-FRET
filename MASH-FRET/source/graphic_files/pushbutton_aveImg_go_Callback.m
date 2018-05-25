@@ -64,8 +64,8 @@ if isfield(h, 'movie')
                 return;
             else
                 figname = get(h.figure_MASH, 'Name');
-                vers = figname(length('MASH smFRET '):end);
-                fprintf(f, ['MASH smFRET exported binary graphic ' ...
+                vers = figname(length('MASH-FRET '):end);
+                fprintf(f, ['MASH-FRET exported binary graphic ' ...
                     'Version: %s\r'], vers);
                 fwrite(f, double(h.movie.cyctime), 'double');
                 fwrite(f, single(h.movie.pixelX), 'single');

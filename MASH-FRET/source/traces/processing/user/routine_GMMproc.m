@@ -20,8 +20,8 @@ dscr_prm{2} = [1 2 0 0 5   0  0 2];
 dscr_prm{4} = [1 2 0 0 100 90 2 2];
 dscr_prm{5} = [1 2 0 0 0   0  0 2];
 figname = get(h_fig, 'Name');
-a = strfind(figname, 'MASH smFRET ');
-b = a + numel('MASH smFRET ');
+a = strfind(figname, 'MASH-FRET ');
+b = a + numel('MASH-FRET ');
 vers = figname(b:end);
 
 for pj = 1:size(proj_file,1)

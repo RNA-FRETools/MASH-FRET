@@ -227,7 +227,7 @@ end
 
 s.date_creation = datestr(now);
 s.date_last_modif = s.date_creation;
-s.MASH_version = getValueFromStr('MASH smFRET ', ...
+s.MASH_version = getValueFromStr('MASH-FRET ', ...
     get(h_fig, 'Name'));
 s.exp_parameters = exp_param; % default parameters
 [path,name,o] = fileparts(pname);

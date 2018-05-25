@@ -42,8 +42,8 @@ FRET_DTA = []; S_DTA = []; bool_intensities = [];
 s.date_creation = datestr(now);
 s.date_last_modif = datestr(now);
 figname = get(h_fig, 'Name');
-a = strfind(figname, 'MASH smFRET ');
-b = a + numel('MASH smFRET ');
+a = strfind(figname, 'MASH-FRET ');
+b = a + numel('MASH-FRET ');
 s.MASH_version = figname(b:end);
 s.proj_file = fname;
 

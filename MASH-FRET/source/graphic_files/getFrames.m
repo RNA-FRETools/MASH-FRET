@@ -30,6 +30,8 @@ function [data ok] = getFrames(fullFname, n, param, h_fig)
             if isempty(strfind(tline,'SIRA exported binary graphic'))
                 if isempty(strfind(tline, ...
                         'MASH smFRET exported binary graphic'))
+                if isempty(strfind(tline, ...
+                        'MASH-FRET exported binary graphic'))
                     if ~isempty(h_fig)
                         updateActPan(['Not a SIRA exported graphic ' ...
                             'file, no file loaded.'], h_fig, 'error');
@@ -40,6 +42,7 @@ function [data ok] = getFrames(fullFname, n, param, h_fig)
                     ok = 0;
                     fclose(f);
                     return;
+                end
                 end
             end
             fclose(f);

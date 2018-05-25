@@ -16,8 +16,9 @@ if f == -1
     updateActPan(['Enable to open file ' nameMain], h_fig);
 else
     figname = get(h_fig, 'Name');
-    vers = figname(length('MASH smFRET '):end);
-    fprintf(f, 'MASH smFRET exported binary graphic Version: %s\r', vers);
+    vers = figname(length('MASH-FRET ')+1:end);
+    %vers = '1.003.84';
+    fprintf(f, 'MASH-FRET exported binary graphic Version: %s\r', vers);
     fwrite(f, double(h.movie.cyctime), 'double');
     fwrite(f, single(h.movie.pixelX), 'single');
     fwrite(f, single(h.movie.pixelY), 'single');

@@ -1290,7 +1290,7 @@ function menu_export_Callback(obj, evd, h_fig)
 
     saveNclose = questdlg(['Do you want to export the traces to ' ...
         'MASH and close the trace manager?'], ...
-        'Close and export to MASH smFRET', 'Yes', 'No', 'No');
+        'Close and export to MASH-FRET', 'Yes', 'No', 'No');
     
     if strcmp(saveNclose, 'Yes')
         h = guidata(h_fig);
