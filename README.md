@@ -8,7 +8,7 @@ License: GPLv3
 
 MASH was developed by **Mélodie C.A.-S. Hadzic** (University of Zürich, melodie.hadzic@chem.uzh.ch) and Danny Kowerko (Technical University of Chemnitz, danny.kowerko@informatik.tu-chemnitz.de). MASH was further developed and is currently taken care of by Fabio D. Steffen (University of Zürich, fabio.steffen@chem.uzh.ch) and Richard Börner (University of Zürich, richard.boerner@chem.uzh.ch). 
 
-For more information please contact richard.boerner@uzh.ch (or rnafretools@uzh.ch).
+For more information please contact richard.boerner@chem.uzh.ch (or rnafretools@chem.uzh.ch).
 
 If you use MASH-FRET in your work please cite ...
 
