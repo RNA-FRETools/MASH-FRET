@@ -27,7 +27,7 @@ for i = 1:nFRET
         I_post = p.proj{proj}.intensities_DTA(stop/nExc+3, ...
             (mol-1)*nChan+1:mol*nChan,exc);
         
-        if I_pre(chan_D) ~= I_post(chan_D) % is donor intensity equal before and after the cutoff
+        if I_pre(chan_D) ~= I_post(chan_D) || I_pre(chan_A) ~= I_post(chan_A) % is donor or acceptor intensity equal before and after the cutoff, (acceptor condition added by FS, 5.6.2018)
             if apply_pbGamma
                 gamma = (I_pre(chan_A)-I_post(chan_A))/(I_post(chan_D)-I_pre(chan_D));
                 p.proj{proj}.curr{mol}{5}{3}(i) = round(gamma,2);

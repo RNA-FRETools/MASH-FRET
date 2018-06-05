@@ -2941,6 +2941,14 @@ if ~isempty(p.proj)
     mol = p.curr_mol(proj);
     val = get(obj, 'Value');
     p.proj{proj}.curr{mol}{4}{1}(2) = val;
+    
+    % added by FS, 5.6.2018
+    % disable photobleaching based gamma factor determination
+    % chechbox and pushbutton are enable again if isDiscrTop is 1 in 'discrTraces.m'
+    set(h.pushbutton_optGamma, 'enable', 'off') 
+    p.proj{proj}.curr{mol}{5}{4}(1) = 0; % deactivate the pb based gamma correction checkbox
+    set(h.checkbox_pbGamma, 'enable', 'off', 'Value', 0)
+    
     h.param.ttPr = p;
     guidata(h.figure_MASH, h);
     ud_DTA(h.figure_MASH);
