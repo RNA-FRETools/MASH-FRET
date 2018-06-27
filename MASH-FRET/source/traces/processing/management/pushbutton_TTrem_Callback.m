@@ -50,6 +50,7 @@ if ~isempty(h.param.ttPr.proj)
         p.proj{proj}.curr = prm_curr;
         p.curr_mol(proj) = curr_mol;
         p.proj{proj}.coord_incl = incl(incl);
+        p.proj{proj}.molTag = p.proj{proj}.molTag(incl); % added by FS, 27.6.2018
         h.param.ttPr = p;
         guidata(h.figure_MASH, h);
         
