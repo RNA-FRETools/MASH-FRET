@@ -37,7 +37,7 @@ end
 
 %----------------
 % version number
-version_number = '1.1.1'; % Versioning without folder structure %2018-03-07
+version_number = '1.1.2'; % Versioning without folder structure %2018-03-07
 %----------------
 
 figName = sprintf('%s %s','MASH-FRET', version_number);

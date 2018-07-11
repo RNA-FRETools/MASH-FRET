@@ -91,7 +91,8 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
                     % intensities)
                     p.proj{i}.curr{n}{5}{3} = gammas(n);
                     p.proj{i}.prm{n}{5}{3} = gammas(n);
-                    
+                end
+                if ~isempty(fnameGamma) && ~isempty(pnameGamma)
                     % Cross talk and filter corrections 
                     % set all correction factors to 0 if restructured ASCII
                     % files are loaded, since the factors have already been
