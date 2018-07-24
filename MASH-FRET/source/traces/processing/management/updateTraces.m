@@ -68,7 +68,7 @@ if ~isempty(p.proj)
             strcmp(opt2, 'ttBg') || strcmp(opt2, 'ttPr')) && nFRET > 0
             p = calcCutoffGamma(mol, p);
             p = prepostInt(h_fig, mol, p);
-            p = discrTraces(h_fig, mol, p);
+            p = discrTraces(h_fig, mol, p); % account for gamma factor
     end
 
     proj = p.curr_proj;

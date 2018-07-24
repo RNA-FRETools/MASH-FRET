@@ -46,8 +46,14 @@ end
 h.gpo.figure_gammaOpt = figure('Visible', 'on', 'Units', 'pixels', ...
     'Position', pos_fig, 'Color', [0.94 0.94 0.94], ...
     'NumberTitle', 'off',...
-    'Name', [get(h_fig, 'Name') ' - Gamma factor options'], ...
-    'WindowStyle', 'modal');  % make other windows inaccessible
+    'Name', [get(h_fig, 'Name') ' - Gamma factor options']);  % make other windows inaccessible
+
+% add debugging mode where all other windows are not deactivated
+% added by FS, 24.7.2018
+debugMode = 1;
+if ~debugMode
+    set(h.gpo.figure_gammaOpt, 'WindowStyle', 'modal')
+end
 
 xNext = mg;
 yNext = hFig - mg - h_pan_all;
@@ -427,7 +433,7 @@ updateFields(h_fig, 'ttPr');
 end
 
 % compute the gamma factor; added by FS, 26.4.2018
-function pushbutton_computeGamma_Callback(obj, ~, h_fig)
+function pushbutton_computeGamma_Callback(~, ~, h_fig)
 h = guidata(h_fig);
 p = h.param.ttPr;
 proj = p.curr_proj;
@@ -436,5 +442,5 @@ h.param.ttPr.proj{proj}.curr{mol}{5}{4}(1) = 1;
 guidata(h_fig, h)
 updateFields(h_fig, 'ttPr');
 set(h.checkbox_pbGamma, 'Value', h.param.ttPr.proj{proj}.curr{mol}{5}{4}(1))
-close(gcf)
+close(h.gpo.figure_gammaOpt)
 end

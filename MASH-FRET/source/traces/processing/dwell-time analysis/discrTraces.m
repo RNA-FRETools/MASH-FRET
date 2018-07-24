@@ -24,18 +24,6 @@ prm_DTA = p.proj{proj}.prm{mol}{4};
 toBottom = prm_DTA{1}(2);
 calc = prm_DTA{1}(3);
 
-% added by FS, 5.6.2018
-% disable gamma factor calculation when intensity traces are not discretized
-h = guidata(h_fig);
-if isDiscrTop
-    set(h.pushbutton_optGamma, 'enable', 'on')  % added by FS, 5.6.2018
-    set(h.checkbox_pbGamma, 'enable', 'on')  % added by FS, 5.6.2018  
-else
-    set(h.pushbutton_optGamma, 'enable', 'off')  % added by FS, 5.6.2018
-    set(h.checkbox_pbGamma, 'enable', 'off', 'Value', 0)  % added by FS, 5.6.2018 
-    p.proj{proj}.curr{mol}{5}{4}(1) = 0; % deactivate the pb based gamma correction checkbox
-    
-end
     
 if (toBottom && ~isDiscrBot) || ((~toBottom || toBottom == 2) && ...
         ~isDiscrTop)

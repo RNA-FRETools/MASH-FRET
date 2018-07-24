@@ -2888,7 +2888,9 @@ if ~isempty(p.proj)
     p.proj{proj}.curr{mol}{5}{5}(1) = val; % show cutoff checkbox
     h.param.ttPr = p;
     guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'ttPr');
+    if val == 1 % added by FS, 24.7.2018
+        updateFields(h.figure_MASH, 'ttPr');
+    end
     % get updated handle (updated in updateFields)
     % h = guidata(h_fig) is called at the beginning of the next function (updateFields is the last function),
     % but here the handle is still needed for the next line
@@ -2944,7 +2946,7 @@ if ~isempty(p.proj)
     
     % added by FS, 5.6.2018
     % disable photobleaching based gamma factor determination
-    % chechbox and pushbutton are enable again if isDiscrTop is 1 in 'discrTraces.m'
+    % checkbox and pushbutton are enable again if isDiscrTop is 1 in 'discrTraces.m'
     set(h.pushbutton_optGamma, 'enable', 'off') 
     p.proj{proj}.curr{mol}{5}{4}(1) = 0; % deactivate the pb based gamma correction checkbox
     set(h.checkbox_pbGamma, 'enable', 'off', 'Value', 0)
@@ -2962,6 +2964,14 @@ if ~isempty(p.proj)
     mol = p.curr_mol(proj);
     val = get(obj, 'Value');
     p.proj{proj}.curr{mol}{4}{1}(2) = ~val;
+    
+    % added by FS, 5.6.2018
+    % disable photobleaching based gamma factor determination
+    % checkbox and pushbutton are enable again if isDiscrTop is 1 in 'discrTraces.m'
+    set(h.pushbutton_optGamma, 'enable', 'on') 
+    p.proj{proj}.curr{mol}{5}{4}(1) = 1; % deactivate the pb based gamma correction checkbox
+    set(h.checkbox_pbGamma, 'enable', 'on', 'Value', 0)
+    
     h.param.ttPr = p;
     guidata(h.figure_MASH, h);
     ud_DTA(h.figure_MASH);
