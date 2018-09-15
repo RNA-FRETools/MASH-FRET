@@ -16,7 +16,7 @@ If you use MASH-FRET in your work please cite ...
 
 R. Börner*, D. Kowerko*, M. C.A.S. Hadzic*, S.L.B.König, M.Ritter, R.K.O.Sigel, "Simulations of Camera-Based Single-Molecule Fluorescence Experiments" *PLoS One* **2018**, *13*, e0195277. http://dx.doi.org/10.1371/journal.pone.0195277 
 
-Supporting Information for parameter optimization and SM localization method comparison (http://skinner.informatik.tu-chemnitz.de:9081/#/)
+Supporting Information for parameter optimization and SM localization method comparison as well as reliable single-molecule video (SMV) test data sets ready for download (http://skinner.informatik.tu-chemnitz.de:9081/#/).
 
 ... for the model selection and state transition analyzing toolbox:
 
