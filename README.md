@@ -24,7 +24,7 @@ Mélodie C. A. S. Hadzic*, D. Kowerko, R. Börner, S. Zelger-Paulus, R.K.O. Sige
 
 and 
 
-Mélodie C. A. S. Hadzic*, R. Börner, D. Kowerko, S.L.B.König, R.K.O. Sigel, "Reliable State Identification and State Transition Detection in Fluorescence Intensity-Based Single-Molecule FRET Data" *J. Phys. Chem. B* **2018**, just accepted. http://dx.doi.org/10.1021/acs.jpcb.7b12483
+Mélodie C. A. S. Hadzic*, R. Börner, D. Kowerko, S.L.B.König, R.K.O. Sigel, "Reliable State Identification and State Transition Detection in Fluorescence Intensity-Based Single-Molecule FRET Data" *J. Phys. Chem. B* **2018**, *122(23)*, 6134-6147. http://dx.doi.org/10.1021/acs.jpcb.7b12483
 
 ... for the bootstraping algorythm BOBA FRET:
 
@@ -41,6 +41,7 @@ Download the folder "MASH-FRET" into the directory of your choice. Then within M
 ## Dependencies
 
 MASH was developed with MATLAB 7.12 (R2011a) and operating system Windows 7. The compatibility was further tested on Windows 8, 8.1 and 10 with MATLAB 7.12 (R2011a) to 9.3 (R2017b).
+MASH is (so far) not running under Matlab (R2018b). Character vector inputs have been removed for "solve" leading to multiple error messages. See MATLAB documentatin for immediate help.
 
 ## Usage
 
