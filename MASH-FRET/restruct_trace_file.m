@@ -27,6 +27,7 @@ for ff = 1:F
      fprintf(cat(2,'\t',fList(ff,1).name,'\n'));
 end
 
+units = repmat({'None'}, 1,F);  % added by FS, 15.11.18
 % collect all headers
 for ff = 1:F
     f = fopen(cat(2,pname,filesep,fList(ff,1).name),'r');
@@ -49,6 +50,14 @@ for ff = 1:F
     
     % add to header list with column number if not already in
     for ii = 1:size(head,2)
+        
+        % added by FS, 15.11.18
+        u = extractBetween(head{ii},'(',')');
+        if ~isempty(u)
+            units{ff} = u;
+        end
+        head{ii} = regexprep(head{ii},'\(\w+\)','');
+        
         isnotfound = cellfun('isempty',strfind(allHead,head{ii}));
         if sum(isnotfound)==size(allHead,2)
             allHead =[allHead,head{ii}];
@@ -163,6 +172,21 @@ for ff = 1:F
             end
             headStr = cat(2,headStr,allHead2{nCol2},'\n');
         end
+        
+        % added by FS, 15.11.18
+        headStr2 = strsplit(headStr, '\\t');
+        headStr = [];
+        for ii = 1:size(headStr2,2)
+            if ~isempty(strfind(headStr2{ii},'I_'))
+                if ~strcmp(units{ff}, 'None')
+                    headStr2{ii} = strcat(headStr2{ii},'(',units{ff}{:},')');  % added by FS,15.11.2018
+                else
+                    headStr2{ii} = regexprep(headStr2{ii},'\(\w+\)','');  % added by FS,15.11.2018
+                end
+            end
+            headStr = cat(2,headStr,headStr2{ii},'\t');
+        end
+        headStr = headStr(1:end-2);
 
         f = fopen(cat(2,out_pname,filesep,fList(ff,1).name),'Wt');
         fprintf(f,headStr);
