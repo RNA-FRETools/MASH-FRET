@@ -1,5 +1,5 @@
 function varargout = MASH(varargin)
-% Last Modified by GUIDE v2.5 08-Jan-2018 15:00:57
+% Last Modified by GUIDE v2.5 16-Mar-2018 10:37:15
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -317,9 +317,9 @@ end
 function edit_gammaW_Callback(obj, evd, h)
 val = str2num(get(obj, 'String'));
 set(obj, 'String', num2str(val));
-if ~(~isempty(val) && numel(val) == 1 && ~isnan(val))
+if ~(~isempty(val) && numel(val) == 1 && ~isnan(val)  && val >= 0)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    setContPan('Gamma factor must be a number', 'error', ...
+    setContPan('Gamma factor width must be a number and must be >= 0', 'error', ...
         h.figure_MASH);
 else
     set(obj, 'BackgroundColor', [1 1 1]);
@@ -575,6 +575,35 @@ else
     updateFields(h.figure_MASH, 'sim');
 end
 
+function edit_simzdec_Callback(obj, evd, h)
+val = str2num(get(obj, 'String'));
+set(obj, 'String', num2str(val));
+if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
+    set(obj, 'BackgroundColor', [1 0.75 0.75]);
+    setContPan('Defocus of acceptor channel should be >= 0', ...
+        'error', h.figure_MASH);
+else
+    set(obj, 'BackgroundColor', [1 1 1]);
+    h.param.sim.zDec = val;
+    guidata(h.figure_MASH, h);
+    updateFields(h.figure_MASH, 'sim');
+end
+
+
+function edit_simz0_A_Callback(obj, evd, h)
+val = str2num(get(obj, 'String'));
+set(obj, 'String', num2str(val));
+if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
+    set(obj, 'BackgroundColor', [1 0.75 0.75]);
+    setContPan('Defocus time decay should be >= 0', ...
+        'error', h.figure_MASH);
+else
+    set(obj, 'BackgroundColor', [1 1 1]);
+    h.param.sim.z0Dec = val;
+    guidata(h.figure_MASH, h);
+    updateFields(h.figure_MASH, 'sim');
+end
+
 % Choose from five different noise modells for the camera SNR
 % characteristics
 function popupmenu_noiseType_Callback(obj, evd, h)
@@ -604,7 +633,6 @@ set(obj, 'String', num2str(val));
 ind = get(h.popupmenu_noiseType, 'Value');
 
 switch ind
-    
     case 1 % Poisson, dark current or camera offset value
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -699,10 +727,10 @@ switch ind
             updateFields(h.figure_MASH, 'sim');
         end
 
-    case 3 % User, A
+    case 3 % User defined, A_CIC
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan('Gaussian/Exponential relative amplitude must be >= 0', ...
+            setContPan('Gaussian/Exponential relative amplitude of CIC must be >= 0', ...
                 'error', h.figure_MASH);
         else
             set(obj, 'BackgroundColor', [1 1 1]);
@@ -837,8 +865,17 @@ switch ind
         
     case 2 % Gaussian, mu_rho.stat (none)
         
-    case 3 % User defined, c
-        
+    case 3 % User defined, K
+        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
+            set(obj, 'BackgroundColor', [1 0.75 0.75]);
+            setContPan('Overall system gain must be >= 0', ...
+                'error', h.figure_MASH);
+        else
+            set(obj, 'BackgroundColor', [1 1 1]);
+            h.param.sim.camNoise(ind,5) = val;
+            guidata(h.figure_MASH, h);
+            updateFields(h.figure_MASH, 'sim');
+        end    
     case 4 % None, none
         
     case 5 % Hirsch or PGN-model
@@ -877,21 +914,22 @@ switch ind
             updateFields(h.figure_MASH, 'sim');
         end
         
-    case 3  % User defined, a
-%         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
-%             set(obj, 'BackgroundColor', [1 0.75 0.75]);
-%             setContPan('Noise width enhancement factor must be >= 0', ...
-%                 'error', h.figure_MASH);
-%         else
-%             set(obj, 'BackgroundColor', [1 1 1]);
-%             h.param.sim.camNoise(ind,6) = val;
-%             guidata(h.figure_MASH, h);
-%             updateFields(h.figure_MASH, 'sim');
-%         end
+    case 3  % User defined, eta
+        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
+                val >= 0 && val <= 1)
+            set(obj, 'BackgroundColor', [1 0.75 0.75]);
+            setContPan(['Total Detection Efficiency must be comprised ' ...
+                'between 0 and 1'], 'error', h.figure_MASH);
+        else
+            set(obj, 'BackgroundColor', [1 1 1]);
+            h.param.sim.camNoise(ind,6) = val;
+            guidata(h.figure_MASH, h);
+            updateFields(h.figure_MASH, 'sim');
+        end
 
     case 4 % None, none
         
-    case 5 % Hirsch or PGN-model
+    case 5 % Hirsch or PGN-model, eta
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
                 val >= 0 && val <= 1)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -910,9 +948,9 @@ function edit_simBtD_Callback(obj, evd, h)
 val = str2num(get(obj, 'String'));
 set(obj, 'String', num2str(val));
 if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0  && ...
-        val <= 100)
+        val <= 1)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    setContPan('Bleedthrough coefficient must be >= 0 and <= 100', ...
+    setContPan('Bleedthrough coefficient must be >= 0 and <= 1', ...
         'error', h.figure_MASH);
 else
     set(obj, 'BackgroundColor', [1 1 1]);
@@ -926,7 +964,7 @@ function edit_simBtA_Callback(obj, evd, h)
 val = str2num(get(obj, 'String'));
 set(obj, 'String', num2str(val));
 if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0  && ...
-        val <= 100)
+        val <= 1)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
     setContPan('Bleedthrough coefficient must be >= 0 and <= 1', ...
         'error', h.figure_MASH);
@@ -942,9 +980,9 @@ function edit_simDeD_Callback(obj, evd, h)
 val = str2num(get(obj, 'String'));
 set(obj, 'String', num2str(val));
 if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0  && ...
-        val <= 100)
+        val <= 1)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    setContPan('Direct excitation coefficient must be >= 0', ...
+    setContPan('Direct excitation coefficient must be >= 0 and <= 1', ...
         'error', h.figure_MASH);
 else
     set(obj, 'BackgroundColor', [1 1 1]);
@@ -958,9 +996,9 @@ function edit_simDeA_Callback(obj, evd, h)
 val = str2num(get(obj, 'String'));
 set(obj, 'String', num2str(val));
 if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0  && ...
-        val <= 100)
+        val <= 1)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    setContPan('Direct excitation coefficient must be >= 0', ...
+    setContPan('Direct excitation coefficient must be >= 0 and <= 1', ...
         'error', h.figure_MASH);
 else
     set(obj, 'BackgroundColor', [1 1 1]);

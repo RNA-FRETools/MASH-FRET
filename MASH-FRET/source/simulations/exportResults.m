@@ -65,8 +65,8 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         matGauss = p.matGauss;
         expT = 1/p.rate; % exposure time
         aDim = p.pixDim; % pixel dimension
-        %[~, sat] = Saturation(p.bitnr);
-        sat = 2^p.bitnr-1;
+        [~, sat] = Saturation(p.bitnr); % saturation of camera pixel value
+        %sat = 2^p.bitnr-1;
         
         % Background
         bgType = p.bgType; % fluorescent background type
@@ -178,7 +178,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                     return;
                 end
         end
-        % check.
+        
         img_bg = [img_bg_don img_bg_acc];
 
         % calculate trajectories for all molecules 
@@ -372,7 +372,6 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                 
                 img = img + img_bg_i;
                 
-
                 % add camera noise
                 % comment: the input values are always poisson distributed pc coming from
                 % the fluorophors and the background!
@@ -403,12 +402,12 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                         
 %                         % old version
 %                         % comment: Indeed, one can first transfer the number of simulated PC to EC and add Poisson noise. This looks great, but is entirely wrong if the transfer function (overall gain is not adapted). The transfer function for a CCD does not account for the EM gain g, but for the readout analog-to-digital conversion factor s. Please consider this carefully. 
-%                          I_th = arb2phtn(noisePrm(1));
+%                          I_th = noisePrm(1);
 %                          eta = noisePrm(2);
 %                         
 %                         %  add noise for photoelectrons in PC
 %                         img = phtn2arb(img);
-%                         % cam_bg_img = noisePrm(1)*ones(size(img));
+%                         cam_bg_img = noisePrm(1)*ones(size(img));
 %                         img = random('poiss', eta*img + I_th);
 %                         
 %                         % convert to PC (conversion yields basically wrong ec or ic as the conversion factor photons to imagecounts is only valid for N, NExpN and PGN model)
@@ -443,22 +442,23 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
 
                     case 'user'  % User defined or NExpN-model from Börner et al. 2017
                        
-                        % model parameters
-                        I_th = noisePrm(1);
-                        A = noisePrm(2);
-                        wG = noisePrm(5);
-                        tau = noisePrm(3);
-                        a = noisePrm(6);
-                        sig0 = noisePrm(4);
+                         % model parameters
+                        I_th = noisePrm(1); % Dark counts or offset
+                        A = noisePrm(2); % CIC contribution
+                        tau = noisePrm(3); % CIC decay
+                        sig0 = noisePrm(4); % read-out noise width
+                        K = noisePrm(5); % Overall system gain
+                        eta = noisePrm(6); % Total detection efficiency
                         
                         % convert to EC
-                        img = phtn2arb(img);
+                        img = phtn2arb(img, K, eta);
                         
                         % calculate noise distribution and add noise
                         %cam_bg_img = noisePrm(1)*ones(size(img));
-                        img = rand_NexpN(img+I_th, noisePrm(2), ...
+                        %img = rand_NexpN(img+cam_bg_img, noisePrm(2), ...
                             noisePrm(5), noisePrm(3), noisePrm(6), ...
                             noisePrm(4));
+                        img = rand_NexpN(img+I_th, A, tau, sig0);
                         
                         % convert to PC
                         if strcmp(op_u, 'photon')
@@ -490,14 +490,14 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                         % Poisson noise of photo-electrons + CIC
                         img = random('poiss', eta*img+CIC);
                         
-                        % Gamma amplification noise
+                        % Gamma amplification noise, convolution
                         img = random('Gamma', img, g);
                         
-                         % Gausian read-out noise
+                        % Gausian read-out noise, composition
                         img = random('norm', img/s + mu_y_dark, s_d*g/s);
 
-%                        % calculate noise distribution and add noise, old
-%                        img = rand_NexpN(img+I_th, A, wG, tau, a, sig0);
+                        % Gausian read-out noise, convolution
+%                         img = conv(img_G,img_g)
                         
                         % convert to PC
                         if strcmp(op_u, 'photon')
@@ -641,21 +641,39 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                 %     Pdark = @(nic,noe,nie,g,f,r) (P(nie,G(noe,nie,g))*N(f*nic,noe,r))*(f*nic);      
 
                     case 'poiss' % Poisson or P-model from Börner et al. 2017
-                        % convert camera offset in photon count
-                        I_don_plot{m} = phtn2arb(I_don_plot{m});
-                        I_acc_plot{m} = phtn2arb(I_acc_plot{m});
-
-                        cam_bg_I = noisePrm(1)*ones(size(I_don_plot{m}));
+                        % convert camera offset in photon counts
+                        I_th = arb2phtn(noisePrm(1));
+                        eta = noisePrm(2); 
                         
                         % add noise for photoelectrons
-                        I_don_plot{m} = I_don_plot{m} + random('poiss', cam_bg_I);
-                        I_acc_plot{m} = I_acc_plot{m} + random('poiss', cam_bg_I);
+                        I_don_plot{m} = random('poiss', eta*I_don_plot{m}+I_th);
+                        I_acc_plot{m} = random('poiss', eta*I_acc_plot{m}+I_th);
                         
-                         % convert to EC (conversion yields basically wrong ec or ic as the conversion factor photons to imagecounts is only valid for N, NExpN and PGN model)
-                        if strcmp(op_u, 'photon')
-                            I_don_plot{m} = arb2phtn(I_don_plot{m});
-                            I_acc_plot{m} = arb2phtn(I_acc_plot{m});
+                        % convert to EC (conversion yields basically wrong ec or ic as the conversion factor photons to imagecounts is only valid for N, NExpN and PGN model)
+                        if strcmp(opUnits, 'electron')
+                            % transfer function with eta=1, as detection efficiency already applied above
+                            I_don_plot{m} = phtn2arb(I_don_plot{m}, 1); % transfer function with eta=1, as detection efficiency already applied above
+                            I_acc_plot{m} = phtn2arb(I_acc_plot{m}, 1);% transfer function with eta=1, as detection efficiency already applied above
                         end
+                        
+%                         % old version
+%                         % comment: Indeed, one can first transfer the number of simulated PC to EC and add Poisson noise. This looks great, but is entirely wrong if the transfer function (overall gain is not adapted). The transfer function for a CCD does not account for the EM gain g, but for the readout analog-to-digital conversion factor s. Please consider this carefully. 
+%                         
+%                         % convert camera offset in photon count
+%                         I_don_plot{m} = phtn2arb(I_don_plot{m});
+%                         I_acc_plot{m} = phtn2arb(I_acc_plot{m});
+% 
+%                         cam_bg_I = noisePrm(1)*ones(size(I_don_plot{m}));
+%                         
+%                         % add noise for photoelectrons
+%                         I_don_plot{m} = I_don_plot{m} + random('poiss', cam_bg_I);
+%                         I_acc_plot{m} = I_acc_plot{m} + random('poiss', cam_bg_I);
+%                         
+%                          % convert to EC (conversion yields basically wrong ec or ic as the conversion factor photons to imagecounts is only valid for N, NExpN and PGN model)
+%                         if strcmp(op_u, 'photon')
+%                             I_don_plot{m} = arb2phtn(I_don_plot{m});
+%                             I_acc_plot{m} = arb2phtn(I_acc_plot{m});
+%                         end
                         
                     case 'norm' % Gaussian, Normal or N-model from Börner et al. 2017
                         % PC are not Poisson distributed here.
@@ -746,19 +764,16 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                         I_don_plot{m} = random('poiss', eta*I_don_plot{m}+CIC);
                         I_acc_plot{m} = random('poiss', eta*I_acc_plot{m}+CIC);
 
-                        % Gamma amplification noise   
+                        % Gamma amplification noise, composition   
                         I_don_plot{m} = random('gamma', I_don_plot{m}, g);
                         I_acc_plot{m} = random('gamma', I_acc_plot{m}, g);
 
-                        % Gausian read-out noise
+                        % Gausian read-out noise, composition
                         I_don_plot{m} = random('norm', I_don_plot{m}/s + mu_y_dark, s_d*g/s);
                         I_acc_plot{m} = random('norm', I_acc_plot{m}/s + mu_y_dark, s_d*g/s);
 
-                %         % calculate noise distribution and add noise, old
-                %         img = rand_NexpN(img+I_th, A, wG, tau, a, sig0);
-                %         I_don_plot = rand_NexpN(I_don_plot+I_th, A, wG, tau, a, sig0);
-                %         I_acc_plot = rand_NexpN(I_acc_plot+I_th, A, wG, tau, a, sig0);
-
+                        % Gausian read-out noise, convolution
+               
                         % convert to PC
                         if strcmp(opUnits, 'photon')
                             img = arb2phtn(img);

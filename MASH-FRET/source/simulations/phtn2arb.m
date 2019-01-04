@@ -1,5 +1,10 @@
 function dat = phtn2arb(varargin)
 
+% Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
+% Last update: 147th of March 2018 by Richard Börner
+%
+% Comments adapted for Boerner et al 2017
+
 dat = varargin{1};
 
 if size(varargin,2)==3
@@ -14,7 +19,6 @@ else
 end
 
 offset = 0; % offset implemented in camera noise model. Do not change!
-
 
 dat = offset + dat*eta*K; % offset implemented in camera noise model. Do not change!
 
