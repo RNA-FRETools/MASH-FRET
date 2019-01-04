@@ -4,7 +4,8 @@ function buildModel(h_fig)
 %
 % Requires external files: setContPan.m
 %                          updateMov.m
-% To be checked 2018-03-06
+% To be checked 2018-03-06 
+
 
 h = guidata(h_fig);
 
@@ -57,13 +58,21 @@ if K>1 && isTrans
         if n==1 && ~imp_kx
             kx = kx(1:K,1:K);
 %             P = kx*N;
-            P = double(~~(kx));
-            
+            P = double(~~(kx)); % to be updated
+%             i= 1;
+%             for i=1:K 
+%                 P(:,i) = (kx(:,i)./sum(kx,2)(i))*(1-exp(-sum(kx,2)(i)*expT));
+%                 P(i,i) = exp(-sum(kx,2)(i)*expT);
+%             end 
         elseif imp_kx
             kx = kx_all(1:K,1:K,n);
 %             P = kx*N;
-            P = double(~~(kx));
-
+            P = double(~~(kx)); % to be updated
+%             i= 1;
+%             for i=1:K 
+%                 P(:,i) = (kx(:,i)./sum(kx,2)(i))*(1-exp(-sum(kx,2)(i)*expT));
+%                 P(i,i) = exp(-sum(kx,2)(i)*expT);
+%             end 
         end
         
         if bleach

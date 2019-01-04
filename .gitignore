@@ -24,3 +24,8 @@ octave-workspace
 # Simulink autosave extension
 *.autosave
 MASH-FRET/default_param.ini
+MASH-FRET/source/traces/processing/background/default_param.ini
+MASH-FRET/source/traces/processing/background/default_param.ini
+*.ini
+log/2018-9-13.log
+MASH-FRET/log/2018-9-13.log

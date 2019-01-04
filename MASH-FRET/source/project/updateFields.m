@@ -10,7 +10,7 @@ function updateFields(h_fig, varargin)
 % Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
 % Last update: 7th of March 2018 by Richard Börner
 %
-% Comments adapted for Boerner et al 2017
+% Comments adapted for Boerner et al, PONE, 2017.
 
 if ~isempty(varargin)
     opt = varargin{1};

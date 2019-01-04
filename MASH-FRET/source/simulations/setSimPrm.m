@@ -17,6 +17,7 @@ function p = setSimPrm(s, movDim)
 
 % Created by Mélodie C.A.S. Hadzic the 24th of April 2014
 % Last update: the 25th of April by Mélodie C.A.S. Hadzic
+% Last update: the 16th of September 2018 by Richard Börner
 
 p = [];
 
