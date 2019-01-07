@@ -148,10 +148,10 @@ if nbMol % Only true, if at least one molecule was simulated.
         % simulated for ALEX type simulations.
         % I_de = I + De*I_j
         if n == 1 % first trace
-            I_don_de = Idon{n}(:,1); % there is no direct excitation of the Donor 
+            I_don_de = Idon{n}(:,1) + deD*totInt; % usally zero, there is no direct excitation of the Donor 
             I_acc_de = Iacc{n}(:,1) + deA*totInt;
         else % for all other traces only first frame
-            I_don_de = Idon{n}(1,1); % there is no direct excitation of the Donor 
+            I_don_de = Idon{n}(1,1) + deD*totInt; % there is no direct excitation of the Donor 
             I_acc_de = Iacc{n}(1,1) + deA*totInt;
         end
         
@@ -160,7 +160,7 @@ if nbMol % Only true, if at least one molecule was simulated.
         I_don_bt = (1-btD)*I_don_de + btA*I_acc_de;
         I_acc_bt = (1-btA)*I_acc_de + btD*I_don_de;
 
-        % add photon emission noise
+        % add photon emission noise, which is Poisson-noise
         if noiseCamInd~=2 % no Poisson noise for pure Gaussian noise
             I_don_bt = random('poiss', I_don_bt);
             I_acc_bt = random('poiss', I_acc_bt);
@@ -285,7 +285,7 @@ switch noiseType
         eta = noisePrm(2); 
         
         % add noise for photoelectrons
-        img = random('poiss', eta*img+I_th);
+        img = random('poiss', eta*img + I_th);
         I_don_plot = random('poiss', eta*I_don_plot+I_th);
         I_acc_plot = random('poiss', eta*I_acc_plot+I_th);
         

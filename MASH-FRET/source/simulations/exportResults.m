@@ -93,8 +93,10 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         noisePrm = p.camNoise(camNoiseInd,:);
         
         % instrumental imperfections
-        btA = p.btA; btD = p.btD; % bleedthrough coefficients
-        deA = p.deA; deD = p.deD; % direct excitation coefficients
+        btD = p.btD; % bleedthrough coefficients D -> A
+        btA = p.btA; % bleedthrough coefficients A -> D, usually zero
+        deD = p.deD; % direct excitation coefficients D, usually zero
+        deA = p.deA; % direct excitation coefficients A
         
         % Import/export options
         isPrm = p.export_param; % export simulation parameters (0/1)
@@ -205,7 +207,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             % measurements. Therefore, direct excitation should only be
             % simulated for ALEX type simulations.
             % I_de = I + De*I_j
-            I_don_de = Idon{m}(:,1); % there is no direct excitation of the Donor 
+            I_don_de = Idon{m}(:,1) + deD*totI; % usually zero, there is no direct excitation of the Donor 
             I_acc_de = Iacc{m}(:,1) + deA*totI;
             
             % bleedthrough (missing signal in each channel will be added in the other)
@@ -213,7 +215,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             I_don_bt{m} = (1-btD)*I_don_de + btA*I_acc_de;
             I_acc_bt{m} = (1-btA)*I_acc_de + btD*I_don_de;
 
-            % add photon emission noise
+            % add photon emission noise, which is Poisson-noise
             if camNoiseInd~=2 % no Poisson noise for pure Gaussian noise
                 I_don_bt{m} = random('poiss', I_don_bt{m});
                 I_acc_bt{m} = random('poiss', I_acc_bt{m});
@@ -456,8 +458,8 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                         % calculate noise distribution and add noise
                         %cam_bg_img = noisePrm(1)*ones(size(img));
                         %img = rand_NexpN(img+cam_bg_img, noisePrm(2), ...
-                            noisePrm(5), noisePrm(3), noisePrm(6), ...
-                            noisePrm(4));
+                        %    noisePrm(5), noisePrm(3), noisePrm(6), ...
+                        %    noisePrm(4));
                         img = rand_NexpN(img+I_th, A, tau, sig0);
                         
                         % convert to PC
