@@ -49,7 +49,7 @@ z0 = h.param.sim.z0Dec;
 z_dec = h.param.sim.zDec; 
 
 % camera noise
-noiseType = h.param.sim.noiseType;
+noiseType = h.param.sim.noiseType; % noise distribution 
 switch noiseType
     case 'poiss'
         noiseCamInd = 1;
@@ -65,10 +65,10 @@ end
 noisePrm = h.param.sim.camNoise(noiseCamInd,:);
 
 % instrumental imperfections
-btD = h.param.sim.btD; % bleedthrough coefficients
-btA = h.param.sim.btA; % bleedthrough coefficients
-deD = h.param.sim.deD; % direct excitation coefficients
-deA = h.param.sim.deA; % direct excitation coefficients
+btD = h.param.sim.btD; % bleedthrough coefficients D -> A
+btA = h.param.sim.btA; % bleedthrough coefficients A -> D, usually zero
+deD = h.param.sim.deD; % direct excitation coefficients D, usually zero
+deA = h.param.sim.deA; % direct excitation coefficients A
 
 % other parameters
 opUnits = h.param.sim.intOpUnits;

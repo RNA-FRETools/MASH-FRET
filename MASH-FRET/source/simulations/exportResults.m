@@ -60,7 +60,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         res_x = p.movDim(1); % movie with
         res_y = p.movDim(2); % movie height
         psf = p.PSF; % convolve with PSF (0/1)
-        o_psf = p.PSFw/p.pixDim; % PSF sigma
+        o_psf = p.PSFw/p.pixDim; % PSF sigma (for both channels)
         
         matGauss = p.matGauss;
         expT = 1/p.rate; % exposure time
@@ -76,6 +76,10 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         amp = p.ampDec; % exponential amplitude
         cst = p.cstDec; % exponential time decay constant
         
+        % Defocusing and lateral chromatic aberration
+        z0 = p.z0Dec;
+        z_dec = p.zDec; 
+
         % camera noise
         noiseType = p.noiseType; % noise distribution 
         switch noiseType      
@@ -144,6 +148,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         % initialise background frame
         lim_don.x = [1 round(res_x/2)]; lim_don.y = [1 res_y];
         lim_acc.x = [1 res_x - round(res_x/2)]; lim_acc.y = [1 res_y];
+        
         img_bg_don = zeros(res_y, round(res_x/2));
         img_bg_acc = zeros(res_y, res_x-round(res_x/2));
 
