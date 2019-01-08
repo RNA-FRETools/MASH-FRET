@@ -6,7 +6,7 @@ This is the MASH-FRET MATLAB Package - A modular toolkit to process surface-immo
 
 License: GPLv3
 
-MASH was developed by **Mélodie C.A.-S. Hadzic** (University of Zürich, melodie.hadzic@chem.uzh.ch) and Danny Kowerko (Technical University of Chemnitz, danny.kowerko@informatik.tu-chemnitz.de). MASH was further developed and is currently taken care of by Fabio D. Steffen (University of Zürich, fabio.steffen@chem.uzh.ch) and Richard Börner (University of Zürich, richard.boerner@chem.uzh.ch). 
+MASH was developed in the group of **Prof. Roland K.O. Sigel** by **Mélodie C.A.-S. Hadzic** (University of Zürich, melodie.hadzic@uzh.ch) and Danny Kowerko (Technical University of Chemnitz, danny.kowerko@informatik.tu-chemnitz.de). MASH was further developed and is currently taken care of by Fabio D. Steffen (University of Zürich, fabio.steffen@chem.uzh.ch) and Richard Börner (University of Zürich, richard.boerner@chem.uzh.ch). 
 
 For more information please contact rnafretools@chem.uzh.ch.
 
@@ -22,7 +22,7 @@ Supporting Information for parameter optimization and SM localization method com
 
 Mélodie C. A. S. Hadzic*, D. Kowerko, R. Börner, S. Zelger-Paulus, R.K.O. Sigel, "Detailed analysis of complex single molecule FRET data with the software MASH" *Proc. SPIE* **2016**, *9711*, 971119. http://dx.doi.org/10.1117/12.2211191
 
-and 
+and in particular
 
 Mélodie C. A. S. Hadzic*, R. Börner, D. Kowerko, S.L.B.König, R.K.O. Sigel, "Reliable State Identification and State Transition Detection in Fluorescence Intensity-Based Single-Molecule FRET Data" *J. Phys. Chem. B* **2018**, *122(23)*, 6134-6147. http://dx.doi.org/10.1021/acs.jpcb.7b12483
 
@@ -32,7 +32,7 @@ S.L.B.König, Mélodie C. A. S. Hadzic*, Erica Fiorini, R. Börner, D. Kowerko, 
 
 Happy MASHing!
 
-Your developers (Mélodie, Danny, Richard and Fabio)
+Your developers (Mélodie, Danny, Sebastian, Richard and Fabio)
 
 ## Installation
 
