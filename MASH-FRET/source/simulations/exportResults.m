@@ -657,7 +657,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                         I_acc_plot{m} = random('poiss', eta*I_acc_plot{m}+I_th);
                         
                         % convert to EC (conversion yields basically wrong ec or ic as the conversion factor photons to imagecounts is only valid for N, NExpN and PGN model)
-                        if strcmp(opUnits, 'electron')
+                        if strcmp(op_u, 'electron')
                             % transfer function with eta=1, as detection efficiency already applied above
                             I_don_plot{m} = phtn2arb(I_don_plot{m}, 1); % transfer function with eta=1, as detection efficiency already applied above
                             I_acc_plot{m} = phtn2arb(I_acc_plot{m}, 1);% transfer function with eta=1, as detection efficiency already applied above
@@ -782,7 +782,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                         % Gausian read-out noise, convolution
                
                         % convert to PC
-                        if strcmp(opUnits, 'photon')
+                        if strcmp(op_U, 'photon')
                             img = arb2phtn(img);
                             I_don_plot{m} = arb2phtn(I_don_plot{m});
                             I_acc_plot{m} = arb2phtn(I_acc_plot{m});
