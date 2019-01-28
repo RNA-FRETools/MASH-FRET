@@ -88,7 +88,8 @@ if nFRET > 0 && nExc>=1
                 symvar1 = sym('Ic');
                 symvar2 = sym('I_0');
                 symvar3 = sym(sprintf('E_%i%i', d, c));
-                E_eq{d,c} = solve(I_eq{d}{c}, symvar3);
+                %E_eq{d,c} = solve(I_eq{d}{c}, symvar3);
+                E_eq{d,c} = solve(str2func(sprintf('@(Ic,I_0,%s)%s', symvar3, I_eq{d}{c})), symvar3);
                 clear('symvar1','symvar2','symvar3');
             end
         end
