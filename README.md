@@ -1,54 +1,65 @@
-# ![](https://github.com/RNA-FRETools/MASH-FRET/blob/master/doc/images/mash-fret_logo.png) MASH-FRET 
+# ![](docs/assets/images/mash-fret_logo.png) MASH-FRET 
 
 ## About MASH-FRET
 
 This is the MASH-FRET MATLAB Package - A modular toolkit to process surface-immobilized single molecule data.
 
-License: GPLv3
+## What is MASH-FRET?
+MASH-FRET is a GUI-based software package written in **Matlab** for the analysis of **single-molecule FRET trajectories**. The framework encompasses the entire workflow from spot detection and trace processing to histogram and dwell time analysis. The program is structured in five modules:
+- Simulation
+- Movie Processing
+- Trace Processing
+- Histogram Analysis
+- Transition Analysis
 
-MASH was developed in the group of **Prof. Roland K.O. Sigel** by **Mélodie C.A.-S. Hadzic** (University of Zürich, melodie.hadzic@uzh.ch) and Danny Kowerko (Technical University of Chemnitz, danny.kowerko@informatik.tu-chemnitz.de). MASH was further developed and is currently taken care of by Fabio D. Steffen (University of Zürich, fabio.steffen@chem.uzh.ch) and Richard Börner (University of Zürich, richard.boerner@chem.uzh.ch). 
+Inputs for analysis can be generated from simulations or single-molecule experiments.
 
-For more information please contact rnafretools@chem.uzh.ch.
+## Getting started
 
-If you use MASH-FRET in your work please cite ...
+Clone or download MASH-FRET into a directory of your choice.
+```
+git clone https://github.com/RNA-FRETools/MASH-FRET.git
+```
+Within Matlab add MASH-FRET to you path by going to `Home → Set Path → Add with Subfolders`
 
-... for the simulation tool:
+**Note:** *MASH-FRET is tested to run under Matlab version R2011a and above*
 
-R. Börner*, D. Kowerko*, M. C.A.S. Hadzic*, S.L.B.König, M.Ritter, R.K.O.Sigel, "Simulations of Camera-Based Single-Molecule Fluorescence Experiments" *PLoS One* **2018**, *13*, e0195277. http://dx.doi.org/10.1371/journal.pone.0195277 
-
-Supporting Information for parameter optimization and SM localization method comparison as well as reliable single-molecule video (SMV) test data sets ready for download (http://skinner.informatik.tu-chemnitz.de:9081/#/).
-
-... for the model selection and state transition analyzing toolbox:
-
-Mélodie C. A. S. Hadzic*, D. Kowerko, R. Börner, S. Zelger-Paulus, R.K.O. Sigel, "Detailed analysis of complex single molecule FRET data with the software MASH" *Proc. SPIE* **2016**, *9711*, 971119. http://dx.doi.org/10.1117/12.2211191
-
-and in particular
-
-Mélodie C. A. S. Hadzic*, R. Börner, D. Kowerko, S.L.B.König, R.K.O. Sigel, "Reliable State Identification and State Transition Detection in Fluorescence Intensity-Based Single-Molecule FRET Data" *J. Phys. Chem. B* **2018**, *122(23)*, 6134-6147. http://dx.doi.org/10.1021/acs.jpcb.7b12483
-
-... for the bootstraping algorythm BOBA FRET:
-
-S.L.B.König, Mélodie C. A. S. Hadzic*, Erica Fiorini, R. Börner, D. Kowerko, Wolf U. Blanckenhorn, R.K.O. Sigel, "BOBA FRET: bootstrap-based analysis of single-molecule FRET data" *PLoS One* **2013**, *8*(12), e84157. http://dx.doi.org/10.1371/journal.pone.0084157
-
-Happy MASHing!
-
-Your developers (Mélodie, Danny, Sebastian, Richard and Fabio)
-
-## Installation
-
-Download the folder "MASH-FRET" into the directory of your choice. Then within MATLAB go to file >> Set path... and add the directory containing "MASH-FRET" to the list (if it isn't already). That's it.
-
-## Dependencies
-
-MASH was developed with MATLAB 7.12 (R2011a) and operating system Windows 7. The compatibility was further tested on Windows 8, 8.1 and 10 with MATLAB 7.12 (R2011a) to 9.3 (R2017b).
-MASH is (so far) not running under Matlab (R2018b). Character vector inputs have been removed for "solve" leading to multiple error messages. See MATLAB documentatin for immediate help.
-
-## Usage
+## Documentation
 
 For information about the different modules in MASH-FRET please visit our [Wiki page](https://github.com/RNA-FRETools/MASH-FRET/wiki).
 
-## External links
+## Getting involved
 
-http://skinner.informatik.tu-chemnitz.de:9081/#/
+MASH-FRET was developed by Mélodie Hadzic and Danny Kowerko in the group of Prof. Roland Sigel at the University of Zurich and is currently maintained by Fabio Steffen and Richard Börner. 
 
-http://www.chem.uzh.ch/en/sigel/research/software.html
+Please report any **bugs** or **feature requests** through the [issue tracker](https://github.com/RNA-FRETools/MASH-FRET/issues) on Github.
+
+For more information please contact rnafretools@chem.uzh.ch.
+
+## Citing MASH-FRET
+
+The various submodules of MASH-FRET (simulation, movie / trace processing, bootstrapping) have been described in several articles. If you use MASH-FRET in your work, please refer to the respective publication listed below.
+
+
+### Simulation routine
+
+R. Börner, D. Kowerko, M.C.A.S. Hadzic, S.L.B. König, M. Ritter, R.K.O. Sigel, "Simulations of Camera-Based Single-Molecule Fluorescence Experiments", *PLoS One* **2018**, *13*, e0195277. [![](https://img.shields.io/badge/DOI-10.1371/journal.pone.0195277-blue.svg)](https://doi.org/10.1371/journal.pone.0195277)
+
+> **Note:** Supporting Information for parameter optimization and benchmarking of different single-molecule localization methods including test data sets is available for download at http://skinner.informatik.tu-chemnitz.de:9081/#/.
+
+### Model selection and state transition analysis
+
+M.C.A.S. Hadzic, R. Börner, D. Kowerko, S.L.B. König, R.K.O. Sigel, "Reliable State Identification and State Transition Detection in Fluorescence Intensity-Based Single-Molecule FRET Data", *J. Phys. Chem. B* **2018**, *122*, 6134-6147. [![](https://img.shields.io/badge/DOI-10.1021/acs.jpcb.7b12483-blue.svg)](https://doi.org/10.1021/acs.jpcb.7b12483)
+
+and
+
+M.C.A.S. Hadzic, D. Kowerko, R. Börner, S. Zelger-Paulus, R.K.O. Sigel, "Detailed analysis of complex single molecule FRET data with the software MASH", *Proc. SPIE* **2016**, *9711*, 971119. [![](https://img.shields.io/badge/DOI-10.1117/12.2211191-blue.svg)](https://doi.org/10.1117/12.2211191)
+
+
+### Bootstrapping BOBA-FRET
+
+S.L.B König, M.C.A.S. Hadzic, E. Fiorini, R. Börner, D. Kowerko, W. Blanckenhorn, R.K.O. Sigel, "Reliable State Identification and State Transition Detection in Fluorescence Intensity-Based Single-Molecule FRET Data", *Plos One* **2013**, *8*, 1-17. [![](https://img.shields.io/badge/DOI-10.1371/journal.pone.0084157-blue.svg)](https://doi.org/10.1371/journal.pone.0084157)
+
+## Licence
+
+MASH-FRET is licensed under the GNU General Public License (GPLv3)
