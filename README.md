@@ -1,8 +1,5 @@
 # ![](docs/assets/images/mash-fret_logo.png) MASH-FRET 
 
-## About MASH-FRET
-
-This is the MASH-FRET MATLAB Package - A modular toolkit to process surface-immobilized single molecule data.
 
 ## What is MASH-FRET?
 MASH-FRET is a GUI-based software package written in **Matlab** for the analysis of **single-molecule FRET trajectories**. The framework encompasses the entire workflow from spot detection and trace processing to histogram and dwell time analysis. The program is structured in five modules:
@@ -20,13 +17,13 @@ Clone or download MASH-FRET into a directory of your choice.
 ```
 git clone https://github.com/RNA-FRETools/MASH-FRET.git
 ```
-Within Matlab add MASH-FRET to you path by going to `Home → Set Path → Add with Subfolders`
+Within Matlab, add MASH-FRET to you path by going to `Home → Set Path → Add with Subfolders`
 
 **Note:** *MASH-FRET is tested to run under Matlab version R2011a and above*
 
 ## Documentation
 
-For information about the different modules in MASH-FRET please visit our [Wiki page](https://github.com/RNA-FRETools/MASH-FRET/wiki).
+For information about the different modules of MASH-FRET please visit our [Wiki page](https://github.com/RNA-FRETools/MASH-FRET/wiki). The documentation is under continuous development. If you have any questions, do not hesitate to contact us at rnafretools@chem.uzh.ch.
 
 ## Getting involved
 
@@ -34,7 +31,7 @@ MASH-FRET was developed by Mélodie Hadzic and Danny Kowerko in the group of Pro
 
 Please report any **bugs** or **feature requests** through the [issue tracker](https://github.com/RNA-FRETools/MASH-FRET/issues) on Github.
 
-For more information please contact rnafretools@chem.uzh.ch.
+
 
 ## Citing MASH-FRET
 
@@ -45,7 +42,7 @@ The various submodules of MASH-FRET (simulation, movie / trace processing, boots
 
 R. Börner, D. Kowerko, M.C.A.S. Hadzic, S.L.B. König, M. Ritter, R.K.O. Sigel, "Simulations of Camera-Based Single-Molecule Fluorescence Experiments", *PLoS One* **2018**, *13*, e0195277. [![](https://img.shields.io/badge/DOI-10.1371/journal.pone.0195277-blue.svg)](https://doi.org/10.1371/journal.pone.0195277)
 
-> **Note:** Supporting Information for parameter optimization and benchmarking of different single-molecule localization methods including test data sets is available for download at http://skinner.informatik.tu-chemnitz.de:9081/#/.
+> **Note:** Supporting Information for parameter optimization and benchmarking of different single-molecule localization methods (including test data sets) is available for download at http://skinner.informatik.tu-chemnitz.de:9081/#/.
 
 ### Model selection and state transition analysis
 
