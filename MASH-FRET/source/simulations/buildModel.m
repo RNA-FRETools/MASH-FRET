@@ -60,7 +60,6 @@ if K>1 && isTrans
 %             P = kx*N; // M.CAS Hadzic 2012
 %             P = double(~~(kx)); %  M.CAS Hadzic 2014, to be updated
             P = kx.*expT; % simple rate-to-prob-model for Markov chains, 2018-03-12 RB
-            i = 1;
             for i=1:K 
                 %P(:,i) = (kx(:,i)./sum(kx,2)(i))*(1-exp(-sum(kx,2)(i)*expT));
                 P(i,i) = 1 - sum(kx(i,:))*expT; % simple rate-to-prob-model for Markov chains
@@ -69,10 +68,8 @@ if K>1 && isTrans
             % State probabilities from rates.
             [V,D,W]=eig(P);
             D = diag(D);
-            i = 1;
             for i=1:K
                 if round(1e5*real(D(i)))/1e5==1 && round(imag(D(i)))==0 
-                    disp(i)
                     break   
                 end
             end
@@ -82,7 +79,6 @@ if K>1 && isTrans
 %             P = kx*N; // M.CAS Hadzic 2012
 %             P = double(~~(kx)); %  M.CAS Hadzic 2014, to be updated
             P = kx.*expT; % simple rate-to-prob-model for Markov chains, 2018-03-12 RB
-            i= 1;
             for i=1:K 
                  %P(:,i) = (kx(:,i)./sum(kx,2)(i))*(1-exp(-sum(kx,2)(i)*expT));
                  P(i,i) = 1 - sum(kx(i,:))*expT; % simple rate-to-prob-model for Markov chains, 2018-03-12 RB
@@ -90,7 +86,6 @@ if K>1 && isTrans
             % State probabilities from rates, 2018-03-12 RB PlosOne
             [V,D,W]=eig(P);
             D = diag(D);
-            i = 1;
             for i=1:K
                 if round(1e5*real(D(i)))/1e5==1 && round(imag(D(i)))==0 
                     %disp(i) % control, 2018-03-12 RB
@@ -203,7 +198,7 @@ if K>1 && isTrans
                 mix{n}(1,1+end_t/expT:N) = -1;
             end
             
-            setContPan(['trace n:°' num2str(n) ' completed'], 'process',...
+            setContPan(['trace n:Â°' num2str(n) ' completed'], 'process',...
                 h_fig);
             n = n+1;
         end
@@ -246,7 +241,7 @@ else
             discr_seq{n}(1+end_t/expT:N,:) = -1;
             mix{n}(1,1+end_t/expT:N) = -1;
         end
-        setContPan(['trace n:°' num2str(n) ' completed'], 'process', ...
+        setContPan(['trace n:Â°' num2str(n) ' completed'], 'process', ...
             h_fig);
     end
 end
