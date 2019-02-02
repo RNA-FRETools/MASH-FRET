@@ -270,6 +270,9 @@ end
 % add camera noise
 % comment: the input values are always poisson distributed pc coming from
 % the fluorophors and the background!
+% EDIT (MH): Careful! Not if Gaussian camera noise is applied (Poisson 
+% noise on fluorescence intensities is ignore in this case, see line 164, 
+% 197, 206 and 247)
 
 switch noiseType
 %     Propability distribution for different noise contributions.
@@ -289,7 +292,9 @@ switch noiseType
         I_don_plot = random('poiss', eta*I_don_plot+I_th);
         I_acc_plot = random('poiss', eta*I_acc_plot+I_th);
         
-        % convert to EC (conversion yields basically wrong ec or ic as the conversion factor photons to imagecounts is only valid for N, NExpN and PGN model)
+        % convert to EC (conversion yields basically wrong ec or ic as the 
+        % conversion factor photons to imagecounts is only valid for N, 
+        % NExpN and PGN model)
         if strcmp(opUnits, 'electron')
             img = phtn2arb(img, 1); % transfer function with eta=1, as detection efficiency already applied above
             I_don_plot = phtn2arb(I_don_plot, 1);
@@ -297,7 +302,12 @@ switch noiseType
         end
         
 %         % old version
-%         % comment: Indeed, one can first transfer the number of simulated PC to EC and add Poisson noise. This looks great, but is entirely wrong if the transfer function (overall gain is not adapted). The transfer function for a CCD does not account for the EM gain g, but for the readout analog-to-digital conversion factor s. Please consider this carefully. 
+%         % comment: Indeed, one can first transfer the number of simulated 
+%         % PC to EC and add Poisson noise. This looks great, but is 
+%         % entirely wrong if the transfer function (overall gain is not 
+%         % adapted). The transfer function for a CCD does not account for 
+%         % the EM gain g, but for the readout analog-to-digital conversion
+%         % factor s. Please consider this carefully. 
 %          I_th = noisePrm(1);
 %          eta = noisePrm(2);
 % 
@@ -306,7 +316,9 @@ switch noiseType
 %         cam_bg_img = noisePrm(1)*ones(size(img));
 %         img = random('poiss', img + cam_bg_img);
 % 
-%         % convert to PC (conversion yields basically wrong ec or ic as the conversion factor photons to imagecounts is only valid for N, NExpN and PGN model)
+%         % convert to PC (conversion yields basically wrong ec or ic as 
+%         % the conversion factor photons to imagecounts is only valid fo
+%         % N, NExpN and PGN model)
 %         if strcmp(op_u, 'photons')
 %             img = arbn2phtn(img); % transfer function with eta=1, as detection efficiency already applied above
 %         end
