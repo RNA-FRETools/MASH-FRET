@@ -26,4 +26,5 @@ Within Matlab add MASH-FRET to you path by going to `Home → Set Path → Add w
 **Note:** *MASH-FRET is tested to run under Matlab version R2011a and above*
 
 
-## MASH-FRET workflow
+## <span id="genwkflw">General workflow</span>
+
