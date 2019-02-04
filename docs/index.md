@@ -21,7 +21,7 @@ nav_order: 0
 ## What is MASH-FRET?
 MASH-FRET is a **Matlab** based software package for the analysis of **single-molecule FRET trajectories** developed in the group of Prof. Roland Sigel at the University of Zurich. The framework encompasses the entire workflow from spot detection and trace processing to histogram and dwell time analysis. The program is structured in five modules:
 - [Simulation](simulation/simulation)
-- [Movie Processing](movie-processing/movie-processing)
+- [Video Processing](movie-processing/movie-processing)
 - [Trace Processing](trace-processing/trace-processing)
 - [Histogram Analysis](histogram-analysis/histogram-analysis)
 - [Transition Analysis](transition-analysis/transition-analysis)
@@ -35,9 +35,13 @@ Clone or download MASH-FRET into a directory of your choice.
 ```
 git clone https://github.com/RNA-FRETools/MASH-FRET.git
 ```
+Alternatively, you may also download the .zip package directly from [Github](https://github.com/RNA-FRETools/MASH-FRET)
+
 Within Matlab, add MASH-FRET to you path by going to `Home → Set Path → Add with Subfolders`
 
 Start MASH-FRET by typing `MASH` at the MATLAB command prompt.
+
+If you would like a quick overview of MASH's individual modules and of how they inter-connect, have a look to the [General workflow](Getting_started.html#genwkflw) .
 
 
 ## Getting involved
