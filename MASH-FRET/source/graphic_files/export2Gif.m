@@ -28,7 +28,7 @@ maxInt = 0;
 minInt = 100000;
 
 for i = startFrame:frameIv:lastFrame
-    [dat ok] = getFrames([h.movie.path h.movie.file], i, ...
+    [dat,ok] = getFrames([h.movie.path h.movie.file], i, ...
         {h.movie.speCursor, [h.movie.pixelX h.movie.pixelY], ...
         h.movie.framesTot}, h_fig);
     if ~ok
@@ -54,7 +54,7 @@ for i = startFrame:frameIv:lastFrame
 end
 
 for ii = startFrame:frameIv:lastFrame
-    [dat ok] = getFrames([h.movie.path h.movie.file], ii, ...
+    [dat,ok] = getFrames([h.movie.path h.movie.file], ii, ...
         {h.movie.speCursor, [h.movie.pixelX h.movie.pixelY], ...
         h.movie.framesTot}, h_fig);
     if ~ok
@@ -85,7 +85,7 @@ for ii = startFrame:frameIv:lastFrame
             'DelayTime', h.movie.cyctime);
     else
         imwrite(img, [pathName nameMain], 'gif', 'WriteMode', ...
-            'append');
+            'append', 'DelayTime', h.movie.cyctime);
     end
 
     % loading bar updating-------------------------------------------------
