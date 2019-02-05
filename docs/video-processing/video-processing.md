@@ -3,7 +3,7 @@ layout: default
 title: Video processing
 nav_order: 4
 has_children: true
-permalink: /docs/movie-processing
+permalink: /docs/video-processing
 ---
 
 # Video processing
@@ -24,7 +24,7 @@ Use this module to obtain single molecule intensity trajectories from a single m
 1. <a href="video-processing.html#workflow">Workflow</a>
 1. <a href="video-processing.html#panels">Panels</a>
    1. <a href="video-processing.html#plot">Plot</a>
-   1. <a href="video-processing.html#video-parameters">Video parameters</a>
+   1. <a href="video-processing.html#experiment">Experiment</a>
    1. <a href="video-processing.html#image-correction">Image correction</a>
    1. <a href="video-processing.html#molecule-coordinates">Molecule coordinates</a>
    1. <a href="video-processing.html#intensity-integration">Intensity integration</a>
@@ -32,27 +32,51 @@ Use this module to obtain single molecule intensity trajectories from a single m
 
 ## Description
 
-The module Video processing is the second component of the software MASH and can be selected in MASH's upper bar.
-It allows to create single molecules intensity-time traces from a single molecule video (SMV).
+The module Video processing is the second component of the software MASH and can be selected in MASH's upper menu bar; see <a href="../Getting_started.html#general-workflow">General workflow</a> for more information.
+It allows to create single molecule intensity-time traces from a single molecule video (SMV).
 
 The interface can be divided into several subunits dedicated to:
 * visualize and navigate through the video
-* set experimental parameters
+* parameters of the experiment
 * correct images
-* obtain single molecule coordinates
-* calculate single molecule intensity trajectories
+* determine single molecule coordinates
+* calculate and export single molecule intensity trajectories
 
-At the end of the procedure, the user holds synthetic SMVs and trajectories written to files that can be used for further analysis, algorithm testing or external illustration.
+At the end of the procedure, the user holds single molecule coordinates and intensity-time traces written to files, in particular to the *.mash project file.
 
 ## Requirements and limitations
+
+Video processing framework is limited to:
+* surface-immobilized molecules,
+* import SMV file formats: Source Input Format (**.sif**), Tagged Image File format (**.tif**), Graphics Interchange Format (**.gif**), WinSpec CCD Capture format (**.spe**), Single data acquisition format (**.pma**), Audio Video Interleave (**.avi**), MASH video format (**.sira**); see <a href="video-processing.html#loadvid">Load video/image file</a> for more information.
 
 ## Workflow
 
 ## Panels
 
+<span id="loadvid"><u>Load video/image file</u></span>
+
+<span id="navvid"><u>Navigate through video</u></span>
+
+<span id="tools"><u>Tools</u></span>
+
 ### Plot
 
-### Video parameters
+<span id="persec"><u>units per second</u> (*units per s.*)</span>
+
+<span id="persec"><u>colormap</u> (*cmap*)</span>
+
+### Experiment
+
+<span id="Nlasers"><u>number of lasers</u> (*Nb. of lasers*)</span>
+
+<span id="ilaserwl"><u>laser wavelength</u></span>
+
+<span id="Nchan"><u>number of spectroscopic channels</u> (*Nb. of channels*)</span>
+
+<span id="expt"><u>Exposure time</u></span>
+
+<span id="projopt"><u>Project options</u> (*Options...*)</span>
 
 ### Image correction
 
