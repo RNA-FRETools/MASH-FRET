@@ -277,8 +277,8 @@ p.itg_nLasers = adjustParam('itg_nLasers', 1, p_input);
 p.itg_wl = adjustParam('itg_wl', ...
     round(532*(1 + 0.2*(0:p.itg_nLasers-1))), p_input);
 p.itg_impMolPrm = adjustParam('itg_impMolPrm', {[1 2] 1}, p_input);
-p_exp = {'Movie name' '' ''
-         'Molecule name' '' ''
+p_exp = {'Project title' '' ''
+         'Molecule' '' ''
          '[Mg2+]' [] 'mM'
          '[K+]' [] 'mM'};
 for i = 1:p.itg_nLasers
