@@ -33,7 +33,8 @@ Use this module to generate synthetic single molecule videos (SMV) and trajector
 
 <a href="../assets/images/module_simulation.png"><img src="../assets/images/module_simulation.png" width="325" style="float:right"/></a>
 
-The module Simulation is the first component of the software MASH and can be selected in MASH's upper bar. It allows to generate synthetic single molecule videos (SMVs) and trajectories.
+The module Simulation is the first component of the software MASH and can be selected in MASH's top menu bar; see <a href="../Getting_started.html#general-workflow">General workflow</a> for more information.
+It allows to generate synthetic single molecule videos (SMVs) and trajectories.
 
 The interface can be divided into three subunits that respectively allow to:
 * generate data
