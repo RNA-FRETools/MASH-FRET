@@ -60,7 +60,7 @@ switch method
 %         cumP_length = cumP(i) - cumP(i-1);
 %         bgI = img(i-1) + (img(i)-img(i-1))*cumP_lower/cumP_length;
 
-        cumP = (1/N)-(1/(N*2)):(1/N):1; % DK
+        cumP = 1/(N*2):(1/N):1; % DK
         
         if sum(cumP==thresh)==1 % DK
            bgI = img(cumP==thresh); % DK

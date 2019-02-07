@@ -56,10 +56,9 @@ switch method
          set(h.edit_bgParam_02, 'Enable', 'on', 'TooltipString', ...
                                 'Histogram interval number');    
     case 13 % old 3: histotresh
-         set(h.edit_bgParam_01, 'Enable', 'on', 'TooltipString', ...
-                                'Cumulative probability threshold');
+         set(h.edit_bgParam_01, 'Enable', 'off', 'TooltipString', '');
          set(h.edit_bgParam_02, 'Enable', 'on', 'TooltipString', ...
-                                'Histogram interval number');
+                                'Cumulative probability threshold');
     case 14 % Ha-all
          set(h.edit_bgParam_01, 'Enable', 'off', 'TooltipString', '');
          set(h.edit_bgParam_02, 'Enable', 'off', 'TooltipString', '');

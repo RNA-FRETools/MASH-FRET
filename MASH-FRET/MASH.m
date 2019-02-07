@@ -1,5 +1,5 @@
 function varargout = MASH(varargin)
-% Last Modified by GUIDE v2.5 16-Mar-2018 10:37:15
+% Last Modified by GUIDE v2.5 04-Feb-2019 17:22:09
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1072,10 +1072,10 @@ updateFields(h.figure_MASH, 'sim');
 
 
 
-%% Movie processing %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Video processing %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-% Movie control
+% Video control
 
 
 function pushbutton_loadMov_Callback(obj, evd, h)
@@ -1279,6 +1279,10 @@ elseif method==8 && val>1
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
     updateActPan('Background correction must be in the range [0,1].', ...
         h.figure_MASH, 'error');
+elseif method==13 && val>1
+    set(obj, 'BackgroundColor', [1 0.75 0.75]);
+    updateActPan([get(obj, 'TooltipString') ' must be in the range ' ...
+        '[0,1].'], h.figure_MASH, 'error');
 else
     set(obj, 'BackgroundColor', [1 1 1]);
     channel = get(h.popupmenu_bgChanel, 'Value');
@@ -5095,3 +5099,4 @@ if ~isempty(p.proj)
     guidata(h.figure_MASH, h);
     updateFields(h.figure_MASH, 'thm');
 end
+

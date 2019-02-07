@@ -197,7 +197,7 @@ u = {[0 0]
      [1500 0]
      [0 2]
      [0 50]
-     [0 50]
+     [0 0.5]
      [0 0]
      [0 0]
      [3 1]
@@ -214,6 +214,11 @@ p.movBg_p = adjustParam('movBg_p', q, p_input);
 for i = 1:p.nChan
     if size(p.movBg_p,1)<19
         p.movBg_p = [p.movBg_p;q(size(p.movBg_p,1)+1:19,:)];
+    end
+    % correct param "probability threshold" for histothresh method
+    if p.movBg_p{13,i}(2)>1
+        p.movBg_p{13,i}(1) = 0;
+        p.movBg_p{13,i}(2) = 0.5;
     end
 end
 p.movBg_method = adjustParam('movBg_method', 1, p_input);
@@ -277,8 +282,8 @@ p.itg_nLasers = adjustParam('itg_nLasers', 1, p_input);
 p.itg_wl = adjustParam('itg_wl', ...
     round(532*(1 + 0.2*(0:p.itg_nLasers-1))), p_input);
 p.itg_impMolPrm = adjustParam('itg_impMolPrm', {[1 2] 1}, p_input);
-p_exp = {'Movie name' '' ''
-         'Molecule name' '' ''
+p_exp = {'Project title' '' ''
+         'Molecule' '' ''
          '[Mg2+]' [] 'mM'
          '[K+]' [] 'mM'};
 for i = 1:p.itg_nLasers
