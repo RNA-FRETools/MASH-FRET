@@ -7,17 +7,18 @@ permalink: /docs/simulation
 ---
 
 # Simulation
-<!-- Automatically generated TOC does not allow to return to the previous page after clicking one of its link
-I'd rather use hand-made TOC until we find a better solution
-{: .no_toc } -->
+{: .no_toc }
 
 Use this module to generate synthetic single molecule videos (SMV) and trajectories.
 
 ## Table of contents
 {: .no_toc .text-delta }
 
-<!-- 1. TOC
-{:toc} -->
+<!-- Automatically generated TOC does not allow to return to the previous page after clicking one of its link
+I'd rather use hand-made TOC until we find a better solution
+1. TOC
+{:toc}
+-->
 
 1. [Description](simulation.html#description)
 1. [Requirements and limitations](simulation.html#requirements-and-limitations)
