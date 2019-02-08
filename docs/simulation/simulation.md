@@ -19,15 +19,15 @@ Use this module to generate synthetic single molecule videos (SMV) and trajector
 <!-- 1. TOC
 {:toc} -->
 
-1. <a href="simulation.html#description">Description</a>
-1. <a href="simulation.html#requirements-and-limitations">Requirements and limitations</a>
-1. <a href="simulation.html#workflow">Workflow</a>
-1. <a href="simulation.html#panels">Panels</a>
-   1. <a href="simulation.html#video-parameters">Video parameters</a>
-   1. <a href="simulation.html#molecules">Molecules</a>
-   1. <a href="simulation.html#experimental-setup">Experimental setup</a>
-   1. <a href="simulation.html#export-options">Export options</a>
-1. <a href="simulation.html#remarks">Remarks</a>
+1. [Description](simulation.html#description)
+1. [Requirements and limitations](simulation.html#requirements-and-limitations)
+1. [Workflow](simulation.html#workflow)
+1. [Panels](simulation.html#panels)
+   1. [Video parameters](simulation.html#video-parameters)
+   1. [Molecules](simulation.html#molecules)
+   1. [Experimental setup](simulation.html#experimental-setup)
+   1. [Export options](simulation.html#export-options)
+1. [Remarks](simulation.html#remarks)
 
 ## Description
 
@@ -41,7 +41,7 @@ The interface can be divided into three subunits that respectively allow to:
 * visualize the generated data
 * export the generated data to files
 
-At the end of the procedure, the user holds synthetic SMVs and trajectories written to files that can be used for further analysis, algorithm testing or external illustration.
+At the end of the procedure, the user holds synthetic SMVs and trajectories written to files that can be used for result validation, algorithm testing or external illustration.
 
 ## Requirements and limitations
 
@@ -93,6 +93,13 @@ The simulation procedure is performed in three steps. Each step requires specifi
    ***Parameters to be set:***  file options in panel <a href = "simulation.html#export-options">Export options</a>.
 
 ## Panels
+
+Simulation is composed of four panels:
+
+1. [Video parameters](simulation.html#video-parameters)
+1. [Molecules](simulation.html#molecules)
+1. [Experimental setup](simulation.html#experimental-setup)
+1. [Export options](simulation.html#export-options)
 
 ### Video parameters
 

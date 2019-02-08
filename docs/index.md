@@ -41,7 +41,7 @@ Within Matlab, add MASH-FRET to you path by going to `Home → Set Path → Add 
 
 Start MASH-FRET by typing `MASH` at the MATLAB command prompt.
 
-If you would like a quick overview of MASH's individual modules and of how they inter-connect, have a look to the [General workflow](Getting_started.html#genwkflw) .
+If you would like a quick overview of MASH's individual modules and of how they inter-connect, have a look to the [General workflow](Getting_started.html#general-workflow) .
 
 
 ## Getting involved

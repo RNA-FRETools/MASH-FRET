@@ -19,16 +19,17 @@ Use this module to obtain single molecule intensity trajectories from a single m
 <!-- 1. TOC
 {:toc} -->
 
-1. <a href="video-processing.html#description">Description</a>
-1. <a href="video-processing.html#requirements-and-limitations">Requirement and limitations</a>
-1. <a href="video-processing.html#workflow">Workflow</a>
-1. <a href="video-processing.html#panels">Panels</a>
-   1. <a href="video-processing.html#plot">Plot</a>
-   1. <a href="video-processing.html#experiment">Experiment</a>
-   1. <a href="video-processing.html#image-correction">Image correction</a>
-   1. <a href="video-processing.html#molecule-coordinates">Molecule coordinates</a>
-   1. <a href="video-processing.html#intensity-integration">Intensity integration</a>
-1. <a href="video-processing.html#remarks">Remarks</a>
+1. [Description](video-processing.html#description)
+1. [Requirement and limitations](video-processing.html#requirements-and-limitations)
+1. [Workflow](video-processing.html#workflow)
+1. [Panels](video-processing.html#panels)
+   1. [Visualization area](video-processing.html#visualization-area)
+   1. [Plot](video-processing.html#plot)
+   1. [Experiment](video-processing.html#experiment)
+   1. [Image correction](video-processing.html#image-correction)
+   1. [Molecule coordinates](video-processing.html#molecule-coordinates)
+   1. [Intensity integration](video-processing.html#intensity-integration)
+1. [Remarks](video-processing.html#remarks)
 
 ## Description
 
@@ -53,6 +54,10 @@ Video processing framework is limited to:
 ## Workflow
 
 ## Panels
+
+Video processing is composed of one visualization area and five panels:
+
+### Visualization area
 
 <span id="loadvid"><u>Load video/image file</u></span>
 
