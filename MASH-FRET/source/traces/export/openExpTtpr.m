@@ -557,6 +557,12 @@ h.optExpTr.popup_molTagged = uicontrol('Style', 'popup', 'Units', ...
     {@popup_molTagged_Callback, h_fig}, 'Position', ...
     [xNext yNext 1/2*w_full_pan h_but]);
 
+% update parameter with current value
+% added by MH, 08.02.2019
+guidata(h_fig,h);
+popup_molTagged_Callback(h.optExpTr.popup_molTagged, [], h_fig);
+h = guidata(h_fig);
+
 xNext = wFig - 3*w_but - 3*mg;
 yNext = mg;
 
