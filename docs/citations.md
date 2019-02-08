@@ -6,10 +6,10 @@ nav_order: 2
 
 # Citing MASH-FRET
 
-If MASH-FRET or a one of its submodules is useful for your own work, we kindly ask you to cite the corresponding publication(s) listed below.
+If MASH-FRET or one of its functionalities is useful for your own work, we kindly ask you to cite the corresponding publication(s) listed below.
 
 
-### Simulation routine
+### Simulation, Algorithm testing
 
 R. Börner, D. Kowerko, M.C.A.S. Hadzic, S.L.B. König, M. Ritter, R.K.O. Sigel, *PLoS One* **2018**, *13*, e0195277. [![](https://img.shields.io/badge/DOI-10.1371/journal.pone.0195277-blue.svg)](https://doi.org/10.1371/journal.pone.0195277)
 
@@ -26,7 +26,7 @@ R. Börner, D. Kowerko, M.C.A.S. Hadzic, S.L.B. König, M. Ritter, R.K.O. Sigel,
 ```
 
 
-### Model selection and trace processing
+### Transition analysis, Algorithm testing
 
 M.C.A.S. Hadzic, R. Börner, D. Kowerko, S.L.B. König, R.K.O. Sigel, *J. Phys. Chem. B* **2018**, *122*, 6134-6147. [![](https://img.shields.io/badge/DOI-10.1021/acs.jpcb.7b12483-blue.svg)](https://doi.org/10.1021/acs.jpcb.7b12483)
 
@@ -42,7 +42,7 @@ M.C.A.S. Hadzic, R. Börner, D. Kowerko, S.L.B. König, R.K.O. Sigel, *J. Phys. 
     doi = {10.1021/acs.jpcb.7b12483}}
 ```
 
-and
+### Video processing, Algorithm testing
 
 M.C.A.S. Hadzic, D. Kowerko, R. Börner, S. Zelger-Paulus, R.K.O. Sigel, *Proc. SPIE* **2016**, *9711*, 971119. [![](https://img.shields.io/badge/DOI-10.1117/12.2211191-blue.svg)](https://doi.org/10.1117/12.2211191)
 
