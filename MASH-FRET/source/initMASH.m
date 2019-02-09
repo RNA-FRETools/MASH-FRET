@@ -42,6 +42,7 @@ axis off;
 hold off;
 
 h.figure_actPan = actionPanel(obj);
+set(h.figure_actPan, 'Visible', 'off');
 
 % Update handles structure
 
