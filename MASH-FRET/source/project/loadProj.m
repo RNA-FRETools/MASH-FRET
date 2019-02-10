@@ -32,7 +32,6 @@ guidata(h_fig, h);
 
 if strcmp(fext, '.mash') % MASH project
     for i = 1:size(fname,2)
-        [o,o,type_data] = fileparts(fname{i});
         s = load([pname fname{i}], '-mat');
         s = checkField(s, [pname fname{i}], h_fig);
 
@@ -58,7 +57,8 @@ elseif strcmp(type_data, 'intensities') % ASCII
         s = checkField(s, s.proj_file, h_fig);
         dat_proj{size(dat_proj,2)+1} = s;
     end
-    
+
+% In construction: intAscii2mash is used meanwhile
 elseif strcmp(type_data, 'dwell-times') % ASCII
     p = h.param.ttPr.impPrm;
     s = dtAscii2mash(pname, fname, p, h_fig);

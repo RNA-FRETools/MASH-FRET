@@ -70,7 +70,7 @@ s.bool_intensities = adjustParam('bool_intensities', ...
     true(size(s.intensities,1), size(s.intensities,2)/s.nb_channel), s_in);
 s.colours = adjustParam('colours', [], s_in); % plot colours
 
-% dwell-times
+% dwell-times: in construction (fields not used)
 s.dt_ascii = adjustParam('dt_ascii', false, s_in);
 s.dt_pname = adjustParam('dt_pname', [], s_in);
 s.dt_fname = adjustParam('dt_fname', [], s_in);
@@ -168,7 +168,7 @@ if isempty(s.chanExc) || size(s.chanExc,2) < s.nb_channel
 end
 
 if isempty(s.exp_parameters) || size(s.exp_parameters,2) ~= 3
-    s.exp_parameters = {'Movie name' '' ''
+    s.exp_parameters = {'Project title' '' ''
                         'Molecule name' '' ''
                         '[Mg2+]' [] 'mM'
                         '[K+]' [] 'mM'};
@@ -223,7 +223,7 @@ if isfield(s, 'exp')
 end
 
 
-%% check dwell-times entries
+%% check dwell-times entries: in construction (fields not used)
 
 if ~s.dt_ascii;
     s.dt_pname = [];
