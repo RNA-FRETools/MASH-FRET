@@ -19,8 +19,9 @@ I'd rather use hand-made TOC until we find a better solution
 
 1. [Installation](Getting_started.html#installation)
 1. [Interface](Getting_started.html#interface)
+1. [Modules](Getting_started.html#modules)
 1. [Recommended procedures](Getting_started.html#recommended-procedures)
-   1. [Analyze smFRET videos](Getting_started.html#analyze-smfret-videos)
+   1. [Analyze experimental data](Getting_started.html#analyze-experimental-data)
    1. [Validate results](Getting_started.html#validate-results)
    1. [Test algorithms](Getting_started.html#test-algorithms)
 
@@ -40,58 +41,68 @@ Start MASH-FRET by typing `MASH` at the MATLAB command prompt.
 
 ## Interface
 
-<a href="../assets/images/main.png"><img src="../assets/images/main.png" width="325" style="float:right"/></a>
+<a href="../assets/images/GUI.png"><img src="../assets/images/GUI.png" width="325" style="float:right; margin-bottom:10px"/></a>
 
-When you start MASH-FRET, the graphical interface appears in its default layout (Video processing module) and includes:
+When you start MASH-FRET the **interactive interface** (MASH-FRET 1.1.2) and the **action history** open simultaneously.
 
-* a permanent **menu bar** to switch between <u>modules</u> and set the <u>root folder</u> where all generated files will be saved.
-* a **main area** that contains the selected module to work with.
+The interactive interface appears in its default layout and includes:
+* a **menu bar** to set the action history <u>view</u> and execute program <u>routines</u> (*advanced use*),
+* a **tool bar** to select the <u>module</u> to work with (default: Video Processing) and set the <u>root folder</u> where all generated files will be saved,
+* a **main area** that contains the selected module.
 
-For a first use, it is recommended to create one <u>root folder</u> for one video file analyzed.
+The action history lists events occurring in the program.
 
-**Note:** *Keep the Matlab command window visible when using MASH-FRET: information about running processes and failure stream in live.
-To keep tracks, logs are automatically written in a [daily log file](../output-files/log-daily-logs.html)*.
+**Note:** *Keep the action history or the command window of Matlab visible when using MASH-FRET: information about running processes and failures are streaming in live.
+To keep track, logs are automatically written in a [daily log file](../output-files/log-daily-logs.html)*.
 
+
+## Modules
+
+The program offers five modules to work with:
+
+- [Simulation](simulation)
+- [Video processing](video-processing)
+- [Trace processing](trace-processing)
+- [Histogram analysis](histogram-analysis)
+- [Transition analysis](transition-analysis)
+
+Module functionalities can be used separately or following a specific order depending on what is to be achieved.
+
+You can learn how to use <u>individual functionalities</u> in the respective module sections of the documentation or follow the <u>recommended procedures</u> to perform more complex tasks.
 
 ## Recommended procedures
 
-The modules of MASH-FRET perform different tasks to generate different type of results. They must be used with a specific procedure depending on what is to be achieved.
+Follow the recommended procedures to perform the common tasks listed below:
 
-Follow the recommended procedures depending on what you want to achieve:
-
-* [Analyze smFRET videos](Getting_started.html#analyze-smfret-videos)
+* [Analyze experimental data](Getting_started.html#analyze-experimental-data)
 * [Validate results](Getting_started.html#validate-results)
 * [Test algorithms](Getting_started.html#test-algorithms)
 
-For more detail about how to use the individual modules, please refer to the respective sections of the documentation ([Simulation](docs/simulation/simulation.html), [Video processing](docs/video-processing/video-processing.html), [Trace processing](docs/trace-processing/trace-processing.html), [Histogram analysis](docs/histogram-analysis/histogram-analysis.html), [Transition analysis](docs/transition-analysis/transition-analysis.html)).
+### Analyze experimental data
 
-### Analyze smFRET videos
+Follow this procedure to characterize the dynamics (FRET states, state transition rates, state relative populations and cross-sample variability) of molecules in your single molecule video (SMV):
 
-Follow this procedure to determine the <u>thermodynamic model</u> (states, state transition rates) and state <u>relative populations</u> of molecules in your single molecule video (SMV):
-
-1. Create a folder named after your SMV and set it as the root folder in the menu bar.
+1. Create a root folder named after your SMV and set the root path in the tool bar.
 
 1. With your **SMV file** and a reference **beads image** or video in hands, use [Video processing](docs/video-processing/video-processing.html) to:  
      
+   &#9745; fill in the <u>experiment settings</u>,  
    &#9745; localize single <u>molecules coordinates</u>,  
    &#9745; calculate donor and acceptor <u>intensity-time traces</u>.  
-     
-   Molecule coordinates and intensity data are exported to a [*.mash project](output-files/mash-mash-project.html) file.
+   &#9745; export data to a [*.mash project](output-files/mash-mash-project.html) file.
 
 1. Load your freshly created [*.mash project](output-files/mash-mash-project.html) in [Trace processing](docs/trace-processing/trace-processing.html) to:  
      
    &#9745; visualize and <u>select</u> single molecules with coherent intensity trajectories,  
-   &#9745; <u>correct intensities</u> from experimental bias,  
+   &#9745; <u>correct intensities</u> from experimental bias (background, cross-talks, gammma, photobleaching),  
    &#9745; <u>discretize</u> FRET trajectories into states.  
-     
-   Save modifications and calculation to your [*.mash project](output-files/mash-mash-project.html) file.
+   &#9745; save modifications and calculation to your [*.mash project](output-files/mash-mash-project.html) file.
 
-1. Load the *[.mash project](output-files/mash-mash-project.html) containing FRET state trajectories in [Transition analysis](docs/transition-analysis/transition-analysis.html) to:  
+1. Load the *[.mash project](output-files/mash-mash-project.html) in [Transition analysis](docs/transition-analysis/transition-analysis.html) to:  
      
    &#9745; determine <u>FRET states</u> from the transition density plot,  
    &#9745; calculate state <u>transition rates</u> from dwell-time histograms.  
-     
-   Save calculations to your [*.mash project](output-files/mash-mash-project.html) file.  
+   &#9745; save calculations to your [*.mash project](output-files/mash-mash-project.html) file.  
      
    **Note:** *For FRET histograms with well-separated peaks, FRET states can also be estimated with [Histogram analysis](docs/histogram-analysis/histogram-analysis.html).*
 
@@ -99,14 +110,13 @@ Follow this procedure to determine the <u>thermodynamic model</u> (states, state
      
    &#9745; quantify the <u>relative population</u> of each state,  
    &#9745; evaluate the <u>cross-sample variability</u> of FRET populations in your molecule set.  
-     
-   Save calculations to your [*.mash project](output-files/mash-mash-project.html) file.
+   &#9745; save calculations to your [*.mash project](output-files/mash-mash-project.html) file.
 
 ### Validate results
 
 Follow this procedure to validate the thermodynamic model determined from smFRET video analysis:
 
-1. Use the **ASCII files** exported during your previous analysis to collect or calculate <u>experimental parameters</u>:  
+1. Use the **files** exported during your previous analysis to collect or calculate <u>experimental parameters</u>:  
      
    &#9745; number of molecules  
    &#9745; summed fluorescence <u>intensities</u> (corrected donor + acceptor intensities)  (in [trace files](output-files/txt-trace-processing-traces.html)  
