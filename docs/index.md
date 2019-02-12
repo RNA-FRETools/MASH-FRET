@@ -25,7 +25,7 @@ MASH-FRET is a **Matlab**-based software package for the analysis of **single-mo
 
 The framework encompasses the entire workflow from localizing single molecule on videos, to characterizing molecule dynamics.
 
-First visit? Learn how to use MASH-FRET with [Getting started](docs/Getting_started).
+First visit? Learn how to use MASH-FRET with [Getting started](Getting_started.html).
 
 
 ## Download

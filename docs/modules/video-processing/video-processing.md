@@ -1,14 +1,15 @@
 ---
 layout: default
 title: Video processing
-nav_order: 4
+parent: Modules
+nav_order: 5
 has_children: true
-permalink: /docs/video-processing
+permalink: /docs/modules/video-processing
 ---
 
 # Video processing
 <!-- Automatically generated TOC does not allow to return to the previous page after clicking one of its link
-I'd rather use hand-made TOC until we find a better solution
+I'd rather use hand-made TOC until we find a better solution (works only with pages with permalink)
 {: .no_toc } -->
 
 Use this module to obtain single molecule intensity trajectories from a single molecule video (SMV).
@@ -33,7 +34,7 @@ Use this module to obtain single molecule intensity trajectories from a single m
 
 ## Description
 
-The module Video processing is the second component of the software MASH and can be selected in MASH's upper menu bar; see <a href="../Getting_started.html#general-workflow">General workflow</a> for more information.
+The module Video processing is the second component of the software MASH and can be selected in the tool bar.
 It allows to create single molecule intensity-time traces from a single molecule video (SMV).
 
 The interface can be divided into several subunits dedicated to:
