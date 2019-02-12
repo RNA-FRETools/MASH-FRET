@@ -91,14 +91,6 @@ if strcmp(opt, 'sim') || strcmp(opt, 'all')
     set(h.edit_totInt, 'String', num2str(p.totInt));
     set(h.edit_dstrbNoise, 'String', num2str(p.totInt_width));
     
-    if strcmp(p.intUnits, 'electron')
-        set([h.edit_totInt h.edit_dstrbNoise], 'TooltipString', ...
-            'EC/frame');
-    else
-        set([h.edit_totInt h.edit_dstrbNoise], 'TooltipString', ...
-            'PC/frame');
-    end
-    
     if p.impPrm
         set(h.edit_nbMol, 'Enable', 'off');
         set([h.pushbutton_simRemPrm h.edit_simPrmFile], 'Enable', 'on');
