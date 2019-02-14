@@ -36,6 +36,6 @@ The file is named after its date of creation using the format `YYYY-M-D.log`.
 
 <u>Time</u> of action and action <u>description</u> are recorded using the following structure:
 
-``
+```
 hh:mm -- action desription
-``
+```

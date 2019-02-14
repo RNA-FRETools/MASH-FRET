@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Citing MASH-FRET
-nav_order: 5
+nav_order: 9
 ---
 
 # Citing MASH-FRET
