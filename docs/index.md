@@ -6,20 +6,6 @@ nav_order: 0
 
 <img src="assets/images/mash-fret_logo_500px.png" width="260" style="float:right"/>
 
-<!--
-# MASH-FRET
-{: .no_toc }
-
-
-## Table of contents
-{: .no_toc .text-delta }
-
-
-1. TOC
-{:toc}
--->
-
-
 ## What is MASH-FRET?
 MASH-FRET is a **Matlab**-based software package for the analysis of **single-molecule FRET videos and trajectories**.
 The framework encompasses the entire workflow from localizing single molecule on videos to characterizing molecule dynamics.
