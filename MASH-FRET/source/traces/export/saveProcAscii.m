@@ -33,7 +33,7 @@ else
     perPix = 1;
 end
 nPix = p.proj{proj}.pix_intgr(2);
-rate = p.proj{proj}.frame_rate;
+rate = p.proj{proj}.frame_rate; % this is the EXPOSURE TIME
 
 FRET = p.proj{proj}.FRET;
 S = p.proj{proj}.S;
