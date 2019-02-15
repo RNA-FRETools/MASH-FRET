@@ -104,8 +104,8 @@ else
 end
 
 %% plot histograms and fit if exists
-plotHist([h.axes_hist1 h.axes_hist2], P, x_lim, thm_start, thm_res, ...
-    p.colList, boba, intUnits, h_fig);
+plotHist([h.axes_hist1,h.axes_hist2,h.axes_thm_BIC], P, x_lim, ...
+    thm_start, thm_res, p.colList, boba, intUnits, h_fig);
 
 
 %% store modifications

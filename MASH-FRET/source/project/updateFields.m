@@ -588,7 +588,7 @@ if strcmp(opt, 'thm') || strcmp(opt, 'all')
         set([h.listbox_thm_projLst h.pushbutton_thm_rmProj ...
             h.pushbutton_thm_saveProj h.pushbutton_thm_export], ...
             'Enable', 'on');
-        set([h.axes_hist1 h.axes_hist2], 'Visible', 'on');
+        set([h.axes_hist1,h.axes_hist2,h.axes_thm_BIC], 'Visible', 'on');
         set(h.listbox_thm_projLst, 'Max', 2, 'Min', 0);
         ud_thmPlot(h_fig);
         ud_thmHistAna(h_fig);
@@ -599,8 +599,9 @@ if strcmp(opt, 'thm') || strcmp(opt, 'all')
             'Value', 0, 'FontWeight', 'normal');
         setProp(get(h.uipanel_thm, 'Children'), 'Enable', 'off');
         cla(h.axes_hist1); cla(h.axes_hist2); cla(h.axes_hist_BOBA);
-        set([h.axes_hist1 h.axes_hist2 h.axes_hist_BOBA], 'Visible', ...
-            'off');
+        cla(h.axes_thm_BIC);
+        set([h.axes_hist1,h.axes_hist2,h.axes_hist_BOBA, ...
+            h.axes_thm_BIC], 'Visible','off');
         set([h.pushbutton_thm_impASCII h.pushbutton_thm_addProj], ...
          'Enable', 'on');
     end

@@ -38,6 +38,10 @@ switch action
             
             h = guidata(h_fig);
             h.param.ttPr = p;
+
+        elseif curr_axes == h.axes_hist1 || curr_axes == h.axes_hist2 ||...
+                curr_axes == h.axes_thm_BIC
+            ud_thmPlot(h_fig);
             
         elseif curr_axes == h.axes_TDPplot1
             p = h.param.TDP;
@@ -63,9 +67,6 @@ switch action
             end
             
             plotTDP(curr_axes, TDP, plot_prm, clust, h_fig);
-            
-        elseif curr_axes == h.axes_hist1 || curr_axes == h.axes_hist2
-            ud_thmPlot(h_fig)
             
         else
             xlim(curr_axes, 'auto');

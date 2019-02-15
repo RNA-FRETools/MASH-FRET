@@ -23,7 +23,43 @@ end
 
 meth = start{1}(1);
 
-% plot results
+% plot state configuration
+if numel(h_axes)>2
+    if ~isempty(res{3,1})
+        L = res{3,1}(:,1);
+        Kmax = size(L,1);
+        isBIC = ~start{4}(1);
+        
+        set(h_axes(3),'visible','on');
+        
+        if isBIC
+            BIC = res{3,1}(:,2);
+            barh(h_axes(3), 1:Kmax, BIC');
+            xlim(h_axes(3),[min(BIC) max(BIC)]);
+            ylim(h_axes(3),[0 Kmax+1]);
+            title(h_axes(3),'BIC');
+            
+        else
+            penalty = start{4}(2);
+            dL = zeros(1,Kmax-1);
+            for k = 2:Kmax
+                dL(k-1) = 1 + ((L(k)-L(k-1))/abs(L(k-1)));
+            end
+            barh(h_axes(3), 2:Kmax, dL);
+            set(h_axes(3),'nextplot','add');
+            plot(h_axes(3),penalty*ones(1,Kmax+2), 0:Kmax+1, '-r');
+            xlim(h_axes(3),[1,2*(penalty-1)+1]);
+            ylim(h_axes(3),[0,Kmax+1]);
+            title(h_axes(3),'penalty');
+            set(h_axes(3),'nextplot','replacechildren');
+        end
+    else
+        cla(h_axes(3));
+        set(h_axes(3),'visible','off');
+    end
+end
+
+% plot state population
 switch meth
     case 1 % Gaussfit
         % plot experimental data
@@ -48,7 +84,7 @@ switch meth
             end
         end
         
-        % plot Gaussians
+        % plot fitting results
         if ~isempty(res{2,1})
             fitprm = res{2,1};
             K = size(fitprm,1);
@@ -105,7 +141,8 @@ switch meth
             plot(h_axes(1), P(:,1), y_all, 'Color', [0.5 0.5 0.5], ...
                 'LineWidth', 2);
             set(h_axes, 'NextPlot', 'replacechildren');
-            
+        
+        % plot most probable configuration
         elseif ~isempty(res{3,1})
             h = guidata(h_fig);
             K = get(h.popupmenu_thm_nTotGauss, 'Value');
@@ -141,53 +178,46 @@ switch meth
         end
 
     case 2 % Thresholding
-        % plot experimental data
-        if ~isempty(res{1,1})
-            pop = res{1,1};
-            thresh = [-Inf start{2}' Inf];
-            if isInt
-                if perSec
-                    thresh = thresh/expT;
-                end
-                if perPix
-                    thresh = thresh/nPix;
-                end
+        
+        % plot thresholds
+        K = size(start{2},1)+1;
+        thresh = [-Inf start{2}' Inf];
+        if isInt
+            if perSec
+                thresh = thresh/expT;
             end
-            K = size(pop,1);
-            for k = 1:K
-                if k>1
-                    set(h_axes, 'NextPlot', 'add');
-                end
-                id = P(:,1)>thresh(k) & P(:,1)<=thresh(k+1);
-                bar(h_axes(1), P(id,1), P(id,2), 'FaceColor', ...
-                    clr(k,:), 'EdgeColor', clr(k,:));
-                if numel(h_axes)>1
-                    plot(h_axes(2), P(id,1), P(id,3), 'Marker', '+', ...
-                        'MarkerEdgeColor', clr(k,:), 'MarkerFaceColor', ...
-                        clr(k,:));
-                end
+            if perPix
+                thresh = thresh/nPix;
             end
-            y_lim = get(h_axes(1), 'YLim');
-            if numel(h_axes)>1
-                ycum_lim = get(h_axes(2), 'YLim');
-            end
-            for k = 2:K
-                plot(h_axes(1), [thresh(k) thresh(k)], y_lim, '-k', ...
-                    'LineWidth', 2);
-                if numel(h_axes)>1
-                    plot(h_axes(2), [thresh(k) thresh(k)], ycum_lim, ...
-                        '-k', 'LineWidth', 2);
-                end
-            end
+        end
+
+        for k = 1:K
             if k>1
-                set(h_axes, 'NextPlot', 'replace');
+                set(h_axes, 'NextPlot', 'add');
             end
-        else
-            % plot experimental data
-            bar(h_axes(1), P(:,1), P(:,2), 'k');
+            id = P(:,1)>thresh(k) & P(:,1)<=thresh(k+1);
+            bar(h_axes(1), P(id,1), P(id,2), 'FaceColor', ...
+                clr(k,:), 'EdgeColor', clr(k,:));
             if numel(h_axes)>1
-                plot(h_axes(2), P(:,1), P(:,3), '+k');
+                plot(h_axes(2), P(id,1), P(id,3), 'Marker', '+', ...
+                    'MarkerEdgeColor', clr(k,:), 'MarkerFaceColor', ...
+                    clr(k,:));
             end
+        end
+        y_lim = get(h_axes(1), 'YLim');
+        if numel(h_axes)>1
+            ycum_lim = get(h_axes(2), 'YLim');
+        end
+        for k = 2:K
+            plot(h_axes(1), [thresh(k) thresh(k)], y_lim, '-k', ...
+                'LineWidth', 2);
+            if numel(h_axes)>1
+                plot(h_axes(2), [thresh(k) thresh(k)], ycum_lim, ...
+                    '-k', 'LineWidth', 2);
+            end
+        end
+        if k>1
+            set(h_axes, 'NextPlot', 'replace');
         end
 end
 

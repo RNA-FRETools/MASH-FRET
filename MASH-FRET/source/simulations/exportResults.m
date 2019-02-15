@@ -327,7 +327,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             setContPan(str, 'process', h_fig);
 
             for i = 1:N % number of frames
-                if i==1
+                if i==2
                     t = tic;
                 end
                 
@@ -559,7 +559,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                     disp(['Writing frame ' num2str(i) ' of ' num2str(N)]);
                 end
                 
-                if i==1 && size(varargin,2)~=2
+                if i==2 && size(varargin,2)~=2
                     t_end = toc(t);
                     t_proc = N*t_end;
                     t_h = t_proc/3600;

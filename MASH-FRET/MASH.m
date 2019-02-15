@@ -1,5 +1,5 @@
 function varargout = MASH(varargin)
-% Last Modified by GUIDE v2.5 04-Feb-2019 17:22:09
+% Last Modified by GUIDE v2.5 15-Feb-2019 11:30:55
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -3936,7 +3936,271 @@ if ~isempty(p.proj)
 end
 
 
-% Bootstrap analysis
+% Plot
+
+function popupmenu_thm_tpe_Callback(obj, evd, h)
+p = h.param.thm;
+if ~isempty(p.proj)
+    proj = p.curr_proj;
+    if get(obj, 'Value') ~= p.curr_tpe(proj)
+        p.curr_tpe(proj) = get(obj, 'Value');
+        h.param.thm = p;
+        guidata(h.figure_MASH, h);
+        cla(h.axes_hist1);
+        cla(h.axes_hist2);
+        updateFields(h.figure_MASH, 'thm');
+    end
+end
+
+
+function edit_thm_xlim1_Callback(obj, evd, h)
+p = h.param.thm;
+if ~isempty(p.proj)
+    proj = p.curr_proj;
+    tpe = p.curr_tpe(proj);
+    prm = p.proj{proj}.prm{tpe};
+    
+    nChan = p.proj{proj}.nb_channel;
+    nExc = p.proj{proj}.nb_excitations;
+    isInt = tpe <= 2*nChan*nExc;
+    perSec = p.proj{proj}.cnt_p_sec;
+    perPix = p.proj{proj}.cnt_p_pix;
+    expT = p.proj{proj}.frame_rate;
+    nPix = p.proj{proj}.pix_intgr(2);
+    
+    val = str2num(get(obj, 'String'));
+    set(obj, 'String', num2str(val));
+    maxVal = prm.plot{1}(1,3);
+    
+    if isInt
+        if perSec
+            maxVal = maxVal/expT;
+        end
+        if perPix
+            maxVal = maxVal/nPix;
+        end
+    end
+    
+    if ~(numel(val)==1 && ~isnan(val) && val<maxVal)
+        setContPan(sprintf(['Lower limit of x-axis must be lower than ' ...
+            '%d.'],maxVal), 'error', h.figure_MASH);
+        set(obj, 'BackgroundColor', [1 0.75 0.75]);
+    else
+        set(obj, 'BackgroundColor', [1 1 1]);
+        
+        if isInt
+            if perSec
+                val = val*expT;
+            end
+            if perPix
+                val = val*nPix;
+            end
+        end
+        
+        prm.plot{1}(1,2) = val;
+        prm.plot{2} = [];
+        p.proj{proj}.prm{tpe} = prm;
+        h.param.thm = p;
+        guidata(h.figure_MASH, h);
+        updateFields(h.figure_MASH, 'thm');
+    end
+end
+
+
+function edit_thm_xlim2_Callback(obj, evd, h)
+p = h.param.thm;
+if ~isempty(p.proj)
+    proj = p.curr_proj;
+    tpe = p.curr_tpe(proj);
+    prm = p.proj{proj}.prm{tpe};
+    
+    nChan = p.proj{proj}.nb_channel;
+    nExc = p.proj{proj}.nb_excitations;
+    isInt = tpe <= 2*nChan*nExc;
+    perSec = p.proj{proj}.cnt_p_sec;
+    perPix = p.proj{proj}.cnt_p_pix;
+    expT = p.proj{proj}.frame_rate;
+    nPix = p.proj{proj}.pix_intgr(2);
+    
+    val = str2num(get(obj, 'String'));
+    set(obj, 'String', num2str(val));
+    minVal = prm.plot{1}(1,2);
+    
+    if isInt
+        if perSec
+            minVal = minVal/expT;
+        end
+        if perPix
+            minVal = minVal/nPix;
+        end
+    end
+    
+    if ~(numel(val)==1 && ~isnan(val) && val>minVal)
+        setContPan(sprintf(['Upper limit of x-axis must be higher than' ...
+            ' %d.'],minVal), 'error', h.figure_MASH);
+        set(obj, 'BackgroundColor', [1 0.75 0.75]);
+    else
+        set(obj, 'BackgroundColor', [1 1 1]);
+        
+        if isInt
+            if perSec
+                val = val*expT;
+            end
+            if perPix
+                val = val*nPix;
+            end
+        end
+        
+        prm.plot{1}(1,3) = val;
+        prm.plot{2} = [];
+        p.proj{proj}.prm{tpe} = prm;
+        h.param.thm = p;
+        guidata(h.figure_MASH, h);
+        updateFields(h.figure_MASH, 'thm');
+    end
+end
+
+
+function edit_thm_xbin_Callback(obj, evd, h)
+p = h.param.thm;
+if ~isempty(p.proj)
+    val = str2num(get(obj, 'String'));
+    set(obj, 'String', num2str(val));
+    if ~(numel(val)==1 && ~isnan(val) && val > 0)
+        set(obj, 'BackgroundColor', [1 0.75 0.75]);
+        setContPan('x-binning must be > 0', 'error', h.figure_MASH);
+    else
+        set(obj, 'BackgroundColor', [1 1 1]);
+        proj = p.curr_proj;
+        tpe = p.curr_tpe(proj);
+        prm = p.proj{proj}.prm{tpe};
+        
+        nChan = p.proj{proj}.nb_channel;
+        nExc = p.proj{proj}.nb_excitations;
+        isInt = tpe <= 2*nChan*nExc;
+        perSec = p.proj{proj}.cnt_p_sec;
+        perPix = p.proj{proj}.cnt_p_pix;
+        expT = p.proj{proj}.frame_rate;
+        nPix = p.proj{proj}.pix_intgr(2);
+        
+        if isInt
+            if perSec
+                val = val*expT;
+            end
+            if perPix
+                val = val*nPix;
+            end
+        end
+        
+        prm.plot{1}(1,1) = val;
+        prm.plot{2} = [];
+        p.proj{proj}.prm{tpe} = prm;
+        h.param.thm = p;
+        guidata(h.figure_MASH, h);
+        updateFields(h.figure_MASH, 'thm');
+    end
+end
+
+
+function checkbox_thm_ovrfl_Callback(obj, evd, h)
+p = h.param.thm;
+if ~isempty(p.proj)
+    proj = p.curr_proj;
+    tpe = p.curr_tpe(proj);
+    prm = p.proj{proj}.prm{tpe};
+    prm.plot{1}(4) = get(obj, 'Value');
+    prm.plot{2} = [];
+    p.proj{proj}.prm{tpe} = prm;
+    h.param.thm = p;
+    guidata(h.figure_MASH, h);
+    updateFields(h.figure_MASH, 'thm');
+end
+
+
+% State configuration
+
+function edit_thm_penalty_Callback(obj, evd, h)
+p = h.param.thm;
+if ~isempty(p.proj)
+    proj = p.curr_proj;
+    tpe = p.curr_tpe(proj);
+    prm = p.proj{proj}.prm{tpe};
+    val = str2num(get(obj, 'String'));
+    set(obj, 'String', num2str(val));
+    if ~(numel(val)==1 && ~isnan(val) && val>0)
+        setContPan('The penalty must be number >=1', 'error', ...
+            h.figure_MASH);
+        set(obj, 'BackgroundColor', [1 0.75 0.75]);
+    else
+        set(obj, 'BackgroundColor', [1 1 1]);
+        prm.thm_start{4}(1,2) = val;
+        p.proj{proj}.prm{tpe} = prm;
+        h.param.thm = p;
+        guidata(h.figure_MASH, h);
+        updateFields(h.figure_MASH, 'thm');
+    end
+end
+
+
+function popupmenu_thm_nTotGauss_Callback(obj, evd, h)
+p = h.param.thm;
+if ~isempty(p.proj)
+    updateFields(h.figure_MASH, 'thm');
+end
+
+
+function radiobutton_thm_penalty_Callback(obj, evd, h)
+p = h.param.thm;
+if ~isempty(p.proj)
+    proj = p.curr_proj;
+    tpe = p.curr_tpe(proj);
+    prm = p.proj{proj}.prm{tpe};
+    prm.thm_start{4}(1,1) = get(obj, 'Value');
+    p.proj{proj}.prm{tpe} = prm;
+    h.param.thm = p;
+    guidata(h.figure_MASH, h);
+    updateFields(h.figure_MASH, 'thm');
+end
+
+
+function radiobutton_thm_BIC_Callback(obj, evd, h)
+p = h.param.thm;
+if ~isempty(p.proj)
+    proj = p.curr_proj;
+    tpe = p.curr_tpe(proj);
+    prm = p.proj{proj}.prm{tpe};
+    prm.thm_start{4}(1,1) = ~get(obj, 'Value');
+    p.proj{proj}.prm{tpe} = prm;
+    h.param.thm = p;
+    guidata(h.figure_MASH, h);
+    updateFields(h.figure_MASH, 'thm');
+end
+
+
+function edit_thm_maxGaussNb_Callback(obj, evd, h)
+p = h.param.thm;
+if ~isempty(p.proj)
+    proj = p.curr_proj;
+    tpe = p.curr_tpe(proj);
+    prm = p.proj{proj}.prm{tpe};
+    val = round(str2num(get(obj, 'String')));
+    set(obj, 'String', num2str(val));
+    if ~(numel(val)==1 && ~isnan(val) && val>0)
+        setContPan(['The max. number of Gaussians should be a positive' ...
+            ' integer'], 'error', h.figure_MASH);
+        set(obj, 'BackgroundColor', [1 0.75 0.75]);
+    else
+        set(obj, 'BackgroundColor', [1 1 1]);
+        prm.thm_start{4}(1,3) = val;
+        p.proj{proj}.prm{tpe} = prm;
+        h.param.thm = p;
+        guidata(h.figure_MASH, h);
+        updateFields(h.figure_MASH, 'thm');
+    end
+end
+
+
+% Method
 
 function radiobutton_thm_gaussFit_Callback(obj, evd, h)
 p = h.param.thm;
@@ -4035,169 +4299,7 @@ if ~isempty(p.proj)
     updateFields(h.figure_MASH, 'thm');
 end
 
-
 % Gaussian fitting
-
-function pushbutton_thm_RMSE_Callback(obj, evd, h)
-p = h.param.thm;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    tpe = p.curr_tpe(proj);
-    prm = p.proj{proj}.prm{tpe};
-    prm.thm_res(2,1:3) = {[] [] []};
-    prm.thm_res(3,1:3) = {[] [] []};
-    prev_res = prm.thm_res;
-    
-    isBIC = ~prm.thm_start{4}(1); % apply BIC (or rmse) selection
-    penalty = prm.thm_start{4}(2); % penalty factor for rmse selection
-    Kmax = prm.thm_start{4}(3); % maximum number of Gaussian functions to fit
-    val = prm.plot{2}(:,[1 2 3])'; % histogram: FRET, count, cumulative count
-%     N = size(val,2); % number of molecules
-
-    res = rmse_ana(h.figure_MASH, isBIC, penalty, Kmax, val);
-    prm.thm_res(3,1:2) = res;
-    
-    if isequal(prm.thm_res,prev_res)
-        setContPan('Not enought data for RMSE analysis.', 'error' , ...
-            h.figure_MASH);
-        return;
-    end
-    
-    L = prm.thm_res{3,1}(:,1);
-    BIC = prm.thm_res{3,1}(:,2);
-    
-    if isBIC
-        [o,Kopt] = min(BIC);
-        
-    else
-        Kopt = 1;
-        for k = 2:Kmax
-            if ((L(k)-L(k-1))/abs(L(k-1)))>(penalty-1)
-                Kopt = k;
-            else
-                break;
-            end
-        end
-    end
-    
-    set(h.popupmenu_thm_nTotGauss, 'Value', Kopt);
-    
-    x_lim = prm.plot{1}(2:3);
-    fitprm = prm.thm_res{3,2}{Kopt};
-    prm.thm_start{3} = [zeros(Kopt,1) fitprm(:,1) ones(Kopt,1) ...
-        repmat(x_lim(1),[Kopt,1]) fitprm(:,2) repmat(x_lim(2),[Kopt,1]) ...
-        zeros(Kopt,1) fitprm(:,3) Inf(Kopt,1) p.colList(1:Kopt,:)];
-    p.proj{proj}.prm{tpe} = prm;
-    h.param.thm = p;
-    guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'thm');
-end
-
-
-function edit_thm_penalty_Callback(obj, evd, h)
-p = h.param.thm;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    tpe = p.curr_tpe(proj);
-    prm = p.proj{proj}.prm{tpe};
-    val = str2num(get(obj, 'String'));
-    set(obj, 'String', num2str(val));
-    if ~(numel(val)==1 && ~isnan(val) && val>0)
-        setContPan('The penalty must be number >=1', 'error', ...
-            h.figure_MASH);
-        set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    else
-        set(obj, 'BackgroundColor', [1 1 1]);
-        prm.thm_start{4}(1,2) = val;
-        p.proj{proj}.prm{tpe} = prm;
-        h.param.thm = p;
-        guidata(h.figure_MASH, h);
-        updateFields(h.figure_MASH, 'thm');
-    end
-end
-
-
-function popupmenu_thm_nTotGauss_Callback(obj, evd, h)
-p = h.param.thm;
-if ~isempty(p.proj)
-    updateFields(h.figure_MASH, 'thm');
-end
-
-
-function radiobutton_thm_penalty_Callback(obj, evd, h)
-p = h.param.thm;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    tpe = p.curr_tpe(proj);
-    prm = p.proj{proj}.prm{tpe};
-    prm.thm_start{4}(1,1) = get(obj, 'Value');
-    p.proj{proj}.prm{tpe} = prm;
-    h.param.thm = p;
-    guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'thm');
-end
-
-
-function radiobutton_thm_BIC_Callback(obj, evd, h)
-p = h.param.thm;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    tpe = p.curr_tpe(proj);
-    prm = p.proj{proj}.prm{tpe};
-    prm.thm_start{4}(1,1) = ~get(obj, 'Value');
-    p.proj{proj}.prm{tpe} = prm;
-    h.param.thm = p;
-    guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'thm');
-end
-
-
-function edit_thm_maxGaussNb_Callback(obj, evd, h)
-p = h.param.thm;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    tpe = p.curr_tpe(proj);
-    prm = p.proj{proj}.prm{tpe};
-    val = round(str2num(get(obj, 'String')));
-    set(obj, 'String', num2str(val));
-    if ~(numel(val)==1 && ~isnan(val) && val>0)
-        setContPan(['The max. number of Gaussians should be a positive' ...
-            ' integer'], 'error', h.figure_MASH);
-        set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    else
-        set(obj, 'BackgroundColor', [1 1 1]);
-        prm.thm_start{4}(1,3) = val;
-        p.proj{proj}.prm{tpe} = prm;
-        h.param.thm = p;
-        guidata(h.figure_MASH, h);
-        updateFields(h.figure_MASH, 'thm');
-    end
-end
-
-
-function pushbutton_thm_impPrm_Callback(obj, evd, h)
-p = h.param.thm;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    tpe = p.curr_tpe(proj);
-    prm = p.proj{proj}.prm{tpe};
-
-    if ~isempty(prm.thm_res{3,2})
-        
-        K = get(h.popupmenu_thm_nTotGauss, 'Value');
-    
-        x_lim = prm.plot{1}(2:3);
-        fitprm = prm.thm_res{3,2}{K};
-        prm.thm_start{3} = [zeros(K,1) fitprm(:,1) ones(K,1) ...
-            repmat(x_lim(1),[K,1]) fitprm(:,2) repmat(x_lim(2),[K,1]) ...
-            zeros(K,1) fitprm(:,3) Inf(K,1) p.colList(1:K,:)];
-        p.proj{proj}.prm{tpe} = prm;
-        h.param.thm = p;
-        guidata(h.figure_MASH, h);
-        updateFields(h.figure_MASH, 'thm');
-    end
-end
-
 
 function edit_thm_nGaussFit_Callback(obj, evd, h)
 p = h.param.thm;
@@ -4795,183 +4897,5 @@ if ~isempty(p.proj)
 end
 
 
-% Plot
 
-function popupmenu_thm_tpe_Callback(obj, evd, h)
-p = h.param.thm;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    if get(obj, 'Value') ~= p.curr_tpe(proj)
-        p.curr_tpe(proj) = get(obj, 'Value');
-        h.param.thm = p;
-        guidata(h.figure_MASH, h);
-        cla(h.axes_hist1);
-        cla(h.axes_hist2);
-        updateFields(h.figure_MASH, 'thm');
-    end
-end
-
-
-function edit_thm_xlim1_Callback(obj, evd, h)
-p = h.param.thm;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    tpe = p.curr_tpe(proj);
-    prm = p.proj{proj}.prm{tpe};
-    
-    nChan = p.proj{proj}.nb_channel;
-    nExc = p.proj{proj}.nb_excitations;
-    isInt = tpe <= 2*nChan*nExc;
-    perSec = p.proj{proj}.cnt_p_sec;
-    perPix = p.proj{proj}.cnt_p_pix;
-    expT = p.proj{proj}.frame_rate;
-    nPix = p.proj{proj}.pix_intgr(2);
-    
-    val = str2num(get(obj, 'String'));
-    set(obj, 'String', num2str(val));
-    maxVal = prm.plot{1}(1,3);
-    
-    if isInt
-        if perSec
-            maxVal = maxVal/expT;
-        end
-        if perPix
-            maxVal = maxVal/nPix;
-        end
-    end
-    
-    if ~(numel(val)==1 && ~isnan(val) && val<maxVal)
-        setContPan(sprintf(['Lower limit of x-axis must be lower than ' ...
-            '%d.'],maxVal), 'error', h.figure_MASH);
-        set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    else
-        set(obj, 'BackgroundColor', [1 1 1]);
-        
-        if isInt
-            if perSec
-                val = val*expT;
-            end
-            if perPix
-                val = val*nPix;
-            end
-        end
-        
-        prm.plot{1}(1,2) = val;
-        prm.plot{2} = [];
-        p.proj{proj}.prm{tpe} = prm;
-        h.param.thm = p;
-        guidata(h.figure_MASH, h);
-        updateFields(h.figure_MASH, 'thm');
-    end
-end
-
-
-function edit_thm_xlim2_Callback(obj, evd, h)
-p = h.param.thm;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    tpe = p.curr_tpe(proj);
-    prm = p.proj{proj}.prm{tpe};
-    
-    nChan = p.proj{proj}.nb_channel;
-    nExc = p.proj{proj}.nb_excitations;
-    isInt = tpe <= 2*nChan*nExc;
-    perSec = p.proj{proj}.cnt_p_sec;
-    perPix = p.proj{proj}.cnt_p_pix;
-    expT = p.proj{proj}.frame_rate;
-    nPix = p.proj{proj}.pix_intgr(2);
-    
-    val = str2num(get(obj, 'String'));
-    set(obj, 'String', num2str(val));
-    minVal = prm.plot{1}(1,2);
-    
-    if isInt
-        if perSec
-            minVal = minVal/expT;
-        end
-        if perPix
-            minVal = minVal/nPix;
-        end
-    end
-    
-    if ~(numel(val)==1 && ~isnan(val) && val>minVal)
-        setContPan(sprintf(['Upper limit of x-axis must be higher than' ...
-            ' %d.'],minVal), 'error', h.figure_MASH);
-        set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    else
-        set(obj, 'BackgroundColor', [1 1 1]);
-        
-        if isInt
-            if perSec
-                val = val*expT;
-            end
-            if perPix
-                val = val*nPix;
-            end
-        end
-        
-        prm.plot{1}(1,3) = val;
-        prm.plot{2} = [];
-        p.proj{proj}.prm{tpe} = prm;
-        h.param.thm = p;
-        guidata(h.figure_MASH, h);
-        updateFields(h.figure_MASH, 'thm');
-    end
-end
-
-
-function edit_thm_xbin_Callback(obj, evd, h)
-p = h.param.thm;
-if ~isempty(p.proj)
-    val = str2num(get(obj, 'String'));
-    set(obj, 'String', num2str(val));
-    if ~(numel(val)==1 && ~isnan(val) && val > 0)
-        set(obj, 'BackgroundColor', [1 0.75 0.75]);
-        setContPan('x-binning must be > 0', 'error', h.figure_MASH);
-    else
-        set(obj, 'BackgroundColor', [1 1 1]);
-        proj = p.curr_proj;
-        tpe = p.curr_tpe(proj);
-        prm = p.proj{proj}.prm{tpe};
-        
-        nChan = p.proj{proj}.nb_channel;
-        nExc = p.proj{proj}.nb_excitations;
-        isInt = tpe <= 2*nChan*nExc;
-        perSec = p.proj{proj}.cnt_p_sec;
-        perPix = p.proj{proj}.cnt_p_pix;
-        expT = p.proj{proj}.frame_rate;
-        nPix = p.proj{proj}.pix_intgr(2);
-        
-        if isInt
-            if perSec
-                val = val*expT;
-            end
-            if perPix
-                val = val*nPix;
-            end
-        end
-        
-        prm.plot{1}(1,1) = val;
-        prm.plot{2} = [];
-        p.proj{proj}.prm{tpe} = prm;
-        h.param.thm = p;
-        guidata(h.figure_MASH, h);
-        updateFields(h.figure_MASH, 'thm');
-    end
-end
-
-
-function checkbox_thm_ovrfl_Callback(obj, evd, h)
-p = h.param.thm;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    tpe = p.curr_tpe(proj);
-    prm = p.proj{proj}.prm{tpe};
-    prm.plot{1}(4) = get(obj, 'Value');
-    prm.plot{2} = [];
-    p.proj{proj}.prm{tpe} = prm;
-    h.param.thm = p;
-    guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'thm');
-end
 

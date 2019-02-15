@@ -2,7 +2,7 @@ function res = rmse_ana(h_fig, isBIC, penalty, Jmax, val)
 
 res = cell(1,2);
 
-T = 5; % number of model (GMM) initializations
+T = 20; % number of model (GMM) initializations
 M = 500; % maximum number of E-M cycles
 N = size(val,2); % number of data points
 
@@ -253,11 +253,11 @@ for k = 1:J
 end
 
 
-function [BIC L I] = calc_L(a, mu, sig, val)
+function [BIC,logL,I] = calc_L(a, mu, sig, val)
 
 w = val(2,:);
 
-L = -Inf;
+logL = -Inf;
 BIC = Inf;
 J = size(mu,1);
 N = size(val,2);
@@ -278,17 +278,16 @@ for k = 1:size(p,1)
 end
 P = P/sum(P);
 
-P(P<=0)=1;
-L = sum((w.*log(P)));
-if L == 0
-    L = -Inf;
+logL = sum((w.*log(P)));
+
+if logL == 0
+    logL = -Inf;
     BIC = Inf;
     I = false(J,N);
     return;
 end
 
-BIC = (J^2 + 2*J)*log(sum(w)) - 2*L;
-
+BIC = (J^2 + 2*J)*log(sum(w)) - 2*logL;
 
 
 function [a, mu, sig] = calc_hypprm(h, val)
