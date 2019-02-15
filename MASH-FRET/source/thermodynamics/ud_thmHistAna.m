@@ -36,18 +36,75 @@ set([h.edit_thm_nRep h.edit_thm_nSpl h.edit_thm_threshNb ...
     h.edit_thm_fwhmFit h.edit_thm_fwhmSigma h.edit_thm_relOccFit ...
     h.edit_thm_relOccSigma], 'BackgroundColor', [1 1 1]);
 
+% RMSE analysis panel
+
+rmse_start = start{4}; % [apply penalty, penalty, max. nb. of Gaussian]
+rmse_res = res{3,1}; % [logL BIC]
+
+setProp(h.uipanel_thm_stateConfig,'Enable', 'on');
+
+set(h.radiobutton_thm_penalty, 'Value', rmse_start(1));
+set(h.radiobutton_thm_BIC, 'Value', ~rmse_start(1));
+Kmax = rmse_start(3);
+set(h.edit_thm_maxGaussNb, 'String', num2str(Kmax));
+if rmse_start(1)
+    set(h.radiobutton_thm_penalty, 'FontWeight', 'bold');
+    set(h.radiobutton_thm_BIC, 'FontWeight', 'normal');
+    set(h.edit_thm_penalty, 'String', num2str(rmse_start(2)));
+else
+    set(h.radiobutton_thm_BIC, 'FontWeight', 'bold');
+    set(h.radiobutton_thm_penalty, 'FontWeight', 'normal');
+    set(h.edit_thm_penalty, 'String', '', 'Enable', 'off');
+end
+if ~isempty(rmse_res)
+    curr_gauss = get(h.popupmenu_thm_nTotGauss, 'Value');
+    if curr_gauss>Kmax
+        curr_gauss = Kmax;
+    end
+    set(h.popupmenu_thm_nTotGauss, 'String', ...
+        cellstr(num2str((1:Kmax)')), 'Value', curr_gauss);
+    if ~rmse_start(1)
+        [o,Kopt] = min(rmse_res(:,2));
+    else
+        Kopt = 1;
+        for k = 2:Kmax
+            if ((rmse_res(k,1)-rmse_res(k-1,1))/ ...
+                    abs(rmse_res(k-1,1)))>(rmse_start(2)-1)
+                Kopt = k;
+            else
+                break;
+            end
+        end
+    end
+    set(h.text_thm_calcNgauss, 'String', num2str(Kopt));
+    set(h.edit_thm_LogL, 'String', ...
+        num2str(rmse_res(curr_gauss,1)));
+    if rmse_start(1)
+        set([h.text_thm_BIC h.edit_thm_BIC], 'Enable', 'off');
+        set(h.edit_thm_BIC, 'String', '');
+    else
+        set([h.text_thm_BIC h.edit_thm_BIC], 'Enable', 'on');
+        set(h.edit_thm_BIC, 'String', ...
+            num2str(rmse_res(curr_gauss,2)));
+    end
+else
+    set([h.text_thm_suggNgauss h.text_thm_calcNgauss ...
+        h.text_thm_for h.popupmenu_thm_nTotGauss ...
+        h.text_thm_nTotGauss h.text_thm_LogL ...
+        h.edit_thm_LogL h.text_thm_BIC h.edit_thm_BIC], ...
+        'Enable', 'off');
+    set([h.text_thm_calcNgauss h.edit_thm_LogL], 'String', '');
+    set(h.popupmenu_thm_nTotGauss, 'String', {''});
+end
+
 switch meth
     case 1 % Gaussian fitting
         fit_start = start{3}; % [low amp., start amp., up amp., low center,
                               %  start center, up center, low FWHM, 
                               %  start FWHM, up FWHM]
-        rmse_start = start{4}; % [apply penalty, penalty, 
-                               %  max. nb. of Gaussian]
         fit_res = res{2,1}; % [amp. fit, amp. sigma, center fit, 
                           %  center sigma, FWHM fit, FWHM sigma, 
                           % rel. occ. fit, rel. occ. sigma]
-        rmse_res = res{3,1}; % [logL BIC]
-        
         if isInt
             if perSec
                 fit_start(:,4:9) = fit_start(:,4:9)/expT;
@@ -60,11 +117,10 @@ switch meth
         set(h.radiobutton_thm_thresh, 'Value', 0, 'FontWeight', 'normal');
         set(h.radiobutton_thm_gaussFit, 'Value', 1, 'FontWeight', 'bold');
         
-        % RMSE analysis and Gaussian fitting panels
-        setProp([h.uipanel_thm_gaussFit h.uipanel_thm_nbGauss], ...
-            'Enable', 'on');
-        
         % Gaussian fitting panel
+        setProp([h.uipanel_thm_gaussFit,h.uipanel_thm_nbGauss], ...
+            'Enable', 'on');
+
         K = size(fit_start,1);
         set(h.edit_thm_nGaussFit, 'String', num2str(K));
         str_gauss = ...
@@ -152,61 +208,6 @@ switch meth
                 '');
         end
         
-        % RMSE panel
-        set(h.radiobutton_thm_penalty, 'Value', rmse_start(1));
-        set(h.radiobutton_thm_BIC, 'Value', ~rmse_start(1));
-        Kmax = rmse_start(3);
-        set(h.edit_thm_maxGaussNb, 'String', num2str(Kmax));
-        if rmse_start(1)
-            set(h.radiobutton_thm_penalty, 'FontWeight', 'bold');
-            set(h.radiobutton_thm_BIC, 'FontWeight', 'normal');
-            set(h.edit_thm_penalty, 'String', num2str(rmse_start(2)));
-        else
-            set(h.radiobutton_thm_BIC, 'FontWeight', 'bold');
-            set(h.radiobutton_thm_penalty, 'FontWeight', 'normal');
-            set(h.edit_thm_penalty, 'String', '', 'Enable', 'off');
-        end
-        if ~isempty(rmse_res)
-            curr_gauss = get(h.popupmenu_thm_nTotGauss, 'Value');
-            if curr_gauss>Kmax
-                curr_gauss = Kmax;
-            end
-            set(h.popupmenu_thm_nTotGauss, 'String', ...
-                cellstr(num2str((1:Kmax)')), 'Value', curr_gauss);
-            if ~rmse_start(1)
-                [o,Kopt] = min(rmse_res(:,2));
-            else
-                Kopt = 1;
-                for k = 2:Kmax
-                    if ((rmse_res(k,1)-rmse_res(k-1,1))/ ...
-                            abs(rmse_res(k-1,1)))>(rmse_start(2)-1)
-                        Kopt = k;
-                    else
-                        break;
-                    end
-                end
-            end
-            set(h.text_thm_calcNgauss, 'String', num2str(Kopt));
-            set(h.edit_thm_LogL, 'String', ...
-                num2str(rmse_res(curr_gauss,1)));
-            if rmse_start(1)
-                set([h.text_thm_BIC h.edit_thm_BIC], 'Enable', 'off');
-                set(h.edit_thm_BIC, 'String', '');
-            else
-                set([h.text_thm_BIC h.edit_thm_BIC], 'Enable', 'on');
-                set(h.edit_thm_BIC, 'String', ...
-                    num2str(rmse_res(curr_gauss,2)));
-            end
-        else
-            set([h.text_thm_suggNgauss h.text_thm_calcNgauss ...
-                h.text_thm_for h.popupmenu_thm_nTotGauss ...
-                h.text_thm_nTotGauss h.text_thm_LogL ...
-                h.edit_thm_LogL h.text_thm_BIC h.edit_thm_BIC], ...
-                'Enable', 'off');
-            set([h.text_thm_calcNgauss h.edit_thm_LogL], 'String', '');
-            set(h.popupmenu_thm_nTotGauss, 'String', {''});
-        end
-        
         % Threshold panel
         setProp(h.uipanel_thm_thresh, 'Enable', 'off');
         set([h.edit_thm_threshNb h.edit_thm_threshVal h.edit_thm_pop ...
@@ -232,11 +233,10 @@ switch meth
             'normal');
         set(h.radiobutton_thm_thresh, 'Value', 1, 'FontWeight', 'bold');
         
-        % RMSE analysis and Gaussian fitting panels
-        setProp([h.uipanel_thm_gaussFit h.uipanel_thm_nbGauss], ...
+        % Gaussian fitting panels
+        setProp([h.uipanel_thm_gaussFit,h.uipanel_thm_nbGauss], ...
             'Enable', 'off');
-        set([h.edit_thm_penalty h.edit_thm_maxGaussNb h.edit_thm_LogL ...
-            h.edit_thm_BIC h.edit_thm_nGaussFit h.edit_thm_ampLow ...
+        set([h.edit_thm_nGaussFit h.edit_thm_ampLow ...
             h.edit_thm_ampStart h.edit_thm_ampUp h.edit_thm_ampFit ...
             h.edit_thm_ampSigma h.edit_thm_centreLow ...
             h.edit_thm_centreStart h.edit_thm_centreUp ...
@@ -244,8 +244,7 @@ switch meth
             h.edit_thm_fwhmLow h.edit_thm_fwhmStart h.edit_thm_fwhmUp ...
             h.edit_thm_fwhmFit h.edit_thm_fwhmSigma ...
             h.edit_thm_relOccFit h.edit_thm_relOccSigma], 'String', '');
-        set([h.popupmenu_thm_nTotGauss h.popupmenu_thm_gaussNb], ...
-            'String', {''});
+        set(h.popupmenu_thm_gaussNb, 'String', {''});
         
         % Threshold panel
         K = size(thresh,1)+1;
