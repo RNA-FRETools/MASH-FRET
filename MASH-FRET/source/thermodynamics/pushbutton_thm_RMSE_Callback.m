@@ -58,18 +58,8 @@ if ~isempty(p.proj)
         case 2 % Modify Thersholding parameters
             A = fitprm(:,1);
             mu = fitprm(:,2);
-            sig = fitprm(:,3);
-            prm.thm_start{2} = [];
-            for k = 1:Kopt-1
-                x1 = mu(k);   o1 = sig(k);   A1 = A(k);
-                x2 = mu(k+1); o2 = sig(k+1); A2 = A(k+1);
-                vA = 1/(o2^2)-1/(o1^2);
-                vB = 2*x1/(o1^2)-2*x2/(o2^2);
-                vC = ((x2/o2)^2)-((x1/o1)^2)-2*log(A2/A1);
-                delta = (vB^2)-4*vA*vC;
-
-                prm.thm_start{2}(k,1) = (-vB-sqrt(delta))/(2*vA);
-            end
+            sig = fitprm(:,3)/(2*sqrt(2*log(2)));
+            prm.thm_start{2} = threshFromGauss(A, mu, sig);
     end
 
     % Save modifications
