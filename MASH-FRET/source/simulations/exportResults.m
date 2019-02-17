@@ -782,7 +782,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                         % Gausian read-out noise, convolution
                
                         % convert to PC
-                        if strcmp(op_U, 'photon')
+                        if strcmp(op_u, 'photon')
                             img = arb2phtn(img);
                             I_don_plot{m} = arb2phtn(I_don_plot{m});
                             I_acc_plot{m} = arb2phtn(I_acc_plot{m});

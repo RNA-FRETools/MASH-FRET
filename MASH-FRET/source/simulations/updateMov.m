@@ -16,6 +16,8 @@ h = guidata(h_fig);
 if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         isfield(h.results.sim, 'mix') && ~isempty(h.results.sim.mix)
     
+    setContPan('Updating intensity data...', 'process', h_fig);
+    
     mix = h.results.sim.mix;
     discr_seq = h.results.sim.discr_seq;
     totInt = h.param.sim.totInt;

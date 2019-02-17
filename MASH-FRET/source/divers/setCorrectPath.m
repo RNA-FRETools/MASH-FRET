@@ -4,15 +4,22 @@ function pth = setCorrectPath(folder, h_fig)
 % "h_fig" >> MASH figure handle
 % "pth" >> generated folder path
 
-% Last update: 18th of March 2014 by Mélodie C.A.S Hadzic
+% Last update: 5th of February 2019 by Mélodie Hadzic
+% --> modify "movie_processing" folder request in "video_processing" to
+%     be consistent with the rest of the GUI
 
 pth = [];
 h = guidata(h_fig);
 
+% --> modify "movie_processing" folder request into "video_processing"
+if strcmp(folder, 'movie_processing')
+    folder = 'video_processing';
+end
+
 if strcmp(folder, 'simulations')
     pth = [h.folderRoot filesep folder];
     
-elseif (strcmp(folder, 'movie_processing') || ...
+elseif (strcmp(folder, 'video_processing') || ...
         strcmp(folder, 'traces_processing') || ...
         strcmp(folder, 'tdp_analysis') || ...
         strcmp(folder, 'thermodynamics'))
@@ -22,7 +29,7 @@ elseif (strcmp(folder, 'average_images') || ...
        strcmp(folder, 'coordinates') || ...
         strcmp(folder, 'exported_graphics'))
 
-    pth1 = setCorrectPath('movie_processing', h_fig);
+    pth1 = setCorrectPath('video_processing', h_fig);
     pth = [pth1 folder];
 
 elseif (strcmp(folder, 'spotfinder') || ...

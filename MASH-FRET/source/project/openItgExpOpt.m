@@ -1,10 +1,20 @@
 function openItgExpOpt(obj, evd, h)
+% Open a window to modify project parameters
+% "obj" >> handle of pushbutton from which the function has been called
+% "evd" >> eventdata structure of the pushbutton from which the function
+%          has been called (usually empty)
+% "h" >> main data structure stored in figure_MASH's handle
+
+% Last update: 4th of February 2019 by Mélodie Hadzic
+% --> remove "file options" panel (displaced in an other option window
+%     created by function openItgExpOpt.m, called by control 
+%     pushbutton_TTgen_FileOpt)
 
 h_fig = h.figure_MASH;
 switch obj
     case h.pushbutton_chanOpt
         p{1} = h.param.movPr.itg_expMolPrm;
-        p{2} = h.param.movPr.itg_expMolFile;
+        p{2} = [];
         p{3} = h.param.movPr.itg_expFRET;
         p{4} = h.param.movPr.itg_expS;
         p{5} = h.param.movPr.itg_clr;
@@ -37,7 +47,6 @@ nPrm = size(p{1},1);
 nFixPrm = 4 + nExc;
 isFRET = nChan > 1;
 isS = nExc > 1;
-isFile = obj == h.pushbutton_chanOpt;
 
 str_laser = {};
 exc = [];
@@ -122,22 +131,16 @@ h_pan_prm = 10 + 5*mg + big_mg + 3*h_txt + 4*h_edit + h_lb + ...
     (nPrm - 2)*(mg + h_edit);
 h_pan_fret = 10 + h_lb + h_edit + 3*mg;
 h_pan_S = 10 + h_lb + h_edit + 3*mg;
-h_pan_files = 10 + h_txt + 7*h_edit + big_mg + 8*mg;
 h_pan_chan = 10 + h_txt + 3*h_edit + h_but + big_mg + 4*mg;
 h_pan_clr = 10 + h_txt + h_edit + h_but + 3*mg;
 
 w_pan = w_full + 2*mg;
 wFig = 2*w_pan + 3*mg;
 
-hFig = 3*mg + h_but + max([(h_pan_prm + double(isFile)*(h_pan_files + ...
-    mg)) (double(isFRET)*(h_pan_fret + mg) + double(isS)*(h_pan_S + mg) ...
-    + h_pan_chan + mg + h_pan_clr)]);
+hFig = 3*mg + h_but + max([h_pan_prm, (double(isFRET)*(h_pan_fret + mg) ...
+    + double(isS)*(h_pan_S + mg) + h_pan_chan + mg + h_pan_clr)]);
 
-if isFile
-    fig_name = 'Export options';
-else
-    fig_name = 'Project parameters';
-end
+fig_name = 'Project parameters';
 
 pos_0 = get(0, 'ScreenSize');
 xFig = pos_0(1) + (pos_0(3) - wFig)/2;
@@ -208,14 +211,6 @@ xNext = mg;
 h.itgExpOpt.uipanel_molPrm = uipanel('Units', 'pixels', 'Parent', ...
     h.figure_itgExpOpt, 'BackgroundColor', bgCol, 'Position', ...
     [xNext yNext w_pan h_pan_prm]);
-
-if isFile
-    yNext = yNext - mg - h_pan_files;
-
-    h.itgExpOpt.uipanel_files = uipanel('Units', 'pixels', 'Parent', ...
-        h.figure_itgExpOpt, 'BackgroundColor', bgCol, 'Position', ...
-        [xNext yNext w_pan h_pan_files]);
-end
 
 yNext = hFig - mg - h_pan_chan;
 xNext = xNext + w_pan + mg;
@@ -648,77 +643,6 @@ h.itgExpOpt.popupmenu_clrChan = uicontrol('Style', 'popupmenu', ...
     [xNext yNext w_full h_edit], 'Callback', ...
     {@popupmenu_clrChan_Callback, h_fig});
 
-
-if isFile
-    %% Panel output files
-
-    switch p{2}(1)
-        case 1
-            enbl = 'on';
-        case 0
-            enbl = 'off';
-    end
-
-    xNext = mg;
-    yNext = mg;
-
-    h.itgExpOpt.checkbox_SMART = uicontrol('Style', 'checkbox', ...
-        'Parent', h.itgExpOpt.uipanel_files, 'String', ...
-        'SMART compatible', 'Value', p{2}(7), 'Position', ...
-        [xNext yNext w_full h_edit]);
-
-    yNext = yNext + h_edit + mg;
-
-    h.itgExpOpt.checkbox_QuB = uicontrol('Style', 'checkbox', ...
-        'Parent', h.itgExpOpt.uipanel_files, 'String', ...
-        'QuB compatible', 'Value', p{2}(6), 'Position', ...
-        [xNext yNext w_full h_edit]);
-
-    yNext = yNext + h_edit + mg;
-
-    h.itgExpOpt.checkbox_VbFRET = uicontrol('Style', 'checkbox', ...
-        'Parent', h.itgExpOpt.uipanel_files, 'String', ...
-        'VbFRET compatible', 'Value', p{2}(5), 'Position', ...
-        [xNext yNext w_full h_edit]);
-
-    yNext = yNext + h_edit + mg;
-
-    h.itgExpOpt.checkbox_HaMMy = uicontrol('Style', 'checkbox', ...
-        'Parent', h.itgExpOpt.uipanel_files, 'String', ...
-        'HaMMy compatible', 'Value', p{2}(4), 'Position', ...
-        [xNext yNext w_full h_edit]);
-
-    yNext = yNext + h_edit + mg;
-    xNext = 2*mg;
-
-    h.itgExpOpt.checkbox_oneMol = uicontrol('Style', 'checkbox', ...
-        'Parent', h.itgExpOpt.uipanel_files, 'String', ...
-        'One file per molecule', 'Value', p{2}(3), 'Position', ...
-        [xNext yNext w_full - mg h_edit], 'Enable', enbl);
-
-    yNext = yNext + h_edit + mg;
-
-    h.itgExpOpt.checkbox_allMol = uicontrol('Style', 'checkbox', ...
-        'Parent', h.itgExpOpt.uipanel_files, 'String', ...
-        'All molecules in one file', 'Value', p{2}(2), 'Position', ...
-        [xNext yNext w_full - mg h_edit], 'Enable', enbl);
-
-    xNext = mg;
-    yNext = yNext + h_edit + mg;
-
-    h.itgExpOpt.checkbox_ASCII = uicontrol('Style', 'checkbox', ...
-        'Parent', h.itgExpOpt.uipanel_files, 'String', 'ASCII traces', ...
-        'Value', p{2}(1), 'Position', [xNext yNext w_full h_edit], ...
-        'Callback', {@checkbox_ASCII_Callback, h_fig});
-
-    yNext = yNext + h_edit + big_mg;
-
-    uicontrol('Style', 'text', 'Parent', h.itgExpOpt.uipanel_files, ...
-        'String', 'One MASH project will be save in any case.', ...
-        'HorizontalAlignment', 'left', 'ForegroundColor', [0 0 1], ...
-        'Position', [xNext yNext w_full h_txt]);
-end
-
 guidata(h_fig, h);
 
 uistack(h.itgExpOpt.pushbutton_itgExpOpt_ok, 'bottom');
@@ -752,18 +676,6 @@ uistack(h.itgExpOpt.listbox_dyeLabel, 'bottom');
 uistack(h.itgExpOpt.popupmenu_dyeExc, 'bottom');
 uistack(h.itgExpOpt.popupmenu_dyeLabel, 'bottom');
 uistack(h.itgExpOpt.popupmenu_dyeChan, 'bottom');
-
-if isFile
-    uistack(h.itgExpOpt.uipanel_molPrm, 'bottom');
-    uistack(h.itgExpOpt.checkbox_SMART, 'bottom');
-    uistack(h.itgExpOpt.checkbox_QuB, 'bottom');
-    uistack(h.itgExpOpt.checkbox_VbFRET, 'bottom');
-    uistack(h.itgExpOpt.checkbox_HaMMy, 'bottom');
-    uistack(h.itgExpOpt.checkbox_oneMol, 'bottom');
-    uistack(h.itgExpOpt.checkbox_allMol, 'bottom');
-    uistack(h.itgExpOpt.checkbox_ASCII, 'bottom');
-end
-
 uistack(h.itgExpOpt.pushbutton_itgExpOpt_add, 'bottom');
 uistack(h.itgExpOpt.edit_newUnits, 'bottom');
 uistack(h.itgExpOpt.edit_newName, 'bottom');
@@ -780,9 +692,9 @@ uistack(h.itgExpOpt.edit_molName, 'bottom');
 uistack(h.itgExpOpt.edit_movName, 'bottom');
 
 set(h.itgExpOpt.uipanel_molPrm, 'Title', 'Project parameters');
-if isFile
-    set(h.itgExpOpt.uipanel_files, 'Title', 'Output files');
-end
+% if fromVidproc
+%     set(h.itgExpOpt.uipanel_files, 'Title', 'Output files');
+% end
 set(h.itgExpOpt.uipanel_chanPrm, 'Title', 'Spectral emission channels');
 if isFRET
     set(h.itgExpOpt.uipanel_fretPrm, 'Title', 'FRET calculations');
@@ -1324,7 +1236,7 @@ else
 end
 
 
-function pushbutton_itgExpOpt_add_Callback(obj, evd, obj_but, h_fig)
+function pushbutton_itgExpOpt_add_Callback(obj, evd, but_obj, h_fig)
 h = guidata(h_fig);
 name_str = get(h.itgExpOpt.edit_newName, 'String');
 units_str = get(h.itgExpOpt.edit_newUnits, 'String');
@@ -1338,17 +1250,9 @@ if ~isempty(name_str) && length(name_str) <= maxN && ...
     nExc = size(str_exc,1)-1;
 
     p{1} = [p{1}; {name_str '' units_str}];
-    if obj_but == h.pushbutton_chanOpt
-        p{2} = [get(h.itgExpOpt.checkbox_ASCII, 'Value') ...
-                get(h.itgExpOpt.checkbox_allMol, 'Value') ...
-                get(h.itgExpOpt.checkbox_oneMol, 'Value') ...
-                get(h.itgExpOpt.checkbox_HaMMy, 'Value') ...
-                get(h.itgExpOpt.checkbox_VbFRET, 'Value') ...
-                get(h.itgExpOpt.checkbox_QuB, 'Value') ...
-                get(h.itgExpOpt.checkbox_SMART, 'Value')];
-    end
+  
     guidata(h.figure_itgExpOpt, p);
-    buildWinOpt(p, nExc, nChan, obj_but, h_fig);
+    buildWinOpt(p, nExc, nChan, but_obj, h_fig);
 else
     updateActPan(['Parameter name must not be empty and parameter name' ...
         'and units must contain ' num2str(maxN) ' characters at max.'], ...
@@ -1356,7 +1260,7 @@ else
 end
 
 
-function pushbutton_itgExpOpt_rem_Callback(obj, evd, obj_but, h_fig)
+function pushbutton_itgExpOpt_rem_Callback(obj, evd, but_obj, h_fig)
 h = guidata(h_fig);
 p_select = get(h.itgExpOpt.listbox_prm, 'Value');
 if p_select > 0
@@ -1368,15 +1272,6 @@ if p_select > 0
         if i ~= p_select + 4 + nExc
             p{1} = [p{1};{p_prev{1}{i,1} p_prev{1}{i,2} p_prev{1}{i,3}}];
         end
-    end
-    if obj_but == h.pushbutton_chanOpt
-        p{2} = [get(h.itgExpOpt.checkbox_ASCII, 'Value') ...
-                get(h.itgExpOpt.checkbox_allMol, 'Value') ...
-                get(h.itgExpOpt.checkbox_oneMol, 'Value') ...
-                get(h.itgExpOpt.checkbox_HaMMy, 'Value') ...
-                get(h.itgExpOpt.checkbox_VbFRET, 'Value') ...
-                get(h.itgExpOpt.checkbox_QuB, 'Value') ...
-                get(h.itgExpOpt.checkbox_SMART, 'Value')];
     end
     p{3} = p_prev{3};
     p{4} = p_prev{4};
@@ -1390,19 +1285,7 @@ if p_select > 0
     str_exc = get(h.itgExpOpt.popupmenu_dyeExc,'String');
     nExc = size(str_exc,1)-1;
     
-    buildWinOpt(p, nExc, nChan, obj_but, h_fig);
-end
-
-
-function checkbox_ASCII_Callback(obj, evd, h_fig)
-h = guidata(h_fig);
-switch get(obj, 'Value')
-    case 1
-        set(h.itgExpOpt.checkbox_allMol, 'Enable', 'on');
-        set(h.itgExpOpt.checkbox_oneMol, 'Enable', 'on');
-    case 0
-        set(h.itgExpOpt.checkbox_allMol, 'Enable', 'off');
-        set(h.itgExpOpt.checkbox_oneMol, 'Enable', 'off');
+    buildWinOpt(p, nExc, nChan, but_obj, h_fig);
 end
 
 
@@ -1417,14 +1300,6 @@ switch but_obj
         h.param.movPr.itg_clr = p{5};
         h.param.movPr.chanExc = p{6};
         h.param.movPr.labels = p{7}{2};
-        h.param.movPr.itg_expMolFile = [ ...
-            get(h.itgExpOpt.checkbox_ASCII, 'Value') ...
-            get(h.itgExpOpt.checkbox_allMol, 'Value') ...
-            get(h.itgExpOpt.checkbox_oneMol, 'Value') ...
-            get(h.itgExpOpt.checkbox_HaMMy, 'Value') ...
-            get(h.itgExpOpt.checkbox_VbFRET, 'Value') ...
-            get(h.itgExpOpt.checkbox_QuB, 'Value') ...
-            get(h.itgExpOpt.checkbox_SMART, 'Value')];
         
     case h.pushbutton_editParam
         currProj = get(h.listbox_traceSet, 'Value');
