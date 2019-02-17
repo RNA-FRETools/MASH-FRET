@@ -75,9 +75,70 @@ if ~isempty(P)
     end
     fname = [name '.hist'];
     f = fopen([pname fname], 'Wt');
-    fprintf(f, [str_tpe '(' str_units ')\tfrequency count\t' ...
-        'cumulative frequency count\n']);
-    fprintf(f, '%d\t%d\t%d\n', P');
+    fprintf(f, [str_tpe '(' str_units ')\tfrequency count\tprobability\t' ...
+        'cumulative frequency count\tcumulative probability\n']);
+    fprintf(f, '%d\t%d\t%d\t%d\t%d\n', [P(:,[1,2]),P(:,2)/sum(P(:,2)), ...
+        P(:,3),P(:,3)/sum(P(:,2))]');
+    fclose(f);
+end
+
+% Export RMSE analysis results
+if ~isempty(pres{3,1})
+    fname = [name '_config.txt'];
+    Kmax = pstart{4}(3);
+    isBIC = ~pstart{4}(1);
+    if isBIC
+        [o,Kopt] = min(pres{3,1}(:,2));
+        str_meth = 'BIC';
+    else
+        penalty = pstart{4}(2);
+        Kopt = 1;
+        for k = 2:Kmax
+            if ((pres{3,1}(k,1)-pres{3,1}(Kopt,1))/ ...
+                    pres{3,1}(Kopt,1))>(penalty-1)
+                Kopt = k;
+            end
+        end
+        str_meth = num2str(penalty);
+    end
+
+    f = fopen([pname fname], 'Wt');
+    fprintf(f, 'Max. number of Gaussians: %i\n\n', Kmax);
+    fprintf(f, 'Penalty: %s\n\n', str_meth);
+    fprintf(f, 'Optimum number of Gaussians: %i\n\n', Kopt);
+    fprintf(f, 'Fitting equations:\n');
+    for K = 1:Kmax
+        if K>2
+            fprintf(f, '- %i Gaussians:\t%s + ... + %s\n', K, ...
+                getEqGauss(1), strrep(getEqGauss(1), '1', num2str(K)));
+        else
+            fprintf(f, '- %i Gaussians:\t%s\n', K, getEqGauss(K));
+        end
+    end
+    fprintf(f, ['\nBest parameters for all GMM with FWHM = o *' ...
+        ' 2*sqrt(2*ln(2)):\n']);
+    fprintf(f, ['number of Gaussians\tLog Likelihood\tBIC' ...
+        repmat('\tA_%i\tmu_%i\tFWHM_%i\t',[1 K]) '\n'], ...
+            reshape(repmat(1:K,[3,1]),[1,3*K]));
+    for K = 1:Kmax
+        if ~isempty(pres{3,2}{K})
+            if isInt
+                if perSec
+                    pres{3,2}{K}(:,[2 3]) = pres{3,2}{K}(:,[2 3])/expT;
+                end
+                if perPix
+                    pres{3,2}{K}(:,[2 3]) = pres{3,2}{K}(:,[2 3])/nPix;
+                end
+            end
+
+            fprintf(f, ['%i\t%d\t%d' repmat('\t%d',[1,3*K]) ...
+                '\n'], [K pres{3,1}(K,:) reshape(pres{3,2}{K}', ...
+                [1 numel(pres{3,2}{K})])]);
+        else
+            fprintf(f, '%i\tn.a.\n', K);
+        end
+    end
+
     fclose(f);
 end
 
@@ -176,67 +237,7 @@ switch meth
                 end
             end
         end
-        
-        % Export RMSE analysis results
-        if ~isempty(pres{3,1})
-            fname = [name '_rmse.txt'];
-            Kmax = pstart{4}(3);
-            isBIC = ~pstart{4}(1);
-            if isBIC
-                [o,Kopt] = min(pres{3,1}(:,2));
-                str_meth = 'BIC';
-            else
-                penalty = pstart{4}(2);
-                Kopt = 1;
-                for k = 2:Kmax
-                    if ((pres{3,1}(k,1)-pres{3,1}(Kopt,1))/ ...
-                            pres{3,1}(Kopt,1))>(penalty-1)
-                        Kopt = k;
-                    end
-                end
-                str_meth = num2str(penalty);
-            end
-            
-            f = fopen([pname fname], 'Wt');
-            fprintf(f, 'Max. number of Gaussians: %i\n\n', Kmax);
-            fprintf(f, 'Penalty: %s\n\n', str_meth);
-            fprintf(f, 'Optimum number of Gaussians: %i\n\n', Kopt);
-            fprintf(f, 'Fitting equations:\n');
-            for K = 1:Kmax
-                if K>2
-                    fprintf(f, '- %i Gaussians:\t%s + ... + %s\n', K, ...
-                        getEqGauss(1), strrep(getEqGauss(1), '1', num2str(K)));
-                else
-                    fprintf(f, '- %i Gaussians:\t%s\n', K, getEqGauss(K));
-                end
-            end
-            fprintf(f, ['\nBest parameters for all GMM with FWHM = o *' ...
-                ' 2*sqrt(2*ln(2)):\n']);
-            fprintf(f, ['number of Gaussians\tLog Likelihood\tBIC' ...
-                repmat('\tA_%i\tmu_%i\tFWHM_%i\t',[1 K]) '\n'], ...
-                    reshape(repmat(1:K,[3,1]),[1,3*K]));
-            for K = 1:Kmax
-                if ~isempty(pres{3,2}{K})
-                    if isInt
-                        if perSec
-                            pres{3,2}{K}(:,[2 3]) = pres{3,2}{K}(:,[2 3])/expT;
-                        end
-                        if perPix
-                            pres{3,2}{K}(:,[2 3]) = pres{3,2}{K}(:,[2 3])/nPix;
-                        end
-                    end
-                    
-                    fprintf(f, ['%i\t%d\t%d' repmat('\t%d',[1,3*K]) ...
-                        '\n'], [K pres{3,1}(K,:) reshape(pres{3,2}{K}', ...
-                        [1 numel(pres{3,2}{K})])]);
-                else
-                    fprintf(f, '%i\tn.a.\n', K);
-                end
-            end
 
-            fclose(f);
-        end
-        
     case 2 % Thresholding
         if ~isempty(pres{1,1})
             fname = [name '_thresh.txt'];
@@ -379,9 +380,16 @@ if expfig
         if curr_s==s_end || curr_s==nSpl
             if isdriver
                 try
-                    fname_fig{nfig} = cat(2,pname_fig_temp,filesep, ...
-                        name,'_sample',num2str(s_prev),'-', ...
-                        num2str(curr_s),'of',num2str(nSpl),'.pdf');
+                    if meth==1
+                        fname_fig{nfig} = cat(2,pname_fig_temp,filesep, ...
+                            name,'_gauss_sample',num2str(s_prev),'-', ...
+                            num2str(curr_s),'of',num2str(nSpl),'.pdf');
+                    else
+                        fname_fig{nfig} = cat(2,pname_fig_temp,filesep, ...
+                            name,'_thresh_sample',num2str(s_prev),'-', ...
+                            num2str(curr_s),'of',num2str(nSpl),'.pdf');
+                    end
+                    
                     print(h_fig_mol,fname_fig{nfig},'-dpdf');
                     nfig = nfig + 1;
                     s_prev = curr_s + 1;
@@ -426,8 +434,11 @@ if expfig
     if isdriver
 %         ps2pdf('psfile', [pname name '.ps'], 'pdffile', [pname name '.pdf']);
 %         delete([pname name '.ps']);
-
-        fname_pdf = cat(2,pname,name,'.pdf');
+        if meth==1
+            fname_pdf = cat(2,pname,name,'_gauss.pdf');
+        else
+            fname_pdf = cat(2,pname,name,'_thresh.pdf');
+        end
         append_pdfs(fname_pdf, fname_fig{:});
         flist = dir(pname_fig_temp);
         for i = 1:size(flist,1)
