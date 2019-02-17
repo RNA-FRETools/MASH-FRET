@@ -1,10 +1,14 @@
 function saveProcAscii(h_fig, p, xp, pname, name)
 
 h = guidata(h_fig);
+
+% saveProcAscii is/isn't called from trace processing export window
+% (openExpTtpr.m)--> can be called in a routine:
 fromTT = isequalwithequalnans(p, h.param.ttPr);
 
-proj = p.curr_proj;
+%% collect project parameters
 
+proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
 nMol = size(p.proj{proj}.intensities,2)/nChan;
 coord = p.proj{proj}.coord;
@@ -25,6 +29,7 @@ end
 exc = p.proj{proj}.excitations;
 chanExc = p.proj{proj}.chanExc;
 labels = p.proj{proj}.labels;
+
 if isfield(p.proj{proj},'fix')
     perSec = p.proj{proj}.fix{2}(4);
     perPix = p.proj{proj}.fix{2}(5);
@@ -49,11 +54,15 @@ if fromTT
 else
     intensities_DTA = p.proj{proj}.adj.intensities_DTA;
 end
+
+iunits = 'counts';
 if perSec
+    iunits = cat(2,iunits,'/second');
     intensities = intensities/rate;
     intensities_DTA = intensities_DTA/rate;
 end
 if perPix
+    iunits = cat(2,iunits,'/pixel');
     intensities = intensities/nPix;
     intensities_DTA = intensities_DTA/nPix;
 end
@@ -67,7 +76,8 @@ else
 end
 
 
-%% traces
+%% collect export options: traces
+
 saveTr = xp.traces{1}(1);
 if saveTr
     saveAscii = false;
@@ -79,41 +89,40 @@ if saveTr
     
     if sum(double(xp.traces{1}(2) == [1 7]))
         saveAscii = true; % one file/mol
-        pname_ascii = setCorrectPath([pname 'traces_ASCII'], h_fig);
+        pname_ascii = setCorrectPath(cat(2,pname,'traces_ASCII'),h_fig);
     end
     if sum(double(xp.traces{1}(2) == [2 7])) && nFRET > 0
         saveHa = true; % one file/mol
-        pname_ha = setCorrectPath([pname 'traces_HaMMy'], h_fig);
+        pname_ha = setCorrectPath(cat(2,pname,'traces_HaMMy'),h_fig);
     end
     if sum(double(xp.traces{1}(2) == [3 7])) && nFRET > 0
         saveVbfret = true; % all mol in one file
-        pname_vbfret = setCorrectPath([pname 'traces_VbFRET'], h_fig);
+        pname_vbfret = setCorrectPath(cat(2,pname,'traces_VbFRET'), h_fig);
     end
     if sum(double(xp.traces{1}(2) == [4 7])) && nFRET > 0
         saveSmart = true; % all mol in one file
-        pname_smart = setCorrectPath([pname 'traces_SMART'], h_fig);
+        pname_smart = setCorrectPath(cat(2,pname,'traces_SMART'),h_fig);
     end
     if sum(double(xp.traces{1}(2) == [5 7])) && nFRET > 0
         saveQub = true; % one file/mol
-        pname_qub = setCorrectPath([pname 'traces_QUB'], h_fig);
+        pname_qub = setCorrectPath(cat(2,pname,'traces_QUB'),h_fig);
     end
     if sum(double(xp.traces{1}(2) == [6 7])) && nFRET > 0
         saveEbfret = true; % one file/mol
         data_ebfret = cell(1,nFRET);
-        pname_ebfret = setCorrectPath([pname 'traces_ebFRET'], h_fig);
+        pname_ebfret = setCorrectPath(cat(2,pname,'traces_ebFRET'),h_fig);
     end
     saveTr_I = xp.traces{2}(1);
     saveTr_fret = ~~xp.traces{2}(2) & nFRET > 0;
     saveTr_S = ~~xp.traces{2}(3) & nS > 0;
     allInOne = ~~xp.traces{2}(4);
-    savePrm = xp.traces{2}(5);
+    savePrm = xp.traces{2}(5); % external file/in trace file/none
     saveGam = xp.traces{2}(6);  % added by FS, 19.3.2018
-    if savePrm == 1 % external file
-        pname_xp = setCorrectPath([pname 'parameters'], h_fig);
-    end
+    pname_xp = setCorrectPath([pname 'parameters'], h_fig);
 end
 
-%% Histograms
+%% collect export options: histograms
+
 saveHist = xp.hist{1}(1);
 if saveHist
     pname_hist = setCorrectPath([pname 'histograms'], h_fig);
@@ -144,7 +153,8 @@ if saveHist
     maxS = xp.hist{2}(3,4);
 end
 
-%% Dwell-times
+%% collect export options: dwell-times
+
 saveDt = xp.dt{1};
 if saveDt
     pname_dt = setCorrectPath([pname 'dwell-times'], h_fig);
@@ -167,7 +177,8 @@ if saveKin
     fname_kinS = [name '_S.kin'];
 end
 
-%% Figures
+%% collect export options: figures
+
 saveFig = xp.fig{1}(1);
 if saveFig
     pname_fig = setCorrectPath([pname 'figures'], h_fig);
@@ -204,6 +215,8 @@ if saveFig
     end
 end
 
+%% export data to files: 
+
 % loading bar parameters---------------------------------------------------
 err = loading_bar('init', h_fig , nMol, ...
     'Export process data for selected molecules ...');
@@ -220,501 +233,263 @@ n = 0;
 try
     for m = 1:nMol
         if mol_incl(m) && mol_incl_tag(m)  % added by FS, 24.4.2018
+            
+            % increment number of exported molecules
             n = n + 1;
-            str = ['export data of molecule n:°' num2str(m) '(' ...
-                num2str(n) ' on ' num2str(N) '):'];
-
+            
+            % display action
+            str = cat(2,'export data of molecule n:°',num2str(m),'(',...
+                num2str(n),' on ',num2str(N),'):');
+            
+            % if requested, process molecule data before exporting
             if fromTT && xp.process
+                
+                % process data
                 p = updateTraces(h_fig, 'ttPr', m, p, []);
+                
+                % collect processed data
                 intensities = p.proj{proj}.intensities_denoise;
                 intensities_DTA = p.proj{proj}.intensities_DTA;
-                
-                % we export always in counts (confusion when
-                % re-importing ASCII to MASH for merging data)
-%                 if perSec
-%                     intensities = intensities/rate;
-%                     intensities_DTA = intensities_DTA/rate;
-%                 end
-%                 if perPix
-%                     intensities = intensities/nPix;
-%                     intensities_DTA = intensities_DTA/nPix;
-%                 end
-
                 FRET_DTA = p.proj{proj}.FRET_DTA;
                 S_DTA = p.proj{proj}.S_DTA;
+                
+                % convert intensity to proper units
+                if perSec
+                    intensities = intensities/rate;
+                    intensities_DTA = intensities_DTA/rate;
+                end
+                if perPix
+                    intensities = intensities/nPix;
+                    intensities_DTA = intensities_DTA/nPix;
+                end
+                
             end
-
+            
+            % build frame and time column
             incl = p.proj{proj}.bool_intensities(:,m);
             [frames,o,o] = find(incl);
             frames = ((nExc*(frames(1)-1)+1):nExc*frames(end))';
             times = frames*rate;
+            
+            % build molecule file name
             name_mol = [name '_mol' num2str(n) 'of' num2str(N)];
+            
+            % intensity traces are/aren't discretized
             if fromTT
                 discrInt = ~p.proj{proj}.prm{m}{4}{1}(2) || ...
                     p.proj{proj}.prm{m}{4}{1}(2)==2;
             else
                 discrInt = 1;
             end
-
-            if fromTT && saveTr && savePrm < 3
+            
+            % select molecule intensity data
+            int_m = intensities(incl,((m-1)*nChan+1):m*nChan,:);
+            intDTA_m = intensities_DTA(incl,((m-1)*nChan+1):m*nChan,:);
+            
+            % format molecule processing parameters
+            if fromTT && saveTr && (savePrm<3) % save parameters
                 str_xp = getStrPrm(p.proj{proj}, m, h_fig);
             end
 
-            %% traces
+            %% export traces
 
             if saveTr
                 if saveAscii
+                    % initialize data to write in file
+                    head_I = [];    fmt_I = [];    dat_I = [];
+                    head_fret = []; fmt_fret = []; dat_fret = [];
+                    head_s = [];    fmt_s = [];    dat_s = [];
+                    
                     if saveTr_I
-                        head = '';
-                        dat = [];
-                        for l = 1:nExc
-                            str_l = strcat(' at ', num2str(exc(l)), 'nm');
-                            if l > 1
-                                head = strcat(head, '\t');
-                            end
-                            dat = [dat times(l:nExc:end,:) ...
-                                frames(l:nExc:end,:)];
-                            head = strcat(head, 'time', str_l, ...
-                                '\tframe', str_l);
-
-                            for c = 1:nChan
-                                dat = [dat ...
-                                    intensities(incl,(m-1)*nChan+c,l)];
-                                head = strcat(head, '\tI_', num2str(c), ...
-                                    str_l,'(counts)');
-                                if discrInt
-                                    dat = [dat intensities_DTA(incl, ...
-                                        (m-1)*nChan+c,l)];
-                                    head = strcat(head, '\tdiscr.I_', ...
-                                        num2str(c), str_l,'(counts)');
-                                end
-                            end
-                        end
-                        head_I = head;
-                        fmt_I = repmat('%d\t', [1,...
-                            ((discrInt+1)*nExc*nChan+2*nExc)]);
-                        dat_I = dat;
+                        % format intensity data
+                        [head_I,fmt_I,dat_I] = formatInt2File(exc, ...
+                            [times,frames],cat(2,int_m,intDTA_m),iunits,...
+                            discrInt);
+                        
                         if ~allInOne
-                            fname_ascii = [name_mol '_I.txt'];
-                            new_fname_ascii = overwriteIt(fname_ascii, ...
-                                pname_ascii, h_fig);
-                            if isempty(new_fname_ascii)
+                            % write data to intensity file
+                            [name_mol,name] = writeDat2file(cat(2,...
+                                pname_ascii,name_mol),'_I.txt',[n,N],...
+                                {head_I,fmt_I,dat_I},[fromTT,savePrm],...
+                                str_xp,h_fig);
+                            if isempty(name)
                                 return;
                             end
-                            if ~isequal(new_fname_ascii,fname_ascii)
-                                fname_ascii = new_fname_ascii;
-                                [o,name_mol,o] = ...
-                                    fileparts(new_fname_ascii);
-                                curs = strfind(name_mol, '_mol');
-                                if ~isempty(curs)
-                                    name = name_mol(1:(curs-1));
-                                else
-                                   curs = strfind(name_mol, 'mol'); 
-                                   if ~isempty(curs)
-                                       name = name_mol(1:(curs-1));
-                                   else
-                                       name = name_mol;
-                                   end
-                                   name_mol = [name '_mol' num2str(n) ...
-                                       'of' num2str(N)];
-                                   fname_ascii = [name_mol '_I.txt'];
-                                end
-                                name = name_mol(1:(curs-1));
-                            end
-                            f = fopen([pname_ascii fname_ascii], 'Wt');
-                            if fromTT && savePrm == 2
-                                fprintf(f, [str_xp '\n']);
-                            end
-                            fprintf(f, strcat(head_I, '\n'));
-                            fprintf(f, [fmt_I '\n'], dat');
-                            fclose(f);
-                            str = [str ...
-                                '\nIntensity traces saved to ASCII ' ...
-                                'file: ' fname_ascii '\n in folder: ' ...
-                                pname_ascii];
+                            
+                            % update action
+                            str = cat(2,str,'\nIntensity traces saved',...
+                                ' to ASCII file: ',name_mol,'_I.txt',...
+                                '\n in folder: ',pname_ascii);
                         end
-                    else
-                        head_I = [];
-                        fmt_I = [];
-                        dat_I = [];
                     end
+                    
                     if saveTr_fret
-                        head = [];
-                        dat = [];
+                        % calculate FRET
                         if fromTT
                             gamma = p.proj{proj}.prm{m}{5}{3};
                         else
                             gamma = 1;
                         end
-                        FRET_all = calcFRET(nChan, nExc, exc, chanExc, ...
-                            FRET, intensities(incl, ...
-                            (((m-1)*nChan+1):m*nChan),:), gamma);
-                        for c = 1:nChan
-                            [i,o,o] = find(FRET(:,1)== c);
-                            if ~isempty(i)
-                                str_l = [' at ' num2str(chanExc(c)) 'nm'];
-                                if ~isempty(head)
-                                    head = [head '\t'];
-                                end
-                                [o,l,o] = find(exc==chanExc(c));
-                                dat = [dat times(l:nExc:end,:) ...
-                                    frames(l:nExc:end,:)];
-                                head = [head 'time' str_l '\tframe' str_l];
-
-                                for j = i'
-                                    dat = [dat FRET_all(:,j)];
-                                    dat = [dat FRET_DTA(incl, ...
-                                            (m-1)*nFRET+j)];
-                                    head = [head '\tFRET_' ...
-                                        num2str(FRET(j,1)) '>' ...
-                                        num2str(FRET(j,2)) ...
-                                        '\tdiscr.FRET_' ...
-                                        num2str(FRET(j,1)) '>' ...
-                                        num2str(FRET(j,2))];
-                                end
-                            end
-                        end
-                        head_fret = head;
-                        fmt_fret = repmat('%d\t', ...
-                            [1,(2*nFRET+2*numel(unique(FRET(:,1))))]);
-                        dat_fret = dat;
+                        FRET_all = calcFRET(nChan,nExc,exc,chanExc,FRET,...
+                            int_m,gamma);
+                        FRET_DTA_all = FRET_DTA(incl,(m-1)*nFRET+1:m*nFRET);
+                        
+                        % format FRET data
+                        [head_fret,fmt_fret,dat_fret] = formatFret2File(...
+                            exc,chanExc,[times,frames],cat(2,FRET_all,...
+                            FRET_DTA_all),FRET);
 
                         if ~allInOne
-                            fname_ascii = [name_mol '_FRET.txt'];
-                            new_fname_ascii = overwriteIt(fname_ascii, ...
-                                pname_ascii, h_fig);
-                            if isempty(new_fname_ascii)
+                            % write data to FRET file
+                            [name_mol,name] = writeDat2file(cat(2,...
+                                pname_ascii,name_mol),'_FRET.txt',[n,N],...
+                                {head_fret,fmt_fret,dat_fret},[fromTT,...
+                                savePrm],str_xp,h_fig);
+                            if isempty(name)
                                 return;
                             end
-                            if ~isequal(new_fname_ascii,fname_ascii)
-                                fname_ascii = new_fname_ascii;
-                                [o,name_mol,o] = ...
-                                    fileparts(new_fname_ascii);
-                                curs = strfind(name_mol, '_mol');
-                                if ~isempty(curs)
-                                    name = name_mol(1:(curs-1));
-                                else
-                                   curs = strfind(name_mol, 'mol'); 
-                                   if ~isempty(curs)
-                                       name = name_mol(1:(curs-1));
-                                   else
-                                       name = name_mol;
-                                   end
-                                   name_mol = [name '_mol' num2str(n) ...
-                                       'of' num2str(N)];
-                                   fname_ascii = [name_mol '_FRET.txt'];
-                                end
-                                name = name_mol(1:(curs-1));
-                            end
-                            f = fopen([pname_ascii fname_ascii], 'Wt');
-                            if fromTT && savePrm == 2
-                                fprintf(f, [str_xp '\n']);
-                            end
-                            fprintf(f, strcat(head_fret, '\n'));
-                            fprintf(f, [fmt_fret '\n'], dat_fret');
-                            fclose(f);
-                            str = [str ...
-                                '\nFRET traces saved to ASCII file: '...
-                                fname_ascii '\n in folder: ' pname_ascii];
+                            
+                            % update action
+                            str = cat(2,str,'\nFRET traces saved to ',...
+                                'ASCII file: ',name_mol,'_FRET.txt',...
+                                '\n in folder: ',pname_ascii);
                         end
-                    else
-                        head_fret = [];
-                        fmt_fret = [];
-                        dat_fret = [];
                     end
-                    if saveTr_S
-                        head = [];
-                        dat = [];
-                        for s = 1:nS
-                            str_l = [' at ' num2str(chanExc(S(s))) 'nm'];
-                            [o,l,o] = find(chanExc(S(s))==exc);
-                            if ~isempty(head)
-                                head = [head '\t'];
-                            end
-                            dat = [dat times(l:nExc:end,:) ...
-                                frames(l:nExc:end,:)];
-                            head = [head 'time' str_l '\tframe' str_l];
-
-                            Inum = sum(intensities(incl, ...
-                                ((m-1)*nChan+1):m*nChan,l),2);
-                            Iden = sum(sum(intensities(incl, ...
-                                ((m-1)*nChan+1):m*nChan,:),2),3);
-                            dat = [dat Inum./Iden];
-                            dat = [dat S_DTA(incl,(m-1)*nS+s)];
-
-                            head = [head '\tS_' labels{S(s)} ...
-                                '\tdiscr.S_' labels{S(s)}];
-                        end
-                        head_s = head;
-                        fmt_s = repmat('%d\t', [1,4*nS]);
-                        dat_s = dat;
-                        if ~allInOne
-                            fname_ascii = [name_mol '_S.txt'];
-                            new_fname_ascii = overwriteIt(fname_ascii, ...
-                                pname_ascii, h_fig);
-                            if isempty(new_fname_ascii)
-                                return;
-                            end
-                            if ~isequal(new_fname_ascii,fname_ascii)
-                                fname_ascii = new_fname_ascii;
-                                [o,name_mol,o] = ...
-                                    fileparts(new_fname_ascii);
-                                curs = strfind(name_mol, '_mol');
-                                if ~isempty(curs)
-                                    name = name_mol(1:(curs-1));
-                                else
-                                   curs = strfind(name_mol, 'mol'); 
-                                   if ~isempty(curs)
-                                       name = name_mol(1:(curs-1));
-                                   else
-                                       name = name_mol;
-                                   end
-                                   name_mol = [name '_mol' num2str(n) ...
-                                       'of' num2str(N)];
-                                   fname_ascii = [name_mol '_S.txt'];
-                                end
-                                name = name_mol(1:(curs-1));
-                            end
-                            f = fopen([pname_ascii fname_ascii], 'Wt');
-                            if fromTT && savePrm == 2
-                                fprintf(f, [str_xp '\n']);
-                            end
-                            fprintf(f, strcat(head_s, '\n'));
-                            fprintf(f, [fmt_s '\n'], dat');
-                            fclose(f);
-                            str = [str ...
-                                '\nS traces saved to ASCII file: ' ...
-                                fname_ascii '\n in folder: ' pname_ascii];
-                        end
-                    else
-                        head_s = [];
-                        fmt_s = [];
-                        dat_s = [];
-                    end
-                    if allInOne
-                        fname_ascii = [name_mol '.txt'];
-                        new_fname_ascii = overwriteIt(fname_ascii, ...
-                            pname_ascii, h_fig);
-                        if isempty(new_fname_ascii)
-                            return;
-                        end
-                        if ~isequal(new_fname_ascii,fname_ascii)
-                            fname_ascii = new_fname_ascii;
-                            [o,name_mol,o] = fileparts(new_fname_ascii);
-                            curs = strfind(name_mol, '_mol');
-                            if ~isempty(curs)
-                                name = name_mol(1:(curs-1));
-                            else
-                               curs = strfind(name_mol, 'mol'); 
-                               if ~isempty(curs)
-                                   name = name_mol(1:(curs-1));
-                               else
-                                   name = name_mol;
-                               end
-                               name_mol = [name '_mol' num2str(n) 'of' ...
-                                   num2str(N)];
-                               fname_ascii = [name_mol '.txt'];
-                            end
-                        end
-                        f = fopen([pname_ascii fname_ascii], 'Wt');
-                        if fromTT && savePrm == 2
-                            fprintf(f, [str_xp '\n']);
-                        end
-                        fprintf(f, [head_I '\t' head_fret '\t' head_s ...
-                            '\n']);
-                        fprintf(f, [fmt_I fmt_fret fmt_s '\n'], ...
-                            [dat_I dat_fret dat_s]');
-                        fclose(f);
-                        str = [str '\nTraces saved to ASCII file: ' ...
-                            fname_ascii '\n in folder: ' pname_ascii];
-                    end
-                end
-
-                for j = 1:nFRET
-                    ext_f = ['FRET' num2str(FRET(j,1)) 'to' ...
-                        num2str(FRET(j,2))];
-                    [o,l,o] = find(exc==chanExc(FRET(j,1)));
-                    I_fret{j}{n} = ...
-                        intensities(incl,[(m-1)*nChan+FRET(j,1) ...
-                        (m-1)*nChan+FRET(j,2)],l);
                     
-%                     % clip outliers
-%                     FRETtrajs = I_fret{j}{n}(:,2)./ sum(I_fret{j}{n},2);
-%                     incldat = FRETtrajs >= -0.2 & FRETtrajs <= 1.2;
-                    incldat = true(size(I_fret{j}{n}(:,1)));
-
-                    if saveHa
-                        fname_ha = [name_mol ext_f '_HaMMy.dat'];
-                        new_fname_ha = overwriteIt(fname_ha, pname_ha, ...
-                            h_fig);
-                        if isempty(new_fname_ha)
-                            return;
-                        end
-                        if ~isequal(new_fname_ha,fname_ha)
-                            fname_ha = new_fname_ha;
-                            [o,name_mol,o] = fileparts(new_fname_ha);
-                            curs = strfind(name_mol, '_mol');
-                            if ~isempty(curs)
-                                name = name_mol(1:(curs-1));
-                            else
-                               curs = strfind(name_mol, 'mol'); 
-                               if ~isempty(curs)
-                                   name = name_mol(1:(curs-1));
-                               else
-                                   name = name_mol;
-                               end
-                               name_mol = [name '_mol' num2str(n) 'of' ...
-                                   num2str(N)];
-                               fname_ha = [name_mol ext_f '_HaMMy.dat'];
+                    if saveTr_S
+                        % format stoichiometry data
+                        [head_s,fmt_s,dat_s] = formatS2File(exc,chanExc,...
+                            [times,frames],int_m,...
+                            S_DTA(incl,(m-1)*nS+1:m*nS),labels,S);
+                        
+                        if ~allInOne
+                            % write data to stoichiometry file
+                            [name_mol,name] = writeDat2file(cat(2,...
+                                pname_ascii,name_mol),'_S.txt',[n,N],...
+                                {head_s,fmt_s,dat_s},[fromTT,savePrm],...
+                                str_xp,h_fig);
+                            if isempty(name)
+                                return;
                             end
-                        end
-                        f = fopen([pname_ha fname_ha], 'Wt');
-                        timeAxis = times(l:nExc:end,1);
-                        fprintf(f, '%d\t%d\t%d\n', ...
-                            [timeAxis(incldat,1),I_fret{j}{n}(incldat,:)]');
-                        fclose(f);
-
-                        str = [str '\nTraces (' ext_f ') saved to ' ...
-                            'HaMMy-compatible file: ' fname_ha '\n in ' ...
-                            'folder: ' pname_ha];
-                    end
-
-                    if saveSmart
-                        tr_fret = I_fret{j}{n};
-                        fname_smart = [name '_all' num2str(N) ext_f ...
-                            '_SMART.traces'];
-                        new_fname_smart = overwriteIt(fname_smart, ...
-                            pname_smart, h_fig);
-                        if isempty(new_fname_smart)
-                            return;
-                        end
-                        if ~isequal(new_fname_smart,fname_smart)
-                            fname_smart = new_fname_smart;
-                            [o,name_all,o] = fileparts(new_fname_smart);
-                            curs = strfind(name_all, '_all');
-                            if ~isempty(curs)
-                                name = name_all(1:(curs-1));
-                            else
-                               curs = strfind(name_all, 'all'); 
-                               if ~isempty(curs)
-                                   name = name_all(1:(curs-1));
-                               else
-                                   name = name_all;
-                               end
-                               fname_smart = [name '_all' num2str(N) ...
-                                   ext_f '_SMART.traces'];
-                            end
-                        end
-                        data_smart{j}{n,1}.name = fname_smart;
-                        data_smart{j}{n,1}.gp_num = NaN;
-                        data_smart{j}{n,1}.movie_num = 1;
-                        data_smart{j}{n,1}.movie_ser = 1;
-                        data_smart{j}{n,1}.trace_num = n;
-                        data_smart{j}{n,1}.spots_in_movie = N;
-                        data_smart{j}{n,1}.position_x = coord(m, ...
-                            (2*FRET(j,1)-1));
-                        data_smart{j}{n,1}.position_y = ...
-                            coord(m,2*FRET(j,1));
-                        data_smart{j}{n,1}.positions = coord(mol_incl, ...
-                            (2*FRET(j,1)-1):2*FRET(j,1));
-                        data_smart{j}{n,1}.fps = rate*nExc;
-                        data_smart{j}{n,1}.len = size(tr_fret,1);
-                        data_smart{j}{n,1}.nchannels = 2;
-                        data_smart{j}{n,2} = tr_fret;
-                        data_smart{j}{n,3} = true(size(tr_fret,1),1);
-                    end
-
-                    if saveEbfret
-                        data_ebfret{j} = [data_ebfret{j}; ...
-                            [ones(size(I_fret{j}{n},1),1)*n I_fret{j}{n}]];
-                        fname_ebfret = [name '_all' num2str(N) ext_f ...
-                            '_ebFRET.dat'];
-                        new_fname_ebfret = overwriteIt(fname_ebfret, ...
-                            pname_ebfret, h_fig);
-                        if isempty(new_fname_ebfret)
-                            return;
-                        end
-                        if ~isequal(new_fname_ebfret,fname_ebfret)
-                            fname_ebfret = new_fname_ebfret;
-                            [o,name_all,o] = fileparts(new_fname_ebfret);
-                            curs = strfind(name_all, '_all');
-                            if ~isempty(curs)
-                                name = name_all(1:(curs-1));
-                            else
-                               curs = strfind(name_all, 'all'); 
-                               if ~isempty(curs)
-                                   name = name_all(1:(curs-1));
-                               else
-                                   name = name_all;
-                               end
-                               fname_ebfret = [name '_all' num2str(N) ext_f ...
-                                   '_ebFRET.dat'];
-                            end
+                            
+                            % update action
+                            str = cat(2,str,'\nS traces saved to ASCII',...
+                                ' file: ',name_mol,'_S.txt\n in folder: ',...
+                                pname_ascii);
                         end
                     end
-                    if saveQub
-                        data = I_fret{j}{n};
-                        fname_qub = [name_mol ext_f '_QUB.txt'];
-                        new_fname_qub = overwriteIt(fname_qub, ...
-                            pname_qub, h_fig);
-                        if isempty(new_fname_qub)
+                    
+                    if allInOne
+                        % write data in molecule file
+                        [name_mol,name] = writeDat2file(cat(2,...
+                            pname_ascii,name_mol),'.txt',[n,N],...
+                            {head_I,fmt_I,dat_I;head_fret,fmt_fret,...
+                            dat_fret;head_s,fmt_s,dat_s},...
+                            [fromTT,savePrm],str_xp,h_fig);
+                        if isempty(name)
                             return;
                         end
-                        if ~isequal(new_fname_qub,fname_qub)
-                            fname_qub = new_fname_qub;
-                            [o,name_mol,o] = fileparts(new_fname_qub);
-                            curs = strfind(name_mol, '_mol');
-                            if ~isempty(curs)
-                                name = name_mol(1:(curs-1));
-                            else
-                               curs = strfind(name_mol, 'mol'); 
-                               if ~isempty(curs)
-                                   name = name_mol(1:(curs-1));
-                               else
-                                   name = name_mol;
-                               end
-                               name_mol = [name '_mol' num2str(n) 'of' ...
-                                   num2str(N)];
-                               fname_qub = [name_mol ext_f '_QUB.txt'];
-                            end
-                        end
-                        save([pname_qub fname_qub], 'data', '-ascii');
-                        str = [str '\nTraces (' ext_f ') saved to ' ...
-                            'QUB-compatible file: ' fname_qub '\n in ' ...
-                            'folder: ' pname_qub];
+                        
+                        % update action
+                        str = cat(2,str,'\nTraces saved to ASCII ',...
+                            'file: ',name_mol,'.txt\n in folder: ',...
+                            pname_ascii);
                     end
                 end
-                if fromTT && savePrm == 1 % external param file
-                    fname_xp = [name_mol '.log'];
-                    new_fname_xp = overwriteIt(fname_xp, pname_xp, ...
-                        h_fig);
-                    if isempty(new_fname_xp)
+                
+                % save traces compatible with external software
+                if saveHa||saveVbfret||saveSmart||saveEbfret||saveQub
+                    
+                    for j = 1:nFRET
+                        % format intensity data for FRET calculation
+                        ext_f = cat(2,'FRET',num2str(FRET(j,1)),'to', ...
+                            num2str(FRET(j,2)));
+                        [o,l,o] = find(exc==chanExc(FRET(j,1)));
+                        I_fret{j}{n} = intensities(incl,[(m-1)*nChan+FRET(j,1), ...
+                            (m-1)*nChan+FRET(j,2)],l);
+
+                        if saveHa
+                            % format HaMMy data
+                            [head,fmt,dat] = formatHa2File(...
+                                times(l:nExc:end,1),I_fret{j}{n});
+
+                            % write data to HaMMy file
+                            [name_mol,name] = writeDat2file(cat(2,...
+                                pname_ha,name_mol),cat(2,ext_f,...
+                                '_HaMMy.dat'),[n,N],{head,fmt,dat},...
+                                [fromTT,0],'',h_fig);
+                            if isempty(name)
+                                return;
+                            end
+                            
+                            % update action
+                            str = cat(2,str,'\nTraces (',ext_f,') ',...
+                                'saved to HaMMy-compatible file: ',...
+                                name_mol,ext_f,'_HaMMy.dat\n in folder: ',...
+                                pname_ha);
+                        end
+
+                        if saveSmart
+                            % format SMART data
+                            if ~p.proj{proj}.is_coord
+                                dat_smart{j} = formatSmart2File(...
+                                    I_fret{j}{n},[n,N],rate*nExc,zeros(...
+                                    numel(mol_incl),numel(2*FRET(j,1)-1:...
+                                    2*FRET(j,1))));
+                            else
+                                dat_smart{j} = formatSmart2File(...
+                                    I_fret{j}{n},[n,N],rate*nExc,coord(...
+                                    mol_incl,(2*FRET(j,1)-1):2*FRET(j,1)));
+                            end
+                            
+                        end
+
+                        if saveEbfret
+                            % format ebFRET data
+                            data_ebfret{j} = cat(1,data_ebfret{j},...
+                                cat(2,ones(size(I_fret{j}{n},1),1)*n,...
+                                I_fret{j}{n}));
+                        end
+
+                        if saveQub
+                            % format QuB data
+                            [head,fmt,dat] = formatQub2File(I_fret{j}{n});
+
+                            % write data to QuB file
+                            [name_mol,name] = writeDat2file(cat(2,...
+                                pname_qub,name_mol),cat(2,ext_f,...
+                                '_QUB.txt'),[n,N],{head,fmt,dat},...
+                                [fromTT,0],'',h_fig);
+                            if isempty(name)
+                                return;
+                            end
+                            
+                            % update action
+                            str = cat(2,str,'\nTraces (',ext_f,') ',...
+                                'saved to QUB-compatible file: ',...
+                                name_mol,ext_f,'_QUB.txt in folder: ',...
+                                pname_qub);
+                        end
+                    end
+                end
+                
+                % save parameters
+                if fromTT && savePrm == 1 
+                    
+                    % write parameters to file
+                    [name_mol,name] = writeDat2file(...
+                        cat(2,pname_xp,name_mol),'.log',[n,N],...
+                        {'',str_xp,[]},[fromTT,0],'',h_fig);
+                    if isempty(name)
                         return;
                     end
-                    if ~isequal(new_fname_xp,fname_xp)
-                        fname_xp = new_fname_xp;
-                        [o,name_mol,o] = fileparts(new_fname_xp);
-                        curs = strfind(name_mol, '_mol');
-                        if ~isempty(curs)
-                            name = name_mol(1:(curs-1));
-                        else
-                           curs = strfind(name_mol, 'mol'); 
-                           if ~isempty(curs)
-                               name = name_mol(1:(curs-1));
-                           else
-                               name = name_mol;
-                           end
-                           name_mol = [name '_mol' num2str(n) 'of' ...
-                               num2str(N)];
-                           fname_xp = [name_mol '.log'];
-                        end
-                    end
-                    f = fopen([pname_xp fname_xp], 'Wt');
-                    fprintf(f, str_xp);
-                    fclose(f);
-                    str = [str '\nParameters saved to file: ' fname_xp ...
-                        '\n in folder: ' pname_xp];
+                    
+                    % update action
+                    str = cat(2,str,'\nParameters saved to file: ',...
+                        name_mol,'.log\n in folder: ',pname_xp);
                 end
+                
+                % format gamma factor data
                 % added by FS, 19.3.2018
                 if saveGam
                     for i = 1:nFRET
@@ -732,9 +507,13 @@ try
 
             if saveHist
                 if saveHst_I
+                    
                     x_I = minI:binI:maxI;
+                    
                     for l = 1:nExc
                         for c = 1:nChan
+                            
+                            % format intensity histogram data
                             I = intensities(incl,(m-1)*nChan+c,l);
                             histI = [];
                             histI(:,1) = x_I';
@@ -742,68 +521,79 @@ try
                             histI(:,3) = histI(:,2)/sum(histI(:,2));
                             histI(:,4) = cumsum(histI(:,2));
                             histI(:,5) = histI(:,4)/histI(end,4);
-                            fname_histI = [name_mol '_I' num2str(c) '-' ...
-                                num2str(exc(l)) '.h2'];
-                            new_fname_histI = overwriteIt(fname_histI, ...
-                                pname_hist, h_fig);
-                            if isempty(new_fname_histI)
+                            
+                            % build file name
+                            fname_histI = cat(2,name_mol,'_I',num2str(c),...
+                                '-',num2str(exc(l)),'.hist');
+                            [name_mol,name] = correctNamemol(fname_histI,...
+                                pname_hist,[n,N],h_fig);
+                            if isempty(name)
                                 return;
                             end
-                            if ~isequal(new_fname_histI,fname_histI)
-                                fname_histI = new_fname_histI;
-                                [o,name_mol,o] = ...
-                                    fileparts(new_fname_histI);
-                                curs = strfind(name_mol, '_mol');
-                                if ~isempty(curs)
-                                    name = name_mol(1:(curs-1));
-                                else
-                                   curs = strfind(name_mol, 'mol'); 
-                                   if ~isempty(curs)
-                                       name = name_mol(1:(curs-1));
-                                   else
-                                       name = name_mol;
-                                   end
-                                   name_mol = [name '_mol' num2str(n) ...
-                                       'of' num2str(N)];
-                                   fname_histI = [name_mol '_I' ...
-                                       num2str(c) '-' num2str(exc(l)) ...
-                                       '.h2'];
-                                end
-                            end
-                            save([pname_hist fname_histI], 'histI', ...
-                                '-ascii');
-                            str = [str '\nIntensity(channel ' ...
-                                num2str(c) ', ' num2str(exc(l)) ...
-                                'nm) histograms saved to ASCII file: ' ...
-                                fname_histI '\n in ' 'folder: ' ...
-                                pname_hist];
+                            fname_histI = cat(2,name_mol,'_I',num2str(c),...
+                                '-',num2str(exc(l)),'.hist');
+                            
+                            % write data to file
+                            f = fopen(cat(2,pname_hist,fname_histI),'Wt');
+                            fprintf(f,cat(2,'I',num2str(c),'-', ...
+                                num2str(exc(l)),'\tfrequency count\t',...
+                                'probability\tcumulative frequency ',...
+                                'count\tcumulative probability\n'));
+                            fprintf(f,cat(2,repmat('%d\t',...
+                                [1,size(histI,2)]),'\n'),histI');
+                            fclose(f);
+                            
+                            % display action
+                            str = cat(2,str,'\nIntensity(channel ',...
+                                num2str(c),', ',num2str(exc(l)),...
+                                'nm) histograms saved to ASCII file: ', ...
+                                fname_histI,'\n in folder: ',pname_hist);
+                            
                             if inclDiscr && discrInt
-                                [o,fname_hist_dI,o] = ...
-                                    fileparts(fname_histI);
-                                fname_hist_dI = [fname_hist_dI '.hd2'];
+                                % format discrete intensity histogram
                                 discrI = ...
                                     intensities_DTA(incl,(m-1)*nChan+c,l);
-                                hist_dI = [];
-                                hist_dI(:,1) = x_I';
-                                hist_dI(:,2) = (hist(discrI,x_I))';
-                                hist_dI(:,3) = ...
-                                    hist_dI(:,2)/sum(hist_dI(:,2));
-                                hist_dI(:,4) = cumsum(hist_dI(:,2));
-                                hist_dI(:,5) = hist_dI(:,4)/hist_dI(end,4);
-                                save([pname_hist fname_hist_dI], ...
-                                    'hist_dI', '-ascii');
-                                str = [str '\nDiscretised intensity' ...
-                                    '(channel ' num2str(c) ', ' ...
-                                    num2str(exc(l)) 'nm) histograms ' ...
-                                    'saved to ASCII file: ' ...
-                                    fname_hist_dI '\n in folder: ' ...
-                                    pname_hist];
+                                histdI = [];
+                                histdI(:,1) = x_I';
+                                histdI(:,2) = (hist(discrI,x_I))';
+                                histdI(:,3) = ...
+                                    histdI(:,2)/sum(histdI(:,2));
+                                histdI(:,4) = cumsum(histdI(:,2));
+                                histdI(:,5) = histdI(:,4)/histdI(end,4);
+                                
+                                % build file name
+                                [o,fname_histdI,o] = fileparts(fname_histI);
+                                fname_histdI = cat(2,fname_histdI,...
+                                    '_discr.hist');
+                                
+                                % write data to file
+                                f = fopen(cat(2,pname_hist,fname_histdI),...
+                                    'Wt');
+                                fprintf(f,cat(2,'discr.I',num2str(c),'-', ...
+                                    num2str(exc(l)),'\tfrequency count\t',...
+                                    'probability\tcumulative frequency ',...
+                                    'count\tcumulative probability\n'));
+                                fprintf(f,cat(2,repmat('%d\t',...
+                                    [1,size(histdI,2)]),'\n'),histdI');
+                                fclose(f);
+                                
+                                % update action
+                                str = cat(2,str,'\nDiscretised intensity', ...
+                                    '(channel ',num2str(c),', ',...
+                                    num2str(exc(l)),'nm) histograms ', ...
+                                    'saved to ASCII file: ', ...
+                                    fname_histdI,'\n in folder: ', ...
+                                    pname_hist);
                             end
                         end
                     end
                 end
+                
                 if saveHst_fret
+                    
                     x_fret = minFret:binFret:maxFret;
+                    
+                    % calculate FRET data
                     if fromTT
                         gamma = p.proj{proj}.prm{m}{5}{3};
                     else
@@ -811,7 +601,9 @@ try
                     end
                     FRET_all = calcFRET(nChan, nExc, exc, chanExc,FRET, ...
                         intensities(incl,(((m-1)*nChan+1):m*nChan),:), gamma);
+                    
                     for i = 1:nFRET
+                        % format FRET histogram
                         FRET_tr = FRET_all(:,i);
                         histF = [];
                         histF(:,1) = x_fret';
@@ -819,120 +611,144 @@ try
                         histF(:,3) = histF(:,2)/sum(histF(:,2));
                         histF(:,4) = cumsum(histF(:,2));
                         histF(:,5) = histF(:,4)/histF(end,4);
-                        fname_histF = [name_mol '_FRET' ...
-                            num2str(FRET(i,1)) 'to' num2str(FRET(i,2)) ...
-                            '.h2'];
-                        new_fname_histF = overwriteIt(fname_histF, ...
-                            pname_hist, h_fig);
-                        if isempty(new_fname_histF)
+                        
+                        % build file name
+                        fname_histF = cat(2,name_mol,'_FRET',...
+                            num2str(FRET(i,1)),'to',num2str(FRET(i,2)),...
+                            '.hist');
+                        [name_mol,name] = correctNamemol(fname_histF,...
+                                pname_hist,[n,N],h_fig);
+                        if isempty(name)
                             return;
                         end
-                        if ~isequal(new_fname_histF,fname_histF)
-                            fname_histF = new_fname_histF;
-                            [o,name_mol,o] = fileparts(new_fname_histF);
-                            curs = strfind(name_mol, '_mol');
-                            if ~isempty(curs)
-                                name = name_mol(1:(curs-1));
-                            else
-                               curs = strfind(name_mol, 'mol'); 
-                               if ~isempty(curs)
-                                   name = name_mol(1:(curs-1));
-                               else
-                                   name = name_mol;
-                               end
-                               name_mol = [name '_mol' num2str(n) ...
-                                   'of' num2str(N)];
-                               fname_histF = [name_mol '_FRET' num2str( ...
-                                   FRET(i,1)) 'to' num2str(FRET(i,2)) ...
-                                   '.h2'];
-                            end
-                        end
-                        save([pname_hist fname_histF], 'histF', '-ascii');
-                        str = [str '\nFRET (' num2str(FRET(i,1)) ' to ' ...
-                            num2str(FRET(i,2)) ') histograms saved to' ...
-                            'ASCII file: ' fname_histF '\n in folder: ' ...
-                            pname_hist];
+                        fname_histF = cat(2,name_mol,'_FRET',...
+                            num2str(FRET(i,1)),'to',num2str(FRET(i,2)),...
+                            '.hist');
+                        
+                        % write data to file
+                        f = fopen(cat(2,pname_hist,fname_histF),'Wt');
+                        fprintf(f,cat(2,'FRET\tfrequency count\t',...
+                            'probability\tcumulative frequency count\t',...
+                            'cumulative probability\n'));
+                        fprintf(f,cat(2,repmat('%d\t',[1,size(histF,2)]),...
+                            '\n'),histF');
+                        fclose(f);
+                        
+                        % update action
+                        str = cat(2,str,'\nFRET (',num2str(FRET(i,1)),...
+                            ' to ',num2str(FRET(i,2)),') histograms saved ',...
+                            'to ASCII file: ',fname_histF,'\n in folder: ', ...
+                            pname_hist);
+                        
                         if inclDiscr
-                            [o,fname_hist_dF,o] = fileparts(fname_histF);
-                            fname_hist_dF = [fname_hist_dF '.hd2'];
+                            % format discrete FRET histogram
                             discrFRET = FRET_DTA(incl,(m-1)*nFRET+i);
-                            hist_dF = [];
-                            hist_dF(:,1) = x_fret';
-                            hist_dF(:,2) = (hist(discrFRET,x_fret))';
-                            hist_dF(:,3) = hist_dF(:,2)/sum(hist_dF(:,2));
-                            hist_dF(:,4) = cumsum(hist_dF(:,2));
-                            hist_dF(:,5) = hist_dF(:,4)/hist_dF(end,4);
-                            save([pname_hist fname_hist_dF], 'hist_dF', ...
-                                '-ascii');
-                            str = [str '\nDiscretised FRET (' ...
-                                num2str(FRET(i,1)) ' to ' ...
-                                num2str(FRET(i,2)) ') histograms saved' ...
-                                'to ASCII file: ' fname_hist_dF ...
-                                '\nin folder: ' pname_hist];
+                            histdF = [];
+                            histdF(:,1) = x_fret';
+                            histdF(:,2) = (hist(discrFRET,x_fret))';
+                            histdF(:,3) = histdF(:,2)/sum(histdF(:,2));
+                            histdF(:,4) = cumsum(histdF(:,2));
+                            histdF(:,5) = histdF(:,4)/histdF(end,4);
+                            
+                            % build file name
+                            [o,fname_histdF,o] = fileparts(fname_histF);
+                            fname_histdF = cat(2,fname_histdF,...
+                                '_discr.hist');
+                            
+                            % write data to file
+                            f = fopen(cat(2,pname_hist,fname_histdF),'Wt');
+                            fprintf(f,cat(2,'discr.FRET\tfrequency count',...
+                                '\tprobability\tcumulative frequency ',...
+                                'count\tcumulative probability\n'));
+                            fprintf(f,cat(2,repmat('%d\t',...
+                                [1,size(histdF,2)]),'\n'),histdF');
+                            fclose(f);
+                            
+                            % update action
+                            str = cat(2,str,'\nDiscretised FRET (',...
+                                num2str(FRET(i,1)),' to ',...
+                                num2str(FRET(i,2)),') histograms saved', ...
+                                'to ASCII file: ',fname_histdF,...
+                                '\nin folder: ',pname_hist);
                         end
                     end
                 end
+                
                 if saveHst_S
+                    
                     x_s = minS:binS:maxS;
+                    
                     for i = 1:nS
+                        % calculate stoichiometry data
                         [o,l_s,o] = find(exc==chanExc(S(i)));
                         Inum = sum(intensities(incl,((m-1)*nChan+1): ...
                             m*nChan,l_s),2);
                         Iden = sum(sum(intensities(incl,((m-1)*nChan+1): ...
                             m*nChan,:),2),3);
                         S_tr = Inum./Iden;
+                        
+                        % format stoichiometry histogram
                         histS = [];
                         histS(:,1) = x_s';
                         histS(:,2) = (hist(S_tr,x_s))';
                         histS(:,3) = histS(:,2)/sum(histS(:,2));
                         histS(:,4) = cumsum(histS(:,2));
                         histS(:,5) = histS(:,4)/histS(end,4);
-                        fname_histS = [name_mol '_S' labels{S(i)} '.h2'];
-                        new_fname_histS = overwriteIt(fname_histS, ...
-                            pname_hist, h_fig);
-                        if isempty(new_fname_histS)
+                        
+                        % build file name
+                        fname_histS = cat(2,name_mol,'_S',labels{S(i)},...
+                            '.hist');
+                        [name_mol,name] = correctNamemol(fname_histS,...
+                                pname_hist,[n,N],h_fig);
+                        if isempty(name)
                             return;
                         end
-                        if ~isequal(new_fname_histS,fname_histS)
-                            fname_histS = new_fname_histS;
-                            [o,name_mol,o] = fileparts(fname_histS);
-                            curs = strfind(name_mol, '_mol');
-                            if ~isempty(curs)
-                                name = name_mol(1:(curs-1));
-                            else
-                               curs = strfind(name_mol, 'mol'); 
-                               if ~isempty(curs)
-                                   name = name_mol(1:(curs-1));
-                               else
-                                   name = name_mol;
-                               end
-                               name_mol = [name '_mol' num2str(n) ...
-                                   'of' num2str(N)];
-                               fname_histS = [name_mol '_S' labels{S(i)}...
-                                   '.h2'];
-                            end
-                        end
-                        save([pname_hist fname_histS], 'histS', '-ascii');
-                        str = [str '\nStoichiometry (' labels{S(i)} ...
-                            ') histograms saved to ASCII file: ' ...
-                            fname_histS '\n in folder: ' pname_hist];
+                        fname_histS = cat(2,name_mol,'_S',labels{S(i)},...
+                            '.hist');
+                       
+                        % write data to file
+                        f = fopen(cat(2,pname_hist,fname_histS),'Wt');
+                        fprintf(f,cat(2,'S\tfrequency count\tprobability',...
+                            '\tcumulative frequency count\tcumulative ',...
+                            'probability\n'));
+                        fprintf(f,cat(2,repmat('%d\t',[1,size(histS,2)]),...
+                            '\n'),histS');
+                        fclose(f);
+                            
+                        % update action
+                        str = cat(2,str,'\nStoichiometry (',labels{S(i)}, ...
+                            ') histograms saved to ASCII file: ', ...
+                            fname_histS,'\n in folder: ',pname_hist);
 
                         if inclDiscr
-                            [o,fname_hist_dS,o] = fileparts(fname_histS);
-                            fname_hist_dS = [fname_hist_dS '.hd2'];
+                            % format discrete stoichiometry histogram
                             discrS = S_DTA(incl,(m-1)*nS+i);
-                            hist_dS = [];
-                            hist_dS(:,1) = x_s';
-                            hist_dS(:,2) = (hist(discrS,x_s))';
-                            hist_dS(:,3) = hist_dS(:,2)/sum(hist_dS(:,2));
-                            hist_dS(:,4) = cumsum(hist_dS(:,2));
-                            hist_dS(:,5) = hist_dS(:,4)/hist_dS(end,4);
-                            save([pname_hist fname_hist_dS], 'hist_dS', ...
-                                '-ascii');
-                            str = [str '\nDiscretised Stoichiometry (' ...
-                                labels{S(i)} ') histograms saved to ' ...
-                                'ASCII file: ' fname_hist_dS '\n in ' ...
-                                'folder: ' pname_hist];
+                            histdS = [];
+                            histdS(:,1) = x_s';
+                            histdS(:,2) = (hist(discrS,x_s))';
+                            histdS(:,3) = histdS(:,2)/sum(histdS(:,2));
+                            histdS(:,4) = cumsum(histdS(:,2));
+                            histdS(:,5) = histdS(:,4)/histdS(end,4);
+                            
+                            % build file name
+                            [o,fname_histdS,o] = fileparts(fname_histS);
+                            fname_histdS = cat(2,fname_histdS,...
+                                '_discr.hist');
+                            
+                            % write data to file
+                            f = fopen(cat(2,pname_hist,fname_histdS),'Wt');
+                            fprintf(f,cat(2,'discr.S\tfrequency count\t',...
+                                'probability\tcumulative frequency count',...
+                                '\tcumulative probability\n'));
+                            fprintf(f,cat(2,repmat('%d\t',...
+                                [1,size(histdS,2)]),'\n'),histdS');
+                            fclose(f);
+                            
+                            % update action
+                            str = cat(2,str,'\nDiscretised Stoichiometry ',...
+                                '(',labels{S(i)},') histograms saved to ',...
+                                'ASCII file: ',fname_histdS,'\n in ',...
+                                'folder: ',pname_hist);
                         end
                     end
                 end
@@ -944,132 +760,119 @@ try
                 if (saveDt_I  || saveKin) && discrInt
                     for l = 1:nExc
                         for c = 1:nChan
+                            
+                            % format intensity dwell times
                             discr_I = ...
                                 intensities_DTA(incl,(m-1)*nChan+c,l);
-                            dt_I = getDtFromDiscr(discr_I, rate);
+                            dtI = getDtFromDiscr(discr_I, rate);
                             
+                            % build file name
+                            fname_dtI = cat(2,name_mol,'_I',num2str(c),...
+                                '-',num2str(exc(l)),'.dt');
+                            [name_mol,name] = correctNamemol(fname_dtI,...
+                                pname_dt,[n,N],h_fig);
+                            fname_dtI = cat(2,name_mol,'_I',num2str(c),...
+                                '-',num2str(exc(l)),'.dt');
                             
-                            fname_dtI = [name_mol '_I' num2str(c) '-' ...
-                                num2str(exc(l)) '.dt'];
-                            new_fname_dtI = overwriteIt(fname_dtI, ...
-                                pname_dt, h_fig);
-                            if isempty(new_fname_dtI)
-                                return;
+                            % write data to file
+                            if saveDt_I
+                                f = fopen(cat(2,pname_dt,fname_dtI),'Wt');
+                                fprintf(f,cat(2,'dwell time (second)\t',...
+                                    'I before\tI after\n'));
+                                fprintf(f,cat(2,repmat('%d\t',...
+                                    [1,size(dtI,2)]),'\n'),dtI');
+                                fclose(f);
                             end
-                            if ~isequal(new_fname_dtI,fname_dtI)
-                                fname_dtI = new_fname_dtI;
-                                [o,name_mol,o] = fileparts(fname_dtI);
-                                curs = strfind(name_mol, '_mol');
-                                if ~isempty(curs)
-                                    name = name_mol(1:(curs-1));
-                                else
-                                   curs = strfind(name_mol, 'mol'); 
-                                   if ~isempty(curs)
-                                       name = name_mol(1:(curs-1));
-                                   else
-                                       name = name_mol;
-                                   end
-                                   name_mol = [name '_mol' num2str(n) ...
-                                       'of' num2str(N)];
-                                   fname_dtI = [name_mol '_I' ...
-                                       num2str(c) '-' num2str(exc(l)) ...
-                                       '.dt'];
-                                end
-                            end
-                            if saveDt_I 
-                                save([pname_dt fname_dtI], 'dt_I', ...
-                                    '-ascii');
-                            end
-                            if saveKin && size(dt_I,1) > 1 && ...
-                                    numel(unique(dt_I(:,2:3))) <= 6
-                                kinDat = getKinDat(dt_I);
-                                upgradeKinFile([pname_dt fname_kinI], ...
-                                    fname_dtI, kinDat);
+                            
+                            % update action
+                            str = cat(2,str,'\nIntensity(channel ',...
+                                num2str(c),', ',num2str(exc(l)),...
+                                'nm) dwell times saved to ASCII file: ', ...
+                                fname_dtI,'\n in folder: ',pname_dt);
+                            
+                            if saveKin && size(dtI,1)>1 && ...
+                                    numel(unique(dtI(:,2:3)))<=6
+                                kinDat = getKinDat(dtI);
+                                upgradeKinFile(cat(2,pname_dt,fname_kinI), ...
+                                    fname_dtI,kinDat);
                             end
                         end
                     end
                 end
+                
                 if saveDt_fret || saveKin
                     for i = 1:nFRET
+                        
+                        % format FRET dwell times
                         discr_F = FRET_DTA(incl,(m-1)*nFRET+i);
-                        dt_F = getDtFromDiscr(discr_F, rate);
-
-                        fname_dtF = [name_mol '_FRET' num2str(FRET(i,1))...
-                            'to' num2str(FRET(i,2)) '.dt'];
-                        new_fname_dtF = overwriteIt(fname_dtF, ...
-                            pname_dt, h_fig);
-                        if isempty(new_fname_dtF)
-                            return;
-                        end
-                        if ~isequal(new_fname_dtF,fname_dtF)
-                            fname_dtF = new_fname_dtF;
-                            [o,name_mol,o] = fileparts(fname_dtF);
-                            curs = strfind(name_mol, '_mol');
-                            if ~isempty(curs)
-                                name = name_mol(1:(curs-1));
-                            else
-                               curs = strfind(name_mol, 'mol'); 
-                               if ~isempty(curs)
-                                   name = name_mol(1:(curs-1));
-                               else
-                                   name = name_mol;
-                               end
-                               name_mol = [name '_mol' num2str(n) 'of' ...
-                                   num2str(N)];
-                               fname_dtF = [name_mol '_FRET' num2str( ...
-                                   FRET(i,1)) 'to' num2str(FRET(i,2)) ...
-                                   '.dt'];
-                            end
-                        end
+                        dtF = getDtFromDiscr(discr_F, rate);
+                        
+                        % build file name
+                        fname_dtF = cat(2,name_mol,'_FRET',num2str(...
+                            FRET(i,1)),'to',num2str(FRET(i,2)),'.dt');
+                        [name_mol,name] = correctNamemol(fname_dtF,...
+                                pname_dt,[n,N],h_fig);
+                        fname_dtF = cat(2,name_mol,'_FRET',num2str(...
+                            FRET(i,1)),'to',num2str(FRET(i,2)),'.dt');
+                               
+                        % write data to file
                         if saveDt_fret
-                            save([pname_dt fname_dtF], 'dt_F', '-ascii');
+                            f = fopen(cat(2,pname_dt,fname_dtF),'Wt');
+                            fprintf(f,cat(2,'dwell time (second)\t',...
+                                'FRET before\tFRET after\n'));
+                            fprintf(f,cat(2,repmat('%d\t',...
+                                [1,size(dtF,2)]),'\n'),dtF');
+                            fclose(f);
                         end
 
-                        if saveKin && size(dt_F,1) > 1 && ...
-                                numel(unique(dt_F(:,2:3))) <= 6
-                            kinDat = getKinDat(dt_F);
-                            upgradeKinFile([pname_dt fname_kinF], ...
+                        % update action
+                        str = cat(2,str,'\nFRET (',num2str(FRET(i,1)),...
+                            ' to ',num2str(FRET(i,2)),') dwell times',...
+                            ' saved to ASCII file: ',fname_dtF,...
+                            '\nin folder: ',pname_dt);
+
+                        if saveKin && size(dtF,1)>1 && ...
+                                numel(unique(dtF(:,2:3)))<=6
+                            kinDat = getKinDat(dtF);
+                            upgradeKinFile(cat(2,pname_dt,fname_kinF), ...
                                 fname_dtF, kinDat)
                         end
                     end
                 end
                 if saveDt_S || saveKin
                     for i = 1:nS
+                        
+                        % format stoichiometry dwell times
                         discr_S = S_DTA(incl,(m-1)*nS+i);
-                        dt_S = getDtFromDiscr(discr_S, rate);
-
-                        fname_dtS = [name_mol '_S' labels{S(i)} '.dt'];
-                        new_fname_dtS = overwriteIt(fname_dtS, ...
-                            pname_dt, h_fig);
-                        if isempty(new_fname_dtS)
-                            return;
-                        end
-                        if ~isequal(new_fname_dtS,fname_dtS)
-                            fname_dtS = new_fname_dtS;
-                            [o,name_mol,o] = fileparts(fname_dtS);
-                            curs = strfind(name_mol, '_mol');
-                            if ~isempty(curs)
-                                name = name_mol(1:(curs-1));
-                            else
-                               curs = strfind(name_mol, 'mol'); 
-                               if ~isempty(curs)
-                                   name = name_mol(1:(curs-1));
-                               else
-                                   name = name_mol;
-                               end
-                               name_mol = [name '_mol' num2str(n) ...
-                                   'of' num2str(N)];
-                               fname_dtS = [name_mol '_S' labels{S(i)} ...
-                                   '.dt'];
-                            end
-                        end
+                        dtS = getDtFromDiscr(discr_S, rate);
+                        
+                        % build file name
+                        fname_dtS = cat(2,name_mol,'_S',labels{S(i)},...
+                            '.dt');
+                        [name_mol,name] = correctNamemol(fname_dtS,...
+                            pname_dt,[n,N],h_fig);
+                        fname_dtS = cat(2,name_mol,'_S',labels{S(i)},...
+                            '.dt');
+                        
+                        % write data to file
                         if saveDt_S
-                            save([pname_dt fname_dtS], 'dt_S', '-ascii');
+                            f = fopen(cat(2,pname_dt,fname_dtS),'Wt');
+                            fprintf(f,cat(2,'dwell time (second)\t',...
+                                'S before\tS after\n'));
+                            fprintf(f,cat(2,repmat('%d\t',...
+                                [1,size(dtS,2)]),'\n'),dtS');
+                            fclose(f);
                         end
-                        if saveKin && size(dt_S,1) > 1 && ...
-                                numel(unique(dt_S(:,2:3))) <= 6
-                            kinDat = getKinDat(dt_S);
-                            upgradeKinFile([pname_dt fname_kinS], ...
+                        
+                        % update action
+                        str = cat(2,str,'\nStoichiometry (',labels{S(i)}, ...
+                            ') dwell times saved to ASCII file: ', ...
+                            fname_dtS,'\n in folder: ',pname_dt);
+                        
+                        if saveKin && size(dtS,1)>1 && ...
+                                numel(unique(dtS(:,2:3)))<=6
+                            kinDat = getKinDat(dtS);
+                            upgradeKinFile(cat(2,pname_dt,fname_kinS), ...
                                 fname_dtS, kinDat)
                         end
                     end
@@ -1117,20 +920,10 @@ try
 
                     switch figFmt
                         case 1 % pdf
-%                             fname_fig = [name '_all' num2str(N) '.ps'];
-%                             print(h_fig_mol, [pname_fig fname_fig], ...
-%                                 '-dpsc', '-append');
                             fname_fig{nfig} = cat(2,pname_fig_temp, ...
                                 filesep,name,'_mol',num2str(n_prev),'-', ...
                                 num2str(n),'of',num2str(N),'.pdf');
                             print(h_fig_mol,fname_fig{nfig},'-dpdf');
-%                             [o,m_prev,o] = find(m_ind == n_prev);
-%                             [o,m_stop,o] = find(m_ind == n);
-%                             str = [str '\nFigures of molecule n:°' ...
-%                                 num2str(m_prev(1)) ' to ' ...
-%                                 num2str(m_stop(1)) ...
-%                                 ' saved to *.pdf file: ' fname_fig{nfig} ...
-%                                 '\n in folder: ' pname_fig];
                             nfig = nfig + 1;
 
                         case 2 % png
@@ -1138,26 +931,12 @@ try
                                 '-' num2str(n) 'of' num2str(N) '.png'];
                             print(h_fig_mol, [pname_fig fname_fig], ...
                                 '-dpng');
-%                             [o,m_prev,o] = find(m_ind == n_prev);
-%                             [o,m_stop,o] = find(m_ind == n);
-%                             str = [str '\nFigures of molecule n:°' ...
-%                                 num2str(m_prev(1)) ' to ' ...
-%                                 num2str(m_stop(1)) ...
-%                                 ' saved to *.png file: ' fname_fig ...
-%                                 '\n in folder: ' pname_fig];
 
                         case 3 % jpg
                             fname_fig = [name '_mol' num2str(n_prev) '-'...
                                 num2str(n) 'of' num2str(N) '.jpeg'];
                             print(h_fig_mol, [pname_fig fname_fig], ...
                                 '-djpeg');
-%                             [o,m_prev,o] = find(m_ind == n_prev);
-%                             [o,m_stop,o] = find(m_ind == n);
-%                             str = [str '\nFigures of molecule n:°' ...
-%                                 num2str(m_prev(1)) ' to ' ...
-%                                 num2str(m_stop(1)) ...
-%                                 ' saved to *.jpg file: ' fname_fig ...
-%                                 '\n in folder: ' pname_fig];
                     end
 
                     delete(h_fig_mol);
@@ -1219,98 +998,74 @@ end
 
 if saveTr
     for j = 1:nFRET
-        ext_f = ['FRET' num2str(FRET(j,1)) 'to' num2str(FRET(j,2))];
+        
+        ext_f = cat(2,'FRET',num2str(FRET(j,1)),'to',num2str(FRET(j,2)));
+        
         if saveSmart
-            fname_smart = [name '_all' num2str(N) ext_f ...
-                '_SMART.traces'];
-            new_fname_smart = overwriteIt(fname_smart, pname_smart, ...
-                    h_fig);
-            if isempty(new_fname_smart)
-                return;
+            
+            % build SMART file name
+            fname_smart = cat(2,name,'_all',num2str(N),ext_f,...
+                '_SMART.traces');
+            [name_all,name] = correctNameall(fname_smart,pname_smart,N,...
+                h_fig);
+            fname_smart = cat(2,name_all,ext_f,'_SMART.traces');
+            
+            % write data to SMART file
+            group_data = dat_smart{j};
+            for n = 1:size(group_data,2)
+                group_data{n} = fname_smart;
             end
-            if ~isequal(new_fname_smart,fname_smart)
-                fname_smart = new_fname_smart;
-                [o,name_all,o] = fileparts(new_fname_smart);
-                curs = strfind(name_all, '_all');
-                if ~isempty(curs)
-                    name = name_all(1:(curs-1));
-                else
-                   curs = strfind(name_all, 'all'); 
-                   if ~isempty(curs)
-                       name = name_all(1:(curs-1));
-                   else
-                       name = name_all;
-                       name_all = [name '_mol' num2str(n) ...
-                           'of' num2str(N)];
-                       fname_smart = [name_all ext_f '_SMART.txt'];
-                   end
-                end
-            end
-            group_data = data_smart{j};
-            save([pname_smart fname_smart], 'group_data', '-mat');
-            updateActPan(['Traces (' ext_f ') saved to ' ...
-                'SMART-compatible file: ' fname_smart '\n in ' ...
-                'folder: ' pname_smart], h_fig, 'process');
+            save(cat(2,pname_smart,fname_smart),'group_data','-mat');
+            
+            % update action
+            updateActPan(cat(2,'Traces (',ext_f,') saved to ', ...
+                'SMART-compatible file: ',fname_smart,'\n in ', ...
+                'folder: ',pname_smart),h_fig,'process');
         end
+        
         if saveVbfret
-            fname_vbfret = [name '_all' num2str(N) ext_f ...
-                '_VbFRET.mat'];
+            
+            % build vbFRET file name
+            fname_vbfret = cat(2,name,'_all',num2str(N),ext_f,...
+                '_vbFRET.mat');
+            [name_all,name] = correctNameall(fname_vbfret,pname_vbfret,N,...
+                h_fig);
+            fname_vbfret = cat(2,name_all,ext_f,'_vbFRET.mat');
+            
+            % write data to vbFRET file
             data = I_fret{j};
-            save([pname_vbfret fname_vbfret], 'data', '-mat');
-            updateActPan(['Traces (' ext_f ') saved to ' ...
-                'VbFRET-compatible file: ' fname_vbfret '\n in ' ...
-                'folder: ' pname_vbfret], h_fig, 'process');
+            save(cat(2,pname_vbfret,fname_vbfret),'data','-mat');
+            
+            % update action
+            updateActPan(cat(2,'Traces (',ext_f,') saved to ',...
+                'VbFRET-compatible file: ',fname_vbfret,'\n in ',...
+                'folder: ',pname_vbfret),h_fig,'process');
         end
+        
         if saveEbfret
-            fname_ebfret = [name '_all' num2str(N) ext_f ...
-                '_ebFRET.dat'];
-            new_fname_ebfret = overwriteIt(fname_ebfret, pname_ebfret, ...
-                    h_fig);
-            if isempty(new_fname_ebfret)
-                return;
-            end
-            if ~isequal(new_fname_ebfret,fname_ebfret)
-                fname_ebfret = new_fname_ebfret;
-                [o,name_all,o] = fileparts(new_fname_ebfret);
-                curs = strfind(name_all, '_all');
-                if ~isempty(curs)
-                    name = name_all(1:(curs-1));
-                else
-                   curs = strfind(name_all, 'all'); 
-                   if ~isempty(curs)
-                       name = name_all(1:(curs-1));
-                   else
-                       name = name_all;
-                       name_all = [name '_mol' num2str(n) ...
-                           'of' num2str(N)];
-                       fname_ebfret = [name_all ext_f '_ebFRET.txt'];
-                   end
-                end
-            end
-            f = fopen([pname_ebfret fname_ebfret], 'Wt');
-            fprintf(f, '%d\t%d\t%d\n', data_ebfret{j}');
+            
+            % build vbFRET file name
+            fname_ebfret = cat(2,name,'_all',num2str(N),ext_f,...
+                '_ebFRET.dat');
+            [name_all,name] = correctNameall(fname_ebfret,pname_ebfret,N,...
+                h_fig);
+            fname_ebfret = cat(2,name_all,ext_f,'_ebFRET.dat');
+            
+            % write data to ebFRET file
+            f = fopen(cat(2,pname_ebfret,fname_ebfret),'Wt');
+            fprintf(f,'%d\t%d\t%d\n',data_ebfret{j}');
             fclose(f);
-            updateActPan(['Traces (' ext_f ') saved to ' ...
-                'ebFRET-compatible file: ' fname_ebfret '\n in ' ...
-                'folder: ' pname_ebfret], h_fig, 'process');
+            
+            % update action
+            updateActPan(cat(2,'Traces (',ext_f,') saved to ', ...
+                'ebFRET-compatible file: ',fname_ebfret,'\n in ', ...
+                'folder: ',pname_ebfret),h_fig,'process');
         end
     end
 end
 
 %% Figure complement
 if saveFig && figFmt == 1 % *.pdf
-%     try
-%         ps2pdf('psfile', [pname_fig fname_fig], 'pdffile', [pname_fig ...
-%             fname_pdf]);
-%         delete([pname_fig fname_fig]);
-%         updateActPan(['Figures saved to PDF file: ' fname_pdf '\n in ' ...
-%             'folder: ' pname_fig], h_fig, 'process');
-%     catch err
-%         updateActPan(['Impossible to save figures to PDF file.\n\n' ...
-%             'MATLAB error: ' err.message '\n\n' ...
-%             'Advice: change in the option menu (>Edit) the export ' ...
-%             'format to *.png or *.jpg'], h_fig, 'error');
-%     end
     fname_pdf = cat(2,name,'_all',num2str(N),'.pdf');
     append_pdfs(cat(2,pname_fig,fname_pdf), fname_fig{:});
     flist = dir(pname_fig_temp);
