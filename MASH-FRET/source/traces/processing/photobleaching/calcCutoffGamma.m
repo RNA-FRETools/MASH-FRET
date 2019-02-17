@@ -23,7 +23,7 @@ for i = 1:nFRET
         start = 1;
     end
     ex = FRET(i,1);
-    trace = I_den(:,chan(i),ex(i));
+    trace = I_den(:,chan,ex);
     nbFrames = numel(trace);
     trace = trace(start:nbFrames,:);
     frames = (1:nbFrames)';
