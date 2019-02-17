@@ -1,4 +1,16 @@
 function saveProcAscii(h_fig, p, xp, pname, name)
+% Export processed and calculated data from Trace processing to files.
+% "h_fig" >> MASH figure handle
+% "p" >> Project parameters in Trace processing
+% "xp" >> Export settings
+% "pname" >> destination folder
+% "name" >> destination file name
+
+% Last update: 17th of February 2019 by Mélodie Hadzic
+% --> optimize code synthaxe
+% --> remove units "per second" and "per pixel" (always export in counts to
+%     avoid confusion when importing exported ASCII traces)
+% --> add headers to histogram and dwell-time files
 
 h = guidata(h_fig);
 
@@ -28,16 +40,6 @@ end
 
 exc = p.proj{proj}.excitations;
 chanExc = p.proj{proj}.chanExc;
-labels = p.proj{proj}.labels;
-
-if isfield(p.proj{proj},'fix')
-    perSec = p.proj{proj}.fix{2}(4);
-    perPix = p.proj{proj}.fix{2}(5);
-else
-    perSec = 0;
-    perPix = 1;
-end
-nPix = p.proj{proj}.pix_intgr(2);
 rate = p.proj{proj}.frame_rate; % this is the EXPOSURE TIME
 
 FRET = p.proj{proj}.FRET;
@@ -55,17 +57,8 @@ else
     intensities_DTA = p.proj{proj}.adj.intensities_DTA;
 end
 
+% export intensity in counts per frame (fixed units)
 iunits = 'counts';
-if perSec
-    iunits = cat(2,iunits,'/second');
-    intensities = intensities/rate;
-    intensities_DTA = intensities_DTA/rate;
-end
-if perPix
-    iunits = cat(2,iunits,'/pixel');
-    intensities = intensities/nPix;
-    intensities_DTA = intensities_DTA/nPix;
-end
 
 if fromTT
     FRET_DTA = p.proj{proj}.FRET_DTA;
@@ -131,16 +124,6 @@ if saveHist
     minI = xp.hist{2}(1,2);
     binI = xp.hist{2}(1,3);
     maxI = xp.hist{2}(1,4);
-    if perSec
-        minI = minI/rate;
-        binI = binI/rate;
-        maxI = maxI/rate;
-    end
-    if perPix
-        minI = minI/nPix;
-        binI = binI/nPix;
-        maxI = maxI/nPix;
-    end
     
     saveHst_fret = ~~xp.hist{2}(2,1) & nFRET > 0;
     minFret = xp.hist{2}(2,2);
@@ -252,17 +235,6 @@ try
                 intensities_DTA = p.proj{proj}.intensities_DTA;
                 FRET_DTA = p.proj{proj}.FRET_DTA;
                 S_DTA = p.proj{proj}.S_DTA;
-                
-                % convert intensity to proper units
-                if perSec
-                    intensities = intensities/rate;
-                    intensities_DTA = intensities_DTA/rate;
-                end
-                if perPix
-                    intensities = intensities/nPix;
-                    intensities_DTA = intensities_DTA/nPix;
-                end
-                
             end
             
             % build frame and time column
