@@ -5,49 +5,61 @@ function FRET = calcFRET(nChan, nExc, allExc, chanExc, p, traces, gamma)
 % Observation Time ». PLoS ONE 5(2010): e12270.
 %
 % "nChan" >> number of channel
-% "nExc" >> number of excitations
-% "p" >> [n-by-3] matrix intensity channels and excitation of each FRET
-% "traces" >> [N-by-nChan-by-nExc] matrix intensities
+% "nExc" >> number of alternated lasers
+% "p" >> [nFRET-by-2] channels of FRET pairs
+% "traces" >> [L-by-nChan-by-nExc] single molecule intensities
+% "gamma" >> [L-by-nFRET] gamma factors
+% "FRET" >> [L-by-nFRET] calculated single molecule FRET data
 
-% Created the 10th of April 2014 by Mélodie C.A.S. Hadzic
-% Last update the 15th of April by Mélodie C.A.S. Hadzic
+% Last update the 17th of April by Mélodie C.A.S. Hadzic
+% --> Fix calculations for more than 2 channels and comment code
 
 warning('off','symbolic:solve:DeprecateStringInputWarning');
 warning('off','symbolic:sym:sym:DeprecateExpressions');
 
 FRET = [];
-nFRET = size(p,1);
-N = size(traces,1);
+nFRET = size(p,1); % number of FRET pairs
+L = size(traces,1); % trajectory length
 
 if nFRET > 0 && nExc>=1
     E_eq = cell(nChan);
     donors = (sort(unique(p(:,1)), 'ascend'))';
 
     for d = donors
-        % assign an excitation to each donor
-        [o,excD,o] = find(allExc == chanExc(d));
         
+        % record donor direct excitation for later
+        [o,excD,o] = find(allExc == chanExc(d));
         if ~isempty(excD)
             exc(d) = excD;
         end
         
-        % build FRET transfer and FRET efficiency matrices
-        q_eq{d} = cell(nChan);
-        
+        % initialize transfer matrix (true if transfer after d excitation)
         isE = false(nChan);
+        
+        % direct transfer donor1->acceptor1
         p_d = p(p(:,1)==d,:);
+        
+        % consequent transfer acceptor1->acceptor2
         acc = p(p(:,1)==d,2);
-        for a = size(acc,1)
+        for a = 1:size(acc,1)
             p_d = [p_d;p(p(:,1)==acc(a,1),:)];
         end
+        
+        % update in transfer matrix
         for f = 1:size(p_d,1)
             isE(p_d(f,1),p_d(f,2)) = true;
         end
-       
+        
+        % express the transferred intensity in function of I_0, the 
+        % fluorescence intensity in absence of transfer 
+        q_eq{d} = cell(nChan);
         q_eq{d}(d,d:end) = {'I_0'};
-        for h = d:nChan % donor (channel==d)
-            for i = (h+1):nChan % possible acceptors (channel>d)
+        
+        for h = d:nChan % direct (donor1) and indirect (acceptor1) donors
+            for i = (h+1):nChan % acceptors
                 if isE(h,i)
+                    
+                    % express intensity absorbed by the acceptor
                     str_q = '';
                     for j = 1:nChan
                         if ~isempty(q_eq{d}{j,h})
@@ -58,16 +70,20 @@ if nFRET > 0 && nExc>=1
                             end
                         end
                     end
+                    
+                    % express intensity emitted by the acceptor
                     q_eq{d}(h,i) = {sprintf('(%s)*E_%i%i', str_q, h, i)};
-%                 else
-%                     q_eq{d}(h,i) = {[]};
+                    
+                else
+                    % no transfer
+                    q_eq{d}(h,i) = {'0'}; 
                 end
             end
         end
     end
     
-    for d = donors % from red to green excited donor
-        for c = (d+1):nChan
+    for d = donors 
+        for c = (d+1):nChan % acceptors
             str_I = 'Ic';
             for don = 1:nChan % FRET transfered to c
                 if ~isempty(q_eq{d}{don,c})
@@ -81,16 +97,19 @@ if nFRET > 0 && nExc>=1
             end
             I_eq{d}{c} = str_I;
             if ~isempty(strfind(str_I, sprintf('E_%i%i', d, c)))
-%                 syms('Ic', 'I_0', sprintf('E_%i%i', d, c));
-%                 E_eq{d,c} = solve(I_eq{d}{c}, sprintf('E_%i%i', d, c));
-%                 clear('Ic', 'I_0', sprintf('E_%i%i', d, c));
+                
+                symvar(1) = sym('Ic');
+                symvar(2) = sym('I_0');
+                symvar(3) = sym(sprintf('E_%i%i', d, c));
+                evar_str = findEelsethan(str_I,sprintf('E_%i%i',d,c));
+                for i_e = 1:size(evar_str,2)
+                    symvar(3+i_e) = sym(evar_str{i_e});
+                end
 
-                symvar1 = sym('Ic');
-                symvar2 = sym('I_0');
-                symvar3 = sym(sprintf('E_%i%i', d, c));
-                %E_eq{d,c} = solve(I_eq{d}{c}, symvar3);
-                E_eq{d,c} = solve(str2func(sprintf('@(Ic,I_0,%s)%s', symvar3, I_eq{d}{c})), symvar3);
-                clear('symvar1','symvar2','symvar3');
+                E_eq{d,c} = solve(str2func(sprintf(...
+                    cat(2,'@(%s',repmat(',%s',[1,numel(symvar)-1]),')%s'),...
+                    symvar,I_eq{d}{c})),symvar(3));
+                clear('symvar');
             end
         end
     end
@@ -102,8 +121,11 @@ if nFRET > 0 && nExc>=1
         end
     end
 
-    E = zeros(N,nChan,nChan);
-    for d = flipdim(donors,2)
+    E = zeros(L,nChan,nChan);
+    
+    % from reddest- to greenest-excited donor
+    for d = flip(donors,2) % /!\ this assumes that chanel 1,2,3... are 
+                           % directly ecxited with increasing wavelength
         if ~isempty(exc(d))
             for c = (d+1):nChan
                 if ~isempty(E_eq{d,c})
@@ -128,3 +150,27 @@ if nFRET > 0 && nExc>=1
     end
 end
 FRET(isnan(FRET))=0;
+
+
+function E_str = findEelsethan(str,E_exept)
+
+E_str = {};
+
+ind = strfind(str,'E_');
+if isempty(ind)
+    return;
+end
+
+for i = 1:numel(ind);
+    Ei_str = str(ind(i):ind(i)+length('_00'));
+    intbl = false;
+    for j = 1:size(E_str,2)
+        if strcmp(E_str{j},Ei_str)
+            intbl = true;
+        end
+    end
+    if ~intbl && ~strcmp(Ei_str,E_exept)
+        E_str = [E_str,Ei_str];
+    end
+end
+
