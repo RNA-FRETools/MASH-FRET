@@ -40,6 +40,7 @@ end
 
 exc = p.proj{proj}.excitations;
 chanExc = p.proj{proj}.chanExc;
+labels = p.proj{proj}.labels;
 rate = p.proj{proj}.frame_rate; % this is the EXPOSURE TIME
 
 FRET = p.proj{proj}.FRET;
@@ -807,7 +808,7 @@ try
                                 numel(unique(dtF(:,2:3)))<=6
                             kinDat = getKinDat(dtF);
                             upgradeKinFile(cat(2,pname_dt,fname_kinF), ...
-                                fname_dtF, kinDat)
+                                fname_dtF,kinDat)
                         end
                     end
                 end
@@ -845,7 +846,7 @@ try
                                 numel(unique(dtS(:,2:3)))<=6
                             kinDat = getKinDat(dtS);
                             upgradeKinFile(cat(2,pname_dt,fname_kinS), ...
-                                fname_dtS, kinDat)
+                                fname_dtS,kinDat)
                         end
                     end
                 end
@@ -1059,11 +1060,11 @@ end
 
 
 
-function upgradeKinFile(fname_kin, fname_dt, kinDat)
+function upgradeKinFile(fname_kin,fname_dt,kinDat)
 
-if exist(fname_kin, 'file')
-
+if exist(fname_kin,'file')
     f = fopen(fname_kin, 'r');
+    fgetl(f); % skip headers
     fData = textscan(f,'%s','delimiter','\n');
     fData = fData{1,1};
     fclose(f);
@@ -1071,26 +1072,36 @@ if exist(fname_kin, 'file')
     fDataNew = {};
     if ~isempty(fData)
         for j = 1:size(fData,1)
-            existDat = strfind(fData{j,1}, fname_dt);
+            existDat = strfind(fData{j,1},fname_dt);
             if isempty(existDat)
                 fDataNew = [fDataNew; fData{j,1}];
             end
         end
     end
     
-    f = fopen(fname_kin, 'Wt');
+    f = fopen(fname_kin,'Wt');
+    fprintf(f,cat(2,'file name\tstate1\tstate2\ttotal time spent in 1\t',...
+        'total time spent in 2\taverage time in 1\taverage time in 2\t',...
+        'ratio average time 1/2\n'));
     if ~isempty(fDataNew)
         for j = 1:size(fDataNew,1)
             fprintf(f, [fDataNew{j,1} '\n']);
         end
     end
     fclose(f);
+    
+else
+    f = fopen(fname_kin, 'Wt');
+    fprintf(f,cat(2,'file name\tstate1\tstate2\ttotal time spent in 1\t',...
+        'total time spent in 2\taverage time in 1\taverage time in 2\t',...
+        'ratio average time 1/2\n'));
+    fclose(f);
 end
 
 f = fopen(fname_kin, 'At');
 for i = 1:size(kinDat,1)
-    fprintf(f, '%s', fname_dt);
-    fprintf(f, [repmat('\t%d', [1,size(kinDat,2)]) '\n'], kinDat(i,:));
+    fprintf(f,'%s',fname_dt);
+    fprintf(f,cat(2,repmat('\t%d',[1,size(kinDat,2)]),'\n'),kinDat(i,:));
 end
 fclose(f);
 
