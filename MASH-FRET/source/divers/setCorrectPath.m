@@ -4,9 +4,9 @@ function pth = setCorrectPath(folder, h_fig)
 % "h_fig" >> MASH figure handle
 % "pth" >> generated folder path
 
-% Last update: 5th of February 2019 by Mélodie Hadzic
-% --> modify "movie_processing" folder request in "video_processing" to
-%     be consistent with the rest of the GUI
+% Last update: 17th of February 2019 by Mélodie Hadzic
+% --> modify "thermodynamic" folder request in "histogram_analysis" and 
+%     "tdp_analysis" to "transition_analysis" to be consistent with the GUI
 
 pth = [];
 h = guidata(h_fig);
@@ -15,19 +15,26 @@ h = guidata(h_fig);
 if strcmp(folder, 'movie_processing')
     folder = 'video_processing';
 end
+% --> modify "thermodynamic" folder request into "histogram_analysis"
+if strcmp(folder, 'thermodynamic')
+    folder = 'histogram_analysis';
+end
+% --> modify "tdp_analysis" folder request into "transition_analysis"
+if strcmp(folder, 'tdp_analysis')
+    folder = 'transition_analysis';
+end
 
-if strcmp(folder, 'simulations')
-    pth = [h.folderRoot filesep folder];
-    
-elseif (strcmp(folder, 'video_processing') || ...
+if (strcmp(folder, 'simulations') || ...
+        strcmp(folder, 'video_processing') || ...
         strcmp(folder, 'traces_processing') || ...
-        strcmp(folder, 'tdp_analysis') || ...
-        strcmp(folder, 'thermodynamics'))
+        strcmp(folder, 'transition_analysis') || ...
+        strcmp(folder, 'histogram_analysis'))
     pth = [h.folderRoot filesep folder];
     
 elseif (strcmp(folder, 'average_images') || ...
        strcmp(folder, 'coordinates') || ...
-        strcmp(folder, 'exported_graphics'))
+        strcmp(folder, 'exported_graphics') || ...
+        strcmp(folder, 'intensities'))
 
     pth1 = setCorrectPath('video_processing', h_fig);
     pth = [pth1 folder];
@@ -42,7 +49,7 @@ elseif (strcmp(folder, 'spotfinder') || ...
 elseif (strcmp(folder, 'clustering') || ...
         strcmp(folder, 'kinteics'))
 
-    pth1 = setCorrectPath('tdp_analysis', h_fig);
+    pth1 = setCorrectPath('transition_analysis', h_fig);
     pth = [pth1 folder];
     
 else
