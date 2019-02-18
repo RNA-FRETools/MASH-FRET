@@ -1,20 +1,21 @@
-function restruct_trace_file(varargin)
-% Restructure the trajectories files (*.txt) into a format that is
-% importable into MASH
-% If ALEX is used, trajecories recorded upon different excitation are saved
-% into one column, alternating the data linewise
+function restruct_trace_file(pname)
+% | Format trajectories files (*.txt) to MASH-importable structure.
+% |
+% | command: restruct_trace_file(pname);
+% | pname >> source directory
+% |
+% | example: restruct_trace_file('C:\MyDataFolder\experiment_01\traces_processing\traces_ASCII\');
 
-if isempty(varargin)
-    pname = cat(2,uigetdir('','Select folder'),filesep);
-else
-    pname = varargin{1};
-end
+% Last update: 18th of February 2019 by Mélodie Hadzic
+% --> update help section
 
+% correct source directory
 if ~strcmp(pname(end),'\')
-    pname = [pname,filesep];
+    pname = cat(2,pname,filesep);
 end
 
 DONOR_EXC = 532;
+
 
 fList = dir(cat(2,pname,'*.txt'));
 F = size(fList,1);
@@ -147,7 +148,8 @@ for ff = 1:F
                     break;
                 end
             end
-
+            
+            % If ALEX is used, data are alternated row-wise.
             if isempty(isExc) % FRET, FRET_discr, S or S_discr
                 alexData = cat(2,alexData,NaN(L*nExc,1));
                 alexData(find(exc==DONOR_EXC):nExc:end,end) = data(:,ii);

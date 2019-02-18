@@ -1,8 +1,18 @@
-function [dataAll,pname,fnames] = importTraces(varargin)
+function [dataAll,pname,fnames] = importTraces(headers)
+% | Import file column data specified by headers to Matlab workspace.
+% |
+% | command: [data,pname,fnames] = importTraces(headers);
+% | headers >> {1-by-H} H column headers
+% | data >> {1-by-F}[L-by-nH] improted data
+% | pname >> source directory
+% | fnames >> {1-by-F} F source files
+% |
+% | example: [data,pname,fnames] = importTraces({'time at532nm','I_1 at532nm','I_2 at532nm','FRET_1>2'});
+
+% Last update: 18th of February 2019 by Mélodie Hadzic
+% --> update help section
 
 dataAll = [];
-headers = {'time at532nm','I_1 at532nm','I_2 at532nm', ...
-    'FRET_1>2'};
 H = size(headers,2);
 
 [fnames,pname] = uigetfile({'*.txt','Text Files(*.txt)'; ...

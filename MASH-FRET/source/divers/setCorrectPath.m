@@ -1,8 +1,10 @@
 function pth = setCorrectPath(folder, h_fig)
-% Generate the correct path of the input folder name
-% "folder" >> folder name
-% "h_fig" >> MASH figure handle
-% "pth" >> generated folder path
+% | Create directory and return correct path.
+% |
+% | pth = setCorrectPath(folder, h_fig)
+% | folder >> directory name
+% | h_fig >> MASH figure handle
+% | pth >> directory path
 
 % Last update: 17th of February 2019 by Mélodie Hadzic
 % --> modify "thermodynamic" folder request in "histogram_analysis" and 
@@ -33,8 +35,7 @@ if (strcmp(folder, 'simulations') || ...
     
 elseif (strcmp(folder, 'average_images') || ...
        strcmp(folder, 'coordinates') || ...
-        strcmp(folder, 'exported_graphics') || ...
-        strcmp(folder, 'intensities'))
+        strcmp(folder, 'exported_graphics'))
 
     pth1 = setCorrectPath('video_processing', h_fig);
     pth = [pth1 folder];

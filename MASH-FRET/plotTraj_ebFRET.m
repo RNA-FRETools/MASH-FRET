@@ -1,40 +1,24 @@
-function plotTraj_ebFRET(varargin)
-% Plot several trajectories from *.mat file exported from ebFRET and export
-% data to a pdf file.
-% input arg1: folder path
-% input arg2: file name
-% input arg3: number of states of data (to export)
+function plotTraj_ebFRET(pname,fname,J)
+% | Export figures of ebFRET-exported trace file (.mat) to .pdf file.
+% |
+% | command: plotTraj_ebFRET(pname,fname,J);
+% | pname >> source directory
+% | fname >> source file
+% | J >> state configuration to export (number of states)
+% |
+% | example: plotTraj_ebFRET('C:\MyDataFolder\experiment_01\traces_processing\ebFRET\','data_ebFRET.mat',2);
 
-% ex: plotTraj_ebFRET(['D:\analysis\MASHsmFRET_test\publication\' ...
-%     'traces_processing\traces_ebFRET\'],'FRET_broad_0150_ebFRET.mat',2);
+% Last update: 18th of February 2019 by Mélodie Hadzic
+% --> update help section
 
 exp_ascii = true;
 exp_fig = true;
 
-% foldder path (with ending file separator)
-if numel(varargin)>0 && ~isempty(varargin{1})
-    pname = varargin{1};
-else
-    fprintf('input argument 1 missing (folder path): process aborted\n');
-end
+% correct source directory
 if ~strcmp(pname(end),filesep)
     pname = cat(2,pname,filesep);
 end
 
-% data file name
-if numel(varargin)>1 && ~isempty(varargin{2})
-    fname = varargin{2};
-else
-    fprintf('input argument 2 missing (root file name): process aborted\n');
-end
-
-% number of states
-if numel(varargin)>2 && ~isempty(varargin{3})
-    J = varargin{3};
-else
-    fprintf('input argument 3 missing (number of states): set to 2\n');
-    J = 2;
-end
 
 fprintf('\nProcessing file:\n%s%s\n...',pname,fname);
 

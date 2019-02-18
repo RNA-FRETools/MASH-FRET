@@ -1,30 +1,20 @@
-function plotTraj(varargin)
-% Plot several trajectories from a set of *.txt file exported from MASH and
-% export data to a pdf file.
-% input arg1: folder path containing ASCII files
-% input arg2: root file name (with a * instead of the molecule number)
+function plotTraj(pname,rname)
+% | Export figures of MASH-processed trace file (.txt) to .pdf file.
+% |
+% | command: plotTraj(pname,rname);
+% | pname >> source directory
+% | rname >> root file name (molecule index is replaced by *)
+% |
+% | example: plotTraj('C:\MyDataFolder\experiment_01\traces_processing\traces_ASCII\','data_mol*of100.txt');
 
-% ex: plotTraj_ebFRET(['D:\analysis\MASHsmFRET_test\publication\' ...
-%     'traces_processing\traces_ASCII\length_6400_VbFRET\'], ...
-%     'length_1600_VbFRET_mol*of100.txt');
+% Last update: 18th of February 2019 by Mélodie Hadzic
+% --> update help section
 
 exp_ascii = true;
 
-% foldder path (with ending file separator)
-if numel(varargin)>0 && ~isempty(varargin{1})
-    pname = varargin{1};
-else
-    fprintf('argument 1 missing (folder path): process aborted\n');
-end
+% correct source directory
 if ~strcmp(pname(end),filesep)
     pname = cat(2,pname,filesep);
-end
-
-% root file name with a "*" character replacing the molecule number
-if numel(varargin)>1 && ~isempty(varargin{2})
-    rname = varargin{2};
-else
-    fprintf('argument 2 missing (root file name): process aborted\n');
 end
 
 fprintf('\nProcessing file:\n%s%s\n...',pname,rname);

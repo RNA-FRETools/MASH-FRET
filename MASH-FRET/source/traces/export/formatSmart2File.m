@@ -1,4 +1,12 @@
 function dat = formatSmart2File(tr_fret,mol,fps,coord)
+% Format intensity data to write in SMART-compatible files.
+%
+% dat = formatSmart2File(tr_fret,mol,fps,coord)
+% tr_fret >> [L-by-2] donor and acceptor intensities
+% mol >> [1-by-2] [molecule index,number of molecules(N)]
+% fps >> frame rate
+% coord >> [N-by-2] molecule coordinates
+% dat >> formatted data
 
 n = mol(1);
 N = mol(2);

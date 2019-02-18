@@ -1,36 +1,39 @@
-function binTrajFiles(varargin)
-% Restructure the trajectories files (*.txt) by binning time data to a
-% greater exposure time and reordering the columns according to user
-%
-% binTrajFiles('C:\Users\SigelPC18\Documents\MATLAB\Susi data\SP_09\traces_processing\traces_ASCII', 0.1)
+function binTrajFiles(pname,expT,headers)
+% | Format MASH-processed trace files (*.txt) by binning data to a greater
+% | exposure time and writing data columns specified by headers.
+% |
+% | command: binTrajFiles(pname);
+% | pname >> source directory
+% | expT >> desired time bin (in second)
+% | headers >> {} or {1-by-H} H specified headers to export. If empty,
+% |            default headers are used: {'timeat638nm','I_1at638nm',
+% |            'I_2at638nm','I_3at638nm','timeat532nm','I_1at532nm',
+% |            'I_2at532nm','I_3at532nm','FRET_1>2','discr.FRET_1>2',
+% |            'S_Cy3','discr.S_Cy3'}
+% |
+% | example: binTrajFiles('C:\myDataFolder\experiment_01\trace_processing_traces_ASCII\',0.1,{'timeat532nm','I_1at532nm','I_2at532nm','I_3at532nm','FRET_1>2','discr.FRET_1>2'});
+
+% Last update: 18th of February 2019 by Mélodie Hadzic
+% --> update help section
+
+defaultHeaders = {'timeat638nm','I_1at638nm','I_2at638nm','I_3at638nm',...
+    'timeat532nm','I_1at532nm','I_2at532nm','I_3at532nm', 'FRET_1>2',...
+    'discr.FRET_1>2','S_Cy3','discr.S_Cy3'};
 
 try
-    % get and correct folder path
-    if isempty(varargin)
-        pname = cat(2,uigetdir('','Select folder'),filesep);
-    else
-        pname = varargin{1};
-    end
-    if ~sum(pname)
-        return;
-    end
+    % correct source directory
     if ~strcmp(pname(end),'\')
         pname = [pname,filesep];
     end
 
-    % get new binning time
-    if size(varargin,2)>=2
-        binTime = varargin{2};
-    end
+    % get new exposure time
+    binTime = expT;
     
     % get final headers
-    if size(varargin,2)>=3
-        headFinal = varargin{3};
+    if isempty(headers)
+        headFinal = headers;
     else
-        headFinal = {'timeat638nm','I_1at638nm','I_2at638nm', ...
-            'I_3at638nm', 'timeat532nm','I_1at532nm','I_2at532nm', ...
-            'I_3at532nm', 'FRET_1>2','discr.FRET_1>2','S_Cy3', ...
-            'discr.S_Cy3'};
+        headFinal = defaultHeaders;
     end
 
     % list trajectory files in the folder
