@@ -735,7 +735,7 @@ for l = 1:nExc
                     p.proj{proj}.movie_dat(1) [res_y res_x] ...
                     p.proj{proj}.movie_dat(3:end)];
                 if autoDark
-                    coord_dark = getDarkCoord(l, m, c, p);
+                    coord_dark = getDarkCoord(l, m, c, p, sub_w);
                 else
                     coord_dark = [g.param{1}{m}(l,c,4) ...
                         g.param{1}{m}(l,c,5)];
@@ -1034,7 +1034,8 @@ meth = g.param{1}{m}(l,c,1);
 if meth == 6
     autoDark = g.param{1}{m}(l,c,6);
     if autoDark
-        coord_dark = getDarkCoord(l, m, c, p);
+        subw = g.param{1}{m}(l,c,3);
+        coord_dark = getDarkCoord(l, m, c, p, subw);
     else
         coord_dark = [g.param{1}{m}(l,c,4) g.param{1}{m}(l,c,5)];
 

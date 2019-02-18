@@ -1,10 +1,9 @@
-function dark_coord = getDarkCoord(exc, mol, c, p)
+function dark_coord = getDarkCoord(exc, mol, c, p, dimImg)
 
 proj = p.curr_proj;
 aveImg = p.proj{proj}.aveImg{exc};
 coord = p.proj{proj}.coord(mol,(2*c-1):2*c);
 nChan = p.proj{proj}.nb_channel;
-dimImg = p.proj{proj}.prm{mol}{3}{3}{exc,c}(6,2);
 res_x = p.proj{proj}.movie_dim(1);
 res_y = p.proj{proj}.movie_dim(2);
 split = round(res_x/nChan)*(1:nChan-1);

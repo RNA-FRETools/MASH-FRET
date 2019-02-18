@@ -87,6 +87,7 @@ if ~isBgCorr
                     bg = nPix*bg;
 
                 case 6 % Dark trace
+                    sub_w = prm(2);
                     aDim = p.proj{proj}.pix_intgr(1);
                     autoDark = prm(6);
                     res_y = p.proj{proj}.movie_dim(2);
@@ -95,7 +96,7 @@ if ~isBgCorr
                         p.proj{proj}.movie_dat(1) [res_y res_x] ...
                         p.proj{proj}.movie_dat(3:end)];
                     if autoDark
-                        coord_dark = getDarkCoord(l, mol, c, p);
+                        coord_dark = getDarkCoord(l,mol,c,p,sub_w);
                     else
                         coord_dark = prm(4:5);
                         itgDim = p.proj{proj}.pix_intgr(1);
@@ -107,8 +108,7 @@ if ~isBgCorr
                         coord_dark(coord_dark(:,2)>=max_y)=max_y-1;
                     end
                     p.proj{proj}.prm{mol}{3}{3}{l,c}(6,4:5) = coord_dark;
-                    [o I_bg] = create_trace(coord_dark, aDim, nPix, ...
-                        fDat);
+                    [o I_bg] = create_trace(coord_dark,aDim,nPix,fDat);
                     I_bg = slideAve(I_bg(l:size(I,3):end,:), prm(1));
                     bg = I_bg(1:size(I,1));
                     
