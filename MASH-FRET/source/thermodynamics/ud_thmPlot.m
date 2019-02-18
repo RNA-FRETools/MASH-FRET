@@ -78,7 +78,7 @@ set(h.checkbox_thm_ovrfl, 'Enable', 'on', 'Value', ovrfl);
 
 %% if not calculated yet, build histograms
 if isempty(P)
-    [P N] = getHist('all', w, ovrfl, h_fig);
+    [P,N] = getHist('all',false, ovrfl, h_fig);
     if isempty(P)
         return;
     end
