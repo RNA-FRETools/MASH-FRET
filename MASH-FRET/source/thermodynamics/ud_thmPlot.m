@@ -37,7 +37,6 @@ P = prm.plot{2};
 thm_start = prm.thm_start;
 thm_res = prm.thm_res;
 boba = thm_start{1}(2);
-w = thm_start{1}(5);
 
 %% set fields to parameter values
 setProp(get(h.uipanel_thm_plot, 'Children'), 'Enable', 'on');
