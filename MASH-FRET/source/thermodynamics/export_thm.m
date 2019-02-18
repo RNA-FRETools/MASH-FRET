@@ -22,12 +22,12 @@ nPix = p.proj{proj}.pix_intgr(2);
 if isInt
     str_units = 'a.u.';
     if perSec
-        str_units = [str_units ' s-1'];
+        str_units = cat(2,str_units,' s-1');
         pstart{2} = pstart{2}/expT; % thresholds
         pstart{3}(:,4:9) = pstart{3}(:,4:9)/expT; % Gaussian param.
     end
     if perPix
-        str_units = [str_units ' pix-1'];
+        str_units = cat(2,str_units,' pix-1');
         pstart{3}(:,4:9) = pstart{3}(:,4:9)/nPix;
     end
 else
@@ -51,19 +51,27 @@ defname = p.proj{proj}.exp_parameters{1,2};
 if isempty(defname)
     [o,defname,o] = fileparts(p.proj{proj}.proj_file);
 end
-defname = [setCorrectPath('thermodynamics', h_fig) defname '_' str_tpe];
-[fname, pname, o] = uiputfile({'*.txt', 'Text files(*.txt)'; '*.*', ...
-    'All files(*.*)'}, 'Export Thermodynamics', defname);
+defname = cat(2,setCorrectPath('histogram_analysis',h_fig),defname,'_',...
+    str_tpe);
+[fname,pname,o] = uiputfile({'*.txt', 'Text files(*.txt)'; '*.*', ...
+    'All files(*.*)'},'Export analysis',defname);
 
 if ~sum(fname)
     return;
 end
+
+% display action
+setContPan('Exporting results from histogram analysis...','process',h_fig);
 
 expfig = 0;
 
 [o,name,o] = fileparts(fname);
 
 P = pplot{2};
+
+str_action = '';
+
+% export histogram
 if ~isempty(P)
     if isInt
         if perSec
@@ -73,18 +81,31 @@ if ~isempty(P)
             P(:,1) = P(:,1)/nPix;
         end
     end
-    fname = [name '.hist'];
-    f = fopen([pname fname], 'Wt');
-    fprintf(f, [str_tpe '(' str_units ')\tfrequency count\tprobability\t' ...
-        'cumulative frequency count\tcumulative probability\n']);
-    fprintf(f, '%d\t%d\t%d\t%d\t%d\n', [P(:,[1,2]),P(:,2)/sum(P(:,2)), ...
+    
+    % build file name
+    fname = cat(2,name,'.hist');
+    
+    % write data to file
+    f = fopen(cat(2,pname,fname),'Wt');
+    fprintf(f,cat(2,str_tpe,'(',str_units,')\tfrequency count\t',...
+        'probability\tcumulative frequency count\t',...
+        'cumulative probability\n'));
+    fprintf(f,'%d\t%d\t%d\t%d\t%d\n',[P(:,[1,2]),P(:,2)/sum(P(:,2)), ...
         P(:,3),P(:,3)/sum(P(:,2))]');
     fclose(f);
+    
+    % update action
+    str_action = cat(2,str_action,'Histogram written to file: ',fname,...
+        '\nin folder: ',pname,'\n');
 end
 
 % Export RMSE analysis results
 if ~isempty(pres{3,1})
-    fname = [name '_config.txt'];
+    
+    % build file name
+    fname = cat(2,name,'_config.txt');
+    
+    % format file header
     Kmax = pstart{4}(3);
     isBIC = ~pstart{4}(1);
     if isBIC
@@ -102,24 +123,34 @@ if ~isempty(pres{3,1})
         str_meth = num2str(penalty);
     end
 
-    f = fopen([pname fname], 'Wt');
-    fprintf(f, 'Max. number of Gaussians: %i\n\n', Kmax);
-    fprintf(f, 'Penalty: %s\n\n', str_meth);
-    fprintf(f, 'Optimum number of Gaussians: %i\n\n', Kopt);
-    fprintf(f, 'Fitting equations:\n');
+    str_head = cat(2,...
+        'Max. number of Gaussians: ',sprintf('%i',Kmax),'\n\n',...
+        'Penalty: ',str_meth,'\n\n',...
+        'Optimum number of Gaussians: ',sprintf('%i',Kopt),'\n\n',...
+        'Fitting equations:\n');
     for K = 1:Kmax
         if K>2
-            fprintf(f, '- %i Gaussians:\t%s + ... + %s\n', K, ...
-                getEqGauss(1), strrep(getEqGauss(1), '1', num2str(K)));
+            str_head = cat(2,str_head,'- ',sprintf('%i',K),...
+                ' Gaussians:\t',getEqGauss(1),' + ... + ',...
+                strrep(getEqGauss(1),'1',num2str(K)),'\n');
         else
-            fprintf(f, '- %i Gaussians:\t%s\n', K, getEqGauss(K));
+            str_head = cat(2,str_head,'- ',sprintf('%i',K),...
+                ' Gaussians:\t',getEqGauss(K),'\n');
         end
     end
-    fprintf(f, ['\nBest parameters for all GMM with FWHM = o *' ...
-        ' 2*sqrt(2*ln(2)):\n']);
-    fprintf(f, ['number of Gaussians\tLog Likelihood\tBIC' ...
-        repmat('\tA_%i\tmu_%i\tFWHM_%i\t',[1 K]) '\n'], ...
-            reshape(repmat(1:K,[3,1]),[1,3*K]));
+    str_head = cat(2,str_head,'\nBest parameters for all GMM with ',...
+        'FWHM = o * 2*sqrt(2*ln(2)):\n',...
+        'number of Gaussians\tLog Likelihood\tBIC');
+    for k = 1:K
+        kstr = num2str(k);
+        str_head = cat(2,str_head,'\tA_',kstr,'\tmu_',kstr,'\tFWHM_',kstr,...
+            '\t');
+    end
+    str_head = cat(2,str_head,'\n');
+    
+    % write data to file
+    f = fopen(cat(2,pname,fname),'Wt');
+    fprintf(f,str_head);
     for K = 1:Kmax
         if ~isempty(pres{3,2}{K})
             if isInt
@@ -131,15 +162,18 @@ if ~isempty(pres{3,1})
                 end
             end
 
-            fprintf(f, ['%i\t%d\t%d' repmat('\t%d',[1,3*K]) ...
-                '\n'], [K pres{3,1}(K,:) reshape(pres{3,2}{K}', ...
-                [1 numel(pres{3,2}{K})])]);
+            fprintf(f, cat(2,'%i\t%d\t%d',repmat('\t%d',[1,3*K]), ...
+                '\n'),[K pres{3,1}(K,:),reshape(pres{3,2}{K}', ...
+                [1,numel(pres{3,2}{K})])]);
         else
-            fprintf(f, '%i\tn.a.\n', K);
+            fprintf(f,'%i\tn.a.\n',K);
         end
     end
-
     fclose(f);
+    
+    % update action
+    str_action = cat(2,str_action,'State configuration written to file: ',...
+        fname,'\nin folder: ',pname,'\n');
 end
 
 switch meth
@@ -236,6 +270,10 @@ switch meth
                     pres{2,1}(:,3:6) = pres{2,1}(:,3:6)*nPix;
                 end
             end
+            
+            % update action
+            str_action = cat(2,str_action,'Gaussian fitting results ',...
+                'written to file: ',fname,'\nin folder: ',pname,'\n');
         end
 
     case 2 % Thresholding
@@ -273,6 +311,10 @@ switch meth
                     [1 T+1])],  pres{1,1}(:,1)');
             end
             fclose(f);
+            
+            % update action
+            str_action = cat(2,str_action,'Thresholding results ',...
+                'written to file: ',fname,'\nin folder: ',pname,'\n');
         end
 end
 
@@ -432,14 +474,12 @@ if expfig
     end
     
     if isdriver
-%         ps2pdf('psfile', [pname name '.ps'], 'pdffile', [pname name '.pdf']);
-%         delete([pname name '.ps']);
         if meth==1
-            fname_pdf = cat(2,pname,name,'_gauss.pdf');
+            fname_pdf = cat(2,name,'_gauss.pdf');
         else
-            fname_pdf = cat(2,pname,name,'_thresh.pdf');
+            fname_pdf = cat(2,name,'_thresh.pdf');
         end
-        append_pdfs(fname_pdf, fname_fig{:});
+        append_pdfs(cat(2,pname,fname_pdf),fname_fig{:});
         flist = dir(pname_fig_temp);
         for i = 1:size(flist,1)
             if ~(strcmp(flist(i).name,'.') || strcmp(flist(i).name,'..')) 
@@ -447,9 +487,16 @@ if expfig
             end
         end
         rmdir(pname_fig_temp);
+        
+        % update action
+        str_action = cat(2,str_action,'Sample figures written to file ',...
+            fname_pdf,'\nin folder: ',pname,'\n');
     end
 end
 
 loading_bar('close', h_fig);
 
+if ~isempty(str_action)
+    setContPan(str_action,'success',h_fig);
+end
 

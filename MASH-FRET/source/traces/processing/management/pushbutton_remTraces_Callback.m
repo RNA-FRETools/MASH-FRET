@@ -36,5 +36,8 @@ if ~isempty(p.proj)
         ud_TTprojPrm(h.figure_MASH);
         ud_trSetTbl(h.figure_MASH);
         updateFields(h.figure_MASH, 'ttPr');
+        
+        setContPan(cat(2,'Projects: ',str_proj,' have been removed from ',...
+            'the list.'),'success',h.figure_MASH);
     end
 end

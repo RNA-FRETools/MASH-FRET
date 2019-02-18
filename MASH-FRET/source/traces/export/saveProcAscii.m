@@ -201,9 +201,12 @@ end
 
 %% export data to files: 
 
+setContPan('Export processed data for selected molecules ...','process',...
+    h_fig);
+
 % loading bar parameters---------------------------------------------------
 err = loading_bar('init', h_fig , nMol, ...
-    'Export process data for selected molecules ...');
+    'Export processed data for selected molecules ...');
 if err
     return;
 end
@@ -222,8 +225,8 @@ try
             n = n + 1;
             
             % display action
-            str = cat(2,'export data of molecule n:°',num2str(m),'(',...
-                num2str(n),' on ',num2str(N),'):');
+            disp(cat(2,'export data of molecule n:°',num2str(m),'(',...
+                num2str(n),' on ',num2str(N),')...'));
             
             % if requested, process molecule data before exporting
             if fromTT && xp.process
@@ -288,11 +291,6 @@ try
                             if isempty(name)
                                 return;
                             end
-                            
-                            % update action
-                            str = cat(2,str,'\nIntensity traces saved',...
-                                ' to ASCII file: ',name_mol,'_I.txt',...
-                                '\n in folder: ',pname_ascii);
                         end
                     end
                     
@@ -321,11 +319,6 @@ try
                             if isempty(name)
                                 return;
                             end
-                            
-                            % update action
-                            str = cat(2,str,'\nFRET traces saved to ',...
-                                'ASCII file: ',name_mol,'_FRET.txt',...
-                                '\n in folder: ',pname_ascii);
                         end
                     end
                     
@@ -344,11 +337,6 @@ try
                             if isempty(name)
                                 return;
                             end
-                            
-                            % update action
-                            str = cat(2,str,'\nS traces saved to ASCII',...
-                                ' file: ',name_mol,'_S.txt\n in folder: ',...
-                                pname_ascii);
                         end
                     end
                     
@@ -362,11 +350,6 @@ try
                         if isempty(name)
                             return;
                         end
-                        
-                        % update action
-                        str = cat(2,str,'\nTraces saved to ASCII ',...
-                            'file: ',name_mol,'.txt\n in folder: ',...
-                            pname_ascii);
                     end
                 end
                 
@@ -394,12 +377,6 @@ try
                             if isempty(name)
                                 return;
                             end
-                            
-                            % update action
-                            str = cat(2,str,'\nTraces (',ext_f,') ',...
-                                'saved to HaMMy-compatible file: ',...
-                                name_mol,ext_f,'_HaMMy.dat\n in folder: ',...
-                                pname_ha);
                         end
 
                         if saveSmart
@@ -436,12 +413,6 @@ try
                             if isempty(name)
                                 return;
                             end
-                            
-                            % update action
-                            str = cat(2,str,'\nTraces (',ext_f,') ',...
-                                'saved to QUB-compatible file: ',...
-                                name_mol,ext_f,'_QUB.txt in folder: ',...
-                                pname_qub);
                         end
                     end
                 end
@@ -456,10 +427,6 @@ try
                     if isempty(name)
                         return;
                     end
-                    
-                    % update action
-                    str = cat(2,str,'\nParameters saved to file: ',...
-                        name_mol,'.log\n in folder: ',pname_xp);
                 end
                 
                 % format gamma factor data
@@ -515,13 +482,7 @@ try
                             fprintf(f,cat(2,repmat('%d\t',...
                                 [1,size(histI,2)]),'\n'),histI');
                             fclose(f);
-                            
-                            % display action
-                            str = cat(2,str,'\nIntensity(channel ',...
-                                num2str(c),', ',num2str(exc(l)),...
-                                'nm) histograms saved to ASCII file: ', ...
-                                fname_histI,'\n in folder: ',pname_hist);
-                            
+
                             if inclDiscr && discrInt
                                 % format discrete intensity histogram
                                 discrI = ...
@@ -549,14 +510,6 @@ try
                                 fprintf(f,cat(2,repmat('%d\t',...
                                     [1,size(histdI,2)]),'\n'),histdI');
                                 fclose(f);
-                                
-                                % update action
-                                str = cat(2,str,'\nDiscretised intensity', ...
-                                    '(channel ',num2str(c),', ',...
-                                    num2str(exc(l)),'nm) histograms ', ...
-                                    'saved to ASCII file: ', ...
-                                    fname_histdI,'\n in folder: ', ...
-                                    pname_hist);
                             end
                         end
                     end
@@ -606,13 +559,7 @@ try
                         fprintf(f,cat(2,repmat('%d\t',[1,size(histF,2)]),...
                             '\n'),histF');
                         fclose(f);
-                        
-                        % update action
-                        str = cat(2,str,'\nFRET (',num2str(FRET(i,1)),...
-                            ' to ',num2str(FRET(i,2)),') histograms saved ',...
-                            'to ASCII file: ',fname_histF,'\n in folder: ', ...
-                            pname_hist);
-                        
+
                         if inclDiscr
                             % format discrete FRET histogram
                             discrFRET = FRET_DTA(incl,(m-1)*nFRET+i);
@@ -636,13 +583,6 @@ try
                             fprintf(f,cat(2,repmat('%d\t',...
                                 [1,size(histdF,2)]),'\n'),histdF');
                             fclose(f);
-                            
-                            % update action
-                            str = cat(2,str,'\nDiscretised FRET (',...
-                                num2str(FRET(i,1)),' to ',...
-                                num2str(FRET(i,2)),') histograms saved', ...
-                                'to ASCII file: ',fname_histdF,...
-                                '\nin folder: ',pname_hist);
                         end
                     end
                 end
@@ -687,11 +627,6 @@ try
                         fprintf(f,cat(2,repmat('%d\t',[1,size(histS,2)]),...
                             '\n'),histS');
                         fclose(f);
-                            
-                        % update action
-                        str = cat(2,str,'\nStoichiometry (',labels{S(i)}, ...
-                            ') histograms saved to ASCII file: ', ...
-                            fname_histS,'\n in folder: ',pname_hist);
 
                         if inclDiscr
                             % format discrete stoichiometry histogram
@@ -716,12 +651,6 @@ try
                             fprintf(f,cat(2,repmat('%d\t',...
                                 [1,size(histdS,2)]),'\n'),histdS');
                             fclose(f);
-                            
-                            % update action
-                            str = cat(2,str,'\nDiscretised Stoichiometry ',...
-                                '(',labels{S(i)},') histograms saved to ',...
-                                'ASCII file: ',fname_histdS,'\n in ',...
-                                'folder: ',pname_hist);
                         end
                     end
                 end
@@ -756,12 +685,6 @@ try
                                     [1,size(dtI,2)]),'\n'),dtI');
                                 fclose(f);
                             end
-                            
-                            % update action
-                            str = cat(2,str,'\nIntensity(channel ',...
-                                num2str(c),', ',num2str(exc(l)),...
-                                'nm) dwell times saved to ASCII file: ', ...
-                                fname_dtI,'\n in folder: ',pname_dt);
                             
                             if saveKin && size(dtI,1)>1 && ...
                                     numel(unique(dtI(:,2:3)))<=6
@@ -798,12 +721,6 @@ try
                             fclose(f);
                         end
 
-                        % update action
-                        str = cat(2,str,'\nFRET (',num2str(FRET(i,1)),...
-                            ' to ',num2str(FRET(i,2)),') dwell times',...
-                            ' saved to ASCII file: ',fname_dtF,...
-                            '\nin folder: ',pname_dt);
-
                         if saveKin && size(dtF,1)>1 && ...
                                 numel(unique(dtF(:,2:3)))<=6
                             kinDat = getKinDat(dtF);
@@ -836,12 +753,7 @@ try
                                 [1,size(dtS,2)]),'\n'),dtS');
                             fclose(f);
                         end
-                        
-                        % update action
-                        str = cat(2,str,'\nStoichiometry (',labels{S(i)}, ...
-                            ') dwell times saved to ASCII file: ', ...
-                            fname_dtS,'\n in folder: ',pname_dt);
-                        
+
                         if saveKin && size(dtS,1)>1 && ...
                                 numel(unique(dtS(:,2:3)))<=6
                             kinDat = getKinDat(dtS);
@@ -921,7 +833,6 @@ try
                     m_i = 0;
                 end
             end
-            updateActPan(str, h_fig, 'process');
         end
         % loading bar update-----------------------------------
         err = loading_bar('update', h_fig);
@@ -967,13 +878,50 @@ if saveTr
 end
 
 
-%% Traces (complement)
+%% Traces (complement) and build action
 
+str = '';
 if saveTr
+    if ~allInOne
+        if saveAscii
+            % update action
+            str = cat(2,str,'Intensity traces saved to ASCII files in ',...
+                'folder: ',pname_ascii,'\n');
+        end
+
+        if saveTr_fret
+            % update action
+            str = cat(2,str,'FRET traces saved to ASCII files in folder: ',...
+                pname_ascii,'\n');
+        end
+        
+        if saveTr_S
+            % update action
+            str = cat(2,str,'S traces saved to ASCII files in folder: ',...
+                pname_ascii,'\n');
+        end
+        
+    else
+        % update action
+        str = cat(2,str,'Traces saved to ASCII files in folder: ',...
+            pname_ascii,'\n');
+    end
+    
+    if fromTT && savePrm == 1 
+        % update action
+        str = cat(2,str,'Parameters saved to files in folder: ',pname_xp,...
+            '\n');
+    end
+    if saveGam
+        % update action
+        str = cat(2,str,'Gamma factors saved to  file: ',name,'.gam in ',...
+            'folder: ',pname_xp,'\n');
+    end
+
     for j = 1:nFRET
         
         ext_f = cat(2,'FRET',num2str(FRET(j,1)),'to',num2str(FRET(j,2)));
-        
+
         if saveSmart
             
             % build SMART file name
@@ -991,9 +939,9 @@ if saveTr
             save(cat(2,pname_smart,fname_smart),'group_data','-mat');
             
             % update action
-            updateActPan(cat(2,'Traces (',ext_f,') saved to ', ...
-                'SMART-compatible file: ',fname_smart,'\n in ', ...
-                'folder: ',pname_smart),h_fig,'process');
+            str = cat(2,str,'Donor and acceptor traces saved to SMART-',...
+                'compatible file: ',fname_smart,' in folder: ',pname_smart,...
+                '\n');
         end
         
         if saveVbfret
@@ -1010,9 +958,9 @@ if saveTr
             save(cat(2,pname_vbfret,fname_vbfret),'data','-mat');
             
             % update action
-            updateActPan(cat(2,'Traces (',ext_f,') saved to ',...
-                'VbFRET-compatible file: ',fname_vbfret,'\n in ',...
-                'folder: ',pname_vbfret),h_fig,'process');
+            str = cat(2,str,'Donor and acceptor traces saved to VbFRET-',...
+                'compatible file: ',fname_vbfret,' in folder: ',...
+                pname_vbfret,'\n');
         end
         
         if saveEbfret
@@ -1030,10 +978,89 @@ if saveTr
             fclose(f);
             
             % update action
-            updateActPan(cat(2,'Traces (',ext_f,') saved to ', ...
-                'ebFRET-compatible file: ',fname_ebfret,'\n in ', ...
-                'folder: ',pname_ebfret),h_fig,'process');
+            str = cat(2,str,'Donor and acceptor traces saved to ebFRET-',...
+                'compatible file: ',fname_ebfret,' in folder: ',...
+                pname_ebfret,'\n');
         end
+    end
+    
+    if saveHa
+        % update action
+        str = cat(2,str,'Donor and acceptor traces saved to HaMMy-',...
+            'compatible files in folder: ',pname_ha,'\n');
+    end
+    if saveQub
+        % update action
+        str = cat(2,str,'Donor and acceptor traces saved to QUB-',...
+            'compatible files in folder: ',pname_qub,'\n');
+    end
+end
+    
+if saveHist
+    if saveHst_I
+        if inclDiscr && discrInt
+            str = cat(2,str,'Intensity and discrete intensity ',...
+                'histograms saved to ASCII files  in folder: ',...
+                pname_hist,'\n');
+        else
+            str = cat(2,str,'Intensity histograms saved to ASCII ',...
+                'files  in folder: ',pname_hist,'\n');
+        end
+    end
+
+    if saveHst_fret
+        % update action
+        if inclDiscr
+            str = cat(2,str,'FRET and discrete FRET histograms saved ', ...
+                'to ASCII files in folder: ',pname_hist,'\n');
+        else
+            str = cat(2,str,'FRET histograms saved to ASCII files in ',...
+                'folder: ',pname_hist,'\n');
+        end
+    end
+    if saveHst_S
+        % update action
+        if inclDiscr
+            str = cat(2,str,'Stoichiometry and discrete Stoichiometry',...
+                'histograms saved to ASCII files in folder: ',...
+                pname_hist,'\n');
+        else
+            str = cat(2,str,'Stoichiometry histograms saved to ASCII ',...
+                'files in folder: ',pname_hist,'\n');
+        end
+    end
+end
+
+if saveDt
+    if saveDt_I
+        % update action
+        str = cat(2,str,'Intensity dwell times saved to ASCII files in',...
+            'folder: ',pname_dt,'\n');
+    end
+    if saveKin && discrInt
+        % update action
+        str = cat(2,str,'Intensity dynamics statistics saved to file: ', ...
+            fname_kinI,'in folder: ',pname_dt,'\n');
+    end
+    if saveDt_fret
+        % update action
+        str = cat(2,str,'FRET dwell times saved to ASCII files in ',...
+            'folder: ',pname_dt,'\n');
+    end
+    if saveKin && nFRET>1
+        % update action
+        str = cat(2,str,'FRET dynamics statistics saved to file: ', ...
+            fname_kinF,'in folder: ',pname_dt,'\n');
+    end
+    if saveDt_S
+        % update action
+        str = cat(2,str,'Stoichiometry dwell times saved to ASCII files ',...
+            'in folder: ',pname_dt,'\n');
+    end
+    if saveKin && nS>1
+        % update action
+        str = cat(2,str,'Stoichiometry dynamics statistics saved to file: ', ...
+            fname_kinS,'in folder: ',pname_dt,'\n');
     end
 end
 
@@ -1048,6 +1075,14 @@ if saveFig && figFmt == 1 % *.pdf
         end
     end
     rmdir(pname_fig_temp);
+    
+    % update action
+    str = cat(2,str,'Figures saved to file: ',fname_pdf,' in folder: ',...
+        pname_fig,'\n');
+    
+elseif saveFig
+    % update action
+    str = cat(2,str,'Figures saved to files in folder: ',pname_fig,'\n');
 end
 
 loading_bar('close', h_fig);
@@ -1058,6 +1093,7 @@ if fromTT
     guidata(h_fig, h);
 end
 
+setContPan(cat(2,'Export completed:\n',str,'\n'),'process',h_fig);
 
 
 function upgradeKinFile(fname_kin,fname_dt,kinDat)

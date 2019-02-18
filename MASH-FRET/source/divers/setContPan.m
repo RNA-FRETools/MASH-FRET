@@ -50,11 +50,17 @@ switch curr_panel
         h_edit = h.edit_TDPcontPan;
     case h.uipanel_thm
         h_edit = h.edit_thmContPan;
+    otherwise
+        h_edit = [];
 end
 
-str = textwrap(h_edit, str);
-set(h_edit, 'String', str, 'BackgroundColor', colBg);
-drawnow;
+if ~isempty(h_edit)
+    str = textwrap(h_edit, str);
+    set(h_edit, 'String', str, 'BackgroundColor', colBg);
+    drawnow;
+end
+
+updateActPan(str,h_fig,state);
 
 guidata(h_fig, h);
 

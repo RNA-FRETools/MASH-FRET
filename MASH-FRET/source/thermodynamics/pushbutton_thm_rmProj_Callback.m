@@ -36,5 +36,8 @@ if ~isempty(p.proj)
         cla(h.axes_hist1);
         cla(h.axes_hist2);
         updateFields(h.figure_MASH, 'thm');
+        
+        setContPan(cat(2,'Projects: ',str_proj,' have been removed from ',...
+            'the list.'),'success',h.figure_MASH);
     end
 end

@@ -20,7 +20,6 @@ h = guidata(h_fig);
 
 p = h.param.sim;
 
-disp_prgss = 0;
 bgDec_dir = {'decrease','decrease'};
 
 
@@ -127,6 +126,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         else
             str_bleach = 'no';
         end
+        str_action = '';
         
         % Results from buildModel function
         res         = h.results.sim; % results/simulated data
@@ -180,8 +180,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                     img_bg_acc(1:h_min,1:w_min) = ...
                         bgImg(1:h_min,1:w_min);
                 else
-                    updateActPan('No BG pattern loaded.', h_fig, ...
-                        'error');
+                    setContPan('No BG pattern loaded.','error',h_fig);
                     return;
                 end
         end
@@ -198,7 +197,9 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         I_acc_plot = I_don_bt; % 
         bg_don = I_don_bt; % noisy BG traces
         bg_acc = I_don_bt; % 
-            
+        
+        setContPan('Format data ...', 'process', h_fig);
+        
         for m = 1:M % M:= Number of molecules
 
 %             % direct excitation in % of the background
@@ -295,6 +296,8 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         % Export SMV
         if isMov || isAvi % sira(movie/video) or avi file 
             
+            setContPan('Write video to file ...', 'process', h_fig);
+            
             % open blank movie file
             if isMov
                 fName_mov = [fName '.sira'];
@@ -322,9 +325,6 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
 
                 open(v);
             end
-
-            str = 'Process: Building movie ...';
-            setContPan(str, 'process', h_fig);
 
             for i = 1:N % number of frames
                 if i==2
@@ -552,12 +552,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                     fwrite(f, img, 'single');
                 end
                 
-                if disp_prgss
-                    setContPan([str '\nWriting frame ' num2str(i) ...
-                        ' of ' num2str(N)], 'process', h_fig);
-                else
-                    disp(['Writing frame ' num2str(i) ' of ' num2str(N)]);
-                end
+%                 disp(cat(2,'Writing frame ',num2str(i),' of ',num2str(N)));
                 
                 if i==2 && size(varargin,2)~=2
                     t_end = toc(t);
@@ -587,20 +582,19 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                             close(v);
                             delete([pName fName_mov_avi]);
                         end
-                        setContPan('Process interrupted.', 'error', ...
-                            h_fig);
+                        setContPan('Process interrupted.','error',h_fig);
                         return;
                     end
                 end
             end
             if isMov
-                setContPan([str '\nExport data to file ' fName_mov ' ...'], ...
-                    'process', h_fig);
+                str_action = cat(2,str_action,'Video written to file: ',...
+                    fName_mov,' in folder: ',pName,'\n');
                 fclose(f);
             end
             if isAvi
-                setContPan([str '\nExport data to file ' fName_mov_avi ' ...'], ...
-                    'process', h_fig);
+                str_action = cat(2,str_action,'Video written to AVI ',...
+                    'file ',fName_mov_avi,' in folder:',pName,'\n');
                 close(v);
             end
         end
@@ -612,6 +606,9 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         end
         
         if isTr || isProcTr || isDt
+            
+            setContPan('Write trace data to file ...', 'process', h_fig);
+            
             if isTr
                 fName_traces = [fName '.mat'];
                 str_exp_traces = 'yes';
@@ -629,9 +626,6 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                     mkdir([pName 'dwell-times']);
                 end
             end
-            
-            str = 'Process: Writing processed files ...';
-            setContPan(str, 'process', h_fig);
             
             % Process all traces
             for m = 1:M
@@ -854,17 +848,32 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                         save(fName_dt, 'dt', '-ascii');
                     end
                     
-                    setContPan([str '\nSaving molecule ' num2str(m) ...
-                        ' of ' num2str(M)], 'process', h_fig);
+%                     disp(cat(2,'Saving molecule ',num2str(m),' of ',...
+%                         num2str(M)));
                 end
             end
+            if isProcTr
+                str_action = cat(2,str_action,'Traces written to files ',...
+                    'in folder: ',pName,'traces_ASCII',filesep,'\n');
+            end
+            if isDt
+                str_action = cat(2,str_action,'Dwell times written to ',...
+                    'files in folder: ',pName,'dwell-times',filesep,'\n');
+            end
             if isTr
-                Trace_all = tr_all; coord = crd;
+                Trace_all = tr_all;
+                coord = crd;
                 save([pName fName_traces], 'coord', 'Trace_all', 'units');
+                
+                str_action = cat(2,str_action,'Traces written to Matlab ',...
+                    'file: ',fName_traces,' in folder: ',pName,'\n');
             end
         end
         
         if isCrd
+            
+            setContPan('Write coordinates to file ...', 'process', h_fig);
+            
             if ~exist([pName 'coordinates'], 'dir')
                 mkdir([pName 'coordinates']);
             end
@@ -872,9 +881,17 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             str_exp_coord = 'yes';
             save([pName 'coordinates' filesep fName_coord], 'crd', ...
                 '-ascii');
+            
+            str_action = cat(2,str_action,'Molecule coordinates written ',...
+                'to file: ',fName_coord,' in folder: ',pName,'coordinates',...
+                filesep,'\n');
         end
 
         if isPrm
+            
+            setContPan('Write simulation parameters to file ...','process',...
+                h_fig);
+            
             fName_param = [fName '_param.log'];
             f = fopen([pName fName_param], 'Wt');
             fprintf(f, 'export traces (in %s counts):\t%s\n', op_u, ...
@@ -994,51 +1011,26 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             end
             
             fclose(f);
+            
+            str_action = cat(2,str_action,'Simulation parameters written ',...
+                'to file: ',fName_param,' in folder: ',pName,'\n');
         end
         
         if isTr || isMov || isProcTr || isDt || isPrm || isCrd
+            str_action = cat(2,'Success: Simulated data have been ',...
+                'exported to files:\n',str_action);
+            setContPan(str_action, 'success', h_fig);
             
-            str = ['Success: Simulated data has been correctly ' ...
-                'exported to files !'];
-            if isTr
-                str = [str '\nRaw traces have been written to the ' ...
-                    'Matlab file: ' fName_traces];
-            end
-            if isCrd
-                str = [str '\nCoordinates have been written to the ' ...
-                    'ASCI file: ' fName_coord];
-            end
-            if isMov
-                str = [str '\nSmFRET movie have been saved to the ' ...
-                    'SIRA file: ' fName_mov];
-            end
-            if isAvi
-                str = [str '\nSmFRET movie have been saved to the ' ...
-                    'Avi file: ' fName_mov_avi];
-            end
-            if isProcTr
-                str = [str 'Ideal traces have been saved to ASCII' ...
-                    ' files in foler: /Processed_traces/Traces'];
-            end
-            if isDt
-                str = [str '\nDwell-times have been saved to ASCII ' ...
-                    'files in foler: /Processed_traces/Dwell-times'];
-            end
-            if isPrm
-                str = [str '\nParameters have been saved to the ' ...
-                    'ASCII file: ' fName_param];
-            end
-            setContPan(str, 'success', h_fig);
         else
-            setContPan(['Error: No saving option is defined for ' ...
-                'exporting data.'], 'error', h_fig);
+            setContPan(cat(2,'Error: No saving option is defined for ',...
+                'exporting data.'),'error',h_fig);
         end
             
     end
     
 else
-    setContPan(['Error: The kinetic model has to be defined first', ...
-                '\nPush the "Generate" button first"'], 'error', h_fig);
+    setContPan(cat(2,'Error: The kinetic model has to be defined first\n',...
+        'Push the "Generate" button first'), 'error', h_fig);
 end
 
 

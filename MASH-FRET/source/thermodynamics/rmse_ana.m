@@ -20,6 +20,11 @@ warning('off','all');
 str = [];
 msgerr = cell(1,Jmax);
 
+if ~isempty(h_fig)
+    setContPan(cat(2,'Calculate optimum state configurations with ',...
+        'maximum ',num2str(Jmax),' states...'),'process',h_fig);
+end
+
 for J = 1:Jmax
     
     msgerr{J} = {};
@@ -115,21 +120,10 @@ for J = 1:Jmax
     
     % Display results
     if L_t(J)>-Inf
-        str = ['GMM of ' num2str(J) ' Gaussians:\n' ...
-            'LogL: ' num2str(L_t(J)/sum(val(2,:))) '\n' ...
-            'BIC: ' num2str(BIC_t(J)/sum(val(2,:))) '\n' str];
-        if ~isempty(h_fig)
-            setContPan(str, 'process', h_fig);
-        end
         disp(sprintf(['GMM of ' num2str(J) ' Gaussians:\n' ...
             'LogL: ' num2str(L_t(J)/sum(val(2,:))) '\n' ...
             'BIC: ' num2str(BIC_t(J)/sum(val(2,:))) '\n']));
     else
-        str = ['GMM of ' num2str(J) ' Gaussians:\n' ...
-            'convergeance impossible\n' str];
-        if ~isempty(h_fig)
-            setContPan(str, 'process', h_fig);
-        end
         disp(sprintf(['GMM of ' num2str(J) ' Gaussians:\n' ...
             'convergeance impossible\n']));
     end
@@ -138,18 +132,15 @@ end
 % model selection
 if (isBIC && sum(BIC_t ~= Inf)) || (~isBIC && sum(L_t ~= -Inf))
     
-    if isBIC % BIC-based selection (if chosen)
-        [o,Kopt] = min(BIC_t);
-        
-    else % rmse-based selection (if chosen)
-        Kopt = 1;
-        for k = 2:Jmax
-            if ((L_t(k)-L_t(k-1))/abs(L_t(k-1)))> ...
-                    (penalty-1)
-                Kopt = k;
-            else
-                break;
-            end
+    [o,Kopt_BIC] = min(BIC_t);
+    
+    Kopt_pen = 1;
+    for k = 2:Jmax
+        if ((L_t(k)-L_t(k-1))/abs(L_t(k-1)))> ...
+                (penalty-1)
+            Kopt_pen = k;
+        else
+            break;
         end
     end
     
@@ -181,8 +172,9 @@ if (isBIC && sum(BIC_t ~= Inf)) || (~isBIC && sum(L_t ~= -Inf))
     end
 
     if ~isempty(h_fig)
-        setContPan(sprintf('Optimal number of states: %i', Kopt), ...
-            'success', h_fig);
+        setContPan(sprintf(cat(2,'Optimum configuration: %i states (BIC) ',...
+            'and %i states (penalty=',num2str(penalty),')'),Kopt_BIC,...
+            Kopt_pen),'success', h_fig);
     end
 else
     if ~isempty(h_fig)

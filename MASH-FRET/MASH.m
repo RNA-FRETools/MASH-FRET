@@ -3920,9 +3920,16 @@ if size(p.proj,2)>1
     p.curr_proj = val(1);
     h.param.thm = p;
     guidata(h.figure_MASH, h);
+    
     cla(h.axes_hist1);
     cla(h.axes_hist2);
+    
     updateFields(h.figure_MASH, 'thm');
+    
+    p = h.param.thm;
+    proj = p.curr_proj;
+    setContPan(cat(2,'Select project: ',...
+        p.proj{proj}.exp_parameters{1,2}),'success', h.figure_MASH);
 end
 
 
@@ -3946,9 +3953,18 @@ if ~isempty(p.proj)
         p.curr_tpe(proj) = get(obj, 'Value');
         h.param.thm = p;
         guidata(h.figure_MASH, h);
+        
         cla(h.axes_hist1);
         cla(h.axes_hist2);
+        
         updateFields(h.figure_MASH, 'thm');
+        
+        p = h.param.thm;
+        proj = p.curr_proj;
+        tpe = p.curr_tpe(proj);
+        tpe_str = get(obj,'String');
+        setContPan(cat(2,'Select data: ',tpe_str{tpe}),'success', ...
+            h.figure_MASH);
     end
 end
 

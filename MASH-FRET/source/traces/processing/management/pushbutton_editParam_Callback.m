@@ -1,5 +1,8 @@
 function pushbutton_editParam_Callback(obj, evd, h)
 if ~isempty(h.param.ttPr.proj)
+    
+    setContPan('Edit project parameters...','process',h.figure_MASH);
+    
     p = h.param.ttPr;
     proj = p.curr_proj;
     q{1} = p.proj{proj}.exp_parameters;
@@ -60,5 +63,12 @@ if ~isempty(h.param.ttPr.proj)
         ud_TTprojPrm(h.figure_MASH);
     end
     
-    updateFields(h.figure_MASH, 'ttPr');
+    updateFields(h.figure_MASH,'ttPr');
+    
+    if ~isequal(r,q)
+        setContPan('Project parameters have been successfully modified.',...
+            'success',h.figure_MASH);
+    else
+        updateActPan('No project parameters was modified.',h.figure_MASH);
+    end
 end

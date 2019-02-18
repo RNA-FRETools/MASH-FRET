@@ -21,6 +21,17 @@ err = loading_bar('init', h_fig, nSpl, ['Performing randomisation and ' ...
 if err
     return;
 end
+
+if boba
+    setContPan(cat(2,'Bootstrap (',num2str(nRpl),' replicates, ',...
+        num2str(nSpl),' samples) histograms and calculate state relative ',...
+        'populations with ',num2str(K-1),' thresholds ...'),'process',...
+        h_fig);
+else
+    setContPan(cat(2,'Calculate state relative populations with ',...
+        num2str(K-1),' thresholds ...'),'process',h_fig);
+end
+
 h = guidata(h_fig);
 h.barData.prev_var = h.barData.curr_var;
 guidata(h_fig, h);
@@ -64,5 +75,8 @@ h.param.thm = p;
 guidata(h_fig,h);
 
 loading_bar('close', h_fig);
+
+setContPan('State relative populations successfully calculated.','success',...
+    h_fig);
 
 

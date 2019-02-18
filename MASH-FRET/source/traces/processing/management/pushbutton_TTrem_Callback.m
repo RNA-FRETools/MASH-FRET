@@ -1,8 +1,13 @@
 function pushbutton_TTrem_Callback(obj, evd, h)
 if ~isempty(h.param.ttPr.proj)
-    del = questdlg('Remove unselected molecules from the list?', ...
+    del = questdlg('Clear selected molecules from the project?', ...
         'Clear molecule list', 'Yes', 'No', 'No');
+    
     if strcmp(del, 'Yes')
+        
+        setContPan('Clear selected molecules from project...','process',...
+            h.figure_MASH);
+        
         p = h.param.ttPr;
         proj = p.curr_proj;
         nChan = p.proj{proj}.nb_channel;
@@ -10,6 +15,12 @@ if ~isempty(h.param.ttPr.proj)
         nS = size(p.proj{proj}.S,1);
         
         incl = p.proj{proj}.coord_incl;
+        if sum(incl)==numel(incl)
+            setContPan('Molecule selection empty.','error',h.figure_MASH);
+            return;
+        else
+            rem_mols = find(~incl);
+        end
         if ~isempty(p.proj{proj}.coord)
             p.proj{proj}.coord = p.proj{proj}.coord(incl,:);
         end
@@ -57,5 +68,18 @@ if ~isempty(h.param.ttPr.proj)
         ud_TTprojPrm(h.figure_MASH);
         ud_trSetTbl(h.figure_MASH);
         updateFields(h.figure_MASH, 'ttPr');
+        
+        str = '';
+        for i = 1:numel(rem_mols)
+            str = cat(2,str,num2str(rem_mols(i)),' ');
+        end
+        if numel(rem_mols)>1
+            str = cat(2,'Molecules ',str,'have ');
+        else
+            str = cat(2,'Molecule ',str,'has ');
+        end
+        
+        setContPan(cat(2,str,'been successfully cleared from the project'),...
+            'success',h.figure_MASH);
     end
 end

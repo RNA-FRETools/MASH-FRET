@@ -24,6 +24,8 @@ end
 %     return;
 % end
 
+setContPan(cat(2,'Generate random state sequences...'),'process',h_fig);
+
 %  Parameter initialization
 
 n_max = h.param.sim.molNb;
@@ -197,9 +199,6 @@ if K>1 && isTrans
                 discr_seq{n}(1+end_t/expT:N,:) = -1;
                 mix{n}(1,1+end_t/expT:N) = -1;
             end
-            
-            setContPan(['trace n:°' num2str(n) ' completed'], 'process',...
-                h_fig);
             n = n+1;
         end
     end
@@ -241,8 +240,6 @@ else
             discr_seq{n}(1+end_t/expT:N,:) = -1;
             mix{n}(1,1+end_t/expT:N) = -1;
         end
-        setContPan(['trace n:°' num2str(n) ' completed'], 'process', ...
-            h_fig);
     end
 end
 

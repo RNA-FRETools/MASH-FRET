@@ -188,6 +188,7 @@ else
 end
 
 if stop == 1
+    setContPan('Process interrupted.','error',h_fig);
     warndlg('Process interrupted.');
 end
 

@@ -57,6 +57,14 @@ P_bs = []; % histograms of each sample
 % get Gaussian mixture equation
 str_fit = getEqGauss(J);
 
+if boba
+    setContPan(cat(2,'Bootstrap (',num2str(nRpl),' replicates, ',...
+        num2str(nSpl),' samples) and fit histograms with ',num2str(J),...
+        ' Gaussians ...'),'process',h_fig);
+else
+    setContPan(cat(2,'Fit histogram with ',num2str(J),'Gaussians ...'),...
+        'process',h_fig);
+end
 
 % loading bar %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 err = loading_bar('init', h_fig, nSpl, ['Performing randomisation and ' ...
@@ -146,5 +154,8 @@ h.param.thm = p;
 guidata(h_fig,h);
 
 loading_bar('close', h_fig); % close loading bar
+
+setContPan(cat(2,'Gaussian fit successfully completed and state relative ',...
+    'population calculated.'),'success',h_fig);
 
 

@@ -28,6 +28,10 @@ if ~isempty(p.proj)
                 prm.thm_res{2,2} = [];
                 prm.thm_res{2,3} = [];
                 
+                str = cat(2,'Configuration with ',num2str(K),' states ',...
+                    'imported in "State population" panel for ',...
+                    'Gaussian fitting analysis.');
+                
             case 2 % Modify Thersholding parameters
                 A = fitprm(:,1);
                 mu = fitprm(:,2);
@@ -38,12 +42,18 @@ if ~isempty(p.proj)
                 prm.thm_res{1,1} = [];
                 prm.thm_res{1,2} = [];
                 prm.thm_res{1,3} = [];
+                
+                str = cat(2,'Configuration with ',num2str(K),' states ',...
+                    'imported in "State population" panel for ',...
+                    'thresholding analysis.');
         end
         
         % Save modifications
         p.proj{proj}.prm{tpe} = prm;
         h.param.thm = p;
         guidata(h.figure_MASH, h);
+        
+        setContPan(str,'success',h.figure_MASH);
         
         % Update interface
         updateFields(h.figure_MASH, 'thm');

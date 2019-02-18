@@ -55,7 +55,7 @@ if ~isempty(p.proj);
             dat.date_last_modif = datestr(now);
             save([pname fname_proj], '-struct', 'dat');
             updateActPan(['Project ' fname ' has been successfully ' ...
-                'exported to folder: ' pname], h.figure_MASH, 'success');
+                'saved in folder: ' pname], h.figure_MASH, 'success');
         end
     end
 end
