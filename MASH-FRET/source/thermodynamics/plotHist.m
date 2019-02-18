@@ -149,7 +149,7 @@ switch meth
             fitprm = res{3,2}{K};
             
             if ~isempty(fitprm)
-                set(h_axes, 'NextPlot', 'add');
+                set(h_axes(1), 'NextPlot', 'add');
                 
                 if isInt
                     if perSec
@@ -173,7 +173,7 @@ switch meth
                 end
                 plot(h_axes(1), P(:,1), y_all, 'Color', [0.5 0.5 0.5], ...
                     'LineWidth', 2);
-                set(h_axes, 'NextPlot', 'replacechildren');
+                set(h_axes(1),'NextPlot','replacechildren');
             end
         end
 
@@ -190,34 +190,32 @@ switch meth
                 thresh = thresh/nPix;
             end
         end
-
+        
         for k = 1:K
             if k>1
-                set(h_axes, 'NextPlot', 'add');
+                set(h_axes(1),'NextPlot','add');
             end
             id = P(:,1)>thresh(k) & P(:,1)<=thresh(k+1);
             bar(h_axes(1), P(id,1), P(id,2), 'FaceColor', ...
                 clr(k,:), 'EdgeColor', clr(k,:));
-            if numel(h_axes)>1
-                plot(h_axes(2), P(id,1), P(id,3), 'Marker', '+', ...
-                    'MarkerEdgeColor', clr(k,:), 'MarkerFaceColor', ...
-                    clr(k,:));
-            end
         end
         y_lim = get(h_axes(1), 'YLim');
-        if numel(h_axes)>1
-            ycum_lim = get(h_axes(2), 'YLim');
-        end
+        
         for k = 2:K
             plot(h_axes(1), [thresh(k) thresh(k)], y_lim, '-k', ...
                 'LineWidth', 2);
-            if numel(h_axes)>1
-                plot(h_axes(2), [thresh(k) thresh(k)], ycum_lim, ...
-                    '-k', 'LineWidth', 2);
-            end
         end
-        if k>1
-            set(h_axes, 'NextPlot', 'replace');
+        set(h_axes(1),'NextPlot','replace');
+        
+        if numel(h_axes)>1
+            plot(h_axes(2), P(:,1), P(:,3), '+k');
+            y_cumlim = get(h_axes(2), 'YLim');
+            set(h_axes(2),'NextPlot','add');
+            for k = 2:K
+                plot(h_axes(2), [thresh(k) thresh(k)], y_cumlim, '-k', ...
+                    'LineWidth', 2);
+            end
+            set(h_axes(2),'NextPlot','replace');
         end
 end
 
@@ -246,6 +244,10 @@ ylabel(h_axes(1), 'normalized occurence');
 if numel(h_axes)>1
     xlabel(h_axes(2), str_tpe{tpe});
     ylim(h_axes(2), [0 1]); 
-    ylabel(h_axes(2), 'normalized cumulative occurence');
+    if meth==1 && size(res,1)>=2 && size(res,2)>=2 && ~isempty(res{2,2})
+        ylabel(h_axes(2), 'relative population');
+    else
+        ylabel(h_axes(2), 'normalized cumulative occurence');
+    end
 end
 

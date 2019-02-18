@@ -1,4 +1,4 @@
-function [Ptbl N] = getHist(m, w, ovrfl, h_fig)
+function [Ptbl,N] = getHist(m,w,ovrfl,h_fig)
 
 h = guidata(h_fig);
 p = h.param.thm;
