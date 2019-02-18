@@ -93,6 +93,10 @@ if w
         Pn(n,:) = hist(trace(incl(:,m(n))',n) ,x_axis);
         Pn(n,:) = Pn(n,:)/sum(Pn(n,:));
     end
+    if ~ovrfl
+        Pn([1 end]) = [];
+        x_axis([1 end]) = [];
+    end
     P = sum(Pn,1);
     P = P/sum(P);
 else
@@ -101,14 +105,14 @@ else
         N = N + numel(trace(incl(:,m(n))',n));
         P = P + hist(trace(incl(:,m(n))',n) ,x_axis);
     end
+    if ~ovrfl
+        P([1 end]) = [];
+        x_axis([1 end]) = [];
+    end
 end
 
 cumP = cumsum(P);
 
 Ptbl = [x_axis' P' cumP'];
-
-if ~ovrfl
-    Ptbl([1 end],:) = [];
-end
 
 
