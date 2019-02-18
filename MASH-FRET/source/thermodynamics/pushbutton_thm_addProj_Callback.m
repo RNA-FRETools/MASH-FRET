@@ -9,7 +9,7 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
     if ~iscell(fname)
         fname = {fname};
     end
-    [dat ok] = loadProj(pname, fname, 'intensities', h.figure_MASH);
+    [dat,ok] = loadProj(pname, fname, 'intensities', h.figure_MASH);
     if ~ok
         return;
     end
@@ -47,6 +47,12 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
         end
         prm = p.proj{i}.prm;
         
+        % project was not processed in Trace processing
+        if ~isfield(p.proj{i},'prmTT')
+            p.proj{i}.prmTT = cell(1,nMol);
+            I = p.proj{i}.intensities;
+        end
+        
         if nTpe>size(prm,2)
             prm = cell(1,nTpe);
         end
@@ -69,6 +75,7 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
                         [nMol*N 1 nExc]);
                 end
                 i_f = tpe - 2*nChan*nExc;
+
                 gamma = [];
                 for i_m = 1:nMol
                     if size(p.proj{i}.prmTT{i_m},2)<5
