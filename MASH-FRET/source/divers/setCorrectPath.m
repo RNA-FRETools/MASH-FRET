@@ -18,7 +18,7 @@ if strcmp(folder, 'movie_processing')
     folder = 'video_processing';
 end
 % --> modify "thermodynamic" folder request into "histogram_analysis"
-if strcmp(folder, 'thermodynamic')
+if strcmp(folder, 'thermodynamics')
     folder = 'histogram_analysis';
 end
 % --> modify "tdp_analysis" folder request into "transition_analysis"
