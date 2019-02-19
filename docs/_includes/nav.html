@@ -15,6 +15,10 @@
 								{% endif %}
 							{% endfor %}
 						{% endif %}
+						
+						{% if page.parent == node.title or page.grand_parent == node.title %}
+							{% assign first_level_url = node.url | absolute_url %}
+						{% endif %}
 					
 						<a href="{{ node.url | absolute_url }}" class="navigation-list-link{% if page.url == node.url or is_select == 1%} active{% endif %}">{{ node.title }}</a>
 						{% if node.has_children %}
@@ -33,6 +37,10 @@
 															{% assign is_select = 1 %}
 														{% endif %}
 													{% endfor %}
+												{% endif %}
+												
+												{% if page.url == child.url or page.parent == child.title %}
+													{% assign second_level_url = child.url | absolute_url %}
 												{% endif %}
 											
 												<a href="{{ child.url | absolute_url }}" class="navigation-list-link{% if page.url == child.url or is_select == 1 %} active{% endif %}">{{ child.title }}</a>
