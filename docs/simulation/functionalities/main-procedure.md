@@ -3,7 +3,7 @@ layout: default
 title: Main simulation procedure
 parent: Simulation functionalities
 grand_parent: Simulation
-nav_order: 3
+nav_order: 1
 ---
 
 # Main simulation procedure 
