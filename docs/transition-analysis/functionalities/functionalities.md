@@ -1,13 +1,13 @@
 ---
 layout: default
-title: Histogram analysis functionalities
-parent: Histogram analysis
+title: Transition analysis functionalities
+parent: Transition analysis
 nav_order: 2
 has_children: true
-permalink: /docs/histogram-analysis/functionalities
+permalink: /docs/transition-analysis/functionalities
 ---
 
-# Histogram analysis functionalities
+# Transition analysis functionalities
 {: .no_toc }
 
-Follow the suggested procedures to obtain state <u>relative populations</u> from FRET histograms or achieve more <u>specific tasks</u>.
+Follow the suggested procedures to obtain optimum <u>state configurations</u> and <u>state transition rates</u> from state transitions or achieve more <u>specific tasks</u>.
