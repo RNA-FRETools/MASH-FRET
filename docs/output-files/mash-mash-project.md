@@ -10,7 +10,7 @@ nav_exclude: 1
 # MASH-FRET project files
 {: .no_toc }
 
-MASH-FRET project files are Matlab binary files with the extension `.mash`. They are usually found in the main analysis folder.
+MASH-FRET project files are Matlab binary files with the extension `.mash`. They are usually found in the main`/video_processing` analysis folder.
 
 ## Table of contents
 {: .no_toc .text-delta }

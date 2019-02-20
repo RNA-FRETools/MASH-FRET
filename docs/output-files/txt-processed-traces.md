@@ -7,7 +7,7 @@ nav_exclude: 1
 ---
 
 
-# Processed traces files
+# Processed trace files
 {: .no_toc }
 
 Processed trace files are ASCII files with the extension `.txt`. They are usually found in the main`/traces_processing/traces_ASCII` analysis folder.

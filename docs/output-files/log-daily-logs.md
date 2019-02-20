@@ -25,7 +25,7 @@ Daily log files contain logs of the <u>action history</u> window.
 They are automatically created at the `rootfolder/log` location, with rootfolder the current root folder.
 
 They are automatically updated when:
-- more than 20 new actions are added to the action history,
+- new actions are added to the action history,
 - closing MASH-FRET.
 
 ## File name

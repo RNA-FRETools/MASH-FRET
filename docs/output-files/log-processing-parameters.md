@@ -1,16 +1,16 @@
 ---
 layout: default
-title: (*.log) Trace parameters
+title: (*.gam) Gamma factors
 parent: Output files
 nav_order: 1
 nav_exclude: 1
 ---
 
 
-# Trace parameters files
+# Gamma factor files
 {: .no_toc }
 
-Trace parameter files are ASCII files with the extension `.log`. They are usually found in the main`/traces_processing/parameters` analysis folder.
+Gamma factor files are ASCII files with the extension `.gam`. They are usually found in the main`/traces_processing/parameters` analysis folder.
 
 ## Table of contents
 {: .no_toc .text-delta }
