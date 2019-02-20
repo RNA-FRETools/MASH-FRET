@@ -1,4 +1,8 @@
-function res = clustTrans(dt_bin, TDP, plot_prm, clust_prm, h_axes, varargin)
+function res = clustTrans(dt_bin, TDP, plot_prm, clust_prm, varargin)
+
+M_def = 500; % default max. number of maximization iteration
+plotIter_def = 0; % plot/not EM results while iterating
+Kmin_def = 2; % minimum configuration
 
 meth = clust_prm{1}(1); % clustering method
 shape = clust_prm{1}(2); % cluster shape
@@ -129,8 +133,8 @@ for k = 1:n_spl
         case 2 % GMM clustering
 
             [mu_spl, clust_spl, BIC_spl, a_spl, sig_spl, o, o, o, o] = ...
-                find_best_model(TDP_spl, x, y, 2, Kmax, T, 1000, 1, ...
-                shape_str, max(bins), false);
+                find_best_model(TDP_spl, x, y, Kmin_def, Kmax, T, M_def,...
+                true,shape_str,max(bins),plotIter_def);
             Kopt = size(mu_spl,1);
             mu_spl = mu_spl';
             param{k} = {mu_spl clust_spl BIC_spl a_spl sig_spl};
