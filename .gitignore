@@ -28,3 +28,5 @@ MASH-FRET/2018-3-16.log
 *.ini
 /docs/_site/*
 *Gemfile.lock
+
+/docs/vendor
