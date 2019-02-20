@@ -7,11 +7,14 @@ function exportResults(h_fig,varargin)
 % Requires external files: setContPan.m
 %
 % Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
-% Last update: 7th of March 2018 by Richard Börner
+% Last update: 20th of February 2019 by Mélodie Hadzic
+% --> add headers to dwell-time files
+% --> modify dwell-times file name for coherence with trace processing
 %
-% Comments adapted for Boerner et al 2017
-% Noise models adapted for Boerner et al 2017.
-% Simulation default parameters adapted for Boerner et al 2017.
+% update: 7th of March 2018 by Richard Börner
+% --> Comments adapted for Boerner et al 2017
+% --> Noise models adapted for Boerner et al 2017.
+% --> Simulation default parameters adapted for Boerner et al 2017.
 
 h = guidata(h_fig);
 
@@ -616,15 +619,11 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             end
             if isProcTr
                 str_exp_procTraces = 'yes';
-                if ~exist([pName 'traces_ASCII'], 'dir')
-                    mkdir([pName 'traces_ASCII']);
-                end
+                setCorrectPath(cat(2,pName,'traces_ASCII'), h_fig);
             end
             if isDt
                 str_exp_dt = 'yes';
-                if ~exist([pName 'dwell-times'], 'dir')
-                    mkdir([pName 'dwell-times']);
-                end
+                setCorrectPath(cat(2,pName,'dwell-times'), h_fig);
             end
             
             % Process all traces
@@ -838,18 +837,20 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                     end
 
                     if isDt
-                        fName_dt = [pName 'dwell-times' filesep fName ...
-                            '_mol' num2str(m) 'of' num2str(M) '_post.dt'];
+                        fName_dt = cat(2,pName,'dwell-times',filesep,fName,...
+                            '_mol',num2str(m),'of',num2str(M),...
+                            '_FRET1to2.dt');
                         dt = res.dt_final{m};
                         for j = 1:numel(states)
                             dt(dt(:,2)==j,2) = states(j);
                             dt(dt(:,3)==j,3) = states(j);
                         end
-                        save(fName_dt, 'dt', '-ascii');
+                        f = fopen(fName_dt,'Wt');
+                        fprintf(f,cat(2,'dwell-time (second)\tstate\t',...
+                            'state after transition\n'));
+                        fprintf(f,'%d\t%d\t%d\n',dt');
+                        fclose(f);
                     end
-                    
-%                     disp(cat(2,'Saving molecule ',num2str(m),' of ',...
-%                         num2str(M)));
                 end
             end
             if isProcTr

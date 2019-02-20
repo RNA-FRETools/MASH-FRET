@@ -6,7 +6,10 @@ function saveProcAscii(h_fig, p, xp, pname, name)
 % "pname" >> destination folder
 % "name" >> destination file name
 
-% Last update: 17th of February 2019 by Mélodie Hadzic
+% Last update: 20th of February 2019 by Mélodie Hadzic
+% --> modify dwell time file header for coherence with simulation
+%
+% update: 17th of February 2019 by Mélodie Hadzic
 % --> optimize code synthaxe
 % --> remove units "per second" and "per pixel" (always export in counts to
 %     avoid confusion when importing exported ASCII traces)
@@ -680,7 +683,7 @@ try
                             if saveDt_I
                                 f = fopen(cat(2,pname_dt,fname_dtI),'Wt');
                                 fprintf(f,cat(2,'dwell time (second)\t',...
-                                    'I before\tI after\n'));
+                                    'state\tstate after transition\n'));
                                 fprintf(f,cat(2,repmat('%d\t',...
                                     [1,size(dtI,2)]),'\n'),dtI');
                                 fclose(f);
@@ -714,8 +717,8 @@ try
                         % write data to file
                         if saveDt_fret
                             f = fopen(cat(2,pname_dt,fname_dtF),'Wt');
-                            fprintf(f,cat(2,'dwell time (second)\t',...
-                                'FRET before\tFRET after\n'));
+                            fprintf(f,cat(2,'dwell time (second)\tstate\t',...
+                                'state after transition\n'));
                             fprintf(f,cat(2,repmat('%d\t',...
                                 [1,size(dtF,2)]),'\n'),dtF');
                             fclose(f);
@@ -747,8 +750,8 @@ try
                         % write data to file
                         if saveDt_S
                             f = fopen(cat(2,pname_dt,fname_dtS),'Wt');
-                            fprintf(f,cat(2,'dwell time (second)\t',...
-                                'S before\tS after\n'));
+                            fprintf(f,cat(2,'dwell time (second)\tstate\t',...
+                                'state after transition\n'));
                             fprintf(f,cat(2,repmat('%d\t',...
                                 [1,size(dtS,2)]),'\n'),dtS');
                             fclose(f);
