@@ -32,8 +32,7 @@ if ~isempty(p.proj)
                    prm.plot{1}(3,2) ... % conv./not TDP with Gaussian, o^2=0.0005
                    prm.plot{1}(3,3)]; % normalize/not TDP z-axis
 
-    res = clustTrans(dt_bin, TDP,plot_prm, clust_prm, h.axes_TDPplot1, ...
-        h.figure_MASH);
+    res = clustTrans(dt_bin, TDP,plot_prm, clust_prm,h.figure_MASH);
     
     if isempty(res)
         return;
@@ -100,7 +99,7 @@ if ~isempty(p.proj)
         guidata(h.figure_MASH, h);
         
     end
-    setContPan(sprintf('Clustering completed: %i states found', Kopt), ...
-        'success', h.figure_MASH);
+    setContPan(cat(2,'Clustering completed: ',num2str(Kopt),' states ',...
+        'found'),'success', h.figure_MASH);
     updateFields(h.figure_MASH, 'TDP');
 end
