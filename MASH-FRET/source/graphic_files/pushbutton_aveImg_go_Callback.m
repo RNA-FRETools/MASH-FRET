@@ -6,19 +6,6 @@ set(h.edit_aveImg_start, 'String', h.param.movPr.ave_start, ...
 set(h.edit_aveImg_end, 'String', h.param.movPr.ave_stop, ...
     'BackgroundColor', [1 1 1]);
 if isfield(h, 'movie')
-    param.start = h.param.movPr.ave_start;
-    param.stop = h.param.movPr.ave_stop;
-    param.iv = h.param.movPr.ave_iv;
-    param.file = [h.movie.path h.movie.file];
-    param.extra{1} = h.movie.speCursor;
-    param.extra{2} = [h.movie.pixelX h.movie.pixelY]; 
-    param.extra{3} = h.movie.framesTot;
-    
-    [img_ave ok] = createAveIm(param, 1, h.figure_MASH);
-    
-    if ~ok
-        return;
-    end
     
     [o, nameMov, o] = fileparts(h.movie.file);
     defName = [setCorrectPath('average_images', h.figure_MASH) nameMov ...
@@ -38,6 +25,20 @@ if isfield(h, 'movie')
         end
         fname = getCorrName(fname, pname, h.figure_MASH);
         h = guidata(h.figure_MASH);
+        
+        param.start = h.param.movPr.ave_start;
+        param.stop = h.param.movPr.ave_stop;
+        param.iv = h.param.movPr.ave_iv;
+        param.file = [h.movie.path h.movie.file];
+        param.extra{1} = h.movie.speCursor;
+        param.extra{2} = [h.movie.pixelX h.movie.pixelY]; 
+        param.extra{3} = h.movie.framesTot;
+
+        [img_ave,ok] = createAveIm(param,1,h.figure_MASH);
+
+        if ~ok
+            return;
+        end
         
         if strcmp(fext, '.png')
             imwrite(uint16(65535*(img_ave-min(min(img_ave)))/ ...
