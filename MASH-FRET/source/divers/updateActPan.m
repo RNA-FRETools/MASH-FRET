@@ -4,7 +4,6 @@ function updateActPan(newAct, h_fig, varargin)
 % "h_fig" >> MASH figure handle
 % "varargin" >> color string: "success", "process" or "error"
 
-% Requires external function: saveActPan, actionPanel.
 % Last update: 19th of February 2019 by Mélodie C.A.S Hadzic
 % --> append log file for each action displayed
 
@@ -65,6 +64,9 @@ if isfield(h, 'figure_actPan') && ishandle(h.figure_actPan)
     end
 
     % get number of old actions
+    if size(newAct,2)>size(newAct,1)
+        newAct = newAct';
+    end
     lst = vertcat(oldLst, newAct);
     lastRow = size(lst,1);
 

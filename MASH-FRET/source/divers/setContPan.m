@@ -1,5 +1,8 @@
 function setContPan(str, state, h_fig)
 % setContPan update the action "str" in the action panel "edit_contPan".
+%
+% Last update: 20th of February 2019 by Mélodie C.A.S Hadzic
+% --> fix find edit fields to display action in
 
 h = guidata(h_fig);
 switch state
@@ -33,12 +36,15 @@ curr_obj = get(h_fig, 'CurrentObject');
 curr_panel = get(curr_obj, 'Parent');
 
 while 1
-    if ~isempty(curr_panel) && isprop(curr_panel,'Parent') && ...
-            curr_panel ~= h_fig && curr_panel ~= h.output && ...
-            curr_panel ~= groot
-        curr_panel = get(curr_panel, 'Parent');
-    else
+    if isempty(curr_panel) || (isprop(curr_panel,'Parent') && ...
+            (curr_panel == h.uipanel_simMov || ...
+            curr_panel == h.uipanel_TDPana ||  ...
+            curr_panel == h.uipanel_thm || ...
+            curr_panel == h_fig || curr_panel == h.output || ...
+            curr_panel == groot))
         break;
+    else
+        curr_panel = get(curr_panel, 'Parent');
     end
 end
 
