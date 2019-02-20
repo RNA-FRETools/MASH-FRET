@@ -94,7 +94,7 @@ if saveTr
     end
     if sum(double(xp.traces{1}(2) == [3 7])) && nFRET > 0
         saveVbfret = true; % all mol in one file
-        pname_vbfret = setCorrectPath(cat(2,pname,'traces_VbFRET'), h_fig);
+        pname_vbfret = setCorrectPath(cat(2,pname,'traces_vbFRET'), h_fig);
     end
     if sum(double(xp.traces{1}(2) == [4 7])) && nFRET > 0
         saveSmart = true; % all mol in one file
@@ -961,7 +961,7 @@ if saveTr
             save(cat(2,pname_vbfret,fname_vbfret),'data','-mat');
             
             % update action
-            str = cat(2,str,'Donor and acceptor traces saved to VbFRET-',...
+            str = cat(2,str,'Donor and acceptor traces saved to vbFRET-',...
                 'compatible file: ',fname_vbfret,' in folder: ',...
                 pname_vbfret,'\n');
         end
