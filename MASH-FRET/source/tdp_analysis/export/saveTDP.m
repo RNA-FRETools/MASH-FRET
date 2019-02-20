@@ -157,7 +157,7 @@ end
 %% Export kinetic files
 setContPan('Export kinetic results ...', 'process', h_fig);
 
-pname_kin = setCorrectPath([pname 'kinetic_analysis'], h_fig);
+pname_kin = setCorrectPath([pname 'kinetics'], h_fig);
 bol = [kinDtHist kinFit kinBoba];
 
 % export dwell-time histogram files & fitting results (if)
