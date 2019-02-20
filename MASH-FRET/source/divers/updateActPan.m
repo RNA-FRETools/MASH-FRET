@@ -5,7 +5,8 @@ function updateActPan(newAct, h_fig, varargin)
 % "varargin" >> color string: "success", "process" or "error"
 
 % Requires external function: saveActPan, actionPanel.
-% Last update: 5th of February 2014 by Mélodie C.A.S Hadzic
+% Last update: 19th of February 2019 by Mélodie C.A.S Hadzic
+% --> append log file for each action displayed
 
 
 if ~iscell(newAct)
@@ -46,6 +47,12 @@ newAct_nkd = newAct;
 t = [hr ':' m ' -- '];
 newAct{1,1} = [t newAct{1,1}];
 
+% append log file with action
+success = saveActPan(newAct, h_fig);
+if ~success
+    disp('Impossible to append actions in daily log file.');
+end
+
 % update action list
 h = guidata(h_fig);
 if isfield(h, 'figure_actPan') && ishandle(h.figure_actPan)
@@ -61,18 +68,13 @@ if isfield(h, 'figure_actPan') && ishandle(h.figure_actPan)
     lst = vertcat(oldLst, newAct);
     lastRow = size(lst,1);
 
-    % save of actions older than the 30th line
+    % remove actions older than the 30th line
     if lastRow > 30
-        ActSave = {};
         newLst = {};
-        for i = 1:lastRow-30
-            ActSave{size(ActSave,1)+1,1} = lst{i,1};
-        end
         for i = lastRow-29:lastRow
             newLst{size(newLst,1)+1,1} = lst{i,1};
         end
         lst = newLst;
-        saveActPan(ActSave, h_fig);
         lastRow = 29;
     end
 

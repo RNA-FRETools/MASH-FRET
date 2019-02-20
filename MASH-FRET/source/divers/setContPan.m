@@ -32,26 +32,29 @@ end
 curr_obj = get(h_fig, 'CurrentObject');
 curr_panel = get(curr_obj, 'Parent');
 
-keep = true;
-while keep
-    if ~(isprop(curr_panel, 'Parent') && ...
-            get(curr_panel, 'Parent') ~= h_fig)
-        keep = false;
-        break;
-    else
+while 1
+    if ~isempty(curr_panel) && isprop(curr_panel,'Parent') && ...
+            curr_panel ~= h_fig && curr_panel ~= h.output && ...
+            curr_panel ~= groot
         curr_panel = get(curr_panel, 'Parent');
+    else
+        break;
     end
 end
 
-switch curr_panel
-    case h.uipanel_simMov
-        h_edit = h.edit_simContPan;
-    case h.uipanel_TDPana
-        h_edit = h.edit_TDPcontPan;
-    case h.uipanel_thm
-        h_edit = h.edit_thmContPan;
-    otherwise
-        h_edit = [];
+if ~isempty(curr_panel)
+    switch curr_panel
+        case h.uipanel_simMov
+            h_edit = h.edit_simContPan;
+        case h.uipanel_TDPana
+            h_edit = h.edit_TDPcontPan;
+        case h.uipanel_thm
+            h_edit = h.edit_thmContPan;
+        otherwise
+            h_edit = [];
+    end
+else
+    h_edit = [];
 end
 
 if ~isempty(h_edit)

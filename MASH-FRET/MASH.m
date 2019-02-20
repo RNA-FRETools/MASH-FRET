@@ -71,7 +71,10 @@ varargout{1} = [];
 function figure_MASH_CloseRequestFcn(obj, evd, h)
 if isfield(h, 'figure_actPan') && ishandle(h.figure_actPan)
     h_pan = guidata(h.figure_actPan);
-    saveActPan(get(h_pan.text_actions, 'String'), h.figure_MASH);
+    success = saveActPan(get(h_pan.text_actions, 'String'), h.figure_MASH);
+    if ~success
+        return
+    end
     delete(h.figure_actPan);
 end
 if isfield(h, 'wait') && isfield(h.wait, 'figWait') && ...
