@@ -6,7 +6,11 @@ function saveTraces(s, pname, fname, prm, h_fig)
 % "fname" >> generated folder path
 % "h_fig" >> MASH figure handle
 
-% Last update: 18th of February 2019 by Mélodie C.A.S Hadzic
+% Last update: 20th of February 2019 by Mélodie C.A.S Hadzic
+% --> add ebFRET-compatible export
+% --> create ASCII,statistics,ebFRET,vbFRET,HaMMy,QUB,SMART folders
+%
+% update: 18th of February 2019 by Mélodie C.A.S Hadzic
 % --> change folder to /intensities
 % --> comment code and optimize synthax
 
@@ -17,9 +21,11 @@ allInOne = pexp(2);
 onePerTrace = pexp(3);
 saveAsHa = pexp(4);
 saveAsVbfret = pexp(5);
-saveAsQUB = pexp(6);
-saveAsSMART = pexp(7);
-saveTraces = saveAsAscii|saveAsHa|saveAsVbfret|saveAsQUB|saveAsSMART;
+saveAsQub = pexp(6);
+saveAsSmart = pexp(7);
+saveAsEbfret = pexp(8);
+saveTraces = saveAsAscii|saveAsHa|saveAsVbfret|saveAsQub|saveAsSmart|...
+    saveAsEbfret;
 
 % collect experiment settings
 N = size(s.coord,1);
@@ -43,11 +49,28 @@ end
 [o,name,o] = fileparts(fname);
 if saveTraces
     pname = setCorrectPath(cat(2,pname,'intensities'),h_fig);
-    if saveAsAscii && onePerTrace
-        pname_one = setCorrectPath(cat(2,pname,'single_traces'),h_fig);
+    pname_stat = setCorrectPath(cat(2,pname,'statistics'),h_fig);
+    if saveAsAscii
+        pname_all = setCorrectPath(cat(2,pname,'traces_ASCII'),h_fig);
+        if onePerTrace
+            pname_one = setCorrectPath(cat(2,pname_all,'single_traces'),...
+                h_fig);
+        end
     end
     if saveAsHa
-        pname_ha = setCorrectPath(cat(2,pname,'HaMMy-compatible'),h_fig);
+        pname_ha = setCorrectPath(cat(2,pname,'traces_HaMMy'),h_fig);
+    end
+    if saveAsVbfret
+        pname_vbfret = setCorrectPath(cat(2,pname,'traces_vbFRET'),h_fig);
+    end
+    if saveAsQub
+        pname_qub = setCorrectPath(cat(2,pname,'traces_QUB'),h_fig);
+    end
+    if saveAsSmart
+        pname_smart = setCorrectPath(cat(2,pname,'traces_SMART'),h_fig);
+    end
+    if saveAsEbfret
+        pname_ebfret = setCorrectPath(cat(2,pname,'traces_ebFRET'),h_fig);
     end
 end
 
@@ -96,14 +119,14 @@ if saveTraces
 
     % write data to file
     fname_tbl = cat(2,name,'_all',num2str(N),'.tbl');
-    f = fopen(cat(2,pname,fname_tbl),'Wt');
+    f = fopen(cat(2,pname_stat,fname_tbl),'Wt');
     fprintf(f,str_tblH);
     fprintf(f,str_tblFmt,cat(2,coord_tbl,I_tbl)');
     fclose(f);
     
     % update action
     updateActPan(cat(2,'Intensity statistics saved to file: ',fname_tbl,...
-        '\n in folder: ',pname),h_fig);
+        '\n in folder: ',pname_stat),h_fig);
 end
 
 % save intensity trajetories in ASCII file
@@ -170,7 +193,7 @@ if saveAsAscii
         fname_all = cat(2,name,'_all',num2str(N),'.txt');
         
         % write data to file
-        f = fopen(cat(2,pname,fname_all),'Wt');
+        f = fopen(cat(2,pname_all,fname_all),'Wt');
         fprintf(f, str_prm);
         fprintf(f, str_hd_coord,s.coord');
         fprintf(f, str_col_names);
@@ -179,7 +202,7 @@ if saveAsAscii
         
         % update action
         updateActPan(cat(2,'Traces saved to ASCII file: ',fname_all, ...
-            '\n in folder: ',pname),h_fig);
+            '\n in folder: ',pname_all),h_fig);
     end
     
     % export single molecules to individual files
@@ -211,12 +234,11 @@ if saveAsAscii
             fprintf(f, str_dat, [expT*(1:L)', ...
                 (1:L)', I_all(:,nChan*(n-1)+1:nChan*n)]');
             fclose(f);
-            
-            % update action
-            updateActPan(cat(2,'Traces of necule n:°',num2str(n), ...
-                ' saved to ASCII file: ',fname_one,'\n in ',...
-                'folder: ',pname_one), h_fig);
         end
+        
+        % update action
+        updateActPan(cat(2,'Individual traces saved to ASCII files in ',...
+            'folder: ',pname_one),h_fig);
     end
 end
 
@@ -249,12 +271,11 @@ for j = 1:nFRET
             f = fopen(cat(2,pname_ha,fname_ha),'Wt');
             fprintf(f,'%d\t%d\t%d\n',[times',intensities]');
             fclose(f);
-            
-            % update action
-            updateActPan(cat(2,'Traces of necule n:°',num2str(n),...
-                ' saved to HaMMy-compatible file: ',fname_ha,'\n in ',...
-                'folder: ',pname_ha),h_fig);
         end
+        
+        % update action
+        updateActPan(cat(2,'Traces saved to HaMMy-compatible files in ',...
+            'folder: ',pname_ha),h_fig);
     end
 
     if saveAsVbfret
@@ -270,14 +291,14 @@ for j = 1:nFRET
         fname_vbfret = cat(2,name,'_all',num2str(N),extf,'_VbFRET.mat');
         
         % write data to file
-        save(cat(2,pname,fname_vbfret),'data');
+        save(cat(2,pname_vbfret,fname_vbfret),'data');
         
         % update action
-        updateActPan(cat(2,'Traces saved to VbFRET-compatible file: ', ...
-            fname_vbfret,'\n in folder: ',pname),h_fig);
+        updateActPan(cat(2,'Traces saved to vbFRET-compatible file: ', ...
+            fname_vbfret,'\n in folder: ',pname_vbfret),h_fig);
     end
 
-    if saveAsQUB
+    if saveAsQub
         
         % format data
         Ifret = [];
@@ -291,16 +312,19 @@ for j = 1:nFRET
         fname_QUB = cat(2,name,'_all',num2str(N),extf,'_QUB.txt');
         
         % write data to file
-        f = fopen(cat(2,pname,fname_QUB),'Wt');
+        f = fopen(cat(2,pname_qub,fname_QUB),'Wt');
         fprintf(f,fmt,Ifret'); 
         fclose(f);
         
         % update action
         updateActPan(cat(2,'Traces saved to QUB-compatible file: ',...
-            fname_QUB,'\n in folder: ',pname), h_fig);
+            fname_QUB,'\n in folder: ',pname_qub), h_fig);
     end
 
-    if saveAsSMART
+    if saveAsSmart
+        
+        % build file name
+        fname_SMART = cat(2,name,'_all',num2str(N),extf,'_SMART.traces');
         
         % format intensity data
         group_data = cell(N,3);
@@ -322,16 +346,36 @@ for j = 1:nFRET
             group_data{n,2} = Ifret;
             group_data{n,3} = true(size(Ifret,1),1);
         end
-        
-        % build file name
-        fname_SMART = cat(2,name,'_all',num2str(N),extf,'_SMART.traces');
-        
+
         % write data to file
-        save(cat(2,pname,fname_SMART),'group_data','-mat');
+        save(cat(2,pname_smart,fname_SMART),'group_data','-mat');
         
         % update action
         updateActPan(cat(2,'Traces saved to SMART-compatible file: ', ...
-            fname_SMART,'\n in folder: ',pname),h_fig);
+            fname_SMART,'\n in folder: ',pname_smart),h_fig);
+    end
+    
+    if saveAsEbfret
+        % format ebFRET data
+        data_ebfret = [];
+        for n = 1:N
+            ind_fret = [nChan*(n-1)+FRET(j,1),nChan*(n-1)+FRET(j,2)];
+            Ifret = I_all(l:nExc:L,ind_fret);
+            data_ebfret = cat(1,data_ebfret,...
+                cat(2,ones(size(Ifret,1),1)*n,Ifret));
+        end
+        
+        % build file name
+        fname_ebFRET = cat(2,name,'_all',num2str(N),extf,'_ebFRET.dat');
+        
+        % write data to file
+        f = fopen(cat(2,pname_ebfret,fname_ebFRET),'Wt');
+        fprintf(f,'%d\t%d\t%d\n',data_ebfret');
+        fclose(f);
+        
+        % update action
+        updateActPan(cat(2,'Traces saved to ebFRET-compatible file: ', ...
+            fname_ebFRET,'\n in folder: ',pname_ebfret),h_fig);
     end
 end
 

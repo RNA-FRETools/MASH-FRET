@@ -1,17 +1,17 @@
 function ok = setParam(h_fig)
-
 % Initialize MASH parameters from the file default_param.ini
 % "h_fig" >> MASH figure handle
-%
+
 % Requires external function: adjustParam
-%
+
 % Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
-% Last update: 5th of February 2014 by Mélodie C.A.S Hadzic
-% Last update: 12th of December 2017 by Richard Börner
-% Last update: 7th of March 2018 by Richard Börner
 %
-% Comments adapted for Boerner et al 2017
-% Simulation default parameters adapted for Boerner et al 2017.
+% Last update: 20th of February by Mélodie Hadzic
+% --> add ebFRET-compatible export in Video processing
+%
+% update: 7th of March 2018 by Richard Börner
+% --> Comments adapted for Boerner et al 2017
+% --> Simulation default parameters adapted for Boerner et al 2017.
 
 h = guidata(h_fig);
 h.param = [];
@@ -303,8 +303,12 @@ itg_clr = getDefTrClr(p.itg_nLasers, p.itg_wl, p.nChan, ...
     size(p.itg_expFRET,1), size(p.itg_expS,1));
 p.itg_clr = adjustParam('itg_clr', itg_clr, p_input);
 
-p.itg_expMolFile = adjustParam('itg_expMolFile', [1 1 0 0 0 0 0], ...
+p.itg_expMolFile = adjustParam('itg_expMolFile', [1 1 0 0 0 0 0 0], ...
     p_input);
+% no ebFRET option
+if numel(p.itg_expMolFile)<8
+    p.itg_expMolFile = cat(2,p.itg_expMolFile,0);
+end
 
 chanExc = zeros(1,p.nChan);
 for c = 1:p.nChan
