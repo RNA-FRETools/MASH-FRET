@@ -323,7 +323,7 @@ if sum(BIC_t ~= Inf)
                 fprintf('\nerror\n');
             end
             
-            subplot(2,(K_max-K_min+1),(K_max-K_min)+K+1);
+            subplot(2,(K_max-K_min+1),(K_max-K_min+1)+K-K_min+1);
             surface(X,Y,z,'EdgeColor','none');
             title('experimental');
             xlim([v(1,1) v(1,end)]);
