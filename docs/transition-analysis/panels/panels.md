@@ -4,7 +4,7 @@ title: Transition analysis panels
 parent: Transition analysis
 nav_order: 3
 has_children: true
-permalink: /docs/transition-analysis/panels
+permalink: transition-analysis/panels
 ---
 
 # Transition analysis panels

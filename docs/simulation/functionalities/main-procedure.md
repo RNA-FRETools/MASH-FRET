@@ -109,4 +109,4 @@ Updating intensity data and writing SMVs to files can be very time consuming dep
 [Camera SNR characteristics](../panels/panel-video-parameters#camera-snr-characteristics) for more information.
 
 Some parameters can be set by loading external files. This allows to bypass the limitations of the user interface in order to work with more than five states or set parameters for individual molecules; see 
-[Load pre-set parameters](../functionalities/load-preset-parameters.html§) for more information.
+[Load pre-set parameters](load-preset-parameters.html) for more information.

@@ -13,30 +13,30 @@ Follow this procedure to validate the thermodynamic model determined from smFRET
 
 1. Use the **files** exported during your previous analysis to collect or calculate <u>experimental parameters</u>:  
      
-   &#9745; number of molecules  
-   &#9745; summed fluorescence <u>intensities</u> (corrected donor + acceptor intensities)  (in 
-   [trace files](../../output-files/txt-trace-processing-traces.html))  
-   &#9745; average channel-specific <u>background</u> intensities  (in 
-   [parameters files](../../output-files/log-trace-processing-parameters.html))  
-   &#9745; <u>FRET states</u>  
-   &#9745; state <u>transition rates</u>  
+   -x number of molecules  
+   -x summed fluorescence <u>intensities</u> (corrected donor + acceptor intensities)  (in 
+   [trace files](../output-files/txt-processed-traces.html))  
+   -x average channel-specific <u>background</u> intensities  (in 
+   [parameters files](../output-files/log-processing-parameters.html))  
+   -x <u>FRET states</u>  
+   -x state <u>transition rates</u>  
    
 1. Use the experimental parameters and your **setup characteristics** in 
-[Simulation](/docs/simulation) to <u>generate</u> synthetic intensity-time traces.  
+[Simulation](../simulation) to <u>generate</u> synthetic intensity-time traces.  
       
 	**Note:** *To simulate kinetic heterogeneity, use a number of degenerated FRET states equal to the number of exponential components*.
      
    Export generated time-traces to "Ideal traces" ASCII files.
    
 1. Load your freshly exported **ASCII files** in 
-[Trace processing](/docs/trace-processing) to edit <u>project parameters</u>.  
+[Trace processing](../trace-processing) to edit <u>project parameters</u>.  
      
    Save modifications and calculation to a new 
-   [mash project](../../output-files/mash-mash-project.html). Use a file name different from the experimental project (for example with the extension *_sim).
+   [mash project](../output-files/mash-mash-project.html). Use a file name different from the experimental project (for example with the extension *_sim).
 
 1. Perform steps 3, 4 and 5 of 
-[smFRET video analysis](/docs/tutorials/analyze-experimental-data.html) on your 
-[mash project](output-files/mash-mash-project.html).
+[smFRET video analysis](analyze-experimental-data.html) on your 
+[mash project](../output-files/mash-mash-project.html).
 
 1. Validate or invalidate your experimental thermodynamic model by comparing with results on simulation:  
      

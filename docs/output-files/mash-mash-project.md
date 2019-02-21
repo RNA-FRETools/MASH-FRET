@@ -25,17 +25,23 @@ MASH project files are the <u>main analysis files</u>. They contain information 
 They are created at a user-defined location.
 
 They are created/updated when:
-- the user create and saves intensity-time traces in [Video processing](../docs/video-processing),
-- the user save modifications and calculations in [Trace processing](../docs/trace-processing), [Histogram analysis](../docs/histogram-analysis) or [Transition analysis](../docs/transition-analysis).
+- the user create and saves intensity-time traces in 
+[Video processing](../video-processing),
+- the user save modifications and calculations in 
+[Trace processing](../trace-processing), [Histogram analysis](../histogram-analysis) or 
+[Transition analysis](../transition-analysis).
 
 ## File name
 
 The file is named by the user.
 
 By default, the file is named after:
-- the <u>video file</u> name loaded in [Video processing](../docs/video-processing),
-- the <u>current project file</u> name loaded in [Trace processing](../docs/trace-processing).
-- the <u>folder</u> containing the trace files imported in [Trace processing](../docs/trace-processing). 
+- the <u>video file</u> name loaded in 
+[Video processing](../video-processing),
+- the <u>current project file</u> name loaded in 
+[Trace processing](../trace-processing).
+- the <u>folder</u> containing the trace files imported in 
+[Trace processing](../trace-processing). 
 
 
 ## Structure
@@ -45,12 +51,12 @@ MASH-FRET project files consist in data structures with the following fields:
 ### Project-related fields:
 {: .no_toc }
 
-| field name              | description                                                            | data type   | example                                     |
-| ----------------------- | ---------------------------------------------------------------------- | ----------- | ------------------------------------------- |
-| `date_creation`         | date of project creation in format DD-Mon-YYYY hh:mm:ss                | string      | `'05-Feb-2019 12:51:06'`                    |
-| `date_last_modif`       | date of last project modification in format DD-Mon-YYYY hh:mm:ss       | string      | `'20-Mar-2019 14:02:32'`                    |
-| `MASH_version`          | version of MASH when project was created                               | string      | `'1.1.2'`                                   |
-| `proj_file`             | path to project file                                                   | string      | `'C:\MyDataFolder\experiment_01\data.mash'` |
+| field name        | description                                                      | data type | example                                     |
+| ----------------- | ---------------------------------------------------------------- | --------- | ------------------------------------------- |
+| `date_creation`   | date of project creation in format DD-Mon-YYYY hh:mm:ss          | string    | `'05-Feb-2019 12:51:06'`                    |
+| `date_last_modif` | date of last project modification in format DD-Mon-YYYY hh:mm:ss | string    | `'20-Mar-2019 14:02:32'`                    |
+| `MASH_version`    | version of MASH when project was created                         | string    | `'1.1.2'`                                   |
+| `proj_file`       | path to project file                                             | string    | `'C:\MyDataFolder\experiment_01\data.mash'` |
 
 ### Video-related fields
 {: .no_toc }
@@ -75,13 +81,13 @@ MASH-FRET project files consist in data structures with the following fields:
 ### Molecule fields
 {: .no_toc }
 
-| `is_coord`              | molecule coordinates are/aren't attached to the project             | 1/0                  | `1`                                                                                       |
-| `coord`                 | a number `M` of molecule coordinates (x,y)                          | `M`-by-`2*nC` double |                                                                                           |
-| `coord_file`            | file from which molecule coordinates were read                      | string               | `'C:\MyDataFolder\experiment_01\video_processing\coordinates\transformed\data_ave.coord'` |
-| `coord_imp_param`       | parameters that were used to import molecule coordinates from file  | 1-by-`nC` cell       |                                                                                           |
-| `coord_incl`            | molecule is selected/unselected                                     | 1-by-`M` true/false  |                                                                                           |
-| `molTag`                | molecule's tag (1,2 or 3)                                           | 1-by-`M` double      |                                                                                           |
-| `molTagNames`           | names of possible molecule tags                                     | 1-by-3 cell          | `{ unlabeled, static, dynamic }`                                                          |
+| `is_coord`        | molecule coordinates are/aren't attached to the project            | 1/0                  | `1`                                                                                       |
+| `coord`           | a number `M` of molecule coordinates (x,y)                         | `M`-by-`2*nC` double |                                                                                           |
+| `coord_file`      | file from which molecule coordinates were read                     | string               | `'C:\MyDataFolder\experiment_01\video_processing\coordinates\transformed\data_ave.coord'` |
+| `coord_imp_param` | parameters that were used to import molecule coordinates from file | 1-by-`nC` cell       |                                                                                           |
+| `coord_incl`      | molecule is selected/unselected                                    | 1-by-`M` true/false  |                                                                                           |
+| `molTag`          | molecule's tag (1,2 or 3)                                          | 1-by-`M` double      |                                                                                           |
+| `molTagNames`     | names of possible molecule tags                                    | 1-by-3 cell          | `{ unlabeled, static, dynamic }`                                                          |
 
 ### Intensity fields
 {: .no_toc }

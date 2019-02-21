@@ -4,7 +4,7 @@ title: Trace processing panels
 parent: Trace processing
 nav_order: 3
 has_children: true
-permalink: /docs/trace-processing/panels
+permalink: trace-processing/panels
 ---
 
 # Trace processing panels

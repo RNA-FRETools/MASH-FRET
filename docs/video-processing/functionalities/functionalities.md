@@ -4,7 +4,7 @@ title: Video processing functionalities
 parent: Video processing
 nav_order: 2
 has_children: true
-permalink: /docs/video-processing/functionalities
+permalink: video-processing/functionalities
 ---
 
 # Video processing functionalities

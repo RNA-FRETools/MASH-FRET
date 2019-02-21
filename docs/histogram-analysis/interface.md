@@ -8,7 +8,7 @@ nav_order: 1
 # Histogram analysis interface
 {: .no_toc }
 
-<a href="../../assets/images/gui-histogram-analysis.png"><img src="../../assets/images/gui-histogram-analysis.png" width="325" style="float:right"/></a>
+<a href="../assets/images/gui-histogram-analysis.png"><img src="../assets/images/gui-histogram-analysis.png" width="325" style="float:right"/></a>
 
 The module Histogram analysis is the fourth component of the software MASH-FRET and can be selected in the main 
 [tool bar](../../Getting_started.html#interface).

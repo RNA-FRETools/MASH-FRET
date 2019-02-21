@@ -8,10 +8,10 @@ nav_order: 1
 # Video processing interface
 {: .no_toc }
 
-<a href="../../assets/images/gui-video-processing.png"><img src="../../assets/images/gui-video-processing.png" width="325" style="float:right"/></a>
+<a href="../assets/images/gui-video-processing.png"><img src="../assets/images/gui-video-processing.png" width="325" style="float:right"/></a>
 
 The module Video processing is the second component of the software MASH-FRET and can be selected in the main 
-[tool bar](../../Getting_started.html#interface).
+[tool bar](../Getting_started.html#interface).
 
 The interface can be divided into four subunits that respectively allow to:
 * <u>visualize</u> imported video data
@@ -20,5 +20,5 @@ The interface can be divided into four subunits that respectively allow to:
 * <u>export</u> the calculated intensity data
 
 Learn about individual components of the interface at 
-[Video processing panels](/docs/video-processing/panels).
+[Video processing panels](panels).
 

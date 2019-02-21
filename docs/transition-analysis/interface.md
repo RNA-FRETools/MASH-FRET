@@ -8,7 +8,7 @@ nav_order: 1
 # Transition analysis interface
 {: .no_toc }
 
-<a href="../../assets/images/gui-transition-analysis.png"><img src="../../assets/images/gui-transition-analysis.png" width="325" style="float:right"/></a>
+<a href="../assets/images/gui-transition-analysis.png"><img src="../assets/images/gui-transition-analysis.png" width="325" style="float:right"/></a>
 
 The module Transition analysis is the fifth and last component of the software MASH-FRET and can be selected in the main 
 [tool bar](../../Getting_started.html#interface).

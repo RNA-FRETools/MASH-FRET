@@ -4,7 +4,7 @@ title: Simulation panels
 parent: Simulation
 nav_order: 4
 has_children: true
-permalink: /docs/simulation/panels
+permalink: simulation/panels
 ---
 
 # Simulation panels
