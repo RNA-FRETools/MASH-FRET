@@ -4,7 +4,7 @@ title: Histogram analysis panels
 parent: Histogram analysis
 nav_order: 3
 has_children: true
-permalink: histogram-analysis/panels
+permalink: histogram-analysis/panels/
 ---
 
 # Histogram analysis panels

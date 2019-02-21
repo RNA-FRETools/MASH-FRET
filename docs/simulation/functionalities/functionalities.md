@@ -4,7 +4,7 @@ title: Simulation functionalities
 parent: Simulation
 nav_order: 2
 has_children: true
-permalink: simulation/functionalities
+permalink: simulation/functionalities/
 ---
 
 # Simulation functionalities

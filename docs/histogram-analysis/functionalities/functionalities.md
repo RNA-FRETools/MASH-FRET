@@ -4,7 +4,7 @@ title: Histogram analysis functionalities
 parent: Histogram analysis
 nav_order: 2
 has_children: true
-permalink: histogram-analysis/functionalities
+permalink: histogram-analysis/functionalities/
 ---
 
 # Histogram analysis functionalities

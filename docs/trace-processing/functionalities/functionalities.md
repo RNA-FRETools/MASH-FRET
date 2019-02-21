@@ -4,7 +4,7 @@ title: Trace processing functionalities
 parent: Trace processing
 nav_order: 2
 has_children: true
-permalink: trace-processing/functionalities
+permalink: trace-processing/functionalities/
 ---
 
 # Trace processing functionalities

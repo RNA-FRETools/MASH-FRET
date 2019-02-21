@@ -3,7 +3,7 @@ layout: default
 title: Histogram analysis
 nav_order: 5
 has_children: true
-permalink: histogram-analysis
+permalink: histogram-analysis/
 ---
 
 # Histogram analysis

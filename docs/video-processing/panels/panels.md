@@ -4,7 +4,7 @@ title: Video processing panels
 parent: Video processing
 nav_order: 3
 has_children: true
-permalink: video-processing/panels
+permalink: video-processing/panels/
 ---
 
 # Video processing panels

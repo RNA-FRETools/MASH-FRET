@@ -3,7 +3,7 @@ layout: default
 title: Video processing
 nav_order: 3
 has_children: true
-permalink: video-processing
+permalink: video-processing/
 ---
 
 # Video processing

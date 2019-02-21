@@ -4,7 +4,7 @@ title: Transition analysis functionalities
 parent: Transition analysis
 nav_order: 2
 has_children: true
-permalink: transition-analysis/functionalities
+permalink: transition-analysis/functionalities/
 ---
 
 # Transition analysis functionalities
