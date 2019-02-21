@@ -10,8 +10,8 @@ nav_order: 1
 {: .no_toc }
 
 At the end of the simulation procedure, the user holds synthetic SMVs and trajectories written to files that can be used for 
-[result validation](../../tutorials/validate-results.html), 
-[algorithm testing](../../tutorials/test-algorithms.html) or external illustration.
+[result validation](../../tutorials/validate-results), 
+[algorithm testing](../../tutorials/test-algorithms) or external illustration.
 
 ## Table of contents 
 {: .no_toc .text-delta }

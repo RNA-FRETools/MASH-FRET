@@ -62,7 +62,7 @@ Learn about <u>individual functionalities</u> in the respective module sections 
 
 You can follow the tutorials to perform the common tasks listed below:
 
-* [Analyze experimental data](../tutorials/analyze-experimental-data.html)
-* [Validate results](../tutorials/validate-results.html)
-* [Test algorithms](../tutorials/test-algorithms.html)
+* [Analyze experimental data](../tutorials/analyze-data)
+* [Validate results](../tutorials/validate-results)
+* [Test algorithms](../tutorials/test-algorithms)
 
