@@ -6,6 +6,8 @@ has_children: true
 permalink: transition-analysis/
 ---
 
+<img src="../assets/images/logo-transition-analysis.png" width="260" style="float:right"/>
+
 # Transition analysis
 
 Use this module to identify the most probable <u>state configuration</u> and quantify state <u>transition rates</u>.

@@ -6,6 +6,8 @@ has_children: true
 permalink: trace-processing/
 ---
 
+<img src="../assets/images/logo-trace-processing.png" width="260" style="float:right"/>
+
 # Trace processing
 
 Use this module to sort single molecules and obtain state trajectories from intensity-time traces.

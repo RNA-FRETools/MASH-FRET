@@ -4,7 +4,7 @@ title: Home
 nav_order: 0
 ---
 
-<img src="assets/images/mash-fret_logo_500px.png" width="260" style="float:right"/>
+<img src="assets/images/logo-MASH.png" width="260" style="float:right"/>
 
 ## What is MASH-FRET?
 MASH-FRET is a **Matlab**-based software package for the analysis of **single-molecule FRET videos and trajectories**.

@@ -6,6 +6,8 @@ has_children: true
 permalink: video-processing/
 ---
 
+<img src="../assets/images/logo-video-processing.png" width="260" style="float:right"/>
+
 # Video processing
 
 Use this module to obtain single molecule **intensity-time traces** from a single molecule video.
