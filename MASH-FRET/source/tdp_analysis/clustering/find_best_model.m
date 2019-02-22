@@ -129,8 +129,8 @@ for K = K_min:K_max
                 title(['fit (K=' num2str(K) ')']);
                 drawnow;
             catch err
-                fprintf('\nerror\n');
-                fprintf(['\n' err.message '\n'])
+                disp('error');
+                disp(err.message)
             end
             end
             L_prev = L; BIC_prev = BIC; I_prev = I;
@@ -209,7 +209,7 @@ for K = K_min:K_max
                             title(['fit (K=' num2str(K) ')']);
                             drawnow;
                         catch err
-                            fprintf('\nerror\n');
+                            disp(err.message);
                         end
                     end
                 end
@@ -250,12 +250,12 @@ for K = K_min:K_max
                         title(['fit (K=' num2str(K) ')']);
                         drawnow;
                     catch err
-                        fprintf('\nerror\n');
+                        disp(err.message)
                     end
                 end
-                fprintf(['\nModel ' num2str(K) ':\nLogL: ' ...
+                disp(sprintf(['\nModel ' num2str(K) ':\nLogL: ' ...
                         num2str(L/sum(v(3,:))) '\nBIC: ' ...
-                        num2str(BIC/sum(v(3,:))) '\n']);
+                        num2str(BIC/sum(v(3,:))) '\n']));
                 
             end
             if K == 1
@@ -268,12 +268,12 @@ for K = K_min:K_max
     end
 
     if L_t(K) == -Inf
-        fprintf(['\nModel ' num2str(K) ...
-            ':\nConvergeance impossible.\n']);
+        disp(sprintf(['\nModel ' num2str(K) ...
+            ':\nConvergeance impossible.\n']));
     else
-        fprintf(['\nModel ' num2str(K) ':\nLogL: ' ...
+        disp(sprintf(['\nModel ' num2str(K) ':\nLogL: ' ...
             num2str(L_t(K)/sum(v(3,:))) '\nBIC: ' ...
-            num2str(BIC_t(K)/sum(v(3,:))) '\n']);
+            num2str(BIC_t(K)/sum(v(3,:))) '\n']));
     end
 end
 
@@ -285,7 +285,7 @@ if sum(BIC_t ~= Inf)
     BIC = BIC_t(Kopt)/N;
     clust = clusters{Kopt};
     rho = permute(sig(1,2,:)./sqrt(sig(1,1,:).*sig(2,2,:)),[3 2 1]);
-    fprintf('\nOptimum number of states: %i\n',Kopt);
+    disp(cat(2,'Optimum number of states: ',num2str(Kopt)));
     if plotIt
         figure('Color', [1 1 1])
         pos = get(gcf,'Position');
@@ -320,7 +320,7 @@ if sum(BIC_t ~= Inf)
                 ylim([v(2,1) v(2,end)]);
                 drawnow;
             catch err
-                fprintf('\nerror\n');
+                disp(cat(2,'Error:',err.message));
             end
             
             subplot(2,(K_max-K_min+1),(K_max-K_min+1)+K-K_min+1);
@@ -341,6 +341,6 @@ else
     clust = [];
 end
 
-fprintf('\nprocess completed !\n');
+disp('process completed !');
 
 
