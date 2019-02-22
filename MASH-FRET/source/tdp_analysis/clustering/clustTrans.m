@@ -92,22 +92,6 @@ for k = 1:n_spl
         TDP_spl = convGauss(TDP_spl, 0.0005, lim);
     end
 
-    % normalise transition densities
-    if norm
-        try
-            TDP_spl = TDP_spl/sum(sum(TDP_spl));
-        catch err % out of memory
-            h_err = errordlg({['Normalisation of TDP impossible: ' ...
-                err.message] '' ...
-                'Increasing TDP binning might be a solution.'}, ...
-                'TDP error', 'modal');
-            uiwait(h_err);
-        end
-        if isempty(TDP_spl)
-            return;
-        end
-    end
-    
     switch shape
         case 1
             shape_str = 'spherical';
@@ -121,7 +105,7 @@ for k = 1:n_spl
 
     switch meth
         case 1 %k-mean clustering
-            [mu_spl clust_spl] = get_kmean(mu_0, tol, T, TDP_spl, x, y, 1);
+            [mu_spl,clust_spl] = get_kmean(mu_0, tol, T, TDP_spl, x, y, 1);
             Kopt = size(mu_spl,1);
             BIC = []; a = []; sig = [];
             if boba
@@ -132,7 +116,7 @@ for k = 1:n_spl
             
         case 2 % GMM clustering
 
-            [mu_spl, clust_spl, BIC_spl, a_spl, sig_spl, o, o, o, o] = ...
+            [mu_spl,clust_spl,BIC_spl,a_spl,sig_spl,o,o,o,o] = ...
                 find_best_model(TDP_spl, x, y, Kmin_def, Kmax, T, M_def,...
                 true,shape_str,max(bins),plotIter_def);
             Kopt = size(mu_spl,1);
@@ -221,14 +205,17 @@ else
     Kopt_sig = [];
 end
 
-fprintf('Kopt = %i\n', Kopt);
-if ~isempty(h_fig)
-    h = guidata(h_fig);
-    p = h.param.TDP;
-    proj = p.curr_proj;
-    [o,fname_proj,o] = fileparts(p.proj{proj}.proj_file);
-    saveStatesResults(param,cat(2,fname_proj,'_',num2str(shape),'.txt'));
-end
+disp(cat(2,'Kopt = ',num2str(Kopt));
+
+% used for Model selection evaluation paper:
+%
+% if ~isempty(h_fig)
+%     h = guidata(h_fig);
+%     p = h.param.TDP;
+%     proj = p.curr_proj;
+%     [o,fname_proj,o] = fileparts(p.proj{proj}.proj_file);
+%     saveStatesResults(param,cat(2,fname_proj,'_',num2str(shape),'.txt'));
+% end
 
 if sum(sum(clust))==0
     return;
