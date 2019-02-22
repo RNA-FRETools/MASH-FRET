@@ -6,7 +6,7 @@ has_children: true
 permalink: histogram-analysis/
 ---
 
-<img src="../assets/images/logo-histogram-analysis.png" width="260" style="float:right"/>
+<img src="../assets/images/logo-histogram-analysis.png" width="260" style="float:right; margin-left: 15px;"/>
 
 # Histogram analysis
 

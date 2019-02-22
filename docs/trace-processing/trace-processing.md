@@ -6,7 +6,7 @@ has_children: true
 permalink: trace-processing/
 ---
 
-<img src="../assets/images/logo-trace-processing.png" width="260" style="float:right"/>
+<img src="../assets/images/logo-trace-processing.png" width="260" style="float:right; margin-left: 15px;"/>
 
 # Trace processing
 

@@ -6,7 +6,7 @@ has_children: true
 permalink: simulation/
 ---
 
-<img src="../assets/images/logo-simulation.png" width="260" style="float:right"/>
+<img src="../assets/images/logo-simulation.png" width="260" style="float:right; margin-left: 15px;"/>
 
 # Simulation
 {: .no_toc }
