@@ -17,7 +17,7 @@ nav_order: 1
 
 ## Load video/image file
 
-## Navigate through video
+## Visualize video
 
 ## Tools
 

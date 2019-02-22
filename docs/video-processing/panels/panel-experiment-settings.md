@@ -15,14 +15,12 @@ nav_order: 3
 1. TOC
 {:toc}
 
-## Number of lasers (*Nb. of lasers*)
+### Alternated lasers
 
-## laser wavelength
+### Video channels
 
-## Number of spectroscopic channels (*Nb. of channels*)
+### Exposure time
 
-## Exposure time
-
-## Project options (*Options...*)
+### Project options
 
 

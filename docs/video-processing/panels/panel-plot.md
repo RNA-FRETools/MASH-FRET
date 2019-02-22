@@ -15,8 +15,8 @@ nav_order: 2
 1. TOC
 {:toc}
 
-## intensity units for display (*units per s.*)
+## Intensity units
 
-## colormap (*cmap*)
+## Colormap
 
 

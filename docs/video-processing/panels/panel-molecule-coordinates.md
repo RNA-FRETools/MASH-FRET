@@ -15,4 +15,9 @@ nav_order: 5
 1. TOC
 {:toc}
 
+### Average image
+
+### Spotfinder
+
+### Coordinates transformation
 
