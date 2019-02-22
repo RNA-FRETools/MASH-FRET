@@ -94,7 +94,7 @@ if w
         Pn(n,:) = Pn(n,:)/sum(Pn(n,:));
     end
     if ~ovrfl
-        Pn([1 end]) = [];
+        Pn(:,[1 end]) = [];
         x_axis([1 end]) = [];
     end
     P = sum(Pn,1);
