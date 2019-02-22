@@ -10,6 +10,13 @@ switch but_obj
         p = h.param.ttPr.impPrm{3}{3};
 end
 
+if size(p{1,1},1)<nChan
+    for i = (size(p{1,1},1)+1):nChan
+        p{1,1} = [p{1,1};p{1,1}(i-1,end)+1 p{1,1}(i-1,end)+2];
+    end
+end
+p{1,1} = p{1,1}(1:nChan,:);
+
 if ~(isfield(h, 'figure_itgOpt') && ishandle(h.figure_itgOpt))
     
     mg = 10;
