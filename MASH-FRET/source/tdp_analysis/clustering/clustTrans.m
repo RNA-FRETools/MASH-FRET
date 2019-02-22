@@ -57,6 +57,12 @@ if boba && ~isempty(h_fig)
     h = guidata(h_fig);
     h.barData.prev_var = h.barData.curr_var;
     guidata(h_fig, h);
+    
+    setContPan(cat(2,'Performing data randomisation and clustering ...'),...
+        'process', h_fig);
+    
+elseif boba
+    disp(cat(2,'Performing data randomisation and clustering ...'));
 end
 
 param = cell(1,n_spl);
@@ -205,8 +211,6 @@ else
     Kopt_sig = [];
 end
 
-disp(cat(2,'Kopt = ',num2str(Kopt));
-
 % used for Model selection evaluation paper:
 %
 % if ~isempty(h_fig)
@@ -262,5 +266,14 @@ for k = 1:Kopt
     res.fract(k,1) = sum(clust_k(:,1),1)/sum(dt_bin(:,1),1);
 end
 
-
+if Kopt>0 && ~isempty(h_fig)
+    setContPan(cat(2,'Clustering completed: ',num2str(Kopt),' states ',...
+        'found'),'success', h_fig);
+elseif Kopt>0
+    disp(cat(2,'Clustering completed: ',num2str(Kopt),' states found'))
+elseif ~isempty(h_fig)
+    setContPan('Clustering failed','error', h_fig);
+else
+    disp('Clustering failed');
+end
 

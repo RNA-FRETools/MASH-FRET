@@ -76,7 +76,7 @@ if ~isempty(p.proj)
         setContPan('Fitting process interrupted', 'error', h.figure_MASH);
         return;
     end
-    
+
     prm.kin_start(curr_k,:) = kin_k;
     
     if boba
@@ -115,5 +115,7 @@ if ~isempty(p.proj)
         end
         
         setContPan(str, 'success', h.figure_MASH);
+    else
+        setContPan('Fitting completed.', 'success', h.figure_MASH);
     end
 end

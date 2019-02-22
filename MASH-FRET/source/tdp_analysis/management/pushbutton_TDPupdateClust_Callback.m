@@ -99,7 +99,6 @@ if ~isempty(p.proj)
         guidata(h.figure_MASH, h);
         
     end
-    setContPan(cat(2,'Clustering completed: ',num2str(Kopt),' states ',...
-        'found'),'success', h.figure_MASH);
+    
     updateFields(h.figure_MASH, 'TDP');
 end
