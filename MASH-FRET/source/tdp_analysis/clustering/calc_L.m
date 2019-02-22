@@ -50,8 +50,8 @@ switch shape
         f_sig = 3*nTrs;
 end
 f_mu = K;
-f_mix = nTrs*(nTrs-1);
+f_a = nTrs;
 
-BIC = (f_mu+f_mix+f_sig)*log(sum(v(3,:))) - 2*L;
+BIC = (f_mu+f_a+f_sig)*log(sum(v(3,:))) - 2*L;
 % BIC = (1+K^2)*log(sum(v(3,:))) - 2*L;
 
