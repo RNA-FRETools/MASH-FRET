@@ -75,6 +75,11 @@ if ~isfield(h.param, 'gath')
 end
 h.param.gath = setParamGath(h.param.gath);
 
+% reinitialize output files management
+h.param.OpFiles.overwrite_ask = 1;
+h.param.OpFiles.overwrite = 0;
+
+
 % Simulation pannel (default parameters for SMV simulations)
 function p = setParamSim(p_input)
 p = p_input;

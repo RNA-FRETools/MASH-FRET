@@ -41,8 +41,12 @@ if exist([pth fName], 'file')
             h.param.OpFiles.overwrite_ask = 0;
             ovrwrtIt = ovrwrtIt - 2;
             h.param.OpFiles.overwrite = ovrwrtIt;% yes = 1, no = 0
-            guidata(h_fig, h);
         end
+        
+        guidata(h_fig, h);
+        
+        ud_menuOverwrite(h_fig);
+        
     else
         ovrwrtIt = h.param.OpFiles.overwrite;% no = 0, yes = 1
     end
@@ -53,7 +57,7 @@ if exist([pth fName], 'file')
 
         number = 1;
         [o,mainName,Fext] = fileparts(fName);
-        while exist([pth '\' OutfName], 'file')
+        while exist([pth OutfName], 'file')
             number = number + 1;
             OutfName = [mainName '(' num2str(number) ')' Fext];
         end
@@ -107,11 +111,7 @@ h.OF.cb = uicontrol('Style', 'checkbox', 'String', 'Remember my choice.', ...
     'Units', 'normalized');
 set(h.OF.cb, 'Position', [0.1,0.22,0.98,0.15]);
 
-if ~isempty(strfind(get(h_fig, 'Name'), 'MovAnalysis'))
-    str_advice = '(can be modified in menu File >> Saving options)';
-else
-    str_advice = '(can be modified in menu Options >> Output Files)';
-end
+str_advice = '(can be modified in menu Options > Overwrite files)';
 
 text2 = uicontrol('Style', 'text', 'String', str_advice, 'Units', ...
     'normalized', 'HorizontalAlignment', 'left');
@@ -141,8 +141,10 @@ elseif obj == h.OF.pushbutton_yes
     ovrwrtIt = 1;
 end
 
-ovrwrtIt = ovrwrtIt + 2*get(h.OF.cb, 'Value');% no = 0, yes = 1, always no = 2, always yes = 3
+% no = 0, yes = 1, always no = 2, always yes = 3
+ovrwrtIt = ovrwrtIt + 2*get(h.OF.cb, 'Value');
 
 h.OF.output = [saveIt, ovrwrtIt];
 guidata(h_fig, h);
 delete(h.OF.figure2);
+
