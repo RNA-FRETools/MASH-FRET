@@ -156,27 +156,31 @@ if saveDt
     else
         saveDt_S = 0;
     end
-end
-saveKin = xp.dt{2}(4);
-if saveKin
-    fname_kinI = [name '_I.kin'];
-    fname_kinI = overwriteIt(fname_kinI,pname_dt,h_fig);
-    if isempty(fname_kinI)
-        return;
-    end
     
-    fname_kinF = [name '_FRET.kin'];
-    fname_kinF = overwriteIt(fname_kinF,pname_dt,h_fig);
-    if isempty(fname_kinF)
-        return;
+    saveKin = xp.dt{2}(4);
+    if saveKin
+        fname_kinI = [name '_I.kin'];
+        fname_kinI = overwriteIt(fname_kinI,pname_dt,h_fig);
+        if isempty(fname_kinI)
+            return;
+        end
+
+        fname_kinF = [name '_FRET.kin'];
+        fname_kinF = overwriteIt(fname_kinF,pname_dt,h_fig);
+        if isempty(fname_kinF)
+            return;
+        end
+
+        fname_kinS = [name '_S.kin'];
+        fname_kinS = overwriteIt(fname_kinS,pname_dt,h_fig);
+        if isempty(fname_kinS)
+            return;
+        end
     end
-    
-    fname_kinS = [name '_S.kin'];
-    fname_kinS = overwriteIt(fname_kinS,pname_dt,h_fig);
-    if isempty(fname_kinS)
-        return;
-    end
+else
+    saveKin = false;
 end
+
 
 %% collect export options: figures
 
@@ -780,9 +784,6 @@ try
             if saveFig
                 if m == m_start
                     h_fig_mol = [];
-                    [o,i_m,o] = find(m_ind == m);
-                    min_end = min([(i_m+molPerFig-1) numel(m_ind)]);
-                    m_max = m_ind(min_end);
                     n_prev = n;
                     m_i = 0;
                 end
@@ -801,10 +802,9 @@ try
                     p2.proj{proj}.S_DTA = p2.proj{proj}.adj.S_DTA;
                 end
 
-                h_fig_mol = buildFig(p2, m, m_i, n, molPerFig, p_fig, ...
-                    h_fig_mol);
+                h_fig_mol = buildFig(p2,m,m_i,molPerFig,p_fig,h_fig_mol);
 
-                if m == m_max || m == m_end
+                if m_i == molPerFig || m == m_end
                     setProp(get(h_fig_mol, 'Children'), 'Units', ...
                         'normalized');
                     set(h_fig_mol, 'Units', 'centimeters');
@@ -848,9 +848,6 @@ try
 
                     delete(h_fig_mol);
                     h_fig_mol = [];
-                    [o,i_m,o] = find(m_ind == m);
-                    min_end = min([(i_m+molPerFig) numel(m_ind)]);
-                    m_max = m_ind(min_end);
                     n_prev = n + 1;
                     m_i = 0;
                 end
