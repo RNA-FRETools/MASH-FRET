@@ -188,8 +188,11 @@ else
 end
 
 if stop == 1
-    setContPan('Process interrupted.','error',h_fig);
-    warndlg('Process interrupted.');
+    try
+        setContPan('Process interrupted.','error',h_fig);
+    catch err
+        warndlg('Process interrupted.');
+    end
 end
 
 function fig_bar_CloseRequestFcn(hObj, evd, h_fig)
