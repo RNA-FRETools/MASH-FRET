@@ -14,7 +14,8 @@ if h.param.movPr.nChan > 1 && h.param.movPr.nChan <= 3
             [img_final ok] = constrTrafoImage(h.param.movPr.trsf_tr, ...
                 img, h.figure_MASH);
             if ~isempty(img_final)
-                h_fig = figure;
+                h_fig = figure('NumberTitle','off','Name',...
+                    'Transformed image');
                 h_axes = axes('Parent', h_fig);
                 imagesc(img_final, 'Parent', h_axes);
                 axis(h_axes, 'image');
