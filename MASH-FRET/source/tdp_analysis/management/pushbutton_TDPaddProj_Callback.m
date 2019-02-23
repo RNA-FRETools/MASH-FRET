@@ -9,7 +9,7 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
     if ~iscell(fname)
         fname = {fname};
     end
-    [dat ok] = loadProj(pname, fname, 'intensities', h.figure_MASH);
+    [dat,ok] = loadProj(pname, fname, 'intensities', h.figure_MASH);
     if ~ok
         return;
     end
@@ -22,6 +22,7 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
         nFRET = size(p.proj{i}.FRET,1);
         nS = size(p.proj{i}.S,1);
         nTpe = nChan*nExc + nFRET + nS;
+        N = numel(p.proj{i}.coord_incl);
         
         if ~isfield(p.proj{i}, 'prmTDP')
             p.proj{i}.prm = cell(1,nTpe);
@@ -62,7 +63,7 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
                 isRatio = 1;
             end
             
-            prm{tpe} = setDefPrm_TDP(prm{tpe}, trace, isRatio, p.colList);
+            prm{tpe} = setDefPrm_TDP(prm{tpe},trace,isRatio,p.colList,N);
         end
         p.proj{i}.prm = prm;
         p.curr_type(i) = 1;

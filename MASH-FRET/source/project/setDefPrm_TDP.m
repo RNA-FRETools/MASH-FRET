@@ -1,17 +1,24 @@
-function prm = setDefPrm_TDP(prm_in, trace, isRatio, clr)
+function prm = setDefPrm_TDP(prm_in, trace, isRatio, clr, N)
 % prm = setDefparam_TDP(prm_in, trace)
 %
 % Set project parameters for TDP analysis if not existing
 % "prm_in" >> TDP parameters loaded from project file and for the data type
 % "trace" >> discretised traces of all molecules and from data type
-% "prm" >> parameters adjusted regarding default parameters
+% "isRatio" >> data in trace are intensity ratio (between 0 and 1)
+% "N" >> number of molecules
 %
 % Requires external function: adjustParam.
 
 % Create the 29th of April 2014 by Mélodie C.A.S. Hadzic
-% Last update: 27th of May 2014 by Mélodie C.A.S. Hadzic
+%
+% Last update: 23rd of February 2019 by Mélodie Hadzic
+% --> Initialize number of replicates with number of molecules in the
+%     sample.
+% --> Increase initial TDP binning to 0.01
+% --> Activate Gaussian convolution and normalized units on intial TDP
+% --> Increase initial max. number of states from 4 to 8
 
-nStates = 4;
+nStates = 8;
 nTrs = nStates*(nStates-1);
 nExp = 1;
 method = 2;
@@ -27,14 +34,14 @@ if ~isRatio
     xy_axis = [bin (minVal-2*bin) (maxVal+2*bin)];
     xy_axis(~isfinite(xy_axis)) = 0;
 else
-    xy_axis = [0.005 -0.2 1.2];
+    xy_axis = [0.01 -0.2 1.2];
 end
 
 % plotPrm{1} = [bin_x  x_inf  x_sup
 %               bin_y  y_inf  y_sup
 %               excl   gconv  norm 
 %               count  empty  empty]
-plotPrm{1} = [xy_axis; xy_axis; [1 0 0]; [0 0 0]];
+plotPrm{1} = [xy_axis; xy_axis; [1 1 1]; [0 0 0]];
 % plotPrm{2} = TDP matrix
 plotPrm{2} = [];
 % plotPrm{3} = [dwells, ini. val., fin. val., molecule] >> bin & updated
@@ -50,7 +57,7 @@ end
 %% strating parameters for clustering (ntrs clusters)
 % trs{1} = [method, mode, start nb. of states, curr. trans, restart nb., 
 %	  apply bootstrapping, sample nb., replicate nb.]
-trs{1} = [method 1 nStates 1 5 0 20 20];
+trs{1} = [method 1 nStates 1 5 0 20 N];
 % trs{2} = [state value, tol. radius]
 trs{2} = repmat([0 Inf],[nStates,1]);
 % trs{3} = rgb colours
@@ -62,7 +69,7 @@ nTrs = nStates*(nStates-1);
 
 % add boba parameters if none
 if size(prm.clst_start,2)<8
-    prm.clst_start{1}(6:8) = [0 20 20];
+    prm.clst_start{1}(6:8) = [0 20 N];
 end
 
 

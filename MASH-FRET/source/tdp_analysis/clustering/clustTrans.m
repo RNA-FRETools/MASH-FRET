@@ -19,7 +19,6 @@ lim = plot_prm{2}; % TDP x & y limits
 rate = plot_prm{3}(1); % frame rate
 onecount = plot_prm{3}(2); % one/total transition count per molecule
 gconv = plot_prm{3}(3); % one/total transition count per molecule
-norm = plot_prm{3}(4); % one/total transition count per molecule
 
 if ~(~isempty(varargin) && ishandle(varargin{1}))
     h_fig = [];
@@ -35,15 +34,9 @@ res.BIC = [];
 res.boba_K = [];
 
 [mols,o,o] = unique(dt_bin(:,4));
-nMol = numel(mols);
 
 if ~boba
     n_spl = 1;
-else
-    h_axes = [];
-    if nMol ~= n_rep
-        n_rep = nMol;
-    end
 end
 res.n_rep = n_rep;
 
@@ -87,7 +80,7 @@ for k = 1:n_spl
             end
         end
 
-        [TDP_spl,o,o,coord_spl] = hist2(data_spl_m(:,[2 3]),[iv_x;iv_y]);
+        [TDP_spl,o,o,o] = hist2(data_spl_m(:,[2 3]),[iv_x;iv_y]);
     else
         TDP_spl = TDP;
     end
@@ -157,7 +150,7 @@ if boba
         for s = 1:size(param_opt,1)
             mu = mu + param_opt{s}{1}/size(param_opt,1);
         end
-        [mu clust] = get_kmean(mu, tol, T, TDP_spl, x, y, 1);
+        [mu,clust] = get_kmean(mu, tol, T, TDP_spl, x, y, 1);
         mu = mu';
     
     elseif meth==2
