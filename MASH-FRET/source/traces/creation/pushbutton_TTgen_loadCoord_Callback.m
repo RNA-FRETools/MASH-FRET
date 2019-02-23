@@ -1,4 +1,11 @@
 function pushbutton_TTgen_loadCoord_Callback(obj, evd, h)
+
+if ~isfield(h,'movie')
+    setContPan('Need access to video dimensions. Load a video first.',...
+        'error',h.figure_MASH);
+    return;
+end
+
 updateFields(h.figure_MASH, 'movPr');
 [fname, pname, o] = uigetfile(...
     {'*.coord;*.spots;*.map', ...
@@ -7,6 +14,9 @@ updateFields(h.figure_MASH, 'movPr');
      setCorrectPath('coordinates', h.figure_MASH));
 
 if ~isempty(fname) && sum(fname)
+    
+    setContPan('Load coordinates ...','process',h.figure_MASH);
+    
     cd(pname);
     fDat = importdata([pname fname], '\n');
     coord_itg = orgCoordCol(fDat, 'cw', h.param.movPr.itg_impMolPrm, ...
@@ -20,8 +30,8 @@ if ~isempty(fname) && sum(fname)
         return;
     end
 
-    updateActPan(['Coordinates successfully loaded from file: ' fname ...
-        '\nin folder: ' pname], h.figure_MASH);
+    setContPan(cat(2,'Coordinates successfully loaded from file: ',fname,...
+        ' in folder: ',pname),'success',h.figure_MASH);
     h.param.movPr.coordItg = coord_itg;
     h.param.movPr.coordItg_file = fname;
     h.param.movPr.itg_coordFullPth = [pname fname];
