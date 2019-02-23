@@ -201,7 +201,8 @@ if saveFig
     %[o,m_ind,o] = find(mol_incl);
     [o,m_ind,o] = find(mol_incl & mol_incl_tag); % added by FS, 25.4.2018
     if isempty(m_ind) % error message if no molecules with specified tag are found; added by FS, 26.4.2018
-        updateActPan('No molecules with the specified tag are found', h_fig, 'error');
+        updateActPan('No molecules with the specified tag are found', ...
+            h_fig, 'error');
         return
     end
     m_start = m_ind(1);
@@ -265,7 +266,7 @@ try
             times = frames*rate;
             
             % build molecule file name
-            name_mol = [name '_mol' num2str(n) 'of' num2str(N)];
+            name_mol = [name '_mol' num2str(m) 'of' num2str(nMol)];
             
             % intensity traces are/aren't discretized
             if fromTT
@@ -817,14 +818,14 @@ try
                     switch figFmt
                         case 1 % pdf
                             fname_fig{nfig} = cat(2,pname_fig_temp, ...
-                                filesep,name,'_mol',num2str(n_prev),'-', ...
-                                num2str(n),'of',num2str(N),'.pdf');
+                                filesep,name,'_mol',num2str(m_ind(n_prev)),...
+                                '-',num2str(m),'of',num2str(nMol),'.pdf');
                             print(h_fig_mol,fname_fig{nfig},'-dpdf');
                             nfig = nfig + 1;
 
                         case 2 % png
-                            fname_fig = [name '_mol' num2str(n_prev) ...
-                                '-' num2str(n) 'of' num2str(N) '.png'];
+                            fname_fig = [name '_mol' num2str(m_ind(n_prev)) ...
+                                '-' num2str(m) 'of' num2str(nMol) '.png'];
                             fname_fig = overwriteIt(fname_fig,pname_fig,...
                                 h_fig);
                             if isempty(fname_fig)
@@ -834,8 +835,8 @@ try
                                 '-dpng');
 
                         case 3 % jpg
-                            fname_fig = [name '_mol' num2str(n_prev) '-'...
-                                num2str(n) 'of' num2str(N) '.jpeg'];
+                            fname_fig = [name '_mol' num2str(m_ind(n_prev)) '-'...
+                                num2str(m) 'of' num2str(nMol) '.jpeg'];
                             fname_fig = overwriteIt(fname_fig,pname_fig,...
                                 h_fig);
                             if isempty(fname_fig)

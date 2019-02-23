@@ -208,11 +208,11 @@ if ~isempty(a)
 end
 
 if isSubImg
-    title(img(1), ['molecule n:°' num2str(n)]);
+    title(img(1), ['molecule n:°' num2str(m)]);
 elseif isTop
-    title(a.axes_traceTop, ['molecule n:°' num2str(n)]);
+    title(a.axes_traceTop, ['molecule n:°' num2str(m)]);
 elseif isBot
-    title(a.axes_traceBottom, ['molecule n:°' num2str(n)]);
+    title(a.axes_traceBottom, ['molecule n:°' num2str(m)]);
 end
 
 
