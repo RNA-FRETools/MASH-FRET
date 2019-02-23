@@ -288,7 +288,7 @@ for j = 1:nFRET
         end
         
         % build file name
-        fname_vbfret = cat(2,name,'_all',num2str(N),extf,'_VbFRET.mat');
+        fname_vbfret = cat(2,name,'_all',num2str(N),extf,'_vbFRET.mat');
         
         % write data to file
         save(cat(2,pname_vbfret,fname_vbfret),'data');
