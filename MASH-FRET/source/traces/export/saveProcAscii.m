@@ -160,8 +160,22 @@ end
 saveKin = xp.dt{2}(4);
 if saveKin
     fname_kinI = [name '_I.kin'];
+    fname_kinI = overwriteIt(fname_kinI,pname_dt,h_fig);
+    if isempty(fname_kinI)
+        return;
+    end
+    
     fname_kinF = [name '_FRET.kin'];
+    fname_kinF = overwriteIt(fname_kinF,pname_dt,h_fig);
+    if isempty(fname_kinF)
+        return;
+    end
+    
     fname_kinS = [name '_S.kin'];
+    fname_kinS = overwriteIt(fname_kinS,pname_dt,h_fig);
+    if isempty(fname_kinS)
+        return;
+    end
 end
 
 %% collect export options: figures
@@ -287,11 +301,9 @@ try
                         
                         if ~allInOne
                             % write data to intensity file
-                            [name_mol,name] = writeDat2file(cat(2,...
-                                pname_ascii,name_mol),'_I.txt',[n,N],...
-                                {head_I,fmt_I,dat_I},[fromTT,savePrm],...
-                                str_xp,h_fig);
-                            if isempty(name)
+                            if ~writeDat2file(cat(2,pname_ascii,name_mol),...
+                                    '_I.txt',{head_I,fmt_I,dat_I},...
+                                    [fromTT,savePrm],str_xp,h_fig)
                                 return;
                             end
                         end
@@ -315,11 +327,10 @@ try
 
                         if ~allInOne
                             % write data to FRET file
-                            [name_mol,name] = writeDat2file(cat(2,...
-                                pname_ascii,name_mol),'_FRET.txt',[n,N],...
-                                {head_fret,fmt_fret,dat_fret},[fromTT,...
-                                savePrm],str_xp,h_fig);
-                            if isempty(name)
+                            if ~writeDat2file(cat(2,pname_ascii,name_mol),...
+                                    '_FRET.txt',{head_fret,fmt_fret,...
+                                    dat_fret},[fromTT,savePrm],str_xp,...
+                                    h_fig)
                                 return;
                             end
                         end
@@ -333,11 +344,9 @@ try
                         
                         if ~allInOne
                             % write data to stoichiometry file
-                            [name_mol,name] = writeDat2file(cat(2,...
-                                pname_ascii,name_mol),'_S.txt',[n,N],...
-                                {head_s,fmt_s,dat_s},[fromTT,savePrm],...
-                                str_xp,h_fig);
-                            if isempty(name)
+                            if ~writeDat2file(cat(2,pname_ascii,name_mol),...
+                                    '_S.txt',{head_s,fmt_s,dat_s},...
+                                    [fromTT,savePrm],str_xp,h_fig)
                                 return;
                             end
                         end
@@ -345,12 +354,10 @@ try
                     
                     if allInOne
                         % write data in molecule file
-                        [name_mol,name] = writeDat2file(cat(2,...
-                            pname_ascii,name_mol),'.txt',[n,N],...
-                            {head_I,fmt_I,dat_I;head_fret,fmt_fret,...
-                            dat_fret;head_s,fmt_s,dat_s},...
-                            [fromTT,savePrm],str_xp,h_fig);
-                        if isempty(name)
+                        if ~writeDat2file(cat(2,pname_ascii,name_mol),...
+                                '.txt',{head_I,fmt_I,dat_I;head_fret,...
+                                fmt_fret,dat_fret;head_s,fmt_s,dat_s},...
+                                [fromTT,savePrm],str_xp,h_fig)
                             return;
                         end
                     end
@@ -373,11 +380,9 @@ try
                                 times(l:nExc:end,1),I_fret{j}{n});
 
                             % write data to HaMMy file
-                            [name_mol,name] = writeDat2file(cat(2,...
-                                pname_ha,name_mol),cat(2,ext_f,...
-                                '_HaMMy.dat'),[n,N],{head,fmt,dat},...
-                                [fromTT,0],'',h_fig);
-                            if isempty(name)
+                            if ~writeDat2file(cat(2,pname_ha,name_mol),...
+                                    cat(2,ext_f,'_HaMMy.dat'),...
+                                    {head,fmt,dat},[fromTT,0],'',h_fig)
                                 return;
                             end
                         end
@@ -409,11 +414,9 @@ try
                             [head,fmt,dat] = formatQub2File(I_fret{j}{n});
 
                             % write data to QuB file
-                            [name_mol,name] = writeDat2file(cat(2,...
-                                pname_qub,name_mol),cat(2,ext_f,...
-                                '_QUB.txt'),[n,N],{head,fmt,dat},...
-                                [fromTT,0],'',h_fig);
-                            if isempty(name)
+                            if ~writeDat2file(cat(2,pname_qub,name_mol),...
+                                    cat(2,ext_f,'_QUB.txt'),{head,fmt,dat},...
+                                    [fromTT,0],'',h_fig)
                                 return;
                             end
                         end
@@ -424,10 +427,8 @@ try
                 if fromTT && savePrm == 1 
                     
                     % write parameters to file
-                    [name_mol,name] = writeDat2file(...
-                        cat(2,pname_xp,name_mol),'.log',[n,N],...
-                        {'',str_xp,[]},[fromTT,0],'',h_fig);
-                    if isempty(name)
+                    if ~writeDat2file(cat(2,pname_xp,name_mol),'.log',...
+                            {'',str_xp,[]},[fromTT,0],'',h_fig)
                         return;
                     end
                 end
@@ -468,13 +469,11 @@ try
                             % build file name
                             fname_histI = cat(2,name_mol,'_I',num2str(c),...
                                 '-',num2str(exc(l)),'.hist');
-                            [name_mol,name] = correctNamemol(fname_histI,...
-                                pname_hist,[n,N],h_fig);
-                            if isempty(name)
+                            fname_histI = overwriteIt(fname_histI,...
+                                pname_hist,h_fig);
+                            if isempty(fname_histI)
                                 return;
                             end
-                            fname_histI = cat(2,name_mol,'_I',num2str(c),...
-                                '-',num2str(exc(l)),'.hist');
                             
                             % write data to file
                             f = fopen(cat(2,pname_hist,fname_histI),'Wt');
@@ -499,9 +498,13 @@ try
                                 histdI(:,5) = histdI(:,4)/histdI(end,4);
                                 
                                 % build file name
-                                [o,fname_histdI,o] = fileparts(fname_histI);
-                                fname_histdI = cat(2,fname_histdI,...
-                                    '_discr.hist');
+                                fname_histdI = cat(2,name_mol,'_I',num2str(c),...
+                                '-',num2str(exc(l)),'_discr.hist');
+                                fname_histdI = overwriteIt(fname_histdI,...
+                                    pname_hist,h_fig);
+                                if isempty(fname_histdI)
+                                    return;
+                                end
                                 
                                 % write data to file
                                 f = fopen(cat(2,pname_hist,fname_histdI),...
@@ -545,14 +548,11 @@ try
                         fname_histF = cat(2,name_mol,'_FRET',...
                             num2str(FRET(i,1)),'to',num2str(FRET(i,2)),...
                             '.hist');
-                        [name_mol,name] = correctNamemol(fname_histF,...
-                                pname_hist,[n,N],h_fig);
-                        if isempty(name)
+                        fname_histF = overwriteIt(fname_histF,pname_hist,...
+                            h_fig);
+                        if isempty(fname_histF)
                             return;
                         end
-                        fname_histF = cat(2,name_mol,'_FRET',...
-                            num2str(FRET(i,1)),'to',num2str(FRET(i,2)),...
-                            '.hist');
                         
                         % write data to file
                         f = fopen(cat(2,pname_hist,fname_histF),'Wt');
@@ -574,9 +574,14 @@ try
                             histdF(:,5) = histdF(:,4)/histdF(end,4);
                             
                             % build file name
-                            [o,fname_histdF,o] = fileparts(fname_histF);
-                            fname_histdF = cat(2,fname_histdF,...
+                            fname_histdF = cat(2,name_mol,'_FRET',...
+                                num2str(FRET(i,1)),'to',num2str(FRET(i,2)),...
                                 '_discr.hist');
+                            fname_histdF = overwriteIt(fname_histdF,...
+                                pname_hist,h_fig);
+                            if isempty(fname_histdF)
+                                return;
+                            end
                             
                             % write data to file
                             f = fopen(cat(2,pname_hist,fname_histdF),'Wt');
@@ -614,13 +619,11 @@ try
                         % build file name
                         fname_histS = cat(2,name_mol,'_S',labels{S(i)},...
                             '.hist');
-                        [name_mol,name] = correctNamemol(fname_histS,...
-                                pname_hist,[n,N],h_fig);
-                        if isempty(name)
+                        fname_histS = overwriteIt(fname_histS,pname_hist,...
+                            h_fig);
+                        if isempty(fname_histS)
                             return;
                         end
-                        fname_histS = cat(2,name_mol,'_S',labels{S(i)},...
-                            '.hist');
                        
                         % write data to file
                         f = fopen(cat(2,pname_hist,fname_histS),'Wt');
@@ -642,9 +645,13 @@ try
                             histdS(:,5) = histdS(:,4)/histdS(end,4);
                             
                             % build file name
-                            [o,fname_histdS,o] = fileparts(fname_histS);
-                            fname_histdS = cat(2,fname_histdS,...
-                                '_discr.hist');
+                            fname_histdS = cat(2,name_mol,'_S',...
+                                labels{S(i)},'_discr.hist');
+                            fname_histdS = overwriteIt(fname_histdS,...
+                                pname_hist,h_fig);
+                            if isempty(fname_histdS)
+                                return;
+                            end
                             
                             % write data to file
                             f = fopen(cat(2,pname_hist,fname_histdS),'Wt');
@@ -674,10 +681,11 @@ try
                             % build file name
                             fname_dtI = cat(2,name_mol,'_I',num2str(c),...
                                 '-',num2str(exc(l)),'.dt');
-                            [name_mol,name] = correctNamemol(fname_dtI,...
-                                pname_dt,[n,N],h_fig);
-                            fname_dtI = cat(2,name_mol,'_I',num2str(c),...
-                                '-',num2str(exc(l)),'.dt');
+                            fname_dtI = overwriteIt(fname_dtI,pname_dt,...
+                                h_fig);
+                            if isempty(fname_dtI)
+                                return;
+                            end
                             
                             % write data to file
                             if saveDt_I
@@ -709,10 +717,10 @@ try
                         % build file name
                         fname_dtF = cat(2,name_mol,'_FRET',num2str(...
                             FRET(i,1)),'to',num2str(FRET(i,2)),'.dt');
-                        [name_mol,name] = correctNamemol(fname_dtF,...
-                                pname_dt,[n,N],h_fig);
-                        fname_dtF = cat(2,name_mol,'_FRET',num2str(...
-                            FRET(i,1)),'to',num2str(FRET(i,2)),'.dt');
+                        fname_dtF = overwriteIt(fname_dtF,pname_dt,h_fig);
+                        if isempty(fname_dtF)
+                            return;
+                        end
                                
                         % write data to file
                         if saveDt_fret
@@ -742,10 +750,10 @@ try
                         % build file name
                         fname_dtS = cat(2,name_mol,'_S',labels{S(i)},...
                             '.dt');
-                        [name_mol,name] = correctNamemol(fname_dtS,...
-                            pname_dt,[n,N],h_fig);
-                        fname_dtS = cat(2,name_mol,'_S',labels{S(i)},...
-                            '.dt');
+                        fname_dtS = overwriteIt(fname_dtS,pname_dt,h_fig);
+                        if isempty(fname_dtS)
+                            return;
+                        end
                         
                         % write data to file
                         if saveDt_S
@@ -817,13 +825,23 @@ try
                         case 2 % png
                             fname_fig = [name '_mol' num2str(n_prev) ...
                                 '-' num2str(n) 'of' num2str(N) '.png'];
-                            print(h_fig_mol, [pname_fig fname_fig], ...
+                            fname_fig = overwriteIt(fname_fig,pname_fig,...
+                                h_fig);
+                            if isempty(fname_fig)
+                                return;
+                            end
+                            print(h_fig_mol, cat(2,pname_fig,fname_fig), ...
                                 '-dpng');
 
                         case 3 % jpg
                             fname_fig = [name '_mol' num2str(n_prev) '-'...
                                 num2str(n) 'of' num2str(N) '.jpeg'];
-                            print(h_fig_mol, [pname_fig fname_fig], ...
+                            fname_fig = overwriteIt(fname_fig,pname_fig,...
+                                h_fig);
+                            if isempty(fname_fig)
+                                return;
+                            end
+                            print(h_fig_mol, cat(2,pname_fig,fname_fig), ...
                                 '-djpeg');
                     end
 
@@ -865,13 +883,22 @@ end
 % added by FS, 19.3.2018
 if saveTr
     if saveGam
+        
+        % build file name
         curs = strfind(name_mol, '_mol');
         if ~isempty(curs)
             name = name_mol(1:(curs-1));
         else
             name = name_mol;
         end
-        f = fopen([pname_xp name '.gam'], 'Wt');
+        fname_gam = cat(2,name,'.gam');
+        fname_gam = overwriteIt(fname_gam,pname_xp,h_fig);
+        if isempty(fname_gam)
+            return;
+        end
+        
+        % write data to file
+        f = fopen(cat(2,pname_xp,fname_gam), 'Wt');
         fmt = repmat('%0.3f\t', nFRET);
         fmt(end) = 'n';
         gammaAll(isnan(gammaAll)) = [];
@@ -930,9 +957,10 @@ if saveTr
             % build SMART file name
             fname_smart = cat(2,name,'_all',num2str(N),ext_f,...
                 '_SMART.traces');
-            [name_all,name] = correctNameall(fname_smart,pname_smart,N,...
-                h_fig);
-            fname_smart = cat(2,name_all,ext_f,'_SMART.traces');
+            fname_smart = overwriteIt(fname_smart,pname_smart,h_fig);
+            if isempty(fname_smart)
+                return;
+            end
             
             % write data to SMART file
             group_data = dat_smart{j};
@@ -952,9 +980,10 @@ if saveTr
             % build vbFRET file name
             fname_vbfret = cat(2,name,'_all',num2str(N),ext_f,...
                 '_vbFRET.mat');
-            [name_all,name] = correctNameall(fname_vbfret,pname_vbfret,N,...
-                h_fig);
-            fname_vbfret = cat(2,name_all,ext_f,'_vbFRET.mat');
+            fname_vbfret = overwriteIt(fname_vbfret,pname_vbfret,h_fig);
+            if isempty(fname_vbfret)
+                return;
+            end
             
             % write data to vbFRET file
             data = I_fret{j};
@@ -971,9 +1000,10 @@ if saveTr
             % build vbFRET file name
             fname_ebfret = cat(2,name,'_all',num2str(N),ext_f,...
                 '_ebFRET.dat');
-            [name_all,name] = correctNameall(fname_ebfret,pname_ebfret,N,...
-                h_fig);
-            fname_ebfret = cat(2,name_all,ext_f,'_ebFRET.dat');
+            fname_ebfret = overwriteIt(fname_ebfret,pname_ebfret,h_fig);
+            if isempty(fname_ebfret)
+                return;
+            end
             
             % write data to ebFRET file
             f = fopen(cat(2,pname_ebfret,fname_ebfret),'Wt');
@@ -1069,8 +1099,18 @@ end
 
 %% Figure complement
 if saveFig && figFmt == 1 % *.pdf
+    
+    % build file name
     fname_pdf = cat(2,name,'_all',num2str(N),'.pdf');
+    fname_pdf = overwriteIt(fname_pdf,pname_fig,h_fig);
+    if isempty(fname_pdf)
+        return;
+    end
+    
+    % write data to file
     append_pdfs(cat(2,pname_fig,fname_pdf), fname_fig{:});
+    
+    % delete temporary files
     flist = dir(pname_fig_temp);
     for i = 1:size(flist,1)
         if ~(strcmp(flist(i).name,'.') || strcmp(flist(i).name,'..')) 
@@ -1096,7 +1136,8 @@ if fromTT
     guidata(h_fig, h);
 end
 
-setContPan(cat(2,'Export completed:\n',str,'\n'),'process',h_fig);
+str = str(1:end-2); % remove last '\n'
+setContPan(cat(2,'Export completed:\n',str),'process',h_fig);
 
 
 function upgradeKinFile(fname_kin,fname_dt,kinDat)

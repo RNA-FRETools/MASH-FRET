@@ -1,4 +1,6 @@
-function [name_mol,name] = writeDat2file(path_mol,ext,mol,filedat,prm,str_xp,h_fig)
+function ok = writeDat2file(path_mol,ext,filedat,prm,str_xp,h_fig)
+
+ok = 1;
 
 head = filedat(:,1);
 fmt = filedat(:,2);
@@ -11,11 +13,19 @@ savePrm = prm(2);
 [pname,name_mol,o] = fileparts(path_mol);
 pname = cat(2,pname,filesep);
 fname = cat(2,name_mol,ext);
-[name_mol,name] = correctNamemol(fname,pname,mol,h_fig);
-if isempty(name)
+
+% [name_mol,name] = correctNamemol(fname,pname,mol,h_fig);
+% if isempty(name)
+%     return;
+% end
+% fname = cat(2,name_mol,ext);
+
+fname = overwriteIt(fname,pname,h_fig);
+if isempty(fname)
+    ok = 0;
     return;
 end
-fname = cat(2,name_mol,ext);
+
 
 % write data to file
 f = fopen(cat(2,pname,fname),'Wt');
