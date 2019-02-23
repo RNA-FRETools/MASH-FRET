@@ -1,4 +1,4 @@
-function h_fig = buildFig(p_mol, m, m_i, n, N, p_fig, h_fig)
+function h_fig = buildFig(p_mol, m, m_i, N, p_fig, h_fig)
 % "p" >>
 % "m" >> real molecule number
 % "m_i" >> molecule number on the figure
@@ -22,6 +22,7 @@ if isempty(h_fig)
         [xFig yFig wFig hFig], 'Color', [1 1 1], 'Name', 'Preview', ...
         'NumberTitle', 'off', 'MenuBar', 'none', 'PaperOrientation', ...
         'portrait', 'PaperType', 'A4');
+    drawnow;
 end
 
 posFig = get(h_fig, 'Position');
@@ -79,15 +80,15 @@ end
 a = [];
 
 if sup3 && ~mod(m_i,2)
-    extr_h = w_full;
+    extr_w = w_full;
     yNext = hFig - ((m_i/2)-1)*hMol - h_txt;
     
 elseif sup3 && mod(m_i,2)
-    extr_h = 0;
+    extr_w = 0;
     yNext = hFig - (((m_i+1)/2)-1)*hMol - h_txt;
     
 else
-    extr_h = 0;
+    extr_w = 0;
     yNext = hFig - (m_i-1)*hMol - h_txt;
 end
 
@@ -102,7 +103,7 @@ if isSubImg
     dimImg = min([dimImg h_axes]);
     
     yNext = yNext - dimImg;
-    xNext = extr_h + mg;
+    xNext = extr_w + mg;
     
     img = zeros(1,nChan);
     
@@ -119,7 +120,7 @@ if isSubImg
 end
 
 if isTop
-    xNext = extr_h + mg;
+    xNext = extr_w + mg;
     yNext = yNext - h_axes;
     
     a.axes_traceTop = axes('Parent',h_fig,'Units','pixels', ...
@@ -150,7 +151,7 @@ if isTop
 end
 
 if isBot
-    xNext = extr_h + mg;
+    xNext = extr_w + mg;
     yNext = yNext - h_axes;
 
     a.axes_traceBottom = axes('Parent',h_fig,'Units','pixels', ...
