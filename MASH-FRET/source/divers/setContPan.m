@@ -64,8 +64,7 @@ else
 end
 
 if ~isempty(h_edit)
-    str = textwrap(h_edit, str);
-    set(h_edit, 'String', str, 'BackgroundColor', colBg);
+    set(h_edit, 'String', textwrap(h_edit, str), 'BackgroundColor', colBg);
     drawnow;
 end
 
