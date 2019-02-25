@@ -41,7 +41,7 @@ if isempty(TDP)
     TDP_prm{4} = onecount; % one/total transition count per mol.
     
     % create TDP matrix and get binned transitions + TDP coord. assignment
-    [TDP dt_bin] = getTDPmat(dt_raw, TDP_prm, h_fig);
+    [TDP,dt_bin] = getTDPmat(dt_raw, TDP_prm, h_fig);
     if isempty(TDP)
         return;
     end

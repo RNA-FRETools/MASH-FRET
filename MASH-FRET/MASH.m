@@ -1,5 +1,5 @@
 function varargout = MASH(varargin)
-% Last Modified by GUIDE v2.5 23-Feb-2019 12:10:06
+% Last Modified by GUIDE v2.5 25-Feb-2019 11:51:29
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -3516,6 +3516,11 @@ if ~isempty(p.proj)
     expTDPopt(h.figure_MASH);
 end
 
+function popupmenu_tdp_model_Callback(obj, evd, h)
+
+
+function pushbutton_tdp_impModel_Callback(obj, evd, h)
+
 
 % Exponential fit
 
@@ -4934,7 +4939,5 @@ if ~isempty(p.proj)
     thresh_ana(h.figure_MASH);
     updateFields(h.figure_MASH, 'thm');
 end
-
-
 
 

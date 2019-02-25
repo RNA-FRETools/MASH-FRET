@@ -45,7 +45,7 @@ if norm
     try
         TDP = TDP/sum(sum(TDP));
     catch err % out of memory
-        h_err = errordlg({['Normalisation of TDP impossible: ' ...
+        h_err = errordlg({['Normalization of TDP impossible: ' ...
             err.message] '' ...
             'Increasing TDP binning might be a solution.'}, ...
             'TDP error', 'modal');
@@ -127,9 +127,9 @@ end
 colorbar(h_axes,'off');
 h_c = colorbar('peer', h_axes);
 if norm
-    ylabel(h_c, 'normalised occurence');
+    ylabel(h_c, 'normalized occurrence');
 else
-    ylabel(h_c, 'occurence');
+    ylabel(h_c, 'occurrence');
 end
 
 

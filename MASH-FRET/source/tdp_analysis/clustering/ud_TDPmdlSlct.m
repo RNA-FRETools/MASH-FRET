@@ -83,7 +83,7 @@ if meth == 1 % kmean clustering
     set(h.togglebutton_TDPgauss, 'Value', 0, 'FontWeight', 'normal');
 
     set([h.text_TDPstate h.popupmenu_TDPstate h.text_TDPiniVal ...
-        h.edit_TDPiniVal], 'Enable', 'on');
+        h.edit_TDPiniVal h.pushbutton_TDPautoStart], 'Enable', 'on');
     
     set(h.text_TDPstate, 'String', 'state:');
     set(h.text_TDPiter, 'String', 'iter nb.:');
@@ -109,15 +109,9 @@ else % GMM-based clustering
     set(h.popupmenu_TDPstate, 'Value', mode, 'String', str_pop, ...
         'TooltipString', '2D Gaussian symetry');
     
-    set([h.text_TDPiniVal h.edit_TDPiniVal], 'String', '', 'Enable', ...
-        'off');
-    
-%     set(h.text_TDPradius, 'String', sprintf('max.\nsigma'));
-%     set(h.edit_TDPradius, 'String', num2str(prm.clst_start{2}(1,2)), ...
-%         'TooltipString', ...
-%         'Max. standard deviation of the 2D Gaussian distributions');
-    set([h.text_TDPradius h.edit_TDPradius], 'String', '', 'Enable', ...
-        'off');
+    set([h.text_TDPiniVal h.edit_TDPiniVal],'String','','Enable','off');
+    set([h.text_TDPradius h.edit_TDPradius],'String','','Enable','off');
+    set(h.pushbutton_TDPautoStart,'Enable','off');
     
     set(h.text_TDPiter, 'String', 'restarts:');
     set(h.edit_TDPmaxiter, 'String', num2str(N), 'TooltipString', ...

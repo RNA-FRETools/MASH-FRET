@@ -27,14 +27,14 @@ if ~isempty(clust_res{1})
     beta_prm = kin_start{2}(curr_exp,7:9);
     
     %% build exponential list
-    str_e = {};
+    str_e = cell(1,nExp);
     for i = 1:nExp
-        str_e = [str_e sprintf('n:°%i', i)];
+        str_e{i} = sprintf('exponential n:°%i', i);
     end
 
     %% set general parameters
     set([h.radiobutton_TDPstretch h.radiobutton_TDPmultExp ...
-        h.text_TDPkin_trans h.checkbox_BOBA h.pushbutton_TDPfit_fit ...
+        h.checkbox_BOBA h.pushbutton_TDPfit_fit ...
         h.text_TDPfit_amp h.text_TDPdec_amp h.text_TDPfit_lower ...
         h.text_TDPfit_start  h.text_TDPfit_upper h.edit_TDPfit_aLow ...
         h.edit_TDPfit_aStart h.edit_TDPfit_aUp h.edit_TDPfit_decLow ...
@@ -44,14 +44,12 @@ if ~isempty(clust_res{1})
     if stchExp
         set([h.text_TDPfit_beta h.edit_TDPfit_betaLow ...
             h.edit_TDPfit_betaStart h.edit_TDPfit_betaUp], 'Enable', 'on');
-        set([h.edit_TDP_nExp h.text_TDP_expNum h.popupmenu_TDP_expNum], ...
-            'Enable', 'off');
+        set([h.edit_TDP_nExp h.popupmenu_TDP_expNum], 'Enable', 'off');
     else
         set([h.text_TDPfit_beta h.edit_TDPfit_betaLow ...
             h.edit_TDPfit_betaStart h.edit_TDPfit_betaUp], 'Enable', ...
             'off');
-        set([h.edit_TDP_nExp h.text_TDP_expNum h.popupmenu_TDP_expNum], ...
-            'Enable', 'on');
+        set([h.edit_TDP_nExp h.popupmenu_TDP_expNum], 'Enable', 'on');
     end
     
     set([h.edit_TDP_nExp h.edit_TDPfit_aLow h.edit_TDPfit_aStart ...
@@ -76,10 +74,6 @@ if ~isempty(clust_res{1})
             end
         end
     end
-    set(h.text_TDPkin_trans, 'String', strcat('trans: ', num2str(mu1), ...
-        ' to ', num2str(mu2)));
-    set(h.edit_TDPkin_transClr, 'Enable', 'inactive', 'BackgroundColor',...
-        prm.clst_start{3}(curr_k,:));
     set(h.edit_TDP_nExp, 'String', num2str(nExp));
     set(h.popupmenu_TDP_expNum, 'Value', curr_exp, 'String', str_e);
     set(h.checkbox_BOBA, 'Value', boba);
@@ -205,7 +199,6 @@ if ~isempty(clust_res{1})
     
 else
     setProp(get(h.uipanel_TDP_transRates, 'Children'), 'Enable', 'off');
-    set(h.text_TDPkin_trans, 'String', '');
     set(h.popupmenu_TDP_expNum, 'Value', 1, 'String', {''});
     cla(h.axes_TDPplot2);
     set(h.axes_TDPplot2, 'Visible', 'off');

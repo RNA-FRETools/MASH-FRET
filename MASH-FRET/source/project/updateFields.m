@@ -632,8 +632,9 @@ if strcmp(opt, 'TDP') || strcmp(opt, 'all')
             'on');
         set(h.listbox_TDPtrans, 'String', {''}, 'Value', 1);
         cla(h.axes_TDPplot1); cla(h.axes_TDPplot2); cla(h.axes_TDPplot3);
+        cla(h.axes_tdp_BIC);
         set([h.axes_TDPplot1 h.axes_TDPplot2 h.axes_TDPplot3 ...
-            h.axes_TDPcmap], 'Visible', 'off');
+            h.axes_TDPcmap h.axes_tdp_BIC], 'Visible', 'off');
     end
 end
 

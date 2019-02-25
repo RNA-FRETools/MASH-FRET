@@ -27,29 +27,29 @@ meth = start{1}(1);
 if numel(h_axes)>2
     if ~isempty(res{3,1})
         L = res{3,1}(:,1);
-        Kmax = size(L,1);
+        Jmax = size(L,1);
         isBIC = ~start{4}(1);
         
         set(h_axes(3),'visible','on');
         
         if isBIC
             BIC = res{3,1}(:,2);
-            barh(h_axes(3), 1:Kmax, BIC');
+            barh(h_axes(3), 1:Jmax, BIC');
             xlim(h_axes(3),[min(BIC) mean(BIC)]);
-            ylim(h_axes(3),[0 Kmax+1]);
+            ylim(h_axes(3),[0 Jmax+1]);
             title(h_axes(3),'BIC');
             
         else
             penalty = start{4}(2);
-            dL = zeros(1,Kmax-1);
-            for k = 2:Kmax
+            dL = zeros(1,Jmax-1);
+            for k = 2:Jmax
                 dL(k-1) = 1 + ((L(k)-L(k-1))/abs(L(k-1)));
             end
-            barh(h_axes(3), 2:Kmax, dL);
+            barh(h_axes(3), 2:Jmax, dL);
             set(h_axes(3),'nextplot','add');
-            plot(h_axes(3),penalty*ones(1,Kmax+2), 0:Kmax+1, '-r');
+            plot(h_axes(3),penalty*ones(1,Jmax+2), 0:Jmax+1, '-r');
             xlim(h_axes(3),[1,2*(penalty-1)+1]);
-            ylim(h_axes(3),[0,Kmax+1]);
+            ylim(h_axes(3),[0,Jmax+1]);
             title(h_axes(3),'penalty');
             set(h_axes(3),'nextplot','replacechildren');
         end
