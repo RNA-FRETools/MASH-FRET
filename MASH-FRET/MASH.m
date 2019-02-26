@@ -63,6 +63,9 @@ addpath(genpath(codePath));
 % initialise MASH
 initMASH(obj, h, figName);
 
+updateActPan(cat(2,'--- WELCOME -----------------------------------------',...
+    '---------------------'),h.figure_MASH);
+
 
 function varargout = MASH_OutputFcn(obj, evd, h) 
 varargout{1} = [];

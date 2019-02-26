@@ -32,9 +32,6 @@ set(obj, 'OuterPosition', [pos(1), 0.05, pos(3), pos(2)-0.1]);
 h.output = obj;
 guidata(obj, h);
 
-updateActPan(cat(2,'--- WELCOME -----------------------------------------',...
-    '---------------------'),h.figure_MASH);
-
 
 function varargout = actionPanel_OutputFcn(obj, evd, h) 
 varargout{1} = h.output;
