@@ -1,7 +1,7 @@
 function res = clustTrans(dt_bin, TDP, plot_prm, clust_prm, varargin)
 
 M_def = 500; % default max. number of maximization iteration
-plotIter_def = 0; % plot/not EM results while iterating
+plotIter_def = 1; % plot/not EM results while iterating
 Jmin_def = 2; % minimum configuration
 
 meth = clust_prm{1}(1); % clustering method
@@ -30,7 +30,7 @@ res.mu = {};
 res.a = {};
 res.o = {};
 res.clusters = {};
-res.BIC = {};
+res.BIC = [];
 res.boba_K = [];
 
 [mols,o,o] = unique(dt_bin(:,4));
@@ -127,15 +127,15 @@ for k = 1:n_spl
             if ~boba
                 % save inferred models for original TDP
                 origin = cell(1,Jmax);
-                origin{Jopt}.mu = mu_spl';
+                origin{Jopt}.mu = mu_spl;
                 origin{Jopt}.clusters = clust_spl;
                 origin{Jopt}.o = [];
-                origin{Jopt}.a = [];
-                origin{Jopt}.BIC = [];
+                origin{Jopt}.w = [];
+                origin{Jopt}.BIC = Inf;
             end
             
             % update action
-            if nSpl==1
+            if n_spl==1
                 setContPan(cat(2,'Inferred model: J=',num2str(Jopt),...
                     ', states=',sprintf(repmat('%d ',[1,size(mu_spl,1)]),...
                     mu_spl')),'success',h_fig);
@@ -161,15 +161,15 @@ for k = 1:n_spl
             [BIC_min,Jopt] = min(BIC_t);
             
             % save sample's best inferred model
-            mu_spl = model{Jopt}.mu';
+            mu_spl = model{Jopt}.mu;
             clust_spl = model{Jopt}.clusters;
-            BIC_spl = BIC(Jopt);
-            a_spl = model{Jopt}.a;
-            sig_spl =model{Jopt}.sig;
+            BIC_spl = model{Jopt}.BIC;
+            a_spl = model{Jopt}.w;
+            sig_spl = model{Jopt}.o;
             param{k} = {mu_spl clust_spl BIC_spl a_spl sig_spl};
             
             % update action
-            if nSpl==1
+            if n_spl==1
                 setContPan(cat(2,'Most sufficient model: J=',num2str(Jopt),...
                     ', LogL=',num2str(L_t(Jopt)),', BIC=',...
                     num2str(BIC_t(Jopt))),'success',h_fig);
@@ -223,11 +223,11 @@ if boba
         
         % save inferred model for original TDP
         origin = cell(1,Jmax);
-        origin{Jopt}.mu = mu';
+        origin{Jopt}.mu = mu;
         origin{Jopt}.clusters = clust;
         origin{Jopt}.o = [];
-        origin{Jopt}.a = [];
-        origin{Jopt}.BIC = [];
+        origin{Jopt}.w = [];
+        origin{Jopt}.BIC = Inf;
     
 %     elseif meth==2 % average GMM parameters over models with J=Jopt (samples)
 %         mu = zeros(size(param_opt{1}{1}));
@@ -257,8 +257,8 @@ if boba
     end
     
 else
-    Jopt_mean = [];
-    Jopt_sig = [];
+    Jopt_mean = Jopt;
+    Jopt_sig = 0;
 end
 
 % used for Model selection evaluation paper:
@@ -271,23 +271,20 @@ end
 %     saveStatesResults(param,cat(2,fname_proj,'_',num2str(shape),'.txt'));
 % end
 
-if sum(sum(clust))==0
-    return;
-end
-
-if meth==1
-    Jmin = Jmax;
-else
-    Jmin = Jmin_def;
-end
-
 % initialize results to return
 res.mu = cell(1,Jmax);
 res.o = cell(1,Jmax);
 res.a = cell(1,Jmax);
 res.clusters = cell(1,Jmax);
-res.BIC = cell(1,Jmax);
+res.BIC = Inf(1,Jmax);
 res.fract = cell(1,Jmax);
+
+if meth==1
+    Jmin = Jopt;
+    Jmax = Jopt;
+else
+    Jmin = Jmin_def;
+end
 
 for J = Jmin:Jmax
     id_j = [];
@@ -319,9 +316,9 @@ for J = Jmin:Jmax
         return;
     end
 
-    res.mu{J} = origin{J}.mu';
-    res.o{J} = origin{J}.sig;
-    res.a{J} = origin{J}.a;
+    res.mu{J} = origin{J}.mu;
+    res.o{J} = origin{J}.o;
+    res.a{J} = origin{J}.w;
     res.clusters{J} = dt_bin_new;
     res.BIC(J) = origin{J}.BIC;
     res.fract{J} = zeros(J,1);

@@ -3,9 +3,9 @@ p = h.param.TDP;
 if ~isempty(p.proj)
     val = round(str2num(get(obj, 'String')));
     set(obj, 'String', num2str(val));
-    if ~(numel(val)==1 && ~isnan(val) && val > 0)
+    if ~(numel(val)==1 && ~isnan(val) && val > 1)
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
-        setContPan('Max. number of transitions must be > 0', 'error', ...
+        setContPan('Max. number of states must be > 1', 'error', ...
             h.figure_MASH);
     else
         proj = p.curr_proj;
@@ -47,7 +47,7 @@ if ~isempty(p.proj)
         end
 
         prm.clst_start = trs_k;
-        prm.clst_res = cell(1,3);
+        prm.clst_res = cell(1,4);
         prm.kin_res = cell(1,5);
         p.proj{proj}.prm{tpe} = prm;
         h.param.TDP = p;

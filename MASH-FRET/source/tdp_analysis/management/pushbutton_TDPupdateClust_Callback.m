@@ -17,9 +17,9 @@ if ~isempty(p.proj)
     clust_prm{1} = [prm.clst_start{1}(1) ... % clustering method
                     prm.clst_start{1}(2) ... % cluster shape
                     prm.clst_start{1}(3) ... % max. number of states
-                    prm.clst_start{1}(5)]; % max. number of k-mean iterations/GMM initialisations
+                    prm.clst_start{1}(5)]; % max. number of j-mean iterations/GMM initialisations
     clust_prm{2} = [prm.clst_start{2}(:,1) ... % starting guess for states
-                    prm.clst_start{2}(:,2)]; % k-mean tolerance radius around states
+                    prm.clst_start{2}(:,2)]; % j-mean tolerance radius around states
     clust_prm{3} = [2 3]; % columns in dt_bin containing transitions
     clust_prm{4} = [prm.clst_start{1}(6) ... % apply/not bootstrapped (BS) clustering
                     prm.clst_start{1}(7) ... % number of BS samples
@@ -44,59 +44,53 @@ if ~isempty(p.proj)
     h.param.TDP = p;
     guidata(h.figure_MASH, h);
     
-    Kopt = size(res.mu,1); % optimum number of states
+    meth = prm.clst_start{1}(1);
+    Jmax = size(res.mu,2);
     
-    if Kopt>0
-        
-        % converged results
-        b.BIC = res.BIC; % minimum Bayesian information criterion
-        b.a = res.a; % Gaussian weigths
-        b.o = res.o; % Gaussian sigmas
-        b.boba_K = res.boba_K; % BS mean and sigma of the number of states
-        states = res.mu; % converged states
-        pop = res.fract; % state populations (time fraction)
-        clust = res.clusters; % binned transitions + cluster assignment
-        prm.clst_res = {[states pop]  clust b};
-        
-        % update number of transitions for kinetics analysis
-        if prm.clst_start{1}(4) > Kopt*(Kopt-1)
-            prm.clst_start{1}(4) = Kopt*(Kopt-1);
-        end
-        for k = 1:Kopt*(Kopt-1)
-            if size(prm.kin_start,1) < 1
-                prm.kin_start(1,1:2) = prm.kin_def;
-            elseif k > size(prm.kin_start,1)
-                prm.kin_start = [prm.kin_start;prm.kin_start(k-1,:)];
-            end
-        end
-        prm.kin_start = prm.kin_start(1:Kopt*(Kopt-1),:);
-        prm.kin_res = cell(Kopt*(Kopt-1),5);
-        curr_k = prm.clst_start{1}(4);
-        
-        % build dwell-time histogram for current cluster
-        wght = prm.kin_start{curr_k,1}(4)*prm.kin_start{curr_k,1}(1);
-        k_trs = 0;
-        for k1 = 1:Kopt
-            for k2 = 1:Kopt
-                if k1 ~= k2
-                    k_trs = k_trs + 1;
-                    excl = prm.kin_start{k_trs,1}(8);
-                    clust_k = res.clusters((res.clusters(:,end-1)==k1 & ...
-                        res.clusters(:,end)==k2),1:end-2);
-                    if size(clust_k,1)>2
-                        prm.clst_res{4}{k_trs} = ...
-                            getDtHist(clust_k, excl, wght);
-                    else
-                        prm.clst_res{4}{k_trs} = [];
-                    end
+    % optimum number of states
+    switch meth
+        case 1
+            for J = 1:Jmax
+                if ~isempty(res.mu{J})
+                    Jopt = size(res.mu{J},1); 
+                    break;
                 end
             end
-        end
+        case 2
+            BICs = NaN(1,Jmax);
+            for J = 1:Jmax
+                if ~isempty(res.BIC(J))
+                    BICs(J) = res.BIC(J);
+                end
+            end
+            [BICmin,Jopt] = min(BICs);
+    end
+    
+    if ~isnan(Jopt) && Jopt>0
+        
+        % converged results
+        models.BIC = res.BIC; % minimum Bayesian information criterion
+        models.a = res.a; % Gaussian weigths
+        models.o = res.o; % Gaussian sigmas
+        models.mu = res.mu; % converged states
+        models.fract = res.fract; % state populations (time fraction)
+        models.clusters = res.clusters; % binned transitions + cluster assignment
+        
+        prm.clst_res = {models res.boba_K Jopt};
+        
+        prm = ud_kinPrm(prm,Jopt);
         
         % save data
         p.proj{proj}.prm{tpe} = prm;
         h.param.TDP = p;
         guidata(h.figure_MASH, h);
+        
+        str_pop = cell(1,Jmax-1);
+        for j = 2:Jmax
+            str_pop{j-1} = num2str(j);
+        end
+        set(h.popupmenu_tdp_model,'Value',1);
+        set(h.popupmenu_tdp_model,'String',str_pop,'Value',Jopt-1);
         
     end
     

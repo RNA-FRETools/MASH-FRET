@@ -60,15 +60,15 @@ if ~isempty(clust_res{1})
     
     set(h.radiobutton_TDPstretch, 'Value', stchExp);
     set(h.radiobutton_TDPmultExp, 'Value', ~stchExp);
-    S = size(clust_res{1},1);
+    J = clust_res{3};
     k = 0;
-    for s1 = 1:S
-        for s2 = 1:S
-            if s2 ~= s1
+    for j1 = 1:J
+        for j2 = 1:J
+            if j2 ~= j1
                 k = k+1;
                 if curr_k == k
-                    mu1 = round(100*clust_res{1}(s1,1))/100;
-                    mu2 = round(100*clust_res{1}(s2,1))/100;
+                    mu1 = round(100*clust_res{1}.mu{J}(j1,1))/100;
+                    mu2 = round(100*clust_res{1}.mu{J}(j2,1))/100;
                     break;
                 end
             end
@@ -173,8 +173,8 @@ if ~isempty(clust_res{1})
         scl = 'log';
     end
     k = 0;
-    for k1 = 1:S
-        for k2 = 1:S
+    for k1 = 1:J
+        for k2 = 1:J
             if k1 ~= k2
                 k = k + 1;
             end
@@ -187,8 +187,8 @@ if ~isempty(clust_res{1})
         end
     end
     excl = prm.kin_start{curr_k,1}(8);
-    clust_k = clust_res{2}((clust_res{2}(:,end-1)==k1 & ...
-        clust_res{2}(:,end)==k2),1:end-2);
+    clust_k = clust_res{1}.clusters{J}((clust_res{1}.clusters{J}(:,end-1)==...
+        k1 & clust_res{1}.clusters{J}(:,end)==k2),1:end-2);
     if size(clust_k,1)>1
         wght = kin_start{1}(7);
         hst = getDtHist(clust_k, excl, wght);

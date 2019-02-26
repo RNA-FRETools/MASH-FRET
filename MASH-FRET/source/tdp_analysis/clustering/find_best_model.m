@@ -48,11 +48,11 @@ end
 
 % create figure to plot fitting iterations
 if plotIt
-    figure;
-    pos = get(gcf,'Position');
+    hfig = figure;
+    pos = get(hfig,'Position');
     pos(4) = 2*pos(4);
     pos(3) = pos(4)/2;
-    set(gcf,'Position',pos);
+    set(hfig,'Position',pos);
     movegui('north');
 end
 
@@ -70,9 +70,9 @@ N = size(v,2);
 
 % plot original TDP on bottom axes
 if plotIt
-    subplot(2,1,2);
-    surface(X,Y,z,'EdgeColor','none');
-    title('experimental');
+    haxes = subplot(2,1,2,'parent',hfig);
+    surface(haxes,X,Y,z,'EdgeColor','none');
+    title(haxes,'experimental');
     drawnow;
 end
 
@@ -133,15 +133,15 @@ for J = J_min:J_max
                 else
                     mu_plot = mu;
                 end
-                subplot(2,1,1,'replace');
+                haxes = subplot(2,1,1,'replace','parent',hfig);
                 obj = gmdistribution(mu_plot,sig,w');
                 try
                     Z = reshape(pdf(obj,[x_v y_v]),numel(y),numel(x));
-                    surface(X,Y,Z,'EdgeColor','none');
-                    hold on;
-                    plot3(mu_plot(:,1), mu_plot(:,2), ...
+                    surface(haxes,X,Y,Z,'EdgeColor','none');
+                    hold(haxes,'on');
+                    plot3(haxes,mu_plot(:,1), mu_plot(:,2), ...
                         repmat(max(Z),[nTrs 1]), '+r');
-                    title(['fit (J=' num2str(J) ')']);
+                    title(haxes,['fit (J=' num2str(J) ')']);
                     drawnow;
                 catch err
                     disp('error');
@@ -236,17 +236,17 @@ for J = J_min:J_max
                         else
                             mu_plot = mu;
                         end
-                        subplot(2,1,1,'replace');
+                        haxes = subplot(2,1,1,'replace','parent',hfig);
                         obj = gmdistribution(mu_plot,sig,w');
                         try
                             Z = reshape(pdf(obj,[x_v y_v]),numel(y), ...
                                 numel(x));
-                            surface(X,Y,Z,'EdgeColor','none');
-                            hold on;
-                            plot3(mu_plot(:,1), mu_plot(:,2), ...
+                            surface(haxes,X,Y,Z,'EdgeColor','none');
+                            hold(haxes,'on');
+                            plot3(haxes,mu_plot(:,1), mu_plot(:,2), ...
                                 repmat(max(max(Z)),[size(mu_plot,1) 1]),...
                                 '+r');
-                            title(['fit (J=' num2str(J) ')']);
+                            title(haxes,['fit (J=' num2str(J) ')']);
                             drawnow;
                         catch err
                             disp(err.message);
@@ -289,15 +289,15 @@ for J = J_min:J_max
                     else
                         mu_plot = mu;
                     end
-                    subplot(2,1,1,'replace');
+                    haxes = subplot(2,1,1,'replace','parent',hfig);
                     obj = gmdistribution(mu_plot,sig,w');
                     try
                         Z = reshape(pdf(obj,[x_v y_v]),numel(y),numel(x));
-                        surface(X,Y,Z,'EdgeColor','none');
-                        hold on;
-                        plot3(mu_plot(:,1), mu_plot(:,2), ...
+                        surface(haxes,X,Y,Z,'EdgeColor','none');
+                        hold(haxes,'on');
+                        plot3(haxes,mu_plot(:,1), mu_plot(:,2), ...
                             repmat(max(max(Z)),[size(mu_plot,1) 1]), '+r');
-                        title(['fit (J=' num2str(J) ')']);
+                        title(haxes,['fit (J=' num2str(J) ')']);
                         drawnow;
                     catch err
                         disp(err.message)
@@ -327,13 +327,17 @@ for J = J_min:J_max
     end
 end
 
+% normalize BIC
+BIC_t = BIC_t/sum(v(3,:));
+L_t = L_t/sum(v(3,:));
+
 % plot fitting results
 if sum(BIC_t ~= Inf) && plotIt
-    figure('Color', [1 1 1])
-    pos = get(gcf,'Position');
+    hfig2 = figure('Color', [1 1 1]);
+    pos = get(hfig2,'Position');
     pos(4) = 2*pos(4);
     pos(3) = pos(4)/2;
-    set(gcf,'Position',pos);
+    set(hfig2,'Position',pos);
     movegui('north');
     
     % plot best inferred models
@@ -350,17 +354,18 @@ if sum(BIC_t ~= Inf) && plotIt
         else
             mu_plot = model{J}.mu;
         end
-        subplot(2,(J_max-J_min+1),(J-J_min+1),'replace');
+        haxes = subplot(2,(J_max-J_min+1),(J-J_min+1),'replace',...
+            'parent',hfig2);
         obj = gmdistribution(mu_plot,model{J}.o,model{J}.w');
         try
             Z = reshape(pdf(obj,[x_v y_v]),numel(y),numel(x));
-            surface(X,Y,Z,'EdgeColor','none');
-            hold on;
-            plot3(mu_plot(:,1), mu_plot(:,2), ...
+            surface(haxes,X,Y,Z,'EdgeColor','none');
+            hold(haxes,'on');
+            plot3(haxes,mu_plot(:,1), mu_plot(:,2), ...
                 repmat(max(max(Z)),[size(mu_plot,1) 1]), '+r');
-            title(['fit (J=' num2str(J) ')']);
-            xlim([v(1,1) v(1,end)]);
-            ylim([v(2,1) v(2,end)]);
+            title(haxes,['fit (J=' num2str(J) ')']);
+            xlim(haxes,[v(1,1) v(1,end)]);
+            ylim(haxes,[v(2,1) v(2,end)]);
             drawnow;
         catch err
             disp(cat(2,'Error:',err.message));
@@ -368,7 +373,7 @@ if sum(BIC_t ~= Inf) && plotIt
     end
     
     % plot original TDP
-    haxes = subplot(2,(J_max-J_min+1),J_max-J_min+2);
+    haxes = subplot(2,(J_max-J_min+1),J_max-J_min+2,'parent',hfig2);
     surface(haxes,X,Y,z,'EdgeColor','none');
     title(haxes,'experimental');
     xlim(haxes,[v(1,1) v(1,end)]);
@@ -376,9 +381,10 @@ if sum(BIC_t ~= Inf) && plotIt
     drawnow;
     
     % plot BIC
-    haxes = subplot(2,(J_max-J_min+1),J_max-J_min+3);
+    haxes = subplot(2,(J_max-J_min+1),J_max-J_min+3,'parent',hfig2);
+    barh(haxes,1:J_max,BIC_t);
     xlim(haxes,[min(BIC_t) mean(BIC_t)]);
-    ylim(haxes,[0 Jmax+1]);
+    ylim(haxes,[0 J_max+1]);
     title(haxes,'BIC');
 end
 

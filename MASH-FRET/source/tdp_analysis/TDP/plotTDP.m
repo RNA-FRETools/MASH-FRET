@@ -5,11 +5,11 @@ function plotTDP(h_axes, TDP, plot_prm, clust_prm, varargin)
 % "lim" >> [2-by-2] x-limits and y-limits
 % "gconv" >> 1 if TDP convolute with Gaussian filter, 0 otherwise
 % "norm" >> 1 if normalised densities, 0 otherwise
-% "mu" >> [K-by-2] cluster centres
+% "mu" >> [J-by-2] cluster centres
 % "clust" >> [N-by-5] clustered transitions (dwells before transition, 
 %            value before transition, value after transition, molecule nb, 
 %            cluster nb)
-% "clr" >> [K-by-3] RGB colours
+% "clr" >> [J-by-3] RGB colours
 % (optional) "varagin" >> MASH figure handle
 
 lim = plot_prm{1};
@@ -66,48 +66,50 @@ plot(h_axes, [minVal maxVal], [minVal maxVal], 'LineStyle', '--', ...
 
 
 %% plot clustered data with resp. colour code
-K = size(states,1);
-mu = zeros(K*(K-1),2);
-k = 0;
-for k1 = 1:K
-for k2 = 1:K
-if k1 ~= k2
-    k = k+1;
-    mu(k,:) = states([k1 k2],1)';
-end
-end
-end
+J = size(states,1);
+if J>0
+    mu = zeros(J*(J-1),2);
+    j = 0;
+    for j1 = 1:J
+    for j2 = 1:J
+    if j1 ~= j2
+        j = j+1;
+        mu(j,:) = states([j1 j2],1)';
+    end
+    end
+    end
 
-if ~isempty(clust)
-    k = 0;
-    for k1 = 1:K
-    for k2 = 1:K
-    if k1 ~= k2
-        k = k+1;
-        clust_k = clust((clust(:,end-1)==k1 & clust(:,end)==k2),:);
-        if ~isempty(clust_k)
-            plot(h_axes, clust_k(:,2), clust_k(:,3), 'Marker', '+', ...
-                'MarkerEdgeColor', clr(k,:), 'MarkerSize', 5, ...
-                'LineWidth', 1, 'LineStyle', 'none');
+    if ~isempty(clust)
+        j = 0;
+        for j1 = 1:J
+        for j2 = 1:J
+        if j1 ~= j2
+            j = j+1;
+            clust_k = clust((clust(:,end-1)==j1 & clust(:,end)==j2),:);
+            if ~isempty(clust_k)
+                plot(h_axes, clust_k(:,2), clust_k(:,3), 'Marker', '+', ...
+                    'MarkerEdgeColor', clr(j,:), 'MarkerSize', 5, ...
+                    'LineWidth', 1, 'LineStyle', 'none');
+            end
+        end
+        end
         end
     end
-    end
-    end
-end
 
-for k = 1:K*(K-1)
-    plot(h_axes, mu(k,1), mu(k,2), 'Marker', '+', 'MarkerEdgeColor', ...
-        clr(k,:), 'MarkerSize', 13, 'LineWidth', 2);
-end
+    for j = 1:J*(J-1)
+        plot(h_axes, mu(j,1), mu(j,2), 'Marker', '+', 'MarkerEdgeColor', ...
+            clr(j,:), 'MarkerSize', 13, 'LineWidth', 2);
+    end
 
-if ~isempty(gmm_prm) && isstruct(gmm_prm)
-    a = gmm_prm.a; sig = gmm_prm.o;
-    if ~isempty(a) && ~isempty(sig)
-        x_iv = lim(1,1):bins(1):lim(1,2);
-        x_iv = mean([x_iv(1:end-1);x_iv(2:end)],1);
-        y_iv = lim(2,1):bins(2):lim(2,2);
-        y_iv = mean([y_iv(1:end-1);y_iv(2:end)],1);
-        plot_elps(h_axes, states, sig, a, x_iv, y_iv, [], '-b');
+    if ~isempty(gmm_prm) && isstruct(gmm_prm)
+        a = gmm_prm.a; sig = gmm_prm.o;
+        if ~isempty(a) && ~isempty(sig)
+            x_iv = lim(1,1):bins(1):lim(1,2);
+            x_iv = mean([x_iv(1:end-1);x_iv(2:end)],1);
+            y_iv = lim(2,1):bins(2):lim(2,2);
+            y_iv = mean([y_iv(1:end-1);y_iv(2:end)],1);
+            plot_elps(h_axes, states, sig, a, x_iv, y_iv, [], '-b');
+        end
     end
 end
 

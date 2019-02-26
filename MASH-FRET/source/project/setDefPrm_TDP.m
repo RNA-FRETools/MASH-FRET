@@ -74,24 +74,58 @@ end
 
 
 %% clustering results (Kopt clusters)
-% converged state centers and state fractions
+% NEW: all inferred models and clustered data
+% res{1} = struct.mu, struct.a, struct.o, struct.BIC, struct.clusters, struct.fract
+% OLD: converged state centers and state fractions
 % res{1} = [mu, fract]
 
-% transitions adjusted after clustering
+% NEW: bootstraping results
+% res{2} = [Jopt mean, Jopt deviation]
+% OLD: transitions adjusted after clustering
 % res{2} = [dwells, ini. val., fin. val., mol, TDP_x coord, TDP_y coord,
 %     mu_x index, mu_y index] 
 
-% inferred model parameters
+% NEW: model selected for kinetic analysis
+% res{3} = J
+% OLD: inferred model parameters
 % res{3} = struct.BIC, struct.a, struct.o, struct.boba_K
 
-% reference histograms adjusted after clustering
+% dwell time histograms corresponding to selected model
 % res{4}{n} = [dwells, occ., norm. occ(1)., cum. occ, 1-cum(P)] dwell-time
 
 prm.clst_res = adjustParam('clst_res', cell(1,4), prm_in);
-% add boba results if none
-if ~isempty(prm.clst_res{3}) && ~isfield(prm.clst_res{3},'boba_K')
-    prm.clst_res{3}.boba_K = [];
-    prm.clst_start{1}(6) = 0;
+
+% restructure old fit results
+if ~isempty(prm.clst_res{1}) && ~isstruct(prm.clst_res{1})
+
+    % initialize new result structure
+    Jmax = prm.clst_start{1}(3);
+    Jopt = size(prm.clst_res{1}(:,1),1);
+    model.mu = cell(1,Jmax);
+    model.fract = cell(1,Jmax);
+    model.clusters = cell(1,Jmax);
+    
+    % place old results in new structure
+    model.mu{Jopt} = prm.clst_res{1}(:,1);
+    model.fract{Jopt} = prm.clst_res{1}(:,2);
+    model.clusters{Jopt} = prm.clst_res{2};
+    
+    method = prm.clst_start{1}(1);
+    
+    if method==1
+        model.a = [];
+        model.o = [];
+        model.BIC = [];
+        
+    else
+        model.a{Jopt} = prm.clst_res{3}.a;
+        model.o{Jopt} = prm.clst_res{3}.o;
+        model.BIC(Jopt) = prm.clst_res{3}.BIC;
+    end
+    
+    prm.clst_res{1} = model;
+    prm.clst_res{2} = prm.clst_res{3}.boba_k;
+    prm.clst_res{3} = Jopt;
 end
 
 

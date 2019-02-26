@@ -53,22 +53,36 @@ end
 
 %% plot TDP matrix and clusters data
 clr = prm.clst_start{3};
+mu = [];
+a = [];
+o = [];
+clust = [];
+
 if ~isempty(prm.clst_res{1})
     if meth == 2 % GM
-        gmm_prm = prm.clst_res{3};
+        J = get(h.popupmenu_tdp_model,'Value')+1;
+        mu = prm.clst_res{1}.mu{J};
+        clust = prm.clst_res{1}.clusters{J};
+        a = prm.clst_res{1}.a{J};
+        o = prm.clst_res{1}.o{J};
+        
+        %% plot BIC results
+        Jmax = size(prm.clst_res{1}.BIC,2);
+        BICs = prm.clst_res{1}.BIC;
+        barh(h.axes_tdp_BIC,1:Jmax,BICs);
+        xlim(h.axes_tdp_BIC,[min(BICs) mean(BICs)]);
+        ylim(h.axes_tdp_BIC,[0,Jmax+1]);
+        title(h.axes_tdp_BIC,'BIC');
+        
     else
-        gmm_prm = [];
+        J = prm.clst_res{3};
+        mu = prm.clst_res{1}.mu{J};
+        clust = prm.clst_res{1}.clusters{J};
     end
-    mu = prm.clst_res{1}(:,1);
-    clust = prm.clst_res{2};
 else
-    if meth == 2 % GM
-        mu = [];
-    else
+    if meth == 1 % kmean
         mu = prm.clst_start{2}(:,1);
     end
-    clust = [];
-    gmm_prm = [];
 end
 
 plot_prm{1} = [x_lim;y_lim]; % TDP x & y limits
@@ -79,7 +93,8 @@ plot_prm{5} = clr; % cluster colours
 
 clust_prm{1} = mu; % converged cluster centres (states)
 clust_prm{2} = clust; % cluster assigment of TDP coordinates
-clust_prm{3} = gmm_prm; % converged BIC-GMM parameters
+clust_prm{3}.a = a; % converged Gaussian weights
+clust_prm{3}.o = o; % converged Gaussian deviations
 
 plotTDP(h.axes_TDPplot1, TDP, plot_prm, clust_prm, h_fig);
 

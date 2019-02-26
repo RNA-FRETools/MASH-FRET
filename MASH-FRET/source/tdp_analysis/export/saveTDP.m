@@ -1,7 +1,9 @@
 function saveTDP(h_fig)
 % Export files from Transition analysis
 
-% Last update: The 23rd of February 2019 by Mélodie Hadzic
+% Last update: the 25th of February 2019 by Mélodie Hadzic
+% --> adapt to the new clustering result structure
+% update: The 23rd of February 2019 by Mélodie Hadzic
 % --> remove option to export readjusted data (no use)
 % --> update action display
 
@@ -92,15 +94,15 @@ if sum(bol_kin)
     % export dwell-time histogram files & fitting results (if)
     for t = 1:nTpe
         prm = p.proj{proj}.prm{t};
-        K = size(prm.clst_res{1},1);
-        if K == 0
+        J = prm.clst_res{3};
+        if J == 0
             disp(['no clustering for data:' str_tpe{t}]);
         end
-        k = 0;
-        for k1 = 1:K
-            for k2 = 1:K
-                if k1 ~= k2
-                    k = k+1;
+        j = 0;
+        for j1 = 1:J
+            for j2 = 1:J
+                if j1 ~= j2
+                    j = j+1;
                     if isempty(prm.clst_res{4})
                         str_act = cat(2,str_act,'No dwell-time histogram',...
                             'for data:',str_tpe{t},'\n');
@@ -108,11 +110,12 @@ if sum(bol_kin)
                             str_tpe{t}));
                         break;
 
-                    elseif ~(size(prm.clst_res{4},2)>=k && ...
-                            ~isempty(prm.clst_res{4}{k}))
+                    elseif ~(size(prm.clst_res{4},2)>=j && ...
+                            ~isempty(prm.clst_res{4}{j}))
                         
                         % update action
-                        states = round(100*prm.clst_res{1}([k1 k2],1))/100;
+                        states = round(100*prm.clst_res{1}.mu{J}([j1,j2],...
+                            1))/100;
                         str = strcat(num2str(states(1)),' to '...
                             ,num2str(states(2)));
                         str_act = cat(2,str_act,'No dwell-time histogram',...
@@ -122,11 +125,12 @@ if sum(bol_kin)
                             str_tpe{t},', transition: ',str));
 
                     else
-                        states = round(100*prm.clst_res{1}([k1 k2],1))/100;
+                        states = round(100*prm.clst_res{1}.mu{J}([j1,j2],...
+                            1))/100;
                         str = strcat(num2str(states(1)), ' to ', ...
                             num2str(states(2)));
                         str_act = cat(2,str_act,...
-                            save_kinDat(bol_kin,prm,k,str_tpe{t},str, ...
+                            save_kinDat(bol_kin,prm,j,str_tpe{t},str, ...
                             pname_kin,[name '_' str_tpe{t}],h_fig));
                     end
                 end
@@ -145,7 +149,9 @@ function str_act = save_tdpDat(str, prm, pname, name, bol, h_fig)
 % Save transition clustering results to ASCII files
 % Return actions to display
 
-% Last update: the 23rd of February 2019 by Mélodie Hadzic
+% Last update: the 25th of February 2019 by Mélodie Hadzic
+% --> adapt to the new clustering result structure
+% update: the 23rd of February 2019 by Mélodie Hadzic
 % --> control file names with function /divers/overwriteIt
 % --> return action string
 
@@ -347,15 +353,15 @@ if isClst && tdp_clust
         switch meth
             case 1 % kmean
                 str_prm = cat(2,'starting parameters:\n', ...
-                    '\tmethod: k-mean clustering\n', ...
+                    '\tmethod: j-mean clustering\n', ...
                     '\tnumber of max. states: %i\n');
-                Kmax = prm.clst_start{1}(3);
-                for k = 1:Kmax
-                    str_prm = strcat(str_prm, sprintf('\tstate %i:', k), ...
+                Jmax = prm.clst_start{1}(3);
+                for j = 1:Jmax
+                    str_prm = strcat(str_prm, sprintf('\tstate %i:', j), ...
                         '%d, tolerance radius: %d\n');
                 end
                 str_prm = strcat(str_prm, ...
-                    '\tmax. number of k-mean iterations: %i\n');
+                    '\tmax. number of j-mean iterations: %i\n');
                 if prm.clst_start{1}(6)
                     str_prm = strcat(str_prm, '\tbootstrapping: yes\n', ...
                         '\t\tnumber of samples: ', ...
@@ -366,14 +372,15 @@ if isClst && tdp_clust
                     str_prm = strcat(str_prm, '\tbootstrapping: no\n');
                 end
                 str_prm = strcat(str_prm, '\nclustering results:\n', ...
-                    '\toptimum number of states: %i\n');
-                Kopt = size(prm.clst_res{1},1);
-                for k = 1:Kopt
-                    str_prm = strcat(str_prm, sprintf('\tstate %i:', k), ...
+                    '\tnumber of states in model: %i\n');
+                J = prm.clst_res{3};
+                for j = 1:J
+                    str_prm = strcat(str_prm, sprintf('\tstate %i:', j), ...
                         '%d, time fraction: %d\n');
                 end
-                str_prm = sprintf(str_prm, Kmax, prm.clst_start{2}', ...
-                    prm.clst_start{1}(5), Kopt, prm.clst_res{1}');
+                str_prm = sprintf(str_prm, Jmax, prm.clst_start{2}', ...
+                    prm.clst_start{1}(5), J, [prm.clst_res{1}.mu{J} ...
+                    prm.clst_res{1}.fract{J}]');
 
             case 2 % GM
                 
@@ -381,13 +388,13 @@ if isClst && tdp_clust
                 str_pop = get(h.popupmenu_TDPstate,'String');
                 shape = str_pop{prm.clst_start{1}(2)};
                 
-                Kmax = prm.clst_start{1}(3);
+                Jmax = prm.clst_start{1}(3);
                 
                 str_prm = cat(2,'starting parameters:\n', ...
                     ['\tmethod: 2D Gaussian mixture model-based ' ...
                     'clustering\n'], ...
                     ['\tcluster shape: ' shape '\n'], ...
-                    ['\tmax. number of states: ' sprintf('%i',Kmax) '\n']);
+                    ['\tmax. number of states: ' sprintf('%i',Jmax) '\n']);
                 
                 if prm.clst_start{1}(6)
                     str_prm = strcat(str_prm, '\tbootstrapping: yes\n', ...
@@ -403,49 +410,48 @@ if isClst && tdp_clust
                     ['\tnumber of model initialisations: ' ...
                     sprintf('%i',prm.clst_start{1}(5)) '\n']);
                 
-                Kopt = size(prm.clst_res{1},1);
+                J = prm.clst_res{3};
                 str_prm = strcat(str_prm, ['\nclustering results:\n' ...
-                    '\toptimum number of states: ' sprintf('%i',Kopt) ...
-                    ' (BIC=' sprintf('%d',prm.clst_res{3}.BIC) ')\n']);
+                    '\tnumber of states in model: ' sprintf('%i',J) ...
+                    ' (BIC=' sprintf('%d',prm.clst_res{1}.BIC(J)) ')\n']);
                 
                 if prm.clst_start{1}(6)
                     str_prm = strcat(str_prm, ['\tbootstrapped number ' ...
                         'of states: ' ...
-                        sprintf('%2.2f',prm.clst_res{3}.boba_K(1)) ...
-                        ' +/- ', ...
-                        sprintf('%2.2f',prm.clst_res{3}.boba_K(2)) '\n']);
+                        sprintf('%2.2f',prm.clst_res{2}(1)) ' +/- ', ...
+                        sprintf('%2.2f',prm.clst_res{2}(2)) '\n']);
                 end
                 
-                for k = 1:Kopt
+                for j = 1:J
                     str_prm = strcat(str_prm, ...
-                        [sprintf('\tstate %i:\t%d',k, ...
-                        prm.clst_res{1}(k,1)) '\ttime fraction:\t' ...
-                        sprintf('%d',prm.clst_res{1}(k,2)) '\n']);
+                        [sprintf('\tstate %i:\t%d',j, ...
+                        prm.clst_res{1}.mu{J}(j,1)) '\ttime fraction:\t' ...
+                        sprintf('%d',prm.clst_res{1}.fract{J}(j,1)) '\n']);
                 end
                 
                 str_prm = strcat(str_prm, ...
                     '\toptimum model parameters:\n');
                 
-                k = 0;
-                for k1 = 1:Kopt
-                    for k2 = 1:Kopt
-                        k = k+1;
+                j = 0;
+                for j1 = 1:J
+                    for j2 = 1:J
+                        j = j+1;
                         str_prm = strcat(str_prm,'\t\t', ...
-                           sprintf('alpha_%i%i',k1,k2),'\t',...
-                            sprintf('%d',prm.clst_res{3}.a(k)),'\n');
+                           sprintf('alpha_%i%i',j1,j2),'\t',...
+                            sprintf('%d',prm.clst_res{1}.a{J}(j)),'\n');
                     end
                 end
                 
-                k = 0;
-                for k1 = 1:Kopt
-                    for k2 = 1:Kopt
-                        k = k+1;
+                j = 0;
+                for j1 = 1:J
+                    for j2 = 1:J
+                        j = j+1;
                         str_prm = strcat(str_prm, ['\t\t' ...
-                            sprintf('sigma_%i%i',k1,k2) '\t' ...
+                            sprintf('sigma_%i%i',j1,j2) '\t' ...
                             sprintf('%d\t%d', ...
-                            prm.clst_res{3}.o(1,:,k)) ...
+                            prm.clst_res{1}.o{J}(1,:,j)) ...
                             '\n\t\t\t' sprintf('%d\t%d', ...
-                            prm.clst_res{3}.o(2,:,k)) '\n']);
+                            prm.clst_res{1}.o{J}(2,:,j)) '\n']);
                     end
                 end
         end
@@ -455,7 +461,8 @@ if isClst && tdp_clust
         fprintf(f, strcat(str_prm,'\n\n'));
         fprintf(f, ['dwell-times(s)\tm\tm*\tmolecule\tx(m)\ty(m*)\ts_i' ...
             '\ts_j\n']);
-        fprintf(f, '%d\t%d\t%d\t%i\t%i\t%i\t%i\t%i\n', prm.clst_res{2}');
+        fprintf(f, '%d\t%d\t%d\t%i\t%i\t%i\t%i\t%i\n', ...
+            prm.clst_res{1}.clusters{J}');
         fclose(f);
 
         % update action
@@ -473,7 +480,7 @@ else
 end
 
 
-function str_act = save_kinDat(bol, prm, k, str1, str2, pname, name, h_fig)
+function str_act = save_kinDat(bol, prm, j, str1, str2, pname, name, h_fig)
 % Save dwell time histograms and fitting results to ASCII files.
 % Return actions to display
 
@@ -497,7 +504,7 @@ if kinDtHist
         fname_hdt = overwriteIt(fname_hdt,pname,h_fig);
         
         % collect data
-        dt_hist = prm.clst_res{4}{k};
+        dt_hist = prm.clst_res{4}{j};
         
         % write data to file
         f = fopen([pname fname_hdt], 'Wt');
@@ -528,10 +535,10 @@ if kinFit
         fname_fit = overwriteIt(fname_fit,pname,h_fig);
         
         % format data
-        isFit = size(prm.kin_res,1)>=k & ~isempty(prm.kin_res{k,2});
+        isFit = size(prm.kin_res,1)>=j & ~isempty(prm.kin_res{j,2});
         if isFit
-            kin_start = prm.kin_start(k,:);
-            kin_res = prm.kin_res(k,:);
+            kin_start = prm.kin_start(j,:);
+            kin_res = prm.kin_res(j,:);
             
             nExp = kin_start{1}(2);
             strch = kin_start{1}(1);

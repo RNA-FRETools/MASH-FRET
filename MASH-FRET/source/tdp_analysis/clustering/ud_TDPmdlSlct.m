@@ -19,7 +19,7 @@ prm = p.proj{proj}.prm{tpe};
 
 meth = prm.clst_start{1}(1);
 mode = prm.clst_start{1}(2);
-Kmax = prm.clst_start{1}(3);
+Jmax = prm.clst_start{1}(3);
 curr_k = prm.clst_start{1}(4);
 N = prm.clst_start{1}(5);
 boba = prm.clst_start{1}(6);
@@ -49,13 +49,15 @@ set([h.text_TDPdataType h.popupmenu_TDPdataType ...
     h.edit_TDPnStates h.text_TDPiter h.edit_TDPmaxiter ...
     h.pushbutton_TDPautoStart h.pushbutton_TDPresetClust ...
     h.pushbutton_TDPupdateClust h.text_TDPradius h.edit_TDPradius ...
-    h.checkbox_TDPboba], 'Enable', 'on', 'Visible', 'on');
+    h.checkbox_TDPboba h.text_tdp_showModel h.text_tdp_Jequal ...
+    h.popupmenu_tdp_model h.pushbutton_tdp_impModel], 'Enable','on',...
+    'Visible','on');
 
 set([h.edit_TDPnStates h.edit_TDPiniVal h.edit_TDPradius ...
     h.edit_TDPmaxiter h.listbox_TDPtrans], 'BackgroundColor', [1 1 1]);
 
 set(h.popupmenu_TDPdataType, 'Value', tpe, 'String', str_pop);
-set(h.edit_TDPnStates, 'String', num2str(Kmax));
+set(h.edit_TDPnStates, 'String', num2str(Jmax));
 
 [id_clr,o,o] = find(p.colList(:,1)==clr(1) & p.colList(:,2)==clr(2) & ...
     p.colList(:,3)==clr(3));
@@ -68,14 +70,14 @@ set(h.edit_TDPcolour, 'Enable', 'inactive', 'BackgroundColor', clr);
 %% set starting parameters
 if meth == 1 % kmean clustering
     state = get(h.popupmenu_TDPstate, 'Value');
-    if state > Kmax
-        state = Kmax;
+    if state > Jmax
+        state = Jmax;
     end
     trs_k = prm.clst_start{2}(state,:);
     
     set(h.text_TDPstate, 'String', 'state n°:');
     
-    str_pop = cellstr(num2str((1:Kmax)'));
+    str_pop = cellstr(num2str((1:Jmax)'));
     set(h.popupmenu_TDPstate, 'Value', state, 'String', str_pop, ...
         'TooltipString', 'current state');
     
@@ -96,6 +98,11 @@ if meth == 1 % kmean clustering
     
     set(h.edit_TDPmaxiter, 'String', num2str(N), 'TooltipString', ...
         'Max. number of kmean iterations');
+    
+    set([h.text_tdp_showModel,h.text_tdp_Jequal,h.popupmenu_tdp_model,...
+        h.pushbutton_tdp_impModel],'Enable','off');
+    cla(h.axes_tdp_BIC);
+    set(h.axes_tdp_BIC,'Visible','off');
     
 else % GMM-based clustering
     
@@ -139,10 +146,10 @@ if isempty(res{1})
     
     % build transition list
     str_list = {};
-    for k1 = 1:Kmax
-        for k2 = 1:Kmax
-            if k1 ~= k2
-                vals = round(100*prm.clst_start{2}([k1 k2],1))/100;
+    for j1 = 1:Jmax
+        for j2 = 1:Jmax
+            if j1 ~= j2
+                vals = round(100*prm.clst_start{2}([j1 j2],1))/100;
                 str_list = [str_list strcat(num2str(vals(1)), ' to ', ...
                     num2str(vals(2)))];
             end
@@ -157,23 +164,28 @@ if isempty(res{1})
     set([h.edit_TDPbobaRes h.edit_TDPbobaSig h.text_TDPbobaRes ...
         h.text_TDPbobaSig], 'Enable', 'off');
     set([h.edit_TDPbobaRes h.edit_TDPbobaSig], 'String', '');
+    
+    set([h.text_tdp_showModel,h.text_tdp_Jequal,h.popupmenu_tdp_model,...
+        h.pushbutton_tdp_impModel],'Enable','off');
+    set(h.axes_tdp_BIC,'Visible','off');
+    cla(h.axes_tdp_BIC);
 
 else
-    Kopt = size(res{1},1);
-    if Kopt*(Kopt-1) <= 0
+    J = res{3};
+    if J*(J-1) <= 0
         curr_k = 1;
-    elseif curr_k > Kopt*(Kopt-1)
-        curr_k = Kopt*(Kopt-1);
+    elseif curr_k > J*(J-1)
+        curr_k = J*(J-1);
     end
     
     % build transition list
     str_list = {};
     k = 0;
-    for k1 = 1:Kopt
-        for k2 = 1:Kopt
-            if k1 ~= k2
+    for j1 = 1:J
+        for j2 = 1:J
+            if j1 ~= j2
                 k = k+1;
-                vals = round(100*res{1}([k1 k2],1))/100;
+                vals = round(100*res{1}.mu{J}([j1 j2],1))/100;
                 str_list = [str_list strcat(num2str(vals(1)), ' to ', ...
                     num2str(vals(2)))];
             end
@@ -185,17 +197,43 @@ else
     set(h.listbox_TDPtrans, 'String', str_list, 'Value', curr_k, ...
         'Enable', 'on');
     
+    % set optimum state configuration and bootstrap results
     if boba
         set([h.text_TDPbobaRes h.text_TDPbobaSig], 'Enable', 'on');
         set([h.edit_TDPbobaRes h.edit_TDPbobaSig], 'Enable', 'inactive');
-        if ~isempty(res{3}.boba_K)
-            set(h.edit_TDPbobaRes, 'String', num2str(res{3}.boba_K(1)));
-            set(h.edit_TDPbobaSig, 'String', num2str(res{3}.boba_K(2)));
+        if ~isempty(res{2})
+            set(h.edit_TDPbobaRes, 'String', num2str(res{2}(1)));
+            set(h.edit_TDPbobaSig, 'String', num2str(res{2}(2)));
         end
     else
-        set([h.edit_TDPbobaRes h.edit_TDPbobaSig h.text_TDPbobaRes ...
-            h.text_TDPbobaSig], 'Enable', 'off');
-        set([h.edit_TDPbobaRes h.edit_TDPbobaSig], 'String', '');
+        if meth==2
+            [BICmin,Jopt] = min(res{1}.BIC);
+        else
+            for J = 1:Jmax
+                if ~isempty(res{1}.mu{J})
+                    break;
+                end
+            end
+            Jopt = J;
+        end
+        
+        set([h.edit_TDPbobaSig h.text_TDPbobaSig],'Enable','off');
+        set(h.edit_TDPbobaSig, 'String', '');
+        
+        set(h.text_TDPbobaRes,'Enable','on');
+        set(h.edit_TDPbobaRes,'Enable','inactive','String',num2str(Jopt));
+        
+    end
+    
+    if meth==2
+        set([h.text_tdp_showModel,h.text_tdp_Jequal,h.popupmenu_tdp_model,...
+            h.pushbutton_tdp_impModel],'Enable','on');
+        set(h.axes_tdp_BIC,'Visible','on');
+    else
+        set([h.text_tdp_showModel,h.text_tdp_Jequal,h.popupmenu_tdp_model,...
+            h.pushbutton_tdp_impModel],'Enable','off');
+        cla(h.axes_tdp_BIC);
+        set(h.axes_tdp_BIC,'Visible','off');
     end
 end
 
