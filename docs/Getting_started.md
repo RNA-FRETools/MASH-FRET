@@ -28,7 +28,7 @@ Start MASH-FRET by typing `MASH` at the MATLAB command prompt.
 
 ## Interface
 
-<a href="../assets/images/gui-default.png"><img src="../assets/images/gui-default.png" width="300" style="float:right; margin-bottom:10px"/></a>
+<a href="../assets/images/interface-default.png"><img src="../assets/images/interface-default.png" width="300" style="float:right; margin-bottom:10px"/></a>
 
 When you start MASH-FRET the **interactive interface** and **action history** open simultaneously.
 
