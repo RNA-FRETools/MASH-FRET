@@ -2,7 +2,7 @@
 layout: default
 title: Trace processing panels
 parent: Trace processing
-nav_order: 3
+nav_order: 4
 has_children: true
 permalink: trace-processing/panels/
 ---

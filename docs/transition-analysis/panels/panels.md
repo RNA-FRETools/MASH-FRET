@@ -2,7 +2,7 @@
 layout: default
 title: Transition analysis panels
 parent: Transition analysis
-nav_order: 3
+nav_order: 4
 has_children: true
 permalink: transition-analysis/panels/
 ---

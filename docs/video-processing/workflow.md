@@ -1,12 +1,11 @@
 ---
 layout: default
-title: Main video processing procedure
-parent: Video processing functionalities
-grand_parent: Video processing
-nav_order: 1
+title: Video processing workflow
+parent: Video processing
+nav_order: 2
 ---
 
-# Main video processing procedure 
+# Video processing workflow
 {: .no_toc }
 
 At the end of the procedure, the user holds single molecule coordinates and intensity-time traces written to files, in particular to the 

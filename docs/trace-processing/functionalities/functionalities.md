@@ -2,7 +2,7 @@
 layout: default
 title: Trace processing functionalities
 parent: Trace processing
-nav_order: 2
+nav_order: 3
 has_children: true
 permalink: trace-processing/functionalities/
 ---
@@ -10,4 +10,4 @@ permalink: trace-processing/functionalities/
 # Trace processing functionalities
 {: .no_toc }
 
-Follow the suggested procedures to obtain <u>state trajectories</u> from intensity-time traces or achieve more <u>specific tasks</u>.
+Follow the suggested procedures to achieve more <u>specific tasks</u> with the Trace processing module.

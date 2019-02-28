@@ -1,12 +1,11 @@
 ---
 layout: default
-title: Main transition analysis procedure
-parent: Transition analysis functionalities
-grand_parent: Transition analysis
-nav_order: 1
+title: Transition analysis workflow
+parent: Transition analysis
+nav_order: 2
 ---
 
-# Main transition analysis procedure 
+# Transition analysis workflow
 {: .no_toc }
 
 At the end of the procedure, the user holds the most probable <u>state configuration</u> and state <u>transition rates</u> written to files, in particular to the 

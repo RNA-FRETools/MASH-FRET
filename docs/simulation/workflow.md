@@ -1,15 +1,14 @@
 ---
 layout: default
-title: Main simulation procedure
-parent: Simulation functionalities
-grand_parent: Simulation
-nav_order: 1
+title: Simulation workflow
+parent: Simulation
+nav_order: 2
 ---
 
-# Main simulation procedure 
+# Simulation workflow
 {: .no_toc }
 
-In this procedure you will create synthetic single molecule videos and trajectories. Exported data can then be used for 
+In this section you will learn how to create synthetic single molecule videos and trajectories. Exported data can then be used for 
 [result validation](../../tutorials/validate-results), 
 [algorithm testing](../../tutorials/test-algorithms) or external illustration.
 
@@ -21,24 +20,24 @@ The procedure includes three steps:
 ## Generate random FRET state sequences
 
 A FRET state sequence is the ideal FRET trajectory followed by a single molecule. 
-It consists in a succession of plateaus dwelling at a particular `FRETj` value before transiting to the next `FRETj'`. 
+It consists in a succession of plateaus dwelling at a particular *FRET*j value before transiting to the next *FRET*j'. 
 
-Sequences are created by randomly drawing FRET values and dwell times from the thermodynamic model, which includes possible `FRETj` values and state transition rates `kjj'`. 
-The operation is repeated until the sequence length reaches the observation time and the number of sequences equals the number of molecules `N`. 
-The observation time is limited by the video length `L` but can be randomly distributed by introducing fluorophore photobleaching.
+Sequences are created by randomly drawing FRET values and dwell times from the thermodynamic model, which includes possible *FRET*j values and state transition rates *k*jj'. 
+The operation is repeated until the sequence length reaches the observation time and the number of sequences equals the number of molecules *N*. 
+The observation time is limited by the video length *L* but can be randomly distributed by introducing fluorophore photobleaching.
 
 ![Scheme of FRET sequence](../../assets/images/sim-scheme-state-sequence.png "Example of FRET sequence")
 
 To generate FRET state sequences:
 
-{: .bg-grey-lt-000}
+{: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
 1. Set parameters:  
      
-   [length](../panels/panel-video-parameters#length),  
-   [frame rate](../panels/panel-video-parameters#frame-rate),  
-   [number of molecules](../panels/panel-molecules#number-of-molecules-n),  
-   [Thermodynamic model](../panels/panel-molecules#thermodynamic-model),  
-   [Photobleaching](../panels/panel-photophysics#photobleaching).  
+   [video length](../panels/panel-video-parameters)  
+   [frame rate](../panels/panel-video-parameters)  
+   [number of molecules](../panels/panel-molecules)  
+   [Thermodynamic model](../panels/panel-molecules)  
+   [Photobleaching](../panels/panel-photophysics)  
      
 1. Press 
 ![Generate](../../assets/images/but-sim-generate.png "Generate") to generate random FRET state sequences,  
@@ -48,9 +47,9 @@ To generate FRET state sequences:
 
 ## Create intensity trajectories and images 
 
-FRET state sequences are then converted into donor and acceptor fluorescence intensities using `Itot,em`, the pure donor emission in the absence of acceptor.
-Donor anisotropy is introduced here, by adjusting donor fluorescence intensities with the gamma factor `g`.
-Imperfect experimental setup is simulated by adding channel-specific bleedthrough `bt` and direct excitation `dE` to the respective fluorescence intensities.
+FRET state sequences are then converted into donor and acceptor fluorescence intensities using *I*tot,em, the pure donor emission in the absence of acceptor.
+Donor anisotropy is introduced here, by adjusting donor fluorescence intensities with the gamma factor *g*.
+Imperfect experimental setup is simulated by adding channel-specific bleedthrough *bt* and direct excitation *dE* to the respective fluorescence intensities.
 
 *From FRET to fluorescence intensities:*  
 [equations]  
@@ -72,17 +71,17 @@ Finally, pixels are convolved with channel-specific point spread functions to ob
 
 To create intensity trajectories and images:
 
-{: .bg-grey-lt-000}
+{: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
 1. Set parameters:  
      
-   [dimensions](../panels/panel-video-parameters#dimensions),  
-   [pixel size](../panels/panel-video-parameters#pixel-size),  
-   [bit rate](../panels/panel-video-parameters#bit-rate),  
-   [Camera SNR characteristics](../panels/panel-video-parameters#camera-snr-characteristics),  
-   [Molecule coordinates](../panels/panel-molecules#molecule-coordinates),  
-   [Photophysics](../panels/panel-molecules#photophysics),  
-   [Point spread functions](../panels/panel-experimental-setup#point-spread-functions),  
-   [Background](../panels/panel-experimental-setup#background).  
+   [video dimensions](../panels/panel-video-parameters)  
+   [pixel size](../panels/panel-video-parameters)  
+   [bit rate](../panels/panel-video-parameters)  
+   [Camera SNR characteristics](../panels/panel-video-parameters)  
+   [Molecule coordinates](../panels/panel-molecules)  
+   [Photophysics](../panels/panel-molecules)  
+   [Point spread functions](../panels/panel-experimental-setup)  
+   [Background](../panels/panel-experimental-setup)  
      
 1. Press 
 ![Update](../../assets/images/but-sim-update.png "Update") to convert FRET state sequences into camera-detected intensity trajectories and images. The execution time can be long; see 
@@ -98,8 +97,8 @@ When exporting the SMV, video frames are successively written in files until the
 
 To export data to files:
 
-{: .bg-grey-lt-000}
-1. Set parameters in [Export options](../panels/panel-export-options),  
+{: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
+1. Set parameters in [Export options](../panels/panel-export-options)  
      
 1. Press 
 ![Export files](../../assets/images/but-sim-export.png "Export files") to start writing data in files. The execution time can be long; see 
