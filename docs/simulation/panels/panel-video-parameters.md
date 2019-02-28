@@ -9,7 +9,7 @@ nav_order: 2
 # Video parameters
 {: .no_toc }
 
-<a href="../../assets/images/sim-panel-video-parameters.png"><img src="../../assets/images/sim-panel-video-parameters.png" /></a>
+<a href="../../assets/images/sim-panel-video-parameters.png"><img src="../../assets/images/sim-panel-video-parameters.png" style="max-width:217px;" /></a>
 
 ## (1) video length
 
@@ -32,19 +32,21 @@ Dimensions of a square pixel in micrometers. It is used in the conversion of PSF
 
 Camera bit rate in bits per second. It is used to calculate the saturation value in the video.
 
-## (5-6) video dimensions
+## (5) video dimensions
 
-Dimensions in pixels of video frames, in the x- **(5)** and y- **(6)** directions.
+Dimensions in pixels of video frames, in the x- **(a)** and y- **(b)** directions.
 
-## (7) model for camera signal distribution
+## (6) Camera SNR characteristics
 
-Model used to generate camera noise:
+<a href="../../assets/images/sim-panel-video-parameters-camera.png"><img src="../../assets/images/sim-panel-video-parameters-camera.png" style="max-width:198px;" /></a>
 
-### none
+The models available to generate camera noise are listed in **(a)**. The parameters to be set in **(b)** are automatically adapted to the model selected in **(a)**.
+
+### model: none
 
 Add a constant offset value *&#956;*_ic,d.
 
-### P- or Poisson model
+### model: P- or Poisson
 
 Distribute intensities following a Poisson distribution with mean *&#955;*:
 
@@ -53,7 +55,7 @@ Distribute intensities following a Poisson distribution with mean *&#955;*:
 <i>&#955;</i> = <i>intensity</i> x <i>&#951;</i> + <i>&#956;</i>_ic,d
 </p>
 
-### N- or Gaussian model
+### model: N- or Gaussian
 
 Distribute intensities following a Gaussian distribution with mean *&#956;*:
 
@@ -69,7 +71,7 @@ and standard deviation *&#963;*:
 <i>&#963;</i> = (  <i>intensity</i> x <i>&#951;</i> x <i>K</i> + ( <i>K</i> x <i>&#963;</i>_d ) ^ 2 + <i>&#963;</i>_q ^ 2 ) ^ 0.5
 </p>
 
-### NExpN- or Gaussian + exponential tail model
+### model: NExpN- or Gaussian + exponential tail
 
 Distribute intensities following an exponential-tailed Gaussian distribution with mean *&#956;*_ic,d, standard deviation *&#963;*_CIC, tail contribution *A*_CIC and exponential decay *&#964;*_CIC.
 
@@ -80,7 +82,7 @@ This model is purely empirical: model parameters are obtained by fitting the dar
 P = ( 1-<i>A</i>_CIC ) x exp( -( <i>intensity</i> - <i>&#956;</i>_ic,d ) ^ 2 / ( 2 x <i>&#963;</i>_CIC ^ 2 ) ) + <i>A</i>_CIC x exp( - <i>intensity</i> / <i>&#964;</i>_CIC )
 </p>
 
-### PGN- or Hirsch model
+### model: PGN- or Hirsch
 
 Distribute intensities following the convolution of a Poisson distribution of mean *&#955;*_p:
 
@@ -104,7 +106,7 @@ and standard deviation *&#963;*_g:
 </p>
 
 
-## (8) Model parameters
+### model parameters
 
 Parameters specific to camera noise model:
 
