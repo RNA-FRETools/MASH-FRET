@@ -9,7 +9,7 @@ nav_order: 5
 # State populations
 {: .no_toc }
 
-<a href="../../assets/images/HA-panel-state-populations.png"><img src="../../assets/images/HA-panel-state-populations.png" style="float:right; max-width: 200px; margin-left: 15px;"/></a>
+<a href="../../assets/images/gui/HA-panel-state-populations.png"><img src="../../assets/images/gui/HA-panel-state-populations.png" style="float:right; max-width: 200px; margin-left: 15px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }

@@ -9,7 +9,7 @@ nav_order: 3
 # Histogram and plot
 {: .no_toc }
 
-<a href="../../assets/images/HA-panel-plot.png"><img src="../../assets/images/HA-panel-plot.png" style="float:right; max-width: 200px; margin-left: 15px;"/></a>
+<a href="../../assets/images/gui/HA-panel-plot.png"><img src="../../assets/images/gui/HA-panel-plot.png" style="float:right; max-width: 200px; margin-left: 15px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }

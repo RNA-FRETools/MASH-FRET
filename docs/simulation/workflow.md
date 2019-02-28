@@ -26,7 +26,7 @@ Sequences are created by randomly drawing FRET values and dwell times from the t
 The operation is repeated until the sequence length reaches the observation time and the number of sequences equals the number of molecules *N*. 
 The observation time is limited by the video length *L* but can be randomly distributed by introducing fluorophore photobleaching.
 
-![Scheme of FRET sequence](../../assets/images/sim-scheme-state-sequence.png "Example of FRET sequence")
+![Scheme of FRET sequence](../../assets/images/figures/sim-scheme-state-sequence.png "Example of FRET sequence")
 
 To generate FRET state sequences:
 
@@ -40,7 +40,7 @@ To generate FRET state sequences:
    [Photobleaching](../panels/panel-photophysics)  
      
 1. Press 
-![Generate](../../assets/images/but-sim-generate.png "Generate") to generate random FRET state sequences,  
+![Generate](../../assets/images/gui/but-sim-generate.png "Generate") to generate random FRET state sequences,  
      
 1. Generate new state sequences whenever one of the parameters is changed.
 
@@ -84,7 +84,7 @@ To create intensity trajectories and images:
    [Background](../panels/panel-experimental-setup)  
      
 1. Press 
-![Update](../../assets/images/but-sim-update.png "Update") to convert FRET state sequences into camera-detected intensity trajectories and images. The execution time can be long; see 
+![Update](../../assets/images/gui/but-sim-update.png "Update") to convert FRET state sequences into camera-detected intensity trajectories and images. The execution time can be long; see 
 [Remarks](#remarks) for details.  
      
 1. Update intensity data whenever one of the parameters is changed.
@@ -101,7 +101,7 @@ To export data to files:
 1. Set parameters in [Export options](../panels/panel-export-options)  
      
 1. Press 
-![Export files](../../assets/images/but-sim-export.png "Export files") to start writing data in files. The execution time can be long; see 
+![Export files](../../assets/images/gui/but-sim-export.png "Export files") to start writing data in files. The execution time can be long; see 
 [Remarks](#remarks) for details.
  
 ## Remarks

@@ -8,7 +8,7 @@ nav_order: 1
 # Simulation interface
 {: .no_toc }
 
-<a href="../assets/images/interface-simulation.png"><img src="../assets/images/interface-simulation.png" width="325" style="float:right"/></a>
+<a href="../assets/images/gui/interface-simulation.png"><img src="../assets/images/gui/interface-simulation.png" width="325" style="float:right"/></a>
 
 The module Simulation is the first component of the software MASH-FRET and can be selected in the main 
 [tool bar](../Getting_started.html#interface).

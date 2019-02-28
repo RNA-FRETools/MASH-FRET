@@ -9,7 +9,7 @@ nav_order: 1
 # Management area
 {: .no_toc }
 
-<a href="../../assets/images/HA-area-management.png"><img src="../../assets/images/HA-area-management.png" style="float:right; max-width: 200px; margin-left: 15px;"/></a>
+<a href="../../assets/images/gui/HA-area-management.png"><img src="../../assets/images/gui/HA-area-management.png" style="float:right; max-width: 200px; margin-left: 15px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }

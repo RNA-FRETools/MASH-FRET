@@ -9,7 +9,7 @@ nav_order: 2
 # Video parameters
 {: .no_toc }
 
-<a href="../../assets/images/sim-panel-video-parameters.png"><img src="../../assets/images/sim-panel-video-parameters.png" style="max-width:217px;" /></a>
+<a href="../../assets/images/gui/sim-panel-video-parameters.png"><img src="../../assets/images/gui/sim-panel-video-parameters.png" style="max-width:217px;" /></a>
 
 ## (1) video length
 
@@ -38,7 +38,7 @@ Dimensions in pixels of video frames, in the x- **(a)** and y- **(b)** direction
 
 ## (6) Camera SNR characteristics
 
-<a href="../../assets/images/sim-panel-video-parameters-camera.png"><img src="../../assets/images/sim-panel-video-parameters-camera.png" style="max-width:198px;" /></a>
+<a href="../../assets/images/gui/sim-panel-video-parameters-camera.png"><img src="../../assets/images/gui/sim-panel-video-parameters-camera.png" style="max-width:198px;" /></a>
 
 The models available to generate camera noise are listed in **(a)**. The parameters to be set in **(b)** are automatically adapted to the model selected in **(a)**.
 

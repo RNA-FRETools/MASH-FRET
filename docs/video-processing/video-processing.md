@@ -6,7 +6,7 @@ has_children: true
 permalink: video-processing/
 ---
 
-<img src="../assets/images/logo-video-processing.png" width="260" style="float:right; margin-left: 15px;"/>
+<img src="../assets/images/logos/logo-video-processing.png" width="260" style="float:right; margin-left: 15px;"/>
 
 # Video processing
 
