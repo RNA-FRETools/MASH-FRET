@@ -9,7 +9,7 @@ nav_order: 1
 # Visualization area
 {: .no_toc }
 
-<a href="../../assets/images/sim-area-visualization.png"><img src="../../assets/images/sim-area-visualization.png" /></a>
+<a href="../../assets/images/sim-area-visualization.png"><img src="../../assets/images/sim-area-visualization.png" style="max-width: 800px;" /></a>
 
 ## (1) Control panel 
 
