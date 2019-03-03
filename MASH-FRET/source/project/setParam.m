@@ -102,7 +102,7 @@ kx = [  0   0.1   0.1   0.1   0.1 % transition state rates (s-1), for up to 5 st
       0.1   0.1   0.1     0   0.1
       0.1   0.1   0.1   0.1     0];
 p.kx = adjustParam('kx', kx, p_input);
-val = round((1:p.nbStates)/(3*p.nbStates/2)*10)/10;
+val = round(10*linspace(0,1,p.nbStates))/10;
 p.stateVal = adjustParam('stateVal', val, p_input);
 p.FRETw = adjustParam('FRETw', zeros(1,p.nbStates), p_input); % FRET width for heterogenous broadening
 p.gamma = adjustParam('gamma', 1, p_input); % gamma factor (correction for different quantum yields and detection efficiencies of the fluorophors)
