@@ -35,7 +35,7 @@ When you start MASH-FRET the **interactive interface** and **action history** op
 The interactive interface appears in its default layout and includes:
 * a **tool bar** to switch between <u>modules</u> (default: Video Processing) and set the <u>root folder</u> where generated files will be saved,
 * a **main area** that contains the selected module,
-* a **menu bar** to set the action history <u>view</u> and execute program <u>routines</u> (*advanced use*).
+* a **menu bar** to set the action history <u>view</u>, set <u>overwrite</u> file options and execute program <u>routines</u> (*advanced use*).
 
 The action history lists the main events occurring in the program.
 
@@ -48,11 +48,11 @@ To keep track, logs are automatically written in a
 
 The program offers five modules to work with:
 
-- [Simulation](/docs/simulation)
-- [Video processing](/docs/video-processing)
-- [Trace processing](/docs/trace-processing)
-- [Histogram analysis](/docs/histogram-analysis)
-- [Transition analysis](/docs/transition-analysis)
+- [Simulation](simulation)
+- [Video processing](video-processing)
+- [Trace processing](trace-processing)
+- [Histogram analysis](histogram-analysis)
+- [Transition analysis](transition-analysis)
 
 Module functionalities can be used separately or following a specific procedure.
 
