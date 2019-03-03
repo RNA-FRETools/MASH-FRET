@@ -7,10 +7,10 @@ nav_exclude: 1
 ---
 
 
-# Dwell times files
+# Dwell time files
 {: .no_toc }
 
-Dwell times files are ASCII files with the extension `.dt`. They are usually found in the main`/simulations/dwell-times` or main`/traces_processing/dwell-times` analysis folders.
+Dwell time files are ASCII files with the extension `.dt`. They are usually found in the main`/simulations/dwell-times` or main`/traces_processing/dwell-times` analysis folders.
 
 ## Table of contents
 {: .no_toc .text-delta }
