@@ -18,6 +18,7 @@ nav_order: 3
 1. TOC
 {:toc}
 
+---
 
 ## Number of molecules
 
@@ -29,10 +30,11 @@ If single molecules coordinates or pre-set parameters are loaded from external f
 
 **<u>default</u>:** 100
 
+---
 
 ## Molecule coordinates
 
-They are the (x,y) pixel coordinates of single molecules on the simulated video.
+They are the (x,y) pixel coordinates of single molecules in the simulated video.
 
 <a href="../../assets/images/gui/sim-panel-molecules-coordinates.png"><img src="../../assets/images/gui/sim-panel-molecules-coordinates.png" style="max-width: 136px;" /></a>
 
@@ -50,10 +52,11 @@ Coordinates can also be defined in pre-set parameters; see
 
 **<u>default</u>:** `N` pairs of random coordinates uniformly distributed within the video dimensions.
 
+---
 
 ## Pre-set parameters
 
-They are parameters pre-set for individual molecules and loaded from an external Matlab binary file.
+They are pre-defined parameters set for individual molecules and loaded from an external Matlab binary file.
 
 <a href="../../assets/images/gui/sim-panel-molecules-preset.png"><img src="../../assets/images/gui/sim-panel-molecules-preset.png"  style="max-width: 136px;" /></a>
 
@@ -82,6 +85,7 @@ MASH-FRET/source/project/createSimPrm.m
 
 **<u>default</u>:** no parameters file is loaded, all parameters are set by the GUI.
 
+---
 
 ## State configuration
 
@@ -100,10 +104,11 @@ In this case, a random *FRET* value is drawn for each molecule, using a Gaussian
 * for state 1: *FRET*<sub>1</sub> = 0, *wFRET*<sub>1</sub> = 0
 * for state 2: *FRET*<sub>2</sub> = 1, *wFRET*<sub>2</sub> = 0
 
+---
 
 ## Transition rates
 
-They are rate constants that govern state transitions, noted *k<sub>jj'</sub>*.
+They are the rate constants that govern state transitions, noted *k<sub>jj'</sub>*.
 
 Transition rates are given in second<sup>-1</sup> and are organized in a matrix, where the cell (row *j*, column *j'*) concerns the unidirectional transition from state *j* to state *j'*. 
 
@@ -111,6 +116,7 @@ When a rate equal to zero, the transition is considered forbidden.
 
 **<u>default</u>:** 0.1 second<sup>-1</sup>.
 
+---
 
 ## Generate data
 
@@ -119,10 +125,11 @@ Generate random FRET state sequences using the state configuration, the transiti
 See
 [Simulation workflow](../workflow.html#generate-random-fret-state-sequences) for more information
 
+---
 
 ## Donor emission
 
-Donor emission intensity in absence of acceptor, noted *I*<sub>tot,em</sub>.
+It is the donor emission intensity in absence of acceptor, noted *I*<sub>tot,em</sub>.
 
 <a href="../../assets/images/gui/sim-panel-molecules-intensity.png"><img src="../../assets/images/gui/sim-panel-molecules-intensity.png"  style="max-width: 99px;" /></a>
 
@@ -166,10 +173,11 @@ See
 * *&#947;* = 1
 * *w&#947;* = 0;
 
+---
 
 ## Cross-talks
 
-They are bias in collected signal caused by imperfect excitation and detection.
+They are the bias in collected intensities caused by imperfect excitation and detection.
 
 <a href="../../assets/images/gui/sim-panel-molecules-crosstalks.png"><img src="../../assets/images/gui/sim-panel-molecules-crosstalks.png"  style="max-width: 99px;" /></a>
 
@@ -184,6 +192,7 @@ The donor and acceptor bleedthrough coefficients *bt*<sub>D</sub> and *bt*<sub>A
 * *bt*<sub>D</sub> = 0.07
 * *bt*<sub>A</sub> = 0
 
+---
 
 ## Photobleaching
 

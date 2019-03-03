@@ -17,9 +17,15 @@ nav_order: 2
 1. TOC
 {:toc}
 
+---
+
 ## Video length
 
 Total number of image frames in the video. It is usually noted *L*
+
+**<u>default</u>:** *L* = 4000 frames
+
+---
 
 ## Frame rate
 
@@ -30,17 +36,33 @@ Number of frames per second. It is usually noted *f*. It is linked to the acquis
 <i>f</i> = 1 / <i>acq_t</i>
 </p>
 
+**<u>default</u>:** *f* = 10 fps
+
+---
+
 ## Pixel size
 
 Dimensions of a square pixel in micrometers. It is used in the conversion of PSF widths from micrometers to pixels.
 
+**<u>default</u>:** 0.53 &#956;m
+
+---
+
 ## Bit rate
 
-Camera bit rate in bits per second. It is used to calculate the saturation value in the video.
+Camera bit rate in bit/second. It is used to calculate the saturation value in the video.
+
+**<u>default</u>:** 14 bit/second
+
+---
 
 ## Video dimensions
 
 Dimensions in pixels of video frames, in the x- **(a)** and y- **(b)** directions.
+
+**<u>default</u>:** 256-by-256 pixels
+
+---
 
 ## Camera SNR characteristics
 
@@ -48,10 +70,13 @@ Dimensions in pixels of video frames, in the x- **(a)** and y- **(b)** direction
 
 The models available to generate camera noise are listed in **(a)**. Model parameters to be set in **(b)** are automatically adapted to the model selected in **(a)**.
 
-### Model: none
+### Model: offset only
 {: .no_toc }
 
 Add a constant offset value *&#956;*<sub>ic,d</sub>.
+
+**<u>default</u>:** *&#956;*<sub>ic,d</sub> = 113 ic
+
 
 ### Model: P- or Poisson
 {: .no_toc }
@@ -62,6 +87,11 @@ Distribute intensities following a Poisson distribution with mean *&#955;*:
 <p style="border-radius: 5px;">
 <i>&#955;</i> = <i>intensity</i> x <i>&#951;</i> + <i>&#956;</i><sub>ic,d</sub>
 </p>
+
+**<u>default</u>:**
+* *&#956;*<sub>ic,d</sub> = 113 ic
+* *&#951;* = 0.95 
+
 
 ### Model: N- or Gaussian
 {: .no_toc }
@@ -80,6 +110,14 @@ and standard deviation *&#963;*:
 <i>&#963;</i> = (  <i>intensity</i> x <i>&#951;</i> x <i>K</i> + ( <i>K</i> x <i>&#963;</i><sub>d</sub> )<sup>2</sup> + <i>&#963;</i><sub>q</sub><sup>2</sup> )<sup>0.5</sup>
 </p>
 
+**<u>default</u>:** values taken from the literature (reference [here](../../citations.html#simulation-algorithm-testing)):
+* *&#956;*<sub>ic,d</sub> = 113 ic.ec
+* *&#951;* = 0.95 
+* *K* = 57.8 ic/ec
+* *&#963;*<sub>d</sub> = 0.067 ec
+* *&#963;*<sub>q</sub> = 0 ic
+
+
 ### Model: NExpN- or Gaussian + exponential tail
 {: .no_toc }
 
@@ -91,6 +129,14 @@ This model is purely empirical: model parameters are obtained by fitting the dar
 <p style="border-radius: 5px;">
 P = ( 1-<i>A</i><sub>CIC</sub> ) x exp( -( <i>intensity</i> - <i>&#956;</i><sub>ic,d</sub> )<sup>2</sup> / ( 2 x <i>&#963;</i><sub>CIC</sub><sup>2</sup> ) ) + <i>A</i><sub>CIC</sub> x exp( - <i>intensity</i> / <i>&#964;</i><sub>CIC</sub> )
 </p>
+
+**<u>default</u>:** values taken from the literature (reference [here](../../citations.html#simulation-algorithm-testing)):
+* *&#956;*<sub>ic,d</sub> = 1069 ic/s
+* *A*<sub>CIC</sub> = 0.02 
+* *&#963;*<sub>CIC</sub> = 49 ic/s
+* *&#964;*<sub>CIC</sub> = 205 ic/s
+* *&#951;* = 0.95 
+* *K* = 57.8 ic/ec
 
 ### Model: PGN- or Hirsch
 {: .no_toc }
@@ -116,6 +162,14 @@ and standard deviation *&#963;*<sub>g</sub>:
 <i>&#963;</i><sub>g</sub> = <i>&#963;</i><sub>d</sub> x <i>g</i> / <i>s</i>
 </p>
 
+**<u>default</u>:** values taken from the literature (reference [here](../../citations.html#simulation-algorithm-testing)):
+* *&#956;*<sub>ic,d</sub> = 113 ic.ec
+* *&#951;* = 0.95 
+* *g* = 300
+* *&#963;*<sub>d</sub> = 0.067 ec
+* *s* = 0 ic
+* *CIC* = 0.02 ec
+
 
 ### Model parameters
 {: .no_toc }
@@ -135,7 +189,6 @@ Parameters specific to camera noise model:
 | *&#963;*<sub>CIC</sub>      | ic                | Gaussian noise deviation                     | NExpN                  |
 | *g*                         | pc/ic             | System gain                                  | PGN                    |
 | *s*                         | ic/pc             | analog-to-digital factor                     | PGN                    |
-| *&#963;*<sub>d</sub>        | pc                | read-out noise deviation                     | PGN                    |
 | *CIC*                       | pc                | CIC offset                                   | PGN                    |
 
 <u>Abbreviations</u>:

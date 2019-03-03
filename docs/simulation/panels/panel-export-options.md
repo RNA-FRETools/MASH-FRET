@@ -17,6 +17,8 @@ nav_order: 5
 1. TOC
 {:toc}
 
+---
+
 ## File options
 
 ### Traces (*.mat)
@@ -92,6 +94,8 @@ Data can be imported in other MASH-FRET modules <u>for algorithm testing</u>.
 See 
 [Simulated coordinates files](../../output-files/crd-simulated-coordinates.html) for more information.
 
+---
+
 ## Intensity units
 
 Intensity units of exported data:
@@ -115,6 +119,10 @@ If one of the characteristics is not defined within the chosen camera noise mode
 See 
 [Camera SNR characteristics](panel-video-parameters.html#camera-snr-characteristics) for more information.
 
+**<u>default:</u>** electron counts
+
+---
+
 ## Update intensities
 
 Update intensity-time trace and image calculations starting with generated noiseless FRET-time traces.
@@ -123,6 +131,8 @@ Calculations include fluorescence intensity, donor anisotropy, cross-talks, back
 
 See
 [Simulation workflow](../workflow.html#create-intensity-trajectories-and-images) for more information
+
+---
 
 ## Export files
 
