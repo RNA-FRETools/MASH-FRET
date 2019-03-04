@@ -5,7 +5,7 @@ function openItgFileOpt(obj, evd, h)
 %          has been called (usually empty)
 % "h" >> main data structure stored in figure_MASH's handle
 
-% Last update: 4th of February 2019 by Mélodie Hadzic
+% Last update: 4th of February 2019 by Mï¿½lodie Hadzic
 % --> created function from scratch
 
 h_fig = h.figure_MASH;
@@ -15,7 +15,7 @@ mg = 10;
 big_mg = 15;
 h_txt = 14;
 h_edit = 20;
-h_but = 22; 
+h_but = 22;
 
 w_but = 53;
 
@@ -43,7 +43,7 @@ if ~(isfield(h, 'figure_itgFileOpt') && ishandle(h.figure_itgFileOpt))
         {@figure_itgFileOpt_CloseRequestFcn, h_fig}, 'WindowStyle', ...
         'Modal');
     guidata(h.figure_itgFileOpt, p);
-    
+
 else
     posCurr = get(h.figure_itgFileOpt, 'Position');
     set(h.figure_itgFileOpt, 'Position', [posCurr(1) yFig wFig hFig]);
@@ -218,4 +218,3 @@ if isfield(h, 'itgFileOpt');
 end
 
 delete(obj);
-

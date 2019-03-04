@@ -1,4 +1,4 @@
-function [data ok] = getFrames(fullFname, n, param, h_fig)
+function [data,ok] = getFrames(fullFname, n, param, h_fig)
     
     ok = 1;
     data = [];
@@ -48,7 +48,7 @@ function [data ok] = getFrames(fullFname, n, param, h_fig)
             fclose(f);
             
             % Create a structure containing data
-            [data ok] = readSira(fullFname, n, param, h_fig);
+            [data,ok] = readSira(fullFname, n, param, h_fig);
             if ~ok
                 fclose(f);
                 ok = 0;
@@ -85,7 +85,7 @@ function [data ok] = getFrames(fullFname, n, param, h_fig)
             fclose(f);
             
             % Create a structure containing data
-            [data ok] = readSif(fullFname, n, param, h_fig);
+            [data,ok] = readSif(fullFname, n, param, h_fig);
             if ~ok
                 return;
             end
@@ -93,22 +93,22 @@ function [data ok] = getFrames(fullFname, n, param, h_fig)
         case '.tif'
             
             % Create a structure containing data
-            [data ok] = readTif(fullFname, n, param, h_fig);
+            [data,ok] = readTif(fullFname, n, param, h_fig);
             
         case '.gif'
             
             % Create a structure containing data
-            [data ok] = readGif(fullFname, n, h_fig);
+            [data,ok] = readGif(fullFname, n, h_fig);
           
         case '.png'
             
             % Create a structure containing data
-            [data ok] = readPng(fullFname, n, param, h_fig);
+            [data,ok] = readPng(fullFname, n, param, h_fig);
             
         case '.pma'
 
             % Create a structure containing data
-            [data ok] = readPma(fullFname, n, param, h_fig);
+            [data,ok] = readPma(fullFname, n, param, h_fig);
             
         case '.spe'
             
@@ -128,10 +128,10 @@ function [data ok] = getFrames(fullFname, n, param, h_fig)
                     data.pixelY = []; % Height of the movie
                     data.fCurs = [];
                 else
-                    [data ok] = readSpe(fullFname, n, h_fig);
+                    [data,ok] = readSpe(fullFname, n, h_fig);
                 end
             else
-                [data ok] = readSpe(fullFname, n, h_fig);
+                [data,ok] = readSpe(fullFname, n, h_fig);
             end
             
         case '.crd'
@@ -148,10 +148,10 @@ function [data ok] = getFrames(fullFname, n, param, h_fig)
                     data.pixelY = h.movie.pixelY; % Height of the movie
                     data.fCurs = h.movie.speCursor;
                 else
-                    [data ok] = readCrd(fullFname, h_fig);
+                    [data,ok] = readCrd(fullFname, h_fig);
                 end
             else
-                [data ok] = readCrd(fullFname, h_fig);
+                [data,ok] = readCrd(fullFname, h_fig);
             end
         case '.avi'
             
@@ -168,10 +168,10 @@ function [data ok] = getFrames(fullFname, n, param, h_fig)
                     data.pixelY = h.movie.pixelY; % Height of the movie
                     data.fCurs = h.movie.speCursor;
                 else
-                    [data ok] = readAvi(fullFname, n, h_fig);
+                    [data,ok] = readAvi(fullFname, n, h_fig);
                 end
             else
-                [data ok] = readAvi(fullFname, n, h_fig);
+                [data,ok] = readAvi(fullFname, n, h_fig);
             end
             
         otherwise

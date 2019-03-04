@@ -1143,7 +1143,7 @@ for l = 1:nExc
 
         % export BG intensities and statistics
         f = fopen([pname fname '_' labels{c} '-' num2str(exc(l)) ...
-            'nm.txt'], 'Wt');
+            'nm.bga'], 'Wt');
         if meth==1
             prm = [];
             fprintf(f, ['mean_value' str_un '\tstd_value' str_un '\t' ...

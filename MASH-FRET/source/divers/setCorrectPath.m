@@ -6,8 +6,8 @@ function pth = setCorrectPath(folder, h_fig)
 % | h_fig >> MASH figure handle
 % | pth >> directory path
 
-% Last update: 17th of February 2019 by Mélodie Hadzic
-% --> modify "thermodynamic" folder request in "histogram_analysis" and 
+% Last update: 17th of February 2019 by Mï¿½lodie Hadzic
+% --> modify "thermodynamic" folder request in "histogram_analysis" and
 %     "tdp_analysis" to "transition_analysis" to be consistent with the GUI
 
 pth = [];
@@ -32,7 +32,7 @@ if (strcmp(folder, 'simulations') || ...
         strcmp(folder, 'transition_analysis') || ...
         strcmp(folder, 'histogram_analysis'))
     pth = [h.folderRoot filesep folder];
-    
+
 elseif (strcmp(folder, 'average_images') || ...
        strcmp(folder, 'coordinates') || ...
         strcmp(folder, 'exported_graphics'))
@@ -46,13 +46,13 @@ elseif (strcmp(folder, 'spotfinder') || ...
 
     pth1 = setCorrectPath('coordinates', h_fig);
     pth = [pth1 folder];
-    
+
 elseif (strcmp(folder, 'clustering') || ...
         strcmp(folder, 'kinteics'))
 
     pth1 = setCorrectPath('transition_analysis', h_fig);
     pth = [pth1 folder];
-    
+
 else
     pth = folder;
 end
@@ -74,5 +74,3 @@ if ~isempty(pth) && ~exist(pth, 'dir')
 end
 
 pth = [pth filesep];
-
-

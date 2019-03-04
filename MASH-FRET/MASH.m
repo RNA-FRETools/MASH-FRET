@@ -67,7 +67,7 @@ updateActPan(cat(2,'--- WELCOME -----------------------------------------',...
     '---------------------'),h.figure_MASH);
 
 
-function varargout = MASH_OutputFcn(obj, evd, h) 
+function varargout = MASH_OutputFcn(obj, evd, h)
 varargout{1} = [];
 
 
@@ -105,7 +105,7 @@ if ~isempty(param.ttPr.proj)
             param.ttPr.defProjPrm.mol{3}{3}{l,c}(3) = 0;
         end
     end
-    
+
     % remove discretisation results
     param.ttPr.defProjPrm.mol{3}{4} = [];
 end
@@ -155,15 +155,15 @@ end
 function menu_overwrite_Callback(obj, evd, h)
 
 switch obj
-    
+
     case h.menu_overWrite
         h.param.OpFiles.overwrite_ask = 0;
         h.param.OpFiles.overwrite = 1;
-        
+
     case h.menu_rename
         h.param.OpFiles.overwrite_ask = 0;
         h.param.OpFiles.overwrite = 0;
-        
+
     case h.menu_ask
         h.param.OpFiles.overwrite_ask = 1;
 end
@@ -174,7 +174,7 @@ ud_menuOverwrite(h.figure_MASH);
 
 %% Simulations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Last update: 7th of March 2018 by Richard Börner
+% Last update: 7th of March 2018 by Richard Bï¿½rner
 %
 % Comments adapted for Boerner et al 2017
 % Noise models adapted for Boerner et al 2017.
@@ -203,7 +203,7 @@ else
     h.param.sim.FRETw = h.param.sim.FRETw(1:h.param.sim.nbStates);
     h.results.sim.mix = [];
     guidata(h.figure_MASH, h);
-    
+
     set(h.popupmenu_states, 'Value', 1);
     set(h.edit_stateVal, 'String', num2str(h.param.sim.stateVal(1)));
     updateFields(h.figure_MASH, 'sim');
@@ -449,9 +449,9 @@ if ~isempty(fname) && sum(fname)
     p.matGauss = cell(1,4);
     h.param.sim = p;
     guidata(h.figure_MASH, h);
-    
+
     setSimCoordTable(h.param.sim.coord, h.uitable_simCoord);
-    
+
     updateFields(h.figure_MASH, 'sim');
 end
 
@@ -634,11 +634,11 @@ end
 % characteristics
 function popupmenu_noiseType_Callback(obj, evd, h)
 switch get(obj, 'Value')
-    case 1 % Poisson or P-model from Börner et al. 2017
+    case 1 % Poisson or P-model from Bï¿½rner et al. 2017
         noiseType = 'poiss';
-    case 2 % Gaussian, Normal or N-model from Börner et al. 2017
+    case 2 % Gaussian, Normal or N-model from Bï¿½rner et al. 2017
         noiseType = 'norm';
-    case 3 % User defined or NExpN-model from Börner et al. 2017
+    case 3 % User defined or NExpN-model from Bï¿½rner et al. 2017
         noiseType = 'user';
     case 4 % None, no camera noise but possible camera offset value
         noiseType = 'none';
@@ -670,7 +670,7 @@ switch ind
             guidata(h.figure_MASH, h);
             updateFields(h.figure_MASH, 'sim');
         end
-        
+
     case 2 % Gaussian, K
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -682,7 +682,7 @@ switch ind
             guidata(h.figure_MASH, h);
             updateFields(h.figure_MASH, 'sim');
         end
-        
+
     case 3 % User defined, with dark current or camera offset value
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -694,7 +694,7 @@ switch ind
             guidata(h.figure_MASH, h);
             updateFields(h.figure_MASH, 'sim');
         end
-        
+
     case 4 % None, dark current or camera offset value
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -705,8 +705,8 @@ switch ind
             h.param.sim.camNoise(ind,1) = val;
             guidata(h.figure_MASH, h);
             updateFields(h.figure_MASH, 'sim');
-        end   
-            
+        end
+
     case 5 % Hirsch or PGN-model, g
       	if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -717,7 +717,7 @@ switch ind
             h.param.sim.camNoise(ind,1) = val;
             guidata(h.figure_MASH, h);
             updateFields(h.figure_MASH, 'sim');
-        end   
+        end
 end
 
 
@@ -764,9 +764,9 @@ switch ind
             guidata(h.figure_MASH, h);
             updateFields(h.figure_MASH, 'sim');
         end
-        
+
     case 4 % None, none
-        
+
     case 5 % Hirsch or PGN-model, s_d, read-out-noise
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -777,7 +777,7 @@ switch ind
             h.param.sim.camNoise(ind,2) = val;
             guidata(h.figure_MASH, h);
             updateFields(h.figure_MASH, 'sim');
-        end  
+        end
 end
 
 
@@ -789,7 +789,7 @@ ind = get(h.popupmenu_noiseType, 'Value');
 
 switch ind
     case 1 % Poissonian, none
-        
+
     case 2 % Gaussian, mu_y.dark
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -813,9 +813,9 @@ switch ind
             guidata(h.figure_MASH, h);
             updateFields(h.figure_MASH, 'sim');
         end
-        
+
     case 4 % None, none
-        
+
     case 5 % Hirsch or PGN-model
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -838,7 +838,7 @@ ind = get(h.popupmenu_noiseType, 'Value');
 
 switch ind
     case 1 % Poissonian, none
-        
+
     case 2 % Gaussian, s_q
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -851,7 +851,7 @@ switch ind
             guidata(h.figure_MASH, h);
             updateFields(h.figure_MASH, 'sim');
         end
-        
+
     case 3  % User defined, sig
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -863,9 +863,9 @@ switch ind
             guidata(h.figure_MASH, h);
             updateFields(h.figure_MASH, 'sim');
         end
-        
+
     case 4 % None, none
-        
+
     case 5 % Hirsch or PGN-model
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -888,9 +888,9 @@ ind = get(h.popupmenu_noiseType, 'Value');
 
 switch ind
     case 1 % Poissonian, none
-        
+
     case 2 % Gaussian, mu_rho.stat (none)
-        
+
     case 3 % User defined, K
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -901,9 +901,9 @@ switch ind
             h.param.sim.camNoise(ind,5) = val;
             guidata(h.figure_MASH, h);
             updateFields(h.figure_MASH, 'sim');
-        end    
+        end
     case 4 % None, none
-        
+
     case 5 % Hirsch or PGN-model
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val > 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -926,7 +926,7 @@ ind = get(h.popupmenu_noiseType, 'Value');
 
 switch ind
     case 1 % Poissonian, none
-        
+
     case 2 % Gaussian, eta
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
                 val >= 0 && val <= 1)
@@ -939,7 +939,7 @@ switch ind
             guidata(h.figure_MASH, h);
             updateFields(h.figure_MASH, 'sim');
         end
-        
+
     case 3  % User defined, eta
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
                 val >= 0 && val <= 1)
@@ -954,7 +954,7 @@ switch ind
         end
 
     case 4 % None, none
-        
+
     case 5 % Hirsch or PGN-model, eta
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
                 val >= 0 && val <= 1)
@@ -1145,7 +1145,7 @@ else
     set(obj, 'BackgroundColor', [1 1 1]);
     p = h.param.movPr;
     p.nChan = nChan;
-    
+
     if isfield(h, 'movie')
         sub_w = round(h.movie.pixelX/nChan);
         h.movie.split = (1:nChan-1)*sub_w;
@@ -1155,10 +1155,10 @@ else
         end
         set(h.text_split, 'String', ['Channel splitting: ' txt_split]);
     end
-    
+
     clr_ref = getDefTrClr(p.itg_nLasers, p.itg_wl, nChan, size(p.itg_expFRET,1), ...
         size(p.itg_expS,1));
-    
+
     for c = 1:nChan
         if c > size(p.itg_clr{1},2)
             p.itg_clr{1}(:,(size(p.itg_clr{1},2)+1):size(clr_ref{1},2)) ...
@@ -1180,7 +1180,7 @@ else
     p.itg_expFRET(~~sum(p.itg_expFRET>nChan),:) = [];
     set(h.popupmenu_bgChanel, 'Value', 1);
     set(h.popupmenu_SFchannel, 'Value', 1);
-    
+
     % Set fields to proper values
     p.SFres = {};
     h.param.movPr = p;
@@ -1193,7 +1193,7 @@ function switchMovTool(obj, evd, h)
 switch obj
     case h.togglebutton_target
         set(h.togglebutton_zoom, 'Value', 0);
-        
+
     case h.togglebutton_zoom
         set(h.togglebutton_target, 'Value', 0);
 end
@@ -1210,7 +1210,7 @@ function slider_img_Callback(obj, evd, h)
 cursorPos = round(get(obj, 'Value'));
 minSlider = get(obj, 'Min');
 maxSlider = get(obj, 'Max');
-if cursorPos <= minSlider 
+if cursorPos <= minSlider
     cursorPos = minSlider;
 elseif cursorPos >= maxSlider
     cursorPos = maxSlider;
@@ -1235,7 +1235,7 @@ updateFields(h.figure_MASH, 'imgAxes');
 
 
 function popupmenu_colorMap_Callback(obj, evd, h)
-contents = get(obj,'String'); 
+contents = get(obj,'String');
 selectedText = contents{get(obj, 'Value')};
 h.param.movPr.cmap = get(obj, 'Value');
 guidata(h.figure_MASH, h);
@@ -1261,7 +1261,7 @@ guidata(h.figure_MASH, h);
 
 function popupmenu_bgChanel_Callback(obj, evd, h)
 updateFields(h.figure_MASH, 'movPr');
-        
+
 
 function edit_bgParam_01_Callback(obj, evd, h)
 val = str2num(get(obj, 'String'));
@@ -1275,12 +1275,12 @@ if ~(numel(val)==1 && ~isnan(val))
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
     updateActPan([get(obj, 'TooltipString') ' must be a number.'], ...
         h.figure_MASH, 'error');
-    
+
 elseif method<18 && val<0
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
     updateActPan([get(obj, 'TooltipString') ' must be > 0.'], ...
         h.figure_MASH, 'error');
-    
+
 elseif method==9 && val>1
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
     updateActPan([get(obj, 'TooltipString') ' must be in the range ' ...
@@ -1404,7 +1404,7 @@ else
     h.param.movPr.ave_stop = val;
     guidata(h.figure_MASH, h);
 end
-    
+
 
 function pushbutton_aveImg_load_Callback(obj, evd, h)
 cd(setCorrectPath('average_images', h.figure_MASH));
@@ -1615,29 +1615,29 @@ else
             num2str(round(p.itg_wl(i))) 'nm)'];
         lasPrm{i,2} = prmVal;
         lasPrm{i,3} = 'mW';
-        
+
     end
-    
+
     % remove laser wavelengths if reducing the number of lasers
     p.itg_wl = p.itg_wl(1:val);
-    
+
     for ii = 1:size(p.chanExc,2)
         if isempty(find(p.itg_wl==p.chanExc(ii)))
-            % remove FRET calculations for which donors are not directly 
+            % remove FRET calculations for which donors are not directly
             % excited anymore
             if size(p.itg_expFRET,2)>0
                 p.itg_expFRET(p.itg_expFRET(:,1)==ii,:) = [];
             end
-            
-            % remove S calculations for dyes that are not directly 
+
+            % remove S calculations for dyes that are not directly
             % excited anymore
             p.itg_expS(p.itg_expS==ii) = [];
-            
+
             % remove channel excitations if reducing the number of lasers
             p.chanExc(ii) = 0;
         end
     end
-    
+
     if ~isempty(find(size(p.itg_expFRET)==0))
         p.itg_expFRET = [];
     end
@@ -1651,10 +1651,10 @@ else
     p.itg_clr{1} = clr_ref{1}(1:numel(p.itg_wl),:);
     p.itg_clr{2} = clr_ref{2}(1:size(p.itg_expFRET,1),:);
     p.itg_clr{3} = clr_ref{3}(1:size(p.itg_expS,1),:);
-    
+
     p.itg_expMolPrm = [defPrm;lasPrm;addPrm];
     p.itg_nLasers = val;
-    
+
     h.param.movPr = p;
     guidata(h.figure_MASH, h);
     updateFields(h.figure_MASH, 'movPr');
@@ -1677,11 +1677,11 @@ else
     laser = get(h.popupmenu_TTgen_lasers, 'Value');
     p.itg_wl(laser) = val;
     p.itg_expMolPrm(4+laser,1) = {['Power(' num2str(val) 'nm)']};
-    
+
     clr_ref = getDefTrClr(numel(p.itg_wl), p.itg_wl, p.nChan, ...
         size(p.itg_expFRET,1), size(p.itg_expS,1));
     p.itg_clr{1} = clr_ref{1}(1:numel(p.itg_wl),:);
-    
+
     h.param.movPr = p;
     guidata(h.figure_MASH, h);
     updateFields(h.figure_MASH, 'movPr');
@@ -2099,7 +2099,7 @@ if ~isempty(p.proj)
         res_x = p.proj{proj}.movie_dim(1);
         lim = [0 round(res_x/nChan)*(1:(nChan-1)) res_x];
         itgDim = p.proj{proj}.pix_intgr(1);
-        
+
         valMin = lim(chan) + itgDim/2;
         valMax = lim(chan+1) - itgDim/2;
 
@@ -2133,7 +2133,7 @@ if ~isempty(p.proj)
         val = str2num(get(obj, 'String'));
         res_y = p.proj{proj}.movie_dim(2);
         itgDim = p.proj{proj}.pix_intgr(1);
-        
+
         valMin = itgDim/2;
         valMax = res_y - itgDim/2;
 
@@ -2188,7 +2188,7 @@ if ~isempty(p.proj)
         'molecules erases previous traces processing'], ...
         'Overwrite background parameters of all molecule?'}, ...
         'Overwrite parameters', 'Apply', 'Cancel', 'Apply');
-    
+
     if strcmp(choice, 'Apply')
         proj = p.curr_proj;
         mol = p.curr_mol(proj);
@@ -2306,15 +2306,15 @@ if ~isempty(p.proj)
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
     method = p.proj{proj}.curr{mol}{1}{1}(1);
-    
+
     if ~(~isempty(val) && numel(val) == 1 && ~isnan(val))
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
         updateActPan('Denoising parameters must be >= 0', ...
             h.figure_MASH, 'error');
-        
+
     else
         switch method
-            
+
             case 1 % Rolling point: running average window size
                 nmax = p.proj{proj}.nb_excitations * ...
                     size(p.proj{proj}.intensities,1);
@@ -2325,9 +2325,9 @@ if ~isempty(p.proj)
                         'error');
                     return;
                 end
-                
+
             case 2 % Haran filter: exponential factor for predictor weights
-                
+
             case 3 % Wavelet analysis: shrink strength, firm/hard/soft
                 if ~(sum(double(val == [1 2 3])))
                     set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -2335,7 +2335,7 @@ if ~isempty(p.proj)
                         '(firm, hard or soft)'], h.figure_MASH, 'error');
                     return;
                 end
-            
+
             otherwise
                 return;
         end
@@ -2356,12 +2356,12 @@ if ~isempty(p.proj)
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
     method = p.proj{proj}.curr{mol}{1}{1}(1);
-    
+
     if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
         updateActPan('Denoising parameters must be >= 0', ...
             h.figure_MASH, 'error');
-        
+
     else
         switch method
 
@@ -2375,7 +2375,7 @@ if ~isempty(p.proj)
                         h.figure_MASH, 'error');
                     return;
                 end
-                
+
             case 3 % Wavelet analysis: time, local/universal
                 if ~(sum(double(val == [1 2])))
                     set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -2383,7 +2383,7 @@ if ~isempty(p.proj)
                         'universal)'], h.figure_MASH, 'error');
                     return;
                 end
-            
+
             otherwise
                 return;
         end
@@ -2404,15 +2404,15 @@ if ~isempty(p.proj)
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
     method = p.proj{proj}.curr{mol}{1}{1}(1);
-    
+
     if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
         updateActPan('Denoising parameters must be >= 0', ...
             h.figure_MASH, 'error');
-        
+
     else
         switch method
-            
+
             case 2 % Haran filter: factor for predictor window sizes
                 if ~(val > 0)
                     set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -2420,7 +2420,7 @@ if ~isempty(p.proj)
                         ' sizes must be > 0'], h.figure_MASH, 'error');
                     return;
                 end
-                
+
             case 3 % Wavelet analysis: cycle spin, on/off
                 if ~(sum(double(val == [1 2])))
                     set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -2428,7 +2428,7 @@ if ~isempty(p.proj)
                         'off)'], h.figure_MASH, 'error');
                     return;
                 end
-                
+
             otherwise
                 return;
         end
@@ -2448,7 +2448,7 @@ if ~isempty(p.proj)
         'molecules erases previous traces processing'], ...
         'Overwrite denoising parameters of all molecule?'}, ...
         'Overwrite parameters', 'Apply', 'Cancel', 'Apply');
-    
+
     if strcmp(choice, 'Apply')
         proj = p.curr_proj;
         mol = p.curr_mol(proj);
@@ -2491,13 +2491,13 @@ if ~isempty(p.proj)
         maxVal = stop;
     end
     set(obj, 'String', num2str(val));
-    
+
     if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
             val >= minVal && val <= maxVal)
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
         updateActPan(['Data start must be >= ' num2str(minVal) ...
             ' and <= ' num2str(maxVal)], h.figure_MASH, 'error');
-        
+
     else
         set(obj, 'BackgroundColor', [1 1 1]);
         if inSec
@@ -2636,7 +2636,7 @@ if ~isempty(p.proj)
     if method == 2 % Threshold
         val = str2num(get(obj, 'String'));
         set(obj, 'String', num2str(val));
-        
+
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val))
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
             updateActPan('Data threshold must be a number.', ...
@@ -2775,7 +2775,7 @@ if ~isempty(p.proj)
         'molecules erases previous traces processing'], ...
         'Overwrite debleaching parameters of all molecule?'}, ...
         'Overwrite parameters', 'Apply', 'Cancel', 'Apply');
-    
+
     if strcmp(choice, 'Apply')
         proj = p.curr_proj;
         mol = p.curr_mol(proj);
@@ -2948,7 +2948,7 @@ if ~isempty(p.proj)
     if toFRET == 1  % if DTA applied to bottom traces, deactivate pb gamma calculation
         val = 0;
     end
-    p.proj{proj}.curr{mol}{5}{4}(1) = val; % pb based gamma corr checkbox 
+    p.proj{proj}.curr{mol}{5}{4}(1) = val; % pb based gamma corr checkbox
     p.proj{proj}.curr{mol}{5}{5}(1) = val; % show cutoff checkbox
     h.param.ttPr = p;
     guidata(h.figure_MASH, h);
@@ -2970,7 +2970,7 @@ if ~isempty(p.proj)
         'molecules erases previous traces processing'], ...
         'Overwrite factor parameters of all molecule?'}, ...
         'Overwrite parameters', 'Apply', 'Cancel', 'Apply');
-    
+
     if strcmp(choice, 'Apply')
         proj = p.curr_proj;
         mol = p.curr_mol(proj);
@@ -3007,14 +3007,14 @@ if ~isempty(p.proj)
     mol = p.curr_mol(proj);
     val = get(obj, 'Value');
     p.proj{proj}.curr{mol}{4}{1}(2) = val;
-    
+
     % added by FS, 5.6.2018
     % disable photobleaching based gamma factor determination
     % checkbox and pushbutton are enable again if isDiscrTop is 1 in 'discrTraces.m'
-    set(h.pushbutton_optGamma, 'enable', 'off') 
+    set(h.pushbutton_optGamma, 'enable', 'off')
     p.proj{proj}.curr{mol}{5}{4}(1) = 0; % deactivate the pb based gamma correction checkbox
     set(h.checkbox_pbGamma, 'enable', 'off', 'Value', 0)
-    
+
     h.param.ttPr = p;
     guidata(h.figure_MASH, h);
     ud_DTA(h.figure_MASH);
@@ -3028,14 +3028,14 @@ if ~isempty(p.proj)
     mol = p.curr_mol(proj);
     val = get(obj, 'Value');
     p.proj{proj}.curr{mol}{4}{1}(2) = ~val;
-    
+
     % added by FS, 5.6.2018
     % disable photobleaching based gamma factor determination
     % checkbox and pushbutton are enable again if isDiscrTop is 1 in 'discrTraces.m'
-    set(h.pushbutton_optGamma, 'enable', 'on') 
+    set(h.pushbutton_optGamma, 'enable', 'on')
     p.proj{proj}.curr{mol}{5}{4}(1) = 1; % deactivate the pb based gamma correction checkbox
     set(h.checkbox_pbGamma, 'enable', 'on', 'Value', 0)
-    
+
     h.param.ttPr = p;
     guidata(h.figure_MASH, h);
     ud_DTA(h.figure_MASH);
@@ -3203,7 +3203,7 @@ if ~isempty(p.proj)
                 updateActPan('Number of bootstrap sample must be > 0', ...
                     h.figure_MASH, 'error');
             end
-            
+
         else
             set(obj, 'BackgroundColor', [1 1 1]);
             chan_in = p.proj{proj}.fix{3}(4);
@@ -3433,7 +3433,7 @@ if ~isempty(p.proj)
         'molecules erases previous traces processing'], ...
         'Overwrite DTA parameters of all molecule?'}, ...
         'Overwrite parameters', 'Apply', 'Cancel', 'Apply');
-    
+
     if strcmp(choice, 'Apply')
         proj = p.curr_proj;
         mol = p.curr_mol(proj);
@@ -3465,7 +3465,7 @@ if ~isempty(p.proj)
     proj = p.curr_proj;
     tpe = p.curr_type(proj);
     meth = p.proj{proj}.prm{tpe}.clst_start{1}(1);
-    
+
     if ~(numel(val)==1 && ~isnan(val) && val >= 0)
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
         switch meth
@@ -3475,13 +3475,13 @@ if ~isempty(p.proj)
                 str = 'Min. Gaussian standard deviation.';
         end
         setContPan([str ' must be >= 0.'], 'error', h.figure_MASH);
-        
+
     else
         switch meth
             case 1 % kmean
                 state = get(h.popupmenu_TDPstate, 'Value');
                 p.proj{proj}.prm{tpe}.clst_start{2}(state,2) = val;
-                
+
             case 2 % gaussian model based
                 p.proj{proj}.prm{tpe}.clst_start{2}(1,2) = val;
         end
@@ -3541,10 +3541,10 @@ if ~isempty(p.proj)
     proj = p.curr_proj;
     tpe = p.curr_type(proj);
     prm = p.proj{proj}.prm{tpe};
-    
+
     prm.clst_res{3} = get(h.popupmenu_tdp_model,'Value') + 1;
     prm = ud_kinPrm(prm,prm.clst_res{3});
-    
+
     h.param.TDP.proj{proj}.prm{tpe} = prm;
     guidata(h.figure_MASH,h);
     updateFields(h.figure_MASH, 'TDP');
@@ -3607,7 +3607,7 @@ if ~isempty(p.proj)
         prev_val = kin_k{trs,1}(2);
         if prev_val ~= val
             for t = 1:val
-                if prev_val < t 
+                if prev_val < t
                     kin_k{trs,2}(t,:) = kin_k{trs,2}(t-1,:);
                 end
             end
@@ -3948,7 +3948,7 @@ p = h.param.TDP;
 if ~isempty(p.proj)
     updateFields(h.figure_MASH, 'TDP');
 end
-    
+
 
 function pushbutton_TDPfit_log_Callback(obj, evd, h)
 p = h.param.TDP;
@@ -3977,12 +3977,12 @@ if size(p.proj,2)>1
     p.curr_proj = val(1);
     h.param.thm = p;
     guidata(h.figure_MASH, h);
-    
+
     cla(h.axes_hist1);
     cla(h.axes_hist2);
-    
+
     updateFields(h.figure_MASH, 'thm');
-    
+
     p = h.param.thm;
     proj = p.curr_proj;
     setContPan(cat(2,'Select project: ',...
@@ -4010,12 +4010,12 @@ if ~isempty(p.proj)
         p.curr_tpe(proj) = get(obj, 'Value');
         h.param.thm = p;
         guidata(h.figure_MASH, h);
-        
+
         cla(h.axes_hist1);
         cla(h.axes_hist2);
-        
+
         updateFields(h.figure_MASH, 'thm');
-        
+
         p = h.param.thm;
         proj = p.curr_proj;
         tpe = p.curr_tpe(proj);
@@ -4032,7 +4032,7 @@ if ~isempty(p.proj)
     proj = p.curr_proj;
     tpe = p.curr_tpe(proj);
     prm = p.proj{proj}.prm{tpe};
-    
+
     nChan = p.proj{proj}.nb_channel;
     nExc = p.proj{proj}.nb_excitations;
     isInt = tpe <= 2*nChan*nExc;
@@ -4040,11 +4040,11 @@ if ~isempty(p.proj)
     perPix = p.proj{proj}.cnt_p_pix;
     expT = p.proj{proj}.frame_rate;
     nPix = p.proj{proj}.pix_intgr(2);
-    
+
     val = str2num(get(obj, 'String'));
     set(obj, 'String', num2str(val));
     maxVal = prm.plot{1}(1,3);
-    
+
     if isInt
         if perSec
             maxVal = maxVal/expT;
@@ -4053,14 +4053,14 @@ if ~isempty(p.proj)
             maxVal = maxVal/nPix;
         end
     end
-    
+
     if ~(numel(val)==1 && ~isnan(val) && val<maxVal)
         setContPan(sprintf(['Lower limit of x-axis must be lower than ' ...
             '%d.'],maxVal), 'error', h.figure_MASH);
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
     else
         set(obj, 'BackgroundColor', [1 1 1]);
-        
+
         if isInt
             if perSec
                 val = val*expT;
@@ -4069,7 +4069,7 @@ if ~isempty(p.proj)
                 val = val*nPix;
             end
         end
-        
+
         prm.plot{1}(1,2) = val;
         prm.plot{2} = [];
         p.proj{proj}.prm{tpe} = prm;
@@ -4086,7 +4086,7 @@ if ~isempty(p.proj)
     proj = p.curr_proj;
     tpe = p.curr_tpe(proj);
     prm = p.proj{proj}.prm{tpe};
-    
+
     nChan = p.proj{proj}.nb_channel;
     nExc = p.proj{proj}.nb_excitations;
     isInt = tpe <= 2*nChan*nExc;
@@ -4094,11 +4094,11 @@ if ~isempty(p.proj)
     perPix = p.proj{proj}.cnt_p_pix;
     expT = p.proj{proj}.frame_rate;
     nPix = p.proj{proj}.pix_intgr(2);
-    
+
     val = str2num(get(obj, 'String'));
     set(obj, 'String', num2str(val));
     minVal = prm.plot{1}(1,2);
-    
+
     if isInt
         if perSec
             minVal = minVal/expT;
@@ -4107,14 +4107,14 @@ if ~isempty(p.proj)
             minVal = minVal/nPix;
         end
     end
-    
+
     if ~(numel(val)==1 && ~isnan(val) && val>minVal)
         setContPan(sprintf(['Upper limit of x-axis must be higher than' ...
             ' %d.'],minVal), 'error', h.figure_MASH);
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
     else
         set(obj, 'BackgroundColor', [1 1 1]);
-        
+
         if isInt
             if perSec
                 val = val*expT;
@@ -4123,7 +4123,7 @@ if ~isempty(p.proj)
                 val = val*nPix;
             end
         end
-        
+
         prm.plot{1}(1,3) = val;
         prm.plot{2} = [];
         p.proj{proj}.prm{tpe} = prm;
@@ -4147,7 +4147,7 @@ if ~isempty(p.proj)
         proj = p.curr_proj;
         tpe = p.curr_tpe(proj);
         prm = p.proj{proj}.prm{tpe};
-        
+
         nChan = p.proj{proj}.nb_channel;
         nExc = p.proj{proj}.nb_excitations;
         isInt = tpe <= 2*nChan*nExc;
@@ -4155,7 +4155,7 @@ if ~isempty(p.proj)
         perPix = p.proj{proj}.cnt_p_pix;
         expT = p.proj{proj}.frame_rate;
         nPix = p.proj{proj}.pix_intgr(2);
-        
+
         if isInt
             if perSec
                 val = val*expT;
@@ -4164,7 +4164,7 @@ if ~isempty(p.proj)
                 val = val*nPix;
             end
         end
-        
+
         prm.plot{1}(1,1) = val;
         prm.plot{2} = [];
         p.proj{proj}.prm{tpe} = prm;
@@ -4423,7 +4423,7 @@ if ~isempty(p.proj)
     proj = p.curr_proj;
     tpe = p.curr_tpe(proj);
     prm = p.proj{proj}.prm{tpe};
-    
+
     nChan = p.proj{proj}.nb_channel;
     nExc = p.proj{proj}.nb_excitations;
     isInt = tpe <= 2*nChan*nExc;
@@ -4431,11 +4431,11 @@ if ~isempty(p.proj)
     perPix = p.proj{proj}.cnt_p_pix;
     expT = p.proj{proj}.frame_rate;
     nPix = p.proj{proj}.pix_intgr(2);
-    
+
     gauss = get(h.popupmenu_thm_gaussNb, 'Value');
     val = str2num(get(obj, 'String'));
     minVal = prm.thm_start{3}(gauss,5);
-    
+
     if isInt
         if perSec
             minVal = minVal/expT;
@@ -4444,7 +4444,7 @@ if ~isempty(p.proj)
             minVal = minVal/nPix;
         end
     end
-    
+
     set(obj, 'String', num2str(val));
     if ~(numel(val)==1 && ~isnan(val) && val>minVal)
         setContPan(sprintf(['The upper limit of Gaussian center must ' ...
@@ -4503,7 +4503,7 @@ if ~isempty(p.proj)
     proj = p.curr_proj;
     tpe = p.curr_tpe(proj);
     prm = p.proj{proj}.prm{tpe};
-    
+
     nChan = p.proj{proj}.nb_channel;
     nExc = p.proj{proj}.nb_excitations;
     isInt = tpe <= 2*nChan*nExc;
@@ -4511,12 +4511,12 @@ if ~isempty(p.proj)
     perPix = p.proj{proj}.cnt_p_pix;
     expT = p.proj{proj}.frame_rate;
     nPix = p.proj{proj}.pix_intgr(2);
-    
+
     gauss = get(h.popupmenu_thm_gaussNb, 'Value');
     val = str2num(get(obj, 'String'));
     minVal = prm.thm_start{3}(gauss,4);
     maxVal = prm.thm_start{3}(gauss,6);
-    
+
     if isInt
         if perSec
             minVal = minVal/expT;
@@ -4527,7 +4527,7 @@ if ~isempty(p.proj)
             maxVal = maxVal/nPix;
         end
     end
-    
+
     set(obj, 'String', num2str(val));
     if ~(numel(val)==1 && ~isnan(val) && val>minVal && val<maxVal)
         setContPan(sprintf(['The starting guess for Gaussian center ' ...
@@ -4537,7 +4537,7 @@ if ~isempty(p.proj)
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
     else
         set(obj, 'BackgroundColor', [1 1 1]);
-        
+
         if isInt
             if perSec
                 val = val*expT;
@@ -4546,7 +4546,7 @@ if ~isempty(p.proj)
                 val = val*nPix;
             end
         end
-        
+
         prm.thm_start{3}(gauss,5) = val;
         p.proj{proj}.prm{tpe} = prm;
         h.param.thm = p;
@@ -4590,7 +4590,7 @@ if ~isempty(p.proj)
     proj = p.curr_proj;
     tpe = p.curr_tpe(proj);
     prm = p.proj{proj}.prm{tpe};
-    
+
     nChan = p.proj{proj}.nb_channel;
     nExc = p.proj{proj}.nb_excitations;
     isInt = tpe <= 2*nChan*nExc;
@@ -4598,11 +4598,11 @@ if ~isempty(p.proj)
     perPix = p.proj{proj}.cnt_p_pix;
     expT = p.proj{proj}.frame_rate;
     nPix = p.proj{proj}.pix_intgr(2);
-    
+
     gauss = get(h.popupmenu_thm_gaussNb, 'Value');
     val = str2num(get(obj, 'String'));
     maxVal = prm.thm_start{3}(gauss,5);
-    
+
     if isInt
         if perSec
             maxVal = maxVal/expT;
@@ -4611,7 +4611,7 @@ if ~isempty(p.proj)
             maxVal = maxVal/nPix;
         end
     end
-    
+
     set(obj, 'String', num2str(val));
     if ~(numel(val)==1 && ~isnan(val) && val<maxVal)
         setContPan(sprintf(['The lower limit of Gaussian center must ' ...
@@ -4620,7 +4620,7 @@ if ~isempty(p.proj)
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
     else
         set(obj, 'BackgroundColor', [1 1 1]);
-        
+
         if isInt
             if perSec
                 val = val*expT;
@@ -4629,7 +4629,7 @@ if ~isempty(p.proj)
                 val = val*nPix;
             end
         end
-        
+
         prm.thm_start{3}(gauss,4) = val;
         p.proj{proj}.prm{tpe} = prm;
         h.param.thm = p;
@@ -4678,7 +4678,7 @@ if ~isempty(p.proj)
     proj = p.curr_proj;
     tpe = p.curr_tpe(proj);
     prm = p.proj{proj}.prm{tpe};
-    
+
     nChan = p.proj{proj}.nb_channel;
     nExc = p.proj{proj}.nb_excitations;
     isInt = tpe <= 2*nChan*nExc;
@@ -4686,11 +4686,11 @@ if ~isempty(p.proj)
     perPix = p.proj{proj}.cnt_p_pix;
     expT = p.proj{proj}.frame_rate;
     nPix = p.proj{proj}.pix_intgr(2);
-    
+
     gauss = get(h.popupmenu_thm_gaussNb, 'Value');
     val = str2num(get(obj, 'String'));
     minVal = prm.thm_start{3}(gauss,8);
-    
+
     if isInt
         if perSec
             minVal = minVal/expT;
@@ -4699,7 +4699,7 @@ if ~isempty(p.proj)
             minVal = minVal/nPix;
         end
     end
-    
+
     set(obj, 'String', num2str(val));
     if ~(numel(val)==1 && ~isnan(val) && val>minVal)
         setContPan(sprintf(['The upper limit of Gaussian FWHM ' ...
@@ -4708,7 +4708,7 @@ if ~isempty(p.proj)
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
     else
         set(obj, 'BackgroundColor', [1 1 1]);
-        
+
         if isInt
             if perSec
                 val = val*expT;
@@ -4717,7 +4717,7 @@ if ~isempty(p.proj)
                 val = val*nPix;
             end
         end
-        
+
         prm.thm_start{3}(gauss,9) = val;
         p.proj{proj}.prm{tpe} = prm;
         h.param.thm = p;
@@ -4733,7 +4733,7 @@ if ~isempty(p.proj)
     proj = p.curr_proj;
     tpe = p.curr_tpe(proj);
     prm = p.proj{proj}.prm{tpe};
-    
+
     nChan = p.proj{proj}.nb_channel;
     nExc = p.proj{proj}.nb_excitations;
     isInt = tpe <= 2*nChan*nExc;
@@ -4741,12 +4741,12 @@ if ~isempty(p.proj)
     perPix = p.proj{proj}.cnt_p_pix;
     expT = p.proj{proj}.frame_rate;
     nPix = p.proj{proj}.pix_intgr(2);
-    
+
     gauss = get(h.popupmenu_thm_gaussNb, 'Value');
     val = str2num(get(obj, 'String'));
     minVal = prm.thm_start{3}(gauss,7);
     maxVal = prm.thm_start{3}(gauss,9);
-    
+
     if isInt
         if perSec
             minVal = minVal/expT;
@@ -4757,7 +4757,7 @@ if ~isempty(p.proj)
             maxVal = maxVal/nPix;
         end
     end
-    
+
     set(obj, 'String', num2str(val));
     if ~(numel(val)==1 && ~isnan(val) && val>minVal && val<maxVal)
         setContPan(sprintf(['The starting guess for Gaussian FWHM' ...
@@ -4767,7 +4767,7 @@ if ~isempty(p.proj)
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
     else
         set(obj, 'BackgroundColor', [1 1 1]);
-        
+
         if isInt
             if perSec
                 val = val*expT;
@@ -4776,7 +4776,7 @@ if ~isempty(p.proj)
                 val = val*nPix;
             end
         end
-        
+
         prm.thm_start{3}(gauss,8) = val;
         p.proj{proj}.prm{tpe} = prm;
         h.param.thm = p;
@@ -4792,7 +4792,7 @@ if ~isempty(p.proj)
     proj = p.curr_proj;
     tpe = p.curr_tpe(proj);
     prm = p.proj{proj}.prm{tpe};
-    
+
     nChan = p.proj{proj}.nb_channel;
     nExc = p.proj{proj}.nb_excitations;
     isInt = tpe <= 2*nChan*nExc;
@@ -4800,11 +4800,11 @@ if ~isempty(p.proj)
     perPix = p.proj{proj}.cnt_p_pix;
     expT = p.proj{proj}.frame_rate;
     nPix = p.proj{proj}.pix_intgr(2);
-    
+
     gauss = get(h.popupmenu_thm_gaussNb, 'Value');
     val = str2num(get(obj, 'String'));
     maxVal = prm.thm_start{3}(gauss,8);
-    
+
     if isInt
         if perSec
             maxVal = maxVal/expT;
@@ -4813,7 +4813,7 @@ if ~isempty(p.proj)
             maxVal = maxVal/nPix;
         end
     end
-    
+
     set(obj, 'String', num2str(val));
     if ~(numel(val)==1 && ~isnan(val) && val<maxVal)
         setContPan(sprintf(['The lower limit of Gaussian FWHM ' ...
@@ -4822,7 +4822,7 @@ if ~isempty(p.proj)
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
     else
         set(obj, 'BackgroundColor', [1 1 1]);
-        
+
         if isInt
             if perSec
                 val = val*expT;
@@ -4831,7 +4831,7 @@ if ~isempty(p.proj)
                 val = val*nPix;
             end
         end
-        
+
         prm.thm_start{3}(gauss,7) = val;
         p.proj{proj}.prm{tpe} = prm;
         h.param.thm = p;
@@ -4849,7 +4849,7 @@ if ~isempty(p.proj)
     proj = p.curr_proj;
     tpe = p.curr_tpe(proj);
     prm = p.proj{proj}.prm{tpe};
-    
+
     nChan = p.proj{proj}.nb_channel;
     nExc = p.proj{proj}.nb_excitations;
     isInt = tpe <= 2*nChan*nExc;
@@ -4857,7 +4857,7 @@ if ~isempty(p.proj)
     perPix = p.proj{proj}.cnt_p_pix;
     expT = p.proj{proj}.frame_rate;
     nPix = p.proj{proj}.pix_intgr(2);
-    
+
     thresh = get(h.popupmenu_thm_thresh, 'Value');
     N = size(prm.thm_start{2},1);
     val = str2num(get(obj, 'String'));
@@ -4874,7 +4874,7 @@ if ~isempty(p.proj)
         minVal = prm.thm_start{2}(thresh-1);
         maxVal =  prm.thm_start{2}(thresh+1);
     end
-    
+
     if isInt
         if perSec
             minVal = minVal/expT;
@@ -4885,7 +4885,7 @@ if ~isempty(p.proj)
             maxVal = maxVal/nPix;
         end
     end
-    
+
     set(obj, 'String', num2str(val));
     if ~(numel(val)==1 && ~isnan(val)&& val>minVal && val<maxVal)
         setContPan(sprintf(['Threshold value must be higher than the ' ...
@@ -4895,7 +4895,7 @@ if ~isempty(p.proj)
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
     else
         set(obj, 'BackgroundColor', [1 1 1]);
-        
+
         if isInt
             if perSec
                 val = val*expT;
@@ -4904,7 +4904,7 @@ if ~isempty(p.proj)
                 val = val*nPix;
             end
         end
-        
+
         prm.thm_start{2}(thresh) = val;
         p.proj{proj}.prm{tpe} = prm;
         h.param.thm = p;
@@ -4968,5 +4968,3 @@ if ~isempty(p.proj)
     thresh_ana(h.figure_MASH);
     updateFields(h.figure_MASH, 'thm');
 end
-
-

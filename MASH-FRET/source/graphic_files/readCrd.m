@@ -1,6 +1,7 @@
-function [data ok] = readCrd(fullname, h_fig)
+function [data,ok] = readCrd(fullname, h_fig)
 
 ok = 0;
+data = [];
 
 [pname,fname,fext] = fileparts(fullname);
 
@@ -8,11 +9,13 @@ if ~(strcmp(fext,'.spots') || strcmp(fext,'.crd') || strcmp(fext,'.coord'))
     return;
 end
 
+nheadl = 1;
+
 if ~isempty(fname) && sum(fname)
     cd(pname);
     fData = importdata(fullname, '\n');
 
-    nCol = size(str2num(fData{1,1}),2);
+    nCol = size(str2num(fData{nheadl+1,1}),2);
     
     if strcmp(fext,'.spots')
         col_x = 1;
@@ -22,9 +25,9 @@ if ~isempty(fname) && sum(fname)
         col_y = 2:2:nCol;
     end
     
-    nCoord = size(fData,1);
+    nLines = size(fData,1)-nheadl;
     coord = [];
-    for i = 1:nCoord
+    for i = 1+nheadl:nLines
         l = str2num(fData{i,1});
         if ~isempty(l)
             coord = [coord; l(:,[col_x col_y])];
