@@ -61,6 +61,9 @@ trs{1} = [method 1 nStates 1 5 0 20 N];
 % trs{2} = [state value, tol. radius]
 trs{2} = repmat([0 Inf],[nStates,1]);
 % trs{3} = rgb colours
+if size(clr,1)<nTrs
+    clr = cat(1,clr,rand(nTrs-size(clr,1),3)); % add random RGB colors
+end
 trs{3} = clr(1:nTrs,:);
 
 prm.clst_start = adjustParam('clst_start', trs, prm_in);
