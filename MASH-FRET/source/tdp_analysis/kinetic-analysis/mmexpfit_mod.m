@@ -3,7 +3,7 @@ function res = mmexpfit_mod(x_dat, y_dat, p, nExp, strch)
 %% Define fit type
 res = [];
 
-[str_fit cell_cf] = getEqExp(strch, nExp);
+[str_fit,cell_cf] = getEqExp(strch, nExp);
 
 ft_ = fittype(str_fit,'dependent',{'y'},'independent',{'x'},'problem', ...
     {'P0','x0'},'coefficients',cell_cf);
@@ -22,8 +22,7 @@ fo_ = fitoptions('method','nonlinearleastsquares','lower',p.lower,...
 
 %% Fit model to data
 if sum(~ex_(ok_))<2  % too many points excluded
-    warndlg(sprintf(['Not enough data left to fit equation:\n' str_fit ...
-        '\nafter applying exclusion rules.']));
+    return;
 
 else
     [cf, gof, output] = fit(x_dat(ok_),y_dat(ok_),ft_, fo_,'problem', ...

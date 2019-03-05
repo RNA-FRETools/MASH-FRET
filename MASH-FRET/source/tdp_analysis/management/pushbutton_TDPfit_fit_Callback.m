@@ -5,16 +5,16 @@ if ~isempty(p.proj)
     tpe = p.curr_type(proj);
     prm = p.proj{proj}.prm{tpe};
     curr_k = prm.clst_start{1}(4);
-    dat = prm.clst_res{2};
-    Kopt = size(prm.clst_res{1}(:,1),1);
+    J = prm.clst_res{3};
+    dat = prm.clst_res{1}.clusters{J};
     ref_k = prm.clst_res{4}{curr_k};
     kin_k = prm.kin_start(curr_k,:);
     stchExp = kin_k{1}(1);
     
     k = 0;
-    for k1 = 1:Kopt
-        for k2 = 1:Kopt
-            if k1 ~= k2
+    for j1 = 1:J
+        for j2 = 1:J
+            if j1 ~= j2
                 k = k+1;
                 if k == curr_k
                     break;
@@ -25,9 +25,6 @@ if ~isempty(p.proj)
             break;
         end
     end
-    
-    dat_k = dat((dat(:,end-1)==k1&((dat(:,end)==k2)|(dat(:,end)==k1))), ...
-        1:end-4);
     
     if stchExp
         % amp, dec, beta
@@ -70,10 +67,8 @@ if ~isempty(p.proj)
     
     setContPan('Fitting in progress ...', 'process', h.figure_MASH);
     
-    res = fitDt(dat_k, excl, ref_k, p_fit, p_boba, ...
-        h.figure_MASH);
+    res = fitDt(dat, j1, j2, excl, ref_k, p_fit, p_boba, h.figure_MASH);
     if isempty(res)
-        setContPan('Fitting process interrupted', 'error', h.figure_MASH);
         return;
     end
 

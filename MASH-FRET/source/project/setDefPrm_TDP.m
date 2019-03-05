@@ -137,7 +137,7 @@ end
 %                       smple nb, weigthing, excl]
 % prm.kin_start{n,2} = [low A, start A, up A, low tau, start tau, up tau, 
 %                       low beta, start beta, up beta]
-kin_def{1} = [0 nExp 1 1 20 100 0 1];
+kin_def{1} = [0 nExp 1 1 20 100 0 0];
 kin_def{2} = repmat([0 0.8 Inf 0 10 Inf 0 0.5 2],[nExp,1]);
 prm.kin_def = adjustParam('kin_def', kin_def, prm_in);
 

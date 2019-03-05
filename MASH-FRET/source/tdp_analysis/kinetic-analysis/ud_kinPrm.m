@@ -25,12 +25,18 @@ for j1 = 1:J
     for j2 = 1:J
         if j1 ~= j2
             j_trs = j_trs + 1;
-            excl = p.kin_start{j_trs,1}(8);
+%             excl = p.kin_start{j_trs,1}(8);
             clust_k = p.clst_res{1}.clusters{J}((...
                 p.clst_res{1}.clusters{J}(:,end-1)==j1 & ...
                 p.clst_res{1}.clusters{J}(:,end)==j2),1:end-2);
+            
             if size(clust_k,1)>2
-                p.clst_res{4}{j_trs} = getDtHist(clust_k, excl, wght);
+                % save histogram including first dwell time of trajectory
+                % for plot
+                mols = unique(p.clst_res{1}.clusters{J}(:,4));
+                p.clst_res{4}{j_trs} = getDtHist(p.clst_res{1}.clusters{J},...
+                    [j1,j2], mols, 0, wght);
+                
             else
                 p.clst_res{4}{j_trs} = [];
             end

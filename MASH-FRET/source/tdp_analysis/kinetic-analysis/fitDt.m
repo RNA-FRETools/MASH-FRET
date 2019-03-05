@@ -1,9 +1,15 @@
-function res = fitDt(dat, excl, hist_ref, p_fit, p_boba, h_fig)
+function res = fitDt(dat, j1, j2, excl, hist_ref, p_fit, p_boba, h_fig)
+
+res = [];
 
 strch = size(p_fit.start,2) == 3;
 nExp = (size(p_fit.start,2)/(2+strch));
-mols = unique(dat(:,end));
-nMol = numel(mols);
+
+% get dwell times concerning j1->j2 transition only
+dat_j1j2 = dat(dat(:,7)==j1 & dat(:,8)==j2,1:end-2);
+
+mols = unique(dat_j1j2(:,4));
+N = numel(mols);
 
 boba = ~isempty(p_boba);
 if boba
@@ -14,40 +20,56 @@ if boba
 end
 
 dt = {};
-m = 0;
-excl_mol = [];
-for im = 1:nMol
-    DT = dat(dat(:,end)==mols(im),1);
-    if isempty(DT)
-        excl_mol = [excl_mol im];
+w_vect = [];
+mol_incl = [];
+for n = 1:N
+    dt_m = dat(dat(:,4)==mols(n),:);
+    
+    % exclude molecules without dwell times concerning j1->j2 transition
+    if isempty(dt_m)
+        disp(cat(2,'molecule ',num2str(mols(n)),' excluded: no dwell time'));
         continue;
+    end
+    
+    if excl && isempty(dt_m(2:end-1,:))
+        disp(cat(2,'molecule ',num2str(mols(n)),' excluded: no dwell time',...
+            ' left after exclusion.'));
+        continue;
+        
+    elseif excl
+        dt_m = dt_m(2:end-1,:);
     end
 
-    if excl && isempty(DT(2:end-1,:))
-        excl_mol = [excl_mol im];
-        continue;
-    elseif excl
-        m = m+1;
-        dt{m} = DT(2:end-1,:);
-    else
-        m = m+1;
-        dt{m} = DT;
-    end
+    dt_m_j1j2 = dt_m(dt_m(:,7)==j1 & dt_m(:,8)==j2,:);
+    dt = cat(2,dt,dt_m_j1j2);
+    mol_incl = cat(2,mol_incl,mols(n));
+    
     if boba && wght
-        w_vect(m,1) = sum(dt{m}(:,1));
-        if im == nMol
+        w_vect = cat(1,w_vect,sum(dt{end}(:,1)));
+        
+        if n == N
             w_vect = w_vect/sum(w_vect);
         end
     end
 end
 
-w_vect = ones(m,1);
+if size(dt,2)==0
+    setContPan(cat(2,'No dwell time is left after excluding first last ',...
+        'occurrence in each trajectory.'),'error',h_fig);
+    return;
+end
+
+disp(sprintf(cat(2,'molecules ',repmat('%i ',[1,numel(mol_incl)]),...
+    ' included in data to fit.'),mol_incl));
+
+if boba && ~wght
+    w_vect = ones(size(dt,2),1);
+end
 
 if boba
     boba_res = BOBA_ana(dt, p_fit, strch, nExp, rspl, n_rpl, n_spl, ...
         w_vect, h_fig);
     if isempty(boba_res)
-        res = [];
         return;
     end
     
@@ -62,6 +84,7 @@ y_data = hist_ref(:,end);
 ref_res = mmexpfit_mod(x_data, y_data, p_fit, nExp, strch);
 if isempty(ref_res)
     res = [];
+    setContPan('Fitting process interrupted', 'error', h.figure_MASH);
     return;
 end
 

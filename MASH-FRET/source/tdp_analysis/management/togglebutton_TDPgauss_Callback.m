@@ -8,5 +8,7 @@ if ~isempty(p.proj)
     guidata(h.figure_MASH, h);
     set(h.zMenu_target, 'Enable', 'off');
     ud_zoom([], [], 'zoom', h.figure_MASH)
-    updateFields(h.figure_MASH, 'TDP');
+    
+    % reset previous clustering results if exist
+    pushbutton_TDPresetClust_Callback(h.pushbutton_TDPresetClust, [], h);
 end

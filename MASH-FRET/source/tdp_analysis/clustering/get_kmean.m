@@ -1,20 +1,20 @@
 function [mu,clust] = get_kmean(mu_0, tol_0, N, z, x, y, corr)
-% "mu_0" >> [K-by-2] initial guess of center
+% "mu_0" >> [J-by-2] initial guess of center
 % "tol" >> tolerance radius around each center
 % "N" >> max. number of iteration
 % "z" >> [M-by-3] (x,y,z) data to cluster
-% "mu" >> [K-by-2] converged values of the K centers
-% "clust" >> {1-by-K}[M-by-3] clustered data
+% "mu" >> [J-by-2] converged values of the J centers
+% "clust" >> {1-by-J}[M-by-3] clustered data
 
 clust = zeros(size(z));
 mu = [];
 
 % Generate cluster for "static" transitions (k to k transitions)
-clstStat = 0;
+clstStat = 1;
 
-K = size(mu_0,1);
+J = size(mu_0,1);
 if corr
-    if K<2
+    if J<2
         disp('If coordinates are correlated, K_max>=2.');
         return;
     end
@@ -52,18 +52,18 @@ n = 0; % Nb of k-mean iteration
 ok = 0;
 
 if ~corr
-    nTrs = K;
+    nTrs = J;
     mu = mu_0;
     tol = tol_0;
 else
-    nTrs = K^2;
+    nTrs = J^2;
     mu = mu_0;
-    tol = NaN(K^2,2);
+    tol = NaN(J^2,2);
     k = 0;
-    for k1 = 1:K
-        for k2 = 1:K
+    for j1 = 1:J
+        for j2 = 1:J
             k = k+1;
-            tol(k,1:2) = tol_0([k1 k2]);
+            tol(k,1:2) = tol_0([j1 j2]);
         end
     end
 end
@@ -79,20 +79,20 @@ while ~ok && (n<N || (N==0 && n==N))
     
     if corr
         mu_0 = mu;
-        mu = NaN(K^2,2);
+        mu = NaN(J^2,2);
         k = 0;
-        for k1 = 1:K
-            for k2 = 1:K
+        for j1 = 1:J
+            for j2 = 1:J
                 k = k+1;
-                mu(k,1:2) = mu_0([k1 k2],1)';
+                mu(k,1:2) = mu_0([j1 j2],1)';
             end
         end
         
         k = 0;
-        for k1 = 1:K
-        for k2 = 1:K
+        for j1 = 1:J
+        for j2 = 1:J
             k = k+1;
-            if (~clstStat && k1~=k2) || clstStat
+            if (~clstStat && j1~=j2) || clstStat
                 % Find data pnts lying in the tol. elipse of the cluster
                 tol_x = tol(k,1);
                 tol_y = tol(k,2);
@@ -138,18 +138,18 @@ while ~ok && (n<N || (N==0 && n==N))
     cvg = true;
     
     if corr
-        sum_k = zeros(1,K);
-        mu_new = zeros(K,1);
+        sum_k = zeros(1,J);
+        mu_new = zeros(J,1);
         k = 0;
-        for k1 = 1:K
-        for k2 = 1:K
+        for j1 = 1:J
+        for j2 = 1:J
             k = k+1;
-            if (~clstStat && k1 ~=k2) || clstStat
+            if (~clstStat && j1 ~=j2) || clstStat
                 xy_k = xy(:,id_k==k); z_k = z(:,id_k==k);
-                mu_new(k1,1) = mu_new(k1,1) + sum(z_k.*xy_k(1,:));
-                mu_new(k2,1) = mu_new(k2,1) + sum(z_k.*xy_k(2,:));
-                sum_k(k1) = sum_k(k1) + sum(z_k);
-                sum_k(k2) = sum_k(k2) + sum(z_k);
+                mu_new(j1,1) = mu_new(j1,1) + sum(z_k.*xy_k(1,:));
+                mu_new(j2,1) = mu_new(j2,1) + sum(z_k.*xy_k(2,:));
+                sum_k(j1) = sum_k(j1) + sum(z_k);
+                sum_k(j2) = sum_k(j2) + sum(z_k);
                 clust(id_k==k) = k;
             end
         end

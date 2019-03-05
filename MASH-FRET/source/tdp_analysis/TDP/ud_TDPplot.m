@@ -42,7 +42,7 @@ if isempty(TDP)
     
     % create TDP matrix and get binned transitions + TDP coord. assignment
     [TDP,dt_bin] = getTDPmat(dt_raw, TDP_prm, h_fig);
-    if isempty(TDP)
+    if isempty(TDP) || (numel(TDP)==1 && isnan(TDP))
         return;
     end
     
@@ -60,7 +60,21 @@ clust = [];
 
 if ~isempty(prm.clst_res{1})
     if meth == 2 % GM
+        % adjust index of model to display
         J = get(h.popupmenu_tdp_model,'Value')+1;
+        Jmax = size(prm.clst_res{1}.mu,2);
+        if J>Jmax
+            J = Jmax;
+        end
+        set(h.popupmenu_tdp_model,'Value',J-1);
+        
+        % adjust model list
+        str = {};
+        for j = 1:Jmax
+            str = cat(2,str,num2str(j));
+        end
+        set(h.popupmenu_tdp_model,'String',str(2:Jmax));
+
         mu = prm.clst_res{1}.mu{J};
         clust = prm.clst_res{1}.clusters{J};
         a = prm.clst_res{1}.a{J};

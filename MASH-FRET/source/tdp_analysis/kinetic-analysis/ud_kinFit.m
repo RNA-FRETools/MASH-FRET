@@ -173,9 +173,9 @@ if ~isempty(clust_res{1})
         scl = 'log';
     end
     k = 0;
-    for k1 = 1:J
-        for k2 = 1:J
-            if k1 ~= k2
+    for j1 = 1:J
+        for j2 = 1:J
+            if j1 ~= j2
                 k = k + 1;
             end
             if k == curr_k
@@ -186,12 +186,16 @@ if ~isempty(clust_res{1})
             break;
         end
     end
+    
     excl = prm.kin_start{curr_k,1}(8);
-    clust_k = clust_res{1}.clusters{J}((clust_res{1}.clusters{J}(:,end-1)==...
-        k1 & clust_res{1}.clusters{J}(:,end)==k2),1:end-2);
+    
+    clust_k = clust_res{1}.clusters{J}(clust_res{1}.clusters{J}(:,7)==j1 & ...
+        clust_res{1}.clusters{J}(:,8)==j2,:);
+    
     if size(clust_k,1)>1
         wght = kin_start{1}(7);
-        hst = getDtHist(clust_k, excl, wght);
+        mols = unique(clust_res{1}.clusters{J}(:,4));
+        hst = getDtHist(clust_res{1}.clusters{J}, [j1,j2], mols, excl, wght);
         plotKinFit(h.axes_TDPplot2, hst, kin_k, boba, scl, stchExp);
     else
         cla(h.axes_TDPplot2);

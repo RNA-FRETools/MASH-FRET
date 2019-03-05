@@ -1,4 +1,4 @@
-function [TDP dt_bin] = getTDPmat(dt, prm, varargin)
+function [TDP,dt_bin] = getTDPmat(dt, prm, varargin)
 % TDP = getTDPmat(dt, p, excl, h_fig)
 %
 % Build TDP matrix from input dwell-times and parameters
@@ -20,16 +20,19 @@ function [TDP dt_bin] = getTDPmat(dt, prm, varargin)
 %        or string "Include" if the first dwell-time is included.
 % "h_fig" >> MASH figure handle
 % "TDP" >> TDP matrix built from input dwell-times
+% "dt_bin" >> dwell time table excluding molecules without transitions
 
 % Created the 29th of April 2014 by Mélodie C.A.S. Hadzic
 % Last update: the 5th of May 2014 by Mélodie C.A.S. Hadzic
+
+TDP = [];
+dt_bin = [];
 
 bins = prm{1};
 lim = prm{2};
 rate = prm{3};
 oneval = prm{4};
 
-TDP = [];
 if ~isempty(varargin)
     h_fig = varargin{1};
 else
@@ -44,38 +47,70 @@ else
     disp(str);
 end
 
+question = sprintf(cat(2,'Some transitions may lay out of TDP range. ',...
+    'Should the outliers be ignored in state sequences? (suggested)\n\n ',...
+    'Outliers will be cut out form original state trajectories and ',...
+    'neighbouring states will be linked together.'));
+choice = questdlg(question, 'Re-arranged state sequence', ...
+    'Yes', 'No', 'Yes');
+
+if strcmp(choice, 'Yes')
+    adj = 1;
+    
+elseif strcmp(choice, 'No')
+    adj = 0;
+
+else
+    setContPan('Building TDP process was aborted.','warning',h_fig);
+    TDP = NaN;
+    return;
+end
+
 iv_x = lim(1,1):bins(1):lim(1,2);
 iv_y = lim(2,1):bins(2):lim(2,2);
 
-dt_bin = []; trans = []; id_m  = [];
+trans = []; id_m  = [];
 for m = 1:size(dt,1)
     if ~isempty(dt{m,1})
-        % add molecule nunmber and exclude out-of range transitions
+        
+        % add molecule number in column 4 and columns 5,6 to add coordinates in TDP
         dat_m = [dt{m,1} ones(size(dt{m,1},1),1)*m zeros(size(dt{m,1},1),2)];
         
+        % assign TDP x-coordinates in column 5
         [vals_x,o,id_x] = unique(dat_m(:,2));
         [o,id,o] = find(vals_x'>lim(1,1) & vals_x'<lim(1,2));
         vals_x(id,2) = id;
         dat_m(:,5) = vals_x(id_x',2);
         
+        % assign TDP y-coordinates in column 6
         [vals_y,o,id_y] = unique(dat_m(:,3));
         [o,id,o] = find(vals_y'>lim(2,1) & vals_y'<lim(2,2));
         vals_y(id,2) = id;
         dat_m(:,6) = vals_y(id_y',2);
         
-        dat_m((dat_m(:,5)==0 | dat_m(:,6)==0),[5 6]) = 0;
+        % if x- or y-coordinates are out of TDP range, set coordinates to 0
+        dat_m((dat_m(:,5)==0 | dat_m(:,6)==0),[5,6]) = 0;
         
-        % re-adjust transition sequence
-        dat_m = adjustDt(dat_m);
+        if adj
+            % re-adjust state sequence by removing out-of-range states and
+            % linking remaining states together
+            dat_m = adjustDt(dat_m);
+        end
         
         if ~isempty(dat_m)
+            
+            % bin dwell times to frame rate
             dat_m(:,1) = round(dat_m(:,1)/rate)*rate;
             
+            % get unique state transitions and their indexes in 
+            % concatenated table
             [trans_m,o,ids] = unique(dat_m(:,2:3), 'rows');
-            id_m = [id_m ids'+size(trans,1)];
-            trans = [trans;trans_m];
+            id_m = cat(2,id_m,ids'+size(trans,1));
+            trans = cat(1,trans,trans_m);
             
-            dt_bin = [dt_bin; dat_m(:,1:4) zeros(size(dat_m,1),2)];
+            % concatenate molecule dwell time tables and add column 7 and 8
+            % for cluster appartenance.
+            dt_bin = cat(1,dt_bin,[dat_m(:,1:4),zeros(size(dat_m,1),2)]);
         end
     end
 end

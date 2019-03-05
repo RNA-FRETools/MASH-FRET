@@ -43,7 +43,9 @@ end
 %% normalise transition densities
 if norm
     try
-        TDP = TDP/sum(sum(TDP));
+        if sum(sum(TDP))>0
+            TDP = TDP/sum(sum(TDP));
+        end
     catch err % out of memory
         h_err = errordlg({['Normalization of TDP impossible: ' ...
             err.message] '' ...
@@ -56,7 +58,11 @@ end
 %% draw TDP image
 cla(h_axes);
 im = imagesc(lim(1,:), lim(2,:), TDP, 'Parent', h_axes);
-set(h_axes,'CLim',[min(min(TDP)) max(max(TDP))]);
+if sum(sum(TDP))
+    set(h_axes,'CLim',[min(min(TDP)) max(max(TDP))]);
+else
+    set(h_axes,'CLim',[0 1]);
+end
 
 %% plot y = x diagonal
 set(h_axes, 'NextPlot', 'add');
