@@ -223,7 +223,7 @@ if isfield(s, 'exp')
 end
 
 
-%% check dwell-times entries: in construction (fields not used)
+%% check dwell-times entries
 
 if ~s.dt_ascii;
     s.dt_pname = [];

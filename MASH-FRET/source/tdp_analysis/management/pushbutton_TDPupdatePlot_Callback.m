@@ -3,7 +3,7 @@ p = h.param.TDP;
 if ~isempty(p.proj)
     proj = p.curr_proj; % current project
     tpe = p.curr_type(proj); % current channel type
-    dt_raw = p.proj{proj}.dt(:,tpe); % {1-by-nMol} transitions
+    dt_raw = p.proj{proj}.dt(:,tpe); % {nMol-by-1} transitions
     prm = p.proj{proj}.prm{tpe}; % current channel parameters
     
     a{1} = prm.plot{1}([1 2],1); % TDP x & y binning
@@ -12,7 +12,11 @@ if ~isempty(p.proj)
     a{4} = prm.plot{1}(4,1); % one/total transition count per molecule
     
     % create TDP matrix and get binned transitions + TDP coord. assignment
-    [TDP dt_bin] = getTDPmat(dt_raw, a, h.figure_MASH);
+    [TDP,dt_bin] = getTDPmat(dt_raw, a, h.figure_MASH);
+    
+    if isnan(TDP)
+        return;
+    end
     
     if ~isempty(TDP)
         % save TDP matrix and binned transitions

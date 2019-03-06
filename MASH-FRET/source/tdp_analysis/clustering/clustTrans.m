@@ -1,7 +1,7 @@
 function res = clustTrans(dt_bin, TDP, plot_prm, clust_prm, varargin)
 
 M_def = 500; % default max. number of maximization iteration
-plotIter_def = 1; % plot/not EM results while iterating
+plotIter_def = 0; % plot/not EM results while iterating
 Jmin_def = 2; % minimum configuration
 
 meth = clust_prm{1}(1); % clustering method
@@ -16,7 +16,6 @@ n_rep = clust_prm{4}(3); % number of BS replicates in one sample
 
 bins = plot_prm{1};
 lim = plot_prm{2}; % TDP x & y limits
-rate = plot_prm{3}(1); % frame rate
 onecount = plot_prm{3}(2); % one/total transition count per molecule
 gconv = plot_prm{3}(3); % one/total transition count per molecule
 
@@ -56,6 +55,12 @@ if boba && ~isempty(h_fig)
     
 elseif boba
     disp(cat(2,'Performing data randomisation and clustering ...'));
+    
+elseif ~boba && ~isempty(h_fig)
+    setContPan('Performing data clustering ...','process', h_fig);
+    
+elseif ~boba
+    disp('Performing data clustering ...');
 end
 
 param = cell(1,n_spl);
@@ -96,7 +101,17 @@ for k = 1:n_spl
     
     % apply Gaussian filter to TDP
     if gconv
-        TDP_spl = convGauss(TDP_spl, 0.0005, lim);
+        lim = plot_prm{2};
+        bin_x = (lim(1,2)-lim(1,1))/size(TDP,2);
+        bin_y = (lim(2,2)-lim(2,1))/size(TDP,1);
+        o2 = [0.0005 0.0005];
+        if lim(1,2)>2
+            o2(1) = (4.4721*bin_x)^2;
+        end
+        if lim(2,2)>2
+            o2(2) = (4.4721*bin_y)^2;
+        end
+        TDP_spl = convGauss(TDP_spl, o2, lim);
     end
     
     % get 2D-Gaussian shape
@@ -287,13 +302,24 @@ else
 end
 
 for J = Jmin:Jmax
+    
+    if isempty(origin{J})
+        res.mu{J} = [];
+        res.o{J} = [];
+        res.a{J} = [];
+        res.clusters{J} = [];
+        res.fract{J} = [];
+        continue;
+    end
+    
     id_j = [];
     for j1 = 1:J
         for j2 = 1:J
             id_j = cat(1,id_j,[j1 j2]);
         end
     end
-
+    
+    % add cluster assignment in columns 7 and 8
     dt_bin_j = [dt_bin zeros(size(dt_bin,1),2)];
     for i = 1:size(dt_bin_j,1)
         if dt_bin_j(i,5)>0 && dt_bin_j(i,6)>0 && ...
@@ -302,15 +328,17 @@ for J = Jmin:Jmax
                 dt_bin_j(i,5)),:);
         end
     end
+    
+    dt_bin_new = dt_bin_j;
 
-    [mols,o,o] = unique(dt_bin_j(:,4));
-    dt_bin_new = [];
-    for m = mols'
-        dt_bin_m = dt_bin_j(dt_bin_j(:,4)==m,:);
-    %     dt_bin_m  = adjustDt(dt_bin_m);
-        dt_bin_new = [dt_bin_new; dt_bin_m];
-    end
-    dt_bin_new(:,1) = round(dt_bin_new(:,1)/rate)*rate;
+%     [mols,o,o] = unique(dt_bin_j(:,4));
+%     dt_bin_new = [];
+%     for m = mols'
+%         dt_bin_m = dt_bin_j(dt_bin_j(:,4)==m,:);
+%     %     dt_bin_m  = adjustDt(dt_bin_m);
+%         dt_bin_new = [dt_bin_new; dt_bin_m];
+%     end
+%     dt_bin_new(:,1) = round(dt_bin_new(:,1)/rate)*rate;
 
     if isempty(dt_bin_new)
         return;
@@ -325,20 +353,15 @@ for J = Jmin:Jmax
 
     for j = 1:J
         clust_k = dt_bin_new(dt_bin_new(:,end-1)==j,:);
-        res.fract{J}(j,1) = sum(clust_k(:,1),1)/sum(dt_bin_j(:,1),1);
+        res.fract{J}(j,1) = sum(clust_k(:,1),1)/sum(dt_bin_new(:,1),1);
     end
 end
 
 res.boba_K = [Jopt_mean Jopt_sig];
 
-if Jopt>0 && ~isempty(h_fig)
-    setContPan(cat(2,'Clustering completed: ',num2str(Jopt),' states ',...
-        'found'),'success', h_fig);
-elseif Jopt>0
-    disp(cat(2,'Clustering completed: ',num2str(Jopt),' states found'))
-elseif ~isempty(h_fig)
+if Jopt<=0 && ~isempty(h_fig)
     setContPan('Clustering failed','error', h_fig);
-else
+elseif Jopt<=0
     disp('Clustering failed');
 end
 

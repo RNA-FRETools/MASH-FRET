@@ -79,7 +79,7 @@ if meth == 1 % kmean clustering
     
     str_pop = cellstr(num2str((1:Jmax)'));
     set(h.popupmenu_TDPstate, 'Value', state, 'String', str_pop, ...
-        'TooltipString', 'current state');
+        'TooltipString', '<html><u>Select</u> state</html>');
     
     set(h.togglebutton_TDPkmean, 'Value', 1, 'FontWeight', 'bold');
     set(h.togglebutton_TDPgauss, 'Value', 0, 'FontWeight', 'normal');
@@ -94,10 +94,13 @@ if meth == 1 % kmean clustering
     set(h.text_TDPradius, 'String', 'radius');
     set(h.edit_TDPiniVal, 'String', num2str(trs_k(1)));
     set(h.edit_TDPradius, 'String', num2str(trs_k(2)), 'TooltipString', ...
-        'Radius of the tolerance area around centers');
+        cat(2,'<html><b>Cluster radius</b>: used for <b>k-mean</b> ',...
+        'clustering</html>'));
     
     set(h.edit_TDPmaxiter, 'String', num2str(N), 'TooltipString', ...
-        'Max. number of kmean iterations');
+        cat(2,'<html>Maximum number of <b>k-mean iterations:</b><br><b>',...
+        '100</b> is a good compromise between<br>execution time and ',...
+        'result accuracy.</html>'));
     
     set([h.text_tdp_showModel,h.text_tdp_Jequal,h.popupmenu_tdp_model,...
         h.pushbutton_tdp_impModel],'Enable','off');
@@ -114,7 +117,8 @@ else % GMM-based clustering
     str_pop = {'spherical','ellipsoid straight','ellipsoid diagonal', ...
         'free'};
     set(h.popupmenu_TDPstate, 'Value', mode, 'String', str_pop, ...
-        'TooltipString', '2D Gaussian symetry');
+        'TooltipString', cat(2,'<html><b>Cluster shape</b> for <b>GM</b> ',...
+        'clustering</html>'));
     
     set([h.text_TDPiniVal h.edit_TDPiniVal],'String','','Enable','off');
     set([h.text_TDPradius h.edit_TDPradius],'String','','Enable','off');
@@ -122,7 +126,9 @@ else % GMM-based clustering
     
     set(h.text_TDPiter, 'String', 'restarts:');
     set(h.edit_TDPmaxiter, 'String', num2str(N), 'TooltipString', ...
-        'Number of Gaussian mixture initialisations.');
+        cat(2,'<html>Maximum number of <b>GM initializations:</b><br> <b>',...
+        '5</b> is a good compromise between<br>execution time and result ',...
+        'accuracy.</html>'));
 end
 
 if boba

@@ -17,6 +17,7 @@ if n_hist ~= n_rep
 
     elseif ~strcmp(choice, 'No')
         res = [];
+        setContPan('Fitting process aborted.','warning',h_fig);
         return;
     end
 end
@@ -60,26 +61,51 @@ for k = 1:n_spl
     y_data = histall(:,2);
     fitres = mmexpfit_mod(x_data, y_data, p, nExp, strch);
     if isempty(fitres)
-        res = [];
-        % close loading bar
-        loading_bar('close', h_fig);
-        return;
+%         res = [];
+%         % close loading bar
+%         loading_bar('close', h_fig);
+%         return;
+        disp(cat(2,'sample ',num2str(k),': insufficient number of data ',...
+            'points to fit.'));
+        res.adj_s(k,1).sse = NaN;
+        res.adj_s(k,1).rsquare = NaN;
+        res.adj_s(k,1).dfe = NaN;
+        res.adj_s(k,1).adjrsquare = NaN;
+        res.adj_s(k,1).rmse = NaN;
+
+        res.cf(k,:) = NaN(1,2*nExp*double(~strch)+3*strch);  % amplitude, decay constant, beta
+    else
+        % get fitting results
+        res.adj_s(k,1) = fitres.gof;
+        res.cf(k,:) = fitres.cf;  % amplitude, decay constant, beta
     end
-    
-    % get fitting results
-    res.adj_s(k,1) = fitres.gof;
-    res.cf(k,:) = fitres.cf;  % amplitude, decay constant, beta
-    
+
     % update loading bar
     err = loading_bar('update', h_fig); 
     if err
-        res= [];
+        res = [];
         return;
     end
 end
 
+% remove failures because of an insufficient number of data points
+res.adj_s(~~sum(isnan(res.cf),2),:) = [];
+res.cf(~~sum(isnan(res.cf),2),:) = [];
+
+if size(res.cf,1)<n_spl
+    setContPan(cat(2,'The number of samples that resulted in a successful',...
+        ' fit is of :',num2str(size(res.cf,1)),'/',num2str(n_spl)),...
+        'process',h_fig);
+end
+
 % close loading bar
 loading_bar('close', h_fig);
+
+% all fits failed because of an insufficient number of data points
+if isempty(res.cf)
+    res = [];
+    return;
+end
 
 res.n_rep = n_rep;
 

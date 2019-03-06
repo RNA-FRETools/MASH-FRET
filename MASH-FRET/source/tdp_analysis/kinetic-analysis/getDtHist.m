@@ -1,26 +1,36 @@
-function hist_ref = getDtHist(dat, excl, wght)
+function hist_ref = getDtHist(clust_dat, trans_id, mols, excl, wght)
 
-mols = unique(dat(:,4));
 nMol = numel(mols);
+j1 = trans_id(1);
+j2 = trans_id(2);
 
-dt = cell(1,nMol);
+dt_j1j2 = cell(1,nMol);
 w_vect = ones(nMol,1);
+
+% extract dwell time histogram for transition j1->j2 and for each molecule
 for m = 1:nMol
-    dt{m} = dat(dat(:,4)==mols(m),1);
-    if excl
-        dt{m} = dt{m}(2:end,:);
+    clst_m = clust_dat(clust_dat(:,4)==mols(m),:);
+    if excl 
+        % exclude first dwell time of trajectory
+        clst_m = clst_m(2:end,:);
     end
+    
+    dt_j1j2{m} = clst_m((clst_m(:,7)==j1 & clst_m(:,8)==j2),1:end-2);
+    
     if wght
-        w_vect(m,1) = sum(dt{m}(:,1));
+        % weight histograms according to the number of dwell times included
+        w_vect(m,1) = sum(dt_j1j2{m}(:,1));
         if m == nMol
             w_vect = w_vect/sum(w_vect);
         end
     end
 end
 
+% concatenate dwell time histograms
 hist_ref = [];
 for m = 1:nMol
-    hist_ref = [hist_ref; [dt{m}(:,1) w_vect(m)*ones(size(dt{m},1),1)]];
+    hist_ref = cat(1,hist_ref,...
+        [dt_j1j2{m}(:,1),w_vect(m)*ones(size(dt_j1j2{m},1),1)]);
 end
 
 hist_ref = sortrows(hist_ref,1);

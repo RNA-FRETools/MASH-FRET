@@ -5,7 +5,9 @@ if ~isempty(p.proj)
     tpe = p.curr_type(proj);
     p.proj{proj}.prm{tpe}.clst_start{1}(1) = 1;
     h.param.TDP = p;
-    set(h.zMenu_target, 'Enable', 'on');
     guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'TDP');
+    set(h.zMenu_target, 'Enable', 'on');
+    
+    % reset previous clustering results if exist
+    pushbutton_TDPresetClust_Callback(h.pushbutton_TDPresetClust, [], h);
 end

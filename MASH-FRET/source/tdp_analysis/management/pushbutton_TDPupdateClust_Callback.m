@@ -14,6 +14,12 @@ if ~isempty(p.proj)
     dt_bin = prm.plot{3}; % binned transitions + TDP coord. assignment
     TDP = prm.plot{2}; % TDP matrix
     
+    if ~sum(sum(TDP))
+        setContPan('TDP is empty, clustering is not availabe.','warning',...
+            h.figure_MASH);
+        return;
+    end
+    
     clust_prm{1} = [prm.clst_start{1}(1) ... % clustering method
                     prm.clst_start{1}(2) ... % cluster shape
                     prm.clst_start{1}(3) ... % max. number of states
