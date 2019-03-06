@@ -184,7 +184,7 @@ if nbMol % Only true, if at least one molecule was simulated.
                 if strcmp(bgDec_dir{2},'increase')
                     exp_bg_acc = img_bg_acc(ceil(coord(n,4)), ...
                         ceil(coord(n,3))-round(res_x/2))*(amp* ...
-                        exp(-(numel(I_acc_bt)':-1:1)*rate/cst)+1);
+                        exp(-(numel(I_acc_bt):-1:1)*rate/cst)+1);
                 else
                     exp_bg_acc = img_bg_acc(ceil(coord(n,4)), ...
                         ceil(coord(n,3))-round(res_x/2))*(amp* ...
@@ -195,8 +195,8 @@ if nbMol % Only true, if at least one molecule was simulated.
                 img_bg_acc = img_bg_acc*(amp*exp(-rate/cst)+1);
                 
                 if noiseCamInd~=2 % no Poisson noise for pure Gaussian noise
-                    I_don_bg = I_don_bt + random('poiss',exp_bg_don)';
-                    I_acc_bg = I_acc_bt + random('poiss',exp_bg_acc)';
+                    I_don_bg = I_don_bt + random('poiss',exp_bg_don);
+                    I_acc_bg = I_acc_bt + random('poiss',exp_bg_acc);
                 else
                     I_don_bg = I_don_bt + exp_bg_don;
                     I_acc_bg = I_acc_bt + exp_bg_acc;
