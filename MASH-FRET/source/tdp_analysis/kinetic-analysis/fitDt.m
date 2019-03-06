@@ -2,6 +2,12 @@ function res = fitDt(dat, j1, j2, excl, hist_ref, p_fit, p_boba, h_fig)
 
 res = [];
 
+if isempty(hist_ref)
+    setContPan(cat(2,'Dwell time histogram is empty: fitting is not ',...
+        'available'),'warning',h_fig);
+    return;
+end
+
 strch = size(p_fit.start,2) == 3;
 nExp = (size(p_fit.start,2)/(2+strch));
 
