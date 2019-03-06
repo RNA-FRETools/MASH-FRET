@@ -706,14 +706,6 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                         end
 
                     case 'user' % User defined or NExpN-model from Börner et al. 2017
-                        
-                         % model parameters
-                        I_th = noisePrm(1);
-                        A = noisePrm(2);
-                        wG = noisePrm(5);
-                        tau = noisePrm(3);
-                        a = noisePrm(6);
-                        sig0 = noisePrm(4);
 
                         % convert to EC
                         I_don_plot{m} = phtn2arb(I_don_plot{m});
@@ -944,10 +936,10 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             end
             if ~impPrm || (impPrm && ~isfield(p.molPrm, 'psf_width'))
                 if p.PSF 
-                    fprintf(f,['donor full PSF width at half maximum ' ...
-                        '(um):\t%d\n'], p.PSFw(1,1)*2*sqrt(2*log(2)));
-                    fprintf(f,['acceptor full PSF width at half maximum'...
-                        ' (um):\t%d\n'], p.PSFw(1,2)*2*sqrt(2*log(2)));
+                    fprintf(f,['donor PSF standard deviation ' ...
+                        '(um):\t%d\n'], p.PSFw(1,1));
+                    fprintf(f,['acceptor PSF standard deviation '...
+                        ' (um):\t%d\n'], p.PSFw(1,2));
                 end
             end
             fprintf(f, 'movie dimension (pixels):\t%i,%i\n', ...

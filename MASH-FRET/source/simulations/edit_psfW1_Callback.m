@@ -7,7 +7,6 @@ if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val > 0)
         h.figure_MASH);
 else
     set(obj, 'BackgroundColor', [1 1 1]);
-    val = val/(2*sqrt(2*log(2))); % conversion FWHM to sigma
     h.param.sim.PSFw(1,1) = val;
     h.param.sim.matGauss = cell(1,4);
     guidata(h.figure_MASH, h);
