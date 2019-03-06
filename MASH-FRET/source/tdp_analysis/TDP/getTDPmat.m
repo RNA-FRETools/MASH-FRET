@@ -48,16 +48,16 @@ else
 end
 
 question = sprintf(cat(2,'Some transitions may lay out of TDP range. ',...
-    'Should the outliers be ignored in state sequences? (suggested)\n\n ',...
+    'Should the outliers be ignored in state sequences?\n\n ',...
     'Outliers will be cut out form original state trajectories and ',...
     'neighbouring states will be linked together.'));
 choice = questdlg(question, 'Re-arranged state sequence', ...
-    'Yes', 'No', 'Yes');
+    'Yes', 'No,keep original dwell times', 'Yes');
 
 if strcmp(choice, 'Yes')
     adj = 1;
     
-elseif strcmp(choice, 'No')
+elseif strcmp(choice, 'No,keep original dwell times')
     adj = 0;
 
 else
