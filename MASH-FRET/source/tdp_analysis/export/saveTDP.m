@@ -220,7 +220,16 @@ if tdp_conv % save gaussian convolution TDP matrix
         
         % calculate data
         lim = prm.plot{1}([1 2],[2 3]);
-        TDP_conv = convGauss(TDP, 0.0005, lim);
+        bin_x = (lim(1,2)-lim(1,1))/size(TDP,2);
+        bin_y = (lim(2,2)-lim(2,1))/size(TDP,1);
+        o2 = [0.0005 0.0005];
+        if lim(1,2)>2
+            o2(1) = (4.4721*bin_x)^2;
+        end
+        if lim(2,2)>2
+            o2(2) = (4.4721*bin_y)^2;
+        end
+        TDP_conv = convGauss(TDP, o2, lim);
         Nx = size(TDP_conv,2);
         
         % write data to file
@@ -318,7 +327,16 @@ if tdp_png_conv
         
         % format data
         lim = prm.plot{1}([1 2],[2 3]);
-        TDP_conv = convGauss(TDP, 0.0005, lim);
+        bin_x = (lim(1,2)-lim(1,1))/size(TDP,2);
+        bin_y = (lim(2,2)-lim(2,1))/size(TDP,1);
+        o2 = [0.0005 0.0005];
+        if lim(1,2)>2
+            o2(1) = (4.4721*bin_x)^2;
+        end
+        if lim(2,2)>2
+            o2(2) = (4.4721*bin_y)^2;
+        end
+        TDP_conv = convGauss(TDP, o2, lim);
         maxI = max(max(TDP_conv)); minI = min(min(TDP_conv));
         TDP_8bit_conv = uint8(255*(TDP_conv-minI)/(maxI-minI));
         
