@@ -44,14 +44,23 @@ for i = 1:numel(dat_val)
     o = sig0;
     
     if o > 0
-        x = (mu-10*o):o/10:(mu+100*(o+2*tau));
+        
+        % to reduce calculation time, use the same distribution if values
+        % differ of less than 1 ec.
+        if i==1 || (i>1 && (mu-mu_ref)>1)
+            x = (mu-10*o):o/10:(mu+100*(o+2*tau));
 
-        % first model, old
-%           P = 0.5*(1+erf((x-mu)/(o*sqrt(2)))).*(A*exp(-(x-mu)/tau)) + ...
-%             (1-0.5*A*(1+erf((x-mu)/(o*sqrt(2))))).*exp(-((x-mu).^2)/(2*(o^2)));
-        % second mode, Boerner et al 2017
-            P = (1-A)*(1/(sqrt(2*pi)*o))*exp(-((x-mu).^2)/(2*(o^2))) + ... 
-              0.5*A*exp((o^2)/(2*(tau^2))-(x-mu)./tau).*(1-erf(o/(sqrt(2)*tau)-(x-mu)./(sqrt(2)*o)));
+            % first model, old
+    %           P = 0.5*(1+erf((x-mu)/(o*sqrt(2)))).*(A*exp(-(x-mu)/tau)) + ...
+    %             (1-0.5*A*(1+erf((x-mu)/(o*sqrt(2))))).*exp(-((x-mu).^2)/(2*(o^2)));
+            % second mode, Boerner et al 2017
+                P = (1-A)*(1/(sqrt(2*pi)*o))*exp(-((x-mu).^2)/(2*(o^2))) + ... 
+                  0.5*A*exp((o^2)/(2*(tau^2))-(x-mu)./tau).*(1-erf(o/(sqrt(2)*tau)-(x-mu)./(sqrt(2)*o)));
+              P = P(P>1E-6);
+              x = x(P>1E-6);
+              
+              mu_ref = mu;
+        end
 
         dat(dat==mu) = randsample(x, numel(dat(dat==mu)), true, P);
         
