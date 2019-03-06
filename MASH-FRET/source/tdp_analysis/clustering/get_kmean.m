@@ -183,14 +183,27 @@ end
 
 clust = reshape(clust, numel(unique(y)), numel(unique(x)));
 
-[k_excl,o,o] = find(isnan(mu));
+[j_excl,o,o] = find(isnan(mu));
 clust_new = clust;
-if isempty(k_excl)
-    k_excl = [];
+
+k_excl = [];
+k = 0;
+if corr
+    for j1 = 1:J
+        for j2 = 1:J
+            k = k+1;
+            if sum(j_excl==j1) || sum(j_excl==j2)
+                k_excl = cat(2,k_excl,k);
+            end
+        end
+    end
+else
+    k_excl = j_excl;
 end
-for k = k_excl'
-    clust_new(clust>k) = clust_new(clust>k)-1;
+
+for k = 1:numel(k_excl)
+    clust_new(clust>=k_excl(k)) = clust_new(clust>=k_excl(k))-1;
 end
 clust = clust_new;
-mu(k_excl',:) = [];
+mu(j_excl',:) = [];
 
