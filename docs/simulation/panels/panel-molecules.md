@@ -138,6 +138,9 @@ Intensity *I*<sub>tot,em</sub> is et in **(a)**
 If needed, sample heterogeneity can be introduced by attributing a strictly positive deviation *wI*<sub>tot,em</sub> **(b)**.
 In this case, a random intensity value is drawn for each molecule, using a Gaussian distribution with mean *I*<sub>tot,em</sub> and standard deviation *wI*<sub>tot,em</sub>.
 
+### Fluorescence anisotropy
+{: .no_toc}
+
 Fluorescence anisotropy can be modulated by setting a factor &#947; in **(d)**. Donor emission is affected according to the relation:
 
 {: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
@@ -149,7 +152,12 @@ with *I*<sub>D,em,0</sub> the original donor fluorescence intensity in presence 
 
 Similarly, sample heterogeneity in anisotropy can be introduced by setting a strictly positive deviation *w&#947;* in **(e)**.
 
+### Intensity units
+{: .no_toc}
+
 Intensity units of *I*<sub>tot,em</sub> and *wI*<sub>tot,em</sub> can be set in photon counts (pc) or electron counts (ec) when the box in **(c)** is checked or unchecked respectively.
+This choice also affects the units of background intensities set in 
+[Backgorund](panel-experimental-setup#background).
 Photon counts and electron counts are linked by the relation:
 
 {: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
@@ -177,7 +185,7 @@ See
 
 ## Cross-talks
 
-They are the bias in collected intensities caused by imperfect excitation and detection.
+They are the bias in collected intensities caused by imperfect excitation and detection selectivity.
 
 <a href="../../assets/images/gui/sim-panel-molecules-crosstalks.png"><img src="../../assets/images/gui/sim-panel-molecules-crosstalks.png"  style="max-width: 99px;" /></a>
 

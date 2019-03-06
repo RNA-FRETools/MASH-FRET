@@ -130,6 +130,8 @@ This model is purely empirical: model parameters are obtained by fitting the dar
 P = ( 1-<i>A</i><sub>CIC</sub> ) x exp( -( <i>intensity</i> - <i>&#956;</i><sub>ic,d</sub> )<sup>2</sup> / ( 2 x <i>&#963;</i><sub>CIC</sub><sup>2</sup> ) ) + <i>A</i><sub>CIC</sub> x exp( - <i>intensity</i> / <i>&#964;</i><sub>CIC</sub> )
 </p>
 
+**Note:** *Random generation of NExpN noise is very time consuming. Expect spending around 8 hours to simulate a 256-by-256-wide and 4000 frame-long video.*
+
 **<u>default</u>:** values taken from the literature (reference [here](../../citations.html#simulation-algorithm-testing)):
 * *&#956;*<sub>ic,d</sub> = 1069 ic/s
 * *A*<sub>CIC</sub> = 0.02 

@@ -56,19 +56,19 @@ Channel-specific fluorescent background.
 
 Fluorescent background is a source of unwanted fluorescence that adds up to each video channel. It can be uniform in space or spatially distributed, but also constant or dynamic in time.
 
----
 
 ### Uniform background
 {: .no_toc}
 
 To apply a uniform background, "Uniform" must be selected in the list **(a)**. 
 Background intensities are set in **(b)** and **(c)** for donor and acceptor channel respectively.
+Intensity units can be given in photon counts (pc) or electron counts (ec); see
+[Intensity units](panel-molecules#intensity-units) for more information.
 
 **<u>default</u>:** 
 * *bg*<sub>D</sub> = 0 ec
 * *bg*<sub>A</sub> = 0 ec
 
----
 
 ### Gaussian-distributed background
 {: .no_toc}
@@ -78,12 +78,13 @@ The background is spatially distributed following a 2D-Gaussian model. This can 
 To apply a <u>2D-Gaussian background</u>, "2D Gaussian profile" must be selected in list **(a)**.
 In that case, the background follows a 2D-Gaussian distribution centred on each channel, having common x- and y-standard deviations, *w*<sub>0,ex,x</sub> and *w*<sub>0,ex,y</sub>, given in pixels and set in **(d)** and **(e)** respectively.
 Gaussian amplitudes *bg*<sub>D</sub> in donor channel and *bg*<sub>A</sub> in acceptor channel are set in **(b)** and **(c)** respectively.
+Gaussian amplitudes can be given in photon counts (pc) or electron counts (ec); see
+[Intensity units](panel-molecules#intensity-units) for more information.
 
 **<u>default</u>:** 2D-Gaussian widths are set to half-channel dimensions in a video of 256-by-256 pixels:
 * *w*<sub>0,ex,x</sub> = 64 px
 * *w*<sub>0,ex,y</sub> = 128 px
 
----
 
 ### Background from image file
 
@@ -96,14 +97,13 @@ If the loaded file is a video, the first frame will be used as the background im
 
 **<u>default</u>:** no background image is loaded.
 
----
 
 ### Background decaying in time
 {: .no_toc}
 
 The fluorescent background intensities are decaying in time. This can be used to model the photobleaching of an autofluorescent medium.
 
-Time decay of background intensities is activated by checking the box in **(f)**.
+Time decay of uniform or spatially distributed background intensities is activated by checking the box in **(f)**.
 In that case, the background intensity in each pixel decays exponentially with a time decay *dec* given in seconds and set in **(g)**.
 The starting background intensities can be modulated by a factor *amp* set in **(h)**. 
 
