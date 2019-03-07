@@ -3,7 +3,7 @@ layout: default
 title: Visualization area
 parent: /trace-processing/panels
 grand_parent: /trace-processing
-nav_order: 2
+nav_order: 8
 ---
 
 # Visualization area

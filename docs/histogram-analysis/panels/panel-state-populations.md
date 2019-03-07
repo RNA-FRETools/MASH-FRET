@@ -3,7 +3,7 @@ layout: default
 title: State populations
 parent: /histogram-analysis/panels
 grand_parent: /histogram-analysis
-nav_order: 5
+nav_order: 4
 ---
 
 # State populations

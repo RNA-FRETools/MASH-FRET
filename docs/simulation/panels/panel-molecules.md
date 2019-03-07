@@ -3,7 +3,7 @@ layout: default
 title: Molecules
 parent: /simulation/panels
 grand_parent: /simulation
-nav_order: 3
+nav_order: 2
 ---
 
 # Molecules

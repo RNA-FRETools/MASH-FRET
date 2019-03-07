@@ -3,7 +3,7 @@ layout: default
 title: Visualization area
 parent: /simulation/panels
 grand_parent: /simulation
-nav_order: 1
+nav_order: 5
 ---
 
 # Visualization area

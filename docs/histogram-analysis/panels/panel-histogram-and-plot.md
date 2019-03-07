@@ -3,7 +3,7 @@ layout: default
 title: Histogram and plot
 parent: /histogram-analysis/panels
 grand_parent: /histogram-analysis
-nav_order: 3
+nav_order: 2
 ---
 
 # Histogram and plot

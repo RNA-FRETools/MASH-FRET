@@ -3,7 +3,7 @@ layout: default
 title: Denoising
 parent: /trace-processing/panels
 grand_parent: /trace-processing
-nav_order: 8
+nav_order: 7
 ---
 
 # Denoising

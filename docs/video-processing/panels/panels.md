@@ -12,4 +12,6 @@ permalink: /video-processing/panels
 
 Video processing is composed of one visualization area and five panels.
 
+<a href="../../assets/images/gui/panel-video-processing.png"><img src="../../assets/images/gui/panel-video-processing.png" /></a>
+
 

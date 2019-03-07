@@ -3,7 +3,7 @@ layout: default
 title: State configuration
 parent: /histogram-analysis/panels
 grand_parent: /histogram-analysis
-nav_order: 4
+nav_order: 3
 ---
 
 # State configuration

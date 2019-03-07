@@ -12,4 +12,6 @@ permalink: /simulation/panels
 
 Module Simulation contains one visualization area and four panels.
 
+<a href="../../assets/images/gui/panel-simulation.png"><img src="../../assets/images/gui/panel-simulation.png" /></a>
+
 

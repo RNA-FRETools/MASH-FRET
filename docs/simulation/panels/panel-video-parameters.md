@@ -3,7 +3,7 @@ layout: default
 title: Video parameters
 parent: /simulation/panels
 grand_parent: /simulation
-nav_order: 2
+nav_order: 1
 ---
 
 # Video parameters

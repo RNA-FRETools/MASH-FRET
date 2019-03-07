@@ -3,7 +3,7 @@ layout: default
 title: Visualization area
 parent: /histogram-analysis/panels
 grand_parent: /histogram-analysis
-nav_order: 2
+nav_order: 5
 ---
 
 # Visualization area

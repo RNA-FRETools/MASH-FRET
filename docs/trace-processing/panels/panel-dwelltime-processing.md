@@ -3,7 +3,7 @@ layout: default
 title: Dwell-time processing
 parent: /trace-processing/panels
 grand_parent: /trace-processing
-nav_order: 5
+nav_order: 4
 ---
 
 # Dwell-time processing

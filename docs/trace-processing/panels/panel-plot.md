@@ -3,7 +3,7 @@ layout: default
 title: Plot
 parent: /trace-processing/panels
 grand_parent: /trace-processing
-nav_order: 9
+nav_order: 2
 ---
 
 # Plot

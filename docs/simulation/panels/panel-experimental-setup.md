@@ -3,7 +3,7 @@ layout: default
 title: Experimental setup
 parent: /simulation/panels
 grand_parent: /simulation
-nav_order: 4
+nav_order: 3
 ---
 
 # Experimental setup
