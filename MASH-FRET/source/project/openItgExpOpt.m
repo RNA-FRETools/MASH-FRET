@@ -694,14 +694,14 @@ set(h.itgExpOpt.uipanel_molPrm, 'Title', 'Project parameters');
 % if fromVidproc
 %     set(h.itgExpOpt.uipanel_files, 'Title', 'Output files');
 % end
-set(h.itgExpOpt.uipanel_chanPrm, 'Title', 'Spectral emission channels');
+set(h.itgExpOpt.uipanel_chanPrm, 'Title', 'Video channels');
 if isFRET
     set(h.itgExpOpt.uipanel_fretPrm, 'Title', 'FRET calculations');
 end
 if isS
     set(h.itgExpOpt.uipanel_sPrm, 'Title', 'Stoichiometry calculations');
 end
-set(h.itgExpOpt.uipanel_clr, 'Title', 'Traces color code');
+set(h.itgExpOpt.uipanel_clr, 'Title', 'Color code');
 
 set(h.figure_itgExpOpt, 'Visible', 'on');
 
