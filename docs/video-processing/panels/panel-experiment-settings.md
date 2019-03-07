@@ -81,8 +81,8 @@ If the file does not contain such information, it must be set manually.
 ## Project options
 
 Command that opens settings of the 
-[.mash project](../../output-files/mash-mash-project) file exported in 
-[Create and export](panel-intensity-integration).
+[.mash project](../../output-files/mash-mash-project) file exported at the end of Video processing workflow; see 
+[Workflow](../workflow) for more information.
 
 To set the project options, please refer to 
 [Set project options](../functionalities/set-project-options).
