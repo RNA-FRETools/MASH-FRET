@@ -143,7 +143,7 @@ See
 
 ## Export files
 
-It is the command to export simulated data to selected file formats in 
+It is the command that exports simulated data to selected file formats in 
 [File options](#file-options).
 
 
