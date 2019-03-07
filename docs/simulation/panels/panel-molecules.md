@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Molecules
-parent: Simulation panels
-grand_parent: Simulation
+parent: /simulation/panels
+grand_parent: /simulation
 nav_order: 3
 ---
 
@@ -120,7 +120,9 @@ When a rate equal to zero, the transition is considered forbidden.
 
 ## Generate data
 
-Generate random FRET state sequences using the state configuration, the transition rates and the photobleaching parameters.
+Command to generate new FRET state sequences.
+
+It generates random FRET state sequences using the state configuration, the transition rates and the photobleaching parameters.
 
 See
 [Simulation workflow](../workflow.html#generate-random-fret-state-sequences) for more information

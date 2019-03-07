@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Experimental setup
-parent: Simulation panels
-grand_parent: Simulation
+parent: /simulation/panels
+grand_parent: /simulation
 nav_order: 4
 ---
 
@@ -21,7 +21,7 @@ nav_order: 4
 
 ## Point spread functions
 
-Settings to build diffraction-limited images.
+They are the settings to build diffraction-limited images.
 
 <a href="../../assets/images/gui/sim-panel-experimental-setup-psf.png"><img src="../../assets/images/gui/sim-panel-experimental-setup-psf.png" style="max-width: 177px;" /></a>
 
@@ -40,7 +40,7 @@ The donor and acceptor PSF widths *w*<sub>det,D</sub> and *w*<sub>det,A</sub> ar
 
 ## Defocusing
 
-Simulates defocusing while recording the video.
+They are the settings to simulate defocusing while video recording.
 
 <a href="../../assets/images/gui/sim-panel-experimental-setup-defocus.png"><img src="../../assets/images/gui/sim-panel-experimental-setup-defocus.png" style="max-width: 220px;" /></a>
 
@@ -50,7 +50,7 @@ Simulates defocusing while recording the video.
 
 ## Background
 
-Channel-specific fluorescent background.
+They are the settings to generate channel-specific fluorescent background.
 
 <a href="../../assets/images/gui/sim-panel-experimental-setup-background.png"><img src="../../assets/images/gui/sim-panel-experimental-setup-background.png" style="max-width: 200px;" /></a>
 

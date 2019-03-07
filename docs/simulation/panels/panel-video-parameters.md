@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Video parameters
-parent: Simulation panels
-grand_parent: Simulation
+parent: /simulation/panels
+grand_parent: /simulation
 nav_order: 2
 ---
 
@@ -21,7 +21,9 @@ nav_order: 2
 
 ## Video length
 
-Total number of image frames in the video. It is usually noted *L*
+It is the total number of image frames in the video. 
+
+It is usually noted *L*
 
 **<u>default</u>:** *L* = 4000 frames
 
@@ -29,12 +31,16 @@ Total number of image frames in the video. It is usually noted *L*
 
 ## Frame rate
 
-Number of frames per second. It is usually noted *f*. It is linked to the acquisition time *acq_t* by the relation:
+It is acquisition rate of the video in frame per second (fps). 
+
+It is usually noted *f*. It is linked to the acquisition time *t*<sub>exp</sub> by the relation:
 
 {: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
 <p style="border-radius: 5px;">
-<i>f</i> = 1 / <i>acq_t</i>
+<i>f</i> = 1 / <i>t</i><sub>exp</sub>
 </p>
+
+with *acq_t* is second
 
 **<u>default</u>:** *f* = 10 fps
 
@@ -42,7 +48,9 @@ Number of frames per second. It is usually noted *f*. It is linked to the acquis
 
 ## Pixel size
 
-Dimensions of a square pixel in micrometers. It is used in the conversion of PSF widths from micrometers to pixels.
+It is the x- and y-dimensions of a square pixel in micrometers. 
+
+It is used in the conversion of PSF widths from micrometers to pixels.
 
 **<u>default</u>:** 0.53 &#956;m
 
@@ -50,21 +58,25 @@ Dimensions of a square pixel in micrometers. It is used in the conversion of PSF
 
 ## Bit rate
 
-Camera bit rate in bit/second. It is used to calculate the saturation value in the video.
+It is the camera digitization bit depth in bit/pixel and defines the range of pixel values. 
 
-**<u>default</u>:** 14 bit/second
+It is used to calculate the saturation value in the video.
+
+**<u>default</u>:** 14 bit/pixel
 
 ---
 
 ## Video dimensions
 
-Dimensions in pixels of video frames, in the x- **(a)** and y- **(b)** directions.
+They are the dimensions of video frames in pixels , following the x- **(a)** and y- **(b)** directions.
 
 **<u>default</u>:** 256-by-256 pixels
 
 ---
 
 ## Camera SNR characteristics
+
+They are the settings to generate camera noise.
 
 <a href="../../assets/images/gui/sim-panel-video-parameters-camera.png"><img src="../../assets/images/gui/sim-panel-video-parameters-camera.png" style="max-width: 198px" /></a>
 
@@ -133,10 +145,10 @@ P = ( 1-<i>A</i><sub>CIC</sub> ) x exp( -( <i>intensity</i> - <i>&#956;</i><sub>
 **Note:** *Random generation of NExpN noise is very time consuming. Expect spending around 8 hours to simulate a 256-by-256-wide and 4000 frame-long video.*
 
 **<u>default</u>:** values taken from the literature (reference [here](../../citations.html#simulation-algorithm-testing)):
-* *&#956;*<sub>ic,d</sub> = 1069 ic/s
+* *&#956;*<sub>ic,d</sub> = 106.9 ic
 * *A*<sub>CIC</sub> = 0.02 
-* *&#963;*<sub>CIC</sub> = 49 ic/s
-* *&#964;*<sub>CIC</sub> = 205 ic/s
+* *&#963;*<sub>CIC</sub> = 4.9 ic
+* *&#964;*<sub>CIC</sub> = 20.5
 * *&#951;* = 0.95 
 * *K* = 57.8 ic/ec
 
