@@ -1,8 +1,8 @@
 ---
 layout: default
 title: State populations
-parent: Histogram analysis panels
-grand_parent: Histogram analysis
+parent: /histogram-analysis/panels
+grand_parent: /histogram-analysis
 nav_order: 5
 ---
 

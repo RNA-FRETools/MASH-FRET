@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Transition analysis functionalities
-parent: Transition analysis
+title: Functionalities
+parent: /transition-analysis
 nav_order: 3
 has_children: true
-permalink: transition-analysis/functionalities/
+permalink: /transition-analysis/functionalities
 ---
 
 # Transition analysis functionalities

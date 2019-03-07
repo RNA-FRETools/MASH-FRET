@@ -1,7 +1,7 @@
 ---
 layout: default
-title: Simulation interface
-parent: Simulation
+title: Interface
+parent: /simulation
 nav_order: 1
 ---
 

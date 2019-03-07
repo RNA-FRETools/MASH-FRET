@@ -1,7 +1,7 @@
 ---
 layout: default
 title: (*.fit) Dwell time fit
-parent: Output files
+parent: /output-files
 nav_order: 1
 nav_exclude: 1
 ---

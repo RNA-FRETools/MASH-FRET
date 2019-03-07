@@ -1,10 +1,10 @@
 ---
 layout: default
 title: Validate results
-parent: Tutorials
+parent: /tutorials
 nav_order: 2
 has_children: true
-permalink: tutorials/validate-results/
+permalink: /tutorials/validate-results
 has_toc: false
 ---
 

@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Identify state network
-grand_parent: Tutorials
-parent: Analyze data
+grand_parent: /tutorials
+parent: /tutorials/analyze-data
 nav_order: 3
 nav_exclude: true
 has_toc: false

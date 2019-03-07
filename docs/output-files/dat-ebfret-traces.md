@@ -1,7 +1,7 @@
 ---
 layout: default
 title: (*.dat) ebFRET traces
-parent: Output files
+parent: /output-files
 nav_order: 1
 nav_exclude: 1
 ---

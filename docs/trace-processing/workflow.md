@@ -1,7 +1,7 @@
 ---
 layout: default
-title: Trace processing workflow
-parent: Trace processing
+title: Workflow
+parent: /trace-processing
 nav_order: 2
 ---
 

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: (*.clst) Transition density clusters
-parent: Output files
+parent: /output-files
 nav_order: 1
 nav_exclude: 1
 ---

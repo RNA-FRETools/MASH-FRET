@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Video processing panels
-parent: Video processing
+title: Panels
+parent: /video-processing
 nav_order: 4
 has_children: true
-permalink: video-processing/panels/
+permalink: /video-processing/panels
 ---
 
 # Video processing panels

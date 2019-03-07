@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Plot
-parent: Video processing panels
-grand_parent: Video processing
+parent: /video-processing/panels
+grand_parent: /video-processing
 nav_order: 2
 ---
 

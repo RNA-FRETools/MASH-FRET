@@ -1,7 +1,7 @@
 ---
 layout: default
-title: Transition analysis interface
-parent: Transition analysis
+title: Interface
+parent: /transition-analysis
 nav_order: 1
 ---
 

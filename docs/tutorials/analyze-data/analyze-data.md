@@ -1,11 +1,11 @@
 ---
 layout: default
 title: Analyze data
-parent: Tutorials
+parent: /tutorials
 nav_order: 1
 has_children: true
 has_toc: false
-permalink: tutorials/analyze-data/
+permalink: /tutorials/analyze-data
 select_with_child: true
 ---
 

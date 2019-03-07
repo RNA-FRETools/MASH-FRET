@@ -3,7 +3,7 @@ layout: default
 title: Simulation
 nav_order: 2
 has_children: true
-permalink: simulation/
+permalink:  /simulation
 ---
 
 <img src="../assets/images/logos/logo-simulation.png" width="260" style="float:right; margin-left: 15px;"/>

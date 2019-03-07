@@ -1,8 +1,8 @@
 ---
 layout: default
 title: State transition rates
-parent: Transition analysis panels
-grand_parent: Transition analysis
+parent: /transition-analysis/panels
+grand_parent: /transition-analysis
 nav_order: 4
 ---
 

@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Import trajectories
-parent: Trace processing functionalities
-grand_parent: Trace processing
+parent: /trace-processing/functionalities
+grand_parent: /trace-processing
 nav_order: 2
 ---
 

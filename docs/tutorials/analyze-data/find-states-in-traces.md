@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Find states in traces
-grand_parent: Tutorials
-parent: Analyze data
+grand_parent: /tutorials
+parent: /tutorials/analyze-data
 nav_order: 2
 nav_exclude: true
 has_toc: false

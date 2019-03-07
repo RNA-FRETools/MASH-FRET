@@ -1,7 +1,7 @@
 ---
 layout: default
-title: Simulation workflow
-parent: Simulation
+title: Workflow
+parent: /simulation
 nav_order: 2
 ---
 

@@ -1,7 +1,7 @@
 ---
 layout: default
-title: Transition analysis workflow
-parent: Transition analysis
+title: Workflow
+parent: /transition-analysis
 nav_order: 2
 ---
 

@@ -3,7 +3,7 @@ layout: default
 title: Transition analysis
 nav_order: 6
 has_children: true
-permalink: transition-analysis/
+permalink: /transition-analysis
 ---
 
 <img src="../assets/images/logos/logo-transition-analysis.png" width="260" style="float:right; margin-left: 15px;"/>
