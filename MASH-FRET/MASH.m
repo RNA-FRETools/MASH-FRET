@@ -1101,7 +1101,7 @@ updateFields(h.figure_MASH, 'sim');
 %% Video processing %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-% Video control
+% Visualization area
 
 
 function pushbutton_loadMov_Callback(obj, evd, h)
@@ -1117,6 +1117,65 @@ if loadMovFile(1, 'Select a graphic file:', 1, h.figure_MASH);
     updateFields(h.figure_MASH, 'imgAxes');
 end
 
+
+function switchMovTool(obj, evd, h)
+switch obj
+    case h.togglebutton_target
+        set(h.togglebutton_zoom, 'Value', 0);
+
+    case h.togglebutton_zoom
+        set(h.togglebutton_target, 'Value', 0);
+end
+updateFields(h.figure_MASH, 'imgAxes');
+
+
+
+function slider_img_Callback(obj, evd, h)
+cursorPos = round(get(obj, 'Value'));
+minSlider = get(obj, 'Min');
+maxSlider = get(obj, 'Max');
+if cursorPos <= minSlider
+    cursorPos = minSlider;
+elseif cursorPos >= maxSlider
+    cursorPos = maxSlider;
+end
+set(obj, 'Value', cursorPos);
+set(h.text_frameCurr, 'String', cursorPos);
+
+[data ok] = getFrames([h.movie.path h.movie.file], cursorPos, ...
+    {h.movie.speCursor [h.movie.pixelX h.movie.pixelY] ...
+    h.movie.framesTot}, h.figure_MASH);
+if ok
+    p = h.param.movPr;
+    if size(p.SFres,1) >= 1
+        p.SFres = p.SFres(1,1:(1+p.nChan));
+    end
+    h.param.movPr = p;
+    h.movie.frameCurNb = cursorPos;
+    h.movie.frameCur = data.frameCur;
+    guidata(h.figure_MASH, h);
+end
+updateFields(h.figure_MASH, 'imgAxes');
+
+
+% plot panel
+
+function checkbox_int_ps_Callback(obj, evd, h)
+h.param.movPr.perSec = get(obj, 'Value');
+guidata(h.figure_MASH, h);
+updateFields(h.figure_MASH, 'imgAxes');
+
+function popupmenu_colorMap_Callback(obj, evd, h)
+contents = get(obj,'String');
+selectedText = contents{get(obj, 'Value')};
+h.param.movPr.cmap = get(obj, 'Value');
+guidata(h.figure_MASH, h);
+colormap(selectedText);
+updateActPan([selectedText ' colormap applied.'], h.figure_MASH);
+updateFields(h.figure_MASH, 'imgAxes');
+
+
+% Experiment
 
 function edit_rate_Callback(obj, evd, h)
 val = str2num(get(obj, 'String'));
@@ -1189,63 +1248,109 @@ else
 end
 
 
-function switchMovTool(obj, evd, h)
-switch obj
-    case h.togglebutton_target
-        set(h.togglebutton_zoom, 'Value', 0);
-
-    case h.togglebutton_zoom
-        set(h.togglebutton_target, 'Value', 0);
-end
-updateFields(h.figure_MASH, 'imgAxes');
-
-
-function checkbox_int_ps_Callback(obj, evd, h)
-h.param.movPr.perSec = get(obj, 'Value');
-guidata(h.figure_MASH, h);
-updateFields(h.figure_MASH, 'imgAxes');
-
-
-function slider_img_Callback(obj, evd, h)
-cursorPos = round(get(obj, 'Value'));
-minSlider = get(obj, 'Min');
-maxSlider = get(obj, 'Max');
-if cursorPos <= minSlider
-    cursorPos = minSlider;
-elseif cursorPos >= maxSlider
-    cursorPos = maxSlider;
-end
-set(obj, 'Value', cursorPos);
-set(h.text_frameCurr, 'String', cursorPos);
-
-[data ok] = getFrames([h.movie.path h.movie.file], cursorPos, ...
-    {h.movie.speCursor [h.movie.pixelX h.movie.pixelY] ...
-    h.movie.framesTot}, h.figure_MASH);
-if ok
+function edit_nLasers_Callback(obj, evd, h)
+val = round(str2num(get(obj, 'String')));
+set(obj, 'String', num2str(val));
+if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val > 0)
+    set(obj, 'BackgroundColor', [1 0.75 0.75]);
+    updateActPan('The number of lasers must be an integer > 0.', ...
+        h.figure_MASH, 'error');
+else
+    set(obj, 'BackgroundColor', [1 1 1]);
     p = h.param.movPr;
-    if size(p.SFres,1) >= 1
-        p.SFres = p.SFres(1,1:(1+p.nChan));
+    isLasPrm = [strncmp({p.itg_expMolPrm{:,1}}', 'Power(', 6)];
+    [lasPrmRow,o,o] = find(isLasPrm);
+    fstLasPrm = lasPrmRow(1);
+    lastLasPrm = lasPrmRow(end);
+    defPrm = {p.itg_expMolPrm{1:(fstLasPrm-1),:}};
+    defPrm = reshape(defPrm, [numel(defPrm)/3 3]);
+    addPrm = {p.itg_expMolPrm{(lastLasPrm+1):end,:}};
+    addPrm = reshape(addPrm, [numel(addPrm)/3 3]);
+    for i = 1:val
+        prmVal = [];
+        if numel(p.itg_wl) < i
+            p.itg_wl(i) = round(p.itg_wl(i-1)*1.2);
+        elseif size(p.itg_expMolPrm,2) >= fstLasPrm+i-1
+            prmVal = p.itg_expMolPrm{fstLasPrm+i-1,2};
+        end
+        lasPrm{i,1} = ['Power(' ...
+            num2str(round(p.itg_wl(i))) 'nm)'];
+        lasPrm{i,2} = prmVal;
+        lasPrm{i,3} = 'mW';
+
     end
+
+    % remove laser wavelengths if reducing the number of lasers
+    p.itg_wl = p.itg_wl(1:val);
+
+    for ii = 1:size(p.chanExc,2)
+        if isempty(find(p.itg_wl==p.chanExc(ii)))
+            % remove FRET calculations for which donors are not directly
+            % excited anymore
+            if size(p.itg_expFRET,2)>0
+                p.itg_expFRET(p.itg_expFRET(:,1)==ii,:) = [];
+            end
+
+            % remove S calculations for dyes that are not directly
+            % excited anymore
+            p.itg_expS(p.itg_expS==ii) = [];
+
+            % remove channel excitations if reducing the number of lasers
+            p.chanExc(ii) = 0;
+        end
+    end
+
+    if ~isempty(find(size(p.itg_expFRET)==0))
+        p.itg_expFRET = [];
+    end
+    if ~isempty(find(size(p.itg_expS)==0))
+        p.itg_expS = [];
+    end
+
+    % redifine colors for intensity trajectories
+    clr_ref = getDefTrClr(val, p.itg_wl, p.nChan, size(p.itg_expFRET,1),...
+        size(p.itg_expS,1));
+    p.itg_clr{1} = clr_ref{1}(1:numel(p.itg_wl),:);
+    p.itg_clr{2} = clr_ref{2}(1:size(p.itg_expFRET,1),:);
+    p.itg_clr{3} = clr_ref{3}(1:size(p.itg_expS,1),:);
+
+    p.itg_expMolPrm = [defPrm;lasPrm;addPrm];
+    p.itg_nLasers = val;
+
     h.param.movPr = p;
-    h.movie.frameCurNb = cursorPos;
-    h.movie.frameCur = data.frameCur;
     guidata(h.figure_MASH, h);
+    updateFields(h.figure_MASH, 'movPr');
 end
-updateFields(h.figure_MASH, 'imgAxes');
 
 
-function popupmenu_colorMap_Callback(obj, evd, h)
-contents = get(obj,'String');
-selectedText = contents{get(obj, 'Value')};
-h.param.movPr.cmap = get(obj, 'Value');
-guidata(h.figure_MASH, h);
-colormap(selectedText);
-updateActPan([selectedText ' colormap applied.'], h.figure_MASH);
-updateFields(h.figure_MASH, 'imgAxes');
+function popupmenu_TTgen_lasers_Callback(obj, evd, h)
+updateFields(h.figure_MASH, 'movPr');
 
 
+function edit_wavelength_Callback(obj, evd, h)
+val = str2num(get(obj, 'String'));
+set(obj, 'String', num2str(val));
+p = h.param.movPr;
+if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val > 0)
+    set(obj, 'BackgroundColor', [1 0.75 0.75]);
+    updateActPan('Wavelengths must be > 0', h.figure_MASH, 'error');
+else
+    set(obj, 'BackgroundColor', [1 1 1]);
+    laser = get(h.popupmenu_TTgen_lasers, 'Value');
+    p.itg_wl(laser) = val;
+    p.itg_expMolPrm(4+laser,1) = {['Power(' num2str(val) 'nm)']};
 
-% Background correction
+    clr_ref = getDefTrClr(numel(p.itg_wl), p.itg_wl, p.nChan, ...
+        size(p.itg_expFRET,1), size(p.itg_expS,1));
+    p.itg_clr{1} = clr_ref{1}(1:numel(p.itg_wl),:);
+
+    h.param.movPr = p;
+    guidata(h.figure_MASH, h);
+    updateFields(h.figure_MASH, 'movPr');
+end
+
+
+% Video edit
 
 function popupmenu_bgCorr_Callback(obj, evd, h)
 ud_movBgCorr(h.figure_MASH);
@@ -1584,108 +1689,6 @@ val = get(obj, 'Value');
 h.param.movPr.itg_ave = val;
 guidata(h.figure_MASH, h);
 updateFields(h.figure_MASH, 'movPr');
-
-
-function edit_nLasers_Callback(obj, evd, h)
-val = round(str2num(get(obj, 'String')));
-set(obj, 'String', num2str(val));
-if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val > 0)
-    set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    updateActPan('The number of lasers must be an integer > 0.', ...
-        h.figure_MASH, 'error');
-else
-    set(obj, 'BackgroundColor', [1 1 1]);
-    p = h.param.movPr;
-    isLasPrm = [strncmp({p.itg_expMolPrm{:,1}}', 'Power(', 6)];
-    [lasPrmRow,o,o] = find(isLasPrm);
-    fstLasPrm = lasPrmRow(1);
-    lastLasPrm = lasPrmRow(end);
-    defPrm = {p.itg_expMolPrm{1:(fstLasPrm-1),:}};
-    defPrm = reshape(defPrm, [numel(defPrm)/3 3]);
-    addPrm = {p.itg_expMolPrm{(lastLasPrm+1):end,:}};
-    addPrm = reshape(addPrm, [numel(addPrm)/3 3]);
-    for i = 1:val
-        prmVal = [];
-        if numel(p.itg_wl) < i
-            p.itg_wl(i) = round(p.itg_wl(i-1)*1.2);
-        elseif size(p.itg_expMolPrm,2) >= fstLasPrm+i-1
-            prmVal = p.itg_expMolPrm{fstLasPrm+i-1,2};
-        end
-        lasPrm{i,1} = ['Power(' ...
-            num2str(round(p.itg_wl(i))) 'nm)'];
-        lasPrm{i,2} = prmVal;
-        lasPrm{i,3} = 'mW';
-
-    end
-
-    % remove laser wavelengths if reducing the number of lasers
-    p.itg_wl = p.itg_wl(1:val);
-
-    for ii = 1:size(p.chanExc,2)
-        if isempty(find(p.itg_wl==p.chanExc(ii)))
-            % remove FRET calculations for which donors are not directly
-            % excited anymore
-            if size(p.itg_expFRET,2)>0
-                p.itg_expFRET(p.itg_expFRET(:,1)==ii,:) = [];
-            end
-
-            % remove S calculations for dyes that are not directly
-            % excited anymore
-            p.itg_expS(p.itg_expS==ii) = [];
-
-            % remove channel excitations if reducing the number of lasers
-            p.chanExc(ii) = 0;
-        end
-    end
-
-    if ~isempty(find(size(p.itg_expFRET)==0))
-        p.itg_expFRET = [];
-    end
-    if ~isempty(find(size(p.itg_expS)==0))
-        p.itg_expS = [];
-    end
-
-    % redifine colors for intensity trajectories
-    clr_ref = getDefTrClr(val, p.itg_wl, p.nChan, size(p.itg_expFRET,1),...
-        size(p.itg_expS,1));
-    p.itg_clr{1} = clr_ref{1}(1:numel(p.itg_wl),:);
-    p.itg_clr{2} = clr_ref{2}(1:size(p.itg_expFRET,1),:);
-    p.itg_clr{3} = clr_ref{3}(1:size(p.itg_expS,1),:);
-
-    p.itg_expMolPrm = [defPrm;lasPrm;addPrm];
-    p.itg_nLasers = val;
-
-    h.param.movPr = p;
-    guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'movPr');
-end
-
-
-function popupmenu_TTgen_lasers_Callback(obj, evd, h)
-updateFields(h.figure_MASH, 'movPr');
-
-
-function edit_wavelength_Callback(obj, evd, h)
-val = str2num(get(obj, 'String'));
-set(obj, 'String', num2str(val));
-p = h.param.movPr;
-if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val > 0)
-    set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    updateActPan('Wavelengths must be > 0', h.figure_MASH, 'error');
-else
-    set(obj, 'BackgroundColor', [1 1 1]);
-    laser = get(h.popupmenu_TTgen_lasers, 'Value');
-    p.itg_wl(laser) = val;
-    p.itg_expMolPrm(4+laser,1) = {['Power(' num2str(val) 'nm)']};
-
-    clr_ref = getDefTrClr(numel(p.itg_wl), p.itg_wl, p.nChan, ...
-        size(p.itg_expFRET,1), size(p.itg_expS,1));
-    p.itg_clr{1} = clr_ref{1}(1:numel(p.itg_wl),:);
-
-    h.param.movPr = p;
-    guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'movPr');
-end
 
 
 
