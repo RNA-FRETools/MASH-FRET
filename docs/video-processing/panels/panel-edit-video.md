@@ -17,6 +17,8 @@ nav_order: 4
 
 ### Filter settings
 
-### Filter management
+### Filter list
 
-### Export video
+### Frame range
+
+Sometimes the frame range of a video needs to be readjusted, because of partial failure in recording or to export light animated GIF files for illustration.

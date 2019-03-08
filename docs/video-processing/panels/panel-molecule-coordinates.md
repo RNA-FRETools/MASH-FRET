@@ -15,9 +15,17 @@ nav_order: 5
 1. TOC
 {:toc}
 
-### Average image
+## Average image
 
-### Spotfinder
+## Spotfinder
 
-### Coordinates transformation
+### Spotfinder settings
+
+### Exclusion rules
+
+## Coordinates transformation
+
+### Transformation type
+
+
 

@@ -3,7 +3,7 @@ layout: default
 title: Set project options
 parent: /video-processing/functionalities
 grand_parent: /video-processing
-nav_order: 3
+nav_order: 1
 ---
 
 # Set project options
@@ -44,8 +44,8 @@ By default, the group in **(c)** contains parameters:
 * `Power(xxxnm)`: power in `mW` of laser with wavelength xxxnm
 
 The user can add personal parameters to the default group.
-To do so, the parameter name (here: `buffer n°`) and units (here: empty) must be set in **(f)** and **(g)** respectively, and the button **(h)** pressed.
-All user-defined parameters are listed in **(d)** and can be removed by pressing button **(e)**. 
+To do so, the parameter name (here: `buffer n°`) and units (here: empty) must be set in **(e)** and **(f)** respectively, prior pressing **Add**.
+All user-defined parameters are listed in **(d)** and can be removed by pressing **Remove**. 
 
 For the moment, optional parameters solely act as project "tags" saved with the 
 [MASH project file](../../output-files/mash-mash-project) and exported in
@@ -128,14 +128,3 @@ Red, green and blue takes values between 0 and 1.
 
 The resulting color is displayed in **(e)** and can be exported to list **(a)** by pressing **update**.
 
----
-
-## Save options
-
-It is the command that saves modifications and close window.
-
----
-
-## Cancel modifications
-
-It is the command that ignores modifications and close window.

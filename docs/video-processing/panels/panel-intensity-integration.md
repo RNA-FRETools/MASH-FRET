@@ -22,4 +22,4 @@ nav_order: 6
 
 ### Integration parameters
 
-### Export data
+### Export options

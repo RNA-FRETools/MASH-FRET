@@ -9,7 +9,7 @@ nav_order: 1
 # Visualization area
 {: .no_toc }
 
-<a href="../../assets/images/gui/VP-panel-expset-opt.png"><img src="../../assets/images/gui/VP-panel-expset-opt.png" style="max-width: 546px;"/></a>
+<a href="../../assets/images/gui/VP-area-visu.png"><img src="../../assets/images/gui/VP-area-visu.png" style="max-width: 516px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
