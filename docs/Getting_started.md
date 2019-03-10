@@ -28,9 +28,9 @@ Start MASH-FRET by typing `MASH` at the MATLAB command prompt.
 
 ## Interface
 
-<a href="../assets/images/gui/interface-default.png"><img src="../assets/images/gui/interface-default.png" width="300" style="float:right; margin-bottom:10px"/></a>
-
 When you start MASH-FRET the **interactive interface** and **action history** open simultaneously.
+
+<a href="../assets/images/gui/interface-default.png"><img src="../assets/images/gui/interface-default.png" /></a>
 
 The interactive interface appears in its default layout and includes:
 * a **tool bar** to switch between <u>modules</u> (default: Video Processing) and set the <u>root folder</u> where generated files will be saved,
