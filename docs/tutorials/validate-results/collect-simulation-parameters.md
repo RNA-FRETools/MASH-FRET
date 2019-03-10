@@ -15,26 +15,12 @@ has_toc: false
 
 Follow this procedure to validate the state configuration, state populations and state transition rates determined from an experimental smFRET video analysis.
 
-* **Step 1: Collect parameters for simulation**
-* [Step 2: ]()
-* [Step 3: ]()
-* [Step 4: ]()
+{% include tutorial_toc.html %}
 
-<span id="steps"></span>
-
----
-
-<span class="fs-3">
-[STEP 1](collect-simulation-parameters#steps){: .btn .btn-green .mr-4} 
-[STEP 2](#steps){: .btn .mr-4} 
-[STEP 3](#steps){: .btn .mr-4} 
-[STEP 4](#steps){: .btn .mr-4}
-</span>
+{% include tutorial_steps.html %}
 
 # STEP 1: Collect parameters for simulation
 {: .no_toc }
-
----
 
 In this step, a maximum number of parameters are collected or calculated from the previous experimental data analysis.
 
@@ -43,6 +29,7 @@ In this step, a maximum number of parameters are collected or calculated from th
 
 ---
 
+{% comment %}
 1. Use the **files** exported during your previous analysis to collect or calculate <u>experimental parameters</u>:  
      
    &#9745; number of molecules  
@@ -75,15 +62,8 @@ In this step, a maximum number of parameters are collected or calculated from th
 	&#9745; the <u>FRET states</u>  
 	&#9745; the state <u>transition rates</u>  
     &#9745; the states <u>relative populations</u>  
-
+{% endcomment %}
+	
 ---
 
-<span class="fs-3">
-[STEP 1](collect-simulation-parameters#steps_bottom){: .btn .btn-green .mr-4} 
-[STEP 2](#steps_bottom){: .btn .mr-4} 
-[STEP 3](#steps_bottom){: .btn .mr-4} 
-[STEP 4](#steps_bottom){: .btn .mr-4}</span>
-
----
-
-<span id="steps_bottom"></span>
+{% include tutorial_steps_bottom.html %}

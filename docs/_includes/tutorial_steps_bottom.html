@@ -1,0 +1,11 @@
+<p><span class="fs-3">
+{% for node in pages_list %}
+	{% if node.parent == page.parent %}
+		<a href="{{ node.url | absolute_url}}#steps_bottom" class="{% if node.url == page.url %}btn btn-green mr-4{% else %}btn mr-4{% endif %}">STEP {{ node.nav_order }}</a>
+	{% endif %}
+{% endfor %}
+</span></p>
+
+---
+
+<span id="steps_bottom"></span>

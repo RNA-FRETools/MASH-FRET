@@ -15,9 +15,6 @@ select_with_child: true
 
 Follow this procedure to validate the state configuration, state populations and state transition rates determined from an experimental smFRET video analysis.
 
-* [Step 1: Collect parameters for simulation](collect-simulation-parameters)
-* [Step 2: ]()
-* [Step 3: ]()
-* [Step 4: ]()
+{% include tutorial_toc.html %}
 
 ---

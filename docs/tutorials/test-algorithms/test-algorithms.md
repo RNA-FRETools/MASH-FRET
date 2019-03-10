@@ -15,10 +15,7 @@ select_with_child: true
 
 Follow this procedure to determine the optimal methods and method parameters to analyse your data.
 
-* [Step 1: Collect parameters for simulation](collect-simulation-parameters)
-* [Step 2: ]()
-* [Step 3: ]()
-* [Step 4: ]()
+{% include tutorial_toc.html %}
 
 ---
 

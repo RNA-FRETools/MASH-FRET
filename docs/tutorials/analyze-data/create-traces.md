@@ -14,29 +14,15 @@ has_toc: false
 
 Follow this procedure to process your single molecule videos (SMVs) or trajectories and characterize the molecule dynamics in your sample.
 
-* **Step 1: Create traces**
-* [Step 2: Find states in traces](find-states-in-traces)
-* [Step 3: Identify state network](identify-state-network)
-* [Step 4: Determine state populations](determine-state-populations)
+{% include tutorial_toc.html %}
 
 **Note:** *Skip step 1 if already in possession of intensity-time traces files (ASCII or 
 [mash project](../../output-files/mash-mash-project)).*
 
-<span id="steps"></span>
-
----
-
-<span class="fs-3">
-[STEP 1](create-traces#steps){: .btn .btn-green .mr-4} 
-[STEP 2](find-states-in-traces#steps){: .btn .mr-4} 
-[STEP 3](identify-state-network#steps){: .btn .mr-4} 
-[STEP 4](determine-state-populations#steps){: .btn .mr-4}
-</span>
+{% include tutorial_steps.html %}
 
 # STEP 1: Create traces
 {: .no_toc }
-
----
 
 In this step, bright spots are first localized in the average image of the single molecule video, coordinates are transformed in other channels and respective intensity-time traces are then calculated.
 
@@ -130,12 +116,4 @@ Create <u>intensity-time traces</u> of donor and acceptor channels and save data
 
 ---
 
-<span class="fs-3">
-[STEP 1](create-traces#steps_bottom){: .btn .btn-green .mr-4} 
-[STEP 2](find-states-in-traces#steps_bottom){: .btn .mr-4} 
-[STEP 3](identify-state-network#steps_bottom){: .btn .mr-4} 
-[STEP 4](determine-state-populations#steps_bottom){: .btn .mr-4}</span>
-
----
-
-<span id="steps_bottom"></span>
+{% include tutorial_steps_bottom.html %}
