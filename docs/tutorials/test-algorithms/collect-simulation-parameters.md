@@ -15,12 +15,7 @@ has_toc: false
 
 Follow this procedure to determine the optimal methods and method parameters to analyse your data.
 
-{% include tutorial_toc.html %}
-
-{% include tutorial_steps.html %}
-
-# STEP 1: Collect parameters for simulation
-{: .no_toc }
+{% include tutorial_head.html %}
 
 In this step, relevant parameters are collected or calculated from the previous experimental data analysis.
 
@@ -37,4 +32,4 @@ Use the ASCII files exported during your previous analysis to collect or calcula
 
 ---
 
-{% include tutorial_steps_bottom.html %}
+{% include tutorial_footer.html %}

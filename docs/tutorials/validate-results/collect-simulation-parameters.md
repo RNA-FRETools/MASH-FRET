@@ -15,12 +15,7 @@ has_toc: false
 
 Follow this procedure to validate the state configuration, state populations and state transition rates determined from an experimental smFRET video analysis.
 
-{% include tutorial_toc.html %}
-
-{% include tutorial_steps.html %}
-
-# STEP 1: Collect parameters for simulation
-{: .no_toc }
+{% include tutorial_head.html %}
 
 In this step, a maximum number of parameters are collected or calculated from the previous experimental data analysis.
 
@@ -66,4 +61,4 @@ In this step, a maximum number of parameters are collected or calculated from th
 	
 ---
 
-{% include tutorial_steps_bottom.html %}
+{% include tutorial_footer.html %}

@@ -14,15 +14,10 @@ has_toc: false
 
 Follow this procedure to process your single molecule videos (SMVs) or trajectories and characterize the molecule dynamics in your sample.
 
-{% include tutorial_toc.html %}
-
 **Note:** *Skip step 1 if already in possession of intensity-time traces files (ASCII or 
 [mash project](../../output-files/mash-mash-project)).*
 
-{% include tutorial_steps.html %}
-
-# STEP 4: Determine state populations
-{: .no_toc }
+{% include tutorial_head.html %}
 
 In this step, state relative populations and sample variability are estimated from histogram data and according to the state configuration determined previously.
 
@@ -94,4 +89,4 @@ Usually number of replicate is set to the total number of molecules and the numb
 
 ---
 
-{% include tutorial_steps_bottom.html %}
+{% include tutorial_footer.html %}

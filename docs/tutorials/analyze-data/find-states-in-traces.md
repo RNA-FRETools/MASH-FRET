@@ -14,15 +14,10 @@ has_toc: false
 
 Follow this procedure to process your single molecule videos (SMVs) or trajectories and characterize the molecule dynamics in your sample.
 
-{% include tutorial_toc.html %}
-
 **Note:** *Skip step 1 if already in possession of intensity-time traces files (ASCII or 
 [mash project](../../output-files/mash-mash-project)).*
 
-{% include tutorial_steps.html %}
-
-# STEP 2: Find states in traces 
-{: .no_toc }
+{% include tutorial_head.html %}
 
 In this step, single molecules are sorted, intensity-time traces are corrected from experimental bias and state sequences are inferred for individual traces.
 
@@ -85,4 +80,4 @@ In this step, single molecules are sorted, intensity-time traces are corrected f
 
 ---
 
-{% include tutorial_steps_bottom.html %}
+{% include tutorial_footer.html %}

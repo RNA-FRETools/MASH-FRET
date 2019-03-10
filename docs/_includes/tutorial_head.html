@@ -19,3 +19,24 @@
 	{% endif %}
 {% endfor %}
 </ul>
+
+{% if page.grand_parent %}
+
+<span id="steps"></span>
+
+---
+
+<p><span class="fs-3">
+{% for node in pages_list %}
+	{% if node.parent == page.parent %}
+		<a href="{{ node.url | absolute_url}}#steps" class="{% if node.url == page.url %}btn btn-green mr-4{% else %}btn mr-4{% endif %}">STEP {{ node.nav_order }}</a>
+	{% endif %}
+{% endfor %}
+</span></p>
+
+# STEP {{ page.nav_order }}: {{ page.title }}
+{: .no_toc }
+
+{% endif %}
+
+

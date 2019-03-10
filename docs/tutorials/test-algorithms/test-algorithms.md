@@ -15,7 +15,7 @@ select_with_child: true
 
 Follow this procedure to determine the optimal methods and method parameters to analyse your data.
 
-{% include tutorial_toc.html %}
+{% include tutorial_head.html %}
 
 ---
 

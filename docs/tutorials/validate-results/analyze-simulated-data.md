@@ -1,13 +1,13 @@
 ---
 layout: default
-title: Validate results
-parent: /tutorials
+title: Analyze simulated data
+grand_parent: /tutorials
+parent: /tutorials/validate-results
 nav_order: 2
-has_children: true
+nav_exclude: true
 has_toc: false
-permalink: /tutorials/validate-results
-select_with_child: true
 ---
+
 
 
 # Validate results
@@ -17,4 +17,13 @@ Follow this procedure to validate the state configuration, state populations and
 
 {% include tutorial_head.html %}
 
+In this step, simulated data are analyzed the same way as experimental data.
+
+1. TOC
+{:toc}
+
 ---
+	
+---
+
+{% include tutorial_footer.html %}
