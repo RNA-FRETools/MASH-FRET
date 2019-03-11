@@ -21,13 +21,13 @@ nav_order: 3
 
 ## Point spread functions
 
-They are the settings to build diffraction-limited images.
+Use these settings to simulate diffraction-limited images.
 
 <a href="../../assets/images/gui/sim-panel-experimental-setup-psf.png"><img src="../../assets/images/gui/sim-panel-experimental-setup-psf.png" style="max-width: 177px;" /></a>
 
-The point spread function (PSF) shapes the intensity 2D-profile of single molecules in diffraction-limited images. 
-The PSF is modelled by a spherical 2D-Gaussian centred on the single molecule coordinates and with a standard deviation *w*<sub>det</sub>.
-As the PSF width depends on the wavelength of the detected light, it is different in donor and acceptor channel.
+The point spread function (PSF) shapes the intensity 2D-profile of single molecules as diffraction-limited spots. 
+The PSF is modelled as spherical 2D-Gaussian centred on the single molecule coordinates with a standard deviation *w*<sub>det</sub>.
+As the PSF width depends on the wavelength of the detected light, it is different for the donor and the acceptor channel.
 
 PSF convolution is activated by checking the box in **(a)**.
 The donor and acceptor PSF widths *w*<sub>det,D</sub> and *w*<sub>det,A</sub> are set in micrometers in **(b)** and **(c)** respectively.
@@ -40,21 +40,21 @@ The donor and acceptor PSF widths *w*<sub>det,D</sub> and *w*<sub>det,A</sub> ar
 
 ## Defocusing
 
-They are the settings to simulate defocusing while video recording.
+Use these settings to simulate defocusing while video recording.
 
 <a href="../../assets/images/gui/sim-panel-experimental-setup-defocus.png"><img src="../../assets/images/gui/sim-panel-experimental-setup-defocus.png" style="max-width: 220px;" /></a>
 
-*In construction.*
+*Under construction.*
 
 ---
 
 ## Background
 
-They are the settings to generate channel-specific fluorescent background.
+Use these settings to generate a channel-specific background signal.
 
 <a href="../../assets/images/gui/sim-panel-experimental-setup-background.png"><img src="../../assets/images/gui/sim-panel-experimental-setup-background.png" style="max-width: 200px;" /></a>
 
-Fluorescent background is a source of unwanted fluorescence that adds up to each video channel. It can be uniform in space or spatially distributed, but also constant or dynamic in time.
+Background is a source of unwanted photon signal that adds up to each video channel. It can be uniform in space or spatially distributed, but also constant or dynamic in time.
 
 
 ### Uniform background
@@ -73,7 +73,7 @@ Intensity units can be given in photon counts (pc) or electron counts (ec); see
 ### Gaussian-distributed background
 {: .no_toc}
 
-The background is spatially distributed following a 2D-Gaussian model. This can be used to model a TIRF excitation profile.
+The background is spatially distributed following a 2D-Gaussian model. This can be used to model a realistic TIRF excitation profile.
 
 To apply a <u>2D-Gaussian background</u>, "2D Gaussian profile" must be selected in list **(a)**.
 In that case, the background follows a 2D-Gaussian distribution centred on each channel, having common x- and y-standard deviations, *w*<sub>0,ex,x</sub> and *w*<sub>0,ex,y</sub>, given in pixels and set in **(d)** and **(e)** respectively.
