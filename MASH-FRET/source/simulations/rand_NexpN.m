@@ -15,9 +15,9 @@ function dat = rand_NexpN(varargin)
 %
 % Requires
 %
-% Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
-% Last update: the 4th of June 2014 by Mélodie C.A.S Hadzic
-% Last update: 7th of March 2018 by Richard Börner for Boerner et al.
+% Created the 23rd of April 2014 by MÃ©lodie C.A.S Hadzic
+% Last update: the 4th of June 2014 by MÃ©lodie C.A.S Hadzic
+% Last update: 7th of March 2018 by Richard BÃ¶rner for Boerner et al.
 %
 % Comments adapted for Boerner et al 2017
 
@@ -46,14 +46,14 @@ for i = 1:numel(dat_val)
     if o > 0
         
         % to reduce calculation time, use the same distribution if values
-        % differ of less than 1 ec.
+        % differ less than 1 ec.
         if i==1 || (i>1 && (mu-mu_ref)>1)
             x = (mu-10*o):o/10:(mu+100*(o+2*tau));
 
             % first model, old
     %           P = 0.5*(1+erf((x-mu)/(o*sqrt(2)))).*(A*exp(-(x-mu)/tau)) + ...
     %             (1-0.5*A*(1+erf((x-mu)/(o*sqrt(2))))).*exp(-((x-mu).^2)/(2*(o^2)));
-            % second mode, Boerner et al 2017
+            % second model, Boerner et al. PONE 2018
                 P = (1-A)*(1/(sqrt(2*pi)*o))*exp(-((x-mu).^2)/(2*(o^2))) + ... 
                   0.5*A*exp((o^2)/(2*(tau^2))-(x-mu)./tau).*(1-erf(o/(sqrt(2)*tau)-(x-mu)./(sqrt(2)*o)));
               P = P(P>1E-6);
