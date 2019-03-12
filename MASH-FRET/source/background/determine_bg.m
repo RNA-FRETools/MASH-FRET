@@ -1,4 +1,4 @@
-function [bgI bgStd] = determine_bg(method, img, p)
+function [bgI,bgStd] = determine_bg(method, img, p)
 % Determine and return constant background intensity and the standard
 % deviation
 % "method" >> background calculation method
@@ -21,16 +21,17 @@ switch method
         NZBinom = nonzeros(BinomFilter);
         StdBinom = std(NZBinom);
         bgI = mean(NZBinom(:));  
-        bgStd = StdBinom*2.3548/2;
+%         bgStd = StdBinom*2.3548/2;
+        bgStd = StdBinom*sqrt(2*log(2)); % HWHM
         
     case 12 % most frequent
         n_bin = p(2);
         img = reshape(img,1,numel(img));
-        [maxVal o] = max(img);
-        [minVal o] = min(img);
+        [maxVal,o] = max(img);
+        [minVal,o] = min(img);
         iv = linspace(minVal, maxVal, n_bin);
         P = hist(img,iv);
-        [MAXHIST Max_index] = max(P);
+        [MAXHIST,Max_index] = max(P);
         bgI = iv(Max_index);  
         i = 1;
         while P(i) <= MAXHIST/2
@@ -71,7 +72,7 @@ switch method
             bgI = (1-perc)*img(i)+(perc)*img(i+1); % DK
         end
         
-        [o,j,o] = find(cumP>=(thresh*(1-0.6827)));
+        [o,j,o] = find(cumP>=(thresh*(1-0.6827))); % 
         j = j(1);
         if j==1
             j = 2;
@@ -81,7 +82,8 @@ switch method
         cumP30_length = cumP(j) - cumP(j-1);
         sig = img(j-1) + ...
             (img(j)-img(j-1))*cumP30_lower/cumP30_length;
-        bgStd = (bgI-sig)*2.3548/2;
+%         bgStd = (bgI-sig)*2.3548/2;
+        bgStd = (bgI-sig)*sqrt(2*log(2)); % HWHM
         
     case 14 % N most probable
         vals = sort(img,1);

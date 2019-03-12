@@ -56,9 +56,9 @@ for i = 1:nChan
     % mean, most frequent or histotresh
     elseif sum(double(bgType == [11 12 13])) 
 
-        [Max Bg_FWHM] = determine_bg(bgType, int, bgCorr{n,i+1});
+        [Max,Bg_HWHM] = determine_bg(bgType, int, bgCorr{n,i+1});
         tol = bgCorr{n,i+1}(1);
-        bg = Max + tol * Bg_FWHM;
+        bg = Max + tol * Bg_HWHM;
         
         if sum(double(bgType == [11 12]))
             int(int<bg) = bg;
