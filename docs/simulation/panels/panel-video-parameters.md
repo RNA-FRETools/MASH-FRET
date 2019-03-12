@@ -31,7 +31,7 @@ It is usually noted *L*
 
 ## Frame rate
 
-It is acquisition rate of the video in frame per second (fps). 
+It is acquisition rate of the video in frames per second (fps). 
 
 It is usually noted *f*. It is linked to the acquisition time *t*<sub>exp</sub> by the relation:
 
