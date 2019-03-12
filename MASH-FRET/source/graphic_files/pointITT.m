@@ -43,20 +43,29 @@ for i = 1:nLasers
 end
 
 h_figBG_mov = figure('Color', [1 1 1], 'NumberTitle', 'off', ...
-    'Name', ['Intensity-time trace at coordinates (' num2str(newPnt)...
-    ')'], 'CloseRequestFcn', {@figureBGmov_CloseRequestFcn}, ...
-    'SelectionType', 'Normal');
+    'Name', cat(2,'Intensity-time trace at coordinates (',...
+    num2str(newPnt(1)),',',num2str(newPnt(2)),')'), 'CloseRequestFcn', ...
+    {@figureBGmov_CloseRequestFcn}, 'SelectionType', 'Normal');
 
 posFig = get(h_figBG_mov, 'Position');
 set(h_figBG_mov, 'Position', [posFig(1) posFig(2) 500 200]);
 h_axes = axes('Units', 'pixels', 'OuterPosition', [0 0 500 200], ...
     'NextPlot', 'add');
-clr = {'-b', '-r', '-k', '-m', '-g'};
+clr = [0 0 1
+    1 0 0
+    0 1 0
+    0 0 0];
+leg_str = {};
 for i = 1:nLasers
+    leg_str = cat(2,leg_str,cat(2,'laser ',num2str(i)));
+    if size(clr,1)<i
+        clr = cat(1,clr,rand(1,3));
+    end
     if size(ITT{i},1) > 1
-        plot(h_axes, ITT{i}(:,1), ITT{i}(:,2), clr{i});
+        plot(h_axes, ITT{i}(:,1), ITT{i}(:,2), 'Color', clr(i,:));
     else
-        plot(h_axes, [0 ITT{i}(1,1)], [ITT{i}(1,2) ITT{i}(1,2)], clr{i});
+        plot(h_axes, [0 ITT{i}(1,1)], [ITT{i}(1,2) ITT{i}(1,2)], 'Color', ...
+            clr(i,:));
     end
 end
 
@@ -69,6 +78,7 @@ end
 ylim(h_axes, 'auto');
 xlabel(h_axes, 'time (s)');
 ylabel(h_axes, ['intensity (counts' str_ave str_sec ')']);
+legend(h_axes, leg_str);
 grid on;
 
 setProp(get(obj, 'Children'), 'Units', 'normalized');
