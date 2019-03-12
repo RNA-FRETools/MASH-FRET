@@ -40,7 +40,7 @@ Laser wavelengths are used to label data and identify which channel is directly 
 
 To set the wavelength, select the laser index in **(a)** and set the wavelength in **(b)**. 
 Laser indexes correspond to the order of appearance in the video and can easily be identified by navigating through the first frames of the video; see 
-[Navigate through video frames](area-visualization#navigate-through-video-frames) for more information.
+[Navigation](area-visualization#navigation) for more information.
 
 **<u>default</u>:** 
 * laser 1: 532 nm (wavelengths used to excite Cy3)
