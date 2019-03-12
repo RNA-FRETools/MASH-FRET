@@ -187,12 +187,12 @@ See
 
 ## Cross-talks
 
-They are the bias in collected intensities caused by imperfect excitation and detection selectivity.
+They are the bias in collected intensities caused by instrumental imperfections.
 
 <a href="../../assets/images/gui/sim-panel-molecules-crosstalks.png"><img src="../../assets/images/gui/sim-panel-molecules-crosstalks.png"  style="max-width: 99px;" /></a>
 
 The donor and acceptor direct excitation coefficients *dE*<sub>D</sub> and *dE*<sub>A</sub>, i.e., the fraction of signal collected when illuminated by the pair's excitation wavelength, can be set in **(a)** and **(b)** respectively.
-Here, setting *dE*<sub>D</sub> is senseless as simulations are limited to continous- (donor-) wavelength excitation.
+Here, setting *dE*<sub>D</sub> is senseless as simulations are limited to continuous- (donor-) wavelength excitation.
 
 The donor and acceptor bleedthrough coefficients *bt*<sub>D</sub> and *bt*<sub>A</sub>, i.e., the fraction of signal leaking in the pair's channel, can be set in **(c)** and **(d)** respectively.
 
