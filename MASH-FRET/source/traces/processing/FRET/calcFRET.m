@@ -98,18 +98,41 @@ if nFRET > 0 && nExc>=1
             I_eq{d}{c} = str_I;
             if ~isempty(strfind(str_I, sprintf('E_%i%i', d, c)))
                 
-                symvar(1) = sym('Ic');
-                symvar(2) = sym('I_0');
-                symvar(3) = sym(sprintf('E_%i%i', d, c));
-                evar_str = findEelsethan(str_I,sprintf('E_%i%i',d,c));
-                for i_e = 1:size(evar_str,2)
-                    symvar(3+i_e) = sym(evar_str{i_e});
+                % check for Matlab version to use sym variables
+                mtlbDat = ver;
+                for i = 1:size(mtlbDat,2)
+                    if strcmp(mtlbDat(1,i).Name, 'MATLAB')
+                        break;
+                    end
                 end
+                
+                evar_str = findEelsethan(str_I,sprintf('E_%i%i',d,c));
+                
+                if str2num(mtlbDat(1,i).Version) >= 9
+                    symvrbl(1) = sym('Ic');
+                    symvrbl(2) = sym('I_0');
+                    symvrbl(3) = sym(sprintf('E_%i%i', d, c));
+                    for i_e = 1:size(evar_str,2)
+                        symvrbl(3+i_e) = sym(evar_str{i_e});
+                    end
 
-                E_eq{d,c} = solve(str2func(sprintf(...
-                    cat(2,'@(%s',repmat(',%s',[1,numel(symvar)-1]),')%s'),...
-                    symvar,I_eq{d}{c})),symvar(3));
-                clear('symvar');
+                    E_eq{d,c} = solve(str2func(sprintf(...
+                        cat(2,'@(%s',repmat(',%s',[1,numel(symvrbl)-1]),...
+                        ')%s'),symvrbl,I_eq{d}{c})),symvrbl(3));
+                    clear('symvrbl');
+                
+                else
+                    syms('Ic', 'I_0', sprintf('E_%i%i', d, c));
+                    for i_e = 1:size(evar_str,2)
+                        syms(evar_str{i_e});
+                    end
+                    
+                    E_eq{d,c} = solve(I_eq{d}{c}, sprintf('E_%i%i', d, c));
+                    clear('Ic', 'I_0', sprintf('E_%i%i', d, c));
+                    for i_e = 1:size(evar_str,2)
+                        clear(evar_str{i_e});
+                    end
+                end
             end
         end
     end
