@@ -48,7 +48,7 @@ with *acq_t* is second
 
 ## Pixel size
 
-It is the x- and y-dimensions of a square pixel in micrometers. 
+It is the x- and y-dimensions of a pixel in micrometers. 
 
 It is used in the conversion of PSF widths from micrometers to pixels.
 
