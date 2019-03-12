@@ -134,7 +134,7 @@ It is the command to refresh simulation display; see
 
 It updates intensity-time trace and image calculations starting with generated noiseless FRET-time traces.
 
-Calculations include fluorescence intensity, donor anisotropy, cross-talks, background, camera noise and PSF convolution.
+Calculations include fluorescence intensity, gamma factor, cross-talks, background, camera noise and PSF convolution.
 
 See
 [Simulation workflow](../workflow.html#create-intensity-trajectories-and-images) for more information

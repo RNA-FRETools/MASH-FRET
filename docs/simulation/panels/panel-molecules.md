@@ -140,19 +140,20 @@ Intensity *I*<sub>tot,em</sub> is et in **(a)**
 If needed, sample heterogeneity can be introduced by attributing a strictly positive deviation *wI*<sub>tot,em</sub> **(b)**.
 In this case, a random intensity value is drawn for each molecule, using a Gaussian distribution with mean *I*<sub>tot,em</sub> and standard deviation *wI*<sub>tot,em</sub>.
 
-### Fluorescence anisotropy
+### Gamma factor
 {: .no_toc}
 
-Fluorescence anisotropy can be modulated by setting a factor &#947; in **(d)**. Donor emission is affected according to the relation:
+Differences in donor and acceptor quantum yields and detection efficiencies can be modulated by setting a factor &#947; in **(d)**. 
+Donor emission is affected according to the relation:
 
 {: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
 <p style="border-radius: 5px;">
 <i>I</i><sub>D,em</sub> = <i>I</i><sub>D,em,0</sub> / <i>&#947;</i>
 </p>
 
-with *I*<sub>D,em,0</sub> the original donor fluorescence intensity in presence of acceptor, and *I*<sub>D,em</sub> the anisotropy-corrected version.
+with *I*<sub>D,em,0</sub> the original donor fluorescence intensity in presence of acceptor, and *I*<sub>D,em</sub> the gamma-modified version.
 
-Similarly, sample heterogeneity in anisotropy can be introduced by setting a strictly positive deviation *w&#947;* in **(e)**.
+Similarly, sample heterogeneity in gamma factor can be introduced by setting a strictly positive deviation *w&#947;* in **(e)**.
 
 ### Intensity units
 {: .no_toc}

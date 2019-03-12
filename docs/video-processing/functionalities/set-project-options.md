@@ -9,7 +9,7 @@ nav_order: 1
 # Set project options
 {: .no_toc }
 
-Project options are specific to each project and include channel-laser correlations, FRET and stoichiometry calculations, but also labels and colors used to present data.
+Project options are specific to each project and include emitter-laser relations, FRET and stoichiometry calculations, but also labels and colors used to present data.
 
 They are initially set in module Video processing (see 
 [Project options](../panels/panel-experiment-settings#project-options) for more information) and can be edited in module Trace processing (see 
@@ -119,7 +119,7 @@ All desired stoichiometry calculations are listed in **(b)** and can be removed 
 
 ## Color code
 
-The are the color used to identify calculated and plotted traces
+They are the colors used to identify calculated and plotted traces
 
 <a href="../../assets/images/gui/VP-panel-expset-opt-colors.png"><img src="../../assets/images/gui/VP-panel-expset-opt-colors.png" style="max-width: 250px;"/></a>
 
