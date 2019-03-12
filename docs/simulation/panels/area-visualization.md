@@ -1,9 +1,9 @@
 ---
 layout: default
 title: Visualization area
-parent: Simulation panels
-grand_parent: Simulation
-nav_order: 1
+parent: /simulation/panels
+grand_parent: /simulation
+nav_order: 5
 ---
 
 # Visualization area
@@ -19,26 +19,26 @@ nav_order: 1
 
 ## Control panel 
 
-Display action logs. The list is automatically saved in a 
+It lists the action logs. Actions are automatically saved in a 
 [daily log file](../../output-files/log-daily-logs.html).
 
 ## Intensity histograms
 
-Donor (blue) and acceptor (red) intensity distributions in simulated intensity-time traces of molecule n:°1. 
+It displays the donor (blue) and acceptor (red) intensity distributions in simulated intensity-time traces of molecule n:°1. 
 
 Intensity units are set in 
 [Exported intensity units](panel-export-options.html#exported-intensity-units).
 
 ## Simulated intensity-time traces
 
-Simulated donor (blue) and acceptor (red) intensity-time traces for molecule n:°1. 
+It displays the simulated donor (blue) and acceptor (red) intensity-time traces for molecule n:°1. 
 
 Intensity units are set in 
 [Exported intensity units](panel-export-options.html#exported-intensity-units).
 
 ## Simulated video
 
-First frame of the simulated single molecule video. 
+It displays the first frame of the simulated single molecule video. 
 
 The color scale for pixel values is indicated by the color bar. Pixel intensity units are set in 
 [Exported intensity units](panel-export-options.html#exported-intensity-units).

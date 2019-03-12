@@ -1,9 +1,9 @@
 ---
 layout: default
 title: Visualization area
-parent: Histogram analysis panels
-grand_parent: Histogram analysis
-nav_order: 2
+parent: /histogram-analysis/panels
+grand_parent: /histogram-analysis
+nav_order: 5
 ---
 
 # Visualization area

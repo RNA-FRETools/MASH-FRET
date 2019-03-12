@@ -42,10 +42,10 @@
             <nav class="breadcrumb-nav">
               <ol class="breadcrumb-nav-list">
                 {% if page.grand_parent %}
-                  <li class="breadcrumb-nav-list-item"><a href="{{ first_level_url }}">{{ page.grand_parent }}</a></li>
-                  <li class="breadcrumb-nav-list-item"><a href="{{ second_level_url }}">{{ page.parent }}</a></li>
+                  <li class="breadcrumb-nav-list-item"><a href="{{ page.grand_parent | absolute_url }}">{{ first_level_title }}</a></li>
+                  <li class="breadcrumb-nav-list-item"><a href="{{ page.parent | absolute_url }}">{{ second_level_title }}</a></li>
                 {% else %}
-                  <li class="breadcrumb-nav-list-item"><a href="{{ first_level_url }}">{{ page.parent }}</a></li>
+                  <li class="breadcrumb-nav-list-item"><a href="{{ page.parent | absolute_url }}">{{ first_level_title }}</a></li>
                 {% endif %}
                 <li class="breadcrumb-nav-list-item"><span>{{ page.title }}</span></li>
               </ol>
@@ -61,7 +61,7 @@
           {% assign children_list = site.pages | sort:"nav_order" %}
           <ul>
             {% for child in children_list %}
-              {% if child.parent == page.title and child.title != page.title %}
+              {% if child.parent == page.url and child.url != page.url %}
               <li>
                 <a href="{{ child.url | absolute_url }}">{{ child.title }}</a>
               </li>

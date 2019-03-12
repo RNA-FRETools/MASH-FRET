@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Video processing functionalities
-parent: Video processing
+title: Functionalities
+parent: /video-processing
 nav_order: 3
 has_children: true
-permalink: video-processing/functionalities/
+permalink: /video-processing/functionalities
 ---
 
 # Video processing functionalities

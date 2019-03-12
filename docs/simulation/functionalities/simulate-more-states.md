@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Simulate more than 5 states
-parent: Simulation functionalities
-grand_parent: Simulation
+parent: /simulation/functionalities
+grand_parent: /simulation
 nav_order: 4
 ---
 

@@ -1,9 +1,9 @@
 ---
 layout: default
 title: Factor corrections
-parent: Trace processing panels
-grand_parent: Trace processing
-nav_order: 6
+parent: /trace-processing/panels
+grand_parent: /trace-processing
+nav_order: 5
 ---
 
 # Sub-images and background correction

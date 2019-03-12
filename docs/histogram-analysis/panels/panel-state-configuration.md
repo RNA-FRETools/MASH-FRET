@@ -1,9 +1,9 @@
 ---
 layout: default
 title: State configuration
-parent: Histogram analysis panels
-grand_parent: Histogram analysis
-nav_order: 4
+parent: /histogram-analysis/panels
+grand_parent: /histogram-analysis
+nav_order: 3
 ---
 
 # State configuration

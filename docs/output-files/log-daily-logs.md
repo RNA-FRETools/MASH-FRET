@@ -1,7 +1,7 @@
 ---
 layout: default
 title: (*.log) Daily log
-parent: Output files
+parent: /output-files
 nav_order: 1
 nav_exclude: 1
 ---

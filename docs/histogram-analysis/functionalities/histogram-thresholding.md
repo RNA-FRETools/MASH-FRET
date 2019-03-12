@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Histogram thresholding
-parent: Histogram analysis functionalities
-grand_parent: Histogram analysis
+parent: /histogram-analysis/functionalities
+grand_parent: /histogram-analysis
 nav_order: 3
 ---
 

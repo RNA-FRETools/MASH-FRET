@@ -1,9 +1,9 @@
 ---
 layout: default
 title: Histogram and plot
-parent: Histogram analysis panels
-grand_parent: Histogram analysis
-nav_order: 3
+parent: /histogram-analysis/panels
+grand_parent: /histogram-analysis
+nav_order: 2
 ---
 
 # Histogram and plot

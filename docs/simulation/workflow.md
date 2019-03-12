@@ -1,7 +1,7 @@
 ---
 layout: default
-title: Simulation workflow
-parent: Simulation
+title: Workflow
+parent: /simulation
 nav_order: 2
 ---
 
@@ -33,11 +33,12 @@ To generate FRET state sequences:
 {: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
 1. Set parameters:  
      
-   [video length](panels/panel-video-parameters)  
-   [frame rate](panels/panel-video-parameters)  
-   [number of molecules](panels/panel-molecules)  
-   [Thermodynamic model](panels/panel-molecules)  
-   [Photobleaching](panels/panel-molecules)  
+   [Video length](panels/panel-video-parameters#video-length)  
+   [Frame rate](panels/panel-video-parameters#frame-rate)  
+   [Number of molecules](panels/panel-molecules#number-of-molecules)  
+   [State configuration](panels/panel-molecules#state-configuration)  
+   [Transition rates](panels/panel-molecules#transition-rates)  
+   [Photobleaching](panels/panel-molecules#photobleaching)  
      
 1. Press 
 ![Generate](../assets/images/gui/but-sim-generate.png "Generate") to generate random FRET state sequences,  
@@ -66,8 +67,9 @@ Like in a 2-color FRET experiment, horizontal dimensions of the video are equall
 Single molecules are then spread randomly on the donor channel and directly translated into the acceptor channel.
 
 At molecule coordinates, pixel values are set to donor or acceptor pure fluorescence intensities, including donor anisotropy and setup cross-talks.
-Channel-specific background and uniform camera noise are added to all pixels to convert fluorescence to camera-detected signal. 
-Finally, pixels are convolved with channel-specific point spread functions to obtain realistic diffraction-limited images. 
+Channel-specific background is added to consider all sources of detected lights. 
+Pixels are then convolved with channel-specific point spread functions to obtain realistic diffraction-limited images. 
+Finally, uniform camera noise is added to all pixels to convert fluorescence intensities to camera-detected signal. 
 
 ![Building SMV](../assets/images/figures/sim-workflow-scheme-build-video.gif "Building SMV from fluorescence intensity-time traces")
 
@@ -76,14 +78,15 @@ To create intensity trajectories and images:
 {: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
 1. Set parameters:  
      
-   [video dimensions](panels/panel-video-parameters)  
-   [pixel size](panels/panel-video-parameters)  
-   [bit rate](panels/panel-video-parameters)  
-   [Camera SNR characteristics](panels/panel-video-parameters)  
-   [Molecule coordinates](panels/panel-molecules)  
-   [Photophysics](panels/panel-molecules)  
-   [Point spread functions](panels/panel-experimental-setup)  
-   [Background](panels/panel-experimental-setup)  
+   [Video dimensions](panels/panel-video-parameters#video-dimensions)  
+   [Pixel size](panels/panel-video-parameters#pixel-size)  
+   [Bit rate](panels/panel-video-parameters#bit-rate)  
+   [Camera SNR characteristics](panels/panel-video-parameters#camera-snr-characteristics)  
+   [Molecule coordinates](panels/panel-molecules#molecule-coordinates)  
+   [Donor emission](panels/panel-molecules#donor-emission)  
+   [Cross-talks](panels/panel-molecules#cross-talks)  
+   [Point spread functions](panels/panel-experimental-setup#point-spread-functions)  
+   [Background](panels/panel-experimental-setup#background)  
      
 1. Press 
 ![Update](../assets/images/gui/but-sim-update.png "Update") to convert FRET state sequences into camera-detected intensity trajectories and images. The execution time can be long; see 
@@ -94,13 +97,17 @@ To create intensity trajectories and images:
 
 ## Export trajectories and video to files
 
-Simulated data and simulation parameters can be exported to various file formats.  
+Simulated data and simulation parameters can be exported to various file formats.
+Intensities can be converted into photon counts or electron counts before writing in files.
 When exporting the SMV, video frames are successively written in files until the video length is reached.
 
 To export data to files:
 
 {: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
-1. Set parameters in [Export options](panels/panel-export-options)  
+1. Set parameters:
+     
+   [File options](panels/panel-export-options#file-options)  
+   [Intensity units](panels/panel-export-options#intensity-units)
      
 1. Press 
 ![Export files](../assets/images/gui/but-sim-export.png "Export files") to start writing data in files. The execution time can be long; see 
@@ -113,5 +120,5 @@ Updating intensity data and writing SMVs to files can be very time consuming dep
 [Camera SNR characteristics](panels/panel-video-parameters#camera-snr-characteristics) for more information.
 
 Some parameters can be set by loading external files. This allows to bypass the limitations of the user interface in order to work with more than five states or set parameters for individual molecules; see 
-[Load pre-set parameters](functionalities/load-preset-parameters.html) for more information.
+[Pre-set parameters](panels/panel-molecules#pre-set-parameters) for more information.
 

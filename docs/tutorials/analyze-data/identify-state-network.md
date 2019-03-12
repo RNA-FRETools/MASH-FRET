@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Identify state network
-grand_parent: Tutorials
-parent: Analyze data
+grand_parent: /tutorials
+parent: /tutorials/analyze-data
 nav_order: 3
 nav_exclude: true
 has_toc: false
@@ -14,47 +14,34 @@ has_toc: false
 
 Follow this procedure to process your single molecule videos (SMVs) or trajectories and characterize the molecule dynamics in your sample.
 
-* [Step 1: Create traces](create-traces.html)
-* [Step 2: Find states in traces](find-states-in-traces.html)
-* **Step 3: Identify state network**
-* [Step 4: Determine state populations](determine-state-populations.html)
-
 **Note:** *Skip step 1 if already in possession of intensity-time traces files (ASCII or 
-[mash project](../../output-files/mash-mash-project.html)).*
+[mash project](../../output-files/mash-mash-project)).*
 
-<span id="steps"></span>
+{% include tutorial_head.html %}
 
----
-
-<span class="fs-3">[STEP 1](create-traces.html#steps){: .btn .mr-4} [STEP 2](find-states-in-traces.html#steps){: .btn .mr-4} [STEP 3](identify-state-network.html#steps){: .btn .btn-green .mr-4} [STEP 4](determine-state-populations.html#steps){: .btn .mr-4}</span>
-
-## STEP 3: Identify state network
-{: .no_toc }
-
----
-
-In this step, the sample's most sufficient <u>state</u> configuration is identified and state <u>transition rates</u> are estimated from transitions detected in single molecule traces.
-
-**Note:** *Alternatively, if states are sufficiently separated, the most sufficient state configuration can be identified from histogram data; see
-[Histogram analysis main procedure](../../histogram-analysis/functionalities/main-procedure.html) for more information.*
+In this step, the sample's most sufficient state configuration is identified and state transition rates are estimated from transitions detected in single molecule traces.
 
 1. TOC
 {:toc}
 
+**Note:** *Alternatively, if states are sufficiently separated, the most sufficient state configuration can be identified from histogram data; see
+[Workflow](../../histogram-analysis/workflow) for more information.*
+
 ---
 
-### Setup working area
+## Setup working area
 
 1. Select module 
-[Transition analysis](../../transition-analysis) in MASH-FRET's [tool bar](../../Getting_started.html#interface).
+[Transition analysis](../../transition-analysis) in MASH-FRET's 
+[tool bar](../../Getting_started#interface).
 
 1. Load your 
-[mash project](../../output-files/mash-mash-project.html)
+[mash project](../../output-files/mash-mash-project)
 
 1. Select data type "FRET"
 
 
-### Build the transition density plot (TDP)
+## Build the transition density plot (TDP)
 
 1. Set TDP's limits as desired.
 Usually limits are set to [0,1] for FRET data.
@@ -69,7 +56,7 @@ Usually binning is set to 0.01 or 0.02 for FRET data.
 1. Display in counts or normalized probability
 
 
-### Identify the most sufficient state configuration
+## Identify the most sufficient state configuration
 
 1. Set the maximum number of states to be found
 
@@ -81,7 +68,7 @@ Usually the number of iteration is set to 5.
 1. Start transition clustering
 
 
-### Estimate state transition rates with exponential fit
+## Estimate state transition rates with exponential fit
 
 1. Select a FRET transition in the list.
 
@@ -91,7 +78,7 @@ Usually the number of iteration is set to 5.
 If the fit looks poor, increase the number of exponential decays or fit with a beta-exponential.
 
 
-### Estimate sample variability with bootstrapping
+## Estimate sample variability with bootstrapping
 
 1. Paste fitting results to starting fit parameters
 
@@ -101,17 +88,13 @@ Usually number of replicate is set to the number of dwell-times  and the number 
 1. Start bootstrap fit
 
 
-### Save and export
+## Save and export
 
 1. Save modifications and calculation to your 
-[mash project](../../output-files/mash-mash-project.html) file.
+[mash project](../../output-files/mash-mash-project) file.
 
 1. (optional) Export state model and transition rate calculations to ASCII files.
 
 ---
 
-<span class="fs-3">[STEP 1](create-traces.html#steps_bottom){: .btn .mr-4} [STEP 2](find-states-in-traces.html#steps_bottom){: .btn .mr-4} [STEP 3](identify-state-network.html#steps_bottom){: .btn .btn-green .mr-4} [STEP 4](determine-state-populations.html#steps_bottom){: .btn .mr-4}</span>
-
----
-
-<span id="steps_bottom"></span>
+{% include tutorial_footer.html %}

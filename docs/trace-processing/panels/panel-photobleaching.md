@@ -1,9 +1,9 @@
 ---
 layout: default
 title: Photobleaching
-parent: Trace processing panels
-grand_parent: Trace processing
-nav_order: 7
+parent: /trace-processing/panels
+grand_parent: /trace-processing
+nav_order: 6
 ---
 
 # Photobleaching

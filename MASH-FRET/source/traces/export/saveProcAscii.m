@@ -83,6 +83,7 @@ if saveTr
     saveSmart = false;
     saveQub = false;
     saveEbfret = false;
+    saveGam = false;
     
     if sum(double(xp.traces{1}(2) == [1 7]))
         saveAscii = true; % one file/mol
@@ -109,12 +110,14 @@ if saveTr
         data_ebfret = cell(1,nFRET);
         pname_ebfret = setCorrectPath(cat(2,pname,'traces_ebFRET'),h_fig);
     end
+    if xp.traces{2}(6) && nFRET > 0
+        saveGam = true;  % added by FS, 19.3.2018
+    end
     saveTr_I = xp.traces{2}(1);
     saveTr_fret = ~~xp.traces{2}(2) & nFRET > 0;
     saveTr_S = ~~xp.traces{2}(3) & nS > 0;
     allInOne = ~~xp.traces{2}(4);
     savePrm = xp.traces{2}(5); % external file/in trace file/none
-    saveGam = xp.traces{2}(6);  % added by FS, 19.3.2018
     pname_xp = setCorrectPath([pname 'parameters'], h_fig);
 end
 
@@ -880,7 +883,7 @@ end
 
 % added by FS, 19.3.2018
 if saveTr
-    if saveGam
+    if nFRET>0 && saveGam
         
         % build file name
         curs = strfind(name_mol, '_mol');

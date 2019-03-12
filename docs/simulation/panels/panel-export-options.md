@@ -1,9 +1,9 @@
 ---
 layout: default
 title: Export options
-parent: Simulation panels
-grand_parent: Simulation
-nav_order: 5
+parent: /simulation/panels
+grand_parent: /simulation
+nav_order: 4
 ---
 
 # Export options
@@ -20,6 +20,8 @@ nav_order: 5
 ---
 
 ## File options
+
+They are the possible files to export after simulation.
 
 ### Traces (*.mat)
 {: .no_toc}
@@ -98,7 +100,9 @@ See
 
 ## Intensity units
 
-Intensity units of exported data:
+They are the intensity units of exported data.
+
+Intensity data can be exported in:
 * Photon counts (pc)
 * Electron counts (ec)
 
@@ -125,9 +129,12 @@ See
 
 ## Update intensities
 
-Update intensity-time trace and image calculations starting with generated noiseless FRET-time traces.
+It is the command to refresh simulation display; see 
+[Visualization area](area-visualization.html) for more information.
 
-Calculations include fluorescence intensity, donor anisotropy, cross-talks, background, camera noise and PSF convolution.
+It updates intensity-time trace and image calculations starting with generated noiseless FRET-time traces.
+
+Calculations include fluorescence intensity, gamma factor, cross-talks, background, camera noise and PSF convolution.
 
 See
 [Simulation workflow](../workflow.html#create-intensity-trajectories-and-images) for more information
@@ -136,5 +143,7 @@ See
 
 ## Export files
 
-Export data to selected file formats; see 
-[File options](#file-options) for details.
+It is the command that exports simulated data to selected file formats in 
+[File options](#file-options).
+
+

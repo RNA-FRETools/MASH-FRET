@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Transition analysis panels
-parent: Transition analysis
+title: Panels
+parent: /transition-analysis
 nav_order: 4
 has_children: true
-permalink: transition-analysis/panels/
+permalink: /transition-analysis/panels
 ---
 
 # Transition analysis panels
@@ -12,4 +12,5 @@ permalink: transition-analysis/panels/
 
 Transition analysis is composed of one project management area and three panels.
 
+<a href="../../assets/images/gui/panel-transition-analysis.png"><img src="../../assets/images/gui/panel-transition-analysis.png" /></a>
 

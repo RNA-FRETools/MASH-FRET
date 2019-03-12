@@ -159,7 +159,7 @@ if ~(isfield(h, 'figure_itgExpOpt') && ishandle(h.figure_itgExpOpt))
         'Modal');
     guidata(h.figure_itgExpOpt, p);
     val_FRETprm = [1 1 1 1];
-    val_Sprm = [1 1 1];
+    val_Sprm = [1 1];
     val_chanPrm = [1 1];
     val_clrPrm = 1;
     
@@ -171,7 +171,6 @@ else
     end
     if isS
         val_Sprm = [get(h.itgExpOpt.popupmenu_Snum, 'Value') ...
-            get(h.itgExpOpt.popupmenu_Sdenum, 'Value') ...
             get(h.itgExpOpt.listbox_Scalc, 'Value')];
     end
     val_chanPrm = [get(h.itgExpOpt.popupmenu_dyeChan, 'Value') ...
@@ -532,7 +531,7 @@ if isS
     h.itgExpOpt.listbox_Scalc = uicontrol('Style', 'listbox', 'Parent', ...
         h.itgExpOpt.uipanel_sPrm, 'String', {''}, 'Position', ...
         [xNext yNext w_lb h_lb], 'BackgroundColor', [1 1 1], 'Value', ...
-        val_Sprm(3), 'String', str_Slst);
+        val_Sprm(2), 'String', str_Slst);
 
     xNext = xNext + w_lb + mg;
 
@@ -695,14 +694,14 @@ set(h.itgExpOpt.uipanel_molPrm, 'Title', 'Project parameters');
 % if fromVidproc
 %     set(h.itgExpOpt.uipanel_files, 'Title', 'Output files');
 % end
-set(h.itgExpOpt.uipanel_chanPrm, 'Title', 'Spectral emission channels');
+set(h.itgExpOpt.uipanel_chanPrm, 'Title', 'Video channels');
 if isFRET
     set(h.itgExpOpt.uipanel_fretPrm, 'Title', 'FRET calculations');
 end
 if isS
     set(h.itgExpOpt.uipanel_sPrm, 'Title', 'Stoichiometry calculations');
 end
-set(h.itgExpOpt.uipanel_clr, 'Title', 'Traces color code');
+set(h.itgExpOpt.uipanel_clr, 'Title', 'Color code');
 
 set(h.figure_itgExpOpt, 'Visible', 'on');
 
@@ -1252,6 +1251,7 @@ if ~isempty(name_str) && length(name_str) <= maxN && ...
     p{1} = [p{1}; {name_str '' units_str}];
   
     guidata(h.figure_itgExpOpt, p);
+    guidata(h_fig,h);
     buildWinOpt(p, nExc, nChan, but_obj, h_fig);
 else
     updateActPan(['Parameter name must not be empty and parameter name' ...

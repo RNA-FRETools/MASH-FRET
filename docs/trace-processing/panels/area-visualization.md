@@ -1,9 +1,9 @@
 ---
 layout: default
 title: Visualization area
-parent: Trace processing panels
-grand_parent: Trace processing
-nav_order: 2
+parent: /trace-processing/panels
+grand_parent: /trace-processing
+nav_order: 8
 ---
 
 # Visualization area

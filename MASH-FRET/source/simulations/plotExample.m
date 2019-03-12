@@ -184,7 +184,7 @@ if nbMol % Only true, if at least one molecule was simulated.
                 if strcmp(bgDec_dir{2},'increase')
                     exp_bg_acc = img_bg_acc(ceil(coord(n,4)), ...
                         ceil(coord(n,3))-round(res_x/2))*(amp* ...
-                        exp(-(numel(I_acc_bt)':-1:1)*rate/cst)+1);
+                        exp(-(numel(I_acc_bt):-1:1)*rate/cst)+1);
                 else
                     exp_bg_acc = img_bg_acc(ceil(coord(n,4)), ...
                         ceil(coord(n,3))-round(res_x/2))*(amp* ...
@@ -195,8 +195,8 @@ if nbMol % Only true, if at least one molecule was simulated.
                 img_bg_acc = img_bg_acc*(amp*exp(-rate/cst)+1);
                 
                 if noiseCamInd~=2 % no Poisson noise for pure Gaussian noise
-                    I_don_bg = I_don_bt + random('poiss',exp_bg_don)';
-                    I_acc_bg = I_acc_bt + random('poiss',exp_bg_acc)';
+                    I_don_bg = I_don_bt + random('poiss',exp_bg_don);
+                    I_acc_bg = I_acc_bt + random('poiss',exp_bg_acc);
                 else
                     I_don_bg = I_don_bt + exp_bg_don;
                     I_acc_bg = I_acc_bt + exp_bg_acc;
@@ -497,15 +497,37 @@ if nbMol > 0 % at least one trace must be simulated.
         fntS_y = get(get(h.axes_example_hist, 'YLabel'), 'FontSize');
         fntS_x = get(get(h.axes_example_hist, 'XLabel'), 'FontSize');
     end
-
-    bar(h.axes_example_hist,don_edges(1:size(don_edges,2)-1), ...
-        I_don_plot_hist,'EdgeColor','none','FaceColor','blue',...
-        'Barwidth',1,'Facealpha',0.5);
-    set(h.axes_example_hist,'yscale','log'); 
-    hold(h.axes_example_hist,'on');
-    bar(h.axes_example_hist,don_edges(1:size(don_edges,2)-1), ...
-        I_acc_plot_hist,'EdgeColor','none','FaceColor','red',...
-        'Barwidth',1,'Facealpha',0.5);
+    
+    % check for Matlab version to add bar transparency
+    mtlbDat = ver;
+    for i = 1:size(mtlbDat,2)
+        if strcmp(mtlbDat(1,i).Name, 'MATLAB')
+            break;
+        end
+    end
+    if str2num(mtlbDat(1,i).Version) >= 9
+        bar(h.axes_example_hist,don_edges(1:size(don_edges,2)-1), ...
+            I_don_plot_hist,'EdgeColor','none','FaceColor','blue',...
+            'Barwidth',1,'Facealpha',0.5);
+    else
+        bar(h.axes_example_hist,don_edges(1:size(don_edges,2)-1), ...
+            I_don_plot_hist,'EdgeColor','none','FaceColor','blue',...
+            'Barwidth',1);
+    end
+    
+        set(h.axes_example_hist,'yscale','log'); 
+        hold(h.axes_example_hist,'on');
+        
+    if str2num(mtlbDat(1,i).Version) >= 9
+        bar(h.axes_example_hist,don_edges(1:size(don_edges,2)-1), ...
+            I_acc_plot_hist,'EdgeColor','none','FaceColor','red',...
+            'Barwidth',1,'Facealpha',0.5);
+    else
+        bar(h.axes_example_hist,don_edges(1:size(don_edges,2)-1), ...
+            I_acc_plot_hist,'EdgeColor','none','FaceColor','red',...
+            'Barwidth',1);
+    end
+    
     hold(h.axes_example_hist,'off');
     
     if isempty(get(get(h.axes_example_hist, 'XLabel'), 'String')) && ...
