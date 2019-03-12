@@ -54,7 +54,8 @@ Use these settings to generate a channel-specific background signal.
 
 <a href="../../assets/images/gui/sim-panel-experimental-setup-background.png"><img src="../../assets/images/gui/sim-panel-experimental-setup-background.png" style="max-width: 200px;" /></a>
 
-Background is a source of unwanted photon signal that adds up to each video channel. It can be uniform in space or spatially distributed, but also constant or dynamic in time.
+Background is a source of unwanted photons that adds up to each video channel. 
+It can be uniform in space or spatially distributed, but also constant or dynamic in time.
 
 
 ### Uniform background
@@ -73,7 +74,8 @@ Intensity units can be given in photon counts (pc) or electron counts (ec); see
 ### Gaussian-distributed background
 {: .no_toc}
 
-The background is spatially distributed following a 2D-Gaussian model. This can be used to model a realistic TIRF excitation profile.
+The background is spatially distributed following a 2D-Gaussian model. 
+This can be used to model a realistic TIRF excitation profile.
 
 To apply a <u>2D-Gaussian background</u>, "2D Gaussian profile" must be selected in list **(a)**.
 In that case, the background follows a 2D-Gaussian distribution centred on each channel, having common x- and y-standard deviations, *w*<sub>0,ex,x</sub> and *w*<sub>0,ex,y</sub>, given in pixels and set in **(d)** and **(e)** respectively.
@@ -88,7 +90,8 @@ Gaussian amplitudes can be given in photon counts (pc) or electron counts (ec); 
 
 ### Background from image file
 
-The spatial distribution of the background is set by an external image file. This can be used to reproduce image imperfections present in experimental recordings.
+The spatial distribution of the background is set by an external image file. 
+This can be used to reproduce image imperfections present in experimental recordings.
 
 To add a <u>background image</u>, "Pattern" must be selected in list **(a)**.
 In that case, the background image or video must be loaded after pressing the "Update" button.
@@ -101,7 +104,8 @@ If the loaded file is a video, the first frame will be used as the background im
 ### Background decaying in time
 {: .no_toc}
 
-The fluorescent background intensities are decaying in time. This can be used to model the photobleaching of an autofluorescent medium.
+The background intensities are decaying in time. 
+This can be used to model the photobleaching of an autofluorescent medium.
 
 Time decay of uniform or spatially distributed background intensities is activated by checking the box in **(f)**.
 In that case, the background intensity in each pixel decays exponentially with a time decay *dec* given in seconds and set in **(g)**.

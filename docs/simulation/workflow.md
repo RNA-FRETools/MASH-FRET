@@ -67,7 +67,7 @@ Like in a 2-color FRET experiment, horizontal dimensions of the video are equall
 Single molecules are then spread randomly on the donor channel and directly translated into the acceptor channel.
 
 At molecule coordinates, pixel values are set to donor or acceptor pure fluorescence intensities, including donor anisotropy and setup cross-talks.
-Channel-specific fluorescent background is added to consider all sources of detected lights. 
+Channel-specific background is added to consider all sources of detected lights. 
 Pixels are then convolved with channel-specific point spread functions to obtain realistic diffraction-limited images. 
 Finally, uniform camera noise is added to all pixels to convert fluorescence intensities to camera-detected signal. 
 
