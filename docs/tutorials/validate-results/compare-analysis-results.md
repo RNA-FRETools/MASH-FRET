@@ -19,6 +19,9 @@ Follow this procedure to validate the state configuration, state populations and
 
 In this step, state configuration, state populations and state transition rates obtained from the analysis of simulated data and experimental data are compared.
 
+For a concrete example, you can refer to the scientific article 
+[A Two-Step Method for smFRET Data Analysis](https://pubs.acs.org/doi/10.1021/acs.jpcb.6b05697).
+
 1. TOC
 {:toc}
 
