@@ -45,5 +45,5 @@ In that case the import option window opens:
 ## Export options
 
 To set export options, please refer to 
-[Set export options](functionalities/set-export-options).
+[Set export options](../functionalities/set-export-options.html).
 

@@ -20,11 +20,11 @@ nav_order: 1
 Command that opens settings of the selected project.
 
 To edit the project options, please refer to 
-[Set project options](../functionalities/set-project-options).
+[Set project options](../functionalities/set-project-options.html).
 
 If the corresponding 
-[.mash project](../../output-files/mash-mash-project) file was exported from module Video processing, initial project options are taken from the pre-set
-[Experiment settings](../../video-processing/panels/panel-experiment-settings#project-options).
+[.mash project](../../output-files/mash-mash-project.html) file was exported from module Video processing, initial project options are taken from the pre-set
+[Experiment settings](../../video-processing/panels/panel-experiment-settings.html#project-options).
 
 
 

@@ -160,7 +160,7 @@ Similarly, sample heterogeneity in gamma factor can be introduced by setting a s
 
 Intensity units of *I*<sub>tot,em</sub> and *wI*<sub>tot,em</sub> can be set in photon counts (pc) or electron counts (ec) when the box in **(c)** is checked or unchecked respectively.
 This choice also affects the units of background intensities set in 
-[Backgorund](panel-experimental-setup#background).
+[Backgorund](panel-experimental-setup.html#background).
 Photon counts and electron counts are linked by the relation:
 
 {: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}

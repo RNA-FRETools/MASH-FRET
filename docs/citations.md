@@ -58,7 +58,7 @@ M.C.A.S. Hadzic, D. Kowerko, R. Börner, S. Zelger-Paulus, R.K.O. Sigel, *Proc. 
 ```
 
 
-### Bootstrapping BOBA-FRET
+### Histogram analysis, transition rates, bootstrapping
 
 S.L.B König, M.C.A.S. Hadzic, E. Fiorini, R. Börner, D. Kowerko, W. Blanckenhorn, R.K.O. Sigel, *Plos One* **2013**, *8*, 1-17. [![](https://img.shields.io/badge/DOI-10.1371/journal.pone.0084157-blue.svg)](https://doi.org/10.1371/journal.pone.0084157)
 

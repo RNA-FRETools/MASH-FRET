@@ -36,20 +36,20 @@ In this step, a maximum number of parameters are collected or calculated from th
    &#9745; state <u>transition rates</u>  
    
 1. Use the experimental parameters and your **setup characteristics** in 
-[Simulation](../../simulation) to <u>generate</u> synthetic intensity-time traces.  
+[Simulation](../../simulation.html) to <u>generate</u> synthetic intensity-time traces.  
       
 	**Note:** *To simulate kinetic heterogeneity, use a number of degenerated FRET states equal to the number of exponential components*.
      
    Export generated time-traces to "Ideal traces" ASCII files.
    
 1. Load your freshly exported **ASCII files** in 
-[Trace processing](../../trace-processing) to edit <u>project parameters</u>.  
+[Trace processing](../../trace-processing.html) to edit <u>project parameters</u>.  
      
    Save modifications and calculation to a new 
    [mash project](../../output-files/mash-mash-project.html). Use a file name different from the experimental project (for example with the extension *_sim).
 
 1. Perform steps 3, 4 and 5 of 
-[smFRET video analysis](../analyze-data) on your 
+[smFRET video analysis](../analyze-data.html) on your 
 [mash project](../../output-files/mash-mash-project.html).
 
 1. Validate or invalidate your experimental thermodynamic model by comparing with results on simulation:  

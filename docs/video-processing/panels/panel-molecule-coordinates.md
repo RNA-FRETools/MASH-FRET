@@ -53,5 +53,5 @@ nav_order: 5
 Command that opens settings to import reference and spots coordinates from ASCII files.
 
 To set the import options, please refer to 
-[Set coordinates import options](../functionalities/set-coordinates-import-options).
+[Set coordinates import options](../functionalities/set-coordinates-import-options.html).
 

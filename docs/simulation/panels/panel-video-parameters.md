@@ -80,9 +80,21 @@ They are the settings to generate camera noise.
 
 <a href="../../assets/images/gui/sim-panel-video-parameters-camera.png"><img src="../../assets/images/gui/sim-panel-video-parameters-camera.png" style="max-width: 198px" /></a>
 
-The models available to generate camera noise are listed in **(a)**. Model parameters to be set in **(b)** are automatically adapted to the model selected in **(a)**.
+Select the model to generate camera noise in **(a)**. 
+Model parameters to be set in **(b)** are automatically adapted to the model selected in **(a)**.
 
-### Model: offset only
+Available camera noise models are:
+* [Offset only](#offset-only)
+* [P- or Poisson](#p--or-poisson)
+* [N- or Gaussian](#n--or-gaussian)
+* [NExpN- or Gaussian + exponential tail](#nexpn--or-gaussian--exponential-tail)
+* [PGN- or Hirsch](#pgn--or-hirsch)
+
+Refer to table 
+[Model parameters](#model-parameters) for an exhaustive list of model parameters.
+
+
+### Offset only
 {: .no_toc }
 
 Add a constant offset value *&#956;*<sub>ic,d</sub>.
@@ -90,7 +102,7 @@ Add a constant offset value *&#956;*<sub>ic,d</sub>.
 **<u>default</u>:** *&#956;*<sub>ic,d</sub> = 113 ic
 
 
-### Model: P- or Poisson
+### P- or Poisson
 {: .no_toc }
 
 Distribute intensities following a Poisson distribution with mean *&#955;*:
@@ -105,7 +117,7 @@ Distribute intensities following a Poisson distribution with mean *&#955;*:
 * *&#951;* = 0.95 
 
 
-### Model: N- or Gaussian
+### N- or Gaussian
 {: .no_toc }
 
 Distribute intensities following a Gaussian distribution with mean *&#956;*:
@@ -130,7 +142,7 @@ and standard deviation *&#963;*:
 * *&#963;*<sub>q</sub> = 0 ic
 
 
-### Model: NExpN- or Gaussian + exponential tail
+### NExpN- or Gaussian + exponential tail
 {: .no_toc }
 
 Distribute intensities following an exponential-tailed Gaussian distribution with mean *&#956;*<sub>ic,d</sub>, standard deviation *&#963;*<sub>CIC</sub>, tail contribution *A*<sub>CIC</sub> and exponential decay *&#964;*<sub>CIC</sub>.
@@ -152,7 +164,7 @@ P = ( 1-<i>A</i><sub>CIC</sub> ) x exp( -( <i>intensity</i> - <i>&#956;</i><sub>
 * *&#951;* = 0.95 
 * *K* = 57.8 ic/ec
 
-### Model: PGN- or Hirsch
+### PGN- or Hirsch
 {: .no_toc }
 
 Distribute intensities following the convolution of a Poisson distribution of mean *&#955;*<sub>p</sub>:

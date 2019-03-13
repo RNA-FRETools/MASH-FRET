@@ -19,5 +19,5 @@ The interface can be divided into three subunits that respectively allow to:
 <a href="../assets/images/gui/interface-video-processing.png"><img src="../assets/images/gui/interface-video-processing.png" /></a>
 
 Learn about individual components of the interface in the 
-[Panels](panels) section.
+[Panels](panels.html) section.
 

@@ -64,7 +64,7 @@ It can be uniform in space or spatially distributed, but also constant or dynami
 To apply a uniform background, "Uniform" must be selected in the list **(a)**. 
 Background intensities are set in **(b)** and **(c)** for donor and acceptor channel respectively.
 Intensity units can be given in photon counts (pc) or electron counts (ec); see
-[Intensity units](panel-molecules#intensity-units) for more information.
+[Intensity units](panel-molecules.html#intensity-units) for more information.
 
 **<u>default</u>:** 
 * *bg*<sub>D</sub> = 0 ec
@@ -81,7 +81,7 @@ To apply a <u>2D-Gaussian background</u>, "2D Gaussian profile" must be selected
 In that case, the background follows a 2D-Gaussian distribution centred on each channel, having common x- and y-standard deviations, *w*<sub>0,ex,x</sub> and *w*<sub>0,ex,y</sub>, given in pixels and set in **(d)** and **(e)** respectively.
 Gaussian amplitudes *bg*<sub>D</sub> in donor channel and *bg*<sub>A</sub> in acceptor channel are set in **(b)** and **(c)** respectively.
 Gaussian amplitudes can be given in photon counts (pc) or electron counts (ec); see
-[Intensity units](panel-molecules#intensity-units) for more information.
+[Intensity units](panel-molecules.html#intensity-units) for more information.
 
 **<u>default</u>:** 2D-Gaussian widths are set to half-channel dimensions in a video of 256-by-256 pixels:
 * *w*<sub>0,ex,x</sub> = 64 px
