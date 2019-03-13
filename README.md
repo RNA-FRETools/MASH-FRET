@@ -1,4 +1,4 @@
-# ![](docs/assets/images/mash-fret_logo.png) MASH-FRET 
+# ![](docs/assets/images/logos/logo-MASH-75x65.png) MASH-FRET 
 
 
 ## What is MASH-FRET?
@@ -23,7 +23,7 @@ Within Matlab, add MASH-FRET to you path by going to `Home → Set Path → Add 
 
 ## Documentation
 
-For information about the different modules of MASH-FRET please visit our [Wiki page](https://github.com/RNA-FRETools/MASH-FRET/wiki). The documentation is under continuous development. If you have any questions, do not hesitate to contact us at rnafretools@chem.uzh.ch.
+For information about the different modules of MASH-FRET and step-by-step tutorials please visit https://rna-fretools.github.io/MASH-FRET/. The documentation is under continuous development. If you have any questions, do not hesitate to contact us at rnafretools@chem.uzh.ch.
 
 ## Getting involved
 
