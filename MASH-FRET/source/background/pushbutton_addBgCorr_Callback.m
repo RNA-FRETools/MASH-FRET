@@ -12,6 +12,11 @@ if isfield(h, 'movie')
             p.movBg_p{nextMethod,1} = dat;
             
         else
+            if sum(double(nextMethod == [2 5:10])) && ~exist('FilterArray')
+                setContPan(cat(2,'This filter can not be used: problem ',...
+                    'with mex compilation.'),'error',h.figure_MASH);
+                return;
+            end
             p.bgCorr{size(p.bgCorr,1)+1,1} = nextMethod;
             nC = p.nChan;
             if nextMethod ~= 17
