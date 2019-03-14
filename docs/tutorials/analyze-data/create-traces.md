@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Create traces
-grand_parent: /tutorials
-parent: /tutorials/analyze-data
+grand_parent: /tutorials.html
+parent: /tutorials/analyze-data.html
 nav_order: 1
 nav_exclude: true
 has_toc: false
@@ -15,7 +15,7 @@ has_toc: false
 Follow this procedure to process your single molecule videos (SMVs) or trajectories and characterize the molecule dynamics in your sample.
 
 **Note:** *Skip step 1 if already in possession of intensity-time traces files (ASCII or 
-[mash project](../../output-files/mash-mash-project)).*
+[mash project](../../output-files/mash-mash-project.html)).*
 
 {% include tutorial_head.html %}
 
@@ -37,11 +37,11 @@ To prepare the working area for analysis:
 1. <u>Create a root folder</u>: name it after your video file for instance.  
      
 1. <u>Set root folder</u>: browse and select your root folder in MASH-FRET's 
-[tool bar](../../Getting_started#interface).  
+[tool bar](../../Getting_started.html#interface).  
      
 1. <u>Select module</u>: 
-[Video processing](../../video-processing) in MASH-FRET's 
-[tool bar](../../Getting_started#interface).
+[Video processing](../../video-processing.html) in MASH-FRET's 
+[tool bar](../../Getting_started.html#interface).
 
 
 ## Fill in experiment settings
@@ -50,7 +50,7 @@ MASH-FRET is compatible with various experiment settings.
 The functionalities adapts automatically to the number of channels, number of alternating lasers and fluorophore properties.
 
 To inform the software about your experiment settings, <u>Fill in</u> panel 
-[Experiment Settings](../../video-processing/panels/panel-experiment-settings).
+[Experiment Settings](../../video-processing/panels/panel-experiment-settings.html).
 
 
 ## Crate the transformation file
@@ -65,10 +65,10 @@ To obtain the reference image from a reference video:
 
 {: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
 1. <u>Load the reference video</u> file in the 
-[Visualization area](../../video-processing/panels/area-visualization)  
+[Visualization area](../../video-processing/panels/area-visualization.html)  
       
 1. <u>Export an average image</u>: use the full video length (from frame 1 to ending frame) and a frame interval of 1; see 
-[Average image](../../video-processing/panels/panel-molecule-coordinates#average-image) for more information.
+[Average image](../../video-processing/panels/panel-molecule-coordinates.html#average-image) for more information.
 
 To map reference coordinates:
 
@@ -107,7 +107,7 @@ Create a new transformation file solely when your setup gets realigned.
 ## Create and export intensity-time traces
 
 Create <u>intensity-time traces</u> of donor and acceptor channels and save data to a 
-[mash project](../../output-files/mash-mash-project) file.
+[mash project](../../output-files/mash-mash-project.html) file.
 
 ---
 

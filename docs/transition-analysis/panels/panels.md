@@ -1,10 +1,10 @@
 ---
 layout: default
 title: Panels
-parent: /transition-analysis
+parent: /transition-analysis.html
 nav_order: 4
 has_children: true
-permalink: /transition-analysis/panels
+permalink: /transition-analysis/panels.html
 ---
 
 # Transition analysis panels

@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Molecules
-parent: /simulation/panels
-grand_parent: /simulation
+parent: /simulation/panels.html
+grand_parent: /simulation.html
 nav_order: 2
 ---
 
@@ -165,22 +165,22 @@ Photon counts and electron counts are linked by the relation:
 
 {: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
 <p style="border-radius: 5px;">
-<b><i>ec</i></b> = <b><i>pc</i></b> x <i>&#951;</i> x <i>K</i> + <i>&#956;</i><sub>ic,d</sub>
+<b><i>ic</i></b> = <b><i>pc</i></b> x <i>&#951;</i> x <i>K</i> + <i>&#956;</i><sub>ic,d</sub>
 </p>
 
 with camera characteristics: signal offset *&#956;*_ic,d, sensitivity *&#951;* and overall gain *K*.
 
 If one of the characteristics is not defined within the chosen camera noise model, the following default values are used:
-* *&#951;* = 0.95
-* *K* = 57.7 ec/pc
-* *&#956;*<sub>ic,d</sub> = 0 ec
+* *&#951;* = 1 ec/pc
+* *K* = 1 ic/ec
+* *&#956;*<sub>ic,d</sub> = 0 ic
 
 See 
 [Camera SNR characteristics](panel-video-parameters.html#camera-snr-characteristics) for more information.
 
 **<u>default</u>:** 
-* *I*<sub>tot,em</sub> = 1000 ec
-* *wI*<sub>tot,em</sub> = 0 ec
+* *I*<sub>tot,em</sub> = 36 pc
+* *wI*<sub>tot,em</sub> = 0 pc
 * *&#947;* = 1
 * *w&#947;* = 0;
 

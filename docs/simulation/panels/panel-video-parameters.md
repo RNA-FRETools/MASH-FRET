@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Video parameters
-parent: /simulation/panels
-grand_parent: /simulation
+parent: /simulation/panels.html
+grand_parent: /simulation.html
 nav_order: 1
 ---
 
@@ -114,7 +114,7 @@ Distribute intensities following a Poisson distribution with mean *&#955;*:
 
 **<u>default</u>:**
 * *&#956;*<sub>ic,d</sub> = 113 ic
-* *&#951;* = 0.95 
+* *&#951;* = 0.95 ec/pc
 
 
 ### N- or Gaussian
@@ -135,8 +135,8 @@ and standard deviation *&#963;*:
 </p>
 
 **<u>default</u>:** values taken from the literature (reference [here](../../citations.html#simulation-algorithm-testing)):
-* *&#956;*<sub>ic,d</sub> = 113 ic.ec
-* *&#951;* = 0.95 
+* *&#956;*<sub>ic,d</sub> = 113 ic
+* *&#951;* = 0.95 ec/pc
 * *K* = 57.8 ic/ec
 * *&#963;*<sub>d</sub> = 0.067 ec
 * *&#963;*<sub>q</sub> = 0 ic
@@ -160,8 +160,8 @@ P = ( 1-<i>A</i><sub>CIC</sub> ) x exp( -( <i>intensity</i> - <i>&#956;</i><sub>
 * *&#956;*<sub>ic,d</sub> = 106.9 ic
 * *A*<sub>CIC</sub> = 0.02 
 * *&#963;*<sub>CIC</sub> = 4.9 ic
-* *&#964;*<sub>CIC</sub> = 20.5
-* *&#951;* = 0.95 
+* *&#964;*<sub>CIC</sub> = 20.5 ic
+* *&#951;* = 0.95 ec/pc
 * *K* = 57.8 ic/ec
 
 ### PGN- or Hirsch
@@ -189,11 +189,11 @@ and standard deviation *&#963;*<sub>g</sub>:
 </p>
 
 **<u>default</u>:** values taken from the literature (reference [here](../../citations.html#simulation-algorithm-testing)):
-* *&#956;*<sub>ic,d</sub> = 113 ic.ec
-* *&#951;* = 0.95 
+* *&#956;*<sub>ic,d</sub> = 113 ic
+* *&#951;* = 0.95 ec/pc
 * *g* = 300
 * *&#963;*<sub>d</sub> = 0.067 ec
-* *s* = 0 ic
+* *s* = 5.199 ec/ic
 * *CIC* = 0.02 ec
 
 
@@ -205,17 +205,17 @@ Parameters specific to camera noise model:
 | parameter                   | units             | description                                  | in model               |
 | :-------------------------: | :---------------: | -------------------------------------------- | ---------------------- |
 | *&#956;*<sub>ic,d</sub>     | ic                | signal offset                                | none, P, N, NexpN, PGN |
-| *&#951;*                    |                   | detection efficiency                         | P, N, NexpN, PGN       |
-| *K*                         | pc/ec             | overall gain                                 | N, NExpN               |
+| *&#951;*                    | ec/pc             | detection efficiency                         | P, N, NexpN, PGN       |
+| *K*                         | ic                | overall gain                                 | N, NExpN               |
 | *sat* (read only)           | ic                | saturation value                             | N                      |
-| *&#963;*<sub>d</sub>        | pc                | readout noise deviation                      | N, PGN                 |
-| *&#963;*<sub>q</sub>        | pc                | analog-to-digital conversion noise deviation | N                      |
-| *&#964;*<sub>CIC</sub>      | ec                | CIC exponential decay constant               | NExpN                  |
-| *A*<sub>CIC</sub>           |                   | CIC exponential decay contribution           | NExpN                  |
-| *&#963;*<sub>CIC</sub>      | ic                | Gaussian noise deviation                     | NExpN                  |
-| *g*                         | pc/ic             | System gain                                  | PGN                    |
-| *s*                         | ic/pc             | analog-to-digital factor                     | PGN                    |
-| *CIC*                       | pc                | CIC offset                                   | PGN                    |
+| *&#963;*<sub>d</sub>        | ec                | readout noise deviation                      | N, PGN                 |
+| *&#963;*<sub>q</sub>        | ic                | analog-to-digital conversion noise deviation | N                      |
+| *&#964;*<sub>CIC</sub>      | ic                | exponential tail decay constant              | NExpN                  |
+| *A*<sub>CIC</sub>           |                   | exponential decay contribution               | NExpN                  |
+| *&#963;*<sub>CIC</sub>      | ic                | Gaussian standard deviation                  | NExpN                  |
+| *g*                         |                   | System gain                                  | PGN                    |
+| *s*                         | ec/ic             | analog-to-digital factor                     | PGN                    |
+| *CIC*                       | ec                | CIC offset                                   | PGN                    |
 
 <u>Abbreviations</u>:
 * **ic**: image count

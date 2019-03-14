@@ -1,10 +1,10 @@
 ---
 layout: default
 title: Panels
-parent: /simulation
+parent: /simulation.html
 nav_order: 4
 has_children: true
-permalink: /simulation/panels
+permalink: /simulation/panels.html
 ---
 
 # Simulation panels

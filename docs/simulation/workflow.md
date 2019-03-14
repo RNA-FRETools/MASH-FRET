@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Workflow
-parent: /simulation
+parent: /simulation.html
 nav_order: 2
 ---
 

@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Collect parameters for simulation
-grand_parent: /tutorials
-parent: /tutorials/test-algorithms
+grand_parent: /tutorials.html
+parent: /tutorials/test-algorithms.html
 nav_order: 1
 nav_exclude: true
 has_toc: false

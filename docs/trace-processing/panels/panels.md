@@ -1,10 +1,10 @@
 ---
 layout: default
 title: Panels
-parent: /trace-processing
+parent: /trace-processing.html
 nav_order: 4
 has_children: true
-permalink: /trace-processing/panels
+permalink: /trace-processing/panels.html
 ---
 
 # Trace processing panels

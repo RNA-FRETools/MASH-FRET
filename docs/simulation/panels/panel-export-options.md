@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Export options
-parent: /simulation/panels
-grand_parent: /simulation
+parent: /simulation/panels.html
+grand_parent: /simulation.html
 nav_order: 4
 ---
 

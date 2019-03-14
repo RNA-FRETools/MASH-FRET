@@ -1,8 +1,8 @@
 ---
 layout: default
 title: State configuration
-parent: /transition-analysis/panels
-grand_parent: /transition-analysis
+parent: /transition-analysis/panels.html
+grand_parent: /transition-analysis.html
 nav_order: 3
 ---
 

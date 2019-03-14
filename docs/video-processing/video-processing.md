@@ -3,7 +3,7 @@ layout: default
 title: Video processing
 nav_order: 3
 has_children: true
-permalink: /video-processing
+permalink: /video-processing.html
 ---
 
 <img src="assets/images/logos/logo-video-processing_400px.png" width="260" style="float:right; margin-left: 15px;"/>

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: (*.mash) MASH-FRET project
-parent: /output-files
+parent: /output-files.html
 nav_order: 1
 nav_exclude: 1
 ---
@@ -28,7 +28,7 @@ They are created/updated when:
 - the user create and saves intensity-time traces in 
 [Video processing](../video-processing.html),
 - the user save modifications and calculations in 
-[Trace processing](../trace-processing), [Histogram analysis](../histogram-analysis.html) or 
+[Trace processing](../trace-processing.html), [Histogram analysis](../histogram-analysis.html) or 
 [Transition analysis](../transition-analysis.html).
 
 ## File name

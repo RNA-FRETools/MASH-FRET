@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Workflow
-parent: /trace-processing
+parent: /trace-processing.html
 nav_order: 2
 ---
 

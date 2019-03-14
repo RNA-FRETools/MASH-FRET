@@ -1,10 +1,10 @@
 ---
 layout: default
 title: Functionalities
-parent: /trace-processing
+parent: /trace-processing.html
 nav_order: 3
 has_children: true
-permalink: /trace-processing/functionalities
+permalink: /trace-processing/functionalities.html
 ---
 
 # Trace processing functionalities

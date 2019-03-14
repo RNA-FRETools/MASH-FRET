@@ -1,11 +1,11 @@
 ---
 layout: default
 title: Test algorithms
-parent: /tutorials
+parent: /tutorials.html
 nav_order: 3
 has_children: true
 has_toc: false
-permalink: /tutorials/test-algorithms
+permalink: /tutorials/test-algorithms.html
 select_with_child: true
 ---
 

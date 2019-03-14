@@ -1,10 +1,10 @@
 ---
 layout: default
 title: Panels
-parent: /histogram-analysis
+parent: /histogram-analysis.html
 nav_order: 4
 has_children: true
-permalink: /histogram-analysis/panels
+permalink: /histogram-analysis/panels.html
 ---
 
 # Histogram analysis panels

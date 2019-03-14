@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Analyze simulated data
-grand_parent: /tutorials
-parent: /tutorials/validate-results
+grand_parent: /tutorials.html
+parent: /tutorials/validate-results.html
 nav_order: 2
 nav_exclude: true
 has_toc: false

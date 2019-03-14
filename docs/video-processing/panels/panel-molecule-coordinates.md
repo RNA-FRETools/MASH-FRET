@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Molecule coordinates
-parent: /video-processing/panels
-grand_parent: /video-processing
+parent: /video-processing/panels.html
+grand_parent: /video-processing.html
 nav_order: 5
 ---
 

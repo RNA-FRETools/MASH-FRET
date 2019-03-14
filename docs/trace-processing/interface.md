@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Interface
-parent: /trace-processing
+parent: /trace-processing.html
 nav_order: 1
 ---
 

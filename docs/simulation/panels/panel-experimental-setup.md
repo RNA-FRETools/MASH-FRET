@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Experimental setup
-parent: /simulation/panels
-grand_parent: /simulation
+parent: /simulation/panels.html
+grand_parent: /simulation.html
 nav_order: 3
 ---
 
@@ -89,6 +89,7 @@ Gaussian amplitudes can be given in photon counts (pc) or electron counts (ec); 
 
 
 ### Background from image file
+{: .no_toc}
 
 The spatial distribution of the background is set by an external image file. 
 This can be used to reproduce image imperfections present in experimental recordings.

@@ -1,10 +1,10 @@
 ---
 layout: default
 title: Functionalities
-parent: /histogram-analysis
+parent: /histogram-analysis.html
 nav_order: 3
 has_children: true
-permalink: /histogram-analysis/functionalities
+permalink: /histogram-analysis/functionalities.html
 ---
 
 # Histogram analysis functionalities
