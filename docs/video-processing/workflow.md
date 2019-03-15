@@ -71,38 +71,29 @@ To localize bright spots in the SMV:
    ![Load...](../assets/images/gui/VP-but-load.png "Load...")  
      
 1. Set parameters in 
-   [Filter settings](panels/panel-edit-video.html#filter-settings) for each channel and apply the filter by pressing 
-   ![Add](../assets/images/gui/VP-but-add.png "Add"). 
-   Several filters can be cumulated with the top-filter in the 
-   [Filter list](panels/panel-edit-video.html#filter-list) being applied first.  
+   [Filter settings](panels/panel-edit-video.html#filter-settings) and apply filter by pressing 
+   ![Add](../assets/images/gui/VP-but-add.png "Add"). Filters can be cumulated and are managed in the 
+   [Filter list](panels/panel-edit-video.html#filter-list).  
      
 1. Set parameters in 
    [Frame range](panels/panel-edit-video.html#frame-range) and export the modified (or not) video to a 
    [.sira file](../output-files/sira-mash-video.html) by pressing 
-   ![Export...](../assets/images/gui/VP-but-export.png "Export...")   
+   ![Export...](../assets/images/gui/VP-but-export.png "Export...").   
      
 1. [Load](panels/area-visualization.html#load-videoimage-file) the newly exported SMV file by pressing 
    ![Load...](../assets/images/gui/VP-but-load.png "Load...")  
      
-1. Set parameters in [Average image](panels/panel-molecule-coordinates.html#average-image) 
-     
-1. Calculate and export the average image to a 
-   [_ave.* file](../output-files/ave-average-image.html) by pressing  
+1. Set parameters in 
+   [Average image](panels/panel-molecule-coordinates.html#average-image) and export the average image to a 
+   [_ave.* file](../output-files/ave-average-image.html) by pressing 
    ![Go](../assets/images/gui/VP-but-go.png "Go")  
      
 1. Load the average image by pressing 
    ![...](../assets/images/gui/VP-but-3p.png "...") in
    [Average image](panels/panel-molecule-coordinates.html#average-image)  
      
-1. Set parameters in 
-   [Spotfinder settings](panels/panel-molecule-coordinates.html#spotfinder-settings) for each channel  
-     
-1. Start the detection procedure by pressing 
-   ![Find](../assets/images/gui/VP-but-find.png "Find"). 
-   If necessary, refine the spots set using the 
-   [Exclusion rules](panels/panel-molecule-coordinates.html#exclusion-rules)  
-     
-1. Export spots coordinates to a 
+1. Detect bright spots with 
+   [Spotfinder](panels/panel-molecule-coordinates.html#spotfinder) in each channel and export spots coordinates to a 
    [.spots file](../output-files/spots-spots-coordinates.html) by pressing 
    ![Save](../assets/images/gui/VP-but-save.png "Save")
 
@@ -134,23 +125,18 @@ To calculate and export the spatial transformation:
 
 {: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
 1. Load the reference image by pressing 
-   ![Map](../assets/images/gui/VP-but-map.png "Map")  
-     
-1. [Use the mapping tool](functionalities/use-mapping-tool.html) to map single emitters positions in every channels   
-     
-1. Export reference coordinates to a 
+   ![Map](../assets/images/gui/VP-but-map.png "Map"),  
+   [Use the mapping tool](functionalities/use-mapping-tool.html) to map positions in every channels and export reference coordinates to a 
    [.map file](../output-files/map-mapped-coordinates.html) by closing the mapping tool.  
      
 1. Select the 
-   [Transformation type](panels/panel-molecule-coordinates.html#transformation-type)
-     
-1. Calculate and export the transformation to a 
+   [Transformation type](panels/panel-molecule-coordinates.html#transformation-type) and export the transformation to a 
    [.mat file](../output-files/mat-transformation.html) by pressing 
-   ![Calculate](../assets/images/gui/VP-but-calculate.png "Calculate")
+   ![Calculate](../assets/images/gui/VP-but-calculate.png "Calculate").
      
 1. Load the reference image by pressing 
-   ![Check quality](../assets/images/gui/VP-but-check-quality.png "Check quality") and judge the transformation quality. 
-   If the quality is not satisfying, return to step 4.  
+   ![Check quality...](../assets/images/gui/VP-but-check-quality.png "Check quality...") and judge the transformation quality; 
+   if the quality is not satisfying, return to step 3.  
      
 1. Recalculate the transformation whenever the setup is realigned. 
    Otherwise, the same transformation [.mat file](../output-files/mat-transformation.html) can be re-used; see 
@@ -158,7 +144,7 @@ To calculate and export the spatial transformation:
      
 1. Transform the spots coordinates and export the single molecule coordinates to a 
    [.coord file](../output-files/coord-transformed-coordinates.html) by pressing 
-   ![Transform](../assets/images/gui/VP-but-transform.png "Transform")
+   ![Transform](../assets/images/gui/VP-but-transform.png "Transform").
 
 
 ## Create and export intensity-time traces
@@ -206,7 +192,7 @@ If the file does not contain such information, the exposure time must be manuall
 [Exposure time](panels/panel-experiment-settings.html#exposure-time).
 
 Even though background correction is more accurate when performed in module Trace processing, some image filters can be used as background correction; see 
-[Filter settings](panels/panel-edit-video.html#filter-settings) for more information.
+[Filters](panels/panel-edit-video.html#filters) for more information.
 In that case, the background-corrected video file can be used to create intensity-time traces, but background correction must be deactivated in module Trace processing; see
 [Background correction](../trace-processing/panels/panel-subimage-background-correction.html#background-correction) for more information.
 

@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Use the mapping tool
-parent: /video-processing/functionalities
-grand_parent: /video-processing
+parent: /video-processing/functionalities.html
+grand_parent: /video-processing.html
 nav_order: 2
 ---
 
@@ -20,4 +20,6 @@ nav_order: 2
 
 ---
 
+A reference image displays luminescent objects visible in all channels. It is usually the average image of a single beads video; see 
+[Average image](../panels/panel-molecule-coordinates.html#average-image) for more information about exporting an average image. 
 
