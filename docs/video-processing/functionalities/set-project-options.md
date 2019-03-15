@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Set project options
-parent: /video-processing/functionalities
-grand_parent: /video-processing
+parent: /video-processing/functionalities.html
+grand_parent: /video-processing.html
 nav_order: 1
 ---
 

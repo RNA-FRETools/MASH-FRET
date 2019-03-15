@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Interface
-parent: /video-processing
+parent: /video-processing.html
 nav_order: 1
 ---
 
