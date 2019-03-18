@@ -63,12 +63,16 @@ It can be uniform in space or spatially distributed, but also constant or dynami
 
 To apply a uniform background, "Uniform" must be selected in the list **(a)**. 
 Background intensities are set in **(b)** and **(c)** for donor and acceptor channel respectively.
-Intensity units can be given in photon counts (pc) or electron counts (ec); see
+Intensity units can be given in photon counts (pc) or pseudo-image counts (pic); see
 [Intensity units](panel-molecules.html#intensity-units) for more information.
 
+Pseudo-image counts are the units of amplified photo-electron counts. 
+Experimental *bg*<sub>D</sub> and *bg*<sub>A</sub> values in p-ic are obtained by subtracting the known camera offset to the background intensities calculated in Trace processing; see 
+[Background correction](../../trace-processing/panels/panel-subimage-background-correction.html#background) for more information.
+
 **<u>default</u>:** 
-* *bg*<sub>D</sub> = 0 ec
-* *bg*<sub>A</sub> = 0 ec
+* *bg*<sub>D</sub> = 0 pc
+* *bg*<sub>A</sub> = 0 pc
 
 
 ### Gaussian-distributed background

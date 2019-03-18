@@ -127,7 +127,7 @@ Distribute intensities following a Gaussian distribution with mean *&#956;*:
 <i>&#956;</i> = <i>intensity</i> x <i>&#951;</i> x <i>K</i> + <i>&#956;</i><sub>ic,d</sub>
 </p>
 
-and standard deviation *&#963;*:
+and standard deviation *&#963;*:                  
 
 {: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
 <p style="border-radius: 5px;">
