@@ -146,6 +146,19 @@ It identifies bright spots considering:
 * a minimum ratio spot intensity over background set in **(d)** 
 * a minimum distance to the image edge set in **(h)**.
 
+The Schmied2012 algorithm was written in C and was compiled to .mex file via the `mex` function of MATLAB. 
+The .mex file may work with certain MATLAB versions and lead to errors with others. 
+If the use of Schmied2012 gives an error, please recompile the .mex file by typing in MATLAB's command window:
+
+```matlab
+mex 'xxxxx\MASH-FRET\source\extern\schmied2012\forloop.c'
+```
+
+with `xxxxx` the path on your computer to the MASH-FRET folder.
+
+If the error persists, please inform us via the  
+[issue tracker](https://github.com/RNA-FRETools/MASH-FRET/issues) on Github.
+
 
 ### Twotone
 {: .no_toc }
@@ -175,29 +188,29 @@ Transformed coordinates are called single molecule coordinates and are exported 
 ![Transform](../../assets/images/gui/VP-but-transform.png "Transform").
 Before transforming spots coordinates, make sure the spots coordinates and the spatial transformation are imported as described below.
 
-Spots coordinates written in ASCII files can be imported in **(d)** :
+Spots coordinates written in ASCII files can be imported in **(d)**:
 * either automatically, after saving spots coordinates with Spotfinder; see 
-[Spotfinder](#spotfinder) for more information.
+[Spotfinder](#spotfinder) for more information
 * or by pressing 
-![...](../../assets/images/gui/VP-but-3p.png "...") and selecting the spots coordinates file; coordinates are imported according to the 
-[Import options](#import-options)
+![...](../../assets/images/gui/VP-but-3p.png "...") and selecting the previously exported spots coordinates file; coordinates are imported according to the 
+[Import options](#import-options).
 
 The spatial transformation stored in a 
-[.mat file](../../output-files/mat-transformation.html) can be imported in **(c)** 
+[.mat file](../../output-files/mat-transformation.html) can be imported in **(c)**:
 * either automatically, after calculation from a set of reference coordinates, according to the transformation type selected in **(b)**, and by pressing 
 ![Calculate](../../assets/images/gui/VP-but-calculate.png "Calculate"); see 
-[Transformation types](#transformation-types) for more details about the available types.
+[Transformation types](#transformation-types) for more details about the available types
 * or by pressing 
-![...](../../assets/images/gui/VP-but-3p.png "...") and selecting the already exported transformation 
-[.mat file](../../output-files/mat-transformation.html)
+![...](../../assets/images/gui/VP-but-3p.png "...") and selecting the previously exported transformation 
+[.mat file](../../output-files/mat-transformation.html).
 
-Reference coordinates are already-transformed coordinates written in ASCII files that can be imported in **(a)** :
+Reference coordinates are already-transformed coordinates written in ASCII files that can be imported in **(a)**:
 * either automatically after mapping coordinates on a reference image with the mapping tool that can be accessed by pressing 
 ![Map](../../assets/images/gui/VP-but-map.png "Map"); see 
 [Use the mapping tool](../functionalities/use-the-mapping-tool.html) to use the mapping tool
 * or by pressing 
-![...](../../assets/images/gui/VP-but-3p.png "...") and selecting the reference coordinates file; coordinates are imported according to the 
-[Import options](#import-options)
+![...](../../assets/images/gui/VP-but-3p.png "...") and selecting the previously exported reference coordinates file; coordinates are imported according to the 
+[Import options](#import-options).
 
 Before transforming any set of coordinates, it is recommended to test the validity of the transformation on a benchmark image (usually the average image of a single bead video recorded parallel to the experiment).
 This is done by overlaying the original benchmark image (colored in red) with the transformed one (colored in green).

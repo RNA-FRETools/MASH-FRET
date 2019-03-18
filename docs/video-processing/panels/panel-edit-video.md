@@ -63,6 +63,21 @@ All filters used on the video or image are listed in the
 | `multiplication`                                  | Pixel values are multiplied by a factor ***p*<sub>1</sub>**.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | 1                       | none                    |
 | `addition`                                        | An constant intensity ***p*<sub>2</sub>** is added to each pixel value.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | 0                       | none                    |
 
+Filters `Gaussian filter`, `mean filter`, `median filter`, `Crocker-Grier filter`, `local Wiener filter`, `global Wiener filter`, `outlier filter`, `histothresh filter` and `simmplethresh filter` were written and generously shared by Dr Mario Heidernätsch from the Institute of Physics, Chemnitz University of Technology.
+These filters were written in C and were compiled to .mex files via the `mex` function of MATLAB. 
+The .mex files may work with certain MATLAB versions and lead to errors with others. 
+
+If the use of one of these filters gives an error, please recompile the .mex files by typing in MATLAB's command window:
+
+```matlab
+mex 'xxxxx\MASH-FRET\source\extern\package\FilterArray.c'
+```
+
+with `xxxxx` the path on your computer to the MASH-FRET folder.
+
+If the error persists, please inform us via the  
+[issue tracker](https://github.com/RNA-FRETools/MASH-FRET/issues) on Github.
+
 
 ### References
 {: .no_toc }
