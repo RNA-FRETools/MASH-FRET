@@ -74,6 +74,7 @@ The final set of spot coordinates can be exported to a
 [.spots file](../../output-files/spots-spots-coordinates) by pressing 
 ![Save](../../assets/images/gui/VP-but-save.png "Save").
 
+
 ### Gaussian fitting
 {: .no_toc }
 
@@ -198,14 +199,14 @@ Reference coordinates are already-transformed coordinates written in ASCII files
 To use the mapping tool, please refer to 
 [Use the mapping tool](../functionalities/use-the-mapping-tool.html).
 
-Before transforming any set of coordinates, it is recommended to test the validity of the transformation on a benchmark image (usually the average image of a single bead video recorded in parallel of the experiment).
+Before transforming any set of coordinates, it is recommended to test the validity of the transformation on a benchmark image (usually the average image of a single bead video recorded parallel to the experiment).
 This is done by overlaying the original benchmark image (colored in red) with the transformed one (colored in green).
 Perfect transformation will result in a perfect overlay of images and thus, in a yellow image.
 When the original and transformed images are shifted, a new transformation needs to be calculated from a new set of reference coordinates.
 
-<a href="../../assets/images/figures/VP-transformation-quality.png"><img src="../../assets/images/figures/VP-transformation-quality.png" /></a>
+<img src="../../assets/images/figures/VP-transformation-quality.png" />
 
-Transformation quality can be checked by pressing
+Transformation quality can be checked by pressing 
 ![Check quality...](../../assets/images/gui/VP-but-check-quality.png "Check quality...") and selecting the benchmark image file.
 
 
@@ -233,7 +234,8 @@ Each type necessitates a minimum number of reference coordinates, which is indic
 ### Import options
 {: .no_toc }
 
-Settings to import reference and spots coordinates from ASCII files can be modified by pressing 
+They are the settings to import reference and spots coordinates from ASCII files.
+Import options can be accessed by pressing 
 ![Options...](../../assets/images/gui/VP-but-options.png "Options...").
 
 To set the import options, please refer to 
