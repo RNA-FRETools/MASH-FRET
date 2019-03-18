@@ -87,6 +87,8 @@ if strcmp(opt, 'sim') || strcmp(opt, 'all')
     set(h.popupmenu_states, 'Value', state, 'String', str);
     set(h.edit_stateVal, 'String', num2str(p.stateVal(state)));
     set(h.edit_simFRETw, 'String', num2str(p.FRETw(state)));
+    set(h.text_simGval, 'String', char(hex2dec('3B3')));
+    set(h.text_simGdelta, 'String', cat(2,'w',char(hex2dec('3B3'))));
     set(h.edit_gamma, 'String', num2str(p.gamma));
     set(h.edit_gammaW, 'String', num2str(p.gammaW));
     set(h.edit_totInt, 'String', num2str(p.totInt));
