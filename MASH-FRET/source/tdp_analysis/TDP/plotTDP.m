@@ -1,16 +1,24 @@
 function plotTDP(h_axes, TDP, plot_prm, clust_prm, varargin)
 % Plot transition density plot and clusters
 % "h_axes" >> axes handle
-% "TDP" >> [m-by-n] TDP matrix
-% "lim" >> [2-by-2] x-limits and y-limits
-% "gconv" >> 1 if TDP convolute with Gaussian filter, 0 otherwise
-% "norm" >> 1 if normalised densities, 0 otherwise
-% "mu" >> [J-by-2] cluster centres
-% "clust" >> [N-by-5] clustered transitions (dwells before transition, 
-%            value before transition, value after transition, molecule nb, 
-%            cluster nb)
-% "clr" >> [J-by-3] RGB colours
+% "plot_prm >> {1-by-5} cell array:
+%  plot_prm{1} >> [m-by-n] TDP matrix
+%  plot_prm{2} >> [2-by-2] x-limits and y-limits
+%  plot_prm{3} >> 1 if TDP convolute with Gaussian filter, 0 otherwise
+%  plot_prm{4} >> 1 if normalised densities, 0 otherwise
+%  plot_prm{5} >> [J-by-3] RGB colours
+% "clust_prm" >> {1-by-3} cell array:
+%  clust_prm{1} >> [J-by-2] cluster centres
+%  clust_prm{2} >> [N-by-5] clustered transitions (dwells before transition, 
+%                  value before transition, value after transition, 
+%                  molecule index, cluster index)
+%  clust_prm{3} >> structure with fields "a" and "o" containing 2D-
+%                  Gaussians amplitudes and standard deviations, used to 
+%                  plot ellipses
 % (optional) "varagin" >> MASH figure handle
+
+% Last update: 18th of March 2019 by Mélodie Hadzic
+% >> update help section
 
 lim = plot_prm{1};
 bins = plot_prm{2};
@@ -47,11 +55,9 @@ if norm
             TDP = TDP/sum(sum(TDP));
         end
     catch err % out of memory
-        h_err = errordlg({['Normalization of TDP impossible: ' ...
-            err.message] '' ...
-            'Increasing TDP binning might be a solution.'}, ...
-            'TDP error', 'modal');
-        uiwait(h_err);
+        setContPan(cat(2,'Impossible to normalize TDP: ',err.message,...
+            '\nIncreasing TDP binning might be a solution.'),'warning',...
+            h_fig);
     end
 end
 
