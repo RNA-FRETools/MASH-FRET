@@ -72,7 +72,7 @@ switch method
             bgI = (1-perc)*img(i)+(perc)*img(i+1); % DK
         end
         
-        [o,j,o] = find(cumP>=(thresh*(1-0.6827))); % 
+        [o,j,o] = find(cumP>=(thresh*(1-0.6827))); % thresh - 1 sigma
         j = j(1);
         if j==1
             j = 2;
