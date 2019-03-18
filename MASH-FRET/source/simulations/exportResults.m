@@ -490,7 +490,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                 img(img>sat) = sat;
                 
                 % (IC-->PC)
-                if strcmp(opUnits, 'photon')
+                if strcmp(op_u, 'photon')
                     img = arb2phtn(img, offset, K, eta);
                 end
                 
@@ -726,7 +726,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                 I_acc_plot{m}(I_acc_plot{m}>sat) = sat;
                 
                 % convert to PC (IC-->PC)
-                if strcmp(opUnits, 'photon')
+                if strcmp(op_u, 'photon')
                     I_don_plot{m} = arb2phtn(I_don_plot{m},offset,K,eta);
                     I_acc_plot{m} = arb2phtn(I_acc_plot{m},offset,K,eta);
                 end
