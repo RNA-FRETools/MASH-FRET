@@ -70,7 +70,7 @@ end
 
 p.proj{proj}.prm{tpe}.thm_res{1,1} = res;
 p.proj{proj}.prm{tpe}.thm_res{1,2} = pop;
-p.proj{proj}.prm{tpe}.thm_res{1,3} = P_bs;
+p.proj{proj}.prm{tpe}.thm_res{1,3} = cat(2,P_s(:,1),P_bs);
 h.param.thm = p;
 guidata(h_fig,h);
 

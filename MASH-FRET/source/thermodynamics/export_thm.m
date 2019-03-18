@@ -356,17 +356,16 @@ if expfig
     start{1}(1) = meth;
     start{2} = pstart{2};
     clr = p.colList;
-    lim = pplot{1}(2:3);
-    x_axis = (lim(1):pplot{1}(1):lim(2))';
-    if ~pplot{1}(4)
-        x_axis([1 end]) = [];
-    end
+
     switch meth
         case 1 % Gaussian fit
             P = pres{2,3};
         case 2 % Thresholding
             P = pres{1,3};
     end
+    
+    x_axis = P(:,1);
+    lim = pplot{1}(2:3);
     
     K = size(pstart{3},1);
     pres_s = pres;
@@ -403,7 +402,7 @@ if expfig
             a = axes('Parent',h_fig_mol,'Units','pixels','FontUnits',...
                 'pixels','FontSize',fntSize,'ActivePositionProperty', ...
                 'OuterPosition');
-            P_s = [x_axis P(:,curr_s)];
+            P_s = [x_axis P(:,curr_s+1)];
             if meth==1
                 pres_s{2,1}(:,1:2:end) = reshape(pres{2,2}(curr_s,:),4,K)';
             end
