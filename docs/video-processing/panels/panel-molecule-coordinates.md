@@ -173,31 +173,31 @@ Spots coordinates are translated in other channels after applying a group of spe
 Transformed coordinates are called single molecule coordinates and are exported to a 
 [.coord file](../../output-files/coord-transformed-coordinates) by pressing 
 ![Transform](../../assets/images/gui/VP-but-transform.png "Transform").
+Before transforming spots coordinates, make sure the spots coordinates and the spatial transformation are imported as described below.
 
-Spots coordinates were previously written in ASCII files that can be imported in **(d)** :
-* manually,  according to the file structure described in 
-[Import options](#import-options) and by pressing 
-![...](../../assets/images/gui/VP-but-3p.png "...")
-* automatically, after saving spots coordinates with Spotfinder; see 
+Spots coordinates written in ASCII files can be imported in **(d)** :
+* either automatically, after saving spots coordinates with Spotfinder; see 
 [Spotfinder](#spotfinder) for more information.
+* or by pressing 
+![...](../../assets/images/gui/VP-but-3p.png "...") and selecting the spots coordinates file; coordinates are imported according to the 
+[Import options](#import-options)
 
-The spatial transformation is stored in a 
-[.mat file](../../output-files/mat-transformation.html) that can be imported in **(c)** 
-* manually, by pressing 
-![...](../../assets/images/gui/VP-but-3p.png "...")
-* automatically after calculation from a set of reference coordinates, according to the transformation type selected in **(b)** and by pressing 
+The spatial transformation stored in a 
+[.mat file](../../output-files/mat-transformation.html) can be imported in **(c)** 
+* either automatically, after calculation from a set of reference coordinates, according to the transformation type selected in **(b)**, and by pressing 
 ![Calculate](../../assets/images/gui/VP-but-calculate.png "Calculate"); see 
 [Transformation types](#transformation-types) for more details about the available types.
+* or by pressing 
+![...](../../assets/images/gui/VP-but-3p.png "...") and selecting the already exported transformation 
+[.mat file](../../output-files/mat-transformation.html)
 
 Reference coordinates are already-transformed coordinates written in ASCII files that can be imported in **(a)** :
-* manually, according to the file structure described in 
-[Import options](#import-options) and by pressing 
-![...](../../assets/images/gui/VP-but-3p.png "...")
-* automatically after mapping coordinates on a reference image and exporting to a 
-[.map file](../../output-file/map-reference-coordinates.html) with the mapping tool accessible with  
-![Map](../../assets/images/gui/VP-but-map.png "Map"). 
-To use the mapping tool, please refer to 
-[Use the mapping tool](../functionalities/use-the-mapping-tool.html).
+* either automatically after mapping coordinates on a reference image with the mapping tool that can be accessed by pressing 
+![Map](../../assets/images/gui/VP-but-map.png "Map"); see 
+[Use the mapping tool](../functionalities/use-the-mapping-tool.html) to use the mapping tool
+* or by pressing 
+![...](../../assets/images/gui/VP-but-3p.png "...") and selecting the reference coordinates file; coordinates are imported according to the 
+[Import options](#import-options)
 
 Before transforming any set of coordinates, it is recommended to test the validity of the transformation on a benchmark image (usually the average image of a single bead video recorded parallel to the experiment).
 This is done by overlaying the original benchmark image (colored in red) with the transformed one (colored in green).
@@ -218,17 +218,17 @@ All transformation types are given in MATLAB and are explained in details in
 [MATLAB's documentation](https://fr.mathworks.com/help/images/ref/cp2tform.html#f1-283651-transformtype) or in the table below.
 Each type necessitates a minimum number of reference coordinates, which is indicated in the last column.
 
-| type                        | symmetry operations                                                                                                   | min. ref |
-| :-------------------------: | --------------------------------------------------------------------------------------------------------------------- | :------: |
-| `Non reflective similarity` | translation, rotaion, uniform scaling                                                                                 | 2        |
-| `Similarity`                | translation, rotaion, uniform scaling, reflection                                                                     | 3        |
-| `Affine`                    | translation, rotaion, uniform scaling, reflection, uniaxial linear distortion                                         | 3        |
-| `Projective`                | translation, rotaion, uniform scaling, reflection, biaxial linear distortion                                          | 4        |
-| `Plynomial ord2`            | translation, rotaion, uniform scaling, reflection, curvilinear distortion by applying a 2nd order polynomial function | 6        |
-| `Plynomial ord3`            | translation, rotaion, uniform scaling, reflection, curvilinear distortion by applying a 3rd order polynomial function | 10       |
-| `Plynomial ord4`            | translation, rotaion, uniform scaling, reflection, curvilinear distortion by applying a 4th order polynomial function | 15       |
-| `Piecewise linear`          | scaling specific to different parts of the image                                                                      | 4        |
-| `Local mean weight`         | locally specific scaling                                                                                              | 12       |
+| type                        | symmetry operations                                                                                                    | min. ref |
+| :-------------------------: | ---------------------------------------------------------------------------------------------------------------------- | :------: |
+| `Non reflective similarity` | translation, rotation, uniform scaling                                                                                 | 2        |
+| `Similarity`                | translation, rotation, uniform scaling, reflection                                                                     | 3        |
+| `Affine`                    | translation, rotation, uniform scaling, reflection, uniaxial linear distortion                                         | 3        |
+| `Projective`                | translation, rotation, uniform scaling, reflection, biaxial linear distortion                                          | 4        |
+| `Plynomial ord2`            | translation, rotation, uniform scaling, reflection, curvilinear distortion by applying a 2nd order polynomial function | 6        |
+| `Plynomial ord3`            | translation, rotation, uniform scaling, reflection, curvilinear distortion by applying a 3rd order polynomial function | 10       |
+| `Plynomial ord4`            | translation, rotation, uniform scaling, reflection, curvilinear distortion by applying a 4th order polynomial function | 15       |
+| `Piecewise linear`          | scaling specific to different parts of the image                                                                       | 4        |
+| `Local mean weight`         | locally specific scaling                                                                                               | 12       |
 
 
 ### Import options
