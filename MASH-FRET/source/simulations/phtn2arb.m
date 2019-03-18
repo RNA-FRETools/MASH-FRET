@@ -1,4 +1,5 @@
 function dat = phtn2arb(dat,offset,K,eta)
+% Convert photon counts to image counts
 
 % Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
 % Last update: 12th of March 2019 by Mélodie Hadzic

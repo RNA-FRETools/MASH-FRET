@@ -312,13 +312,6 @@ switch noiseType
         I_don_plot = K*I_don_plot + offset;
         I_acc_plot = K*I_acc_plot + offset;
         
-        % (IC-->PC)
-        if strcmp(opUnits, 'photon')
-            img = arb2phtn(img, offset, K, eta);
-            I_don_plot = arb2phtn(I_don_plot, offset, K, eta);
-            I_acc_plot = arb2phtn(I_acc_plot, offset, K, eta);
-        end
-        
 %         % old version
 %         % comment: Indeed, one can first transfer the number of simulated 
 %         % PC to EC and add Poisson noise. This looks great, but is 
@@ -362,30 +355,19 @@ switch noiseType
         % ASSUMPTION (no units conversion, just value assignment)
         % (EC)
         sig_pe_img = sqrt(eta*img); 
-        sig_pe_Idon = sqrt(eta*Idon_plot); 
-        sig_pe_Iacc = sqrt(eta*Iacc_plot); 
+        sig_pe_Idon = sqrt(eta*I_don_plot); 
+        sig_pe_Iacc = sqrt(eta*I_acc_plot); 
         
         % (EC-->IC)
-        sig_y_img = sqrt((K*sig_d)^2 + (sig_q^2) + (K*sig_pe_img)^2);
-        sig_y_Idon = sqrt((K*sig_d)^2 + (sig_q^2) + (K*sig_pe_Idon)^2);
-        sig_y_Iacc = sqrt((K*sig_d)^2 + (sig_q^2) + (K*sig_pe_Iacc)^2);
+        sig_y_img = sqrt((K*sig_d)^2 + (sig_q^2) + (K*sig_pe_img).^2);
+        sig_y_Idon = sqrt((K*sig_d)^2 + (sig_q^2) + (K*sig_pe_Idon).^2);
+        sig_y_Iacc = sqrt((K*sig_d)^2 + (sig_q^2) + (K*sig_pe_Iacc).^2);
         
         % add Gaussian noise
         % (IC)
         img = random('norm', mu_y_img, sig_y_img);
         I_don_plot = random('norm', mu_y_I_don, sig_y_Idon);
         I_acc_plot = random('norm', mu_y_I_acc, sig_y_Iacc);
-        
-        % convert to PC 
-        % (IC-->PC)
-        if strcmp(opUnits, 'photon')
-%             img = arb2phtn(img,K,eta);
-%             I_don_plot = arb2phtn(I_don_plot,K,eta);
-%             I_acc_plot = arb2phtn(I_acc_plot,K,eta);
-            img = arb2phtn(img,offset,K,eta);
-            I_don_plot = arb2phtn(I_don_plot,offset,K,eta);
-            I_acc_plot = arb2phtn(I_acc_plot,offset,K,eta);
-        end
         
     case 'user' % User defined or NExpN-model from Börner et al. 2017
         
@@ -416,16 +398,6 @@ switch noiseType
         I_don_plot = rand_NexpN(I_don_plot, A, tau, sig0);
         I_acc_plot = rand_NexpN(I_acc_plot, A, tau, sig0);
         
-        % (IC-->PC)
-        if strcmp(opUnits, 'photon')
-%             img = arb2phtn(img);
-%             I_don_plot = arb2phtn(I_don_plot);
-%             I_acc_plot = arb2phtn(I_acc_plot);
-            img = arb2phtn(img, offset, K, eta);
-            I_don_plot = arb2phtn(I_don_plot, offset, K, eta);
-            I_acc_plot = arb2phtn(I_acc_plot, offset, K, eta);
-        end
-        
     case 'none' % None, no camera noise but possible camera offset value
 %         % convert camera offset in photon counts
 %         I_th = arb2phtn(noisePrm(1));
@@ -449,13 +421,6 @@ switch noiseType
 %             I_don_plot = phtn2arb(I_don_plot);
 %             I_acc_plot = phtn2arb(I_acc_plot);
 %         end
-        % convert to PC 
-        % (IC-->PC)
-        if strcmp(opUnits, 'photon') 
-            img = arb2phtn(img, offset, K, eta);
-            I_don_plot = arb2phtn(I_don_plot, offset, K, eta);
-            I_acc_plot = arb2phtn(I_acc_plot, offset, K, eta);
-        end
         
     case 'hirsch' % Hirsch or PGN- Model from Hirsch et al. 2011
        
@@ -494,16 +459,6 @@ switch noiseType
         
         % Gausian read-out noise, convolution
 %        img = conv(img_G,img_g)
-      
-        % convert to PC (IC-->PC)
-        if strcmp(opUnits, 'photon')
-%             img = arb2phtn(img);
-%             I_don_plot = arb2phtn(I_don_plot);
-%             I_acc_plot = arb2phtn(I_acc_plot);
-            img = arb2phtn(img, offset, K, eta);
-            I_don_plot = arb2phtn(I_don_plot, offset, K, eta);
-            I_acc_plot = arb2phtn(I_acc_plot, offset, K, eta);
-        end
         
 end
 
@@ -516,11 +471,6 @@ end
 %     sat = phtn2arb(sat);
 % end
 
-if strcmp(opUnits, 'photons')
-%     sat = arb2phtn(sat);
-    sat = arb2phtn(sat, offset, K, eta);
-end
-
 img(img<0) = 0;
 img(img>sat) = sat;
 
@@ -529,6 +479,12 @@ I_don_plot(I_don_plot>sat) = sat;
 
 I_acc_plot(I_acc_plot<0) = 0;
 I_acc_plot(I_acc_plot>sat) = sat;
+
+if strcmp(opUnits, 'photon')
+    img = arb2phtn(img, offset, K, eta);
+    I_don_plot = arb2phtn(I_don_plot, offset, K, eta);
+    I_acc_plot = arb2phtn(I_acc_plot, offset, K, eta);
+end
 
 % Histogram first trace
 

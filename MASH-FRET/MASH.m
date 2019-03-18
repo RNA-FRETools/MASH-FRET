@@ -363,9 +363,13 @@ if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
     setContPan('Intensities must be >= 0', 'error', h.figure_MASH);
 else
     set(obj, 'BackgroundColor', [1 1 1]);
+    
     if strcmp(h.param.sim.intUnits, 'electron')
-        val = arb2phtn(val);
+        [offset,K,eta] = getCamParam(h.param.sim.noiseType,...
+            h.param.sim.camNoise);
+        val = ele2phtn(val,K,eta);
     end
+    
     h.param.sim.totInt = val;
     guidata(h.figure_MASH, h);
     updateFields(h.figure_MASH, 'sim');
@@ -381,7 +385,9 @@ if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
 else
     set(obj, 'BackgroundColor', [1 1 1]);
     if strcmp(h.param.sim.intUnits, 'electron')
-        val = arb2phtn(val);
+        [offset,K,eta] = getCamParam(h.param.sim.noiseType,...
+            h.param.sim.camNoise);
+        val = ele2phtn(val,K,eta);
     end
     h.param.sim.totInt_width = val;
     guidata(h.figure_MASH, h);
@@ -398,7 +404,9 @@ if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
 else
     set(obj, 'BackgroundColor', [1 1 1]);
     if strcmp(h.param.sim.intUnits, 'electron')
-        val = arb2phtn(val);
+        [offset,K,eta] = getCamParam(h.param.sim.noiseType,...
+            h.param.sim.camNoise);
+        val = ele2phtn(val,K,eta);
     end
     h.param.sim.bgInt_don = val;
     guidata(h.figure_MASH, h);
@@ -415,7 +423,9 @@ if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
 else
     set(obj, 'BackgroundColor', [1 1 1]);
     if strcmp(h.param.sim.intUnits, 'electron')
-        val = arb2phtn(val);
+        [offset,K,eta] = getCamParam(h.param.sim.noiseType,...
+            h.param.sim.camNoise);
+        val = ele2phtn(val,K,eta);
     end
     h.param.sim.bgInt_acc = val;
     guidata(h.figure_MASH, h);
