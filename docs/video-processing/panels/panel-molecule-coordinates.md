@@ -249,7 +249,7 @@ Each type necessitates a minimum number of reference coordinates, which is indic
 
 They are the settings to import reference and spots coordinates from ASCII files.
 Import options can be accessed by pressing 
-![Options...](../../assets/images/gui/VP-but-options.png "Options...").
+![Options...](../../assets/images/gui/VP-but-options3p.png "Options...").
 
 To set the import options, please refer to 
 [Set coordinates import options](../functionalities/set-coordinates-import-options.html).

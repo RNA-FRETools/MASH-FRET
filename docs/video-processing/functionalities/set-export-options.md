@@ -22,7 +22,11 @@ nav_order: 4
 
 ## ASCII traces
 
+Export single molecule intensity-time traces to one common ASCII file or to individual ASCII files.
+
 <a href="../../assets/images/gui/VP-panel-integration-expopt-ascii.png"><img src="../../assets/images/gui/VP-panel-integration-expopt-ascii.png" style="max-width: 144px;"/></a>
+
+
 
 ---
 
