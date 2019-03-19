@@ -6,9 +6,9 @@ switch noiseType
         eta = noisePrm(1,2); 
         K = 1;
     case 'norm'
-        K = noisePrm(21);
-        offset = noisePrm(23);
-        eta = noisePrm(26);
+        K = noisePrm(2,1);
+        offset = noisePrm(2,3);
+        eta = noisePrm(2,6);
     case 'user'
         offset = noisePrm(3,1);
         K = noisePrm(3,5);
