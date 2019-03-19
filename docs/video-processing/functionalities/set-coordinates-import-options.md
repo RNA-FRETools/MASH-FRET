@@ -12,7 +12,7 @@ nav_order: 3
 Import options are the settings used to import spots and reference coordinates from ASCII files. 
 They are accessed from panel 
 [Coordinates transformation](../panels/panel-molecule-coordinates.html#coordinates-transformation) by pressing 
-![Options...](../../assets/images/gui/VP-but-options.png "Options...").
+![Options...](../../assets/images/gui/VP-but-options3p.png "Options...").
 
 <a href="../../assets/images/gui/VP-panel-molcoord-transf-impopt.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf-impopt.png" style="max-width: 310px;"/></a>
 
@@ -52,7 +52,7 @@ For each channel, give the column indexes in the file where channel-specific x-c
 Coordinates (x,y) of one single molecule in individual channels are written on different lines and in the same columns.
 
 This is the default import format and is based on the structure of 
-[.map files](../../output-files/map-reference-coordinates.html).
+[.map files](../../output-files/map-mapped-coordinates.html).
 
 Give in the column indexes in the file where x-coordinates, in **(f)**, and y-coordinates, in **(g)**, are written.
 
