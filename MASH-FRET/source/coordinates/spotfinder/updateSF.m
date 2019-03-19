@@ -97,6 +97,14 @@ for i = 1:nChan
         end
         
     elseif SFtype == 4 % Schmied2012
+        
+        % check for correct compilation of mex file for method Schmied2012
+        if ~exist('forloop')
+            setContPan(cat(2,'This spotfinder method can not be used: ',...
+                'problem with mex compilation.'),'error',h_fig);
+            return;
+        end
+        
         d_edge =darkArea(2);
         peaks = spotfinder_schmied2012_mash(double(int), ratioInt, d_edge);
         if ~isempty(peaks)
