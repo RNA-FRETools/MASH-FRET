@@ -34,7 +34,7 @@ else
     h_fig = [];
 end
 
-if ~sum(isempty(dt))
+if ~sum(~cellfun(@isempty,dt))
     str = 'Not enough dwell-times to build a TDP.';
     if ~isempty(h_fig)
         setContPan(str, 'warning', h_fig);
