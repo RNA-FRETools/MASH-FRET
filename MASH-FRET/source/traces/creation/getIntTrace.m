@@ -314,7 +314,7 @@ function trace = getNpixFromVect(trace_vect, nPix)
 trace = zeros(zTot,nMol);
 
 ave_vect = permute(mean(trace_vect,1),[3 2 1]);
-[o id_pix] = sort(ave_vect,1,'descend');
+[o,id_pix] = sort(ave_vect,1,'descend');
 
 id_pix = id_pix(1:nPix,:);
 
