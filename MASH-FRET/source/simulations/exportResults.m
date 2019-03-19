@@ -879,8 +879,9 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             if ~impPrm || (impPrm && ~isfield(p.molPrm, 'totInt'))
                 
                 if strcmp(ip_u,'electron')
+                    [offset,K,eta] = getCamParam(noiseType,p.camNoise);
                     totI = phtn2ele(totI,K,eta);
-                    totIw = phtn2arb(totI,K,eta);
+                    totIw = phtn2ele(totI,K,eta);
                 end
                 
                 fprintf(f, ['total intensity (%s count/time bin):\t%d' ...
