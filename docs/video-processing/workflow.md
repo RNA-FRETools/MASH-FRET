@@ -9,7 +9,7 @@ nav_order: 2
 {: .no_toc }
 
 In this section you will learn how to process single molecule videos to obtain single molecule coordinates and intensity-time traces. Exported data, in particular to the 
-[mash project](../output-files/mash-mash-project.html) file, can further be used for 
+[mash project](../output-files/mash-mash-project.html) file, can further be used in module Trace processing for 
 [data analysis](../tutorials/analyze-data.html).
 
 The procedure includes four steps:
@@ -22,7 +22,7 @@ The procedure includes four steps:
 In theory, the software is compatible with:
 * an unlimited number of video channels, 
 * an unlimited number of alternated lasers,
-* FRET calculations for an unlimited number of donor-acceptor network.
+* FRET calculations for an unlimited size of donor-acceptor network.
 
 To adapt the software functionalities to your own experiment setup, MASH must be informed about the particular settings.
 
@@ -38,7 +38,7 @@ To register your experiment settings:
    [Exposure time](panels/panel-experiment-settings.html#exposure-time) (optional); see 
    [Remarks](#remarks) for more details.  
      
-1. Modify experiment settings whenever the laser or channel order change, or when experimental conditions varies.
+1. Modify experiment settings whenever the laser or channel order changes, or when experimental conditions vary.
 
 
 ## Localize bright spots
@@ -51,8 +51,7 @@ MASH offers a set of basic or smFRET-specific image filters that can be used for
 Some image filters can also be used as background correction prior creating intensity-time traces; see 
 [Remarks](#remarks) for more details.
 
-*Noise SMV to filter SMV and .sira file*  
-[Figure]
+![Apply image filter to video](../assets/images/figures/VP-workflow-scheme-filter-video.png "Apply image filter to video")
 
 Image filter or not, it is recommended to export every video analyzed to a 
 [.sira file](../output-files/sira-mash-video.html). 
@@ -61,8 +60,7 @@ This will eventually reduce the processing time.
 To get rid of brightness variations in time and smooth the background noise, video frames are averaged into one average image.
 Finally, spot detection is performed on the average image with the Spotfinder tool.
 
-*SMV averaging and spot detection*  
-[Figure]
+![Average image and spot detection](../assets/images/figures/VP-workflow-scheme-average-sf.png "Average video and detect spots")
 
 To localize bright spots in the SMV:
 
@@ -106,8 +104,7 @@ This implies that the spatial transformation specific to your setup must be calc
 The spatial transformation is calculated from an already co-localized set of coordinates called the reference coordinates.
 They are mapped manually using a reference image where reference samples emits in all channels.
 
-*Map reference to transformation*  
-[Figure]
+![Transformation calculation](../assets/images/figures/VP-workflow-scheme-map-reference.gif)
 
 The transformation from one channel to another uses a combination of symmetry operations which is specific to the recording setup. 
 A list of transformation types is available for such purpose, going from the most simple to the most complex combination.
@@ -118,8 +115,7 @@ The quality of the transformation is judged by the user's eye from the superposi
 If the transformation is correct, reference emitters will appear as yellow dots on a dark background.
 If the quality is poor, red and green dots will be visible and the operation must be repeated with increasing complexity of the combination.
 
-*Iteration calculate-check*  
-[Figure]
+![Transformation calculation](../assets/images/figures/VP-workflow-scheme-transformation-calculation.png)
 
 To calculate and export the spatial transformation:
 
@@ -141,8 +137,11 @@ To calculate and export the spatial transformation:
 1. Recalculate the transformation whenever the setup is realigned. 
    Otherwise, the same transformation [.mat file](../output-files/mat-transformation.html) can be re-used; see 
    [Coordinates transformation](panels/panel-molecule-coordinates.html#coordinates-transformation) for more information.
-     
-1. Transform the spots coordinates and export the single molecule coordinates to a 
+
+To transform spots coordinates:
+
+{: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
+   Transform the spots coordinates and export the single molecule coordinates to a 
    [.coord file](../output-files/coord-transformed-coordinates.html) by pressing 
    ![Transform](../assets/images/gui/VP-but-transform.png "Transform").
 
@@ -196,9 +195,5 @@ Even though background correction is more accurate when performed in module Trac
 In that case, the background-corrected video file can be used to create intensity-time traces, but background correction must be deactivated in module Trace processing; see
 [Background correction](../trace-processing/panels/panel-subimage-background-correction.html#background-correction) for more information.
 
-Creating intensity-time traces is a rather slow process because the script was written for low-RAM computers.
-For more information about how the script works, please refer to the respective function in the source code:
-
-```
-MASH-FRET/source/traces/creation/getIntTrace.m
-```
+Creating intensity-time traces is a rather slow process because the script was written for low-RAM computers; see 
+[Create and export intensity-time traces](panels/panel-intensity-integration.html#create-and-export-intensity-time-traces) for more information.
