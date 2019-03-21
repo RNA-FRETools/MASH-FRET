@@ -252,7 +252,7 @@ for j = 1:nFRET
     % build file extension specific to FRET
     extf = [];
     if size(FRET,1) > 1
-        extf = cat('FRET',num2str(FRET(1)),num2str(FRET(2)));
+        extf = cat(2,'FRET',num2str(FRET(1)),num2str(FRET(2)));
     end
     
     % save HaMMy-compatible files
