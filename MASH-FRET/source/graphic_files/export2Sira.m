@@ -7,7 +7,7 @@ h = guidata(h_fig);
 
 startFrame = h.param.movPr.mov_start;
 lastFrame = h.param.movPr.mov_end;
-iv = 2;
+iv = 1;
 L = numel(startFrame:iv:lastFrame);
 
 ok = 1;
