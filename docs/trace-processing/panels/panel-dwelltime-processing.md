@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Dwell-time processing
-parent: /trace-processing/panels
-grand_parent: /trace-processing
+parent: /trace-processing/panels.html
+grand_parent: /trace-processing.html
 nav_order: 4
 ---
 

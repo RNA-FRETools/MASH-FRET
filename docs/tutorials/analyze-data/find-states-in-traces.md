@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Find states in traces
-grand_parent: /tutorials
-parent: /tutorials/analyze-data
+grand_parent: /tutorials.html
+parent: /tutorials/analyze-data.html
 nav_order: 2
 nav_exclude: true
 has_toc: false
@@ -29,7 +29,7 @@ In this step, single molecules are sorted, intensity-time traces are corrected f
 ## Setup working area
 
 1. Select module 
-[Trace processing](../../trace-processing) in MASH-FRET's 
+[Trace processing](../../trace-processing.html) in MASH-FRET's 
 [tool bar](../../Getting_started#interface).
 
 1. Load your freshly created 

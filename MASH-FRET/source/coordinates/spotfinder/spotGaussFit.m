@@ -1,4 +1,4 @@
-function [res intrupt] = spotGaussFit(spots, I, spotSize, lb, h_fig)
+function [res,intrupt] = spotGaussFit(spots, I, spotSize, lb, h_fig)
 % Fit the intensity profile of the input spots with a 2D-Gaussian and
 % return fitting results (x and y coordinates, intensity, spot width and 
 % height, assymetry)
@@ -17,7 +17,9 @@ function [res intrupt] = spotGaussFit(spots, I, spotSize, lb, h_fig)
 %       c = (sin(theta)^2)/(2*o_x^2) + (cos(theta)^2)/(2*o_y^2)
 
 % Requires external functions: integrate2dgauss, loading_bar 
-% Last update: 5th of February 2014 by M.C.A.S.H.
+
+% Last update: 14th of March 2019 by Mélodie Hadzic
+% >> Review Gaussian assymetry calculation
 
 res = [];
     
@@ -49,26 +51,37 @@ for i = 1:n_spots
             (sin(a(3)))^2)/(2*(a(4)^2))+((cos(a(3)))^2)/(2*(a(5)^2)))*( ...
             (x(:,2)-a(7)).^2)));
         
-        P_0 = 0;
-        I_0 = I(ceil(spots(i,2)), ceil(spots(i,1)));
-        theta_0 = 0;
-        x_0 = spots(i,1);
-        y_0 = spots(i,2);
-        sig_x = spotSize(1)/2;
-        sig_y = spotSize(2)/2;
-        c0 = [P_0 I_0 theta_0 sig_x sig_y x_0 y_0];
+        P_0 = 0; % z-offset
+        I_0 = I(ceil(spots(i,2)), ceil(spots(i,1))); % amplitude
+        theta_0 = 0; % orientation angle
+        sig_x = spotSize(1)/2; % x standrd deviation
+        sig_y = spotSize(2)/2; % y standard deviation
+        x_0 = spots(i,1); % x position
+        y_0 = spots(i,2); % y position
         
-        [cc,o,o,o] = nlinfit(x, q, fun, c0);
+        [cc,o,o,o] = nlinfit(x,q,fun,[P_0 I_0 theta_0 sig_x sig_y x_0 y_0]);
         
-        res(i,1) = cc(6); % x-Position
-        res(i,2) = cc(7); % y-Position
+        P_0 = cc(1);
+        I_0 = cc(2);
+        theta_0 = cc(3);
+        sig_x = abs(cc(4));
+        sig_y = abs(cc(5));
+        x_0 = cc(6);
+        y_0 = cc(7);
+        
+        res(i,1) = x_0; % x-Position
+        res(i,2) = y_0; % y-Position
 %         res(i,3) = cc(2)*2*pi*cc(4)*cc(5); % Integral
-        res(i,3) = sum(q)-cc(1)*numel(q); % Integral
-        res(i,4) = 1 + abs(1 - abs(cc(4)/cc(5))); % ratio of full widths
-        res(i,5) = abs(cc(4)); % x sigma
-        res(i,6) = abs(cc(5)); % y sigma
-        res(i,7) = cc(3); % orientation angle
-        res(i,8) = cc(1); % z offset
+        res(i,3) = sum(q)-P_0*numel(q); % Integral
+        if sig_x>sig_y
+            res(i,4) = sig_x/sig_y; % ratio of standard deviations
+        else
+            res(i,4) = sig_y/sig_x; % ratio of standard deviations
+        end
+        res(i,5) = sig_x; % x sigma
+        res(i,6) = sig_y; % y sigma
+        res(i,7) = theta_0; % orientation angle
+        res(i,8) = P_0; % z offset
 
         if ~lb
             intrupt = loading_bar('update', h_fig);

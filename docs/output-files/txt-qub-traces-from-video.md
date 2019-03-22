@@ -1,7 +1,7 @@
 ---
 layout: default
 title: (*.txt) QUB traces from video
-parent: O/output-files
+parent: O/output-files.html
 nav_order: 1
 nav_exclude: 1
 ---

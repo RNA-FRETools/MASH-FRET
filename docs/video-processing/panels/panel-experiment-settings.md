@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Experiment settings
-parent: /video-processing/panels
-grand_parent: /video-processing
+parent: /video-processing/panels.html
+grand_parent: /video-processing.html
 nav_order: 3
 ---
 
@@ -36,11 +36,11 @@ They are the relevant wavelengths in nanometers of each alternated laser.
 <a href="../../assets/images/gui/VP-panel-expset-laser.png"><img src="../../assets/images/gui/VP-panel-expset-laser.png" style="max-width: 138px;"/></a>
 
 Laser wavelengths are used to label data and identify which channel is directly excited by the laser; see 
-[Video channels](../functionalities/set-project-options#video-channels) for more details.
+[Video channels](../functionalities/set-project-options.html#video-channels) for more details.
 
 To set the wavelength, select the laser index in **(a)** and set the wavelength in **(b)**. 
 Laser indexes correspond to the order of appearance in the video and can easily be identified by navigating through the first frames of the video; see 
-[Navigation](area-visualization#navigation) for more information.
+[Navigation](area-visualization.html#navigation) for more information.
 
 **<u>default</u>:** 
 * laser 1: 532 nm (wavelengths used to excite Cy3)
@@ -81,12 +81,12 @@ If the file does not contain such information, it must be set manually.
 ## Project options
 
 Command that opens settings of the 
-[.mash project](../../output-files/mash-mash-project) file exported at the end of Video processing workflow; see 
-[Workflow](../workflow) for more information.
+[.mash project](../../output-files/mash-mash-project.html) file exported at the end of Video processing workflow; see 
+[Workflow](../workflow.html) for more information.
 
 To set the project options, please refer to 
-[Set project options](../functionalities/set-project-options).
+[Set project options](../functionalities/set-project-options.html).
 
-Project options can be modified any time by loading the [.mash project](../../output-files/mash-mash-project) file in module Trace processing; see 
-[Edit project options](../../trace-processing/panels/area-management#edit-project-options) for more information.
+Project options can be modified any time by loading the [.mash project](../../output-files/mash-mash-project.html) file in module Trace processing; see 
+[Edit project options](../../trace-processing/panels/area-management.html#edit-project-options) for more information.
 

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: (*.mash) MASH-FRET project
-parent: /output-files
+parent: /output-files.html
 nav_order: 1
 nav_exclude: 1
 ---
@@ -26,10 +26,10 @@ They are created at a user-defined location.
 
 They are created/updated when:
 - the user create and saves intensity-time traces in 
-[Video processing](../video-processing),
+[Video processing](../video-processing.html),
 - the user save modifications and calculations in 
-[Trace processing](../trace-processing), [Histogram analysis](../histogram-analysis) or 
-[Transition analysis](../transition-analysis).
+[Trace processing](../trace-processing.html), [Histogram analysis](../histogram-analysis.html) or 
+[Transition analysis](../transition-analysis.html).
 
 ## File name
 
@@ -37,11 +37,11 @@ The file is named by the user.
 
 By default, the file is named after:
 - the <u>video file</u> name loaded in 
-[Video processing](../video-processing),
+[Video processing](../video-processing.html),
 - the <u>current project file</u> name loaded in 
-[Trace processing](../trace-processing).
+[Trace processing](../trace-processing.html).
 - the <u>folder</u> containing the trace files imported in 
-[Trace processing](../trace-processing). 
+[Trace processing](../trace-processing.html). 
 
 
 ## Structure

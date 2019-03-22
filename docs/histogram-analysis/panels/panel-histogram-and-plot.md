@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Histogram and plot
-parent: /histogram-analysis/panels
-grand_parent: /histogram-analysis
+parent: /histogram-analysis/panels.html
+grand_parent: /histogram-analysis.html
 nav_order: 2
 ---
 

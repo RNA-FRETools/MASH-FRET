@@ -1,4 +1,4 @@
-function [coord trace] = create_trace(coord, aDim, nPix, fDat)
+function [coord,trace] = create_trace(coord, aDim, nPix, fDat)
 % Create intensity-time trace of input single molecule by summing up
 % the pixel intensity values as indicated in the GUI. The intensity
 % extraction takes in account applied background corrections.

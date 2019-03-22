@@ -7,6 +7,8 @@ h = guidata(h_fig);
 
 startFrame = h.param.movPr.mov_start;
 lastFrame = h.param.movPr.mov_end;
+iv = 1;
+L = numel(startFrame:iv:lastFrame);
 
 ok = 1;
 
@@ -22,10 +24,10 @@ else
     fwrite(f, double(h.movie.cyctime), 'double');
     fwrite(f, single(h.movie.pixelX), 'single');
     fwrite(f, single(h.movie.pixelY), 'single');
-    fwrite(f, single(lastFrame-startFrame+1), 'single');
+    fwrite(f, single(L), 'single');
     
     % loading bar parameters--------------------------------------
-    intrupt = loading_bar('init', h_fig, lastFrame-startFrame+1, ...
+    intrupt = loading_bar('init', h_fig, L, ...
         'Export to a *.sira file...');
     if ~intrupt
 
@@ -34,7 +36,7 @@ else
         guidata(h_fig, h);
         % ------------------------------------------------------------
 
-        for i = startFrame:lastFrame
+        for i = startFrame:iv:lastFrame
             [data ok] = getFrames([h.movie.path h.movie.file], i, ...
                 {h.movie.speCursor [h.movie.pixelX h.movie.pixelY] ...
                 h.movie.framesTot}, h_fig);

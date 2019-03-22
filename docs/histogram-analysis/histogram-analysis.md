@@ -3,10 +3,10 @@ layout: default
 title: Histogram analysis
 nav_order: 5
 has_children: true
-permalink: /histogram-analysis
+permalink: /histogram-analysis.html
 ---
 
-<img src="../assets/images/logos/logo-histogram-analysis.png" width="260" style="float:right; margin-left: 15px;"/>
+<img src="assets/images/logos/logo-histogram-analysis_400px.png" width="260" style="float:right; margin-left: 15px;"/>
 
 # Histogram analysis
 

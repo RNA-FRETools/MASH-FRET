@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Identify state network
-grand_parent: /tutorials
-parent: /tutorials/analyze-data
+grand_parent: /tutorials.html
+parent: /tutorials/analyze-data.html
 nav_order: 3
 nav_exclude: true
 has_toc: false
@@ -15,7 +15,7 @@ has_toc: false
 Follow this procedure to process your single molecule videos (SMVs) or trajectories and characterize the molecule dynamics in your sample.
 
 **Note:** *Skip step 1 if already in possession of intensity-time traces files (ASCII or 
-[mash project](../../output-files/mash-mash-project)).*
+[mash project](../../output-files/mash-mash-project.html)).*
 
 {% include tutorial_head.html %}
 
@@ -25,18 +25,18 @@ In this step, the sample's most sufficient state configuration is identified and
 {:toc}
 
 **Note:** *Alternatively, if states are sufficiently separated, the most sufficient state configuration can be identified from histogram data; see
-[Workflow](../../histogram-analysis/workflow) for more information.*
+[Workflow](../../histogram-analysis/workflow.html) for more information.*
 
 ---
 
 ## Setup working area
 
 1. Select module 
-[Transition analysis](../../transition-analysis) in MASH-FRET's 
-[tool bar](../../Getting_started#interface).
+[Transition analysis](../../transition-analysis.html) in MASH-FRET's 
+[tool bar](../../Getting_started.html#interface).
 
 1. Load your 
-[mash project](../../output-files/mash-mash-project)
+[mash project](../../output-files/mash-mash-project.html)
 
 1. Select data type "FRET"
 
@@ -91,7 +91,7 @@ Usually number of replicate is set to the number of dwell-times  and the number 
 ## Save and export
 
 1. Save modifications and calculation to your 
-[mash project](../../output-files/mash-mash-project) file.
+[mash project](../../output-files/mash-mash-project.html) file.
 
 1. (optional) Export state model and transition rate calculations to ASCII files.
 

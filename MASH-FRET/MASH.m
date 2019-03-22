@@ -363,9 +363,13 @@ if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
     setContPan('Intensities must be >= 0', 'error', h.figure_MASH);
 else
     set(obj, 'BackgroundColor', [1 1 1]);
+    
     if strcmp(h.param.sim.intUnits, 'electron')
-        val = arb2phtn(val);
+        [offset,K,eta] = getCamParam(h.param.sim.noiseType,...
+            h.param.sim.camNoise);
+        val = ele2phtn(val,K,eta);
     end
+    
     h.param.sim.totInt = val;
     guidata(h.figure_MASH, h);
     updateFields(h.figure_MASH, 'sim');
@@ -381,7 +385,9 @@ if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
 else
     set(obj, 'BackgroundColor', [1 1 1]);
     if strcmp(h.param.sim.intUnits, 'electron')
-        val = arb2phtn(val);
+        [offset,K,eta] = getCamParam(h.param.sim.noiseType,...
+            h.param.sim.camNoise);
+        val = ele2phtn(val,K,eta);
     end
     h.param.sim.totInt_width = val;
     guidata(h.figure_MASH, h);
@@ -398,7 +404,9 @@ if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
 else
     set(obj, 'BackgroundColor', [1 1 1]);
     if strcmp(h.param.sim.intUnits, 'electron')
-        val = arb2phtn(val);
+        [offset,K,eta] = getCamParam(h.param.sim.noiseType,...
+            h.param.sim.camNoise);
+        val = ele2phtn(val,K,eta);
     end
     h.param.sim.bgInt_don = val;
     guidata(h.figure_MASH, h);
@@ -415,7 +423,9 @@ if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
 else
     set(obj, 'BackgroundColor', [1 1 1]);
     if strcmp(h.param.sim.intUnits, 'electron')
-        val = arb2phtn(val);
+        [offset,K,eta] = getCamParam(h.param.sim.noiseType,...
+            h.param.sim.camNoise);
+        val = ele2phtn(val,K,eta);
     end
     h.param.sim.bgInt_acc = val;
     guidata(h.figure_MASH, h);
@@ -4009,8 +4019,14 @@ function popupmenu_thm_tpe_Callback(obj, evd, h)
 p = h.param.thm;
 if ~isempty(p.proj)
     proj = p.curr_proj;
-    if get(obj, 'Value') ~= p.curr_tpe(proj)
-        p.curr_tpe(proj) = get(obj, 'Value');
+    val = get(obj, 'Value');
+    if val ~= p.curr_tpe(proj)
+        
+        tpe_str = get(obj,'String');
+        setContPan(cat(2,'Select data: ',tpe_str{val}),'success', ...
+            h.figure_MASH);
+        
+        p.curr_tpe(proj) = val;
         h.param.thm = p;
         guidata(h.figure_MASH, h);
 
@@ -4018,13 +4034,6 @@ if ~isempty(p.proj)
         cla(h.axes_hist2);
 
         updateFields(h.figure_MASH, 'thm');
-
-        p = h.param.thm;
-        proj = p.curr_proj;
-        tpe = p.curr_tpe(proj);
-        tpe_str = get(obj,'String');
-        setContPan(cat(2,'Select data: ',tpe_str{tpe}),'success', ...
-            h.figure_MASH);
     end
 end
 

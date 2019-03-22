@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Sub-images and background correction
-parent: /trace-processing/panels
-grand_parent: /trace-processing
+parent: /trace-processing/panels.html
+grand_parent: /trace-processing.html
 nav_order: 3
 ---
 
@@ -15,7 +15,7 @@ nav_order: 3
 1. TOC
 {:toc}
 
-## Background
+## Background correction
 
 
 

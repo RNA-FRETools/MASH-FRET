@@ -181,7 +181,7 @@ if saveAsAscii
         for i = 1:N
             for j = 1:nChan
                 str_coord = cat(2,str_coord,'\t%4.2f,%4.2f');
-                str_dat_hd = cat(2,str_dat_hd,'\tintensity(a.u.)');
+                str_dat_hd = cat(2,str_dat_hd,'\tI_',num2str(j),'(a.u.)');
                 str_dat = cat(2,str_dat,'\t%d');
             end
         end
@@ -252,7 +252,7 @@ for j = 1:nFRET
     % build file extension specific to FRET
     extf = [];
     if size(FRET,1) > 1
-        extf = cat('FRET',num2str(FRET(1)),num2str(FRET(2)));
+        extf = cat(2,'FRET',num2str(FRET(1)),num2str(FRET(2)));
     end
     
     % save HaMMy-compatible files

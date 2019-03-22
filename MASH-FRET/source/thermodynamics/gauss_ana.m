@@ -149,7 +149,7 @@ res = reshape(reshape(res,[1,numel(res)])',[8 J])';
 
 p.proj{proj}.prm{tpe}.thm_res{2,1} = res;
 p.proj{proj}.prm{tpe}.thm_res{2,2} = cf;
-p.proj{proj}.prm{tpe}.thm_res{2,3} = P_bs;
+p.proj{proj}.prm{tpe}.thm_res{2,3} = cat(2,P_s(:,1),P_bs);
 h.param.thm = p;
 guidata(h_fig,h);
 

@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Import trajectories
-parent: /transition-analysis/functionalities
-grand_parent: /transition-analysis
+parent: /transition-analysis/functionalities.html
+grand_parent: /transition-analysis.html
 nav_order: 2
 ---
 

@@ -1,10 +1,10 @@
 ---
 layout: default
 title: Panels
-parent: /video-processing
+parent: /video-processing.html
 nav_order: 4
 has_children: true
-permalink: /video-processing/panels
+permalink: /video-processing/panels.html
 ---
 
 # Video processing panels
@@ -12,6 +12,6 @@ permalink: /video-processing/panels
 
 Video processing is composed of one visualization area and five panels.
 
-<a href="../../assets/images/gui/panel-video-processing.png"><img src="../../assets/images/gui/panel-video-processing.png" /></a>
+<a href="../assets/images/gui/panel-video-processing.png"><img src="../assets/images/gui/panel-video-processing.png" /></a>
 
 

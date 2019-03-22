@@ -70,11 +70,12 @@ if strcmp(opt, 'sim') || strcmp(opt, 'all')
     end
     
     if strcmp(p.intUnits, 'electron')
+        [offset,K,eta] = getCamParam(p.noiseType,p.camNoise);
         set(h.checkbox_photon, 'Value', 0);
-        p.totInt = phtn2arb(p.totInt);
-        p.totInt_width = phtn2arb(p.totInt_width);
-        p.bgInt_don = phtn2arb(p.bgInt_don);
-        p.bgInt_acc = phtn2arb(p.bgInt_acc);
+        p.totInt = phtn2ele(p.totInt,K,eta);
+        p.totInt_width = phtn2ele(p.totInt_width,K,eta);
+        p.bgInt_don = phtn2ele(p.bgInt_don,K,eta);
+        p.bgInt_acc = phtn2ele(p.bgInt_acc,K,eta);
     else
         set(h.checkbox_photon, 'Value', 1);
     end
@@ -86,6 +87,8 @@ if strcmp(opt, 'sim') || strcmp(opt, 'all')
     set(h.popupmenu_states, 'Value', state, 'String', str);
     set(h.edit_stateVal, 'String', num2str(p.stateVal(state)));
     set(h.edit_simFRETw, 'String', num2str(p.FRETw(state)));
+    set(h.text_simGval, 'String', char(hex2dec('3B3')));
+    set(h.text_simGdelta, 'String', cat(2,'w',char(hex2dec('3B3'))));
     set(h.edit_gamma, 'String', num2str(p.gamma));
     set(h.edit_gammaW, 'String', num2str(p.gammaW));
     set(h.edit_totInt, 'String', num2str(p.totInt));

@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Set project options
-parent: /video-processing/functionalities
-grand_parent: /video-processing
+parent: /video-processing/functionalities.html
+grand_parent: /video-processing.html
 nav_order: 1
 ---
 
@@ -12,8 +12,8 @@ nav_order: 1
 Project options are specific to each project and include emitter-laser relations, FRET and stoichiometry calculations, but also labels and colors used to present data.
 
 They are initially set in module Video processing (see 
-[Project options](../panels/panel-experiment-settings#project-options) for more information) and can be edited in module Trace processing (see 
-[Edit project options](../../trace-processing/panels/area-management#edit-project-options) for more information).
+[Project options](../panels/panel-experiment-settings.html#project-options) for more information) and can be edited in module Trace processing (see 
+[Edit project options](../../trace-processing/panels/area-management.html#edit-project-options) for more information).
 
 <a href="../../assets/images/gui/VP-panel-expset-opt.png"><img src="../../assets/images/gui/VP-panel-expset-opt.png" style="max-width: 546px;"/></a>
 
@@ -35,7 +35,7 @@ They concern the project title and some optional parameters.
 The project title is the name appearing in the project lists. 
 It can be modified in **(a)**.
 Default titles are named after the
-[MASH project file](../../output-files/mash-mash-project) or by the directory containing imported ASCII trajectories.
+[MASH project file](../../output-files/mash-mash-project.html) or by the directory containing imported ASCII trajectories.
 
 Optional project parameters include the name of the molecule under study, set in **(b)**, and a group of experimental parameters, set in **(c)**.
 By default, the group in **(c)** contains parameters:
@@ -48,8 +48,8 @@ To do so, the parameter name (here: `buffer n°`) and units (here: empty) must b
 All user-defined parameters are listed in **(d)** and can be removed by pressing **Remove**. 
 
 For the moment, optional parameters solely act as project "tags" saved with the 
-[MASH project file](../../output-files/mash-mash-project) and exported in
-[Processing parameter files](../../output-files/log-processing-parameters).
+[MASH project file](../../output-files/mash-mash-project.html) and exported in
+[Processing parameter files](../../output-files/log-processing-parameters.html).
 
 
 ---

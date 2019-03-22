@@ -30,7 +30,7 @@ Start MASH-FRET by typing `MASH` at the MATLAB command prompt.
 
 When you start MASH-FRET the **interactive interface** and **action history** open simultaneously.
 
-<a href="../assets/images/gui/interface-default.png"><img src="../assets/images/gui/interface-default.png" /></a>
+<a href="assets/images/gui/interface-default.png"><img src="assets/images/gui/interface-default.png" /></a>
 
 The interactive interface appears in its default layout and includes:
 * a **tool bar** to switch between <u>modules</u> (default: Video Processing) and set the <u>root folder</u> where generated files will be saved,
@@ -41,18 +41,18 @@ The action history lists the main events occurring in the program.
 
 **Note:** *Keep the action history or the command window of Matlab visible when using MASH-FRET: information about running processes and failures are streaming in live.
 To keep track, logs are automatically written in a 
-[daily log file](../output-files/log-daily-logs.html)*.
+[daily log file](output-files/log-daily-logs.html)*.
 
 
 ## Modules
 
 The program offers five modules to work with:
 
-- [Simulation](simulation)
-- [Video processing](video-processing)
-- [Trace processing](trace-processing)
-- [Histogram analysis](histogram-analysis)
-- [Transition analysis](transition-analysis)
+- [Simulation](simulation.html)
+- [Video processing](video-processing.html)
+- [Trace processing](trace-processing.html)
+- [Histogram analysis](histogram-analysis.html)
+- [Transition analysis](transition-analysis.html)
 
 Module functionalities can be used separately or following a specific procedure.
 
@@ -62,7 +62,7 @@ Learn about <u>individual functionalities</u> in the respective module sections 
 
 You can follow the tutorials to perform the common tasks listed below:
 
-* [Analyze experimental data](../tutorials/analyze-data)
-* [Validate results](../tutorials/validate-results)
-* [Test algorithms](../tutorials/test-algorithms)
+* [Analyze experimental data](tutorials/analyze-data.html)
+* [Validate results](tutorials/validate-results.html)
+* [Test algorithms](tutorials/test-algorithms.html)
 

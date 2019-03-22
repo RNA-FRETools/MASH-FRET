@@ -28,16 +28,26 @@ function [TDP,dt_bin] = getTDPmat(dt, prm, varargin)
 TDP = [];
 dt_bin = [];
 
-bins = prm{1};
-lim = prm{2};
-rate = prm{3};
-oneval = prm{4};
-
 if ~isempty(varargin)
     h_fig = varargin{1};
 else
     h_fig = [];
 end
+
+if ~sum(~cellfun(@isempty,dt))
+    str = 'Not enough dwell-times to build a TDP.';
+    if ~isempty(h_fig)
+        setContPan(str, 'warning', h_fig);
+    else
+        disp(str);
+    end
+    return;
+end
+
+bins = prm{1};
+lim = prm{2};
+rate = prm{3};
+oneval = prm{4};
 
 % bin state values
 str = 'Process: (1/2) binning the discrete values ...';
@@ -61,7 +71,11 @@ elseif strcmp(choice, 'No,keep original dwell times')
     adj = 0;
 
 else
-    setContPan('Building TDP process was aborted.','warning',h_fig);
+    if ~isempty(h_fig)
+        setContPan('Building TDP process was aborted.','warning',h_fig);
+    else
+        disp('Building TDP process was aborted.');
+    end
     TDP = NaN;
     return;
 end
@@ -118,7 +132,7 @@ end
 if isempty(dt_bin)
     str = 'Not enough dwell-times to build a TDP.';
     if ~isempty(h_fig)
-        setContPan(str, 'error', h_fig);
+        setContPan(str, 'warning', h_fig);
     else
         disp(str);
     end
@@ -145,10 +159,14 @@ try
     TDP(~~eye(size(TDP))) = 0;
     
 catch err
-    h_err = errordlg({['Impossible to create TDP: ' err.message] '' ...
-        'Increasing TDP binning might be a solution.'}, 'TDP error', ...
-        'modal');
-    uiwait(h_err);
+    if ~isempty(h_fig)
+        setContPan(cat(2,'Impossible to create TDP: ',err.message,...
+            '\nIncreasing TDP binning might be a solution.'),'warning',...
+            h_fig);
+    else
+        disp(sprintf(cat(2,'Impossible to create TDP: ',err.message,...
+            '\nIncreasing TDP binning might be a solution.')));
+    end
     return;
 end
 

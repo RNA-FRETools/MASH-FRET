@@ -1,7 +1,7 @@
 ---
 layout: default
 title: (*.txt) Processed traces
-parent: /output-files
+parent: /output-files.html
 nav_order: 1
 nav_exclude: 1
 ---

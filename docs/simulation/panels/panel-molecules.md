@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Molecules
-parent: /simulation/panels
-grand_parent: /simulation
+parent: /simulation/panels.html
+grand_parent: /simulation.html
 nav_order: 2
 ---
 
@@ -158,29 +158,31 @@ Similarly, sample heterogeneity in gamma factor can be introduced by setting a s
 ### Intensity units
 {: .no_toc}
 
-Intensity units of *I*<sub>tot,em</sub> and *wI*<sub>tot,em</sub> can be set in photon counts (pc) or electron counts (ec) when the box in **(c)** is checked or unchecked respectively.
+Intensity units of *I*<sub>tot,em</sub> and *wI*<sub>tot,em</sub> can be set in photon counts (pc) or pseudo-image counts (p-ic) when the box in **(c)** is checked or unchecked respectively.
 This choice also affects the units of background intensities set in 
-[Backgorund](panel-experimental-setup#background).
-Photon counts and electron counts are linked by the relation:
+[Background](panel-experimental-setup.html#background).
+Photon counts and pseudo-image counts are linked by the relation:
 
 {: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
 <p style="border-radius: 5px;">
-<b><i>ec</i></b> = <b><i>pc</i></b> x <i>&#951;</i> x <i>K</i> + <i>&#956;</i><sub>ic,d</sub>
+<b><i>p-ic</i></b> = <b><i>pc</i></b> x <i>&#951;</i> x <i>K</i>
 </p>
 
-with camera characteristics: signal offset *&#956;*_ic,d, sensitivity *&#951;* and overall gain *K*.
+with camera characteristics: detection efficiency *&#951;* and overall gain *K*.
+
+Pseudo-image counts are the units of amplified photo-electron counts. 
+Experimental *I*<sub>tot,em</sub> value in p-ic are obtained by averaging the sum of donor and acceptor intensity-time traces in Trace processing after background correction (which includes subtraction of camera offset).
 
 If one of the characteristics is not defined within the chosen camera noise model, the following default values are used:
-* *&#951;* = 0.95
-* *K* = 57.7 ec/pc
-* *&#956;*<sub>ic,d</sub> = 0 ec
+* *&#951;* = 1 ec/pc
+* *K* = 1 ic/ec
 
 See 
 [Camera SNR characteristics](panel-video-parameters.html#camera-snr-characteristics) for more information.
 
 **<u>default</u>:** 
-* *I*<sub>tot,em</sub> = 1000 ec
-* *wI*<sub>tot,em</sub> = 0 ec
+* *I*<sub>tot,em</sub> = 36 pc
+* *wI*<sub>tot,em</sub> = 0 pc
 * *&#947;* = 1
 * *w&#947;* = 0;
 
