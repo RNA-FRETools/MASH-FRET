@@ -34,7 +34,7 @@ if ~isempty(p.proj)
                     fCurs = p.proj{proj}.movie_dat{1};
                     nFrames = p.proj{proj}.movie_dat{3};
 
-                    [o trace] = create_trace(new_coord,q.itgArea,nPix, ...
+                    [o,trace] = create_trace(new_coord,q.itgArea,nPix, ...
                         {mov_file,fCurs,[res_y,res_x],nFrames});
                     nFrames = size(p.proj{proj}.intensities,1);
                     nExc = p.proj{proj}.nb_excitations;
@@ -55,7 +55,7 @@ if ~isempty(p.proj)
                 if p_bg{2}(exc,c) == 6 % dark trace
                     set(h_axes(c), 'NextPlot', 'add');
                     if p_bg{3}{exc,c}(6,6) % auto dark
-                        coord_dark = getDarkCoord(exc, mol, c, p);
+                        coord_dark = getDarkCoord(exc,mol,c,p,q.dimImg);
                         p.proj{proj}.curr{mol}{3}{3}{exc,c}(6,4:5) = ...
                             coord_dark;
                     else
