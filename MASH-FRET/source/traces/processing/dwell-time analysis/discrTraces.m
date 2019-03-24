@@ -52,11 +52,8 @@ if (toBottom && ~isDiscrBot) || ((~toBottom || toBottom == 2) && ...
             S_tr(s,:) = (sum(I_den(:,:,exc_num),2)./ ...
                 sum((sum(I_den,2)),3))';
         end
-        prm = squeeze(prm_DTA{2}(method,:,1:nFRET+nS)); % [m-by-8] matrix
-        if size(prm,2) ~= size(prm_DTA{2},2)
-            prm = prm';
-        end
-        thresh = prm_DTA{4}(:,:,1:nFRET+nS); % [3-by-6-by-m] matrix
+        prm = permute(prm_DTA{2}(method,:,1:nFRET+nS),[3,2,1]); % [m-by-6] matrix
+        thresh = prm_DTA{4}(:,:,1:nFRET+nS); % [3-by-t-by-m] matrix
         
         
         incl_fret = FRET_tr>=-0.2 & FRET_tr<=1.2;
@@ -83,11 +80,8 @@ if (toBottom && ~isDiscrBot) || ((~toBottom || toBottom == 2) && ...
                 I_tr = [I_tr; I_den(:,c,l)'];
             end
         end
-        prm = squeeze(prm_DTA{2}(method,:,nFRET+nS+1:end));
-        if size(prm,2) ~= size(prm_DTA{2},2)
-            prm = prm';
-        end
-        tol = prm(1,8);
+        prm = permute(prm_DTA{2}(method,:,nFRET+nS+1:end),[3,2,1]);
+        tol = prm(1,4);
         thresh = prm_DTA{4}(:,:,nFRET+nS+1:end);
 
         top = (getDiscr(method, I_tr, [], prm, thresh, calc, ...

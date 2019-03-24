@@ -403,12 +403,14 @@ if ~isempty(p.proj)
     
     % create as many edit fields for bg intensity as for the number of
     % channels
-    if ~isfield(g, 'edit_chan') || ...
-            (isfield(g, 'edit_chan') && numel(g.edit_chan)~=nChan)
-        try
-            delete([g.edit_chan g.text_chan]);
-        catch err
-            disp(err.message);
+    if ~isfield(g, 'edit_chan') || (isfield(g, 'edit_chan') && ...
+            numel(g.edit_chan)~=nChan)
+        if isfield(g, 'edit_chan')
+            try
+                delete([g.edit_chan g.text_chan]);
+            catch err
+                disp(err.message);
+            end
         end
         g.text_chan = [];
         g.edit_chan = [];
@@ -618,12 +620,29 @@ h = guidata(g.figure_MASH);
 p = h.param.ttPr;
 proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
-nExc = p.proj{proj}.nb_excitations;
 nMol = size(p.proj{proj}.intensities,2)/nChan;
+exc = p.proj{proj}.excitations;
+nExc = numel(exc);
+nChan = p.proj{proj}.nb_channel;
+
+% get channel and laser corresponding to selected data
+selected_chan = p.proj{proj}.fix{3}(6);
+chan = 0;
+for l = 1:nExc
+    for c = 1:nChan
+        chan = chan+1;
+        if chan==selected_chan
+            break;
+        end
+    end
+    if chan==selected_chan
+        break;
+    end
+end
 
 curr_m = p.curr_mol(proj); % current molecule
-curr_l = p.proj{proj}.fix{3}(5); % current excitation
-curr_c = p.proj{proj}.fix{3}(6); % current channel
+curr_l = l; % current excitation
+curr_c = c; % current channel
 
 for m = 1:nMol
     if exist('prm_prev','var')

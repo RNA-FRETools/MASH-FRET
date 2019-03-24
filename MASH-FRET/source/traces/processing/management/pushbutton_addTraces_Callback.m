@@ -79,6 +79,25 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
             if n > size(p.proj{i}.prm,2)
                 p.proj{i}.prm{n} = {};
             end
+            
+            % reshape old "find states" parameters to new format
+            if size(p.proj{i}.prm{n},2)>=4 && ...
+                    size(p.proj{i}.prm{n}{4},2)>=2 && ...
+                    size(p.proj{i}.prm{n}{4}{2},2)==8
+                for j = 1:size(p.proj{i}.prm{n}{4}{2},3)
+                    p.proj{i}.prm{n}{4}{2}(1,1:6,j) = ...
+                        p.proj{i}.prm{n}{4}{2}(1,[2,1,5,8,3,4],j);
+                    p.proj{i}.prm{n}{4}{2}(2,1:6,j) = ...
+                        p.proj{i}.prm{n}{4}{2}(2,[1,2,5,8,3,4],j);
+                    p.proj{i}.prm{n}{4}{2}(3,1:6,j) = ...
+                        p.proj{i}.prm{n}{4}{2}(3,[1,2,5,8,3,4],j);
+                    p.proj{i}.prm{n}{4}{2}(4,1:6,j) = ...
+                        p.proj{i}.prm{n}{4}{2}(4,[5,6,7,8,3,4],j);
+                    p.proj{i}.prm{n}{4}{2}(5,1:6,j) = ...
+                        p.proj{i}.prm{n}{4}{2}(5,[2,1,5,8,3,4],j);
+                end
+            end
+
             p.proj{i}.curr{n} = adjustVal(p.proj{i}.prm{n}, ...
                 p.proj{i}.def.mol);
             
@@ -142,14 +161,9 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
                     end
                 end
             end
+            
             if size(p.proj{i}.curr{n}{3},2)>=4
                 p.proj{i}.curr{n}{3}(4) = [];
-            end
-            % the maximum number of state for CPA should be Inf
-            for j = 1:size(p.proj{i}.curr{n}{4}{2},3)
-                if isfinite( p.proj{i}.curr{n}{4}{2}(4,2,j))
-                     p.proj{i}.curr{n}{4}{2}(4,2,j) = Inf;
-                end
             end
         end
     end

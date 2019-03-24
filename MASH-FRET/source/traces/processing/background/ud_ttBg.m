@@ -7,17 +7,33 @@ if ~isempty(p)
     isCoord = p{proj}.is_coord;
     mol = h.param.ttPr.curr_mol(proj);
     labels = p{proj}.labels;
-    exc = p{proj}.fix{3}(5);
-    chan = p{proj}.fix{3}(6);
+    exc = p{proj}.excitations;
+    nExc = numel(exc);
+    nChan = p{proj}.nb_channel;
+    
+    % get channel and laser corresponding to selected data
+    selected_chan = p{proj}.fix{3}(6);
+    chan = 0;
+    for l = 1:nExc
+        for c = 1:nChan
+            chan = chan+1;
+            if chan==selected_chan
+                break;
+            end
+        end
+        if chan==selected_chan
+            break;
+        end
+    end
     p_panel = p{proj}.curr{mol}{3};
-    apply = p_panel{1}(exc,chan);
-    method = p_panel{2}(exc,chan);
-    prm = p_panel{3}{exc,chan}(method,:);
+    apply = p_panel{1}(l,c);
+    method = p_panel{2}(l,c);
+    prm = p_panel{3}{l,c}(method,:);
     autoDark = prm(6);
     set(h.popupmenu_trBgCorr, 'Value', method);
     
-    set(h.popupmenu_trBgCorr_chan, 'String', getStrPop('chan', ...
-        {labels exc p{proj}.colours{1}}));
+    set(h.popupmenu_trBgCorr_data, 'String', getStrPop('bg_corr', ...
+        {labels exc p{proj}.colours}));
     
     if isMov && isCoord
         set(h.pushbutton_optBg, 'Enable', 'on');

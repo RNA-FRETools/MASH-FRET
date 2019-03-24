@@ -107,6 +107,9 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         % Import/export options
         isPrm = p.export_param; % export simulation parameters (0/1)
         ip_u = p.intUnits; % input intensity units
+        if strcmp(ip_u,'electron')
+            ip_u = 'image';
+        end
         op_u = p.intOpUnits; % output intensity units
         prm_file = p.prmFile; % parameters file name
         crd_file = p.coordFile; % coordinates file name
@@ -395,29 +398,29 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                 %     Pdark = @(nic,noe,nie,g,f,r) (P(nie,G(noe,nie,g))*N(f*nic,noe,r))*(f*nic);      
     
                     case 'poiss' % Poisson or P-model from Börner et al. 2017
-                        offset = noisePrm(1); % given in IC
-                        eta = noisePrm(2); 
+                        mu_y_dark = noisePrm(1); % given in IC
+                        eta = noisePrm(3); 
                         K = 1;
                         
-                        % add noise for photoelectrons (no offset here)
+                        % add noise for photoelectrons (no mu_y_dark here)
                         % (PC-->EC)
                         img = random('poiss', eta*img);
                         
-                        % add camera offset for conversion to image counts
+                        % add camera mu_y_dark for conversion to image counts
                         % (EC-->IC)
-                        img = img + offset;
+                        img = img + mu_y_dark;
                         
                     case 'norm' % Gaussian, Normal or N-model from Börner et al. 2017
                         % PC are not Poisson distributed here.
                         % model parameters
-                        K = noisePrm(1);
+                        mu_y_dark = noisePrm(1);
                         sig_d = noisePrm(2);
-                        offset = noisePrm(3);
+                        eta = noisePrm(3);
                         sig_q = noisePrm(4);
-                        eta = noisePrm(6);
+                        K = noisePrm(5);
                         
                         % (PC-->IC)
-                        mu_y_img = phtn2arb(img,offset,K,eta);
+                        mu_y_img = phtn2arb(img,mu_y_dark,K,eta);
 
                         % calculate noise width in EC, Gaussian width
                         % ASSUMPTION (no units conversion, just value assignment)
@@ -434,39 +437,39 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                     case 'user'  % User defined or NExpN-model from Börner et al. 2017
                        
                          % model parameters
-                        offset = noisePrm(1); % Dark counts or offset
+                        mu_y_dark = noisePrm(1); % Dark counts or mu_y_dark
                         A = noisePrm(2); % CIC contribution
-                        tau = noisePrm(3); % CIC decay
-                        sig0 = noisePrm(4); % read-out noise width
+                        eta = noisePrm(3); % Total detection efficiency
+                        tau = noisePrm(6); % CIC decay
                         K = noisePrm(5); % Overall system gain
-                        eta = noisePrm(6); % Total detection efficiency
+                        sig0 = noisePrm(4); % read-out noise width
                         
                         % convert to IC (PC-->IC)
-                        img = phtn2arb(img,offset,K,eta);
+                        img = phtn2arb(img,mu_y_dark,K,eta);
                         
                         % calculate noise distribution and add noise (IC)
                         img = rand_NexpN(img, A, tau, sig0);
                         
-                    case 'none' % None, no camera noise but possible camera offset value
-                        offset = noisePrm(1); % given in IC
+                    case 'none' % None, no camera noise but possible camera mu_y_dark value
+                        mu_y_dark = noisePrm(1); % given in IC
                         K = 1;
                         eta = 1;
                         
-                        % no noise but offset in IC (according to PONE) 
+                        % no noise but mu_y_dark in IC (according to PONE) 
                         % (PC-->IC)
-                        img = phtn2arb(img, offset, K, eta);
+                        img = phtn2arb(img, mu_y_dark, K, eta);
                         
                     case 'hirsch' % Hirsch or PGN- Model from Hirsch et al. 2011
                         
                         % model parameters
-                        % EDIT MH: Here the offset participates to the generation of noise 
+                        % EDIT MH: Here the mu_y_dark participates to the generation of noise 
                         % (according to PONE)
-                        g = noisePrm(1); % change 2018-08-03
+                        mu_y_dark = noisePrm(1);
                         s_d = noisePrm(2); 
-                        offset = noisePrm(3);
+                        eta = noisePrm(3);
                         CIC = noisePrm(4);
-                        s = noisePrm(5);
-                        eta = noisePrm(6);
+                        g = noisePrm(5); % change 2018-08-03
+                        s = noisePrm(6);
                         K = g/s;
                         
                         % Poisson noise of photo-electrons + CIC 
@@ -479,7 +482,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
 
                         % Gausian read-out noise, composition 
                         % (EC-->IC)
-                        img = random('norm', img/s + offset, s_d*g/s);
+                        img = random('norm', img/s + mu_y_dark, s_d*g/s);
 
                 end
                 
@@ -491,7 +494,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                 
                 % (IC-->PC)
                 if strcmp(op_u, 'photon')
-                    img = arb2phtn(img, offset, K, eta);
+                    img = arb2phtn(img, mu_y_dark, K, eta);
                 end
                 
                 if isAvi
@@ -607,31 +610,31 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                 %     Pdark = @(nic,noe,nie,g,f,r) (P(nie,G(noe,nie,g))*N(f*nic,noe,r))*(f*nic);      
 
                     case 'poiss' % Poisson or P-model from Börner et al. 2017
-                        offset = noisePrm(1); % given in IC
-                        eta = noisePrm(2); 
+                        mu_y_dark = noisePrm(1); % given in IC
+                        eta = noisePrm(3); 
                         K = 1;
 
-                        % add noise for photoelectrons (no offset here)
+                        % add noise for photoelectrons (no mu_y_dark here)
                         % (PC-->EC)
                         I_don_plot{m} = random('poiss', eta*I_don_plot{m});
                         I_acc_plot{m} = random('poiss', eta*I_acc_plot{m});
 
                         % convert to IC
                         % (EC-->IC)
-                        I_don_plot{m} = K*I_don_plot{m} + offset;
-                        I_acc_plot{m} = K*I_acc_plot{m} + offset;
+                        I_don_plot{m} = K*I_don_plot{m} + mu_y_dark;
+                        I_acc_plot{m} = K*I_acc_plot{m} + mu_y_dark;
 
                         
                     case 'norm' % Gaussian, Normal or N-model from Börner et al. 2017
-                        K = noisePrm(1);
+                        mu_y_dark = noisePrm(1);
                         sig_d = noisePrm(2);
-                        offset = noisePrm(3);
+                        eta = noisePrm(3);
                         sig_q = noisePrm(4);
-                        eta = noisePrm(6);
+                        K = noisePrm(5);
 
                         % (PC-->IC)
-                        mu_y_I_don = phtn2arb(I_don_plot{m},offset,K,eta);
-                        mu_y_I_acc = phtn2arb(I_acc_plot{m},offset,K,eta);
+                        mu_y_I_don = phtn2arb(I_don_plot{m},mu_y_dark,K,eta);
+                        mu_y_I_acc = phtn2arb(I_acc_plot{m},mu_y_dark,K,eta);
 
                         % calculate noise width in EC, Gaussian width
                         % ASSUMPTION (no units conversion, just value assignment)
@@ -656,17 +659,17 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                     case 'user' % User defined or NExpN-model from Börner et al. 2017
 
                         % model parameters
-                        offset = noisePrm(1); % Dark counts or offset
+                        mu_y_dark = noisePrm(1); % Dark counts or mu_y_dark
                         A = noisePrm(2); % CIC contribution
-                        tau = noisePrm(3); % CIC decay
+                        eta = noisePrm(3); % Total detection efficiency
                         sig0 = noisePrm(4); % read-out noise width
                         K = noisePrm(5); % Overall system gain
-                        eta = noisePrm(6); % Total detection efficiency
+                        tau = noisePrm(6); % CIC decay
 
                         % convert to IC (PC-->IC)
-                        I_don_plot{m} = phtn2arb(I_don_plot{m},offset,K,...
+                        I_don_plot{m} = phtn2arb(I_don_plot{m},mu_y_dark,K,...
                             eta);
-                        I_acc_plot{m} = phtn2arb(I_acc_plot{m},offset,K,...
+                        I_acc_plot{m} = phtn2arb(I_acc_plot{m},mu_y_dark,K,...
                             eta);
 
                         % calculate noise distribution and add noise (IC)
@@ -675,24 +678,24 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                         I_acc_plot{m} = rand_NexpN(I_acc_plot{m},A,tau,...
                             sig0);
                         
-                     case 'none' % None, no camera noise but possible camera offset value
-                        offset = noisePrm(1); % given in IC
+                     case 'none' % None, no camera noise but possible camera mu_y_dark value
+                        mu_y_dark = noisePrm(1); % given in IC
                         K = 1;
                         eta = 1;
 
-                        I_don_plot{m} = phtn2arb(I_don_plot{m},offset,K,...
+                        I_don_plot{m} = phtn2arb(I_don_plot{m},mu_y_dark,K,...
                             eta);
-                        I_acc_plot{m} = phtn2arb(I_acc_plot{m},offset,K,...
+                        I_acc_plot{m} = phtn2arb(I_acc_plot{m},mu_y_dark,K,...
                             eta);
                         
                     case 'hirsch' % Hirsch or PGN- Model from Hirsch et al. 2011
                         % model parameters
-                        g = noisePrm(1); % change 2018-08-03
-                        s_d = noisePrm(2); 
-                        offset = noisePrm(3);
+                        mu_y_dark = noisePrm(1);
+                        s_d = noisePrm(2);
+                        eta = noisePrm(3);
                         CIC = noisePrm(4);
-                        s = noisePrm(5);
-                        eta = noisePrm(6);
+                        g = noisePrm(5); % change 2018-08-03
+                        s = noisePrm(6);
                         K = g/s;
 
                         % Poisson noise of photo-electrons + CIC 
@@ -710,9 +713,9 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                         % Gausian read-out noise, composition 
                         % (EC-->IC)
                         I_don_plot{m} = random('norm', I_don_plot{m}/s+...
-                            offset, s_d*g/s);
+                            mu_y_dark, s_d*g/s);
                         I_acc_plot{m} = random('norm', I_acc_plot{m}/s+...
-                            offset, s_d*g/s);
+                            mu_y_dark, s_d*g/s);
 
                 end
 
@@ -727,8 +730,8 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                 
                 % convert to PC (IC-->PC)
                 if strcmp(op_u, 'photon')
-                    I_don_plot{m} = arb2phtn(I_don_plot{m},offset,K,eta);
-                    I_acc_plot{m} = arb2phtn(I_acc_plot{m},offset,K,eta);
+                    I_don_plot{m} = arb2phtn(I_don_plot{m},mu_y_dark,K,eta);
+                    I_acc_plot{m} = arb2phtn(I_acc_plot{m},mu_y_dark,K,eta);
                 end
                 
                 if isTr % Matlab file
@@ -878,10 +881,10 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             end
             if ~impPrm || (impPrm && ~isfield(p.molPrm, 'totInt'))
                 
-                if strcmp(ip_u,'electron')
-                    [offset,K,eta] = getCamParam(noiseType,p.camNoise);
+                if strcmp(ip_u,'image')
+                    [mu_y_dark,K,eta] = getCamParam(noiseType,p.camNoise);
                     totI = phtn2ele(totI,K,eta);
-                    totIw = phtn2ele(totI,K,eta);
+                    totIw = phtn2ele(totIw,K,eta);
                 end
                 
                 fprintf(f, ['total intensity (%s count/time bin):\t%d' ...
@@ -909,7 +912,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             fprintf(f,['acceptor direct excitation coefficient:\t%d%% ' ...
                 'of BG intensity\n'], 100*deA);
             
-            if strcmp(ip_u,'electron')
+            if strcmp(ip_u,'image')
                 bgDon = phtn2ele(bgDon,K,eta);
                 bgAcc = phtn2ele(bgAcc,K,eta);
             end
@@ -939,30 +942,36 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             end
             
             if strcmp(noiseType, 'poiss')
-                str_eq = sprintf('P(I)=exp(-%d)*(%d^I)/fact(I)', ...
-                    noisePrm(1), noisePrm(1));
-                fprintf(f, 'Poissonian noise distribution:\t%s\n', str_eq);
+                prm_id = [1,3,5];
+                pop_id = 1;
                 
             elseif strcmp(noiseType, 'norm')
-                str_eq = sprintf(['P(I)=exp(-(I-%d)^2/(2*sig_y^2)), ', ...
-                    'with sig_y^2 = (%d*%d)^2 + %d^2 + %d*(I-%d)'], ...
-                    noisePrm(3), noisePrm(1), noisePrm(2), noisePrm(4), ...
-                    noisePrm(1),noisePrm(3));
-                fprintf(f, 'Gaussian noise distribution:\t%s\n', str_eq);
+                prm_id = [1,2,3,4,5];
+                pop_id = 2;
                 
             elseif strcmp(noiseType, 'user')
-                str_eq1 = sprintf(['if x<%d: ' ...
-                    'P(I)=exp(-(I-%d)^2/(2*(sig^2)))), with sig(I)=%d*' ...
-                    '(I-%d)^%d + %d'], noisePrm(1), noisePrm(1), ...
-                    noisePrm(5), noisePrm(1), noisePrm(4), noisePrm(6));
-                str_eq2 = sprintf(['if x>=%d: ' ...
-                    'P(I)=(1-%d)*exp(-(I-%d)/(2*(sig^2)))) + %d*exp(-(' ...
-                    'I-%d)/%d)), with sig(I)=%d*(I-%d)^%d + %d'], ...
-                    noisePrm(1), noisePrm(2), noisePrm(1), noisePrm(2), ...
-                    noisePrm(1), noisePrm(3), noisePrm(5), ...
-                    noisePrm(1), noisePrm(4), noisePrm(6));
-                fprintf(f, ['user-defined noise distribution:\t%s\n%s' ...
-                    '\n'], str_eq1, str_eq2);
+                prm_id = [1,2,3,4,5,6];
+                pop_id = 3;
+                
+            elseif strcmp(noiseType, 'none')
+                prm_id = [1,2,3];
+                pop_id = 4;
+                
+            elseif strcmp(noiseType, 'hirsch')
+                prm_id = [1,2,3,4,5,6];
+                pop_id = 5;
+            end
+            
+            str_noise = get(h.popupmenu_noiseType,'string');
+            h_text = [h.text_camNoise_01,h.text_camNoise_02,...
+                h.text_camNoise_03,h.text_camNoise_04,h.text_camNoise_05,...
+                h.text_camNoise_06];
+            
+            fprintf(f, cat(2,'Camera noise model:\t',str_noise{pop_id},...
+                '\n'));
+            for j = prm_id
+                fprintf(f, cat(2,'\tparameter ',get(h_text(j),'string'),...
+                    ' ',num2str(noisePrm(j)),'\n'));
             end
             
             fclose(f);
