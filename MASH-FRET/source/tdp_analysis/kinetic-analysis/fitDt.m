@@ -47,7 +47,7 @@ for n = 1:N
     end
 
     dt_m_j1j2 = dt_m(dt_m(:,7)==j1 & dt_m(:,8)==j2,:);
-    dt = cat(2,dt,dt_m_j1j2);
+    dt = [dt,dt_m_j1j2];
     mol_incl = cat(2,mol_incl,mols(n));
     
     if boba && wght
