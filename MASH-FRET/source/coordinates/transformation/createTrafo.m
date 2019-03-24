@@ -1,4 +1,4 @@
-function tr = createTrafo(method, refCoord)
+function tr = createTrafo(method, refCoord, h_fig)
 % Create the matrices of spatial transformations calculated from reference 
 % coordinates file, to obtain acceptor from donor (tform2) and donor from
 % acceptor (tform1) and save it to a *_trafo.mat file.
@@ -15,33 +15,54 @@ switch method
     case 2
         tform_type = 'nonreflective similarity';
         tform_name = 'nrsim';
+        n_min = 2;
     case 3
         tform_type = 'similarity';
         tform_name = 'sim';
+        n_min = 3;
     case 4
         tform_type = 'affine';
         tform_name = 'aff';
+        n_min = 3;
     case 5
         tform_type = 'projective';
         tform_name = 'proj';
+        n_min = 4;
     case 6
         tform_type = 'polynomial';
         tform_order = 2;
         tform_name = 'pol2';
+        n_min = 6;
     case 7
         tform_type = 'polynomial';
         tform_order = 3;
         tform_name = 'pol3';
+        n_min = 10;
     case 8
         tform_type = 'polynomial';
         tform_order = 4;
         tform_name = 'pol4';
+        n_min = 15;
     case 9
         tform_type = 'piecewise linear';
         tform_name = 'plin';
+        n_min = 4;
     case 10
         tform_type = 'lwm';
         tform_name = 'lwm';
+        n_min = 12;
+        
+    otherwise
+        setContPan(cat(2,'Transformation type no supported'),'error',...
+            h_fig);
+        return;
+end
+
+if size(refCoord,1)<n_min
+    setContPan(cat(2,'At least ',num2str(n_min),' non-collinear points ',...
+        'needed to infer ',tform_type,' (',tform_name,') transform'),...
+        'error',h_fig);
+    return;
 end
 
 
