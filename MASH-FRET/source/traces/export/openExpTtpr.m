@@ -733,7 +733,7 @@ h_fig_mol = [];
 m_i = 0;
 for m = m_valid(1:min_end)
     m_i = m_i + 1;
-    h_fig_mol = buildFig(p, m, m_i, m_i, molPerFig, p_fig, h_fig_mol);
+    h_fig_mol = buildFig(p, m, m_i, molPerFig, p_fig, h_fig_mol);
 end
 set(h_fig_mol, 'Visible', 'on');
 
