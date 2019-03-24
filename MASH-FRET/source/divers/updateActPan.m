@@ -1,4 +1,4 @@
-function updateActPan(newAct, h_fig, varargin)
+function updateActPan(act, h_fig, varargin)
 % Actualise actions listed in control panel.
 % "newAct" >> action to append to action panel
 % "h_fig" >> MASH figure handle
@@ -7,6 +7,7 @@ function updateActPan(newAct, h_fig, varargin)
 % Last update: 19th of February 2019 by Mélodie C.A.S Hadzic
 % --> append log file for each action displayed
 
+newAct = act;
 
 if ~iscell(newAct)
     n = strfind(newAct, '\n');
@@ -84,7 +85,22 @@ if isfield(h, 'figure_actPan') && ishandle(h.figure_actPan)
     set(h_pan.text_actions, 'ListboxTop', lastRow, 'Value', lastRow);
     if ~isempty(varargin)
         if strcmp(varargin{1}, 'error')
-            helpdlg(newAct_nkd{1});
+            str_err = {};
+            if ~iscell(act)
+                n = strfind(act, '\n');
+                if ~isempty(n)
+                    str_err{1,1} = act(1:n(1)-1);
+                    for i = 1:numel(n)-1
+                        str_err{size(str_err,1)+1,1} = act(n(i)+2:n(i+1)-1);
+                    end
+                    str_err{size(str_err,1)+1,1} = act(n(numel(n))+2:numel(act));
+                else
+                    str_err{1,1} = act;
+                end
+            else
+                str_err = act;
+            end
+            helpdlg(str_err);
             set(h_pan.text_actions, 'BackgroundColor', [1 0.75 0.75]);
         elseif strcmp(varargin{1}, 'success')
             set(h_pan.text_actions, 'BackgroundColor', [0.75 1 0.75]);
