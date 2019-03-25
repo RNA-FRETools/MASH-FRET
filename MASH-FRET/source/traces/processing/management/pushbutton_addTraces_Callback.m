@@ -96,6 +96,7 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
                     p.proj{i}.prm{n}{4}{2}(5,1:6,j) = ...
                         p.proj{i}.prm{n}{4}{2}(5,[2,1,5,8,3,4],j);
                 end
+                p.proj{i}.prm{n}{4}{2} = p.proj{i}.prm{n}{4}{2}(:,1:6,:);
             end
 
             p.proj{i}.curr{n} = adjustVal(p.proj{i}.prm{n}, ...
