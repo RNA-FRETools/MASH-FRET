@@ -15,6 +15,7 @@ if iscell(dat)
     end
 else
     datNum = dat;
+    nCol = size(datNum,2);
 end
 
 nLine = size(dat,1);
