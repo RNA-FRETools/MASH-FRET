@@ -56,6 +56,10 @@ if ~isempty(p.proj);
             save([pname fname_proj], '-struct', 'dat');
             updateActPan(['Project ' fname ' has been successfully ' ...
                 'saved in folder: ' pname], h.figure_MASH, 'success');
+            
+            p.proj{proj}.proj_file = dat.proj_file;
+            h.param.ttPr = p;
+            guidata(h.figure_MASH,h);
         end
     end
 end

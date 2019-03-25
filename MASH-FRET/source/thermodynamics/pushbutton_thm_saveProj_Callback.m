@@ -40,6 +40,10 @@ if ~isempty(p.proj);
             save([pname fname_proj], '-struct', 'dat');
             setContPan(['Project ' fname ' has been successfully ' ...
                 'exported to folder: ' pname], 'success' , h.figure_MASH);
+            
+            p.proj{proj}.proj_file = dat.proj_file;
+            h.param.thm = p;
+            guidata(h.figure_MASH,h);
         end
     end
 end
