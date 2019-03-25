@@ -2,7 +2,7 @@ function res = rmse_ana(h_fig, isBIC, penalty, Jmax, val)
 
 res = cell(1,2);
 
-T = 20; % number of model (GMM) initializations
+T = 5; % number of model (GMM) initializations
 M = 500; % maximum number of E-M cycles
 N = size(val,2); % number of data points
 
@@ -74,7 +74,7 @@ for J = 1:Jmax
                 end
                 
                 % calculate L and BIC
-                [BIC L I] = calc_L(a, mu, sig, val);
+                [BIC,L,I] = calc_L(a, mu, sig, val);
                 
                 % when the GOF is worse, E-M stops
                 if isnan(L) || (L/sum(val(2,:)))<(L_prev/sum(val(2,:)))
@@ -120,9 +120,9 @@ for J = 1:Jmax
     
     % Display results
     if L_t(J)>-Inf
-        disp(sprintf(['GMM of ' num2str(J) ' Gaussians:\n' ...
-            'LogL: ' num2str(L_t(J)/sum(val(2,:))) '\n' ...
-            'BIC: ' num2str(BIC_t(J)/sum(val(2,:))) '\n']));
+        disp(sprintf(['GMM of ' num2str(J) ' Gaussians:' ...
+            ' LogL=' num2str(L_t(J)/sum(val(2,:))) ...
+            ' BIC=' num2str(BIC_t(J)/sum(val(2,:)))]));
     else
         disp(sprintf(['GMM of ' num2str(J) ' Gaussians:\n' ...
             'convergeance impossible\n']));
@@ -238,10 +238,8 @@ N = size(val,2);
 J = size(mu,1);
 prob = zeros(J,N);
 
-A = 1./(sig*sqrt(2*pi));
-
 for k = 1:J
-    prob(k,:) = A(k)*exp(-((val(1,:)-mu(k,1)).^2)/(2*(sig(k)^2)));
+    prob(k,:) = normpdf(val(1,:),mu(k,1),sig(k));
 end
 
 
@@ -266,11 +264,11 @@ P = zeros(1,N);
 
 for k = 1:size(p,1)
     I(k,:) = (i==k);
-    P = P + a(k)*p(k,:);
+%     P = P + a(k)*p(k,:); % to calculate incomplete-data likelihood 
+    P(I(k,:)) = P(I(k,:)) + a(k)*p(k,I(k,:)); % to calculate complete-data likelihood 
 end
-P = P/sum(P);
 
-logL = sum((w.*log(P)));
+logL = sum((w(P>0).*log(P(P>0))));
 
 if logL == 0
     logL = -Inf;
@@ -279,7 +277,11 @@ if logL == 0
     return;
 end
 
-BIC = (J^2 + 2*J)*log(sum(w)) - 2*logL;
+f_sig = J;
+f_a = J-1; % when n-1 coefficients are known, the n-th coefficient is known as 1-sum(n coefficients)
+f_mu = J;
+
+BIC = (f_sig + f_a + f_mu)*log(sum(w)) - 2*logL;
 
 
 function [a, mu, sig] = calc_hypprm(h, val)
