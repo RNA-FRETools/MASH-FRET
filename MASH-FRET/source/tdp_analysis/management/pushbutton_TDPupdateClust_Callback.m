@@ -20,6 +20,23 @@ if ~isempty(p.proj)
         return;
     end
     
+    % manage ill-defined k-mean starting guess
+    if sum(prm.clst_start{2}(:,1))==0
+        question = sprintf(cat(2,'Some states have identical values in ',...
+            'the starting guess. Do you want to use default state values?'));
+        choice = questdlg(question, 'Starting guess is ill-defined', ...
+            'Yes, use default', 'No, I will set it manually', ...
+            'Yes, use default');
+        if strcmp(choice, 'Yes, use default')
+            pushbutton_TDPautoStart_Callback([], [], h);
+            h = guidata(h.figure_MASH);
+            p = h.param.TDP;
+            prm = p.proj{proj}.prm{tpe}; % current channel parameters
+        else
+            return;
+        end
+    end
+    
     clust_prm{1} = [prm.clst_start{1}(1) ... % clustering method
                     prm.clst_start{1}(2) ... % cluster shape
                     prm.clst_start{1}(3) ... % max. number of states
@@ -72,7 +89,7 @@ if ~isempty(p.proj)
             [BICmin,Jopt] = min(BICs);
     end
     
-    if ~isnan(Jopt) && Jopt>0
+    if ~isnan(Jopt) && Jopt>1
         
         % converged results
         models.BIC = res.BIC; % minimum Bayesian information criterion
