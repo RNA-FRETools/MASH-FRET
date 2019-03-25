@@ -47,7 +47,14 @@ for n = 1:N
     end
 
     dt_m_j1j2 = dt_m(dt_m(:,7)==j1 & dt_m(:,8)==j2,:);
-    dt = [dt,dt_m_j1j2];
+    
+    if isempty(dt_m_j1j2)
+        disp(cat(2,'molecule ',num2str(mols(n)),' excluded: no dwell time',...
+            ' left after exclusion.'));
+        continue;
+    end
+    
+    dt{size(dt,2)+1} = dt_m_j1j2;
     mol_incl = cat(2,mol_incl,mols(n));
     
     if boba && wght
