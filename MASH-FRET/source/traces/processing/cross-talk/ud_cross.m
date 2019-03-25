@@ -44,15 +44,17 @@ if ~isempty(p)
             num2str(p_panel{2}{curr_exc,curr_chan}(curr_dirExc)));
     end
     if nFRET > 0
-        set(h.popupmenu_gammaFRET, 'Enable', 'on', 'Value', curr_fret+1);
+        
+        set(h.popupmenu_gammaFRET, 'Value', curr_fret+1);
         if curr_fret>=1
             set(h.edit_gammaCorr, 'Enable', 'on', 'String', ...
                 num2str(p_panel{3}(curr_fret)));
             % update the gamm correction checkbox when changing to different molecules; added by FS, 26.4.2018
-            set(h.checkbox_pbGamma, 'Value', h.param.ttPr.proj{proj}.curr{mol}{5}{4}(1))
+            set(h.checkbox_pbGamma, 'Enable', 'on', 'Value', ...
+                h.param.ttPr.proj{proj}.curr{mol}{5}{4}(1))
+        else
+            set([h.edit_gammaCorr,h.checkbox_pbGamma],'Enable','off');
+            set(h.edit_gammaCorr,'String','');
         end
-    else
-        set(h.edit_gammaCorr, 'String', '');
-        set([h.popupmenu_gammaFRET h.edit_gammaCorr], 'Enable', 'off');
     end
 end
