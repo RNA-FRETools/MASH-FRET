@@ -144,20 +144,40 @@ if ~isempty(p.proj)
     end
     
     if isCoord && isMov
+        unitsPanel = get(h.uipanel_TP, 'Units');
+        unitsTopaxes = get(h.axes_top, 'Units');
+        unitsList = get(h.listbox_traceSet, 'Units');
+        unitsBg = get(h.uipanel_TP_backgroundCorrection, 'Units');
+        
+        set(h.uipanel_TP,'Units','pixels');
+        set(h.axes_top, 'Units','pixels');
+        set(h.listbox_traceSet,'Units','pixels');
+        set(h.uipanel_TP_backgroundCorrection,'Units','pixels');
+        
         posList = get(h.listbox_traceSet, 'Position');
-        units = get(h.listbox_traceSet, 'Units');
+        posPanel = get(h.uipanel_TP, 'Position');
+        posTopaxes = get(h.axes_top, 'Position');
         posBg = get(h.uipanel_TP_backgroundCorrection, 'Position');
+        
+        set(h.uipanel_TP,'Units',unitsPanel);
+        set(h.axes_top, 'Units',unitsTopaxes);
+        set(h.listbox_traceSet,'Units',unitsList);
+        set(h.uipanel_TP_backgroundCorrection,'Units',unitsBg);
+        
         mg = posList(1);
-        wImg = (posBg(1)-(posList(1)+posList(3))-(nC+1)*mg)/nC;
-        hImg = posList(4);
-        yNext = posList(2);
+        yNext = posTopaxes(2) + posTopaxes(4) + 2*mg;
         xNext = posList(1) + posList(3) + mg;
+        wImg = (posBg(1)-(posList(1)+posList(3))-(nC+1)*mg)/nC;
+        hImg = posPanel(4) - yNext - mg;
+        
         c = (linspace(0, 1, 50))';
         cmap = [c c c];
         for i = 1:nC
-            h.axes_subImg(i) = axes('Parent', h.uipanel_TP, ...
-                'Units', units, 'Position', [xNext yNext wImg hImg], ...
-                'FontUnits', 'pixels', 'FontSize', 11, 'Visible', 'off');
+            h.axes_subImg(i) = axes('Parent',h.uipanel_TP, ...
+                'Units','pixels','Position',[xNext yNext wImg hImg], ...
+                'FontUnits',get(h.axes_top,'FontUnits'),'FontSize',...
+                get(h.axes_top,'FontSize'),'Visible','off');
+            set(h.axes_subImg(i),'Units','normalized');
             colormap(h.axes_subImg(i), cmap);
             xNext = xNext + wImg + mg;
         end

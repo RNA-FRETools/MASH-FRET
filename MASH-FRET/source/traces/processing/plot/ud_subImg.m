@@ -8,29 +8,6 @@ if ~isempty(p)
     nExc = p{proj}.nb_excitations;
     nChan = p{proj}.nb_channel;
     coord = p{proj}.coord;
-    incl = p{proj}.coord_incl;
-    tags = p{proj}.molTag;
-    tagsName = p{proj}.molTagNames;
-
-    set(h.checkbox_TP_selectMol,'string',cat(2,'include molecule (',...
-        num2str(sum(incl)),' included)'),'value',incl(mol));
-    
-    if incl(mol)
-        colorlist = {'transparent','#4298B5','#DD5F32','#92B06A','#ADC4CC',...
-            '#E19D29'};
-        str_lst = cell(1,length(tagsName));
-        str_lst{1} = tagsName{1};
-
-        for k = 2:length(tagsName)
-            str_lst{k} = ['<html><body  bgcolor="' colorlist{k} '">' ...
-                '<font color="white">' tagsName{k} '</font></body></html>'];
-        end
-        set(h.popupmenu_TP_molLabel,'enable','on','string',str_lst,...
-            'value',tags(mol));
-        
-    else
-        set(h.popupmenu_TP_molLabel,'enable','off','value',1);
-    end
     
     % get channel and laser corresponding to selected data
     selected_chan = p{proj}.fix{3}(6);
@@ -67,6 +44,13 @@ if ~isempty(p)
             set(h.edit_TP_subImg_y,'string',num2str(coord(mol,2*chan)));
         else
             set([h.edit_TP_subImg_x h.edit_TP_subImg_y],'string','');
+        end
+    end
+    
+    if p{proj}.is_movie && p{proj}.is_coord
+        for c = 1:nChan
+            set(h.axes_subImg(c),'FontUnits',get(h.axes_top,'FontUnits'),...
+                'FontSize',get(h.axes_top,'FontSize'));
         end
     end
 end

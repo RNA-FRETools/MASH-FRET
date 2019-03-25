@@ -22,7 +22,30 @@ if ~isempty(p.proj)
     h.param.ttPr = p;
     guidata(h_fig, h);
     
+    incl = p.proj{proj}.coord_incl;
+    molTag = p.proj{proj}.molTag;
+    tagsName = p.proj{proj}.molTagNames;
+    currMol = p.curr_mol(proj);
     
+    set(h.checkbox_TP_selectMol,'string',cat(2,'include (',...
+        num2str(sum(incl)),' included)'),'value',incl(currMol));
+    
+    if incl(currMol)
+        colorlist = {'transparent','#4298B5','#DD5F32','#92B06A','#ADC4CC',...
+            '#E19D29'};
+        str_lst = cell(1,length(tagsName));
+        str_lst{1} = tagsName{1};
+
+        for k = 2:length(tagsName)
+            str_lst{k} = ['<html><body  bgcolor="' colorlist{k} '">' ...
+                '<font color="white">' tagsName{k} '</font></body></html>'];
+        end
+        set(h.popupmenu_TP_molLabel,'enable','on','string',str_lst,...
+            'value',molTag(currMol));
+        
+    else
+        set(h.popupmenu_TP_molLabel,'enable','off','value',1);
+    end
     
 end
  
