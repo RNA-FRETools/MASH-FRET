@@ -63,9 +63,6 @@ addpath(genpath(codePath));
 % initialise MASH
 initMASH(obj, h, figName);
 
-updateActPan(cat(2,'--- WELCOME -----------------------------------------',...
-    '---------------------'),h.figure_MASH);
-
 
 function varargout = MASH_OutputFcn(obj, evd, h)
 varargout{1} = [];
@@ -1614,18 +1611,22 @@ updateFields(h.figure_MASH, 'movPr');
 function listbox_traceSet_Callback(obj, evd, h)
 p = h.param.ttPr;
 if ~isempty(p.proj)
-    slct = get(obj, 'Value');
-    val = slct(end);
-    if val ~= p.curr_proj
+    val = get(obj, 'Value');
+    proj_name = get(obj,'string');
+    if numel(val)==1 && val ~= p.curr_proj
         p.curr_proj = val;
         h.param.ttPr = p;
         guidata(h.figure_MASH, h);
+            
+        str_proj = cat(2,'Project selected: "',proj_name{val},'" (',...
+            p.proj{val}.proj_file,')');
+        setContPan(str_proj,'none',h.figure_MASH);
 
         ud_TTprojPrm(h.figure_MASH);
         ud_trSetTbl(h.figure_MASH);
 
         updateFields(h.figure_MASH, 'ttPr');
-    end
+    end       
 end
 
 
@@ -4040,19 +4041,21 @@ function listbox_thm_projLst_Callback(obj, evd, h)
 p = h.param.thm;
 if size(p.proj,2)>1
     val = get(obj, 'Value');
-    p.curr_proj = val(1);
-    h.param.thm = p;
-    guidata(h.figure_MASH, h);
+    if numel(val)==1 && val ~= p.curr_proj
+        p.curr_proj = val;
+        h.param.thm = p;
+        guidata(h.figure_MASH, h);
+        
+        proj_name = get(obj,'string');
+        str_proj = cat(2,'Project selected: "',proj_name{val},'" (',...
+            p.proj{val}.proj_file,')');
+        setContPan(str_proj,'none',h.figure_MASH);
 
-    cla(h.axes_hist1);
-    cla(h.axes_hist2);
+        cla(h.axes_hist1);
+        cla(h.axes_hist2);
 
-    updateFields(h.figure_MASH, 'thm');
-
-    p = h.param.thm;
-    proj = p.curr_proj;
-    setContPan(cat(2,'Select project: ',...
-        p.proj{proj}.exp_parameters{1,2}),'success', h.figure_MASH);
+        updateFields(h.figure_MASH, 'thm');
+    end
 end
 
 
