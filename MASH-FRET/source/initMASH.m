@@ -109,6 +109,9 @@ set(h.TTzoom, 'Enable', 'on');
 
 guidata(obj,h);
 
+updateActPan(cat(2,'--- WELCOME ----------------------------------------',...
+    '--------------------'),h.figure_MASH);
+
 switchPan(h.togglebutton_VP, [], h);
 
 set(h.edit_rootFolder, 'String', h.folderRoot);
