@@ -21,6 +21,7 @@ switch obj
         cmaps = get(h.popupmenu_colorMap, 'String');
         cmap = cmaps{h.param.movPr.cmap};
         colormap(cmap);
+        setContPan('Module "Simulation" selected.','none',h.figure_MASH);
         
     case h.togglebutton_VP
         set(h.togglebutton_S, 'Value', 0, 'BackgroundColor', grey);
@@ -37,6 +38,8 @@ switch obj
         cmaps = get(h.popupmenu_colorMap, 'String');
         cmap = cmaps{h.param.movPr.cmap};
         colormap(cmap);
+        setContPan('Module "Video processing" selected.','none',...
+            h.figure_MASH);
         
     case h.togglebutton_TP
         set(h.togglebutton_S, 'Value', 0, 'BackgroundColor', grey);
@@ -49,6 +52,8 @@ switch obj
         set(h.uipanel_TA, 'Visible', 'off');
         set(h.uipanel_TP, 'Visible', 'on');
         set(h.zMenu_target, 'Enable', 'off', 'Checked', 'off');
+        setContPan('Module "Trace processing" selected.','none',...
+            h.figure_MASH);
         
     case h.togglebutton_HA
         set(h.togglebutton_S, 'Value', 0, 'BackgroundColor', grey);
@@ -61,6 +66,8 @@ switch obj
         set(h.uipanel_TA, 'Visible', 'off');
         set(h.uipanel_HA, 'Visible', 'on');
         set(h.zMenu_target, 'Enable', 'off', 'Checked', 'off');
+        setContPan('Module "Histogram analysis" selected.','none',...
+            h.figure_MASH);
         
     case h.togglebutton_TA
         set(h.togglebutton_S, 'Value', 0, 'BackgroundColor', grey);
@@ -73,6 +80,8 @@ switch obj
         set(h.uipanel_HA, 'Visible', 'off');
         set(h.uipanel_TA, 'Visible', 'on');
         set(h.zMenu_target, 'Enable', 'on');
+        setContPan('Module "Transition analysis" selected.','none',...
+            h.figure_MASH);
 
         colormap(h.param.TDP.cmap);
 end
