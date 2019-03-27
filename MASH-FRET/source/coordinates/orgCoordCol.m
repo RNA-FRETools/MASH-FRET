@@ -46,8 +46,20 @@ switch mode
                     'coordinates.'),h_fig, 'error');
                 return;
             end
-            orgCoord(:,2*i-1:2*i) = ...
-                datNum(:,[x_col(i,1) y_col(i,1)]);
+            
+            dat_i = datNum(:,[x_col(i,1) y_col(i,1)]);
+            
+            if isempty(dat_i)
+                updateActPan(cat(2,'No reference coordinates are found ',...
+                    'for channel ',num2str(i),'.\n\nYou may modify ',...
+                    'the number of channel in panel Experiment settings ',...
+                    'or change to row-wise structure in Coordinates ',...
+                    'transformation >> Options... >> Reference ',...
+                    'coordinates.'),h_fig, 'error');
+                return;
+            end
+            
+            orgCoord(:,2*i-1:2*i) = dat_i;
         end
 
     case 'rw'
@@ -80,8 +92,20 @@ switch mode
                     'Reference coordinates.'),h_fig, 'error');
                 return;
             end
-           orgCoord(:,2*i-1:2*i) = ...
-                datNum(start_r(i):iv_r(i):stop_r(i),[x_col y_col]);
+            
+            dat_i = datNum(start_r(i):iv_r(i):stop_r(i),[x_col y_col]);
+            
+            if isempty(dat_i)
+                updateActPan(cat(2,'No reference coordinates are found ',...
+                    'for channel ',num2str(i),'.\n\nYou may modify ',...
+                    'the number of channel in panel Experiment settings ',...
+                    'or change to column-wise structure in Coordinates ',...
+                    'transformation >> Options... >> Reference ',...
+                    'coordinates.'),h_fig, 'error');
+                return;
+            end
+            
+           orgCoord(:,2*i-1:2*i) = dat_i;
         end
 end
 
