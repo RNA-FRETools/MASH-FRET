@@ -9,6 +9,7 @@
 function [gamma,ok] = prepostInt(stop, I_D, I_A)
 
 ok = 0;
+gamma = 1;
 
 L = size(I_A,1);
 tol = 3; % tolerance around cutoff
