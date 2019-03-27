@@ -17,6 +17,18 @@ if pbGamma
     % collect molecule traces
     I_den = p.proj{proj}.intensities_denoise(:, ...
         ((mol-1)*nChan+1):mol*nChan,:);
+    I_DTA = p.proj{proj}.intensities_DTA(:, ...
+        ((mol-1)*nChan+1):mol*nChan,:);
+    
+    % set method to "manual" if no intensity discretization is found
+    if sum(isnan(I_DTA))
+        setContPan(cat(2,'intensity-time traces must be discretized to ',...
+            'apply photobleaching-based gamma factor calculation: method ',...
+            'is set to "manual" and gamma factor to previous value.'),...
+            'warning',h_fig);
+        p.proj{proj}.prm{mol}{5}{4}(1) = 0;
+        return;
+    end
     
     for i = 1:nFRET
         
@@ -24,16 +36,25 @@ if pbGamma
         acc = FRET(i,2); % the acceptor channel
         don = FRET(i,1);
         I_A = I_den(:,acc,exc==chanExc(don));
-        I_D = I_den(:,don,exc==chanExc(don));
         
         % calculate and save cutoff on acceptor trace
         stop = calcCutoffGamma(prm{5}(i,2:5),I_A,nExc);
         p.proj{proj}.prm{mol}{5}{5}(i,6) = stop*nExc;
         
-        % calculate gamma
-        [gamma,ok] = prepostInt(stop, I_D, I_A);
+        I_DTA_A = I_DTA(:,acc,exc==chanExc(don));
+        I_DTA_D = I_DTA(:,don,exc==chanExc(don));
         
-        if round(gamma,2) ~= p.proj{proj}.prm{mol}{5}{3}(i) % gamma changed
+        % calculate gamma
+        [gamma,ok] = prepostInt(stop, I_DTA_D, I_DTA_A);
+        
+        % set method to "manual" if gamma calculation did not converge
+        if ~ok
+            p.proj{proj}.prm{mol}{5}{4}(1) = 0;
+            setContPan(cat(2,'photobleaching-based gamma factor could not be ',...
+                'calculated: method is set to "manual" and gamma factor ',...
+                'to previous value'),'warning',h_fig);
+            
+        elseif round(gamma,2) ~= p.proj{proj}.prm{mol}{5}{3}(i) % gamma changed
             % save gamma
             p.proj{proj}.prm{mol}{5}{3}(i) = round(gamma,2);
         

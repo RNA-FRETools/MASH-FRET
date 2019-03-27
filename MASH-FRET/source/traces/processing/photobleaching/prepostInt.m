@@ -4,14 +4,10 @@
 % "gammaOpt.m" without messing up with molecule processing parameters 
 % p.proj{proj}.prm{mol}. Processing parameters are now set only in the 
 % combined function "gammaCorr.m" which is called by "updateTraces.m" (and
-% thus "updateFields.m"). I've also set a default value of 1 for gamma
-% factors that could not be calculated. This allows to keep the
-% "photobleaching-based" calculation active in the GUI even if calculations 
-% did not converge.
+% thus "updateFields.m").
 
 function [gamma,ok] = prepostInt(stop, I_D, I_A)
 
-gamma = 1;
 ok = 0;
 
 L = size(I_A,1);
@@ -29,18 +25,15 @@ if (stop+tol)<L && (stop-tol)>1
     else
         if I_pre(1)~=I_post(1)
             disp(cat(2,'donor intensities before and after photobleaching',...
-                ' cutoff are identical; the gamma factor could not be ',...
-                'calculated and is set to 1'));
+                ' cutoff are identical'));
         else
             disp(cat(2,'acceptor intensities before and after ',...
-                'photobleaching cutoff are identical; the gamma factor ',...
-                'could not be calculated and is set to 1'));
+                'photobleaching cutoff are identical'));
         end
     end
 
 else
     disp(cat(2,'no photobleaching detected in acceptor intensity-time',...
-        'trace; the gamma factor could not be calculated and is set ',...
-        'to 1'));
+        'trace'));
 end
 end
