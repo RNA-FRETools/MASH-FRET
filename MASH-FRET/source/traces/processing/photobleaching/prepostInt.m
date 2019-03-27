@@ -9,7 +9,7 @@
 % "photobleaching-based" calculation active in the GUI even if calculations 
 % did not converge.
 
-function [gamma,ok] = prepostInt(stop, I_D, I_A, nExc)
+function [gamma,ok] = prepostInt(stop, I_D, I_A)
 
 gamma = 1;
 ok = 0;
@@ -18,10 +18,10 @@ L = size(I_A,1);
 tol = 3; % tolerance around cutoff
 
 % determine DTA intensities prior to and after the calculated cutoff
-if (stop/nExc + tol)<L && (stop/nExc-tol)>1
+if (stop+tol)<L && (stop-tol)>1
 
-    I_pre = [I_D(stop/nExc-tol,1) I_A(stop/nExc-tol,1)];
-    I_post = [I_D(stop/nExc+tol,1) I_A(stop/nExc+tol,1)];
+    I_pre = [I_D(stop-tol,1) I_A(stop-tol,1)];
+    I_post = [I_D(stop+tol,1) I_A(stop+tol,1)];
 
     if (I_pre(1)~=I_post(1)) && (I_pre(2)~=I_post(2)) % is donor or acceptor intensity equal before and after the cutoff, (acceptor condition added by FS, 5.6.2018)
         gamma = (I_pre(2)-I_post(2))/(I_post(1)-I_pre(1));

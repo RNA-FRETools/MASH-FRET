@@ -31,11 +31,11 @@ if ~isempty(p.proj)
 
     % calculate cutoff
     cutOff = calcCutoffGamma(prm, I_A, nExc);
-    p.proj{proj}.curr{mol}{5}{5}(acc,6) = cutOff;
+    p.proj{proj}.curr{mol}{5}{5}(acc,6) = cutOff*nExc;
 
     % calculate gamma
-    [gamma,p.proj{proj}.curr{mol}{5}{5}(acc,7)] = prepostInt(cutOff, I_D, ...
-        I_A, nExc);
+    [gamma,p.proj{proj}.curr{mol}{5}{5}(acc,7)] = ...
+        prepostInt(cutOff,I_D,I_A);
     
     % save curr parameters
     h.param.ttPr = p;
@@ -53,7 +53,7 @@ if ~isempty(p.proj)
 
     if inSec
         start = start*rate;
-        cutOff = cutOff*rate;
+        cutOff = cutOff*nExc*rate;
         prm(2:3) = prm(2:3)*rate;
     end
     if perSec

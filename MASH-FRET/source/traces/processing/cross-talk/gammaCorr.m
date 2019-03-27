@@ -31,7 +31,7 @@ if pbGamma
         p.proj{proj}.prm{mol}{5}{5}(i,6) = stop*nExc;
         
         % calculate gamma
-        [gamma,ok] = prepostInt(stop, I_D, I_A, nExc);
+        [gamma,ok] = prepostInt(stop, I_D, I_A);
         
         if round(gamma,2) ~= p.proj{proj}.prm{mol}{5}{3}(i) % gamma changed
             % save gamma
