@@ -7,7 +7,7 @@ exc = p.proj{proj}.excitations;
 chanExc = p.proj{proj}.chanExc;
 FRET = p.proj{proj}.FRET;   nFRET = size(FRET,1);
 S = p.proj{proj}.S;         nS = size(S,1);
-gamma = p.proj{proj}.curr{mol}{5}{3};
+gamma = p.proj{proj}.prm{mol}{5}{3};
 
 isDiscrTop = ~isempty(p.proj{proj}.intensities_DTA) && ...
     sum(sum(sum(double(~isnan(p.proj{proj}.intensities_DTA(:, ...

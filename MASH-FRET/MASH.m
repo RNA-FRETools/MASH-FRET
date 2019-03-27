@@ -1,5 +1,5 @@
 function varargout = MASH(varargin)
-% Last Modified by GUIDE v2.5 25-Mar-2019 13:06:20
+% Last Modified by GUIDE v2.5 26-Mar-2019 20:44:27
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -2988,6 +2988,7 @@ end
 function edit_gammaCorr_Callback(obj, evd, h)
 p = h.param.ttPr;
 if ~isempty(p.proj)
+    
     clr = get(obj, 'String');
     if strcmp(clr, 'pink') || strcmp(clr, 'yellow') || ...
             strcmp(clr, 'blue') || strcmp(clr, 'green') || ...
@@ -2996,6 +2997,7 @@ if ~isempty(p.proj)
         ud_cross(h.figure_MASH);
         return;
     end
+    
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
     chan = p.proj{proj}.fix{3}(8);
@@ -3033,29 +3035,48 @@ gammaOpt(h.figure_MASH);
 
 
 
+% MH modified checkbox to popupmenu 26.3.2019
 % FS added 8.1.2018, last modified 11.1.2018
-function checkbox_pbGamma_Callback(obj, evd, h)
+function popupmenu_TP_factors_method_Callback(obj, evd, h)
 p = h.param.ttPr;
 if ~isempty(p.proj)
-    val = get(obj, 'Value');
+    method = get(obj, 'Value');
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
     toFRET = p.proj{proj}.curr{mol}{4}{1}(2);
-    if toFRET == 1  % if DTA applied to bottom traces, deactivate pb gamma calculation
+    
+    if (method==2 && toFRET == 1) % if DTA applied to bottom traces, deactivate pb gamma calculation
         val = 0;
+        msgbox({cat(2,'Photobleaching-based gamma calculation needs donor ',...
+            'intensity-time traces to be discretized') '' cat(2,'To ',...
+            'discretize intensity-time traces, go to panel "Find states" ',...
+            'set "apply to" to "top" or "all"')},...
+            'Photobleaching-based gamma');
+        
+    elseif method==1 % manual
+        val = 0;
+        
+    else % photobleaching-based calculation
+        val = 1;
     end
+    
     p.proj{proj}.curr{mol}{5}{4}(1) = val; % pb based gamma corr checkbox
     p.proj{proj}.curr{mol}{5}{5}(1) = val; % show cutoff checkbox
+    
     h.param.ttPr = p;
     guidata(h.figure_MASH, h);
-    if val == 1 % added by FS, 24.7.2018
-        updateFields(h.figure_MASH, 'ttPr');
-    end
+    ud_cross(h.figure_MASH);
+%     updateFields(h.figure_MASH, 'ttPr');
+    
+%     if val == 1 % added by FS, 24.7.2018
+%         updateFields(h.figure_MASH, 'ttPr');
+%     end
+    
     % get updated handle (updated in updateFields)
     % h = guidata(h_fig) is called at the beginning of the next function (updateFields is the last function),
     % but here the handle is still needed for the next line
-    h = guidata(h.figure_MASH);
-    set(obj, 'Value', h.param.ttPr.proj{proj}.curr{mol}{5}{4}(1)) % updates the pb Gamma checkbox
+%     h = guidata(h.figure_MASH);
+%     set(obj, 'Value', h.param.ttPr.proj{proj}.curr{mol}{5}{4}(1)) % updates the pb Gamma checkbox
 end
 
 
@@ -3108,30 +3129,31 @@ if ~isempty(p.proj)
         case 1 % bottom
             p.proj{proj}.curr{mol}{4}{1}(2) = 1;
             
-            % added by FS, 5.6.2018
-            % disable photobleaching based gamma factor determination
-            % checkbox and pushbutton are enable again if isDiscrTop is 1 in 'discrTraces.m'
-            set(h.pushbutton_optGamma, 'enable', 'off')
-            p.proj{proj}.curr{mol}{5}{4}(1) = 0; % deactivate the pb based gamma correction checkbox
-            set(h.checkbox_pbGamma, 'enable', 'off', 'Value', 0)
+            % modified by MH, 26.03.2019:
+            % the warning is activated when choosing the
+            % photobleaching-based calculation
+%             % added by FS, 5.6.2018
+%             % disable photobleaching based gamma factor determination
+%             % popupmenu and pushbutton are enable again if isDiscrTop is 1 in 'discrTraces.m'
+%             set(h.pushbutton_optGamma, 'enable', 'off')
+%             p.proj{proj}.curr{mol}{5}{4}(1) = 0; % deactivate the pb based gamma correction checkbox
+%             set(h.popupmenu_TP_factors_method, 'enable', 'off', 'Value', 1)
     
         case 2 % top
             p.proj{proj}.curr{mol}{4}{1}(2) = 0;
             
-            % added by FS, 5.6.2018
-            % disable photobleaching based gamma factor determination
-            % checkbox and pushbutton are enable again if isDiscrTop is 1 in 'discrTraces.m'
-            set(h.pushbutton_optGamma, 'enable', 'on')
-            p.proj{proj}.curr{mol}{5}{4}(1) = 1; % activate the pb based gamma correction checkbox
-            set(h.checkbox_pbGamma, 'enable', 'on', 'Value', 0)
+            % modified by MH, 26.03.2019:
+            % the warning is activated when choosing the
+            % photobleaching-based calculation
+%             % added by FS, 5.6.2018
+%             % disable photobleaching based gamma factor determination
+%             % popupmenu and pushbutton are enable again if isDiscrTop is 1 in 'discrTraces.m'
+%             set(h.pushbutton_optGamma, 'enable', 'on')
+%             p.proj{proj}.curr{mol}{5}{4}(1) = 1; % activate the pb based gamma correction checkbox
+%             set(h.popupmenu_TP_factors_method, 'enable', 'on', 'Value', 2)
     
         case 3 % all
             p.proj{proj}.curr{mol}{4}{1}(2) = 2;
-            
-            % added by MH, 21.3.2019
-            set(h.pushbutton_optGamma, 'enable', 'on')
-            p.proj{proj}.curr{mol}{5}{4}(1) = 1; % activate the pb based gamma correction checkbox
-            set(h.checkbox_pbGamma, 'enable', 'on', 'Value', 0)
     end
 
     h.param.ttPr = p;

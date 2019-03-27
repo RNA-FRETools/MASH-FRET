@@ -186,7 +186,7 @@ if curr_chan_bottom > 0
     
     if nFRET > 0
         trs = p.proj{proj}.FRET;
-        gamma = p.proj{proj}.curr{mol}{5}{3};
+        gamma = p.proj{proj}.prm{mol}{5}{3};
         f_tr = calcFRET(nChan, nExc, allExc, chanExc, trs, I, gamma);
     end
 

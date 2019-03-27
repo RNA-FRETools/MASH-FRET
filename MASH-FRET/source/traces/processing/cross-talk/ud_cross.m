@@ -43,18 +43,34 @@ if ~isempty(p)
         set(h.edit_dirExc, 'String', ...
             num2str(p_panel{2}{curr_exc,curr_chan}(curr_dirExc)));
     end
-    if nFRET > 0
+    
+    if nFRET > 0 && curr_fret>=1
+        set([h.text_TP_factors_data h.popupmenu_gammaFRET ...
+            h.text_TP_factors_method h.popupmenu_TP_factors_method ...
+            h.text_TP_factors_gamma],'Enable','on');
         
-        set(h.popupmenu_gammaFRET, 'Value', curr_fret+1);
-        if curr_fret>=1
-            set(h.edit_gammaCorr, 'Enable', 'on', 'String', ...
-                num2str(p_panel{3}(curr_fret)));
-            % update the gamm correction checkbox when changing to different molecules; added by FS, 26.4.2018
-            set(h.checkbox_pbGamma, 'Enable', 'on', 'Value', ...
-                h.param.ttPr.proj{proj}.curr{mol}{5}{4}(1))
-        else
-            set([h.edit_gammaCorr,h.checkbox_pbGamma],'Enable','off');
-            set(h.edit_gammaCorr,'String','');
+        set(h.popupmenu_gammaFRET,'Value',curr_fret+1);
+        set(h.edit_gammaCorr,'String',num2str(p_panel{3}(curr_fret)));
+
+        % update the gamm correction checkbox when changing to different molecules; added by FS, 26.4.2018
+        % checkbox changed to popupmenu; MH 26.3.2019
+        switch p_panel{4}(1)
+            case 0 % manual
+                set(h.edit_gammaCorr,'Enable','on');
+                set(h.pushbutton_optGamma,'enable','off');
+                
+            case 1 % photobleaching based
+                set(h.edit_gammaCorr,'Enable','inactive');
+                set(h.pushbutton_optGamma,'enable','on');
         end
+        set(h.popupmenu_TP_factors_method,'Enable','on','Value',...
+            p_panel{4}(1)+1);
+        
+    else
+        set([h.text_TP_factors_data h.popupmenu_gammaFRET ...
+            h.text_TP_factors_method h.popupmenu_TP_factors_method ...
+            h.text_TP_factors_gamma h.edit_gammaCorr ...
+            h.pushbutton_optGamma],'Enable','off');
+        set(h.edit_gammaCorr,'String','');
     end
 end
