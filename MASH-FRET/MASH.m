@@ -35,13 +35,20 @@ while issep
 end
 %figName = strrep(pname,'_',' '); % Versioning with folder structure 2018-03-07
 
+% Add source folders to Matlab search path
+codePath = fileparts(mfilename('fullpath'));
+addpath(genpath(codePath));
+
 %----------------
 % version number
 % version_number = 'x.x.x'; % Versioning without folder structure %2018-03-07
 % versioning based on latest git tag and current commit hash
+currentFolder = pwd;
+cd(codePath)
 [~,git_description] = system('git describe --tags');
 git_tag_commit_hash = regexp(git_description, '(?<tag>\d+\.\d+\.\d+)-\w*-g(?<hash>\w*)', 'names');
 version_str = sprintf('%s (%s)', git_tag_commit_hash.tag, git_tag_commit_hash.hash);
+cd(currentFolder)
 %----------------
 
 figName = sprintf('%s %s','MASH-FRET', version_str);
@@ -60,9 +67,6 @@ if str2num(mtlbDat(1,i).Version) < 7.12
         'compatibility problems can occur.'], obj, 'error');
 end
 
-% Add source folders to Matlab search path
-codePath = fileparts(mfilename('fullpath'));
-addpath(genpath(codePath));
 
 % initialise MASH
 initMASH(obj, h, figName);
