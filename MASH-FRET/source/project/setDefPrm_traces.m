@@ -222,9 +222,10 @@ mol{5}{5} = [zeros(nFRET,1), 1000*ones(nFRET,1) ...
 
 def.mol = adjustVal(def.mol, mol);
 
-% set quantum yield & additional factors to 1
 if size(mol{5},2)>=3
+    % set null gamma factors to 1
     def.mol{5}{3}(def.mol{5}{3}==0) = 1;
+    % adjust channel for photobleaching cutoff calculation
     if def.mol{2}{1}(3) > nFRET+nS*(1 + 2*double(nFRET>1|nS>1)) + ...
             nExc*nChan*(1 + 2*double(nChan>1|nExc>1))
         def.mol{2}{1}(3) = 1;
