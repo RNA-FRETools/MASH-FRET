@@ -30,46 +30,22 @@ if isempty(coord_i)
     return;
 end
 
-if ~isempty(tr{1,2}.forward_fcn)
-    for i = 1:nChan
-        if ~isempty(coord_i{i})
-            coordTrsf_ij = [];
-            coordTrsf_ij(:,2*i-1:2*i) = coord_i{i};
-            for j = 1:size(tr,1)
-                chan_input = tr{j,1}(1);
-                if chan_input == i
-                    chan_output = tr{j,1}(2);
-                    tr_ij = tr{j,2};
-                    coordTrsf_ij(:,2*chan_output-1:2*chan_output) = ...
-                        tformfwd(tr_ij, coord_i{i});
-                end
-            end
-            coordTrsf = [coordTrsf; coordTrsf_ij];
-        end
-    end
-    
-elseif ~isempty(tr{1,2}.inverse_fcn)
-    for i = 1:nChan
-        if ~isempty(coord_i{i})
-            coordTrsf_ij = [];
-            coordTrsf_ij(:,2*i-1:2*i) = coord_i{i};
-            for j = 1:size(tr,1)
-                chan_output = tr{j,1}(2);
-                if chan_output == i
-                    chan_input = tr{j,1}(1);
-                    tr_ij = tr{j,2};
-                    coordTrsf_ij(:,2*chan_input-1:2*chan_input) = ...
-                        tforminv(tr_ij, coord_i{i});
-                end
-            end
-            coordTrsf = [coordTrsf; coordTrsf_ij];
-        end
-    end
-    
-else
-    updateActPan(['Empty transform matrices.\nPlease check the import ' ...
-        'options.'], h_fig, 'error');
+[coord_tr_i,ok] = transformPoints(tr,coord_i,nChan,h_fig);
+if ~ok
     return;
+end
+
+coordTrsf_i = cell(1,nChan);
+
+for i = 1:nChan
+    for j = 1:nChan
+        coordTrsf_i{i} = cat(1,coordTrsf_i{i},coord_tr_i{i}{j}(:,[1,2]));
+    end
+end
+
+coordTrsf = [];
+for i = 1:nChan
+    coordTrsf = cat(2,coordTrsf,coordTrsf_i{i});
 end
 
 ok = exclude_doublecoord(3, coordTrsf);

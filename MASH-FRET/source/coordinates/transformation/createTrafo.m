@@ -5,15 +5,33 @@ function tr = createTrafo(method, refCoord, h_fig)
 
 % Requires external function: updateActPan, setCorrectPath,
 %                             setCorrectFname.
-% Last update the 5th of February 2014 by Mélodie C.A.S. Hadzic
+
+% MH, last update 27.03.2019
+% >> adapt the function for newer versions of MATLAB: transformation are
+%    calculated using the MATLAB's fitgeotrans function
 
 tr = {};
 nChan = size(refCoord,2)/2;
+
+% check MATLAB version for compatibility.
+% cp2tform works fine on MATLAB 2016a (9.0), even though 
+% fitgeotrans was introduced with MATLAB 2013b (8.2)
+matlabver = ver;
+for v = 1:numel(matlabver)
+    if strcmp(matlabver(v).Name,'MATLAB')
+        matlabver = str2num(matlabver(v).Version);
+        break;
+    end
+end
     
 % Perform spatial transformation
 switch method
     case 2
-        tform_type = 'nonreflective similarity';
+        if matlabver<=9
+            tform_type = 'nonreflective similarity';
+        else
+            tform_type = 'nonreflectivesimilarity';
+        end
         tform_name = 'nrsim';
         n_min = 2;
     case 3
@@ -44,12 +62,18 @@ switch method
         tform_name = 'pol4';
         n_min = 15;
     case 9
-        tform_type = 'piecewise linear';
+        if matlabver<=9
+            tform_type = 'piecewise linear';
+        else
+            tform_type = 'pwl';
+        end
         tform_name = 'plin';
         n_min = 4;
+        
     case 10
         tform_type = 'lwm';
         tform_name = 'lwm';
+        tform_order = 12; % MATLAB default
         n_min = 12;
         
     otherwise
@@ -73,16 +97,29 @@ for i = 1:nChan
         if i ~= j
             % tr(j-->i) = obtain channel i from channel j
             tr{l,1} = [j i];
-
+            
             if exist('tform_order', 'var') && tform_order >= 2
-                tr{l,2} = cp2tform(refCoord(:,2*j-1:2*j), ...
-                                   refCoord(:,2*i-1:2*i), ...
-                                   tform_type, tform_order);
+                
+                if matlabver<=9
+                    tr{l,2} = cp2tform(refCoord(:,2*j-1:2*j), ...
+                                       refCoord(:,2*i-1:2*i), ...
+                                       tform_type, tform_order);
+                else
+                    tr{l,2} = fitgeotrans(refCoord(:,2*j-1:2*j), ...
+                                       refCoord(:,2*i-1:2*i), ...
+                                       tform_type, tform_order);
+                end
 
             elseif ~exist('tform_order', 'var')
-                tr{l,2} = cp2tform(refCoord(:,2*j-1:2*j), ...
-                                   refCoord(:,2*i-1:2*i), ...
-                                   tform_type);
+                if matlabver<=9
+                    tr{l,2} = cp2tform(refCoord(:,2*j-1:2*j), ...
+                                       refCoord(:,2*i-1:2*i), ...
+                                       tform_type);
+                else
+                    tr{l,2} = fitgeotrans(refCoord(:,2*j-1:2*j), ...
+                                       refCoord(:,2*i-1:2*i), ...
+                                       tform_type);
+                end
             end
             l = l+1;
         end
