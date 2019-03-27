@@ -37,10 +37,14 @@ end
 
 %----------------
 % version number
-version_number = '1.1.2'; % Versioning without folder structure %2018-03-07
+% version_number = 'x.x.x'; % Versioning without folder structure %2018-03-07
+% versioning based on latest git tag and current commit hash
+[~,git_description] = system('git describe --tags');
+git_tag_commit_hash = regexp(git_description, '(?<tag>\d+\.\d+\.\d+)-\w*-g(?<hash>\w*)', 'names');
+version_str = sprintf('%s (%s)', git_tag_commit_hash.tag, git_tag_commit_hash.hash);
 %----------------
 
-figName = sprintf('%s %s','MASH-FRET', version_number);
+figName = sprintf('%s %s','MASH-FRET', version_str);
 
 % check for proper Matlab version
 mtlbDat = ver;
