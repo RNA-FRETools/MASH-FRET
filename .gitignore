@@ -24,7 +24,6 @@ octave-workspace
 # Simulink autosave extension
 *.autosave
 MASH-FRET/default_param.ini
-MASH-FRET/2018-3-16.log
 *.ini
 /docs/_site/*
 *Gemfile.lock
