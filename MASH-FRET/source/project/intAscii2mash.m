@@ -1,5 +1,11 @@
 function s = intAscii2mash(pname, fname, p, h_fig)
 
+% Last update: 28th of March 2019 by Melodie Hadzic
+% --> Display all function and code line when an error occurs
+% --> Fix error when importing coordinates from file
+% --> Manage error when importing a number of coordinates from file
+%     different from number of intensity-time traces
+
 s = [];
 
 if size(p{1}{1},2)==8
@@ -52,7 +58,7 @@ if isCoord && isCoordFile
     coord_file = p{3}{2};
     res_x = p{3}{4};
     coord_tot = orgCoordCol(importdata(coord_file, '\n'), 'cw', ...
-        coord_imp, nChan, res_x);
+        coord_imp, nChan, res_x, h_fig);
 else
     coord_imp = [];
     coord_file = [];
@@ -195,16 +201,16 @@ try
             end
             if isempty(coord)
                 loading_bar('close', h_fig);
-                updateActPan(['Unable to load coordinates data from ' ...
-                    'file: ' fname{i}], h_fig, 'error');
+                updateActPan(['Molecule coordinates not found in file: ' ...
+                    fname{i}], h_fig, 'error');
                 return;
             end
-        end
-
-        if isCoord && size(I,2)/nChan ~= size(coord,1)
-            updateActPan(['Number of intensity-time traces inconsistent' ...
-                'with number of molecules'], 'h_fig', 'error');
-            return;
+            
+            if size(I,2)/nChan ~= size(coord,1)
+                updateActPan(['Number of intensity-time traces inconsistent ' ...
+                    'with number of coordinates'], h_fig, 'error');
+                return;
+            end
         end
 
         coord_tot = [coord_tot;coord];
@@ -218,12 +224,18 @@ try
 catch err
     updateActPan(['An error occurred during processing of file: ' ...
         fname{i} ':\n' err.message], h_fig, 'error');
-    disp(err.message);
-    disp(['function: ' err.stack(1,1).name ', line: ' ...
-        num2str(err.stack(1,1).line)]);
+    for i = 1:size(err.stack,1)
+        disp(['function: ' err.stack(i,1).name ', line: ' ...
+            num2str(err.stack(i,1).line)]);
+    end
     return;
 end
 
+if isCoord && size(intensities,2)/nChan ~= size(coord_tot,1)
+    updateActPan(['Number of intensity-time traces inconsistent with ',...
+        'number of coordinates'], h_fig, 'error');
+    return;
+end
 
 s.date_creation = datestr(now);
 s.date_last_modif = s.date_creation;
