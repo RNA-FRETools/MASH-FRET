@@ -1,26 +1,26 @@
-function [offset,K,eta] = getCamParam(noiseType,noisePrm)
+function [mu_y_dark,K,eta] = getCamParam(noiseType,noisePrm)
 
 switch noiseType
     case 'poiss'
-        offset = noisePrm(1,1);
-        eta = noisePrm(1,2); 
+        mu_y_dark = noisePrm(1,1);
+        eta = noisePrm(1,3); 
         K = 1;
     case 'norm'
-        K = noisePrm(2,1);
-        offset = noisePrm(2,3);
-        eta = noisePrm(2,6);
+        mu_y_dark = noisePrm(2,1);
+        eta = noisePrm(2,3);
+        K = noisePrm(2,5);
     case 'user'
-        offset = noisePrm(3,1);
+        mu_y_dark = noisePrm(3,1);
+        eta = noisePrm(3,3);
         K = noisePrm(3,5);
-        eta = noisePrm(3,6);
     case 'none'
-        offset = noisePrm(4,1);
-        K = 1;
+        mu_y_dark = noisePrm(4,1);
         eta = 1;
+        K = 1;
     case 'hirsch'
-        g = noisePrm(5,1);
-        offset = noisePrm(5,3);
-        s = noisePrm(5,5);
-        eta = noisePrm(5,6);
+        mu_y_dark = noisePrm(5,1);
+        eta = noisePrm(5,3);
+        g = noisePrm(5,5);
+        s = noisePrm(5,6);
         K = g/s;
 end

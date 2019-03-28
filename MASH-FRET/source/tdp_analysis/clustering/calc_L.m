@@ -27,11 +27,12 @@ P = zeros(1,N);
 
 for k = 1:size(p,1)
     I(k,:) = (i==k);
-    P = P + w(k)*p(k,:);
+%     P = P + w(k)*p(k,:); % to calculate incomplete-data likelihood 
+    P(I(k,:)) = P(I(k,:)) + w(k)*p(k,I(k,:)); % to calculate complete-data likelihood 
 end
 
-P(P<=0)=1;
-L = sum((v(3,:).*log(P)),2);
+L = sum((v(3,(P>0)).*log(P(P>0))),2);
+
 if L == 0
     L = -Inf;
     BIC = Inf;
@@ -50,8 +51,8 @@ switch shape
         f_sig = 3*nTrs;
 end
 f_mu = K;
-f_a = nTrs;
+f_w = nTrs-1; % when n-1 coefficients are known, the n-th coefficient is known as 1-sum(n coefficients)
 
-BIC = (f_mu+f_a+f_sig)*log(sum(v(3,:))) - 2*L;
+BIC = (f_mu+f_w+f_sig)*log(sum(v(3,:))) - 2*L;
 % BIC = (1+K^2)*log(sum(v(3,:))) - 2*L;
 

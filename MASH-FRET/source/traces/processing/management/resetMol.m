@@ -16,7 +16,7 @@ elseif ~isequal(prm_curr{3}, prm_prev{3})
     opt = 'ttBg';
     p.proj{proj}.intensities_bgCorr(:,((m-1)*nC+1):m*nC,:) = NaN;
     
-elseif ~isequal(prm_curr{5}, prm_prev{5})
+elseif ~isequal(prm_curr{5}([1,2]), prm_prev{5}([1,2]))
     opt = 'corr';
     p.proj{proj}.intensities_crossCorr(:,((m-1)*nC+1):m*nC,:) = NaN;
     
@@ -35,7 +35,7 @@ elseif ~isequal(prm_curr{2}, prm_prev{2})
     end
     
 elseif ~(~isempty(prm_prev{4}) && ...
-        isequalwithequalnans(prm_curr{4}([1 2 4]), prm_prev{4}([1 2 4])))
+        isequaln(prm_curr{4}([1 2 4]), prm_prev{4}([1 2 4])))
     opt = 'DTA';
     p.proj{proj}.intensities_DTA(:,((m-1)*nC+1):m*nC,:) = NaN;
     if nF > 0
@@ -46,10 +46,12 @@ elseif ~(~isempty(prm_prev{4}) && ...
     end
 
 % added by FS, 8.1.2018 (check if anything changed in the gamma correction panel, => opt = 'gamma' for updateTraces    
-elseif ~isequal(prm_curr{5}, prm_prev{5})
+elseif ~isequal(prm_curr{5}(3:5), prm_prev{5}(3:5))
     opt = 'gamma';
-    p.proj{proj}.intensities_DTA(:,((m-1)*nC+1):m*nC,:) = NaN;
-    p.proj{proj}.FRET_DTA(:,((m-1)*nF+1):m*nF) = NaN;
+    % edit by MH, 27.3.2019 (data are reset in gammaCorr.m called in
+    % updateTraces.m)
+%     p.proj{proj}.intensities_DTA(:,((m-1)*nC+1):m*nC,:) = NaN;
+%     p.proj{proj}.FRET_DTA(:,((m-1)*nF+1):m*nF) = NaN;
 else
     opt = 'plot';
 end

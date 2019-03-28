@@ -1,39 +1,12 @@
 function ud_trSetTbl(h_fig)
 h = guidata(h_fig);
 p = h.param.ttPr;
-datTbl = {};
-col_w = 'auto';
-col_name = [];
-col_fmt = {};
-col_edt = false(size(col_name));
 if ~isempty(p.proj)
     proj = p.curr_proj;
     projPrm = p.proj{proj};
     mol = p.curr_mol(proj);
     nC = projPrm.nb_channel;
-    incl = {projPrm.coord_incl(mol)};
-    coord = projPrm.coord;
-    w_incl = 15; w_coord = 43;
-    if ~isempty(coord)
-        datTbl = num2cell(coord(mol,:));
-        col_w = {};
-        for n = 1:nC
-            col_w = [col_w {w_coord w_coord}];
-            col_name = [col_name {['x' num2str(n)]  ['y' num2str(n)]}];
-            col_fmt = [col_fmt {'bank' 'bank'}];
-        end
-        col_name = [{''} col_name];
-        col_w = [{w_incl} col_w];
-        col_fmt = [{'logical'} col_fmt];
-    else
-        datTbl = {};
-        col_name = {''};
-        col_w = {w_incl};
-        col_fmt = {'logical'};
-    end
-    col_edt = true(size(col_name));
-    datTbl = [incl datTbl];
-    
+
     p.defProjPrm.mol = p.proj{proj}.curr{mol};
     
     % reorder the cross talk coefficients as the wavelength
@@ -49,10 +22,32 @@ if ~isempty(p.proj)
     h.param.ttPr = p;
     guidata(h_fig, h);
     
-end
+    incl = p.proj{proj}.coord_incl;
+    molTag = p.proj{proj}.molTag;
+    tagsName = p.proj{proj}.molTagNames;
+    currMol = p.curr_mol(proj);
+    
+    set(h.checkbox_TP_selectMol,'string',cat(2,'include (',...
+        num2str(sum(incl)),' included)'),'value',incl(currMol));
+    
+    if incl(currMol)
+        colorlist = {'transparent','#4298B5','#DD5F32','#92B06A','#ADC4CC',...
+            '#E19D29'};
+        str_lst = cell(1,length(tagsName));
+        str_lst{1} = tagsName{1};
 
-set(h.uitable_molCoord, 'Data', datTbl, 'ColumnName', col_name, ...
-    'ColumnFormat', col_fmt, 'ColumnEditable', col_edt, 'ColumnWidth', ...
-    col_w, 'RowName', []);
+        for k = 2:length(tagsName)
+            str_lst{k} = ['<html><body  bgcolor="' colorlist{k} '">' ...
+                '<font color="white">' tagsName{k} '</font></body></html>'];
+        end
+        set(h.popupmenu_TP_molLabel,'enable','on','string',str_lst,...
+            'value',molTag(currMol));
+        
+    else
+        set(h.popupmenu_TP_molLabel,'enable','off','value',1);
+    end
+    
+end
  
 ud_lstMolStr(p, h.listbox_molNb);
+

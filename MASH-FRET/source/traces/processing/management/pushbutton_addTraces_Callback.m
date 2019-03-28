@@ -1,16 +1,45 @@
 function pushbutton_addTraces_Callback(obj, evd, h)
+
+% collect files to import
 defPth = h.folderRoot;
 [fname,pname,o] = uigetfile({'*.mash', 'MASH project(*.mash)'; '*.*', ...
     'All files(*.*)'}, 'Select trace files', defPth, 'MultiSelect', 'on');
+
 if ~isempty(fname) && ~isempty(pname) && sum(pname)
+    
+    % covert to cell if only one file is imported
     if ~iscell(fname)
         fname = {fname};
     end
-    [dat ok] = loadProj(pname, fname, 'intensities', h.figure_MASH);
+    
+    p = h.param.ttPr;
+    
+    % check if the project file is not already loaded
+    excl_f = false(size(fname));
+    str_proj = get(h.listbox_traceSet,'string');
+    if isfield(p,'proj')
+        for i = 1:numel(fname)
+            for j = 1:numel(p.proj)
+                if strcmp(cat(2,pname,fname{i}),p.proj{j}.proj_file)
+                    excl_f(i) = true;
+                    disp(cat(2,'project "',str_proj{j},'" is already ',...
+                        'opened (',p.proj{j}.proj_file,').'));
+                end
+            end
+        end
+    end
+    fname(excl_f) = [];
+    
+    % stop if no file is left
+    if isempty(fname)
+        return;
+    end
+    
+    % load project data
+    [dat,ok] = loadProj(pname, fname, 'intensities', h.figure_MASH);
     if ~ok
         return;
     end
-    p = h.param.ttPr;
     p.proj = [p.proj dat];
     
     % load gamma factor file if it exists; added by FS, 28.3.2018
@@ -33,7 +62,8 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
         end
     end
 
-
+    % define molecule processing parameters applied (prm) and to apply
+    % (curr)
     for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
         p.curr_mol(i) = 1;
         p.defProjPrm = setDefPrm_traces(p,i);
@@ -79,6 +109,26 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
             if n > size(p.proj{i}.prm,2)
                 p.proj{i}.prm{n} = {};
             end
+            
+            % reshape old "find states" parameters to new format
+            if size(p.proj{i}.prm{n},2)>=4 && ...
+                    size(p.proj{i}.prm{n}{4},2)>=2 && ...
+                    size(p.proj{i}.prm{n}{4}{2},2)==8
+                for j = 1:size(p.proj{i}.prm{n}{4}{2},3)
+                    p.proj{i}.prm{n}{4}{2}(1,1:6,j) = ...
+                        p.proj{i}.prm{n}{4}{2}(1,[2,1,5,8,3,4],j);
+                    p.proj{i}.prm{n}{4}{2}(2,1:6,j) = ...
+                        p.proj{i}.prm{n}{4}{2}(2,[1,2,5,8,3,4],j);
+                    p.proj{i}.prm{n}{4}{2}(3,1:6,j) = ...
+                        p.proj{i}.prm{n}{4}{2}(3,[1,2,5,8,3,4],j);
+                    p.proj{i}.prm{n}{4}{2}(4,1:6,j) = ...
+                        p.proj{i}.prm{n}{4}{2}(4,[5,6,7,8,3,4],j);
+                    p.proj{i}.prm{n}{4}{2}(5,1:6,j) = ...
+                        p.proj{i}.prm{n}{4}{2}(5,[2,1,5,8,3,4],j);
+                end
+                p.proj{i}.prm{n}{4}{2} = p.proj{i}.prm{n}{4}{2}(:,1:6,:);
+            end
+
             p.proj{i}.curr{n} = adjustVal(p.proj{i}.prm{n}, ...
                 p.proj{i}.def.mol);
             
@@ -142,35 +192,40 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
                     end
                 end
             end
+            
             if size(p.proj{i}.curr{n}{3},2)>=4
                 p.proj{i}.curr{n}{3}(4) = [];
             end
-            % the maximum number of state for CPA should be Inf
-            for j = 1:size(p.proj{i}.curr{n}{4}{2},3)
-                if isfinite( p.proj{i}.curr{n}{4}{2}(4,2,j))
-                     p.proj{i}.curr{n}{4}{2}(4,2,j) = Inf;
-                end
-            end
         end
     end
+    
+    % set last-improted project as current project
     p.curr_proj = size(p.proj,2);
-
-    str_files = 'file';
-    if size(fname,2) > 1
-        str_files = [str_files 's'];
-    end
-    for i = 1:size(fname,2)
-        str_files = [str_files '\n' fname{i}];
-    end
-
+    
+    % update project list
     p = ud_projLst(p, h.listbox_traceSet);
     h.param.ttPr = p;
     guidata(h.figure_MASH, h);
+
+    % display action
+    if size(fname,2) > 1
+        str_files = 'files:\n';
+    else
+        str_files = 'file: ';
+    end
+    for i = 1:size(fname,2)
+        str_files = cat(2,str_files,pname,fname{i},'\n');
+    end
+    str_files = str_files(1:end-2);
+    setContPan(['Project successfully imported from ' str_files],'success',...
+        h.figure_MASH);
     
+    % update GUI according to new project parameters
     ud_TTprojPrm(h.figure_MASH);
-    ud_trSetTbl(h.figure_MASH);
-    updateFields(h.figure_MASH, 'ttPr');
     
-    updateActPan(['Traces have been successfully imported from ' ...
-        str_files '\n in folder: ' pname], h.figure_MASH, 'success');
+    % update sample management area
+    ud_trSetTbl(h.figure_MASH);
+    
+    % update calculations and GUI
+    updateFields(h.figure_MASH, 'ttPr');
 end

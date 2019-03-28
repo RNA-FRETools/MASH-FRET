@@ -16,8 +16,6 @@ if h.param.movPr.nChan > 1 && h.param.movPr.nChan <= 3
         coordTrsf = applyTrafo(h.param.movPr.trsf_tr, ...
             h.param.movPr.coordMol, q, h.figure_MASH);
         if isempty(coordTrsf)
-            updateActPan('Unable to transform coordinates.', ...
-                h.figure_MASH, 'error');
             return;
         end
 

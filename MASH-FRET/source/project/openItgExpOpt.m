@@ -757,7 +757,7 @@ else
 end
 chan = get(h.itgExpOpt.popupmenu_dyeChan,'Value');
 p{6}(chan) = exc;
-if p{6}(chan)==0
+if p{6}(chan)==0 && isfield(h.itgExpOpt,'popupmenu_Snum')
     p{4}(p{4}==chan) = [];
     str_chanS = get(h.itgExpOpt.popupmenu_Snum, 'String');
     str_lst = {};

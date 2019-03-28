@@ -13,7 +13,7 @@ if method == 2 % VbFRET
     for n = 1:N
         minN = prm(n,1);
         maxN = prm(n,2);
-        n_iter = prm(n,5);
+        n_iter = prm(n,3);
         nSlopes = nSlopes + (maxN-minN+1)*n_iter;
     end
 else
@@ -44,7 +44,7 @@ for n = 1:N
             discrVal = thresh(1,:,n);
             low = thresh(2,:,n);
             up = thresh(3,:,n);
-            nbStates = prm(n,2);
+            nbStates = prm(n,1);
             
             d_traces(n,incl(n,:)) = discr_thresh(traces(n,incl(n,:)), ...
                 discrVal, low, up, nbStates);
@@ -53,7 +53,7 @@ for n = 1:N
 %             t = tic;
             minN = prm(n,1);
             maxN = prm(n,2);
-            n_iter = prm(n,5);
+            n_iter = prm(n,3);
             data = cell(1,1);
             data{1} = traces(n,incl(n,:));
             [d_traces(n,incl(n,:)),o] = discr_vbFRET(minN, maxN, n_iter, data, ...
@@ -72,10 +72,10 @@ for n = 1:N
 
         case 4 % CPA
 %             t = tic;
-            maxN = prm(n,2);
-            n_bss = prm(n,5);
-            lvl = prm(n,6);
-            ana_type = prm(n,7);
+            maxN = 0; % not used
+            n_bss = prm(n,1);
+            lvl = prm(n,2);
+            ana_type = prm(n,3);
             d_traces(n,incl(n,:)) = discr_cpa(traces(n,incl(n,:)), n_bss, lvl, ...
                 ana_type, maxN);
 %             ct = toc(t);
@@ -88,7 +88,7 @@ for n = 1:N
             
         case 5 % STaSI
 %             t = tic;
-            maxN = prm(n,2);
+            maxN = prm(n,1);
             [MDL dat] = discr_stasi(traces(n,incl(n,:)), maxN);
             [o,idx] = min(MDL);
             d_traces(n,incl(n,:)) = dat(idx,:)';
@@ -110,8 +110,8 @@ for n = 1:N
     end
     d_traces(n,isnan(d_traces(n,:))) = 0;
 
-    d_traces(n,:) = binDiscrVal(prm(n,4), d_traces(n,:));
-    d_traces(n,:) = refineDiscr(prm(n,3), d_traces(n,:), traces(n,:));
+    d_traces(n,:) = binDiscrVal(prm(n,6), d_traces(n,:));
+    d_traces(n,:) = refineDiscr(prm(n,5), d_traces(n,:), traces(n,:));
     if calc
         d_traces(n,:) = aveStates(traces(n,:), d_traces(n,:));
     end

@@ -37,9 +37,9 @@ curr_panel = get(curr_obj, 'Parent');
 
 while 1
     if isempty(curr_panel) || (isprop(curr_panel,'Parent') && ...
-            (curr_panel == h.uipanel_simMov || ...
-            curr_panel == h.uipanel_TDPana ||  ...
-            curr_panel == h.uipanel_thm || ...
+            (curr_panel == h.uipanel_S || ...
+            curr_panel == h.uipanel_TA ||  ...
+            curr_panel == h.uipanel_HA || ...
             curr_panel == h_fig || curr_panel == h.output || ...
             curr_panel == groot))
         break;
@@ -50,11 +50,11 @@ end
 
 if ~isempty(curr_panel)
     switch curr_panel
-        case h.uipanel_simMov
+        case h.uipanel_S
             h_edit = h.edit_simContPan;
-        case h.uipanel_TDPana
+        case h.uipanel_TA
             h_edit = h.edit_TDPcontPan;
-        case h.uipanel_thm
+        case h.uipanel_HA
             h_edit = h.edit_thmContPan;
         otherwise
             h_edit = [];
