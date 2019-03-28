@@ -4,6 +4,7 @@ title: Panels
 parent: /transition-analysis.html
 nav_order: 4
 has_children: true
+numbered_toc: true
 permalink: /transition-analysis/panels.html
 ---
 

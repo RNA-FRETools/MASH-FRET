@@ -4,6 +4,7 @@ title: Panels
 parent: /histogram-analysis.html
 nav_order: 4
 has_children: true
+numbered_toc: true
 permalink: /histogram-analysis/panels.html
 ---
 
