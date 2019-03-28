@@ -39,6 +39,10 @@ if ~isempty(p)
         set(h.text_contrast, 'String', [num2str(100*p_panel(4)) '%']);
         
         chan = get(h.popupmenu_TP_subImg_channel,'value');
+        if chan>nChan
+            chan = nChan;
+            set(h.popupmenu_TP_subImg_channel,'value',chan);
+        end
         if ~isempty(coord)
             set(h.edit_TP_subImg_x,'string',num2str(coord(mol,2*chan-1)));
             set(h.edit_TP_subImg_y,'string',num2str(coord(mol,2*chan)));
