@@ -58,9 +58,9 @@ if exist(release_version_file, 'file') == 2
         git_tag_commit_hash = jsondecode(fileread(release_version_file));
     else
         % parse json file with regex
-        git_tag_commit_hash = regexp(regexprep(fileread(release_version_file), '\n+', ' '), '{(?:.|\n)*\"\<tag\>\"\s*\:\s*\"(?<tag>\d+\.\d+\.\d+)\"(?:.|\n)*\"\<commit_hash\>\"\s*\:\s*\"(?<commit_hash>\w*)\"(?:.|\n)*}', 'names');
+        git_tag_commit_hash = regexp(regexprep(fileread(release_version_file), '\n+', ' '), '{(?:.|\n)*\"\<tag\>\"\s*\:\s*\"(?<tag>\d+\.\d+\.\d+)\"(?:.|\n)*\"\<prev_commit_hash\>\"\s*\:\s*\"(?<prev_commit_hash>\w*)\"(?:.|\n)*}', 'names');
     end
-    version_str = sprintf('%s (%s)', git_tag_commit_hash.tag, git_tag_commit_hash.commit_hash);
+    version_str = sprintf('%s (prev. commit: %s)', git_tag_commit_hash.tag, git_tag_commit_hash.commit_hash);
 else
     version_str = '(unknown version)';
 end
