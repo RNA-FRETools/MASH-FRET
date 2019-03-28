@@ -1,5 +1,14 @@
 function pushbutton_addTraces_Callback(obj, evd, h)
 
+% Last update: 28.3.2019 by MH
+% --> For ASCII traces import: gamma factors files are recovered from 
+%     import options
+%
+% update: 28.3.2018 by FS
+% --> if ASCII file and not MASH project is loaded: load gamma factor file
+%     if it exists; assign gamma value only if number of values in .gam 
+%     file equals the number of loaded restructured ASCII files
+
 % collect files to import
 defPth = h.folderRoot;
 [fname,pname,o] = uigetfile({'*.mash', 'MASH project(*.mash)'; '*.*', ...
@@ -45,12 +54,19 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
     % load gamma factor file if it exists; added by FS, 28.3.2018
     [o,o,fext] = fileparts(fname{1});
     if ~strcmp(fext, '.mash') % if ASCII file and not MASH project is loaded
-            [fnameGamma,pnameGamma,~] = uigetfile({'*.gam', 'Gamma factors (*.gam)'; '*.*', ...
-    'All files(*.*)'}, 'Select gamma factor file', defPth, 'MultiSelect', 'on');
+        % cancelled by MH, 28.3.2019
+%         [fnameGamma,pnameGamma,~] = uigetfile({'*.gam', 'Gamma factors (*.gam)'; '*.*', ...
+%                 'All files(*.*)'}, 'Select gamma factor file', defPth, 'MultiSelect', 'on');
+
+        % collect gamma files from import options, added by MH, 28.3.2019
+        pnameGamma = p.impPrm{6}{2};
+        fnameGamma = p.impPrm{6}{3};
+        
         if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
-            if ~iscell(fnameGamma)
-                fnameGamma = {fnameGamma};
-            end
+            % cancelled by MH, 28.3.2019
+%             if ~iscell(fnameGamma)
+%                 fnameGamma = {fnameGamma};
+%             end
             gammasCell = cell(1,length(fnameGamma));
             for f = 1:length(fnameGamma)
                 filename = [pnameGamma fnameGamma{f}];
