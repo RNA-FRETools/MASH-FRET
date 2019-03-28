@@ -1,4 +1,17 @@
 function ud_cross(h_fig)
+
+% Last update: 28.3.2019 by MH
+% --> UI controls for DE coefficients are made visible even if calculation
+%     is not possible (one laser data) but are off-enabled in that case,
+%     but popupmenu for laser selection is made off-visible.
+%
+% update: 26.3.2019 by MH
+% --> gamma correction checkbox changed to popupmenu
+%
+% update: 26.4.2018 by FS
+% --> update the gamma correction checkbox when changing to different 
+%     molecules
+
 h = guidata(h_fig);
 p = h.param.ttPr.proj;
 if ~isempty(p)
@@ -40,8 +53,18 @@ if ~isempty(p)
             num2str(p_panel{1}{curr_exc,curr_chan}(curr_btChan)));
     end
     if nExc > 1
+        set(h.popupmenu_excDirExc,'Visible','on');
+        set([h.text_dirExc,h.edit_dirExc,h.popupmenu_excDirExc,...
+            h.edit_dirExc],'Enable','on');
+        set(h.text_dirExc,'String','DE calculation based on:');
         set(h.edit_dirExc, 'String', ...
             num2str(p_panel{2}{curr_exc,curr_chan}(curr_dirExc)));
+    else
+        set(h.popupmenu_excDirExc,'Visible','off');
+         set([h.text_dirExc,h.edit_dirExc,h.popupmenu_excDirExc,...
+             h.edit_dirExc],'Enable','off');
+        set(h.text_dirExc,'String','DE coefficient:');
+        set(h.edit_dirExc,'String',num2str(0));
     end
     
     if nFRET > 0 && curr_fret>=1
@@ -52,8 +75,6 @@ if ~isempty(p)
         set(h.popupmenu_gammaFRET,'Value',curr_fret+1);
         set(h.edit_gammaCorr,'String',num2str(p_panel{3}(curr_fret)));
 
-        % update the gamm correction checkbox when changing to different molecules; added by FS, 26.4.2018
-        % checkbox changed to popupmenu; MH 26.3.2019
         switch p_panel{4}(1)
             case 0 % manual
                 set(h.edit_gammaCorr,'Enable','on');

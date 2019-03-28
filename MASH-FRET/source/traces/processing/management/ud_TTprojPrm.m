@@ -1,4 +1,9 @@
 function ud_TTprojPrm(h_fig)
+
+% Last update: 28.3.2019 by Melodie Hadzic
+% --> Visibility of UI controls for DE coefficients is not manage here
+%     anymore but in ud_cross.m
+
 h = guidata(h_fig);
 p = h.param.ttPr;
 
@@ -93,15 +98,6 @@ if ~isempty(p.proj)
         setProp([h.text_bt h.popupmenu_bt h.edit_bt], 'Visible', 'off');
     else
         setProp([h.text_bt h.popupmenu_bt h.edit_bt], 'Visible', 'on');
-    end
-    
-    % manage control visibility for direct excitation correction
-    if nExc == 1
-        set([h.popupmenu_excDirExc h.text_dirExc h.edit_dirExc], ...
-            'Visible', 'off');
-    else
-        set([h.popupmenu_excDirExc h.text_dirExc h.edit_dirExc], ...
-            'Visible', 'on');
     end
     
     % manage panel visibility for factor corrections
