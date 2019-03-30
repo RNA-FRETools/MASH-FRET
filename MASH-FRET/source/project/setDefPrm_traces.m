@@ -4,10 +4,18 @@ function def = setDefPrm_traces(p, proj)
 % "proj" >> project number in the list
 % "def" >> 1-by-n cell array containing molecule parameters for each of ...
 %          the n panels
+
+% Cross talk and filter corrections
+% Last update: by MH 29.3.2019
+% >> change bleedthrough coefficient (mol{5}{1}) structure: coefficients 
+%    are independant of laser
+% >> change direct excitation coefficient (mol{5}{2}) structure: direct 
+%    excitation possible by every laser but emitter-specific illumination 
+%    (nExc-1) and is calculated only based on emitter intensities at 
+%    emitter-specific laser (possibility to choose another laser was 
+%    removed)
 %
-% Last update: the 28th of April 2014 by Mélodie C.A.S. Hadzic
-
-
+% update: the 28th of April 2014 by Mélodie C.A.S. Hadzic
 
 if ~isfield(p, 'defProjPrm')
     p.defProjPrm = [];
@@ -193,14 +201,19 @@ end
 mol{4}{3} = nan(nFRET+nS+nExc*nChan,6);  % States values
              
 % Cross talk and filter corrections
-for l = 1:nExc
-    for c = 1:nChan
-        % bleedthrough
-        mol{5}{1}{l,c} = zeros(1,nChan-1);
-        % direct excitation
-        mol{5}{2}{l,c} = zeros(1,nExc-1);
-    end
-end
+% modified by MH 29.3.2019
+% bleedthrough
+mol{5}{1} = zeros(nChan,nChan-1);
+% direct excitation
+mol{5}{2} = zeros(nExc-1,nChan);
+% for l = 1:nExc
+%     for c = 1:nChan
+%         % bleedthrough
+%         mol{5}{1}{l,c} = zeros(1,nChan-1);
+%         % direct excitation
+%         mol{5}{2}{l,c} = zeros(1,nExc-1);
+%     end
+% end
 
 % gamma
 mol{5}{3} = [];

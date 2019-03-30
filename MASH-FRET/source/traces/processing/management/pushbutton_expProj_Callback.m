@@ -1,4 +1,9 @@
 function pushbutton_expProj_Callback(obj, evd, h)
+
+% Last update: 29.3.2019 by MH
+% >> adapt reorganization of cross-talk coefficients to new parameter 
+%    structure (see project/setDefPrm_traces.m)
+
 p = h.param.ttPr;
 if ~isempty(p.proj);
     
@@ -59,12 +64,30 @@ if ~isempty(p.proj);
             % set interface default param. to project's default param.
             p.defProjPrm = p.proj{proj}.def;
             
-            % reorder the cross talk coefficients as the wavelength
-            [o,id] = sort(p.proj{proj}.excitations,'ascend'); % chronological index sorted as wl
+            chanExc = p.proj{proj}.chanExc;
+            exc = p.proj{proj}.excitations;
+            
+            % removed by MH, 29.3.2019
+%             % reorder the cross talk coefficients as the wavelength
+%             [o,id] = sort(p.proj{proj}.excitations,'ascend'); % chronological index sorted as wl
+
             mol_prev = p.defProjPrm.mol{5};
+            
+            % modified by MH, 29.3.2019
+%             for c = 1:dat.nb_channel
+%                 p.defProjPrm.mol{5}{1}(:,c) = mol_prev{1}(id,c);
+%                 p.defProjPrm.mol{5}{2}(:,c) = mol_prev{2}(id,c);
+%             end
             for c = 1:dat.nb_channel
-                p.defProjPrm.mol{5}{1}(:,c) = mol_prev{1}(id,c);
-                p.defProjPrm.mol{5}{2}(:,c) = mol_prev{2}(id,c);
+                if sum(exc==chanExc(c)) % emitter-specific illumination 
+                                        % defined and present in used ALEX 
+                                        % scheme (DE calculation possible)
+                    % reorder the direct excitation coefficients according 
+                    % to laser wavelength
+                    exc_but_c = exc(exc~=chanExc(c));
+                    [o,id] = sort(exc_but_c,'ascend'); % chronological index sorted as wl
+                    p.defProjPrm.mol{5}{2}(:,c) = mol_prev{2}(id,c);
+                end
             end
             
             % update exported file path to current project
