@@ -106,19 +106,28 @@ Intensity data can be exported in:
 * Photon counts (pc)
 * Image counts (ic)
 
-Photon counts and image counts are linked by the relation:
+Photon counts 
+<span style="font-family: Times;"><i>&#956;</i><sub>pc</sub></span> 
+and image counts 
+<span style="font-family: Times;"><i>&#956;</i><sub>ic</sub></span> 
+are linked by the relation:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
-<b><i>ic</i></b> = <b><i>pc</i></b> x <i>&#951;</i> x <i>K</i> + <i>&#956;</i><sub>ic,d</sub>
+{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
+<p style="font-family: Times; border-radius: 5px;">
+<i>&#956;</i><sub>ic</sub> = <i>&#956;</i><sub>pc</sub> &#215; <i>&#951;</i> &#215; <i>K</i> + <i>&#956;</i><sub>ic,d</sub>
 </p>
 
-with camera characteristics: signal offset *&#956;*<sub>ic,d</sub>, sensitivity *&#951;* and overall gain *K*.
+with camera characteristics: signal offset 
+<span style="font-family: Times;">*&#956;*<sub>ic,d</sub></span>, 
+detection efficiency 
+<span style="font-family: Times;">*&#951;*</span> 
+and overall gain 
+<span style="font-family: Times;">*K*</span>.
 
 If one of the characteristics is not defined within the chosen camera noise model, the following default values are used:
-* *&#951;* = 1 ec/pc
-* *K* = 1 ic/ec
-* *&#956;*<sub>ic,d</sub> = 0 ic
+* <span style="font-family: Times;">*&#951;*</span> = 1 ec/pc
+* <span style="font-family: Times;">*K*</span> = 1 ic/ec
+* <span style="font-family: Times;">*&#956;*<sub>ic,d</sub></span> = 0 ic
 
 See 
 [Camera SNR characteristics](panel-video-parameters.html#camera-snr-characteristics) for more information.

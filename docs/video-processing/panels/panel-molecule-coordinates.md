@@ -80,21 +80,40 @@ The final set of spot coordinates can be exported to a
 
 When Gaussian fitting is activated, a pixel area of **(e)**-by-**(f)** pixels centered on the spot position is fitted with a tilted ellipsoid Gaussian function:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
+{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
+<p style="font-family: Times; border-radius: 5px;">
 <i>I</i>(<i>x</i>,<i>y</i>) = <i>offset</i> + <i>I</i><sub>0</sub>exp{ - [ <i>a</i>(<i>x</i> - <i>x</i><sub>0</sub>)<sup>2</sup> + 2<i>b</i>(<i>x</i> - <i>x</i><sub>0</sub>)(<i>y</i> - <i>y</i><sub>0</sub>) + <i>c</i>(<i>y</i> - <i>y</i><sub>0</sub>)<sup>2</sup> ] }
 </p>
 
-with *offset* the Gaussian offset, *I*<sub>0</sub> the Gaussian amplitude, *x*<sub>0</sub> and *y*<sub>0</sub> the x- and y- spot coordinates, and with coefficient *a*, *b* and *c* containing information about Gaussian width and orientation:
+with 
+<span style="font-family: Times;">*offset*</span> 
+the Gaussian offset, 
+<span style="font-family: Times;">*I*<sub>0</sub></span> 
+the Gaussian amplitude, 
+<span style="font-family: Times;">*x*<sub>0</sub></span> 
+and 
+<span style="font-family: Times;">*y*<sub>0</sub></span> 
+the x- and y- spot coordinates, and with coefficient 
+<span style="font-family: Times;">*a*,</span> 
+<span style="font-family: Times;">*b*</span> 
+and 
+<span style="font-family: Times;">*c*</span> 
+containing information about Gaussian width and orientation:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
+{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
+<p style="font-family: Times; border-radius: 5px;">
 <i>a</i> = cos<sup>2</sup>( <i>&#952;</i> ) / ( 2<i>&#963;</i><sub>x</sub><sup>2</sup> ) + sin<sup>2</sup>( <i>&#952;</i> ) / ( 2<i>&#963;</i><sub>y</sub><sup>2</sup> )<br><br>
 <i>b</i> = - sin( 2<i>&#952;</i> ) / ( 4<i>&#963;</i><sub>x</sub><sup>2</sup> ) + sin( 2<i>&#952;</i> ) / ( 4<i>&#963;</i><sub>y</sub><sup>2</sup> )<br><br>
 <i>c</i> = sin<sup>2</sup>( <i>&#952;</i> ) / (2<i>&#963;</i><sub>x</sub><sup>2</sup>) + cos<sup>2</sup>( <i>&#952;</i> ) / (2<i>&#963;</i><sub>y</sub><sup>2</sup>)
 </p>
 
-with *&#963;*<sub>x</sub> and *&#963;*<sub>y</sub> the Gaussian standard deviations in the x- and y- direction, and <i>&#952;</i> the Gaussian orientation angle.
+with 
+<span style="font-family: Times;">*&#963;*<sub>x</sub></span> 
+and 
+<span style="font-family: Times;">*&#963;*<sub>y</sub></span> 
+the Gaussian standard deviations in the x- and y- direction, and 
+<span style="font-family: Times;">*&#952;*</span> 
+the Gaussian orientation angle.
 
 
 ### Exclusion rules
@@ -119,9 +138,9 @@ Exclusion rules are set in **(j-p)** and are described in details in the table b
 It is a home-made algorithm adapted from 
 [houghpeaks](#houghpeaks) but faster. It processes as described below:
 
-1. it searches for the brightest pixel in the image considering a minimum pixel intensity set in **(d)** 
-1. an area of **(g)**-by-**(h)** pixels centered on the brightest pixel is set to zero
-1. the algorithm repeats steps 1 and 2 until no pixel with intensity higher than **(d)** are found.
+1. searches for the brightest pixel in the image considering a minimum pixel intensity set in **(d)** 
+1. sets an area of **(g)**-by-**(h)** pixels centered on the brightest pixel to zero
+1. repeats steps 1 and 2 until no pixel with intensity higher than **(d)** is found.
 
 
 ### houghpeaks
@@ -156,7 +175,7 @@ mex 'xxxxx\MASH-FRET\source\extern\schmied2012\forloop.c'
 
 with `xxxxx` the path on your computer to the MASH-FRET folder.
 
-If the error persists, please inform us via the  
+If the error persists, please inform us via the 
 [issue tracker](https://github.com/RNA-FRETools/MASH-FRET/issues) on Github.
 
 
@@ -169,10 +188,10 @@ A.N. Kapanidis, N.K. Lee, T.A. Laurence, S. Doose, E.Margeat, S. Weiss, *Definin
 [10.1016/j.bpj.2010.09.005](https://doi.org/10.1016/j.bpj.2010.09.005)
 
 It processes as described below:
-1. apply the Twotone image filter to the average image or video frame with a kernel size set in **(d)**; see 
+1. applies the Twotone image filter to the average image or video frame with a kernel size set in **(d)**; see 
    [Filters](panel-edit-video.html#filters) for more information
-1. search in the filtered image for pixels brighter than the intensity threshold set in **(g)**
-1. only the pixels that are local maxima in the 3-by-3 pixel area around them are detected as spots.
+1. searches in the filtered image for pixels brighter than the intensity threshold set in **(g)**
+1. selects pixels that are local maxima in the 3-by-3 pixel area around them.
 
 ---
 
@@ -204,7 +223,7 @@ The spatial transformation stored in a
 ![...](../../assets/images/gui/VP-but-3p.png "...") and selecting the previously exported transformation 
 [.mat file](../../output-files/mat-transformation.html).
 
-Reference coordinates are already-transformed coordinates written in ASCII files that can be imported in **(a)**:
+Reference coordinates written in ASCII files can be imported in **(a)**:
 * either automatically after mapping coordinates on a reference image with the mapping tool that can be accessed by pressing 
 ![Map](../../assets/images/gui/VP-but-map.png "Map"); see 
 [Use the mapping tool](../functionalities/use-the-mapping-tool.html) to use the mapping tool

@@ -26,15 +26,20 @@ Use these settings to simulate diffraction-limited images.
 <a href="../../assets/images/gui/sim-panel-experimental-setup-psf.png"><img src="../../assets/images/gui/sim-panel-experimental-setup-psf.png" style="max-width: 177px;" /></a>
 
 The point spread function (PSF) shapes the intensity 2D-profile of single molecules as diffraction-limited spots. 
-The PSF is modelled as spherical 2D-Gaussian centred on the single molecule coordinates with a standard deviation *w*<sub>det</sub>.
+The PSF is modelled as spherical 2D-Gaussian centred on the single molecule coordinates with a standard deviation 
+<span style="font-family: Times;">*w*<sub>det</sub></span>.
 As the PSF width depends on the wavelength of the detected light, it is different for the donor and the acceptor channel.
 
 PSF convolution is activated by checking the box in **(a)**.
-The donor and acceptor PSF widths *w*<sub>det,D</sub> and *w*<sub>det,A</sub> are set in micrometers in **(b)** and **(c)** respectively.
+The donor and acceptor PSF widths 
+<span style="font-family: Times;">*w*<sub>det,D</sub></span> 
+and 
+<span style="font-family: Times;">*w*<sub>det,A</sub></span> 
+are set in micrometers in **(b)** and **(c)** respectively.
 
 **<u>default</u>:** PSF convolution is activated with:
-* *w*<sub>det,D</sub> = 0.353 &#956;m
-* *w*<sub>det,A</sub> = 0.383 &#956;m
+* <span style="font-family: Times;">*w*<sub>det,D</sub></span> = 0.353 &#956;m
+* <span style="font-family: Times;">*w*<sub>det,A</sub></span> = 0.383 &#956;m
 
 ---
 
@@ -67,12 +72,16 @@ Intensity units can be given in photon counts (pc) or pseudo-image counts (pic);
 [Intensity units](panel-molecules.html#intensity-units) for more information.
 
 Pseudo-image counts are the units of amplified photo-electron counts. 
-Experimental *bg*<sub>D</sub> and *bg*<sub>A</sub> values in p-ic are obtained by subtracting the known camera offset to the background intensities calculated in Trace processing; see 
+Experimental 
+<span style="font-family: Times;">*bg*<sub>D</sub></span> 
+and 
+<span style="font-family: Times;">*bg*<sub>A</sub></span> 
+values in p-ic are obtained by subtracting the known camera offset to the background intensities calculated in Trace processing; see 
 [Background correction](../../trace-processing/panels/panel-subimage-background-correction.html#background) for more information.
 
 **<u>default</u>:** 
-* *bg*<sub>D</sub> = 0 pc
-* *bg*<sub>A</sub> = 0 pc
+* <span style="font-family: Times;">*bg*<sub>D</sub></span> = 0 pc
+* <span style="font-family: Times;">*bg*<sub>A</sub></span> = 0 pc
 
 
 ### Gaussian-distributed background
@@ -82,14 +91,22 @@ The background is spatially distributed following a 2D-Gaussian model.
 This can be used to model a realistic TIRF excitation profile.
 
 To apply a <u>2D-Gaussian background</u>, "2D Gaussian profile" must be selected in list **(a)**.
-In that case, the background follows a 2D-Gaussian distribution centred on each channel, having common x- and y-standard deviations, *w*<sub>0,ex,x</sub> and *w*<sub>0,ex,y</sub>, given in pixels and set in **(d)** and **(e)** respectively.
-Gaussian amplitudes *bg*<sub>D</sub> in donor channel and *bg*<sub>A</sub> in acceptor channel are set in **(b)** and **(c)** respectively.
+In that case, the background follows a 2D-Gaussian distribution centred on each channel, having common x- and y-standard deviations, 
+<span style="font-family: Times;">*w*<sub>0,ex,x</sub></span> 
+and 
+<span style="font-family: Times;">*w*<sub>0,ex,y</sub></span>, 
+given in pixels and set in **(d)** and **(e)** respectively.
+Gaussian amplitudes 
+<span style="font-family: Times;">*bg*<sub>D</sub></span> 
+in donor channel and 
+<span style="font-family: Times;">*bg*<sub>A</sub></span> 
+in acceptor channel are set in **(b)** and **(c)** respectively.
 Gaussian amplitudes can be given in photon counts (pc) or electron counts (ec); see
 [Intensity units](panel-molecules.html#intensity-units) for more information.
 
 **<u>default</u>:** 2D-Gaussian widths are set to half-channel dimensions in a video of 256-by-256 pixels:
-* *w*<sub>0,ex,x</sub> = 64 px
-* *w*<sub>0,ex,y</sub> = 128 px
+* <span style="font-family: Times;">*w*<sub>0,ex,x</sub></span> = 64 px
+* <span style="font-family: Times;">*w*<sub>0,ex,y</sub></span> = 128 px
 
 
 ### Background from image file
@@ -113,12 +130,16 @@ The background intensities are decaying in time.
 This can be used to model the photobleaching of an autofluorescent medium.
 
 Time decay of uniform or spatially distributed background intensities is activated by checking the box in **(f)**.
-In that case, the background intensity in each pixel decays exponentially with a time decay *dec* given in seconds and set in **(g)**.
-The starting background intensities can be modulated by a factor *amp* set in **(h)**. 
+In that case, the background intensity in each pixel decays exponentially with a time decay 
+<span style="font-family: Times;">*dec*</span> 
+given in seconds and set in **(g)**.
+The starting background intensities can be modulated by a factor 
+<span style="font-family: Times;">*amp*</span> 
+set in **(h)**. 
 
 **<u>default</u>:** decay time constant is set to 10 times the default trajectory length:
-* *dec* = 4000 seconds
-* *amp* = 1
+* <span style="font-family: Times;">*dec*</span> = 4000 seconds
+* <span style="font-family: Times;">*amp*</span> = 1
 
 
 

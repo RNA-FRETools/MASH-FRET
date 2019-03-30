@@ -23,9 +23,11 @@ nav_order: 1
 
 It is the total number of image frames in the video. 
 
-It is usually noted *L*
+It is usually noted 
+<span style="font-family: Times;">*L*</span>
 
-**<u>default</u>:** *L* = 4000 frames
+**<u>default</u>:** 
+<span style="font-family: Times;">*L*</span> = 4000 frames
 
 ---
 
@@ -33,16 +35,23 @@ It is usually noted *L*
 
 It is acquisition rate of the video in frames per second (fps). 
 
-It is usually noted *f*. It is linked to the acquisition time *t*<sub>exp</sub> by the relation:
+It is usually noted 
+<span style="font-family: Times;">*f*</span>. 
+It is linked to the acquisition time 
+<span style="font-family: Times;">*t*<sub>exp</sub></span> 
+by the relation:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
+{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
+<p style="font-family: Times; border-radius: 5px;">
 <i>f</i> = 1 / <i>t</i><sub>exp</sub>
 </p>
 
-with *acq_t* is second
+with 
+<span style="font-family: Times;">*t*<sub>exp</sub></span> 
+in seconds
 
-**<u>default</u>:** *f* = 10 fps
+**<u>default</u>:** 
+<span style="font-family: Times;">*f*</span> = 10 fps
 
 ---
 
@@ -76,7 +85,7 @@ They are the dimensions of video frames in pixels , following the x- **(a)** and
 
 ## Camera SNR characteristics
 
-They are the settings to generate camera noise.
+They are the settings to convert photon counts to images counts and generate camera noise.
 
 <a href="../../assets/images/gui/sim-panel-video-parameters-camera.png"><img src="../../assets/images/gui/sim-panel-video-parameters-camera.png" style="max-width: 198px" /></a>
 
@@ -97,104 +106,236 @@ Refer to table
 ### Offset only
 {: .no_toc }
 
-Add a constant offset value *&#956;*<sub>ic,d</sub>.
+Photon counts 
+<span style="font-family: Times;">*&#956;*<sub>pc</sub></span> 
+are ideally converted to image counts 
+<span style="font-family: Times;">*&#956;*<sub>ic</sub></span> 
+such as:
 
-**<u>default</u>:** *&#956;*<sub>ic,d</sub> = 113 ic
+{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
+<p style="font-family: Times; border-radius: 5px;">
+<i>&#956;</i><sub>ic</sub> = <i>&#956;</i><sub>pc</sub>
+</p>
+
+A constant camera dark count 
+<span style="font-family: Times;">*&#956;*<sub>ic,d</sub></span> 
+is then added.
+
+**<u>default</u>:** 
+<span style="font-family: Times;">*&#956;*<sub>ic,d</sub></span> = 113 ic
 
 
 ### P- or Poisson
 {: .no_toc }
 
-Distribute intensities following a Poisson distribution with mean *&#955;*:
+Photon counts 
+<span style="font-family: Times;">*&#956;*<sub>pc</sub></span> 
+are converted to electron counts 
+<span style="font-family: Times;">*&#956;*<sub>ec</sub></span> 
+with a detection efficiency 
+<span style="font-family: Times;">*&#951;*</span> 
+such as:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
-<i>&#955;</i> = <i>intensity</i> x <i>&#951;</i> + <i>&#956;</i><sub>ic,d</sub>
+{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
+<p style="font-family: Times; border-radius: 5px;">
+<i>&#956;</i><sub>ec</sub> = <i>&#956;</i><sub>pc</sub> &#215; <i>&#951;</i>
 </p>
 
+Electron counts are distributed following a Poisson distribution and are ideally converted to image counts 
+<span style="font-family: Times;">*&#956;*<sub>ic</sub></span> 
+such as:
+
+{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
+<p style="font-family: Times; border-radius: 5px;">
+<i>&#956;</i><sub>ic</sub> = <i>&#956;</i><sub>ec</sub>
+</p>
+
+A constant camera dark count 
+<span style="font-family: Times;">*&#956;*<sub>ic,d</sub></span> 
+is then added.
+
 **<u>default</u>:**
-* *&#956;*<sub>ic,d</sub> = 113 ic
-* *&#951;* = 0.95 ec/pc
+* <span style="font-family: Times;">*&#956;*<sub>ic,d</sub></span> = 113 ic
+* <span style="font-family: Times;">*&#951;*</span> = 0.95 ec/pc
 
 
 ### N- or Gaussian
 {: .no_toc }
 
-Distribute intensities following a Gaussian distribution with mean *&#956;*:
+Photon counts 
+<span style="font-family: Times;">*&#956;*<sub>pc</sub></span> 
+are converted to electron counts 
+<span style="font-family: Times;">*&#956;*<sub>ec</sub></span> 
+with a detection efficiency 
+<span style="font-family: Times;">*&#951;*</span> 
+such as:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
-<i>&#956;</i> = <i>intensity</i> x <i>&#951;</i> x <i>K</i> + <i>&#956;</i><sub>ic,d</sub>
+{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
+<p style="font-family: Times; border-radius: 5px;">
+<i>&#956;</i><sub>ec</sub> = <i>&#956;</i><sub>pc</sub> &#215; <i>&#951;</i>
 </p>
 
-and standard deviation *&#963;*:                  
+Electron counts are converted to image counts 
+<span style="font-family: Times;">*&#956;*<sub>ic</sub></span> 
+with an overall gain 
+<span style="font-family: Times;">*K*</span> 
+such as:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
-<i>&#963;</i> = (  <i>intensity</i> x <i>&#951;</i> x <i>K</i> + ( <i>K</i> x <i>&#963;</i><sub>d</sub> )<sup>2</sup> + <i>&#963;</i><sub>q</sub><sup>2</sup> )<sup>0.5</sup>
+{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
+<p style="font-family: Times; border-radius: 5px;">
+<i>&#956;</i><sub>ic</sub> = <i>&#956;</i><sub>ec</sub> &#215; <i>K</i>
 </p>
 
-**<u>default</u>:** values taken from the literature (reference [here](../../citations.html#simulation-algorithm-testing)):
-* *&#956;*<sub>ic,d</sub> = 113 ic
-* *&#951;* = 0.95 ec/pc
-* *K* = 57.8 ic/ec
-* *&#963;*<sub>d</sub> = 0.067 ec
-* *&#963;*<sub>q</sub> = 0 ic
+A constant camera dark count 
+<span style="font-family: Times;">*&#956;*<sub>ic,d</sub></span> 
+is added and image counts are distributed following a Gaussian distribution of mean 
+<span style="font-family: Times;">*&#956;*<sub>ic</sub></span> 
+and standard deviation 
+<span style="font-family: Times;">*&#963;*<sub>ic</sub></span> 
+that depends on 
+<span style="font-family: Times;">*&#956;*<sub>ic</sub></span>, 
+the readout noise standard deviation 
+<span style="font-family: Times;">*&#963;*<sub>d</sub></span> 
+and the analog-to-digital noise standard deviation 
+<span style="font-family: Times;">*&#963;*<sub>q</sub></span> 
+such as:
+
+{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
+<p style="font-family: Times; border-radius: 5px;">
+<i>&#963;</i><sub>ic</sub> = (  <i>&#956;</i><sub>ic</sub> + ( <i>K</i> &#215; <i>&#963;</i><sub>d</sub> )<sup>2</sup> + <i>&#963;</i><sub>q</sub><sup>2</sup> )<sup>0.5</sup>
+</p>
+
+**<u>default</u>:** values taken from the literature (reference 
+[here](../../citations.html#simulation-algorithm-testing)):
+* <span style="font-family: Times;">*&#956;*<sub>ic,d</sub></span> = 113 ic
+* <span style="font-family: Times;">*&#951;*</span> = 0.95 ec/pc
+* <span style="font-family: Times;">*K*</span> = 57.8 ic/ec
+* <span style="font-family: Times;">*&#963;*<sub>d</sub></span> = 0.067 ec
+* <span style="font-family: Times;">*&#963;*<sub>q</sub></span> = 0 ic
 
 
 ### NExpN- or Gaussian + exponential tail
 {: .no_toc }
 
-Distribute intensities following an exponential-tailed Gaussian distribution with mean *&#956;*<sub>ic,d</sub>, standard deviation *&#963;*<sub>CIC</sub>, tail contribution *A*<sub>CIC</sub> and exponential decay *&#964;*<sub>CIC</sub>.
+Photon counts 
+<span style="font-family: Times;">*&#956;*<sub>pc</sub></span> 
+are converted to electron counts 
+<span style="font-family: Times;">*&#956;*<sub>ec</sub></span> 
+with a detection efficiency 
+<span style="font-family: Times;">*&#951;*</span> 
+such as:
 
-This model is purely empirical: model parameters are obtained by fitting the dark count distribution with the function:
-
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
-P = ( 1-<i>A</i><sub>CIC</sub> ) x exp( -( <i>intensity</i> - <i>&#956;</i><sub>ic,d</sub> )<sup>2</sup> / ( 2 x <i>&#963;</i><sub>CIC</sub><sup>2</sup> ) ) + <i>A</i><sub>CIC</sub> x exp( - <i>intensity</i> / <i>&#964;</i><sub>CIC</sub> )
+{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
+<p style="font-family: Times; border-radius: 5px;">
+<i>&#956;</i><sub>ec</sub> = <i>&#956;</i><sub>pc</sub> &#215; <i>&#951;</i>
 </p>
 
-**Note:** *Random generation of NExpN noise is very time consuming. Expect spending around 8 hours to simulate a 256-by-256-wide and 4000 frame-long video.*
+Electron counts are converted to image counts 
+<span style="font-family: Times;">*&#956;*<sub>ic</sub></span> 
+with an overall gain 
+<span style="font-family: Times;">*K*</span> 
+such as:
 
-**<u>default</u>:** values taken from the literature (reference [here](../../citations.html#simulation-algorithm-testing)):
-* *&#956;*<sub>ic,d</sub> = 106.9 ic
-* *A*<sub>CIC</sub> = 0.02 
-* *&#963;*<sub>CIC</sub> = 4.9 ic
-* *&#964;*<sub>CIC</sub> = 20.5 ic
-* *&#951;* = 0.95 ec/pc
-* *K* = 57.8 ic/ec
+{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
+<p style="font-family: Times; border-radius: 5px;">
+<i>&#956;</i><sub>ic</sub> = <i>&#956;</i><sub>ec</sub> &#215; <i>K</i>
+</p>
+
+A constant camera dark count 
+<span style="font-family: Times;">*&#956;*<sub>ic,d</sub></span> 
+is added and image counts are distributed following an exponential-tailed Gaussian distribution with mean 
+<span style="font-family: Times;">*&#956;*<sub>ic</sub></span>, 
+standard deviation 
+<span style="font-family: Times;">*&#963;*<sub>ic</sub></span>, 
+tail contribution 
+<span style="font-family: Times;">*A*<sub>CIC</sub></span> 
+and exponential decay 
+<span style="font-family: Times;">*&#964;*<sub>CIC</sub></span>.
+
+This model is purely empirical: model parameters are obtained by fitting the distribution 
+<span style="font-family: Times;">P</span> 
+of image counts obtain from a camera with closed shutter 
+<span style="font-family: Times;">*&#956;*<sub>ic,0</sub></span>
+with the function:
+
+{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
+<p style="font-family: Times; border-radius: 5px;">
+P(<i>&#956;</i><sub>ic,0</sub>) = ( 1-<i>A</i><sub>CIC</sub> ) &#215; exp( -( <i>&#956;</i><sub>ic,0</sub> - <i>&#956;</i><sub>ic,d</sub> )<sup>2</sup> / ( 2 &#215; <i>&#963;</i><sub>ic</sub><sup>2</sup> ) ) + <i>A</i><sub>CIC</sub> &#215; exp( - <i>intensity</i> / <i>&#964;</i><sub>CIC</sub> )
+</p>
+
+**Note:** *Random generation of NExpN noise is very time consuming. 
+Expect spending around 8 hours to simulate a 256-by-256-wide and 4000 frame-long video.*
+
+**<u>default</u>:** values taken from the literature (reference 
+[here](../../citations.html#simulation-algorithm-testing)):
+* <span style="font-family: Times;">*&#956;*<sub>ic,d</sub></span> = 106.9 ic
+* <span style="font-family: Times;">*A*<sub>CIC</sub></span> = 0.02 
+* <span style="font-family: Times;">*&#963;*<sub>ic</sub></span> = 4.9 ic
+* <span style="font-family: Times;">*&#964;*<sub>CIC</sub></span> = 20.5 ic
+* <span style="font-family: Times;">*&#951;*</span> = 0.95 ec/pc
+* <span style="font-family: Times;">*K*</span> = 57.8 ic/ec
 
 ### PGN- or Hirsch
 {: .no_toc }
 
-Distribute intensities following the convolution of a Poisson distribution of mean *&#955;*<sub>p</sub>:
+Photon counts 
+<span style="font-family: Times;">*&#956;*<sub>pc</sub></span> 
+are converted to electron counts 
+<span style="font-family: Times;">*&#956;*<sub>ec</sub></span> 
+with a detection efficiency 
+<span style="font-family: Times;">*&#951;*</span> 
+and a contribution of clock-induced charges 
+<span style="font-family: Times;">*CIC*</span> 
+such as:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
-<i>&#955;</i><sub>p</sub> = <i>intensity</i> x <i>&#951;</i> + <i>CIC</i>
+{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
+<p style="font-family: Times; border-radius: 5px;">
+<i>&#956;</i><sub>ec</sub> = <i>&#956;</i><sub>pc</sub> &#215; <i>&#951;</i> + <i>CIC</i>
 </p>
 
-with a Gamma distribution of scale parameter *g*, and with a Gaussian distribution of mean *&#956;*<sub>g</sub>:
+Electron counts are distributed following a Poisson distribution of mean 
+<span style="font-family: Times;">*&#956;*<sub>ec</sub></span> 
+and are then multiplied in the electron-multiplier (EM) register following a gamma distribution with shape parameter 
+<span style="font-family: Times;">*&#956;*<sub>ec</sub></span> 
+and the EM gain 
+<span style="font-family: Times;">*g*</span>,
+for scale parameter.
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
-<i>&#956;</i><sub>g</sub> = <i>intensity</i> + <i>&#956;</i><sub>ic,d</sub>
+Multiplied electron counts are converted to image counts 
+<span style="font-family: Times;">*&#956;*<sub>ic</sub></span> 
+with an analog-to-digital factor 
+<span style="font-family: Times;">*s*</span> 
+such as:
+
+{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
+<p style="font-family: Times; border-radius: 5px;">
+<i>&#956;</i><sub>ic</sub> = <i>&#956;</i><sub>ec</sub> / <i>s</i>
 </p>
 
-and standard deviation *&#963;*<sub>g</sub>:
+A constant camera dark count 
+<span style="font-family: Times;">*&#956;*<sub>ic,d</sub></span> 
+is added and image counts are distributed following a Gaussian distribution of mean 
+<span style="font-family: Times;">*&#956;*<sub>ic</sub></span> 
+and standard deviation 
+<span style="font-family: Times;">*&#963;*<sub>ic</sub></span> 
+that represent the readout noise standard deviation 
+<span style="font-family: Times;">*&#963;*<sub>d</sub></span> 
+converted to image counts with the analog-to-digital factor 
+<span style="font-family: Times;">*s*</span> 
+such as:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
-<i>&#963;</i><sub>g</sub> = <i>&#963;</i><sub>d</sub> x <i>g</i> / <i>s</i>
+{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
+<p style="font-family: Times; border-radius: 5px;">
+<i>&#963;</i><sub>ic</sub> = <i>&#963;</i><sub>d</sub> / <i>s</i>
 </p>
 
 **<u>default</u>:** values taken from the literature (reference [here](../../citations.html#simulation-algorithm-testing)):
-* *&#956;*<sub>ic,d</sub> = 113 ic
-* *&#951;* = 0.95 ec/pc
-* *g* = 300
-* *&#963;*<sub>d</sub> = 0.067 ec
-* *s* = 5.199 ec/ic
-* *CIC* = 0.02 ec
+* <span style="font-family: Times;">*&#956;*<sub>ic,d</sub></span> = 113 ic
+* <span style="font-family: Times;">*&#951;*</span> = 0.95 ec/pc
+* <span style="font-family: Times;">*g*</span> = 300
+* <span style="font-family: Times;">*&#963;*<sub>d</sub></span> = 0.067 ec
+* <span style="font-family: Times;">*s*</span> = 5.199 ec/ic
+* <span style="font-family: Times;">*CIC*</span> = 0.02 ec
 
 
 ### Model parameters
@@ -202,20 +343,20 @@ and standard deviation *&#963;*<sub>g</sub>:
 
 Parameters specific to camera noise model:
 
-| parameter                   | units             | description                                  | in model               |
-| :-------------------------: | :---------------: | -------------------------------------------- | ---------------------- |
-| *&#956;*<sub>ic,d</sub>     | ic                | signal offset                                | none, P, N, NexpN, PGN |
-| *&#951;*                    | ec/pc             | detection efficiency                         | P, N, NexpN, PGN       |
-| *K*                         | ic                | overall gain                                 | N, NExpN               |
-| *sat* (read only)           | ic                | saturation value                             | N                      |
-| *&#963;*<sub>d</sub>        | ec                | readout noise deviation                      | N, PGN                 |
-| *&#963;*<sub>q</sub>        | ic                | analog-to-digital conversion noise deviation | N                      |
-| *&#964;*<sub>CIC</sub>      | ic                | exponential tail decay constant              | NExpN                  |
-| *A*<sub>CIC</sub>           |                   | exponential decay contribution               | NExpN                  |
-| *&#963;*<sub>CIC</sub>      | ic                | Gaussian standard deviation                  | NExpN                  |
-| *g*                         |                   | System gain                                  | PGN                    |
-| *s*                         | ec/ic             | analog-to-digital factor                     | PGN                    |
-| *CIC*                       | ec                | CIC offset                                   | PGN                    |
+| parameter                                                            | units             | description                                  | in model               |
+| :------------------------------------------------------------------: | :---------------: | -------------------------------------------- | ---------------------- |
+| <span style="font-family: Times;">*&#956;*<sub>ic,d</sub></span>     | ic                | signal offset                                | none, P, N, NexpN, PGN |
+| <span style="font-family: Times;">*&#951;*</span>                    | ec/pc             | detection efficiency                         | P, N, NexpN, PGN       |
+| <span style="font-family: Times;">*K*</span>                         | ic                | overall gain                                 | N, NExpN               |
+| <span style="font-family: Times;">*sat*</span> (read only)           | ic                | saturation value                             | N                      |
+| <span style="font-family: Times;">*&#963;*<sub>d</sub></span>        | ec                | readout noise deviation                      | N, PGN                 |
+| <span style="font-family: Times;">*&#963;*<sub>q</sub></span>        | ic                | analog-to-digital conversion noise deviation | N                      |
+| <span style="font-family: Times;">*&#964;*<sub>CIC</sub></span>      | ic                | exponential tail decay constant              | NExpN                  |
+| <span style="font-family: Times;">*A*<sub>CIC</sub></span>           |                   | exponential decay contribution               | NExpN                  |
+| <span style="font-family: Times;">*&#963;*<sub>ic</sub></span>       | ic                | Gaussian standard deviation                  | NExpN                  |
+| <span style="font-family: Times;">*g*</span>                         |                   | system gain                                  | PGN                    |
+| <span style="font-family: Times;">*s*</span>                         | ec/ic             | analog-to-digital factor                     | PGN                    |
+| <span style="font-family: Times;">*CIC*</span>                       | ec                | CIC offset                                   | PGN                    |
 
 <u>Abbreviations</u>:
 * **ic**: image count

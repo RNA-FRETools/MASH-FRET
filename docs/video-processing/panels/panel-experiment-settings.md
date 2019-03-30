@@ -62,19 +62,25 @@ Upon modification, channel-dependant parameters and channel limits on video disp
 
 It is the time spent by the camera to acquire one video frame.
 
-It is noted *t*<sub>exp</sub> and is linked to the video frame rate *f* by the relation:
+It is noted 
+<span style="font-family: Times;">*t*<sub>exp</sub></span> 
+and is linked to the video frame rate 
+<span style="font-family: Times;">*f*</span> 
+by the relation:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
+{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
+<p style="font-family: Times; border-radius: 5px;">
 <i>t</i><sub>exp</sub> = 1 / <i>f</i>
 </p>
 
-with *f* in frame per second (fps).
+with 
+<span style="font-family: Times;">*f*</span> 
+in frame per second (fps).
 
 It is automatically updated from the loaded video file. 
 If the file does not contain such information, it must be set manually.
 
-**<u>default</u>:** *t*<sub>exp</sub> = 1 second
+**<u>default</u>:** <span style="font-family: Times;">*t*<sub>exp</sub></span> = 1 second
 
 ---
 
@@ -88,5 +94,5 @@ To set the project options, please refer to
 [Set project options](../functionalities/set-project-options.html).
 
 Project options can be modified any time by loading the [.mash project](../../output-files/mash-mash-project.html) file in module Trace processing; see 
-[Edit project options](../../trace-processing/panels/area-management.html#edit-project-options) for more information.
+[Edit project options](../../trace-processing/panels/area-project-management.html#edit-project-options) for more information.
 
