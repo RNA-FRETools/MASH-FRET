@@ -16,6 +16,8 @@ function ud_TTprojPrm(h_fig)
 h = guidata(h_fig);
 p = h.param.ttPr;
 
+setProp(get(h.uipanel_TP, 'Children'), 'Visible', 'on');
+
 if ~isempty(p.proj)
     proj = p.curr_proj;
     isMov = p.proj{proj}.is_movie;
