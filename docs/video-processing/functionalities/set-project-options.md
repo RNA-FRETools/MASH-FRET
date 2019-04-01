@@ -198,30 +198,36 @@ They are the desired emitter stoichiometries to be calculated and plotted.
 The stoichiometry of an emitter is usually used to estimate the ratio of different emitters on the single molecule under observation.
 
 The stoichiometry 
-<span style="font-family: Times;">*S*<sub>*em*0</sub></span> 
-of an emitter specifically detected in channel 
-<span style="font-family: Times;">*em*<sub>0</sub></span> 
+<span style="font-family: Times;">*S*<sub>*D*</sub></span> 
+of an emitter 
+<span style="font-family: Times;">*D*</span> 
+specifically detected in channel 
+<span style="font-family: Times;">*D*<sub>em</sub></span> 
 and specifically excited by illumination 
-<span style="font-family: Times;">*ex*<sub>0</sub></span> 
-is calculated as:
+<span style="font-family: Times;">*D*<sub>ex</sub></span> 
+in a labelling scheme consisting of 
+<span style="font-family: Times;">*K*</span> 
+emitters, is calculated as:
 
 {: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
 <p style="font-family: Times; border-radius: 5px;">
-<i>S</i><sub><i>em</i>0</sub> = &#931;<i><sub>em</sub></i>( <i>I</i><sub><i>em</i></sub><sup><i>ex</i>0</sup> ) / &#931;<i><sub>em</sub></i>[ &#931;<sub><i>ex</i></sub>( <i>I</i><sub><i>em</i></sub><sup><i>ex</i></sup> ) ]
+<i>S</i><sub><i>D</i></sub> = &#931;<sub>1&#8805;<i>k</i>&#8805;<i>K</i></sub>( <i>I</i><sub><i>k</i>,em</sub><sup><i>D</i>,ex</sup> ) / &#931;<sub>1&#8805;<i>k</i>&#8805;<i>K</i></sub>[ &#931;<sub>1&#8805;<i>k'</i>&#8805;<i>K</i></sub>( <i>I</i><sub><i>k</i>,em</sub><sup><i>k'</i>,ex</sup> ) ]
 </p>
 
 with 
-<span style="font-family: Times;">*I*<sub>*em*</sub><sup>*ex*</sup></span> 
-the intensity collected in channel 
-<span style="font-family: Times;">*em*</span> 
+<span style="font-family: Times;">*I*<sub>*k*,em</sub><sup>*k'*,ex</sup></span> 
+the intensity collected from emitter 
+<span style="font-family: Times;">*k*</span> 
+specifically detected in channel 
+<span style="font-family: Times;">*k*<sub>em</sub></span> 
 and upon illumination 
-<span style="font-family: Times;">*ex*</span>.
+<span style="font-family: Times;">*k'*<sub>ex</sub></span>, 
+that specifically excites emitter 
+<span style="font-family: Times;">*k'*</span>.
 
 A stoichiometry 
-<span style="font-family: Times;">*S*<sub>*em*0</sub></span> = 0.5 means that 50% of the total number of collected photons belongs to the emitter specifically detected in channel 
-<span style="font-family: Times;">*em*<sub>0</sub></span> 
-and specifically excited by illumination 
-<span style="font-family: Times;">*ex*<sub>0</sub></span>.
+<span style="font-family: Times;">*S*<sub>*D*</sub></span> = 0.5 means that 50% of the total number of collected photons belongs to the emitter 
+<span style="font-family: Times;">*D*</span>.
 
 To activate the calculation of an emitter stoichiometry, the corresponding channel label must be selected in **(a)** prior pressing 
 ![Add](../../assets/images/gui/VP-but-add.png "Add").
