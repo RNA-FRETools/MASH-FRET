@@ -28,7 +28,7 @@ To adapt the software functionalities to your own experiment setup, MASH must be
 
 To register your experiment settings:
 
-{: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
+{: .procedure }
 1. Set parameters:  
      
    [Number of alternated lasers](panels/panel-experiment-settings.html#number-of-alternated-lasers)  
@@ -64,7 +64,7 @@ Finally, spot detection is performed on the average image with the Spotfinder to
 
 To localize bright spots in the SMV:
 
-{: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
+{: .procedure }
 1. [Load](panels/area-visualization.html#load-videoimage-file) the SMV file by pressing 
    ![Load...](../assets/images/gui/VP-but-load.png "Load...")  
      
@@ -119,7 +119,7 @@ If the quality is poor, red and green dots will be visible and the operation mus
 
 To calculate and export the spatial transformation:
 
-{: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
+{: .procedure }
 1. Load the reference image by pressing 
    ![Map](../assets/images/gui/VP-but-map.png "Map"),  
    [Use the mapping tool](functionalities/use-mapping-tool.html) to map positions in every channels and export reference coordinates to a 
@@ -140,7 +140,7 @@ To calculate and export the spatial transformation:
 
 To transform spots coordinates:
 
-{: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
+{: .procedure }
    Transform the spots coordinates and export the single molecule coordinates to a 
    [.coord file](../output-files/coord-transformed-coordinates.html) by pressing 
    ![Transform](../assets/images/gui/VP-but-transform.png "Transform").
@@ -157,7 +157,7 @@ Intensity-time traces and project parameters are automatically saved to a
 
 To calculate and export the intensity-time traces:
 
-{: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
+{: .procedure }
 1. Load the unmodified SMV file by pressing 
    ![...](../assets/images/gui/VP-but-3p.png "...") in 
    [Input video](panels/panel-intensity-integration.html#input-video).

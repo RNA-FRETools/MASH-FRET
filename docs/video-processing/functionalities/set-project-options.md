@@ -92,93 +92,69 @@ All transfers included in the network are listed in list **(c)** and can be remo
 ![Remove](../../assets/images/gui/VP-but-remove.png "Remove").
 
 In a FRET network composed of 
-<span style="font-family: Times;"><i>K</i></span> 
-emitters and where emitters are indexed according to the red-shift of their emission spectra (1 for the most blue-shifted and K for the most red-shifted), the apparent FRET value 
-<span style="font-family: Times;">*E\**<sub>*D*,*A*</sub></span> 
-of a pair donor-acceptor with respective indexes 
-<span style="font-family: Times;">*D*</span> 
-and 
-<span style="font-family: Times;">*A*</span> 
-is calculated as:
+[*K*](){: .math_var } emitters and where emitters are indexed according to the red-shift of their emission spectra (1 for the most blue-shifted and K for the most red-shifted), the apparent FRET value 
+[*E*\*<sub>*D*,*A*</sub>](){: .math_var } of a pair donor-acceptor with respective indexes 
+[*D*](){: .math_var } and 
+[*A*](){: .math_var } is calculated as:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
-<pre style="font-family: Times; border-radius: 5px;">
-<i>E*</i><sub><i>D</i>,<i>A</i></sub> = <i>I</i><sub><i>A</i></sub><sup><i>D</i></sup> / { [ 1 - &#931;<sub><i>A</i>><i>k</i>&#8805;<i>K</i></sub>( <i>E*</i><sub><i>A</i>,<i>k</i></sub> ) ] &#215; &#931;<sub><i>D</i>&#8805;<i>k</i>&#8805;<i>K</i></sub>( <i>I</i><sub><i>k</i></sub><sup><i>D</i></sup> ) }<br>
-                          - &#931;<sub><i>D</i>><i>k</i>><i>A</i></sub>{ <i>E*</i><sub><i>D</i>,<i>k</i></sub> &#215; &#928;<sub><i>k</i>><i>k'</i>&#8805;<i>A</i></sub>[ <i>E*</i><sub><i>k</i>,<i>k'</i></sub> &#215; &#928;<sub><i>k'</i>><i>k''</i>&#8805;<i>A</i></sub>( <i>E*</i><sub><i>k'</i>,<i>k''</i></sub> ) ] }
-</pre>
+{: .equation }
+*E*\*<sub>*D*,*A*</sub> = *I*<sub>*A*</sub><sup>*D*</sup> / { [ 1 - &#931;<sub>*A*>*k*&#8805;*K*</sub>( *E*\*<sub>*A*,*k*</sub> ) ] &#215; &#931;<sub>*D*&#8805;*k*&#8805;*K*</sub>( *I*<sub>*k*</sub><sup>*D*</sup> ) }<br><br>
+&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+            - &#931;<sub>*D*>*k*>*A*</sub>{ *E*\*<sub>*D*,*k*</sub> &#215; &#928;<sub>*k*>*k'*&#8805;*A*</sub>[ *E*\*<sub>*k*,*k'*</sub> &#215; &#928;<sub>*k'*>*k''*&#8805;*A*</sub>( *E*\*<sub>*k'*,*k''*</sub> ) ] }
 
 with 
-<span style="font-family: Times;">*I*<sub>*k*</sub><sup>*k'*</sup></span> 
-the intensity collected in detection channel of emitter 
-<span style="font-family: Times;">*k*</span> 
-upon illumination specific to emitter 
-<span style="font-family: Times;">*k'*</span>.
+[*I*<sub>*k*</sub><sup>*k'*</sup>](){: .math_var } the intensity collected in detection channel of emitter 
+[*k*](){: .math_var } upon illumination specific to emitter 
+[*k'*](){: .math_var }.
 
 As the expression of 
-<span style="font-family: Times;">*E\**<sub>*D*,*A*</sub></span> 
-depends on other unknown apparent FRET values 
-<span style="font-family: Times;">*E\**<sub>*A*,*k*</sub></span>, 
-<span style="font-family: Times;">*E\**<sub>*D*,*k*</sub></span>, 
-<span style="font-family: Times;">*E\**<sub>*k*,*k'*</sub></span> 
-and 
-<span style="font-family: Times;">*E\**<sub>*k*',*k''*</sub></span>, 
-the equation is first solved for the most red-shifted donor, *i.e.*, for the pair 
-(<span style="font-family: Times;">*D* = *K-1*</span>, 
-<span style="font-family: Times;">*A* = *K*</span>).
+[*E*\*<sub>*D*,*A*</sub>](){: .math_var } depends on other unknown apparent FRET values 
+[*E*\*<sub>*A*,*k*</sub>](){: .math_var }, 
+[*E*\*<sub>*D*,*k*</sub>](){: .math_var }, 
+[*E*\*<sub>*k*,*k'*</sub>](){: .math_var } and 
+[*E*\*<sub>*k*',*k''*</sub>](){: .math_var }, the equation is first solved for the most red-shifted donor, *i.e.*, for the pair (
+[*D* = *K-1*](){: .math_var }, 
+[*A* = *K*](){: .math_var }).
 
 In this case, the expression is simplified to a simple 2-color apparent FRET equation such as:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
-<pre style="font-family: Times; border-radius: 5px;">
-<i>E*</i><sub><i>K</i>-1,<i>K</i></sub> = <i>I</i><sub><i>K</i></sub><sup><i>K</i>-1</sup> / &#931;<sub><i>K</i>-1&#8805;<i>k</i>&#8805;<i>K</i></sub>( <i>I</i><sub><i>k</i></sub><sup><i>K</i>-1</sup> )
-</pre>
+{: .equation }
+*E*\*<sub>*K*-1,*K*</sub> = *I*<sub>*K*</sub><sup>*K*-1</sup> / &#931;<sub>*K*-1&#8805;*k*&#8805;*K*</sub>( *I*<sub>*k*</sub><sup>*K*-1</sup> )
 
 giving:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
-<pre style="font-family: Times; border-radius: 5px;">
-<i>E*</i><sub><i>K</i>-1,<i>K</i></sub> = <i>I</i><sub><i>K</i></sub><sup><i>K</i>-1</sup> / ( <i>I</i><sub><i>K</i></sub><sup><i>K</i>-1</sup> + <i>I</i><sub><i>K</i>-1</sub><sup><i>K</i>-1</sup> )
-</pre>
+{: .equation }
+*E*\*<sub>*K*-1,*K*</sub> = *I*<sub>*K*</sub><sup>*K*-1</sup> / ( *I*<sub>*K*</sub><sup>*K*-1</sup> + *I*<sub>*K*-1</sub><sup>*K*-1</sup> )
 
 where 
-<span style="font-family: Times;">*E\**<sub>*K*-1,*K*</sub></span> 
-depends only on acquired intensity-time traces and thus, can be readily calculated.
+[*E*\*<sub>*K*-1,*K*</sub>](){: .math_var } depends only on acquired intensity-time traces and thus, can be readily calculated.
 
 Calculated 
-<span style="font-family: Times;">*E\**<sub>*K*-1,*K*</sub></span> 
-can then be used to solve the equation for the next most red-shifted donor, *i.e.*, for pairs 
-(<span style="font-family: Times;">*D* = *K*-2</span>, 
-<span style="font-family: Times;">*A* = *K*-1</span>) 
-and 
-(<span style="font-family: Times;">*D* = *K*-2</span>, 
-<span style="font-family: Times;">*A* = *K*</span>).
+[*E*\*<sub>*K*-1,*K*</sub>](){: .math_var } can then be used to solve the equation for the next most red-shifted donor, *i.e.*, for pairs 
+([*D* = *K*-2](){: .math_var }, 
+[*A* = *K*-1](){: .math_var }) and 
+([*D* = *K*-2](){: .math_var }, 
+[*A* = *K*](){: .math_var }).
 
 In this case, the expression is simplified to a 3-color apparent FRET equation system such as:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
-<pre style="font-family: Times; border-radius: 5px;">
-<i>E*</i><sub><i>K</i>-2,<i>K</i>-1</sub> = <i>I</i><sub><i>K</i>-1</sub><sup><i>K</i>-2</sup> / { [ 1 - &#931;<sub><i>K</i>-1><i>k</i>&#8805;<i>K</i></sub>( <i>E*</i><sub><i>K</i>-1,<i>k</i></sub> ) ] &#215; &#931;<sub><i>K</i>-2&#8805;<i>k</i>&#8805;<i>K</i></sub>( <i>I</i><sub><i>k</i></sub><sup><i>K</i>-2</sup> ) }<br>
-<i>E*</i><sub><i>K</i>-2,<i>K</i></sub> = <i>I</i><sub><i>K</i></sub><sup><i>K</i>-2</sup> / &#931;<sub><i>K</i>-2&#8805;<i>k</i>&#8805;<i>K</i></sub>( <i>I</i><sub><i>k</i></sub><sup><i>K</i>-2</sup> ) - &#931;<sub><i>K</i>-2><i>k</i>><i>K</i></sub>[ <i>E*</i><sub><i>K</i>-2,<i>k</i></sub> &#215; &#928;<sub><i>k</i>><i>k'</i>&#8805;<i>K</i></sub>( <i>E*</i><sub><i>k</i>,<i>k'</i></sub> ) ]
-</pre>
+{: .equation }
+*E*\*<sub>*K*-2,*K*-1</sub> = *I*<sub>*K*-1</sub><sup>*K*-2</sup> / { [ 1 - &#931;<sub>*K*-1>*k*&#8805;*K*</sub>( *E*\*<sub>*K*-1,*k*</sub> ) ] &#215; &#931;<sub>*K*-2&#8805;*k*&#8805;*K*</sub>( *I*<sub>*k*</sub><sup>*K*-2</sup> ) }<br><br>
+*E*\*<sub>*K*-2,*K*</sub> = *I*<sub>*K*</sub><sup>*K*-2</sup> / &#931;<sub>*K*-2&#8805;*k*&#8805;*K*</sub>( *I*<sub>*k*</sub><sup>*K*-2</sup> ) - &#931;<sub>*K*-2>*k*>*K*</sub>[ *E*\*<sub>*K*-2,*k*</sub> &#215; &#928;<sub>*k*>*k'*&#8805;*K*</sub>( *E*\*<sub>*k*,*k'*</sub> ) ]
 
 giving:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
-<pre style="font-family: Times; border-radius: 5px;">
-<i>E*</i><sub><i>K</i>-2,<i>K</i>-1</sub> = <i>I</i><sub><i>K</i>-1</sub><sup><i>K</i>-2</sup> / ( 1 - <i>E</i><sub><i>K</i>-1,<i>K</i></sub> ) &#215; ( <i>I</i><sub><i>K</i></sub><sup><i>K</i>-2</sup> + <i>I</i><sub><i>K</i>-1</sub><sup><i>K</i>-2</sup> + <i>I</i><sub><i>K</i>-2</sub><sup><i>K</i>-2</sup> )<br>
-<i>E*</i><sub><i>K</i>-2,<i>K</i></sub> = <i>I</i><sub><i>K</i></sub><sup><i>K</i>-2</sup> / ( <i>I</i><sub><i>K</i></sub><sup><i>K</i>-2</sup> + <i>I</i><sub><i>K</i>-1</sub><sup><i>K</i>-2</sup> + <i>I</i><sub><i>K</i>-2</sub><sup><i>K</i>-2</sup> ) - <i>E</i><sub><i>K</i>-2,<i>K</i>-1</sub> &#215; <i>E</i><sub><i>K</i>-1,<i>K</i></sub> 
-</pre>
+{: .equation }
+*E*\*<sub>*K*-2,*K*-1</sub> = *I*<sub>*K*-1</sub><sup>*K*-2</sup> / ( 1 - *E*<sub>*K*-1,*K*</sub> ) &#215; ( *I*<sub>*K*</sub><sup>*K*-2</sup> + *I*<sub>*K*-1</sub><sup>*K*-2</sup> + *I*<sub>*K*-2</sub><sup>*K*-2</sup> )<br><br>
+*E*\*<sub>*K*-2,*K*</sub> = *I*<sub>*K*</sub><sup>*K*-2</sup> / ( *I*<sub>*K*</sub><sup>*K*-2</sup> + *I*<sub>*K*-1</sub><sup>*K*-2</sup> + *I*<sub>*K*-2</sub><sup>*K*-2</sup> ) - *E*<sub>*K*-2,*K*-1</sub> &#215; *E*<sub>*K*-1,*K*</sub> 
 
 where 
-<span style="font-family: Times;">*E\**<sub>*K*-2,*K*-1</sub></span> 
-depends on acquired intensity-time traces and the previously calculated 
-<span style="font-family: Times;">*E\**<sub>*K*-1,*K*</sub></span>.
+[*E*\*<sub>*K*-2,*K*-1</sub>](){: .math_var } depends on acquired intensity-time traces and the previously calculated 
+[*E*\*<sub>*K*-1,*K*</sub>](){: .math_var }.
 
 Calculated 
-<span style="font-family: Times;">*E\**<sub>*K*-2,*K*-1</sub></span> 
-and 
-<span style="font-family: Times;">*E\**<sub>*K*-2,*K*</sub></span> 
-can then be used to solve the equation for the next most red-shifted donor and so on ...
+[*E*\*<sub>*K*-2,*K*-1</sub>](){: .math_var } and 
+[*E*\*<sub>*K*-2,*K*</sub>](){: .math_var } can then be used to solve the equation for the next most red-shifted donor and so on ...
 
 To know more about how multi-color apparent FRET data are calculated, please refer to the respective functions in the source code:
 
@@ -198,36 +174,25 @@ They are the desired emitter stoichiometries to be calculated and plotted.
 The stoichiometry of an emitter is usually used to estimate the ratio of different emitters on the single molecule under observation.
 
 The stoichiometry 
-<span style="font-family: Times;">*S*<sub>*D*</sub></span> 
-of an emitter 
-<span style="font-family: Times;">*D*</span> 
-specifically detected in channel 
-<span style="font-family: Times;">*D*<sub>em</sub></span> 
-and specifically excited by illumination 
-<span style="font-family: Times;">*D*<sub>ex</sub></span> 
-in a labelling scheme consisting of 
-<span style="font-family: Times;">*K*</span> 
-emitters, is calculated as:
+[*S*<sub>*D*</sub>](){: .math_var } of an emitter 
+[*D*](){: .math_var } specifically detected in channel 
+[*D*<sub>em</sub>](){: .math_var } and specifically excited by illumination 
+[*D*<sub>ex</sub>](){: .math_var } in a labelling scheme consisting of 
+[*K*](){: .math_var } emitters, is calculated as:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
-<p style="font-family: Times; border-radius: 5px;">
-<i>S</i><sub><i>D</i></sub> = &#931;<sub>1&#8805;<i>k</i>&#8805;<i>K</i></sub>( <i>I</i><sub><i>k</i>,em</sub><sup><i>D</i>,ex</sup> ) / &#931;<sub>1&#8805;<i>k</i>&#8805;<i>K</i></sub>[ &#931;<sub>1&#8805;<i>k'</i>&#8805;<i>K</i></sub>( <i>I</i><sub><i>k</i>,em</sub><sup><i>k'</i>,ex</sup> ) ]
-</p>
+{: .equation }
+*S*<sub>*D*</sub> = &#931;<sub>1&#8805;*k*&#8805;*K*</sub>( *I*<sub>*k*,em</sub><sup>*D*,ex</sup> ) / &#931;<sub>1&#8805;*k*&#8805;*K*</sub>[ &#931;<sub>1&#8805;*k'*&#8805;*K*</sub>( *I*<sub>*k*,em</sub><sup>*k'*,ex</sup> ) ]
 
 with 
-<span style="font-family: Times;">*I*<sub>*k*,em</sub><sup>*k'*,ex</sup></span> 
-the intensity collected from emitter 
-<span style="font-family: Times;">*k*</span> 
-specifically detected in channel 
-<span style="font-family: Times;">*k*<sub>em</sub></span> 
-and upon illumination 
-<span style="font-family: Times;">*k'*<sub>ex</sub></span>, 
-that specifically excites emitter 
-<span style="font-family: Times;">*k'*</span>.
+[*I*<sub>*k*,em</sub><sup>*k'*,ex</sup>](){: .math_var } the intensity collected from emitter 
+[*k*](){: .math_var } specifically detected in channel 
+[*k*<sub>em</sub>](){: .math_var } and upon illumination 
+[*k'*<sub>ex</sub>](){: .math_var }, that specifically excites emitter 
+[*k'*](){: .math_var }.
 
 A stoichiometry 
-<span style="font-family: Times;">*S*<sub>*D*</sub></span> = 0.5 means that 50% of the total number of collected photons belongs to the emitter 
-<span style="font-family: Times;">*D*</span>.
+[*S*<sub>*D*</sub>](){: .math_var } = 0.5 means that 50% of the total number of collected photons belongs to the emitter 
+[*D*](){: .math_var }.
 
 To activate the calculation of an emitter stoichiometry, the corresponding channel label must be selected in **(a)** prior pressing 
 ![Add](../../assets/images/gui/VP-but-add.png "Add").

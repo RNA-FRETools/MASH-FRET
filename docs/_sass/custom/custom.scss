@@ -1,1 +1,30 @@
 $link-color: $blue-100;
+$var-color: $green-100;
+
+.equation {
+  display: block;
+  font-family: Times;
+  color: $var-color;
+  padding: 1.5rem;
+  }
+  
+.math_var {
+  cursor: text;
+  pointer-events: none;
+  color: $var-color;
+  background-image: none;
+  font-family: Times;
+  }
+  
+.procedure{
+  background-color: $grey-lt-000;
+  border-radius: 5px;
+  padding-top: 0.75rem;
+  padding-right: 1rem;
+  padding-bottom: 0.5rem;
+  padding-left: 2.5rem;
+  li {
+    position: absolute;
+    margin-left: 1rem;
+  }
+ }

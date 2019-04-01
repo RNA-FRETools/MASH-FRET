@@ -80,40 +80,27 @@ The final set of spot coordinates can be exported to a
 
 When Gaussian fitting is activated, a pixel area of **(e)**-by-**(f)** pixels centered on the spot position is fitted with a tilted ellipsoid Gaussian function:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
-<p style="font-family: Times; border-radius: 5px;">
-<i>I</i>(<i>x</i>,<i>y</i>) = <i>offset</i> + <i>I</i><sub>0</sub>exp{ - [ <i>a</i>(<i>x</i> - <i>x</i><sub>0</sub>)<sup>2</sup> + 2<i>b</i>(<i>x</i> - <i>x</i><sub>0</sub>)(<i>y</i> - <i>y</i><sub>0</sub>) + <i>c</i>(<i>y</i> - <i>y</i><sub>0</sub>)<sup>2</sup> ] }
-</p>
+{: .equation }
+*I*(*x*,*y*) = *offset* + *I*<sub>0</sub>exp{ - [ *a*(*x* - *x*<sub>0</sub>)<sup>2</sup> + 2*b*(*x* - *x*<sub>0</sub>)(*y* - *y*<sub>0</sub>) + *c*(*y* - *y*<sub>0</sub>)<sup>2</sup> ] }
 
 with 
-<span style="font-family: Times;">*offset*</span> 
-the Gaussian offset, 
-<span style="font-family: Times;">*I*<sub>0</sub></span> 
-the Gaussian amplitude, 
-<span style="font-family: Times;">*x*<sub>0</sub></span> 
-and 
-<span style="font-family: Times;">*y*<sub>0</sub></span> 
-the x- and y- spot coordinates, and with coefficient 
-<span style="font-family: Times;">*a*,</span> 
-<span style="font-family: Times;">*b*</span> 
-and 
-<span style="font-family: Times;">*c*</span> 
-containing information about Gaussian width and orientation:
+[*offset*](){: .math_var } the Gaussian offset, 
+[*I*<sub>0</sub>](){: .math_var } the Gaussian amplitude, 
+[*x*<sub>0</sub>](){: .math_var } and 
+[*y*<sub>0</sub>](){: .math_var } the x- and y- spot coordinates, and with coefficient 
+[*a*,](){: .math_var } 
+[*b*](){: .math_var } and 
+[*c*](){: .math_var } containing information about Gaussian width and orientation:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
-<p style="font-family: Times; border-radius: 5px;">
-<i>a</i> = cos<sup>2</sup>( <i>&#952;</i> ) / ( 2<i>&#963;</i><sub>x</sub><sup>2</sup> ) + sin<sup>2</sup>( <i>&#952;</i> ) / ( 2<i>&#963;</i><sub>y</sub><sup>2</sup> )<br><br>
-<i>b</i> = - sin( 2<i>&#952;</i> ) / ( 4<i>&#963;</i><sub>x</sub><sup>2</sup> ) + sin( 2<i>&#952;</i> ) / ( 4<i>&#963;</i><sub>y</sub><sup>2</sup> )<br><br>
-<i>c</i> = sin<sup>2</sup>( <i>&#952;</i> ) / (2<i>&#963;</i><sub>x</sub><sup>2</sup>) + cos<sup>2</sup>( <i>&#952;</i> ) / (2<i>&#963;</i><sub>y</sub><sup>2</sup>)
-</p>
+{: .equation }
+*a* = cos<sup>2</sup>( *&#952;* ) / ( 2*&#963;*<sub>x</sub><sup>2</sup> ) + sin<sup>2</sup>( *&#952;* ) / ( 2*&#963;*<sub>y</sub><sup>2</sup> )<br><br>
+*b* = - sin( 2*&#952;* ) / ( 4*&#963;*<sub>x</sub><sup>2</sup> ) + sin( 2*&#952;* ) / ( 4*&#963;*<sub>y</sub><sup>2</sup> )<br><br>
+*c* = sin<sup>2</sup>( *&#952;* ) / (2*&#963;*<sub>x</sub><sup>2</sup>) + cos<sup>2</sup>( *&#952;* ) / (2*&#963;*<sub>y</sub><sup>2</sup>)
 
 with 
-<span style="font-family: Times;">*&#963;*<sub>x</sub></span> 
-and 
-<span style="font-family: Times;">*&#963;*<sub>y</sub></span> 
-the Gaussian standard deviations in the x- and y- direction, and 
-<span style="font-family: Times;">*&#952;*</span> 
-the Gaussian orientation angle.
+[*&#963;*<sub>x</sub>](){: .math_var } and 
+[*&#963;*<sub>y</sub>](){: .math_var } the Gaussian standard deviations in the x- and y- direction, and 
+[*&#952;*](){: .math_var } the Gaussian orientation angle.
 
 
 ### Exclusion rules
@@ -156,10 +143,7 @@ The houghpeaks method uses the same principle and parameters as
 ### Schmied2012
 {: .no_toc }
 
-It is an algorithm originally designed for super-resolution microscopy and published in the scientific article: 
-
-J.J. Schmied, A. Gietl, P. Holzmeister, C. Forthmann, C. Steinhauer, T. Dammeyer, P. Tinnefeld, *Fluorescence and super-resolution standards based on DNA origami*, *Nature Methods* **2012**, DOI: 
-[10.1038/nmeth.2254](https://doi.org/10.1038/nmeth.2254).
+It is an algorithm originally designed for super-resolution microscopy and published in the literature<sup>[1](#references)</sup>. 
 
 It identifies bright spots considering:
 * a minimum ratio spot intensity over background set in **(d)** 
@@ -182,16 +166,20 @@ If the error persists, please inform us via the
 ### Twotone
 {: .no_toc }
 
-It is an algorithm originally designed to localize single molecules in TIRF-FRET videos and is used in the software Twotone:
-
-A.N. Kapanidis, N.K. Lee, T.A. Laurence, S. Doose, E.Margeat, S. Weiss, *Defining the Limits of Single-Molecule FRET Resolution in TIRF Microscopy*, *Proc. Nat. Acad. Sci.* **2004**, DOI: 
-[10.1016/j.bpj.2010.09.005](https://doi.org/10.1016/j.bpj.2010.09.005)
+It is an algorithm originally designed to localize single molecules in TIRF-FRET videos and is used in the software Twotone published in the literature<sup>[2](#references)</sup>.
 
 It processes as described below:
 1. applies the Twotone image filter to the average image or video frame with a kernel size set in **(d)**; see 
    [Filters](panel-edit-video.html#filters) for more information
 1. searches in the filtered image for pixels brighter than the intensity threshold set in **(g)**
 1. selects pixels that are local maxima in the 3-by-3 pixel area around them.
+
+
+### References
+{: .no_toc }
+
+1. J.J. Schmied, A. Gietl, P. Holzmeister, C. Forthmann, C. Steinhauer, T. Dammeyer, P. Tinnefeld, *Fluorescence and super-resolution standards based on DNA origami*, *Nature Methods* **2012**, DOI: [10.1038/nmeth.2254](https://doi.org/10.1038/nmeth.2254).
+1. A.N. Kapanidis, N.K. Lee, T.A. Laurence, S. Doose, E.Margeat, S. Weiss, *Defining the Limits of Single-Molecule FRET Resolution in TIRF Microscopy*, *Proc. Nat. Acad. Sci.* **2004**, DOI: [10.1016/j.bpj.2010.09.005](https://doi.org/10.1016/j.bpj.2010.09.005)
 
 ---
 
