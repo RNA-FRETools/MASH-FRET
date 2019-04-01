@@ -6,11 +6,13 @@ function str = buildFretExpr(D,A,K)
 % I_kem_Dex collected in each of the K emitter-specific detection channels 
 % upon D-specific illumination, and in function of other apparent FRET
 % values.
+% Emitter indexes are ordered according to their detection range: 1 for the
+% most blue-shifted and K for the most red-shifted.
 %
-% "D": donor emitter index in the FRET network (1: most blue-shifted 
-%      emitter, K: most red-shited)
-% "A": acceptor emitter indes in the FRET network
-% "K": total number of emitters in the FRET network
+% "D":   donor emitter index in the FRET network 
+% "A":   acceptor emitter index in the FRET network
+% "K":   total number of emitters in the FRET network
+% "str": expression of E_DA used for FRET calculation in MASH
 
 % created by MH, 1.4.2019
 
