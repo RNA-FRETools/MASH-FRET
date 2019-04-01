@@ -16,10 +16,9 @@ It is used to sort single molecules into sub-groups by giving them a label and t
 
 <a href="../../assets/images/gui/TP-panel-sample-tm.png"><img src="../../assets/images/gui/TP-panel-sample-tm.png"/></a>
 
-Individual single molecules can be labelled and included or excluded in panel 
+Individual single molecules can be labelled and selected/unselected in panel 
 [Overview](#overview).
-
-The effect on overall sample data can be visualized in panel 
+The effect on overall sample histograms and concatenated time traces can be visualized in panel 
 [Overall plot](#overall-plot).
 
 ## Window components
@@ -30,14 +29,15 @@ The effect on overall sample data can be visualized in panel
 
 ---
 
-## Overview
-
-<a href="../../assets/images/gui/TP-panel-sample-tm-overview.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview.png"/></a>
-
----
-
 ## Overall plot
 
 <a href="../../assets/images/gui/TP-panel-sample-tm-overall.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overall.png"/></a>
+
+
+---
+
+## Overview
+
+<a href="../../assets/images/gui/TP-panel-sample-tm-overview.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview.png"/></a>
 
 

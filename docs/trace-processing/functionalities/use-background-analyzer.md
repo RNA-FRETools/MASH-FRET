@@ -10,7 +10,7 @@ nav_order: 4
 {: .no_toc }
 
 The background analyzer allows to screen parameter settings for background estimation and is accessed by pressing 
-![Opt.](../../assets/images/gui/VP-but-optp.png "Map") in the 
+![Opt.](../../assets/images/gui/TP-but-optp.png "Opt.") in the 
 [Background correction](../panels/panel-background-correction.html) panel of module Trace processing.
 It is used to evaluate the performances of background estimation methods on simulated data.
 

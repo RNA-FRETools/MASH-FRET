@@ -18,6 +18,6 @@ The interface can be divided into several subunits that respectively allow to:
 
 <a href="../assets/images/gui/interface-trace-processing.png"><img src="../assets/images/gui/interface-trace-processing.png"/></a>
 
-Learn about individual components of the interface in the  
+Learn about individual components of the interface in the 
 [Panels](panels.html) section.
 

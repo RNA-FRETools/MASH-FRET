@@ -9,7 +9,7 @@ nav_order: 9
 # Find states
 {: .no_toc }
 
-<a href="../../assets/images/gui/TP-panel-findstates.png"><img src="../../assets/images/gui/TP-panel-findstates.png" style="max-width: 700px;"/></a>
+<a href="../../assets/images/gui/TP-panel-findstates.png"><img src="../../assets/images/gui/TP-panel-findstates.png"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
