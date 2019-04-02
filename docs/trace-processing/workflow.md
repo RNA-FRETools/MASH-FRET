@@ -31,7 +31,7 @@ After successful import, channel-specific images and trajectories of the first s
 To import single molecule data from a 
 [.mash file](../output-files/mash-mash-project.html):
 
-{: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
+{: .procedure }
 1. Add the project to the list by pressing 
    ![Add](../assets/images/gui/TP-but-add.png "Add") and selecting the corresponding 
    [.mash file](../output-files/mash-mash-project.html)  
@@ -45,7 +45,7 @@ To import single molecule data from a
 
 To import single molecule data from a ASCII files:
 
-{: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
+{: .procedure }
 1. Set the import settings by pressing 
    ![ASCII options ...](../assets/images/gui/TP-but-ascii-options-3p.png "ASCII options ..."); see 
    [Set project import options](functionalities/set-project-import-options.html) for more information  
@@ -76,7 +76,7 @@ In that case, the positions must be recentered.
 
 To recenter single molecule positions:
 
-{: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
+{: .procedure }
 1. Select the molecule index in the 
    [Molecule list](panels/panel-sample.html#molecule-list).  
      
@@ -107,31 +107,22 @@ The background signal is usually spatially distributed over the single molecule 
 MASH offers a set of local background estimators that can be used for such purpose.
 
 The intensity 
-<span style="font-family: Times;">*I*<sub>*em*,*ex*</sub>(*n*,*t*)</span> 
- of molecule 
-<span style="font-family: Times;">*n*</span> 
-detected in emission channel 
-<span style="font-family: Times;">*em*</span> 
-upon illumination with laser 
-<span style="font-family: Times;">*ex*</span> 
-at time 
-<span style="font-family: Times;">*t*</span> 
-is background-corrected such as:
+[*I*<sub>*em*,*ex*</sub>(*n*,*t*)](){: .math_var } of molecule 
+[*n*](){: .math_var } detected in emission channel 
+[*em*](){: .math_var } upon illumination with laser 
+[*ex*](){: .math_var } at time 
+[*t*](){: .math_var } is background-corrected such as:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
-<p style="font-family: Times; border-radius: 5px;">
-<i>I</i><sub><i>em</i>,<i>ex</i></sub><i><sup>*</sup></i>(<i>n</i>,<i>t</i>) = <i>I</i><sub><i>em</i>,<i>ex</i></sub>(<i>n</i>,<i>t</i>) - <i>bg</i><sub><i>em</i>,<i>ex</i></sub>(<i>n</i>,<i>t</i>)
-</p>
+{: .equation }
+*I*<sup>\*</sup><sub>*em*,*ex*</sub>(*n*,*t*) = *I*<sub>*em*,*ex*</sub>(*n*,*t*) - *bg*<sub>*em*,*ex*</sub>(*n*,*t*)
 
 with 
-<span style="font-family: Times;">*I*<sub>*em*,*ex*</sub><sup>\*</sup>(*n*,*t*)</span> 
-the background-corrected intensity and 
-<span style="font-family: Times;">*bg*<sub>*em*,*ex*</sub>(*n*,*t*)</span> 
-the estimated background intensity.
+[*I*<sup>\*</sup><sub>*em*,*ex*</sub>(*n*,*t*)](){: .math_var } the background-corrected intensity and 
+[*bg*<sub>*em*,*ex*</sub>(*n*,*t*)](){: .math_var } the estimated background intensity.
 
 To correct intensities from background:
 
-{: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
+{: .procedure }
 1. Select the molecule index in the 
    [Molecule list](panels/panel-sample.html#molecule-list).  
      
@@ -155,49 +146,44 @@ Cross-talks are due to instrumental imperfections and include two phenomena:
 * the detection of an emitter fluorescence into unspecific video channels, called the <u>bleedthrough</u>
 * the detection of an emitter fluorescence into specific video channel after unspecific laser illumination, called the <u>direct excitation</u>
 
-The bleedthrough and direct excitation coefficient are determined from control experiments involving single-labelled species.
+The bleedthrough and direct excitation coefficient can be determined from control experiments involving single-labelled species.
+The bleedthrough coefficient 
+[*bt*<sub>*em*,*em*0</sub>](){: .math_var } of an emitter 
+[*em*](){: .math_var } into detection channel of an emitter 
+[*em*<sub>0</sub>](){: .math_var } is calculated from intensities measured from species single-labelled with emitter 
+[*em*](){: .math_var } and after background correction, such as:
+
+{: .equation }
+*bt*<sub>*em*,*em*0</sub> = *I*<sup>\*</sup><sub>*em*0</sub><sup>*ex*</sup> / *I*<sup>\*</sup><sub>*em*</sub><sup>*ex*</sup>
+
+The direct excitation coefficient 
+[*dE*<sub>*em*0</sub><sup>*ex*&#8800;*ex*0</sup>](){: .math_var } for direct excitation of an emitter 
+[*em*<sub>0</sub>](){: .math_var } specifically excited by illumination 
+[*ex*<sub>0</sub>](){: .math_var } upon unspecific illumination 
+[*ex*](){: .math_var } is calculated from intensities measured from species single-labelled with emitter 
+[*em*<sub>0</sub>](){: .math_var } and after background correction, such as:
+
+{: .equation }
+*dE*<sub>*em*0</sub><sup>*ex*&#8800;*ex*0</sup> = *I*<sup>\*</sup><sub>*em*0</sub><sup>*ex*</sup> / *I*<sup>\*</sup><sub>*em*0</sub><sup>*ex*0</sup>
 
 The background-corrected intensity 
-<span style="font-family: Times;">*I*<sub>*em*,*ex*</sub>\*(*n*,*t*)</span> 
- of molecule 
-<span style="font-family: Times;">*n*</span> 
-detected in emission channel 
-<span style="font-family: Times;">*em*</span> 
-upon illumination with laser 
-<span style="font-family: Times;">*ex*</span> 
-at time 
-<span style="font-family: Times;">*t*</span> 
-is corrected from cross-talks such as:
+[*I*<sup>\*</sup><sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*)](){: .math_var } of molecule 
+[*n*](){: .math_var } detected in emission channel 
+[*em*<sub>0</sub>](){: .math_var } upon illumination with laser 
+[*ex*](){: .math_var } at time 
+[*t*](){: .math_var } is corrected from cross-talks such as:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3}
-<p style="font-family: Times; border-radius: 5px;">
-<i>I</i><sub><i>em</i>,<i>ex</i></sub><i><sup>**</sup></i>(<i>n</i>,<i>t</i>) = <i>I</i><sub><i>em</i>,<i>ex</i></sub><sup>*</sup>(<i>n</i>,<i>t</i>) - &#931;<sub>em2&#8800;em</sub>[ <i>bt</i><sub><i>em2</i>,<i>em</i></sub>(<i>n</i>) &#215; <i>I</i><sub><i>em2</i>,<i>ex</i></sub><sup>*</sup>(<i>n</i>,<i>t</i>) )]<br><br>
-<i>I</i><sub><i>em</i>,<i>ex</i></sub><i><sup>***</sup></i>(<i>n</i>,<i>t</i>) = <i>I</i><sub><i>em</i>,<i>ex</i></sub><sup>**</sup>(<i>n</i>,<i>t</i>) - <i>dE</i><sub><i>em</i>,<i>ex</i></sub>(<i>n</i>) &#215; <i>I</i><sub><i>em</i>,<i>ex0</i></sub><sup>**</sup>(<i>n</i>,<i>t</i>) <br>
-</p>
+{: .equation }
+*I*<sup>\*\*</sup><sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*) = *I*<sup>\*</sup><sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*) - &#931;<sub>*em*&#8800;*em*0</sub>[ *bt*<sub>*em*,*em*0</sub>(*n*) &#215; *I*<sup>\*</sup><sub>*em*</sub><sup>*ex*</sup>(*n*,*t*) )]<br><br>
+*I*<sup>\*\*\*</sup><sub>*em*0</sub><sup>*ex*&#8800;*ex*0</sup>(*n*,*t*) = *I*<sup>\*\*</sup><sub>*em*0</sub><sup>*ex*&#8800;*ex*0</sup>(*n*,*t*) - *dE*<sub>*em*0</sub><sup>*ex*&#8800;*ex*0</sup>(*n*) &#215; *I*<sup>\*\*</sup><sub>*em*0</sub><sup>*ex*0</sup>(*n*,*t*)
 
 with 
-<span style="font-family: Times;">*I*<sub>*em*,*ex*</sub><sup>\*\*\*</sup>(*n*,*t*)</span> 
-the intensity corrected from cross-talks, 
-<span style="font-family: Times;">*bt*<sub>*em2*,*em*</sub>(*n*)</span> 
-the bleedthrough coefficient of emitter 
-<span style="font-family: Times;">*em*<sub>2</sub></span> 
-into detection channel of emitter 
-<span style="font-family: Times;">*em*</span>, 
-<span style="font-family: Times;">*dE*<sub>*em*,*ex*</sub>(*n*)</span> 
-the coefficient for direct excitation of emitter 
-<span style="font-family: Times;">*em*</span> 
-upon unspecific illumination 
-<span style="font-family: Times;">*ex*</span> 
-and 
-<span style="font-family: Times;">*I*<sub>*em*,*ex0*</sub><sup>\*\*</sup>(*n*,*t*)</span> 
-the bleedthrough-corrected intensity of emitter 
-<span style="font-family: Times;">*em*</span> 
-upon specific illumination 
-<span style="font-family: Times;">*ex*<sub>0</sub></span>.
+[*I*<sup>\*\*</sup><sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*)](){: .math_var } and 
+[*I*<sup>\*\*\*</sup><sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*)](){: .math_var }, the intensities corrected from bleedthrough-only and both cross-talks respectively.
 
 To correct intensities from cross-talks:
 
-{: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-3}
+{: .procedure }
 1. Select the molecule index in the 
    [Molecule list](panels/panel-sample.html#molecule-list).  
      
@@ -214,9 +200,54 @@ To correct intensities from cross-talks:
 
 ## Correct FRET values
 
-Differences in detection efficiency and 
+To recover absolute distances between a FRET pair and from apparent FRET values, it is necessary, but not sufficient, to have the donor and acceptor intensities on the same scale.
+For this, differences in detection efficiencies and quantum yields between the donor 
+[*D*](){: .math_var } and the acceptor 
+[*A*](){: .math_var } of a FRET pair must be corrected.
+These differences are accounted for in the FRET pair-specific
+[*&#947;*<sub>*D*,*A*</sub>](){: .math_var } factor such as:
+
+{: .equation }
+*&#947;*<sub>*D*,*A*</sub> = *&#951;*<sub>*A*</sub>*&#934;*<sub>*A*</sub> / *&#951;*<sub>*D*</sub>*&#934;*<sub>*D*</sub>
+
+with 
+[*&#951;*<sub>A</sub>](){: .math_var } and 
+[*&#951;*<sub>D</sub>](){: .math_var }, the respective photon detection efficiency in acceptor and donor emission channels, and 
+[*&#934;*<sub>A</sub>](){: .math_var } and 
+[*&#934;*<sub>D</sub>](){: .math_var }, the respective acceptor and donor quantum yields.
+
+Apparent FRET values 
+[*E*<sup>\*</sup><sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } from a donor emitter 
+[*D*](){: .math_var } to an acceptor emitter 
+[*A*](){: .math_var } are calculated according to 
+[FRET calculation](../video-processing/functionalities/set-project-options.html#fret-calculations) and are 
+[*&#947;*](){: .math_var }-corrected to 
+[*E*<sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } values such as:
+
+{: .equation }
+*E*<sub>*D*,*A*</sub>(*n*,*t*) = *E*<sup>\*</sup><sub>*D*,*A*</sub>(*n*,*t*) / [ *&#947;*<sub>*D*,*A*</sub>(*n*) - *E*<sup>\*</sup><sub>*D*,*A*</sub>(*n*,*t*)  &#215;  ( *&#947;*<sub>*D*,*A*</sub>(*n*) - 1 ) ]
+
+To correct apparent FRET-time traces with 
+[*&#947;*](){: .math_var } factors:
+
+{: .procedure }
+1. Select the molecule index in the 
+   [Molecule list](panels/panel-sample.html#molecule-list).  
+     
+1. For each donor-acceptor FRET pair, set parameters 
+   [Gamma factor settings](panels/panel-factor-corrections.html#gamma-factor-settings)  
+     
+1. If desired, apply the same parameter settings to all molecules by pressing 
+   ![all](../../assets/images/gui/TP-but-all.png "all")   
+     
+1. Update data correction and display for current molecule only or for all molecules by pressing 
+   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE") or 
+   ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL") respectively.
+ 
 
 ## Sort trajectories with Trace manager
+
+
 
 ## Correct for photobleaching
 
