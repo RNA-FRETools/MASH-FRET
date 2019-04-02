@@ -934,7 +934,7 @@ function pushbutton_update_Callback(obj, evd, h_fig)
     % RB 2018-01-04: adapted for FRET-S-Histogram, hist2 is rather slow
     % RB 2018-01-05: hist2 replaced by hist2D
     % loading bar parameters-----------------------------------------------
-    err = loading_bar('init', h_fig , (nChan*nExc+nFRET+nS+nFRET), ...
+    err = loading_bar('init', h_fig , (nChan*nExc+nFRET+nS+nFRET*nS), ...
         'Histogram data ...');
     if err
         return;
@@ -946,7 +946,14 @@ function pushbutton_update_Callback(obj, evd, h_fig)
     
     % RB 2018-01-04: adapted for FRET-S-Histogram
     ES = []; % local array
-    for ind = 1:(size(dat1.trace,2)+nS) % counts for nChan*nExc Intensity channels, nFRET channles, nS channels and nFRET ES histograms
+    % MH 2019-03-27: collect ES indexes
+    ind_es = [];
+    for fret = 1:nFRET
+        for s = 1:nS
+            ind_es = cat(1,ind_es,[fret,s]);
+        end
+    end
+    for ind = 1:(size(dat1.trace,2)+nFRET*nS) % counts for nChan*nExc Intensity channels, nFRET channles, nS channels and nFRET ES histograms
         dat1.niv(ind) = def_niv;
         if ind <= nChan*nExc % intensity histogram 1D 
             dat1.lim{ind} = [min(dat1.trace{ind}) max(dat1.trace{ind})];
@@ -964,7 +971,9 @@ function pushbutton_update_Callback(obj, evd, h_fig)
             %biny = (dat1.lim{ind}(1,2) - dat1.lim{ind}(1,1)) / dat1.niv(ind);
             %ivx = (dat1.lim{ind}(2,1) - binx):binx:(dat1.lim{ind}(2,2) + binx);
             %ivy = (dat1.lim{ind}(1,1) - biny):biny:(dat1.lim{ind}(1,2) + biny);
-            ES = [dat1.trace{ind-nFRET-nS},dat1.trace{ind-nS}]; % build [N-by-2] or ' ... '[2-by-N] data matrix.']
+            ind_fret = ind_es(ind-nChan*nExc-nFRET-nS,1) + nChan*nExc;
+            ind_s = ind_es(ind-nChan*nExc-nFRET-nS,2) + nChan*nExc + nFRET;
+            ES = [dat1.trace{ind_fret},dat1.trace{ind_s}]; % build [N-by-2] or ' ... '[2-by-N] data matrix.']
             %[dat2.hist{ind},o,o,dat2.iv{ind}] = hist2(ES, [ivx;ivy]); % hist2 by MCASH rather slow
             binEdges_minmaxN_xy = [dat1.lim{ind}(1,1) dat1.lim{ind}(1,2) dat1.niv(ind); dat1.lim{ind}(2,1) dat1.lim{ind}(2,2) dat1.niv(ind)];
             [dat2.hist{ind},dat2.iv{ind}(1,:),dat2.iv{ind}(2,:)] = hist2D(ES, binEdges_minmaxN_xy); % hist2D by tudima at zahoo dot com, inlcuded in \traces\processing\management
@@ -1059,30 +1068,36 @@ function pushbutton_update_Callback(obj, evd, h_fig)
     end
     % String for Stoichiometry-FRET Channels in popup menu
     % RB 2017-12-15: str_plot including FRET-S-histograms in popupmenu (only corresponding SToichiometry FRET values e.g. FRET:Cy3->Cy5 and S:Cy3->Cy5 not FRET:Cy3->Cy5 and S:Cy3->Cy7 etc.)   )
-    for n = 1:nS
-        clr_bg_s = sprintf('rgb(%i,%i,%i)', ...
-            round(clr{3}(n,1:3)*255));
-        clr_bg_e = sprintf('rgb(%i,%i,%i)', ...
-            round(clr{2}(n,1:3)*255));
-        clr_fbt_s = sprintf('rgb(%i,%i,%i)', ...
-            [255 255 255]*sum(double( ...
-            clr{3}(n,1:3) <= 0.5)));
-        clr_fbt_e = sprintf('rgb(%i,%i,%i)', ...
-            [255 255 255]*sum(double( ...
-            clr{2}(n,1:3) <= 0.5)));
-        str_plot =  [str_plot ['<html><span style= "background-color: '...
-            clr_bg_e ';color: ' clr_fbt_e ';">FRET ' labels{FRET(n,1)} ...
-            '>' labels{FRET(n,2)} '</span>-<span style= "background-color: '...
-            clr_bg_s ';color: ' clr_fbt_s ';">S ' labels{S(n)} ...
-            '</span></html>']];
-        % no dat1.ylabel{nChan*nExc+nFRET+nS+n} = 'FRET or S'; % RB 2018-01-04
-        dat2.ylabel{nChan*nExc+nFRET+nS+n} = 'S'; % RB 2018-01-04: change index as str_plot and str_plot2 are different
-        dat2.xlabel{nChan*nExc+nFRET+nS+n} = 'E'; % RB 2018-01-04: change index as str_plot and str_plot2 are different
+    n = 0;
+    for fret = 1:nFRET
+        for s = 1:nS
+            
+            n = n + 1;
+            
+            clr_bg_s = sprintf('rgb(%i,%i,%i)', ...
+                round(clr{3}(s,1:3)*255));
+            clr_bg_e = sprintf('rgb(%i,%i,%i)', ...
+                round(clr{2}(fret,1:3)*255));
+            clr_fbt_s = sprintf('rgb(%i,%i,%i)', ...
+                [255 255 255]*sum(double( ...
+                clr{3}(s,1:3) <= 0.5)));
+            clr_fbt_e = sprintf('rgb(%i,%i,%i)', ...
+                [255 255 255]*sum(double( ...
+                clr{2}(fret,1:3) <= 0.5)));
+            str_plot =  [str_plot ['<html><span style= "background-color: '...
+                clr_bg_e ';color: ' clr_fbt_e ';">FRET ' labels{FRET(fret,1)} ...
+                '>' labels{FRET(fret,2)} '</span>-<span style= "background-color: '...
+                clr_bg_s ';color: ' clr_fbt_s ';">S ' labels{S(s)} ...
+                '</span></html>']];
+            
+            % no dat1.ylabel{nChan*nExc+nFRET+nS+n} = 'FRET or S'; % RB 2018-01-04
+            dat2.ylabel{nChan*nExc+nFRET+nS+n} = 'S'; % RB 2018-01-04: change index as str_plot and str_plot2 are different
+            dat2.xlabel{nChan*nExc+nFRET+nS+n} = 'E'; % RB 2018-01-04: change index as str_plot and str_plot2 are different
+        end
     end
    
     % RB 2018-01-03: new variable to expand popupmenu entries
-    str_plot2 = {}; % string for popup menu
-    str_plot2 = [str_plot(1:(nChan*nExc+nFRET+nS)) [str_plot((size(str_plot,2)-nFRET+1):size(str_plot,2))]];
+    str_plot2 = [str_plot(1:(nChan*nExc+nFRET+nS)) str_plot((size(str_plot,2)-nFRET*nS+1):size(str_plot,2))];
         
     % RB 2017-12-15: str_plot including FRET-S-histograms in popupmenu of axes 2 
     set(h.tm.popupmenu_axes1, 'String', str_plot(1:(size(str_plot,2)-nFRET*nS)));

@@ -45,10 +45,6 @@ if ~isCrossCorr
             end
         end
     end
-    
-    % calculate gamma and correct FRET trajectories
-    
-    %
 
     p.proj{proj}.intensities_crossCorr(:,((mol-1)*nChan+1):mol*nChan,:)= ...
         I_corr;

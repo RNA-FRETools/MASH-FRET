@@ -1,48 +1,40 @@
 % calculate the cutoff when the acceptor fluorophores bleaches
 % adapted from calcCutoff.m
 % FS, last updated on 12.1.18
+% MH, last update on 27.3.2019 >> i've updated the function to be usable in
+% "gammaOpt.m" without messing up with molecule processing parameters 
+% p.proj{proj}.prm{mol}. Processing parameters are now set only in the 
+% combined function "gammaCorr.m" which is called by "updateTraces.m" (and
+% thus "updateFields.m")
 
-function p = calcCutoffGamma(mol, p)
+function cutOff = calcCutoffGamma(prm, trace, nExc)
 
-proj = p.curr_proj;
-curr_mol = p.proj{proj}.curr{mol};
-FRET = p.proj{proj}.FRET;
-nExc = p.proj{proj}.nb_excitations;
-nChan = p.proj{proj}.nb_channel;
-nFRET = size(p.proj{proj}.FRET,1);
+thresh = prm(1);
+extra = prm(2);
+minCut = prm(3);
+start = prm(4);
+lastData = sum(double(~isnan(trace)));
+start = ceil(start/nExc);
+if start == 0
+    start = 1;
+end
 
-I_den = p.proj{proj}.intensities_denoise(:, ...
-    ((mol-1)*nChan+1):mol*nChan,:);
-
-lastData = sum(double(~isnan(I_den(:,1,1))));
-
-for i = 1:nFRET
-    chan = FRET(i,2); % the acceptor channel
-    start = ceil(curr_mol{5}{5}(i,5)/nExc);
-    if start == 0
-        start = 1;
-    end
-    ex = FRET(i,1);
-    trace = I_den(:,chan,ex);
-    nbFrames = numel(trace);
-    trace = trace(start:nbFrames,:);
-    frames = (1:nbFrames)';
-    thresh = curr_mol{5}{5}(i,2);
-    extra = curr_mol{5}{5}(i,3);
-    extra = ceil(extra/nExc);
-    minCut = ceil(curr_mol{5}{5}(i,4)/nExc);
-    cutOff = find(trace < thresh) + start - 1;
-    if ~isempty(cutOff)
-        cutOff2 = frames(cutOff) - extra;
-        [r,~,~] = find(cutOff2 > minCut);
-        if ~isempty(r) &&  cutOff2(r(1),1)<lastData
-            cutOff = cutOff2(r(1),1);
-        else
-            cutOff = lastData;
-        end
+nbFrames = numel(trace);
+trace = trace(start:nbFrames,:);
+frames = (1:nbFrames)';
+extra = ceil(extra/nExc);
+minCut = ceil(minCut/nExc);
+cutOff = find(trace < thresh) + start - 1;
+if ~isempty(cutOff)
+    cutOff2 = frames(cutOff) - extra;
+    [r,~,~] = find(cutOff2 > minCut);
+    if ~isempty(r) &&  cutOff2(r(1),1)<lastData
+        cutOff = cutOff2(r(1),1);
     else
         cutOff = lastData;
     end
-    p.proj{proj}.curr{mol}{5}{5}(i,6) = cutOff*nExc;
+else
+    cutOff = lastData;
 end
+
 

@@ -20,13 +20,11 @@ if h.param.movPr.nChan > 1 && h.param.movPr.nChan <= 3
             case 'cw'
                 p = h.param.movPr.trsf_refImp_cw;
         end
-        coord_ref = orgCoordCol(fDat, mode, p, h.param.movPr.nChan, res_x);
+        coord_ref = orgCoordCol(fDat, mode, p, h.param.movPr.nChan, res_x, ...
+            h.figure_MASH);
         
         if isempty(coord_ref) || ...
                 size(coord_ref, 2) ~= 2*h.param.movPr.nChan
-            updateActPan(['Unable to import reference coordinates.'...
-                '\nPlease modify the import options.'], ...
-                h.figure_MASH, 'error');
             return;
         end
 

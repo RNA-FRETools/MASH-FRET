@@ -4,10 +4,9 @@ if h.param.movPr.nChan > 1 && h.param.movPr.nChan <= 3
     if isfield(h.param.movPr, 'trsf_coordRef') && ...
             ~isempty(h.param.movPr.trsf_coordRef)
         if tform_type > 1
-            tr = createTrafo(tform_type, h.param.movPr.trsf_coordRef);
+            tr = createTrafo(tform_type, h.param.movPr.trsf_coordRef,...
+                h.figure_MASH);
             if isempty(tr)
-                updateActPan('Unable to calculate transformations.', ...
-                    h.figure_MASH, 'error');
                 return;
             end
 

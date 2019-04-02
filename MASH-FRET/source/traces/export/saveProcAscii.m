@@ -867,7 +867,6 @@ try
 catch err
     updateActPan(['An error occurred during processing of molecule n:°' ...
         num2str(m) ':\n' err.message], h_fig, 'error');
-    disp(err.message);
     for i = 1:size(err.stack,1)
         disp(['function: ' err.stack(i,1).name ', line: ' ...
             num2str(err.stack(i,1).line)]);

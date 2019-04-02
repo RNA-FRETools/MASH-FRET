@@ -202,7 +202,8 @@ if ~isempty(clust_res{1})
     end
     
 else
-    setProp(get(h.uipanel_TDP_transRates, 'Children'), 'Enable', 'off');
+    setProp(get(h.uipanel_TA_stateTransitionRates, 'Children'), 'Enable', ...
+        'off');
     set(h.popupmenu_TDP_expNum, 'Value', 1, 'String', {''});
     cla(h.axes_TDPplot2);
     set(h.axes_TDPplot2, 'Visible', 'off');

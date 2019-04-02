@@ -1,5 +1,5 @@
 function varargout = MASH(varargin)
-% Last Modified by GUIDE v2.5 25-Feb-2019 11:51:29
+% Last Modified by GUIDE v2.5 26-Mar-2019 20:44:27
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -78,9 +78,6 @@ end
 
 % initialise MASH
 initMASH(obj, h, figName);
-
-updateActPan(cat(2,'--- WELCOME -----------------------------------------',...
-    '---------------------'),h.figure_MASH);
 
 
 function varargout = MASH_OutputFcn(obj, evd, h)
@@ -166,6 +163,20 @@ else
     end
     set(obj, 'Checked', 'off');
 end
+
+
+function menu_routine_CreateFcn(obj, evd, h)
+
+h_fig = get(obj,'Parent');
+
+uimenu(obj,'Label','routine 01','Callback', ...
+    {@ttPr_routine,1,h_fig});
+uimenu(obj,'Label','routine 02','Callback', ...
+    {@ttPr_routine,2,h_fig});
+uimenu(obj,'Label','routine 03','Callback', ...
+    {@ttPr_routine,3,h_fig});
+uimenu(obj,'Label','routine 04','Callback', ...
+    {@ttPr_routine,4,h_fig});
 
 
 function menu_overwrite_Callback(obj, evd, h)
@@ -684,66 +695,16 @@ set(obj, 'String', num2str(val));
 
 ind = get(h.popupmenu_noiseType, 'Value');
 
-switch ind
-    case 1 % Poisson, dark current or camera offset value
-        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
-            set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan('Dark counts or offset of the CCD camera must be >= 0', ...
-                'error', h.figure_MASH);
-        else
-            set(obj, 'BackgroundColor', [1 1 1]);
-            h.param.sim.camNoise(ind,1) = val;
-            guidata(h.figure_MASH, h);
-            updateFields(h.figure_MASH, 'sim');
-        end
-
-    case 2 % Gaussian, K
-        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
-            set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan('System gain must be >= 0', ...
-                'error', h.figure_MASH);
-        else
-            set(obj, 'BackgroundColor', [1 1 1]);
-            h.param.sim.camNoise(ind,1) = val;
-            guidata(h.figure_MASH, h);
-            updateFields(h.figure_MASH, 'sim');
-        end
-
-    case 3 % User defined, with dark current or camera offset value
-        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
-            set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan('Dark count of the CCD camera must be >= 0', ...
-                'error', h.figure_MASH);
-        else
-            set(obj, 'BackgroundColor', [1 1 1]);
-            h.param.sim.camNoise(ind,1) = val;
-            guidata(h.figure_MASH, h);
-            updateFields(h.figure_MASH, 'sim');
-        end
-
-    case 4 % None, dark current or camera offset value
-        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
-            set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan('Dark counts of the CCD camera must be >= 0', ...
-                'error', h.figure_MASH);
-        else
-            set(obj, 'BackgroundColor', [1 1 1]);
-            h.param.sim.camNoise(ind,1) = val;
-            guidata(h.figure_MASH, h);
-            updateFields(h.figure_MASH, 'sim');
-        end
-
-    case 5 % Hirsch or PGN-model, g
-      	if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
-            set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan('EM register gain must be >= 0', ...
-                'error', h.figure_MASH);
-        else
-            set(obj, 'BackgroundColor', [1 1 1]);
-            h.param.sim.camNoise(ind,1) = val;
-            guidata(h.figure_MASH, h);
-            updateFields(h.figure_MASH, 'sim');
-        end
+% Dark counts or camera offset
+if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
+    set(obj, 'BackgroundColor', [1 0.75 0.75]);
+    setContPan('Dark counts or camera offset must be >= 0', 'error', ...
+        h.figure_MASH);
+else
+    set(obj, 'BackgroundColor', [1 1 1]);
+    h.param.sim.camNoise(ind,1) = val;
+    guidata(h.figure_MASH, h);
+    updateFields(h.figure_MASH, 'sim');
 end
 
 
@@ -754,23 +715,12 @@ set(obj, 'String', num2str(val));
 ind = get(h.popupmenu_noiseType, 'Value');
 
 switch ind
-    case 1 % Poissonian, total detection efficiency
-        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
-                val >= 0 && val <= 1)
-            set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan(['Total Detection Efficiency must be comprised ' ...
-                'between 0 and 1'], 'error', h.figure_MASH);
-        else
-            set(obj, 'BackgroundColor', [1 1 1]);
-            h.param.sim.camNoise(ind,2) = val;
-            guidata(h.figure_MASH, h);
-            updateFields(h.figure_MASH, 'sim');
-        end
+    case 1 % Poissonian, none
+        
     case 2 % Gaussian, s_d
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan(['The noise standard deviation of the Gaussian' ...
-                ' contribution must be >= 0'], ...
+            setContPan('Read-out noise standard deviation must be >= 0', ...
                 'error', h.figure_MASH);
         else
             set(obj, 'BackgroundColor', [1 1 1]);
@@ -780,10 +730,11 @@ switch ind
         end
 
     case 3 % User defined, A_CIC
-        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
+        if ~(~isempty(val) && numel(val)==1 && ~isnan(val) && val>=0 && ...
+                val<=1)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan('Gaussian/Exponential relative amplitude of CIC must be >= 0', ...
-                'error', h.figure_MASH);
+            setContPan(['Exponential tail contribution must be >= 0 and ',...
+                '<= 1'],'error', h.figure_MASH);
         else
             set(obj, 'BackgroundColor', [1 1 1]);
             h.param.sim.camNoise(ind,2) = val;
@@ -796,7 +747,7 @@ switch ind
     case 5 % Hirsch or PGN-model, s_d, read-out-noise
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan('The read-out-noise must be >= 0', ...
+            setContPan('Read-out-noise standard deviation must be >= 0', ...
                 'error', h.figure_MASH);
         else
             set(obj, 'BackgroundColor', [1 1 1]);
@@ -813,46 +764,16 @@ set(obj, 'String', num2str(val));
 
 ind = get(h.popupmenu_noiseType, 'Value');
 
-switch ind
-    case 1 % Poissonian, none
-
-    case 2 % Gaussian, mu_y.dark
-        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
-            set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan('Dark count or offset of the CCD camera must be >= 0', ...
-                'error', h.figure_MASH);
-        else
-            set(obj, 'BackgroundColor', [1 1 1]);
-            h.param.sim.camNoise(ind,3) = val;
-            guidata(h.figure_MASH, h);
-            updateFields(h.figure_MASH, 'sim');
-        end
-
-    case 3 % User defined, tau_CIC
-        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
-            set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan('CIC Exponential decay constant must be >= 0', ...
-                'error', h.figure_MASH);
-        else
-            set(obj, 'BackgroundColor', [1 1 1]);
-            h.param.sim.camNoise(ind,3) = val;
-            guidata(h.figure_MASH, h);
-            updateFields(h.figure_MASH, 'sim');
-        end
-
-    case 4 % None, none
-
-    case 5 % Hirsch or PGN-model
-        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
-            set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan('Dark count or offset of the CCD camera must be >= 0', ...
-                'error', h.figure_MASH);
-        else
-            set(obj, 'BackgroundColor', [1 1 1]);
-            h.param.sim.camNoise(ind,3) = val;
-            guidata(h.figure_MASH, h);
-            updateFields(h.figure_MASH, 'sim');
-        end
+if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
+        val >= 0 && val <= 1)
+    set(obj, 'BackgroundColor', [1 0.75 0.75]);
+    setContPan(['Total Detection Efficiency must be comprised ' ...
+        'between 0 and 1'], 'error', h.figure_MASH);
+else
+    set(obj, 'BackgroundColor', [1 1 1]);
+    h.param.sim.camNoise(ind,3) = val;
+    guidata(h.figure_MASH, h);
+    updateFields(h.figure_MASH, 'sim');
 end
 
 
@@ -868,9 +789,8 @@ switch ind
     case 2 % Gaussian, s_q
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan(['Noise standard deviaton of the contribution ' ...
-                'due to analog digital conversion must be >= 0'], ...
-                'error', h.figure_MASH);
+            setContPan(['Standard deviaton of analog-to-digital ',...
+                'conversion noise must be >= 0'],'error', h.figure_MASH);
         else
             set(obj, 'BackgroundColor', [1 1 1]);
             h.param.sim.camNoise(ind,4)= val;
@@ -881,8 +801,8 @@ switch ind
     case 3  % User defined, sig
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan('Camera noise width must be >= 0', ...
-                'error', h.figure_MASH);
+            setContPan(['Gaussian camera noise standard deviation width ',...
+                'must be >= 0'],'error', h.figure_MASH);
         else
             set(obj, 'BackgroundColor', [1 1 1]);
             h.param.sim.camNoise(ind,4) = val;
@@ -892,11 +812,11 @@ switch ind
 
     case 4 % None, none
 
-    case 5 % Hirsch or PGN-model
+    case 5 % Hirsch or PGN-model, CIC noise
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan('CIC contribution must be >= 0', ...
-                'error', h.figure_MASH);
+            setContPan('CIC contribution must be >= 0','error', ...
+                h.figure_MASH);
         else
             set(obj, 'BackgroundColor', [1 1 1]);
             h.param.sim.camNoise(ind,4) = val;
@@ -912,35 +832,29 @@ set(obj, 'String', num2str(val));
 
 ind = get(h.popupmenu_noiseType, 'Value');
 
-switch ind
-    case 1 % Poissonian, none
-
-    case 2 % Gaussian, mu_rho.stat (none)
-
-    case 3 % User defined, K
-        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
-            set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan('Overall system gain must be >= 0', ...
-                'error', h.figure_MASH);
-        else
-            set(obj, 'BackgroundColor', [1 1 1]);
-            h.param.sim.camNoise(ind,5) = val;
-            guidata(h.figure_MASH, h);
-            updateFields(h.figure_MASH, 'sim');
-        end
-    case 4 % None, none
-
-    case 5 % Hirsch or PGN-model
-        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val > 0)
-            set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan('Analog-to-Digital factor must be > 0', ...
-                'error', h.figure_MASH);
-        else
-            set(obj, 'BackgroundColor', [1 1 1]);
-            h.param.sim.camNoise(ind,5)= val;
-            guidata(h.figure_MASH, h);
-            updateFields(h.figure_MASH, 'sim');
-        end
+if ind==5 % Hirsch or PGN-model, EM register gain
+    if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
+        set(obj, 'BackgroundColor', [1 0.75 0.75]);
+        setContPan('EM register gain must be >= 0', ...
+            'error', h.figure_MASH);
+    else
+        set(obj, 'BackgroundColor', [1 1 1]);
+        h.param.sim.camNoise(ind,5) = val;
+        guidata(h.figure_MASH, h);
+        updateFields(h.figure_MASH, 'sim');
+    end
+    
+else % overall gain
+    if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
+        set(obj, 'BackgroundColor', [1 0.75 0.75]);
+        setContPan('Overall system gain must be >= 0', ...
+            'error', h.figure_MASH);
+    else
+        set(obj, 'BackgroundColor', [1 1 1]);
+        h.param.sim.camNoise(ind,5) = val;
+        guidata(h.figure_MASH, h);
+        updateFields(h.figure_MASH, 'sim');
+    end
 end
 
 
@@ -953,25 +867,13 @@ ind = get(h.popupmenu_noiseType, 'Value');
 switch ind
     case 1 % Poissonian, none
 
-    case 2 % Gaussian, eta
-        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
-                val >= 0 && val <= 1)
-            set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan(['Total Detection Efficiency must be comprised ' ...
-                'between 0 and 1'], 'error', h.figure_MASH);
-        else
-            set(obj, 'BackgroundColor', [1 1 1]);
-            h.param.sim.camNoise(ind,6) = val;
-            guidata(h.figure_MASH, h);
-            updateFields(h.figure_MASH, 'sim');
-        end
+    case 2 % Gaussian, pixel saturation
 
-    case 3  % User defined, eta
-        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
-                val >= 0 && val <= 1)
+    case 3  % User defined, exponential decay constant
+        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan(['Total Detection Efficiency must be comprised ' ...
-                'between 0 and 1'], 'error', h.figure_MASH);
+            setContPan('Exponential tail decay constant must be >= 0', ...
+                'error', h.figure_MASH);
         else
             set(obj, 'BackgroundColor', [1 1 1]);
             h.param.sim.camNoise(ind,6) = val;
@@ -981,15 +883,14 @@ switch ind
 
     case 4 % None, none
 
-    case 5 % Hirsch or PGN-model, eta
-        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
-                val >= 0 && val <= 1)
+    case 5 % Hirsch or PGN-model, analog-to-digital factor
+        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val > 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            setContPan(['Total Detection Efficiency must be comprised ' ...
-                'between 0 and 1'], 'error', h.figure_MASH);
+            setContPan('Analog-to-Digital factor must be > 0', ...
+                'error', h.figure_MASH);
         else
             set(obj, 'BackgroundColor', [1 1 1]);
-            h.param.sim.camNoise(ind,6) = val;
+            h.param.sim.camNoise(ind,6)= val;
             guidata(h.figure_MASH, h);
             updateFields(h.figure_MASH, 'sim');
         end
@@ -1721,40 +1622,31 @@ updateFields(h.figure_MASH, 'movPr');
 %% Trace processing %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-% Manage projects/traces
-
-
-function menu_routine_CreateFcn(obj, evd, h)
-
-h_fig = get(obj,'Parent');
-
-uimenu(obj,'Label','routine 01','Callback', ...
-    {@ttPr_routine,1,h_fig});
-uimenu(obj,'Label','routine 02','Callback', ...
-    {@ttPr_routine,2,h_fig});
-uimenu(obj,'Label','routine 03','Callback', ...
-    {@ttPr_routine,3,h_fig});
-uimenu(obj,'Label','routine 04','Callback', ...
-    {@ttPr_routine,4,h_fig});
-
+% Manage projects
 
 function listbox_traceSet_Callback(obj, evd, h)
 p = h.param.ttPr;
 if ~isempty(p.proj)
-    slct = get(obj, 'Value');
-    val = slct(end);
-    if val ~= p.curr_proj
+    val = get(obj, 'Value');
+    proj_name = get(obj,'string');
+    if numel(val)==1 && val ~= p.curr_proj
         p.curr_proj = val;
         h.param.ttPr = p;
         guidata(h.figure_MASH, h);
+            
+        str_proj = cat(2,'Project selected: "',proj_name{val},'" (',...
+            p.proj{val}.proj_file,')');
+        setContPan(str_proj,'none',h.figure_MASH);
 
         ud_TTprojPrm(h.figure_MASH);
         ud_trSetTbl(h.figure_MASH);
 
         updateFields(h.figure_MASH, 'ttPr');
-    end
+    end       
 end
 
+
+% Sample management
 
 function listbox_molNb_Callback(obj, evd, h)
 p = h.param.ttPr;
@@ -1865,6 +1757,71 @@ function pushbutton_ttGo_Callback(obj, evd, h)
 updateFields(h.figure_MASH, 'ttPr');
 
 
+function pushbutton_TP_updateAll_Callback(obj, evd, h)
+p = h.param.ttPr;
+if ~isempty(p.proj)
+    h_fig = h.figure_MASH;
+    proj = p.curr_proj;
+    nMol = size(p.proj{proj}.coord_incl,2);
+    
+    setContPan('Process all molecule data ...','process',h_fig);
+    
+    % loading bar parameters-----------------------------------------------
+      err = loading_bar('init',h_fig ,nMol,...
+          'Process all molecule data ...');
+      if err
+          return;
+      end
+      h = guidata(h_fig);
+      h.barData.prev_var = h.barData.curr_var;
+      guidata(h_fig, h);
+    % ---------------------------------------------------------------------
+    
+    try
+        for m = 1:nMol
+            % display action
+            disp(cat(2,'process data of molecule n:°',num2str(m)));
+
+            % process data
+            p = updateTraces(h_fig, 'ttPr', m, p, []);
+
+            % loading bar update-----------------------------------------------
+              err = loading_bar('update',h_fig);
+              if err
+                  h = guidata(h_fig);
+                  h.param.ttPr = p;
+                  guidata(h_fig, h);
+                  return;
+              end
+            % -----------------------------------------------------------------
+
+        end
+        
+    catch err
+        updateActPan(['An error occurred during processing of molecule n:°' ...
+            num2str(m) ':\n' err.message],h_fig,'error');
+        for i = 1:size(err.stack,1)
+            disp(['function: ' err.stack(i,1).name ', line: ' ...
+                num2str(err.stack(i,1).line)]);
+        end
+        h = guidata(h_fig);
+        h.param.ttPr = p;
+        guidata(h_fig, h);
+        return;
+    end
+    
+    % collect processed data
+    h = guidata(h_fig);
+    h.param.ttPr = p;
+    guidata(h_fig, h);
+    
+    loading_bar('close',h_fig);
+    
+    setContPan('Update completed !','success',h_fig);
+    
+end
+
+
 function pushbutton_expTraces_Callback(obj, evd, h)
 openExpTtpr(h.figure_MASH);
 
@@ -1881,7 +1838,7 @@ if isfield(h, 'tm') && h.tm.ud
 end
 
 
-% Sub-images and Background correction
+% Sub-images
 
 function popupmenu_subImg_exc_Callback(obj, evd, h)
 p = h.param.ttPr;
@@ -1932,19 +1889,17 @@ if ~isempty(p.proj) && p.proj{p.curr_proj}.is_coord && ...
 end
 
 
-function popupmenu_trBgCorr_exc_Callback(obj, evd, h)
+function popupmenu_TP_subImg_channel_Callback(obj, evd, h)
 p = h.param.ttPr;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    val = get(obj, 'Value');
-    p.proj{proj}.fix{3}(5) = val;
-    h.param.ttPr = p;
-    guidata(h.figure_MASH, h);
-    ud_ttBg(h.figure_MASH);
+if ~isempty(p.proj) && p.proj{p.curr_proj}.is_coord 
+    ud_subImg(h.figure_MASH);
 end
 
 
-function popupmenu_trBgCorr_chan_Callback(obj, evd, h)
+% Background correction
+
+
+function popupmenu_trBgCorr_data_Callback(obj, evd, h)
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -1961,10 +1916,26 @@ p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
-    exc = p.proj{proj}.fix{3}(5);
-    chan = p.proj{proj}.fix{3}(6);
+    nExc = p.proj{proj}.nb_excitations;
+    nChan = p.proj{proj}.nb_channel;
+    
+    % get channel and laser corresponding to selected data
+    selected_chan = p.proj{proj}.fix{3}(6);
+    chan = 0;
+    for l = 1:nExc
+        for c = 1:nChan
+            chan = chan+1;
+            if chan==selected_chan
+                break;
+            end
+        end
+        if chan==selected_chan
+            break;
+        end
+    end
+    
     val = get(obj, 'Value');
-    p.proj{proj}.curr{mol}{3}{2}(exc,chan) = val;
+    p.proj{proj}.curr{mol}{3}{2}(l,c) = val;
     h.param.ttPr = p;
     guidata(h.figure_MASH, h);
     ud_ttBg(h.figure_MASH);
@@ -1976,9 +1947,25 @@ p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
-    exc = p.proj{proj}.fix{3}(5);
-    chan = p.proj{proj}.fix{3}(6);
-    method = p.proj{proj}.curr{mol}{3}{2}(exc,chan);
+    nExc = p.proj{proj}.nb_excitations;
+    nChan = p.proj{proj}.nb_channel;
+    
+    % get channel and laser corresponding to selected data
+    selected_chan = p.proj{proj}.fix{3}(6);
+    chan = 0;
+    for l = 1:nExc
+        for c = 1:nChan
+            chan = chan+1;
+            if chan==selected_chan
+                break;
+            end
+        end
+        if chan==selected_chan
+            break;
+        end
+    end
+    
+    method = p.proj{proj}.curr{mol}{3}{2}(l,c);
     if sum(double(method~=[1 2]))
         val = str2num(get(obj, 'String'));
         if method==4 % number of binning interval
@@ -2025,7 +2012,7 @@ if ~isempty(p.proj)
             end
         end
         set(obj, 'BackgroundColor', [1 1 1]);
-        p.proj{proj}.curr{mol}{3}{3}{exc,chan}(method,1) = val;
+        p.proj{proj}.curr{mol}{3}{3}{l,c}(method,1) = val;
         h.param.ttPr = p;
         guidata(h.figure_MASH, h);
         ud_ttBg(h.figure_MASH);
@@ -2049,11 +2036,29 @@ if ~isempty(p.proj)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
             updateActPan(['Subimage dimensions must be > 0 and <= ' ...
                 num2str(minVal)], h.figure_MASH , 'error');
+            
         else
             set(obj, 'BackgroundColor', [1 1 1]);
-            l = p.proj{proj}.fix{3}(5);
-            c = p.proj{proj}.fix{3}(6);
+            
             mol = p.curr_mol(proj);
+            nExc = p.proj{proj}.nb_excitations;
+            nChan = p.proj{proj}.nb_channel;
+            
+            % get channel and laser corresponding to selected data
+            selected_chan = p.proj{proj}.fix{3}(6);
+            chan = 0;
+            for l = 1:nExc
+                for c = 1:nChan
+                    chan = chan+1;
+                    if chan==selected_chan
+                        break;
+                    end
+                end
+                if chan==selected_chan
+                    break;
+                end
+            end
+
             method = p.proj{proj}.curr{mol}{3}{2}(l,c);
             p.proj{proj}.curr{mol}{3}{3}{l,c}(method,2) = val;
             h.param.ttPr = p;
@@ -2069,9 +2074,25 @@ p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
-    exc = p.proj{proj}.fix{3}(5);
-    chan = p.proj{proj}.fix{3}(6);
-    method = p.proj{proj}.curr{mol}{3}{2}(exc,chan);
+    nExc = p.proj{proj}.nb_excitations;
+    nChan = p.proj{proj}.nb_channel;
+    
+    % get channel and laser corresponding to selected data
+    selected_chan = p.proj{proj}.fix{3}(6);
+    chan = 0;
+    for l = 1:nExc
+        for c = 1:nChan
+            chan = chan+1;
+            if chan==selected_chan
+                break;
+            end
+            if chan==selected_chan
+                break;
+            end
+        end
+    end
+    
+    method = p.proj{proj}.curr{mol}{3}{2}(l,c);
     if method == 1
         val = str2num(get(obj, 'String'));
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val))
@@ -2090,7 +2111,7 @@ if ~isempty(p.proj)
                 nPix = p.proj{proj}.pix_intgr(2);
                 val = val*nPix;
             end
-            p.proj{proj}.curr{mol}{3}{3}{exc,chan}(method,3) = val;
+            p.proj{proj}.curr{mol}{3}{3}{l,c}(method,3) = val;
             h.param.ttPr = p;
             guidata(h.figure_MASH, h);
             ud_ttBg(h.figure_MASH);
@@ -2104,15 +2125,30 @@ p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
-    exc = p.proj{proj}.fix{3}(5);
-    chan = p.proj{proj}.fix{3}(6);
+    nExc = p.proj{proj}.nb_excitations;
+    nChan = p.proj{proj}.nb_channel;
+    
+    % get channel and laser corresponding to selected data
+    selected_chan = p.proj{proj}.fix{3}(6);
+    chan = 0;
+    for l = 1:nExc
+        for c = 1:nChan
+            chan = chan+1;
+            if chan==selected_chan
+                break;
+            end
+        end
+        if chan==selected_chan
+            break;
+        end
+    end
+    
     val = get(obj, 'Value');
-    p.proj{proj}.curr{mol}{3}{1}(exc,chan)= val;
+    p.proj{proj}.curr{mol}{3}{1}(l,c)= val;
     h.param.ttPr = p;
     guidata(h.figure_MASH, h);
     updateFields(h.figure_MASH, 'ttPr');
 end
-
 
 function edit_xDark_Callback(obj, evd, h)
 p = h.param.ttPr;
@@ -2120,9 +2156,24 @@ if ~isempty(p.proj)
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
     nChan = p.proj{proj}.nb_channel;
-    exc = p.proj{proj}.fix{3}(5);
-    chan = p.proj{proj}.fix{3}(6);
-    method = p.proj{proj}.curr{mol}{3}{2}(exc,chan);
+    nExc = p.proj{proj}.nb_excitations;
+    
+    % get channel and laser corresponding to selected data
+    selected_chan = p.proj{proj}.fix{3}(6);
+    chan = 0;
+    for l = 1:nExc
+        for c = 1:nChan
+            chan = chan+1;
+            if chan==selected_chan
+                break;
+            end
+        end
+        if chan==selected_chan
+            break;
+        end
+    end
+    
+    method = p.proj{proj}.curr{mol}{3}{2}(l,c);
     if method == 6 % dark trace
         val = str2num(get(obj, 'String'));
         res_x = p.proj{proj}.movie_dim(1);
@@ -2140,7 +2191,7 @@ if ~isempty(p.proj)
                 h.figure_MASH, 'error');
         else
             set(obj, 'BackgroundColor', [1 1 1]);
-            p.proj{proj}.curr{mol}{3}{3}{exc,chan}(method,4) = val;
+            p.proj{proj}.curr{mol}{3}{3}{l,c}(method,4) = val;
             h.param.ttPr = p;
             guidata(h.figure_MASH, h);
             ud_ttBg(h.figure_MASH);
@@ -2155,9 +2206,25 @@ p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
-    exc = p.proj{proj}.fix{3}(5);
-    chan = p.proj{proj}.fix{3}(6);
-    method = p.proj{proj}.curr{mol}{3}{2}(exc,chan);
+    nExc = p.proj{proj}.nb_excitations;
+    nChan = p.proj{proj}.nb_channel;
+    
+    % get channel and laser corresponding to selected data
+    selected_chan = p.proj{proj}.fix{3}(6);
+    chan = 0;
+    for l = 1:nExc
+        for c = 1:nChan
+            chan = chan+1;
+            if chan==selected_chan
+                break;
+            end
+        end
+        if chan==selected_chan
+            break;
+        end
+    end
+    
+    method = p.proj{proj}.curr{mol}{3}{2}(l,c);
     if method == 6 % dark trace
         val = str2num(get(obj, 'String'));
         res_y = p.proj{proj}.movie_dim(2);
@@ -2174,7 +2241,7 @@ if ~isempty(p.proj)
                 h.figure_MASH, 'error');
         else
             set(obj, 'BackgroundColor', [1 1 1]);
-            p.proj{proj}.curr{mol}{3}{3}{exc,chan}(method,5) = val;
+            p.proj{proj}.curr{mol}{3}{3}{l,c}(method,5) = val;
             h.param.ttPr = p;
             guidata(h.figure_MASH, h);
             ud_ttBg(h.figure_MASH);
@@ -2189,12 +2256,28 @@ p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
-    exc = p.proj{proj}.fix{3}(5);
-    chan = p.proj{proj}.fix{3}(6);
-    method = p.proj{proj}.curr{mol}{3}{2}(exc,chan);
+    nExc = p.proj{proj}.nb_excitations;
+    nChan = p.proj{proj}.nb_channel;
+    
+    % get channel and laser corresponding to selected data
+    selected_chan = p.proj{proj}.fix{3}(6);
+    chan = 0;
+    for l = 1:nExc
+        for c = 1:nChan
+            chan = chan+1;
+            if chan==selected_chan
+                break;
+            end
+        end
+        if chan==selected_chan
+            break;
+        end
+    end
+    
+    method = p.proj{proj}.curr{mol}{3}{2}(l,c);
     if method == 6 % dark trace
         val = get(obj, 'Value');
-        p.proj{proj}.curr{mol}{3}{3}{exc,chan}(method,6) = val;
+        p.proj{proj}.curr{mol}{3}{3}{l,c}(method,6) = val;
         h.param.ttPr = p;
         guidata(h.figure_MASH, h);
         ud_ttBg(h.figure_MASH);
@@ -2921,6 +3004,7 @@ end
 function edit_gammaCorr_Callback(obj, evd, h)
 p = h.param.ttPr;
 if ~isempty(p.proj)
+    
     clr = get(obj, 'String');
     if strcmp(clr, 'pink') || strcmp(clr, 'yellow') || ...
             strcmp(clr, 'blue') || strcmp(clr, 'green') || ...
@@ -2929,6 +3013,7 @@ if ~isempty(p.proj)
         ud_cross(h.figure_MASH);
         return;
     end
+    
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
     chan = p.proj{proj}.fix{3}(8);
@@ -2966,29 +3051,48 @@ gammaOpt(h.figure_MASH);
 
 
 
+% MH modified checkbox to popupmenu 26.3.2019
 % FS added 8.1.2018, last modified 11.1.2018
-function checkbox_pbGamma_Callback(obj, evd, h)
+function popupmenu_TP_factors_method_Callback(obj, evd, h)
 p = h.param.ttPr;
 if ~isempty(p.proj)
-    val = get(obj, 'Value');
+    method = get(obj, 'Value');
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
     toFRET = p.proj{proj}.curr{mol}{4}{1}(2);
-    if toFRET == 1  % if DTA applied to bottom traces, deactivate pb gamma calculation
+    
+    if (method==2 && toFRET == 1) % if DTA applied to bottom traces, deactivate pb gamma calculation
         val = 0;
+        msgbox({cat(2,'Photobleaching-based gamma calculation needs donor ',...
+            'intensity-time traces to be discretized') '' cat(2,'To ',...
+            'discretize intensity-time traces, go to panel "Find states" ',...
+            'set "apply to" to "top" or "all"')},...
+            'Photobleaching-based gamma');
+        
+    elseif method==1 % manual
+        val = 0;
+        
+    else % photobleaching-based calculation
+        val = 1;
     end
+    
     p.proj{proj}.curr{mol}{5}{4}(1) = val; % pb based gamma corr checkbox
     p.proj{proj}.curr{mol}{5}{5}(1) = val; % show cutoff checkbox
+    
     h.param.ttPr = p;
     guidata(h.figure_MASH, h);
-    if val == 1 % added by FS, 24.7.2018
-        updateFields(h.figure_MASH, 'ttPr');
-    end
+    ud_cross(h.figure_MASH);
+%     updateFields(h.figure_MASH, 'ttPr');
+    
+%     if val == 1 % added by FS, 24.7.2018
+%         updateFields(h.figure_MASH, 'ttPr');
+%     end
+    
     % get updated handle (updated in updateFields)
     % h = guidata(h_fig) is called at the beginning of the next function (updateFields is the last function),
     % but here the handle is still needed for the next line
-    h = guidata(h.figure_MASH);
-    set(obj, 'Value', h.param.ttPr.proj{proj}.curr{mol}{5}{4}(1)) % updates the pb Gamma checkbox
+%     h = guidata(h.figure_MASH);
+%     set(obj, 'Value', h.param.ttPr.proj{proj}.curr{mol}{5}{4}(1)) % updates the pb Gamma checkbox
 end
 
 
@@ -3016,7 +3120,7 @@ end
 
 % Dwell-time analysis
 
-function popupmenu_DTAmethod_Callback(obj, evd, h)
+function popupmenu_TP_states_method_Callback(obj, evd, h)
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -3029,20 +3133,44 @@ if ~isempty(p.proj)
 end
 
 
-function radiobutton_DTA2bottom_Callback(obj, evd, h)
+function popupmenu_TP_states_applyTo_Callback(obj, evd, h)
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
     val = get(obj, 'Value');
-    p.proj{proj}.curr{mol}{4}{1}(2) = val;
-
-    % added by FS, 5.6.2018
-    % disable photobleaching based gamma factor determination
-    % checkbox and pushbutton are enable again if isDiscrTop is 1 in 'discrTraces.m'
-    set(h.pushbutton_optGamma, 'enable', 'off')
-    p.proj{proj}.curr{mol}{5}{4}(1) = 0; % deactivate the pb based gamma correction checkbox
-    set(h.checkbox_pbGamma, 'enable', 'off', 'Value', 0)
+    
+    switch val
+        
+        case 1 % bottom
+            p.proj{proj}.curr{mol}{4}{1}(2) = 1;
+            
+            % modified by MH, 26.03.2019:
+            % the warning is activated when choosing the
+            % photobleaching-based calculation
+%             % added by FS, 5.6.2018
+%             % disable photobleaching based gamma factor determination
+%             % popupmenu and pushbutton are enable again if isDiscrTop is 1 in 'discrTraces.m'
+%             set(h.pushbutton_optGamma, 'enable', 'off')
+%             p.proj{proj}.curr{mol}{5}{4}(1) = 0; % deactivate the pb based gamma correction checkbox
+%             set(h.popupmenu_TP_factors_method, 'enable', 'off', 'Value', 1)
+    
+        case 2 % top
+            p.proj{proj}.curr{mol}{4}{1}(2) = 0;
+            
+            % modified by MH, 26.03.2019:
+            % the warning is activated when choosing the
+            % photobleaching-based calculation
+%             % added by FS, 5.6.2018
+%             % disable photobleaching based gamma factor determination
+%             % popupmenu and pushbutton are enable again if isDiscrTop is 1 in 'discrTraces.m'
+%             set(h.pushbutton_optGamma, 'enable', 'on')
+%             p.proj{proj}.curr{mol}{5}{4}(1) = 1; % activate the pb based gamma correction checkbox
+%             set(h.popupmenu_TP_factors_method, 'enable', 'on', 'Value', 2)
+    
+        case 3 % all
+            p.proj{proj}.curr{mol}{4}{1}(2) = 2;
+    end
 
     h.param.ttPr = p;
     guidata(h.figure_MASH, h);
@@ -3050,41 +3178,7 @@ if ~isempty(p.proj)
 end
 
 
-function radiobutton_DTA2top_Callback(obj, evd, h)
-p = h.param.ttPr;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    mol = p.curr_mol(proj);
-    val = get(obj, 'Value');
-    p.proj{proj}.curr{mol}{4}{1}(2) = ~val;
-
-    % added by FS, 5.6.2018
-    % disable photobleaching based gamma factor determination
-    % checkbox and pushbutton are enable again if isDiscrTop is 1 in 'discrTraces.m'
-    set(h.pushbutton_optGamma, 'enable', 'on')
-    p.proj{proj}.curr{mol}{5}{4}(1) = 1; % deactivate the pb based gamma correction checkbox
-    set(h.checkbox_pbGamma, 'enable', 'on', 'Value', 0)
-
-    h.param.ttPr = p;
-    guidata(h.figure_MASH, h);
-    ud_DTA(h.figure_MASH);
-end
-
-
-function radiobutton_DTA2all_Callback(obj, evd, h)
-p = h.param.ttPr;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    mol = p.curr_mol(proj);
-    val = get(obj, 'Value');
-    p.proj{proj}.curr{mol}{4}{1}(2) = 2*val;
-    h.param.ttPr = p;
-    guidata(h.figure_MASH, h);
-    ud_DTA(h.figure_MASH);
-end
-
-
-function popupmenu_DTAchannel_Callback(obj, evd, h)
+function popupmenu_TP_states_data_Callback(obj, evd, h)
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -3096,64 +3190,113 @@ if ~isempty(p.proj)
 end
 
 
-function edit_DTA_minN_Callback(obj, evd, h)
+function edit_TP_states_param1_Callback(obj, evd, h)
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
     method = p.proj{proj}.curr{mol}{4}{1}(1);
     chan_in = p.proj{proj}.fix{3}(4);
-    val = round(str2num(get(obj, 'String')));
-    set(obj, 'String', num2str(val));
-    valMax = p.proj{proj}.curr{mol}{4}{2}(method,2,chan_in);
-    if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 1 ...
-            && val <= valMax)
-        set(obj, 'BackgroundColor', [1 0.75 0.75]);
-        updateActPan(['Minimum number of states must be >= 1 and <= ' ...
-            num2str(valMax)], h.figure_MASH, 'error');
-    else
-        set(obj, 'BackgroundColor', [1 1 1]);
-        p.proj{proj}.curr{mol}{4}{2}(method,1,chan_in) = val;
-        h.param.ttPr = p;
-        guidata(h.figure_MASH, h);
-        ud_DTA(h.figure_MASH);
+    
+    if sum(double(method == [1,2,4,5]))
+        val = round(str2num(get(obj, 'String')));
+        set(obj, 'String', num2str(val));
+        
+        if method == 2 % VbFRET
+            maxVal = p.proj{proj}.curr{mol}{4}{2}(method,2,chan_in);
+        else
+            maxVal = Inf;
+        end
+
+        if ~(~isempty(val) && numel(val)==1 && ~isnan(val) && val>0 && ...
+                val<maxVal)
+            set(obj, 'BackgroundColor', [1 0.75 0.75]);
+            
+            switch method
+                case 1 % Threshold
+                    updateActPan('Number of states must be > 0', ...
+                        h.figure_MASH, 'error');
+                    
+                case 2 % VbFRET
+                    updateActPan(cat(2,'Minimum number of states must be ',...
+                        '> 0 and < ',num2str(maxVal)),h.figure_MASH,...
+                        'error');
+
+                case 4 % CPA
+                    updateActPan('Number of bootstrap samples must be > 0', ...
+                        h.figure_MASH, 'error');
+                    
+                case 5 % STaSI
+                    updateActPan('Maximum number of states must be > 0', ...
+                        h.figure_MASH, 'error');
+            end
+
+        else
+            set(obj, 'BackgroundColor', [1 1 1]);
+            
+            if method==1 % Threshold
+                thresh = p.proj{proj}.curr{mol}{4}{4};
+                if size(thresh,2)<val
+                    thresh = cat(2,thresh,repmat(thresh(:,end,:),...
+                        [1,val-size(thresh,2),1]));
+                end
+                p.proj{proj}.curr{mol}{4}{4} = thresh;
+            end
+            
+            p.proj{proj}.curr{mol}{4}{2}(method,1,chan_in) = val;
+            h.param.ttPr = p;
+            guidata(h.figure_MASH, h);
+            ud_DTA(h.figure_MASH);
+        end
     end
 end
 
 
-function edit_DTA_maxN_Callback(obj, evd, h)
+function edit_TP_states_param2_Callback(obj, evd, h)
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
     method = p.proj{proj}.curr{mol}{4}{1}(1);
     chan_in = p.proj{proj}.fix{3}(4);
-    val = round(str2num(get(obj, 'String')));
-    set(obj, 'String', num2str(val));
-    valMin = p.proj{proj}.curr{mol}{4}{2}(method,1,chan_in);
-    if method==1
-        valMax = 6;
-    else
-        valMax = Inf;
-    end
-    if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
-            val <= valMax && val >= valMin)
-        set(obj, 'BackgroundColor', [1 0.75 0.75]);
-        updateActPan(['Maximum number of states must be >= ' ...
-            num2str(valMin) ' and <= ' num2str(valMax)], h.figure_MASH, ...
-            'error');
-    else
-        set(obj, 'BackgroundColor', [1 1 1]);
-        p.proj{proj}.curr{mol}{4}{2}(method,2,chan_in) = val;
-        h.param.ttPr = p;
-        guidata(h.figure_MASH, h);
-        ud_DTA(h.figure_MASH);
+    
+    if sum(double(method == [2,4]))
+        val = round(str2num(get(obj, 'String')));
+        set(obj, 'String', num2str(val));
+    
+        if method == 2 % VbFRET
+            minVal = p.proj{proj}.curr{mol}{4}{2}(method,2,chan_in);
+            maxVal = Inf;
+        else
+            minVal = 0;
+            maxVal = 100;
+        end
+
+        if ~(~isempty(val) && numel(val)==1 && ~isnan(val) && val>=minVal ...
+                && val<=maxVal)
+            set(obj, 'BackgroundColor', [1 0.75 0.75]);
+            
+            switch method
+                case 2 % VbFRET
+                    updateActPan(cat(2,'Maximum number of states must be ',...
+                        '>= ',num2str(minVal)),h.figure_MASH,'error');
+
+                case 4 % CPA
+                    updateActPan('Confidence level must be >= 0 and <= 100', ...
+                        h.figure_MASH, 'error');
+            end
+        else
+            set(obj, 'BackgroundColor', [1 1 1]);
+            p.proj{proj}.curr{mol}{4}{2}(method,2,chan_in) = val;
+            h.param.ttPr = p;
+            guidata(h.figure_MASH, h);
+            ud_DTA(h.figure_MASH);
+        end
     end
 end
 
 
-
-function edit_DTA_smooth_Callback(obj, evd, h)
+function edit_TP_states_paramRefine_Callback(obj, evd, h)
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -3168,7 +3311,7 @@ if ~isempty(p.proj)
         set(obj, 'BackgroundColor', [1 1 1]);
         method = p.proj{proj}.curr{mol}{4}{1}(1);
         chan_in = p.proj{proj}.fix{3}(4);
-        p.proj{proj}.curr{mol}{4}{2}(method,3,chan_in) = val;
+        p.proj{proj}.curr{mol}{4}{2}(method,5,chan_in) = val;
         h.param.ttPr = p;
         guidata(h.figure_MASH, h);
         ud_DTA(h.figure_MASH);
@@ -3176,7 +3319,7 @@ if ~isempty(p.proj)
 end
 
 
-function edit_DTA_bin_Callback(obj, evd, h)
+function edit_TP_states_paramBin_Callback(obj, evd, h)
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -3205,7 +3348,7 @@ if ~isempty(p.proj)
                 val = val*nPix;
             end
         end
-        p.proj{proj}.curr{mol}{4}{2}(method,4,chan_in) = val;
+        p.proj{proj}.curr{mol}{4}{2}(method,6,chan_in) = val;
         h.param.ttPr = p;
         guidata(h.figure_MASH, h);
         ud_DTA(h.figure_MASH);
@@ -3213,91 +3356,7 @@ if ~isempty(p.proj)
 end
 
 
-function edit_DTAparam_01_Callback(obj, evd, h)
-p = h.param.ttPr;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    mol = p.curr_mol(proj);
-    method = p.proj{proj}.curr{mol}{4}{1}(1);
-    if sum(double(method == [2 4]))
-        val = round(str2num(get(obj, 'String')));
-        set(obj, 'String', num2str(val));
-
-        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val > 0)
-            set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            if method == 2 % VbFRET
-                updateActPan('Number of iteration must be > 0', ...
-                    h.figure_MASH, 'error');
-            elseif method == 4 % CPA
-                updateActPan('Number of bootstrap sample must be > 0', ...
-                    h.figure_MASH, 'error');
-            end
-
-        else
-            set(obj, 'BackgroundColor', [1 1 1]);
-            chan_in = p.proj{proj}.fix{3}(4);
-            p.proj{proj}.curr{mol}{4}{2}(method,5,chan_in) = val;
-            h.param.ttPr = p;
-            guidata(h.figure_MASH, h);
-            ud_DTA(h.figure_MASH);
-        end
-    end
-end
-
-
-function edit_DTAparam_02_Callback(obj, evd, h)
-p = h.param.ttPr;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    mol = p.curr_mol(proj);
-    method = p.proj{proj}.curr{mol}{4}{1}(1);
-    if method == 4 % CPA
-        val = round(str2num(get(obj, 'String')));
-        set(obj, 'String', num2str(val));
-        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
-                val >= 0 && val <= 100)
-            set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            updateActPan('Confidence level must be >= 0 and <= 100', ...
-                h.figure_MASH, 'error');
-        else
-            set(obj, 'BackgroundColor', [1 1 1]);
-            chan_in = p.proj{proj}.fix{3}(4);
-            p.proj{proj}.curr{mol}{4}{2}(method,6,chan_in) = val;
-            h.param.ttPr = p;
-            guidata(h.figure_MASH, h);
-            ud_DTA(h.figure_MASH);
-        end
-    end
-end
-
-
-function edit_DTAparam_03_Callback(obj, evd, h)
-p = h.param.ttPr;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    mol = p.curr_mol(proj);
-    method = p.proj{proj}.curr{mol}{4}{1}(1);
-    if method == 4 % CPA
-        val = round(str2num(get(obj, 'String')));
-        set(obj, 'String', num2str(val));
-        if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
-                sum(double(val == [1 2])))
-            set(obj, 'BackgroundColor', [1 0.75 0.75]);
-            updateActPan(['Method for change localisation must be 1 ' ...
-                'or 2 ("max." or "MSE")'], h.figure_MASH, 'error');
-        else
-            set(obj, 'BackgroundColor', [1 1 1]);
-            chan_in = p.proj{proj}.fix{3}(4);
-            p.proj{proj}.curr{mol}{4}{2}(method,7,chan_in) = val;
-            h.param.ttPr = p;
-            guidata(h.figure_MASH, h);
-            ud_DTA(h.figure_MASH);
-        end
-    end
-end
-
-
-function edit_DTAparam_04_Callback(obj, evd, h)
+function edit_TP_states_paramTol_Callback(obj, evd, h)
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -3316,7 +3375,7 @@ if ~isempty(p.proj)
         else
             set(obj, 'BackgroundColor', [1 1 1]);
             method = p.proj{proj}.curr{mol}{4}{1}(1);
-            p.proj{proj}.curr{mol}{4}{2}(method,8,:) = val;
+            p.proj{proj}.curr{mol}{4}{2}(method,4,:) = val;
             h.param.ttPr = p;
             guidata(h.figure_MASH, h);
             ud_DTA(h.figure_MASH);
@@ -3338,7 +3397,14 @@ if ~isempty(p.proj)
 end
 
 
-function edit_thresh_Callback(obj, evd, h, state)
+function popupmenu_TP_states_indexThresh_Callback(obj, evd, h)
+p = h.param.ttPr;
+if ~isempty(p.proj)
+    ud_DTA(h.figure_MASH);
+end
+
+
+function edit_TP_states_state_Callback(obj, evd, h)
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -3368,6 +3434,7 @@ if ~isempty(p.proj)
                     val = val*nPix;
                 end
             end
+            state = get(h.popupmenu_TP_states_indexThresh,'value');
             p.proj{proj}.curr{mol}{4}{4}(1,state,chan_in) = val;
             h.param.ttPr = p;
             guidata(h.figure_MASH, h);
@@ -3377,7 +3444,7 @@ if ~isempty(p.proj)
 end
 
 
-function edit_low_Callback(obj, evd, h, state)
+function edit_TP_states_lowThresh_Callback(obj, evd, h)
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -3407,6 +3474,7 @@ if ~isempty(p.proj)
                     val = val*nPix;
                 end
             end
+            state = get(h.popupmenu_TP_states_indexThresh,'value');
             p.proj{proj}.curr{mol}{4}{4}(2,state,chan_in) = val;
             h.param.ttPr = p;
             guidata(h.figure_MASH, h);
@@ -3416,7 +3484,7 @@ if ~isempty(p.proj)
 end
 
 
-function edit_up_Callback(obj, evd, h, state)
+function edit_TP_states_highThresh_Callback(obj, evd, h)
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -3446,12 +3514,20 @@ if ~isempty(p.proj)
                     val = val*nPix;
                 end
             end
+            state = get(h.popupmenu_TP_states_indexThresh,'value');
             p.proj{proj}.curr{mol}{4}{4}(3,state,chan_in) = val;
             h.param.ttPr = p;
             guidata(h.figure_MASH, h);
             ud_DTA(h.figure_MASH);
         end
     end
+end
+
+
+function popupmenu_TP_states_index_Callback(obj, evd, h)
+p = h.param.ttPr;
+if ~isempty(p.proj)
+    ud_DTA(h.figure_MASH);
 end
 
 
@@ -4003,19 +4079,21 @@ function listbox_thm_projLst_Callback(obj, evd, h)
 p = h.param.thm;
 if size(p.proj,2)>1
     val = get(obj, 'Value');
-    p.curr_proj = val(1);
-    h.param.thm = p;
-    guidata(h.figure_MASH, h);
+    if numel(val)==1 && val ~= p.curr_proj
+        p.curr_proj = val;
+        h.param.thm = p;
+        guidata(h.figure_MASH, h);
+        
+        proj_name = get(obj,'string');
+        str_proj = cat(2,'Project selected: "',proj_name{val},'" (',...
+            p.proj{val}.proj_file,')');
+        setContPan(str_proj,'none',h.figure_MASH);
 
-    cla(h.axes_hist1);
-    cla(h.axes_hist2);
+        cla(h.axes_hist1);
+        cla(h.axes_hist2);
 
-    updateFields(h.figure_MASH, 'thm');
-
-    p = h.param.thm;
-    proj = p.curr_proj;
-    setContPan(cat(2,'Select project: ',...
-        p.proj{proj}.exp_parameters{1,2}),'success', h.figure_MASH);
+        updateFields(h.figure_MASH, 'thm');
+    end
 end
 
 
@@ -4996,3 +5074,4 @@ if ~isempty(p.proj)
     thresh_ana(h.figure_MASH);
     updateFields(h.figure_MASH, 'thm');
 end
+
