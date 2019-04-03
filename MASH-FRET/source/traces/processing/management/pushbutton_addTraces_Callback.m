@@ -1,6 +1,12 @@
 function pushbutton_addTraces_Callback(obj, evd, h)
 
 %%
+% Last update: 2.4.2019 by MH
+% >> fix error when importing ASCII traces: correct dimensions of 
+%    bleedthrough coefficients when resetting cross-talks to 0.
+% >> reset cross-talks to 0 whether or not gamma files were successfully
+%    imported or not.
+%
 % Last update: 29.3.2019 by MH
 % >> manage down-compatibility and adapt reorganization of cross-talk 
 %    coefficients to new parameter structure (see 
@@ -99,7 +105,7 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
         nChan = p.proj{i}.nb_channel;
         nExc = p.proj{i}.nb_excitations;
         
-        % added by NH,29.3.2019
+        % added by MH,29.3.2019
         exc = p.proj{i}.excitations;
         chanExc = p.proj{i}.chanExc;
         
@@ -249,28 +255,32 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
 %                     p.proj{i}.prm{n}{5}{3} = gammas(n);
 
                 end
-                if ~isempty(fnameGamma) && ~isempty(pnameGamma)
-                    % Cross talk and filter corrections 
-                    % set all correction factors to 0 if restructured ASCII
-                    % files are loaded, since the factors have already been
-                    % applied
-                    
-                    % modified by MH, 29.3.2019
-                    % coefficients
+                
+                % modified by MH, 2.4.2019
+                p.proj{i}.curr{n}{5}{1} = zeros(nChan,nChan-1);
+                p.proj{i}.curr{n}{5}{2} = zeros(nExc-1,nChan);
+%                 if ~isempty(fnameGamma) && ~isempty(pnameGamma)
+%                     % Cross talk and filter corrections 
+%                     % set all correction factors to 0 if restructured ASCII
+%                     % files are loaded, since the factors have already been
+%                     % applied
+%                     
+%                     % modified by MH, 29.3.2019
+%                     % coefficients
 %                     for l = 1:nExc
 %                         for c = 1:nChan
-                            % bleedthrough
+%                             % bleedthrough
 %                             p.proj{i}.curr{n}{5}{1}{l,c} = zeros(1,nChan-1);
-                            % direct excitation
+%                             % direct excitation
 %                             if ~isempty(p.proj{i}.curr{n}{5}{2}{1,c})
 %                                 p.proj{i}.curr{n}{5}{2}{l,c} = zeros(1,nExc-1);
 %                             end
 %                         end
 %                     end
-                    p.proj{i}.curr{n}{5}{1} = zeros(1,nChan-1);
-                    p.proj{i}.curr{n}{5}{2} = zeros(nExc-1,nChan);
-                    
-                end
+%                     p.proj{i}.curr{n}{5}{1} = zeros(1,nChan-1);
+%                     p.proj{i}.curr{n}{5}{2} = zeros(nExc-1,nChan);
+%                     
+%                 end
             end
             
             % if the molecule parameter "window size" does not belong to 
