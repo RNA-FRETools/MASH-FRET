@@ -5,7 +5,15 @@ function openItgExpOpt(obj, evd, h)
 %          has been called (usually empty)
 % "h" >> main data structure stored in figure_MASH's handle
 
-% Last update: 4th of February 2019 by Mélodie Hadzic
+% Last update: 3re of April 2019 by MH
+% --> Warn the user and review FRET and Stoichiometry when changing an 
+%     emitter-specific illumination to "none"
+% --> review ud_fretPanel, create ud_sPanel and use both to make robust 
+%     updates of FRET and stoichiometry panels
+% --> avoid exporting empty parameters with non-zero dimensions, correct 
+%     typos and remove caps-lock in message boxes 
+%
+% update: 4th of February 2019 by Mélodie Hadzic
 % --> remove "file options" panel (displaced in an other option window
 %     created by function openItgExpOpt.m, called by control 
 %     pushbutton_TTgen_FileOpt)
@@ -743,6 +751,8 @@ val = get(obj, 'Value');
 chan = get(h.itgExpOpt.popupmenu_dyeChan,'Value');
 p{7}{2}(chan) = str(val);
 guidata(h.figure_itgExpOpt,p);
+ud_fretPanel(h_fig);
+ud_sPanel(h_fig);
 
 
 function popupmenu_dyeExc_Callback(obj, evd, h_fig)
@@ -756,18 +766,73 @@ else
     exc = getValueFromStr('', str{val});
 end
 chan = get(h.itgExpOpt.popupmenu_dyeChan,'Value');
-p{6}(chan) = exc;
-if p{6}(chan)==0 && isfield(h.itgExpOpt,'popupmenu_Snum')
-    p{4}(p{4}==chan) = [];
-    str_chanS = get(h.itgExpOpt.popupmenu_Snum, 'String');
-    str_lst = {};
-    for l = 1:numel(p{4})
-        str_lst = [str_lst ['S ' str_chanS{p{4}(l,1)}]];
-    end
-    guidata(h.figure_itgExpOpt,p);
-    set(h.itgExpOpt.listbox_Scalc, 'Value', l, 'String', str_lst);
+if exc==p{6}(chan)
+    return;
 end
+if exc==0 
+    ud_fret = 0;
+    ud_s = 0;
+    for id = 1:numel(str)
+        if ~isempty(strfind(str{id},num2str(p{6}(chan))))
+            break;
+        end
+    end
+    if isfield(h.itgExpOpt,'popupmenu_Snum') && sum(p{4}==chan) && ...
+        isfield(h.itgExpOpt,'popupmenu_FRETto') && sum(p{3}(:,1)==chan)
+        choice = questdlg({cat(2,'Selected emitter is invoved in ',...
+            'FRET and stoichiometry calculations. Changing its specific ',...
+            'illumination to "none" will automatically remove the ',...
+            'corresponding FRET and stoichiometry from the lists'),'',...
+            cat(2,'Do you want to turn illumination to "none" and remove ',...
+            'the FRET and stoichiometry from the lists?')},'',...
+            'Yes, remove','cancel','cancel');
+        if strcmp(choice,'Yes, remove')
+            ud_fret = 1;
+            ud_s = 1;
+        else
+            set(obj,'Value',id);
+            return;
+        end
+    elseif isfield(h.itgExpOpt,'popupmenu_Snum') && sum(p{4}==chan)
+        choice = questdlg({cat(2,'Selected emitter is invoved in ',...
+            'stoichiometry calculations. Changing its specific ',...
+            'illumination to "none" will automatically remove the ',...
+            'corresponding stoichiometry from the list'),'',...
+            cat(2,'Do you want to turn illumination to "none" and remove ',...
+            'the stoichiometry from the list?')},'',...
+            'Yes, remove','Cancel','Cancel');
+        if strcmp(choice,'Yes, remove')
+            ud_s = 1;
+        else
+            set(obj,'Value',id);
+            return;
+        end
+    elseif isfield(h.itgExpOpt,'popupmenu_FRETto') && sum(p{3}(:,1)==chan)
+        choice = questdlg({cat(2,'Selected emitter is invoved in ',...
+            'FRET calculations as a donor. Changing its specific ',...
+            'illumination to "none" will automatically remove the ',...
+            'corresponding FRET from the list'),'',...
+            cat(2,'Do you want to turn illumination to "none" and remove ',...
+            'the FRET from the list?')},'',...
+            'Yes, remove','Cancel','Cancel');
+        if strcmp(choice,'Yes, remove')
+            ud_fret = 1;
+        else
+            set(obj,'Value',id);
+            return;
+        end
+    end
+    if ud_s
+        p{4}(p{4}==chan) = [];
+    end
+    if ud_fret
+        p{3}(p{3}(:,1)==chan,:) = [];
+    end
+end
+p{6}(chan) = exc;
 guidata(h.figure_itgExpOpt,p);
+ud_fretPanel(h_fig);
+ud_sPanel(h_fig);
 
 
 function pushbutton_addLabel_Callback(obj, evd, h_fig)
@@ -1019,7 +1084,7 @@ if ~isempty(p{3})
     end
     guidata(h.figure_itgExpOpt,p);
     ud_fretPanel(h_fig);
-    if isempty(size(p{3},1))
+    if isempty(p{3})
         l = 0;
     else
         l = size(p{3},1);
@@ -1035,11 +1100,11 @@ chanTo = get(h.itgExpOpt.popupmenu_FRETto, 'Value');
 p = guidata(h.figure_itgExpOpt);
 exc = p{6}(chanFrom);
 if chanFrom == chanTo
-    updateActPan('DONOR and ACCEPTOR channels must be DIFFERENT.', ...
+    updateActPan('DONOR and ACCEPTOR channels must be different.', ...
         h_fig, 'error');
 elseif exc==0
-    updateActPan(['FRET calculation impossible: NO DONOR EXCITATION ' ...
-        'is defined.'], h_fig, 'error');
+    updateActPan(['FRET calculation impossible: no donor-specific '...
+        'illumination is defined.'], h_fig, 'error');
 else
     p = guidata(h.figure_itgExpOpt);
     for i = 1:size(p{3},1)
@@ -1056,7 +1121,7 @@ else
     p{3}(size(p{3},1)+1,1:2) = [chanFrom chanTo];
     guidata(h.figure_itgExpOpt, p);
     ud_fretPanel(h_fig);
-    if isempty(size(p{3},1))
+    if isempty(p{3})
         l = 0;
     else
         l = size(p{3},1);
@@ -1069,16 +1134,21 @@ function ud_fretPanel(h_fig)
 h = guidata(h_fig);
 p = guidata(h.figure_itgExpOpt);
 
+% get excitation wavelengths
 str_exc = get(h.itgExpOpt.popupmenu_dyeExc,'String');
 for i = 1:size(str_exc,1)-1
     exc(i) = getValueFromStr('', str_exc{i});
 end
+
+% set channel popupmenu string
 if isfield(h.itgExpOpt, 'popupmenu_FRETfrom')
     set(h.itgExpOpt.popupmenu_FRETfrom, 'String', p{7}{2});
 end
 if isfield(h.itgExpOpt, 'popupmenu_FRETto')
     set(h.itgExpOpt.popupmenu_FRETto, 'String', p{7}{2});
 end
+
+% build FRET list string and FRET default colors
 str_lst = {};
 r_f = fliplr(linspace(0.8,0,size(p{3},1)));
 g_f = fliplr(linspace(0.8,0,size(p{3},1)));
@@ -1090,8 +1160,73 @@ for l = 1:size(p{3},1)
         p{5}{2}(l,:) = [r_f(l) g_f(l) b_f(l)];
     end
 end
+
+% update list
+val = get(h.itgExpOpt.listbox_FRETcalc, 'Value');
+set(h.itgExpOpt.listbox_FRETcalc, 'Value', 1);
 set(h.itgExpOpt.listbox_FRETcalc, 'String', str_lst);
+if val<=numel(str_lst)
+    set(h.itgExpOpt.listbox_FRETcalc, 'Value', val);
+else
+    set(h.itgExpOpt.listbox_FRETcalc, 'Value', numel(str_lst));
+end
+
+% save colors
 guidata(h.figure_itgExpOpt,p);
+
+% update color panel
+str_clrChan = getStrPop('DTA_chan',{p{7}{2} p{3} p{4} exc p{5}});
+val_clrChan = get(h.itgExpOpt.popupmenu_clrChan, 'Value');
+if val_clrChan > size(str_clrChan,2)
+    val_clrChan = size(str_clrChan,2);
+end
+set(h.itgExpOpt.popupmenu_clrChan, 'Value', val_clrChan, 'String', ...
+  str_clrChan);
+popupmenu_clrChan_Callback(h.itgExpOpt.popupmenu_clrChan, [], h_fig);
+
+
+function ud_sPanel(h_fig)
+h = guidata(h_fig);
+p = guidata(h.figure_itgExpOpt);
+
+% get excitation wavelengths
+str_exc = get(h.itgExpOpt.popupmenu_dyeExc,'String');
+for i = 1:size(str_exc,1)-1
+    exc(i) = getValueFromStr('', str_exc{i});
+end
+
+% set channel popupmenu string
+if isfield(h.itgExpOpt, 'popupmenu_Snum')
+    set(h.itgExpOpt.popupmenu_Snum, 'String', p{7}{2});
+end
+
+% build S list string and S default colors
+r_s = zeros(1,numel(p{4}));
+g_s = zeros(1,numel(p{4}));
+b_s = fliplr(linspace(0.8,0,numel(p{4})));
+str_S = get(h.itgExpOpt.popupmenu_Snum, 'String');
+str_lst = {};
+for l = 1:numel(p{4})
+    str_lst = [str_lst ['S ' str_S{p{4}(l)}]];
+    if l > size(p{5}{2},1)
+        p{5}{3}(l,:) = [r_s(l) g_s(l) b_s(l)];
+    end
+end
+
+% update list
+val = get(h.itgExpOpt.listbox_Scalc, 'Value');
+set(h.itgExpOpt.listbox_Scalc, 'Value', 1);
+set(h.itgExpOpt.listbox_Scalc, 'String', str_lst);
+if val<=numel(str_lst)
+    set(h.itgExpOpt.listbox_Scalc, 'Value', val);
+else
+    set(h.itgExpOpt.listbox_Scalc, 'Value', numel(str_lst));
+end
+
+% save colors
+guidata(h.figure_itgExpOpt,p);
+
+% update color panel
 str_clrChan = getStrPop('DTA_chan',{p{7}{2} p{3} p{4} exc p{5}});
 val_clrChan = get(h.itgExpOpt.popupmenu_clrChan, 'Value');
 if val_clrChan > size(str_clrChan,2)
@@ -1120,21 +1255,13 @@ if ~isempty(p{4})
         end
     end
     guidata(h.figure_itgExpOpt,p);
-    str_S = get(h.itgExpOpt.popupmenu_Snum, 'String');
-    str_lst = {};
-    for l = 1:numel(p{4})
-        str_lst = [str_lst ['S ' str_S{p{4}(l)}]];
+    ud_sPanel(h_fig);
+    if isempty(p{4})
+        l = 0;
+    else
+        l = numel(p{4});
     end
-    set(h.itgExpOpt.listbox_Scalc, 'Value', 1, 'String', str_lst);
-    
-    str_clrChan = getStrPop('DTA_chan',{p{7}{2} p{3} p{4} exc p{5}});
-    val_clrChan = get(h.itgExpOpt.popupmenu_clrChan, 'Value');
-    if val_clrChan > size(str_clrChan,2)
-        val_clrChan = size(str_clrChan,2);
-    end
-    set(h.itgExpOpt.popupmenu_clrChan, 'Value', val_clrChan, 'String', ...
-      str_clrChan);
-    popupmenu_clrChan_Callback(h.itgExpOpt.popupmenu_clrChan, [], h_fig);
+    set(h.itgExpOpt.listbox_Scalc, 'Value', l);
 end
 
 
@@ -1158,29 +1285,14 @@ elseif p{6}(chanS)==0
 end
 
 p{4}(numel(p{4})+1,1) = chanS;
-str_chanS = get(h.itgExpOpt.popupmenu_Snum, 'String');
-str_lst = {};
-r_s = fliplr(linspace(0,0,numel(p{4})));
-g_s = fliplr(linspace(1,0,numel(p{4})));
-b_s = fliplr(linspace(1,1,numel(p{4})));
-for l = 1:numel(p{4})
-    str_lst = [str_lst ['S ' str_chanS{p{4}(l,1)}]];
-    if l > size(p{5}{3},1)
-        p{5}{3}(l,:) = [r_s(l) g_s(l) b_s(l)];
-    end
-end
 guidata(h.figure_itgExpOpt,p);
-
-set(h.itgExpOpt.listbox_Scalc, 'Value', l, 'String', str_lst);
-
-str_clrChan = getStrPop('DTA_chan',{p{7}{2} p{3} p{4} exc p{5}});
-val_clrChan = get(h.itgExpOpt.popupmenu_clrChan, 'Value');
-if val_clrChan > size(str_clrChan,2)
-    val_clrChan = size(str_clrChan,2);
+ud_sPanel(h_fig);
+if isempty(p{4})
+    l = 0;
+else
+    l = numel(p{4});
 end
-set(h.itgExpOpt.popupmenu_clrChan, 'Value', val_clrChan, 'String', ...
-  str_clrChan); 
-popupmenu_clrChan_Callback(h.itgExpOpt.popupmenu_clrChan, [], h_fig);
+set(h.itgExpOpt.listbox_Scalc, 'Value', l);
 
 
 function edit_param_Callback(obj, evd, i, h_fig)
@@ -1292,11 +1404,20 @@ end
 function pushbutton_itgExpOpt_ok_Callback(obj, evd, but_obj, h_fig)
 h = guidata(h_fig);
 p = guidata(h.figure_itgExpOpt);
+
+% added by MH, 3.4.2019
+% avoid empty variables with non-zero dimensions
+for i = 1:numel(p)
+    if numel(p{i})==0
+        p{i} = [];
+    end
+end
+
 switch but_obj
     case h.pushbutton_chanOpt
         h.param.movPr.itg_expMolPrm = p{1};
         h.param.movPr.itg_expFRET = p{3};
-        h.param.movPr.itg_expS = squeeze(p{4});
+        h.param.movPr.itg_expS = p{4};
         h.param.movPr.itg_clr = p{5};
         h.param.movPr.chanExc = p{6};
         h.param.movPr.labels = p{7}{2};
@@ -1305,7 +1426,7 @@ switch but_obj
         currProj = get(h.listbox_traceSet, 'Value');
         h.param.ttPr.proj{currProj}.exp_parameters = p{1};
         h.param.ttPr.proj{currProj}.FRET = p{3};
-        h.param.ttPr.proj{currProj}.S = squeeze(p{4});
+        h.param.ttPr.proj{currProj}.S = p{4};
         h.param.ttPr.proj{currProj}.colours = p{5};
         h.param.ttPr.proj{currProj}.chanExc = p{6};
         h.param.ttPr.proj{currProj}.labels = p{7}{2};
