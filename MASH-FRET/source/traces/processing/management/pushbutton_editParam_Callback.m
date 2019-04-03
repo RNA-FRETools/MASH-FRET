@@ -30,6 +30,7 @@ if ~isempty(h.param.ttPr.proj)
         % added by MH, 3.4.2019
         labels = p.proj{proj}.labels;
         clr = p.proj{proj}.colours;
+        exc = p.proj{proj}.excitations;
         
         nFRET = size(r{2},1);
         nMol = numel(h.param.ttPr.proj{proj}.coord_incl);
@@ -57,7 +58,7 @@ if ~isempty(h.param.ttPr.proj)
         
         % added by MH, 3.4.2019
         if (nFRET+nS) > 0
-            str_bot = getStrPop('plot_botChan',{FRET S exc clr labels});
+            str_bot = getStrPop('plot_botChan',{r{2} r{3} exc clr labels});
             if p.proj{proj}.fix{2}(3)>numel(str_bot)
                 p.proj{proj}.fix{2}(3) = numel(str_bot);
             end
