@@ -5,11 +5,12 @@ function openItgExpOpt(obj, evd, h)
 %          has been called (usually empty)
 % "h" >> main data structure stored in figure_MASH's handle
 
-% Last update: 3re of April 2019 by MH
+% Last update: 3rd of April 2019 by MH
 % --> Warn the user and review FRET and Stoichiometry when changing an 
 %     emitter-specific illumination to "none"
 % --> review ud_fretPanel, create ud_sPanel and use both to make robust 
-%     updates of FRET and stoichiometry panels
+%     updates of FRET and stoichiometry panels and manage absence of FRET
+%     or stoichiometry panels.
 % --> avoid exporting empty parameters with non-zero dimensions, correct 
 %     typos and remove caps-lock in message boxes 
 %
@@ -713,6 +714,10 @@ set(h.itgExpOpt.uipanel_clr, 'Title', 'Color code');
 
 set(h.figure_itgExpOpt, 'Visible', 'on');
 
+% added by MH, 3.4.2019
+ud_fretPanel(h_fig);
+ud_sPanel(h_fig);
+
 
 function figure_itgExpOpt_CloseRequestFcn(obj, evd, h_fig)
 h = guidata(h_fig);
@@ -1134,6 +1139,11 @@ function ud_fretPanel(h_fig)
 h = guidata(h_fig);
 p = guidata(h.figure_itgExpOpt);
 
+% added by MH, 3.4.2019
+if ~isfield(h.itgExpOpt,'popupmenu_FRETfrom')
+    return;
+end
+
 % get excitation wavelengths
 str_exc = get(h.itgExpOpt.popupmenu_dyeExc,'String');
 for i = 1:size(str_exc,1)-1
@@ -1188,6 +1198,11 @@ popupmenu_clrChan_Callback(h.itgExpOpt.popupmenu_clrChan, [], h_fig);
 function ud_sPanel(h_fig)
 h = guidata(h_fig);
 p = guidata(h.figure_itgExpOpt);
+
+% added by MH, 3.4.2019
+if ~isfield(h.itgExpOpt,'popupmenu_Snum')
+    return;
+end
 
 % get excitation wavelengths
 str_exc = get(h.itgExpOpt.popupmenu_dyeExc,'String');
