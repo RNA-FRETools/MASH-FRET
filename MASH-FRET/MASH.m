@@ -3142,6 +3142,11 @@ end
 
 
 function popupmenu_TP_states_applyTo_Callback(obj, evd, h)
+
+% Last update: by MH, 3.4.2019
+% >> adjust selected data index in popupmenu, fix{3}(4), to shorter 
+%    popupmenu size when discretization is only applied to bottom traces
+
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -3152,6 +3157,15 @@ if ~isempty(p.proj)
         
         case 1 % bottom
             p.proj{proj}.curr{mol}{4}{1}(2) = 1;
+            
+            % added by MH, 3.4.2019
+            nFRET = size(p.proj{proj}.FRET,1);
+            nS = size(p.proj{proj}.S,1);
+            chan = p.proj{proj}.fix{3}(4);
+            if chan>nFRET+nS
+                chan = nFRET+nS;
+            end
+            p.proj{proj}.fix{3}(4) = chan;
             
             % modified by MH, 26.03.2019:
             % the warning is activated when choosing the
@@ -3199,12 +3213,27 @@ end
 
 
 function edit_TP_states_param1_Callback(obj, evd, h)
+
+% Last update: by MH, 3.4.2019
+% >> adjust selected data index in popupmenu, chan_in, to shorter 
+%    popupmenu size when discretization is only applied to bottom traces
+
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
     method = p.proj{proj}.curr{mol}{4}{1}(1);
     chan_in = p.proj{proj}.fix{3}(4);
+    
+    % added by MH, 3.4.2019
+    nFRET = size(p.proj{proj}.FRET,1);
+    nS = size(p.proj{proj}.S,1);
+    toFRET = p.proj{proj}.prm{mol}{4}{1}(2);
+    if toFRET==1 && (nFRET+nS)>0
+        if chan_in>(nFRET+nS)
+            chan_in = nFRET + nS;
+        end
+    end
     
     if sum(double(method == [1,2,4,5]))
         val = round(str2num(get(obj, 'String')));
@@ -3261,12 +3290,27 @@ end
 
 
 function edit_TP_states_param2_Callback(obj, evd, h)
+
+% Last update: by MH, 3.4.2019
+% >> adjust selected data index in popupmenu, chan_in, to shorter 
+%    popupmenu size when discretization is only applied to bottom traces
+
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
     method = p.proj{proj}.curr{mol}{4}{1}(1);
     chan_in = p.proj{proj}.fix{3}(4);
+    
+    % added by MH, 3.4.2019
+    nFRET = size(p.proj{proj}.FRET,1);
+    nS = size(p.proj{proj}.S,1);
+    toFRET = p.proj{proj}.prm{mol}{4}{1}(2);
+    if toFRET==1 && (nFRET+nS)>0
+        if chan_in>(nFRET+nS)
+            chan_in = nFRET + nS;
+        end
+    end
     
     if sum(double(method == [2,4]))
         val = round(str2num(get(obj, 'String')));
@@ -3305,6 +3349,11 @@ end
 
 
 function edit_TP_states_paramRefine_Callback(obj, evd, h)
+
+% Last update: by MH, 3.4.2019
+% >> adjust selected data index in popupmenu, chan_in, to shorter 
+%    popupmenu size when discretization is only applied to bottom traces
+
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -3319,6 +3368,17 @@ if ~isempty(p.proj)
         set(obj, 'BackgroundColor', [1 1 1]);
         method = p.proj{proj}.curr{mol}{4}{1}(1);
         chan_in = p.proj{proj}.fix{3}(4);
+        
+        % added by MH, 3.4.2019
+        nFRET = size(p.proj{proj}.FRET,1);
+        nS = size(p.proj{proj}.S,1);
+        toFRET = p.proj{proj}.prm{mol}{4}{1}(2);
+        if toFRET==1 && (nFRET+nS)>0
+            if chan_in>(nFRET+nS)
+                chan_in = nFRET + nS;
+            end
+        end
+        
         p.proj{proj}.curr{mol}{4}{2}(method,5,chan_in) = val;
         h.param.ttPr = p;
         guidata(h.figure_MASH, h);
@@ -3328,6 +3388,11 @@ end
 
 
 function edit_TP_states_paramBin_Callback(obj, evd, h)
+
+% Last update: by MH, 3.4.2019
+% >> adjust selected data index in popupmenu, chan_in, to shorter 
+%    popupmenu size when discretization is only applied to bottom traces
+
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -3344,6 +3409,15 @@ if ~isempty(p.proj)
         chan_in = p.proj{proj}.fix{3}(4);
         nFRET = size(p.proj{proj}.FRET,1);
         nS = size(p.proj{proj}.S,1);
+        
+        % added by MH, 3.4.2019
+        toFRET = p.proj{proj}.prm{mol}{4}{1}(2);
+        if toFRET==1 && (nFRET+nS)>0
+            if chan_in>(nFRET+nS)
+                chan_in = nFRET + nS;
+            end
+        end
+        
         if chan_in > (nFRET + nS)
             perSec = p.proj{proj}.fix{2}(4);
             perPix = p.proj{proj}.fix{2}(5);
@@ -3365,6 +3439,13 @@ end
 
 
 function edit_TP_states_paramTol_Callback(obj, evd, h)
+
+% Last update: by MH, 3.4.2019
+% >> adjust selected data index in popupmenu, chan_in, to shorter 
+%    popupmenu size when discretization is only applied to bottom traces
+% >> correct destination for tolerance window size parameter: specific to
+%    each bottom trace data
+
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -3383,7 +3464,24 @@ if ~isempty(p.proj)
         else
             set(obj, 'BackgroundColor', [1 1 1]);
             method = p.proj{proj}.curr{mol}{4}{1}(1);
-            p.proj{proj}.curr{mol}{4}{2}(method,4,:) = val;
+            
+            % corrected by MH, 3.4.2019
+%             p.proj{proj}.curr{mol}{4}{2}(method,4,:) = val;
+            
+            % added by MH, 3.4.2019
+            chan_in = p.proj{proj}.fix{3}(4);
+            nFRET = size(p.proj{proj}.FRET,1);
+            nS = size(p.proj{proj}.S,1);
+            toFRET = p.proj{proj}.prm{mol}{4}{1}(2);
+            if toFRET==1 && (nFRET+nS)>0
+                if chan_in>(nFRET+nS)
+                    chan_in = nFRET + nS;
+                end
+            end
+            
+            % corrected by MH, 3.4.2019
+            p.proj{proj}.curr{mol}{4}{2}(method,4,chan_in) = val;
+            
             h.param.ttPr = p;
             guidata(h.figure_MASH, h);
             ud_DTA(h.figure_MASH);
@@ -3413,6 +3511,11 @@ end
 
 
 function edit_TP_states_state_Callback(obj, evd, h)
+
+% Last update: by MH, 3.4.2019
+% >> adjust selected data index in popupmenu, chan_in, to shorter 
+%    popupmenu size when discretization is only applied to bottom traces
+
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -3430,6 +3533,15 @@ if ~isempty(p.proj)
             chan_in = p.proj{proj}.fix{3}(4);
             nFRET = size(p.proj{proj}.FRET,1);
             nS = size(p.proj{proj}.S,1);
+            
+            % added by MH, 3.4.2019
+            toFRET = p.proj{proj}.prm{mol}{4}{1}(2);
+            if toFRET==1 && (nFRET+nS)>0
+                if chan_in>(nFRET+nS)
+                    chan_in = nFRET + nS;
+                end
+            end
+            
             if chan_in > (nFRET + nS)
                 perSec = p.proj{proj}.fix{2}(4);
                 perPix = p.proj{proj}.fix{2}(5);
@@ -3453,6 +3565,11 @@ end
 
 
 function edit_TP_states_lowThresh_Callback(obj, evd, h)
+
+% Last update: by MH, 3.4.2019
+% >> adjust selected data index in popupmenu, chan_in, to shorter 
+%    popupmenu size when discretization is only applied to bottom traces
+
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -3470,6 +3587,15 @@ if ~isempty(p.proj)
             chan_in = p.proj{proj}.fix{3}(4);
             nFRET = size(p.proj{proj}.FRET,1);
             nS = size(p.proj{proj}.S,1);
+            
+            % added by MH, 3.4.2019
+            toFRET = p.proj{proj}.prm{mol}{4}{1}(2);
+            if toFRET==1 && (nFRET+nS)>0
+                if chan_in>(nFRET+nS)
+                    chan_in = nFRET + nS;
+                end
+            end
+            
             if chan_in > (nFRET + nS)
                 perSec = p.proj{proj}.fix{2}(4);
                 perPix = p.proj{proj}.fix{2}(5);
@@ -3493,6 +3619,11 @@ end
 
 
 function edit_TP_states_highThresh_Callback(obj, evd, h)
+
+% Last update: by MH, 3.4.2019
+% >> adjust selected data index in popupmenu, chan_in, to shorter 
+%    popupmenu size when discretization is only applied to bottom traces
+
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -3510,6 +3641,15 @@ if ~isempty(p.proj)
             chan_in = p.proj{proj}.fix{3}(4);
             nFRET = size(p.proj{proj}.FRET,1);
             nS = size(p.proj{proj}.S,1);
+            
+            % added by MH, 3.4.2019
+            toFRET = p.proj{proj}.prm{mol}{4}{1}(2);
+            if toFRET==1 && (nFRET+nS)>0
+                if chan_in>(nFRET+nS)
+                    chan_in = nFRET + nS;
+                end
+            end
+            
             if chan_in > (nFRET + nS)
                 perSec = p.proj{proj}.fix{2}(4);
                 perPix = p.proj{proj}.fix{2}(5);

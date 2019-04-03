@@ -1,5 +1,9 @@
 function p = discrTraces(h_fig, mol, p)
 
+% Last update: MH, 3.4.2019
+% >> correct source parameter for tolerance window used to identify common
+%    transitions in top traces
+%
 % Last update: MH, 30.3.2019
 % >> comment and reorganize code (no modification)
 
@@ -99,7 +103,10 @@ if (toBottom && ~isDiscrBot) || ((~toBottom || toBottom == 2) && ...
         
         % discretize intensity-time traces
         prm = permute(prm_DTA{2}(method,:,nFRET+nS+1:end),[3,2,1]);
-        tol = prm(1,4);
+        
+        % corrected by MH, 3.4.2019
+%         tol = prm(1,4);
+
         thresh = prm_DTA{4}(:,:,nFRET+nS+1:end);
         top = (getDiscr(method, I_tr, [], prm, thresh, calc, ...
             'Discretisation of top traces...', h_fig))';
@@ -144,6 +151,10 @@ if (toBottom && ~isDiscrBot) || ((~toBottom || toBottom == 2) && ...
                 
                 % get changing points common to both discretized intensity-
                 % time traces
+                
+                % corrected by MH, 3.4.2019
+                tol = prm_DTA{2}(method,4,n);
+                
                 cp = get_cpFromDiscr([Idon Iacc]);
                 cp = correl_cp(cp, tol);
                 
