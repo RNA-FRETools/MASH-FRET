@@ -209,10 +209,16 @@ This model is purely empirical: model parameters are obtained by fitting the dis
 [*&#956;*<sub>ic,0</sub>](){: .math_var } with the function:
 
 {: .equation }
-P(*&#956;*<sub>ic,0</sub>) = ( 1-*A*<sub>CIC</sub> ) &#215; exp( -( *&#956;*<sub>ic,0</sub> - *&#956;*<sub>ic,d</sub> )<sup>2</sup> / ( 2 &#215; *&#963;*<sub>ic</sub><sup>2</sup> ) ) + *A*<sub>CIC</sub> &#215; exp( - *intensity* / *&#964;*<sub>CIC</sub> )
+P(*&#956;*<sub>ic,0</sub>) = ( 1-*A*<sub>CIC</sub> ) &#215; exp[ -( *&#956;*<sub>ic,0</sub> - *&#956;*<sub>ic,d</sub> )<sup>2</sup> / ( 2 &#215; *&#963;*<sub>ic</sub><sup>2</sup> ) ] + *A*<sub>CIC</sub> &#215; exp( - *&#956;*<sub>ic,0</sub> / *&#964;*<sub>CIC</sub> )
 
-**Note:** *Random generation of NExpN noise is very time consuming. 
-Expect spending around 8 hours to simulate a 256-by-256-wide and 4000 frame-long video.*
+To fit dark count distribution with the NExpN model, you can use our home-written script located at:
+
+```
+MASH-FRET/fit_NExpN.m
+```
+
+**Note:** *Random generation of NExpN noise is relatively time consuming. 
+Expect spending around 20 minutes to simulate a 256-by-256-wide and 4000 frame-long video.*
 
 **<u>default</u>:** values taken from the literature (reference 
 [here](../../citations.html#simulation-algorithm-testing)):
