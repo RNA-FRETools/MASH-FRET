@@ -6,7 +6,10 @@ function saveProcAscii(h_fig, p, xp, pname, name)
 % "pname" >> destination folder
 % "name" >> destination file name
 
-% Last update: 20th of February 2019 by Mélodie Hadzic
+% Last update: 3rd of April 2019 by Mélodie Hadzic
+% --> correct export of gamma factors for multiple FRET channels
+%
+% update: 20th of February 2019 by Mélodie Hadzic
 % --> modify dwell time file header for coherence with simulation
 %
 % update: 17th of February 2019 by Mélodie Hadzic
@@ -241,6 +244,7 @@ guidata(h_fig, h);
 % -------------------------------------------------------------------------
 
 gammaAll = NaN(nMol,nFRET);  % added by FS, 19.3.2018
+
 n = 0;
 try
     for m = 1:nMol
@@ -900,10 +904,19 @@ if saveTr
         
         % write data to file
         f = fopen(cat(2,pname_xp,fname_gam), 'Wt');
-        fmt = repmat('%0.3f\t', nFRET);
+        
+        % modified by MH, 3.4.2019
+%         fmt = repmat('%0.3f\t',nFRET);
+        fmt = repmat('%0.3f\t',1,nFRET);
+        
         fmt(end) = 'n';
-        gammaAll(isnan(gammaAll)) = [];
-        fprintf(f, fmt, gammaAll);
+        
+        % modified by MH, 3.4.2019
+%         gammaAll(isnan(gammaAll)) = [];
+%         fprintf(f, fmt, gammaAll);
+        gammaAll(~~sum(isnan(gammaAll),2),:) = [];
+        fprintf(f, fmt, gammaAll');
+        
         fclose(f);
     end
 end

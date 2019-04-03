@@ -1,20 +1,26 @@
 function pushbutton_addTraces_Callback(obj, evd, h)
 
 %%
+
+% update: 3.4.2019 by MH
+% >> adapt gamma factor import for more than one FRET calculation
+% >> correct MH's past modifications: gamma factors must be saved in prm
+%    and in curr parameters to be taken into account
+%
 % Last update: 2.4.2019 by MH
 % >> fix error when importing ASCII traces: correct dimensions of 
 %    bleedthrough coefficients when resetting cross-talks to 0.
 % >> reset cross-talks to 0 whether or not gamma files were successfully
 %    imported or not.
 %
-% Last update: 29.3.2019 by MH
+% update: 29.3.2019 by MH
 % >> manage down-compatibility and adapt reorganization of cross-talk 
 %    coefficients to new parameter structure (see 
 %    project/setDefPrm_traces.m)
 % >> cancel saving of ASCII-improted gamma factors in p.proj{i}.prm: if
 %    save in prm, molecule won't be processed with new gammas
 %
-% Last update: 28.3.2019 by MH
+% update: 28.3.2019 by MH
 % --> For ASCII traces import: gamma factors files are recovered from 
 %     import options
 %
@@ -88,9 +94,10 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
             gammasCell = cell(1,length(fnameGamma));
             for f = 1:length(fnameGamma)
                 filename = [pnameGamma fnameGamma{f}];
-                fileID = fopen(filename,'r');
-                formatSpec = '%f';
-                gammasCell{f} = fscanf(fileID,formatSpec);
+%                 fileID = fopen(filename,'r');
+%                 formatSpec = '%f';
+%                 gammasCell{f} = fscanf(fileID,formatSpec);
+                gammasCell{f} = importdata(filename);
             end
             gammas = cell2mat(gammasCell');
         end
@@ -156,7 +163,11 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
         % added by FS, 28.3.2018
         if ~strcmp(fext, '.mash')
             if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
-                if length(gammas) ~= nMol
+                
+                % modified by MH, 3.4.2019
+%                 if length(gammas) ~= nMol
+                if size(gammas,1) ~= nMol
+                    
                     updateActPan('number of gamma factors does not match the number of ASCII files loaded. Set all gamma factors to 1.', h.figure_MASH, 'error');
                     fnameGamma = []; % set to empty (will not try to import any gamma factors from file)
                 end    
@@ -249,10 +260,13 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
                     % set the gamma factor from the .gam file 
                     % (FRET is calculated on the spot based on imported and corrected
                     % intensities)
-                    p.proj{i}.curr{n}{5}{3} = gammas(n);
                     
-                    % cancelled by MH, 29.3.2019
+                    % modified by MH, 3.4.2019
+%                     p.proj{i}.curr{n}{5}{3} = gammas(n);
 %                     p.proj{i}.prm{n}{5}{3} = gammas(n);
+                    p.proj{i}.curr{n}{5}{3} = gammas(n,:);
+                    p.proj{i}.prm{n}{5}{3} = gammas(n,:);
+
 
                 end
                 
