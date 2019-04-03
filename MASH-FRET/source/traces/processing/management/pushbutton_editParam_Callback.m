@@ -1,4 +1,10 @@
 function pushbutton_editParam_Callback(obj, evd, h)
+
+% Last update: by MH, 3.4.2019
+% >> manage error that occurs after changing FRET and stoichiometry 
+%    calculations in project options: adapt fix value of bottom trace plot 
+%    popupmenu to actual FREt and S sizes
+
 if ~isempty(h.param.ttPr.proj)
     
     setContPan('Edit project parameters...','process',h.figure_MASH);
@@ -21,6 +27,10 @@ if ~isempty(h.param.ttPr.proj)
     r{3} = p.proj{proj}.S;
 
     if ~isequal(r,q)
+        % added by MH, 3.4.2019
+        labels = p.proj{proj}.labels;
+        clr = p.proj{proj}.colours;
+        
         nFRET = size(r{2},1);
         nMol = numel(h.param.ttPr.proj{proj}.coord_incl);
         nS = size(r{3},1);
@@ -44,6 +54,15 @@ if ~isempty(h.param.ttPr.proj)
             p.defProjPrm.mol);
         p.proj{proj}.fix = adjustVal(p.proj{proj}.fix, ...
             p.defProjPrm.general);
+        
+        % added by MH, 3.4.2019
+        if (nFRET+nS) > 0
+            str_bot = getStrPop('plot_botChan',{FRET S exc clr labels});
+            if p.proj{proj}.fix{2}(3)>numel(str_bot)
+                p.proj{proj}.fix{2}(3) = numel(str_bot);
+            end
+        end
+        
         p.proj{proj}.exp = setExpOpt(p.proj{proj}.exp, p.proj{proj});
         
         nMol = numel(p.proj{proj}.coord_incl);
