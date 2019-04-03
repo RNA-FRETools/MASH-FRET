@@ -1,13 +1,13 @@
 $link-color: $blue-100;
 $var-color: $body-text-color;
-$eq-color: $green-100;
+$eq-color: $link-color;
 
 .equation {
   display: block;
   font-family: Times;
   color: $eq-color;
   padding: 1.5rem;
-  font-weight: bold;
+//  font-weight: bold;
   }
   
 .math_var {
