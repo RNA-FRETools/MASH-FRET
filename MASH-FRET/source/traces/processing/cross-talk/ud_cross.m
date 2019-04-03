@@ -1,7 +1,12 @@
 function ud_cross(h_fig)
 
 %%
-% Last update: 29.3.2019 by MH
+% Last update: 3.4.2019 by MH
+% --> change pushbutton string to "Opt." if method photobleaching-based 
+%     gamma is chosen, or "Load" if manual
+% --> correct control off-enabling when data "none" is selected
+%
+% update: 29.3.2019 by MH
 % --> delete popupmenu_excDirExc and text_dirExc from GUI
 % --> adapt display of bleethrough and direct excitation coefficient to new 
 %     parameter structure (see project/setDefPrm_traces.m)
@@ -111,25 +116,50 @@ if ~isempty(p)
         set(h.edit_dirExc,'String',num2str(0));
     end
     
-    if nFRET > 0 && curr_fret>=1
-        set([h.text_TP_factors_data h.popupmenu_gammaFRET ...
-            h.text_TP_factors_method h.popupmenu_TP_factors_method ...
-            h.text_TP_factors_gamma],'Enable','on');
-        
-        set(h.popupmenu_gammaFRET,'Value',curr_fret+1);
-        set(h.edit_gammaCorr,'String',num2str(p_panel{3}(curr_fret)));
+    % modified by MH, 3.4.2019
+%     if nFRET > 0 && curr_fret>=1
+    if nFRET > 0
+        if curr_fret>=1
+            
+            % modified by MH, 3.4.2019
+%             set([h.text_TP_factors_data h.popupmenu_gammaFRET ...
+%                 h.text_TP_factors_method h.popupmenu_TP_factors_method ...
+%                 h.text_TP_factors_gamma],'Enable','on');
+            set([h.text_TP_factors_data h.popupmenu_gammaFRET ...
+                h.text_TP_factors_method h.popupmenu_TP_factors_method ...
+                h.text_TP_factors_gamma h.pushbutton_optGamma],'Enable',...
+                'on');
 
-        switch p_panel{4}(1)
-            case 0 % manual
-                set(h.edit_gammaCorr,'Enable','on');
-                set(h.pushbutton_optGamma,'enable','off');
-                
-            case 1 % photobleaching based
-                set(h.edit_gammaCorr,'Enable','inactive');
-                set(h.pushbutton_optGamma,'enable','on');
+            set(h.popupmenu_gammaFRET,'Value',curr_fret+1);
+            set(h.edit_gammaCorr,'String',num2str(p_panel{3}(curr_fret)));
+
+            switch p_panel{4}(1)
+                case 0 % manual
+                    set(h.edit_gammaCorr,'Enable','on');
+                    
+                    % modified by MH, 3.4.2019
+%                     set(h.pushbutton_optGamma,'enable','off');
+                    set(h.pushbutton_optGamma,'String','Load');
+
+                case 1 % photobleaching based
+                    set(h.edit_gammaCorr,'Enable','inactive');
+                    
+                    % modified by MH, 3.4.2019
+%                     set(h.pushbutton_optGamma,'enable','on');
+                    set(h.pushbutton_optGamma,'String','Opt.');
+                    
+            end
+            set(h.popupmenu_TP_factors_method,'Enable','on','Value',...
+                p_panel{4}(1)+1);
+        
+        % added by MH, 3.4.2019
+        else
+            set([h.text_TP_factors_data,h.popupmenu_gammaFRET],'Enable',...
+                'on')
+            set([h.text_TP_factors_method h.popupmenu_TP_factors_method ...
+                h.text_TP_factors_gamma, h.edit_gammaCorr ...
+                h.pushbutton_optGamma],'Enable','off');
         end
-        set(h.popupmenu_TP_factors_method,'Enable','on','Value',...
-            p_panel{4}(1)+1);
         
     else
         set([h.text_TP_factors_data h.popupmenu_gammaFRET ...

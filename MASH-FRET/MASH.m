@@ -3055,8 +3055,27 @@ end
 
 % FS added 8.1.2018
 function pushbutton_optGamma_Callback(obj, evd, h)
-gammaOpt(h.figure_MASH);
 
+% Last update: by MH, 3.4.2019
+% >> use the same button to load gamma files (in manual mode) or open 
+%    photobleaching-based parameters
+
+p = h.param.ttPr;
+if ~isempty(p.proj)
+    proj = p.curr_proj;
+    mol = p.curr_mol(proj);
+    method = p.proj{proj}.curr{mol}{5}{4}(1);
+    
+    % modified by MH, 3.4.2019
+%     gammaOpt(h.figure_MASH);
+    switch method
+        case 0 % manual: load gamma from files
+            pushbutton_loadGamma_Callback(0,[],h.figure_MASH);
+            
+        case 1 % photobleaching-based: photo-bleaching otpions
+            gammaOpt(h.figure_MASH);
+    end
+end
 
 
 % MH modified checkbox to popupmenu 26.3.2019
@@ -3228,7 +3247,7 @@ if ~isempty(p.proj)
     % added by MH, 3.4.2019
     nFRET = size(p.proj{proj}.FRET,1);
     nS = size(p.proj{proj}.S,1);
-    toFRET = p.proj{proj}.prm{mol}{4}{1}(2);
+    toFRET = p.proj{proj}.curr{mol}{4}{1}(2);
     if toFRET==1 && (nFRET+nS)>0
         if chan_in>(nFRET+nS)
             chan_in = nFRET + nS;
@@ -3305,7 +3324,7 @@ if ~isempty(p.proj)
     % added by MH, 3.4.2019
     nFRET = size(p.proj{proj}.FRET,1);
     nS = size(p.proj{proj}.S,1);
-    toFRET = p.proj{proj}.prm{mol}{4}{1}(2);
+    toFRET = p.proj{proj}.curr{mol}{4}{1}(2);
     if toFRET==1 && (nFRET+nS)>0
         if chan_in>(nFRET+nS)
             chan_in = nFRET + nS;
@@ -3348,6 +3367,57 @@ if ~isempty(p.proj)
 end
 
 
+function edit_TP_states_param3_Callback(obj, evd, h)
+
+% created by MH, 3.4.2019
+% >> function was missing (???)
+
+p = h.param.ttPr;
+if ~isempty(p.proj)
+    proj = p.curr_proj;
+    mol = p.curr_mol(proj);
+    method = p.proj{proj}.curr{mol}{4}{1}(1);
+    chan_in = p.proj{proj}.fix{3}(4);
+    
+    % added by MH, 3.4.2019
+    nFRET = size(p.proj{proj}.FRET,1);
+    nS = size(p.proj{proj}.S,1);
+    toFRET = p.proj{proj}.curr{mol}{4}{1}(2);
+    if toFRET==1 && (nFRET+nS)>0
+        if chan_in>(nFRET+nS)
+            chan_in = nFRET + nS;
+        end
+    end
+    
+    if sum(double(method == [2,4]))
+        val = round(str2num(get(obj, 'String')));
+        set(obj, 'String', num2str(val));
+
+        if isempty(val) || numel(val)~=1 || isnan(val) || ...
+                (method==2 && val<=0) || (method==4 && ~(val==1 || val==2))
+            set(obj, 'BackgroundColor', [1 0.75 0.75]);
+            
+            switch method
+                case 2 % VbFRET
+                    updateActPan('Number of iterations must be > 0',...
+                        h.figure_MASH,'error');
+
+                case 4 % CPA
+                    updateActPan(cat(2,'Method for change localisation ',...
+                        'must be 1 or 2 ("max." or "MSE")'),h.figure_MASH,...
+                        'error');
+            end
+        else
+            set(obj, 'BackgroundColor', [1 1 1]);
+            p.proj{proj}.curr{mol}{4}{2}(method,3,chan_in) = val;
+            h.param.ttPr = p;
+            guidata(h.figure_MASH, h);
+            ud_DTA(h.figure_MASH);
+        end
+    end
+end
+
+
 function edit_TP_states_paramRefine_Callback(obj, evd, h)
 
 % Last update: by MH, 3.4.2019
@@ -3372,7 +3442,7 @@ if ~isempty(p.proj)
         % added by MH, 3.4.2019
         nFRET = size(p.proj{proj}.FRET,1);
         nS = size(p.proj{proj}.S,1);
-        toFRET = p.proj{proj}.prm{mol}{4}{1}(2);
+        toFRET = p.proj{proj}.curr{mol}{4}{1}(2);
         if toFRET==1 && (nFRET+nS)>0
             if chan_in>(nFRET+nS)
                 chan_in = nFRET + nS;
@@ -3411,7 +3481,7 @@ if ~isempty(p.proj)
         nS = size(p.proj{proj}.S,1);
         
         % added by MH, 3.4.2019
-        toFRET = p.proj{proj}.prm{mol}{4}{1}(2);
+        toFRET = p.proj{proj}.curr{mol}{4}{1}(2);
         if toFRET==1 && (nFRET+nS)>0
             if chan_in>(nFRET+nS)
                 chan_in = nFRET + nS;
@@ -3472,7 +3542,7 @@ if ~isempty(p.proj)
             chan_in = p.proj{proj}.fix{3}(4);
             nFRET = size(p.proj{proj}.FRET,1);
             nS = size(p.proj{proj}.S,1);
-            toFRET = p.proj{proj}.prm{mol}{4}{1}(2);
+            toFRET = p.proj{proj}.curr{mol}{4}{1}(2);
             if toFRET==1 && (nFRET+nS)>0
                 if chan_in>(nFRET+nS)
                     chan_in = nFRET + nS;
@@ -3535,7 +3605,7 @@ if ~isempty(p.proj)
             nS = size(p.proj{proj}.S,1);
             
             % added by MH, 3.4.2019
-            toFRET = p.proj{proj}.prm{mol}{4}{1}(2);
+            toFRET = p.proj{proj}.curr{mol}{4}{1}(2);
             if toFRET==1 && (nFRET+nS)>0
                 if chan_in>(nFRET+nS)
                     chan_in = nFRET + nS;
@@ -3589,7 +3659,7 @@ if ~isempty(p.proj)
             nS = size(p.proj{proj}.S,1);
             
             % added by MH, 3.4.2019
-            toFRET = p.proj{proj}.prm{mol}{4}{1}(2);
+            toFRET = p.proj{proj}.curr{mol}{4}{1}(2);
             if toFRET==1 && (nFRET+nS)>0
                 if chan_in>(nFRET+nS)
                     chan_in = nFRET + nS;
@@ -3643,7 +3713,7 @@ if ~isempty(p.proj)
             nS = size(p.proj{proj}.S,1);
             
             % added by MH, 3.4.2019
-            toFRET = p.proj{proj}.prm{mol}{4}{1}(2);
+            toFRET = p.proj{proj}.curr{mol}{4}{1}(2);
             if toFRET==1 && (nFRET+nS)>0
                 if chan_in>(nFRET+nS)
                     chan_in = nFRET + nS;
