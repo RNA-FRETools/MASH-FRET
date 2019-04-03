@@ -72,13 +72,16 @@ To be obtain the most accurate intensities, the single molecule positions must b
 **[*scheme: sub-images with shifted and centered coordinates*]**
 
 Because of imperfect coordinates transformation, it can happen that positions are shifted one or two pixels away from the brightest pixel.
-In that case, the positions must be recentered.
+In that case, the positions must be recentered on the brightest pixel.
 
-To recenter single molecule positions:
+MASH offers the possibility to automatically recenter single molecule positions; see 
+[Remarks](#remarks) for more details.
+
+To automatically recenter single molecule positions:
 
 {: .procedure }
 1. Select the molecule index in the 
-   [Molecule list](panels/panel-sample.html#molecule-list).  
+   [Molecule list](panels/panel-sample-management.html#molecule-list).  
      
 1. If necessary, adjust the brightness and contrast in 
    [Single molecule images](panels/panel-subimage.html#single-molecule-images) to render the molecule profile the most apparent.  
@@ -88,9 +91,6 @@ To recenter single molecule positions:
      
 1. To prevent re-centering on potentially empty single molecule images, deactivate the "recenter" option in 
    [Sub molecule coordinates](panels/panel-subimage.html#single-molecule-coordinates) after re-centering.
-
-**Note:** *If necessary, molecule x- and y-coordinates can be modified manually; see 
-[Sub molecule coordinates](panels/panel-subimage.html#single-molecule-coordinates) for more information.*
 
 
 ## Correct intensities
@@ -124,7 +124,7 @@ To correct intensities from background:
 
 {: .procedure }
 1. Select the molecule index in the 
-   [Molecule list](panels/panel-sample.html#molecule-list).  
+   [Molecule list](panels/panel-sample-management.html#molecule-list).  
      
 1. For each intensity-time trace, set parameters:  
      
@@ -145,6 +145,8 @@ To correct intensities from background:
 Cross-talks are due to instrumental imperfections and include two phenomena:
 * the detection of an emitter fluorescence into unspecific video channels, called the <u>bleedthrough</u>
 * the detection of an emitter fluorescence into specific video channel after unspecific laser illumination, called the <u>direct excitation</u>
+
+**[*scheme: bleedthrough/direct excitation explained on emission/absorption spectra*]**
 
 The bleedthrough and direct excitation coefficient can be determined from control experiments involving single-labelled species.
 The bleedthrough coefficient 
@@ -185,7 +187,7 @@ To correct intensities from cross-talks:
 
 {: .procedure }
 1. Select the molecule index in the 
-   [Molecule list](panels/panel-sample.html#molecule-list).  
+   [Molecule list](panels/panel-sample-management.html#molecule-list).  
      
 1. For each emitter, set parameters 
    [Cross-talks settings](panels/panel-factor-corrections.html#cross-talks-settings)  
@@ -220,7 +222,7 @@ Apparent FRET values
 [*E*<sup>\*</sup><sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } from a donor emitter 
 [*D*](){: .math_var } to an acceptor emitter 
 [*A*](){: .math_var } are calculated according to 
-[FRET calculation](../video-processing/functionalities/set-project-options.html#fret-calculations) and are 
+[FRET calculations](../video-processing/functionalities/set-project-options.html#fret-calculations) and are 
 [*&#947;*](){: .math_var }-corrected to 
 [*E*<sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } values such as:
 
@@ -232,7 +234,7 @@ To correct apparent FRET-time traces with
 
 {: .procedure }
 1. Select the molecule index in the 
-   [Molecule list](panels/panel-sample.html#molecule-list).  
+   [Molecule list](panels/panel-sample-management.html#molecule-list).  
      
 1. For each donor-acceptor FRET pair, set parameters 
    [Gamma factor settings](panels/panel-factor-corrections.html#gamma-factor-settings)  
@@ -245,13 +247,107 @@ To correct apparent FRET-time traces with
    ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL") respectively.
  
 
-## Sort trajectories with Trace manager
+## Sort trajectories into subgroups
 
+Single molecules trajectories can be manually sorted into subgroups to perform category-specific analysis.
+For instance, molecules with correct dye-labelling and showing dynamics can be saved into a separate project to determine the state configuration and corresponding state transition rates involved in molecule dynamics.
+It can also be convenient to sort molecules with incomplete dye labelling in order to make statistics on the labelling efficiency in the sample.
+Beside, it is important to identify and exclude incoherent intensity-time traces from the analysis set.
+
+**[*scheme: example of dynamic trace, single labelled trace and incoherent trace*]**
+
+MASH offers a tool called Trace manager that can be used to perform such task.
+Molecules can also be sorted manually in the Trace processing interface; see 
+[Remarks](#remarks) for more details.
+
+To sort molecules and save a particular subgroup:
+
+{: .procedure }
+1. Open Trace manager by pressing 
+   ![TM](../assets/images/gui/TP-but-tm.png "TM").  
+     
+1. Sort single molecule data into subgroups by referring to  
+   [Use Trace manager](functionalities/use-trace-manager.html); 
+   in order to save the original data set with manual sorting, it is recommended to save modifications by pressing 
+   ![Save](../assets/images/gui/TP-but-save.png "Save") and overwriting the project file.  
+     
+1. Clear unselected molecules form the 
+   [Molecule list](panels/panel-sample-management.html#molecule-list) and from the data set by pressing 
+   ![Clear](../assets/images/gui/TP-but-clear.png "Clear").
+     
+1. Save the conserved subgroup of molecules to a new 
+   [.mash file](../output-files/mash-mash-project.html) by pressing 
+   ![Save](../assets/images/gui/TP-but-save.png "Save").
 
 
 ## Correct for photobleaching
 
+It can happen that emitters get photochemically destroyed after absorbing a certain amount of photons.
+This phenomenon is called photobleaching and results in the permanent loss of signal in the dye-specific emission channel that translates into a drop of the corresponding intensity-time trace to zero.
+
+**[*scheme: photobleaching in trace and effect on FRET trace*]**
+
+These zero-intensity portions of the intensity-time traces may bias the following histogram and transition analysis by creating irrelevantly fluctuating FRET data.
+To prevent such bias, it is necessary to detect photobleaching and delete photobleached data by truncating intensity-time traces.
+
+To detect and truncate photobleached data:
+
+{: .procedure }
+1. Select the molecule index in the 
+   [Molecule list](panels/panel-sample-management.html#molecule-list).  
+     
+1. Set parameters  
+     
+   [Photobleaching detection method](panels/panel-photobleaching.html#photobleaching-detection-method)  
+   [Method parameters](panels/panel-photobleaching.html#method-parameters)  
+   [Truncate trajectories](panels/panel-photobleaching.html#truncate-trajectories)  
+     
+1. If desired, apply the same parameter settings to all molecules by pressing 
+   ![all](../../assets/images/gui/TP-but-all.png "all")   
+     
+1. Update data correction and display for current molecule only or for all molecules by pressing 
+   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE") or 
+   ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL") respectively.
+
+
 ## Smooth trajectories
+
+Intensity-time traces are naturally noisy due to the stochastic nature of photon emission but also of camera detection, signal amplification and signal conversion.
+The magnitude of the noise in a background- and cross-talk-corrected intensity-time trace 
+[*I*<sup>\*\*\*</sup>(*t*)](){: .math_var } is characterized by the signal-to-noise ratio 
+[*SNR*](){: .math_var } calculated as:
+
+{: .equation }
+*SNR* = *&#956;*( *I*<sup>\*\*\*</sup>(*t*) ) / *&#963;*( *I*<sup>\*\*\*</sup>(*t*) )
+
+with 
+[*&#956;*](){: .math_var } and 
+[*&#963;*](){: .math_var }, the respective mean and standard deviation of the intensities over the observation time.
+
+A low 
+[*SNR*](){: .math_var } results in a large broadening in intensity histograms and to even larger broadening in intensity ratio histograms, *e. g.* in FRET histograms.
+Large broadening in FRET histograms implies greater overlaps between FRET populations which make the identification of the state configuration more difficult.
+One way to minimize the population overlap in histograms is to artificially reduce the noise magnitude in, or to "smooth", intensity-time traces.
+
+{: .procedure }
+1. Select the molecule index in the 
+   [Molecule list](panels/panel-sample-management.html#molecule-list).  
+     
+1. Set parameters  
+     
+   [Photobleaching detection method](panels/panel-photobleaching.html#photobleaching-detection-method)  
+   [Method parameters](panels/panel-photobleaching.html#method-parameters)  
+   [Truncate trajectories](panels/panel-photobleaching.html#truncate-trajectories)  
+     
+1. If desired, apply the same parameter settings to all molecules by pressing 
+   ![all](../../assets/images/gui/TP-but-all.png "all")   
+     
+1. Update data correction and display for current molecule only or for all molecules by pressing 
+   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE") or 
+   ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL") respectively.
+
+**Note:** *Smoothing is not recommended when determining state trajectories as it induces a modification in data distribution, while most state finding algorithms rely on a naturally distributed noise to identify states and detect state transitions.*
+
 
 ## Determine state trajectories
 
@@ -259,4 +355,16 @@ To correct apparent FRET-time traces with
  
 ## Remarks
 {: .no_toc }
+
+If the initial single molecule position is shifted more than 3 pixels from the brightest pixel, spots coordinates are considered as ill-defined and the automatic recentering option will not function.
+In this case, it is recommended to review the spot detection and/or transformation procedure to obtain a more decent set of single molecule coordinates; see 
+[Spotfinder](../video-processing/panels/panel-molecule-coordinates.html#spotfinder) and 
+[Coordinates transformation](../video-processing/panels/panel-molecule-coordinates.html#coordinates-transformation) for more information. 
+However, if desired, molecule x- and y-coordinates must be modified manually; see 
+[Sub molecule coordinates](panels/panel-subimage.html#single-molecule-coordinates) for more information.
+
+Molecule can be excluded from or included in the data set and can be given a label while browsing the 
+[Molecule list](panels/panel-sample-management.html#molecule-list) in the Trace processing interface; see 
+[Molecule status](panels/panel-sample-management.html#molecule-status) for more information.
+
 
