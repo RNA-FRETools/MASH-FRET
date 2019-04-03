@@ -5,8 +5,11 @@ function def = setDefPrm_traces(p, proj)
 % "def" >> 1-by-n cell array containing molecule parameters for each of ...
 %          the n panels
 
-% Cross talk and filter corrections
-% Last update: by MH 29.3.2019
+% Last update: by MH 3.4.2019
+% >> correct default value for bottom axes plot
+% >> change default state finding algorithm to STaSI
+%
+% update: by MH 29.3.2019
 % >> change bleedthrough coefficient (mol{5}{1}) structure: coefficients 
 %    are independant of laser
 % >> change direct excitation coefficient (mol{5}{2}) structure: direct 
@@ -68,8 +71,11 @@ elseif nS > 1 || nFRET > 1
 elseif nFRET == 1 && nS == 1
     gen{2}(3) = nFRET + nS + 2; % + none + all 
     
-else
+elseif nFRET>0 || nS>0
     gen{2}(3) = 2;
+    
+else
+    gen{2}(3) = 1;
 end
 
 gen{2}(4) = p.proj{proj}.cnt_p_sec; % plot in intensity units per second
@@ -146,9 +152,9 @@ end
 
 % DTA
 if nFRET > 0 || nS > 0
-    mol{4}{1} = [1 1 0]; % method/apply to FRET/recalc states;
+    mol{4}{1} = [5 1 0]; % method/apply to FRET/recalc states;
 else
-    mol{4}{1} = [1 0 0];
+    mol{4}{1} = [5 0 0];
 end
 
 for i = 1:nFRET
