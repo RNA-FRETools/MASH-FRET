@@ -1,12 +1,25 @@
-function restruct_trace_file(pname)
+function restruct_trace_file(pname,varargin)
 % | Format trajectories files (*.txt) to MASH-importable structure.
 % |
 % | command: restruct_trace_file(pname);
 % | pname >> source directory
+% | varargin >> optional: DONOR_EXC 1-by-(nFRET+nS) laser wavelengths for 
+% |             donor- and emitter-specific illuminations used in FRET and 
+% |             stoichiometry calculations.
+% |             example: if files contain columns for FRET_Cy3>Cy5, 
+% |             discrFRET_Cy3>Cy5, FRET_Cy5>Cy7, discrFRET_Cy5>Cy7,
+% |             S_Cy3, discrS_Cy3, S_Cy5, and discrS_Cy5
+% |             in order of appearence, DONOR_EXC = [532 532 638 638 532 
+% |             532 638 638]
 % |
 % | example: restruct_trace_file('C:\MyDataFolder\experiment_01\traces_processing\traces_ASCII\');
 
-% Last update: 18th of February 2019 by Mélodie Hadzic
+% Last update: 3rd of April 2019 by Mélodie Hadzic
+% --> implement restructuration of files with multiple FRET and 
+%     stoichiometry and write substitute to MATLAB built-in function
+%     extractBetween for version older than 2016b
+%
+% update: 18th of February 2019 by Mélodie Hadzic
 % --> update help section
 
 % correct source directory
@@ -14,8 +27,11 @@ if ~strcmp(pname(end),'\')
     pname = cat(2,pname,filesep);
 end
 
-DONOR_EXC = 532;
-
+if ~isempty(varargin)
+    DONOR_EXC = varargin{1};
+else
+    DONOR_EXC = 532;
+end
 
 fList = dir(cat(2,pname,'*.txt'));
 F = size(fList,1);
@@ -53,8 +69,11 @@ for ff = 1:F
     for ii = 1:size(head,2)
         
         % added by FS, 15.11.18
-        u = extractBetween(head{ii},'(',')');
+        % modified by MH, 3.4.2019
+%         u = extractBetween(head{ii},'(',')');
+        u = regexp(head{ii},'\(\w*\)','match');
         if ~isempty(u)
+            u = u(2:end-1);
             units{ff} = u;
         end
         head{ii} = regexprep(head{ii},'\(\w+\)','');
@@ -75,7 +94,12 @@ excl = sum(~~headPos,1)<F;
 headPos(:,excl) = [];
 allHead(excl) = [];
 % remove discretized intensities
-excl = contains(allHead,'discr.I');
+
+% modified by MH, 3.4.2019
+% excl = contains(allHead,'discr.I');
+excl = strfind(allHead,'discr.I');
+excl = ~cellfun('isempty',excl);
+
 allHead(excl) = [];
 headPos(:,excl) = [];
 
@@ -140,6 +164,11 @@ for ff = 1:F
         
         % organize intensity data row-wise regarding excitation
         alexData = NaN(nExc*L,nChan+1+isFrame);
+        
+        % added by MH, 3.4.2019
+        % initilize counter for non-intensity columns
+        j = 0;
+        
         for ii = 1:nCol
             % identify excitation for each column
             for l = 1:nExc
@@ -152,7 +181,25 @@ for ff = 1:F
             % If ALEX is used, data are alternated row-wise.
             if isempty(isExc) % FRET, FRET_discr, S or S_discr
                 alexData = cat(2,alexData,NaN(L*nExc,1));
-                alexData(find(exc==DONOR_EXC):nExc:end,end) = data(:,ii);
+
+                % modified by MH, 3.4.2019
+%                 alexData(find(exc==DONOR_EXC):nExc:end,end) = data(:,ii);
+                if numel(DONOR_EXC)>1
+                    j = j+1;
+                    if j>numel(DONOR_EXC)
+                        disp(cat(2,'the number of non-intensity columns ',...
+                            'in file ',fList(ff,1).name,'is greater than ',...
+                            'second input argument size: please review ',...
+                            'the second input argument'));
+                        return;
+                    end
+                    alexData(find(exc==DONOR_EXC(j)):nExc:end,end) = ...
+                        data(:,ii);
+                else
+                    alexData(find(exc==DONOR_EXC):nExc:end,end) = ...
+                        data(:,ii);
+                end
+
             else
                 if ii>1+isFrame+nChan % second excitation
                     id = ii-1-isFrame-nChan;
