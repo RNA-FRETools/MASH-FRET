@@ -17,6 +17,9 @@ The procedure includes three steps:
 1. TOC
 {:toc}
 
+
+---
+
 ## Generate random FRET state sequences
 
 A FRET state sequence is the ideal FRET trajectory followed by a single molecule. 
@@ -51,6 +54,8 @@ To generate FRET state sequences:
      
 1. Generate new state sequences whenever one of the parameters is changed.
 
+
+---
 
 ## Create intensity trajectories and images 
 
@@ -105,6 +110,8 @@ To create intensity trajectories and images:
 1. Update intensity data whenever one of the parameters is changed.
 
 
+---
+
 ## Export trajectories and video to files
 
 Simulated data and simulation parameters can be exported to various file formats.
@@ -122,7 +129,10 @@ To export data to files:
 1. Press 
 ![Export files](../assets/images/gui/but-sim-export.png "Export files") to start writing data in files. The execution time can be long; see 
 [Remarks](#remarks) for details.
- 
+
+
+---
+
 ## Remarks
 {: .no_toc }
 

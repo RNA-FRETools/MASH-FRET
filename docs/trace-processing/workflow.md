@@ -8,14 +8,18 @@ nav_order: 2
 # Trace processing workflow
 {: .no_toc }
 
-In this section you will learn how to correct single molecule intensity-time traces from experimental bias and how to obtain state trajectories. Exported data, in particular to the 
+In this section you will learn how to correct single molecule intensity-time traces from experimental bias and obtain state trajectories. 
+Exported data, in particular to the 
 [mash project](../output-files/mash-mash-project.html) file, can further be used in modules Histogram analysis and Transition analysis for 
 [data analysis](../tutorials/analyze-data.html).
 
-The procedure includes eight steps:
+The procedure includes nine steps:
 
 1. TOC
 {:toc}
+
+
+---
 
 ## Import single molecule data
 
@@ -48,7 +52,7 @@ To import single molecule data from a ASCII files:
 {: .procedure }
 1. Set the import settings by pressing 
    ![ASCII options ...](../assets/images/gui/TP-but-ascii-options-3p.png "ASCII options ..."); see 
-   [Set project import options](functionalities/set-project-import-options.html) for more information  
+   [Set project import options](functionalities/set-project-import-options.html) for help  
      
 1. Import data by pressing 
    ![Add](../assets/images/gui/TP-but-add.png "Add") and selecting the corresponding ASCII files; this will add a new project to the project list  
@@ -61,6 +65,8 @@ To import single molecule data from a ASCII files:
    [.mash file](../output-files/mash-mash-project.html) by pressing 
    ![Save](../assets/images/gui/TP-but-save.png "Save").
 
+
+---
 
 ## Adjust single molecule position
 
@@ -93,6 +99,8 @@ To automatically recenter single molecule positions:
    [Sub molecule coordinates](panels/panel-subimage.html#single-molecule-coordinates) after re-centering.
 
 
+---
+
 ## Correct intensities
 
 Raw intensities obtained after integration include the contribution of signals that must be subtracted to calculate reliable FRET and stoichiometry values.
@@ -123,7 +131,7 @@ with
 To correct intensities from background:
 
 {: .procedure }
-1. Select the molecule index in the 
+1. If not already done, select the molecule index in the 
    [Molecule list](panels/panel-sample-management.html#molecule-list).  
      
 1. For each intensity-time trace, set parameters:  
@@ -137,6 +145,8 @@ To correct intensities from background:
 1. If desired, apply the same parameter settings to all molecules by pressing 
    ![all](../../assets/images/gui/TP-but-all.png "all")   
 
+
+---
    
 ### Cross-talk correction
 {: .no_toc }
@@ -185,7 +195,7 @@ with
 To correct intensities from cross-talks:
 
 {: .procedure }
-1. Select the molecule index in the 
+1. If not already done, select the molecule index in the 
    [Molecule list](panels/panel-sample-management.html#molecule-list).  
      
 1. For each emitter, set parameters 
@@ -197,6 +207,8 @@ To correct intensities from cross-talks:
 1. If desired, apply the same parameter settings to all molecules by pressing 
    ![all](../../assets/images/gui/TP-but-all.png "all") (usually the case) 
 
+
+---
 
 ## Correct FRET values
 
@@ -231,7 +243,7 @@ To correct apparent FRET-time traces with
 [*&#947;*](){: .math_var } factors:
 
 {: .procedure }
-1. Select the molecule index in the 
+1. If not already done, select the molecule index in the 
    [Molecule list](panels/panel-sample-management.html#molecule-list).  
      
 1. For each donor-acceptor FRET pair, set parameters 
@@ -242,7 +254,9 @@ To correct apparent FRET-time traces with
      
 1. If desired, apply the same parameter settings to all molecules by pressing 
    ![all](../../assets/images/gui/TP-but-all.png "all")   
- 
+
+
+--- 
 
 ## Sort trajectories into subgroups
 
@@ -277,6 +291,8 @@ To sort molecules and save a particular subgroup:
    ![Save](../assets/images/gui/TP-but-save.png "Save").
 
 
+---
+
 ## Correct for photobleaching
 
 It can happen that emitters get photochemically destroyed after absorbing a certain amount of photons.
@@ -290,7 +306,7 @@ To prevent such bias, it is necessary to detect photobleaching and delete photob
 To detect and truncate photobleached data:
 
 {: .procedure }
-1. Select the molecule index in the 
+1. If not already done, select the molecule index in the 
    [Molecule list](panels/panel-sample-management.html#molecule-list).  
      
 1. Set parameters  
@@ -305,6 +321,8 @@ To detect and truncate photobleached data:
 1. If desired, apply the same parameter settings to all molecules by pressing 
    ![all](../../assets/images/gui/TP-but-all.png "all")   
 
+
+---
 
 ## Smooth trajectories
 
@@ -330,7 +348,7 @@ One way to minimize the population overlap in histograms is to artificially redu
 To smooth trajectories:
 
 {: .procedure }
-1. Select the molecule index in the 
+1. If not already done, select the molecule index in the 
    [Molecule list](panels/panel-sample-management.html#molecule-list).  
      
 1. Set parameters  
@@ -347,6 +365,8 @@ To smooth trajectories:
 **Note:** *Smoothing is not recommended when determining state trajectories as it induces a modification in data distribution, while most state finding algorithms rely on a naturally distributed noise to identify states and detect state transitions.*
 
 
+---
+
 ## Determine state trajectories
 
 The main goal of module Trace processing is to obtain a reliable set of single molecule intensity- and FRET-time traces in order to infer reliable state trajectories.
@@ -360,7 +380,7 @@ After further analysis of state trajectories with the module Transition analysis
 To infer state trajectories:
 
 {: .procedure }
-1. Select the molecule index in the 
+1. If not already done, select the molecule index in the 
    [Molecule list](panels/panel-sample-management.html#molecule-list).  
      
 1. Set parameters  
@@ -376,6 +396,8 @@ To infer state trajectories:
 1. If desired, apply the same parameter settings to all molecules by pressing 
    ![all](../../assets/images/gui/TP-but-all.png "all")   
 
+
+---
 
 ## Save project and export data
 
@@ -402,6 +424,8 @@ To export data to files:
 1. Press 
    ![Next >>](../assets/images/gui/TP-but-next-supsup.png "Next >>") to start writing processed molecule data in files. 
 
+
+---
  
 ## Remarks
 {: .no_toc }

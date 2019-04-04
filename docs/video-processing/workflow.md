@@ -17,6 +17,9 @@ The procedure includes four steps:
 1. TOC
 {:toc}
 
+
+---
+
 ## Register experiment settings
 
 In theory, the software is compatible with:
@@ -40,6 +43,8 @@ To register your experiment settings:
      
 1. Modify experiment settings whenever the laser or channel order changes, or when experimental conditions vary.
 
+
+---
 
 ## Localize bright spots
 
@@ -96,6 +101,8 @@ To localize bright spots in the SMV:
    ![Save](../assets/images/gui/VP-but-save.png "Save")
 
 
+---
+
 ## Transform spots coordinates
 
 To obtain single molecules coordinates, spots coordinates must be transformed into other channels.
@@ -141,10 +148,12 @@ To calculate and export the spatial transformation:
 To transform spots coordinates:
 
 {: .procedure }
-   Transform the spots coordinates and export the single molecule coordinates to a 
+1. Transform the spots coordinates and export the single molecule coordinates to a 
    [.coord file](../output-files/coord-transformed-coordinates.html) by pressing 
    ![Transform](../assets/images/gui/VP-but-transform.png "Transform").
 
+
+---
 
 ## Create and export intensity-time traces
 
@@ -179,9 +188,9 @@ To calculate and export the intensity-time traces:
    ![Create & Export...](../assets/images/gui/VP-but-export.png "Create & Export..."). 
    The process is rather slow; see 
    [Remarks](#remarks) for more details.
-   
-Et voilà!
 
+
+---
 
 ## Remarks
 {: .no_toc}
