@@ -6,6 +6,11 @@ function openItgExpOpt(obj, evd, h)
 % "h" >> main data structure stored in figure_MASH's handle
 
 % Last update: 3rd of April 2019 by MH
+% --> Add project's labels to default labels (FRET and S popupmenus were 
+%     updated with project's labels and channel popupmenu with defaults
+%     that are different when importing ASCII traces)
+% --> improve default color coding of FRET and S by taking into account
+%     the color of last added FRET or S
 % --> Warn the user and review FRET and Stoichiometry when changing an 
 %     emitter-specific illumination to "none"
 % --> review ud_fretPanel, create ud_sPanel and use both to make robust 
@@ -45,6 +50,21 @@ switch obj
         p{7}{2} = h.param.ttPr.proj{currProj}.labels;
         nExc = h.param.ttPr.proj{currProj}.nb_excitations;
         nChan = h.param.ttPr.proj{currProj}.nb_channel;
+end
+
+% added by MH, 3.4.2019
+% adjust default labels with project labels if any and different:
+nLabels = numel(p{7}{1});
+isincluded = false(1,numel(p{7}{2}));
+for i = 1:numel(p{7}{2})
+    for j = 1:nLabels
+        if strcmp(p{7}{2}(i),p{7}{1}(j))
+            isincluded(i) = true;
+        end
+    end
+    if ~isincluded(i)
+        p{7}{1} = [p{7}{1} p{7}{2}(i)];
+    end
 end
 
 buildWinOpt(p, nExc, nChan, obj, h_fig);
@@ -1159,15 +1179,18 @@ if isfield(h.itgExpOpt, 'popupmenu_FRETto')
 end
 
 % build FRET list string and FRET default colors
+rgb_Emin = [0,0,0];
+rgb_Emax = [1,1,1];
 str_lst = {};
-r_f = fliplr(linspace(0.8,0,size(p{3},1)));
-g_f = fliplr(linspace(0.8,0,size(p{3},1)));
-b_f = fliplr(linspace(0.8,0,size(p{3},1)));
 for l = 1:size(p{3},1)
     str_lst = [str_lst ['FRET ' p{7}{2}{p{3}(l,1)} '>' ...
         p{7}{2}{p{3}(l,2)}]];
     if l > size(p{5}{2},1)
-        p{5}{2}(l,:) = [r_f(l) g_f(l) b_f(l)];
+        if l>1
+            p{5}{2}(l,:) = mean([p{5}{2}(l-1,:);rgb_Emax],1);
+        else
+            p{5}{2}(l,:) = rgb_Emin;
+        end
     end
 end
 
@@ -1175,7 +1198,7 @@ end
 val = get(h.itgExpOpt.listbox_FRETcalc, 'Value');
 set(h.itgExpOpt.listbox_FRETcalc, 'Value', 1);
 set(h.itgExpOpt.listbox_FRETcalc, 'String', str_lst);
-if val<=numel(str_lst)
+if val<=numel(str_lst) && val>0
     set(h.itgExpOpt.listbox_FRETcalc, 'Value', val);
 else
     set(h.itgExpOpt.listbox_FRETcalc, 'Value', numel(str_lst));
@@ -1216,15 +1239,18 @@ if isfield(h.itgExpOpt, 'popupmenu_Snum')
 end
 
 % build S list string and S default colors
-r_s = zeros(1,numel(p{4}));
-g_s = zeros(1,numel(p{4}));
-b_s = fliplr(linspace(0.8,0,numel(p{4})));
+rgb_Smin = [0,0,1];
+rgb_Smax = [1,1,1];
 str_S = get(h.itgExpOpt.popupmenu_Snum, 'String');
 str_lst = {};
 for l = 1:numel(p{4})
     str_lst = [str_lst ['S ' str_S{p{4}(l)}]];
-    if l > size(p{5}{2},1)
-        p{5}{3}(l,:) = [r_s(l) g_s(l) b_s(l)];
+    if l > size(p{5}{3},1)
+        if l>1
+            p{5}{3}(l,:) = mean([p{5}{3}(l-1,:);rgb_Smax],1);
+        else
+            p{5}{3}(l,:) = rgb_Smin;
+        end
     end
 end
 
@@ -1232,7 +1258,7 @@ end
 val = get(h.itgExpOpt.listbox_Scalc, 'Value');
 set(h.itgExpOpt.listbox_Scalc, 'Value', 1);
 set(h.itgExpOpt.listbox_Scalc, 'String', str_lst);
-if val<=numel(str_lst)
+if val<=numel(str_lst) && val>0
     set(h.itgExpOpt.listbox_Scalc, 'Value', val);
 else
     set(h.itgExpOpt.listbox_Scalc, 'Value', numel(str_lst));
