@@ -9,7 +9,7 @@ nav_order: 1
 # Management area
 {: .no_toc }
 
-<a href="../../assets/images/gui/HA-area-management.png"><img src="../../assets/images/gui/HA-area-management.png" style="float:right; max-width: 200px; margin-left: 15px;"/></a>
+<a href="../../assets/images/gui/HA-area-management.png"><img src="../../assets/images/gui/HA-area-management.png" style="max-width: 186px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -18,21 +18,27 @@ nav_order: 1
 {:toc}
 
 
-### Import data
+---
+
+## Import data
 
 * <u>Import ASCII traces</u>
 
 * <u>Open MASH project(s)</u>
 
 
-### Export processed data
+---
+
+## Export processed data
 
 * <u>Export figures and ASCII data</u>
 
 * <u>Save MASH project</u>
 
 
-### Close MASH project(s)
+---
+
+## Close MASH project(s)
 
 
 
