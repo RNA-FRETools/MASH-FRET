@@ -131,12 +131,11 @@ To correct intensities from background:
    [Background correction settings](panels/panel-background-correction.html#background-correction-settings)  
    [Apply background correction](panels/panel-background-correction.html#apply-background-correction)  
      
-1. If desired apply the same parameter settings to all molecules by pressing 
-   ![all](../../assets/images/gui/TP-but-all.png "all")  
+1. Update background correction and display of intensity-time traces for the current molecule by pressing 
+   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE").
      
-1. Update data correction and display for current molecule only or for all molecules by pressing 
-   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE") or 
-   ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL") respectively.
+1. If desired, apply the same parameter settings to all molecules by pressing 
+   ![all](../../assets/images/gui/TP-but-all.png "all")   
 
    
 ### Cross-talk correction
@@ -192,12 +191,11 @@ To correct intensities from cross-talks:
 1. For each emitter, set parameters 
    [Cross-talks settings](panels/panel-factor-corrections.html#cross-talks-settings)  
      
-1. If desired, apply the same parameter settings to all molecules by pressing 
-   ![all](../../assets/images/gui/TP-but-all.png "all") (usually the case)   
+1. Update cross-talk correction and display of intensity-time traces for the current molecule by pressing 
+   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE").
      
-1. Update data correction and display for current molecule only or for all molecules by pressing 
-   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE") or 
-   ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL") respectively.
+1. If desired, apply the same parameter settings to all molecules by pressing 
+   ![all](../../assets/images/gui/TP-but-all.png "all") (usually the case) 
 
 
 ## Correct FRET values
@@ -239,12 +237,11 @@ To correct apparent FRET-time traces with
 1. For each donor-acceptor FRET pair, set parameters 
    [Gamma factor settings](panels/panel-factor-corrections.html#gamma-factor-settings)  
      
+1. Update correction and display of FRET-time traces for the current molecule by pressing 
+   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE").
+     
 1. If desired, apply the same parameter settings to all molecules by pressing 
    ![all](../../assets/images/gui/TP-but-all.png "all")   
-     
-1. Update data correction and display for current molecule only or for all molecules by pressing 
-   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE") or 
-   ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL") respectively.
  
 
 ## Sort trajectories into subgroups
@@ -302,12 +299,11 @@ To detect and truncate photobleached data:
    [Method parameters](panels/panel-photobleaching.html#method-parameters)  
    [Truncate trajectories](panels/panel-photobleaching.html#truncate-trajectories)  
      
+1. Update photobleaching correction and display of the intensity-time traces for the current molecule by pressing 
+   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE").
+     
 1. If desired, apply the same parameter settings to all molecules by pressing 
    ![all](../../assets/images/gui/TP-but-all.png "all")   
-     
-1. Update data correction and display for current molecule only or for all molecules by pressing 
-   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE") or 
-   ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL") respectively.
 
 
 ## Smooth trajectories
@@ -324,10 +320,14 @@ with
 [*&#956;*](){: .math_var } and 
 [*&#963;*](){: .math_var }, the respective mean and standard deviation of the intensities over the observation time.
 
+Therefore, the lower the intensity is in the time trace, the lower the 
+[*SNR*](){: .math_var } and the noisier the intensity-time traces.
 A low 
 [*SNR*](){: .math_var } results in a large broadening in intensity histograms and to even larger broadening in intensity ratio histograms, *e. g.* in FRET histograms.
 Large broadening in FRET histograms implies greater overlaps between FRET populations which make the identification of the state configuration more difficult.
 One way to minimize the population overlap in histograms is to artificially reduce the noise magnitude in, or to "smooth", intensity-time traces.
+
+To smooth trajectories:
 
 {: .procedure }
 1. Select the molecule index in the 
@@ -335,23 +335,73 @@ One way to minimize the population overlap in histograms is to artificially redu
      
 1. Set parameters  
      
-   [Photobleaching detection method](panels/panel-photobleaching.html#photobleaching-detection-method)  
-   [Method parameters](panels/panel-photobleaching.html#method-parameters)  
-   [Truncate trajectories](panels/panel-photobleaching.html#truncate-trajectories)  
+   [Denoising settings](panels/panel-denoising.html#denoising-settings)  
+   [Apply denoising](panels/panel-denoising.html#apply-denoising)  
+     
+1. Update and display smoothed trajectories for the current molecule by pressing 
+   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE").
      
 1. If desired, apply the same parameter settings to all molecules by pressing 
    ![all](../../assets/images/gui/TP-but-all.png "all")   
-     
-1. Update data correction and display for current molecule only or for all molecules by pressing 
-   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE") or 
-   ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL") respectively.
 
 **Note:** *Smoothing is not recommended when determining state trajectories as it induces a modification in data distribution, while most state finding algorithms rely on a naturally distributed noise to identify states and detect state transitions.*
 
 
 ## Determine state trajectories
 
-## Export data
+The main goal of module Trace processing is to obtain a reliable set of single molecule intensity- and FRET-time traces in order to infer reliable state trajectories.
+These state trajectories are idealized time traces, i.e., without noise, or in other words, are discretized time traces.
+State trajectories allow to characterize the conformational states visited by the molecule during the observation time and to quantify the times the molecule dwells in each state. 
+
+After further analysis of state trajectories with the module Transition analysis, one can obtain the most probable state configuration of single molecules and the rate coefficient that govern transitions between those states.
+
+**[*scheme FRET-time trace to state trajectory with corresponding dwell times and state configuration*]**
+
+To infer state trajectories:
+
+{: .procedure }
+1. Select the molecule index in the 
+   [Molecule list](panels/panel-sample-management.html#molecule-list).  
+     
+1. Set parameters  
+     
+   [Discretization method](panels/panel-find-states.html#discretization-method)  
+   [Data to discretize](panels/panel-find-states.html#data-to-discretize)  
+   [Method parameters](panels/panel-find-states.html#method-parameters)  
+   [Post-processing parameters](panels/panel-find-states.html#post-processing-parameters)  
+     
+1. Update and display state trajectories for the current molecule by pressing 
+   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE").
+     
+1. If desired, apply the same parameter settings to all molecules by pressing 
+   ![all](../../assets/images/gui/TP-but-all.png "all")   
+
+
+## Save project and export data
+
+Project modifications must be saved in order to use corrected data for further histogram and transition analysis.
+Additionally, processed data and processing parameters can be exported to various file formats, including ASCII files compatible with other software.
+
+To save project modifications:
+
+{: .procedure }
+1. Update all data corrections and calculations by pressing 
+   ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL")  
+     
+1. Save modifications to the 
+   [.mash file](../output-files/mash-mash-project.html) by pressing 
+   ![Save](../assets/images/gui/TP-but-save.png "Save") and overwriting existing file.  
+
+To export data to files:
+
+{: .procedure }
+1. Open export options by pressing 
+   ![Export ASCII...](../../assets/images/gui/TP-but-export-ascii-3p.png "Export ASCII...") and set the options as desired; please refer to 
+   [Set export options](functionalities/set-export-options.html) for help.
+     
+1. Press 
+   ![Next >>](../assets/images/gui/TP-but-next-supsup.png "Next >>") to start writing processed molecule data in files. 
+
  
 ## Remarks
 {: .no_toc }
@@ -366,5 +416,4 @@ However, if desired, molecule x- and y-coordinates must be modified manually; se
 Molecule can be excluded from or included in the data set and can be given a label while browsing the 
 [Molecule list](panels/panel-sample-management.html#molecule-list) in the Trace processing interface; see 
 [Molecule status](panels/panel-sample-management.html#molecule-status) for more information.
-
 
