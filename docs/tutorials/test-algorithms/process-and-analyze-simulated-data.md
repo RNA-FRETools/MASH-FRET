@@ -1,13 +1,13 @@
 ---
 layout: default
-title: Test algorithms
-parent: /tutorials.html
+title: Process and analyze simulated data
+grand_parent: /tutorials.html
+parent: /tutorials/test-algorithms.html
 nav_order: 3
-has_children: true
+nav_exclude: true
 has_toc: false
-permalink: /tutorials/test-algorithms.html
-select_with_child: true
 ---
+
 
 
 # Test algorithms
@@ -19,7 +19,15 @@ Follow this procedure to determine the optimal methods and method parameters to 
 
 {% include tutorial_head.html %}
 
+In this step, simulated data are processed and/or analyzed with algorithms to test and relevant results are collected.
+
+1. TOC
+{:toc}
 
 ---
 
+*In construction*
 
+---
+
+{% include tutorial_footer.html %}
