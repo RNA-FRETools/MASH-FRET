@@ -23,7 +23,8 @@ The procedure include four steps:
 ## Import single molecule data
 
 Single molecule data can be imported from a 
-[.mash file](../output-files/mash-mash-project.html), ideally processed in module Trace processing, or from a set of traces written in ASCII files.
+[.mash file](../output-files/mash-mash-project.html), ideally processed in module Trace processing, or from a set of traces written in ASCII files; see 
+[Remarks](#remarks) for more details about ASCII import.
 If data are imported from ASCII files, MASH must be informed about the particular file structure. 
 In that case, it is recommended to export the imported data set to a new 
 [.mash file](../output-files/mash-mash-project.html) in order to save analysis results and allow further review.
@@ -45,7 +46,7 @@ To import single molecule data from a ASCII files:
 {: .procedure }
 1. Set the import settings by pressing 
    ![ASCII options ...](../assets/images/gui/TA-but-ascii-options-3p.png "ASCII options ..."); see 
-   [Set project import options](functionalities/set-project-import-options.html) for help  
+   [Set project import options](../trace-processing/functionalities/set-project-import-options.html) for help  
      
 1. Import data by pressing 
    ![Add](../assets/images/gui/TA-but-add.png "Add") and selecting the corresponding ASCII files; this will add a new project to the project list  
@@ -97,7 +98,7 @@ To build the TDP:
    [Gaussian filter](panels/panel-transition-density-plot.html#gaussian-filter)  
      
 1. Update the TDP and display by pressing 
-   ![update](../../assets/images/gui/TA-but-update.png "update").
+   ![Update](../../assets/images/gui/TA-but-update.png "Update").
 
 
 ---
@@ -240,3 +241,11 @@ To export data to files:
 1. Press 
    ![Next >>](../assets/images/gui/TA-but-next-supsup.png "Next >>") to start writing processed molecule data in files. 
 
+
+---
+
+## Remarks
+
+For the moment only FRET state trajectories can be imported.
+Additionally, imported state trajectories are only available in module Histogram analysis and Transition analysis: if the project is loaded and saved in module Trace processing, state trajectories will be overwritten by newly calculated ones. 
+This compatibility problem will be managed in the future.
