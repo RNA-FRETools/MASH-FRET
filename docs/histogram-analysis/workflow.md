@@ -143,13 +143,13 @@ To calculate relative state populations:
      
 1. Import parameters of one of the inferred state configurations by selecting the configuration in 
    [Inferred models](panels/panel-state-configuration.html#inferred-models) and pressing 
-   ![>>](../assets/images/gui/HA-but-supsup.png)  
+   ![>>](../assets/images/gui/HA-but-supsup.png ">>")  
      
 1. Adjust parameters in 
    [Thresholding](panels/panel-state-populations.html#thresholding) or 
    [Gaussian fitting](panels/panel-state-populations.html#gaussian-fitting) and respectively press 
-   ![Start](../assets/images/gui/HA-but-start.png) or 
-   ![Fit](../assets/images/gui/HA-but-fit.png) to calculate state relative populations
+   ![Start](../assets/images/gui/HA-but-start.png "Start") or 
+   ![Fit](../assets/images/gui/HA-but-fit.png "Fit") to calculate state relative populations
 
 
 ---
@@ -174,7 +174,7 @@ To export data to files:
 
 {: .procedure }
 1. Press
-   ![Export...](../../assets/images/gui/HA-but-export-3p.png "Export...") and browse the desired destination; files will be automatically created in the destination folder.
+   ![Export...](../../assets/images/gui/HA-but-export3p.png "Export...") and browse the desired destination; files will be automatically created in the destination folder.
 
 
 ---
