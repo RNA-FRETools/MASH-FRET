@@ -53,7 +53,7 @@ This is why the data-specific histogram limits and bin size have to be carefully
 To build the histogram:
 
 {: .procedure }
-1. Select a data type in the 
+1. Select the data to work with in the 
    [Data list](panels/panel-histogram-and-plot.html#data-list)  
      
 1. Set parameters:  
@@ -92,7 +92,7 @@ In the second case, the BIC are used to rank models according to their sufficien
 To determine the most sufficient state configuration:
 
 {: .procedure }
-1. If not already done, select a data type in the 
+1. If not already done, select the data to work with in the 
    [Data list](panels/panel-histogram-and-plot.html#data-list)  
      
 1. Set parameters:  
@@ -101,7 +101,7 @@ To determine the most sufficient state configuration:
    [Model penalty](panels/panel-state-configuration.html#model-penalty)  
      
 1. Start inference of state configurations by pressing 
-   ![Start analysis](../assets/images/gui/HA-but-start-analysis.png "Start analysis"); after completion, the display is instantly updated with the corresponding Gaussian mixture
+   ![Start analysis](../assets/images/gui/HA-but-start-analysis.png "Start analysis"); after completion, the display is instantly updated with the most sufficient Gaussian mixture
 
 
 ---
@@ -135,7 +135,7 @@ BOBA-FRET applies to both threshold and Gaussian-fitting methods, and infers the
 To calculate relative state populations:
 
 {: .procedure }
-1. If not already done, select a data type in the 
+1. If not already done, select the data to work with in the 
    [Data list](panels/panel-histogram-and-plot.html#data-list)  
      
 1. Set parameters in 
@@ -163,6 +163,9 @@ Additionally, histograms, analysis results and analysis parameters can be export
 To save project modifications:
 
 {: .procedure }
+1. Select the data to export in the 
+   [Data list](panels/panel-histogram-and-plot.html#data-list)  
+     
 1. Save modifications to the 
    [.mash file](../output-files/mash-mash-project.html) by pressing 
    ![Save](../assets/images/gui/HA-but-save.png "Save") and overwriting existing file.  
