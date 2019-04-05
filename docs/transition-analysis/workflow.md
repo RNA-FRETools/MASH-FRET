@@ -245,6 +245,7 @@ To export data to files:
 ---
 
 ## Remarks
+{: .no_toc }
 
 For the moment only FRET state trajectories can be imported.
 Additionally, imported state trajectories are only available in module Histogram analysis and Transition analysis: if the project is loaded and saved in module Trace processing, state trajectories will be overwritten by newly calculated ones. 
