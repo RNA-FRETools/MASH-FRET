@@ -1,6 +1,10 @@
 function openTrImpOpt(obj, evd, h)
 
-% Last update: 28th of March 2019 by Melodie Hadzic
+% Last update: by MH, 5.4.2019
+% --> saved empty file and directory for gamma import if the option is
+%     unselected
+%
+% update: 28th of March 2019 by Melodie Hadzic
 % --> Add "Gamma factor" panel in buildWinTrOpt (add functions
 %     pushbutton_impGamFile_Callback and checkbox_impGam_Callback)
 % --> Add "State trajectories" panel in buildWinTrOpt (recover UI controls
@@ -726,6 +730,11 @@ switch checked
     case 0
         set([h.trImpOpt.text_fnameGam h.trImpOpt.pushbutton_impGamFile],...
             'Enable', 'off');
+        
+        % added by MH, 5.4.2019
+        m{6}{2} = [];
+        m{6}{3} = [];
+        guidata(h.figure_trImpOpt, m);
 end
 
 
