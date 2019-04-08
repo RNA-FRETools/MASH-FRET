@@ -132,6 +132,8 @@ BOBA-FRET applies to both threshold and Gaussian-fitting methods, and infers the
 [*&#956;*<sub>*X*,*j*</sub>](){: .math_var } and bootstrap standard deviation
 [*&#963;*<sub>*X*,*j*</sub>](){: .math_var } of state populations for the given sample.
 
+![Estimation of cross sample variability with BOBA-FRET](../assets/images/figures/HA-workflow-scheme-bobafret.png "Estimation of cross sample variability with BOBA-FRET")
+
 To calculate relative state populations:
 
 {: .procedure }
