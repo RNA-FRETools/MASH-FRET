@@ -73,7 +73,7 @@ Knowing the excitation selectivity is necessary for FRET and stoichiometry calcu
 Channel label and excitation wavelength are set by first selecting the channel index in list **(a)** and then selecting the desired label and excitation wavelength in list **(b)** and **(c)** respectively.
 Channel indexes correspond to the order of appearance in the video from left to right.
 
-The user can add personal labels to the list **(b)** by writing the new label name in **(e)** and pressing 
+The user can add personal labels to the list **(d)** by writing the new label name in **(e)** and pressing 
 ![Add](../../assets/images/gui/VP-but-add.png "Add"). 
 Labels can be removed from the list any time by pressing 
 ![Remove](../../assets/images/gui/VP-but-remove.png "Remove").
