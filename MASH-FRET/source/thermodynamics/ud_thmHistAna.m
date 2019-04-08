@@ -1,5 +1,8 @@
 function ud_thmHistAna(h_fig)
 
+% Last update: by MH, 8.4.2019
+% >> correct update of checkbox_thm_BS
+
 h = guidata(h_fig);
 p = h.param.thm;
 proj = p.curr_proj;
@@ -287,10 +290,17 @@ switch meth
 end
 
 % BOBA panel
+
+% added by MH, 8.4.2019
+set(h.checkbox_thm_BS, 'Value', BOBA);
+
 if BOBA
     set([h.text_thm_nRep h.edit_thm_nRep h.text_thm_nSpl ...
         h.edit_thm_nSpl h.checkbox_thm_weight], 'Enable', 'on')
-    set(h.checkbox_thm_BS, 'Value', BOBA);
+    
+    % cancelled by MH, 8.4.2019
+%     set(h.checkbox_thm_BS, 'Value', BOBA);
+
     set(h.edit_thm_nRep, 'String', num2str(rplNb));
     set(h.edit_thm_nSpl, 'String', num2str(splNb));
     set(h.checkbox_thm_weight, 'Value', weight);
