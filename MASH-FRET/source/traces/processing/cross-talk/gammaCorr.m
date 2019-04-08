@@ -1,6 +1,10 @@
 function p = gammaCorr(h_fig, mol, p)
 
-% Last update: by MH, 2.4.2019
+% Last update: by MH, 8.4.2019
+% >> correct the control of presence for multidimensional discretized 
+%    intensities
+%
+% update: by MH, 2.4.2019
 % >> correct the control of presence of discretized intensities according
 %    to FS suggestions
 %
@@ -28,8 +32,9 @@ if pbGamma
     % set method to "manual" if no intensity discretization is found
     
     % modified by MH, 2.4.2019
+    % corrected by MH, 8.4.2019
 %     if sum(isnan(I_DTA))
-    if all(isnan(I_DTA))
+    if all(all(isnan(I_DTA)))
         
         setContPan(cat(2,'intensity-time traces must be discretized to ',...
             'apply photobleaching-based gamma factor calculation: method ',...
