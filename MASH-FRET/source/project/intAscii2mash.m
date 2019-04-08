@@ -1,6 +1,9 @@
 function s = intAscii2mash(pname, fname, p, h_fig)
 
-% Last update: 3rd of April 2019 by Melodie Hadzic
+% Last update: 8th of April 2019 by Melodie Hadzic
+% --> fix errors occurring when improting discretized FRET traces
+%
+% update: 3rd of April 2019 by Melodie Hadzic
 % --> correct boolean data according to each molecule's NaN
 % --> correct discretized FRET import for more than one laser excitation: 
 %     import FRET data at donor excitation, fill missing discretized FRET 
@@ -143,7 +146,9 @@ try
         end
         
         % added by MH, 3.4.2019
-        if isdFRET && ~isempty(dfretNum)
+        % corrected by MH, 8.4.2019
+        if isdFRET && isempty(dfretNum)
+%         if isdFRET && ~isempty(dfretNum)
             updateActPan(['Unable to load discretized FRET from file: ' ...
                 fname{i} '\nPlease check import options.'], h_fig, ...
                 'error');
@@ -157,7 +162,7 @@ try
         
         % added by MH, 3.4.2019
         if isdFRET
-            nFRET = size(dfretNum,2)/(nChan);
+            nFRET = size(dfretNum,2);
         end
         
         % get differences in intensity-time traces length in current file
@@ -283,7 +288,9 @@ try
         end
         
         % added by MH, 3.4.2019
-        if isdFRET && all(isnan(fret_DTA))
+        % corrected by MH, 8.4.2019
+%         if isdFRET && all(isnan(fret_DTA))
+        if isdFRET && all(all(isnan(fret_DTA)))
             loading_bar('close', h_fig);
             updateActPan(['Unable to load discretized FRET data from file:' ...
                 ' ' fname{i} '\nPlease check import options.'], h_fig, ...
