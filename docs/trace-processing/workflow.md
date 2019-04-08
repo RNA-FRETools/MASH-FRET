@@ -72,10 +72,10 @@ To import single molecule data from a ASCII files:
 
 Single molecule image in each channel and upon a specific laser shine are shown in the 
 [Visualization area](panels/area-visualization.html#single-molecule-images).
-Single molecule positions are marked with red crosses and the dimensions of pixel area used to integrate the intensities are indicated by red squares.
-To be obtain the most accurate intensities, the single molecule positions must be centered on the brightest pixel in the integration zone.
+Single molecule positions are marked with red crosses and the dimensions of the pixel area used to integrate the intensities are indicated by red squares.
+To be obtain the most accurate intensities, the single molecule positions must be centered on the brightest pixel in the integration zone and the integration area of two neighbouring molecules must not overlap.
 
-**[*scheme: sub-images with shifted and centered coordinates*]**
+![Adjusting molecule positions](../assets/images/figures/TP-workflow-scheme-sub-images.png "Adjusting molecule positions")
 
 Because of imperfect coordinates transformation, it can happen that positions are shifted one or two pixels away from the brightest pixel.
 In that case, the positions must be recentered on the brightest pixel.
@@ -155,7 +155,7 @@ Cross-talks are due to instrumental imperfections and include two phenomena:
 * the detection of an emitter fluorescence into unspecific video channels, called the <u>bleedthrough</u>
 * the detection of an emitter fluorescence into specific video channel after unspecific laser illumination, called the <u>direct excitation</u>
 
-**[*scheme: bleedthrough/direct excitation explained on emission/absorption spectra*]**
+![Instrumental imperfections](../assets/images/figures/TP-workflow-scheme-cross-talks.png "Instrumental imperfections")
 
 The bleedthrough and direct excitation coefficient can be determined from control experiments involving single-labelled species.
 The bleedthrough coefficient 
@@ -265,7 +265,7 @@ For instance, molecules with correct dye-labelling and showing dynamics can be s
 It can also be convenient to sort molecules with incomplete dye labelling in order to make statistics on the labelling efficiency in the sample.
 Beside, it is important to identify and exclude incoherent intensity-time traces from the analysis set.
 
-**[*scheme: example of dynamic trace, single labelled trace and incoherent trace*]**
+<a href="../assets/images/figures/TP-workflow-scheme-sorting.png">![Molecule sorting](../assets/images/figures/TP-workflow-scheme-sorting.png "Molecule sorting")</a>
 
 MASH offers a tool called Trace manager that can be used to perform such task.
 Molecules can also be sorted manually in the Trace processing interface; see 
@@ -298,7 +298,7 @@ To sort molecules and save a particular subgroup:
 It can happen that emitters get photochemically destroyed after absorbing a certain amount of photons.
 This phenomenon is called photobleaching and results in the permanent loss of signal in the dye-specific emission channel that translates into a drop of the corresponding intensity-time trace to zero.
 
-**[*scheme: photobleaching in trace and effect on FRET trace*]**
+![Effect of photobleaching of intensity ratio](../assets/images/figures/TP-workflow-scheme-photobleaching.png "Effect of photobleaching of intensity ratio")
 
 These zero-intensity portions of the intensity-time traces may bias the following histogram and transition analysis by creating irrelevantly fluctuating FRET data.
 To prevent such bias, it is necessary to detect photobleaching and delete photobleached data by truncating intensity-time traces.
@@ -373,9 +373,9 @@ The main goal of module Trace processing is to obtain a reliable set of single m
 These state trajectories are idealized time traces, i.e., without noise, or in other words, are discretized time traces.
 State trajectories allow to characterize the conformational states visited by the molecule during the observation time and to quantify the times the molecule dwells in each state. 
 
-After further analysis of state trajectories with the module Transition analysis, one can obtain the most probable state configuration of single molecules and the rate coefficient that govern transitions between those states.
+![FRET state configuration in trajectory](../assets/images/figures/TP-workflow-scheme-state-sequence.png "FRET state configuration in trajectory")
 
-**[*scheme FRET-time trace to state trajectory with corresponding dwell times and state configuration*]**
+After further analysis of state trajectories with the module Transition analysis, one can obtain the most probable state configuration of single molecules and the rate coefficient that govern transitions between those states.
 
 To infer state trajectories:
 
