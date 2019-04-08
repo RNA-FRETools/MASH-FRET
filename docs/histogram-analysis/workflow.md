@@ -48,7 +48,7 @@ The bin size has a substantial influence on the histogram shape: large bins will
 Histogram boundaries are important to exclude out-of range data that would bias the state analysis.
 This is why the data-specific histogram limits and bin size have to be carefully chosen in order to enhance the natural shape of data distribution without altering it.
 
-**[*scheme: effect of bin size on histogram shape*]**
+![Effect of histogram bin size](../assets/images/figures/HA-workflow-scheme-bin-size.png "Effect of histogram bin size")
 
 To build the histogram:
 
@@ -75,7 +75,7 @@ As state populations are ideally modelled by a Gaussian distribution, the overal
 In the case of well-separated peaks, it is easy to determine 
 [*J*](){: .math_var } by eye, but most of the time, peaks overlap to great extend and can't be accurately identified.
 
-**[*scheme of well-separated and overlapping peaks*]**
+![Histogram peak overlap](../assets/images/figures/HA-workflow-scheme-peak-overlap.png "Histogram peak overlap")
 
 One way of objectively identifying the number of peaks in an histogram is to, first, find the Gaussian mixtures that describe the data the best for different 
 [*J*](){: .math_var }, and then to compare optimum models with each other.
@@ -124,7 +124,7 @@ For overlapping peaks, a mixture of
 [*J*](){: .math_var } Gaussians is fitted to the histogram and Gaussian integrals are used as 
 [*S*<sub>*j*</sub>](){: .math_var } values.
 
-**[*scheme of well-separated and overlapping peaks with threshold and Gaussian fit*]**
+![Estimation of state's relative populations](../assets/images/figures/HA-workflow-scheme-populations.png "Estimation of state's relative populations")
 
 These relative state populations are single estimates and carry no information about how much they vary from molecule to molecule.
 One way to estimate the cross-sample variability of relative state populations is to use the bootstrap-based analysis called BOBA-FRET.
