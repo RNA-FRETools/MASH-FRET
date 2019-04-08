@@ -68,22 +68,20 @@ To build a TDP, states in state trajectories are first limited to specific bound
 ( [*val*<sub>*i*</sub>](){: .math_var };[*val*<sub>*i'*</sub>](){: .math_var } ) are then sorted into bins of specific size.
 Ideally, transitions involving similar states assemble into clusters in the TDP: the identification of these clusters, *e. g.* by clustering algorithms, is crucial to determine the overall state configuration.
 
-The regular way of sorting transitions into bins, *i.e.*, counting transition absolute occurrences, will systematically favour state transitions that occur the most in trajectories at the expense of rarely occurring state transitions.
-For instance, rapid interconversion of two states will appear as intense clusters whereas irreversible state transitions might be barely visible.
-One way of scaling equally the two type of clusters is to assign one transition count per trajectory, regardless the amount of times it occurs in the trajectory.
-
-**[*scheme: effect of single count per molecule on rarely occurring state transitions in TDP*]**
-
 The bin size has a substantial influence on the cluster shapes: large bins will increase the overlap between neighbouring clusters until the extreme case where all clusters are merged in one, whereas short bins will spread out the clusters until the extreme case where no cluster is distinguishable.
 TDP boundaries are important to exclude out-of range states that would bias the determination of state configuration.
 Therefore, data-specific TDP limits and bin size have to be carefully chosen in order to make transition clusters visible and sufficiently separated.
 
-**[*scheme: effect of bin size on TDP*]**
+![Effect of bin size on TDP](../assets/images/figures/TA-workflow-scheme-bin-size.png "Effect of bin size on TDP")
+
+The regular way of sorting transitions into bins, *i.e.*, counting transition absolute occurrences, will systematically favour state transitions that occur the most in trajectories at the expense of rarely occurring state transitions.
+For instance, rapid interconversion of two states will appear as intense clusters whereas irreversible state transitions might be barely visible.
+One way of scaling equally the two type of clusters is to assign one transition count per trajectory, regardless the amount of times it occurs in the trajectory.
 
 Transition clusters are easier identified by eyes and by clustering algorithms if a Gaussian filter is applied to the TDP.
 This has for effect to smooth the cluster's edges and to enhance the Gaussian shape of their 2D-profile.
 
-**[*scheme: effect of Gaussian filter on TDP*]**
+![TDP processing](../assets/images/figures/TA-workflow-scheme-tdp-processing.png "TDP processing")
 
 To build the TDP:
 
@@ -116,8 +114,6 @@ In the case of well-separated transition clusters, it is easy to determine
 [*J*](){: .math_var } by eye, where a simple partition algorithm, like k-mean, can be used.
 But when clusters overlap to great extend, they can't be accurately identified.
 
-**[*scheme of well-separated and overlapping clusters*]**
-
 One way of objectively identifying the number of clusters is to model the TDP by a sum of 
 [*J*<sup>2</sup>](){: .math_var } 2D-Gaussians, with each Gaussian modelling a cluster, such as:
 
@@ -130,6 +126,8 @@ with
 [&#956;<sub>*j*,*j'*</sub>](){: .math_var } that contains information about inferred states 
 ( [*val*<sub>*j*</sub>](){: .math_var };[*val*<sub>*j'*</sub>](){: .math_var } ), and covariance 
 [*&#931;*<sub>*j*,*j'*</sub>](){: .math_var } that contains information about cluster's shape.
+
+![Gaussian mixture clustering](../assets/images/figures/TA-workflow-scheme-clustering.png "Gaussian mixture clustering")
 
 The Gaussian mixtures that describe the data the best for different 
 [*J*](){: .math_var } are inferred and compared to each other.
