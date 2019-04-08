@@ -1,12 +1,12 @@
 ---
 layout: default
-title: Project management area
+title: Project management
 parent: /trace-processing/panels.html
 grand_parent: /trace-processing.html
 nav_order: 1
 ---
 
-# Project management area
+# Project management
 {: .no_toc }
 
 <a href="../../assets/images/gui/TP-area-proj.png"><img src="../../assets/images/gui/TP-area-proj.png" style="max-width: 192px;"/></a>
