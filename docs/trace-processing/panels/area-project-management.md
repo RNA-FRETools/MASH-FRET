@@ -27,7 +27,7 @@ Import options can be modified by pressing
 ![ASCII options ...](../../assets/images/gui/TP-but-ascii-options-3p.png "ASCII options ...").
 
 To set the options, please refer to 
-[Set project import options](../functionalities/set-project-import-options.html).
+[Set project import options](../functionalities/set-import-options.html).
 
 
 ---
@@ -42,11 +42,12 @@ Single molecule data can be imported in module Trace processing from:
 * a [.mash file](../../output-files/mash-mash-project.html)
 * a set of ASCII files.
 
-Single molecule data are imported by pressing 
+Importe single molecule data by pressing 
 ![Add](../../assets/images/gui/TP-but-add.png "Add") and selecting the 
 [.mash file](../../output-files/mash-mash-project.html "Add") or the set of ASCII files to import.
-If a video is assigned to the imported data, laser-specific average images used for molecule visualization and background correction are calculated during the import process; see 
-[Background correction](panel-subimage-background-correction.html#background-correction) for more information.
+If a video is assigned to the imported data, laser-specific average images used for sub-images and background correction are calculated during the import process; see 
+[Sub-images](panel-sub-images.html) and 
+[Background correction](panel-background-correction.html) for more information.
 
 <a href="../../assets/images/gui/TP-area-proj-loadingbar.png"><img src="../../assets/images/gui/TP-area-proj-loadingbar.png" style="max-width: 300px;"/></a>
 
