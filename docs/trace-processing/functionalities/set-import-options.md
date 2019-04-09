@@ -1,12 +1,12 @@
 ---
 layout: default
-title: Set project import options
+title: Set import options
 parent: /trace-processing/functionalities.html
 grand_parent: /trace-processing.html
 nav_order: 1
 ---
 
-# Set project import options
+# Set import options
 {: .no_toc }
 
 <a href="../../assets/images/gui/TP-area-proj-impopt.png"><img src="../../assets/images/gui/TP-area-proj-impopt.png" style="max-width: 286px;"/></a>
