@@ -55,7 +55,7 @@ The content of these trace files is customizable and can include:
 * <u>stoichiometry-time traces</u> if box **(f)** is activated
 * <u>trace processing parameters</u> if selected in list **(i)**
 
-Single molecule data can be exported to one common ASCII file or to individual ASCII files, by respectively activating or deactivating the box in **(g)**.
+Specific data-time traces can be exported to one common ASCII file per molecule or to individual ASCII files, by respectively activating or deactivating the box in **(g)**.
 
 See 
 [Processed trace files](../../output-files/txt-processed-traces.html) for more information about the file structure.
