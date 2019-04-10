@@ -65,7 +65,7 @@ Use this interface to exclude outliers and assemble sub-groups.
 Overview shows individual single molecule data plots that can be browsed using the sliding bar in **(n)**. 
 The interface can be optimized by adjusting in **(f)** the number of molecules per page, and by hiding the panel 
 [Overall plot](#overall-plot) when pressing 
-![\^](../../assets/images/gui/TP-but-triangle.png "^").
+![\^](../../assets/images/gui/TP-but-triangle.png "^") in **(g)**.
 
 Single molecule intensity-time traces and histograms are respectively shown in axes **(j)** and **(k)**, whereas FRET- and stoichiometry-time traces and histograms are respectively shown in axes **(l)** and **(m)**. 
 
