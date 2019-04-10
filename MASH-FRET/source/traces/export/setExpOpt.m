@@ -3,7 +3,9 @@ function def = setExpOpt(opt, p_proj)
 % "p_proj" >> structure containing project parameters
 % "def" >> structure containing export defions for each of the n panels
 %
-% Last update: the 18th of March 2014 by Mélodie C.A.S. Hadzic
+% Last update: by MH, 10.4.2019
+% >> set default intensity histogram x-axis to [-1000 500 20000] to adapt
+%    to actual expeirmental data
 
 nChan = p_proj.nb_channel;
 nFRET = size(p_proj.FRET,1);
@@ -55,8 +57,11 @@ opt.traces = adjustVal(opt.traces, def.traces);
 def.hist{1}(1) = 1; % export histogram files
 def.hist{1}(2) = 1; % include discretised
 
- % export intensities & min& binning & max 
-def.hist{2}(1,1:4) = [1 -100 50 2000];
+% export intensities & min& binning & max 
+% modified by MH, 10.4.2019
+% def.hist{2}(1,1:4) = [1 -100 50 2000];
+def.hist{2}(1,1:4) = [1 -1000 500 20000];
+
 % export FRET & min & binning & max
 def.hist{2}(2,1:4) = [double(nFRET>0) -0.2 0.01 1.2]; 
 % export S & min & binning & max

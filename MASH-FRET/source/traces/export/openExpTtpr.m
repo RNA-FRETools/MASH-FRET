@@ -1,5 +1,27 @@
 function openExpTtpr(h_fig)
 
+% Last update by MH, 10.4.2019
+% >> link the "infos" button to online documentation
+% >> set edit fields with empty strings and checkboxes unchecked when 
+%    main export options are deactivated
+% >> improve trace section:
+%    - change "ASCII(*.txt)" trace file format to "customed format(*.txt)",
+%      and "VbFRET" to "vbFRET"
+%    - improve informative text about the number of trace file per 
+%      molecules and which traces are exported
+%    - set checkboxes for trace options to unchecked when formats 
+%      other than "custommed format" are used and prevent the
+%      selection of the option "external file(.log)" for processing
+%      parameters export
+% >> improve figure section:
+%    - add informative text about the number of pages exported in one 
+%      figure file depending on the chosen format
+%    - display processing action when creating figure preview (slow 
+%      process)
+%    - correct panel title's font weight to bold
+%    - correct extra space in GUI
+
+
 h = guidata(h_fig);
 p = h.param.ttPr;
 proj = p.curr_proj;
@@ -7,20 +29,39 @@ FRET = p.proj{proj}.FRET;
 S = p.proj{proj}.S;
 exc = p.proj{proj}.excitations;
 
-str_trFmt = {'ASCII(*.txt)', 'HaMMy-compatible(*.dat)', ...
-    'VbFRET-compatible(*.mat)', 'SMART-compatible(*.traces)', ...
+% modified by MH, 10.4.2019
+% str_trFmt = {'ASCII(*.txt)', 'HaMMy-compatible(*.dat)', ...
+%    'VbFRET-compatible(*.mat)', 'SMART-compatible(*.traces)', ...
+str_trFmt = {'customed format(*.txt)', 'HaMMy-compatible(*.dat)', ...
+    'vbFRET-compatible(*.mat)', 'SMART-compatible(*.traces)', ...
     'QUB-compatible(*.txt)', 'ebFRET-compatible(*.dat)', 'All formats'};
-str_trInfos = {'---', ...
-    'Donor and acceptor traces only.', ...
-    'All in one file: donor and acc. traces only.', ...
-    'All in one file: donor and acc. traces only.', ...
-    'Donor and acceptor traces only.', ...
-    'All in one file: donor and acc. traces only.', ...
-    '---'};
+
+% modified by MH, 10.4.2019
+% str_trInfos = {'---', ...
+%     'Donor and acceptor traces only.', ...
+%     'All in one file: donor and acc. traces only.', ...
+%     'All in one file: donor and acc. traces only.', ...
+%     'Donor and acceptor traces only.', ...
+%     'All in one file: donor and acc. traces only.', ...
+%     '---'};
+str_trInfos = {'(individual files)', ...
+    '(individual files) Donor and acceptor traces only.', ...
+    '(one file) Donor and acceptor traces only.', ...
+    '(one file) Donor and acceptor traces only.', ...
+    '(individual files) Donor and acceptor traces only.', ...
+    '(one file) Donor and acceptor traces only.', ...
+    'Options set for customed format only.'};
+
 str_prm = {'external file(*.log)', 'ASCII file headers', 'none'};
 str_figFmt = {'Portable document format(*.pdf)', ...
     'Portable network graphics(*.png)', ...
     'Joint Photographic Experts Group(*.jpeg)'};
+
+% added by MH, 10.4.2019
+str_figInfos = {'All pages in on file.', ...
+    'One file per page.', ...
+    'One file per page.'};
+
 str_figTopExc = getStrPop('plot_exc', exc);
 str_figTopChan = getStrPop('plot_topChan', ...
     {p.proj{proj}.labels p.proj{proj}.fix{1}(1) p.proj{proj}.colours{1}});
@@ -43,7 +84,10 @@ h_txt = 14;
 hPan_tr =   9*h_edit + 2*h_txt + 9*mg + 3*mg/2;
 hPan_hist = 6*h_edit + 2*h_txt + 6*mg + 3*mg/2;
 hPan_dt =   6*h_edit +   h_txt + 7*mg + 2*mg/2;
-hPan_fig =  10*h_edit +   h_but + 8*mg + 4*mg/2;
+
+% modified by MH, 10.4.2019
+% hPan_fig =  10*h_edit +   h_but + 8*mg + 4*mg/2;
+hPan_fig =  9*h_edit + h_txt +  h_but + 8*mg + 4*mg/2;
 
 hFig = h_txt + h_but + max([(hPan_tr+hPan_hist),(hPan_dt+hPan_fig)]) + ...
     5*mg;
@@ -417,12 +461,17 @@ h.optExpTr.radiobutton_noDt = uicontrol('Style', 'radiobutton', ...
 xNext = wPan + 2*mg;
 yNext = hFig - 3*mg - h_txt - hPan_dt - hPan_fig;
 
+% modified by MH, 10.4.2019
 h.optExpTr.uipanel_fig = uipanel('Parent', h.optExpTr.figure_optExpTr, ...
-    'Units', 'pixels', 'Title', 'Figures', 'Position', ...
-    [xNext yNext wPan hPan_fig]);
+    'Units', 'pixels', 'Title','Figures', 'Position', ...
+    [xNext yNext wPan hPan_fig], 'FontWeight','bold');
+%     [xNext yNext wPan hPan_fig]);
 
 xNext = mg;
-yNext = hPan_tr - 3*mg - h_edit;
+
+% modified by MH, 10.4.2019
+% yNext = hPan_tr - 3*mg - h_edit;
+yNext = hPan_tr - 2*mg - h_edit;
 
 h.optExpTr.radiobutton_saveFig = uicontrol('Style', 'radiobutton', ...
     'Units', 'pixels', 'Parent', h.optExpTr.uipanel_fig, 'String', ...
@@ -444,11 +493,19 @@ h.optExpTr.popupmenu_figFmt = uicontrol('Style', 'popupmenu', 'Units', ...
     {@popupmenu_figFmt_Callback, h_fig}, 'BackgroundColor', [1 1 1]);
 
 xNext = mg;
+
+% added by MH, 10.4.2019
+yNext = yNext - mg/2 - h_txt;
+h.optExpTr.text_figInfos = uicontrol('Style', 'text', 'Units', 'pixels', ...
+    'Parent', h.optExpTr.uipanel_fig, 'UserData', str_figInfos, ...
+    'Position', [xNext yNext w_full_pan h_txt], 'HorizontalAlignment', ...
+    'left', 'ForegroundColor', [0 0 1]);
+
 yNext = yNext - mg - h_edit;
 
 h.optExpTr.text_nMol = uicontrol('Style', 'text', 'Units', ...
     'pixels', 'Parent', h.optExpTr.uipanel_fig, 'String', ...
-    'molecules per figure:', 'Position', [xNext yNext w_big h_txt], ...
+    'molecules per page:', 'Position', [xNext yNext w_big h_txt], ...
     'HorizontalAlignment', 'left');
 
 xNext = xNext + w_big;
@@ -729,6 +786,9 @@ else
     p_fig.botChan = 0;
 end
 
+% added by MH, 10.4.2019
+disp('building figure preview in process ...');
+
 h_fig_mol = [];
 m_i = 0;
 for m = m_valid(1:min_end)
@@ -736,6 +796,9 @@ for m = m_valid(1:min_end)
     h_fig_mol = buildFig(p, m, m_i, molPerFig, p_fig, h_fig_mol);
 end
 set(h_fig_mol, 'Visible', 'on');
+
+% added by MH, 10.4.2019
+disp('figure preview successfully built.');
 
 
 function radiobutton_noFig_Callback(obj, evd, h_fig)
@@ -1070,6 +1133,17 @@ ud_optExpTr('dt', h_fig);
 function popupmenu_trPrm_Callback(obj, evd, h_fig)
 val = get(obj, 'Value');
 h = guidata(h_fig);
+
+% added by MH, 10.4.2019
+trFmt = h.param.ttPr.proj{h.param.ttPr.curr_proj}.exp.traces{1}(2);
+if val==2 && sum(trFmt==[2,3,4,5,6])
+    trFmt_txt = get(h.optExpTr.popupmenu_trFmt,'String');
+    setContPan(cat(2,'Processing parameters can not be written in headers',...
+        ' of files with format:',trFmt_txt{trFmt}),'error',h_fig);
+    set(obj, 'Value', 1);
+    return;
+end
+
 h.param.ttPr.proj{h.param.ttPr.curr_proj}.exp.traces{2}(5) = val;
 guidata(h_fig, h);
 ud_optExpTr('tr', h_fig);
@@ -1102,7 +1176,12 @@ ud_optExpTr('all', h_fig);
 
 
 function pushbutton_infos_Callback(obj, evd, h_fig)
-msgbox('Soon avaiblable');
+
+% modified by MH, 10.4.2019
+% msgbox('Soon avaiblable');
+disp('open MASH online documentation, please wait...');
+web(cat(2,'https://rna-fretools.github.io/MASH-FRET/trace-processing/',...
+    'functionalities/set-export-options.html'));
 
 
 function pushbutton_cancel_Callback(obj, evd, h_fig)
@@ -1166,19 +1245,34 @@ else
 end
 
 if strcmp(opt, 'tr') || strcmp(opt, 'all')
+    
     set(h.optExpTr.radiobutton_saveTr, 'Value', prm.traces{1}(1));
     set(h.optExpTr.radiobutton_noTr, 'Value', ~prm.traces{1}(1));
-    set(h.optExpTr.popupmenu_trFmt, 'Value', prm.traces{1}(2));
-    dat_txt = get(h.optExpTr.text_trInfos, 'UserData');
-    set(h.optExpTr.text_trInfos, 'String', dat_txt(prm.traces{1}(2)));
-    set(h.optExpTr.checkbox_trI, 'Value', prm.traces{2}(1));
-    set(h.optExpTr.checkbox_trFRET, 'Value', prm.traces{2}(2));
-    set(h.optExpTr.checkbox_trS, 'Value', prm.traces{2}(3));
-    set(h.optExpTr.checkbox_trAll, 'Value', prm.traces{2}(4));
-    set(h.optExpTr.popupmenu_trPrm, 'Value', prm.traces{2}(5));
-    set(h.optExpTr.checkbox_gam, 'Value', prm.traces{2}(6));  % added by FS, 4.4.2017
+    
+    % cancelled by MH, 10.4.2019
+%     set(h.optExpTr.popupmenu_trFmt, 'Value', prm.traces{1}(2));
+%     dat_txt = get(h.optExpTr.text_trInfos, 'UserData');
+%     set(h.optExpTr.text_trInfos, 'String', dat_txt(prm.traces{1}(2)));
+%     set(h.optExpTr.checkbox_trI, 'Value', prm.traces{2}(1));
+%     set(h.optExpTr.checkbox_trFRET, 'Value', prm.traces{2}(2));
+%     set(h.optExpTr.checkbox_trS, 'Value', prm.traces{2}(3));
+%     set(h.optExpTr.checkbox_trAll, 'Value', prm.traces{2}(4));
+%     set(h.optExpTr.popupmenu_trPrm, 'Value', prm.traces{2}(5));
+%     set(h.optExpTr.checkbox_gam, 'Value', prm.traces{2}(6));  % added by FS, 4.4.2017
     
     if prm.traces{1}(1)
+        
+        % moved here by MH, 10.4.2019
+        set(h.optExpTr.popupmenu_trFmt, 'Value', prm.traces{1}(2));
+        dat_txt = get(h.optExpTr.text_trInfos, 'UserData');
+        set(h.optExpTr.text_trInfos, 'String', dat_txt(prm.traces{1}(2)));
+        set(h.optExpTr.checkbox_trI, 'Value', prm.traces{2}(1));
+        set(h.optExpTr.checkbox_trFRET, 'Value', prm.traces{2}(2));
+        set(h.optExpTr.checkbox_trS, 'Value', prm.traces{2}(3));
+        set(h.optExpTr.checkbox_trAll, 'Value', prm.traces{2}(4));
+        set(h.optExpTr.popupmenu_trPrm, 'Value', prm.traces{2}(5));
+        set(h.optExpTr.checkbox_gam, 'Value', prm.traces{2}(6));  % added by FS, 4.4.2017
+        
         set(h.optExpTr.radiobutton_saveTr, 'FontWeight', 'bold');
         set(h.optExpTr.radiobutton_noTr, 'FontWeight', 'normal');
         set([h.optExpTr.text_trFmt h.optExpTr.popupmenu_trFmt ...
@@ -1190,9 +1284,13 @@ if strcmp(opt, 'tr') || strcmp(opt, 'all')
                 h.optExpTr.checkbox_trS h.optExpTr.checkbox_trAll], ...
                 'Enable', 'on');
         else
-            set([h.optExpTr.checkbox_trI h.optExpTr.checkbox_trFRET ...
-                h.optExpTr.checkbox_trS h.optExpTr.checkbox_trAll], ...
-                'Enable', 'off');
+            % modified by MH, 10.4.2019
+%             set([h.optExpTr.checkbox_trI h.optExpTr.checkbox_trFRET ...
+%                 h.optExpTr.checkbox_trS h.optExpTr.checkbox_trAll], ...
+%                 'Enable', 'off');
+            set(h.optExpTr.checkbox_trI,'Value',1,'Enable','off');
+            set([h.optExpTr.checkbox_trFRET h.optExpTr.checkbox_trS ...
+                h.optExpTr.checkbox_trAll],'Value', 0, 'Enable', 'off');
         end
 
     else
@@ -1204,6 +1302,11 @@ if strcmp(opt, 'tr') || strcmp(opt, 'all')
             h.optExpTr.checkbox_trS h.optExpTr.checkbox_trAll ...
             h.optExpTr.checkbox_gam h.optExpTr.text_trPrm ...
             h.optExpTr.popupmenu_trPrm],'Enable', 'off');
+        
+        % added by MH, 10.4.2019
+        set([h.optExpTr.checkbox_trI h.optExpTr.checkbox_trFRET ...
+            h.optExpTr.checkbox_trS h.optExpTr.checkbox_trAll ...
+            h.optExpTr.checkbox_gam], 'Value', 0);
     end
     if ~nFRET
         set([h.optExpTr.checkbox_trFRET h.optExpTr.checkbox_gam], ...
@@ -1220,34 +1323,63 @@ end
 if strcmp(opt, 'hist') || strcmp(opt, 'all')
     set(h.optExpTr.radiobutton_saveHist, 'Value', prm.hist{1}(1));
     set(h.optExpTr.radiobutton_noHist, 'Value', ~prm.hist{1}(1));
-    set(h.optExpTr.checkbox_histDiscr, 'Value', prm.hist{1}(2));
-    set(h.optExpTr.checkbox_histI, 'Value', prm.hist{2}(1,1));
-    perSec = h.param.ttPr.proj{h.param.ttPr.curr_proj}.fix{2}(4);
-    perPix = h.param.ttPr.proj{h.param.ttPr.curr_proj}.fix{2}(5);
-    if perSec
-        rate = h.param.ttPr.proj{h.param.ttPr.curr_proj}.frame_rate;
-        prm.hist{2}(1,2:4) = prm.hist{2}(1,2:4)/rate;
-    end
-    if perPix
-        nPix = h.param.ttPr.proj{h.param.ttPr.curr_proj}.pix_intgr(2);
-        prm.hist{2}(1,2:4) = prm.hist{2}(1,2:4)/nPix;
-    end
-    set(h.optExpTr.edit_minI, 'String', num2str(prm.hist{2}(1,2)));
-    set(h.optExpTr.edit_binI, 'String', num2str(prm.hist{2}(1,3)));
-    set(h.optExpTr.edit_maxI, 'String', num2str(prm.hist{2}(1,4)));
-    set(h.optExpTr.checkbox_histFRET, 'Value', prm.hist{2}(2,1));
-    set(h.optExpTr.edit_minFRET, 'String', num2str(prm.hist{2}(2,2)));
-    set(h.optExpTr.edit_binFRET, 'String', num2str(prm.hist{2}(2,3)));
-    set(h.optExpTr.edit_maxFRET, 'String', num2str(prm.hist{2}(2,4)));
-    set(h.optExpTr.checkbox_histS, 'Value', prm.hist{2}(3,1));
-    set(h.optExpTr.edit_minS, 'String', num2str(prm.hist{2}(3,2)));
-    set(h.optExpTr.edit_binS, 'String', num2str(prm.hist{2}(3,3)));
-    set(h.optExpTr.edit_maxS, 'String', num2str(prm.hist{2}(3,4)));
+    
+    % cancel by MH, 10.4.2019
+%     set(h.optExpTr.checkbox_histDiscr, 'Value', prm.hist{1}(2));
+%     set(h.optExpTr.checkbox_histI, 'Value', prm.hist{2}(1,1));
+%     perSec = h.param.ttPr.proj{h.param.ttPr.curr_proj}.fix{2}(4);
+%     perPix = h.param.ttPr.proj{h.param.ttPr.curr_proj}.fix{2}(5);
+%     if perSec
+%         rate = h.param.ttPr.proj{h.param.ttPr.curr_proj}.frame_rate;
+%         prm.hist{2}(1,2:4) = prm.hist{2}(1,2:4)/rate;
+%     end
+%     if perPix
+%         nPix = h.param.ttPr.proj{h.param.ttPr.curr_proj}.pix_intgr(2);
+%         prm.hist{2}(1,2:4) = prm.hist{2}(1,2:4)/nPix;
+%     end
+%     set(h.optExpTr.edit_minI, 'String', num2str(prm.hist{2}(1,2)));
+%     set(h.optExpTr.edit_binI, 'String', num2str(prm.hist{2}(1,3)));
+%     set(h.optExpTr.edit_maxI, 'String', num2str(prm.hist{2}(1,4)));
+%     set(h.optExpTr.checkbox_histFRET, 'Value', prm.hist{2}(2,1));
+%     set(h.optExpTr.edit_minFRET, 'String', num2str(prm.hist{2}(2,2)));
+%     set(h.optExpTr.edit_binFRET, 'String', num2str(prm.hist{2}(2,3)));
+%     set(h.optExpTr.edit_maxFRET, 'String', num2str(prm.hist{2}(2,4)));
+%     set(h.optExpTr.checkbox_histS, 'Value', prm.hist{2}(3,1));
+%     set(h.optExpTr.edit_minS, 'String', num2str(prm.hist{2}(3,2)));
+%     set(h.optExpTr.edit_binS, 'String', num2str(prm.hist{2}(3,3)));
+%     set(h.optExpTr.edit_maxS, 'String', num2str(prm.hist{2}(3,4)));
     
     
     if prm.hist{1}(1)
+        
         set(h.optExpTr.radiobutton_saveHist, 'FontWeight', 'bold');
         set(h.optExpTr.radiobutton_noHist, 'FontWeight', 'normal');
+        
+        % moved here by MH, 10.4.2019
+        set(h.optExpTr.checkbox_histDiscr, 'Value', prm.hist{1}(2));
+        set(h.optExpTr.checkbox_histI, 'Value', prm.hist{2}(1,1));
+        perSec = h.param.ttPr.proj{h.param.ttPr.curr_proj}.fix{2}(4);
+        perPix = h.param.ttPr.proj{h.param.ttPr.curr_proj}.fix{2}(5);
+        if perSec
+            rate = h.param.ttPr.proj{h.param.ttPr.curr_proj}.frame_rate;
+            prm.hist{2}(1,2:4) = prm.hist{2}(1,2:4)/rate;
+        end
+        if perPix
+            nPix = h.param.ttPr.proj{h.param.ttPr.curr_proj}.pix_intgr(2);
+            prm.hist{2}(1,2:4) = prm.hist{2}(1,2:4)/nPix;
+        end
+        set(h.optExpTr.edit_minI, 'String', num2str(prm.hist{2}(1,2)));
+        set(h.optExpTr.edit_binI, 'String', num2str(prm.hist{2}(1,3)));
+        set(h.optExpTr.edit_maxI, 'String', num2str(prm.hist{2}(1,4)));
+        set(h.optExpTr.checkbox_histFRET, 'Value', prm.hist{2}(2,1));
+        set(h.optExpTr.edit_minFRET, 'String', num2str(prm.hist{2}(2,2)));
+        set(h.optExpTr.edit_binFRET, 'String', num2str(prm.hist{2}(2,3)));
+        set(h.optExpTr.edit_maxFRET, 'String', num2str(prm.hist{2}(2,4)));
+        set(h.optExpTr.checkbox_histS, 'Value', prm.hist{2}(3,1));
+        set(h.optExpTr.edit_minS, 'String', num2str(prm.hist{2}(3,2)));
+        set(h.optExpTr.edit_binS, 'String', num2str(prm.hist{2}(3,3)));
+        set(h.optExpTr.edit_maxS, 'String', num2str(prm.hist{2}(3,4)));
+
         set([h.optExpTr.text_hist2exp h.optExpTr.text_min ...
             h.optExpTr.text_bin h.optExpTr.text_max ...
             h.optExpTr.checkbox_histDiscr h.optExpTr.checkbox_histI ...
@@ -1287,6 +1419,16 @@ if strcmp(opt, 'hist') || strcmp(opt, 'all')
             h.optExpTr.edit_binFRET h.optExpTr.edit_maxFRET ...
             h.optExpTr.edit_minS h.optExpTr.edit_binS ...
             h.optExpTr.edit_maxS], 'Enable', 'off');
+        
+        % added by MH, 10.4.2019
+        set([h.optExpTr.checkbox_histDiscr h.optExpTr.checkbox_histI ...
+            h.optExpTr.checkbox_histFRET h.optExpTr.checkbox_histS],...
+            'Value',0);
+        set([h.optExpTr.edit_minI h.optExpTr.edit_binI ...
+            h.optExpTr.edit_maxI h.optExpTr.edit_minFRET ...
+            h.optExpTr.edit_binFRET h.optExpTr.edit_maxFRET ...
+            h.optExpTr.edit_minS h.optExpTr.edit_binS ...
+            h.optExpTr.edit_maxS],'String','');
     end
     if ~nFRET
         set([h.optExpTr.checkbox_histFRET h.optExpTr.edit_minFRET ...
@@ -1302,12 +1444,21 @@ end
 if strcmp(opt, 'dt') || strcmp(opt, 'all')
     set(h.optExpTr.radiobutton_saveDt, 'Value', prm.dt{1});
     set(h.optExpTr.radiobutton_noDt, 'Value', ~prm.dt{1});
-    set(h.optExpTr.checkbox_dtI, 'Value', prm.dt{2}(1));
-    set(h.optExpTr.checkbox_dtFRET, 'Value', prm.dt{2}(2));
-    set(h.optExpTr.checkbox_dtS, 'Value', prm.dt{2}(3));
-    set(h.optExpTr.checkbox_kin, 'Value', prm.dt{2}(4));
+    
+    % cancelled by MH, 10.4.2019
+%     set(h.optExpTr.checkbox_dtI, 'Value', prm.dt{2}(1));
+%     set(h.optExpTr.checkbox_dtFRET, 'Value', prm.dt{2}(2));
+%     set(h.optExpTr.checkbox_dtS, 'Value', prm.dt{2}(3));
+%     set(h.optExpTr.checkbox_kin, 'Value', prm.dt{2}(4));
     
     if prm.dt{1}
+        
+        % moved here by MH, 10.4.2019
+        set(h.optExpTr.checkbox_dtI, 'Value', prm.dt{2}(1));
+        set(h.optExpTr.checkbox_dtFRET, 'Value', prm.dt{2}(2));
+        set(h.optExpTr.checkbox_dtS, 'Value', prm.dt{2}(3));
+        set(h.optExpTr.checkbox_kin, 'Value', prm.dt{2}(4));
+    
         set(h.optExpTr.radiobutton_saveDt, 'FontWeight', 'bold');
         set(h.optExpTr.radiobutton_noDt, 'FontWeight', 'normal');
         set([h.optExpTr.text_dt2exp h.optExpTr.checkbox_dtI ...
@@ -1320,6 +1471,10 @@ if strcmp(opt, 'dt') || strcmp(opt, 'all')
         set([h.optExpTr.text_dt2exp h.optExpTr.checkbox_dtI ...
             h.optExpTr.checkbox_dtFRET h.optExpTr.checkbox_dtS ...
             h.optExpTr.checkbox_kin], 'Enable', 'off');
+        
+        % added by MH, 10.4.2019
+        set([h.optExpTr.checkbox_dtI h.optExpTr.checkbox_dtFRET ...
+            h.optExpTr.checkbox_dtS h.optExpTr.checkbox_kin],'Value',0);
     end
     if ~nFRET
         set(h.optExpTr.checkbox_dtFRET, 'Enable', 'off');
@@ -1332,19 +1487,37 @@ end
 if strcmp(opt, 'fig') || strcmp(opt, 'all')
     set(h.optExpTr.radiobutton_saveFig, 'Value', prm.fig{1}(1));
     set(h.optExpTr.radiobutton_noFig, 'Value', ~prm.fig{1}(1));
-    set(h.optExpTr.popupmenu_figFmt, 'Value', prm.fig{1}(2))
-    set(h.optExpTr.edit_nMol, 'String', num2str(prm.fig{1}(3)));
-    set(h.optExpTr.checkbox_subImg, 'Value', prm.fig{1}(4));
-    set(h.optExpTr.checkbox_figHist, 'Value', prm.fig{1}(5));
-    set(h.optExpTr.checkbox_figDiscr, 'Value', prm.fig{1}(6));
-    set(h.optExpTr.checkbox_top, 'Value', prm.fig{2}{1}(1));
-    set(h.optExpTr.popupmenu_topExc, 'Value', prm.fig{2}{1}(2));
-    set(h.optExpTr.popupmenu_topChan, 'Value', prm.fig{2}{1}(3));
-    set(h.optExpTr.checkbox_bottom, 'Value', prm.fig{2}{2}(1));
+    
+    % cancelled by MH, 10.4.2019
+%     set(h.optExpTr.popupmenu_figFmt, 'Value', prm.fig{1}(2));
+%     set(h.optExpTr.edit_nMol, 'String', num2str(prm.fig{1}(3)));
+%     set(h.optExpTr.checkbox_subImg, 'Value', prm.fig{1}(4));
+%     set(h.optExpTr.checkbox_figHist, 'Value', prm.fig{1}(5));
+%     set(h.optExpTr.checkbox_figDiscr, 'Value', prm.fig{1}(6));
+%     set(h.optExpTr.checkbox_top, 'Value', prm.fig{2}{1}(1));
+%     set(h.optExpTr.popupmenu_topExc, 'Value', prm.fig{2}{1}(2));
+%     set(h.optExpTr.popupmenu_topChan, 'Value', prm.fig{2}{1}(3));
+%     set(h.optExpTr.checkbox_bottom, 'Value', prm.fig{2}{2}(1));
     
     if prm.fig{1}(1)
         set(h.optExpTr.radiobutton_saveFig, 'FontWeight', 'bold');
         set(h.optExpTr.radiobutton_noFig, 'FontWeight', 'normal');
+        
+        % moved here by MH, 10.4.2019
+        set(h.optExpTr.popupmenu_figFmt, 'Value', prm.fig{1}(2));
+        set(h.optExpTr.edit_nMol, 'String', num2str(prm.fig{1}(3)));
+        set(h.optExpTr.checkbox_subImg, 'Value', prm.fig{1}(4));
+        set(h.optExpTr.checkbox_figHist, 'Value', prm.fig{1}(5));
+        set(h.optExpTr.checkbox_figDiscr, 'Value', prm.fig{1}(6));
+        set(h.optExpTr.checkbox_top, 'Value', prm.fig{2}{1}(1));
+        set(h.optExpTr.popupmenu_topExc, 'Value', prm.fig{2}{1}(2));
+        set(h.optExpTr.popupmenu_topChan, 'Value', prm.fig{2}{1}(3));
+        set(h.optExpTr.checkbox_bottom, 'Value', prm.fig{2}{2}(1));
+        
+        % added by MH, 10.4.2019
+        dat_txt = get(h.optExpTr.text_figInfos, 'UserData');
+        set(h.optExpTr.text_figInfos, 'String', dat_txt(prm.fig{1}(2)));
+        
         set([h.optExpTr.text_figFmt h.optExpTr.popupmenu_figFmt ...
             h.optExpTr.text_nMol h.optExpTr.edit_nMol ...
             h.optExpTr.checkbox_subImg h.optExpTr.checkbox_top ...
@@ -1369,6 +1542,12 @@ if strcmp(opt, 'fig') || strcmp(opt, 'all')
             set([h.optExpTr.checkbox_figHist ...
                 h.optExpTr.checkbox_figDiscr], 'Enable', 'off');
         end
+        
+        % moved here by MH, 10.4.2019
+        if ~nFRET && ~nS
+            set([h.optExpTr.checkbox_bottom h.optExpTr.popupmenu_botChan], ...
+                'Enable', 'off');
+        end
 
     else
         set(h.optExpTr.radiobutton_saveFig, 'FontWeight', 'normal');
@@ -1380,11 +1559,18 @@ if strcmp(opt, 'fig') || strcmp(opt, 'all')
             h.optExpTr.checkbox_bottom h.optExpTr.popupmenu_botChan ...
             h.optExpTr.checkbox_figHist h.optExpTr.checkbox_figDiscr ...
             h.optExpTr.pushbutton_preview], 'Enable', 'off');
+        
+        % added by MH, 10.4.2019
+        set([h.optExpTr.checkbox_subImg h.optExpTr.checkbox_top ...
+            h.optExpTr.checkbox_bottom h.optExpTr.checkbox_figHist ...
+            h.optExpTr.checkbox_figDiscr],'Value',0);
     end
-    if ~nFRET && ~nS
-        set([h.optExpTr.checkbox_bottom h.optExpTr.popupmenu_botChan], ...
-            'Enable', 'off');
-    end
+    
+    % cancelled by MH, 10.4.2019
+%     if ~nFRET && ~nS
+%         set([h.optExpTr.checkbox_bottom h.optExpTr.popupmenu_botChan], ...
+%             'Enable', 'off');
+%     end
 end
 
 
