@@ -1,20 +1,25 @@
-function restruct_trace_file(pname,varargin)
+function restruct_trace_file(varargin)
 % | Format trajectories files (*.txt) to MASH-importable structure.
 % |
 % | command: restruct_trace_file(pname);
-% | pname >> source directory
-% | varargin >> optional: DONOR_EXC 1-by-(nFRET+nS) laser wavelengths for 
+% | 1st argument (optional) >> source directory
+% | 2nd argument (optional) >> 1-by-(nFRET+nS) laser wavelengths for 
 % |             donor- and emitter-specific illuminations used in FRET and 
 % |             stoichiometry calculations.
 % |             example: if files contain columns for FRET_Cy3>Cy5, 
 % |             discrFRET_Cy3>Cy5, FRET_Cy5>Cy7, discrFRET_Cy5>Cy7,
 % |             S_Cy3, discrS_Cy3, S_Cy5, and discrS_Cy5
-% |             in order of appearence, DONOR_EXC = [532 532 638 638 532 
+% |             in order of appearence, RATIO_EXC = [532 532 638 638 532 
 % |             532 638 638]
 % |
 % | example: restruct_trace_file('C:\MyDataFolder\experiment_01\traces_processing\traces_ASCII\');
 
-% Last update: 3rd of April 2019 by Mélodie Hadzic
+% Last update: 10th of April 2019 by Mélodie Hadzic
+% --> implement GUI-based user input to select source directory, choose 
+%     file format (Trace processing/Transition analysis import) and
+%     ratio-specific illumination wavelength
+%
+% update: 3rd of April 2019 by Mélodie Hadzic
 % --> implement restructuration of files with multiple FRET and 
 %     stoichiometry and write substitute to MATLAB built-in function
 %     extractBetween for version older than 2016b
@@ -22,15 +27,56 @@ function restruct_trace_file(pname,varargin)
 % update: 18th of February 2019 by Mélodie Hadzic
 % --> update help section
 
-% correct source directory
+% added by MH, 10.4.2019
+% get source directory
+if ~isempty(varargin) && numel(varargin)>=1
+    pname = varargin{1};
+else
+    pname = uigetdir();
+    if isempty(pname) || ~sum(pname)
+        return;
+    end
+end
+
 if ~strcmp(pname(end),'\')
     pname = cat(2,pname,filesep);
 end
 
-if ~isempty(varargin)
-    DONOR_EXC = varargin{1};
+% added by MH, 10.4.2019
+cd(pname);
+
+% modified by MH, 10.4.2019
+% get ratio-specific illuminations
+% if ~isempty(varargin)
+%     DONOR_EXC = varargin{1};
+% else
+%     DONOR_EXC = 532;
+% end
+if ~isempty(varargin) && numel(varargin)>=2
+    RATIO_EXC = varargin{2};
 else
-    DONOR_EXC = 532;
+    RATIO_EXC = [];
+end
+
+% added by MH, 10.4.2019
+% activate/deactivate reorganization of ratio data
+if isempty(RATIO_EXC)
+    % ask user the new format of restructured files
+    module = questdlg({cat(2,'How do you want to format restructured trace ',...
+        'files?'),'- for Trace processing: restructure intensity data only',...
+        '- for Transition analysis / other: restructure all'},...
+        'Chose a file format','for Trace processing',...
+        'for Transition analysis / other','Cancel',...
+        'for Trace processing');
+    if strcmp(module,'for Trace processing')
+        reorgRatio = false;
+    elseif strcmp(module,'for Transition analysis / other')
+        reorgRatio = true;
+    else
+        return;
+    end
+else
+    reorgRatio = true;
 end
 
 fList = dir(cat(2,pname,'*.txt'));
@@ -126,6 +172,35 @@ for l = 1:nExc
     exc(l) = str2num(allHead{timeIdref(l)}(length('timeat')+1:pos-1));
 end
 
+% added by MH, 10.4.2019
+% if not defined in input argument, aske for ratio-specific illuminations
+if reorgRatio && isempty(RATIO_EXC)
+    ratioHead = {};
+    for ii = 1:nCol
+        % identify excitation for each column
+        for l = 1:nExc
+            isExc =  strfind(allHead{ii},num2str(exc(l)));
+            if ~isempty(isExc)
+                break;
+            end
+        end
+        if isempty(isExc)
+            ratioHead = [ratioHead allHead{ii}];
+        end
+    end
+    fig = inputlaserdlg(ratioHead,'Ratio-specific illumination',exc);
+    waitfor(fig,'userdata');
+    if ishandle(fig)
+        RATIO_EXC = get(fig,'userdata');
+        close(fig);
+        if numel(RATIO_EXC)==1 && RATIO_EXC==0
+            return;
+        end
+    else
+        return;
+    end
+end
+
 for ff = 1:F
     try
         
@@ -179,27 +254,32 @@ for ff = 1:F
             end
             
             % If ALEX is used, data are alternated row-wise.
-            if isempty(isExc) % FRET, FRET_discr, S or S_discr
+
+            % modified by MH, 10.4.2019
+%             if isempty(isExc) % FRET, FRET_discr, S or S_discr
+            % include ratio data in restructured file at proper excitations
+            if reorgRatio && isempty(isExc) % FRET, FRET_discr, S or S_discr
+
                 alexData = cat(2,alexData,NaN(L*nExc,1));
 
                 % modified by MH, 3.4.2019
-%                 alexData(find(exc==DONOR_EXC):nExc:end,end) = data(:,ii);
-                if numel(DONOR_EXC)>1
-                    j = j+1;
-                    if j>numel(DONOR_EXC)
-                        disp(cat(2,'the number of non-intensity columns ',...
-                            'in file ',fList(ff,1).name,'is greater than ',...
-                            'second input argument size: please review ',...
-                            'the second input argument'));
-                        return;
-                    end
-                    alexData(find(exc==DONOR_EXC(j)):nExc:end,end) = ...
-                        data(:,ii);
-                else
-                    alexData(find(exc==DONOR_EXC):nExc:end,end) = ...
-                        data(:,ii);
+%                 alexData(find(exc==RATIO_EXC):nExc:end,end) = data(:,ii);
+                j = j+1;
+                if j>size(RATIO_EXC,2)
+                    disp(cat(2,'the number of non-intensity columns ',...
+                        'in file ',fList(ff,1).name,'is greater than ',...
+                        'second input argument size: please review ',...
+                        'the second input argument'));
+                    return;
                 end
-
+                alexData(find(exc==RATIO_EXC(j)):nExc:end,end) = ...
+                    data(:,ii);
+                
+            % added by MH, 10.4.2019
+            % exclude ratio data from restructured file
+            elseif isempty(isExc)
+                rmHead(ii) = true;
+                
             else
                 if ii>1+isFrame+nChan % second excitation
                     id = ii-1-isFrame-nChan;
@@ -254,4 +334,104 @@ end
 fprintf('\nprocess completed !\n');
 
 
+% added by MH, 10.4.2019
+function fig = inputlaserdlg(dlgtxt,dlgtitle,exc)
+% builds a figure to get user inputs on ratio-specific illuminations and
+% return the figure handle.
+% dlgtxt >> {1-by-R} cellstring with ratio data labels (column headers)
+% dlgtitle >> string, figure title
+% exc >> [1-by-nExc], laser wavelength
+
+% get dimensions
+R = numel(dlgtxt);
+h_pop = 20;
+w_pop = 80;
+h_but = 20;
+w_but = 40;
+h_text = 14;
+h_intro = h_text*5;
+mg = 10;
+halfSize = ceil(R/2);
+if R==1
+    nCol = 1;
+else
+    nCol = 2;
+end
+h_fig = mg + h_intro + mg + halfSize*(h_text+h_pop+mg) + h_but + mg;
+w_fig = mg + nCol*(w_pop+mg);
+w_intro = w_fig - mg;
+
+% get popupmenu string
+str_pop = {};
+for l = 1:numel(exc)
+    str_pop = [str_pop,cat(2,num2str(exc(l)),'nm')];
+end
+
+% build figure
+fig = figure('name',dlgtitle,'numbertitle','off','menubar','none',...
+    'visible','off','units','pixels');
+pos_fig = get(fig,'position');
+set(fig,'position',[pos_fig(1:2),w_fig,h_fig]);
+
+h.fig = fig;
+h.exc = exc;
+
+xNext = (w_fig-2*w_but-mg)/2;
+yNext = mg;
+
+h.pushbutton_ok = uicontrol('style','pushbutton','units','pixels','string',...
+    'Save','callback',{@pushbutton_ok_Callback,fig},'position',...
+    [xNext,yNext,w_but,h_but]);
+
+xNext = xNext + w_but + mg;
+
+h.pushbutton_cancel = uicontrol('style','pushbutton','units','pixels',...
+    'string','Cancel','callback',{@pushbutton_cancel_Callback,fig},...
+    'position',[xNext,yNext,w_but,h_but]);
+
+xNext = mg;
+yNext = h_fig - mg - h_intro;
+
+h.text_intro = uicontrol('Style','text','horizontalalignment','left',...
+    'position',[xNext,yNext,w_intro,h_intro]);
+txt_intro = textwrap(h.text_intro,{cat(2,'Select the characteristic ',...
+    'illumination of each ratio data (donor-specific illumination for ',...
+    'FRET ratio and emitter-specific illumination for S ratio):')});
+set(h.text_intro,'string',txt_intro);
+
+for i = 1:R
+    
+    yNext = yNext - mg - h_text;
+    
+    h.text(i) = uicontrol('style','text','string',dlgtxt{i},...
+        'position',[xNext,yNext,w_pop,h_text]);
+    
+    yNext = yNext - h_pop;
+    
+    h.popupmenu(i) = uicontrol('style','popupmenu','string',str_pop,...
+        'value',1,'position',[xNext,yNext,w_pop,h_pop]);
+    
+    if i==halfSize
+        xNext = xNext + w_pop + mg;
+        yNext = h_fig - mg - h_intro;
+    end
+end
+
+guidata(fig,h);
+
+set(fig,'visible','on');
+
+
+function pushbutton_ok_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
+R = numel(h.popupmenu);
+RATIO_EXC = zeros(1,R);
+for i = 1:R
+    RATIO_EXC(i) = h.exc(get(h.popupmenu(i),'value'));
+end
+set(h_fig,'userdata',RATIO_EXC);
+
+
+function pushbutton_cancel_Callback(obj, evd, h_fig)
+set(h_fig,'userdata',0);
 
