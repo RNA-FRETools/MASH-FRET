@@ -9,6 +9,13 @@ nav_order: 1
 # Set import options
 {: .no_toc }
 
+Import options define the particular file structure and annexed files used to create a project from ASCII trace files in module Trace processing.
+The window is accessed by pressing 
+![ASCII options ...](../../assets/images/gui/TP-but-ascii-options-3p.png "ASCII options ...") in the project management area of module Trace processing.
+
+Import options are correctly exported to MASH only after pressing 
+![Save](../../assets/images/gui/TP-but-save.png "Save").
+
 <a href="../../assets/images/gui/TP-area-proj-impopt.png"><img src="../../assets/images/gui/TP-area-proj-impopt.png" style="max-width: 286px;"/></a>
 
 ## Window components
@@ -32,10 +39,10 @@ If no coordinates are available, only manual background setting will be allowed.
 Single molecule coordinates can be imported from an external ASCII file by activating the box in **(a)**, or from the headers of trace files by activating the box in **(d)** and setting in **(e)** the corresponding source line in file.
 
 The coordinates file can be imported along with ASCII traces by pressing 
-![...](../../assets/images/gui/TP-but-3p.png) and selecting the proper file. 
+![...](../../assets/images/gui/TP-but-3p.png "...") and selecting the proper file. 
 The imported file name is then displayed in **(b)**.
 Coordinates are read following user-defined import settings that can be accessed and modified by pressing 
-![Import options](../../assets/images/gui/TP-but-import-options.png).
+![Import options](../../assets/images/gui/TP-but-import-options.png "Import options").
 
 <a href="../../assets/images/gui/TP-area-proj-impopt-coord-impopt.png"><img src="../../assets/images/gui/TP-area-proj-impopt-coord-impopt.png" style="max-width: 226px;"/></a>
 
@@ -43,7 +50,7 @@ Single molecule coordinates are coordinates co-localized in each channel, with e
 The number of file header lines set in **(d)** is skipped before reading coordinates data and channel-specific x- and y-coordinates are read from columns set in **(c)** and **(d)** respectively.
 Coordinates are sorted according to the specific x-range of each channel which is calculated from the initial video x-dimension set in **(c)**.
 Import settings are saved only after pressing 
-![Ok](../../assets/images/gui/TP-but-ok.png).
+![Ok](../../assets/images/gui/TP-but-ok.png "Ok").
 
 ---
 
@@ -57,7 +64,7 @@ The SMV is used to re-calculate intensity-time traces in case molecule positions
 If no video is available, only manual background setting will be allowed.
 
 The SMV file can be imported along with the ASCII traces by activating the option in **(a)**, pressing 
-![...](../../assets/images/gui/TP-but-3p.png) and selecting the proper file. 
+![...](../../assets/images/gui/TP-but-3p.png "...") and selecting the proper file. 
 The imported file name is then displayed in **(b)**.
 If possible, it is recommended to convert the file to the 
 [.sira file](../../output-files/sira-mash-video.html) format to increase speed of execution; see 
@@ -99,7 +106,7 @@ They can be set in panel
 
 Gamma factor files are organized in columns with each column corresponding to one donor-acceptor pair and each line corresponding to one molecule of the imported set.
 Gamma factors are imported from files by activating the option in **(a)**, pressing 
-![...](../../assets/images/gui/TP-but-3p.png) and selecting the proper file(s).
+![...](../../assets/images/gui/TP-but-3p.png "...") and selecting the proper file(s).
 The imported file name is then displayed in **(b)**.
 If several files are selected, gamma factors will be concatenated line-wise.
 

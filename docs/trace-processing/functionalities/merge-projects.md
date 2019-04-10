@@ -83,7 +83,7 @@ To restructure ALEX trace files:
    ![for Transition analysis](../../assets/images/gui/TP-but-for-transition-analysis.png)  
      
 1. If format for Transition analysis is chosen, assign laser wavelengths to each ratio data and press 
-   ![Save](../../assets/images/gui/TP-but-save.png) to start formatting
+   ![Save](../../assets/images/gui/TP-but-save.png "Save") to start formatting
 
 ---
 
