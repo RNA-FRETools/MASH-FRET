@@ -1,24 +1,59 @@
-function binTrajFiles(pname,expT,headers)
+function binTrajFiles(expT, varargin)
 % | Format MASH-processed trace files (*.txt) by binning data to a greater
 % | exposure time and writing data columns specified by headers.
 % |
-% | command: binTrajFiles(pname);
-% | pname >> source directory
+% | command: binTrajFiles(expT,arg2,arg3);
 % | expT >> desired time bin (in second)
-% | headers >> {} or {1-by-H} H specified headers to export. If empty,
-% |            default headers are used: {'timeat638nm','I_1at638nm',
-% |            'I_2at638nm','I_3at638nm','timeat532nm','I_1at532nm',
-% |            'I_2at532nm','I_3at532nm','FRET_1>2','discr.FRET_1>2',
-% |            'S_Cy3','discr.S_Cy3'}
+% | arg2 (optional) >> source directory
+% | arg3 (optional) >> cellstring file headers that specify data to export.
 % |
-% | example: binTrajFiles('C:\myDataFolder\experiment_01\trace_processing_traces_ASCII\',0.1,{'timeat532nm','I_1at532nm','I_2at532nm','I_3at532nm','FRET_1>2','discr.FRET_1>2'});
+% | example1: binTrajFiles(0.2);
+% | example2: binTrajFiles(0.1, 'C:\myDataFolder\experiment_01\trace_processing_traces_ASCII\', {'timeat532nm','FRET_1>2'});
 
-% Last update: 18th of February 2019 by Mélodie Hadzic
+% Last update: 10th of April 2019 by Mélodie Hadzic
+% --> adapt code to allow use without giving specific headers in input and
+%     to allow use with on sinlge input argument (the new time bin)
+% --> correct code for alex data (numbe of different laser was calculated
+%     from the number of time columns divided by 2)
+%
+% update: 18th of February 2019 by Mélodie Hadzic
 % --> update help section
 
-defaultHeaders = {'timeat638nm','I_1at638nm','I_2at638nm','I_3at638nm',...
-    'timeat532nm','I_1at532nm','I_2at532nm','I_3at532nm', 'FRET_1>2',...
-    'discr.FRET_1>2','S_Cy3','discr.S_Cy3'};
+% cancelled by MH, 10.4.2019
+% defaultHeaders = {'timeat638nm','I_1at638nm','I_2at638nm','I_3at638nm',...
+%     'timeat532nm','I_1at532nm','I_2at532nm','I_3at532nm', 'FRET_1>2',...
+%     'discr.FRET_1>2','S_Cy3','discr.S_Cy3'};
+
+% added by MH, 10.4.2019
+% collect source directory
+if ~isempty(varargin) && numel(varargin)>=1
+    pname = varargin{1};
+    if isempty(pname) || ~sum(pname)
+        disp('second input argument must contain the source directory');
+        disp('for help type: help binTrajFiles');
+        return;
+    end
+else
+    pname = uigetdir();
+end
+if isempty(pname) || ~sum(pname)
+    return;
+end
+cd(pname)
+
+% added by MH, 10.4.2019
+% collect headers of column to export
+if ~isempty(varargin) && numel(varargin)>=2
+    headers = varargin{2};
+    if isempty(headers)
+        disp(cat(2,'third input argument must contain headers of file ',...
+            'columns to export'));
+        disp('for help type: help binTrajFiles');
+        return;
+    end
+else
+    headers = {};
+end
 
 try
     % correct source directory
@@ -29,12 +64,13 @@ try
     % get new exposure time
     binTime = expT;
     
-    % get final headers
-    if isempty(headers)
-        headFinal = headers;
-    else
-        headFinal = defaultHeaders;
-    end
+    % cancelled by MH, 10.4.2019
+%     % get final headers
+%     if isempty(headers)
+%         headFinal = headers;
+%     else
+%         headFinal = defaultHeaders;
+%     end
 
     % list trajectory files in the folder
     fList = dir(cat(2,pname,'*.txt'));
@@ -70,6 +106,21 @@ try
         end
         head{end} = headline((idt(nCol)+length(sprintf('\t'))): ...
             (length(headline)-length(sprintf('\n'))+1));
+        
+        % added by MH, 10.4.2019
+        if isempty(head{end})
+            head = head(1:end-1);
+        end
+        
+        % added by MH, 10.4.2019
+        excid = strfind(head,'timeat');
+        exc = [];
+        for j = 1:numel(head)
+            if ~isempty(excid{j})
+                exc = [exc str2num(head{j}(length('timeat')+1:end-2))];
+            end
+        end
+        exc = unique(exc);
 
         % localizes time data column from header
         isTime = cellfun('isempty',strfind(head,'timeat'));
@@ -79,11 +130,18 @@ try
         data = importdata(cat(2,pname,fList(ff,1).name));
         data = data.data;
         if exist('binTime','var')
-            data = binData(data, binTime, timeIdref);
+            data = binData(data, binTime, timeIdref, exc);
         end
         
         % order and remove columns
-        data = arrangeColumns(headFinal, head, data);
+        % modified by MF, 10.4.2019
+%         data = arrangeColumns(headFinal, head, data);
+        if ~isempty(headers)
+            headFinal = headers;
+            data = arrangeColumns(headFinal, head, data);
+        else
+            headFinal = head;
+        end
 
         % export binned trajectory
         nCol2 = size(headFinal,2);
@@ -116,11 +174,11 @@ end
 fprintf('\nprocess completed !\n');
 
 
-function binned = binData(data, bin_1, colTime)
+function binned = binData(data, bin_1, colTime, exc)
 
 binned = data;
 
-bin_1 = bin_1*numel(colTime)/2; % multiple time bin for ALEX data
+bin_1 = bin_1*numel(exc); % multiple time bin for ALEX data
 bin_0 = data(2,colTime(1))-data(1,colTime(1)); % original bin time
 if bin_0>bin_1
     fprintf(['\nTime binning failed: exposure time in data is larger ' ...
