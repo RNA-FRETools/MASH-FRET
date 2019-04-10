@@ -72,7 +72,7 @@ The bin size has a substantial influence on the cluster shapes: large bins will 
 TDP boundaries are important to exclude out-of range states that would bias the determination of state configuration.
 Therefore, data-specific TDP limits and bin size have to be carefully chosen in order to make transition clusters visible and sufficiently separated.
 
-![Effect of bin size on TDP](../assets/images/figures/TA-workflow-scheme-bin-size.png "Effect of bin size on TDP")
+<a href="../assets/images/figures/TA-workflow-scheme-bin-size.png" title="Effect of bin size on TDP"><img src="../assets/images/figures/TA-workflow-scheme-bin-size.png" alt="Effect of bin size on TDP"></a>
 
 The regular way of sorting transitions into bins, *i.e.*, counting transition absolute occurrences, will systematically favour state transitions that occur the most in trajectories at the expense of rarely occurring state transitions.
 For instance, rapid interconversion of two states will appear as intense clusters whereas irreversible state transitions might be barely visible.
@@ -81,7 +81,7 @@ One way of scaling equally the two type of clusters is to assign one transition 
 Transition clusters are easier identified by eyes and by clustering algorithms if a Gaussian filter is applied to the TDP.
 This has for effect to smooth the cluster's edges and to enhance the Gaussian shape of their 2D-profile.
 
-![TDP processing](../assets/images/figures/TA-workflow-scheme-tdp-processing.png "TDP processing")
+<a href="../assets/images/figures/TA-workflow-scheme-tdp-processing.png" title="TDP processing"><img src="../assets/images/figures/TA-workflow-scheme-tdp-processing.png" alt="TDP processing"></a>
 
 To build the TDP:
 
@@ -127,7 +127,7 @@ with
 ( [*val*<sub>*j*</sub>](){: .math_var };[*val*<sub>*j'*</sub>](){: .math_var } ), and covariance 
 [*&#931;*<sub>*j*,*j'*</sub>](){: .math_var } that contains information about cluster's shape.
 
-![Gaussian mixture clustering](../assets/images/figures/TA-workflow-scheme-clustering.png "Gaussian mixture clustering")
+<a href="../assets/images/figures/TA-workflow-scheme-clustering.png" title="Gaussian mixture clustering"><img src="../assets/images/figures/TA-workflow-scheme-clustering.png" alt="Gaussian mixture clustering"></a>
 
 The Gaussian mixtures that describe the data the best for different 
 [*J*](){: .math_var } are inferred and compared to each other.
