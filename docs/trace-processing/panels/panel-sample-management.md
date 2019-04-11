@@ -25,39 +25,78 @@ nav_order: 2
 
 Use this list to navigate through the single molecules in your sample.
 
-Molecules in your project are listed in **(a)**.
-Selection in the list updates the 
-[Visualization area](area-visualization.html) and adapt the processing parameters of panels 
-[Sub-images and background correction](panel-subimage-background-correction), 
-[Dwell-time processing](panel-dwelltime-processing), 
-[Factor corrections](panel-factor-corrections), 
-[Photobleaching](panel-photobleaching) and 
-[Denoising](panel-denoising) to the selected molecule.
-To navigate through the molecules in your sample, simply select the corresponding index in the list or press 
+Molecules in your project can be browsed by selecting the corresponding index in the list or press 
 ![left arrow button](../../assets/images/gui/TP-but-arrow-left.png) and 
 ![right arrow button](../../assets/images/gui/TP-but-arrow-right.png) to go to the previous and next molecule respectively.
+
+Selection in the list updates the 
+[Visualization area](area-visualization.html) and adapt the processing parameters of panels 
+[Sub-images](panel-sub-images.html), 
+[Background correction](panel-background-correction.html),
+[Factor corrections](panel-factor-corrections.html), 
+[Photobleaching](panel-photobleaching.html), 
+[Denoising](panel-denoising.html) and 
+[Find states](panel-find-states.html) to the selected molecule.
 
 
 ---
 
 ## Current molecule
 
+Defines the molecule index of the currently selected molecule.
+
+Editing the current molecule updates the 
+[Visualization area](area-visualization.html) and adapt the processing parameters of panels 
+[Sub-images](panel-sub-images.html), 
+[Background correction](panel-background-correction.html), 
+[Factor corrections](panel-factor-corrections.html), 
+[Photobleaching](panel-photobleaching.html), 
+[Denoising](panel-denoising.html) and 
+[Find states](panel-find-states.html) for the defined molecule index.
 
 ---
 
 ## Process current molecule data
 
+Updates corrections and calculations for the current molecule.
+
+Pressing 
+![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE") applies all intensity corrections as configured in panels 
+[Background correction](panel-background-correction.html),
+[Factor corrections](panel-factor-corrections.html), 
+[Photobleaching](panel-photobleaching.html) and 
+[Denoising](panel-denoising.html), and calculates states trajectories as configured in panel 
+[Find states](panel-find-states.html) for the current molecule.
+
+Usually, this functionality is used after changing any processing parameters in the sub-mentioned panels.
 
 ---
 
 ## Process all molecules data
 
+Updates corrections and calculations for all molecules in the sample.
+
+Pressing 
+![UPDATE ALL](../../assets/images/gui/TP-but-update.png "UPDATE") applies all intensity corrections as configured in panels 
+[Background correction](panel-background-correction.html),
+[Factor corrections](panel-factor-corrections.html), 
+[Photobleaching](panel-photobleaching.html) and 
+[Denoising](panel-denoising.html), and calculates states trajectories as configured in panel 
+[Find states](panel-find-states.html) for all molecules.
+
+Usually, this functionality is used before exporting the MASH project.
+
+**Note:** *If the recentering options is activated in panel 
+[Sub-images](panel-sub-images.html), all single molecule coordinates will be automatically recentered. If not desired, deactivate the recentering option prior processing all data; see 
+[Single molecule coordinates](panel-sub-images.html#single-molecule-coordinates) for more information.*
 
 ---
 
 ## Export processed data
 
-Opens export options used to write processed single molecule data to ASCII files and figures.
+Pressing 
+![Export ASCII...](../../assets/images/gui/TP-but-export-ascii-3p.png "Export ASCII...") opens the export options window.
+Export options defines the files formats to export, including ASCII files and figures.
 
 To set export options, refer to 
 [Set export options](../functionalities/set-export-options.html).
@@ -67,7 +106,9 @@ To set export options, refer to
 
 ## Trace manager
 
-Opens the tool Trace manager used to sort single molecules and set molecule statuses.
+Pressing 
+![TM](../../assets/images/gui/TP-but-tm.png "Export ASCII...") opens the tool.
+Trace manager is used to sort single molecules and set molecule statuses in the sample.
 
 To use Trace manager, refer to 
 [Use Trace manager](../functionalities/use-trace-manager.html).
@@ -77,6 +118,12 @@ To use Trace manager, refer to
 
 ## Molecule status
 
-The molecule status is defined by the inclusion/exclusion from the sample and the label.
+The molecule status is defined by sample inclusion/exclusion and group assignment.
 
 <a href="../../assets/images/gui/TP-panel-sample-mol.png"><img src="../../assets/images/gui/TP-panel-sample-mol.png" style="max-width: 173px;"/></a>
+
+To include the current molecule in, or exclude from, the sample, activate or deactivate respectively the box in **(a)**.
+
+To assign the current molecule to an existing group, select the group label in list **(b)**.
+To add customed group labels, please refer to 
+[Use Trace manager](../functionalities/use-trace-manager.html).
