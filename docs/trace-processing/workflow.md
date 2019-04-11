@@ -115,18 +115,22 @@ The background signal is usually spatially distributed over the single molecule 
 MASH offers a set of local background estimators that can be used for such purpose.
 
 The intensity 
-[*I*<sub>*em*,*ex*</sub>(*n*,*t*)](){: .math_var } of molecule 
+[*I*<sub>*em*</sub><sup>*ex*</sup>(*n*,*t*)](){: .math_var } of molecule 
 [*n*](){: .math_var } detected in emission channel 
 [*em*](){: .math_var } upon illumination with laser 
 [*ex*](){: .math_var } at time 
 [*t*](){: .math_var } is background-corrected such as:
 
+<img src="../assets/images/equations/TP-eq-trace-corr-01.gif" alt="\left I_{em}^{ex}(n,t)^{*} = I_{em}^{ex}(n,t) - bg_{em}^{ex}(n,t)">
+
+<!--
 {: .equation }
 *I*<sup>\*</sup><sub>*em*,*ex*</sub>(*n*,*t*) = *I*<sub>*em*,*ex*</sub>(*n*,*t*) - *bg*<sub>*em*,*ex*</sub>(*n*,*t*)
+-->
 
 with 
-[*I*<sup>\*</sup><sub>*em*,*ex*</sub>(*n*,*t*)](){: .math_var } the background-corrected intensity and 
-[*bg*<sub>*em*,*ex*</sub>(*n*,*t*)](){: .math_var } the estimated background intensity.
+[*I*<sub>*em*</sub><sup>*ex*</sup>(*n*,*t*)<sup>\*</sup>](){: .math_var } the background-corrected intensity and 
+[*bg*<sub>*em*</sub><sup>*ex*</sup>(*n*,*t*)](){: .math_var } the estimated background intensity.
 
 To correct intensities from background:
 
@@ -164,8 +168,12 @@ The bleedthrough coefficient
 [*em*<sub>0</sub>](){: .math_var } is calculated from intensities measured from species single-labelled with emitter 
 [*em*](){: .math_var } and after background correction, such as:
 
+<img src="../assets/images/equations/TP-eq-trace-corr-02.gif" alt="bt_{em,em0} = {}\frac{I_{em0}^{ex}^{*}}{I_{em}^{ex}^{*}}">
+
+<!--
 {: .equation }
 *bt*<sub>*em*,*em*0</sub> = *I*<sup>\*</sup><sub>*em*0</sub><sup>*ex*</sup> / *I*<sup>\*</sup><sub>*em*</sub><sup>*ex*</sup>
+-->
 
 The direct excitation coefficient 
 [*dE*<sub>*em*0</sub><sup>*ex*&#8800;*ex*0</sup>](){: .math_var } for direct excitation of an emitter 
@@ -174,23 +182,33 @@ The direct excitation coefficient
 [*ex*](){: .math_var } is calculated from intensities measured from species single-labelled with emitter 
 [*em*<sub>0</sub>](){: .math_var } and after background correction, such as:
 
+<img src="../assets/images/equations/TP-eq-trace-corr-03.gif" alt="dE_{em0}^{ex\neq ex0} = {}\frac{I_{em0}^{ex}^{*}}{I_{em0}^{ex0}^{*}}">
+
+<!--
 {: .equation }
 *dE*<sub>*em*0</sub><sup>*ex*&#8800;*ex*0</sup> = *I*<sup>\*</sup><sub>*em*0</sub><sup>*ex*</sup> / *I*<sup>\*</sup><sub>*em*0</sub><sup>*ex*0</sup>
+-->
 
 The background-corrected intensity 
-[*I*<sup>\*</sup><sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*)](){: .math_var } of molecule 
+[*I*<sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*)<sup>\*</sup>](){: .math_var } of molecule 
 [*n*](){: .math_var } detected in emission channel 
 [*em*<sub>0</sub>](){: .math_var } upon illumination with laser 
 [*ex*](){: .math_var } at time 
 [*t*](){: .math_var } is corrected from cross-talks such as:
 
+<img src="../assets/images/equations/TP-eq-trace-corr-04.gif" alt="I_{em0}^{ex}(n,t)^{**} = I_{em0}^{ex}(n,t)^{*} - \sum_{em\not\equiv em0}\left ( bt_{em,em0}(n) × I_{em}^{ex}(n,t)^{*} \right )">
+
+<img src="../assets/images/equations/TP-eq-trace-corr-05.gif" alt="I_{em0}^{ex\neq ex0}(n,t)^{***} = I_{em0}^{ex\neq ex0}(n,t)^{**} - dE_{em0}^{ex\neq ex0}(n) × I_{em0}^{ex0}(n,t)^{**}">
+
+<!--
 {: .equation }
 *I*<sup>\*\*</sup><sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*) = *I*<sup>\*</sup><sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*) - &#931;<sub>*em*&#8800;*em*0</sub>[ *bt*<sub>*em*,*em*0</sub>(*n*) &#215; *I*<sup>\*</sup><sub>*em*</sub><sup>*ex*</sup>(*n*,*t*) )]<br><br>
 *I*<sup>\*\*\*</sup><sub>*em*0</sub><sup>*ex*&#8800;*ex*0</sup>(*n*,*t*) = *I*<sup>\*\*</sup><sub>*em*0</sub><sup>*ex*&#8800;*ex*0</sup>(*n*,*t*) - *dE*<sub>*em*0</sub><sup>*ex*&#8800;*ex*0</sup>(*n*) &#215; *I*<sup>\*\*</sup><sub>*em*0</sub><sup>*ex*0</sup>(*n*,*t*)
+-->
 
 with 
-[*I*<sup>\*\*</sup><sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*)](){: .math_var } and 
-[*I*<sup>\*\*\*</sup><sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*)](){: .math_var }, the intensities corrected from bleedthrough-only and both cross-talks respectively.
+[*I*<sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*)<sup>\*\*</sup>](){: .math_var } and 
+[*I*<sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*)<sup>\*\*\*</sup>](){: .math_var }, the intensities corrected from bleedthrough-only and both cross-talks respectively.
 
 To correct intensities from cross-talks:
 
@@ -219,8 +237,12 @@ For this, differences in detection efficiencies and quantum yields between the d
 These differences are accounted for in the FRET pair-specific
 [*&#947;*<sub>*D*,*A*</sub>](){: .math_var } factor such as:
 
+<img src="../assets/images/equations/TP-eq-trace-corr-06.gif" alt="\gamma _{D,A} = \frac{\eta_{A}\phi_{A}}{\eta_{D}\phi_{D}}">
+
+<!--
 {: .equation }
 *&#947;*<sub>*D*,*A*</sub> = *&#951;*<sub>*A*</sub>*&#934;*<sub>*A*</sub> / *&#951;*<sub>*D*</sub>*&#934;*<sub>*D*</sub>
+-->
 
 with 
 [*&#951;*<sub>A</sub>](){: .math_var } and 
@@ -236,8 +258,12 @@ Apparent FRET values
 [*&#947;*](){: .math_var }-corrected to 
 [*E*<sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } values such as:
 
+<img src="../assets/images/equations/TP-eq-trace-corr-07.gif" alt="E_{D,A}(n,t) = \frac{E_{D,A}^{*}(n,t)}{\gamma_{D,A}(n) - E_{D,A}^{*}(n,t) \times \left ( \gamma_{D,A}(n) - 1 \right ) }">
+
+<!--
 {: .equation }
 *E*<sub>*D*,*A*</sub>(*n*,*t*) = *E*<sup>\*</sup><sub>*D*,*A*</sub>(*n*,*t*) / [ *&#947;*<sub>*D*,*A*</sub>(*n*) - *E*<sup>\*</sup><sub>*D*,*A*</sub>(*n*,*t*)  &#215;  ( *&#947;*<sub>*D*,*A*</sub>(*n*) - 1 ) ]
+-->
 
 To correct apparent FRET-time traces with 
 [*&#947;*](){: .math_var } factors:
@@ -328,15 +354,19 @@ To detect and truncate photobleached data:
 
 Intensity-time traces are naturally noisy due to the stochastic nature of photon emission but also of camera detection, signal amplification and signal conversion.
 The magnitude of the noise in a background- and cross-talk-corrected intensity-time trace 
-[*I*<sup>\*\*\*</sup>(*t*)](){: .math_var } is characterized by the signal-to-noise ratio 
-[*SNR*](){: .math_var } calculated as:
+[*I*<sub>em</sub><sup>ex</sup>(*n*)<sup>\*\*\*</sup>](){: .math_var } is characterized by the signal-to-noise ratio 
+[*SNR*<sub>em</sub><sup>ex</sup>(*n*)](){: .math_var } calculated as:
 
+<img src="../assets/images/equations/TP-eq-trace-corr-08.gif" alt="SNR_{em}^{ex}(n) = \frac{\mu_{em}^{ex}(n)^{***}}{\sigma_{em}^{ex}(n)^{***}}">
+
+<!--
 {: .equation }
 *SNR* = *&#956;*( *I*<sup>\*\*\*</sup>(*t*) ) / *&#963;*( *I*<sup>\*\*\*</sup>(*t*) )
+-->
 
 with 
-[*&#956;*](){: .math_var } and 
-[*&#963;*](){: .math_var }, the respective mean and standard deviation of the intensities over the observation time.
+[*&#956;*<sub>em</sub><sup>ex</sup>(*n*)<sup>\*\*\*</sup>](){: .math_var } and 
+[*&#963;*<sub>em</sub><sup>ex</sup>(*n*)<sup>\*\*\*</sup>](){: .math_var }, the respective mean and standard deviation of the intensities over the observation time.
 
 Therefore, the lower the intensity is in the time trace, the lower the 
 [*SNR*](){: .math_var } and the noisier the intensity-time traces.
