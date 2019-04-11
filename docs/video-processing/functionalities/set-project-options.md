@@ -204,7 +204,7 @@ The stoichiometry
 [*D*<sub>ex</sub>](){: .math_var } in a labelling scheme consisting of 
 [*K*](){: .math_var } emitters, is calculated as:
 
-<img src="../../assets/images/equations/VP-eq-s-calc.gif" alt="S_{D} = \frac{\sum_{k}\left (I_{k,em}^{D,ex} \right )}{\sum_{k}\left( \sum_{k'}I_{k',em}^{k,ex} \right )}">
+<img src="../../assets/images/equations/VP-eq-s-calc.gif" alt="S_{D} = \frac{\sum_{k}\left (I_{k,em}^{D,ex} \right )}{\sum_{k}\left[ \sum_{k'}\left( I_{k',em}^{k,ex} \right ) \right ]}">
 
 <!--
 {: .equation }
