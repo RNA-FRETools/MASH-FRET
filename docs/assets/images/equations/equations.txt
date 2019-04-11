@@ -15,8 +15,8 @@ Gamma factor (equation 06):
 	\gamma _{D,A} = \frac{\eta_{A}\phi_{A}}{\eta_{D}\phi_{D}}
 Gamma correction (equation 07):
 	E_{D,A}(n,t) = \frac{E_{D,A}^{*}(n,t)}{\gamma_{D,A}(n) - E_{D,A}^{*}(n,t) \times \left ( \gamma_{D,A}(n) - 1 \right ) }
-Signale-to-noise ratio (equation 08):
-	SNR_{em}^{ex} = \frac{\mu \left [ I_{em}^{ex}(n)^{***} \right ]}{\sigma \left [ I_{em}^{ex}(n)^{***} \right ] }
+Signal-to-noise ratio (equation 08):
+	SNR_{em}^{ex}(n) = \frac{\mu \left [ I_{em}^{ex}(n)^{***} \right ]}{\sigma \left [ I_{em}^{ex}(n)^{***} \right ] }
 
 >> FRET calculations:
 Multi-color FRET (equation 01):
@@ -40,3 +40,17 @@ and (equation 07)
 
 >> Stoichiometry calculation:
 	S_{D} = \frac{\sum_{k}\left (I_{k,em}^{D,ex} \right )}{\sum_{k}\left[ \sum_{k'}\left( I_{k',em}^{k,ex} \right ) \right ]}
+
+>> Histogram populations:
+	X_{j} = \frac{S_{j}}{\sum_{j'=1}^{J}( S_{j'})}
+
+>> TDP Gaussian mixture model:
+	TDP( val_{i};val_{i'} ) = \sum_{j=1}^{J} \sum_{j'=1}^{J} a_{j,j'}G_{j,j'}( val_{i};val_{i'} )
+
+>> Kinetic analysis:
+Mono-exponential fit (equation 01):
+	1- F\left ( \Delta t_{j,j'} \right ) = {exp( - k_{j,j'}\Delta t_{j,j'} )}
+Multi-exponential fit (equation 02):
+	1- F( \Delta t_{j,j'}) = \sum_{z=1}^{Z}[ a_{z}exp( - k_{j,j',z}\Delta t_{j,j'} ) ]
+Beta-exponential fit (equation 03):
+	1- F( \Delta t_{j,j'} ) = exp[ - ( k_{j,j'}\Delta t_{j,j'} )^{\beta_{j,j'}} ]

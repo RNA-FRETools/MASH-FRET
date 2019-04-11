@@ -117,11 +117,15 @@ But when clusters overlap to great extend, they can't be accurately identified.
 One way of objectively identifying the number of clusters is to model the TDP by a sum of 
 [*J*<sup>2</sup>](){: .math_var } 2D-Gaussians, with each Gaussian modelling a cluster, such as:
 
+<img src="../assets/images/equations/TA-eq-gmm.gif" alt="TDP( val_{i};val_{i'} ) = \sum_{j=1}^{J} \sum_{j'=1}^{J} a_{j,j'}G_{j,j'}( val_{i};val_{i'} )">
+
+<!--
 {: .equation }
 TDP( *val*<sub>*i*</sub>;*val*<sub>*i'*</sub> ) = &#931;<sub>1&#8805;*j*&#8805;*J*<sup>2</sup></sub>{ &#931;<sub>1&#8805;*j*&#8805;*J*<sup>2</sup></sub>[ *a*<sub>*j*,*j'*</sub>G<sub>*j*,*j'*</sub>( *val*<sub>*i*</sub>,*val*<sub>*i'*</sub> ) ] }
+-->
 
 with 
-[*a*<sub>*j*,*j'*](){: .math_var } the weight in the sum of the Gaussian 
+[*a*<sub>*j*,*j'*</sub>](){: .math_var } the weight in the sum of the Gaussian 
 [G<sub>*j*,*j'*</sub>](){: .math_var } with bi-dimensional mean 
 [&#956;<sub>*j*,*j'*</sub>](){: .math_var } that contains information about inferred states 
 ( [*val*<sub>*j*</sub>](){: .math_var };[*val*<sub>*j'*</sub>](){: .math_var } ), and covariance 
@@ -169,8 +173,12 @@ It can be determined from the cumulative histogram of dwell times
 [*j*](){: .math_var } prior transiting to state 
 [*j'*](){: .math_var }, by fitting an exponential decay function such as:
 
+<img src="../assets/images/equations/TA-kin-ana-01.gif" alt="1- F\left ( \Delta t_{j,j'} \right ) = {exp( - k_{j,j'}\Delta t_{j,j'} )}">
+
+<!--
 {: .equation }
 1- *F*( &#916;*t*<sub>*j*,*j'*</sub> ) = exp( - *k*<sub>*j*,*j'*</sub>&#916;*t*<sub>*j*,*j'*</sub> )
+-->
 
 with 
 [*F*( &#916;*t*<sub>*j*,*j'*</sub> )](){: .math_var } the cumulative histogram normalized between 0 and 1.
@@ -179,13 +187,21 @@ For heterogeneous system, the dwell time histogram is not sufficiently described
 [*Z*](){: .math_var } exponential functions weighted by the respective 
 [*a*<sub>*z*</sub>](){: .math_var } coefficients, such as:
 
+<img src="../assets/images/equations/TA-kin-ana-02.gif" alt="1- F( \Delta t_{j,j'}) = \sum_{z=1}^{Z}[ a_{z}exp( - k_{j,j',z}\Delta t_{j,j'} ) ]">
+
+<!--
 {: .equation }
 1- *F*( &#916;*t*<sub>*j*,*j'*</sub> ) = &#931;<sub>1&#8805;*z*&#8805;*Z*</sub>[ *a*<sub>*z*</sub>exp( - *k*<sub>*j*,*j'*,*z*</sub>&#916;*t*<sub>*j*,*j'*</sub> ) ]
+-->
 
 or by a stretched exponential function, such as:
 
+<img src="../assets/images/equations/TA-kin-ana-03.gif" alt="1- F( \Delta t_{j,j'} ) = exp[ - ( k_{j,j'}\Delta t_{j,j'} )^{\beta_{j,j'}} ]">
+
+<!--
 {: .equation }
 1- *F*( &#916;*t*<sub>*j*,*j'*</sub> ) = exp[ - ( *k*<sub>*j*,*j'*</sub>&#916;*t*<sub>*j*,*j'*</sub> )<sup>*&#946;*<sub>*j*,*j'*</sub></sup> ]
+-->
 
 with the stretching exponent 
 [*&#946;*<sub>*j*,*j'*</sub>](){: .math_var } being an indicator of the degree of heterogeneity 
