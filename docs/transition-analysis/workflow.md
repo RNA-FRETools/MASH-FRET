@@ -117,6 +117,7 @@ But when clusters overlap to great extend, they can't be accurately identified.
 One way of objectively identifying the number of clusters is to model the TDP by a sum of 
 [*J*<sup>2</sup>](){: .math_var } 2D-Gaussians, with each Gaussian modelling a cluster, such as:
 
+{: .equation }
 <img src="../assets/images/equations/TA-eq-gmm.gif" alt="TDP( val_{i};val_{i'} ) = \sum_{j=1}^{J} \sum_{j'=1}^{J} a_{j,j'}G_{j,j'}( val_{i};val_{i'} )">
 
 <!--
@@ -173,6 +174,7 @@ It can be determined from the cumulative histogram of dwell times
 [*j*](){: .math_var } prior transiting to state 
 [*j'*](){: .math_var }, by fitting an exponential decay function such as:
 
+{: .equation }
 <img src="../assets/images/equations/TA-kin-ana-01.gif" alt="1- F\left ( \Delta t_{j,j'} \right ) = {exp( - k_{j,j'}\Delta t_{j,j'} )}">
 
 <!--
@@ -187,6 +189,7 @@ For heterogeneous system, the dwell time histogram is not sufficiently described
 [*Z*](){: .math_var } exponential functions weighted by the respective 
 [*a*<sub>*z*</sub>](){: .math_var } coefficients, such as:
 
+{: .equation }
 <img src="../assets/images/equations/TA-kin-ana-02.gif" alt="1- F( \Delta t_{j,j'}) = \sum_{z=1}^{Z}[ a_{z}exp( - k_{j,j',z}\Delta t_{j,j'} ) ]">
 
 <!--
@@ -196,6 +199,7 @@ For heterogeneous system, the dwell time histogram is not sufficiently described
 
 or by a stretched exponential function, such as:
 
+{: .equation }
 <img src="../assets/images/equations/TA-kin-ana-03.gif" alt="1- F( \Delta t_{j,j'} ) = exp[ - ( k_{j,j'}\Delta t_{j,j'} )^{\beta_{j,j'}} ]">
 
 <!--

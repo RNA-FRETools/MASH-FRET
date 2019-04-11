@@ -121,6 +121,7 @@ The intensity
 [*ex*](){: .math_var } at time 
 [*t*](){: .math_var } is background-corrected such as:
 
+{: .equation }
 <img src="../assets/images/equations/TP-eq-trace-corr-01.gif" alt="\left I_{em}^{ex}(n,t)^{*} = I_{em}^{ex}(n,t) - bg_{em}^{ex}(n,t)">
 
 <!--
@@ -168,6 +169,7 @@ The bleedthrough coefficient
 [*em*<sub>0</sub>](){: .math_var } is calculated from intensities measured from species single-labelled with emitter 
 [*em*](){: .math_var } and after background correction, such as:
 
+{: .equation }
 <img src="../assets/images/equations/TP-eq-trace-corr-02.gif" alt="bt_{em,em0} = {}\frac{I_{em0}^{ex}^{*}}{I_{em}^{ex}^{*}}">
 
 <!--
@@ -182,6 +184,7 @@ The direct excitation coefficient
 [*ex*](){: .math_var } is calculated from intensities measured from species single-labelled with emitter 
 [*em*<sub>0</sub>](){: .math_var } and after background correction, such as:
 
+{: .equation }
 <img src="../assets/images/equations/TP-eq-trace-corr-03.gif" alt="dE_{em0}^{ex\neq ex0} = {}\frac{I_{em0}^{ex}^{*}}{I_{em0}^{ex0}^{*}}">
 
 <!--
@@ -196,8 +199,10 @@ The background-corrected intensity
 [*ex*](){: .math_var } at time 
 [*t*](){: .math_var } is corrected from cross-talks such as:
 
+{: .equation }
 <img src="../assets/images/equations/TP-eq-trace-corr-04.gif" alt="I_{em0}^{ex}(n,t)^{**} = I_{em0}^{ex}(n,t)^{*} - \sum_{em\not\equiv em0}\left ( bt_{em,em0}(n) × I_{em}^{ex}(n,t)^{*} \right )">
 
+{: .equation }
 <img src="../assets/images/equations/TP-eq-trace-corr-05.gif" alt="I_{em0}^{ex\neq ex0}(n,t)^{***} = I_{em0}^{ex\neq ex0}(n,t)^{**} - dE_{em0}^{ex\neq ex0}(n) × I_{em0}^{ex0}(n,t)^{**}">
 
 <!--
@@ -237,6 +242,7 @@ For this, differences in detection efficiencies and quantum yields between the d
 These differences are accounted for in the FRET pair-specific
 [*&#947;*<sub>*D*,*A*</sub>](){: .math_var } factor such as:
 
+{: .equation }
 <img src="../assets/images/equations/TP-eq-trace-corr-06.gif" alt="\gamma _{D,A} = \frac{\eta_{A}\phi_{A}}{\eta_{D}\phi_{D}}">
 
 <!--
@@ -258,6 +264,7 @@ Apparent FRET values
 [*&#947;*](){: .math_var }-corrected to 
 [*E*<sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } values such as:
 
+{: .equation }
 <img src="../assets/images/equations/TP-eq-trace-corr-07.gif" alt="E_{D,A}(n,t) = \frac{E_{D,A}^{*}(n,t)}{\gamma_{D,A}(n) - E_{D,A}^{*}(n,t) \times \left ( \gamma_{D,A}(n) - 1 \right ) }">
 
 <!--
@@ -357,6 +364,7 @@ The magnitude of the noise in a background- and cross-talk-corrected intensity-t
 [*I*<sub>em</sub><sup>ex</sup>(*n*,*t*)<sup>\*\*\*</sup>](){: .math_var } is characterized by the signal-to-noise ratio 
 [*SNR*<sub>em</sub><sup>ex</sup>(*n*)](){: .math_var } calculated as:
 
+{: .equation }
 <img src="../assets/images/equations/TP-eq-trace-corr-08.gif" alt="SNR_{em}^{ex}(n) = \frac{\mu_{em}^{ex}(n)^{***}}{\sigma_{em}^{ex}(n)^{***}}">
 
 <!--

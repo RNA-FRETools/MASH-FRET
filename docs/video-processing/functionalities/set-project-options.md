@@ -97,6 +97,7 @@ In a FRET network composed of
 [*D*](){: .math_var } and 
 [*A*](){: .math_var } is calculated as:
 
+{: .equation }
 <img src="../../assets/images/equations/VP-eq-fret-calc-01.gif" alt="E_{D,A}^{*} = {}\frac{I_{A,em}^{D,ex}}{\left [ 1 - \sum_{k>A} \left ( E_{A,k}^{*}  \right ) \right ] \times \sum_{k} \left ( I_{k,em}^{D,ex}  \right )} - \sum_{k>D}^{A-1} \left \{\E_{D,k}^{*} \times \prod_{k'> k}^{A} \left [E_{k,k'}^{*} \times \prod_{k''> k'}^{A} \left (E_{k',k'''}^{*}  \right )  \right ]  \right \}">
 
 <!--
@@ -122,6 +123,7 @@ As the expression of
 
 In this case, the expression is simplified to a simple 2-color apparent FRET equation such as:
 
+{: .equation }
 <img src="../../assets/images/equations/VP-eq-fret-calc-02.gif" alt="E_{K-1,K}^{*}= \fract{I_{K-1,em}^{K,ex}}{\sum_{k \geq K-1} \left ( I_{K-1,em}^{K,ex} \right )}">
 
 <!--
@@ -131,6 +133,7 @@ In this case, the expression is simplified to a simple 2-color apparent FRET equ
 
 giving:
 
+{: .equation }
 <img src="../../assets/images/equations/VP-eq-fret-calc-03.gif" alt="E_{K-1,K}^{*}= \frac{I_{K,em}^{K-1,ex}}{I_{K,em}^{K-1,ex}+I_{K-1,em}^{K-1,ex}}">
 
 <!--
@@ -150,8 +153,10 @@ Calculated
 
 In this case, the expression is simplified to a 3-color apparent FRET equation system such as:
 
+{: .equation }
 <img src="../../assets/images/equations/VP-eq-fret-calc-04.gif" alt="E_{K-2,K-1}^{*} = \frac{ I_{K-1,em}^{K-2,ex} }{ \left [ 1 - \sum_{k>K-1}\left ( E_{K-1,k}^{*} \right ) \right ] \times \sum_{k \geq  K-2}\left ( I_{k,em}^{K-2,ex} \right )  }">
 
+{: .equation }
 <img src="../../assets/images/equations/VP-eq-fret-calc-05.gif" alt="E_{K-2,K}^{*} = \frac{ I_{K,em}^{K-2ex} }{ \sum_{k\geq K-2}\left ( I_{k,em}^{K-2,ex} \right ) - \sum_{k> K-2}\left [ E_{K-2,k}^{*} \times \prod_{k'>k} \left ( E_{k,k'}^{*} \right ) \right ]}">
 
 <!--
@@ -162,8 +167,10 @@ In this case, the expression is simplified to a 3-color apparent FRET equation s
 
 giving:
 
+{: .equation }
 <img src="../../assets/images/equations/VP-eq-fret-calc-06.gif" alt="E_{K-2,K-1}^{*} = \frac{I_{K-1,em}^{K-2,ex}}{\left ( 1 - E_{K-1,K}^{*} \right ) \times \left ( I_{K,em}^{K-2,ex} + I_{K-1,em}^{K-2,ex} + I_{K-2,em}^{K-2,ex} \right )}">
 
+{: .equation }
 <img src="../../assets/images/equations/VP-eq-fret-calc-07.gif" alt="E_{K-2,K}^{*} = \frac{I_{K,em}^{K-2,ex}}{ I_{K,em}^{K-2,ex} + I_{K-1,em}^{K-2,ex} + I_{K-2,em}^{K-2,ex}} - E_{K-2,K-1}^{*}\times E_{K-1,K}^{*}">
 
 <!--
@@ -204,6 +211,7 @@ The stoichiometry
 [*D*<sub>ex</sub>](){: .math_var } in a labelling scheme consisting of 
 [*K*](){: .math_var } emitters, is calculated as:
 
+{: .equation }
 <img src="../../assets/images/equations/VP-eq-s-calc.gif" alt="S_{D} = \frac{\sum_{k}\left (I_{k,em}^{D,ex} \right )}{\sum_{k}\left[ \sum_{k'}\left( I_{k',em}^{k,ex} \right ) \right ]}">
 
 <!--

@@ -115,6 +115,7 @@ The relative population
 It can be estimated from the histogram by integrating each peak to a value 
 [*S*<sub>*j*</sub>](){: .math_var } and calculating the ratio:
 
+{: .equation }
 <img src="../assets/images/equations/HA-eq-pop.gif" alt="X_{j} = \frac{S_{j}}{\sum_{j'=1}^{J}( S_{j'})}">
 
 <!--
