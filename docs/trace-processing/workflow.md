@@ -354,7 +354,7 @@ To detect and truncate photobleached data:
 
 Intensity-time traces are naturally noisy due to the stochastic nature of photon emission but also of camera detection, signal amplification and signal conversion.
 The magnitude of the noise in a background- and cross-talk-corrected intensity-time trace 
-[*I*<sub>em</sub><sup>ex</sup>(*n*)<sup>\*\*\*</sup>](){: .math_var } is characterized by the signal-to-noise ratio 
+[*I*<sub>em</sub><sup>ex</sup>(*n*,*t*)<sup>\*\*\*</sup>](){: .math_var } is characterized by the signal-to-noise ratio 
 [*SNR*<sub>em</sub><sup>ex</sup>(*n*)](){: .math_var } calculated as:
 
 <img src="../assets/images/equations/TP-eq-trace-corr-08.gif" alt="SNR_{em}^{ex}(n) = \frac{\mu_{em}^{ex}(n)^{***}}{\sigma_{em}^{ex}(n)^{***}}">
