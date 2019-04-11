@@ -34,15 +34,16 @@ To set the options, please refer to
 
 ## Project list
 
-Projects contain original single molecule data, calculated data and parameters necessary for calculations in all modules of MASH-FRET.
-
 Use this area to manage your projects imported in module Trace processing.
+
+Projects contain original single molecule data, calculated data and parameters necessary for calculations in all modules of MASH-FRET.
 
 Single molecule data can be imported in module Trace processing from:
 * a [.mash file](../../output-files/mash-mash-project.html)
-* a set of ASCII files.
+* a set of ASCII files with import options defined in 
+[ASCII import options](#ascii-import-options).
 
-Importe single molecule data by pressing 
+Import single molecule data by pressing 
 ![Add](../../assets/images/gui/TP-but-add.png "Add") and selecting the 
 [.mash file](../../output-files/mash-mash-project.html "Add") or the set of ASCII files to import.
 If a video is assigned to the imported data, laser-specific average images used for sub-images and background correction are calculated during the import process; see 
