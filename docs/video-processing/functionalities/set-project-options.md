@@ -154,9 +154,7 @@ Calculated
 In this case, the expression is simplified to a 3-color apparent FRET equation system such as:
 
 {: .equation }
-<img src="../../assets/images/equations/VP-eq-fret-calc-04.gif" alt="E_{K-2,K-1}^{*} = \frac{ I_{K-1,em}^{K-2,ex} }{ \left [ 1 - \sum_{k>K-1}\left ( E_{K-1,k}^{*} \right ) \right ] \times \sum_{k \geq  K-2}\left ( I_{k,em}^{K-2,ex} \right )  }">
-
-{: .equation }
+<img src="../../assets/images/equations/VP-eq-fret-calc-04.gif" alt="E_{K-2,K-1}^{*} = \frac{ I_{K-1,em}^{K-2,ex} }{ \left [ 1 - \sum_{k>K-1}\left ( E_{K-1,k}^{*} \right ) \right ] \times \sum_{k \geq  K-2}\left ( I_{k,em}^{K-2,ex} \right )  }"><br>
 <img src="../../assets/images/equations/VP-eq-fret-calc-05.gif" alt="E_{K-2,K}^{*} = \frac{ I_{K,em}^{K-2ex} }{ \sum_{k\geq K-2}\left ( I_{k,em}^{K-2,ex} \right ) - \sum_{k> K-2}\left [ E_{K-2,k}^{*} \times \prod_{k'>k} \left ( E_{k,k'}^{*} \right ) \right ]}">
 
 <!--
@@ -168,9 +166,7 @@ In this case, the expression is simplified to a 3-color apparent FRET equation s
 giving:
 
 {: .equation }
-<img src="../../assets/images/equations/VP-eq-fret-calc-06.gif" alt="E_{K-2,K-1}^{*} = \frac{I_{K-1,em}^{K-2,ex}}{\left ( 1 - E_{K-1,K}^{*} \right ) \times \left ( I_{K,em}^{K-2,ex} + I_{K-1,em}^{K-2,ex} + I_{K-2,em}^{K-2,ex} \right )}">
-
-{: .equation }
+<img src="../../assets/images/equations/VP-eq-fret-calc-06.gif" alt="E_{K-2,K-1}^{*} = \frac{I_{K-1,em}^{K-2,ex}}{\left ( 1 - E_{K-1,K}^{*} \right ) \times \left ( I_{K,em}^{K-2,ex} + I_{K-1,em}^{K-2,ex} + I_{K-2,em}^{K-2,ex} \right )}"><br>
 <img src="../../assets/images/equations/VP-eq-fret-calc-07.gif" alt="E_{K-2,K}^{*} = \frac{I_{K,em}^{K-2,ex}}{ I_{K,em}^{K-2,ex} + I_{K-1,em}^{K-2,ex} + I_{K-2,em}^{K-2,ex}} - E_{K-2,K-1}^{*}\times E_{K-1,K}^{*}">
 
 <!--
