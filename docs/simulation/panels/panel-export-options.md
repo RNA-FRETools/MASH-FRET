@@ -111,7 +111,12 @@ Photon counts
 [*&#956;*<sub>ic</sub>](){: .math_var } are linked by the relation:
 
 {: .equation }
+<img src="../../assets/images/equations/sim-eq-units-conversion-02.gif" alt="\mu_{ic} = \mu_{pc} \times \eta \times K + \mu_{ic,d}">
+
+<!--
+{: .equation }
 *&#956;*<sub>ic</sub> = *&#956;*<sub>pc</sub> &#215; *&#951;* &#215; *K* + *&#956;*<sub>ic,d</sub>
+-->
 
 with camera characteristics: signal offset 
 [*&#956;*<sub>ic,d</sub>](){: .math_var }, detection efficiency 

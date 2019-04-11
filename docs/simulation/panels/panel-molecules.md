@@ -170,7 +170,12 @@ Differences in donor and acceptor quantum yields and detection efficiencies can 
 Donor emission is affected according to the relation:
 
 {: .equation }
+<img src="../../assets/images/equations/sim-eq-gamma.gif" alt="I_{D,em} = \frac{I_{D,em,0}}{\gamma}">
+
+<!--
+{: .equation }
 *I*<sub>D,em</sub> = *I*<sub>D,em,0</sub> / *&#947;*
+-->
 
 with 
 [*I*<sub>D,em,0</sub>](){: .math_var } the original donor fluorescence intensity in presence of acceptor, and 
@@ -193,7 +198,12 @@ Photon counts
 [*&#956;*<sub>ic</sub>](){: .math_var } are linked by the relation:
 
 {: .equation }
+<img src="../../assets/images/equations/sim-eq-units-conversion-01.gif" alt="\mu_{ic} = \mu_{pc} \times \eta \times K">
+
+<!--
+{: .equation }
 *&#956;*<sub>ic</sub> = *&#956;*<sub>pc</sub> &#215; *&#951;* &#215; *K*
+-->
 
 with camera characteristics: detection efficiency *&#951;* and overall gain *K*.
 

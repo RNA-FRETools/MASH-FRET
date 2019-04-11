@@ -40,6 +40,7 @@ It is usually noted
 It is linked to the acquisition time 
 [*t*<sub>exp</sub>](){: .math_var } by the relation:
 
+{: .equation }
 <img src="../../assets/images/equations/sim-eq-frame-rate.gif" alt="f = \frac{1}{t_{exp}}">
 
 <!--
@@ -110,6 +111,7 @@ Photon counts
 [*&#956;*<sub>pc</sub>](){: .math_var } are ideally converted to image counts 
 [*&#956;*<sub>ic</sub>](){: .math_var } such as:
 
+{: .equation }
 <img src="../../assets/images/equations/sim-eq-cam-noise-01.gif" alt="\mu_{ic} = \mu_{pc}">
 
 <!--
@@ -132,6 +134,7 @@ Photon counts
 [*&#956;*<sub>ec</sub>](){: .math_var } with a detection efficiency 
 [*&#951;*](){: .math_var } such as:
 
+{: .equation }
 <img src="../../assets/images/equations/sim-eq-cam-noise-02.gif" alt="\mu_{ec} = \mu_{pc} \times \eta">
 
 <!--
@@ -142,6 +145,7 @@ Photon counts
 Electron counts are distributed following a Poisson distribution and are ideally converted to image counts 
 [*&#956;*<sub>ic</sub>](){: .math_var } such as:
 
+{: .equation }
 <img src="../../assets/images/equations/sim-eq-cam-noise-03.gif" alt="\mu_{ic} = \mu_{ec}">
 
 <!--
@@ -165,6 +169,7 @@ Photon counts
 [*&#956;*<sub>ec</sub>](){: .math_var } with a detection efficiency 
 [*&#951;*](){: .math_var } such as:
 
+{: .equation }
 <img src="../../assets/images/equations/sim-eq-cam-noise-04.gif" alt="\mu_{ec} = \mu_{pc} \times \eta">
 
 <!--
@@ -176,6 +181,7 @@ Electron counts are converted to image counts
 [*&#956;*<sub>ic</sub>](){: .math_var } with an overall gain 
 [*K*](){: .math_var } such as:
 
+{: .equation }
 <img src="../../assets/images/equations/sim-eq-cam-noise-05.gif" alt="\mu_{ic} = \mu_{ec} \times K">
 
 <!--
@@ -191,6 +197,7 @@ A constant camera dark count
 [*&#963;*<sub>d</sub>](){: .math_var } and the analog-to-digital noise standard deviation 
 [*&#963;*<sub>q</sub>](){: .math_var } such as:
 
+{: .equation }
 <img src="../../assets/images/equations/sim-eq-cam-noise-06.gif" alt="\sigma_{ic} = \sqrt{\mu_{ic} + ( K × \sigma_{d} )^{2} + \sigma_{q}^{2}}">
 
 <!--
@@ -215,6 +222,7 @@ Photon counts
 [*&#956;*<sub>ec</sub>](){: .math_var } with a detection efficiency 
 [*&#951;*](){: .math_var } such as:
 
+{: .equation }
 <img src="../../assets/images/equations/sim-eq-cam-noise-07.gif" alt="\mu_{ec} = \mu_{pc} \times \eta">
 
 <!--
@@ -226,6 +234,7 @@ Electron counts are converted to image counts
 [*&#956;*<sub>ic</sub>](){: .math_var } with an overall gain 
 [*K*](){: .math_var } such as:
 
+{: .equation }
 <img src="../../assets/images/equations/sim-eq-cam-noise-08.gif" alt="\mu_{ic} = \mu_{ec} \times K">
 
 <!--
@@ -244,6 +253,7 @@ This model is purely empirical: model parameters are obtained by fitting the dis
 [P](){: .math_var } of image counts obtain from a camera with closed shutter 
 [*&#956;*<sub>ic,0</sub>](){: .math_var } with the function:
 
+{: .equation }
 <img src="../../assets/images/equations/sim-eq-cam-noise-09.gif" alt="\textup{P}(\mu_{ic,0}) = ( 1-A_{CIC} )\textup{exp}\left [ -\frac{( \mu_{ic,0} - \mu_{ic,d} )^{2}}{2\sigma_{ic}^{2}} \right ] + A_{CIC}\textup{exp}\left ( - \frac{\mu_{ic,0}}{\tau_{CIC}}  \right )">
 
 <!--
@@ -278,6 +288,7 @@ Photon counts
 [*&#951;*](){: .math_var } and a contribution of clock-induced charges 
 [*CIC*](){: .math_var } such as:
 
+{: .equation }
 <img src="../../assets/images/equations/sim-eq-cam-noise-10.gif" alt="\mu_{ec} = \mu_{pc} \times \eta + CIC">
 
 <!--
@@ -294,6 +305,7 @@ Multiplied electron counts are converted to image counts
 [*&#956;*<sub>ic</sub>](){: .math_var } with an analog-to-digital factor 
 [*s*](){: .math_var } such as:
 
+{: .equation }
 <img src="../../assets/images/equations/sim-eq-cam-noise-11.gif" alt="\mu_{ic} = \frac {\mu_{ic}}{s}">
 
 <!--
@@ -308,6 +320,7 @@ A constant camera dark count
 [*&#963;*<sub>d</sub>](){: .math_var } converted to image counts with the analog-to-digital factor 
 [*s*](){: .math_var } such as:
 
+{: .equation }
 <img src="../../assets/images/equations/sim-eq-cam-noise-12.gif" alt="\sigma_{ic} = \frac {\sigma_{d}}{s}">
 
 <!--
