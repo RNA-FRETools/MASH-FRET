@@ -67,7 +67,12 @@ It is noted
 [*f*](){: .math_var } by the relation:
 
 {: .equation }
+<img src="../../assets/images/equations/VP-eq-exp-time.gif" alt="t_{exp} = \frac{1}{f}">
+
+<!--
+{: .equation }
 *t*<sub>exp</sub> = 1 / *f*
+-->
 
 with 
 [*f*](){: .math_var } in frame per second (fps).

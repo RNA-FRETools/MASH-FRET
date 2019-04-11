@@ -81,7 +81,11 @@ The final set of spot coordinates can be exported to a
 When Gaussian fitting is activated, a pixel area of **(e)**-by-**(f)** pixels centered on the spot position is fitted with a tilted ellipsoid Gaussian function:
 
 {: .equation }
+<img src="../../assets/images/equations/VP-eq-spots-01.gif" alt="I(x,y) = offset + I_{0}\textup{exp}\left \{ - \left [ a(x - x_{0})^{2} + 2b(x - x_{0})(y - y_{0}) + c(y - y_{0})^{2} \right ] \right \}">
+
+<!--
 *I*(*x*,*y*) = *offset* + *I*<sub>0</sub>exp{ - [ *a*(*x* - *x*<sub>0</sub>)<sup>2</sup> + 2*b*(*x* - *x*<sub>0</sub>)(*y* - *y*<sub>0</sub>) + *c*(*y* - *y*<sub>0</sub>)<sup>2</sup> ] }
+-->
 
 with 
 [*offset*](){: .math_var } the Gaussian offset, 
@@ -93,9 +97,15 @@ with
 [*c*](){: .math_var } containing information about Gaussian width and orientation:
 
 {: .equation }
+<img src="../../assets/images/equations/VP-eq-spots-02.gif" alt="a = \frac{cos^{2}( \theta )}{2\sigma_{x}^{2}} + \frac{sin^{2}( \theta )}{2\sigma_{y}^{2}}"><br>
+<img src="../../assets/images/equations/VP-eq-spots-03.gif" alt="b = - \frac{sin( 2\theta )}{4\sigma_{x}^{2}} + \frac{sin( 2\theta )}{4\sigma_{y}^{2}}"><br>
+<img src="../../assets/images/equations/VP-eq-spots-04.gif" alt="c = \frac{sin^{2}( \theta )}{2\sigma_{x}^{2}} +  \frac{cos^{2}( \theta )}{2\sigma_{y}^{2}}">
+
+<!--
 *a* = cos<sup>2</sup>( *&#952;* ) / ( 2*&#963;*<sub>x</sub><sup>2</sup> ) + sin<sup>2</sup>( *&#952;* ) / ( 2*&#963;*<sub>y</sub><sup>2</sup> )<br><br>
 *b* = - sin( 2*&#952;* ) / ( 4*&#963;*<sub>x</sub><sup>2</sup> ) + sin( 2*&#952;* ) / ( 4*&#963;*<sub>y</sub><sup>2</sup> )<br><br>
 *c* = sin<sup>2</sup>( *&#952;* ) / (2*&#963;*<sub>x</sub><sup>2</sup>) + cos<sup>2</sup>( *&#952;* ) / (2*&#963;*<sub>y</sub><sup>2</sup>)
+-->
 
 with 
 [*&#963;*<sub>x</sub>](){: .math_var } and 
