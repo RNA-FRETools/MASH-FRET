@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Trace
+title: Plot
 parent: /trace-processing/panels.html
 grand_parent: /trace-processing.html
 nav_order: 3
