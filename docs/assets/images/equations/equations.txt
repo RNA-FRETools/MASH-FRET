@@ -98,6 +98,23 @@ and (equation 07)
 >> Photobleaching-based gamma:
 	\gamma_{D,A}(n) = \frac{state_{A,em}^{D,ex}(n,t_{0}-3)-state_{A,em}^{D,ex}(n,t_{0}+3)}{state_{D,em}^{D,ex}(n,t_{0}-3)-state_{D,em}^{D,ex}(n,t_{0}+3)}
 
+>> Denoising (equation 01):
+	\bar{I}_{t-r}(t)=\frac{1}{r}\sum_{j=1}^{r}I(t-j)
+	and (equation 02):
+	\bar{I}_{t+r}(t)=\frac{1}{r}\sum_{j=1}^{r}I(t+j)
+	and (equation 03):
+	r=\left [r_{1},r_{2},r_{3},r_{4} \right ] = \left [ \mathbf{P_{1}} , 2 \mathbf{P_{1}} , 3 \mathbf{P_{1}} , 4 \mathbf{P_{1}} \right ]
+	and (equation 04):
+	\bar{\sigma}_{t-r}^{2}(t)=\frac{1}{\mathbf{P_{2}}}\sum_{j=0}^{\mathbf{P_{2}}-1}\left [ I(t-j)-\bar{I}_{t-r}(t-j)\right ]
+	and (equation 05):
+	\bar{\sigma}_{t+r}^{2}(t)=\frac{1}{\mathbf{P_{2}}}\sum_{j=0}^{\mathbf{P_{2}}-1}\left [ I(t+j)-\bar{I}_{t+r}(t+j)\right ]
+	and (equation 06):
+	w_{t-r}(t)= \frac{1}{\left [ \bar{v}_{t-r}(t) \right ]^{\mathbf{P_{3}}}}
+	and (equation 07):
+	w_{t+r}(t)= \frac{1}{\left [ \bar{v}_{t+r}(t) \right ]^{\mathbf{P_{3}}}}
+	and (equation 08):
+	I_{\textup{denoise}}^{A}(t)=\frac{\sum_{r=r_{1}}^{r_{4}}\left [w_{t-r}^{A}(t)\bar{I}_{t-r}^{A}(t)+w_{t+r}^{A}(t)\bar{I}_{t-r}^{A}(t)\right ]}{\sum_{r=r_{1}}^{r_{4}}\left [ w_{t-r}^{A}(t)+w_{t+r}^{A}(t)+w_{t-r}^{D}(t)+w_{t+r}^{D}(t)\right ]}
+
 >> Histogram populations:
 	X_{j} = \frac{S_{j}}{\sum_{j'=1}^{J}( S_{j'})}
 
