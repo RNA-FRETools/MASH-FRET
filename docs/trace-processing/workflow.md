@@ -93,10 +93,10 @@ To automatically recenter single molecule positions:
    [Single molecule images](panels/panel-subimage.html#single-molecule-images) to render the molecule profile the most apparent.  
      
 1. Select the channel where position needs to be re-centered and activate the "recenter" option in 
-   [Sub molecule coordinates](panels/panel-subimage.html#single-molecule-coordinates); intensity-time traces will automatically be recalculated after re-centering.  
+   [Single molecule coordinates](panels/panel-subimage.html#single-molecule-coordinates); intensity-time traces will automatically be recalculated after re-centering.  
      
 1. To prevent re-centering on potentially empty single molecule images, deactivate the "recenter" option in 
-   [Sub molecule coordinates](panels/panel-subimage.html#single-molecule-coordinates) after re-centering.
+   [Single molecule coordinates](panels/panel-subimage.html#single-molecule-coordinates) after re-centering.
 
 
 ---
@@ -471,7 +471,7 @@ In this case, it is recommended to review the spot detection and/or transformati
 [Spotfinder](../video-processing/panels/panel-molecule-coordinates.html#spotfinder) and 
 [Coordinates transformation](../video-processing/panels/panel-molecule-coordinates.html#coordinates-transformation) for more information. 
 However, if desired, molecule x- and y-coordinates must be modified manually; see 
-[Sub molecule coordinates](panels/panel-subimage.html#single-molecule-coordinates) for more information.
+[Single molecule coordinates](panels/panel-subimage.html#single-molecule-coordinates) for more information.
 
 Molecule can be excluded from or included in the data set and can be given a label while browsing the 
 [Molecule list](panels/panel-sample-management.html#molecule-list) in the Trace processing interface; see 
