@@ -74,6 +74,8 @@ As the method `Dark tarce` calculates a background trajectory and not an intensi
 Activate this option to subtract the background to the intensity-time trace selected in 
 [Background correction settings](#background-correction-settings), or deactivate this option to visualize the original intensity-time trace.
 
+For more information about how background correction is performed, see 
+[Background correction](../workflow.html#background-correction) in Trace processing workflow.
 
 ---
 
