@@ -90,6 +90,14 @@ and (equation 07)
 >> Stoichiometry calculation:
 	S_{D} = \frac{\sum_{k}\left (I_{k,em}^{D,ex} \right )}{\sum_{k}\left[ \sum_{k'}\left( I_{k',em}^{k,ex} \right ) \right ]}
 
+>> Intensity units (equation 01):
+	\mu_{\textup{ic,s}} = \frac{\mu_{\textup{ic}}}{t_{\textup{exp}}}
+	and (equation 02):
+	\mu_{\textup{ic,pix}} = \frac{\mu_{\textup{ic}}}{n_{\textup{pix}}}
+
+>> Photobleaching-based gamma:
+	\gamma_{D,A}(n) = \frac{state_{A,em}^{D,ex}(n,t_{0}-3)-state_{A,em}^{D,ex}(n,t_{0}+3)}{state_{D,em}^{D,ex}(n,t_{0}-3)-state_{D,em}^{D,ex}(n,t_{0}+3)}
+
 >> Histogram populations:
 	X_{j} = \frac{S_{j}}{\sum_{j'=1}^{J}( S_{j'})}
 
