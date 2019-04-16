@@ -77,7 +77,7 @@ Usually, this functionality is used after changing any processing parameters in 
 Updates corrections and calculations for all molecules in the sample.
 
 Pressing 
-![UPDATE ALL](../../assets/images/gui/TP-but-update.png "UPDATE") applies all intensity corrections as configured in panels 
+![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL") applies all intensity corrections as configured in panels 
 [Background correction](panel-background-correction.html),
 [Factor corrections](panel-factor-corrections.html), 
 [Photobleaching](panel-photobleaching.html) and 
