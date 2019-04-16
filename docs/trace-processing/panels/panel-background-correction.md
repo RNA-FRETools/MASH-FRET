@@ -66,6 +66,9 @@ For method `Manual`, the background intensity to subtract must be set here.
 
 As the method `Dark tarce` calculates a background trajectory and not an intensity, the mean value of the dark trace is taken for the point estimate of the background intensity.
 
+The background intensity is given in image counts per pixel and/or per second according to intensity units defined in 
+[Intensity units](panel-plot.html#intensity-units).
+
 
 ---
 
