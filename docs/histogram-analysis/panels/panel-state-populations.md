@@ -65,7 +65,7 @@ If the
 
 <img src="../../assets/images/gui/HA-panel-state-populations-threshold-loadingbar.png" style="max-width:389px;">
 
-After completion, relative population of the histogram peak selected in list **(d)** is displayed in **(e)**.
+After completion, relative population of the histogram peak selected in list **(d)** and corresponding to the color **(g)**, is displayed in **(e)**.
 When using BOBA-FRET, the bootstrap mean and standard deviation of the state relative population are respectively displayed in **(e)** and **(f)**.
 
 
@@ -112,7 +112,7 @@ If the
 
 <img src="../../assets/images/gui/HA-panel-state-populations-gaussian-fitting-loadingbar.png" style="max-width:389px;">
 
-After completion, relative population of the Gaussian selected in list **(b)** is displayed in row **(j)** and column **(k)**.
+After completion, relative population of the Gaussian selected in list **(b)** and corresponding to the color **(c)**, is displayed in row **(j)** and column **(k)**.
 When using BOBA-FRET, the bootstrap mean and standard deviation of the state relative population are respectively displayed in column **(k)** and **(l)**.
 Similarly, the bootstrap mean and standard deviation of fit parameters 
 [*A*<sub>*j*</sub>](){: .math_var },
