@@ -39,7 +39,7 @@ thm_res = prm.thm_res;
 boba = thm_start{1}(2);
 
 %% set fields to parameter values
-setProp(get(h.uipanel_thm_plot, 'Children'), 'Enable', 'on');
+setProp(get(h.uipanel_HA_histogramAndPlot, 'Children'), 'Enable', 'on');
 
 %% build data type list
 str_pop = {};

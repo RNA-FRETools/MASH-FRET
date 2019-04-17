@@ -1,5 +1,5 @@
 function varargout = Background_Analyser(varargin)
-% Last Modified by GUIDE v2.5 28-Oct-2014 09:29:33
+% Last Modified by GUIDE v2.5 28-Mar-2019 22:38:19
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -27,7 +27,7 @@ g.figure_MASH = varargin{1};
 
 % initialise variables
 g.output = obj;
-[ok g.param g.curr_m g.curr_l g.curr_c] = setDefBganaPrm(g);
+[ok,g.param,g.curr_m,g.curr_l,g.curr_c] = setDefBganaPrm(g);
 if ~ok
     close all force;
     return;
@@ -69,16 +69,32 @@ save([mfile_path filesep 'default_param.ini'], '-struct', 'param');
 delete(obj);
 
 
-function popupmenu_exc_Callback(obj, evd, g)
-g.curr_l = get(obj, 'Value');
-% update g structure
-guidata(g.figure_bgopt, g);
-ud_fields(g.figure_bgopt);
-plot_bgRes(g.figure_bgopt);
+function popupmenu_data_Callback(obj, evd, g)
+h = guidata(g.figure_MASH);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+nExc = p.proj{proj}.nb_excitations;
 
+selected_chan = get(obj, 'Value');
 
-function popupmenu_chan_Callback(obj, evd, g)
-g.curr_c = get(obj, 'Value');
+% get channel and laser corresponding to selected data
+chan = 0;
+for l = 1:nExc
+    for c = 1:nChan
+        chan = chan+1;
+        if chan==selected_chan
+            break;
+        end
+    end
+    if chan==selected_chan
+        break;
+    end
+end
+
+g.curr_c = c;
+g.curr_l = l;
+
 % update g structure
 guidata(g.figure_bgopt, g);
 ud_fields(g.figure_bgopt);
@@ -173,10 +189,11 @@ guidata(g.figure_bgopt, g);
 ud_fields(g.figure_bgopt);
 
 
-function edit_chan_Callback(obj, evd, h_fig, c)
+function edit_chan_Callback(obj, evd, h_fig)
 g = guidata(h_fig);
 m = g.curr_m;
 l = g.curr_l;
+c = g.curr_c;
 val = str2num(get(obj, 'String'));
 g.param{1}{m}(l,c,7) = val;
 % update g structure
@@ -288,13 +305,9 @@ nMol = size(p.proj{proj}.intensities,2)/nChan;
 
 if ~g.param{3}(1) % varies param 1
     p1 = g.param{2}{1};
-    N = size(p1,3);
-else
-    N = 1;
 end
 if ~g.param{3}(2) % varies sub-image dim.
     subdim = g.param{2}{2};
-    N = N*size(subdim,3);
 end
 if g.param{3}(3) % all molecules
     mols = 1:nMol;
@@ -304,7 +317,7 @@ end
 
 bg_m = cell(nMol,nExc,nChan);
 % loading bar parameters--------------------------------------
-err = loading_bar('init', g.figure_MASH, numel(mols)*N, ...
+err = loading_bar('init', g.figure_MASH, numel(mols), ...
     'Calculate background intensities...');
 if err
     return;
@@ -342,14 +355,15 @@ for m = mols
                     end
                 end
             end
-            % loading bar updating-------------------------------------
-            err = loading_bar('update', g.figure_MASH);
-            if err
-                return;
-            end
-            % ---------------------------------------------------------
         end
     end
+    
+    % loading bar updating-------------------------------------
+    err = loading_bar('update', g.figure_MASH);
+    if err
+        return;
+    end
+    % ---------------------------------------------------------
 end
 loading_bar('close', g.figure_MASH);
 g.res = bg_m;
@@ -372,7 +386,7 @@ if ~isempty(p.proj)
     proj = p.curr_proj;
     nChan = p.proj{proj}.nb_channel;
     exc = p.proj{proj}.excitations;
-    clr = p.proj{proj}.colours{1};
+    clr = p.proj{proj}.colours;
     labels = p.proj{proj}.labels;
     perSec = p.proj{proj}.fix{2}(4);
     perPix = p.proj{proj}.fix{2}(5);
@@ -389,7 +403,7 @@ if ~isempty(p.proj)
     xdark = g.param{1}{m}(l,c,4);
     ydark = g.param{1}{m}(l,c,5);
     auto = g.param{1}{m}(l,c,6);
-    bgVal = g.param{1}{m}(l,:,7);
+    bgVal = g.param{1}{m}(l,c,7);
     mlt_param1 = squeeze(g.param{2}{1}(l,c,:))';
     mlt_subdim = squeeze(g.param{2}{2}(l,c,:))';
     fix_param1 = g.param{3}(1);
@@ -401,52 +415,12 @@ if ~isempty(p.proj)
         str_un = '(a.u. /pix /s)';
     end
     
-    % create as many edit fields for bg intensity as for the number of
-    % channels
-    if ~isfield(g, 'edit_chan') || ...
-            (isfield(g, 'edit_chan') && numel(g.edit_chan)~=nChan)
-        try
-            delete([g.edit_chan g.text_chan]);
-        catch err
-            disp(err.message);
-        end
-        g.text_chan = [];
-        g.edit_chan = [];
-        y_edit = 39; y_txt = 56; mg = 10; w_edit = 40; h_edit = 20;
-        xNext = 150;
-        for c = 1:nChan
-            g.text_chan(c) = uicontrol('Style', 'text', 'Parent', ...
-                g.uipanel_determine_bg, 'Units', 'pixel', 'Position', ...
-                [xNext y_txt w_edit h_edit], 'String', ...
-                labels{c}, 'HorizontalAlignment', 'center');
-            g.edit_chan(c) = uicontrol('Style', 'edit', 'Parent', ...
-                g.uipanel_determine_bg, 'Units', 'pixel', 'Position', ...
-                [xNext y_edit w_edit h_edit], 'Callback', ...
-                {@edit_chan_Callback, h_fig, c}, 'TooltipString', ...
-                sprintf('Background intensity in %s channel %s', ...
-                labels{c}, str_un));
-            xNext = xNext + w_edit + mg;
-        end
-    end
-    
     % set popupmenu strings and values
-    if isempty(set(g.popupmenu_exc, 'String'))
-        set(g.popupmenu_exc, 'String', getStrPop('exc', exc));
-    end
-    set(g.popupmenu_exc, 'Value', l);
-    if isempty(get(g.popupmenu_chan, 'String'))
-        set(g.popupmenu_chan, 'String', getStrPop('chan', {labels, ...
-            l, clr}));
-    end
-    set(g.popupmenu_chan, 'Value', c);
-    if isempty(get(g.popupmenu_meth, 'String'))
-        set(g.popupmenu_meth, 'String', get(h.popupmenu_trBgCorr, ...
-            'String'));
-    end
-    set(g.popupmenu_meth, 'Value', meth);
+    set(g.popupmenu_data,'String',getStrPop('bg_corr',{labels,exc,clr}));
+    set(g.popupmenu_data,'Value',nChan*(l-1)+c);
     
-    set(g.text_bgval, 'String', sprintf('Background values (%inm):', ...
-        exc(l)));
+    set(g.popupmenu_meth, 'String', get(h.popupmenu_trBgCorr, 'String'));
+    set(g.popupmenu_meth, 'Value', meth);
 
     if ~fix_param1
         edit_param1 = [g.edit_param1_1 g.edit_param1_2 g.edit_param1_3 ...
@@ -478,10 +452,9 @@ if ~isempty(p.proj)
     set([edit_param1 edit_subimdim g.edit_xdark g.edit_ydark ...
         g.edit_chan g.edit_curmol], 'BackgroundColor', [1 1 1]);
     
-    set([g.text_exc g.popupmenu_exc g.text_chan g.popupmenu_chan ...
-        g.text_meth g.popupmenu_meth g.text_bgval g.text_curmol ...
-        g.edit_curmol g.checkbox_allmol g.pushbutton_start ...
-        g.pushbutton_save], 'Enable', 'on');
+    set([g.text_data g.popupmenu_data g.text_meth g.popupmenu_meth ...
+        g.text_bgval g.text_curmol g.edit_curmol g.checkbox_allmol ...
+        g.pushbutton_start g.pushbutton_save], 'Enable', 'on');
     
     if meth==1 % Manual
         set([g.text_param1 edit_param1 g.text_subimdim edit_subimdim ...
@@ -576,9 +549,7 @@ if ~isempty(p.proj)
     set(g.edit_xdark, 'String', num2str(xdark));
     set(g.edit_ydark, 'String', num2str(ydark));
     set(g.checkbox_auto, 'Value', auto);
-    for c = 1:nChan
-        set(g.edit_chan(c), 'String', num2str(bgVal(c)));
-    end
+    set(g.edit_chan, 'String', num2str(bgVal));
     set(g.edit_curmol, 'String', num2str(m));
     set(g.checkbox_allmol, 'Value', allmol);
     set(g.radiobutton_fix_subimdim, 'Value', fix_subdim);
@@ -618,12 +589,29 @@ h = guidata(g.figure_MASH);
 p = h.param.ttPr;
 proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
-nExc = p.proj{proj}.nb_excitations;
 nMol = size(p.proj{proj}.intensities,2)/nChan;
+exc = p.proj{proj}.excitations;
+nExc = numel(exc);
+nChan = p.proj{proj}.nb_channel;
+
+% get channel and laser corresponding to selected data
+selected_chan = p.proj{proj}.fix{3}(6);
+chan = 0;
+for l = 1:nExc
+    for c = 1:nChan
+        chan = chan+1;
+        if chan==selected_chan
+            break;
+        end
+    end
+    if chan==selected_chan
+        break;
+    end
+end
 
 curr_m = p.curr_mol(proj); % current molecule
-curr_l = p.proj{proj}.fix{3}(5); % current excitation
-curr_c = p.proj{proj}.fix{3}(6); % current channel
+curr_l = l; % current excitation
+curr_c = c; % current channel
 
 for m = 1:nMol
     if exist('prm_prev','var')
@@ -816,8 +804,7 @@ if g.param{3}(1) || ~isprm1
         cla(g.axes_plot_bgint);
         xlim(g.axes_plot_bgint, [0 1]);
         ylim(g.axes_plot_bgint, [0 1]);
-        text(0.05, 0.95, sprintf([ ...
-            'Previous calculation:\n' ...
+        text(0.05, 0.95, sprintf([...
             'BG intensity ' str_un ' = %d\n' ...
             'Parameter 1 = %s\n', ...
             'Sub-image dim. (pixel) = %s\n'], res_m(1), str_p1, ...
@@ -834,8 +821,7 @@ if g.param{3}(1) || ~isprm1
     elseif size(res_m,1)>=10 % fix param 1
                              % varies sub-image dim.
         plot(g.axes_plot_bgint, res_m(1:10,3), res_m(1:10,1), '+b');
-        title(g.axes_plot_bgint, sprintf(['Previous calculation: ' ...
-            'Parameter 1 = %s'], str_p1));
+        title(g.axes_plot_bgint, sprintf('Parameter 1 = %s', str_p1));
         view(g.axes_plot_bgint, 2);
         rotate3d(g.axes_plot_bgint, 'off');
         xlabel(g.axes_plot_bgint, 'Sub-image dim. (pixel)');
@@ -847,8 +833,7 @@ else
         % fix sub-image dim.
         % varies param 1
         plot(g.axes_plot_bgint, res_m(1:10,2), res_m(1:10,1), '+b');
-        title(g.axes_plot_bgint, sprintf(['Previous calculation: ' ...
-            'Sub-image dim. = %s'], str_sbig));
+        title(g.axes_plot_bgint, sprintf('Sub-image dim. = %s', str_sbig));
         view(g.axes_plot_bgint, 2);
         rotate3d(g.axes_plot_bgint, 'off');
         xlabel(g.axes_plot_bgint, 'Parameter 1');
@@ -860,7 +845,7 @@ else
         Y = reshape(res_m(1:100,3), [10 10]);
         Z = reshape(res_m(1:100,1), [10 10]);
         surf(g.axes_plot_bgint, X, Y, Z);
-        title(g.axes_plot_bgint, 'Previous calculation:');
+        title(g.axes_plot_bgint, '2D-screening');
         rotate3d(g.axes_plot_bgint, 'on');
         xlabel(g.axes_plot_bgint, 'Parameter 1');
         ylabel(g.axes_plot_bgint, 'Sub-image dim. (pixel)');

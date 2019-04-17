@@ -39,7 +39,7 @@ function [imgGauss,matGauss] = getImgGauss(lim, p, volume, varargin)
                 A = 1/(2*pi*o_x*o_y);
                 %A = 1/(2*pi*o_x*o_y*o_z)
             else
-                A = 1;
+                A = I_0;
             end
 
             if isempty(mltp_gauss_str)
@@ -73,7 +73,7 @@ function [imgGauss,matGauss] = getImgGauss(lim, p, volume, varargin)
                 y_range = fix(y_0-5*o_y):ceil(y_0+5*o_y);
             end
 
-            [x_pix y_pix] = meshgrid(x_range, y_range);
+            [x_pix,y_pix] = meshgrid(x_range, y_range);
             x_pix = reshape(x_pix,[numel(x_pix) 1]);
             y_pix = reshape(y_pix,[numel(y_pix) 1]);
 

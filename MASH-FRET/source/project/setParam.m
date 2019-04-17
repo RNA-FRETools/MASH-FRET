@@ -6,7 +6,10 @@ function ok = setParam(h_fig)
 
 % Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
 %
-% Last update: 20th of February by Mélodie Hadzic
+% Last update: 28th of March 2019 by Melodie Hadzic
+% --> add gamma file import in Trace processing
+%
+% update: 20th of February by Mélodie Hadzic
 % --> add ebFRET-compatible export in Video processing
 %
 % update: 7th of March 2018 by Richard Börner
@@ -138,11 +141,11 @@ p.zDec = adjustParam('zDec', 0, p_input); % defocusing
 p.z0Dec = adjustParam('z0Dec', 0, p_input); % lateral chromatic aberration
 
 % camera noise default values
-camNoise = [113 0.95 0 0 0 0      %  mu.d /   /    /   /    /      % default P- or Poisson Model
-            57.8 0.067 113 0 0 0.95   %  K s_d mu.d s_q mr.s eta    % default N- or Gaussian Model
-            106.9 0.02 205 16 57.7 0.95      %  I_0 A_CIC tau_CIC sig_d K  eta      % default NexpN or Exp.-CIC Model
-            113 0 0 0 0 0      %  mu.d /   /    /   /    /      % default no noise but camera offset
-            300 0.067 113 0.067 5.199 0.95];%  g    s_d mu.d CIC s    eta    % default PGN- or Hirsch Model 
+camNoise = [113   0     0.95 0    1    0       % mu.d /     eta /     1 /       % default P- or Poisson Model
+            113   0.067 0.95 0    57.8 0       % mu.d s_d   eta s_q   K mr.s    % default N- or Gaussian Model
+            106.9 0.02  0.95 2    57.7 20.5    % mu.d A_CIC eta sig_d K tau_CIC % default NexpN or Exp.-CIC Model
+            113   0     1    0    1    0       % mu.d /     1   /     1 /       % default no noise but camera offset
+            113   0.067 0.95 0.02 300  5.199]; % mu.d s_d   eta CIC   g s       % default PGN- or Hirsch Model 
         
 p.camNoise = adjustParam('camNoise', camNoise, p_input);
 
@@ -349,7 +352,8 @@ p_imp = {{[1 0 0 1 1 0 nChan nExc 0 5] wl} ...
     {0 ''} ...
     {0 '' {[1 2] 1} 256} ...
     [0 1] ...
-    defprm};
+    defprm ...
+    {0 '' {}}}; % add gamma import
 p.impPrm = adjustParam('impPrm', p_imp, p_input);
 p.impFRET = adjustParam('impFRET', [], p_input);
 p.impS = adjustParam('impS', [], p_input);

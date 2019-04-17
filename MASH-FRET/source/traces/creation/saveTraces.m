@@ -6,7 +6,11 @@ function saveTraces(s, pname, fname, prm, h_fig)
 % "fname" >> generated folder path
 % "h_fig" >> MASH figure handle
 
-% Last update: 20th of February 2019 by Mélodie C.A.S Hadzic
+% Last update: 28th of March 2019 by Mélodie C.A.S Hadzic
+% --> change destination directory from project folder (which is now root 
+%     folder) "/intensities" to root folder "/video_processing/intensities"
+%
+% update: 20th of February 2019 by Mélodie C.A.S Hadzic
 % --> add ebFRET-compatible export
 % --> create ASCII,statistics,ebFRET,vbFRET,HaMMy,QUB,SMART folders
 %
@@ -48,7 +52,7 @@ end
 % build destination directories and file name
 [o,name,o] = fileparts(fname);
 if saveTraces
-    pname = setCorrectPath(cat(2,pname,'intensities'),h_fig);
+    pname = setCorrectPath('intensities',h_fig);
     pname_stat = setCorrectPath(cat(2,pname,'statistics'),h_fig);
     if saveAsAscii
         pname_all = setCorrectPath(cat(2,pname,'traces_ASCII'),h_fig);

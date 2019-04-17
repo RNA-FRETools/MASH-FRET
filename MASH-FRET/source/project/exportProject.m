@@ -4,7 +4,7 @@ h = guidata(h_fig);
 
 s = [];
      
-[data ok] = getFrames(p.itg_movFullPth, 1, [], h_fig);
+[data,ok] = getFrames(p.itg_movFullPth, 1, [], h_fig);
 if ~ok
     return;
 end

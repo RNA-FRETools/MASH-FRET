@@ -342,6 +342,9 @@ if sum(BIC_t ~= Inf) && plotIt
     
     % plot best inferred models
     for J = J_min:J_max
+        if isempty(model{J})
+            continue;
+        end
         if corr
             mu_plot = zeros(J^2,2);
             j = 0;

@@ -1,5 +1,8 @@
 function plotData(mol, p, axes, prm, plotDscr)
 
+% Last update: MH, 3.4.2019
+% >> correct data selection for plotting in bottom axes (curr_chan_bottom)
+
 proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
 nFRET = size(p.proj{proj}.FRET,1);
@@ -38,14 +41,26 @@ if curr_chan_top > nChan
 end
 
 curr_chan_bottom = p.proj{proj}.fix{2}(3) - 1; % "none" in first position
-if curr_chan_bottom > nFRET + nS
-    if nFRET > 1 && curr_chan_bottom == nFRET + nS + 1 % "all FRET"
-        curr_chan_bottom = 1:nFRET;
-    elseif nS > 1 && curr_chan_bottom == nFRET + nS + 1 % "all S"
-        curr_chan_bottom = nFRET+1:nFRET+nS;
-    else % "all"
-        curr_chan_bottom = 1:(nFRET+nS);
-    end
+
+% modified by MH, 3.4.2019
+% if curr_chan_bottom > nFRET + nS
+%     if nFRET > 1 && curr_chan_bottom == nFRET + nS + 1 % "all FRET"
+%         curr_chan_bottom = 1:nFRET;
+%     elseif nS > 1 && curr_chan_bottom == nFRET + nS + 1 % "all S"
+%         curr_chan_bottom = nFRET+1:nFRET+nS;
+%     else % "all"
+%         curr_chan_bottom = 1:(nFRET+nS);
+%     end
+% end
+is_allfret = double(nFRET>1);
+is_alls = double(nS>1);
+is_all = double(nFRET>0 & nS>0);
+if is_allfret && curr_chan_bottom==(nFRET+nS+is_allfret)
+    curr_chan_bottom = 1:nFRET;
+elseif is_alls && curr_chan_bottom==(nFRET+nS+is_allfret+is_alls)
+    curr_chan_bottom = nFRET+1:nFRET+nS;
+elseif is_all && curr_chan_bottom==(nFRET+nS+is_allfret+is_alls+is_all) % all
+    curr_chan_bottom = 1:(nFRET+nS);
 end
 
 rate = p.proj{proj}.frame_rate;
@@ -176,7 +191,10 @@ if isfield(axes, 'axes_histBottom')
     cla(axes.axes_histBottom);
     ylim(axes.axes_histBottom, 'auto');
 end
-if curr_chan_bottom > 0
+
+% modified by MH, 3.4.2019
+% if curr_chan_bottom > 0
+if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
     if isfield(axes, 'axes_traceBottom')
         set(axes.axes_traceBottom, 'NextPlot', 'add');
     end
@@ -186,7 +204,7 @@ if curr_chan_bottom > 0
     
     if nFRET > 0
         trs = p.proj{proj}.FRET;
-        gamma = p.proj{proj}.curr{mol}{5}{3};
+        gamma = p.proj{proj}.prm{mol}{5}{3};
         f_tr = calcFRET(nChan, nExc, allExc, chanExc, trs, I, gamma);
     end
 

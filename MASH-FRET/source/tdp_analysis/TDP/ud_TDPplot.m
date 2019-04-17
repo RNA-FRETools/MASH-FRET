@@ -17,7 +17,7 @@ TDP = prm.plot{2};
 meth = prm.clst_start{1}(1);
 
 %% set fields to parameter values
-setProp(get(h.uipanel_TDPplot, 'Children'), 'Enable', 'on');
+setProp(get(h.uipanel_TA_transitionDensitiesAndPlot, 'Children'), 'Enable', 'on');
 
 set([h.edit_TDPxBin h.edit_TDPxLow h.edit_TDPxUp h.edit_TDPyBin ...
     h.edit_TDPyLow h.edit_TDPyUp], 'BackgroundColor', [1 1 1]);

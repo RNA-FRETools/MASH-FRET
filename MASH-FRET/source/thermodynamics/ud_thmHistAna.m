@@ -1,5 +1,8 @@
 function ud_thmHistAna(h_fig)
 
+% Last update: by MH, 8.4.2019
+% >> correct update of checkbox_thm_BS
+
 h = guidata(h_fig);
 p = h.param.thm;
 proj = p.curr_proj;
@@ -41,7 +44,7 @@ set([h.edit_thm_nRep h.edit_thm_nSpl h.edit_thm_threshNb ...
 rmse_start = start{4}; % [apply penalty, penalty, max. nb. of Gaussian]
 rmse_res = res{3,1}; % [logL BIC]
 
-setProp(h.uipanel_thm_stateConfig,'Enable', 'on');
+setProp(h.uipanel_HA_stateConfiguration,'Enable', 'on');
 
 set(h.radiobutton_thm_penalty, 'Value', rmse_start(1));
 set(h.radiobutton_thm_BIC, 'Value', ~rmse_start(1));
@@ -118,8 +121,8 @@ switch meth
         set(h.radiobutton_thm_gaussFit, 'Value', 1, 'FontWeight', 'bold');
         
         % Gaussian fitting panel
-        setProp([h.uipanel_thm_gaussFit,h.uipanel_thm_nbGauss], ...
-            'Enable', 'on');
+        setProp([h.uipanel_HA_gaussianFitting,...
+            h.uipanel_HA_fittingParameters],'Enable', 'on');
 
         K = size(fit_start,1);
         set(h.edit_thm_nGaussFit, 'String', num2str(K));
@@ -209,7 +212,7 @@ switch meth
         end
         
         % Threshold panel
-        setProp(h.uipanel_thm_thresh, 'Enable', 'off');
+        setProp(h.uipanel_HA_thresholding, 'Enable', 'off');
         set([h.edit_thm_threshNb h.edit_thm_threshVal h.edit_thm_pop ...
             h.edit_thm_popSigma], 'String', '');
         set([h.popupmenu_thm_pop h.popupmenu_thm_thresh], 'String', ...
@@ -234,8 +237,8 @@ switch meth
         set(h.radiobutton_thm_thresh, 'Value', 1, 'FontWeight', 'bold');
         
         % Gaussian fitting panels
-        setProp([h.uipanel_thm_gaussFit,h.uipanel_thm_nbGauss], ...
-            'Enable', 'off');
+        setProp([h.uipanel_HA_gaussianFitting,...
+            h.uipanel_HA_fittingParameters],'Enable', 'off');
         set([h.edit_thm_nGaussFit h.edit_thm_ampLow ...
             h.edit_thm_ampStart h.edit_thm_ampUp h.edit_thm_ampFit ...
             h.edit_thm_ampSigma h.edit_thm_centreLow ...
@@ -248,7 +251,7 @@ switch meth
         
         % Threshold panel
         K = size(thresh,1)+1;
-        setProp(h.uipanel_thm_thresh, 'Enable', 'on');
+        setProp(h.uipanel_HA_thresholding, 'Enable', 'on');
         set(h.edit_thm_threshNb, 'String', num2str(K-1));
         curr_thr = get(h.popupmenu_thm_thresh, 'Value');
         if curr_thr>K-1
@@ -287,10 +290,17 @@ switch meth
 end
 
 % BOBA panel
+
+% added by MH, 8.4.2019
+set(h.checkbox_thm_BS, 'Value', BOBA);
+
 if BOBA
     set([h.text_thm_nRep h.edit_thm_nRep h.text_thm_nSpl ...
         h.edit_thm_nSpl h.checkbox_thm_weight], 'Enable', 'on')
-    set(h.checkbox_thm_BS, 'Value', BOBA);
+    
+    % cancelled by MH, 8.4.2019
+%     set(h.checkbox_thm_BS, 'Value', BOBA);
+
     set(h.edit_thm_nRep, 'String', num2str(rplNb));
     set(h.edit_thm_nSpl, 'String', num2str(splNb));
     set(h.checkbox_thm_weight, 'Value', weight);

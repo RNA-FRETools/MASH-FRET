@@ -1,5 +1,19 @@
 function openTrImpOpt(obj, evd, h)
 
+% Last update: by MH, 5.4.2019
+% --> saved empty file and directory for gamma import if the option is
+%     unselected
+%
+% update: 28th of March 2019 by Melodie Hadzic
+% --> Add "Gamma factor" panel in buildWinTrOpt (add functions
+%     pushbutton_impGamFile_Callback and checkbox_impGam_Callback)
+% --> Add "State trajectories" panel in buildWinTrOpt (recover UI controls
+%     checkbox_dFRET, text_thcol, edit_thcol and text_every from panel 
+%     "Intensity-time traces")
+% --> Change "Movie" to "Video" in buildWinTrOpt
+% --> Fix error when importing coordinates from file in 
+%     pushbutton_impCoordFile_Callback
+
 h_fig = h.figure_MASH;
 p = h.param.ttPr.impPrm;
 if size(p{1}{1},2) < 10
@@ -12,8 +26,7 @@ end
 nChan_imp = p{1}{1}(7);
 for i = 1:nChan_imp
     if i > size(p{3}{3}{1},1)
-        p{3}{3}{1}(i,1:2) = ...
-            p{3}{3}{1}(i-1,1:2) + 2;
+        p{3}{3}{1}(i,1:2) = p{3}{3}{1}(i-1,1:2) + 2;
     end
 end
 
@@ -30,12 +43,15 @@ h_pop = 20; w_pop = 60;
 h_cb = 20;
 w_short = 30; w_med = 70; w_big = 90; w_full = 230;
 
-h_pan_int = 10 + 7*h_edit + h_pop + h_txt + 10*mg;
+h_pan_discr = 10 + h_cb + h_edit + 3*mg;
+h_pan_gamma = 10 + h_cb + h_but + 3*mg;
+h_pan_int = 10 + 5*h_edit + h_pop + h_txt + 8*mg;
 h_pan_mov = 10 + h_cb + h_but + 3*mg;
 h_pan_coord = 10 + 2*h_but + 2*h_edit + 5*mg;
 
 w_pan = w_full + 2*mg;
-hFig = h_pan_int + h_pan_mov + h_pan_coord + h_but + 5*mg;
+hFig = h_pan_discr + h_pan_gamma + h_pan_int + h_pan_mov + h_pan_coord + ...
+    h_but + 7*mg;
 wFig = w_pan + 2*mg;
 
 pos_0 = get(0, 'ScreenSize');
@@ -79,6 +95,20 @@ if ~(isfield(h, 'figure_trImpOpt') && ishandle(h.figure_trImpOpt))
     yNext = yNext + h_but + mg;
     xNext = mg;
 
+    h.trImpOpt.uipanel_discr = uipanel('Title', 'State trajectories', ...
+        'Units', 'pixels', 'BackgroundColor', bgCol, 'FontWeight', 'bold', ...
+        'Position', [xNext yNext w_pan h_pan_discr]);
+    
+    yNext = yNext + h_pan_discr + mg;
+    xNext = mg;
+    
+    h.trImpOpt.uipanel_gamma = uipanel('Title', 'Gamma factors', ...
+        'Units', 'pixels', 'BackgroundColor', bgCol, 'FontWeight', 'bold', ...
+        'Position', [xNext yNext w_pan h_pan_gamma]);
+    
+    yNext = yNext + h_pan_gamma + mg;
+    xNext = mg;
+
     h.trImpOpt.uipanel_ITT = uipanel('Title', 'Intensity-time traces', ...
         'Units', 'pixels', 'BackgroundColor', bgCol, 'FontWeight', ...
         'bold', 'Position', [xNext yNext w_pan h_pan_int]);
@@ -86,8 +116,8 @@ if ~(isfield(h, 'figure_trImpOpt') && ishandle(h.figure_trImpOpt))
     yNext = yNext + h_pan_int + mg;
     xNext = mg;
     
-    h.trImpOpt.uipanel_mov = uipanel('Title', 'Movie', 'Units', ...
-        'pixels', 'BackgroundColor', bgCol, 'FontWeight', 'bold', ...
+    h.trImpOpt.uipanel_mov = uipanel('Title', 'Single moelcule video', ...
+        'Units', 'pixels', 'BackgroundColor', bgCol, 'FontWeight', 'bold', ...
         'Position', [xNext yNext w_pan h_pan_mov]);
      
     yNext = yNext + h_pan_mov + mg;
@@ -196,7 +226,7 @@ if ~(isfield(h, 'figure_trImpOpt') && ishandle(h.figure_trImpOpt))
         'Callback', {@pushbutton_impCoordOpt_Callback, h_fig});
 
     
-    %% Movie panel
+    %% Video panel
     
     if p{2}{1}
         enbl_movfile = 'on';
@@ -234,7 +264,7 @@ if ~(isfield(h, 'figure_trImpOpt') && ishandle(h.figure_trImpOpt))
     
     h.trImpOpt.checkbox_impMov = uicontrol('Style', 'checkbox', ...
         'Parent', h.trImpOpt.uipanel_mov, 'String', ...
-        'Movie file', 'Units', 'pixels', 'BackgroundColor', bgCol, ...
+        'Video file', 'Units', 'pixels', 'BackgroundColor', bgCol, ...
         'Position', [xNext yNext w_full h_cb], 'Callback', ...
         {@checkbox_impMov_Callback, h_fig}, 'Value', p{2}{1});
     
@@ -247,46 +277,7 @@ if ~(isfield(h, 'figure_trImpOpt') && ishandle(h.figure_trImpOpt))
         enbl_coltime = 'off';
     end
     
-    if p{1}{1}(9)
-        enbl_colFRET = 'on';
-    else
-        enbl_colFRET = 'off';
-    end
-    
     yNext = mg;
-    xNext = mg;
-    
-    h.trImpOpt.text_every = uicontrol('Style', 'text', 'Parent', ...
-        h.trImpOpt.uipanel_ITT, 'String', 'every', ...
-        'HorizontalAlignment', 'left', 'Position', ...
-        [xNext yNext w_edit h_txt], 'Enable', enbl_colFRET);
-    
-    xNext = xNext + w_edit;
-    
-    h.trImpOpt.edit_thcol = uicontrol('Style', 'edit', 'Parent', ...
-        h.trImpOpt.uipanel_ITT, 'String', num2str(p{1}{1}(10)), ...
-        'Units', 'pixels', 'BackgroundColor', [1 1 1], 'Position', ...
-        [xNext yNext w_edit h_edit], 'Callback', {@edit_thcol_Callback, ...
-        h_fig}, 'Enable', enbl_colFRET);
-    
-    xNext = xNext + w_edit;
-    
-    h.trImpOpt.text_thcol = uicontrol('Style', 'text', 'Parent', ...
-        h.trImpOpt.uipanel_ITT, 'String', 'th column.', ...
-        'HorizontalAlignment', 'left', 'Position', ...
-        [xNext yNext w_med h_txt], 'Enable', enbl_colFRET);
-
-    yNext = yNext + h_edit + mg;
-    xNext = mg;
-    
-    h.trImpOpt.checkbox_dFRET = uicontrol('Style', 'checkbox', 'Parent',...
-        h.trImpOpt.uipanel_ITT, 'String', 'discretised FRET data', ...
-        'Units', 'pixels', 'BackgroundColor', bgCol, ...
-        'Position', [xNext yNext w_full h_cb], 'Callback', ...
-        {@checkbox_dFRET_Callback, h_fig}, 'Value', p{1}{1}(9), ...
-        'FontAngle', 'italic');
-
-    yNext = yNext + h_cb + mg;
     xNext = mg;
     
     uicontrol('Style', 'text', 'Parent', h.trImpOpt.uipanel_ITT, ...
@@ -467,6 +458,93 @@ if ~(isfield(h, 'figure_trImpOpt') && ishandle(h.figure_trImpOpt))
         'String', 'Intensity data:', 'HorizontalAlignment', 'left', ...
         'Position', [xNext yNext w_full h_txt], 'FontAngle', 'italic');
     
+    
+    %% Gamma factors panel
+    
+    if p{6}{1}
+        enbl_gamfile = 'on';
+    else
+        enbl_gamfile = 'off';
+    end
+    
+    str_file = '';
+    if ~isempty(p{6}{3})
+        fname_gam = p{6}{3};
+        for i = 1:numel(fname_gam)
+            str_file = cat(2,str_file,fname_gam{i},'; ');
+        end
+        str_file = str_file(1:end-2);
+    end
+    
+    yNext = mg;
+    xNext = mg;
+
+    h.trImpOpt.pushbutton_impGamFile = uicontrol('Style', ...
+        'pushbutton', 'Parent', h.trImpOpt.uipanel_gamma, ...
+        'String', '...', 'Units', 'pixels', 'BackgroundColor', bgCol, ...
+        'Position', [xNext yNext w_but_short h_but], 'Enable', ...
+        enbl_gamfile, 'Callback', {@pushbutton_impGamFile_Callback, ...
+        h_fig});
+
+    xNext = xNext + w_but_short + mg;
+
+    h.trImpOpt.text_fnameGam = uicontrol('Style', 'text', 'Parent', ...
+        h.trImpOpt.uipanel_gamma, 'String', str_file, 'Units', ...
+        'pixels', 'BackgroundColor', [1 1 1], 'ForegroundColor', ...
+        [0 0 1], 'HorizontalAlignment', 'left', 'Enable', enbl_gamfile, ...
+        'Position', [xNext yNext w_full-mg-w_but_short h_txt]);
+    
+    yNext = yNext + h_but + mg;
+    xNext = mg;
+    
+    h.trImpOpt.checkbox_impGam = uicontrol('Style', 'checkbox', ...
+        'Parent', h.trImpOpt.uipanel_gamma, 'String', ...
+        'Gamma factors file', 'Units', 'pixels', 'BackgroundColor', bgCol, ...
+        'Position', [xNext yNext w_full h_cb], 'Callback', ...
+        {@checkbox_impGam_Callback, h_fig}, 'Value', p{6}{1});
+    
+    
+    %% State trajectories panel
+    
+    if p{1}{1}(9)
+        enbl_colFRET = 'on';
+    else
+        enbl_colFRET = 'off';
+    end
+    
+    yNext = mg;
+    xNext = mg;
+    
+    h.trImpOpt.text_every = uicontrol('Style', 'text', 'Parent', ...
+        h.trImpOpt.uipanel_discr, 'String', 'every', ...
+        'HorizontalAlignment', 'left', 'Position', ...
+        [xNext yNext w_edit h_txt], 'Enable', enbl_colFRET);
+    
+    xNext = xNext + w_edit;
+    
+    h.trImpOpt.edit_thcol = uicontrol('Style', 'edit', 'Parent', ...
+        h.trImpOpt.uipanel_discr, 'String', num2str(p{1}{1}(10)), ...
+        'Units', 'pixels', 'BackgroundColor', [1 1 1], 'Position', ...
+        [xNext yNext w_edit h_edit], 'Callback', {@edit_thcol_Callback, ...
+        h_fig}, 'Enable', enbl_colFRET);
+    
+    xNext = xNext + w_edit;
+    
+    h.trImpOpt.text_thcol = uicontrol('Style', 'text', 'Parent', ...
+        h.trImpOpt.uipanel_discr, 'String', 'th column.', ...
+        'HorizontalAlignment', 'left', 'Position', ...
+        [xNext yNext w_med h_txt], 'Enable', enbl_colFRET);
+
+    yNext = yNext + h_edit + mg;
+    xNext = mg;
+    
+    h.trImpOpt.checkbox_dFRET = uicontrol('Style', 'checkbox', 'Parent',...
+        h.trImpOpt.uipanel_discr, 'String', 'discretised FRET data', ...
+        'Units', 'pixels', 'BackgroundColor', bgCol, ...
+        'Position', [xNext yNext w_full h_cb], 'Callback', ...
+        {@checkbox_dFRET_Callback, h_fig}, 'Value', p{1}{1}(9), ...
+        'FontAngle', 'italic');
+    
     guidata(h_fig, h);
 
     set(h.figure_trImpOpt, 'Visible', 'on');
@@ -524,7 +602,7 @@ guidata(h.figure_trImpOpt, m);
 
 
 function pushbutton_impCoordFile_Callback(obj, evd, h_fig)
-defPth = setCorrectPath('Coordinates', h_fig);
+defPth = setCorrectPath('coordinates', h_fig);
 [fname, pname, o] = uigetfile({...
     '*.coord;*.spots', 'Coordinates file(*.coord;*.spots)'; ...
     '*.*', 'All files(*.*)'}, 'Select a coordinates file:', defPth);
@@ -613,6 +691,50 @@ switch checked
     case 0
         set([h.trImpOpt.text_fnameMov h.trImpOpt.pushbutton_impMovFile],...
             'Enable', 'off');
+end
+
+
+function pushbutton_impGamFile_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
+defPth = h.folderRoot;
+[fname,pname,o] = uigetfile({'*.gam', 'Gamma factors (*.gam)'; '*.*', ...
+    'All files(*.*)'},'Select gamma factor file',defPth,'MultiSelect','on');
+if ~isempty(fname) && ~isempty(pname) && sum(pname)
+    if ~iscell(fname)
+        fname = {fname};
+    end
+    m = guidata(h.figure_trImpOpt);
+    m{6}{2} = pname;
+    m{6}{3} = fname;
+    str_file = '';
+    for i = 1:numel(fname)
+        str_file = cat(2,str_file,fname{i},'; ');
+    end
+    str_file = str_file(1:end-2);
+    set(h.trImpOpt.text_fnameGam, 'String', str_file);
+    guidata(h.figure_trImpOpt, m);
+end
+
+
+function checkbox_impGam_Callback(obj, evd, h_fig)
+checked = get(obj, 'Value');
+h = guidata(h_fig);
+m = guidata(h.figure_trImpOpt);
+m{6}{1} = checked;
+guidata(h.figure_trImpOpt, m);
+
+switch checked
+    case 1
+        set([h.trImpOpt.text_fnameGam h.trImpOpt.pushbutton_impGamFile],...
+            'Enable', 'on');
+    case 0
+        set([h.trImpOpt.text_fnameGam h.trImpOpt.pushbutton_impGamFile],...
+            'Enable', 'off');
+        
+        % added by MH, 5.4.2019
+        m{6}{2} = [];
+        m{6}{3} = [];
+        guidata(h.figure_trImpOpt, m);
 end
 
 

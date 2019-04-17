@@ -22,7 +22,7 @@ function discr = discr_cpa(trace, varargin)
 %% Initialisation
 
 % parameters
-[n_smpl sgn_lvl ana_type correl tol Kmax] = getParam(varargin);
+[n_smpl,sgn_lvl,ana_type,correl,tol,Kmax] = getParam(varargin);
 if ana_type == 1
     ana_type = 'max';
 elseif ana_type == 2

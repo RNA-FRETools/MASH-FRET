@@ -75,8 +75,12 @@ if sum(bol_tdp)
         if isempty(prm.plot{2})
             disp(['no TDP built for data: ' str_tpe{t}]);
         else
-            str_act = cat(2,str_act,...
-                save_tdpDat(str_tpe{t},prm,pname_tdp,name,bol_tdp,h_fig));
+            [ok,str_tdp] = save_tdpDat(str_tpe{t},prm,pname_tdp,name,...
+                bol_tdp,h_fig);
+            if ~ok
+                return;
+            end
+            str_act = cat(2,str_act,str_tdp);
         end
     end
 end
@@ -129,9 +133,13 @@ if sum(bol_kin)
                             1))/100;
                         str = strcat(num2str(states(1)), ' to ', ...
                             num2str(states(2)));
-                        str_act = cat(2,str_act,...
-                            save_kinDat(bol_kin,prm,j,str_tpe{t},str, ...
-                            pname_kin,[name '_' str_tpe{t}],h_fig));
+                        [ok,str_kin] = save_kinDat(bol_kin,prm,j,str_tpe{t},str, ...
+                            pname_kin,[name '_' str_tpe{t}],h_fig);
+                        if ~ok
+                            return;
+                        end
+                        str_act = cat(2,str_act,str_kin);
+                            
                     end
                 end
             end
@@ -144,7 +152,7 @@ str_act = str_act(1:end-2); % remove last '\n'
 setContPan(cat(2,'Data successfully exported:\n',str_act),'success',h_fig);
 
 
-function str_act = save_tdpDat(str, prm, pname, name, bol, h_fig)
+function [ok,str_act] = save_tdpDat(str, prm, pname, name, bol, h_fig)
 % Save transition density plot to ASCII files and image files.
 % Save transition clustering results to ASCII files
 % Return actions to display
@@ -156,6 +164,7 @@ function str_act = save_tdpDat(str, prm, pname, name, bol, h_fig)
 % --> return action string
 
 str_act = '';
+ok = 1;
 
 tdp_mat = bol(1);
 tdp_conv = bol(2);
@@ -190,6 +199,10 @@ if tdp_mat% save TDP matrix
     fname_mat = getCorrName(fname_mat, [], h_fig);
     if sum(fname_mat)
         fname_mat = overwriteIt(fname_mat,pname,h_fig);
+        if isempty(fname_mat)
+            ok = 0;
+            return;
+        end
         
         % write data to file
         Nx = size(TDP,2);
@@ -217,6 +230,10 @@ if tdp_conv % save gaussian convolution TDP matrix
     fname_mat_conv = getCorrName(fname_mat_conv, [], h_fig);
     if sum(fname_mat_conv)
         fname_mat_conv = overwriteIt(fname_mat_conv,pname,h_fig);
+        if isempty(fname_mat_conv)
+            ok = 0;
+            return;
+        end
         
         % calculate data
         lim = prm.plot{1}([1 2],[2 3]);
@@ -258,6 +275,10 @@ if tdp_coord % save TDP coordinates
     fname_coord = getCorrName(fname_coord, [], h_fig);
     if sum(fname_coord)
         fname_coord = overwriteIt(fname_coord,pname,h_fig);
+        if isempty(fname_coord)
+            ok = 0;
+            return;
+        end
         
         % format data
         bins = prm.plot{1}([1 2],1);
@@ -297,6 +318,10 @@ if tdp_png
     fname_png = getCorrName(fname_png, [], h_fig);
     if sum(fname_png)
         fname_png = overwriteIt(fname_png,pname,h_fig);
+        if isempty(fname_png)
+            ok = 0;
+            return;
+        end
         
         % format data
         maxI = max(max(TDP)); minI = min(min(TDP));
@@ -324,6 +349,10 @@ if tdp_png_conv
     fname_png_cv = getCorrName(fname_png_cv, [], h_fig);
     if sum(fname_png_cv)
         fname_png_cv = overwriteIt(fname_png_cv,pname,h_fig);
+        if isempty(fname_png_cv)
+            ok = 0;
+            return;
+        end
         
         % format data
         lim = prm.plot{1}([1 2],[2 3]);
@@ -365,6 +394,10 @@ if isClst && tdp_clust
     fname_clust = getCorrName(fname_clust, [], h_fig);
     if sum(fname_clust)
         fname_clust = overwriteIt(fname_clust,pname,h_fig);
+        if isempty(fname_clust)
+            ok = 0;
+            return;
+        end
         
         % format data
         meth = prm.clst_start{1}(1);
@@ -498,7 +531,8 @@ else
 end
 
 
-function str_act = save_kinDat(bol, prm, j, str1, str2, pname, name, h_fig)
+function [ok,str_act] = save_kinDat(bol, prm, j, str1, str2, pname, name, ...
+    h_fig)
 % Save dwell time histograms and fitting results to ASCII files.
 % Return actions to display
 
@@ -507,6 +541,7 @@ function str_act = save_kinDat(bol, prm, j, str1, str2, pname, name, h_fig)
 % --> return action string
 
 str_act = '';
+ok = 1;
 
 kinDtHist = bol(1);
 kinFit = bol(2);
@@ -520,6 +555,10 @@ if kinDtHist
     fname_hdt = getCorrName(fname_hdt, [], h_fig);
     if sum(fname_hdt)
         fname_hdt = overwriteIt(fname_hdt,pname,h_fig);
+        if isempty(fname_hdt)
+            ok = 0;
+            return;
+        end
         
         % collect data
         dt_hist = prm.clst_res{4}{j};
@@ -551,6 +590,10 @@ if kinFit
     fname_fit = getCorrName(fname_fit, [], h_fig);
     if sum(fname_fit)
         fname_fit = overwriteIt(fname_fit,pname,h_fig);
+        if isempty(fname_fit)
+            ok = 0;
+            return;
+        end
         
         % format data
         isFit = size(prm.kin_res,1)>=j & ~isempty(prm.kin_res{j,2});

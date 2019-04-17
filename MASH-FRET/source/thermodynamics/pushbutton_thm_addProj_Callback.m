@@ -1,4 +1,9 @@
 function pushbutton_thm_addProj_Callback(obj, evd, h)
+
+% Last update: 28.3.2019 by MH
+% --> Define "isratio" variable and pass it to "setDefPrm_thm" to define
+%     ratio-specific parameters
+
 defPth = h.folderRoot;
 [fname,pname,o] = uigetfile({'*.mash', 'MASH project(*.mash)'; ...
     '*path.dat', 'HaMMy path files (*path.dat)'; '*.*', ...
@@ -9,13 +14,38 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
     if ~iscell(fname)
         fname = {fname};
     end
+    
+    p = h.param.thm;
+    
+    % check if the project file is not already loaded
+    excl_f = false(size(fname));
+    str_proj = get(h.listbox_thm_projLst,'string');
+    if isfield(p,'proj')
+        for i = 1:numel(fname)
+            for j = 1:numel(p.proj)
+                if strcmp(cat(2,pname,fname{i}),p.proj{j}.proj_file)
+                    excl_f(i) = true;
+                    disp(cat(2,'project "',str_proj{j},'" is already ',...
+                        'opened (',p.proj{j}.proj_file,').'));
+                end
+            end
+        end
+    end
+    fname(excl_f) = [];
+    
+    % stop if no file is left
+    if isempty(fname)
+        return;
+    end
+    
+    % load project data
     [dat,ok] = loadProj(pname, fname, 'intensities', h.figure_MASH);
     if ~ok
         return;
     end
-    p = h.param.thm;
     p.proj = [p.proj dat];
-
+    
+    % define data processing parameters applied (prm)
     for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
         nChan = p.proj{i}.nb_channel;
         nExc = p.proj{i}.nb_excitations;
@@ -58,6 +88,10 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
         end
         
         for tpe = 1:nTpe
+            
+            % current data isn't an intensity ratio
+            isratio = 0;
+            
             if tpe <= nChan*nExc % intensity
                 i_c = mod(tpe,nChan); i_c(i_c==0) = nChan;
                 i_l = ceil(tpe/nChan);
@@ -94,9 +128,15 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
                 trace = allFRET(:,i_f);
                 trace = reshape(trace, [N nMol]);
                 
+                % current data is an intensity ratio
+                isratio = 1;
+                
             elseif tpe <= 2*nChan*nExc+2*nFRET % FRET
                 i_f = tpe - 2*nChan*nExc - nFRET;
                 trace = FRET_discr(:,i_f:nFRET:end);
+                
+                % current data is an intensity ratio
+                isratio = 1;
 
             elseif tpe <= 2*nChan*nExc + 2*nFRET + nS % Stoichiometry
                 i_s = tpe - 2*nChan*nExc - 2*nFRET;
@@ -110,37 +150,50 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
                 trace = sum(I_re(:,:,i_l),2)./sum(sum(I_re,2),3);
                 trace = reshape(trace, [N nMol]);
                 
+                % current data is an intensity ratio
+                isratio = 1;
+                
             elseif tpe <= 2*nChan*nExc + 2*nFRET + 2*nS % Stoichiometry
                 i_s = tpe - 2*nChan*nExc - 2*nFRET - nS;
                 trace = S_discr(:,i_s:nS:end);
+                
+                % current data is an intensity ratio
+                isratio = 1;
             end
+            
             trace = trace(:,incl);
             
-            prm{tpe} = setDefPrm_thm(prm{tpe}, trace, p.colList);
+            prm{tpe} = setDefPrm_thm(prm{tpe}, trace, isratio, p.colList);
         end
         p.proj{i}.prm = prm;
         p.curr_tpe(i) = 1;
     end
 
+    % set last-imported project as current project
     p.curr_proj = size(p.proj,2);
     
+    % update project list
     p = ud_projLst(p, h.listbox_thm_projLst);
-    
     h.param.thm = p;
     guidata(h.figure_MASH, h);
-    
-    str_files = 'file';
+
+    % display action
     if size(fname,2) > 1
-        str_files = [str_files 's'];
+        str_files = 'files:\n';
+    else
+        str_files = 'file: ';
     end
-    str_files = [str_files ': '];
     for i = 1:size(fname,2)
-        str_files = [str_files fname{i} '\n'];
+        str_files = cat(2,str_files,pname,fname{i},'\n');
     end
+    str_files = str_files(1:end-2);
+    setContPan(['Project successfully imported from ' str_files],'success',...
+        h.figure_MASH);
     
-    setContPan(['Project successfully imported from ' ...
-        str_files 'in folder: ' pname], 'success', h.figure_MASH);
+    % clear axes
     cla(h.axes_hist1);
     cla(h.axes_hist2);
+    
+    % update calculations and GUI
     updateFields(h.figure_MASH, 'thm');
 end

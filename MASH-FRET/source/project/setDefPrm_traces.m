@@ -4,10 +4,21 @@ function def = setDefPrm_traces(p, proj)
 % "proj" >> project number in the list
 % "def" >> 1-by-n cell array containing molecule parameters for each of ...
 %          the n panels
+
+% Last update: by MH 3.4.2019
+% >> correct default value for bottom axes plot
+% >> change default state finding algorithm to STaSI
 %
-% Last update: the 28th of April 2014 by Mélodie C.A.S. Hadzic
-
-
+% update: by MH 29.3.2019
+% >> change bleedthrough coefficient (mol{5}{1}) structure: coefficients 
+%    are independant of laser
+% >> change direct excitation coefficient (mol{5}{2}) structure: direct 
+%    excitation possible by every laser but emitter-specific illumination 
+%    (nExc-1) and is calculated only based on emitter intensities at 
+%    emitter-specific laser (possibility to choose another laser was 
+%    removed)
+%
+% update: the 28th of April 2014 by Mélodie C.A.S. Hadzic
 
 if ~isfield(p, 'defProjPrm')
     p.defProjPrm = [];
@@ -60,8 +71,11 @@ elseif nS > 1 || nFRET > 1
 elseif nFRET == 1 && nS == 1
     gen{2}(3) = nFRET + nS + 2; % + none + all 
     
-else
+elseif nFRET>0 || nS>0
     gen{2}(3) = 2;
+    
+else
+    gen{2}(3) = 1;
 end
 
 gen{2}(4) = p.proj{proj}.cnt_p_sec; % plot in intensity units per second
@@ -74,8 +88,8 @@ gen{3}(1) = 1; % correction excitation
 gen{3}(2) = 1; % correction channel
 gen{3}(3) = 1; % Bleedthrough channel
 gen{3}(4) = 1; % DTA channel
-gen{3}(5) = 1; % Background excitation
-gen{3}(6) = 1; % Background channel
+gen{3}(5) = 0; % nothing (old background excitation)
+gen{3}(6) = 1; % data for background correction
 gen{3}(7) = 1; % Direct excitation coefficient excitation
 gen{3}(8) = 1; % FRET correction channel
 
@@ -138,19 +152,19 @@ end
 
 % DTA
 if nFRET > 0 || nS > 0
-    mol{4}{1} = [1 1 0]; % method/apply to FRET/recalc states;
+    mol{4}{1} = [5 1 0]; % method/apply to FRET/recalc states;
 else
-    mol{4}{1} = [1 0 0];
+    mol{4}{1} = [5 0 0];
 end
 
 for i = 1:nFRET
 
     mol{4}{2}(:,:,i) = ...
-        [1 2  0  0 0  0  0 2
-         1 2  0  0 5  0  0 2
-         1 1  0  0 0  0  0 0
-         1 Inf  0  0 50 90 2 2
-         1 2 0  0 0  0  0 2];
+        [2  0  0 2 0 0 %   Thresholds J   ,none,none,tol ,refine,bin
+         1  2  5 2 0 0 %   vbFRET     minJ,maxJ,prm1,tol ,refine,bin
+         1  0  0 0 0 0 %   One state  none,none,none,none,none  ,none
+         50 90 2 2 0 0 %   CPA        prm1,prm2,prm3,tol ,refine,bin 
+         2  0  0 2 0 0]; % STaSI      maxJ,none,none,tol ,refine,bin
 
     mol{4}{4}(:,:,i) = ...
         [1    0.8  0.6  0.4  0.2   0   
@@ -161,11 +175,11 @@ end
 for i = 1:nS
     
     mol{4}{2}(:,:,nFRET+i) = ...
-        [1 2  0  0 0  0  0 2
-         1 2  0  0 5  0  0 2
-         1 1  0  0 0  0  0 0
-         1 Inf  0  0 50 90 2 2
-         1 2 0  0 0  0  0 2];
+        [2  0  0 2 0 0 %   Thresholds J   ,none,none,tol ,refine,bin
+         1  2  5 2 0 0 %   vbFRET     minJ,maxJ,prm1,tol ,refine,bin
+         1  0  0 0 0 0 %   One state  none,none,none,none,none  ,none
+         50 90 2 2 0 0 %   CPA        prm1,prm2,prm3,tol ,refine,bin 
+         2  0  0 2 0 0]; % STaSI      maxJ,none,none,tol ,refine,bin
 
     mol{4}{4}(:,:,nFRET+i) = ...
         [1    0.8  0.6  0.4  0.2   0   
@@ -178,11 +192,11 @@ meanI = mean(mean(mean(p.proj{proj}.intensities,3),2),1);
 for j = 1:nExc
     for i = 1:nChan
         mol{4}{2}(:,:,nFRET+nS+(j-1)*nChan+i) = ...
-            [1 2  0 0 0  0  0 2
-             1 2  0 0 5  0  0 2
-             1 1  0 0 0  0  0 0
-             1 Inf  0 0 50 90 2 2
-             1 2 0  0 0  0  0 2];
+            [2  0  0 2 0 0 %   Thresholds J   ,none,none,tol ,refine,bin
+             1  2  5 2 0 0 %   vbFRET     minJ,maxJ,prm1,tol ,refine,bin
+             1  0  0 0 0 0 %   One state  none,none,none,none,none  ,none
+             50 90 2 2 0 0 %   CPA        prm1,prm2,prm3,tol ,refine,bin 
+             2  0  0 2 0 0]; % STaSI      maxJ,none,none,tol ,refine,bin
 
         mol{4}{4}(:,:,nFRET+nS+(j-1)*nChan+i) = ...
             round(meanI*[1    0.8  0.6  0.4  0.2   0   
@@ -193,14 +207,19 @@ end
 mol{4}{3} = nan(nFRET+nS+nExc*nChan,6);  % States values
              
 % Cross talk and filter corrections
-for l = 1:nExc
-    for c = 1:nChan
-        % bleedthrough
-        mol{5}{1}{l,c} = zeros(1,nChan-1);
-        % direct excitation
-        mol{5}{2}{l,c} = zeros(1,nExc-1);
-    end
-end
+% modified by MH 29.3.2019
+% bleedthrough
+mol{5}{1} = zeros(nChan,nChan-1);
+% direct excitation
+mol{5}{2} = zeros(nExc-1,nChan);
+% for l = 1:nExc
+%     for c = 1:nChan
+%         % bleedthrough
+%         mol{5}{1}{l,c} = zeros(1,nChan-1);
+%         % direct excitation
+%         mol{5}{2}{l,c} = zeros(1,nExc-1);
+%     end
+% end
 
 % gamma
 mol{5}{3} = [];
@@ -222,9 +241,10 @@ mol{5}{5} = [zeros(nFRET,1), 1000*ones(nFRET,1) ...
 
 def.mol = adjustVal(def.mol, mol);
 
-% set quantum yield & additional factors to 1
 if size(mol{5},2)>=3
+    % set null gamma factors to 1
     def.mol{5}{3}(def.mol{5}{3}==0) = 1;
+    % adjust channel for photobleaching cutoff calculation
     if def.mol{2}{1}(3) > nFRET+nS*(1 + 2*double(nFRET>1|nS>1)) + ...
             nExc*nChan*(1 + 2*double(nChan>1|nExc>1))
         def.mol{2}{1}(3) = 1;
@@ -292,10 +312,6 @@ if size(def.mol{3},2)>=4
     def.mol{3}(4) = [];
 end
 
-% if the maximum number of state is Inf for the method CPA
-for i = 1:size(def.mol{4}{2},3)
-    if ~isfinite(def.mol{4}{2}(4,2,i))
-        def.mol{4}{2}(4,2,i) = 2;
-    end
-end
+
+
 

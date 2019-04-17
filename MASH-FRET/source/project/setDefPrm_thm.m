@@ -1,13 +1,25 @@
-function prm = setDefPrm_thm(prm_in, trace, clr)
+function prm = setDefPrm_thm(prm_in, trace, isratio, clr)
+
+% Last update: 28.3.2019 by MH
+% --> Take "isratio" as input argument to define ratio-specific histogram
+%     plot parameters: default x-axis is now -0.2:0.025:1.2
 
 K = 2;
 
 %% Histograms plot
-tr_min = trace; tr_min(isnan(tr_min)) = Inf;
-tr_max = trace; tr_max(isnan(tr_max)) = -Inf;
-minVal = min(min(tr_min)); maxVal = max(max(tr_max));
-bin = (maxVal-minVal)/150;
-xy_axis = [bin (minVal-2*bin) (maxVal+2*bin)];
+if isratio
+    bin = 0.025;
+    minVal = -0.2;
+    maxVal = 1.2;
+else
+    tr_min = trace; tr_min(isnan(tr_min)) = Inf;
+    tr_max = trace; tr_max(isnan(tr_max)) = -Inf;
+    minVal = min(min(tr_min)); maxVal = max(max(tr_max));
+    bin = (maxVal-minVal)/150;
+    minVal = (minVal-2*bin);
+    maxVal = (maxVal+2*bin);
+end
+xy_axis = [bin minVal maxVal];
 xy_axis(~isfinite(xy_axis)) = 0;
 
 % plotPrm{1} = [bin_x, x_inf, x_sup, overflow bins]
@@ -34,7 +46,7 @@ states = linspace(0,1,K+2);
 thm{3} = [repmat([0 0.1 Inf -Inf],[K,1]) states(2:end-1)' ...
     repmat([Inf 0 0.14 Inf],[K,1]) clr(1:K,:)];
 % thm{4} = [apply penalty, penalty, max. nb. of Gaussian]
-thm{4} = [0 1.001 10];
+thm{4} = [0 1.2 10];
 prm.thm_start = adjustParam('thm_start', thm, prm_in);
 
 

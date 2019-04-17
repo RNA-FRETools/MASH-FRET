@@ -25,4 +25,10 @@ if ~isempty(p.proj)
     end
     currMol = p.curr_mol(proj);
 end
+top = get(h_lb,'Listboxtop');
 set(h_lb, 'String', str_lst, 'Value', currMol);
+if numel(str_lst)>=top
+    set(h_lb,'Listboxtop',top);
+else
+    set(h_lb,'Listboxtop',1);
+end
