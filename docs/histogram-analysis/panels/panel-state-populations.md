@@ -22,22 +22,25 @@ nav_order: 4
 
 ## Method settings
 
-Population calculation settings.
+Defines the method to calculate state populations.
 
-* <u>Population calculation method</u>
-
-* <u>Data bootstrapping</u>
+<img src="../../assets/images/gui/HA-panel-state-populations-method.png" style="max-width: 156px;"/>
 
 
 ---
 
 ## Thresholding
 
+Defines settings to calculate state populations with the Thresholding method.
+
+<img src="../../assets/images/gui/HA-panel-state-populations-thresholding.png" style="max-width: 215px;"/>
+
 States are separated by fixed thresholds, histogram counts are summed up between thresholds and resulting populations are normalized.
 
-* Set `J-1` thresholds in edit fieldd **(1)** for a model containing *J* of states.
-* Select threshold with dropdown menu **(2)** and set the threshold value in edit field **(3)**.
-* Start calculations with button ![Start](../../assets/images/but-HA-start.png)
+* Set `J-1` thresholds in edit fieldd **(a)** for a model containing *J* of states.
+* Select threshold with dropdown menu **(b)** and set the threshold value in edit field **(c)**.
+* Start calculations with button 
+![Start](../../assets/images/gui/HA-but-start.png)
 * <u>Start thresholding</u>
 
 * <u>Calculation results</u>
@@ -46,6 +49,10 @@ States are separated by fixed thresholds, histogram counts are summed up between
 ---
 
 ## Gaussian fitting
+
+Defines settings to calculate state populations with the Gaussian fitting method.
+
+<img src="../../assets/images/gui/HA-panel-state-populations-gaussian-fitting.png" style="max-width: 365px;"/>
 
 Histogram is fitted with a mixture of Gaussians and 
 

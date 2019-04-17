@@ -9,7 +9,7 @@ nav_order: 2
 # Histogram and plot
 {: .no_toc }
 
-<a href="../../assets/images/gui/HA-panel-plot.png"><img src="../../assets/images/gui/HA-panel-plot.png" style="max-width: 166px;"/></a>
+<a href="../../assets/images/gui/HA-panel-plot.png"><img src="../../assets/images/gui/HA-panel-plot.png" style="max-width: 200px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -26,6 +26,9 @@ nav_order: 2
 
 ## Histogram bounds
 
+Defines limits for the histogram x-axis
+
+<img src="../../assets/images/gui/HA-panel-plot-bounds.png" style="max-width: 171px;"/>
 
 ---
 

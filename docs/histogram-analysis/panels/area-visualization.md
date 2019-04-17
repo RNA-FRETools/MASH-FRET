@@ -21,12 +21,27 @@ nav_order: 5
 ## Top axes
 
 ### Default
+{: .no_toc }
+
+<img src="../../assets/images/gui/HA-area-visualization-top-default.png" style="max-width:482px;">
+
 
 ### Inferred state configuration
+{: .no_toc }
+
+<img src="../../assets/images/gui/HA-area-visualization-top-gaussian.png" style="max-width:482px;">
+
 
 ### After Gaussian fitting
+{: .no_toc }
+
+<img src="../../assets/images/gui/HA-area-visualization-top-gaussian-boba.png" style="max-width:482px;">
+
 
 ### After thresholding
+{: .no_toc }
+
+<img src="../../assets/images/gui/HA-area-visualization-top-threshold.png" style="max-width:482px;">
 
 
 ---
@@ -34,8 +49,20 @@ nav_order: 5
 ## Bottom axes
 
 ### Default
+{: .no_toc }
+
+<img src="../../assets/images/gui/HA-area-visualization-bottom-default.png" style="max-width:482px;">
+
 
 ### After Gaussian fitting
+{: .no_toc }
 
+<img src="../../assets/images/gui/HA-area-visualization-bottom-gaussian-boba.png" style="max-width:482px;">
+
+
+### After thresholding
+{: .no_toc }
+
+<img src="../../assets/images/gui/HA-area-visualization-bottom-threshold.png" style="max-width:482px;">
 
 
