@@ -47,6 +47,8 @@ The lower limit is set in **(a)** and the higher limit in **(b)**.
 For more information about the influence of x-axis limits on the analysis, please refere to 
 [Build histogram](../workflow.html#build-histogram) in Histogram analysis workflow.
 
+**<u>default</u>:** [-0.2; 1.2] for ratio data
+
 
 ---
 
@@ -57,6 +59,8 @@ The histogram bin size defines the sorting interval of the time traces data into
 For more information about the influence of bin size on the analysis, please refere to 
 [Build histogram](../workflow.html#build-histogram) in Histogram analysis workflow.
 
+**<u>default</u>:** 0.025 for ratio data
+
 
 ---
 
@@ -66,3 +70,5 @@ Sorting a data set into specific bins often leads to large counts in the two bin
 
 To prevent such undesired effect, the extreme bins can be removed from the histogram by activating this option. 
 To keep extreme bins for analysis, deactivate this option.
+
+**<u>default</u>:** activated
