@@ -17,24 +17,52 @@ nav_order: 2
 1. TOC
 {:toc}
 
+
 ---
 
 ## Data list
+
+Selects the data to be analyzed in Histogram analysis.
+
+Supported data are:
+* intensities from time traces
+* intensities from states trajectories (`discr.`)
+* FRET from time traces (`FRET`)
+* FRET from states trajectories (`discr. FRET`)
+* stoichiometries from time traces (`S`)
+* stoichiometries from states trajectories (`discr. S`)
 
 
 ---
 
 ## Histogram bounds
 
-Defines limits for the histogram x-axis
+Defines limits for the histogram x-axis.
 
 <img src="../../assets/images/gui/HA-panel-plot-bounds.png" style="max-width: 171px;"/>
+
+Histogram x-axis limits define the range of data used in the analysis. 
+The lower limit is set in **(a)** and the higher limit in **(b)**.
+
+For more information about the influence of x-axis limits on the analysis, please refere to 
+[Build histogram](../workflow.html#build-histogram) in Histogram analysis workflow.
+
 
 ---
 
 ## Histogram bin size
 
+The histogram bin size defines the sorting interval of the time traces data into the histogram.
+
+For more information about the influence of bin size on the analysis, please refere to 
+[Build histogram](../workflow.html#build-histogram) in Histogram analysis workflow.
+
 
 ---
 
 ## Overflow bins
+
+Sorting a data set into specific bins often leads to large counts in the two bins flanking the x-axis, which bias the state configuration and state population analysis. 
+
+To prevent such undesired effect, the extreme bins can be removed from the histogram by activating this option. 
+To keep extreme bins for analysis, deactivate this option.
