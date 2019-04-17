@@ -4,10 +4,21 @@ function def = setDefPrm_traces(p, proj)
 % "proj" >> project number in the list
 % "def" >> 1-by-n cell array containing molecule parameters for each of ...
 %          the n panels
+
+% Last update: by MH 3.4.2019
+% >> correct default value for bottom axes plot
+% >> change default state finding algorithm to STaSI
 %
-% Last update: the 28th of April 2014 by Mélodie C.A.S. Hadzic
-
-
+% update: by MH 29.3.2019
+% >> change bleedthrough coefficient (mol{5}{1}) structure: coefficients 
+%    are independant of laser
+% >> change direct excitation coefficient (mol{5}{2}) structure: direct 
+%    excitation possible by every laser but emitter-specific illumination 
+%    (nExc-1) and is calculated only based on emitter intensities at 
+%    emitter-specific laser (possibility to choose another laser was 
+%    removed)
+%
+% update: the 28th of April 2014 by Mélodie C.A.S. Hadzic
 
 if ~isfield(p, 'defProjPrm')
     p.defProjPrm = [];
@@ -60,8 +71,11 @@ elseif nS > 1 || nFRET > 1
 elseif nFRET == 1 && nS == 1
     gen{2}(3) = nFRET + nS + 2; % + none + all 
     
-else
+elseif nFRET>0 || nS>0
     gen{2}(3) = 2;
+    
+else
+    gen{2}(3) = 1;
 end
 
 gen{2}(4) = p.proj{proj}.cnt_p_sec; % plot in intensity units per second
@@ -138,9 +152,9 @@ end
 
 % DTA
 if nFRET > 0 || nS > 0
-    mol{4}{1} = [1 1 0]; % method/apply to FRET/recalc states;
+    mol{4}{1} = [5 1 0]; % method/apply to FRET/recalc states;
 else
-    mol{4}{1} = [1 0 0];
+    mol{4}{1} = [5 0 0];
 end
 
 for i = 1:nFRET
@@ -193,14 +207,19 @@ end
 mol{4}{3} = nan(nFRET+nS+nExc*nChan,6);  % States values
              
 % Cross talk and filter corrections
-for l = 1:nExc
-    for c = 1:nChan
-        % bleedthrough
-        mol{5}{1}{l,c} = zeros(1,nChan-1);
-        % direct excitation
-        mol{5}{2}{l,c} = zeros(1,nExc-1);
-    end
-end
+% modified by MH 29.3.2019
+% bleedthrough
+mol{5}{1} = zeros(nChan,nChan-1);
+% direct excitation
+mol{5}{2} = zeros(nExc-1,nChan);
+% for l = 1:nExc
+%     for c = 1:nChan
+%         % bleedthrough
+%         mol{5}{1}{l,c} = zeros(1,nChan-1);
+%         % direct excitation
+%         mol{5}{2}{l,c} = zeros(1,nExc-1);
+%     end
+% end
 
 % gamma
 mol{5}{3} = [];

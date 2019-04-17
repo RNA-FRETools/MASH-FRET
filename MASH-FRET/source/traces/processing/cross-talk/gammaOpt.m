@@ -207,63 +207,65 @@ if ~isempty(p.proj)
 end
 end
 
-% load gamma factor file, added by FS, 24.4.2018
-function pushbutton_loadGamma_Callback(~, ~, h_fig)
-h = guidata(h_fig);
-p = h.param.ttPr;
-defPth = h.folderRoot;
-
-% load gamma factor file if it exists
-[fnameGamma,pnameGamma,~] = uigetfile({'*.gam', 'Gamma factors (*.gam)'; '*.*', ...
-    'All files(*.*)'}, 'Select gamma factor file', defPth, 'MultiSelect', 'on');
-if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
-    if ~iscell(fnameGamma)
-        fnameGamma = {fnameGamma};
-    end
-    gammasCell = cell(1,length(fnameGamma));
-    for f = 1:length(fnameGamma)
-        filename = [pnameGamma fnameGamma{f}];
-        fileID = fopen(filename,'r');
-        formatSpec = '%f';
-        gammasCell{f} = fscanf(fileID,formatSpec);
-    end
-    gammas = cell2mat(gammasCell');
-end
-
-
-% check if number of molecules is the same in the project and the .gam file
-proj = p.curr_proj;
-nMol = numel(p.proj{proj}.coord_incl);
-if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
-    if length(gammas) ~= nMol
-        updateActPan('number of gamma factors does not match the number of ASCII files loaded. Set all gamma factors to 1.', h.figure_MASH, 'error');
-        fnameGamma = []; % set to empty (will not try to import any gamma factors from file)
-    end
-end
-
-% set the gamma factors
-for n = 1:nMol
-    % assign gamma value (assignment only works if number of values in .gam file equals the number of loaded restructured ASCII files)
-    if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
-        % set the gamma factor from the .gam file
-        % (FRET is calculated on the spot based on imported and corrected
-        % intensities)
-        p.proj{proj}.curr{n}{5}{4}(1) = 0; % MH: go in manual
-        p.proj{proj}.curr{n}{5}{3} = gammas(n);
-%         p.proj{proj}.prm{n}{5}{3} = gammas(n);
-    end
-end
-
-% update the parameters (adapted from pushbutton_addTraces_Callback.m)
-h.param.ttPr = p;
-guidata(h.figure_MASH, h);
-% ud_TTprojPrm(h.figure_MASH); % MH: to use when project options change
-% ud_trSetTbl(h.figure_MASH); % MH: to use to update molecule list
-ud_cross(h.figure_MASH); % update gamma value in GUI
-
-% close figure
-close(gcf)
-end
+% moved to separate file by MH, 3.4.2019
+% see destination: MASH-FRET\source\traces\processing\cross-talk\pushbutton_loadGamma_Callback.m
+% % load gamma factor file, added by FS, 24.4.2018
+% function pushbutton_loadGamma_Callback(~, ~, h_fig)
+% h = guidata(h_fig);
+% p = h.param.ttPr;
+% defPth = h.folderRoot;
+% 
+% % load gamma factor file if it exists
+% [fnameGamma,pnameGamma,~] = uigetfile({'*.gam', 'Gamma factors (*.gam)'; '*.*', ...
+%     'All files(*.*)'}, 'Select gamma factor file', defPth, 'MultiSelect', 'on');
+% if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
+%     if ~iscell(fnameGamma)
+%         fnameGamma = {fnameGamma};
+%     end
+%     gammasCell = cell(1,length(fnameGamma));
+%     for f = 1:length(fnameGamma)
+%         filename = [pnameGamma fnameGamma{f}];
+%         fileID = fopen(filename,'r');
+%         formatSpec = '%f';
+%         gammasCell{f} = fscanf(fileID,formatSpec);
+%     end
+%     gammas = cell2mat(gammasCell');
+% end
+% 
+% 
+% % check if number of molecules is the same in the project and the .gam file
+% proj = p.curr_proj;
+% nMol = numel(p.proj{proj}.coord_incl);
+% if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
+%     if length(gammas) ~= nMol
+%         updateActPan('number of gamma factors does not match the number of ASCII files loaded. Set all gamma factors to 1.', h.figure_MASH, 'error');
+%         fnameGamma = []; % set to empty (will not try to import any gamma factors from file)
+%     end
+% end
+% 
+% % set the gamma factors
+% for n = 1:nMol
+%     % assign gamma value (assignment only works if number of values in .gam file equals the number of loaded restructured ASCII files)
+%     if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
+%         % set the gamma factor from the .gam file
+%         % (FRET is calculated on the spot based on imported and corrected
+%         % intensities)
+%         p.proj{proj}.curr{n}{5}{4}(1) = 0; % MH: go in manual
+%         p.proj{proj}.curr{n}{5}{3} = gammas(n);
+% %         p.proj{proj}.prm{n}{5}{3} = gammas(n);
+%     end
+% end
+% 
+% % update the parameters (adapted from pushbutton_addTraces_Callback.m)
+% h.param.ttPr = p;
+% guidata(h.figure_MASH, h);
+% % ud_TTprojPrm(h.figure_MASH); % MH: to use when project options change
+% % ud_trSetTbl(h.figure_MASH); % MH: to use to update molecule list
+% ud_cross(h.figure_MASH); % update gamma value in GUI
+% 
+% % close figure
+% close(gcf)
+% end
 
 % threshold (adapted from edit_photoblParam_01_Callback in MASH.m)
 function edit_pbGamma_threshold_Callback(obj, ~, h_fig)

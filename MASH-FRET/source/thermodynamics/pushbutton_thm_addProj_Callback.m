@@ -1,4 +1,9 @@
 function pushbutton_thm_addProj_Callback(obj, evd, h)
+
+% Last update: 28.3.2019 by MH
+% --> Define "isratio" variable and pass it to "setDefPrm_thm" to define
+%     ratio-specific parameters
+
 defPth = h.folderRoot;
 [fname,pname,o] = uigetfile({'*.mash', 'MASH project(*.mash)'; ...
     '*path.dat', 'HaMMy path files (*path.dat)'; '*.*', ...
@@ -83,6 +88,10 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
         end
         
         for tpe = 1:nTpe
+            
+            % current data isn't an intensity ratio
+            isratio = 0;
+            
             if tpe <= nChan*nExc % intensity
                 i_c = mod(tpe,nChan); i_c(i_c==0) = nChan;
                 i_l = ceil(tpe/nChan);
@@ -119,9 +128,15 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
                 trace = allFRET(:,i_f);
                 trace = reshape(trace, [N nMol]);
                 
+                % current data is an intensity ratio
+                isratio = 1;
+                
             elseif tpe <= 2*nChan*nExc+2*nFRET % FRET
                 i_f = tpe - 2*nChan*nExc - nFRET;
                 trace = FRET_discr(:,i_f:nFRET:end);
+                
+                % current data is an intensity ratio
+                isratio = 1;
 
             elseif tpe <= 2*nChan*nExc + 2*nFRET + nS % Stoichiometry
                 i_s = tpe - 2*nChan*nExc - 2*nFRET;
@@ -135,13 +150,20 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
                 trace = sum(I_re(:,:,i_l),2)./sum(sum(I_re,2),3);
                 trace = reshape(trace, [N nMol]);
                 
+                % current data is an intensity ratio
+                isratio = 1;
+                
             elseif tpe <= 2*nChan*nExc + 2*nFRET + 2*nS % Stoichiometry
                 i_s = tpe - 2*nChan*nExc - 2*nFRET - nS;
                 trace = S_discr(:,i_s:nS:end);
+                
+                % current data is an intensity ratio
+                isratio = 1;
             end
+            
             trace = trace(:,incl);
             
-            prm{tpe} = setDefPrm_thm(prm{tpe}, trace, p.colList);
+            prm{tpe} = setDefPrm_thm(prm{tpe}, trace, isratio, p.colList);
         end
         p.proj{i}.prm = prm;
         p.curr_tpe(i) = 1;

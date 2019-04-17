@@ -129,6 +129,8 @@ for i = 1:nChan
     set(h.axes_bottom(i), 'UserData', subImg{i});
 end
 
+colormap(h.fig,'jet');
+
 guidata(h.fig, h);
 
 

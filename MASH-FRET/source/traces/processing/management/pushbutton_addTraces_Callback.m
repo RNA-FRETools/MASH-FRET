@@ -1,5 +1,35 @@
 function pushbutton_addTraces_Callback(obj, evd, h)
 
+%%
+
+% update: 3.4.2019 by MH
+% >> adapt gamma factor import for more than one FRET calculation
+% >> correct MH's past modifications: gamma factors must be saved in prm
+%    and in curr parameters to be taken into account
+%
+% Last update: 2.4.2019 by MH
+% >> fix error when importing ASCII traces: correct dimensions of 
+%    bleedthrough coefficients when resetting cross-talks to 0.
+% >> reset cross-talks to 0 whether or not gamma files were successfully
+%    imported or not.
+%
+% update: 29.3.2019 by MH
+% >> manage down-compatibility and adapt reorganization of cross-talk 
+%    coefficients to new parameter structure (see 
+%    project/setDefPrm_traces.m)
+% >> cancel saving of ASCII-improted gamma factors in p.proj{i}.prm: if
+%    save in prm, molecule won't be processed with new gammas
+%
+% update: 28.3.2019 by MH
+% --> For ASCII traces import: gamma factors files are recovered from 
+%     import options
+%
+% update: 28.3.2018 by FS
+% --> if ASCII file and not MASH project is loaded: load gamma factor file
+%     if it exists; assign gamma value only if number of values in .gam 
+%     file equals the number of loaded restructured ASCII files
+%%
+
 % collect files to import
 defPth = h.folderRoot;
 [fname,pname,o] = uigetfile({'*.mash', 'MASH project(*.mash)'; '*.*', ...
@@ -45,18 +75,29 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
     % load gamma factor file if it exists; added by FS, 28.3.2018
     [o,o,fext] = fileparts(fname{1});
     if ~strcmp(fext, '.mash') % if ASCII file and not MASH project is loaded
-            [fnameGamma,pnameGamma,~] = uigetfile({'*.gam', 'Gamma factors (*.gam)'; '*.*', ...
-    'All files(*.*)'}, 'Select gamma factor file', defPth, 'MultiSelect', 'on');
+        
+        % cancelled by MH, 28.3.2019
+%         [fnameGamma,pnameGamma,~] = uigetfile({'*.gam', 'Gamma factors (*.gam)'; '*.*', ...
+%                 'All files(*.*)'}, 'Select gamma factor file', defPth, 'MultiSelect', 'on');
+
+        % collect gamma files from import options, added by MH, 28.3.2019
+        pnameGamma = p.impPrm{6}{2};
+        fnameGamma = p.impPrm{6}{3};
+        
         if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
-            if ~iscell(fnameGamma)
-                fnameGamma = {fnameGamma};
-            end
+            
+            % cancelled by MH, 28.3.2019
+%             if ~iscell(fnameGamma)
+%                 fnameGamma = {fnameGamma};
+%             end
+
             gammasCell = cell(1,length(fnameGamma));
             for f = 1:length(fnameGamma)
                 filename = [pnameGamma fnameGamma{f}];
-                fileID = fopen(filename,'r');
-                formatSpec = '%f';
-                gammasCell{f} = fscanf(fileID,formatSpec);
+%                 fileID = fopen(filename,'r');
+%                 formatSpec = '%f';
+%                 gammasCell{f} = fscanf(fileID,formatSpec);
+                gammasCell{f} = importdata(filename);
             end
             gammas = cell2mat(gammasCell');
         end
@@ -65,18 +106,43 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
     % define molecule processing parameters applied (prm) and to apply
     % (curr)
     for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
+        
+        % moved here by MH, 29.3.2019
+        nMol = numel(p.proj{i}.coord_incl);
+        nChan = p.proj{i}.nb_channel;
+        nExc = p.proj{i}.nb_excitations;
+        
+        % added by MH,29.3.2019
+        exc = p.proj{i}.excitations;
+        chanExc = p.proj{i}.chanExc;
+        
         p.curr_mol(i) = 1;
         p.defProjPrm = setDefPrm_traces(p,i);
 
         p.proj{i}.fix = p.defProjPrm.general;
         p.proj{i}.def = p.defProjPrm;
 
-        % reorder the cross talk coefficients chronologically
-        [o,id] = sort(p.proj{i}.excitations,'ascend'); % chronological index sorted as wl
+        % cancelled by MH, 29.3.2019
+%         % reorder the cross talk coefficients chronologically
+%         [o,id] = sort(p.proj{i}.excitations,'ascend'); % chronological index sorted as wl
+
         mol_prev = p.proj{i}.def.mol{5};
-        for c = 1:p.proj{i}.nb_channel
-            p.proj{i}.def.mol{5}{1}(id,c) = mol_prev{1}(:,c);
-            p.proj{i}.def.mol{5}{2}(id,c) = mol_prev{2}(:,c);
+        
+        % modified by MH, 29.3.2019
+%         for c = 1:p.proj{i}.nb_channel
+%             p.proj{i}.def.mol{5}{1}(id,c) = mol_prev{1}(:,c);
+%             p.proj{i}.def.mol{5}{2}(id,c) = mol_prev{2}(:,c);
+%         end
+        for c = 1:nChan
+            if sum(exc==chanExc(c)) % emitter-specific illumination defined 
+                                    % and present in used ALEX scheme (DE 
+                                    % calculation possible)
+                % reorder the direct excitation coefficients according to 
+                % laser chronological order
+                exc_but_c = exc(exc~=chanExc(c));
+                [o,id] = sort(exc_but_c,'ascend'); % chronological index sorted as wl
+                p.proj{i}.def.mol{5}{2}(id,c) = mol_prev{2}(:,c);
+            end
         end
 
         if ~isfield(p.proj{i}, 'expTT')
@@ -87,7 +153,6 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
         end
         p.proj{i}.exp = setExpOpt(p.proj{i}.exp, p.proj{i});
         
-        nMol = numel(p.proj{i}.coord_incl);
         if ~isfield(p.proj{i}, 'prmTT')
             p.proj{i}.prm = cell(1,nMol); % empty param. for all mol.
         else
@@ -98,7 +163,11 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
         % added by FS, 28.3.2018
         if ~strcmp(fext, '.mash')
             if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
-                if length(gammas) ~= nMol
+                
+                % modified by MH, 3.4.2019
+%                 if length(gammas) ~= nMol
+                if size(gammas,1) ~= nMol
+                    
                     updateActPan('number of gamma factors does not match the number of ASCII files loaded. Set all gamma factors to 1.', h.figure_MASH, 'error');
                     fnameGamma = []; % set to empty (will not try to import any gamma factors from file)
                 end    
@@ -110,7 +179,59 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
                 p.proj{i}.prm{n} = {};
             end
             
-            % reshape old "find states" parameters to new format
+            % added by MH, 29.3.2019
+            % reorder already-existing Bt coefficient values into new 
+            % format: sum Bt coefficients over the different excitations 
+            % and use as only Bt coefficients.
+            if size(p.proj{i}.prm{n},2)>=5 && ...
+                    size(p.proj{i}.prm{n}{5},2)>=2 && ...
+                    iscell(p.proj{i}.prm{n}{5}{1})
+                newBtPrm = zeros(nChan,nChan-1);
+                for c = 1:nChan
+                    bts = zeros(nExc,nChan-1);
+                    for l = 1:nExc
+                        bts(l,:) = p.proj{i}.prm{n}{5}{1}{l,c};
+                    end
+                    newBtPrm(c,:) = sum(bts,1);
+                end
+                p.proj{i}.prm{n}{5}{1} = newBtPrm;
+            end
+            
+            % added by MH, 29.3.2019
+            % reorder already-existing DE coefficient values into new 
+            % format: use the first non-zero DE coefficient as only DE
+            % coefficient.
+            if size(p.proj{i}.prm{n},2)>=5 && ...
+                    size(p.proj{i}.prm{n}{5},2)>=2 && ...
+                    iscell(p.proj{i}.prm{n}{5}{2})
+                newDePrm = zeros(nExc-1,nChan);
+                for c = 1:nChan
+                    l0 = find(exc==chanExc(c));
+                    if isempty(l0)
+                        newDePrm(:,c) = 0;
+                        continue;
+                    end
+
+                    l0 = l0(1);
+                    exc_dir = 0;
+                    for l = 1:nExc
+                        if l ~= l0
+                            exc_dir = exc_dir+1;
+                            val = find(p.proj{i}.prm{n}{5}{2}{l,c}~=0);
+                            if isempty(val)
+                                newDePrm(exc_dir,c) = 0;
+                            else
+                                newDePrm(exc_dir,c) = ...
+                                    p.proj{i}.prm{n}{5}{2}{l,c}(val(1));
+                            end
+                        end
+                    end
+                end
+                p.proj{i}.prm{n}{5}{2} = newDePrm;
+            end
+            
+            % reshape old and already-applied "find states" parameters to 
+            % new format
             if size(p.proj{i}.prm{n},2)>=4 && ...
                     size(p.proj{i}.prm{n}{4},2)>=2 && ...
                     size(p.proj{i}.prm{n}{4}{2},2)==8
@@ -139,27 +260,41 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
                     % set the gamma factor from the .gam file 
                     % (FRET is calculated on the spot based on imported and corrected
                     % intensities)
-                    p.proj{i}.curr{n}{5}{3} = gammas(n);
-                    p.proj{i}.prm{n}{5}{3} = gammas(n);
+                    
+                    % modified by MH, 3.4.2019
+%                     p.proj{i}.curr{n}{5}{3} = gammas(n);
+%                     p.proj{i}.prm{n}{5}{3} = gammas(n);
+                    p.proj{i}.curr{n}{5}{3} = gammas(n,:);
+                    p.proj{i}.prm{n}{5}{3} = gammas(n,:);
+
+
                 end
-                if ~isempty(fnameGamma) && ~isempty(pnameGamma)
-                    % Cross talk and filter corrections 
-                    % set all correction factors to 0 if restructured ASCII
-                    % files are loaded, since the factors have already been
-                    % applied
-                    nChan = p.proj{i}.nb_channel;
-                    nExc = p.proj{i}.nb_excitations;
-                    for l = 1:nExc
-                        for c = 1:nChan
-                            % bleedthrough
-                            p.proj{i}.curr{n}{5}{1}{l,c} = zeros(1,nChan-1);
-                            % direct excitation
-                            if ~isempty(p.proj{i}.curr{n}{5}{2}{1,c})
-                                p.proj{i}.curr{n}{5}{2}{l,c} = zeros(1,nExc-1);
-                            end
-                        end
-                    end
-                end
+                
+                % modified by MH, 2.4.2019
+                p.proj{i}.curr{n}{5}{1} = zeros(nChan,nChan-1);
+                p.proj{i}.curr{n}{5}{2} = zeros(nExc-1,nChan);
+%                 if ~isempty(fnameGamma) && ~isempty(pnameGamma)
+%                     % Cross talk and filter corrections 
+%                     % set all correction factors to 0 if restructured ASCII
+%                     % files are loaded, since the factors have already been
+%                     % applied
+%                     
+%                     % modified by MH, 29.3.2019
+%                     % coefficients
+%                     for l = 1:nExc
+%                         for c = 1:nChan
+%                             % bleedthrough
+%                             p.proj{i}.curr{n}{5}{1}{l,c} = zeros(1,nChan-1);
+%                             % direct excitation
+%                             if ~isempty(p.proj{i}.curr{n}{5}{2}{1,c})
+%                                 p.proj{i}.curr{n}{5}{2}{l,c} = zeros(1,nExc-1);
+%                             end
+%                         end
+%                     end
+%                     p.proj{i}.curr{n}{5}{1} = zeros(1,nChan-1);
+%                     p.proj{i}.curr{n}{5}{2} = zeros(nExc-1,nChan);
+%                     
+%                 end
             end
             
             % if the molecule parameter "window size" does not belong to 

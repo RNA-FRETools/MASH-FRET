@@ -448,9 +448,6 @@ switch noiseType
         
         % Gausian read-out noise, composition 
         % (EC-->IC)
-%         img = random('norm', img/s + mu_y_dark, s_d*g/s);
-%         I_don_plot = random('norm', I_don_plot/s + mu_y_dark, s_d*g/s);
-%         I_acc_plot = random('norm', I_acc_plot/s + mu_y_dark, s_d*g/s);
         img = random('norm', img/s + mu_y_dark, s_d*g/s);
         I_don_plot = random('norm', I_don_plot/s + mu_y_dark, s_d*g/s);
         I_acc_plot = random('norm', I_acc_plot/s + mu_y_dark, s_d*g/s);

@@ -12,14 +12,16 @@ function dat = rand_NexpN(varargin)
 %               4. Exponential decay constant "tau"
 %
 % "dat" >> [n-by-m] random numbers
+
+% Last update: 2.4.2019 by MH
+% >> reduce input data precision to 1 ic in order to save calculation time
 %
-% Requires
+% update: 7th of March 2018 by Richard Börner for Boerner et al.
+% >> Comments adapted for Boerner et al 2017
+%
+% update: the 4th of June 2014 by Mélodie C.A.S Hadzic
 %
 % Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
-% Last update: the 4th of June 2014 by Mélodie C.A.S Hadzic
-% Last update: 7th of March 2018 by Richard Börner for Boerner et al.
-%
-% Comments adapted for Boerner et al 2017
 
 if nargin < 4
     N = 4000;
@@ -34,6 +36,10 @@ else
     sig0 = varargin{4};
 end
 
+% added by MH, 2.4.2019
+% reduce input data precision to integers: computation time from 4h to 20min
+dat = round(dat);
+
 dat_val = unique(dat(:));
 
 for i = 1:numel(dat_val)
@@ -45,9 +51,11 @@ for i = 1:numel(dat_val)
     
     if o > 0
         
-        % to reduce calculation time, use the same distribution if values
-        % differ less than 1 ec.
-        if i==1 || (i>1 && (mu-mu_ref)>1)
+        % cancelled by MH, 2.4.2019
+%         % to reduce calculation time, use the same distribution if values
+%         % differ less than 1 ec.
+%         if i==1 || (i>1 && (mu-mu_ref)>1)
+
             x = (mu-10*o):o/10:(mu+100*(o+2*tau));
 
             % first model, old
@@ -59,8 +67,9 @@ for i = 1:numel(dat_val)
               P = P(P>1E-6);
               x = x(P>1E-6);
               
-              mu_ref = mu;
-        end
+              % cancelled by MH, 2.4.2019
+%               mu_ref = mu;
+%         end
 
         dat(dat==mu) = randsample(x, numel(dat(dat==mu)), true, P);
         

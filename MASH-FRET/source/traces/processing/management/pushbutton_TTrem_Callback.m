@@ -39,12 +39,12 @@ if ~isempty(h.param.ttPr.proj)
             p.proj{proj}.intensities_DTA(:,incl_c,:);
         
         if nFRET > 0
-            incl_f = reshape(repmat(incl, [1,nFRET]),1,nFRET*numel(incl));
+            incl_f = reshape(repmat(incl, [nFRET,1]),1,nFRET*numel(incl));
             p.proj{proj}.FRET_DTA = p.proj{proj}.FRET_DTA(:,incl_f);
         end
         
         if nS > 0
-            incl_s = reshape(repmat(incl, [1,nS]),1,nS*numel(incl));
+            incl_s = reshape(repmat(incl, [nS,1]),1,nS*numel(incl));
             p.proj{proj}.S_DTA = p.proj{proj}.S_DTA(:,incl_s);
         end
 

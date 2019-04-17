@@ -1,4 +1,11 @@
 function str_pop = getStrPop(menu, param)
+
+% Last update: 29.3.2019 by MH
+% --> Change 'dir_exc' string: remove colors (menu lists laser wavelength 
+%     and colors are for channels) and list all lasers but emitter-specific
+%     illumination (for which DE=1 and no correction is expected). For this
+%     the number of input argument "param" was modified from 4 to 2.
+
 str_pop = {};
 
 switch menu
@@ -191,19 +198,27 @@ switch menu
         end
         
     case 'dir_exc'
-        exc = param{1}; curr_exc = param{2}; curr_chan = param{3};
-        clr = param{4};
+        
+        % modified by MH, 29.3.2019
+%         exc = param{1}; curr_exc = param{2}; chanExc = param{3};
+%         clr = param{4};
+        exc = param{1}; curr_exc = param{2};
+        
         if numel(exc) > 1
             for l = 1:numel(exc)
                 if l ~= curr_exc
-                    clr_bg_c = sprintf('rgb(%i,%i,%i)', ...
-                        round(clr{l,curr_chan}(1:3)*255));
-                    clr_fbt_c = sprintf('rgb(%i,%i,%i)', ...
-                        [255 255 255]*(sum(clr{l,curr_chan}(1:3)) <= 1.5));
-                    str_pop = [str_pop ...
-                        ['<html><span style= "background-color: ' ...
-                        clr_bg_c ';color: ' clr_fbt_c ';">' ...
-                        num2str(exc(l)) 'nm</span></html>']];
+                    
+                    % modified by MH, 29.3.2019
+%                     clr_bg_c = sprintf('rgb(%i,%i,%i)', ...
+%                         round(clr{l,spec_chan}(1:3)*255));
+%                     clr_fbt_c = sprintf('rgb(%i,%i,%i)', ...
+%                         [255 255 255]*(sum(clr{l,spec_chan}(1:3)) <= 1.5));
+%                     str_pop = [str_pop ...
+%                         ['<html><span style= "background-color: ' ...
+%                         clr_bg_c ';color: ' clr_fbt_c ';">' ...
+%                         num2str(exc(l)) 'nm</span></html>']];
+                    str_pop = [str_pop [num2str(exc(l)) 'nm']];
+
                 end
             end
         else

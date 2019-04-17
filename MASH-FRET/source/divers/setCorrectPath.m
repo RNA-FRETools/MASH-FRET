@@ -6,7 +6,10 @@ function pth = setCorrectPath(folder, h_fig)
 % | h_fig >> MASH figure handle
 % | pth >> directory path
 
-% Last update: 17th of February 2019 by M�lodie Hadzic
+% Last update: 28th of March 2019 by Melodie Hadzic
+% --> add "intensities" folder request in "video_processing"
+%
+% update: 17th of February 2019 by M�lodie Hadzic
 % --> modify "thermodynamic" folder request in "histogram_analysis" and
 %     "tdp_analysis" to "transition_analysis" to be consistent with the GUI
 
@@ -35,7 +38,8 @@ if (strcmp(folder, 'simulations') || ...
 
 elseif (strcmp(folder, 'average_images') || ...
        strcmp(folder, 'coordinates') || ...
-        strcmp(folder, 'exported_graphics'))
+        strcmp(folder, 'exported_graphics') || ...
+        strcmp(folder, 'intensities'))
 
     pth1 = setCorrectPath('video_processing', h_fig);
     pth = [pth1 folder];

@@ -6,7 +6,10 @@ function ok = setParam(h_fig)
 
 % Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
 %
-% Last update: 20th of February by Mélodie Hadzic
+% Last update: 28th of March 2019 by Melodie Hadzic
+% --> add gamma file import in Trace processing
+%
+% update: 20th of February by Mélodie Hadzic
 % --> add ebFRET-compatible export in Video processing
 %
 % update: 7th of March 2018 by Richard Börner
@@ -349,7 +352,8 @@ p_imp = {{[1 0 0 1 1 0 nChan nExc 0 5] wl} ...
     {0 ''} ...
     {0 '' {[1 2] 1} 256} ...
     [0 1] ...
-    defprm};
+    defprm ...
+    {0 '' {}}}; % add gamma import
 p.impPrm = adjustParam('impPrm', p_imp, p_input);
 p.impFRET = adjustParam('impFRET', [], p_input);
 p.impS = adjustParam('impS', [], p_input);

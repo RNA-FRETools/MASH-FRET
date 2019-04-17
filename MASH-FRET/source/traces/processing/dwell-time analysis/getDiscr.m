@@ -1,6 +1,11 @@
 function d_traces = getDiscr(method, traces, incl, prm, thresh, calc, ...
     str_discr, h_fig)
 
+% Last update: MH, 30.3.2019
+% >> fix error for ratio data: if all data points were excluded because 
+%    out-of-range [-0.2;1.2], include all data point back and discretize
+%    out-of-range data.
+
 if isempty(incl)
     incl = true(size(traces));
 end
@@ -39,6 +44,12 @@ warning('verbose', 'on');
 warning('off', 'stats:kmeans:EmptyCluster');
 
 for n = 1:N
+    
+    % added by MH, 30.3.2019
+    if sum(~incl(n,:))==size(traces,2)
+        incl(n,:) = true;
+    end
+    
     switch method
         case 1 % Threshold
             discrVal = thresh(1,:,n);
@@ -89,7 +100,7 @@ for n = 1:N
         case 5 % STaSI
 %             t = tic;
             maxN = prm(n,1);
-            [MDL dat] = discr_stasi(traces(n,incl(n,:)), maxN);
+            [MDL,dat] = discr_stasi(traces(n,incl(n,:)), maxN);
             [o,idx] = min(MDL);
             d_traces(n,incl(n,:)) = dat(idx,:)';
 %             ct = toc(t);
