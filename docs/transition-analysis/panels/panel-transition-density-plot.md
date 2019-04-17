@@ -9,6 +9,8 @@ nav_order: 2
 # Transition density plot
 {: .no_toc }
 
+<a href="../../assets/images/gui/TA-panel-transition-density-plot.png"><img src="../../assets/images/gui/TA-panel-transition-density-plot.png" style="max-width:200px;"></a>
+
 ## Panel components
 {: .no_toc .text-delta }
 
@@ -24,6 +26,8 @@ nav_order: 2
 ---
 
 ## Bounds and bin size
+
+<img src="../../assets/images/gui/TA-panel-transition-density-plot-axis.png" style="max-width:168px;">
 
 
 ---
@@ -41,9 +45,18 @@ nav_order: 2
 ## Normalized probability
 
 
+
+---
+
+## Update TDP
+
+<img src="../../assets/images/gui/TA-panel-transition-density-plot-rearrange.png" style="max-width:494px;">
+
+
 ---
 
 ## Color map
 
+<img src="../../assets/images/gui/TA-panel-transition-density-plot-colormap.png" style="max-width:172px;">
 
 
