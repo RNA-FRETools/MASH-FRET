@@ -121,6 +121,9 @@ and (equation 07)
 >> Histogram populations:
 	X_{j} = \frac{S_{j}}{\sum_{j'=1}^{J}( S_{j'})}
 
+>> Gaussian function:
+	P_{j} = A_{j}\textup{exp}\left [-\frac{(x-\mu_{j})^{2}}{2\sigma_{j}^{2}} \right ]
+
 >> TDP Gaussian mixture model:
 	TDP( val_{i};val_{i'} ) = \sum_{j=1}^{J} \sum_{j'=1}^{J} a_{j,j'}G_{j,j'}( val_{i};val_{i'} )
 
