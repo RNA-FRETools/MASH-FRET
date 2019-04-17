@@ -31,7 +31,7 @@ Molecules in your project can be browsed by selecting the corresponding index in
 
 Selection in the list updates the 
 [Visualization area](area-visualization.html) and adapt the processing parameters of panels 
-[Sub-images](panel-sub-images.html), 
+[Sub-images](panel-subimage.html), 
 [Background correction](panel-background-correction.html),
 [Factor corrections](panel-factor-corrections.html), 
 [Photobleaching](panel-photobleaching.html), 
@@ -47,7 +47,7 @@ Defines the molecule index of the currently selected molecule.
 
 Editing the current molecule updates the 
 [Visualization area](area-visualization.html) and adapt the processing parameters of panels 
-[Sub-images](panel-sub-images.html), 
+[Sub-images](panel-subimage.html), 
 [Background correction](panel-background-correction.html), 
 [Factor corrections](panel-factor-corrections.html), 
 [Photobleaching](panel-photobleaching.html), 
@@ -87,8 +87,8 @@ Pressing
 Usually, this functionality is used before exporting the MASH project.
 
 **Note:** *If the recentering options is activated in panel 
-[Sub-images](panel-sub-images.html), all single molecule coordinates will be automatically recentered. If not desired, deactivate the recentering option prior processing all data; see 
-[Single molecule coordinates](panel-sub-images.html#single-molecule-coordinates) for more information.*
+[Sub-images](panel-subimage.html), all single molecule coordinates will be automatically recentered. If not desired, deactivate the recentering option prior processing all data; see 
+[Single molecule coordinates](panel-subimage.html#single-molecule-coordinates) for more information.*
 
 ---
 

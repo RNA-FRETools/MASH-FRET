@@ -76,9 +76,9 @@ with
 [*&#956;*<sub>ic,pix</sub>](){: .math_var} per pixel, by respectively activating the option in **(a)** and/or **(b)**.
 
 Units conversion concerns intensity-time traces and histogram plot, background intensities in panel 
-[Background correction](panel-background-correction.html), as well as parameters of threshold methods in panels 
-[Find states](panel-find-states.html) and 
-[Photobleaching](panel-photobleaching.html).
+[Background correction](panel-background-correction.html#background-intensity), as well as parameters of threshold methods in panels 
+[Find states](panel-find-states.html#method-parameters) and 
+[Photobleaching](panel-photobleaching.html#automatic-detection-settings).
 
 
 ---
@@ -94,7 +94,7 @@ To keep the starting point fixed for all single molecules, activate the option i
 
 The time axis can displayed time units (in second) or video frame indexes by respectively activate or deactivate the option in **(c)**. 
 Processing parameters affected by this options are the cutoff values in panel 
-[Photobleaching](panel-photobleaching.html) and in 
+[Photobleaching cutoff](panel-photobleaching.html#photobleaching-cutoff) and in 
 [Gamma factor settings](panel-factor-corrections#gamma-factor-settings).
 
 

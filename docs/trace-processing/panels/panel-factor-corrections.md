@@ -64,7 +64,7 @@ For more information about how FRET values are corrected with gamma factors, see
 {: .no_toc }
 
 Photobleaching-based gamma calculation requires intensity state trajectories; see 
-[Find states](panel-find-states.html) for more information about how to obtain state trajectories for intensity-time traces.
+[Data to discretize](panel-find-states.html#data-to-discretize) for more information about how to obtain state trajectories for intensity-time traces.
 
 The gamma factor 
 [*&#947;*<sub>*D*,*A*</sub>(*n*)](){: .math_var } for the donor-acceptor pair 

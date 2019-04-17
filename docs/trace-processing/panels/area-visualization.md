@@ -30,7 +30,7 @@ Single molecule positions are indicated by crosses and framed by squares of dime
 [Integration parameters](../../video-processing/panels/panel-intensity-integration.html#integration-parameters) for more information.
 
 The position of the molecule selected in the 
-[Molecule list]() is displayed in red, whereas other molecules are displayed in yellow.
+[Molecule list](panel-sample-management.html#molecule-list) is displayed in red, whereas other molecules are displayed in yellow.
 When using the `Dark trace` background correction method is used, the dark coordinates used for calculation are displayed in green; see 
 [Background correction settings](panel-background-correction.html#background-correction-settings) for more information.
 
@@ -55,7 +55,7 @@ Histogram axes show the current single molecule intensity histograms selected in
 Histograms are built by sorting intensities in 100 bins between the minimum and maximum intensities.
 
 Colors used in trace and histogram axes are defined in the project options; see 
-[Edit project options](panel-project-management.html#edit-project-options) for more information.
+[Edit project options](area-project-management.html#edit-project-options) for more information.
 
 Any graphics in MASH can be exported to an image file by left-clicking on the axes and selecting `Export graph`.
 
@@ -76,7 +76,7 @@ Histogram axes show the current single molecule FRET and stoichiometry histogram
 Histograms are built by sorting FRET and stoichiometry values into bins of size 0.01 between -0.2 and 1.2.
 
 FRET and stoichiometry calculations, as well as colors used in trace and histogram axes, are defined in the project options; see 
-[Edit project options](panel-project-management.html#edit-project-options) for more information.
+[Edit project options](area-project-management.html#edit-project-options) for more information.
 
 Any graphics in MASH can be exported to an image file by left-clicking on the axes and selecting `Export graph`.
 

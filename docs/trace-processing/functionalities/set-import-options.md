@@ -14,7 +14,7 @@ The window is accessed by pressing
 ![ASCII options ...](../../assets/images/gui/TP-but-ascii-options-3p.png "ASCII options ...") in the project management area of module Trace processing.
 
 Press 
-![Save](../../assets/images/gui/TP-but-save.bga.png "Save") to export settings to MASH.
+![Save](../../assets/images/gui/TP-but-save-bga.png "Save") to export settings to MASH.
 
 <a href="../../assets/images/gui/TP-area-proj-impopt.png"><img src="../../assets/images/gui/TP-area-proj-impopt.png" style="max-width: 286px;"/></a>
 
