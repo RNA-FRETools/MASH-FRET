@@ -26,6 +26,19 @@ Defines the method to calculate state populations.
 
 <img src="../../assets/images/gui/HA-panel-state-populations-method.png" style="max-width: 156px;"/>
 
+State relative population are calculated as the surface of the corresponding histogram peak normalized by the total histogram surface.
+
+Histogram peaks can be integrated in two ways:
+* with [Gaussian fitting](#gaussian-fitting), by activating the option in **(a)**
+* with [Thresholds](#thresholding) between histogram peaks, by activating the option in **(b)**
+
+Additionally, the cross-sample variability of state populations can be estimated with the BOBA-FRET method by activating the option in **(c)**.
+In that case, the number of replicates to build a bootstrap histogram sample must be set in **(d)** and the number of bootstrap samples in **(e)**.
+By default, the number of replicates is set to the number of molecules in the project.
+
+In order to not over-represent short trajectories in the bootstrap histograms, replicates can be given a weight proportional to the length of their time traces.
+This is done by activating the option in **(f)**.
+
 
 ---
 
@@ -35,15 +48,19 @@ Defines settings to calculate state populations with the Thresholding method.
 
 <img src="../../assets/images/gui/HA-panel-state-populations-thresholding.png" style="max-width: 215px;"/>
 
-States are separated by fixed thresholds, histogram counts are summed up between thresholds and resulting populations are normalized.
+With the thresholding method, histogram peaks are separated by fixed thresholds, histogram counts are summed up between thresholds and resulting populations are normalized.
 
-* Set `J-1` thresholds in edit fieldd **(a)** for a model containing *J* of states.
-* Select threshold with dropdown menu **(b)** and set the threshold value in edit field **(c)**.
-* Start calculations with button 
-![Start](../../assets/images/gui/HA-but-start.png)
-* <u>Start thresholding</u>
+To calculate the relative populations of 
+[*J*](){: .math_var } states, a number of 
+[*J*-1](){: .math_var } thresholds must be used.
+The number of threshold must be set in **(a)**, and each threshold in **(c)** after browsing the list in **(b)**.
 
-* <u>Calculation results</u>
+Calculation of state relative populations can be started after setting thresholds and by pressing 
+![Start](../../assets/images/gui/HA-but-start.png).
+If the 
+[Method settings](#method-settings) include BOBA-FRET, 
+
+After completion, state relative populations are displayed in **(e)** after selecting the corresponding histogram peak in list **(d)**.
 
 
 ---
