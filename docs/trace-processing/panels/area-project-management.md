@@ -45,7 +45,7 @@ Single molecule data can be imported in module Trace processing from:
 
 Import single molecule data by pressing 
 ![Add](../../assets/images/gui/TP-but-add.png "Add") and selecting the 
-[.mash file](../../output-files/mash-mash-project.html "Add") or the set of ASCII files to import.
+[.mash file](../../output-files/mash-mash-project.html) or the set of ASCII files to import.
 If a video is assigned to the imported data, laser-specific average images used for sub-images and background correction are calculated during the import process; see 
 [Sub-images](panel-subimage.html) and 
 [Background correction](panel-background-correction.html) for more information.
