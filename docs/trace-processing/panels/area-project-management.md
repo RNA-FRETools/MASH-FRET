@@ -47,13 +47,13 @@ Import single molecule data by pressing
 ![Add](../../assets/images/gui/TP-but-add.png "Add") and selecting the 
 [.mash file](../../output-files/mash-mash-project.html "Add") or the set of ASCII files to import.
 If a video is assigned to the imported data, laser-specific average images used for sub-images and background correction are calculated during the import process; see 
-[Sub-images](panel-sub-images.html) and 
+[Sub-images](panel-subimage.html) and 
 [Background correction](panel-background-correction.html) for more information.
 
 <a href="../../assets/images/gui/TP-area-proj-loadingbar.png"><img src="../../assets/images/gui/TP-area-proj-loadingbar.png" style="max-width: 300px;"/></a>
 
 After import, the new project is added to the project list and the 
-[Sample management](#sample-management) area is updated to the first molecule in the project.
+[Sample management](panel-sample-management.html) panel is updated to the first molecule in the project.
 
 Project settings such as relations between channels and lasers, FRET calculations, stoichiometry calculations, plot colors and project tags can be modified any time by pressing 
 ![Edit...](../../assets/images/gui/TP-but-edit-3p.png "Edit..."); see 
@@ -71,7 +71,7 @@ Project settings are opened by selecting the project in list **(a)** and pressin
 ![Edit...](../../assets/images/gui/TP-but-edit-3p.png "Edit...").
 
 To modify project settings, please refer to 
-[Set project options](../functionalities/set-project-options.html).
+[Set project options](../../video-processing/functionalities/set-project-options.html).
 
 If the project was imported from a 
 [.mash file](../../output-files/mash-mash-project.html) that was created in module Video processing, initial project options are taken from the pre-set

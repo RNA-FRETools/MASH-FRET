@@ -84,7 +84,7 @@ The resulting photobleaching cutoff displayed in
 
 Use this command to apply the 
 [Photobleaching detection method](#photobleaching-detection-method) and 
-[Photobleaching settings](#photobleahing-settings) to all molecules.
+[Automatic detection settings](#automatic-detection-settings) to all molecules.
 
 Corrections are applied to other molecules only when the corresponding data is processed, *i.e.*, when pressing 
 ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL"); see 

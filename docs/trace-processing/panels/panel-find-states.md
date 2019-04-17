@@ -41,7 +41,7 @@ The MATLAB scripts for method `STaSI` was downloaded from
 [LandesLab](https://github.com/LandesLab/STaSI) Github repository.
 
 
-### Threshold
+### Thresholds
 {: .no_toc }
 
 The threshold method does not make any assumption about the nature of FRET transitions or noise in the time trace.
