@@ -32,7 +32,7 @@ function restruct_trace_file(varargin)
 if ~isempty(varargin) && numel(varargin)>=1
     pname = varargin{1};
 else
-    pname = uigetdir();
+    pname = uigetdir('','Select the source directory');
     if isempty(pname) || ~sum(pname)
         return;
     end
