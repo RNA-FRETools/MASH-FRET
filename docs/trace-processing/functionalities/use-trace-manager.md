@@ -53,6 +53,8 @@ Data available in list **(b)** for histogram plot are:
 * Stoichiometry histograms
 * E-S histograms
 
+Any graphics in MASH can be exported to an image file by left-clicking on the axes and selecting `Export graph`.
+
 
 ---
 

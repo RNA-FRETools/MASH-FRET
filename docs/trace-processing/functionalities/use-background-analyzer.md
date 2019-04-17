@@ -83,6 +83,8 @@ Results of uni- or multidimensional background estimations can be exported to
 
 Display screening results.
 
+Any graphics in MASH can be exported to an image file by left-clicking on the axes and selecting `Export graph`.
+
 
 ### no screening
 {: .no_toc }
