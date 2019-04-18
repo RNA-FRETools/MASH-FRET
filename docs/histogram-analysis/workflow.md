@@ -189,11 +189,7 @@ To export data to files:
 ## Remarks
 {: .no_toc }
 
-The type of exported files depends on which analysis was carried on: 
-[.hist files](../output-files/hist-histograms.html) are systematically saved, 
-[.pdf files](../output-files/pdf-histogram-analysis-figures.html) are saved when bootstrap analysis was used, 
-[_config.txt](../output-files/txt-histogram-state-configurations.html) are saved when state configurations were determined, 
-[_thresh.txt](../output-files/txt-histogram-gaussian-populations.html) are saved when thresholds were used, and 
-[_gauss.txt](../output-files/txt-histogram-gaussian-populations.) when Gaussian fitting was used.
+The type of exported files depends on which analysis was carried on; see 
+[Export analysis results](panels/area-management.html#export-analysis-results) for more information.
 
 

@@ -115,8 +115,14 @@ and (equation 07)
 	and (equation 08):
 	I_{\textup{denoise}}^{A}(t)=\frac{\sum_{r=r_{1}}^{r_{4}}\left [w_{t-r}^{A}(t)\bar{I}_{t-r}^{A}(t)+w_{t+r}^{A}(t)\bar{I}_{t-r}^{A}(t)\right ]}{\sum_{r=r_{1}}^{r_{4}}\left [ w_{t-r}^{A}(t)+w_{t+r}^{A}(t)+w_{t-r}^{D}(t)+w_{t+r}^{D}(t)\right ]}
 
+>> BIC:
+	BIC = p(J) \times \textup{log}( N_{\textup{total}} ) - \textup{log}\left [ likelihood( J ) \right ]
+
 >> Histogram populations:
 	X_{j} = \frac{S_{j}}{\sum_{j'=1}^{J}( S_{j'})}
+
+>> Gaussian function:
+	P_{j} = A_{j}\textup{exp}\left [-\frac{(x-\mu_{j})^{2}}{2\sigma_{j}^{2}} \right ]
 
 >> TDP Gaussian mixture model:
 	TDP( val_{i};val_{i'} ) = \sum_{j=1}^{J} \sum_{j'=1}^{J} a_{j,j'}G_{j,j'}( val_{i};val_{i'} )
