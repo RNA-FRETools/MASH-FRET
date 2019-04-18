@@ -16,4 +16,24 @@ nav_order: 3
 {:toc}
 
 
+---
+
+## Method settings
+
+
+---
+
+## Cluster settings
+
+
+---
+
+## Clustering results
+
+
+---
+
+## Visualization area
+
+
 

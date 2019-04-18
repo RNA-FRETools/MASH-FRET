@@ -26,6 +26,9 @@ In this step, bright spots are first localized in the average image of the singl
 
 ---
 
+*In construction*
+
+<!--
 ## Setup working area
 
 During your analysis, several files will be automatically or manually exported.
@@ -108,6 +111,7 @@ Create a new transformation file solely when your setup gets realigned.
 
 Create <u>intensity-time traces</u> of donor and acceptor channels and save data to a 
 [mash project](../../output-files/mash-mash-project.html) file.
+-->
 
 ---
 

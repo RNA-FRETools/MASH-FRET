@@ -4,6 +4,7 @@ title: Panels
 parent: /video-processing.html
 nav_order: 4
 has_children: true
+numbered_toc: true
 permalink: /video-processing/panels.html
 ---
 

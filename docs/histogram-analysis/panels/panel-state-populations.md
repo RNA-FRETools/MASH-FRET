@@ -9,7 +9,7 @@ nav_order: 4
 # State populations
 {: .no_toc }
 
-<a href="../../assets/images/gui/HA-panel-state-populations.png"><img src="../../assets/images/gui/HA-panel-state-populations.png" style="float:right; max-width: 200px; margin-left: 15px;"/></a>
+<a href="../../assets/images/gui/HA-panel-state-populations.png"><img src="../../assets/images/gui/HA-panel-state-populations.png" style="max-width: 388px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -18,7 +18,9 @@ nav_order: 4
 {:toc}
 
 
-### Method panel
+---
+
+## Method settings
 
 Population calculation settings.
 
@@ -27,7 +29,9 @@ Population calculation settings.
 * <u>Data bootstrapping</u>
 
 
-### Thresholding panel
+---
+
+## Thresholding
 
 States are separated by fixed thresholds, histogram counts are summed up between thresholds and resulting populations are normalized.
 
@@ -39,7 +43,9 @@ States are separated by fixed thresholds, histogram counts are summed up between
 * <u>Calculation results</u>
 
 
-### Gaussian fitting panel
+---
+
+## Gaussian fitting
 
 Histogram is fitted with a mixture of Gaussians and 
 
