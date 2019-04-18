@@ -52,7 +52,7 @@ To import single molecule data from a ASCII files:
 {: .procedure }
 1. Set the import settings by pressing 
    ![ASCII options ...](../assets/images/gui/TP-but-ascii-options-3p.png "ASCII options ..."); see 
-   [Set project import options](functionalities/set-project-import-options.html) for help  
+   [Set import options](functionalities/set-import-options.html) for help  
      
 1. Import data by pressing 
    ![Add](../assets/images/gui/TP-but-add.png "Add") and selecting the corresponding ASCII files; this will add a new project to the project list  
