@@ -45,7 +45,7 @@ To import single molecule data from a ASCII files:
 
 {: .procedure }
 1. Set the import settings by pressing 
-   ![ASCII options ...](../assets/images/gui/TA-but-ascii-options-3p.png "ASCII options ..."); see 
+   ![ASCII Import](../assets/images/gui/TA-but-ascii-import.png "ASCII Import"); see 
    [Set project import options](../trace-processing/functionalities/set-project-import-options.html) for help  
      
 1. Import data by pressing 
