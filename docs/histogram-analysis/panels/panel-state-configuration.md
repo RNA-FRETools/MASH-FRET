@@ -72,9 +72,14 @@ The
 with 
 [*p*<sub>*J*</sub>](){: .math_var } the number of parameters necessary to describe the model with 
 [*J*](){: .math_var } components and
-[*N*<sub>total</sub>](){: .math_var } the total number of counts in the TDP.
-Here, 
-[*p*<sub>*J*</sub>](){: .math_var } = 3[*J*](){: .math_var }.
+[*N*<sub>total</sub>](){: .math_var } the total number of counts in the histogram.
+The number of parameters necessary to describe the model includes the number of Gaussian means, 
+[*p*<sub>means</sub>](){: .math_var }, standard deviations, 
+[*p*<sub>widths</sub>](){: .math_var } and weights, 
+[*p*<sub>weights</sub>](){: .math_var }, and is calculated such as:
+
+{: .equation }
+<img src="../../assets/images/equations/HA-eq-bic-02.gif" alt="p_{J} = p_{\textup{means}} + p_{\textup{widths}} + p_{\textup{weights}} = 3J - 1">
 
 
 ---
