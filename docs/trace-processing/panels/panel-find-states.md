@@ -166,7 +166,7 @@ Four post-processing methods are available, following the post-processing order:
 ### State binning
 {: .no_toc }
 
-The state binning method bins state trajectories with a bin size set in **(c)**.
+The state binning method bins segments in the state trajectories with a bin size set in **(c)**.
 
 This method is useful in case small amplitude jumps to blur states are occurring in state trajectories.
 
@@ -174,8 +174,8 @@ This method is useful in case small amplitude jumps to blur states are occurring
 ### State refinement
 {: .no_toc }
 
-The refinement method correct state assignment without modifying the state values. 
-Each segment of the state trajectory is reassigned to the state having the closest value to the average data behind the segment.
+The refinement method corrects state assignment without modifying the values. 
+Each segment is reassigned to the state having the closest value to the average data behind the segment.
 The state refinement method is an iterative process with each iteration refining the new state trajectory.
 The number of refinement iterations in set in **(b)**.
 
@@ -185,10 +185,10 @@ This method is useful to correct state trajectories from noise-induced transitio
 ### Adjust states to data
 {: .no_toc }
 
-Adjusting states to data consists in recalculating states without modifying the number of states and state transitions.
-States are recalculated as the average data behind each state.
+Adjusting states to data consists in recalculating states without modifying state transitions.
+States are recalculated as the average data behind each segment of the state trajectory.
 
-This method is useful to obtain more representative states when using fix state values with the Threshold method.
+This method is useful to obtain more representative states when using predefined levels, *e. g.* with the Threshold method.
 
 
 ### Find shared transitions
@@ -199,7 +199,7 @@ Finding shared transitions is used after each `top` discretization, in order to 
 For FRET transitions, the algorithm looks for transitions detected in donor and acceptor state trajectories that occurs less than a certain number of frame away.
 For stoichiometry transitions, intensity state trajectories are first summed over all channels and (1) over the emitter's specific excitation, and (2) over all laser illumination, prior looking for shared transitions.
 
-The tolerance frame gap between donor and acceptor, or emitter's sum and overall sum, transitions is set in **(a)**.
+The maximum frame gap between donor and acceptor transitions or emitter's sum and overall sum transitions, is set in **(a)** for FRET or stoichiometry data respectively.
 
 
 ---
