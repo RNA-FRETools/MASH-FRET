@@ -98,12 +98,17 @@ In a FRET network composed of
 [*A*](){: .math_var } is calculated as:
 
 {: .equation }
+<img src="../../assets/images/equations/VP-eq-fret-calc-01.gif" alt="E_{D,A}^{*} = {}\frac{I_{A,em}^{D,ex}}{\left [ 1 - \sum_{k>A} \left ( E_{A,k}^{*}  \right ) \right ] \times \sum_{k} \left ( I_{k,em}^{D,ex}  \right )} - \sum_{k>D}^{A-1} \left \{\E_{D,k}^{*} \times \prod_{k'> k}^{A} \left [E_{k,k'}^{*} \times \prod_{k''> k'}^{A} \left (E_{k',k'''}^{*}  \right )  \right ]  \right \}">
+
+<!--
+{: .equation }
 *E*\*<sub>*D*,*A*</sub> = *I*<sub>*A*</sub><sup>*D*</sup> / { [ 1 - &#931;<sub>*A*>*k*&#8805;*K*</sub>( *E*\*<sub>*A*,*k*</sub> ) ] &#215; &#931;<sub>*D*&#8805;*k*&#8805;*K*</sub>( *I*<sub>*k*</sub><sup>*D*</sup> ) }<br><br>
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
             - &#931;<sub>*D*>*k*>*A*</sub>{ *E*\*<sub>*D*,*k*</sub> &#215; &#928;<sub>*k*>*k'*&#8805;*A*</sub>[ *E*\*<sub>*k*,*k'*</sub> &#215; &#928;<sub>*k'*>*k''*&#8805;*A*</sub>( *E*\*<sub>*k'*,*k''*</sub> ) ] }
+-->
 
 with 
-[*I*<sub>*k*</sub><sup>*k'*</sup>](){: .math_var } the intensity collected in detection channel of emitter 
+[*I*<sub>*k*,em</sub><sup>*k'*,ex</sup>](){: .math_var } the intensity collected in detection channel of emitter 
 [*k*](){: .math_var } upon illumination specific to emitter 
 [*k'*](){: .math_var }.
 
@@ -113,40 +118,62 @@ As the expression of
 [*E*\*<sub>*D*,*k*</sub>](){: .math_var }, 
 [*E*\*<sub>*k*,*k'*</sub>](){: .math_var } and 
 [*E*\*<sub>*k*',*k''*</sub>](){: .math_var }, the equation is first solved for the most red-shifted donor, *i.e.*, for the pair (
-[*D* = *K-1*](){: .math_var }, 
-[*A* = *K*](){: .math_var }).
+[*D*](){: .math_var } = [*K*](){: .math_var }-1, 
+[*A*](){: .math_var } = [*K*](){: .math_var }.
 
 In this case, the expression is simplified to a simple 2-color apparent FRET equation such as:
 
 {: .equation }
+<img src="../../assets/images/equations/VP-eq-fret-calc-02.gif" alt="E_{K-1,K}^{*}= \fract{I_{K-1,em}^{K,ex}}{\sum_{k \geq K-1} \left ( I_{K-1,em}^{K,ex} \right )}">
+
+<!--
+{: .equation }
 *E*\*<sub>*K*-1,*K*</sub> = *I*<sub>*K*</sub><sup>*K*-1</sup> / &#931;<sub>*K*-1&#8805;*k*&#8805;*K*</sub>( *I*<sub>*k*</sub><sup>*K*-1</sup> )
+-->
 
 giving:
 
 {: .equation }
+<img src="../../assets/images/equations/VP-eq-fret-calc-03.gif" alt="E_{K-1,K}^{*}= \frac{I_{K,em}^{K-1,ex}}{I_{K,em}^{K-1,ex}+I_{K-1,em}^{K-1,ex}}">
+
+<!--
+{: .equation }
 *E*\*<sub>*K*-1,*K*</sub> = *I*<sub>*K*</sub><sup>*K*-1</sup> / ( *I*<sub>*K*</sub><sup>*K*-1</sup> + *I*<sub>*K*-1</sub><sup>*K*-1</sup> )
+-->
 
 where 
 [*E*\*<sub>*K*-1,*K*</sub>](){: .math_var } depends only on acquired intensity-time traces and thus, can be readily calculated.
 
 Calculated 
 [*E*\*<sub>*K*-1,*K*</sub>](){: .math_var } can then be used to solve the equation for the next most red-shifted donor, *i.e.*, for pairs 
-([*D* = *K*-2](){: .math_var }, 
-[*A* = *K*-1](){: .math_var }) and 
-([*D* = *K*-2](){: .math_var }, 
-[*A* = *K*](){: .math_var }).
+([*D*](){: .math_var } = [*K*](){: .math_var }-2, 
+[*A*](){: .math_var } = [*K*](){: .math_var }-1, ) and 
+([*D*](){: .math_var } = [*K*](){: .math_var }-2, 
+[*A*](){: .math_var } = [*K*](){: .math_var }).
 
 In this case, the expression is simplified to a 3-color apparent FRET equation system such as:
 
 {: .equation }
+<img src="../../assets/images/equations/VP-eq-fret-calc-04.gif" alt="E_{K-2,K-1}^{*} = \frac{ I_{K-1,em}^{K-2,ex} }{ \left [ 1 - \sum_{k>K-1}\left ( E_{K-1,k}^{*} \right ) \right ] \times \sum_{k \geq  K-2}\left ( I_{k,em}^{K-2,ex} \right )  }"><br>
+<img src="../../assets/images/equations/VP-eq-fret-calc-05.gif" alt="E_{K-2,K}^{*} = \frac{ I_{K,em}^{K-2ex} }{ \sum_{k\geq K-2}\left ( I_{k,em}^{K-2,ex} \right ) - \sum_{k> K-2}\left [ E_{K-2,k}^{*} \times \prod_{k'>k} \left ( E_{k,k'}^{*} \right ) \right ]}">
+
+<!--
+{: .equation }
 *E*\*<sub>*K*-2,*K*-1</sub> = *I*<sub>*K*-1</sub><sup>*K*-2</sup> / { [ 1 - &#931;<sub>*K*-1>*k*&#8805;*K*</sub>( *E*\*<sub>*K*-1,*k*</sub> ) ] &#215; &#931;<sub>*K*-2&#8805;*k*&#8805;*K*</sub>( *I*<sub>*k*</sub><sup>*K*-2</sup> ) }<br><br>
 *E*\*<sub>*K*-2,*K*</sub> = *I*<sub>*K*</sub><sup>*K*-2</sup> / &#931;<sub>*K*-2&#8805;*k*&#8805;*K*</sub>( *I*<sub>*k*</sub><sup>*K*-2</sup> ) - &#931;<sub>*K*-2>*k*>*K*</sub>[ *E*\*<sub>*K*-2,*k*</sub> &#215; &#928;<sub>*k*>*k'*&#8805;*K*</sub>( *E*\*<sub>*k*,*k'*</sub> ) ]
+-->
 
 giving:
 
 {: .equation }
+<img src="../../assets/images/equations/VP-eq-fret-calc-06.gif" alt="E_{K-2,K-1}^{*} = \frac{I_{K-1,em}^{K-2,ex}}{\left ( 1 - E_{K-1,K}^{*} \right ) \times \left ( I_{K,em}^{K-2,ex} + I_{K-1,em}^{K-2,ex} + I_{K-2,em}^{K-2,ex} \right )}"><br>
+<img src="../../assets/images/equations/VP-eq-fret-calc-07.gif" alt="E_{K-2,K}^{*} = \frac{I_{K,em}^{K-2,ex}}{ I_{K,em}^{K-2,ex} + I_{K-1,em}^{K-2,ex} + I_{K-2,em}^{K-2,ex}} - E_{K-2,K-1}^{*}\times E_{K-1,K}^{*}">
+
+<!--
+{: .equation }
 *E*\*<sub>*K*-2,*K*-1</sub> = *I*<sub>*K*-1</sub><sup>*K*-2</sup> / ( 1 - *E*<sub>*K*-1,*K*</sub> ) &#215; ( *I*<sub>*K*</sub><sup>*K*-2</sup> + *I*<sub>*K*-1</sub><sup>*K*-2</sup> + *I*<sub>*K*-2</sub><sup>*K*-2</sup> )<br><br>
 *E*\*<sub>*K*-2,*K*</sub> = *I*<sub>*K*</sub><sup>*K*-2</sup> / ( *I*<sub>*K*</sub><sup>*K*-2</sup> + *I*<sub>*K*-1</sub><sup>*K*-2</sup> + *I*<sub>*K*-2</sub><sup>*K*-2</sup> ) - *E*<sub>*K*-2,*K*-1</sub> &#215; *E*<sub>*K*-1,*K*</sub> 
+-->
 
 where 
 [*E*\*<sub>*K*-2,*K*-1</sub>](){: .math_var } depends on acquired intensity-time traces and the previously calculated 
@@ -181,7 +208,12 @@ The stoichiometry
 [*K*](){: .math_var } emitters, is calculated as:
 
 {: .equation }
+<img src="../../assets/images/equations/VP-eq-s-calc.gif" alt="S_{D} = \frac{\sum_{k}\left (I_{k,em}^{D,ex} \right )}{\sum_{k}\left[ \sum_{k'}\left( I_{k',em}^{k,ex} \right ) \right ]}">
+
+<!--
+{: .equation }
 *S*<sub>*D*</sub> = &#931;<sub>1&#8805;*k*&#8805;*K*</sub>( *I*<sub>*k*,em</sub><sup>*D*,ex</sup> ) / &#931;<sub>1&#8805;*k*&#8805;*K*</sub>[ &#931;<sub>1&#8805;*k'*&#8805;*K*</sub>( *I*<sub>*k*,em</sub><sup>*k'*,ex</sup> ) ]
+-->
 
 with 
 [*I*<sub>*k*,em</sub><sup>*k'*,ex</sup>](){: .math_var } the intensity collected from emitter 

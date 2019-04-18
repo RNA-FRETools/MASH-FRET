@@ -116,7 +116,12 @@ It can be estimated from the histogram by integrating each peak to a value
 [*S*<sub>*j*</sub>](){: .math_var } and calculating the ratio:
 
 {: .equation }
+<img src="../assets/images/equations/HA-eq-pop.gif" alt="X_{j} = \frac{S_{j}}{\sum_{j'=1}^{J}( S_{j'})}">
+
+<!--
+{: .equation }
 *X*<sub>*j*</sub> = *S*<sub>*j*</sub> / &#931;<sub>1&#8805;*j'*&#8805;*J*</sub>(  *S*<sub>*j'*</sub> )
+-->
 
 For well-separated histogram peaks, 
 [*S*<sub>*j*</sub>](){: .math_var } values are calculated using thresholds between peaks.

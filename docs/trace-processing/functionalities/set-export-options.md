@@ -13,8 +13,8 @@ Export options define the particular files to export from a project in module Tr
 The window is accessed by pressing 
 ![Export ASCII...](../../assets/images/gui/TP-but-export-ascii-3p.png "Export ASCII...") in the project management area of module Trace processing.
 
-File export using export options will start after pressing 
-![Next >>](../../assets/images/gui/TP-but-next-supsup.png "Next >>").
+Press 
+![Next >>](../../assets/images/gui/TP-but-next-supsup.png "Next >>") to start file export.
 
 <a href="../../assets/images/gui/TP-panel-sample-export.png"><img src="../../assets/images/gui/TP-panel-sample-export.png" style="max-width: 516px;"/></a>
 

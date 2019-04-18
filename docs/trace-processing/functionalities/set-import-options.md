@@ -13,8 +13,8 @@ Import options define the particular file structure and annexed files used to cr
 The window is accessed by pressing 
 ![ASCII options ...](../../assets/images/gui/TP-but-ascii-options-3p.png "ASCII options ...") in the project management area of module Trace processing.
 
-Import options are correctly exported to MASH only after pressing 
-![Save](../../assets/images/gui/TP-but-save.png "Save").
+Press 
+![Save](../../assets/images/gui/TP-but-save-bga.png "Save") to export settings to MASH.
 
 <a href="../../assets/images/gui/TP-area-proj-impopt.png"><img src="../../assets/images/gui/TP-area-proj-impopt.png" style="max-width: 286px;"/></a>
 
@@ -83,13 +83,18 @@ if imported trajectories are already corrected of some sort, do not forget to de
 
 Intensity data are read in one or several ASCII files according to the following structure:
 
-- intensity data are located in files from line **(a)** to **(b)** and from column **(c)** to **(d)**
-- intensities detected in one specific video channel are distributed every **(g)**<sup>th</sup> file columns
-- intensities collected upon one specific laser illumination are distributed every **(h)**<sup>th</sup> file lines
+- intensity data in files are located from line **(a)** to **(b)** and from column **(c)** to **(d)**
+- channel-specific intensities are distributed every **(g)**<sup>th</sup> file columns
+- laser-specific intensities are distributed every **(h)**<sup>th</sup> file lines
 
-Lasers are later identified by their excitation wavelength, which must be set for all lasers in **(j)**, after selecting the corresponding laser in **(i)**.
+Laser-specific wavelengths are used in FRET calculations to identify the red-shift order of FRET pairs; see 
+[FRET calculations](../../video-processing/functionalities/set-project-options.html#fret-calculations) for more information.
+Alternated lasers are named "exc 
+[*i*](){: .math_var }" in list **(i)**, with the index 
+[*i*](){: .math_var } respecting the order of appearance in the trajectory.
+Set laser wavelentgth in **(j)** after changing selection in list **(i)**. 
 
-If the files contain specific time data, activate the option in **(e)** and set in **(f)** the file column where time data are located.
+If the files contain specific time data that must be imported, activate the option in **(e)** and set in **(f)** the file column where time data are located.
 
 ---
 
