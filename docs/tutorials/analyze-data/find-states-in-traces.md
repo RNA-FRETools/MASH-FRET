@@ -26,6 +26,10 @@ In this step, single molecules are sorted, intensity-time traces are corrected f
 
 ---
 
+*In construction*
+
+<!--
+
 ## Setup working area
 
 1. Select module 
@@ -77,6 +81,8 @@ In this step, single molecules are sorted, intensity-time traces are corrected f
 [mash project](../../output-files/mash-mash-project) file.
 
 1. (optional) Export corrected time-traces and calculations to ASCII files.
+
+-->
 
 ---
 

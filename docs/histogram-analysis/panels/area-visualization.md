@@ -16,4 +16,26 @@ nav_order: 5
 {:toc}
 
 
+---
+
+## Top axes
+
+### Default
+
+### Inferred state configuration
+
+### After Gaussian fitting
+
+### After thresholding
+
+
+---
+
+## Bottom axes
+
+### Default
+
+### After Gaussian fitting
+
+
 

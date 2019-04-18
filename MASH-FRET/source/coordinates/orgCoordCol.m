@@ -1,5 +1,9 @@
 function orgCoord = orgCoordCol(dat, mode, p, nChan, res_x, h_fig)
 
+% Last update: 28th of March 2019 by Melodie Hadzic
+% --> Review channel-specific coordinates sorting to allow import from
+% identical x- and y- columns (ex: mapped coordinates in *.map file)
+
 orgCoord = [];
 
 if iscell(dat)
@@ -110,9 +114,16 @@ switch mode
 end
 
 lim = [0 (1:nChan-1)*round(res_x/nChan) res_x];
+orgCoord_i = cell(1,nChan);
 for i = 1:nChan
-    orgCoord = orgCoord((orgCoord(:,2*i-1)>lim(i) & ...
-        orgCoord(:,2*i-1)<lim(i+1)),:);
+    orgCoord_i{i} = orgCoord((orgCoord(:,2*i-1)>lim(i) & ...
+        orgCoord(:,2*i-1)<lim(i+1)),2*i-1:2*i);
+    sz_i = size(orgCoord_i{i},1);
+end
+min_sz = min(sz_i);
+orgCoord = [];
+for i = 1:nChan
+    orgCoord = cat(2,orgCoord,orgCoord_i{i}(1:min_sz,:));
 end
 
 if isempty(orgCoord)

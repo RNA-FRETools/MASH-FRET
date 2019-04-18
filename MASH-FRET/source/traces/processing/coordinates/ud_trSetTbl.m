@@ -1,4 +1,9 @@
 function ud_trSetTbl(h_fig)
+
+% Last update: 29.3.2019 by MH
+% >> adapt reorganization of cross-talk coefficients to new parameter 
+%    structure (see project/setDefPrm_traces.m)
+
 h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
@@ -6,15 +11,32 @@ if ~isempty(p.proj)
     projPrm = p.proj{proj};
     mol = p.curr_mol(proj);
     nC = projPrm.nb_channel;
+    chanExc = projPrm.chanExc;
+    exc = projPrm.excitations;
 
     p.defProjPrm.mol = p.proj{proj}.curr{mol};
-    
-    % reorder the cross talk coefficients as the wavelength
-    [o,id] = sort(p.proj{proj}.excitations,'ascend'); % chronological index sorted as wl
+
+    % cancelled by MH, 29.3.2019
+%     % reorder the cross talk coefficients as the wavelength
+%     [o,id] = sort(p.proj{proj}.excitations,'ascend'); % chronological index sorted as wl
+
     mol_prev = p.defProjPrm.mol{5};
+    
+    % modified by MH, 29.3.2019
+%     for c = 1:nC
+%         p.defProjPrm.mol{5}{1}(:,c) = mol_prev{1}(id,c);
+%         p.defProjPrm.mol{5}{2}(:,c) = mol_prev{2}(id,c);
+%     end
     for c = 1:nC
-        p.defProjPrm.mol{5}{1}(:,c) = mol_prev{1}(id,c);
-        p.defProjPrm.mol{5}{2}(:,c) = mol_prev{2}(id,c);
+        if sum(exc==chanExc(c)) % emitter-specific illumination defined and 
+                                % present in used ALEX scheme (DE 
+                                % calculation possible)           
+            % reorder the direct excitation coefficients according to laser
+            % wavelength
+            exc_but_c = exc(exc~=chanExc(c));
+            [o,id] = sort(exc_but_c,'ascend'); % chronological index sorted as wl
+            p.defProjPrm.mol{5}{2}(:,c) = mol_prev{2}(id,c);
+        end
     end
     
     p.defProjPrm.general = p.proj{proj}.fix;

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Collect parameters for simulation
+title: Collect analysis results
 grand_parent: /tutorials.html
 parent: /tutorials/validate-results.html
 nav_order: 1
@@ -17,14 +17,16 @@ Follow this procedure to validate the state configuration, state populations and
 
 {% include tutorial_head.html %}
 
-In this step, a maximum number of parameters are collected or calculated from the previous experimental data analysis.
+In this step, a maximum number of parameters are collected or calculated from results of the previous experimental data analysis.
 
 1. TOC
 {:toc}
 
 ---
 
-{% comment %}
+*In construction*
+
+<!--
 1. Use the **files** exported during your previous analysis to collect or calculate <u>experimental parameters</u>:  
      
    &#9745; number of molecules  
@@ -57,7 +59,8 @@ In this step, a maximum number of parameters are collected or calculated from th
 	&#9745; the <u>FRET states</u>  
 	&#9745; the state <u>transition rates</u>  
     &#9745; the states <u>relative populations</u>  
-{% endcomment %}
+
+-->
 	
 ---
 

@@ -6,7 +6,10 @@ function pushbutton_TTgenGo_Callback(obj, evd, h)
 % "fname" >> generated folder path
 % "h" >> MASH handle structure
 
-% Last update: 18th of February 2019 by Mélodie C.A.S Hadzic
+% Last update: 28th of March 2019 by Mélodie C.A.S Hadzic
+% --> change MASH folder from /video-processing back to root folder
+%
+% update: 18th of February 2019 by Mélodie C.A.S Hadzic
 % --> change default folder to video_processing
 % --> comment code
 
@@ -22,7 +25,7 @@ if isfield(p,'itg_movFullPth') && ~isempty(p.itg_movFullPth)
         % build file name
         fname_proj = '';
         [o,movName,o] = fileparts(p.itg_movFullPth);
-        defName = cat(2,setCorrectPath('video_processing',h_fig),movName,...
+        defName = cat(2,setCorrectPath(h.folderRoot,h_fig),movName,...
             '.mash');
         [fname,pname,o] = uiputfile({'*.mash;', 'MASH project(*.mash)'; ...
              '*.*','All Files (*.*)'},'Export MASH project',defName);

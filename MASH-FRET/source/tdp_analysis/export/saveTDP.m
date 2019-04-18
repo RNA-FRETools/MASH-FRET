@@ -75,11 +75,12 @@ if sum(bol_tdp)
         if isempty(prm.plot{2})
             disp(['no TDP built for data: ' str_tpe{t}]);
         else
-            [ok,str_act] = cat(2,str_act,...
-                save_tdpDat(str_tpe{t},prm,pname_tdp,name,bol_tdp,h_fig));
-                if ~ok
-                    return;
-                end
+            [ok,str_tdp] = save_tdpDat(str_tpe{t},prm,pname_tdp,name,...
+                bol_tdp,h_fig);
+            if ~ok
+                return;
+            end
+            str_act = cat(2,str_act,str_tdp);
         end
     end
 end
@@ -132,12 +133,13 @@ if sum(bol_kin)
                             1))/100;
                         str = strcat(num2str(states(1)), ' to ', ...
                             num2str(states(2)));
-                        [ok,str_act] = cat(2,str_act,...
-                            save_kinDat(bol_kin,prm,j,str_tpe{t},str, ...
-                            pname_kin,[name '_' str_tpe{t}],h_fig));
+                        [ok,str_kin] = save_kinDat(bol_kin,prm,j,str_tpe{t},str, ...
+                            pname_kin,[name '_' str_tpe{t}],h_fig);
                         if ~ok
                             return;
                         end
+                        str_act = cat(2,str_act,str_kin);
+                            
                     end
                 end
             end

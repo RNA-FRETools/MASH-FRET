@@ -28,7 +28,9 @@ if ~isempty(p.proj)
         J_0 = prm.clst_start{1}(3);
         isdouble = 0;
         for j=1:J_0
-            if sum(mu_0(j)==mu_0)
+            ind = 1:J_0;
+            ind(ind==j)=[];
+            if sum(mu_0(j)==mu_0(ind))
                 isdouble = 1;
                 break;
             end

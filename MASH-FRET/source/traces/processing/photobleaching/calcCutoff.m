@@ -1,16 +1,23 @@
 function p = calcCutoff(mol, p)
 
+% Last update: by MH, 3.4.2019
+% >> manage missing intensities when loading ASCII traces with different 
+%    lengths: cut-off frame is automatically set to last number in trace
+%    and saved no matter if photobleaching correction is applied or not
+
 proj = p.curr_proj;
 
-incl = false(size(p.proj{proj}.bool_intensities(:,mol)));
-prm = p.proj{proj}.prm{mol}{2};
-apply = prm{1}(1);
-FRET = p.proj{proj}.FRET;
-gamma = p.proj{proj}.prm{mol}{5}{3};
-
+nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
 exc = p.proj{proj}.excitations;
 chanExc = p.proj{proj}.chanExc;
+incl = false(size(p.proj{proj}.bool_intensities(:,mol)));
+intensities = p.proj{proj}.intensities(:,(mol-1)*nChan+1:mol*nChan,:);
+FRET = p.proj{proj}.FRET;
+gamma = p.proj{proj}.prm{mol}{5}{3};
+prm = p.proj{proj}.prm{mol}{2};
+
+apply = prm{1}(1);
 start = ceil(prm{1}(4)/nExc);
 
 method = prm{1}(2);
@@ -73,16 +80,32 @@ else
     else
         cutOff = lastData;
     end
-    p.proj{proj}.prm{mol}{2}{1}(4+method) = cutOff*nExc;
 
 end
+
+firstNan = find(isnan(sum(sum(intensities,3),2)),1);
+if isempty(firstNan)
+    firstNan = size(intensities,1)+1;
+else
+    firstNan = firstNan(1);
+    if firstNan==1
+        firstNan = 2;
+    end
+end
+
+if cutOff>firstNan-1
+    disp(cat(2,'intensity-time traces have missing data: cutoff set to ',...
+        'last intensity data.'));
+end
+cutOff = min([firstNan-1,cutOff]);
 
 if apply
     incl(start:cutOff,1) = true;
 else
-    incl(start:end) = true;
+    incl(start:firstNan-1) = true;
 end
 
+p.proj{proj}.prm{mol}{2}{1}(4+method) = cutOff*nExc;
 p.proj{proj}.bool_intensities(:,mol) = incl;
 
 

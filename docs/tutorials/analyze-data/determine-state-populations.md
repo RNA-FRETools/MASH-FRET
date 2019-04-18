@@ -26,6 +26,8 @@ In this step, state relative populations and sample variability are estimated fr
 
 ---
 
+<!--
+
 ## Setup working area
 
 1. Select module 
@@ -86,6 +88,8 @@ Usually number of replicate is set to the total number of molecules and the numb
 [mash project](../../output-files/mash-mash-project.html) file.
 
 1. (optional) Export state population calculations to ASCII files.
+
+-->
 
 ---
 

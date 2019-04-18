@@ -1,5 +1,8 @@
 function s = checkField(s_in, fname, h_fig)
 
+% Last update: by MH, 3.4.2019
+% >> if labels are empty (ASCII import), set default labels
+
 s = s_in;
 
 %% load data
@@ -146,8 +149,17 @@ if (isempty(s.movie_dat) || size(s.movie_dat, 2) ~= 3) && s.is_movie
 end
 
 if isempty(s.labels) || size(s.labels,2) < s.nb_channel
+    h = guidata(h_fig);
+    label_def = h.param.movPr.labels_def;
     for c = 1:s.nb_channel
-        s.labels{c} = sprintf('Cy%i', (2*c+1));
+        if c>numel(s.labels) || (c<=numel(s.labels) && ...
+                ~isempty(s.labels{c}))
+            if c<=numel(label_def)
+                s.labels{c} = label_def{c};
+            else
+                s.labels{c} = cat(2,'chan ',num2str(c));
+            end
+        end
     end
 end
 

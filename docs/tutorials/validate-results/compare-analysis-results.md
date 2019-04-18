@@ -3,7 +3,7 @@ layout: default
 title: Compare analysis results
 grand_parent: /tutorials.html
 parent: /tutorials/validate-results.html
-nav_order: 3
+nav_order: 4
 nav_exclude: true
 has_toc: false
 ---
@@ -26,6 +26,8 @@ For a concrete example, you can refer to the scientific article
 {:toc}
 
 ---
+
+*In construction*
 	
 ---
 

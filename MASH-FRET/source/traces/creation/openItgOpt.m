@@ -1,13 +1,20 @@
 function openItgOpt(but_obj, evd, h)
 
+% Last update: 28.3.2019 by MH
+% >> Correct parameter saving (in pushbutton_itgOpt_ok_Callback) and import
+%    (openItgOpt.m) : if coordinates import option window is called from 
+%    Trace import options's window, parameters must be saved in/imported 
+%    from figure_trImpOpt's handle instead of figure_MASH's handle.
+
 h_fig = h.figure_MASH;
 switch but_obj
     case h.pushbutton_TTgen_loadOpt
         nChan = h.param.movPr.nChan;
         p = h.param.movPr.itg_impMolPrm;
     case h.trImpOpt.pushbutton_impCoordOpt
-        nChan = h.param.ttPr.impPrm{1}{1}(7);
-        p = h.param.ttPr.impPrm{3}{3};
+        m = guidata(h.figure_trImpOpt);
+        nChan = m{1}{1}(7);
+        p = m{3}{3};
 end
 
 if size(p{1,1},1)<nChan
@@ -151,14 +158,21 @@ delete(obj);
 
 
 function pushbutton_itgOpt_ok_Callback(obj, evd, h_fig, but_obj)
+
+% Last update: 28.3.2019 by MH
+% >> Correct parameter saving: if coordinates import option window is 
+%    called from trace import options, parameters must be saved in 
+%    figure_trImpOpt's handle instead of figure_MASH's handle.
+
 h = guidata(h_fig);
 switch but_obj
     case h.pushbutton_TTgen_loadOpt
         nChan = h.param.movPr.nChan;
         p = h.param.movPr.itg_impMolPrm;
     case h.trImpOpt.pushbutton_impCoordOpt
-        nChan = h.param.ttPr.impPrm{1}{1}(7);
-        p = h.param.ttPr.impPrm{3}{3};
+        m = guidata(h.figure_trImpOpt);
+        nChan = m{1}{1}(7);
+        p = m{3}{3};
 end
 
 for i = 1:nChan
@@ -171,10 +185,11 @@ p{2} = str2num(get(h.itgOpt.edit_nHead, 'String'));
 switch but_obj
     case h.pushbutton_TTgen_loadOpt
         h.param.movPr.itg_impMolPrm = p;
+        guidata(h_fig, h);
     case h.trImpOpt.pushbutton_impCoordOpt
-        h.param.ttPr.impPrm{3}{3} = p;
+        m{3}{3} = p;
+        guidata(h.figure_trImpOpt,m);
 end
-guidata(h_fig, h);
 
 close(h.figure_itgOpt);
 

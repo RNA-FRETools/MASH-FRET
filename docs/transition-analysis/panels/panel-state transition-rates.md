@@ -16,4 +16,24 @@ nav_order: 4
 {:toc}
 
 
+---
+
+## Transition list
+
+
+---
+
+## Method settings
+
+
+---
+
+## Fitting parameters
+
+
+---
+
+## Visualization arera
+
+
 
