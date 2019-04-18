@@ -53,14 +53,14 @@ Centers are iteratively calculated until a maximum number of iterations is reach
 
 The maximum number of states to look for is set in **(a)** and the maximum number of process iterations in **(b)**.
 The starting guess and state-specific tolerance radius are set in 
-[Cluster settings](#cluster settings).
+[Cluster settings](#cluster-settings).
 
 
 ### GM clustering
 {: .no_toc }
 
 The GM clustering algorithm has the particularity to infer cluster configurations for different number of states, and then determine the most sufficient description.
-The method is largely inspired from the smFRET literature 
+The method is adapted from the smFRET literature 
 [<sup>1</sup>](#references).
 
 With GM clustering, transition clusters are modelled with a 2D-Gaussian.
@@ -94,7 +94,7 @@ The number of parameters that describe the all 2D-Gaussian covariances, [*p*<sub
 
 The maximum number of states to look for is set in **(a)** and the number of E-M restart with new starting guess in **(b)**.
 The Gaussian shape used for clustering is set in 
-[Cluster settings](#cluster settings).
+[Cluster settings](#cluster-settings).
 
 
 ### References
@@ -110,14 +110,14 @@ The Gaussian shape used for clustering is set in
 Defines the clusters used in the clustering procedure.
 
 The interface changes depending on which clustering method is used (left 
-[GM](GM-clustering) and right 
+[GM](#gm-clustering) and right 
 [k-mean](#k-mean-clustering)):
 
 <img src="../../assets/images/gui/TA-panel-state-configuration-clusters-gm.png" style="max-width:137px;">
 <img src="../../assets/images/gui/TA-panel-state-configuration-clusters-kmean.png" style="max-width:137px;">
 
 For 
-[GM clustering](GM-clustering), select the appropriate cluster shape in the list **(a)**.
+[GM clustering](#gm-clustering), select the appropriate cluster shape in the list **(a)**.
 Four shapes are available:
 * `spherical`: Gaussian widths are equal in the x- and y- direction
 * `ellipsoid straight`: Gaussian widths are different in the x- and y- direction and the Gaussian orientation is fixed and defined with 0° inclination
@@ -192,7 +192,7 @@ After completing TDP clustering, clustered transition are indicated by cross mar
 Cluster colors can be modified in the 
 [Transition list](panel-state-transition-rates.html#transition-list).
 When the 
-[Method settings](panel-state-populations.html#method-settings) include the use of GM clustering, the contour of each Gaussian-shaped cluster is plotted as a blue solid line.
+[Method settings](#method-settings) include the use of GM clustering, the contour of each Gaussian-shaped cluster is plotted as a blue solid line.
 
 <img src="../../assets/images/gui/TA-panel-state-configuration-plot-clusters.png" style="max-width:471px;">
 
