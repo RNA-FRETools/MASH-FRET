@@ -115,8 +115,12 @@ and (equation 07)
 	and (equation 08):
 	I_{\textup{denoise}}^{A}(t)=\frac{\sum_{r=r_{1}}^{r_{4}}\left [w_{t-r}^{A}(t)\bar{I}_{t-r}^{A}(t)+w_{t+r}^{A}(t)\bar{I}_{t-r}^{A}(t)\right ]}{\sum_{r=r_{1}}^{r_{4}}\left [ w_{t-r}^{A}(t)+w_{t+r}^{A}(t)+w_{t-r}^{D}(t)+w_{t+r}^{D}(t)\right ]}
 
->> BIC:
+>> BIC (equation 01):
 	BIC = p(J) \times \textup{log}( N_{\textup{total}} ) - \textup{log}\left [ likelihood( J ) \right ]
+	and (equation 02):
+	p_{J} = p_{\textup{means}} + p_{\textup{widths}} + p_{\textup{weights}} = 3J - 1
+	and (equation 03):
+	p_{J} = p_{\textup{means}} + p_{\textup{widths}} + p_{\textup{weights}} = J + p_{\textbf{widths}} + J^{2} - 1
 
 >> Histogram populations:
 	X_{j} = \frac{S_{j}}{\sum_{j'=1}^{J}( S_{j'})}
