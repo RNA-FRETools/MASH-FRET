@@ -138,3 +138,5 @@ Multi-exponential fit (equation 02):
 	1- F( \Delta t_{j,j'}) = \sum_{z=1}^{Z}[ a_{z}exp( - k_{j,j',z}\Delta t_{j,j'} ) ]
 Beta-exponential fit (equation 03):
 	1- F( \Delta t_{j,j'} ) = exp[ - ( k_{j,j'}\Delta t_{j,j'} )^{\beta_{j,j'}} ]
+Decay (equation 04):
+	k_{j,j'} = \frac{1}{t_{j,j'}}
