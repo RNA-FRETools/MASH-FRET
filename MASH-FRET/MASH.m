@@ -209,32 +209,7 @@ ud_menuOverwrite(h.figure_MASH);
 
 % Kinetic model
 
-function edit_nbStates_Callback(obj, evd, h)
-val = round(str2num(get(obj, 'String')));
-set(obj, 'String', num2str(val));
-if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val > 0 && val ...
-        <= 5)
-    set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    setContPan('Number of states must be an integer >= 1 and <= 5', ...
-        'error', h.figure_MASH);
-else
-    set(obj, 'BackgroundColor', [1 1 1]);
-    h.param.sim.nbStates = val;
-    for i = 1:h.param.sim.nbStates
-        if i > size(h.param.sim.stateVal,2)
-            h.param.sim.stateVal(i) = h.param.sim.stateVal(i-1);
-            h.param.sim.FRETw(i) = h.param.sim.FRETw(i-1);
-        end
-    end
-    h.param.sim.stateVal = h.param.sim.stateVal(1:h.param.sim.nbStates);
-    h.param.sim.FRETw = h.param.sim.FRETw(1:h.param.sim.nbStates);
-    h.results.sim.mix = [];
-    guidata(h.figure_MASH, h);
 
-    set(h.popupmenu_states, 'Value', 1);
-    set(h.edit_stateVal, 'String', num2str(h.param.sim.stateVal(1)));
-    updateFields(h.figure_MASH, 'sim');
-end
 
 
 function edit_kinCst_Callback(obj, evd, h)

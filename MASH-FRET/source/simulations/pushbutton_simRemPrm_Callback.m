@@ -17,4 +17,9 @@ h.param.sim = p;
 
 guidata(h.figure_MASH, h);
 
+if h.param.sim.nbStates>5
+    set(h.edit_nbStates,'string','5');
+    edit_nbStates_Callback(h.edit_nbStates,[],h);
+end
+
 updateFields(h.figure_MASH, 'sim');
