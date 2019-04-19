@@ -1,16 +1,19 @@
-function createSimPrm(file)
+function createSimPrm(varargin)
 % | Create a structure of pre-set parameters and export it to a Matlab 
 % | binary file. The created file can be directly imported in MASH-FRET's
 % | Simulation module.
 % |
 % | Edit the source code of this function to set your own parameters.
 % |
-% | command: createSimPrm(file)
-% | file >> destination file including directory path
+% | command: createSimPrm
+% | argument1 (optional) >> destination file including directory path
 % |
 % | example: createSimPrm('C:\MyDataFolder\experiment_01\model_01.mat');
 
-
+% Last update: 19.4.2019 by MH
+% >> allow script execution without input argument (ask for destination
+%    file with uiputfile)
+% >> manage communication with disp
 
 
 %% %% STATE CONFIGURATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -175,7 +178,20 @@ psf_width = [];
 
 %% %%% SAVE CREATED FIELDS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+if ~isempty(varargin)
+    file = varargin{1};
+else
+    [fname,pname,o] = uiputfile('*.mat','Export presets to file');
+    if ~(~isempty(pname) && ~isempty(fname) && sum(fname) && sum(pname))
+        return;
+    end
+    cd(pname);
+    file = cat(2,pname,fname);
+end
+
 save(file,'FRET','trans_rates','gamma','tot_intensity','coordinates',...
     'psf_width','-mat');
+
+disp(cat(2,'Preset parameters were successfully written in file: ',file));
 
 
