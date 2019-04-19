@@ -143,10 +143,6 @@ if ~isempty(folderRoot) && sum(folderRoot)
 end
 
 
-function pushbutton_moreTools_Callback(obj, evd, h)
-msgbox('Soon available');
-
-
 function menu_showActPan_Callback(obj, evd, h)
 checked = strcmp(get(obj, 'Checked'), 'on');
 if ~checked
