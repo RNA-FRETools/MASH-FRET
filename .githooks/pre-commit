@@ -1,0 +1,12 @@
+#!/bin/sh
+
+tag_commit_hash=`git describe --always`
+tag=`echo $tag_commit_hash | cut -d'-' -f 1 | tr -d v`
+prev_commit_hash=`echo $tag_commit_hash | cut -d'-' -f 3 | cut -c 2-`
+
+echo { > MASH-FRET/.release_version.json
+echo \"tag\" : \"$tag\", >> MASH-FRET/.release_version.json
+echo \"prev_commit_hash\" : \"$prev_commit_hash\" >> MASH-FRET/.release_version.json
+echo } >> MASH-FRET/.release_version.json
+
+git add MASH-FRET/.release_version.json

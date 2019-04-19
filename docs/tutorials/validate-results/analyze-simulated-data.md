@@ -3,7 +3,7 @@ layout: default
 title: Analyze simulated data
 grand_parent: /tutorials.html
 parent: /tutorials/validate-results.html
-nav_order: 2
+nav_order: 3
 nav_exclude: true
 has_toc: false
 ---
@@ -23,6 +23,8 @@ In this step, simulated data are analyzed the same way as experimental data.
 {:toc}
 
 ---
+
+*In construction*
 	
 ---
 

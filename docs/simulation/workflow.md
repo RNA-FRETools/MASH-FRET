@@ -17,20 +17,29 @@ The procedure includes three steps:
 1. TOC
 {:toc}
 
+
+---
+
 ## Generate random FRET state sequences
 
 A FRET state sequence is the ideal FRET trajectory followed by a single molecule. 
-It consists in a succession of plateaus dwelling at a particular *FRET*j value before transiting to the next *FRET*j'. 
+It consists in a succession of plateaus dwelling at a particular 
+[*FRET*<sub>*j*</sub>](){: .math_var } value before transiting to the next 
+[*FRET*<sub>*j'*</sub>](){: .math_var }. 
 
-Sequences are created by randomly drawing FRET values and dwell times from the thermodynamic model, which includes possible *FRET*j values and state transition rates *k*jj'. 
-The operation is repeated until the sequence length reaches the observation time and the number of sequences equals the number of molecules *N*. 
-The observation time is limited by the video length *L* but can be randomly distributed by introducing fluorophore photobleaching.
+Sequences are created by randomly drawing FRET values and dwell times from the thermodynamic model, which includes possible 
+[*FRET*<sub>*j*</sub>](){: .math_var } values and state transition rates 
+[*k*<sub>*jj'*</sub>](){: .math_var }. 
+The operation is repeated until the sequence length reaches the observation time and the number of sequences equals the number of molecules 
+[*N*](){: .math_var }. 
+The observation time is limited by the video length 
+[*L*](){: .math_var } but can be randomly distributed by introducing fluorophore photobleaching.
 
 ![FRET state sequence](../assets/images/figures/sim-workflow-scheme-state-sequence.png "Generate FRET state sequences")
 
 To generate FRET state sequences:
 
-{: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
+{: .procedure }
 1. Set parameters:  
      
    [Video length](panels/panel-video-parameters.html#video-length)  
@@ -46,13 +55,19 @@ To generate FRET state sequences:
 1. Generate new state sequences whenever one of the parameters is changed.
 
 
+---
+
 ## Create intensity trajectories and images 
 
-FRET state sequences are then converted into donor and acceptor fluorescence intensities using *I*tot,em, the pure donor emission in the absence of acceptor.
+FRET state sequences are then converted into donor and acceptor fluorescence intensities using 
+[*I*<sub>tot,em</sub>](){: .math_var }, the pure donor emission in the absence of acceptor.
 
-Donor anisotropy is introduced here, by adjusting donor fluorescence intensities with the gamma factor *g*.
+Differences in donor and acceptor emission detection efficiencies and quantum yields is introduced here, by adjusting donor fluorescence intensities with the gamma factor 
+[*&#947;*](){: .math_var }.
 
-Imperfect experimental setup is simulated by adding channel-specific bleedthrough *bt* and direct excitation *dE* to the respective fluorescence intensities.
+Imperfect experimental setup is simulated by adding channel-specific bleedthrough 
+[*bt*](){: .math_var } and direct excitation 
+[*dE*](){: .math_var } to the respective fluorescence intensities.
 
 ![Conversion to fluorescence](../assets/images/figures/sim-workflow-scheme-convert-to-intensity.png "Convert sequences to fluorescence intensities")
 
@@ -75,7 +90,7 @@ Finally, uniform camera noise is added to all pixels to convert fluorescence int
 
 To create intensity trajectories and images:
 
-{: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
+{: .procedure }
 1. Set parameters:  
      
    [Video dimensions](panels/panel-video-parameters.html#video-dimensions)  
@@ -95,6 +110,8 @@ To create intensity trajectories and images:
 1. Update intensity data whenever one of the parameters is changed.
 
 
+---
+
 ## Export trajectories and video to files
 
 Simulated data and simulation parameters can be exported to various file formats.
@@ -103,7 +120,7 @@ When exporting the SMV, video frames are successively written in files until the
 
 To export data to files:
 
-{: .bg-grey-lt-000 .pt-3 .pb-2 .pl-7 .pr-4}
+{: .procedure }
 1. Set parameters:
      
    [File options](panels/panel-export-options.html#file-options)  
@@ -112,7 +129,10 @@ To export data to files:
 1. Press 
 ![Export files](../assets/images/gui/but-sim-export.png "Export files") to start writing data in files. The execution time can be long; see 
 [Remarks](#remarks) for details.
- 
+
+
+---
+
 ## Remarks
 {: .no_toc }
 

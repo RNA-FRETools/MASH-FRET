@@ -29,6 +29,10 @@ In this step, the sample's most sufficient state configuration is identified and
 
 ---
 
+*In construction*
+
+<!--
+
 ## Setup working area
 
 1. Select module 
@@ -94,6 +98,8 @@ Usually number of replicate is set to the number of dwell-times  and the number 
 [mash project](../../output-files/mash-mash-project.html) file.
 
 1. (optional) Export state model and transition rate calculations to ASCII files.
+
+-->
 
 ---
 

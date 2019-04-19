@@ -68,6 +68,8 @@ It is possible to zoom in the display and create intensity-time traces at specif
 [Zoom tool](#zoom-tool) and 
 [Create trace tool](#create-trace-tool) for more details.
 
+Any graphics in MASH can be exported to an image file by left-clicking on the axes and selecting `Export graph`.
+
 ---
 
 ## Navigation

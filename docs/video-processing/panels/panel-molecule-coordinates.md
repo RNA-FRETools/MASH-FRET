@@ -80,21 +80,37 @@ The final set of spot coordinates can be exported to a
 
 When Gaussian fitting is activated, a pixel area of **(e)**-by-**(f)** pixels centered on the spot position is fitted with a tilted ellipsoid Gaussian function:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
-<i>I</i>(<i>x</i>,<i>y</i>) = <i>offset</i> + <i>I</i><sub>0</sub>exp{ - [ <i>a</i>(<i>x</i> - <i>x</i><sub>0</sub>)<sup>2</sup> + 2<i>b</i>(<i>x</i> - <i>x</i><sub>0</sub>)(<i>y</i> - <i>y</i><sub>0</sub>) + <i>c</i>(<i>y</i> - <i>y</i><sub>0</sub>)<sup>2</sup> ] }
-</p>
+{: .equation }
+<img src="../../assets/images/equations/VP-eq-spots-01.gif" alt="I(x,y) = offset + I_{0}\textup{exp}\left \{ - \left [ a(x - x_{0})^{2} + 2b(x - x_{0})(y - y_{0}) + c(y - y_{0})^{2} \right ] \right \}">
 
-with *offset* the Gaussian offset, *I*<sub>0</sub> the Gaussian amplitude, *x*<sub>0</sub> and *y*<sub>0</sub> the x- and y- spot coordinates, and with coefficient *a*, *b* and *c* containing information about Gaussian width and orientation:
+<!--
+*I*(*x*,*y*) = *offset* + *I*<sub>0</sub>exp{ - [ *a*(*x* - *x*<sub>0</sub>)<sup>2</sup> + 2*b*(*x* - *x*<sub>0</sub>)(*y* - *y*<sub>0</sub>) + *c*(*y* - *y*<sub>0</sub>)<sup>2</sup> ] }
+-->
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
-<i>a</i> = cos<sup>2</sup>( <i>&#952;</i> ) / ( 2<i>&#963;</i><sub>x</sub><sup>2</sup> ) + sin<sup>2</sup>( <i>&#952;</i> ) / ( 2<i>&#963;</i><sub>y</sub><sup>2</sup> )<br><br>
-<i>b</i> = - sin( 2<i>&#952;</i> ) / ( 4<i>&#963;</i><sub>x</sub><sup>2</sup> ) + sin( 2<i>&#952;</i> ) / ( 4<i>&#963;</i><sub>y</sub><sup>2</sup> )<br><br>
-<i>c</i> = sin<sup>2</sup>( <i>&#952;</i> ) / (2<i>&#963;</i><sub>x</sub><sup>2</sup>) + cos<sup>2</sup>( <i>&#952;</i> ) / (2<i>&#963;</i><sub>y</sub><sup>2</sup>)
-</p>
+with 
+[*offset*](){: .math_var } the Gaussian offset, 
+[*I*<sub>0</sub>](){: .math_var } the Gaussian amplitude, 
+[*x*<sub>0</sub>](){: .math_var } and 
+[*y*<sub>0</sub>](){: .math_var } the x- and y- spot coordinates, and with coefficient 
+[*a*,](){: .math_var } 
+[*b*](){: .math_var } and 
+[*c*](){: .math_var } containing information about Gaussian width and orientation:
 
-with *&#963;*<sub>x</sub> and *&#963;*<sub>y</sub> the Gaussian standard deviations in the x- and y- direction, and <i>&#952;</i> the Gaussian orientation angle.
+{: .equation }
+<img src="../../assets/images/equations/VP-eq-spots-02.gif" alt="a = \frac{cos^{2}( \theta )}{2\sigma_{x}^{2}} + \frac{sin^{2}( \theta )}{2\sigma_{y}^{2}}"><br>
+<img src="../../assets/images/equations/VP-eq-spots-03.gif" alt="b = - \frac{sin( 2\theta )}{4\sigma_{x}^{2}} + \frac{sin( 2\theta )}{4\sigma_{y}^{2}}"><br>
+<img src="../../assets/images/equations/VP-eq-spots-04.gif" alt="c = \frac{sin^{2}( \theta )}{2\sigma_{x}^{2}} +  \frac{cos^{2}( \theta )}{2\sigma_{y}^{2}}">
+
+<!--
+*a* = cos<sup>2</sup>( *&#952;* ) / ( 2*&#963;*<sub>x</sub><sup>2</sup> ) + sin<sup>2</sup>( *&#952;* ) / ( 2*&#963;*<sub>y</sub><sup>2</sup> )<br><br>
+*b* = - sin( 2*&#952;* ) / ( 4*&#963;*<sub>x</sub><sup>2</sup> ) + sin( 2*&#952;* ) / ( 4*&#963;*<sub>y</sub><sup>2</sup> )<br><br>
+*c* = sin<sup>2</sup>( *&#952;* ) / (2*&#963;*<sub>x</sub><sup>2</sup>) + cos<sup>2</sup>( *&#952;* ) / (2*&#963;*<sub>y</sub><sup>2</sup>)
+-->
+
+with 
+[*&#963;*<sub>x</sub>](){: .math_var } and 
+[*&#963;*<sub>y</sub>](){: .math_var } the Gaussian standard deviations in the x- and y- direction, and 
+[*&#952;*](){: .math_var } the Gaussian orientation angle.
 
 
 ### Exclusion rules
@@ -119,9 +135,9 @@ Exclusion rules are set in **(j-p)** and are described in details in the table b
 It is a home-made algorithm adapted from 
 [houghpeaks](#houghpeaks) but faster. It processes as described below:
 
-1. it searches for the brightest pixel in the image considering a minimum pixel intensity set in **(d)** 
-1. an area of **(g)**-by-**(h)** pixels centered on the brightest pixel is set to zero
-1. the algorithm repeats steps 1 and 2 until no pixel with intensity higher than **(d)** are found.
+1. searches for the brightest pixel in the image considering a minimum pixel intensity set in **(d)** 
+1. sets an area of **(g)**-by-**(h)** pixels centered on the brightest pixel to zero
+1. repeats steps 1 and 2 until no pixel with intensity higher than **(d)** is found.
 
 
 ### houghpeaks
@@ -137,10 +153,7 @@ The houghpeaks method uses the same principle and parameters as
 ### Schmied2012
 {: .no_toc }
 
-It is an algorithm originally designed for super-resolution microscopy and published in the scientific article: 
-
-J.J. Schmied, A. Gietl, P. Holzmeister, C. Forthmann, C. Steinhauer, T. Dammeyer, P. Tinnefeld, *Fluorescence and super-resolution standards based on DNA origami*, *Nature Methods* **2012**, DOI: 
-[10.1038/nmeth.2254](https://doi.org/10.1038/nmeth.2254).
+It is an algorithm originally designed for super-resolution microscopy and published in the literature<sup>[1](#references)</sup>. 
 
 It identifies bright spots considering:
 * a minimum ratio spot intensity over background set in **(d)** 
@@ -156,23 +169,27 @@ mex 'xxxxx\MASH-FRET\source\extern\schmied2012\forloop.c'
 
 with `xxxxx` the path on your computer to the MASH-FRET folder.
 
-If the error persists, please inform us via the  
+If the error persists, please inform us via the 
 [issue tracker](https://github.com/RNA-FRETools/MASH-FRET/issues) on Github.
 
 
 ### Twotone
 {: .no_toc }
 
-It is an algorithm originally designed to localize single molecules in TIRF-FRET videos and is used in the software Twotone:
-
-A.N. Kapanidis, N.K. Lee, T.A. Laurence, S. Doose, E.Margeat, S. Weiss, *Defining the Limits of Single-Molecule FRET Resolution in TIRF Microscopy*, *Proc. Nat. Acad. Sci.* **2004**, DOI: 
-[10.1016/j.bpj.2010.09.005](https://doi.org/10.1016/j.bpj.2010.09.005)
+It is an algorithm originally designed to localize single molecules in TIRF-FRET videos and is used in the software Twotone published in the literature<sup>[2](#references)</sup>.
 
 It processes as described below:
-1. apply the Twotone image filter to the average image or video frame with a kernel size set in **(d)**; see 
+1. applies the Twotone image filter to the average image or video frame with a kernel size set in **(d)**; see 
    [Filters](panel-edit-video.html#filters) for more information
-1. search in the filtered image for pixels brighter than the intensity threshold set in **(g)**
-1. only the pixels that are local maxima in the 3-by-3 pixel area around them are detected as spots.
+1. searches in the filtered image for pixels brighter than the intensity threshold set in **(g)**
+1. selects pixels that are local maxima in the 3-by-3 pixel area around them.
+
+
+### References
+{: .no_toc }
+
+1. J.J. Schmied, A. Gietl, P. Holzmeister, C. Forthmann, C. Steinhauer, T. Dammeyer, P. Tinnefeld, *Fluorescence and super-resolution standards based on DNA origami*, *Nature Methods* **2012**, DOI: [10.1038/nmeth.2254](https://doi.org/10.1038/nmeth.2254).
+1. A.N. Kapanidis, N.K. Lee, T.A. Laurence, S. Doose, E.Margeat, S. Weiss, *Defining the Limits of Single-Molecule FRET Resolution in TIRF Microscopy*, *Proc. Nat. Acad. Sci.* **2004**, DOI: [10.1016/j.bpj.2010.09.005](https://doi.org/10.1016/j.bpj.2010.09.005)
 
 ---
 
@@ -204,7 +221,7 @@ The spatial transformation stored in a
 ![...](../../assets/images/gui/VP-but-3p.png "...") and selecting the previously exported transformation 
 [.mat file](../../output-files/mat-transformation.html).
 
-Reference coordinates are already-transformed coordinates written in ASCII files that can be imported in **(a)**:
+Reference coordinates written in ASCII files can be imported in **(a)**:
 * either automatically after mapping coordinates on a reference image with the mapping tool that can be accessed by pressing 
 ![Map](../../assets/images/gui/VP-but-map.png "Map"); see 
 [Use the mapping tool](../functionalities/use-the-mapping-tool.html) to use the mapping tool

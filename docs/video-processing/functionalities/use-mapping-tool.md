@@ -58,6 +58,8 @@ Parts of the images shown in close-ups are indicated by a red rectangle on the f
 
 You can slide the rectangle along the full-length image with the sliding bars located on the right-hand side of the close-ups.
 
+Any graphics in MASH can be exported to an image file by left-clicking on the axes and selecting `Export graph`.
+
 
 ---
 

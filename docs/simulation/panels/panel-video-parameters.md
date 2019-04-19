@@ -23,9 +23,11 @@ nav_order: 1
 
 It is the total number of image frames in the video. 
 
-It is usually noted *L*
+It is usually noted 
+[*L*](){: .math_var }
 
-**<u>default</u>:** *L* = 4000 frames
+**<u>default</u>:** 
+[*L*](){: .math_var } = 4000 frames
 
 ---
 
@@ -33,16 +35,24 @@ It is usually noted *L*
 
 It is acquisition rate of the video in frames per second (fps). 
 
-It is usually noted *f*. It is linked to the acquisition time *t*<sub>exp</sub> by the relation:
+It is usually noted 
+[*f*](){: .math_var }. 
+It is linked to the acquisition time 
+[*t*<sub>exp</sub>](){: .math_var } by the relation:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
-<i>f</i> = 1 / <i>t</i><sub>exp</sub>
-</p>
+{: .equation }
+<img src="../../assets/images/equations/sim-eq-frame-rate.gif" alt="f = \frac{1}{t_{exp}}">
 
-with *acq_t* is second
+<!--
+{: .equation }
+*f* = 1 / *t*<sub>exp</sub>
+-->
 
-**<u>default</u>:** *f* = 10 fps
+with 
+[*t*<sub>exp</sub>](){: .math_var } in seconds
+
+**<u>default</u>:** 
+[*f*](){: .math_var } = 10 fps
 
 ---
 
@@ -76,7 +86,7 @@ They are the dimensions of video frames in pixels , following the x- **(a)** and
 
 ## Camera SNR characteristics
 
-They are the settings to generate camera noise.
+They are the settings to convert photon counts to images counts and generate camera noise.
 
 <a href="../../assets/images/gui/sim-panel-video-parameters-camera.png"><img src="../../assets/images/gui/sim-panel-video-parameters-camera.png" style="max-width: 198px" /></a>
 
@@ -97,104 +107,234 @@ Refer to table
 ### Offset only
 {: .no_toc }
 
-Add a constant offset value *&#956;*<sub>ic,d</sub>.
+Photon counts 
+[*&#956;*<sub>pc</sub>](){: .math_var } are ideally converted to image counts 
+[*&#956;*<sub>ic</sub>](){: .math_var } such as:
 
-**<u>default</u>:** *&#956;*<sub>ic,d</sub> = 113 ic
+{: .equation }
+<img src="../../assets/images/equations/sim-eq-cam-noise-01.gif" alt="\mu_{ic} = \mu_{pc}">
+
+<!--
+{: .equation }
+*&#956;*<sub>ic</sub> = *&#956;*<sub>pc</sub>
+-->
+
+A constant camera dark count 
+[*&#956;*<sub>ic,d</sub>](){: .math_var } is then added.
+
+**<u>default</u>:** 
+[*&#956;*<sub>ic,d</sub>](){: .math_var } = 113 ic
 
 
 ### P- or Poisson
 {: .no_toc }
 
-Distribute intensities following a Poisson distribution with mean *&#955;*:
+Photon counts 
+[*&#956;*<sub>pc</sub>](){: .math_var } are converted to electron counts 
+[*&#956;*<sub>ec</sub>](){: .math_var } with a detection efficiency 
+[*&#951;*](){: .math_var } such as:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
-<i>&#955;</i> = <i>intensity</i> x <i>&#951;</i> + <i>&#956;</i><sub>ic,d</sub>
-</p>
+{: .equation }
+<img src="../../assets/images/equations/sim-eq-cam-noise-02.gif" alt="\mu_{ec} = \mu_{pc} \times \eta">
+
+<!--
+{: .equation }
+*&#956;*<sub>ec</sub> = *&#956;*<sub>pc</sub> &#215; *&#951;*
+-->
+
+Electron counts are distributed following a Poisson distribution and are ideally converted to image counts 
+[*&#956;*<sub>ic</sub>](){: .math_var } such as:
+
+{: .equation }
+<img src="../../assets/images/equations/sim-eq-cam-noise-03.gif" alt="\mu_{ic} = \mu_{ec}">
+
+<!--
+{: .equation }
+*&#956;*<sub>ic</sub> = *&#956;*<sub>ec</sub>
+-->
+
+A constant camera dark count 
+[*&#956;*<sub>ic,d</sub>](){: .math_var } is then added.
 
 **<u>default</u>:**
-* *&#956;*<sub>ic,d</sub> = 113 ic
-* *&#951;* = 0.95 ec/pc
+* [*&#956;*<sub>ic,d</sub>](){: .math_var } = 113 ic
+* [*&#951;*](){: .math_var } = 0.95 ec/pc
 
 
 ### N- or Gaussian
 {: .no_toc }
 
-Distribute intensities following a Gaussian distribution with mean *&#956;*:
+Photon counts 
+[*&#956;*<sub>pc</sub>](){: .math_var } are converted to electron counts 
+[*&#956;*<sub>ec</sub>](){: .math_var } with a detection efficiency 
+[*&#951;*](){: .math_var } such as:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
-<i>&#956;</i> = <i>intensity</i> x <i>&#951;</i> x <i>K</i> + <i>&#956;</i><sub>ic,d</sub>
-</p>
+{: .equation }
+<img src="../../assets/images/equations/sim-eq-cam-noise-04.gif" alt="\mu_{ec} = \mu_{pc} \times \eta">
 
-and standard deviation *&#963;*:                  
+<!--
+{: .equation }
+*&#956;*<sub>ec</sub> = *&#956;*<sub>pc</sub> &#215; *&#951;*
+-->
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
-<i>&#963;</i> = (  <i>intensity</i> x <i>&#951;</i> x <i>K</i> + ( <i>K</i> x <i>&#963;</i><sub>d</sub> )<sup>2</sup> + <i>&#963;</i><sub>q</sub><sup>2</sup> )<sup>0.5</sup>
-</p>
+Electron counts are converted to image counts 
+[*&#956;*<sub>ic</sub>](){: .math_var } with an overall gain 
+[*K*](){: .math_var } such as:
 
-**<u>default</u>:** values taken from the literature (reference [here](../../citations.html#simulation-algorithm-testing)):
-* *&#956;*<sub>ic,d</sub> = 113 ic
-* *&#951;* = 0.95 ec/pc
-* *K* = 57.8 ic/ec
-* *&#963;*<sub>d</sub> = 0.067 ec
-* *&#963;*<sub>q</sub> = 0 ic
+{: .equation }
+<img src="../../assets/images/equations/sim-eq-cam-noise-05.gif" alt="\mu_{ic} = \mu_{ec} \times K">
+
+<!--
+{: .equation }
+*&#956;*<sub>ic</sub> = *&#956;*<sub>ec</sub> &#215; *K*
+-->
+
+A constant camera dark count 
+[*&#956;*<sub>ic,d</sub>](){: .math_var } is added and image counts are distributed following a Gaussian distribution of mean 
+[*&#956;*<sub>ic</sub>](){: .math_var } and standard deviation 
+[*&#963;*<sub>ic</sub>](){: .math_var } that depends on 
+[*&#956;*<sub>ic</sub>](){: .math_var }, the readout noise standard deviation 
+[*&#963;*<sub>d</sub>](){: .math_var } and the analog-to-digital noise standard deviation 
+[*&#963;*<sub>q</sub>](){: .math_var } such as:
+
+{: .equation }
+<img src="../../assets/images/equations/sim-eq-cam-noise-06.gif" alt="\sigma_{ic} = \sqrt{\mu_{ic} + ( K × \sigma_{d} )^{2} + \sigma_{q}^{2}}">
+
+<!--
+{: .equation }
+*&#963;*<sub>ic</sub> = (  *&#956;*<sub>ic</sub> + ( *K* &#215; *&#963;*<sub>d</sub> )<sup>2</sup> + *&#963;*<sub>q</sub><sup>2</sup> )<sup>0.5</sup>
+-->
+
+**<u>default</u>:** values taken from the literature (reference 
+[here](../../citations.html#simulation-algorithm-testing)):
+* [*&#956;*<sub>ic,d</sub>](){: .math_var } = 113 ic
+* [*&#951;*](){: .math_var } = 0.95 ec/pc
+* [*K*](){: .math_var } = 57.8 ic/ec
+* [*&#963;*<sub>d</sub>](){: .math_var } = 0.067 ec
+* [*&#963;*<sub>q</sub>](){: .math_var } = 0 ic
 
 
 ### NExpN- or Gaussian + exponential tail
 {: .no_toc }
 
-Distribute intensities following an exponential-tailed Gaussian distribution with mean *&#956;*<sub>ic,d</sub>, standard deviation *&#963;*<sub>CIC</sub>, tail contribution *A*<sub>CIC</sub> and exponential decay *&#964;*<sub>CIC</sub>.
+Photon counts 
+[*&#956;*<sub>pc</sub>](){: .math_var } are converted to electron counts 
+[*&#956;*<sub>ec</sub>](){: .math_var } with a detection efficiency 
+[*&#951;*](){: .math_var } such as:
 
-This model is purely empirical: model parameters are obtained by fitting the dark count distribution with the function:
+{: .equation }
+<img src="../../assets/images/equations/sim-eq-cam-noise-07.gif" alt="\mu_{ec} = \mu_{pc} \times \eta">
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
-P = ( 1-<i>A</i><sub>CIC</sub> ) x exp( -( <i>intensity</i> - <i>&#956;</i><sub>ic,d</sub> )<sup>2</sup> / ( 2 x <i>&#963;</i><sub>CIC</sub><sup>2</sup> ) ) + <i>A</i><sub>CIC</sub> x exp( - <i>intensity</i> / <i>&#964;</i><sub>CIC</sub> )
-</p>
+<!--
+{: .equation }
+*&#956;*<sub>ec</sub> = *&#956;*<sub>pc</sub> &#215; *&#951;*
+-->
 
-**Note:** *Random generation of NExpN noise is very time consuming. Expect spending around 8 hours to simulate a 256-by-256-wide and 4000 frame-long video.*
+Electron counts are converted to image counts 
+[*&#956;*<sub>ic</sub>](){: .math_var } with an overall gain 
+[*K*](){: .math_var } such as:
 
-**<u>default</u>:** values taken from the literature (reference [here](../../citations.html#simulation-algorithm-testing)):
-* *&#956;*<sub>ic,d</sub> = 106.9 ic
-* *A*<sub>CIC</sub> = 0.02 
-* *&#963;*<sub>CIC</sub> = 4.9 ic
-* *&#964;*<sub>CIC</sub> = 20.5 ic
-* *&#951;* = 0.95 ec/pc
-* *K* = 57.8 ic/ec
+{: .equation }
+<img src="../../assets/images/equations/sim-eq-cam-noise-08.gif" alt="\mu_{ic} = \mu_{ec} \times K">
+
+<!--
+{: .equation }
+*&#956;*<sub>ic</sub> = *&#956;*<sub>ec</sub> &#215; *K*
+-->
+
+A constant camera dark count 
+[*&#956;*<sub>ic,d</sub>](){: .math_var } is added and image counts are distributed following an exponential-tailed Gaussian distribution with mean 
+[*&#956;*<sub>ic</sub>](){: .math_var }, standard deviation 
+[*&#963;*<sub>ic</sub>](){: .math_var }, tail contribution 
+[*A*<sub>CIC</sub>](){: .math_var } and exponential decay 
+[*&#964;*<sub>CIC</sub>](){: .math_var }.
+
+This model is purely empirical: model parameters are obtained by fitting the distribution 
+[P](){: .math_var } of image counts obtain from a camera with closed shutter 
+[*&#956;*<sub>ic,0</sub>](){: .math_var } with the function:
+
+{: .equation }
+<img src="../../assets/images/equations/sim-eq-cam-noise-09.gif" alt="\textup{P}(\mu_{ic,0}) = ( 1-A_{CIC} )\textup{exp}\left [ -\frac{( \mu_{ic,0} - \mu_{ic,d} )^{2}}{2\sigma_{ic}^{2}} \right ] + A_{CIC}\textup{exp}\left ( - \frac{\mu_{ic,0}}{\tau_{CIC}}  \right )">
+
+<!--
+{: .equation }
+P(*&#956;*<sub>ic,0</sub>) = ( 1-*A*<sub>CIC</sub> ) &#215; exp[ -( *&#956;*<sub>ic,0</sub> - *&#956;*<sub>ic,d</sub> )<sup>2</sup> / ( 2 &#215; *&#963;*<sub>ic</sub><sup>2</sup> ) ] + *A*<sub>CIC</sub> &#215; exp( - *&#956;*<sub>ic,0</sub> / *&#964;*<sub>CIC</sub> )
+-->
+
+To fit dark count distribution with the NExpN model, you can use our home-written script located at:
+
+```
+MASH-FRET/fit_NExpN.m
+```
+
+**Note:** *Random generation of NExpN noise is relatively time consuming. 
+Expect spending around 20 minutes to simulate a 256-by-256-wide and 4000 frame-long video.*
+
+**<u>default</u>:** values taken from the literature (reference 
+[here](../../citations.html#simulation-algorithm-testing)):
+* [*&#956;*<sub>ic,d</sub>](){: .math_var } = 106.9 ic
+* [*A*<sub>CIC</sub>](){: .math_var } = 0.02 
+* [*&#963;*<sub>ic</sub>](){: .math_var } = 4.9 ic
+* [*&#964;*<sub>CIC</sub>](){: .math_var } = 20.5 ic
+* [*&#951;*](){: .math_var } = 0.95 ec/pc
+* [*K*](){: .math_var } = 57.8 ic/ec
 
 ### PGN- or Hirsch
 {: .no_toc }
 
-Distribute intensities following the convolution of a Poisson distribution of mean *&#955;*<sub>p</sub>:
+Photon counts 
+[*&#956;*<sub>pc</sub>](){: .math_var } are converted to electron counts 
+[*&#956;*<sub>ec</sub>](){: .math_var } with a detection efficiency 
+[*&#951;*](){: .math_var } and a contribution of clock-induced charges 
+[*CIC*](){: .math_var } such as:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
-<i>&#955;</i><sub>p</sub> = <i>intensity</i> x <i>&#951;</i> + <i>CIC</i>
-</p>
+{: .equation }
+<img src="../../assets/images/equations/sim-eq-cam-noise-10.gif" alt="\mu_{ec} = \mu_{pc} \times \eta + CIC">
 
-with a Gamma distribution of scale parameter *g*, and with a Gaussian distribution of mean *&#956;*<sub>g</sub>:
+<!--
+{: .equation }
+*&#956;*<sub>ec</sub> = *&#956;*<sub>pc</sub> &#215; *&#951;* + *CIC*
+-->
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
-<i>&#956;</i><sub>g</sub> = <i>intensity</i> + <i>&#956;</i><sub>ic,d</sub>
-</p>
+Electron counts are distributed following a Poisson distribution of mean 
+[*&#956;*<sub>ec</sub>](){: .math_var } and are then multiplied in the electron-multiplier (EM) register following a gamma distribution with shape parameter 
+[*&#956;*<sub>ec</sub>](){: .math_var } and the EM gain 
+[*g*](){: .math_var }, for scale parameter.
 
-and standard deviation *&#963;*<sub>g</sub>:
+Multiplied electron counts are converted to image counts 
+[*&#956;*<sub>ic</sub>](){: .math_var } with an analog-to-digital factor 
+[*s*](){: .math_var } such as:
 
-{: .bg-grey-lt-000 .pt-3 .pb-3 .pl-3 .pr-3 .fs-3}
-<p style="border-radius: 5px;">
-<i>&#963;</i><sub>g</sub> = <i>&#963;</i><sub>d</sub> x <i>g</i> / <i>s</i>
-</p>
+{: .equation }
+<img src="../../assets/images/equations/sim-eq-cam-noise-11.gif" alt="\mu_{ic} = \frac {\mu_{ic}}{s}">
+
+<!--
+{: .equation }
+*&#956;*<sub>ic</sub> = *&#956;*<sub>ec</sub> / *s*
+-->
+
+A constant camera dark count 
+[*&#956;*<sub>ic,d</sub>](){: .math_var } is added and image counts are distributed following a Gaussian distribution of mean 
+[*&#956;*<sub>ic</sub>](){: .math_var } and standard deviation 
+[*&#963;*<sub>ic</sub>](){: .math_var } that represent the readout noise standard deviation 
+[*&#963;*<sub>d</sub>](){: .math_var } converted to image counts with the analog-to-digital factor 
+[*s*](){: .math_var } such as:
+
+{: .equation }
+<img src="../../assets/images/equations/sim-eq-cam-noise-12.gif" alt="\sigma_{ic} = \frac {\sigma_{d}}{s}">
+
+<!--
+{: .equation }
+*&#963;*<sub>ic</sub> = *&#963;*<sub>d</sub> / *s*
+-->
 
 **<u>default</u>:** values taken from the literature (reference [here](../../citations.html#simulation-algorithm-testing)):
-* *&#956;*<sub>ic,d</sub> = 113 ic
-* *&#951;* = 0.95 ec/pc
-* *g* = 300
-* *&#963;*<sub>d</sub> = 0.067 ec
-* *s* = 5.199 ec/ic
-* *CIC* = 0.02 ec
+* [*&#956;*<sub>ic,d</sub>](){: .math_var } = 113 ic
+* [*&#951;*](){: .math_var } = 0.95 ec/pc
+* [*g*](){: .math_var } = 300
+* [*&#963;*<sub>d</sub>](){: .math_var } = 0.067 ec
+* [*s*](){: .math_var } = 5.199 ec/ic
+* [*CIC*](){: .math_var } = 0.02 ec
 
 
 ### Model parameters
@@ -202,20 +342,20 @@ and standard deviation *&#963;*<sub>g</sub>:
 
 Parameters specific to camera noise model:
 
-| parameter                   | units             | description                                  | in model               |
-| :-------------------------: | :---------------: | -------------------------------------------- | ---------------------- |
-| *&#956;*<sub>ic,d</sub>     | ic                | signal offset                                | none, P, N, NexpN, PGN |
-| *&#951;*                    | ec/pc             | detection efficiency                         | P, N, NexpN, PGN       |
-| *K*                         | ic                | overall gain                                 | N, NExpN               |
-| *sat* (read only)           | ic                | saturation value                             | N                      |
-| *&#963;*<sub>d</sub>        | ec                | readout noise deviation                      | N, PGN                 |
-| *&#963;*<sub>q</sub>        | ic                | analog-to-digital conversion noise deviation | N                      |
-| *&#964;*<sub>CIC</sub>      | ic                | exponential tail decay constant              | NExpN                  |
-| *A*<sub>CIC</sub>           |                   | exponential decay contribution               | NExpN                  |
-| *&#963;*<sub>CIC</sub>      | ic                | Gaussian standard deviation                  | NExpN                  |
-| *g*                         |                   | System gain                                  | PGN                    |
-| *s*                         | ec/ic             | analog-to-digital factor                     | PGN                    |
-| *CIC*                       | ec                | CIC offset                                   | PGN                    |
+| parameter                                     | units             | description                                  | in model               |
+| :-------------------------------------------: | :---------------: | -------------------------------------------- | ---------------------- |
+| [*&#956;*<sub>ic,d</sub>](){: .math_var }     | ic                | signal offset                                | none, P, N, NexpN, PGN |
+| [*&#951;*](){: .math_var }                    | ec/pc             | detection efficiency                         | P, N, NexpN, PGN       |
+| [*K*](){: .math_var }                         | ic                | overall gain                                 | N, NExpN               |
+| [*sat*](){: .math_var } (read only)           | ic                | saturation value                             | N                      |
+| [*&#963;*<sub>d</sub>](){: .math_var }        | ec                | readout noise deviation                      | N, PGN                 |
+| [*&#963;*<sub>q</sub>](){: .math_var }        | ic                | analog-to-digital conversion noise deviation | N                      |
+| [*&#964;*<sub>CIC</sub>](){: .math_var }      | ic                | exponential tail decay constant              | NExpN                  |
+| [*A*<sub>CIC</sub>](){: .math_var }           |                   | exponential decay contribution               | NExpN                  |
+| [*&#963;*<sub>ic</sub>](){: .math_var }       | ic                | Gaussian standard deviation                  | NExpN                  |
+| [*g*](){: .math_var }                         |                   | system gain                                  | PGN                    |
+| [*s*](){: .math_var }                         | ec/ic             | analog-to-digital factor                     | PGN                    |
+| [*CIC*](){: .math_var }                       | ec                | CIC offset                                   | PGN                    |
 
 <u>Abbreviations</u>:
 * **ic**: image count

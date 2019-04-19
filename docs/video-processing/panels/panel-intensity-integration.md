@@ -52,11 +52,9 @@ In that case the import option window opens:
 
 <a href="../../assets/images/gui/VP-panel-integration-loadcoord-impopt.png"><img src="../../assets/images/gui/VP-panel-integration-loadcoord-impopt.png" style="max-width: 226px;"/></a>
 
-Single molecule coordinates are coordinates co-localized in each channel, with channel-specific coordinates being written in a column-wise fashion to the file. 
-This means that coordinates (x,y) of one single molecule in individual channels must be written on the same line and in different columns.
-
-A number of file header lines set in **(b)** is skipped before reading coordinates data.
-The column indexes in the file where channel-specific x- and y-coordinates are written, are set in **(c)** and **(d)** respectively.
+Single molecule coordinates are coordinates co-localized in each channel, with each channel corresponding to a specific x-range.
+The number of file header lines set in **(b)** is skipped before reading coordinates data and channel-specific x- and y-coordinates are read from columns set in **(c)** and **(d)** respectively.
+If all channel-specific data are organized in the same two columns, coordinates are sorted according to the specific x-range of each channel.
 Import settings are saved only after pressing 
 ![Ok](../../assets/images/gui/VP-but-ok.png).
 
