@@ -119,6 +119,9 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             ip_u = 'pc';
         end
         op_u = p.intOpUnits; % output intensity units
+        if strcmp(op_u,'electron')
+            op_u = 'image';
+        end
         prm_file = p.prmFile; % parameters file name
         crd_file = p.coordFile; % coordinates file name
         impPrm = p.impPrm; % imported simulation parameters (0/1)
@@ -574,7 +577,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             end
         end
         
-        if strcmp(op_u, 'electron')
+        if strcmp(op_u, 'image')
             units = 'a.u.';
         else
             units = 'photons';
