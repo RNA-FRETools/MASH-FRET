@@ -9,7 +9,7 @@ nav_order: 3
 # Simulate sample heterogeneity
 {: .no_toc }
 
-Sample heterogeneity is characterized by the presence of molecule sub-populations with different characteristics.
+Sample heterogeneity is characterized by the presence of molecules with different characteristics in the data set.
 It can be simulated for various characteristics by using one of the following methods:
 
 1. TOC
@@ -42,13 +42,13 @@ This method can be used to introduce sample heterogeneity in FRET states
 [*&#947;*](){: .math_var } and PSF widths 
 [*w*<sub>det</sub>](){: .math_var }.
 
-Parameters are defined individually for each molecule by loading a pre-set parameter file with the respective variables `FRET`, `trans_rates`, `tot_intensity`, `gamma` and `psf_width` set accordingly. 
+Parameters are pre-defined for individual molecules in a pre-set parameter file containing the respective variables `FRET`, `trans_rates`, `tot_intensity`, `gamma` and/or `psf_width`. 
 For more information about the structure and use of pre-set parameter file, please refer to 
 [Pre-set parameters](../panels/panel-molecules.html#pre-set-parameters).
 
 This method allows to custom the type of sample heterogeneity by either producing a broadening of molecule characteristics or by creating sub-populations of molecules with distinguishable characteristics.
 
-As an example, this script creates two distinct molecule sub-populations of equal size, with one population allowing step-wise and reversible state transitions, and one getting trapped after an off-path state transition:
+As an example, the script below creates two distinct molecule sub-populations of equal size, with one population allowing step-wise and reversible state transitions, and one getting trapped after an off-path state transition:
 
 ```matlab
 %%%%% EDIT HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -80,7 +80,7 @@ trans_rates = cat(3,trans_rates1,trans_rates2);
 To build and export the pre-set parameter file:
 
 {: .procedure }
-1. Open the pre-set template in MATLAB's editor by going to menu `Open → Open ...` and selecting the file `MASH-FRET/createSimPrm.m`.  
+1. Open the pre-set template in MATLAB's editor by going to MATLAB's menu `Open → Open ...` and selecting the file `MASH-FRET/createSimPrm.m`.  
       
 1. Define the variable `trans_rates` in the corresponding section of the template  
      
@@ -97,8 +97,8 @@ To build and export the pre-set parameter file:
 
 This method can be used to introduce sample heterogeneity in state transition rates 
 [*k*<sub>*jj'*</sub>](){: .math_var } and consists in defining closed transition networks within the same 
-[Transition rates matrix](../panels/panel-molecules.html#transition-rates), with each state having a certain probability to start a state trajectory.
-In that way, trajectories in the sample can follow only one of the state network defined in the transition rates matrix.
+[Transition rates matrix](../panels/panel-molecules.html#transition-rates).
+As each state has a certain probability to be drawn to start a state trajectory, simulated trajectories can follow only one of the state networks defined in the transition rates matrix.
 
 This method produces a discontinuous sample heterogeneity, *i.e.*, it creates sub-populations of molecules with distinguishable characteristics as opposed to a broadening of molecule characteristics.
 
