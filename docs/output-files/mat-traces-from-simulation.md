@@ -10,7 +10,7 @@ nav_exclude: 1
 # Trace file from simulation
 {: .no_toc }
 
-Trace files from simulation are binary Matlab files with the extension `.mat`. They are usually found in the main`/simulation` analysis folder.
+Trace files from simulation are binary Matlab files with the extension `.mat`. They are usually found in the main`/simulations` analysis folder.
 
 ## Table of contents
 {: .no_toc .text-delta }
@@ -26,7 +26,7 @@ Trace files from simulation are binary Matlab files with the extension `.mat`. T
 This trace file contains the simulated data of all molecules written in MATLAB binary format.
 It includes molecule coordinates in the video, simulated intensity-time traces and intensity units.
 
-It is created in the `/simulation` analysis sub-folder after exporting *.mat traces in panel 
+It is created in the `/simulations` analysis sub-folder after exporting *.mat traces in panel 
 [Export options](..//simulation/panels/panel-export-options.html) of module Simulation.
 
 

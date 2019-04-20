@@ -10,7 +10,7 @@ nav_exclude: 1
 # Trace file from simulation
 {: .no_toc }
 
-Trace files from simulation are ASCII files with the extension `.txt`. They are usually found in the main`/simulation/traces_ASCII` analysis folder.
+Trace files from simulation are ASCII files with the extension `.txt`. They are usually found in the main`/simulations/traces_ASCII` analysis folder.
 
 ## Table of contents
 {: .no_toc .text-delta }
@@ -26,7 +26,7 @@ Trace files from simulation are ASCII files with the extension `.txt`. They are 
 These trace files are the simulated data of individual molecules written in ASCII format.
 They contain the molecule coordinates in the video, the simulated intensity- and FRET-time traces as well as the corresponding state trajectories.
 
-They are created in the `/simulation/traces_ASCII` analysis sub-folder after exporting ASCII traces in panel 
+They are created in the `/simulations/traces_ASCII` analysis sub-folder after exporting ASCII traces in panel 
 [Export options](../simulation/panels/panel-export-options.html) of module Simulation.
 
 

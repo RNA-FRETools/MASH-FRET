@@ -10,7 +10,7 @@ nav_exclude: 1
 # MASH video files
 {: .no_toc }
 
-MASH video files are binary files with the extension `.sira`. They are usually found in the main, main`/simulation`, or main`/video_processing/average_images` analysis folders.
+MASH video files are binary files with the extension `.sira`. They are usually found in the main, main`/simulations`, or main`/video_processing/average_images` analysis folders.
 
 ## Table of contents
 {: .no_toc .text-delta }
@@ -26,7 +26,7 @@ MASH video files are binary files with the extension `.sira`. They are usually f
 MASH video files are the graphic files written and used by MASH. 
 They contain the strict necessary information about the single molecule video (SMV) or image, including pixel data, video dimensions, the frame rate and MASH-FRET version. 
 
-They are created in the `/simulation` analysis sub-folder from module Simulation, and at a user-defined location from module Video processing.
+They are created in the `/simulations` analysis sub-folder when exported from module Simulation, at a user-defined location or in `video_processing/average_images` when exported from module Video processing.
 
 They are created when:
 - exporting the simulated SMV in panel 
