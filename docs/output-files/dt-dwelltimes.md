@@ -29,7 +29,7 @@ They are created in the `/simulations/dwell-times` analysis sub-folder when expo
 
 They are created when:
 - exporting simulated dwell times in panel 
-[Export options](..//simulation/panels/panel-export-options.html) of module Simulation
+[Export options](../simulation/panels/panel-export-options.html) of module Simulation
 - exporting processed dwell times in window 
 [Export options](../trace-processing/functionalities/set-export-options.html#export-dwell-times) of module Trace processing
 
