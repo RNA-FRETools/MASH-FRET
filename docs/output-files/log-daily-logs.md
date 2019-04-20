@@ -18,6 +18,9 @@ Daily log files are ASCII files with the extension `.log`. They are usually foun
 1. TOC
 {:toc}
 
+
+---
+
 ## Description
 
 Daily log files contain logs of the <u>action history</u> window.
@@ -28,10 +31,15 @@ They are automatically updated when:
 - new actions are added to the action history,
 - closing MASH-FRET.
 
+
+---
+
 ## File name
 
 The file is named after its date of creation using the format `YYYY-M-D.log`.
 
+
+---
 
 ## Structure
 
@@ -40,3 +48,4 @@ The file is named after its date of creation using the format `YYYY-M-D.log`.
 ```
 hh:mm -- action desription
 ```
+
