@@ -63,6 +63,9 @@ trans_rates2 = [ 0   0.1 0   0
 		 0.1 0   0   0.1
 		 0   0   0   0
 		 0   0   0   0];
+		 
+% defines the number of trajectories to simulate
+N = 60;
 
 % replicate the first and second transition rates matrix for half of the molecules with the repmat function
 trans_rates1 = repmat(trans_rates1,[1 1 N/2]);
