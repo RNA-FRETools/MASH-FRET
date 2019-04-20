@@ -42,10 +42,10 @@ The FRET state configuration is defined in the `FRET` variable of the template a
 [*J*](){: .math_var }-by-2-by-[*N*](){: .math_var } matrix, with 
 [*N*](){: .math_var } the number of state trajectories to simulate. 
 The first column contains the 
-[*FRET*<sub>*j*</sub>](){: .math_var } and the second the corresponding deviations 
+[*FRET*<sub>*j*</sub>](){: .math_var } values and the second the corresponding deviations 
 [*wFRET*<sub>*j*</sub>](){: .math_var }.
 
-For example, to define a ten-states system with evenly-spaced 
+For example, the script below can be used to define a ten-states system with evenly-spaced 
 [*FRET*<sub>*j*</sub>](){: .math_var } values and no sample heterogeneity:
 
 ```matlab
@@ -77,8 +77,9 @@ State transition rates are defined in the `trans_rates` variable of the template
 Transition rates are given in second<sup>-1</sup> and set to zero to forbid particular state transitions.
 The diagonal is naturally ignored during the simulation process and can be set to zero.
 
-For example, to define a transition rate matrix allowing only step-wise transitions in the 10-states system, with a uniform rate of 0.1 second<sup>-1</sup> except the transition state 2 to 3 
-([*FRET*<sub>3</sub>](){: .math_var }=0.3 to [*FRET*<sub>4</sub>](){: .math_var }=0.4) governed by a rate coefficient of 0.5 second<sup>-1</sup>
+For example, the script below can be used to define a transition rate matrix for the 10-states system, allowing only step-wise transitions and with uniform rate coefficients 
+[*k*<sub>*jj'*</sub>](){: .math_var } = 0.1 second<sup>-1</sup>, except for the transition from state 2 to state 3 
+([*FRET*<sub>3</sub>](){: .math_var }=0.3 to [*FRET*<sub>4</sub>](){: .math_var }=0.4) that is governed by a rate coefficient of 0.5 second<sup>-1</sup>:
 
 ```matlab
 %%%%% EDIT HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -104,7 +105,7 @@ trans_rates = repmat(trans_rates,[1 1 N]);
 To build and export the pre-set parameter file:
 
 {: .procedure }
-1. Open the pre-set template in MATLAB's editor by going to menu `Open → Open ...` and selecting the file `MASH-FRET/createSimPrm.m`.  
+1. Open the pre-set template in MATLAB's editor by going to MATLAB's menu `Open → Open ...` and selecting the file `MASH-FRET/createSimPrm.m`.  
       
 1. Define the variables `FRET` and `trans_rates` in the corresponding sections of the template  
      
