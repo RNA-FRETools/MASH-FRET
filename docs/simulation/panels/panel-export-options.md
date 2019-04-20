@@ -84,7 +84,7 @@ See
 Export one ASCII file that contains the list of parameters and export options used in the simulation.
 
 See 
-[Dwell time files](../../output-files/log-simulation-parameters.html) for more information.
+[Simulation parameter files](../../output-files/log-simulation-parameters.html) for more information.
 
 ### Coordinates
 {: .no_toc}
