@@ -5,8 +5,12 @@ function exportResults(h_fig,varargin)
 % noisy traces.
 %
 % Requires external files: setContPan.m
+
+% Last update: 20.4.2019 by MH
+% >> improve file aesthetic and efficacity by renaming intensity units 
+%    "image counts/time bin" by "ic", add categories "VIDEO PARAMETERS", 
+%    "PRESETS", "MOLECULES", "EXPERIMENTAL SETUP" and "EXPORT OPTIONS"
 %
-% Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
 % Last update: 20th of February 2019 by Mélodie Hadzic
 % --> add headers to dwell-time files
 % --> modify dwell-times file name for coherence with trace processing
@@ -15,6 +19,8 @@ function exportResults(h_fig,varargin)
 % --> Comments adapted for Boerner et al 2017
 % --> Noise models adapted for Boerner et al 2017.
 % --> Simulation default parameters adapted for Boerner et al 2017.
+%
+% Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
 
 h = guidata(h_fig);
 
@@ -108,7 +114,9 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         isPrm = p.export_param; % export simulation parameters (0/1)
         ip_u = p.intUnits; % input intensity units
         if strcmp(ip_u,'electron')
-            ip_u = 'image';
+            ip_u = 'ic';
+        else
+            ip_u = 'pc';
         end
         op_u = p.intOpUnits; % output intensity units
         prm_file = p.prmFile; % parameters file name
@@ -127,11 +135,6 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         str_exp_procTraces = 'no';
         str_exp_dt = 'no';
         str_exp_coord = 'no';
-        if bleach
-            str_bleach = 'yes';
-        else
-            str_bleach = 'no';
-        end
         str_action = '';
         
         % Results from buildModel function
@@ -838,109 +841,14 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             
             fName_param = [fName '_param.log'];
             f = fopen([pName fName_param], 'Wt');
-            fprintf(f, 'export traces (in %s counts):\t%s\n', op_u, ...
-                str_exp_traces);
-            fprintf(f, 'export *.sira video:\t%s\n', str_exp_mov);
-            fprintf(f, 'export *.avi video:\t%s\n', str_exp_avi);
-            fprintf(f, 'export ideal traces:\t%s\n', str_exp_procTraces);
-            fprintf(f, 'export dwell-times:\t%s\n', str_exp_dt);
-            fprintf(f, 'export coordinates:\t%s\n', str_exp_coord);
-            if impPrm
-                fprintf(f, 'input parameters file:\t%s\n', prm_file);
-            end
-            if ~isempty(crd_file)
-                fprintf(f, 'input coordinates file:\t%s\n', crd_file);
-            end
-            fprintf(f, 'number of states:\t%i\n', J);
-            fprintf(f, 'number of traces:\t%i\n', M);
-            fprintf(f, '\nframe rate (sec-1):\t%1.4f\n', 1/expT);
-            fprintf(f, 'trace length (frame):\t%i\n', N);
-            fprintf(f, 'photobleaching:\t%s\n', str_bleach);
-            if bleach
-                fprintf(f, 'photobleaching time decay:\t%d s\n', bleachT);
-            end
-            if (~impPrm || (impPrm && ~isfield(p.molPrm, 'kx'))) && J>1
-                fprintf(f, 'transitions rates (sec-1):\n');
-                str_fmt = '%1.3f';
-                for i = 2:J
-                    str_fmt = [str_fmt '\t%1.3f'];
-                end
-                str_fmt = [str_fmt '\n'];
-                fprintf(f, str_fmt, transMat(1:J, 1:J)');
-            end
-            if ~impPrm || (impPrm && ~isfield(p.molPrm, 'stateVal'))
-                fprintf(f, '\nstate values:\n');
-                for i = 1:J
-                    fprintf(f, 'state%i:\t%1.3f\t', i, states(i));
-                    fprintf(f, 'distribution width:\t%d\n', FRETw(i));
-                end
-            end
-            if ~impPrm || (impPrm && ~isfield(p.molPrm, 'gamma'))
-                fprintf(f, 'gamma factor:\t%d\t', gamma);
-                fprintf(f, 'distribution width:\t%d\n', gammaW);
-            end
-            if ~impPrm || (impPrm && ~isfield(p.molPrm, 'totInt'))
-                
-                if strcmp(ip_u,'image')
-                    [mu_y_dark,K,eta] = getCamParam(noiseType,p.camNoise);
-                    totI = phtn2ele(totI,K,eta);
-                    totIw = phtn2ele(totIw,K,eta);
-                end
-                
-                fprintf(f, ['total intensity (%s count/time bin):\t%d' ...
-                    '\t'], ip_u, totI);
-                fprintf(f, ['distribution width (%s count/time bin):\t' ...
-                    '%d\n'], ip_u, totIw);
-            end
-            if ~impPrm || (impPrm && ~isfield(p.molPrm, 'psf_width'))
-                if p.PSF 
-                    fprintf(f,['donor PSF standard deviation ' ...
-                        '(um):\t%d\n'], p.PSFw(1,1));
-                    fprintf(f,['acceptor PSF standard deviation '...
-                        ' (um):\t%d\n'], p.PSFw(1,2));
-                end
-            end
-            fprintf(f, 'movie dimension (pixels):\t%i,%i\n', ...
+            fprintf(f,'VIDEO PARAMETERS\n');
+            fprintf(f,cat(2,'> frame rate (s-1): ',num2str(1/expT),'\n'));
+            fprintf(f, '> trace length (frame): %i\n', N);
+            fprintf(f, '> movie dimension (pixels): %i,%i\n', ...
                 [res_x res_y]);
-            fprintf(f, 'pixel dimension (um):\t%d\n', aDim);
-            fprintf(f, 'bit rate:\t%i\n', p.bitnr);
-            fprintf(f,'donor bleedthrough coefficient:\t%d%%\n', 100*btD);
-            fprintf(f,'acceptor bleedthrough coefficient:\t%d%%\n', ...
-                100*btA);
-            fprintf(f,['donor direct excitation coefficient:\t%d%% of ' ...
-                'BG intensity\n'], 100*deD);
-            fprintf(f,['acceptor direct excitation coefficient:\t%d%% ' ...
-                'of BG intensity\n'], 100*deA);
-            
-            if strcmp(ip_u,'image')
-                bgDon = phtn2ele(bgDon,K,eta);
-                bgAcc = phtn2ele(bgAcc,K,eta);
-            end
-            
-            fprintf(f, ['fluorescent background intensity in donor ' ...
-                'channel(%s count/time bin):\t%d\n'], ip_u, ...
-                bgDon);
-            fprintf(f, ['fluorescent background intensity in acceptor ' ...
-                'channel (%s count/time bin):\t%d\n'], ip_u, ...
-                bgAcc);
-            
-            bg_str = get(h.popupmenu_simBg_type, 'String');
-            fprintf(f, 'background type:\t%s\n', bg_str{bgType});
-            if bgType == 2
-                fprintf(f,'TIRF (x,y) widths (um):\t(%d,%d)\n', TIRFw);
-            elseif bgType == 3
-                if isfield(p, 'bgImg') && ~isempty(p.bgImg)
-                    fprintf(f, 'background image file:\t%s\n', ...
-                        p.bgImg.file);
-                else
-                    fprintf(f, 'no background image file loaded\n');
-                end
-            end
-            if p.bgDec
-                fprintf(f, 'background decay (s):\t%d\n', cst);
-                fprintf(f, 'initial background amplitude:\t%d %\n', amp);
-            end
-            
+            fprintf(f,cat(2,'> pixel dimension (um): ',num2str(aDim),...
+                '\n'));
+            fprintf(f, '> bit rate: %i\n', p.bitnr);
             if strcmp(noiseType, 'poiss')
                 prm_id = [1,3,5];
                 pop_id = 1;
@@ -967,13 +875,117 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                 h.text_camNoise_03,h.text_camNoise_04,h.text_camNoise_05,...
                 h.text_camNoise_06];
             
-            fprintf(f, cat(2,'Camera noise model:\t',str_noise{pop_id},...
+            fprintf(f, cat(2,'> camera noise model: ',str_noise{pop_id},...
                 '\n'));
             for j = prm_id
                 fprintf(f, cat(2,'\tparameter ',get(h_text(j),'string'),...
                     ' ',num2str(noisePrm(j)),'\n'));
             end
             
+            if impPrm
+                fprintf(f,'\nPRESETS\n');
+                fprintf(f,'> input parameters file: %s\n',prm_file);
+            end
+            
+            fprintf(f,'\nMOLECULES\n');
+            fprintf(f, '> number of traces: %i\n', M);
+            if ~isempty(crd_file)
+                fprintf(f,'> input coordinates file: %s\n',crd_file);
+            end
+            fprintf(f, '> number of states: %i\n', J);
+            if ~impPrm || (impPrm && ~isfield(p.molPrm, 'stateVal'))
+                fprintf(f, '> state values:\n');
+                for i = 1:J
+                    fprintf(f,cat(2,'\tstate',num2str(i),': ',...
+                        num2str(states(i)),', '));
+                    fprintf(f,cat(2,'deviation: ',num2str(FRETw(i)),'\n'));
+                end
+            end
+            if (~impPrm || (impPrm && ~isfield(p.molPrm, 'kx'))) && J>1
+                fprintf(f, '> transitions rates (sec-1):\n');
+                str_fmt = '\t%1.3f';
+                for i = 2:J
+                    str_fmt = [str_fmt '\t%1.3f'];
+                end
+                str_fmt = [str_fmt '\n'];
+                fprintf(f, str_fmt, transMat(1:J, 1:J)');
+            end
+            if ~impPrm || (impPrm && ~isfield(p.molPrm, 'totInt'))
+                
+                if strcmp(ip_u,'ic')
+                    [mu_y_dark,K,eta] = getCamParam(noiseType,p.camNoise);
+                    totI = phtn2ele(totI,K,eta);
+                    totIw = phtn2ele(totIw,K,eta);
+                end
+                
+                fprintf(f,cat(2,'> total intensity (',ip_u,'): ',...
+                    num2str(totI),', '));
+                fprintf(f,cat(2,'deviation (',ip_u,'): ',num2str(totIw),...
+                    '\n'));
+            end
+            if ~impPrm || (impPrm && ~isfield(p.molPrm, 'gamma'))
+                fprintf(f,cat(2,'> gamma factor: ',num2str(gamma),', '));
+                fprintf(f,cat(2,'deviation: ',num2str(gammaW),'\n'));
+            end
+            fprintf(f,cat(2,'> donor bleedthrough coefficient: ',...
+                num2str(100*btD),'%%\n'));
+            fprintf(f,cat(2,'> acceptor bleedthrough coefficient: ',...
+                num2str(100*btA),'%%\n'));
+            fprintf(f,cat(2,'> donor direct excitation coefficient: ',...
+                num2str(100*deD),'%% of total intensity\n'));
+            fprintf(f,cat(2,'> acceptor direct excitation coefficient: ',...
+                num2str(100*deA),'%% of total intensity\n'));
+            if bleach
+                fprintf(f,cat(2,'\tphotobleaching time decay: ',...
+                    num2str(bleachT),' s\n'));
+            end
+            
+            fprintf(f,'\nEXPERIMENTAL SETUP\n');
+            if ~impPrm || (impPrm && ~isfield(p.molPrm, 'psf_width'))
+                if p.PSF 
+                    fprintf(f,cat(2,'> donor PSF standard deviation ',...
+                        '(um): ',num2str(p.PSFw(1,1)),'\n'));
+                    fprintf(f,cat(2,'> acceptor PSF standard deviation ',...
+                        ' (um): ',num2str(p.PSFw(1,2)),'\n'));
+                end
+            end
+            if strcmp(ip_u,'ic')
+                bgDon = phtn2ele(bgDon,K,eta);
+                bgAcc = phtn2ele(bgAcc,K,eta);
+            end
+            fprintf(f,cat(2,'> fluorescent background intensity in donor ', ...
+                'channel(',ip_u,'): ',num2str(bgDon),'\n'));
+            fprintf(f,cat(2,'> fluorescent background intensity in ',...
+                'acceptor channel (',ip_u,'): ',num2str(bgAcc),'\n'));
+            bg_str = get(h.popupmenu_simBg_type, 'String');
+            fprintf(f, '> background type: %s\n', bg_str{bgType});
+            if bgType == 2
+                fprintf(f,cat(2,'\tTIRF (x,y) widths (pixel): (',...
+                    num2str(TIRFw(1)),',',num2str(TIRFw(2)),')\n'));
+            elseif bgType == 3
+                if isfield(p, 'bgImg') && ~isempty(p.bgImg)
+                    fprintf(f, '\tbackground image file: %s\n', ...
+                        p.bgImg.file);
+                else
+                    fprintf(f, '\tno background image file loaded\n');
+                end
+            end
+            if p.bgDec
+                fprintf(f,cat(2,'> background decay (s): ',num2str(cst),...
+                    '\n'));
+                fprintf(f,cat(2,'> initial background amplitude: ',...
+                    num2str(amp),'\n'));
+            end
+            
+            fprintf(f,'\nEXPORT OPTIONS\n');
+            fprintf(f,'> export traces (in %s counts): %s\n',op_u, ...
+                str_exp_traces);
+            fprintf(f,'> export *.sira video: %s\n',str_exp_mov);
+            fprintf(f,'> export *.avi video: %s\n',str_exp_avi);
+            fprintf(f,'> export ideal traces: %s\n',str_exp_procTraces);
+            fprintf(f,'> export dwell-times: %s\n',str_exp_dt);
+            fprintf(f,'> export coordinates: %s\n',str_exp_coord);
+
             fclose(f);
             
             str_action = cat(2,str_action,'Simulation parameters written ',...
