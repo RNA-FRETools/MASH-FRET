@@ -34,7 +34,7 @@ They are created in the `/simulations/traces_ASCII` analysis sub-folder after ex
 
 ## File name
 
-The file is named by the user during the export process, and is appended with the extension `_molMMMofNNN`, where `MMM` is the index of the molecule written in the file and `NNN` the total number of simulated molecules.
+The file is named by the user during the export process, and is appended with the extension `_molMofN`, where `M` is the index of the molecule written in the file and `N` the total number of simulated molecules.
 
 
 ---
