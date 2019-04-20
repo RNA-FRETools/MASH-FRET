@@ -2,7 +2,7 @@
 layout: default
 title: (*.traces) SMART traces
 parent: /output-files.html
-nav_order: 1
+nav_order: 27
 nav_exclude: 1
 ---
 

@@ -2,7 +2,7 @@
 layout: default
 title: (*.bga) Background analyzer
 parent: /output-files.html
-nav_order: 1
+nav_order: 2
 nav_exclude: 1
 ---
 

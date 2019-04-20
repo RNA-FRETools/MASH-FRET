@@ -2,7 +2,7 @@
 layout: default
 title: (*.tbl) Intensity statistics
 parent: /output-files.html
-nav_order: 1
+nav_order: 25
 nav_exclude: 1
 ---
 

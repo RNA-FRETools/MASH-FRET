@@ -2,7 +2,7 @@
 layout: default
 title: (*.gam) Gamma factors
 parent: /output-files.html
-nav_order: 1
+nav_order: 10
 nav_exclude: 1
 ---
 

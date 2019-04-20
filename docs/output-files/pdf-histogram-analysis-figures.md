@@ -2,7 +2,7 @@
 layout: default
 title: (*.pdf) Histogram analysis figures
 parent: /output-files.html
-nav_order: 1
+nav_order: 22
 nav_exclude: 1
 ---
 

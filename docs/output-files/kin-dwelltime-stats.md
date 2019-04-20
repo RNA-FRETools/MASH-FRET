@@ -2,7 +2,7 @@
 layout: default
 title: (*.kin) Dwell time statistics
 parent: /output-files.html
-nav_order: 1
+nav_order: 13
 nav_exclude: 1
 ---
 

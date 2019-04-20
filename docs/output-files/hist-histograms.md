@@ -2,7 +2,7 @@
 layout: default
 title: (*.hist) Histograms
 parent: /output-files.html
-nav_order: 1
+nav_order: 12
 nav_exclude: 1
 ---
 

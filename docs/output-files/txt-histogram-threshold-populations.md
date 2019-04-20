@@ -2,7 +2,7 @@
 layout: default
 title: (*.txt) Histogram threshold populations
 parent: /output-files.html
-nav_order: 1
+nav_order: 30
 nav_exclude: 1
 ---
 

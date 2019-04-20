@@ -2,7 +2,7 @@
 layout: default
 title: (*.dat) HaMMy traces
 parent: /output-files.html
-nav_order: 1
+nav_order: 7
 nav_exclude: 1
 ---
 
