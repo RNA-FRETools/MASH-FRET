@@ -2,16 +2,16 @@ function plotExample(h_fig)
 
 % Plot one simulated trajectory and the first frame of the SMV
 % Short version of exportResults.m
+
+% Last update: 20.4.2019 by Mélodie Hadzic
+% >> correct "Pattern" background: the background image is now split in two
+%    with donor and acceptor channel having the left and right half images 
+%    as background.
 %
-% Requires external files: 
-%
-% Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
-% Last update: 12th of December 2017 by Richard Börner
-% Last update: 7th of March 2018 by Richard Börner
-%
-% Comments adapted for Boerner et al 2017
-% Noise models adapted for Boerner et al 2017.
-% Simulation default parameters adapted for Boerner et al 2017.
+% update: 7th of March 2018 by Richard Börner
+% >> Comments adapted for Boerner et al 2017
+% >> Noise models adapted for Boerner et al 2017.
+% >> Simulation default parameters adapted for Boerner et al 2017.
 
 h = guidata(h_fig);
 
@@ -115,12 +115,8 @@ if nbMol % Only true, if at least one molecule was simulated.
         case 3 % patterned
             if isfield(h.param.sim, 'bgImg') && ~isempty(h.param.sim.bgImg)
                 bgImg = h.param.sim.bgImg.frameCur;
-                min_s = min([size(img_bg_don);size(bgImg)],[],1);
-                h_min = min_s(1); w_min = min_s(2);
-                img_bg_don(1:h_min,1:w_min) = bgImg(1:h_min,1:w_min);
-                min_s = min([size(img_bg_acc);size(bgImg)],[],1);
-                h_min = min_s(1); w_min = min_s(2);
-                img_bg_acc(1:h_min,1:w_min) = bgImg(1:h_min,1:w_min);
+                img_bg_don = bgImg(:,1:size(img_bg_don,2));
+                img_bg_acc = bgImg(:,size(img_bg_don,2)+1:end);
             else
                 updateActPan('No BG pattern loaded.', h_fig, 'error');
                 return;
