@@ -1,4 +1,7 @@
-function [data ok] = readPng(fullFname, n, fDat, h_fig)
+function [data,ok] = readPng(fullFname, n, fDat, h_fig)
+
+% Last update: 20.4.2019 by Mélodie Hadzic
+% >> fix error occuring when loading background image for simulation
 
 data = [];
 ok = 1;
@@ -19,7 +22,8 @@ if isempty(fDat)
     if isfield(info, 'Description')
         % time delay between each frame
         descr = info(1,1).Description;
-        if isnan(str2num(descr))
+        if isempty(descr) || (numel(str2num(descr))==1 && ...
+                isnan(str2num(descr)))
             txt = ['arbitrary ' num2str(cycleTime)];
         else
             descr = str2num(descr);
