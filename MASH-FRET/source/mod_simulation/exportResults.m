@@ -7,6 +7,9 @@ function exportResults(h_fig,varargin)
 % Requires external files: setContPan.m
 
 % Last update: 20.4.2019 by MH
+% >> correct "Pattern" background: the background image is now split in two
+%    with donor and acceptor channel having the left and right half images 
+%    as background.
 % >> improve file aesthetic and efficacity by renaming intensity units 
 %    "image counts/time bin" by "ic", add categories "VIDEO PARAMETERS", 
 %    "PRESETS", "MOLECULES", "EXPERIMENTAL SETUP" and "EXPORT OPTIONS"
@@ -183,14 +186,8 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             case 3 % patterned
                 if isfield(p, 'bgImg') && ~isempty(p.bgImg)
                     bgImg = p.bgImg.frameCur;
-                    min_s = min([size(img_bg_don);size(bgImg)]);
-                    h_min = min_s(1); w_min = min_s(2);
-                    img_bg_don(1:h_min,1:w_min) = ...
-                        bgImg(1:h_min,1:w_min);
-                    min_s = min([size(img_bg_acc);size(bgImg)]);
-                    h_min = min_s(1); w_min = min_s(2);
-                    img_bg_acc(1:h_min,1:w_min) = ...
-                        bgImg(1:h_min,1:w_min);
+                    img_bg_don = bgImg(:,1:size(img_bg_don,2));
+                    img_bg_acc = bgImg(:,size(img_bg_don,2)+1:end);
                 else
                     setContPan('No BG pattern loaded.','error',h_fig);
                     return;
@@ -956,12 +953,14 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                 bgDon = phtn2ele(bgDon,K,eta);
                 bgAcc = phtn2ele(bgAcc,K,eta);
             end
-            fprintf(f,cat(2,'> fluorescent background intensity in donor ', ...
-                'channel(',ip_u,'): ',num2str(bgDon),'\n'));
-            fprintf(f,cat(2,'> fluorescent background intensity in ',...
-                'acceptor channel (',ip_u,'): ',num2str(bgAcc),'\n'));
             bg_str = get(h.popupmenu_simBg_type, 'String');
             fprintf(f, '> background type: %s\n', bg_str{bgType});
+            if bgType==1 || bgType==2
+                fprintf(f,cat(2,'> fluorescent background intensity in donor ', ...
+                    'channel(',ip_u,'): ',num2str(bgDon),'\n'));
+                fprintf(f,cat(2,'> fluorescent background intensity in ',...
+                    'acceptor channel (',ip_u,'): ',num2str(bgAcc),'\n'));
+            end
             if bgType == 2
                 fprintf(f,cat(2,'\tTIRF (x,y) widths (pixel): (',...
                     num2str(TIRFw(1)),',',num2str(TIRFw(2)),')\n'));
