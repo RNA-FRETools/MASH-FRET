@@ -6,7 +6,12 @@ function saveTraces(s, pname, fname, prm, h_fig)
 % "fname" >> generated folder path
 % "h_fig" >> MASH figure handle
 
-% Last update: 28th of March 2019 by Mélodie C.A.S Hadzic
+% Last update: 22.4.2019 by MH
+% --> correct multiple FRET export of data for external software
+% --> add file name extensions "_HaMMy" for consistency with Trace
+%     processing
+%
+% update: 28th of March 2019 by Mélodie C.A.S Hadzic
 % --> change destination directory from project folder (which is now root 
 %     folder) "/intensities" to root folder "/video_processing/intensities"
 %
@@ -250,14 +255,11 @@ end
 for j = 1:nFRET
     
     % build time column data
-    [o,l,o] = find(exc==chanExc(FRET(1)));
+    [o,l,o] = find(exc==chanExc(FRET(j,1)));
     times =  expT*(l:nExc:L);
     
     % build file extension specific to FRET
-    extf = [];
-    if size(FRET,1) > 1
-        extf = cat(2,'FRET',num2str(FRET(1)),num2str(FRET(2)));
-    end
+    extf = cat(2,'FRET',num2str(FRET(j,1)),num2str(FRET(j,2)));
     
     % save HaMMy-compatible files
     if saveAsHa
@@ -265,7 +267,7 @@ for j = 1:nFRET
             
             % build file name
             fname_ha = cat(2,name,'_mol',num2str(n),'of',num2str(N),extf,...
-                '.dat');
+                '_HaMMy.dat');
             
             % format intensity data
             intensities = I_all(l:nExc:L,[nChan*(n-1)+FRET(j,1),...
