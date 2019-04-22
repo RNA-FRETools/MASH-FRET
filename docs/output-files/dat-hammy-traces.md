@@ -10,7 +10,7 @@ nav_exclude: 1
 # HaMMy trace files
 {: .no_toc }
 
-HaMMy trace files are ASCII files with the extension `_HaMMy.dat`. They are usually found in the main`/video_processing/intensities/traces_HaMMy` or main`/traces_processing/traces_HaMMy` analysis folder.
+HaMMy trace files are ASCII files with the extension `.dat`. They are usually found in the main`/video_processing/intensities/traces_HaMMy` or main`/traces_processing/traces_HaMMy` analysis folder.
 
 ## Table of contents
 {: .no_toc .text-delta }
@@ -26,7 +26,7 @@ HaMMy trace files are ASCII files with the extension `_HaMMy.dat`. They are usua
 These trace files are written in an ASCII format importable in the software HaMMy [<sup>1</sup>].
 Each file contains intensity-time traces of a specific molecule and FRET pair, integrated from a single molecule video (SMV) or exported after trace processing.
 
-They are created in the `/video_processing/intensities/traces_HaMMy` analysis sub-folder after creating and exporting ASCII traces in panel 
+They are created in the `/video_processing/intensities/traces_HaMMy` analysis sub-folder after creating and exporting HaMMy traces in panel 
 [Intensity integration](../video-processing/panels/panel-intensity-integration.html#create-and-export-intensity-time-traces) of module Video processing, or in or `/traces_processing/traces_HaMMy` if exported from panel 
 [Sample management](../trace-processing/panels/panel-sample-management.html#export-processed-data)of module Trace processing.
 
