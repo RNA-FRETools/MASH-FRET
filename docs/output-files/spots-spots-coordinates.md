@@ -51,7 +51,7 @@ Coordinates are written in double precision and are organized in a column-wise f
 * column `frame` containing frame indexes on which the spot detection was performed
 
 ```
-x	y	I	frame
+x		y		I	frame
 1.450000e+01	3.450000e+01	518	1
 7.350000e+01	2.150000e+01	542	1
 1.350000e+01	1.405000e+02	547	1
@@ -66,7 +66,7 @@ In the case where the
 [Pixel intensity units](../video-processing/panels/panel-plot.html#pixel-intensity-units)
 
 ```
-x	y	I	assymetry	width	height	theta	z-offset	frame
+x		y		I		assymetry	width		height		theta		z-offset	frame
 1.500000e+01	3.800000e+01	1.200463e+02	1.000000e+00	3.402311e-01	3.402311e-01	-3.230343e+04	1.129999e+03	1
 1.033617e+02	1.942211e+02	1.212129e+02	1.162688e+00	8.045870e-01	6.920058e-01	-9.087937e+00	1.129771e+03	1
 3.499995e+01	1.107173e+02	1.260142e+02	1.708943e+00	7.835743e-01	4.585141e-01	-1.169097e+05	1.129877e+03	1

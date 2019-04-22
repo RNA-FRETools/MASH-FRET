@@ -56,10 +56,10 @@ Dwell times are organized column-wise with:
 * columns `state after transition` containing state values after transitions
 
 ```
-dwell-time (second)	state	state after transition
-4.074967e+01	2.000000e-01	4.000000e-01
-2.270107e+01	4.000000e-01	6.000000e-01
-3.884042e+00	6.000000e-01	2.000000e-01
+dwell-time (second)	state		state after transition
+4.074967e+01		2.000000e-01	4.000000e-01
+2.270107e+01		4.000000e-01	6.000000e-01
+3.884042e+00		6.000000e-01	2.000000e-01
 ```
 
 The last value in column `state after transition` is set to `NaN` when the state after transition is unknown, *e. g.* when the last dwell time is truncated by the limited observation time.

@@ -10,7 +10,7 @@ nav_exclude: 1
 # Trace file from video processing
 {: .no_toc }
 
-Trace files from video are ASCII files with the extension `.txt`. They are usually found in the main `/video_processing/intensities/traces_ASCII` or main`/video_processing/intensities/traces_ASCII/intensities` analysis folders.
+Trace files from video are ASCII files with the extension `.txt`. They are usually found in the main `/video_processing/intensities/traces_ASCII` or main`/video_processing/intensities/traces_ASCII/single_traces` analysis folders.
 
 ## Table of contents
 {: .no_toc .text-delta }
@@ -25,8 +25,8 @@ Trace files from video are ASCII files with the extension `.txt`. They are usual
 
 These trace files are written in ASCII format and contain the intensity-time traces integrated from the single molecule video (SMV).
 
-They are created in the `/video_processing/intensities/traces_ASCII` analysis sub-folder if molecules are saved in individual files, or `/video_processing/intensities/traces_ASCII/single` if all molecules are saved in one file, after creating and exporting ASCII traces in panel 
-[Intensity integration](/video-processing/panels/panel-intensity-integration.html#create-and-export-intensity-time-traces) of module Video processing.
+They are created in the `/video_processing/intensities/traces_ASCII` analysis sub-folder if molecules are saved in individual files, or `/video_processing/intensities/traces_ASCII/single_traces` if all molecules are saved in one file, after creating and exporting ASCII traces in panel 
+[Intensity integration](../video-processing/panels/panel-intensity-integration.html#create-and-export-intensity-time-traces) of module Video processing.
 
 
 ---
@@ -79,9 +79,9 @@ Intensity-time traces are organized column-wise with:
 
 ```
 time(s)		frames	I_1(a.u.)	I_2(a.u.)	I_3(a.u.)
-1.017500e-01	1	3181	17475	3741
-2.035000e-01	2	14617	6545	3304
-3.052500e-01	3	2975	18031	3755
+1.017500e-01	1	3181		17475		3741
+2.035000e-01	2	14617		6545		3304
+3.052500e-01	3	2975		18031		3755
 ```
 
 For consistency, intensities are always given as the sum of the brightest pixel intensities per video frame, regardless the units defined in

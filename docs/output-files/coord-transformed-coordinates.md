@@ -46,7 +46,7 @@ By default, the file is named after the <u>spots coordinates file</u> loaded in
 Coordinates are written in double precision and are organized in a column-wise fashion with columns `x[i]` and `y[i]` containing the respective x- and y- coordinates of single molecules in detection channel `[i]`.
 
 ```
-x1	y1	x2	y2
+x1		y1		x2		y2
 7.500000e+00	8.650000e+01	1.355000e+02	8.650000e+01
 9.050000e+01	9.550000e+01	2.185000e+02	9.550000e+01
 1.145000e+02	2.505000e+02	2.425000e+02	2.505000e+02

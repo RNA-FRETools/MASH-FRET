@@ -47,7 +47,7 @@ By default, the file is named after the <u>reference image file</u> loaded in
 Coordinates are written in double precision and are organized in a row-wise fashion with coordinates corresponding to one emitter in each channel being written successively on separated lines, and in a column-wise fashion with columns `x` and `y` containing x- and y- reference coordinates respectively.
 
 ```
-x	y
+x		y
 1.045000e+02	2.365000e+02
 2.325000e+02	2.365000e+02
 6.250000e+01	2.385000e+02
