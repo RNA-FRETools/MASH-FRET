@@ -21,7 +21,10 @@ $eq-color: $link-color;
   
 .procedure{
   background-color: $grey-lt-000;
-  border-radius: 5px;
+  border: solid;
+  border-width: thin;
+  border-radius: 7px;
+  border-color: lightgray;
   padding-top: 0.75rem;
   padding-right: 1rem;
   padding-bottom: 0.5rem;

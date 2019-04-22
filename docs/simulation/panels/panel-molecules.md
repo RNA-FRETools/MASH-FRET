@@ -131,7 +131,22 @@ Transition rates are given in second<sup>-1</sup> and are organized in a matrix,
 
 When a rate equal to zero, the transition is considered forbidden.
 
+Heterogeneous transition kinetics characterized by multiple rate coefficients can be simulated by using degenerated states, *i.e.*, using states with same 
+[*FRET*<sub>*j*</sub>](){: .math_var } value but different transition rate coefficients.
+For an example, please refer to the 
+literature [1](#references).
+
 **<u>default</u>:** 0.1 second<sup>-1</sup>.
+
+**Note:** *For more practicability, the transition rate matrix is limited to five states. 
+To simulate a system with more than five states, please refer to 
+[Simulate more than five states](../functionalities/simulate-more-states.html)*
+
+
+### References
+
+1. S. Schmid, T. Hugel, *Efficient use of single molecule time traces to resolve kinetic rates, models and uncertainties*, *J. Chem. Phys.* **2017**, DOI: [10.1063/1.5006604](https://doi.org/10.1063/1.5006604)
+
 
 ---
 
