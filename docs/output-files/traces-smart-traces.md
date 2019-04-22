@@ -10,7 +10,7 @@ nav_exclude: 1
 # SMART trace files
 {: .no_toc }
 
-SMART trace files are Matlab binary files with the extension `_SMART.traces`. They are usually found in the main`/video_processing/intensities/traces_SMART` or main`/traces_processing/traces_SMART` analysis folder.
+SMART trace files are Matlab binary files with the extension `.traces`. They are usually found in the main`/video_processing/intensities/traces_SMART` or main`/traces_processing/traces_SMART` analysis folder.
 
 ## Table of contents
 {: .no_toc .text-delta }
@@ -26,7 +26,7 @@ SMART trace files are Matlab binary files with the extension `_SMART.traces`. Th
 These trace files are written in MATLAB binary format importable in the software SMART [<sup>1</sup>].
 Each file contains intensity-time traces of a specific FRET pair, integrated from a single molecule video (SMV) or exported after trace processing.
 
-They are created in the `/video_processing/intensities/traces_SMART` analysis sub-folder after creating and exporting ASCII traces in panel 
+They are created in the `/video_processing/intensities/traces_SMART` analysis sub-folder after creating and exporting SMART traces in panel 
 [Intensity integration](../video-processing/panels/panel-intensity-integration.html#create-and-export-intensity-time-traces) of module Video processing, or in or `/traces_processing/traces_SMART` if exported from panel 
 [Sample management](../trace-processing/panels/panel-sample-management.html#export-processed-data)of module Trace processing.
 
