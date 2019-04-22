@@ -10,7 +10,7 @@ nav_exclude: 1
 # ebFRET trace files
 {: .no_toc }
 
-ebFRET trace files are ASCII files with the extension `_ebFRET.dat`. They are usually found in the main`/video_processing/intensities/traces_ebFRET` or main`/traces_processing/traces_ebFRET` analysis folder.
+ebFRET trace files are ASCII files with the extension `.dat`. They are usually found in the main`/video_processing/intensities/traces_ebFRET` or main`/traces_processing/traces_ebFRET` analysis folder.
 
 ## Table of contents
 {: .no_toc .text-delta }
@@ -26,7 +26,7 @@ ebFRET trace files are ASCII files with the extension `_ebFRET.dat`. They are us
 These trace files are written in an ASCII format importable in the software ebFRET [<sup>1</sup>].
 Each file contains intensity-time traces of a specific FRET pair, integrated from a single molecule video (SMV) or exported after trace processing.
 
-They are created in the `/video_processing/intensities/traces_ebFRET` analysis sub-folder after creating and exporting ASCII traces in panel 
+They are created in the `/video_processing/intensities/traces_ebFRET` analysis sub-folder after creating and exporting ebFRET traces in panel 
 [Intensity integration](../video-processing/panels/panel-intensity-integration.html#create-and-export-intensity-time-traces) of module Video processing, or in or `/traces_processing/traces_ebFRET` if exported from panel 
 [Sample management](../trace-processing/panels/panel-sample-management.html#export-processed-data)of module Trace processing.
 
