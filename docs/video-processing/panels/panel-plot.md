@@ -19,9 +19,14 @@ nav_order: 2
 
 ---
 
-## Intensity units
+## Pixel intensity units
 
 Pixel intensities are expressed in (image) counts and can be given in counts per second by checking the **Units per s.** box.
+
+Intensity units are used for 
+[Video visualization](area-visualization.html#video-visualization), in the 
+[Create trace tool](area-visualization.html#create-trace-tool) and in
+[.spots files](../..//output-files/spots-spots-coordinates.html).
 
 **<u>default</u>:** intensities are given in count per second.
 
