@@ -7,7 +7,7 @@ function saveProcAscii(h_fig, p, xp, pname, name)
 % "name" >> destination file name
 
 % Last update: 22.4.2019 by MH
-% --> correct file name and rate in SMART-compatible files
+% --> correct rate in SMART-compatible files
 %
 % update: 3rd of April 2019 by Mélodie Hadzic
 % --> correct export of gamma factors for multiple FRET channels
@@ -983,7 +983,7 @@ if saveTr
             % write data to SMART file
             group_data = dat_smart{j};
             for n = 1:size(group_data,2)
-                group_data{n} = cat(2,pname_smart,fname_smart);
+                group_data{n} = fname_smart;
             end
             save(cat(2,pname_smart,fname_smart),'group_data','-mat');
             
