@@ -69,7 +69,7 @@ Export single molecule intensity-time traces to one common ASCII file importable
 [here](https://qub.mandelics.com/)).
 
 See 
-[QUB trace files from video](../../output-files/txt-qub-traces-from-video.html) for more information.
+[QUB trace files from video](../../output-files/txt-qub-traces.html) for more information.
 
 
 ---
