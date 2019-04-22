@@ -6,7 +6,10 @@ function saveProcAscii(h_fig, p, xp, pname, name)
 % "pname" >> destination folder
 % "name" >> destination file name
 
-% Last update: 3rd of April 2019 by Mélodie Hadzic
+% Last update: 22.4.2019 by MH
+% --> correct file name and rate in SMART-compatible files
+%
+% update: 3rd of April 2019 by Mélodie Hadzic
 % --> correct export of gamma factors for multiple FRET channels
 %
 % update: 20th of February 2019 by Mélodie Hadzic
@@ -47,7 +50,7 @@ end
 exc = p.proj{proj}.excitations;
 chanExc = p.proj{proj}.chanExc;
 labels = p.proj{proj}.labels;
-rate = p.proj{proj}.frame_rate; % this is the EXPOSURE TIME
+expT = p.proj{proj}.frame_rate; % this is the EXPOSURE TIME
 
 FRET = p.proj{proj}.FRET;
 S = p.proj{proj}.S;
@@ -274,7 +277,7 @@ try
             incl = p.proj{proj}.bool_intensities(:,m);
             [frames,o,o] = find(incl);
             frames = ((nExc*(frames(1)-1)+1):nExc*frames(end))';
-            times = frames*rate;
+            times = frames*expT;
             
             % build molecule file name
             name_mol = [name '_mol' num2str(m) 'of' num2str(nMol)];
@@ -404,13 +407,14 @@ try
                             % format SMART data
                             if ~p.proj{proj}.is_coord
                                 dat_smart{j} = formatSmart2File(...
-                                    I_fret{j}{n},[n,N],rate*nExc,zeros(...
-                                    numel(mol_incl),numel(2*FRET(j,1)-1:...
-                                    2*FRET(j,1))));
+                                    I_fret{j}{n},[n,N],1/(expT*nExc),...
+                                    zeros(numel(mol_incl),...
+                                    numel(2*FRET(j,1)-1:2*FRET(j,1))));
                             else
                                 dat_smart{j} = formatSmart2File(...
-                                    I_fret{j}{n},[n,N],rate*nExc,coord(...
-                                    mol_incl,(2*FRET(j,1)-1):2*FRET(j,1)));
+                                    I_fret{j}{n},[n,N],1/(expT*nExc),...
+                                    coord(mol_incl,...
+                                    (2*FRET(j,1)-1):2*FRET(j,1)));
                             end
                             
                         end
@@ -689,7 +693,7 @@ try
                             % format intensity dwell times
                             discr_I = ...
                                 intensities_DTA(incl,(m-1)*nChan+c,l);
-                            dtI = getDtFromDiscr(discr_I, rate);
+                            dtI = getDtFromDiscr(discr_I, expT);
                             
                             % build file name
                             fname_dtI = cat(2,name_mol,'_I',num2str(c),...
@@ -725,7 +729,7 @@ try
                         
                         % format FRET dwell times
                         discr_F = FRET_DTA(incl,(m-1)*nFRET+i);
-                        dtF = getDtFromDiscr(discr_F, rate);
+                        dtF = getDtFromDiscr(discr_F, expT);
                         
                         % build file name
                         fname_dtF = cat(2,name_mol,'_FRET',num2str(...
@@ -758,7 +762,7 @@ try
                         
                         % format stoichiometry dwell times
                         discr_S = S_DTA(incl,(m-1)*nS+i);
-                        dtS = getDtFromDiscr(discr_S, rate);
+                        dtS = getDtFromDiscr(discr_S, expT);
                         
                         % build file name
                         fname_dtS = cat(2,name_mol,'_S',labels{S(i)},...
@@ -979,7 +983,7 @@ if saveTr
             % write data to SMART file
             group_data = dat_smart{j};
             for n = 1:size(group_data,2)
-                group_data{n} = fname_smart;
+                group_data{n} = cat(2,pname_smart,fname_smart);
             end
             save(cat(2,pname_smart,fname_smart),'group_data','-mat');
             
