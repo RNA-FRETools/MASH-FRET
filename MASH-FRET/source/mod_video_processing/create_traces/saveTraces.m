@@ -8,6 +8,7 @@ function saveTraces(s, pname, fname, prm, h_fig)
 
 % Last update: 22.4.2019 by MH
 % --> correct multiple FRET export of data for external software
+% --> correct coordinates, file name and rate in SMART-compatible files
 % --> add file name extensions "_HaMMy" for consistency with Trace
 %     processing
 %
@@ -337,7 +338,7 @@ for j = 1:nFRET
         for n = 1:N
             ind_fret = [nChan*(n-1)+FRET(j,1) nChan*(n-1)+FRET(j,2)];
             Ifret = I_all(l:nExc:L,ind_fret);
-            group_data{n,1}.name = fname_SMART;
+            group_data{n,1}.name = cat(2,pname_smart,fname_SMART);
             group_data{n,1}.gp_num = NaN;
             group_data{n,1}.movie_num = 1;
             group_data{n,1}.movie_ser = 1;
@@ -345,8 +346,9 @@ for j = 1:nFRET
             group_data{n,1}.spots_in_movie = N;
             group_data{n,1}.position_x = s.coord(n,2*FRET(j,1)-1);
             group_data{n,1}.position_y = s.coord(n,2*FRET(j,1));
-            group_data{n,1}.positions = s.coord;
-            group_data{n,1}.fps = expT*nExc;
+            group_data{n,1}.positions = ...
+                s.coord(:,[2*FRET(j,1)-1,2*FRET(j,1)]);
+            group_data{n,1}.fps = 1/(expT*nExc);
             group_data{n,1}.len = size(Ifret,1);
             group_data{n,1}.nchannels = 2;
             group_data{n,2} = Ifret;
