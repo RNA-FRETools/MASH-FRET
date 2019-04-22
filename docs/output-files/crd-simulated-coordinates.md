@@ -54,10 +54,14 @@ X- and y-coordinates in donor channel are written in columns 1 and 2 respectivel
 
 ## Compatibility
 
-Simulated coordinates files can be imported in panel 
-[Coordinates transformation](../video-processing/panels/panel-molecule-coordinates.html#coordinates-transformation) as reference, spots or single molecule coordinates, but also in the 
-[Visualization area](../video-processing/panels/area-visualization.html#load-videoimage-file) as a graphic file to visualize the simulated single molecule density.
-
-Simulated coordinates files can as well be imported in module 
-[Trace processing](../transition-analysis/workflow.html#import-single-molecule-data) together with ASCII trace files, for trace processing.
+Simulated coordinates files can be imported:
+* as reference or spots coordinates in panel 
+[Coordinates transformation](../video-processing/panels/panel-molecule-coordinates.html#coordinates-transformation) by adjusting the corresponding 
+[Import options](../video-processing/functionalities/set-coordinates-import-options.html) to the actual file structure
+* as single molecule coordinates in panel 
+[Intensity integration](../video-processing/panels/panel-intensity-integration.html#input-coordinates) by adjusting the corresponding import options
+* as a graphic file in the 
+[Visualization area](../video-processing/panels/area-visualization.html#load-videoimage-file) to visualize the simulated single molecule density
+* together with ASCII trace files in module 
+[Trace processing](../transition-analysis/workflow.html#import-single-molecule-data) for trace processing
 
