@@ -148,7 +148,7 @@ MASH-FRET/source/project/setDefPrm_TDP.m
 
 ## Compatibility
 
-MASH project files are MATLAB binary files and can be imported in MATLAB's workspace by simply drag-and-dropping the file, or by typing in MATLAB's command window:
+MASH project files are MATLAB binary files and can be imported in MATLAB's workspace by typing in MATLAB's command window:
 
 ```matlab
 load('datafolder\project-file.mash','-mat');
