@@ -310,7 +310,7 @@ switch meth
                 expfig = 1;
                 
             else
-                fprintf(f, ['Relative occurences:' repmat('\t%d', ...
+                fprintf(f, ['\n\nRelative occurences:' repmat('\t%d', ...
                     [1 T+1])],  pres{1,1}(:,1)');
             end
             fclose(f);
