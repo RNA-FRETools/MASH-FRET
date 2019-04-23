@@ -44,7 +44,7 @@ By default, the file is named after the <u>project file</u> loaded in
 [Trace processing](../trace-processing/panels/area-project-management.html#project-list) or 
 [Histogram analysis](../histogram-analysis/panels/area-management.html#project-list), and is appended with the extension `_[Ddd]`, where `[Ddd]` is the data type written in the file.
 
-Data types supported in dwell time files are:
+Data types supported in histogram files are:
 * `I[i]-[L]`: intensities in detection channel indexed `[i]` upon illumination with laser wavelength `[L]` nm
 * `FRET[D]to[A]`: FRET from donor emitter detected in channel indexed `[D]` to acceptor emitter detected in channel indexed `[A]`
 * `S[Eee]`: stoichiometry of emitter detected in channel labelled `[Eee]`
