@@ -56,8 +56,7 @@ The type of exported files depends on which analysis was carried on:
 * [.hist files](../../output-files/hist-histograms.html) are systematically saved, 
 * [.pdf files](../../output-files/pdf-histogram-analysis-figures.html) are saved when bootstrap analysis was used, 
 * [_config.txt](../../output-files/txt-histogram-state-configurations.html) are saved when state configurations were determined, 
-* [_thresh.txt](../../output-files/txt-histogram-gaussian-populations.html) are saved when thresholds were used, and 
-* [_gauss.txt](../../output-files/txt-histogram-gaussian-populations.) when Gaussian fitting was used.
+* [_thresh or _gauss.txt](../../output-files/txt-histogram-gaussian-populations.html) are saved when state populations were calculated.
 
 
 ---
