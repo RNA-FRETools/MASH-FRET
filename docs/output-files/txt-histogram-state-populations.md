@@ -37,8 +37,8 @@ They are created in the `/histogram_analysis` analysis sub-folder after state po
 The file is named by the user during the export process.
 
 By default, the file is named after the <u>project file</u> loaded in 
-[Histogram analysis](../histogram-analysis/panels/area-management.html#project-list), and is appended with an extension depending on the method settings in 
-[]():
+[Histogram analysis](../histogram-analysis/panels/area-management.html#project-list), and is appended with an extension depending on the 
+[Method settings](../histogram-analysis/panels/panel-state-populations.html#method-settings):
 * `_[Ddd]_gauss` if populations are calculated with Gaussian fitting, where `[Ddd]` is the data type written in the file
 * `_[Ddd]_thresh` if populations are calculated with thresholding
 
