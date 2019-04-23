@@ -6,7 +6,8 @@ function nameCorr = getCorrName(name, pName, h_fig)
 % "h_fig" >> MASH figure handle
 % "nameCorr" >> corrected file name
 
-% Last update: 5th of February 2014 by Mélodie C.A.S Hadzic
+% Last update: 23.4.2019 by MH
+% >> correct infinite loop when filename is too long
 
 [o,name,fext] = fileparts(name);
 
@@ -44,7 +45,7 @@ if (length(namePreCorr) + length(maxCarExt)) > (namelengthmax - 1)
         nameCorr = [nameCorr maxCarExt];
     end
 
-    if (length(nameCorr) + length(maxCarExt)) > (namelengthmax - 1)
+    if length(nameCorr) > (namelengthmax - 1)
         while (length(nameCorr) + length(maxCarExt)) >= namelengthmax
             nameCorr = getCorrName(nameCorr, h_fig);
         end
