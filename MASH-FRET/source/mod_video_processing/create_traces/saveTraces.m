@@ -6,6 +6,10 @@ function saveTraces(s, pname, fname, prm, h_fig)
 % "fname" >> generated folder path
 % "h_fig" >> MASH figure handle
 
+% Last update: 23.4.2019 by MH
+% --> change file name extension "FRET[D][A]" to "FRET[D]to[A]" for
+%     consistency with files exported from Trace processing
+%
 % Last update: 22.4.2019 by MH
 % --> correct multiple FRET export of data for external software
 % --> correct coordinates and rate in SMART-compatible files
@@ -260,7 +264,7 @@ for j = 1:nFRET
     times =  expT*(l:nExc:L);
     
     % build file extension specific to FRET
-    extf = cat(2,'FRET',num2str(FRET(j,1)),num2str(FRET(j,2)));
+    extf = cat(2,'FRET',num2str(FRET(j,1)),'to',num2str(FRET(j,2)));
     
     % save HaMMy-compatible files
     if saveAsHa
