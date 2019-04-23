@@ -1,5 +1,8 @@
 function gauss_ana(h_fig)
 
+% Last update: 23.4.2019 by MH
+% >> use loading bar only for BOBA-FRET
+
 % recover parameters from MASH interface
 h = guidata(h_fig);
 p = h.param.thm;
@@ -61,21 +64,22 @@ if boba
     setContPan(cat(2,'Bootstrap (',num2str(nRpl),' replicates, ',...
         num2str(nSpl),' samples) and fit histograms with ',num2str(J),...
         ' Gaussians ...'),'process',h_fig);
+    
+    % loading bar %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    err = loading_bar('init', h_fig, nSpl, ['Performing randomisation and ' ...
+        'Gaussian fitting ...']);
+    if err
+        return;
+    end
+    h = guidata(h_fig);
+    h.barData.prev_var = h.barData.curr_var;
+    guidata(h_fig, h);
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 else
     setContPan(cat(2,'Fit histogram with ',num2str(J),'Gaussians ...'),...
         'process',h_fig);
 end
-
-% loading bar %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-err = loading_bar('init', h_fig, nSpl, ['Performing randomisation and ' ...
-    'Gaussian fitting ...']);
-if err
-    return;
-end
-h = guidata(h_fig);
-h.barData.prev_var = h.barData.curr_var;
-guidata(h_fig, h);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 for s = 1:nSpl
 
@@ -130,9 +134,11 @@ for s = 1:nSpl
     P_bs(:,s) = P_s(:,2);
     
     % update loading bar
-    err = loading_bar('update', h_fig);
-    if err
-        return;
+    if boba
+        err = loading_bar('update', h_fig);
+        if err
+            return;
+        end
     end
 end
 
@@ -153,7 +159,9 @@ p.proj{proj}.prm{tpe}.thm_res{2,3} = cat(2,P_s(:,1),P_bs);
 h.param.thm = p;
 guidata(h_fig,h);
 
-loading_bar('close', h_fig); % close loading bar
+if boba
+    loading_bar('close', h_fig); % close loading bar
+end
 
 setContPan(cat(2,'Gaussian fit successfully completed and state relative ',...
     'population calculated.'),'success',h_fig);
