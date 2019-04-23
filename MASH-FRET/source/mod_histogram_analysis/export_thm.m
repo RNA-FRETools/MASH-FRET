@@ -1,5 +1,8 @@
 function export_thm(h_fig)
 
+% Last update: 23.4.2019 by MH
+% >> correct export for Gaussian fit without BOBA-FRET
+
 h = guidata(h_fig);
 p = h.param.thm;
 proj = p.curr_proj;
@@ -124,9 +127,8 @@ if ~isempty(pres{3,1})
     end
 
     str_head = cat(2,...
-        'Max. number of Gaussians: ',sprintf('%i',Kmax),'\n\n',...
-        'Penalty: ',str_meth,'\n\n',...
-        'Optimum number of Gaussians: ',sprintf('%i',Kopt),'\n\n',...
+        'Max. number of Gaussians: ',sprintf('%i',Kmax),'\n',...
+        'Penalty: ',str_meth,'\n',...
         'Fitting equations:\n');
     for K = 1:Kmax
         if K>2
@@ -138,7 +140,8 @@ if ~isempty(pres{3,1})
                 ' Gaussians:\t',getEqGauss(K),'\n');
         end
     end
-    str_head = cat(2,str_head,'\nBest parameters for all GMM with ',...
+    str_head = cat(2,str_head,'\nOptimum number of Gaussians: ',...
+        sprintf('%i',Kopt),'\nBest parameters for all GMM with ',...
         'FWHM = o * 2*sqrt(2*ln(2)):\n',...
         'number of Gaussians\tLog Likelihood\tBIC');
     for k = 1:K
@@ -196,7 +199,7 @@ switch meth
             f = fopen([pname fname], 'Wt');
             K = size(pstart{3},1);
             str_fit = getEqGauss(K);
-            fprintf(f, 'Fitting equation:\n%s\n\n', str_fit);
+            fprintf(f, 'Fitting equation:\n%s\n', str_fit);
             fprintf(f, ['Starting fit parameters with FWHM = o * ' ...
                 '2*sqrt(2*ln(2)):\n']);
             for k = 1:K
@@ -214,7 +217,7 @@ switch meth
                     end
                 end
             
-                fprintf(f, ['\n\nBootstraping parameters:\n' ...
+                fprintf(f, ['\nBootstraping parameters:\n' ...
                     '- %i samples\n' ...
                     '- %i replicates\n' ...
                     '- weighting: ' str_w], nSpl, nRpl);
@@ -253,11 +256,11 @@ switch meth
                 
             else
                 fprintf(f, '\n\nFit parameters:\n');
-                fprintf(f, ['\nGaussian\tA\tmu\tFWHM\trelative ' ...
+                fprintf(f, ['Gaussian\tA\tmu\tFWHM\trelative ' ...
                     'occurence\n']);
                 for k = 1:K
                     fprintf(f, '%i\t%d\t%d\t%d\t%d\n', ...
-                        pres{2,1}(k,1:2:end));
+                        k,pres{2,1}(k,1:2:end));
                 end
             end
             fclose(f);
