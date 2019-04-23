@@ -56,12 +56,12 @@ The second extension `_discr` is added to the file name when distributions of st
 
 ## Structure
 
-Dwell times are organized column-wise with:
+Histograms are organized column-wise with:
 * column `[Ddd]` containing binned data
 * column `frequency count` absolute histogram count
 * column `probability` histogram count normalized by the sum
 * column `cumulative frequency count` absolute cumulative histogram count
-* column `cumulative probability` cumulative histogram count normalized by the sum
+* column `cumulative probability` cumulative histogram count normalized by the maximum
 
 ```
 FRET		frequency count	probability	cumulative frequency count	cumulative probability
