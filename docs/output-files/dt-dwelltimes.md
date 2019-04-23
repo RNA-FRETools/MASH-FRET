@@ -40,10 +40,11 @@ They are created when:
 
 The file is named by the user during the export process.
 By default, when exported from module 
-[Trace processing](../trace-processing/panels/area-project-management.html#project-list), the file is named after the sleected <u>project file</u>.
+[Trace processing](../trace-processing/panels/area-project-management.html#project-list), the file is named after the selected <u>project file</u>.
 
 The file name is appended with the extension `_mol[n]of[N]_[Ddd]`, where `[n]` is the index of the molecule written in the file, `[N]` the total number of exported molecules, and `[Ddd]` the data type written in the file.
 
+Data types supported in dwell time files are:
 * `I[i]-[L]`: intensities in detection channel indexed `[i]` upon illumination with laser wavelength `[L]` nm
 * `FRET[D]to[A]`: FRET from donor emitter detected in channel indexed `[D]` to acceptor emitter detected in channel indexed `[A]`
 * `S[Eee]`: stoichiometry of emitter detected in channel labelled `[Eee]`
