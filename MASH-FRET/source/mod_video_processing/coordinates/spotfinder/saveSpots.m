@@ -3,7 +3,9 @@ function [spots pname fname] = saveSpots(h_fig)
 
 % Requires external functions: getCorrName, setCorrectPath, getFrames,
 %                              updateBgCorr, updateSF, updateActPan.
-% Last update: 9th of February 2014 by Mélodie C.A.S Hadzic
+%
+% Last update: 23.4.2019 by MH
+% >> correct typos in exported file
 
 spots = [];
 pname = [];
@@ -88,7 +90,7 @@ if isfield(p, 'SFres') && isfield(h, 'movie')
                 else
                     headUn = '(a.u.)';
                 end
-                str_header = ['x\ty\tI' headUn '\tassymetry\twidth\t' ...
+                str_header = ['x\ty\tI' headUn '\tasymmetry\twidth\t' ...
                     'height\ttheta\tz-offset' headUn '\tframe'];
                 str_frmt = '%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d';
             end
