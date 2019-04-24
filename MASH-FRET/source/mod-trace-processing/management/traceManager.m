@@ -1113,7 +1113,7 @@ function pushbutton_update_Callback(obj, evd, h_fig)
             '</span></html>']];
         dat1.ylabel{size(str_plot,2)} = 'S';
         dat2.ylabel{size(str_plot,2)} = 'freq. counts'; % RB 2018-01-04
-        dat2.xlabel{s.3.20189ize(str_plot,2)} = 'S'; % RB 2018-01-04
+        dat2.xlabel{size(str_plot,2)} = 'S'; % RB 2018-01-04
     end
     % String for all Intensity Channels in popup menu 
     if nChan > 1 || nExc > 1
