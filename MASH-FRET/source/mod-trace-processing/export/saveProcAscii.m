@@ -6,20 +6,36 @@ function saveProcAscii(h_fig, p, xp, pname, name)
 % "pname" >> destination folder
 % "name" >> destination file name
 
-% Last update: 22.4.2019 by MH
+%% Last update by MH, 24.4.2019
+% --> adapt code to new molecule tag structure
+%
+% update: by MH 22.4.2019 by MH
 % --> correct rate in SMART-compatible files
 %
-% update: 3rd of April 2019 by Mélodie Hadzic
+% update: by MH, 3.4.2019
 % --> correct export of gamma factors for multiple FRET channels
 %
-% update: 20th of February 2019 by Mélodie Hadzic
+% update: by MH, 20.2.2019
 % --> modify dwell time file header for coherence with simulation
 %
-% update: 17th of February 2019 by Mélodie Hadzic
+% update: by MH, 17.2.2019
 % --> optimize code synthaxe
 % --> remove units "per second" and "per pixel" (always export in counts to
 %     avoid confusion when importing exported ASCII traces)
 % --> add headers to histogram and dwell-time files
+%
+% update: by FS, 26.4.2019
+% --> display error message if no molecules with specified tag are found
+%
+% update: by FS, 25.4.2019
+% --> correct molecule index when specific tags are exported
+%
+% update: by FS, 24.4.2018
+% --> adapt export to specific molecule tags
+%
+% update: by FS, 19.3.2018
+% --> export gamma factors to files
+%%
 
 h = guidata(h_fig);
 
@@ -41,16 +57,24 @@ end
 
 % added by FS, 24.4.2018
 mol_TagVal = h.param.ttPr.proj{h.param.ttPr.curr_proj}.exp.mol_TagVal;
-if mol_TagVal > length(p.proj{proj}.molTagNames)
-    mol_incl_tag = mol_incl;
+if mol_TagVal > numel(p.proj{proj}.molTagNames)
+    
+    % modified by MH, 24.4.2019
+%     mol_incl_tag = mol_incl;
+    mol_incl_tag = true(1,nMol);
+    
 else
-    mol_incl_tag = p.proj{proj}.molTag == mol_TagVal;
+    
+    % modified by MH, 24.4.2019
+%     mol_incl_tag = p.proj{proj}.molTag == mol_TagVal;
+    mol_incl_tag = p.proj{proj}.molTag(:,mol_TagVal)';
+    
 end
 
 exc = p.proj{proj}.excitations;
 chanExc = p.proj{proj}.chanExc;
 labels = p.proj{proj}.labels;
-expT = p.proj{proj}.frame_rate; % this is the EXPOSURE TIME
+expT = p.proj{proj}.frame_rate; % MH: this is the EXPOSURE TIME
 
 FRET = p.proj{proj}.FRET;
 S = p.proj{proj}.S;

@@ -1,6 +1,9 @@
 function ud_TTprojPrm(h_fig)
 
-% Last update: 3.4.2019 by MH
+%% Last update: 24.4.2019 by MH
+% --> manage visibility of new tag list
+%
+% update: 3.4.2019 by MH
 % --> manage visibility of control text_TP_cross_gammafactor
 %
 % Last update: 29.3.2019 by MH
@@ -15,11 +18,14 @@ function ud_TTprojPrm(h_fig)
 % update: 28.3.2019 by Melodie Hadzic
 % --> Visibility of UI controls for DE coefficients is not manage here
 %     anymore but in ud_cross.m
+%%
 
 h = guidata(h_fig);
 p = h.param.ttPr;
 
 setProp(get(h.uipanel_TP, 'Children'), 'Visible', 'on');
+set(h.lisbox_TP_defaultTags,'visible','off');
+set(h.pushbutton_TP_addTag,'value',0);
 
 if ~isempty(p.proj)
     proj = p.curr_proj;

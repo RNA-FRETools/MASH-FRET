@@ -13,7 +13,7 @@ nS = size(p_proj.S,1);
 
 def.process = 1;
 def.mol_valid = 1;
-def.mol_TagVal = length(p_proj.molTagNames); % added by FS, 26.4.2018
+def.mol_TagVal = numel(p_proj.molTagNames); % added by FS, 26.4.2018
 
 if ~isfield(opt, 'process')
     opt.process = def.process;

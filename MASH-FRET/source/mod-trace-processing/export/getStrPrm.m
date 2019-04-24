@@ -1,6 +1,9 @@
 function str_prm = getStrPrm(s, m, incl, h_fig)
 
-% Last update: by MH, 3.4.2019
+%% Last update: by MH, 24.4.2019
+% >> adapt code to multiple molecule tags
+%
+% update: by MH, 3.4.2019
 % >> fix error occuring when exporting ASCII: cross-talks section is
 %    adapted to new parameter formats (see project/setDefPrm_traces.m)
 % >> add new input argument "incl" to correct exported molecule index (m_i 
@@ -15,6 +18,7 @@ function str_prm = getStrPrm(s, m, incl, h_fig)
 %    replace sprintf(...) by num2str(...) to get pretty number formats, add 
 %    categories "PROJECT", "VIDEO PROCESSING", "EXPERIMENT SETTINGS" and 
 %    "MOLECULE"
+%%
 
 
 %% collect parameters
@@ -170,6 +174,20 @@ if nS > 0
     str_s = cat(2,str_s,'\n');
 else
     str_s = 'none\n';
+end
+
+% molecule tags
+nTag = numel(tagName);
+if nTag==0
+    str_tags = 'none';
+else
+    str_tags = '';
+    for t = 1:nTag
+        if tag(m,t)
+            str_tags = cat(2,' ',str_tags,tagName{t},',');
+        end
+    end
+    str_tags(end) = [];
 end
 
 %% background corrections
@@ -537,7 +555,7 @@ str_prm = cat(2,'PROJECT\n',...
     '> stoichiometry calculations:',str_s,'\n', ...
     'MOLECULE\n',...
     '> molecule index: ',num2str(m),' on ',num2str(nMol),' (',num2str(m_i),' on ',num2str(nMol_i),' exported)\n', ...
-    '> molecule label: ',tagName{tag(m)},'\n',...
+    '> molecule tags:',str_tags,'\n',...
     '> molecule coordinates: ',str_coord,'\n', ...
     '> intensity units: ',str_units,'\n', ...
     '> background correction: \n',str_bg, ...
