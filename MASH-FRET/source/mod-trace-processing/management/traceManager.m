@@ -106,7 +106,7 @@ end
 
 % added by MH, 24.4.2019
 if isempty(str_lst)
-    str_lst = {'no default label'};
+    str_lst = {'no default tag'};
 end
 end
 
@@ -389,6 +389,7 @@ function openMngrTool(h_fig)
         'FontSize', fntS);
 
     % popup menu to select molecule tag, added by FS, 24.4.2018
+    % add callback, MH 24.4.2019
     xNext = xNext + w_pop + mg;
     str_lst = colorTagNames(h_fig);
     h.tm.popup_molTag = uicontrol('Style', 'popup', 'Parent', ...
@@ -397,10 +398,21 @@ function openMngrTool(h_fig)
         'Position', [xNext yNext w_pop h_but], ...
         'TooltipString', 'select a molecule tag', ...
         'FontUnits', 'pixels', ...
-        'FontSize', fntS);
+        'FontSize', fntS, 'Callback', {@popup_molTag_Callback,h_fig});
+    
+    % added by MH, 24.4.2019
+    xNext = xNext + w_pop + mg;
+    hexclr = h.tm.molTagClr{get(h.tm.popup_molTag,'value')}(2:end);
+    
+    h.tm.edit_tagClr = uicontrol('Style','edit','Parent', ...
+        h.tm.uipanel_overview,'Units','pixels','String',num2str(hexclr), ...
+        'Position',[xNext yNext w_edit h_but],'TooltipString', ...
+        'define the tag color','FontUnits','pixels','FontSize',fntS, ...
+        'Backgroundcolor',hex2rgb(hexclr)/255,'callback',...
+        {@edit_tagClr_Callback,h_fig});
 
     % popup menu to select molecule tag, added by FS, 24.4.2018
-    xNext = xNext + w_pop + mg;
+    xNext = xNext + w_edit + mg;
     h.tm.pushbutton_deleteMolTag = uicontrol('Style', 'pushbutton', 'Parent', ...
         h.tm.uipanel_overview, 'Units', 'pixels', ...
         'String', 'delete tag', ...
@@ -1905,6 +1917,7 @@ function edit_addMolTag_Callback(obj, evd, h_fig)
 % >> add random colors for tags that exceed tag list
 % >> upscale molecule tag structure after adding new tag name
 % >> reset edit string to "define a new tag" after adding new tag name
+% >> update color field after adding
 %
 % Created by FS, 25.4.2018
 %
@@ -1937,8 +1950,77 @@ function edit_addMolTag_Callback(obj, evd, h_fig)
         set(h.tm.popup_molTag,'String',str_lst,'value',numel(str_lst));
         nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
         guidata(h_fig, h);
-        update_popups(h_fig, nb_mol_disp)
+        update_popups(h_fig, nb_mol_disp);
+        
+        % added by MH, 24.4.2019
+        popup_molTag_Callback(h.tm.popup_molTag,[],h_fig);
     end
+end
+
+
+function popup_molTag_Callback(obj,evd,h_fig)
+% Updates the tag color in corresponding edit field
+
+%% Created by MH, 24.4.2019
+%
+%%
+
+h = guidata(h_fig);
+
+% control empty tag
+tag = get(obj,'value');
+str_pop = get(obj, 'string');
+if strcmp(str_pop{tag},'no default tag')
+    set(h.tm.edit_tagClr,'string','','enable','off');
+    return;
+end
+
+% update edit field background color
+clr_hex = h.tm.molTagClr{tag}(2:end);
+set(h.tm.edit_tagClr,'string',clr_hex,'enable','on','backgroundcolor',...
+    hex2rgb(clr_hex)/255,'foregroundcolor','white');
+
+end
+
+
+function edit_tagClr_Callback(obj,evd,h_fig)
+% Defines the tag color with hexadecimal input
+
+%% Created by MH, 24.4.2019
+%
+%%
+
+h = guidata(h_fig);
+
+% control empty tag
+tag = get(h.tm.popup_molTag,'value');
+str_pop = get(h.tm.popup_molTag, 'string');
+if strcmp(str_pop{tag},'no default tag')
+    return;
+end
+
+% control color value
+clr_str = get(obj,'string');
+if ~ishexclr(clr_str)
+    setContPan(cat(2,'Tag color must be a RGB value in the hexadecimal ',...
+        'format (ex:92B06A)'),'error',h_fig);
+end
+
+% save color
+h.tm.molTagClr{tag} = cat(2,'#',clr_str);
+guidata(h_fig,h);
+
+% update edit field background color
+popup_molTag_Callback(h.tm.popup_molTag,[],h_fig);
+
+% update color in default tag popup
+str_lst = colorTagNames(h_fig);
+set(h.tm.popup_molTag,'String',str_lst);
+
+% update color in molecule tag listboxes and popups
+n_mol_disp = str2num(get(h.tm.edit_nbTotMol,'string'));
+update_popups(h_fig,n_mol_disp);
+
 end
 
 
@@ -1948,6 +2030,7 @@ function pushbutton_deleteMolTag_Callback(obj, evd, h_fig)
 % >> downscale molecule tag structure after deleting a tag name
 % >> warn and ask user confirmation to delete tag name
 % >> allow the absence of default tag in list
+% >> update color field after deleting
 %
 % Created by FS, 25.4.2018
 %
@@ -1977,6 +2060,8 @@ function pushbutton_deleteMolTag_Callback(obj, evd, h_fig)
     
     % added by MH, 24.4.2019
     h.tm.molTag(:,selectMolTag) = [];
+    h.tm.molTagClr = [h.tm.molTagClr h.tm.molTagClr(selectMolTag)];
+    h.tm.molTagClr(selectMolTag) = [];
     
     guidata(h_fig, h);
     str_lst = colorTagNames(h_fig);
@@ -1984,7 +2069,10 @@ function pushbutton_deleteMolTag_Callback(obj, evd, h_fig)
     set(h.tm.popup_molTag, 'String', str_lst);
     nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
     guidata(h_fig, h);
-    update_popups(h_fig, nb_mol_disp)
+    update_popups(h_fig, nb_mol_disp);
+    
+    % added by MH, 24.4.2019
+    popup_molTag_Callback(h.tm.popup_molTag,[],h_fig);
     
     % cancelled by MH, 24.4.2019
 %     end
