@@ -137,7 +137,11 @@ end
 
 function openMngrTool(h_fig)
 
-%% Last update: by FS, 24.4.2018
+%% Last update by MH, 24.4.2019
+% >> add toolbar and empty tools "Auto sorting" and "View of video"
+% >> rename "Overview" panel in "Molecule selection"
+%
+% update: by FS, 24.4.2018
 % >> add debugging mode where all other windows are not deactivated
 % >> add edit box to define a molecule tag
 % >> add popup menu to select molecule tag
@@ -179,14 +183,18 @@ function openMngrTool(h_fig)
     mg_win = 0;
     mg_ttl = 10;
     fntS = 10.6666666;
+    fntS_big = 12;
     h_edit = 20; w_edit = 40;
-    h_but = 20; w_but = 45;
+    w_pop = 120; % RB 2018-01-03: adapt width of popupmenu for FRET-S-Histogram 
+    h_but = 20; w_but = (w_pop-mg)/2;
+    h_but_big = 30; w_but_big = 120;
     h_txt = 14;
     w_pan = wFig - 2*mg;
-    w_pop = 120; % RB 2018-01-03: adapt width of popupmenu for FRET-S-Histogram 
 
     h_pan_all = mg_ttl + 3*mg + mg_big + 2*h_edit + 2*h_txt + h_but;
-    h_pan_sgl = hFig - mg_win - 3*mg - h_pan_all;
+    h_toolbar = h_but_big + 2*mg;
+    h_pan_sgl = hFig - mg_win - 4*mg - h_pan_all - h_toolbar;
+    h_pan_tool = h_pan_all + mg + h_pan_sgl;
     
     h_axes_all = h_pan_all - mg_ttl - 2*mg - h_edit;
     w_axes2 = 2*mg + 3*w_edit;
@@ -217,8 +225,36 @@ function openMngrTool(h_fig)
         set(h.tm.figure_traceMngr, 'WindowStyle', 'modal')
     end
     
+    x_0 = mg;
+    y_0 = hFig - mg_win;
+
+    xNext = x_0;
+    yNext = y_0 - mg - h_but_big;
+    
+    h.tm.togglebutton_overview = uicontrol('style','togglebutton','parent',...
+        h.tm.figure_traceMngr,'units','pixels','position',...
+        [xNext,yNext,w_but_big,h_but_big],'string','Overview','fontweight',...
+        'bold','fontunits','pixels','fontsize',fntS_big,'callback',...
+        {@switchPan_TM,h_fig});
+    
+    xNext = xNext + w_but_big + mg;
+    
+    h.tm.togglebutton_autoSorting = uicontrol('style','togglebutton',...
+        'parent',h.tm.figure_traceMngr,'units','pixels','position',...
+        [xNext,yNext,w_but_big,h_but_big],'string','Auto sorting',...
+        'fontweight','bold','fontunits','pixels','fontsize',fntS_big,...
+        'callback',{@switchPan_TM,h_fig});
+    
+    xNext = xNext + w_but_big + mg;
+    
+    h.tm.togglebutton_videoView = uicontrol('style','togglebutton','parent',...
+        h.tm.figure_traceMngr,'units','pixels','position',...
+        [xNext,yNext,w_but_big,h_but_big],'string','View on video',...
+        'fontweight','bold','fontunits','pixels','fontsize',fntS_big,...
+        'callback',{@switchPan_TM,h_fig});
+    
     xNext = mg;
-    yNext = hFig - mg_win - mg - h_pan_all;
+    yNext = yNext - mg - h_pan_all;
     
     h.tm.uipanel_overall = uipanel('Parent', h.tm.figure_traceMngr, ...
         'Units', 'pixels', 'Position', [xNext yNext w_pan h_pan_all], ...
@@ -228,7 +264,19 @@ function openMngrTool(h_fig)
     
     h.tm.uipanel_overview = uipanel('Parent', h.tm.figure_traceMngr, ...
         'Units', 'pixels', 'Position', [xNext yNext w_pan h_pan_sgl], ...
-        'Title', 'Overview', 'FontUnits', 'pixels', 'FontSize', fntS);
+        'Title','Molecule selection','FontUnits','pixels','FontSize',fntS);
+    
+    yNext = y_0 - mg - h_but_big - mg - h_pan_tool;
+    
+    h.tm.uipanel_autoSorting = uipanel('Parent', h.tm.figure_traceMngr, ...
+        'Units', 'pixels', 'Position', [xNext yNext w_pan h_pan_tool], ...
+        'Title', '', 'FontUnits', 'pixels', ...
+        'FontSize', fntS, 'Visible', 'off');
+    
+    h.tm.uipanel_videoView = uipanel('Parent', h.tm.figure_traceMngr, ...
+        'Units', 'pixels', 'Position', [xNext yNext w_pan h_pan_tool], ...
+        'Title', '', 'FontUnits', 'pixels', ...
+        'FontSize', fntS, 'Visible', 'off');
     
     
     %% all results panel
@@ -538,6 +586,46 @@ function openMngrTool(h_fig)
 
     set(h.tm.figure_traceMngr, 'Visible', 'on');
     
+    switchPan_TM(h.tm.togglebutton_overview,[],h_fig);
+    
+end
+
+function switchPan_TM(obj,evd,h_fig)
+% Render the selected tool visible and other tools invisible
+
+%% Created by MH, 24.4.2019
+%
+%%
+
+h = guidata(h_fig);
+
+green = [0.76 0.87 0.78];
+grey = [240/255 240/255 240/255];
+
+set(obj,'Value',1,'BackgroundColor',green);
+
+switch obj
+    case h.tm.togglebutton_overview
+        set([h.tm.togglebutton_autoSorting,h.tm.togglebutton_videoView],...
+            'Value',0,'BackgroundColor',grey);
+        set([h.tm.uipanel_autoSorting,h.tm.uipanel_videoView],'Visible',...
+            'off');
+        set([h.tm.uipanel_overall,h.tm.uipanel_overview], 'Visible', 'on');
+        
+    case h.tm.togglebutton_autoSorting
+        set([h.tm.togglebutton_overview,h.tm.togglebutton_videoView],...
+            'Value',0,'BackgroundColor',grey);
+        set([h.tm.uipanel_overall,h.tm.uipanel_overview,...
+            h.tm.uipanel_videoView],'Visible','off');
+        set(h.tm.uipanel_autoSorting, 'Visible', 'on');
+        
+    case h.tm.togglebutton_videoView
+        set([h.tm.togglebutton_overview,h.tm.togglebutton_autoSorting],...
+            'Value',0,'BackgroundColor',grey);
+        set([h.tm.uipanel_overall,h.tm.uipanel_overview,...
+            h.tm.uipanel_autoSorting],'Visible','off');
+        set(h.tm.uipanel_videoView, 'Visible', 'on');
+end
 end
 
 
