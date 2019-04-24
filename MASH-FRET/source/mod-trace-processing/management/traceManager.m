@@ -110,6 +110,31 @@ if isempty(str_lst)
 end
 end
 
+
+function str_lst = getStrPop_select(h_fig)
+% Defines string in automatic molecule selection popupmenu
+
+%% Created by MH, 24.4.2019
+%
+%%
+
+h = guidata(h_fig);
+tagNames = h.tm.molTagNames;
+tagClr = h.tm.molTagClr;
+nTag = numel(tagNames);
+
+str_lst = {'current','all','none','inverse'};
+for t = 1:nTag
+    str_lst = [str_lst cat(2,'<html>add <span bgcolor=',tagClr{t},'>',...
+            '<font color="white">',tagNames{t},'</font></body></html>')];
+end
+for t = 1:nTag
+    str_lst = [str_lst cat(2,'<html>remove <span bgcolor=',tagClr{t},'>',...
+            '<font color="white">',tagNames{t},'</font></body></html>')];
+end
+end
+
+
 function openMngrTool(h_fig)
 
 %% Last update: by FS, 24.4.2018
@@ -360,27 +385,45 @@ function openMngrTool(h_fig)
     xNext = mg;
     yNext = h_pan_sgl - mg_ttl - mg - h_but;
     
-    h.tm.checkbox_all = uicontrol('Style', 'checkbox', 'Parent', ...
-        h.tm.uipanel_overview, 'Units', 'pixels', 'FontUnits', 'pixels',...
-        'FontSize', fntS, 'String', 'Check all', 'TooltipString', ...
-        'Include all molecules', 'Position', [xNext yNext w_pop h_edit],...
-        'Callback', {@checkbox_all_Callback, h_fig}, 'Value', 1);
+    % cancelled by MH, 24.4.2019
+    % replace "all" checkbox and "inverse selection" pushbutton by a
+    % popupmenu
+%     h.tm.checkbox_all = uicontrol('Style', 'checkbox', 'Parent', ...
+%         h.tm.uipanel_overview, 'Units', 'pixels', 'FontUnits', 'pixels',...
+%         'FontSize', fntS, 'String', 'Check all', 'TooltipString', ...
+%         'Include all molecules', 'Position', [xNext yNext w_pop h_edit],...
+%         'Callback', {@checkbox_all_Callback, h_fig}, 'Value', 1);
     
     % RB 2018-01-05: new pushbotton to inverse the selcetion of individual
     % molecules
+%     
+%     xNext = xNext + 2/3*w_pop ;
+%     
+%     h.tm.pushbutton_inverse = uicontrol('Style', 'pushbutton', 'Parent', ...
+%         h.tm.uipanel_overview, 'Units', 'pixels', 'FontWeight', 'bold', ...
+%         'String', 'Invert Selection', 'Position', [xNext yNext 4/5*w_pop h_but], ...
+%         'TooltipString', 'Invert selection of all molecules', 'Callback', ...
+%         {@pushbutton_all_inverse_Callback, h_fig}, 'FontUnits', 'pixels', ...
+%         'FontSize', fntS);
     
-    xNext = xNext + 2/3*w_pop ;
+    % added by MH, 24.4.2019
+    h.tm.text_selection = uicontrol('style','text','parent',...
+        h.tm.uipanel_overview,'units','pixels','string','Selection:',...
+        'position',[xNext,yNext,0.5*w_pop,h_txt],'fontunits','pixels', ...
+        'fontsize', fntS,'fontweight','bold');
     
-    h.tm.pushbutton_inverse = uicontrol('Style', 'pushbutton', 'Parent', ...
-        h.tm.uipanel_overview, 'Units', 'pixels', 'FontWeight', 'bold', ...
-        'String', 'Invert Selection', 'Position', [xNext yNext 4/5*w_pop h_but], ...
-        'TooltipString', 'Invert selection of all molecules', 'Callback', ...
-        {@pushbutton_all_inverse_Callback, h_fig}, 'FontUnits', 'pixels', ...
-        'FontSize', fntS);
+    xNext = xNext + 0.5*w_pop + mg/2 ;
     
+    str_pop = getStrPop_select(h_fig);
+    
+    % added by MH, 24.4.2019
+    h.tm.popupmenu_selection = uicontrol('style','popupmenu','parent',...
+        h.tm.uipanel_overview,'units','pixels','string',str_pop,'value',1,...
+        'position',[xNext,yNext,4/5*w_pop,h_but],'fontunits','pixels', ...
+        'fontsize', fntS,'callback',{@popupmenu_selection_Callback,h_fig});
     
     % edit box to define a molecule tag, added by FS, 24.4.2018
-    xNext = xNext + w_pop;
+    xNext = xNext + 4/5*w_pop + 2*mg;
     h.tm.edit_molTag = uicontrol('Style', 'edit', 'Parent', ...
         h.tm.uipanel_overview, 'Units', 'pixels', ...
         'String', 'define a new tag', 'Position', [xNext yNext w_pop h_but], ...
@@ -1440,7 +1483,11 @@ end
 
 function plotData_overall(h_fig)
 
-%% Last update: by RB, 3.1.2018
+%% Last update by MH, 24.4.2019
+% >> correct plot clearing before plotting multiple traces on the same 
+%    graph
+% 
+% update: by RB, 3.1.2018
 % >> indizes/colour bug solved
 %
 % update: by RB, 15.12.2017
@@ -1476,7 +1523,7 @@ warning('off','MATLAB:hg:EraseModeIgnored');
             x_axis = x_axis*rate;
         end
         plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{plot1}, 'Color', ...
-            dat1.color{plot1}, 'EraseMode', 'background');
+            dat1.color{plot1});
         xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
         if plot1 <= nChan*nExc
             ylim(h.tm.axes_ovrAll_1, [min(dat1.trace{plot1}) ...
@@ -1496,15 +1543,19 @@ warning('off','MATLAB:hg:EraseModeIgnored');
         end
         min_y = Inf;
         max_y = -Inf;
-        set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
         for l = 1:nExc
             for c = 1:nChan
                 %ind = (l-1)+c; % RB 2018-01-03: indizes/colour bug solved
                 ind = 2*(l-1)+c;
                 plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{ind}, ...
-                    'Color', dat1.color{ind}, 'EraseMode', 'background');
+                    'Color', dat1.color{ind});
                 min_y = min([min_y min(dat1.trace{ind})]);
                 max_y = max([max_y max(dat1.trace{ind})]);
+                
+                % added by MH, 24.4.2019
+                if l==1 && c==1
+                    set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
+                end
             end
         end
         set(h.tm.axes_ovrAll_1, 'NextPlot', 'replacechildren');
@@ -1519,11 +1570,14 @@ warning('off','MATLAB:hg:EraseModeIgnored');
             rate = p.proj{proj}.frame_rate;
             x_axis = x_axis*rate;
         end
-        set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
         for n = 1:nFRET
             ind = nChan*nExc+n;
             plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{ind}, ...
-                'Color', dat1.color{ind}, 'EraseMode', 'background');
+                'Color', dat1.color{ind});
+            % added by MH, 24.4.2019
+            if n==1
+                set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
+            end
         end
         set(h.tm.axes_ovrAll_1, 'NextPlot', 'replacechildren');
         xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
@@ -1538,11 +1592,13 @@ warning('off','MATLAB:hg:EraseModeIgnored');
             rate = p.proj{proj}.frame_rate;
             x_axis = x_axis*rate;
         end
-        set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
         for n = 1:nS
             ind = nChan*nExc+nFRET+n;
             plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{ind}, ...
-                'Color', dat1.color{ind}, 'EraseMode', 'background');
+                'Color', dat1.color{ind});
+            if n==1
+                set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
+            end
         end
         set(h.tm.axes_ovrAll_1, 'NextPlot', 'replacechildren');
         xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
@@ -1559,11 +1615,13 @@ warning('off','MATLAB:hg:EraseModeIgnored');
             rate = p.proj{proj}.frame_rate;
             x_axis = x_axis*rate;
         end
-        set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
         for n = 1:(nFRET+nS)
             ind = nChan*nExc+n;
             plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{ind}, ...
-                'Color', dat1.color{ind}, 'EraseMode', 'background');
+                'Color', dat1.color{ind});
+            if n==1
+                set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
+            end
         end
         set(h.tm.axes_ovrAll_1, 'NextPlot', 'replacechildren');
         xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
@@ -1836,79 +1894,135 @@ function edit_nbiv_Callback(obj, evd, h_fig)
 end
 
 
-function checkbox_all_Callback(obj, evd, h_fig)
+function popupmenu_selection_Callback(obj, evd, h_fig)
+% Change the current selection according to selected menu
 
-%% Last update by MH, 24.4.2019
-% >> allow molecule tagging even if the molecule unselected
-%
-% Last update: by FS 25.4.2018
-% >> deactivate the label popupmenu if the molecule is not selected
+%% Created by MH, 24.4.2019
 %
 %%
 
-    h = guidata(h_fig);
-    if get(obj, 'Value')
-        h.tm.molValid = true(size(h.tm.molValid));
-    else
-        h.tm.molValid = false(size(h.tm.molValid));
+h = guidata(h_fig);
+
+meth = get(obj,'value');
+
+if meth>1
+    choice = questdlg({cat(2,'After applying the automatic selection mode, ',...
+        'the current selection will be lost'),'',cat(2,'Do you want to ',...
+        'continue and overwrite the current selection?')},...
+        'Change molecule selection','Yes, modify the current selection',...
+        'Cancel','Cancel');
+    if ~strcmp(choice,'Yes, modify the current selection')
+        return;
     end
+else
+    return;
+end
+
+switch meth
+    case 2 % all
+        h.tm.molValid(1:end) = true;
+    case 3 % none
+        h.tm.molValid(1:end) = false;
+    case 4 % inverse
+        h.tm.molValid = ~h.tm.molValid; 
+end
+
+if meth>4
+    nTag = numel(h.tm.molTagNames);
     
-    % deactivate the popupmenu if the molecule is not selected
-    % added by FS, 25.4.2018
-    % cancelled by MH, 24.4.2019: allow labelling even if not selected
-%     pos_slider = round(get(h.tm.slider, 'Value'));
-%     max_slider = get(h.tm.slider, 'Max');
-%     nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
-%     for i = nb_mol_disp:-1:1
-%         if h.tm.molValid(max_slider-pos_slider+i) == 0
-%             set(h.tm.popup_molNb(i), 'Enable', 'off', 'Value', 1)
-%             h.tm.molTag(max_slider-pos_slider+i) = 1;
-%         else
-%             set(h.tm.popup_molNb(i), 'Enable', 'on')
-%         end
-%     end
-    
-    guidata(h_fig, h);
-    plotDataTm(h_fig);
+    if meth<=4+nTag % add tag-based selection
+        tag = meth - 4;
+        h.tm.molValid(h.tm.molTag(:,tag)') = true;
+        
+    else % remove tag-based selection
+        tag = meth - 4 - nTag;
+        h.tm.molValid(h.tm.molTag(:,tag)') = false;
+    end
+end
+
+set(obj,'value',1);
+
+guidata(h_fig,h);
+plotDataTm(h_fig);
 
 end
 
-
-function pushbutton_all_inverse_Callback(obj, evd, h_fig)
-% Pushbutton to invert the selection of individual molecules
-
-%% Last update by MH, 24.4.2019
-% >> allow molecule tagging even if the molecule unselected
-%
-% update: by FS, 25.4.2018
-% >> deactivate the label popupmenu if the molecule is not selected
-%
-% Created by RB, 5.1.2018
-%
-%%
-    
-    h = guidata(h_fig);
-    
-    h.tm.molValid = ~h.tm.molValid;
-    
-    % deactivate the popupmenu if the molecule is not selected
-    % added by FS, 25.4.2018
-    % cancelled by MH, 24.4.2019: allow labelling even if not selected
-%     pos_slider = round(get(h.tm.slider, 'Value'));
-%     max_slider = get(h.tm.slider, 'Max');
-%     nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
-%     for i = nb_mol_disp:-1:1
-%         if h.tm.molValid(max_slider-pos_slider+i) == 0
-%             set(h.tm.popup_molNb(i), 'Enable', 'off', 'Value', 1)
-%             h.tm.molTag(max_slider-pos_slider+i) = 1;
-%         else
-%             set(h.tm.popup_molNb(i), 'Enable', 'on')
-%         end
+% cancelled by MH, 24.4.2019: replace "all" checkbox and "inverse
+% selection" pushbutton by a popupmenu
+% function checkbox_all_Callback(obj, evd, h_fig)
+% 
+% %% Last update by MH, 24.4.2019
+% % >> allow molecule tagging even if the molecule unselected
+% %
+% % Last update: by FS 25.4.2018
+% % >> deactivate the label popupmenu if the molecule is not selected
+% %
+% %%
+% 
+%     h = guidata(h_fig);
+%     if get(obj, 'Value')
+%         h.tm.molValid = true(size(h.tm.molValid));
+%     else
+%         h.tm.molValid = false(size(h.tm.molValid));
 %     end
-    
-    guidata(h_fig, h);
-    plotDataTm(h_fig);
-end 
+%     
+%     % deactivate the popupmenu if the molecule is not selected
+%     % added by FS, 25.4.2018
+%     % cancelled by MH, 24.4.2019: allow labelling even if not selected
+% %     pos_slider = round(get(h.tm.slider, 'Value'));
+% %     max_slider = get(h.tm.slider, 'Max');
+% %     nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
+% %     for i = nb_mol_disp:-1:1
+% %         if h.tm.molValid(max_slider-pos_slider+i) == 0
+% %             set(h.tm.popup_molNb(i), 'Enable', 'off', 'Value', 1)
+% %             h.tm.molTag(max_slider-pos_slider+i) = 1;
+% %         else
+% %             set(h.tm.popup_molNb(i), 'Enable', 'on')
+% %         end
+% %     end
+%     
+%     guidata(h_fig, h);
+%     plotDataTm(h_fig);
+% 
+% end
+
+% cancelled by MH, 24.4.2019: replace "all" checkbox and "inverse
+% selection" pushbutton by a popupmenu
+% function pushbutton_all_inverse_Callback(obj, evd, h_fig)
+% % Pushbutton to invert the selection of individual molecules
+% 
+% %% Last update by MH, 24.4.2019
+% % >> allow molecule tagging even if the molecule unselected
+% %
+% % update: by FS, 25.4.2018
+% % >> deactivate the label popupmenu if the molecule is not selected
+% %
+% % Created by RB, 5.1.2018
+% %
+% %%
+%     
+%     h = guidata(h_fig);
+%     
+%     h.tm.molValid = ~h.tm.molValid;
+%     
+%     % deactivate the popupmenu if the molecule is not selected
+%     % added by FS, 25.4.2018
+%     % cancelled by MH, 24.4.2019: allow labelling even if not selected
+% %     pos_slider = round(get(h.tm.slider, 'Value'));
+% %     max_slider = get(h.tm.slider, 'Max');
+% %     nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
+% %     for i = nb_mol_disp:-1:1
+% %         if h.tm.molValid(max_slider-pos_slider+i) == 0
+% %             set(h.tm.popup_molNb(i), 'Enable', 'off', 'Value', 1)
+% %             h.tm.molTag(max_slider-pos_slider+i) = 1;
+% %         else
+% %             set(h.tm.popup_molNb(i), 'Enable', 'on')
+% %         end
+% %     end
+%     
+%     guidata(h_fig, h);
+%     plotDataTm(h_fig);
+% end 
 
 
 function edit_addMolTag_Callback(obj, evd, h_fig)
@@ -1953,7 +2067,15 @@ function edit_addMolTag_Callback(obj, evd, h_fig)
         update_popups(h_fig, nb_mol_disp);
         
         % added by MH, 24.4.2019
+        % update color edit field with new current tag
         popup_molTag_Callback(h.tm.popup_molTag,[],h_fig);
+        % update string of selection popupmenu
+        str_pop = getStrPop_select(h_fig);
+        curr_slct = get(h.tm.popupmenu_selection,'value');
+        if curr_slct>numel(str_pop)
+            curr_slct = numel(str_pop);
+        end
+        set(h.tm.popupmenu_selection,'value',curr_slct,'string',str_pop);
     end
 end
 
@@ -2021,6 +2143,14 @@ set(h.tm.popup_molTag,'String',str_lst);
 n_mol_disp = str2num(get(h.tm.edit_nbTotMol,'string'));
 update_popups(h_fig,n_mol_disp);
 
+% update color in string of selection popupmenu
+str_pop = getStrPop_select(h_fig);
+curr_slct = get(h.tm.popupmenu_selection,'value');
+if curr_slct>numel(str_pop)
+    curr_slct = numel(str_pop);
+end
+set(h.tm.popupmenu_selection,'value',curr_slct,'string',str_pop);
+
 end
 
 
@@ -2072,7 +2202,15 @@ function pushbutton_deleteMolTag_Callback(obj, evd, h_fig)
     update_popups(h_fig, nb_mol_disp);
     
     % added by MH, 24.4.2019
+    % update color edit field with new current tag
     popup_molTag_Callback(h.tm.popup_molTag,[],h_fig);
+    % update string of selection popupmenu
+    str_pop = getStrPop_select(h_fig);
+    curr_slct = get(h.tm.popupmenu_selection,'value');
+    if curr_slct>numel(str_pop)
+        curr_slct = numel(str_pop);
+    end
+    set(h.tm.popupmenu_selection,'value',curr_slct,'string',str_pop);
     
     % cancelled by MH, 24.4.2019
 %     end
