@@ -1,9 +1,6 @@
 function ud_TTprojPrm(h_fig)
 
-%% Last update: 25.4.2019 by MH
-% --> manage background color of togglebutton associated with new tag list
-% 
-% update: 24.4.2019 by MH
+%% Last update: 24.4.2019 by MH
 % --> manage visibility of new tag list
 %
 % update: 3.4.2019 by MH
@@ -27,12 +24,8 @@ h = guidata(h_fig);
 p = h.param.ttPr;
 
 setProp(get(h.uipanel_TP, 'Children'), 'Visible', 'on');
-
-% set default tag name list invisible and update corresponding button 
-% appearance
 set(h.lisbox_TP_defaultTags,'visible','off');
-set(h.pushbutton_TP_addTag,'value',0,'backgroundcolor',...
-    [240/255 240/255 240/255]);
+set(h.pushbutton_TP_addTag,'value',0);
 
 if ~isempty(p.proj)
     proj = p.curr_proj;
