@@ -4,13 +4,14 @@ function traceManager(h_fig)
 % Enables trace selection upon visual inspection or defined criteria 
 % "h_fig" >> handle to the main figure
 
-%% Last update: by MH, 24.4.2019
+% Last update by MH, 25.4.2019
+% >> move molecule selection here
+%
+% update: by MH, 24.4.2019
 % >> add tag colors
 %
 % update: by FS, 24.4.2018
 % >> add molecule tags
-%
-%%
    
     h = guidata(h_fig);
     h.tm.ud = false;
@@ -26,6 +27,9 @@ function traceManager(h_fig)
     % added by MH, 24.4.2019
     h.tm.molTagClr = p.proj{proj}.molTagClr;
     
+    % added by MH, 25.4.2019
+    h.tm.molValid = p.proj{proj}.coord_incl;
+    
     guidata(h_fig, h);
     
     global intensities;
@@ -40,104 +44,410 @@ end
 
 
 function loadData2Mngr(h_fig)
-    
+
+    % build figure and panel "Molecule selection"
     openMngrTool(h_fig);
-    h = guidata(h_fig);
-     
-    pushbutton_update_Callback(h.tm.pushbutton_update, [], h_fig);
+
+    % load data from MASH
+    loadDataFromMASH(h_fig);
+    
+    % assign data-specific plot colors and axis labels
+    setDataPlotPrm(h_fig);
+    
+    % concatenate data and assign axis limits
+    concatenateData(h_fig);
+    
+    % plot data in panel "Overall plot" and "Molecule selection"
+    plotData_overall(h_fig)
     plotDataTm(h_fig);
     
 end
 
-function str_lst = colorTagLists(h_fig,i)
-% Defines colored strings for listboxes listing tag names
 
-h = guidata(h_fig);
-molTag = h.tm.molTag;
-tagNames = h.tm.molTagNames;
-tagClr = h.tm.molTagClr;
-nTag = numel(tagNames);
+%% data handling
 
-str_lst = {};
-for t = 1:nTag
-    if molTag(i,t)
-        str_lst = [str_lst cat(2,'<html><span bgcolor=',tagClr{t},'>',...
-            '<font color="white">',tagNames{t},'</font></body></html>')];
-    end
-end
-if ~sum(molTag(i,:))
-    str_lst = {'no tag'};
-end
+function loadDataFromMASH(h_fig)
 
-end
-
-function str_lst = colorTagNames(h_fig)
-% Defines colored strings for popupmenus listing tag names
-
-%% Last update by MH, 24.4.2019
-% >> fetch tag colors in project parameters
-% >> remove "unlabelled" tag
-%
-% Created by FS, 24.4.2018
-%
-%%
-
-h = guidata(h_fig);
-
-% modified by MH, 24.4.2019
-% colorlist = {'transparent', '#4298B5', '#DD5F32', '#92B06A', '#ADC4CC', '#E19D29'};
-colorlist = h.tm.molTagClr;
-
-% added by MH, 24.4.2019
-nTag = numel(h.tm.molTagNames);
-
-str_lst = cell(1,nTag);
-
-% cancelled by MH, 24.4.2019
-% str_lst{1} = h.tm.molTagNames{1};
-
-% modified by MH, 24.4.2019
-% for k = 2:length(h.tm.molTagNames)
-for k = 1:nTag
+    h = guidata(h_fig);
+    m = h.param.ttPr;
+    proj = m.curr_proj;
+    nMol = numel(h.tm.molValid);
+    nChan = m.proj{proj}.nb_channel;
     
-    str_lst{k} = ['<html><body  bgcolor="' colorlist{k} '">' ...
-        '<font color="white">' h.tm.molTagNames{k} '</font></body></html>'];
+    global intensities;
+
+    % loading bar parameters-----------------------------------------------
+    err = loading_bar('init',h_fig ,nMol,'Collecting data from MASH ...');
+    if err
+        return;
+    end
+    h = guidata(h_fig); % update:  get current guidata 
+    h.barData.prev_var = h.barData.curr_var;
+    guidata(h_fig, h); % update: set current guidata 
+    % ---------------------------------------------------------------------
+
+    for i = 1:nMol
+        dtaCurr = m.proj{proj}.curr{i}{4};
+        if ~isempty(m.proj{proj}.prm{i})
+            dtaPrm = m.proj{proj}.prm{i}{4};
+        else
+            dtaPrm = [];
+        end
+       
+        [m,opt] = resetMol(i, m);
+        
+        m = plotSubImg(i, m, []);
+
+        isBgCorr = ~isempty(m.proj{proj}.intensities_bgCorr) && ...
+            sum(~prod(prod(double(~isnan(m.proj{proj}.intensities_bgCorr(:, ...
+            ((i-1)*nChan+1):i*nChan,:))),3),2),1)~= ...
+            size(m.proj{proj}.intensities_bgCorr,1);
+
+        if ~isBgCorr
+            opt = 'ttBg';
+        end
+        
+        if strcmp(opt, 'ttBg') || strcmp(opt, 'ttPr')
+            m = bgCorr(i, m);
+        end
+        if strcmp(opt, 'corr') || strcmp(opt, 'ttBg') || ...
+                strcmp(opt, 'ttPr')
+            m = crossCorr(i, m);
+        end
+        if strcmp(opt, 'denoise') || strcmp(opt, 'corr') || ...
+                strcmp(opt, 'ttBg') || strcmp(opt, 'ttPr')
+            m = denoiseTraces(i, m);
+        end
+        if strcmp(opt, 'debleach') || strcmp(opt, 'denoise') || ...
+                strcmp(opt, 'corr') || strcmp(opt, 'ttBg') || ...
+                strcmp(opt, 'ttPr')
+            m = calcCutoff(i, m);
+        end
+        m.proj{proj}.curr{i} = m.proj{proj}.prm{i};
+        m.proj{proj}.prm{i}{4} = dtaPrm;
+        m.proj{proj}.curr{i}{4} = dtaCurr;
+
+        intensities(:,(nChan*(i-1)+1):nChan*i,:) = ...
+            m.proj{proj}.intensities_denoise(:, ...
+            (nChan*(i-1)+1):nChan*i,:);
+            
+        % loading bar update-----------------------------------
+        err = loading_bar('update', h_fig);
+        % -----------------------------------------------------
+
+        if err
+            return;
+        end
+    end
+    loading_bar('close', h_fig);
+    
+    h.param.ttPr = m;
+    guidata(h_fig,h);
+    
 end
 
-% added by MH, 24.4.2019
-if isempty(str_lst)
-    str_lst = {'no default tag'};
+
+function setDataPlotPrm(h_fig)
+% Assign data-specific plot colors and axis labels
+    
+    % get project parameters
+    h = guidata(h_fig);
+    p = h.param.ttPr;
+    proj = p.curr_proj;
+    nChan = p.proj{proj}.nb_channel;
+    nExc = p.proj{proj}.nb_excitations;
+    nFRET = size(p.proj{proj}.FRET,1);
+    nS = numel(p.proj{proj}.S);
+    clr = p.proj{proj}.colours;
+    perSec = p.proj{proj}.fix{2}(4);
+    perPix = p.proj{proj}.fix{2}(5);
+    inSec = p.proj{proj}.fix{2}(7);
+
+    % get existing plot data
+    dat1 = get(h.tm.axes_ovrAll_1,'UserData');
+    dat2 = get(h.tm.axes_ovrAll_2,'UserData');
+
+    % initializes plot parameters
+    dat1.color = cell(1,nChan*nExc+nFRET+nS);
+    dat1.ylabel = cell(1,nChan*nExc+nFRET+nS+4);
+    if inSec
+        dat1.xlabel = 'time (s)';
+    else
+        dat1.xlabel = 'frame number';
+    end   
+
+    % define axis labels
+    str_extra = [];
+    if perSec
+        str_extra = [str_extra ' per s.'];
+    end
+    if perPix
+        str_extra = [str_extra ' per pix.'];
+    end
+    
+    i = 0;
+    for l = 1:nExc % number of excitation channels
+        for c = 1:nChan % number of emission channels
+            i = i + 1;
+            dat1.ylabel{i} = ['counts' str_extra];
+            dat2.ylabel{i} = 'freq. counts'; % RB 2018-01-04
+            dat2.xlabel{i} = ['counts' str_extra]; % RB 2018-01-04
+            dat1.color{i} = clr{1}{l,c};
+        end
+    end
+    for n = 1:nFRET
+        i = i + 1;
+        dat1.ylabel{i} = 'FRET';
+        dat2.ylabel{i} = 'freq. counts'; % RB 2018-01-04
+        dat2.xlabel{i} = 'FRET'; % RB 2018-01-04
+        dat1.color{i} = clr{2}(n,:);
+    end
+    for n = 1:nS
+        i = i + 1;
+        dat1.ylabel{i} = 'S';
+        dat2.ylabel{i} = 'freq. counts'; % RB 2018-01-04
+        dat2.xlabel{i} = 'S'; % RB 2018-01-04
+        dat1.color{i} = clr{3}(n,:);
+    end
+    if nChan > 1 || nExc > 1
+        i = i + 1;
+        dat1.ylabel{i} = ['counts' str_extra];
+        % no dat2.xlabel{size(str_plot,2)} = ['counts' str_extra]; % RB 2018-01-04
+    end
+    if nFRET > 1
+        i = i + 1;
+        dat1.ylabel{i} = 'FRET';
+        % no dat2.xlabel{size(str_plot,2)} = 'FRET'; % RB 2018-01-04
+    end
+    % String for all Stoichiometry Channels in popup menu
+    if nS > 1
+        i = i + 1;
+        dat1.ylabel{i} = 'S';
+        % no dat2.xlabel{size(str_plot,2)} = 'S'; % RB 2018-01-04
+    end
+    % String for all FRET and Stoichiometry Channels in popup menu
+    if nFRET > 0 && nS > 0
+        i = i + 1;
+        dat1.ylabel{i} = 'FRET or S';
+        % no dat2.xlabel{size(str_plot,2)} = 'FRET or S'; % RB 2018-01-04
+    end
+    i = 0;
+    for fret = 1:nFRET
+        for s = 1:nS
+            i = i + 1;
+            % no dat1.ylabel{nChan*nExc+nFRET+nS+n} = 'FRET or S'; % RB 2018-01-04
+            dat2.ylabel{nChan*nExc+nFRET+nS+i} = 'S'; % RB 2018-01-04: change index as str_plot and str_plot2 are different
+            dat2.xlabel{nChan*nExc+nFRET+nS+i} = 'E'; % RB 2018-01-04: change index as str_plot and str_plot2 are different
+        end
+    end
+    
+    set(h.tm.axes_ovrAll_1,'UserData',dat1);
+    set(h.tm.axes_ovrAll_2,'UserData',dat2);
+    
 end
-end
 
 
-function str_lst = getStrPop_select(h_fig)
-% Defines string in automatic molecule selection popupmenu
+function concatenateData(h_fig)
+% Concatenates traces and calculate new axis limits if necessary
 
-%% Created by MH, 24.4.2019
+% Last update by MH, 27.3.2019
+% >> correct update for ES histograms for multiple FRET and stoichiometries
 %
-%%
+% Last update: by RB, 4.1.2018
+% >> hist2 rather slow replaced by hist2D
+%
+% update: by RB, 4.1.2018
+% >> include FRET-S-Histogram
+% >> restructured dat2.hist, dat2.iv and dat1.lim
 
-h = guidata(h_fig);
-tagNames = h.tm.molTagNames;
-tagClr = h.tm.molTagClr;
-nTag = numel(tagNames);
+    % defaults
+    def_niv = 200;
 
-str_lst = {'current','all','none','inverse'};
-for t = 1:nTag
-    str_lst = [str_lst cat(2,'<html>add <span bgcolor=',tagClr{t},'>',...
-            '<font color="white">',tagNames{t},'</font></body></html>')];
-end
-for t = 1:nTag
-    str_lst = [str_lst cat(2,'<html>remove <span bgcolor=',tagClr{t},'>',...
-            '<font color="white">',tagNames{t},'</font></body></html>')];
-end
+    % collect project parameters
+    h = guidata(h_fig);
+    p = h.param.ttPr;
+    proj = p.curr_proj;
+    nMol = numel(h.tm.molValid);
+    nChan = p.proj{proj}.nb_channel;
+    exc = p.proj{proj}.excitations;
+    chanExc = p.proj{proj}.chanExc;
+    nExc = p.proj{proj}.nb_excitations;
+    FRET = p.proj{proj}.FRET;
+    nFRET = size(FRET,1);
+    S = p.proj{proj}.S;
+    nS = size(S,1);
+    perSec = p.proj{proj}.fix{2}(4);
+    perPix = p.proj{proj}.fix{2}(5);
+    rate = p.proj{proj}.frame_rate;
+    nPix = p.proj{proj}.pix_intgr(2);
+    
+    % get existing plot data
+    dat1 = get(h.tm.axes_ovrAll_1,'UserData');
+    dat2 = get(h.tm.axes_ovrAll_2,'UserData');
+    
+    % allocate cells
+    dat1.trace = cell(1,nChan*nExc+nFRET+nS);
+    dat1.lim = dat1.trace;
+    %dat2.hist = dat1.trace; %old
+    %dat2.iv = dat1.trace; %old
+    dat2.hist = cell(1,nChan*nExc+nFRET+nS+nFRET); % RB 2018-01-03:
+    dat1.niv = repmat(def_niv,1,nChan*nExc+nFRET+nS+nFRET*nS);
+    
+    global intensities;
+
+    % loading bar parameters-----------------------------------------------
+    err = loading_bar('init', h_fig , nMol, ...
+        'Concatenate and calculate data ...');
+    if err
+        return;
+    end
+    h = guidata(h_fig);
+    h.barData.prev_var = h.barData.curr_var;
+    guidata(h_fig, h);
+    % ---------------------------------------------------------------------
+    
+    for i = 1:nMol
+        if h.tm.molValid(i)
+            for l = 1:nExc
+                for c = 1:nChan
+                    ind = (l-1)*nChan+c;
+                    incl = p.proj{proj}.bool_intensities(:,i);
+                    I = intensities(incl,nChan*(i-1)+c,l);
+                    if perSec
+                        I = I/rate;
+                    end
+                    if perPix
+                        I = I/nPix;
+                    end
+                    dat1.trace{ind} = [dat1.trace{ind}; reshape(I, ...
+                        [numel(I), 1])];
+                end
+            end
+            
+            I = intensities(incl,(nChan*(i-1)+1):nChan*i,:);
+            gamma = p.proj{proj}.curr{i}{5}{3};
+            fret = calcFRET(nChan, nExc, exc, chanExc, FRET, I, gamma);
+            for n = 1:nFRET
+                ind = ind + 1;
+                FRET_tr = fret(:,n);
+                FRET_tr(FRET_tr == Inf) = 1000000;
+                FRET_tr(FRET_tr == -Inf) = -1000000;
+                dat1.trace{ind} = [dat1.trace{ind}; ...
+                    reshape(FRET_tr, [numel(FRET_tr) 1])];
+            end
+            for n = 1:nS
+                ind = ind + 1;
+                [o,l_s,o] = find(exc==chanExc(S(n)));
+                Inum = sum(intensities(incl, ...
+                    (nChan*(i-1)+1):nChan*i,l_s),2);
+                Iden = sum(sum(intensities(incl, ...
+                    (nChan*(i-1)+1):nChan*i,:),2),3);
+                S_tr = Inum./Iden;
+                S_tr(S_tr == Inf) = 1000000; % prevent for Inf
+                S_tr(S_tr == -Inf) = -1000000; % prevent for Inf
+                dat1.trace{ind} = [dat1.trace{ind}; ...
+                    reshape(S_tr, [numel(S_tr) 1])];
+            end
+        end
+
+        % loading bar update-----------------------------------
+        err = loading_bar('update', h_fig);
+        % -----------------------------------------------------
+
+        if err
+            return;
+        end
+    end
+    disp('data successfully concatenated !');
+    loading_bar('close', h_fig);
+    
+    % RB 2018-01-04: adapted for FRET-S-Histogram, hist2 is rather slow
+    % RB 2018-01-05: hist2 replaced by hist2D
+    % loading bar parameters-----------------------------------------------
+    
+    % corrected by MH, 27.3.2019
+%     err = loading_bar('init', h_fig , (nChan*nExc+nFRET+nS+nFRET), ...
+    err = loading_bar('init', h_fig , (nChan*nExc+nFRET+nS+nFRET*nS), ...
+        'Histogram data ...');
+    
+    if err
+        return;
+    end
+    h = guidata(h_fig);
+    h.barData.prev_var = h.barData.curr_var;
+    guidata(h_fig, h);
+    % ---------------------------------------------------------------------
+    
+    % RB 2018-01-04: adapted for FRET-S-Histogram
+    ES = []; % local array
+    
+    % MH 2019-03-27: collect ES indexes
+%     for ind = 1:(size(dat1.trace,2)+nS)
+    ind_es = [];
+    for fret = 1:nFRET
+        for s = 1:nS
+            ind_es = cat(1,ind_es,[fret,s]);
+        end
+    end
+    for ind = 1:(size(dat1.trace,2)+nFRET*nS) % counts for nChan*nExc Intensity channels, nFRET channles, nS channels and nFRET ES histograms
+        
+        if ind <= nChan*nExc % intensity histogram 1D 
+            dat1.lim{ind} = [min(dat1.trace{ind}) max(dat1.trace{ind})];
+            bin = (dat1.lim{ind}(2) - dat1.lim{ind}(1)) / dat1.niv(ind);
+            iv = (dat1.lim{ind}(1) - bin):bin:(dat1.lim{ind}(2) + bin);
+            [dat2.hist{ind}, dat2.iv{ind}] = hist(dat1.trace{ind}, iv); % HISTOGRAM replaces hist since 2015! 
+            
+        elseif ind <= (nChan*nExc + nFRET + nS) % FRET and S histogram 1D
+            dat1.lim{ind} = [-0.2 1.2];
+            bin = (dat1.lim{ind}(2) - dat1.lim{ind}(1)) / dat1.niv(ind);
+            iv = (dat1.lim{ind}(1) - bin):bin:(dat1.lim{ind}(2) + bin);
+            
+            [dat2.hist{ind}, dat2.iv{ind}] = hist(dat1.trace{ind}, iv); % HISTOGRAM replaces hist since 2015! 
+        else  % FRET-S histogram 2D, adapted from getTDPmat.m
+            dat1.lim{ind} = [-0.2 1.2; -0.2 1.2];
+            %binx = (dat1.lim{ind}(2,2) - dat1.lim{ind}(2,1)) / dat1.niv(ind);
+            %biny = (dat1.lim{ind}(1,2) - dat1.lim{ind}(1,1)) / dat1.niv(ind);
+            %ivx = (dat1.lim{ind}(2,1) - binx):binx:(dat1.lim{ind}(2,2) + binx);
+            %ivy = (dat1.lim{ind}(1,1) - biny):biny:(dat1.lim{ind}(1,2) + biny);
+            
+            % corrected by MH, 27.3.2019
+%             ES = [dat1.trace{ind-nFRET-nS},dat1.trace{ind-nS}]; % build [N-by-2] or ' ... '[2-by-N] data matrix.']
+            ind_fret = ind_es(ind-nChan*nExc-nFRET-nS,1) + nChan*nExc;
+            ind_s = ind_es(ind-nChan*nExc-nFRET-nS,2) + nChan*nExc + nFRET;
+            ES = [dat1.trace{ind_fret},dat1.trace{ind_s}]; % build [N-by-2] or ' ... '[2-by-N] data matrix.']
+            
+            %[dat2.hist{ind},o,o,dat2.iv{ind}] = hist2(ES, [ivx;ivy]); % hist2 by MCASH rather slow
+            binEdges_minmaxN_xy = [dat1.lim{ind}(1,1) dat1.lim{ind}(1,2) dat1.niv(ind); dat1.lim{ind}(2,1) dat1.lim{ind}(2,2) dat1.niv(ind)];
+            [dat2.hist{ind},dat2.iv{ind}(1,:),dat2.iv{ind}(2,:)] = hist2D(ES, binEdges_minmaxN_xy); % hist2D by tudima at zahoo dot com, inlcuded in \traces\processing\management
+        end
+        
+        % old from MCASH
+        %bin = (dat1.lim{ind}(2) - dat1.lim{ind}(1)) / dat1.niv(ind);
+        %iv = (dat1.lim{ind}(1) - bin):bin:(dat1.lim{ind}(2) + bin);
+        %[dat2.hist{ind}, dat2.iv{ind}] = hist(dat1.trace{ind}, iv); % HISTOGRAM replaces hist since 2015! 
+        
+        % loading bar update-----------------------------------
+        err = loading_bar('update', h_fig);
+        % -----------------------------------------------------
+
+        if err
+            return;
+        end
+    end
+    disp('data successfully histogrammed !');
+    loading_bar('close', h_fig);
+    
+    % store data in axes
+    set(h.tm.axes_ovrAll_1, 'UserData', dat1);
+    set(h.tm.axes_ovrAll_2, 'UserData', dat2);
 end
 
+
+%% build GUI
 
 function openMngrTool(h_fig)
 
-%% Last update by MH, 24.4.2019
+% Last update by MH, 24.4.2019
 % >> add toolbar and empty tools "Auto sorting" and "View of video"
 % >> rename "Overview" panel in "Molecule selection"
 %
@@ -157,15 +467,9 @@ function openMngrTool(h_fig)
 % update: by RB, 15.12.2017
 % >> update popupmenu_axes1 and popupmenu_axes2 string
 %
-%%
-    
-    h = guidata(h_fig);
-    p = h.param.ttPr;
-    proj = p.curr_proj;
-    nb_mol = numel(p.proj{proj}.coord_incl);
-    
-    wFig = 900;
-    hFig = 800;
+%
+
+    % get MASH figure dimensions
     prev_u = get(h_fig, 'Units');
     set(h_fig, 'Units', 'pixels');
     posFig = get(h_fig, 'Position');
@@ -174,49 +478,57 @@ function openMngrTool(h_fig)
     set(0, 'Units', 'pixels');
     pos_scr = get(0, 'ScreenSize');
     set(0, 'Units', prev_u);
+    
+    % set TM figure dimensions
+    wFig = 900;
+    hFig = 800;
     xFig = posFig(1) + (posFig(3) - wFig)/2;
     yFig = min([hFig pos_scr(4)]) - hFig;
     pos_fig = [xFig yFig wFig hFig];
     
+    % set margins
     mg = 10;
     mg_big = 2*mg;
     mg_win = 0;
     mg_ttl = 10;
+    
+    % set font sizes
     fntS = 10.6666666;
     fntS_big = 12;
-    h_edit = 20; w_edit = 40;
+    
+    % set UI control dimensions
+    h_edit = 20;
+    w_edit = 40;
+    h_pop = h_edit;
     w_pop = 120; % RB 2018-01-03: adapt width of popupmenu for FRET-S-Histogram 
-    h_but = 20; w_but = (w_pop-mg)/2;
-    h_but_big = 30; w_but_big = 120;
+    h_but = h_edit;
+    w_but = (w_pop-mg)/2;
+    h_but_big = 30;
+    w_but_big = 120;
     h_txt = 14;
+    
+    % set panels dimensions
     w_pan = wFig - 2*mg;
-
     h_pan_all = mg_ttl + 3*mg + mg_big + 2*h_edit + 2*h_txt + h_but;
     h_toolbar = h_but_big + 2*mg;
-    h_pan_sgl = hFig - mg_win - 4*mg - h_pan_all - h_toolbar;
-    h_pan_tool = h_pan_all + mg + h_pan_sgl;
+    h_pan_sgl = hFig - mg_win - 2*mg - h_pan_all - h_toolbar;
+    h_pan_tool = hFig - h_toolbar + mg;
     
+    % set axes dimensions
     h_axes_all = h_pan_all - mg_ttl - 2*mg - h_edit;
     w_axes2 = 2*mg + 3*w_edit;
     w_axes1 = w_pan - 4*mg - w_pop - w_axes2;
     
+    % set sliding bar dimensions
     w_sld = 20;
     h_sld = h_pan_sgl - 3*mg - mg_ttl - h_but;
-
+    
     h = guidata(h_fig);
-    
-    if nb_mol < 3
-        nb_mol_disp = nb_mol;
-    else
-        nb_mol_disp = 3;
-    end
-    
-    h.tm.molValid = p.proj{proj}.coord_incl;
     
     h.tm.figure_traceMngr = figure('Visible', 'on', 'Units', 'pixels', ...
         'Position', pos_fig, 'Color', [0.94 0.94 0.94], ...
         'CloseRequestFcn', {@figure_traceMngr, h_fig}, 'NumberTitle', ...
-        'off', 'Name', [get(h_fig, 'Name') ' - Trace manager']);
+        'off', 'Name', ['Trace manager - ' get(h_fig, 'Name')]);
     
     % add debugging mode where all other windows are not deactivated
     % added by FS, 24.4.2018
@@ -266,20 +578,21 @@ function openMngrTool(h_fig)
         'Units', 'pixels', 'Position', [xNext yNext w_pan h_pan_sgl], ...
         'Title','Molecule selection','FontUnits','pixels','FontSize',fntS);
     
+    xNext = -mg;
     yNext = y_0 - mg - h_but_big - mg - h_pan_tool;
     
     h.tm.uipanel_autoSorting = uipanel('Parent', h.tm.figure_traceMngr, ...
-        'Units', 'pixels', 'Position', [xNext yNext w_pan h_pan_tool], ...
+        'Units', 'pixels', 'Position', [xNext yNext wFig+2*mg h_pan_tool], ...
         'Title', '', 'FontUnits', 'pixels', ...
         'FontSize', fntS, 'Visible', 'off');
     
     h.tm.uipanel_videoView = uipanel('Parent', h.tm.figure_traceMngr, ...
-        'Units', 'pixels', 'Position', [xNext yNext w_pan h_pan_tool], ...
+        'Units', 'pixels', 'Position', [xNext yNext wFig+2*mg h_pan_tool], ...
         'Title', '', 'FontUnits', 'pixels', ...
         'FontSize', fntS, 'Visible', 'off');
     
     
-    %% all results panel
+    % all results panel
     
     xNext = mg;
     yNext = h_pan_all - mg_ttl - mg - h_txt;
@@ -291,10 +604,11 @@ function openMngrTool(h_fig)
         fntS);
     
     yNext = yNext - h_edit;
-    
-    % RB 2017-12-15: update str_plot 
+
+    % RB 2017-12-15: update str_plot
+    str_plot = getStrPlot_overall(h_fig); % added by MH, 25.4.2019
     h.tm.popupmenu_axes1 = uicontrol('Style', 'popupmenu', 'Parent', ...
-        h.tm.uipanel_overall, 'String', {'none'}, 'Units', 'pixels', ...
+        h.tm.uipanel_overall, 'String', str_plot{1}, 'Units', 'pixels', ...
         'Position', [xNext yNext w_pop h_edit], 'BackgroundColor', ...
         [1 1 1], 'Callback', {@popupmenu_axes_Callback, h_fig}, ...
         'FontUnits', 'pixels', 'FontSize', fntS);
@@ -311,7 +625,7 @@ function openMngrTool(h_fig)
     
     % RB 2017-12-15: update str_plot 
     h.tm.popupmenu_axes2 = uicontrol('Style', 'popupmenu', 'Parent', ...
-        h.tm.uipanel_overall, 'Units', 'pixels', 'String', {'none'}, ...
+        h.tm.uipanel_overall, 'Units', 'pixels', 'String', str_plot{2}, ...
         'Position', [xNext yNext w_pop h_edit], 'BackgroundColor', ...
         [1 1 1], 'Callback', {@popupmenu_axes_Callback, h_fig}, ...
         'FontUnits', 'pixels', 'FontSize', fntS);
@@ -350,7 +664,6 @@ function openMngrTool(h_fig)
     xNext = xNext + mg + w_axes1;
     yNext = mg;
     
-    
     h.tm.axes_ovrAll_2 = axes('Parent', h.tm.uipanel_overall, 'Units', ...
         'pixels', 'FontUnits', 'pixels', 'FontSize', fntS, ...
         'ActivePositionProperty', 'OuterPosition', 'GridLineStyle', ':',...
@@ -386,7 +699,7 @@ function openMngrTool(h_fig)
         'BackgroundColor', [1 1 1], 'TooltipString', ...
         'upper interval value');
    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
    % RB 2018-01-05 to do: include y-axes control for FRET-S-Histogram
    %     yNext = h_pan_all - mg_ttl - mg - h_edit;
    %     
@@ -411,24 +724,10 @@ function openMngrTool(h_fig)
    %         ... 'Callback', {@edit_xlim_up_Callback, h_fig}, 'String', '1',
    %         ... 'BackgroundColor', [1 1 1], 'TooltipString', ... 'upper
    %         interval value');
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
    
    
-    %% TM panel overview
-    
-    if nb_mol <= nb_mol_disp || nb_mol_disp == 0
-        min_step = 1;
-        maj_step = 1;
-        min_val = 0;
-        max_val = 1;
-        vis = 'off';
-    else
-        vis = 'on';
-        min_val = 1;
-        max_val = nb_mol-nb_mol_disp+1;
-        min_step = 1/(nb_mol-nb_mol_disp);
-        maj_step = nb_mol_disp/(nb_mol-nb_mol_disp);
-    end
+    % TM panel overview
     
     xNext = mg;
     yNext = h_pan_sgl - mg_ttl - mg - h_but;
@@ -461,27 +760,28 @@ function openMngrTool(h_fig)
         'fontsize', fntS,'fontweight','bold');
     
     xNext = xNext + 0.5*w_pop + mg/2 ;
-    
-    str_pop = getStrPop_select(h_fig);
-    
+
     % added by MH, 24.4.2019
+    str_pop = getStrPop_select(h_fig);
     h.tm.popupmenu_selection = uicontrol('style','popupmenu','parent',...
         h.tm.uipanel_overview,'units','pixels','string',str_pop,'value',1,...
         'position',[xNext,yNext,4/5*w_pop,h_but],'fontunits','pixels', ...
         'fontsize', fntS,'callback',{@popupmenu_selection_Callback,h_fig});
     
-    % edit box to define a molecule tag, added by FS, 24.4.2018
     xNext = xNext + 4/5*w_pop + 2*mg;
+    
+    % edit box to define a molecule tag, added by FS, 24.4.2018
     h.tm.edit_molTag = uicontrol('Style', 'edit', 'Parent', ...
         h.tm.uipanel_overview, 'Units', 'pixels', ...
         'String', 'define a new tag', 'Position', [xNext yNext w_pop h_but], ...
         'Callback', {@edit_addMolTag_Callback, h_fig}, ...
         'FontUnits', 'pixels', ...
         'FontSize', fntS);
+    
+    xNext = xNext + w_pop + mg;
 
     % popup menu to select molecule tag, added by FS, 24.4.2018
     % add callback, MH 24.4.2019
-    xNext = xNext + w_pop + mg;
     str_lst = colorTagNames(h_fig);
     h.tm.popup_molTag = uicontrol('Style', 'popup', 'Parent', ...
         h.tm.uipanel_overview, 'Units', 'pixels', ...
@@ -491,19 +791,20 @@ function openMngrTool(h_fig)
         'FontUnits', 'pixels', ...
         'FontSize', fntS, 'Callback', {@popup_molTag_Callback,h_fig});
     
-    % added by MH, 24.4.2019
     xNext = xNext + w_pop + mg;
-    hexclr = h.tm.molTagClr{get(h.tm.popup_molTag,'value')}(2:end);
     
+    % added by MH, 24.4.2019
+    hexclr = h.tm.molTagClr{get(h.tm.popup_molTag,'value')}(2:end);
     h.tm.edit_tagClr = uicontrol('Style','edit','Parent', ...
         h.tm.uipanel_overview,'Units','pixels','String',num2str(hexclr), ...
         'Position',[xNext yNext w_edit h_but],'TooltipString', ...
         'define the tag color','FontUnits','pixels','FontSize',fntS, ...
         'Backgroundcolor',hex2rgb(hexclr)/255,'callback',...
         {@edit_tagClr_Callback,h_fig});
+    
+    xNext = xNext + w_edit + mg;
 
     % popup menu to select molecule tag, added by FS, 24.4.2018
-    xNext = xNext + w_edit + mg;
     h.tm.pushbutton_deleteMolTag = uicontrol('Style', 'pushbutton', 'Parent', ...
         h.tm.uipanel_overview, 'Units', 'pixels', ...
         'String', 'delete tag', ...
@@ -514,13 +815,23 @@ function openMngrTool(h_fig)
         'FontSize', fntS);
     
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     xNext = w_pan - mg - w_but;
-
+    
+    arrow_up = [0.92 0.92 0.92 0.92 0.92 0.92 0 0.92 0.92 0.92 0.92 0.92;
+                0.92 0.92 0.92 1    1    0    0 0    0.92 0.92 0.92 0.92;
+                0.92 0.92 1    1    0    0    0 0    0    0.92 0.92 0.92;
+                0.92 1    1    0    0    0    0 0    0    0    0.92 0.92;
+                1    1    0    0    0    0    0 0    0    0    0    0.85;
+                1    0    0    0    0    0    0 0    0    0    0    0;
+                1    1    1    1    1    1    1 1    1    1    1    0.85];
+    arrow_up = cat(3,arrow_up,arrow_up,arrow_up);
     h.tm.pushbutton_reduce = uicontrol('Style', 'pushbutton', 'Parent', ...
         h.tm.uipanel_overview, 'Units', 'pixels', 'Position', ...
-        [xNext yNext w_but h_but]);
+        [xNext yNext w_but h_but], 'CData', arrow_up, 'TooltipString', ...
+        'Hide overall panel', 'Callback', ...
+        {@pushbutton_reduce_Callback, h_fig});
     
     xNext = xNext - mg_big - w_edit;
     
@@ -540,98 +851,136 @@ function openMngrTool(h_fig)
     
     xNext = w_pan - mg - w_sld;
     yNext = mg;
-
+    
+    % define the number of molecule displayed per page
+    nb_mol = numel(h.tm.molValid);
+    if nb_mol < 3
+        nb_mol_disp = nb_mol;
+    else
+        nb_mol_disp = 3;
+    end
+    % adjust sliding parameters and visibility
+    if nb_mol <= nb_mol_disp || nb_mol_disp == 0
+        min_step = 1;
+        maj_step = 1;
+        min_val = 0;
+        max_val = 1;
+        vis = 'off';
+    else
+        vis = 'on';
+        min_val = 1;
+        max_val = nb_mol-nb_mol_disp+1;
+        min_step = 1/(nb_mol-nb_mol_disp);
+        maj_step = nb_mol_disp/(nb_mol-nb_mol_disp);
+    end
     h.tm.slider = uicontrol('Style', 'slider', 'Parent', ...
         h.tm.uipanel_overview, 'Units', 'pixels', 'Position', ...
         [xNext yNext w_sld h_sld], 'Value', max_val, 'Max', max_val, ...
         'Min', min_val, 'Callback', {@slider_Callback, h_fig}, ...
         'SliderStep', [min_step maj_step], 'Visible', vis);
     
+    
+    % panel auto-sorting
+   
+    w_axes3 = wFig - 2*mg;
+    h_axes3 = 0.5*(h_pan_tool-4*mg)-h_pop-mg;
+    w_pan_slct = (w_axes3-mg)/2;
+    h_pan_slct = h_pan_tool-h_axes3-h_pop-mg-4*mg;
+    w_pan_sg = w_axes3-mg-w_pan_slct;
+    w_txt = 140;
+   
+    xNext = 2*mg;
+    yNext = 2*mg;
+   
+	h.tm.uipanel_selection = uipanel('parent',h.tm.uipanel_autoSorting, ...
+        'units','pixels','position',[xNext yNext w_pan_slct h_pan_slct], ...
+        'title','Selection','fontunits','pixels','fontsize',fntS);
+    
+    xNext = xNext + w_pan_slct + mg;
+    
+    h.tm.uipanel_subgroups = uipanel('parent',h.tm.uipanel_autoSorting, ...
+        'units', 'pixels', 'position', [xNext yNext w_pan_sg h_pan_slct], ...
+        'title','Subgroup tag','fontunits','pixels','fontsize',fntS);
+    
+    xNext = 2*mg;
+    yNext = yNext + h_pan_slct + mg;
+   
+    h.tm.axes_histSort = axes('parent',h.tm.uipanel_autoSorting,...
+        'units','pixels','fontunits','pixels','fontsize',fntS,...
+        'activepositionproperty','outerposition','gridlineStyle',':',...
+        'nextPlot','replacechildren');
+     pos = getRealPosAxes([xNext,yNext,w_axes3,h_axes3], ...
+         get(h.tm.axes_histSort,'TightInset'),'traces'); 
+     pos(3) = pos(3) - fntS;
+     pos(1) = pos(1) + fntS;
+     set(h.tm.axes_histSort,'Position',pos);
+     
+     yNext = yNext + h_axes3 + mg;
+     
+     h.tm.text_selectDistrib = uicontrol('style','text','parent',...
+         h.tm.uipanel_autoSorting,'string','Select data distribution:',...
+         'position',[xNext,yNext,w_txt,h_txt],'fontunits','pixels',...
+         'fontsize',fntS,'fontweight','bold');
+     
+     xNext = xNext + w_txt + mg;
+     
+     str_pop = getStrPlot_overall(h_fig);
+     h.tm.popupmenu_selectDistrib = uicontrol('style','popupmenu','parent',...
+         h.tm.uipanel_autoSorting,'string',str_pop{2},'tooltipstring',...
+         'Select data distribution:','position',[xNext,yNext,w_txt,h_pop],...
+         'fontunits','pixels','fontsize',fntS);
+     
+    
+	% panel selection
+     
+     
+    
+    
+    % Save and finalize figure
+    
+    % save controls
     guidata(h_fig, h);
+    
+    % build controls and axes in panel "Molecule selection"
     updatePanel_single(h_fig, nb_mol_disp);
+    
+    % recover new controls
     h = guidata(h_fig);
     
+    % set all positions and dimensions to normalized 
     setProp(get(h.tm.figure_traceMngr, 'Children'), 'Units', 'normalized');
-    setProp(get(h.tm.figure_traceMngr, 'Children'), 'FontUnits', ...
-        'normalized');
-    set([h.tm.uipanel_overview h.tm.uipanel_overall], 'FontUnits', ...
-        'pixels');
-
-    arrow_up = [0.92 0.92 0.92 0.92 0.92 0.92 0 0.92 0.92 0.92 0.92 0.92;
-                0.92 0.92 0.92 1    1    0    0 0    0.92 0.92 0.92 0.92;
-                0.92 0.92 1    1    0    0    0 0    0    0.92 0.92 0.92;
-                0.92 1    1    0    0    0    0 0    0    0    0.92 0.92;
-                1    1    0    0    0    0    0 0    0    0    0    0.85;
-                1    0    0    0    0    0    0 0    0    0    0    0;
-                1    1    1    1    1    1    1 1    1    1    1    0.85];
-
-    arrow_up = cat(3,arrow_up,arrow_up,arrow_up);
-
-    dat.arrow = flipdim(arrow_up,1);% close
-    dat.open = 1;
+    
+    % set all font units to pixels
+    setProp(get(h.tm.figure_traceMngr, 'Children'), 'FontUnits', 'pixels');
+    
+    % store relevant parameters to used when reducing panel "Overall plot"
     pos_button = get(h.tm.pushbutton_reduce, 'Position');
     pos_panelAll_open = get(h.tm.uipanel_overall, 'Position');
-    dat.pos_all = [pos_panelAll_open(1) 1-pos_button(4) ...
-        pos_panelAll_open(3) pos_button(4)];% close
     pos_panelSingle_open = get(h.tm.uipanel_overview, 'Position');
+    dat.arrow = flipdim(arrow_up,1);% close
+    dat.open = 1;
+    h_panelAll_close = pos_button(4);
+    dat.pos_all = [pos_panelAll_open(1) ...
+        pos_panelAll_open(2)+pos_panelAll_open(4)-h_panelAll_close ...
+        pos_panelAll_open(3) h_panelAll_close];% close
     dat.pos_single = [pos_panelSingle_open(1) pos_panelSingle_open(2) ...
         pos_panelAll_open(3) (pos_panelSingle_open(4)+ ...
-        pos_panelAll_open(4)-pos_button(4))];% close
+        pos_panelAll_open(4)-h_panelAll_close)];% close
     dat.tooltip = 'Show overall panel';% close
     dat.visible = 'off';
-
-    set(h.tm.pushbutton_reduce, 'CData', arrow_up, 'TooltipString', ...
-        'Hide overall panel', 'UserData', dat, 'Callback', ...
-        {@pushbutton_reduce_Callback, h_fig});
-
+    set(h.tm.pushbutton_reduce, 'UserData', dat);
+    
+    % make figure visible
     set(h.tm.figure_traceMngr, 'Visible', 'on');
     
+    % switch to default tool interface
     switchPan_TM(h.tm.togglebutton_overview,[],h_fig);
     
 end
 
-function switchPan_TM(obj,evd,h_fig)
-% Render the selected tool visible and other tools invisible
-
-%% Created by MH, 24.4.2019
-%
-%%
-
-h = guidata(h_fig);
-
-green = [0.76 0.87 0.78];
-grey = [240/255 240/255 240/255];
-
-set(obj,'Value',1,'BackgroundColor',green);
-
-switch obj
-    case h.tm.togglebutton_overview
-        set([h.tm.togglebutton_autoSorting,h.tm.togglebutton_videoView],...
-            'Value',0,'BackgroundColor',grey);
-        set([h.tm.uipanel_autoSorting,h.tm.uipanel_videoView],'Visible',...
-            'off');
-        set([h.tm.uipanel_overall,h.tm.uipanel_overview], 'Visible', 'on');
-        
-    case h.tm.togglebutton_autoSorting
-        set([h.tm.togglebutton_overview,h.tm.togglebutton_videoView],...
-            'Value',0,'BackgroundColor',grey);
-        set([h.tm.uipanel_overall,h.tm.uipanel_overview,...
-            h.tm.uipanel_videoView],'Visible','off');
-        set(h.tm.uipanel_autoSorting, 'Visible', 'on');
-        
-    case h.tm.togglebutton_videoView
-        set([h.tm.togglebutton_overview,h.tm.togglebutton_autoSorting],...
-            'Value',0,'BackgroundColor',grey);
-        set([h.tm.uipanel_overall,h.tm.uipanel_overview,...
-            h.tm.uipanel_autoSorting],'Visible','off');
-        set(h.tm.uipanel_videoView, 'Visible', 'on');
-end
-end
-
-
 function updatePanel_single(h_fig, nb_mol_disp)
 
-%% Last update by MH, 24.4.2019
+% Last update by MH, 24.4.2019
 % >> allow molecule tagging even if the molecule unselected
 % >> review positionning of existing uicontrol
 % >> add listboxes as well as "Tag" and "Untag" pushbuttons to allow 
@@ -641,7 +990,7 @@ function updatePanel_single(h_fig, nb_mol_disp)
 % >> add popupmenu for molecule label and deactivate it if the molecule is 
 %    not selected
 %
-%%
+%
     
     h = guidata(h_fig);
     p = h.param.ttPr;
@@ -826,300 +1175,48 @@ function updatePanel_single(h_fig, nb_mol_disp)
 end
 
 
-function update_popups(h_fig, nb_mol_disp)
+%% update GUI
 
-%% Last update by MH, 24.4.2019
-% >> add colors to tag lists
+function switchPan_TM(obj,evd,h_fig)
+% Render the selected tool visible and other tools invisible
+
+% Created by MH, 24.4.2019
 %
-% update by FS, 25.4.2018
-% >> add colors to tag popupmenu
-%%
-
-h = guidata(h_fig);
-p = h.param.ttPr;
-proj = p.curr_proj;
-tagNames = p.proj{proj}.molTagNames;
-    
-for i = nb_mol_disp:-1:1
-    % added by FS, 25.4.2018
-    str_lst = colorTagNames(h_fig);
-    nTag = numel(str_lst);
-    currTag = get(h.tm.popup_molNb(i),'value');
-    if currTag>nTag
-        currTag = nTag;
-    end
-    set(h.tm.popup_molNb(i), 'String', str_lst, 'Value', currTag);
-    
-    mol = str2num(get(h.tm.checkbox_molNb(i), 'String'));
-    str_lst = colorTagLists(h_fig,mol);
-    nTag = numel(str_lst);
-    currTag = get(h.tm.listbox_molLabel(i),'value');
-    if currTag>nTag
-        currTag = nTag;
-    end
-    set(h.tm.listbox_molLabel(i), 'String', str_lst, 'Value', currTag)
-    
-end
-end
-
-
-function checkbox_molNb_Callback(obj, evd, h_fig)
-
-%% Last update by MH, 24.4.2019
-% >> allow molecule tagging even if the molecule unselected
 %
-% update: FS, 24.4.2018
-% >> deactivate the label popupmenu if the molecule is not selected
-%
-%%
-
-    h = guidata(h_fig);
-    p = h.param.ttPr;
-    proj = p.curr_proj;
-    nFRET = size(p.proj{proj}.FRET,1);
-    nS = size(p.proj{proj}.S,1);
-    isBot = nFRET | nS;
-    
-    mol = str2num(get(obj, 'String'));
-    [o,ind_h,o] = find(h.tm.checkbox_molNb == obj);
-    h.tm.molValid(mol) = logical(get(obj, 'Value'));
-    guidata(h_fig, h);
-    
-    if get(obj, 'Value')
-        shad = [1 1 1];
-    else
-        shad = get(h.tm.checkbox_molNb(ind_h), 'BackgroundColor');
-    end
-    set([h.tm.axes_itt(ind_h), h.tm.axes_itt_hist(ind_h)], 'Color', shad);
-    if isBot
-        set([h.tm.axes_frettt(ind_h), h.tm.axes_hist(ind_h)], 'Color', ...
-            shad);
-    end
-    
-    % deactivate the popupmenu if the molecule is not selected
-    % added by FS, 24.4.2018
-    % cancelled by MH, 24.4.2019: allow labelling even if not selected
-%     if h.tm.molValid(mol) == 0
-%         set(h.tm.popup_molNb(ind_h), 'Enable', 'off', 'Value', 1)
-%         h.tm.molTag(mol) = 1;
-%         guidata(h_fig, h)
-%     else
-%         set(h.tm.popup_molNb(ind_h), 'Enable', 'on')
-%     end
-
-end
-
-
-function pushbutton_addTag2mol_Callback(obj,evd,h_fig,i)
-% Pushbutton adds tag selected in popupmenu to current molecule 
-
-%% Created by MH, 24.4.2019
-%
-%%
 
 h = guidata(h_fig);
 
-% get tag to add
-tagNames = get(h.tm.popup_molNb(i),'string');
-tag = get(h.tm.popup_molNb(i),'value');
-if strcmp(tagNames{tag},'no default tag')
-    return;
-end
+green = [0.76 0.87 0.78];
+grey = [240/255 240/255 240/255];
 
-% update and save molecule tags
-mol = str2num(get(h.tm.checkbox_molNb(i),'String'));
-h.tm.molTag(mol,tag) = true;
-guidata(h_fig,h);
+set(obj,'Value',1,'BackgroundColor',green);
 
-% update molecule tag lists
-nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
-update_popups(h_fig,nb_mol_disp)
-
-end
-
-
-function pushbutton_remLabel_Callback(obj,evd,h_fig,i)
-% Pushbutton removes tag selected in molecule-specific listbox
-
-%% Created by MH, 24.4.2019
-%
-%%
-
-h = guidata(h_fig);
-
-% get tag to remove
-molTagNames = removeHtml(get(h.tm.listbox_molLabel(i),'string'));
-tag = get(h.tm.listbox_molLabel(i),'value');
-if strcmp(molTagNames{tag},'no tag')
-    return;
-end
-
-% update and save molecule tags
-mol = str2num(get(h.tm.checkbox_molNb(i),'String'));
-tagId = find(h.tm.molTag(mol,:));
-h.tm.molTag(mol,tagId(tag)) = false;
-guidata(h_fig,h);
-
-% update molecule tag lists
-nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
-update_popups(h_fig,nb_mol_disp)
-end
-
-
-% cancelled by MH, 24.4.2019: popupmenu is no longer used to set molecule
-% tag
-% function popup_molTag_Callback(obj, evd, h_fig, ~)
-% 
-% %% Last update: FS, 25.4.2019
-% % >> the molecule is passed directly to the callback, since the string 
-% %    variable is already occupied with the molecule tags
-% %
-% % Created by FS, 24.4.2018
-% %%
-% 
-%     % the molecule is passed directly to the callback, since the string
-%     % variable is already occupied with the molecule tags
-%     h = guidata(h_fig);
-%     pos_slider = round(get(h.tm.slider, 'Value'));
-%     max_slider = get(h.tm.slider, 'Max');
-%     cb = get(obj, 'Callback');
-%     mol = max_slider-pos_slider+cb{3};
-%     h.tm.molTag(mol) = get(obj, 'Value');
-%     guidata(h_fig, h);
-% end
-
-
-function pushbutton_reduce_Callback(obj, evd, h_fig)
-
-    h = guidata(h_fig);
-
-    dat = get(obj, 'UserData');
-
-    dat_next.arrow = flipdim(dat.arrow,1);
-    dat_next.pos_all = get(h.tm.uipanel_overall, 'Position');
-    dat_next.pos_single = get(h.tm.uipanel_overview, 'Position');
-    dat_next.tooltip = get(h.tm.pushbutton_reduce, 'TooltipString');
-    dat_next.open = abs(dat.open - 1);
-    dat_next.visible = get(h.tm.popupmenu_axes1, 'Visible');
-
-    set(obj, 'CData', dat.arrow, 'TooltipString', dat.tooltip, ...
-        'UserData', dat_next);
-    set(get(h.tm.uipanel_overall, 'Children'), 'Visible', dat.visible);
-    set(h.tm.uipanel_overall, 'Position', dat.pos_all);
-    set(h.tm.uipanel_overview, 'Position', dat.pos_single);
-    
-    if dat_next.open
-        plotData_overall(h_fig);
+switch obj
+    case h.tm.togglebutton_overview
+        set([h.tm.togglebutton_autoSorting,h.tm.togglebutton_videoView],...
+            'Value',0,'BackgroundColor',grey);
+        set([h.tm.uipanel_autoSorting,h.tm.uipanel_videoView],'Visible',...
+            'off');
+        set([h.tm.uipanel_overall,h.tm.uipanel_overview], 'Visible', 'on');
         
-    else
-        dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
-        dat2 = get(h.tm.axes_ovrAll_2, 'UserData');
-        cla(h.tm.axes_ovrAll_1);
-        cla(h.tm.axes_ovrAll_2);
-        set(h.tm.axes_ovrAll_1, 'UserData', dat1, 'GridLineStyle', ':');
-        set(h.tm.axes_ovrAll_2, 'UserData', dat2, 'GridLineStyle', ':');
-    end
-    
+    case h.tm.togglebutton_autoSorting
+        set([h.tm.togglebutton_overview,h.tm.togglebutton_videoView],...
+            'Value',0,'BackgroundColor',grey);
+        set([h.tm.uipanel_overall,h.tm.uipanel_overview,...
+            h.tm.uipanel_videoView],'Visible','off');
+        set(h.tm.uipanel_autoSorting, 'Visible', 'on');
+        
+    case h.tm.togglebutton_videoView
+        set([h.tm.togglebutton_overview,h.tm.togglebutton_autoSorting],...
+            'Value',0,'BackgroundColor',grey);
+        set([h.tm.uipanel_overall,h.tm.uipanel_overview,...
+            h.tm.uipanel_autoSorting],'Visible','off');
+        set(h.tm.uipanel_videoView, 'Visible', 'on');
+end
 end
 
 
-function slider_Callback(obj, evd, h_fig)
-
-%% Last update by MH, 24.4.2019
-% >> cancel change in popupmenu's background color: no need as width and 
-%    height were downscaled to regular dimensions and the line color is
-%    given by the checkbox
-% >> allow molecule tagging even if the molecule unselected
-%
-% Last update: by FS, 24.4.2018
-% >> deactivate the label popupmenu if the molecule is not selected
-%
-%%
-
-    h = guidata(h_fig);
-    nMol = numel(h.tm.molValid);
-    
-    pos_slider = round(get(obj, 'Value'));
-    max_slider = get(obj, 'Max');
-    
-    nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
-    if nb_mol_disp > nMol
-        nb_mol_disp = nMol;
-    end
-    
-    for i = 1:nb_mol_disp
-        set(h.tm.checkbox_molNb(i), 'String', ...
-            num2str(max_slider-pos_slider+i), 'Value', ...
-            h.tm.molValid(max_slider-pos_slider+i), 'BackgroundColor', ...
-            0.05*[mod(max_slider-pos_slider+i,2) ...
-            mod(max_slider-pos_slider+i,2) ...
-            mod(max_slider-pos_slider+i,2)]+0.85);
-        
-        
-        % added by FS, 24.4.2018
-        % cancelled by MH, 24.4.2019
-%         str_lst = colorTagNames(h_fig);
-%         if h.tm.molTag(max_slider-pos_slider+i) > length(str_lst)
-%             val = 1;
-%         else
-%             val = h.tm.molTag(max_slider-pos_slider+i);
-%         end
-%         set(h.tm.popup_molNb(i), 'String', ...
-%             str_lst, 'Value', ...
-%             val, 'BackgroundColor', ...
-%             0.05*[mod(max_slider-pos_slider+i,2) ...
-%             mod(max_slider-pos_slider+i,2) ...
-%             mod(max_slider-pos_slider+i,2)]+0.85);
-        
-        % deactivate the popupmenu if the molecule is not selected
-        % added by FS, 24.4.2018
-        % cancelled by MH, 24.4.2019: allow labelling even if not selected
-%         if h.tm.molValid(max_slider-pos_slider+i) == 0
-%             set(h.tm.popup_molNb(i), 'Enable', 'off')
-%         else
-%             set(h.tm.popup_molNb(i), 'Enable', 'on')
-%         end
-    end
-   
-    update_popups(h_fig,nb_mol_disp);
-    plotDataTm(h_fig);
-
-end
-
-
-function edit_nbTotMol_Callback(obj, evd, h_fig)
-
-    h = guidata(h_fig);
-    nb_mol = numel(h.tm.molValid);
-
-    nb_mol_disp = str2num(get(obj, 'String'));
-    if nb_mol_disp > nb_mol
-        nb_mol_disp = nb_mol;
-    end
-    updatePanel_single(h_fig, nb_mol_disp);
-    
-    nb_mol_page = str2num(get(h.tm.edit_nbTotMol, 'String'));
-    if nb_mol <= nb_mol_page || nb_mol_page == 0
-        min_step = 1;
-        maj_step = 1;
-        min_val = 0;
-        max_val = 1;
-        set(h.tm.slider, 'Visible', 'off');
-    else
-        set(h.tm.slider, 'Visible', 'on');
-        min_val = 1;
-        max_val = nb_mol-nb_mol_page+1;
-        min_step = 1/(max_val-min_val);
-        maj_step = nb_mol_page/(max_val-min_val);
-    end
-    
-    set(h.tm.slider, 'Value', max_val, 'Max', max_val, 'Min', min_val, ...
-        'SliderStep', [min_step maj_step]);
-    
-    plotDataTm(h_fig);
-
-end
-
+%% plots
 
 function plotDataTm(h_fig)
 
@@ -1171,407 +1268,9 @@ function plotDataTm(h_fig)
 end
 
 
-function pushbutton_update_Callback(obj, evd, h_fig)
-
-%% Last update by MH, 27.3.2019
-% >> correct update for ES histograms for multiple FRET and stoichiometries
-%
-% Last update: by RB, 4.1.2018
-% >> hist2 rather slow replaced by hist2D
-%
-% update: by RB, 4.1.2018
-% >> include FRET-S-Histogram
-% >> restructured dat2.hist, dat2.iv and dat1.lim
-% 
-% update: by RB, 3.1.2018
-% >> new variable to expand popupmenu entries
-%
-% update: by RB, 15.12.2017 
-% >> review string in popupmenu of axes 2 for ES hitograms
-%
-%%
-    
-    % get guidata
-    h = guidata(h_fig);
-    p = h.param.ttPr;
-    proj = p.curr_proj;
-    nMol = numel(h.tm.molValid);
-
-    m = p;
-    
-    % get variables from the indiviudal project `proj`
-    nChan = p.proj{proj}.nb_channel;
-    exc = p.proj{proj}.excitations;
-    chanExc = p.proj{proj}.chanExc;
-    labels = p.proj{proj}.labels;
-    nExc = p.proj{proj}.nb_excitations;
-    FRET = p.proj{proj}.FRET;
-    nFRET = size(FRET,1);
-    S = p.proj{proj}.S;
-    nS = size(S,1);
-    perSec = p.proj{proj}.fix{2}(4);
-    perPix = p.proj{proj}.fix{2}(5);
-    inSec = p.proj{proj}.fix{2}(7);
-    rate = p.proj{proj}.frame_rate;
-    nPix = p.proj{proj}.pix_intgr(2);
-    
-    % allocate cells
-    def_niv = 200;
-    dat1.trace = cell(1,nChan*nExc+nFRET+nS);
-    dat1.lim = dat1.trace;
-    dat1.ylabel = cell(1,nChan*nExc+nFRET+nS+4);
-    dat1.color = dat1.trace;
-    
-    str_extra = [];
-    if perSec
-        str_extra = [str_extra ' per s.'];
-    end
-    if perPix
-        str_extra = [str_extra ' per pix.'];
-    end
-    if inSec
-        dat1.xlabel = 'time (s)';
-    else
-        dat1.xlabel = 'frame number';
-    end
-    %dat2.hist = dat1.trace; %old
-    %dat2.iv = dat1.trace; %old
-    dat2.hist = cell(1,nChan*nExc+nFRET+nS+nFRET); % RB 2018-01-03:
-    dat2.iv = dat2.hist; % RB 2018-01-03:
-    
-    global intensities;
-        
-    % loading bar parameters-----------------------------------------------
-    err = loading_bar('init', h_fig , nMol, ...
-        'Collecting data from MASH ...');
-    if err
-        return;
-    end
-    h = guidata(h_fig); % update:  get current guidata 
-    h.barData.prev_var = h.barData.curr_var;
-    guidata(h_fig, h); % update: set current guidata 
-    % ---------------------------------------------------------------------
-    
-    clr = p.proj{proj}.colours;
-    for i = 1:nMol
-        dtaCurr = m.proj{proj}.curr{i}{4};
-        if ~isempty(m.proj{proj}.prm{i})
-            dtaPrm = m.proj{proj}.prm{i}{4};
-        else
-            dtaPrm = [];
-        end
-        m = plotSubImg(i, m, []);
-       
-        [m opt] = resetMol(i, m);
-        if strcmp(opt, 'ttBg') || strcmp(opt, 'ttPr')
-            m = bgCorr(i, m);
-        end
-        if strcmp(opt, 'corr') || strcmp(opt, 'ttBg') || ...
-                strcmp(opt, 'ttPr')
-            m = crossCorr(i, m);
-        end
-        if strcmp(opt, 'denoise') || strcmp(opt, 'corr') || ...
-                strcmp(opt, 'ttBg') || strcmp(opt, 'ttPr')
-            m = denoiseTraces(i, m);
-        end
-        if strcmp(opt, 'debleach') || strcmp(opt, 'denoise') || ...
-                strcmp(opt, 'corr') || strcmp(opt, 'ttBg') || ...
-                strcmp(opt, 'ttPr')
-            m = calcCutoff(i, m);
-        end
-        m.proj{proj}.curr{i} = m.proj{proj}.prm{i};
-        m.proj{proj}.prm{i}{4} = dtaPrm;
-        m.proj{proj}.curr{i}{4} = dtaCurr;
-
-        intensities(:,(nChan*(i-1)+1):nChan*i,:) = ...
-            m.proj{proj}.intensities_denoise(:, ...
-            (nChan*(i-1)+1):nChan*i,:);
-            
-        % loading bar update-----------------------------------
-        err = loading_bar('update', h_fig);
-        % -----------------------------------------------------
-
-        if err
-            return;
-        end
-    end
-    loading_bar('close', h_fig);
-    
-    h.param.ttPr = m;
-    guidata(h_fig,h);
-    
-    % loading bar parameters-----------------------------------------------
-    err = loading_bar('init', h_fig , nMol, ...
-        'Concatenate and calculate data ...');
-    if err
-        return;
-    end
-    h = guidata(h_fig);
-    h.barData.prev_var = h.barData.curr_var;
-    guidata(h_fig, h);
-    % ---------------------------------------------------------------------
-    
-    for i = 1:nMol
-        if h.tm.molValid(i)
-            for l = 1:nExc
-                for c = 1:nChan
-                    ind = (l-1)*nChan+c;
-                    incl = m.proj{proj}.bool_intensities(:,i);
-                    I = intensities(incl,nChan*(i-1)+c,l);
-                    if perSec
-                        I = I/rate;
-                    end
-                    if perPix
-                        I = I/nPix;
-                    end
-                    dat1.trace{ind} = [dat1.trace{ind}; reshape(I, ...
-                        [numel(I), 1])];
-                    dat1.color{ind} = clr{1}{l,c};
-                end
-            end
-            I = intensities(incl,(nChan*(i-1)+1):nChan*i,:);
-            gamma = p.proj{proj}.curr{i}{5}{3};
-            fret = calcFRET(nChan, nExc, exc, chanExc, FRET, I, gamma);
-            for n = 1:nFRET
-                ind = ind + 1;
-                FRET_tr = fret(:,n);
-                FRET_tr(FRET_tr == Inf) = 1000000;
-                FRET_tr(FRET_tr == -Inf) = -1000000;
-                dat1.trace{ind} = [dat1.trace{ind}; ...
-                    reshape(FRET_tr, [numel(FRET_tr) 1])];
-                dat1.color{ind} = clr{2}(n,:);
-            end
-            for n = 1:nS
-                ind = ind + 1;
-                [o,l_s,o] = find(exc==chanExc(S(n)));
-                Inum = sum(intensities(incl, ...
-                    (nChan*(i-1)+1):nChan*i,l_s),2);
-                Iden = sum(sum(intensities(incl, ...
-                    (nChan*(i-1)+1):nChan*i,:),2),3);
-                S_tr = Inum./Iden;
-                S_tr(S_tr == Inf) = 1000000; % prevent for Inf
-                S_tr(S_tr == -Inf) = -1000000; % prevent for Inf
-                dat1.trace{ind} = [dat1.trace{ind}; ...
-                    reshape(S_tr, [numel(S_tr) 1])];
-                dat1.color{ind} = clr{3}(n,:);
-            end
-        end
-        
-        % loading bar update-----------------------------------
-        err = loading_bar('update', h_fig);
-        % -----------------------------------------------------
-
-        if err
-            return;
-        end
-    end
-    disp('data successfully concatenated !');
-    loading_bar('close', h_fig);
-    
-    % RB 2018-01-04: adapted for FRET-S-Histogram, hist2 is rather slow
-    % RB 2018-01-05: hist2 replaced by hist2D
-    % loading bar parameters-----------------------------------------------
-    
-    % corrected by MH, 27.3.2019
-%     err = loading_bar('init', h_fig , (nChan*nExc+nFRET+nS+nFRET), ...
-    err = loading_bar('init', h_fig , (nChan*nExc+nFRET+nS+nFRET*nS), ...
-        'Histogram data ...');
-    
-    if err
-        return;
-    end
-    h = guidata(h_fig);
-    h.barData.prev_var = h.barData.curr_var;
-    guidata(h_fig, h);
-    % ---------------------------------------------------------------------
-    
-    % RB 2018-01-04: adapted for FRET-S-Histogram
-    ES = []; % local array
-    
-    % MH 2019-03-27: collect ES indexes
-%     for ind = 1:(size(dat1.trace,2)+nS)
-    ind_es = [];
-    for fret = 1:nFRET
-        for s = 1:nS
-            ind_es = cat(1,ind_es,[fret,s]);
-        end
-    end
-    for ind = 1:(size(dat1.trace,2)+nFRET*nS) % counts for nChan*nExc Intensity channels, nFRET channles, nS channels and nFRET ES histograms
-        
-        dat1.niv(ind) = def_niv;
-        if ind <= nChan*nExc % intensity histogram 1D 
-            dat1.lim{ind} = [min(dat1.trace{ind}) max(dat1.trace{ind})];
-            bin = (dat1.lim{ind}(2) - dat1.lim{ind}(1)) / dat1.niv(ind);
-            iv = (dat1.lim{ind}(1) - bin):bin:(dat1.lim{ind}(2) + bin);
-            [dat2.hist{ind}, dat2.iv{ind}] = hist(dat1.trace{ind}, iv); % HISTOGRAM replaces hist since 2015! 
-        elseif ind <= (nChan*nExc + nFRET + nS) % FRET and S histogram 1D
-            dat1.lim{ind} = [-0.2 1.2];
-            bin = (dat1.lim{ind}(2) - dat1.lim{ind}(1)) / dat1.niv(ind);
-            iv = (dat1.lim{ind}(1) - bin):bin:(dat1.lim{ind}(2) + bin);
-            [dat2.hist{ind}, dat2.iv{ind}] = hist(dat1.trace{ind}, iv); % HISTOGRAM replaces hist since 2015! 
-        else  % FRET-S histogram 2D, adapted from getTDPmat.m
-            dat1.lim{ind} = [-0.2 1.2; -0.2 1.2];
-            %binx = (dat1.lim{ind}(2,2) - dat1.lim{ind}(2,1)) / dat1.niv(ind);
-            %biny = (dat1.lim{ind}(1,2) - dat1.lim{ind}(1,1)) / dat1.niv(ind);
-            %ivx = (dat1.lim{ind}(2,1) - binx):binx:(dat1.lim{ind}(2,2) + binx);
-            %ivy = (dat1.lim{ind}(1,1) - biny):biny:(dat1.lim{ind}(1,2) + biny);
-            
-            % corrected by MH, 27.3.2019
-%             ES = [dat1.trace{ind-nFRET-nS},dat1.trace{ind-nS}]; % build [N-by-2] or ' ... '[2-by-N] data matrix.']
-            ind_fret = ind_es(ind-nChan*nExc-nFRET-nS,1) + nChan*nExc;
-            ind_s = ind_es(ind-nChan*nExc-nFRET-nS,2) + nChan*nExc + nFRET;
-            ES = [dat1.trace{ind_fret},dat1.trace{ind_s}]; % build [N-by-2] or ' ... '[2-by-N] data matrix.']
-            
-            %[dat2.hist{ind},o,o,dat2.iv{ind}] = hist2(ES, [ivx;ivy]); % hist2 by MCASH rather slow
-            binEdges_minmaxN_xy = [dat1.lim{ind}(1,1) dat1.lim{ind}(1,2) dat1.niv(ind); dat1.lim{ind}(2,1) dat1.lim{ind}(2,2) dat1.niv(ind)];
-            [dat2.hist{ind},dat2.iv{ind}(1,:),dat2.iv{ind}(2,:)] = hist2D(ES, binEdges_minmaxN_xy); % hist2D by tudima at zahoo dot com, inlcuded in \traces\processing\management
-        end
-        
-        % old from MCASH
-        %bin = (dat1.lim{ind}(2) - dat1.lim{ind}(1)) / dat1.niv(ind);
-        %iv = (dat1.lim{ind}(1) - bin):bin:(dat1.lim{ind}(2) + bin);
-        %[dat2.hist{ind}, dat2.iv{ind}] = hist(dat1.trace{ind}, iv); % HISTOGRAM replaces hist since 2015! 
-        
-        % loading bar update-----------------------------------
-        err = loading_bar('update', h_fig);
-        % -----------------------------------------------------
-
-        if err
-            return;
-        end
-    end
-    disp('data successfully histogrammed !');
-    loading_bar('close', h_fig);
-    
-    str_plot = {}; % string for popup menu
-
-    % String for Intensity Channels in popup menu
-    for l = 1:nExc % number of excitation channels
-        for c = 1:nChan % number of emission channels
-            clr_bg_c = sprintf('rgb(%i,%i,%i)', ...
-                round(clr{1}{l,c}(1:3)*255));
-            clr_fbt_c = sprintf('rgb(%i,%i,%i)', ...
-                [255 255 255]*sum(double( ...
-                clr{1}{l,c}(1:3) <= 0.5)));
-            str_plot = [str_plot ...
-                ['<html><span style= "background-color: ' ...
-                clr_bg_c ';color: ' clr_fbt_c ';"> ' labels{c} ...
-                ' at ' num2str(exc(l)) 'nm</span></html>']];
-            dat1.ylabel{size(str_plot,2)} = ['counts' str_extra];
-            dat2.ylabel{size(str_plot,2)} = 'freq. counts'; % RB 2018-01-04
-            dat2.xlabel{size(str_plot,2)} = ['counts' str_extra]; % RB 2018-01-04
-        end
-    end
-    % String for FRET Channels in popup menu
-    for n = 1:nFRET
-        clr_bg_f = sprintf('rgb(%i,%i,%i)', ...
-            round(clr{2}(n,1:3)*255));
-        clr_fbt_f = sprintf('rgb(%i,%i,%i)', ...
-            [255 255 255]*sum(double( ...
-            clr{2}(n,1:3) <= 0.5)));
-        str_plot = [str_plot ['<html><span style= "background-color: '...
-            clr_bg_f ';color: ' clr_fbt_f ';">FRET ' labels{FRET(n,1)} ...
-            '>' labels{FRET(n,2)} '</span></html>']];
-        dat1.ylabel{size(str_plot,2)} = 'FRET';
-        dat2.ylabel{size(str_plot,2)} = 'freq. counts'; % RB 2018-01-04
-        dat2.xlabel{size(str_plot,2)} = 'FRET'; % RB 2018-01-04
-    end
-    % String for Stoichiometry Channels in popup menu
-    for n = 1:nS
-        clr_bg_s = sprintf('rgb(%i,%i,%i)', ...
-            round(clr{3}(n,1:3)*255));
-        clr_fbt_s = sprintf('rgb(%i,%i,%i)', ...
-            [255 255 255]*sum(double( ...
-            clr{3}(n,1:3) <= 0.5)));
-        str_plot = [str_plot ['<html><span style= "background-color: '...
-            clr_bg_s ';color: ' clr_fbt_s ';">S ' labels{S(n)} ...
-            '</span></html>']];
-        dat1.ylabel{size(str_plot,2)} = 'S';
-        dat2.ylabel{size(str_plot,2)} = 'freq. counts'; % RB 2018-01-04
-        dat2.xlabel{size(str_plot,2)} = 'S'; % RB 2018-01-04
-    end
-    % String for all Intensity Channels in popup menu 
-    if nChan > 1 || nExc > 1
-        str_plot = [str_plot 'all intensity traces'];
-        dat1.ylabel{size(str_plot,2)} = ['counts' str_extra];
-        % no dat2.xlabel{size(str_plot,2)} = ['counts' str_extra]; % RB 2018-01-04
-    end
-    % String for all FRET Channels in popup menu
-    if nFRET > 1
-        str_plot = [str_plot 'all FRET traces'];
-        dat1.ylabel{size(str_plot,2)} = 'FRET';
-        % no dat2.xlabel{size(str_plot,2)} = 'FRET'; % RB 2018-01-04
-    end
-    % String for all Stoichiometry Channels in popup menu
-    if nS > 1
-        str_plot = [str_plot 'all S traces'];
-        dat1.ylabel{size(str_plot,2)} = 'S';
-        % no dat2.xlabel{size(str_plot,2)} = 'S'; % RB 2018-01-04
-    end
-    % String for all FRET and Stoichiometry Channels in popup menu
-    if nFRET > 0 && nS > 0
-        str_plot = [str_plot 'all FRET & S traces'];
-        dat1.ylabel{size(str_plot,2)} = 'FRET or S';
-        % no dat2.xlabel{size(str_plot,2)} = 'FRET or S'; % RB 2018-01-04
-    end
-    % String for Stoichiometry-FRET Channels in popup menu
-    % RB 2017-12-15: str_plot including FRET-S-histograms in popupmenu (only corresponding SToichiometry FRET values e.g. FRET:Cy3->Cy5 and S:Cy3->Cy5 not FRET:Cy3->Cy5 and S:Cy3->Cy7 etc.)   )
-    
-    % corrected by MH, 27.3.2019
-%     for s = 1:nS
-    n = 0;
-    for fret = 1:nFRET
-        for s = 1:nS
-            n = n + 1;
-            
-            clr_bg_s = sprintf('rgb(%i,%i,%i)', ...
-                round(clr{3}(s,1:3)*255));
-            clr_bg_e = sprintf('rgb(%i,%i,%i)', ...
-                round(clr{2}(fret,1:3)*255));
-            clr_fbt_s = sprintf('rgb(%i,%i,%i)', ...
-                [255 255 255]*sum(double( ...
-                clr{3}(s,1:3) <= 0.5)));
-            clr_fbt_e = sprintf('rgb(%i,%i,%i)', ...
-                [255 255 255]*sum(double( ...
-                clr{2}(fret,1:3) <= 0.5)));
-            str_plot =  [str_plot ['<html><span style= "background-color: '...
-                clr_bg_e ';color: ' clr_fbt_e ';">FRET ' labels{FRET(fret,1)} ...
-                '>' labels{FRET(fret,2)} '</span>-<span style= "background-color: '...
-                clr_bg_s ';color: ' clr_fbt_s ';">S ' labels{S(s)} ...
-                '</span></html>']];
-            
-            % no dat1.ylabel{nChan*nExc+nFRET+nS+n} = 'FRET or S'; % RB 2018-01-04
-            dat2.ylabel{nChan*nExc+nFRET+nS+n} = 'S'; % RB 2018-01-04: change index as str_plot and str_plot2 are different
-            dat2.xlabel{nChan*nExc+nFRET+nS+n} = 'E'; % RB 2018-01-04: change index as str_plot and str_plot2 are different
-        end
-    end
-   
-    % RB 2018-01-03: new variable to expand popupmenu entries
-    % corrected by MH, 27.3.2019
-%     str_plot2 = {}; % string for popup menu
-%     str_plot2 = [str_plot(1:(nChan*nExc+nFRET+nS)) [str_plot((size(str_plot,2)-nFRET+1):size(str_plot,2))]];
-    str_plot2 = [str_plot(1:(nChan*nExc+nFRET+nS)) str_plot((size(str_plot,2)-nFRET*nS+1):size(str_plot,2))];
-        
-    % RB 2017-12-15: str_plot including FRET-S-histograms in popupmenu of axes 2 
-    set(h.tm.popupmenu_axes1, 'String', str_plot(1:(size(str_plot,2)-nFRET*nS)));
-    set(h.tm.popupmenu_axes2, 'String', str_plot2()); 
-
-    set(h.tm.axes_ovrAll_1, 'UserData', dat1);
-    set(h.tm.axes_ovrAll_2, 'UserData', dat2);
-    
-    plot2 = get(h.tm.popupmenu_axes2, 'Value');
-    
-    set(h.tm.edit_xlim_low, 'String', dat1.lim{plot2}(1));
-    set(h.tm.edit_xlim_up, 'String', dat1.lim{plot2}(2));
-    set(h.tm.edit_nbiv, 'String', dat1.niv(plot2));
-
-    plotData_overall(h_fig);
-    
-end
-
 function plotData_overall(h_fig)
 
-%% Last update by MH, 24.4.2019
+% Last update by MH, 24.4.2019
 % >> correct plot clearing before plotting multiple traces on the same 
 %    graph
 % 
@@ -1581,7 +1280,7 @@ function plotData_overall(h_fig)
 % update: by RB, 15.12.2017
 % >> implement FRET-S-histograms in plot2
 %
-%%
+%
 
 warning('off','MATLAB:hg:EraseModeIgnored');
 
@@ -1744,6 +1443,534 @@ warning('off','MATLAB:hg:EraseModeIgnored');
 end
 
 
+function update_popups(h_fig, nb_mol_disp)
+
+% Last update by MH, 24.4.2019
+% >> add colors to tag lists
+%
+% update by FS, 25.4.2018
+% >> add colors to tag popupmenu
+%
+
+h = guidata(h_fig);
+    
+for i = nb_mol_disp:-1:1
+    % added by FS, 25.4.2018
+    str_lst = colorTagNames(h_fig);
+    nTag = numel(str_lst);
+    currTag = get(h.tm.popup_molNb(i),'value');
+    if currTag>nTag
+        currTag = nTag;
+    end
+    set(h.tm.popup_molNb(i), 'String', str_lst, 'Value', currTag);
+    
+    mol = str2num(get(h.tm.checkbox_molNb(i), 'String'));
+    str_lst = colorTagLists(h_fig,mol);
+    nTag = numel(str_lst);
+    currTag = get(h.tm.listbox_molLabel(i),'value');
+    if currTag>nTag
+        currTag = nTag;
+    end
+    set(h.tm.listbox_molLabel(i), 'String', str_lst, 'Value', currTag)
+    
+end
+end
+
+
+%% popup and list strings
+
+function str_lst = colorTagLists(h_fig,i)
+% Defines colored strings for listboxes listing tag names
+
+h = guidata(h_fig);
+molTag = h.tm.molTag;
+tagNames = h.tm.molTagNames;
+tagClr = h.tm.molTagClr;
+nTag = numel(tagNames);
+
+str_lst = {};
+for t = 1:nTag
+    if molTag(i,t)
+        str_lst = [str_lst cat(2,'<html><span bgcolor=',tagClr{t},'>',...
+            '<font color="white">',tagNames{t},'</font></body></html>')];
+    end
+end
+if ~sum(molTag(i,:))
+    str_lst = {'no tag'};
+end
+
+end
+
+function str_lst = colorTagNames(h_fig)
+% Defines colored strings for popupmenus listing tag names
+
+% Last update by MH, 24.4.2019
+% >> fetch tag colors in project parameters
+% >> remove "unlabelled" tag
+%
+% Created by FS, 24.4.2018
+%
+%
+
+h = guidata(h_fig);
+
+% modified by MH, 24.4.2019
+% colorlist = {'transparent', '#4298B5', '#DD5F32', '#92B06A', '#ADC4CC', '#E19D29'};
+colorlist = h.tm.molTagClr;
+
+% added by MH, 24.4.2019
+nTag = numel(h.tm.molTagNames);
+
+str_lst = cell(1,nTag);
+
+% cancelled by MH, 24.4.2019
+% str_lst{1} = h.tm.molTagNames{1};
+
+% modified by MH, 24.4.2019
+% for k = 2:length(h.tm.molTagNames)
+for k = 1:nTag
+    
+    str_lst{k} = ['<html><body  bgcolor="' colorlist{k} '">' ...
+        '<font color="white">' h.tm.molTagNames{k} '</font></body></html>'];
+end
+
+% added by MH, 24.4.2019
+if isempty(str_lst)
+    str_lst = {'no default tag'};
+end
+end
+
+
+function str_lst = getStrPop_select(h_fig)
+% Defines string in automatic molecule selection popupmenu
+
+% Created by MH, 24.4.2019
+%
+%
+
+h = guidata(h_fig);
+tagNames = h.tm.molTagNames;
+tagClr = h.tm.molTagClr;
+nTag = numel(tagNames);
+
+str_lst = {'current','all','none','inverse'};
+for t = 1:nTag
+    str_lst = [str_lst cat(2,'<html>add <span bgcolor=',tagClr{t},'>',...
+            '<font color="white">',tagNames{t},'</font></body></html>')];
+end
+for t = 1:nTag
+    str_lst = [str_lst cat(2,'<html>remove <span bgcolor=',tagClr{t},'>',...
+            '<font color="white">',tagNames{t},'</font></body></html>')];
+end
+end
+
+
+function str_out = getStrPlot_overall(h_fig)
+% Return popupmenu string for overall plot in str_out{1} for axes1 and
+% str_out{2} for axes2
+
+% update: by RB, 3.1.2018
+% >> new variable to expand popupmenu entries
+%
+% update: by RB, 15.12.2017 
+% >> review string in popupmenu of axes 2 for ES hitograms
+
+% get guidata
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+
+% get variables from the indiviudal project `proj`
+nChan = p.proj{proj}.nb_channel;
+exc = p.proj{proj}.excitations;
+labels = p.proj{proj}.labels;
+nExc = p.proj{proj}.nb_excitations;
+FRET = p.proj{proj}.FRET;
+nFRET = size(FRET,1);
+S = p.proj{proj}.S;
+nS = size(S,1);
+clr = p.proj{proj}.colours;
+
+str_plot = {}; % string for popup menu
+
+% String for Intensity Channels in popup menu
+for l = 1:nExc % number of excitation channels
+    for c = 1:nChan % number of emission channels
+        clr_bg_c = sprintf('rgb(%i,%i,%i)', ...
+            round(clr{1}{l,c}(1:3)*255));
+        clr_fbt_c = sprintf('rgb(%i,%i,%i)', ...
+            [255 255 255]*sum(double( ...
+            clr{1}{l,c}(1:3) <= 0.5)));
+        str_plot = [str_plot ...
+            ['<html><span style= "background-color: ' ...
+            clr_bg_c ';color: ' clr_fbt_c ';"> ' labels{c} ...
+            ' at ' num2str(exc(l)) 'nm</span></html>']];
+    end
+end
+
+% String for FRET Channels in popup menu
+for n = 1:nFRET
+    clr_bg_f = sprintf('rgb(%i,%i,%i)', ...
+        round(clr{2}(n,1:3)*255));
+    clr_fbt_f = sprintf('rgb(%i,%i,%i)', ...
+        [255 255 255]*sum(double( ...
+        clr{2}(n,1:3) <= 0.5)));
+    str_plot = [str_plot ['<html><span style= "background-color: '...
+        clr_bg_f ';color: ' clr_fbt_f ';">FRET ' labels{FRET(n,1)} ...
+        '>' labels{FRET(n,2)} '</span></html>']];
+end
+% String for Stoichiometry Channels in popup menu
+for n = 1:nS
+    clr_bg_s = sprintf('rgb(%i,%i,%i)', ...
+        round(clr{3}(n,1:3)*255));
+    clr_fbt_s = sprintf('rgb(%i,%i,%i)', ...
+        [255 255 255]*sum(double( ...
+        clr{3}(n,1:3) <= 0.5)));
+    str_plot = [str_plot ['<html><span style= "background-color: '...
+        clr_bg_s ';color: ' clr_fbt_s ';">S ' labels{S(n)} ...
+        '</span></html>']];
+end
+% String for all Intensity Channels in popup menu 
+if nChan > 1 || nExc > 1
+    str_plot = [str_plot 'all intensity traces'];
+end
+% String for all FRET Channels in popup menu
+if nFRET > 1
+    str_plot = [str_plot 'all FRET traces'];
+    dat1.ylabel{size(str_plot,2)} = 'FRET';
+    % no dat2.xlabel{size(str_plot,2)} = 'FRET'; % RB 2018-01-04
+end
+% String for all Stoichiometry Channels in popup menu
+if nS > 1
+    str_plot = [str_plot 'all S traces'];
+    dat1.ylabel{size(str_plot,2)} = 'S';
+    % no dat2.xlabel{size(str_plot,2)} = 'S'; % RB 2018-01-04
+end
+% String for all FRET and Stoichiometry Channels in popup menu
+if nFRET > 0 && nS > 0
+    str_plot = [str_plot 'all FRET & S traces'];
+    dat1.ylabel{size(str_plot,2)} = 'FRET or S';
+    % no dat2.xlabel{size(str_plot,2)} = 'FRET or S'; % RB 2018-01-04
+end
+% String for Stoichiometry-FRET Channels in popup menu
+% RB 2017-12-15: str_plot including FRET-S-histograms in popupmenu (only corresponding SToichiometry FRET values e.g. FRET:Cy3->Cy5 and S:Cy3->Cy5 not FRET:Cy3->Cy5 and S:Cy3->Cy7 etc.)   )
+
+% corrected by MH, 27.3.2019
+%     for s = 1:nS
+for fret = 1:nFRET
+    for s = 1:nS
+        clr_bg_s = sprintf('rgb(%i,%i,%i)', ...
+            round(clr{3}(s,1:3)*255));
+        clr_bg_e = sprintf('rgb(%i,%i,%i)', ...
+            round(clr{2}(fret,1:3)*255));
+        clr_fbt_s = sprintf('rgb(%i,%i,%i)', ...
+            [255 255 255]*sum(double( ...
+            clr{3}(s,1:3) <= 0.5)));
+        clr_fbt_e = sprintf('rgb(%i,%i,%i)', ...
+            [255 255 255]*sum(double( ...
+            clr{2}(fret,1:3) <= 0.5)));
+        str_plot =  [str_plot ['<html><span style= "background-color: '...
+            clr_bg_e ';color: ' clr_fbt_e ';">FRET ' labels{FRET(fret,1)} ...
+            '>' labels{FRET(fret,2)} '</span>-<span style= "background-color: '...
+            clr_bg_s ';color: ' clr_fbt_s ';">S ' labels{S(s)} ...
+            '</span></html>']];
+    end
+end
+
+str_out{1} = str_plot(1:(size(str_plot,2)-nFRET*nS));
+str_out{2} = [str_plot(1:(nChan*nExc+nFRET+nS)) ...
+    str_plot((size(str_plot,2)-nFRET*nS+1):size(str_plot,2))];
+
+end
+
+
+%% callbacks
+
+
+function checkbox_molNb_Callback(obj, evd, h_fig)
+
+% Last update by MH, 24.4.2019
+% >> allow molecule tagging even if the molecule unselected
+%
+% update: FS, 24.4.2018
+% >> deactivate the label popupmenu if the molecule is not selected
+%
+%
+
+    h = guidata(h_fig);
+    p = h.param.ttPr;
+    proj = p.curr_proj;
+    nFRET = size(p.proj{proj}.FRET,1);
+    nS = size(p.proj{proj}.S,1);
+    isBot = nFRET | nS;
+    
+    mol = str2num(get(obj, 'String'));
+    [o,ind_h,o] = find(h.tm.checkbox_molNb == obj);
+    h.tm.molValid(mol) = logical(get(obj, 'Value'));
+    guidata(h_fig, h);
+    
+    if get(obj, 'Value')
+        shad = [1 1 1];
+    else
+        shad = get(h.tm.checkbox_molNb(ind_h), 'BackgroundColor');
+    end
+    set([h.tm.axes_itt(ind_h), h.tm.axes_itt_hist(ind_h)], 'Color', shad);
+    if isBot
+        set([h.tm.axes_frettt(ind_h), h.tm.axes_hist(ind_h)], 'Color', ...
+            shad);
+    end
+    
+    % deactivate the popupmenu if the molecule is not selected
+    % added by FS, 24.4.2018
+    % cancelled by MH, 24.4.2019: allow labelling even if not selected
+%     if h.tm.molValid(mol) == 0
+%         set(h.tm.popup_molNb(ind_h), 'Enable', 'off', 'Value', 1)
+%         h.tm.molTag(mol) = 1;
+%         guidata(h_fig, h)
+%     else
+%         set(h.tm.popup_molNb(ind_h), 'Enable', 'on')
+%     end
+
+end
+
+
+function pushbutton_addTag2mol_Callback(obj,evd,h_fig,i)
+% Pushbutton adds tag selected in popupmenu to current molecule 
+
+% Created by MH, 24.4.2019
+%
+%
+
+h = guidata(h_fig);
+
+% get tag to add
+tagNames = get(h.tm.popup_molNb(i),'string');
+tag = get(h.tm.popup_molNb(i),'value');
+if strcmp(tagNames{tag},'no default tag')
+    return;
+end
+
+% update and save molecule tags
+mol = str2num(get(h.tm.checkbox_molNb(i),'String'));
+h.tm.molTag(mol,tag) = true;
+guidata(h_fig,h);
+
+% update molecule tag lists
+nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
+update_popups(h_fig,nb_mol_disp)
+
+end
+
+
+function pushbutton_remLabel_Callback(obj,evd,h_fig,i)
+% Pushbutton removes tag selected in molecule-specific listbox
+
+% Created by MH, 24.4.2019
+%
+%
+
+h = guidata(h_fig);
+
+% get tag to remove
+molTagNames = removeHtml(get(h.tm.listbox_molLabel(i),'string'));
+tag = get(h.tm.listbox_molLabel(i),'value');
+if strcmp(molTagNames{tag},'no tag')
+    return;
+end
+
+% update and save molecule tags
+mol = str2num(get(h.tm.checkbox_molNb(i),'String'));
+tagId = find(h.tm.molTag(mol,:));
+h.tm.molTag(mol,tagId(tag)) = false;
+guidata(h_fig,h);
+
+% update molecule tag lists
+nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
+update_popups(h_fig,nb_mol_disp)
+end
+
+
+% cancelled by MH, 24.4.2019: popupmenu is no longer used to set molecule
+% tag
+% function popup_molTag_Callback(obj, evd, h_fig, ~)
+% 
+% % Last update: FS, 25.4.2019
+% % >> the molecule is passed directly to the callback, since the string 
+% %    variable is already occupied with the molecule tags
+% %
+% % Created by FS, 24.4.2018
+% %
+% 
+%     % the molecule is passed directly to the callback, since the string
+%     % variable is already occupied with the molecule tags
+%     h = guidata(h_fig);
+%     pos_slider = round(get(h.tm.slider, 'Value'));
+%     max_slider = get(h.tm.slider, 'Max');
+%     cb = get(obj, 'Callback');
+%     mol = max_slider-pos_slider+cb{3};
+%     h.tm.molTag(mol) = get(obj, 'Value');
+%     guidata(h_fig, h);
+% end
+
+
+function pushbutton_reduce_Callback(obj, evd, h_fig)
+
+    h = guidata(h_fig);
+
+    dat = get(obj, 'UserData');
+
+    dat_next.arrow = flipdim(dat.arrow,1);
+    dat_next.pos_all = get(h.tm.uipanel_overall, 'Position');
+    dat_next.pos_single = get(h.tm.uipanel_overview, 'Position');
+    dat_next.tooltip = get(h.tm.pushbutton_reduce, 'TooltipString');
+    dat_next.open = abs(dat.open - 1);
+    dat_next.visible = get(h.tm.popupmenu_axes1, 'Visible');
+
+    set(obj, 'CData', dat.arrow, 'TooltipString', dat.tooltip, ...
+        'UserData', dat_next);
+    set(get(h.tm.uipanel_overall, 'Children'), 'Visible', dat.visible);
+    set(h.tm.uipanel_overall, 'Position', dat.pos_all);
+    set(h.tm.uipanel_overview, 'Position', dat.pos_single);
+    
+    if dat_next.open
+        plotData_overall(h_fig);
+        
+    else
+        dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
+        dat2 = get(h.tm.axes_ovrAll_2, 'UserData');
+        cla(h.tm.axes_ovrAll_1);
+        cla(h.tm.axes_ovrAll_2);
+        set(h.tm.axes_ovrAll_1, 'UserData', dat1, 'GridLineStyle', ':');
+        set(h.tm.axes_ovrAll_2, 'UserData', dat2, 'GridLineStyle', ':');
+    end
+    
+end
+
+
+function slider_Callback(obj, evd, h_fig)
+
+% Last update by MH, 24.4.2019
+% >> cancel change in popupmenu's background color: no need as width and 
+%    height were downscaled to regular dimensions and the line color is
+%    given by the checkbox
+% >> allow molecule tagging even if the molecule unselected
+%
+% Last update: by FS, 24.4.2018
+% >> deactivate the label popupmenu if the molecule is not selected
+%
+%
+
+    h = guidata(h_fig);
+    nMol = numel(h.tm.molValid);
+    
+    pos_slider = round(get(obj, 'Value'));
+    max_slider = get(obj, 'Max');
+    
+    nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
+    if nb_mol_disp > nMol
+        nb_mol_disp = nMol;
+    end
+    
+    for i = 1:nb_mol_disp
+        set(h.tm.checkbox_molNb(i), 'String', ...
+            num2str(max_slider-pos_slider+i), 'Value', ...
+            h.tm.molValid(max_slider-pos_slider+i), 'BackgroundColor', ...
+            0.05*[mod(max_slider-pos_slider+i,2) ...
+            mod(max_slider-pos_slider+i,2) ...
+            mod(max_slider-pos_slider+i,2)]+0.85);
+        
+        
+        % added by FS, 24.4.2018
+        % cancelled by MH, 24.4.2019
+%         str_lst = colorTagNames(h_fig);
+%         if h.tm.molTag(max_slider-pos_slider+i) > length(str_lst)
+%             val = 1;
+%         else
+%             val = h.tm.molTag(max_slider-pos_slider+i);
+%         end
+%         set(h.tm.popup_molNb(i), 'String', ...
+%             str_lst, 'Value', ...
+%             val, 'BackgroundColor', ...
+%             0.05*[mod(max_slider-pos_slider+i,2) ...
+%             mod(max_slider-pos_slider+i,2) ...
+%             mod(max_slider-pos_slider+i,2)]+0.85);
+        
+        % deactivate the popupmenu if the molecule is not selected
+        % added by FS, 24.4.2018
+        % cancelled by MH, 24.4.2019: allow labelling even if not selected
+%         if h.tm.molValid(max_slider-pos_slider+i) == 0
+%             set(h.tm.popup_molNb(i), 'Enable', 'off')
+%         else
+%             set(h.tm.popup_molNb(i), 'Enable', 'on')
+%         end
+    end
+   
+    update_popups(h_fig,nb_mol_disp);
+    plotDataTm(h_fig);
+
+end
+
+
+function edit_nbTotMol_Callback(obj, evd, h_fig)
+
+    h = guidata(h_fig);
+    nb_mol = numel(h.tm.molValid);
+
+    nb_mol_disp = str2num(get(obj, 'String'));
+    if nb_mol_disp > nb_mol
+        nb_mol_disp = nb_mol;
+    end
+    updatePanel_single(h_fig, nb_mol_disp);
+    
+    nb_mol_page = str2num(get(h.tm.edit_nbTotMol, 'String'));
+    if nb_mol <= nb_mol_page || nb_mol_page == 0
+        min_step = 1;
+        maj_step = 1;
+        min_val = 0;
+        max_val = 1;
+        set(h.tm.slider, 'Visible', 'off');
+    else
+        set(h.tm.slider, 'Visible', 'on');
+        min_val = 1;
+        max_val = nb_mol-nb_mol_page+1;
+        min_step = 1/(max_val-min_val);
+        maj_step = nb_mol_page/(max_val-min_val);
+    end
+    
+    set(h.tm.slider, 'Value', max_val, 'Max', max_val, 'Min', min_val, ...
+        'SliderStep', [min_step maj_step]);
+    
+    plotDataTm(h_fig);
+
+end
+
+
+function pushbutton_update_Callback(obj, evd, h_fig)
+
+% Last update: MH, 24.4.2019
+% >> shorten callback by moving content in specific functions 
+%    concatenateData, setDataPlotPrm and getStrPlot_overall: this also 
+%    avoid re-defining popupmenu string, axis labels and colors everytime 
+%    updating the data set
+    
+    % refresh data set
+    concatenateData(h_fig);
+    
+    % plot new data set
+    plotData_overall(h_fig);
+
+    % display new histogram limits and bins
+    h = guidata(h_fig);
+    dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
+    plot2 = get(h.tm.popupmenu_axes2, 'Value');
+    
+    set(h.tm.edit_xlim_low, 'String', dat1.lim{plot2}(1));
+    set(h.tm.edit_xlim_up, 'String', dat1.lim{plot2}(2));
+    set(h.tm.edit_nbiv, 'String', dat1.niv(plot2));
+    
+end
+
+
 function popupmenu_axes_Callback(obj, evd, h_fig)
 
     h = guidata(h_fig);
@@ -1763,7 +1990,7 @@ function popupmenu_axes_Callback(obj, evd, h_fig)
             set(h.tm.edit_xlim_low, 'String', dat1.lim{plot2}(1));
             set(h.tm.edit_xlim_up, 'String', dat1.lim{plot2}(2));
             set(h.tm.edit_nbiv, 'String', dat1.niv(plot2));
-        else %% double check RB 2018-01-04
+        else % double check RB 2018-01-04
             dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
             set(h.tm.edit_xlim_low, 'String',  dat1.lim{plot2}(1,1));
             set(h.tm.edit_xlim_up, 'String', dat1.lim{plot2}(1,2));
@@ -1778,13 +2005,13 @@ end
 
 function menu_export_Callback(obj, evd, h_fig)
 
-%% Last update: by MH, 24.4.2019
+% Last update: by MH, 24.4.2019
 % >> save tag colors
 %
 % update by FS, 24.4.2018
 % >> save molecule tags and tag names
 %
-%%
+%
 
     saveNclose = questdlg(['Do you want to export the traces to ' ...
         'MASH and close the trace manager?'], ...
@@ -1813,11 +2040,11 @@ end
 
 function edit_xlim_low_Callback(obj, evd, h_fig)
 
-%% Last update: by RB, 4.1.2018
+% Last update: by RB, 4.1.2018
 % >> adapted for FRET-S-histograms
 % >> hist2 rather slow replaced by hist2D
 %
-%%
+%
 
     h = guidata(h_fig);
     xlim_low = str2num(get(obj, 'String'));
@@ -1872,11 +2099,11 @@ end
 
 function edit_xlim_up_Callback(obj, evd, h_fig)
 
-%% Last update: by RB 5.1.2018
+% Last update: by RB 5.1.2018
 % >> adapted for FRET-S-histograms
 % >> hist2 rather slow replaced by hist2D
 %
-%%
+%
 
     h = guidata(h_fig);
     xlim_up = str2num(get(obj, 'String'));
@@ -1934,11 +2161,11 @@ end
 
 function edit_nbiv_Callback(obj, evd, h_fig)
 
-%% Last update: by RB 5.1.2018
+% Last update: by RB 5.1.2018
 % >> adapted for FRET-S-histograms
 % >> hist2 rather slow replaced by hist2D
 %
-%%
+%
     
     h = guidata(h_fig);
     nbiv = round(str2num(get(obj, 'String')));
@@ -1985,9 +2212,9 @@ end
 function popupmenu_selection_Callback(obj, evd, h_fig)
 % Change the current selection according to selected menu
 
-%% Created by MH, 24.4.2019
+% Created by MH, 24.4.2019
 %
-%%
+%
 
 h = guidata(h_fig);
 
@@ -2039,13 +2266,13 @@ end
 % selection" pushbutton by a popupmenu
 % function checkbox_all_Callback(obj, evd, h_fig)
 % 
-% %% Last update by MH, 24.4.2019
+% % Last update by MH, 24.4.2019
 % % >> allow molecule tagging even if the molecule unselected
 % %
 % % Last update: by FS 25.4.2018
 % % >> deactivate the label popupmenu if the molecule is not selected
 % %
-% %%
+% %
 % 
 %     h = guidata(h_fig);
 %     if get(obj, 'Value')
@@ -2079,7 +2306,7 @@ end
 % function pushbutton_all_inverse_Callback(obj, evd, h_fig)
 % % Pushbutton to invert the selection of individual molecules
 % 
-% %% Last update by MH, 24.4.2019
+% % Last update by MH, 24.4.2019
 % % >> allow molecule tagging even if the molecule unselected
 % %
 % % update: by FS, 25.4.2018
@@ -2087,7 +2314,7 @@ end
 % %
 % % Created by RB, 5.1.2018
 % %
-% %%
+% %
 %     
 %     h = guidata(h_fig);
 %     
@@ -2115,7 +2342,7 @@ end
 
 function edit_addMolTag_Callback(obj, evd, h_fig)
 
-%% Last update by MH, 24.4.2019
+% Last update by MH, 24.4.2019
 % >> add random colors for tags that exceed tag list
 % >> upscale molecule tag structure after adding new tag name
 % >> reset edit string to "define a new tag" after adding new tag name
@@ -2123,7 +2350,7 @@ function edit_addMolTag_Callback(obj, evd, h_fig)
 %
 % Created by FS, 25.4.2018
 %
-%%
+%
 
     h = guidata(h_fig);
     if ~strcmp(obj.String, 'define a new tag') && ...
@@ -2171,9 +2398,9 @@ end
 function popup_molTag_Callback(obj,evd,h_fig)
 % Updates the tag color in corresponding edit field
 
-%% Created by MH, 24.4.2019
+% Created by MH, 24.4.2019
 %
-%%
+%
 
 h = guidata(h_fig);
 
@@ -2196,9 +2423,9 @@ end
 function edit_tagClr_Callback(obj,evd,h_fig)
 % Defines the tag color with hexadecimal input
 
-%% Created by MH, 24.4.2019
+% Created by MH, 24.4.2019
 %
-%%
+%
 
 h = guidata(h_fig);
 
@@ -2245,7 +2472,7 @@ end
 
 function pushbutton_deleteMolTag_Callback(obj, evd, h_fig)
 
-%% Last update by MH, 24.4.2019
+% Last update by MH, 24.4.2019
 % >> downscale molecule tag structure after deleting a tag name
 % >> warn and ask user confirmation to delete tag name
 % >> allow the absence of default tag in list
@@ -2253,7 +2480,7 @@ function pushbutton_deleteMolTag_Callback(obj, evd, h_fig)
 %
 % Created by FS, 25.4.2018
 %
-%%
+%
 
     h = guidata(h_fig);
     selectMolTag = get(h.tm.popup_molTag, 'Value');
