@@ -657,19 +657,11 @@ function str_lst = colorTagNames(h_fig)
 h = guidata(h_fig);
 p = h.param.ttPr;
 proj = p.curr_proj;
-
-% modified by MH, 24.4.2019
-% colorlist = p.proj{proj}.molTagClr;
-colorlist = p.proj{proj}.molTagClr;
-
+colorlist = {'transparent', '#4298B5', '#DD5F32', '#92B06A', '#ADC4CC', '#E19D29'};
 str_lst = cell(1,length(p.proj{proj}.molTagNames));
-
-% cancelled by MH, 24.4.2019
-% str_lst{1} = p.proj{proj}.molTagNames{1};
-
-% modified by MH, 24.4.2019
-for k = 1:numel(p.proj{proj}.molTagNames)
-% for k = 2:length(p.proj{proj}.molTagNames)
+str_lst{1} = p.proj{proj}.molTagNames{1};
+ 
+for k = 2:length(p.proj{proj}.molTagNames)
     str_lst{k} = ['<html><body  bgcolor="' colorlist{k} '">' ...
         '<font color="white">' p.proj{proj}.molTagNames{k} '</font></body></html>'];
 end
