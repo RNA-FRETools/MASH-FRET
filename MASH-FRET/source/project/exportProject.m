@@ -1,13 +1,5 @@
 function s = exportProject(p, fname, h_fig)
 
-%% Last update by MH, 24.4.2019
-% >> modify molecule tag names by removing label 'unlabelled'
-% >> modify molecule tag structure to allow multiple tags per molecule, by 
-%    using the first dimension for molecule idexes and the second dimension 
-%    for label indexes 
-% >> add tag's default colors to project
-%%
-
 h = guidata(h_fig);
 
 s = [];
@@ -88,15 +80,8 @@ if ~isempty(I)
     s.colours = p.itg_clr; % plot colours
     
     % added by FS, 24.4.2018
-    % modified by MH, 24.4.2019: remove label 'unlabelled', use second 
-    % dimension for label indexes and first dimension for molecule idexes
-%     s.molTag = ones(1,size(I,2)/p.nChan);
-%     s.molTagNames = {'unlabeled', 'static', 'dynamic'};
-    s.molTagNames = {'static', 'dynamic'};
-    s.molTag = false((size(I,2)/p.nChan),numel(s.molTagNames));
-    
-    % added by MH, 24.4.2019
-    s.molTagClr = {'#4298B5','#DD5F32','#92B06A','#ADC4CC','#E19D29'};
+    s.molTag = ones(1,size(I,2)/p.nChan);
+    s.molTagNames = {'unlabeled', 'static', 'dynamic'};
 
 end
 
