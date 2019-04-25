@@ -10,8 +10,7 @@ if ~isempty(p.proj)
         h.param.ttPr = p;
         guidata(h.figure_MASH,h);
         
-        grey = [240/255 240/255 240/255];
-        set(h.pushbutton_TP_addTag,'value',0,'backgroundColor',grey);
+        set(h.pushbutton_TP_addTag,'value',0);
         set(obj,'visible','off');
         
         ud_trSetTbl(h.figure_MASH);
