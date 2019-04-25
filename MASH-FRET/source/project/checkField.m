@@ -1,6 +1,11 @@
 function s = checkField(s_in, fname, h_fig)
 
-%% Last update by MH, 24.4.2019
+%% Last update by MH, 25.4.2019
+% >> correct random generation of tag colors
+% >> fetch default tag names and colors in interface's default parameters
+%    (default_param.ini)
+%
+% update by MH, 24.4.2019
 % >> modify molecule tag names by removing label 'unlabelled'
 % >> modify molecule tag structure to allow multiple tags per molecule, by 
 %    using the first dimension for molecule idexes and the second dimension 
@@ -13,6 +18,10 @@ function s = checkField(s_in, fname, h_fig)
 %%
 
 s = s_in;
+
+% added by MH, 25.4.2019
+h = guidata(h_fig);
+pMov = h.param.movPr;
 
 %% load data
 
@@ -94,13 +103,18 @@ s.dt = adjustParam('dt', {}, s_in);
 % dimension for label indexes and first dimension for molecule idexes
 % s.molTag = adjustParam('molTag', ones(1,size(s.intensities,2)/s.nb_channel), s_in);
 % s.molTagNames = adjustParam('molTagNames', {'unlabeled', 'static', 'dynamic'}, s_in);
-s.molTagNames = adjustParam('molTagNames', {'static', 'dynamic'}, s_in);
+% modified by MH, 25.4.2019: fetch tag names in interface's defaults
+% s.molTagNames = adjustParam('molTagNames', {'static', 'dynamic'}, s_in);
+s.molTagNames = adjustParam('molTagNames',pMov.defTagNames,s_in);
+
 nTag = numel(s.molTagNames);
 s.molTag = adjustParam('molTag', false(nMol,nTag), s_in);
 
 % added by MH, 24.4.2019
-s.molTagClr = adjustParam('molTagClr', ...
-    {'#4298B5','#DD5F32','#92B06A','#ADC4CC','#E19D29'}, s_in);
+% modified by MH, 25.4.2019: fetch tag colors in interface's defaults
+% s.molTagClr = adjustParam('molTagClr', ...
+%     {'#4298B5','#DD5F32','#92B06A','#ADC4CC','#E19D29'}, s_in);
+s.molTagClr = adjustParam('molTagClr',pMov.defTagClr,s_in);
 
 %% check movie entries
 
@@ -320,9 +334,22 @@ if ~isempty(oldTag)
 end
 
 if numel(s.molTagClr)<nTag
-    clr = round(255*rand(1,3));
-    s.molTagClr = [s.molTagClr cat(2,'#',num2str(dec2hex(clr(1))),...
-        num2str(dec2hex(clr(2))),num2str(dec2hex(clr(3))))];
+    
+    % corrected by MH, 25.4.2019
+%     clr = round(255*rand(1,3));
+%     s.molTagClr = [s.molTagClr cat(2,'#',num2str(dec2hex(clr(1))),...
+%         num2str(dec2hex(clr(2))),num2str(dec2hex(clr(3))))];
+    for t = (numel(s.molTagClr)+1):nTag
+        if t<=numel(pMov.defTagClr)
+            clr_str = pMov.defTagClr{t};
+        else
+            clr = round(255*rand(1,3));
+            clr_str = cat(2,'#',num2str(dec2hex(clr(1))),...
+            num2str(dec2hex(clr(2))),num2str(dec2hex(clr(3))));
+        end
+        s.molTagClr = [s.molTagClr clr_str];
+    end
+    
 end
 
 
