@@ -1,9 +1,9 @@
+function traceManager(h_fig)
 % traceManager(h_fig)
 %
 % Enables trace selection upon visual inspection or defined criteria 
-% "h_fig" >> 
+% "h_fig" >> handle to the main figure
 
-<<<<<<< HEAD
 %% Last update: by MH, 24.4.2019
 % >> add tag colors
 %
@@ -11,15 +11,6 @@
 % >> add molecule tags
 %
 %%
-=======
-% Created the ??th of ???? 201? by Mélodie C.A.S. Hadzic
-% Last update: the 5rd of January 2018 by Richard Börner
-% >> include FRET-S-Histogram
-% >> include inverse selection button
-% >> restructured dat2.hist, dat2.iv and dat1.lim
-
-function traceManager(h_fig)
->>>>>>> parent of 6b3dd7b... Update traceManager.m
    
     h = guidata(h_fig);
     h.tm.ud = false;
@@ -58,7 +49,6 @@ function loadData2Mngr(h_fig)
     
 end
 
-<<<<<<< HEAD
 function str_lst = colorTagLists(h_fig,i)
 % Defines colored strings for listboxes listing tag names
 
@@ -92,10 +82,6 @@ function str_lst = colorTagNames(h_fig)
 %
 %%
 
-=======
-% define colors for tag names; added by FS, 24.4.2018
-function str_lst = colorTagNames(h_fig)
->>>>>>> parent of 6b3dd7b... Update traceManager.m
 h = guidata(h_fig);
 
 % modified by MH, 24.4.2019
@@ -150,6 +136,24 @@ end
 
 
 function openMngrTool(h_fig)
+
+%% Last update: by FS, 24.4.2018
+% >> add debugging mode where all other windows are not deactivated
+% >> add edit box to define a molecule tag
+% >> add popup menu to select molecule tag
+% >> add popup menu to select molecule tag
+%
+% update: by RB, 5.1.2018
+% >> new pushbutton to inverse the selection of individual molecules
+% >> add "to do" section: include y-axes control for FRET-S-Histogram
+%
+% update: by RB, 3.1.2018
+% >> adapt width of popupmenu for FRET-S-Histogram 
+%
+% update: by RB, 15.12.2017
+% >> update popupmenu_axes1 and popupmenu_axes2 string
+%
+%%
     
     h = guidata(h_fig);
     p = h.param.ttPr;
@@ -426,7 +430,6 @@ function openMngrTool(h_fig)
         'Callback', {@edit_addMolTag_Callback, h_fig}, ...
         'FontUnits', 'pixels', ...
         'FontSize', fntS);
-    
 
     % popup menu to select molecule tag, added by FS, 24.4.2018
     % add callback, MH 24.4.2019
@@ -438,7 +441,6 @@ function openMngrTool(h_fig)
         'Position', [xNext yNext w_pop h_but], ...
         'TooltipString', 'select a molecule tag', ...
         'FontUnits', 'pixels', ...
-<<<<<<< HEAD
         'FontSize', fntS, 'Callback', {@popup_molTag_Callback,h_fig});
     
     % added by MH, 24.4.2019
@@ -452,10 +454,6 @@ function openMngrTool(h_fig)
         'Backgroundcolor',hex2rgb(hexclr)/255,'callback',...
         {@edit_tagClr_Callback,h_fig});
 
-=======
-        'FontSize', fntS);
-    
->>>>>>> parent of 6b3dd7b... Update traceManager.m
     % popup menu to select molecule tag, added by FS, 24.4.2018
     xNext = xNext + w_edit + mg;
     h.tm.pushbutton_deleteMolTag = uicontrol('Style', 'pushbutton', 'Parent', ...
@@ -544,7 +542,6 @@ end
 
 
 function updatePanel_single(h_fig, nb_mol_disp)
-<<<<<<< HEAD
 
 %% Last update by MH, 24.4.2019
 % >> allow molecule tagging even if the molecule unselected
@@ -557,8 +554,6 @@ function updatePanel_single(h_fig, nb_mol_disp)
 %    not selected
 %
 %%
-=======
->>>>>>> parent of 6b3dd7b... Update traceManager.m
     
     h = guidata(h_fig);
     p = h.param.ttPr;
@@ -782,7 +777,6 @@ end
 
 function checkbox_molNb_Callback(obj, evd, h_fig)
 
-<<<<<<< HEAD
 %% Last update by MH, 24.4.2019
 % >> allow molecule tagging even if the molecule unselected
 %
@@ -791,8 +785,6 @@ function checkbox_molNb_Callback(obj, evd, h_fig)
 %
 %%
 
-=======
->>>>>>> parent of 6b3dd7b... Update traceManager.m
     h = guidata(h_fig);
     p = h.param.ttPr;
     proj = p.curr_proj;
@@ -829,7 +821,6 @@ function checkbox_molNb_Callback(obj, evd, h_fig)
 
 end
 
-<<<<<<< HEAD
 
 function pushbutton_addTag2mol_Callback(obj,evd,h_fig,i)
 % Pushbutton adds tag selected in popupmenu to current molecule 
@@ -845,19 +836,6 @@ tagNames = get(h.tm.popup_molNb(i),'string');
 tag = get(h.tm.popup_molNb(i),'value');
 if strcmp(tagNames{tag},'no default tag')
     return;
-=======
-% added by FS, 24.4.2018, modified by FS, 25.5.2018
-function popup_molTag_Callback(obj, evd, h_fig, ~)
-    % the molecule is passed directly to the callback, since the string
-    % variable is already occupied with the molecule tags
-    h = guidata(h_fig);
-    pos_slider = round(get(h.tm.slider, 'Value'));
-    max_slider = get(h.tm.slider, 'Max');
-    cb = get(obj, 'Callback');
-    mol = max_slider-pos_slider+cb{3};
-    h.tm.molTag(mol) = get(obj, 'Value');
-    guidata(h_fig, h);
->>>>>>> parent of 6b3dd7b... Update traceManager.m
 end
 
 % update and save molecule tags
@@ -959,7 +937,6 @@ end
 
 function slider_Callback(obj, evd, h_fig)
 
-<<<<<<< HEAD
 %% Last update by MH, 24.4.2019
 % >> cancel change in popupmenu's background color: no need as width and 
 %    height were downscaled to regular dimensions and the line color is
@@ -971,8 +948,6 @@ function slider_Callback(obj, evd, h_fig)
 %
 %%
 
-=======
->>>>>>> parent of 6b3dd7b... Update traceManager.m
     h = guidata(h_fig);
     nMol = numel(h.tm.molValid);
     
@@ -1107,8 +1082,26 @@ function plotDataTm(h_fig)
     end
 end
 
-% RB 2018-01-03: adapted for FRET-S-histograms
+
 function pushbutton_update_Callback(obj, evd, h_fig)
+
+%% Last update by MH, 27.3.2019
+% >> correct update for ES histograms for multiple FRET and stoichiometries
+%
+% Last update: by RB, 4.1.2018
+% >> hist2 rather slow replaced by hist2D
+%
+% update: by RB, 4.1.2018
+% >> include FRET-S-Histogram
+% >> restructured dat2.hist, dat2.iv and dat1.lim
+% 
+% update: by RB, 3.1.2018
+% >> new variable to expand popupmenu entries
+%
+% update: by RB, 15.12.2017 
+% >> review string in popupmenu of axes 2 for ES hitograms
+%
+%%
     
     % get guidata
     h = guidata(h_fig);
@@ -1290,8 +1283,12 @@ function pushbutton_update_Callback(obj, evd, h_fig)
     % RB 2018-01-04: adapted for FRET-S-Histogram, hist2 is rather slow
     % RB 2018-01-05: hist2 replaced by hist2D
     % loading bar parameters-----------------------------------------------
+    
+    % corrected by MH, 27.3.2019
+%     err = loading_bar('init', h_fig , (nChan*nExc+nFRET+nS+nFRET), ...
     err = loading_bar('init', h_fig , (nChan*nExc+nFRET+nS+nFRET*nS), ...
         'Histogram data ...');
+    
     if err
         return;
     end
@@ -1302,7 +1299,9 @@ function pushbutton_update_Callback(obj, evd, h_fig)
     
     % RB 2018-01-04: adapted for FRET-S-Histogram
     ES = []; % local array
+    
     % MH 2019-03-27: collect ES indexes
+%     for ind = 1:(size(dat1.trace,2)+nS)
     ind_es = [];
     for fret = 1:nFRET
         for s = 1:nS
@@ -1310,6 +1309,7 @@ function pushbutton_update_Callback(obj, evd, h_fig)
         end
     end
     for ind = 1:(size(dat1.trace,2)+nFRET*nS) % counts for nChan*nExc Intensity channels, nFRET channles, nS channels and nFRET ES histograms
+        
         dat1.niv(ind) = def_niv;
         if ind <= nChan*nExc % intensity histogram 1D 
             dat1.lim{ind} = [min(dat1.trace{ind}) max(dat1.trace{ind})];
@@ -1327,9 +1327,13 @@ function pushbutton_update_Callback(obj, evd, h_fig)
             %biny = (dat1.lim{ind}(1,2) - dat1.lim{ind}(1,1)) / dat1.niv(ind);
             %ivx = (dat1.lim{ind}(2,1) - binx):binx:(dat1.lim{ind}(2,2) + binx);
             %ivy = (dat1.lim{ind}(1,1) - biny):biny:(dat1.lim{ind}(1,2) + biny);
+            
+            % corrected by MH, 27.3.2019
+%             ES = [dat1.trace{ind-nFRET-nS},dat1.trace{ind-nS}]; % build [N-by-2] or ' ... '[2-by-N] data matrix.']
             ind_fret = ind_es(ind-nChan*nExc-nFRET-nS,1) + nChan*nExc;
             ind_s = ind_es(ind-nChan*nExc-nFRET-nS,2) + nChan*nExc + nFRET;
             ES = [dat1.trace{ind_fret},dat1.trace{ind_s}]; % build [N-by-2] or ' ... '[2-by-N] data matrix.']
+            
             %[dat2.hist{ind},o,o,dat2.iv{ind}] = hist2(ES, [ivx;ivy]); % hist2 by MCASH rather slow
             binEdges_minmaxN_xy = [dat1.lim{ind}(1,1) dat1.lim{ind}(1,2) dat1.niv(ind); dat1.lim{ind}(2,1) dat1.lim{ind}(2,2) dat1.niv(ind)];
             [dat2.hist{ind},dat2.iv{ind}(1,:),dat2.iv{ind}(2,:)] = hist2D(ES, binEdges_minmaxN_xy); % hist2D by tudima at zahoo dot com, inlcuded in \traces\processing\management
@@ -1424,10 +1428,12 @@ function pushbutton_update_Callback(obj, evd, h_fig)
     end
     % String for Stoichiometry-FRET Channels in popup menu
     % RB 2017-12-15: str_plot including FRET-S-histograms in popupmenu (only corresponding SToichiometry FRET values e.g. FRET:Cy3->Cy5 and S:Cy3->Cy5 not FRET:Cy3->Cy5 and S:Cy3->Cy7 etc.)   )
+    
+    % corrected by MH, 27.3.2019
+%     for s = 1:nS
     n = 0;
     for fret = 1:nFRET
         for s = 1:nS
-            
             n = n + 1;
             
             clr_bg_s = sprintf('rgb(%i,%i,%i)', ...
@@ -1453,6 +1459,9 @@ function pushbutton_update_Callback(obj, evd, h_fig)
     end
    
     % RB 2018-01-03: new variable to expand popupmenu entries
+    % corrected by MH, 27.3.2019
+%     str_plot2 = {}; % string for popup menu
+%     str_plot2 = [str_plot(1:(nChan*nExc+nFRET+nS)) [str_plot((size(str_plot,2)-nFRET+1):size(str_plot,2))]];
     str_plot2 = [str_plot(1:(nChan*nExc+nFRET+nS)) str_plot((size(str_plot,2)-nFRET*nS+1):size(str_plot,2))];
         
     % RB 2017-12-15: str_plot including FRET-S-histograms in popupmenu of axes 2 
@@ -1472,10 +1481,8 @@ function pushbutton_update_Callback(obj, evd, h_fig)
     
 end
 
-% RB 2018-01-03: adapted for FRET-S-histograms
 function plotData_overall(h_fig)
 
-<<<<<<< HEAD
 %% Last update by MH, 24.4.2019
 % >> correct plot clearing before plotting multiple traces on the same 
 %    graph
@@ -1488,8 +1495,6 @@ function plotData_overall(h_fig)
 %
 %%
 
-=======
->>>>>>> parent of 6b3dd7b... Update traceManager.m
 warning('off','MATLAB:hg:EraseModeIgnored');
 
     h = guidata(h_fig);
@@ -1717,8 +1722,14 @@ function menu_export_Callback(obj, evd, h_fig)
 
 end
 
-% RB 2018-01-04: adapted for FRET-S-histograms
+
 function edit_xlim_low_Callback(obj, evd, h_fig)
+
+%% Last update: by RB, 4.1.2018
+% >> adapted for FRET-S-histograms
+% >> hist2 rather slow replaced by hist2D
+%
+%%
 
     h = guidata(h_fig);
     xlim_low = str2num(get(obj, 'String'));
@@ -1771,8 +1782,13 @@ function edit_xlim_low_Callback(obj, evd, h_fig)
     
 end
 
-% RB 2018-01-04: adapted for FRET-S-histograms
 function edit_xlim_up_Callback(obj, evd, h_fig)
+
+%% Last update: by RB 5.1.2018
+% >> adapted for FRET-S-histograms
+% >> hist2 rather slow replaced by hist2D
+%
+%%
 
     h = guidata(h_fig);
     xlim_up = str2num(get(obj, 'String'));
@@ -1827,8 +1843,14 @@ function edit_xlim_up_Callback(obj, evd, h_fig)
 
 end
 
-% RB 2018-01-04: adapted for FRET-S-histograms
+
 function edit_nbiv_Callback(obj, evd, h_fig)
+
+%% Last update: by RB 5.1.2018
+% >> adapted for FRET-S-histograms
+% >> hist2 rather slow replaced by hist2D
+%
+%%
     
     h = guidata(h_fig);
     nbiv = round(str2num(get(obj, 'String')));
@@ -1875,7 +1897,6 @@ end
 function popupmenu_selection_Callback(obj, evd, h_fig)
 % Change the current selection according to selected menu
 
-<<<<<<< HEAD
 %% Created by MH, 24.4.2019
 %
 %%
@@ -1892,13 +1913,6 @@ if meth>1
         'Cancel','Cancel');
     if ~strcmp(choice,'Yes, modify the current selection')
         return;
-=======
-    h = guidata(h_fig);
-    if get(obj, 'Value')
-        h.tm.molValid = true(size(h.tm.molValid));
-    else
-        h.tm.molValid = false(size(h.tm.molValid));
->>>>>>> parent of 6b3dd7b... Update traceManager.m
     end
 else
     return;
@@ -1926,7 +1940,6 @@ if meth>4
     end
 end
 
-<<<<<<< HEAD
 set(obj,'value',1);
 
 guidata(h_fig,h);
@@ -2010,37 +2023,9 @@ end
 %     guidata(h_fig, h);
 %     plotDataTm(h_fig);
 % end 
-=======
-% RB 2018-01-05: new pushbotton to invert the selcetion of individual molecules
-function pushbutton_all_inverse_Callback(obj, evd, h_fig)
-    
-    h = guidata(h_fig);
-    
-    h.tm.molValid = ~h.tm.molValid;
-    
-    % deactivate the popupmenu if the molecule is not selected
-    % added by FS, 25.4.2018
-    pos_slider = round(get(h.tm.slider, 'Value'));
-    max_slider = get(h.tm.slider, 'Max');
-    nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
-    for i = nb_mol_disp:-1:1
-        if h.tm.molValid(max_slider-pos_slider+i) == 0
-            set(h.tm.popup_molNb(i), 'Enable', 'off', 'Value', 1)
-            h.tm.molTag(max_slider-pos_slider+i) = 1;
-        else
-            set(h.tm.popup_molNb(i), 'Enable', 'on')
-        end
-    end
-    
-    guidata(h_fig, h);
-    plotDataTm(h_fig);
-end 
->>>>>>> parent of 6b3dd7b... Update traceManager.m
 
 
-% added by FS, 24.4.2018
 function edit_addMolTag_Callback(obj, evd, h_fig)
-<<<<<<< HEAD
 
 %% Last update by MH, 24.4.2019
 % >> add random colors for tags that exceed tag list
@@ -2052,8 +2037,6 @@ function edit_addMolTag_Callback(obj, evd, h_fig)
 %
 %%
 
-=======
->>>>>>> parent of 6b3dd7b... Update traceManager.m
     h = guidata(h_fig);
     if ~strcmp(obj.String, 'define a new tag') && ...
             ~ismember(obj.String, h.tm.molTagNames)
@@ -2096,7 +2079,6 @@ function edit_addMolTag_Callback(obj, evd, h_fig)
     end
 end
 
-<<<<<<< HEAD
 
 function popup_molTag_Callback(obj,evd,h_fig)
 % Updates the tag color in corresponding edit field
@@ -2184,10 +2166,6 @@ function pushbutton_deleteMolTag_Callback(obj, evd, h_fig)
 %
 %%
 
-=======
-% added by FS, 24.4.2018
-function pushbutton_deleteMolTag_Callback(obj, evd, h_fig)
->>>>>>> parent of 6b3dd7b... Update traceManager.m
     h = guidata(h_fig);
     selectMolTag = get(h.tm.popup_molTag, 'Value');
     
