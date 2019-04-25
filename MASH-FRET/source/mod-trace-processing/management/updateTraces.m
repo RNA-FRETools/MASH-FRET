@@ -24,7 +24,6 @@ if ~isempty(p.proj)
         return;
     end
     
-    proj = p.curr_proj;
     nC = p.proj{proj}.nb_channel;
     gammaPb = p.proj{proj}.prm{mol}{5}{4}(1);
 
