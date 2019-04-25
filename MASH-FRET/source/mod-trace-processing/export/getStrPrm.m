@@ -184,7 +184,7 @@ else
     str_tags = '';
     for t = 1:nTag
         if tag(m,t)
-            str_tags = cat(2,str_tags,' ',tagName{t},',');
+            str_tags = cat(2,' ',str_tags,tagName{t},',');
         end
     end
     str_tags(end) = [];
