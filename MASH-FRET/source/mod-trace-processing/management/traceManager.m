@@ -2214,6 +2214,7 @@ clr_str = get(obj,'string');
 if ~ishexclr(clr_str)
     setContPan(cat(2,'Tag color must be a RGB value in the hexadecimal ',...
         'format (ex:92B06A)'),'error',h_fig);
+    return;
 end
 
 % save color
