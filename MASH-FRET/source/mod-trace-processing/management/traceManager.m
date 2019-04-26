@@ -30,6 +30,9 @@ function traceManager(h_fig)
     % added by MH, 25.4.2019
     h.tm.molValid = p.proj{proj}.coord_incl;
     
+    % added byMH, 26.4.2019
+    h.tm.rangeTag = [];
+    
     guidata(h_fig, h);
     
     if ~(isfield(h.tm, 'figure_traceMngr') && ...
@@ -44,7 +47,7 @@ function traceManager(h_fig)
     
 end
 
-%% data handling
+%% data handling for first use
 
 function ok = loadData2Mngr(h_fig)
 
@@ -266,6 +269,8 @@ set(h.tm.axes_histSort,'UserData',dat3);
 end
 
 
+%% data handling for selection update
+
 function ok = concatenateData(h_fig)
 % Concatenates traces and calculate new axis limits if necessary
 
@@ -333,6 +338,9 @@ dat3.val = cell(nChan*nExc+nFRET+nS,nCalc);
 dat3.lim = cell(1,nChan*nExc+nFRET+nS);
 dat3.iv =  cell(nChan*nExc+nFRET+nS+nFRET*nS,nCalc);
 dat3.hist = cell(nChan*nExc+nFRET+nS+nFRET*nS,nCalc);
+% added by MH, 26.4.2019
+dat3.range = {};
+dat3.rangeTags = [];
 
 % loading bar parameters-----------------------------------------------
 err = loading_bar('init',h_fig,nMol,'Concatenate and calculate data ...');
@@ -392,7 +400,7 @@ for i = 1:nMol
             dat3.val{ind,3} = [dat3.val{ind,3};max(FRET_tr)];
             dat3.val{ind,4} = [dat3.val{ind,4};median(FRET_tr)];
             dat3.val{ind,5} = [dat3.val{ind,5};...
-                FRET_DTA(:,nFRET*(i-1)+n)];
+                FRET_DTA(incl,nFRET*(i-1)+n)];
         end
         for n = 1:nS
             ind = ind + 1;
@@ -413,7 +421,7 @@ for i = 1:nMol
             dat3.val{ind,2} = [dat3.val{ind,2};min(S_tr)];
             dat3.val{ind,3} = [dat3.val{ind,3};max(S_tr)];
             dat3.val{ind,4} = [dat3.val{ind,4};median(S_tr)];
-            dat3.val{ind,5} = [dat3.val{ind,5};S_DTA(:,nS*(i-1)+n)];
+            dat3.val{ind,5} = [dat3.val{ind,5};S_DTA(incl,nS*(i-1)+n)];
         end
     end
 
@@ -462,12 +470,22 @@ for ind = 1:(size(dat1.trace,2)+nFRET*nS) % counts for nChan*nExc Intensity chan
         dat1.lim{ind} = [min(dat1.trace{ind}) max(dat1.trace{ind})];
         [dat2.hist{ind},dat2.iv{ind}] = getHistTM(dat1.trace{ind},...
             dat1.lim{ind},dat1.niv(ind,1));
+        
+        % overflow first & last bins
+        dat2.hist{ind}([1 end]) = [];
+        dat2.iv{ind}([1 end]) = [];
 
         % build histogram with mean,max,min,median and states
         for j = 1:nCalc
             dat3.lim{ind,j} = [min(dat3.val{ind,j}) max(dat3.val{ind,j})];
             [dat3.hist{ind,j},dat3.iv{ind,j}] = getHistTM(dat3.val{ind,j},...
                 dat3.lim{ind,j},dat3.niv(ind,1,j));
+            
+            % overflow first & last bins
+            if ~isempty(dat3.hist{ind,j})
+                dat3.hist{ind,j}([1,end]) = [];
+                dat3.iv{ind,j}([1,end]) = [];
+            end
         end
 
 
@@ -475,12 +493,22 @@ for ind = 1:(size(dat1.trace,2)+nFRET*nS) % counts for nChan*nExc Intensity chan
         dat1.lim{ind} = [defMin defMax];
         [dat2.hist{ind},dat2.iv{ind}] = getHistTM(dat1.trace{ind},...
             dat1.lim{ind},dat1.niv(ind,1));
+        
+        % overflow first & last bins
+        dat2.hist{ind}([1 end]) = [];
+        dat2.iv{ind}([1 end]) = [];
 
         % build histogram with mean,max,min,median and states
         for j = 1:nCalc
             dat3.lim{ind,j} = [defMin defMax];
             [dat3.hist{ind,j},dat3.iv{ind,j}] = getHistTM(dat3.val{ind,j},...
                 dat3.lim{ind,j},dat3.niv(ind,1,j));
+            
+            % overflow first & last bins
+            if ~isempty(dat3.hist{ind,j})
+                dat3.hist{ind,j}([1 end]) = [];
+                dat3.iv{ind,j}([1 end]) = [];
+            end
         end
 
     else  % FRET-S histogram 2D, adapted from getTDPmat.m
@@ -521,6 +549,8 @@ set(h.tm.axes_histSort, 'UserData', dat3);
 end
 
 
+%% data handling for building histograms
+
 function [P,iv] = getHistTM(trace,lim,niv)
 % Build and return 1D or 2D histogram depending on the second dimension of
 % input data
@@ -556,8 +586,6 @@ end
 end
 
 
-%% build GUI
-
 function openMngrTool(h_fig)
 
 % Last update by MH, 24.4.2019
@@ -582,7 +610,7 @@ function openMngrTool(h_fig)
 %
 %
 
-%% - build figure and toolbar
+%% build figure and toolbar
 
 % defaults
 defNperPage = 3; % molecules/ page
@@ -594,9 +622,9 @@ h_edit = 20; w_edit = 40; % edit field dimensions
 h_but_big = 30; w_but_big = 120; % large pushbutton dimension
 w_sld = 20; % slider bar x-dimension
 h_txt = 14; % text y-dimension
-w_pop = 120; % RB 2018-01-03: adapt width of popupmenu for FRET-S-Histogram 
-w_txt1 = 65; % medium text x-diemension
-w_txt2 = 105; % large text x-diemension
+w_txt1 = 65; % medium text x-dimension
+w_txt2 = 105; % large text x-dimension
+w_txt3 = 32; % small text x-dimension
 % pushbutton cdata
 arrow_up = [0.92 0.92 0.92 0.92 0.92 0.92 0 0.92 0.92 0.92 0.92 0.92;
             0.92 0.92 0.92 1    1    0    0 0    0.92 0.92 0.92 0.92;
@@ -626,20 +654,22 @@ mg_big = 2*mg;
 
 % set UI control dimensions
 h_pop = h_edit;
+w_pop = 3*w_edit+2*mg/2;
 h_but = h_edit;
-w_but = (w_pop-mg)/2;
+w_but = (w_pop+w_txt3)/2;
 
 % set panels dimensions
 w_pan = wFig - 2*mg;
-h_pan_all = mg + 3*mg + mg_big + 2*h_edit + 2*h_txt + h_but;
+h_pan_all = 5*mg + 2*h_pop + 2*h_edit + mg_big + h_but;
 h_toolbar = h_but_big + 2*mg;
 h_pan_sgl = hFig - 2*mg - h_pan_all - h_toolbar;
 h_pan_tool = hFig - h_toolbar + mg;
 
 % set axes dimensions
-h_axes_all = h_pan_all - mg - 2*mg - h_edit;
-w_axes2 = 2*mg + 3*w_edit;
-w_axes1 = w_pan - 4*mg - w_pop - w_axes2;
+h_axes_all = h_pan_all - 2.5*mg;
+w_axes_all = w_pan - w_txt3 - w_pop - 3*mg;
+w_axes1 = (w_axes_all-2*mg)*0.75;
+w_axes2 = w_axes_all - 2*mg - w_axes1;
 
 % adjust sliding bar dimensions
 h_sld = h_pan_sgl - 3*mg - mg - h_but;
@@ -688,7 +718,7 @@ h.tm.togglebutton_videoView = uicontrol('style','togglebutton','parent',...
     'fontweight','bold','fontunits','pixels','fontsize',fntS_big,...
     'callback',{@switchPan_TM,h_fig});
 
-%% - build main panels
+%% build main panels
 
 xNext = mg;
 yNext = yNext - mg - h_pan_all;
@@ -717,44 +747,103 @@ h.tm.uipanel_videoView = uipanel('Parent', h.tm.figure_traceMngr, ...
     'FontSize', fntS, 'Visible', 'off');
 
 
-%% - build panel overall plots
+%% build panel overall plots
 
 xNext = mg;
-yNext = h_pan_all - 1.5*mg - h_txt;
+yNext = h_pan_all - 1.5*mg - h_pop;
 
-h.tm.text1 = uicontrol('Style', 'text', 'Parent', ...
-    h.tm.uipanel_overall, 'Units', 'pixels', 'String', ...
-    'Plot axes1:', 'HorizontalAlignment', 'center', 'Position', ...
-    [xNext yNext w_pop h_txt], 'FontUnits', 'pixels', 'FontSize', ...
-    fntS);
+h.tm.text1 = uicontrol('Style','text','Parent',h.tm.uipanel_overall,...
+    'Units','pixels','String','plot1:','HorizontalAlignment','center',...
+    'Position',[xNext yNext w_txt3 h_txt],'FontUnits','pixels','FontSize',...
+    fntS,'FontWeight','bold');
 
-yNext = yNext - h_edit;
+xNext = xNext + w_txt3 + mg;
 
 % RB 2017-12-15: update str_plot
 str_plot = getStrPlot_overall(h_fig); % added by MH, 25.4.2019
-h.tm.popupmenu_axes1 = uicontrol('Style', 'popupmenu', 'Parent', ...
-    h.tm.uipanel_overall, 'String', str_plot{1}, 'Units', 'pixels', ...
-    'Position', [xNext yNext w_pop h_edit], 'BackgroundColor', ...
-    [1 1 1], 'Callback', {@popupmenu_axes_Callback, h_fig}, ...
-    'FontUnits', 'pixels', 'FontSize', fntS);
-
-yNext = yNext - mg - h_txt;
-
-h.tm.text2 = uicontrol('Style', 'text', 'Parent', ...
-    h.tm.uipanel_overall, 'Units', 'pixels', 'String', ...
-    'Plot axes2:', 'HorizontalAlignment', 'center', 'Position', ...
-    [xNext yNext w_pop h_txt], 'FontUnits', 'pixels', 'FontSize', ...
+h.tm.popupmenu_axes1 = uicontrol('Style','popupmenu','Parent', ...
+    h.tm.uipanel_overall,'String',str_plot{1},'Units','pixels','Position',...
+    [xNext yNext w_pop h_pop],'BackgroundColor',[1 1 1],'Callback',...
+    {@popupmenu_axes_Callback, h_fig},'FontUnits','pixels','FontSize',...
     fntS);
 
-yNext = yNext - h_edit;
+xNext = mg;
+yNext = yNext - mg - h_pop;
+
+h.tm.text2 = uicontrol('Style','text','Parent',h.tm.uipanel_overall,...
+    'Units','pixels','String','plot2:','HorizontalAlignment','center',...
+    'Position',[xNext yNext w_txt3 h_txt],'FontUnits','pixels',...
+    'FontSize',fntS,'FontWeight','bold');
+
+xNext = xNext + w_txt3 + mg;
 
 % RB 2017-12-15: update str_plot 
 h.tm.popupmenu_axes2 = uicontrol('Style', 'popupmenu', 'Parent', ...
     h.tm.uipanel_overall, 'Units', 'pixels', 'String', str_plot{2}, ...
-    'Position', [xNext yNext w_pop h_edit], 'BackgroundColor', ...
+    'Position', [xNext yNext w_pop h_pop], 'BackgroundColor', ...
     [1 1 1], 'Callback', {@popupmenu_axes_Callback, h_fig}, ...
     'FontUnits', 'pixels', 'FontSize', fntS);
 
+xNext = mg;
+yNext = yNext - mg - h_edit;
+
+h.tm.text3 = uicontrol('Style','text','Parent',h.tm.uipanel_overall,...
+    'Units','pixels','String','xbins:','HorizontalAlignment','center',...
+    'Position',[xNext yNext w_txt3 h_txt],'FontUnits','pixels','FontSize',...
+    fntS);
+
+xNext = xNext + w_txt3 + mg;
+
+h.tm.edit_xlim_low = uicontrol('Style', 'edit', 'Parent', ...
+    h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit], ...
+    'Callback', {@edit_lim_low_Callback,h_fig,1}, 'String', '0', ...
+    'BackgroundColor', [1 1 1], 'TooltipString', ...
+    'lower interval value');
+
+xNext = xNext + mg/2 + w_edit;
+
+h.tm.edit_xnbiv = uicontrol('Style', 'edit', 'Parent', ...
+    h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit], ...
+    'Callback', {@edit_nbiv_Callback, h_fig,1}, 'String', '200', ...
+    'BackgroundColor', [1 1 1], 'TooltipString', 'number of interval');
+
+xNext = xNext + mg/2 + w_edit;
+
+h.tm.edit_xlim_up = uicontrol('Style','edit','Parent',h.tm.uipanel_overall,...
+    'Position', [xNext yNext w_edit h_edit],'Callback',...
+    {@edit_lim_up_Callback,h_fig,1},'String','1','BackgroundColor',[1 1 1],...
+    'TooltipString','upper interval value');
+
+xNext = mg;
+yNext = yNext - mg/2 - h_edit;
+
+h.tm.text4 = uicontrol('Style','text','Parent',h.tm.uipanel_overall,...
+    'Units','pixels','String','ybins:','HorizontalAlignment','center',...
+    'Position',[xNext yNext w_txt3 h_txt],'FontUnits','pixels','FontSize',...
+    fntS,'Enable','off');
+
+xNext = xNext + w_txt3 + mg;
+
+h.tm.edit_ylim_low = uicontrol('Style','edit','Parent',...
+    h.tm.uipanel_overall,'Position',[xNext yNext w_edit h_edit],'Callback',...
+    {@edit_lim_low_Callback,h_fig,2},'String','','BackgroundColor',[1 1 1],...
+    'TooltipString','lower interval value','Enable','off');
+
+xNext = xNext + mg/2 + w_edit;
+
+h.tm.edit_ynbiv = uicontrol('Style','edit','Parent',h.tm.uipanel_overall,...
+    'Position',[xNext yNext w_edit h_edit],'Callback',...
+    {@edit_nbiv_Callback,h_fig,2},'String','','BackgroundColor',[1 1 1],...
+    'TooltipString','number of interval','Enable','off');
+
+xNext = xNext + mg/2 + w_edit;
+
+h.tm.edit_ylim_up = uicontrol('Style','edit','Parent',h.tm.uipanel_overall,...
+    'Position',[xNext yNext w_edit h_edit],'Callback',...
+    {@edit_lim_up_Callback,h_fig,2},'String','','BackgroundColor',[1 1 1],...
+    'TooltipString','upper interval value','Enable','off');
+
+xNext = mg;
 yNext = yNext - mg_big - h_but;
 
 h.tm.pushbutton_update = uicontrol('Style', 'pushbutton', 'Parent', ...
@@ -773,7 +862,7 @@ h.tm.pushbutton_export = uicontrol('Style', 'pushbutton', 'Parent', ...
     {@menu_export_Callback, h_fig}, 'FontUnits', 'pixels', ...
     'FontSize', fntS);
 
-xNext = w_pop + 2*mg;
+xNext = mg + w_txt3 + mg + w_pop + mg;
 yNext = mg;
 
 h.tm.axes_ovrAll_1 = axes('Parent', h.tm.uipanel_overall, 'Units', ...
@@ -803,84 +892,11 @@ pos(3) = pos(3) - fntS;
 pos(1) = pos(1) + fntS;
 set(h.tm.axes_ovrAll_2, 'Position', pos);
 
-yNext = h_pan_all - mg - mg - h_edit;
-xNext = pos(1);
-w_edit_hist = (pos(3)-2*mg/2)/3;
 
-h.tm.edit_xlim_low = uicontrol('Style', 'edit', 'Parent', ...
-    h.tm.uipanel_overall, 'Position', [xNext yNext w_edit_hist h_edit], ...
-    'Callback', {@edit_xlim_low_Callback, h_fig}, 'String', '0', ...
-    'BackgroundColor', [1 1 1], 'TooltipString', ...
-    'lower interval value');
-
-xNext = xNext + mg/2 + w_edit_hist;
-
-h.tm.edit_nbiv = uicontrol('Style', 'edit', 'Parent', ...
-    h.tm.uipanel_overall, 'Position', [xNext yNext w_edit_hist h_edit], ...
-    'Callback', {@edit_nbiv_Callback, h_fig}, 'String', '200', ...
-    'BackgroundColor', [1 1 1], 'TooltipString', 'number of interval');
-
-xNext = xNext + mg/2 + w_edit_hist;
-
-h.tm.edit_xlim_up = uicontrol('Style', 'edit', 'Parent', ...
-    h.tm.uipanel_overall, 'Position', [xNext yNext w_edit_hist h_edit], ...
-    'Callback', {@edit_xlim_up_Callback, h_fig}, 'String', '1', ...
-    'BackgroundColor', [1 1 1], 'TooltipString', ...
-    'upper interval value');
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
-% RB 2018-01-05 to do: include y-axes control for FRET-S-Histogram
-%     yNext = h_pan_all - mg - mg - h_edit;
-%     
-%     h.tm.edit_xlim_low = uicontrol('Style', 'edit', 'Parent', ...
-%         h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit],
-%         ... 'Callback', {@edit_xlim_low_Callback, h_fig}, 'String', '0',
-%         ... 'BackgroundColor', [1 1 1], 'TooltipString', ... 'lower
-%         interval value');
-%
-%     xNext = xNext + mg + w_edit;
-%
-%     h.tm.edit_nbiv = uicontrol('Style', 'edit', 'Parent', ...
-%         h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit],
-%         ... 'Callback', {@edit_nbiv_Callback, h_fig}, 'String', '200',
-%         ... 'BackgroundColor', [1 1 1], 'TooltipString', 'number of
-%         interval');
-%
-%     xNext = xNext + mg + w_edit;
-%
-%     h.tm.edit_xlim_up = uicontrol('Style', 'edit', 'Parent', ...
-%         h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit],
-%         ... 'Callback', {@edit_xlim_up_Callback, h_fig}, 'String', '1',
-%         ... 'BackgroundColor', [1 1 1], 'TooltipString', ... 'upper
-%         interval value');
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
-
-
-%% - build panel molecule selection
+%% build panel molecule selection
 
 xNext = mg;
-yNext = h_pan_sgl - mg - mg - h_but;
-
-% cancelled by MH, 24.4.2019
-% replace "all" checkbox and "inverse selection" pushbutton by a
-% popupmenu
-%     h.tm.checkbox_all = uicontrol('Style', 'checkbox', 'Parent', ...
-%         h.tm.uipanel_overview, 'Units', 'pixels', 'FontUnits', 'pixels',...
-%         'FontSize', fntS, 'String', 'Check all', 'TooltipString', ...
-%         'Include all molecules', 'Position', [xNext yNext w_pop h_edit],...
-%         'Callback', {@checkbox_all_Callback, h_fig}, 'Value', 1);
-    
-    % RB 2018-01-05: new pushbotton to inverse the selcetion of individual
-    % molecules
-%     
-%     xNext = xNext + 2/3*w_pop ;
-%     
-%     h.tm.pushbutton_inverse = uicontrol('Style', 'pushbutton', 'Parent', ...
-%         h.tm.uipanel_overview, 'Units', 'pixels', 'FontWeight', 'bold', ...
-%         'String', 'Invert Selection', 'Position', [xNext yNext 4/5*w_pop h_but], ...
-%         'TooltipString', 'Invert selection of all molecules', 'Callback', ...
-%         {@pushbutton_all_inverse_Callback, h_fig}, 'FontUnits', 'pixels', ...
-%         'FontSize', fntS);
+yNext = h_pan_sgl - mg - mg - h_but + (h_but-h_txt)/2;
     
 % added by MH, 24.4.2019
 h.tm.text_selection = uicontrol('style','text','parent',...
@@ -889,6 +905,7 @@ h.tm.text_selection = uicontrol('style','text','parent',...
     'fontsize', fntS,'fontweight','bold');
 
 xNext = xNext + 0.5*w_pop + mg/2 ;
+yNext = yNext - (h_but-h_txt)/2;
 
 % added by MH, 24.4.2019
 str_pop = getStrPop_select(h_fig);
@@ -963,12 +980,13 @@ h.tm.edit_nbTotMol = uicontrol('Style', 'edit', 'Parent', ...
     'Number of molecule per view', 'BackgroundColor', [1 1 1], ...
     'Callback', {@edit_nbTotMol_Callback, h_fig});
 
-xNext = xNext - mg - w_pop;
+xNext = xNext - mg - 0.8*w_pop;
+yNext = yNext + (h_edit-h_txt)/2;
 
 h.tm.textNmol = uicontrol('Style', 'text', 'Parent', ...
     h.tm.uipanel_overview, 'Units', 'pixels', 'String', ...
     'molecules per page:', 'HorizontalAlignment', 'right', ...
-    'Position', [xNext yNext w_pop h_txt], 'FontUnits', 'pixels', ...
+    'Position', [xNext yNext 0.8*w_pop h_txt], 'FontUnits', 'pixels', ...
     'FontSize', fntS);
 
 xNext = w_pan - mg - w_sld;
@@ -1011,40 +1029,38 @@ updatePanel_single(h_fig, nb_mol_disp);
 h = guidata(h_fig);
     
     
-%% - build panel auto-sorting
+%% build panel auto-sorting
    
-w_axes3 = wFig - 2*mg;
-h_axes3 = 0.5*(h_pan_tool-4*mg)-h_pop-h_txt-2*mg;
-w_pan_slct = (w_axes3-mg)/2;
-h_pan_slct = h_pan_tool-h_axes3-h_pop-h_txt-mg-5*mg;
-w_pan_sg = w_axes3-mg-w_pan_slct;
+w_pan_slct = 0.5*w_pop + 2*w_edit + w_txt3 + 2.5*mg;
+h_pan_slct = h_pan_tool-h_pop-h_txt-4*mg;
+w_axes3 = wFig - w_pan_slct - 3*mg;
+h_axes3 = h_pan_slct;
+w_lst = w_pan_slct-2*mg;
+h_lst = 3*h_txt + 2*h_edit + 1.5*mg;
 
 xNext = 2*mg;
 yNext = 2*mg;
 
-h.tm.uipanel_selection = uipanel('parent',h.tm.uipanel_autoSorting, ...
+h.tm.uipanel_range = uipanel('parent',h.tm.uipanel_autoSorting, ...
     'units','pixels','position',[xNext yNext w_pan_slct h_pan_slct], ...
-    'title','Selection','fontunits','pixels','fontsize',fntS);
+    'title','Ranges','fontunits','pixels','fontsize',fntS);
 
 xNext = xNext + w_pan_slct + mg;
-
-h.tm.uipanel_subgroups = uipanel('parent',h.tm.uipanel_autoSorting, ...
-    'units', 'pixels', 'position', [xNext yNext w_pan_sg h_pan_slct], ...
-    'title','Subgroup tag','fontunits','pixels','fontsize',fntS);
-
-xNext = 2*mg;
-yNext = yNext + h_pan_slct + 2*mg;
 
 h.tm.axes_histSort = axes('parent',h.tm.uipanel_autoSorting,...
     'units','pixels','fontunits','pixels','fontsize',fntS,...
     'activepositionproperty','outerposition','gridlineStyle',':',...
     'nextPlot','replacechildren');
+ylim(h.tm.axes_histSort,[0 10000]);
+ylabel(h.tm.axes_histSort,'freq. counts');
+xlabel(h.tm.axes_histSort,'counts per s. per pix.');
 pos = getRealPosAxes([xNext,yNext,w_axes3,h_axes3], ...
 get(h.tm.axes_histSort,'TightInset'),'traces'); 
 pos(3) = pos(3) - fntS;
 pos(1) = pos(1) + fntS;
 set(h.tm.axes_histSort,'Position',pos);
 
+xNext = 2*mg;
 yNext = yNext + h_axes3 + mg;
 
 h.tm.text_selectData = uicontrol('style','text','parent',...
@@ -1076,7 +1092,7 @@ h.tm.popupmenu_selectCalc = uicontrol('style','popupmenu','parent',...
     h.tm.uipanel_autoSorting,'string',str_pop,'tooltipstring',...
     'Select the calculated value to histogram','position',...
     [xNext,yNext,w_pop,h_pop],'fontunits','pixels','fontsize',fntS,...
-    'callback',{@popupmenu_selectData_Callback,h_fig});
+    'callback',{@popupmenu_selectData_Callback,h_fig},'userdata',1);
 
 xNext = xNext + w_pop + 2*mg;
 
@@ -1181,11 +1197,214 @@ h.tm.text_yniv = uicontrol('style','text','parent',...
     'horizontalalignment','center','enable','off');
 
     
-%% - build panel selection
-     
+%% build panel ranges
+
+xNext = mg;
+yNext = h_pan_slct - 1.5*mg - h_txt;
+
+h.tm.text5 = uicontrol('style','text','parent',h.tm.uipanel_range,...
+    'string','Range bounds:','position',[xNext,yNext,2*w_edit+mg/2,h_txt],...
+    'fontunits','pixels','fontsize',fntS,'horizontalalignment','left',...
+    'fontweight','bold');
+
+yNext = yNext - mg - h_txt - h_edit;
+
+h.tm.edit_xrangeLow = uicontrol('style','edit','parent',...
+    h.tm.uipanel_range,'string','0','position',...
+    [xNext,yNext,w_edit,h_edit],'fontunits','pixels','fontsize',fntS,...
+    'callback',{@edit_xrangeLow_Callback,h_fig});
+
+yNext = yNext + h_edit;
+
+h.tm.text_xrangeLow = uicontrol('style','text','parent',...
+    h.tm.uipanel_range,'string','xlow','position',...
+    [xNext,yNext,w_edit,h_txt],'fontunits','pixels','fontsize',fntS,...
+    'horizontalalignment','center');
+
+yNext = yNext - h_edit;
+xNext = xNext + w_edit + mg/2;
+
+h.tm.edit_xrangeUp = uicontrol('style','edit','parent',...
+    h.tm.uipanel_range,'string','1','position',...
+    [xNext,yNext,w_edit,h_edit],'fontunits','pixels','fontsize',fntS,...
+    'callback',{@edit_xrangeUp_Callback,h_fig});
+
+yNext = yNext + h_edit;
+
+h.tm.text_xrangeUp = uicontrol('style','text','parent',...
+    h.tm.uipanel_range,'string','xup','position',...
+    [xNext,yNext,w_edit,h_txt],'fontunits','pixels','fontsize',fntS,...
+    'horizontalalignment','center');
+
+yNext = yNext - h_edit;
+xNext = xNext + w_edit + mg;
+
+h.tm.edit_yrangeLow = uicontrol('style','edit','parent',...
+    h.tm.uipanel_range,'string','0','position',...
+    [xNext,yNext,w_edit,h_edit],'fontunits','pixels','fontsize',fntS,...
+    'callback',{@edit_yrangeLow_Callback,h_fig},'enable','off');
+
+yNext = yNext + h_edit;
+
+h.tm.text_yrangeLow = uicontrol('style','text','parent',...
+    h.tm.uipanel_range,'string','ylow','position',...
+    [xNext,yNext,w_edit,h_txt],'fontunits','pixels','fontsize',fntS,...
+    'horizontalalignment','center','enable','off');
+
+yNext = yNext - h_edit;
+xNext = xNext + w_edit + mg/2;
+
+h.tm.edit_yrangeUp = uicontrol('style','edit','parent',...
+    h.tm.uipanel_range,'string','1','position',...
+    [xNext,yNext,w_edit,h_edit],'fontunits','pixels','fontsize',fntS,...
+    'callback',{@edit_yrangeUp_Callback,h_fig},'enable','off');
+
+yNext = yNext + h_edit;
+
+h.tm.text_yrangeUp = uicontrol('style','text','parent',...
+    h.tm.uipanel_range,'string','yup','position',...
+    [xNext,yNext,w_edit,h_txt],'fontunits','pixels','fontsize',fntS,...
+    'horizontalalignment','center','enable','off');
+
+xNext = mg;
+yNext = yNext - h_edit - mg - h_txt;
+
+h.tm.text_conf1 = uicontrol('style','text','parent',h.tm.uipanel_range,...
+    'string','Confidence:','position',...
+    [xNext,yNext,w_pan_slct-2*mg,h_txt],'fontunits','pixels','fontsize',...
+    fntS,'horizontalalignment','left','fontweight','bold');
+
+yNext = yNext - h_txt;
+
+h.tm.text_conf2 = uicontrol('style','text','parent',h.tm.uipanel_range,...
+    'string','(for trajectories only)','position',...
+    [xNext,yNext,w_pan_slct-2*mg,h_txt],'fontunits','pixels','fontsize',...
+    fntS,'horizontalalignment','left','fontangle','italic');
+
+yNext = yNext - mg - h_pop;
+
+str_pop = {'confidence in percent','confidence in data points'};
+h.tm.popupmenu_units = uicontrol('style','popupmenu','parent',...
+    h.tm.uipanel_range,'string',str_pop,'tooltipstring',...
+    'Select a condition','position',[xNext,yNext,w_pan_slct-2*mg,h_pop],...
+    'fontunits','pixels','fontsize',fntS,'callback',...
+    {@popupmenu_units_Callback,h_fig});
+
+yNext = yNext - mg - h_pop;
+
+str_pop = {'at least','at most','between'};
+h.tm.popupmenu_cond = uicontrol('style','popupmenu','parent',...
+    h.tm.uipanel_range,'string',str_pop,'tooltipstring',...
+    'Select a condition','position',[xNext,yNext,0.5*w_pop,h_pop],...
+    'fontunits','pixels','fontsize',fntS,'callback',...
+    {@popupmenu_cond_Callback,h_fig});
+
+xNext = xNext + 0.5*w_pop + mg/2;
+
+h.tm.edit_conf1 = uicontrol('style','edit','parent',h.tm.uipanel_range,...
+    'string','50','position',[xNext,yNext,w_edit,h_edit],'fontunits',...
+    'pixels','fontsize',fntS,'callback',{@edit_conf_Callback,h_fig});
+
+xNext = xNext + w_edit;
+yNext = yNext + (h_edit-h_txt)/2;
+
+h.tm.text_and = uicontrol('style','text','parent',h.tm.uipanel_range,...
+    'string','and','position',[xNext,yNext,w_txt3,h_txt],'fontunits',...
+    'pixels','fontsize',fntS,'horizontalalignment','center','enable',...
+    'off');
+
+xNext = xNext + w_txt3;
+yNext = yNext - (h_edit-h_txt)/2;
+
+h.tm.edit_conf2 = uicontrol('style','edit','parent',h.tm.uipanel_range,...
+    'string','100','position',[xNext,yNext,w_edit,h_edit],'fontunits',...
+    'pixels','fontsize',fntS,'callback',{@edit_conf_Callback,h_fig},...
+    'enable','off');
+
+xNext = mg;
+yNext = yNext - mg - h_txt;
+
+h.tm.text_Npop = uicontrol('style','text','parent',h.tm.uipanel_range,...
+    'string','subgroup size: 0 molecule','position',...
+    [xNext,yNext,w_pan_slct-2*mg,h_txt],'fontunits','pixels','fontsize',...
+    fntS,'horizontalalignment','left');
+
+yNext = yNext - mg - h_but;
+
+h.tm.pushbutton_saveRange = uicontrol('style','pushbutton','parent',...
+    h.tm.uipanel_range,'string','Save subgroup','tooltipstring',...
+    'Save the range to tag the corresponding molecule subgroup','position',...
+    [xNext,yNext,w_lst,h_but],'fontunits','pixels','fontsize',...
+    fntS,'callback',{@pushbutton_saveRange_Callback,h_fig},'enable','off');
+
+yNext = yNext - mg_big - h_edit;
+
+h.tm.text_pop = uicontrol('style','text','parent',h.tm.uipanel_range,...
+    'string','Molecule subgroups:','position',...
+    [xNext,yNext,w_pan_slct-2*mg,h_txt],'fontunits','pixels','fontsize',...
+    fntS,'horizontalalignment','left','fontweight','bold','enable','off');
+
+xNext = mg;
+yNext = yNext - mg - h_lst;
+
+h.tm.listbox_ranges = uicontrol('style','listbox','parent',...
+    h.tm.uipanel_range,'string',{'no range'},'tooltipstring',...
+    'Select a range','position',[xNext,yNext,w_lst,h_lst],'fontunits',...
+    'pixels','fontsize',fntS,'callback',{@listbox_ranges_Callback,h_fig},...
+    'enable','off');
+
+yNext = yNext - mg - h_but;
+
+h.tm.pushbutton_dismissRange = uicontrol('style','pushbutton','parent',...
+    h.tm.uipanel_range,'string','Dismiss subgroup','tooltipstring',...
+    'Delete selected subgroup','position',[xNext,yNext,w_lst,h_but],...
+    'fontunits','pixels','fontsize',fntS,'callback',...
+    {@pushbutton_dismissRange_Callback,h_fig},'enable','off');
+
+yNext = yNext - mg_big - h_edit;
+
+h.tm.text_tag = uicontrol('style','text','parent',h.tm.uipanel_range,...
+    'string','Subgroup tags:','position',...
+    [xNext,yNext,w_pan_slct-2*mg,h_txt],'fontunits','pixels','fontsize',...
+    fntS,'horizontalalignment','left','fontweight','bold','enable','off');
+
+yNext = yNext - mg - h_but;
+
+h.tm.pushbutton_addTag2pop = uicontrol('style','pushbutton', ...
+    'Parent',h.tm.uipanel_range,'units','pixel','position', ...
+    [xNext yNext w_edit h_but],'string','Tag','callback', ...
+    {@pushbutton_addTag2pop_Callback,h_fig},'enable','off');
+
+xNext = xNext + w_edit + mg;
+
+str_pop = colorTagNames(h_fig);
+h.tm.popupmenu_defTagPop = uicontrol('style','popup','parent',...
+    h.tm.uipanel_range,'units','pixel','enable','off','position',...
+    [xNext yNext w_pan_slct-3*mg-w_edit h_pop],'string',str_pop,'value',1);
+
+xNext = mg;
+yNext = yNext - mg - h_lst;
+
+str_lst = {'no tag'};
+h.tm.listbox_popTag = uicontrol('style','listbox','parent',...
+    h.tm.uipanel_range,'units','pixel','enable','off','position',...
+    [xNext yNext w_pan_slct-2*mg h_lst],'string',str_lst);
+
+yNext = yNext - mg - h_but;
+
+h.tm.pushbutton_remPopTag = uicontrol('style','pushbutton','parent',...
+    h.tm.uipanel_range,'units','pixel','enable','off','position',...
+    [xNext yNext w_pan_slct-2*mg h_but],'string','Untag','callback',...
+    {@pushbutton_remPopTag_Callback,h_fig});
+
+h.tm.pushbutton_applyTag = uicontrol('style','pushbutton','parent',...
+    h.tm.uipanel_range,'units','pixel','enable','off','position',...
+    [xNext mg w_pan_slct-2*mg yNext-2*mg],'string',...
+    'APPLY TAG TO MOLECULES','callback',...
+    {@pushbutton_applyTag_Callback,h_fig},'fontweight','bold');
 
     
-%% - save and finalize figure
+%% save and finalize figure
     
 % save controls
 guidata(h_fig, h);
@@ -1215,6 +1434,9 @@ set(h.tm.pushbutton_reduce, 'UserData', dat);
 
 % make figure visible
 set(h.tm.figure_traceMngr, 'Visible', 'on');
+
+% set jet colormap
+colormap(h.tm.figure_traceMngr,'jet');
 
 % switch to default tool interface
 switchPan_TM(h.tm.togglebutton_overview,[],h_fig);
@@ -1333,7 +1555,7 @@ for i = nb_mol_disp:-1:1
 
     y_next = y_next + h_but + mg;
 
-    str_lst = colorTagLists(h_fig,i);
+    str_lst = colorTagLists_OV(h_fig,i);
 
     h.tm.listbox_molLabel(i) = uicontrol('Style', 'listbox', ...
         'Parent', h.tm.uipanel_overview, 'Units', 'pixel', ...
@@ -1418,7 +1640,7 @@ guidata(h_fig, h);
 end
 
 
-%% update GUI
+%% update main GUI
 
 function switchPan_TM(obj,evd,h_fig)
 % Render the selected tool visible and other tools invisible
@@ -1459,9 +1681,7 @@ end
 end
 
 
-%% plots
-
-%% - plots in "Overview"
+%% plots in tool "Overview"
 
 function plotDataTm(h_fig)
 
@@ -1672,8 +1892,14 @@ if plot2 <= nChan*nExc+nFRET+nS
 else  % draw FRET-S histogram
     cla(h.tm.axes_ovrAll_2);
     %lim = [-0.2 1.2; -0.2,1.2];
-    imagesc(dat1.lim{plot2}(1,:),dat1.lim{plot2}(1,:),dat2.hist{plot2}, 'Parent', h.tm.axes_ovrAll_2);
-    set(h.tm.axes_ovrAll_2,'CLim',[min(min(dat2.hist{plot2})) max(max(dat2.hist{plot2}))]);
+    imagesc(dat1.lim{plot2}(1,:),dat1.lim{plot2}(2,:),dat2.hist{plot2},...
+        'Parent', h.tm.axes_ovrAll_2);
+    if sum(sum(dat2.hist{plot2}))
+        set(h.tm.axes_ovrAll_2,'CLim',[min(min(dat2.hist{plot2})) ...
+            max(max(dat2.hist{plot2}))]);
+    else
+        set(h.tm.axes_ovrAll_2,'CLim',[0 1]);
+    end
 
     xlabel(h.tm.axes_ovrAll_2, dat2.xlabel{plot2});
     ylabel(h.tm.axes_ovrAll_2, dat2.ylabel{plot2});
@@ -1685,12 +1911,25 @@ end
 % display histogram parameters
 set(h.tm.edit_xlim_low,'string',num2str(dat1.lim{plot2}(1,1)));
 set(h.tm.edit_xlim_up,'string',num2str(dat1.lim{plot2}(1,2)));
-set(h.tm.edit_nbiv,'string',num2str(dat1.niv(plot2,1)));
+set(h.tm.edit_xnbiv,'string',num2str(dat1.niv(plot2,1)));
+if plot2 > nChan*nExc+nFRET+nS
+    set(h.tm.edit_ylim_low,'string',num2str(dat1.lim{plot2}(2,1)),'enable',...
+        'on');
+    set(h.tm.edit_ylim_up,'string',num2str(dat1.lim{plot2}(2,2)),'enable',...
+        'on');
+    set(h.tm.edit_ynbiv,'string',num2str(dat1.niv(plot2,2)),'enable','on');
+    set(h.tm.text4,'enable','on');
+else
+    set(h.tm.edit_ylim_low,'string','','enable','off');
+    set(h.tm.edit_ylim_up,'string','','enable','off');
+    set(h.tm.edit_ynbiv,'string','','enable','off');
+    set(h.tm.text4,'enable','off');
+end
 
 end
 
 
-%% - plots in "Auto sorting"
+%% plots in tool "Auto sorting"
 
 function plotData_autoSort(h_fig)
 
@@ -1738,6 +1977,18 @@ if ind<=(nChan*nExc+nFRET+nS) % 1D histograms
     xlim(h.tm.axes_histSort, [iv(1),iv(end)]);
     ylim(h.tm.axes_histSort, 'auto');
     
+    % plot range
+    yaxis = get(h.tm.axes_histSort,'ylim');
+    xlow = str2num(get(h.tm.edit_xrangeLow,'string'));
+    xup = str2num(get(h.tm.edit_xrangeUp,'string'));
+    set(h.tm.axes_histSort,'nextplot','add');
+    xdata = [iv(1)-1,xlow,xlow,xup,xup,iv(end)+1];
+    ydata = [yaxis(2)+1,yaxis(2)+1,-1,-1,yaxis(2)+1,yaxis(2)+1];
+    area(xdata,ydata,'edgecolor',[0.5,0.5,0.5],'facecolor',[0.5,0.5,0.5],...
+        'facealpha',0.5,'linewidth',2);
+    set(h.tm.axes_histSort,'nextplot','replacechildren');
+    set(h.tm.axes_histSort,'ylim',[0,yaxis(end)]);
+    
 else % E-S histograms
     
     if j==1 % original data
@@ -1757,8 +2008,30 @@ else % E-S histograms
         ivy = dat3.iv{ind,j-1}{2};
     end
        
-    imagesc([ivy(1),ivy(end)],[ivx(1),ivx(end)],P2D,'parent',...
+    imagesc([ivx(1),ivx(end)],[ivy(1),ivy(end)],P2D,'parent',...
         h.tm.axes_histSort);
+    
+    % plot range
+    set(h.tm.axes_histSort,'nextplot','add');
+    xlow = str2num(get(h.tm.edit_xrangeLow,'string'));
+    xup = str2num(get(h.tm.edit_xrangeUp,'string'));
+    ylow = str2num(get(h.tm.edit_yrangeLow,'string'));
+    yup = str2num(get(h.tm.edit_yrangeUp,'string'));
+    pos = [xlow,ylow,(xup-xlow),(yup-ylow)];
+    pos(pos==Inf) = max([ivx(end) ivy(end)]);
+    pos(pos==-Inf) = min([ivx(1) ivy(1)]);
+    area(h.tm.axes_histSort,[ivx(1),xlow],[ivy(end),ivy(end)],'facecolor',[0.5,0.5,0.5],...
+        'facealpha',0.5,'linestyle','none','basevalue',ivy(1));
+    area(h.tm.axes_histSort,[xlow,xup],[ylow,ylow],'facecolor',[0.5,0.5,0.5],'facealpha',0.5,...
+        'linestyle','none','basevalue',ivy(1));
+    area(h.tm.axes_histSort,[xup,ivx(end)],[ivy(end),ivy(end)],'facecolor',[0.5,0.5,0.5],...
+        'facealpha',0.5,'linestyle','none','basevalue',ivy(1));
+    patch(h.tm.axes_histSort,'xdata',[xlow,xup,xup,xlow],'ydata',...
+        [ivy(end),ivy(end),yup,yup],'facecolor',[0.5,0.5,0.5],'facealpha',...
+        0.5,'linestyle','none');
+    rectangle(h.tm.axes_histSort,'position',pos,'edgecolor',[0.5,0.5,0.5],...
+        'linewidth',2);
+    set(h.tm.axes_histSort,'nextplot','replacechildren');
     
     if sum(sum(P2D))
         set(h.tm.axes_histSort,'CLim',[0,max(max(P2D))]);
@@ -1785,19 +2058,23 @@ set(h.tm.edit_xlow,'string',num2str(lim(1,1)));
 set(h.tm.edit_xup,'string',num2str(lim(1,2)));
 set(h.tm.edit_xniv,'string',num2str(niv(1)));
 if ind>(nChan*nExc+nFRET+nS)
-    set(h.tm.edit_ylow,'enable','on','string',num2str(lim(2,1)));
-    set(h.tm.edit_yup,'enable','on','string',num2str(lim(2,2)));
-    set(h.tm.edit_yniv,'enable','on','string',num2str(niv(2)));
+    set(h.tm.edit_ylow,'string',num2str(lim(2,1)));
+    set(h.tm.edit_yup,'string',num2str(lim(2,2)));
+    set(h.tm.edit_yniv,'string',num2str(niv(2)));
+    set([h.tm.text_ylow,h.tm.edit_ylow,h.tm.text_yup,h.tm.edit_yup,...
+        h.tm.text_yniv,h.tm.edit_yniv],'enable','on');
 else
-    set(h.tm.edit_ylow,'enable','off','string','');
-    set(h.tm.edit_yup,'enable','off','string','');
-    set(h.tm.edit_yniv,'enable','off','string','');
+    set([h.tm.edit_ylow,h.tm.edit_yup,h.tm.edit_yniv],'string','');
+    set([h.tm.text_ylow,h.tm.edit_ylow,h.tm.text_yup,h.tm.edit_yup,...
+        h.tm.text_yniv,h.tm.edit_yniv],'enable','off');
 end
 
 end
 
 
-function update_popups(h_fig, nb_mol_disp)
+%% popup & list strings for tool "Overview"
+
+function update_taglist_OV(h_fig, nb_mol_disp)
 
 % Last update by MH, 24.4.2019
 % >> add colors to tag lists
@@ -1819,7 +2096,7 @@ for i = nb_mol_disp:-1:1
     set(h.tm.popup_molNb(i), 'String', str_lst, 'Value', currTag);
     
     mol = str2num(get(h.tm.checkbox_molNb(i), 'String'));
-    str_lst = colorTagLists(h_fig,mol);
+    str_lst = colorTagLists_OV(h_fig,mol);
     nTag = numel(str_lst);
     currTag = get(h.tm.listbox_molLabel(i),'value');
     if currTag>nTag
@@ -1830,11 +2107,9 @@ for i = nb_mol_disp:-1:1
 end
 end
 
-
-%% popup and list strings
-
-function str_lst = colorTagLists(h_fig,i)
-% Defines colored strings for listboxes listing tag names
+function str_lst = colorTagLists_OV(h_fig,i)
+% Defines colored strings for listboxes listing tag names in tool
+% "Overview"
 
 h = guidata(h_fig);
 molTag = h.tm.molTag;
@@ -2037,10 +2312,62 @@ str_out{2} = [str_plot(1:(nChan*nExc+nFRET+nS)) ...
 
 end
 
+%% popup & list strings for tool "Auto sorting"
 
-%% callbacks
+function update_taglist_AS(h_fig)
 
-%% - callbaks for panel overall plot
+h = guidata(h_fig);
+
+str_lst = colorTagNames(h_fig);
+nTag = numel(str_lst);
+currTag = get(h.tm.popupmenu_defTagPop,'value');
+if currTag>nTag
+    currTag = nTag;
+end
+set(h.tm.popupmenu_defTagPop, 'String', str_lst, 'Value', currTag);
+
+range = get(h.tm.listbox_ranges,'value');
+str_lst = colorTagLists_AS(h_fig,range);
+nTag = numel(str_lst);
+currTag = get(h.tm.listbox_popTag,'value');
+if currTag>nTag
+    currTag = nTag;
+end
+set(h.tm.listbox_popTag,'string',str_lst,'value',currTag);
+
+
+end
+
+function str_lst = colorTagLists_AS(h_fig,i)
+% Defines colored strings for listboxes listing tag names in tool
+% "Auto sorting"
+
+h = guidata(h_fig);
+dat3 = get(h.tm.axes_histSort,'userdata');
+rangeTag = dat3.rangeTags;
+tagNames = h.tm.molTagNames;
+tagClr = h.tm.molTagClr;
+nTag = numel(tagNames);
+
+if size(rangeTag,1)<i
+    str_lst = {'no tag'};
+    return;
+end
+
+str_lst = {};
+for t = 1:nTag
+    if rangeTag(i,t)
+        str_lst = [str_lst cat(2,'<html><span bgcolor=',tagClr{t},'>',...
+            '<font color="white">',tagNames{t},'</font></body></html>')];
+    end
+end
+if ~sum(rangeTag(i,:))
+    str_lst = {'no tag'};
+end
+end
+
+
+%% callbaks for panel "Overall plot"
 
 function pushbutton_update_Callback(obj, evd, h_fig)
 
@@ -2066,7 +2393,7 @@ function pushbutton_update_Callback(obj, evd, h_fig)
     
     set(h.tm.edit_xlim_low, 'String', dat1.lim{plot2}(1));
     set(h.tm.edit_xlim_up, 'String', dat1.lim{plot2}(2));
-    set(h.tm.edit_nbiv, 'String', dat1.niv(plot2));
+    set(h.tm.edit_xnbiv, 'String', dat1.niv(plot2));
     
 end
 
@@ -2089,12 +2416,12 @@ function popupmenu_axes_Callback(obj, evd, h_fig)
             dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
             set(h.tm.edit_xlim_low, 'String', dat1.lim{plot2}(1));
             set(h.tm.edit_xlim_up, 'String', dat1.lim{plot2}(2));
-            set(h.tm.edit_nbiv, 'String', dat1.niv(plot2));
+            set(h.tm.edit_xnbiv, 'String', dat1.niv(plot2));
         else % double check RB 2018-01-04
             dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
             set(h.tm.edit_xlim_low, 'String',  dat1.lim{plot2}(1,1));
             set(h.tm.edit_xlim_up, 'String', dat1.lim{plot2}(1,2));
-            set(h.tm.edit_nbiv, 'String', dat1.niv(plot2));
+            set(h.tm.edit_xnbiv, 'String', dat1.niv(plot2));
         end
     end
     
@@ -2141,7 +2468,7 @@ end
 end
 
 
-function edit_xlim_low_Callback(obj, evd, h_fig)
+function edit_lim_low_Callback(obj,evd,h_fig,row)
 
 % Last update: by RB, 4.1.2018
 % >> adapted for FRET-S-histograms
@@ -2164,19 +2491,19 @@ dat2 = get(h.tm.axes_ovrAll_2, 'UserData');
 plot2 = get(h.tm.popupmenu_axes2, 'Value');
 xlim_low = str2num(get(obj,'String'));
 
-if xlim_low >= dat1.lim{plot2}(2)
+if xlim_low >= dat1.lim{plot2}(row,2)
     setContPan('Lower bound must be lower than higher bound.','error',...
         h_fig);
     return;
 end
 
+dat1.lim{plot2}(row,1) = xlim_low;
+
 if plot2 <= nChan*nExc+nFRET+nS
-    dat1.lim{plot2}(1) = xlim_low;
     [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(dat1.trace{plot2},...
         dat1.lim{plot2},dat1.niv(plot2,1));
     
 else%% double check RB 2018-01-04
-    dat1.lim{plot2}([1,2],1) = xlim_low;
     ES = [dat1.trace{plot2-nFRET-nS},dat1.trace{plot2-nS}];
     [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(ES,...
         dat1.lim{plot2},dat1.niv(plot2,[1,2]));
@@ -2188,7 +2515,7 @@ plotData_overall(h_fig);
     
 end
 
-function edit_xlim_up_Callback(obj, evd, h_fig)
+function edit_lim_up_Callback(obj,evd,h_fig,row)
 
 % Last update: by RB, 4.1.2018
 % >> adapted for FRET-S-histograms
@@ -2209,21 +2536,21 @@ nS = size(S,1);
 dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
 dat2 = get(h.tm.axes_ovrAll_2, 'UserData');
 plot2 = get(h.tm.popupmenu_axes2, 'Value');
-xlim_up = str2num(get(obj,'String'));
+lim_up = str2num(get(obj,'String'));
 
-if xlim_up <= dat1.lim{plot2}(1)
+if lim_up <= dat1.lim{plot2}(row,1)
     setContPan('Higher bound must be higher than lower bound.','error',...
         h_fig);
     return;
 end
 
+dat1.lim{plot2}(row,2) = lim_up;
+
 if plot2 <= nChan*nExc+nFRET+nS
-    dat1.lim{plot2}(2) = xlim_up;
     [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(dat1.trace{plot2},...
         dat1.lim{plot2},dat1.niv(plot2,1));
     
 else%% double check RB 2018-01-04
-    dat1.lim{plot2}([1,2],2) = xlim_up;
     ES = [dat1.trace{plot2-nFRET-nS},dat1.trace{plot2-nS}];
     [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(ES,...
         dat1.lim{plot2},dat1.niv(plot2,[1,2]));
@@ -2236,7 +2563,7 @@ plotData_overall(h_fig);
 end
 
 
-function edit_nbiv_Callback(obj, evd, h_fig)
+function edit_nbiv_Callback(obj,evd,h_fig,col)
 
 % Last update: by RB 5.1.2018
 % >> adapted for FRET-S-histograms
@@ -2265,13 +2592,13 @@ if ~isnumeric(nbiv) || nbiv < 1
     return;
 end
 
+dat1.niv(plot2,col) = nbiv;
+
 if plot2 <= nChan*nExc+nFRET+nS
-    dat1.niv(plot2,1) = nbiv;
     [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(dat1.trace{plot2},...
         dat1.lim{plot2},dat1.niv(plot2,1));
     
 else%% double check RB 2018-01-05
-    dat1.niv(plot2,:) = nbiv;
     ES = [dat1.trace{plot2-nFRET-nS},dat1.trace{plot2-nS}];
     [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(ES,dat1.lim{plot2},...
         dat1.niv(plot2,:));
@@ -2286,7 +2613,7 @@ plotData_overall(h_fig);
 end
 
 
-%% - panel molecule selection
+%% callbacks for panel "Molecule selection"
 
 function checkbox_molNb_Callback(obj, evd, h_fig)
 
@@ -2358,7 +2685,7 @@ guidata(h_fig,h);
 
 % update molecule tag lists
 nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
-update_popups(h_fig,nb_mol_disp)
+update_taglist_OV(h_fig,nb_mol_disp);
 
 end
 
@@ -2387,7 +2714,7 @@ guidata(h_fig,h);
 
 % update molecule tag lists
 nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
-update_popups(h_fig,nb_mol_disp)
+update_taglist_OV(h_fig,nb_mol_disp)
 end
 
 
@@ -2506,7 +2833,7 @@ function slider_Callback(obj, evd, h_fig)
 %         end
     end
    
-    update_popups(h_fig,nb_mol_disp);
+    update_taglist_OV(h_fig,nb_mol_disp);
     plotDataTm(h_fig);
 
 end
@@ -2708,6 +3035,11 @@ function edit_addMolTag_Callback(obj, evd, h_fig)
         % adjust molecule tag structure
         h.tm.molTag = [h.tm.molTag, false(size(h.tm.molTag,1),1)];
         
+        % adjust range tag structure
+        dat3 = get(h.tm.axes_histSort,'userdata');
+        dat3.rangeTags = [dat3.rangeTags false(size(dat3.rangeTags,1),1)];
+        set(h.tm.axes_histSort,'userdata',dat3);
+        
         % added by MH, 24.4.2019
         set(obj,'string','define a new tag');
         
@@ -2716,7 +3048,9 @@ function edit_addMolTag_Callback(obj, evd, h_fig)
         set(h.tm.popup_molTag,'String',str_lst,'value',numel(str_lst));
         nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
         guidata(h_fig, h);
-        update_popups(h_fig, nb_mol_disp);
+        
+        update_taglist_OV(h_fig, nb_mol_disp);
+        update_taglist_AS(h_fig);
         
         % added by MH, 24.4.2019
         % update color edit field with new current tag
@@ -2794,7 +3128,9 @@ set(h.tm.popup_molTag,'String',str_lst);
 
 % update color in molecule tag listboxes and popups
 n_mol_disp = str2num(get(h.tm.edit_nbTotMol,'string'));
-update_popups(h_fig,n_mol_disp);
+
+update_taglist_OV(h_fig,n_mol_disp);
+update_taglist_AS(h_fig);
 
 % update color in string of selection popupmenu
 str_pop = getStrPop_select(h_fig);
@@ -2845,6 +3181,12 @@ function pushbutton_deleteMolTag_Callback(obj, evd, h_fig)
     h.tm.molTag(:,selectMolTag) = [];
     h.tm.molTagClr = [h.tm.molTagClr h.tm.molTagClr(selectMolTag)];
     h.tm.molTagClr(selectMolTag) = [];
+    % added by MH, 26.4.2019
+    dat3 = get(h.tm.axes_histSort,'userdata');
+    if size(dat3.rangeTags,2)>=selectMolTag
+        dat3.rangeTags(:,selectMolTag) = [];
+        set(h.tm.axes_histSort,'userdata',dat3);
+    end
     
     guidata(h_fig, h);
     str_lst = colorTagNames(h_fig);
@@ -2852,7 +3194,9 @@ function pushbutton_deleteMolTag_Callback(obj, evd, h_fig)
     set(h.tm.popup_molTag, 'String', str_lst);
     nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
     guidata(h_fig, h);
-    update_popups(h_fig, nb_mol_disp);
+    
+    update_taglist_OV(h_fig, nb_mol_disp);
+    update_taglist_AS(h_fig);
     
     % added by MH, 24.4.2019
     % update color edit field with new current tag
@@ -2871,7 +3215,7 @@ function pushbutton_deleteMolTag_Callback(obj, evd, h_fig)
 end
 
 
-%% - callbacks for panel auto sorting
+%% callbacks for panel "Auto sorting"
 
 
 function popupmenu_selectData_Callback(obj, evd, h_fig)
@@ -2884,6 +3228,7 @@ nExc = p.proj{proj}.nb_excitations;
 nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
 
+ind = get(h.tm.popupmenu_selectData,'Value');
 j = get(h.tm.popupmenu_selectCalc,'value');
 
 % control the presence of discretized data
@@ -2891,8 +3236,6 @@ if j==6
     h = guidata(h_fig);
     p = h.param.ttPr;
     proj = p.curr_proj;
-    
-    ind = get(h.tm.popupmenu_selectData,'Value');
     
     str_axes = 'bottom';
     
@@ -2935,14 +3278,18 @@ if j==6
     isdiscr = ~all(isnan(sum(sum(discr,3),2)));
     if ~isdiscr
         msgbox({cat(2,'This method requires the individual time-traces ',...
-            'in ',str_axes,' axes to be discretized.'),cat(2,'Please ',...
+            'in ',str_axes,' axes to be discretized.'),'',cat(2,'Please ',...
             'return to Trace processing and infer the corresponding state',...
             ' trajectories.')},'Missing states trajectories');
+        set(obj,'value',get(obj,'userdata'));
             return;
     end
 end
 
+set(obj,'userdata',get(obj,'value'));
+
 plotData_autoSort(h_fig);
+ud_panRanges(h_fig);
 
 end
 
@@ -3336,6 +3683,512 @@ plotData_autoSort(h_fig);
 end
 
 
+%% callbacks for panel "Ranges"
+
+function ud_panRanges(h_fig)
+
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+nExc = p.proj{proj}.nb_excitations;
+nFRET = size(p.proj{proj}.FRET,1);
+nS = numel(p.proj{proj}.S);
+
+dat3 = get(h.tm.axes_histSort,'userdata');
+data = get(h.tm.popupmenu_selectData,'value');
+calc = get(h.tm.popupmenu_selectCalc,'value');
+
+prm = dat3.range;
+if isempty(prm)
+    R = 0;
+else
+    R = size(prm,1);
+end
+
+if data>(nChan*nExc+nFRET+nS) % 2D histogram
+    set([h.tm.text_yrangeLow,h.tm.edit_yrangeLow,h.tm.text_yrangeUp,...
+        h.tm.edit_yrangeUp],'enable','on');
+else
+    set([h.tm.text_yrangeLow,h.tm.edit_yrangeLow,h.tm.text_yrangeUp,...
+        h.tm.edit_yrangeUp],'enable','off');
+end
+
+if calc==1 || calc==6 % trajectories
+    set([h.tm.text_conf1,h.tm.text_conf2,h.tm.popupmenu_units,...
+        h.tm.popupmenu_cond,h.tm.edit_conf1,h.tm.text_and,...
+        h.tm.edit_conf2],'enable','on');
+
+    cond = get(h.tm.popupmenu_cond,'value');
+    if cond==3 % between
+        set([h.tm.text_and,h.tm.edit_conf2],'enable','on');
+    else
+        set([h.tm.text_and,h.tm.edit_conf2],'enable','off');
+    end
+
+else
+    set([h.tm.text_conf1,h.tm.text_conf2,h.tm.popupmenu_units,...
+        h.tm.popupmenu_cond,h.tm.edit_conf1,h.tm.text_and,...
+        h.tm.edit_conf2],'enable','off');
+end
+
+disp('sort molecules...');
+molIncl = ud_popCalc(h_fig);
+disp('sorting complete!');
+
+nMol = sum(molIncl);
+str_mol = cat(2,'subgroup size: ',num2str(nMol),' molecule');
+if nMol>1
+    str_mol = cat(2,str_mol,'s');
+end
+set(h.tm.text_Npop,'string',str_mol);
+
+if nMol==0
+    set(h.tm.pushbutton_saveRange,'enable','off');
+
+else
+    set(h.tm.pushbutton_saveRange,'enable','on');
+end
+
+if R==0
+    set(h.tm.listbox_ranges,'string',{'no range'},'value',1);
+    
+    set([h.tm.pushbutton_dismissRange,h.tm.listbox_ranges,h.tm.text_pop,...
+        h.tm.text_tag,h.tm.pushbutton_addTag2pop,h.tm.popupmenu_defTagPop,...
+        h.tm.listbox_popTag,h.tm.pushbutton_remPopTag,...
+        h.tm.pushbutton_applyTag],'enable','off');
+
+else
+    range = get(h.tm.listbox_ranges,'value');
+    if range>R
+        range = R;
+    end
+    str_lst = cellstr(num2str((1:R)'))';
+    set(h.tm.listbox_ranges,'string',str_lst,'value',range);
+    
+    set([h.tm.pushbutton_dismissRange,h.tm.listbox_ranges,h.tm.text_pop,...
+        h.tm.text_tag,h.tm.pushbutton_addTag2pop,h.tm.popupmenu_defTagPop,...
+        h.tm.listbox_popTag,h.tm.pushbutton_remPopTag,...
+        h.tm.pushbutton_applyTag],'enable','on');
+    
+    str_lst = colorTagLists_AS(h_fig,range);
+    currTag = get(h.tm.listbox_popTag,'value');
+    if currTag>numel(str_lst)
+        currTag = numel(str_lst);
+    end
+    set(h.tm.listbox_popTag,'string',str_lst,'value',currTag);
+end
+   
+end
+
+
+function molIncl = ud_popCalc(h_fig)
+
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+exc = p.proj{proj}.excitations;
+nExc = numel(exc);
+FRET = p.proj{proj}.FRET;
+nFRET = size(FRET,1);
+S = p.proj{proj}.S;
+nS = numel(S);
+incl =  p.proj{proj}.bool_intensities(:,h.tm.molValid);
+
+% get stored data
+dat1 = get(h.tm.axes_ovrAll_1,'userdata');
+dat3 = get(h.tm.axes_histSort,'userdata');
+
+% get method settings
+data = get(h.tm.popupmenu_selectData,'value');
+j = get(h.tm.popupmenu_selectCalc,'value');
+
+prm = [str2num(get(h.tm.edit_xrangeLow,'string')), ...
+    str2num(get(h.tm.edit_xrangeUp,'string'));...
+    str2num(get(h.tm.edit_yrangeLow,'string')), ...
+    str2num(get(h.tm.edit_yrangeUp,'string'));...
+    get(h.tm.popupmenu_units,'value')...
+    get(h.tm.popupmenu_cond,'value');...
+    str2num(get(h.tm.edit_conf1,'string')), ...
+    str2num(get(h.tm.edit_conf2,'string'))];
+
+if j==1 % original time traces
+    if data<=(nChan*nExc+nFRET+nS) % 1D
+        trace = dat1.trace{data};
+        
+    else % 2D
+        ind = data-nChan*nExc-nFRET-nS;
+        data_e = ceil(ind/nS)+nChan*nExc;
+        data_s = ind-fix(ind/nS)*nS+nChan*nExc+nFRET;
+        trace = [dat1.trace{data_e} dat1.trace{data_s}];
+    end
+    molIncl = molsWithConf(trace,'trace',prm,incl);
+    
+elseif j==6 % state trajectories
+    if data<=(nChan*nExc+nFRET+nS) % 1D
+        trace = dat3.val{data,j-1};
+    else % 2D
+        ind = data-nChan*nExc-nFRET-nS;
+        data_e = ceil(ind/nS)+nChan*nExc;
+        data_s = ind-fix(ind/nS)*nS+nChan*nExc+nFRET;
+        trace = [dat3.val{data_e,j-1} dat3.val{data_s,j-1}];
+    end
+    molIncl = molsWithConf(trace,'trace',prm,incl);
+    
+else % calculated values
+    if data<=(nChan*nExc+nFRET+nS) % 1D
+        values = dat3.val{data,j-1};
+    else
+        ind = data-nChan*nExc-nFRET-nS;
+        data_e = ceil(ind/nS) + nChan*nExc;
+        data_s = ind - fix(ind/nS)*nS + nChan*nExc+nFRET;
+        values = [dat3.val{data_e,j-1} dat3.val{data_s,j-1}] ;
+    end
+    molIncl = molsWithConf(values,'value',prm);
+end
+
+end
+
+
+function molIncl = molsWithConf(dat,dat_type,prm,varargin)
+
+units = prm(3,1);
+meth = prm(3,2);
+
+switch dat_type
+    
+    case 'trace'
+        incl = varargin{1};
+        M = size(incl,2);
+        molIncl = false(1,M);
+        
+        id_end = 0;
+        for m = 1:M
+            id_start = id_end + 1;
+            id_end = id_start + sum(incl(:,m)) - 1;
+            N0 = numel(id_start:id_end);
+            
+            if size(dat,2)==1 % 1D
+                N = sum(dat(id_start:id_end,1)>=prm(1,1) & ...
+                    dat(id_start:id_end,1)<=prm(1,2));
+            else % 2D
+                N = sum(dat(id_start:id_end,1)>=prm(1,1) & ...
+                    dat(id_start:id_end,1)<=prm(1,2) & ...
+                    dat(id_start:id_end,2)>=prm(2,1) & ...
+                    dat(id_start:id_end,2)<=prm(2,2));
+            end
+                
+            switch meth
+                case 1 % at least
+                    if units==1 && 100*(N/N0)>=prm(4,1) % percent
+                        molIncl(m) = true;
+                    elseif units==2 && N>=prm(4,1) % absolute count
+                        molIncl(m) = true;
+                    end
+
+                case 2 % at most
+                    if units==1 && 100*(N/N0)<=prm(4,1) % percent
+                        molIncl(m) = true;
+                    elseif units==2 && N<=prm(4,1) % absolute count
+                        molIncl(m) = true;
+                    end
+
+                case 3 % between
+                    if units==1 && 100*(N/N0)>=prm(4,1) && ...
+                            100*(N/N0)<=prm(4,2) % percent
+                        molIncl(m) = true;
+                    elseif units==2 && N>=prm(4,1) && ...
+                            N<=prm(4,2) % absolute count
+                        molIncl(m) = true;
+                    end
+            end
+        end
+        
+    case 'value'
+        if size(dat,2)==1 % 1D
+            molIncl = dat'>=prm(1,1) & dat'<=prm(1,2);
+        else % 2D
+            molIncl = dat(:,1)'>=prm(1,1) & dat(:,1)'<=prm(1,2) & ...
+                dat(:,2)'>=prm(2,1) & dat(:,2)'<=prm(2,2);
+        end
+        
+end
+
+end
+
+
+function pushbutton_saveRange_Callback(obj,evd,h_fig)
+
+h = guidata(h_fig);
+dat3 = get(h.tm.axes_histSort,'userdata');
+data = get(h.tm.popupmenu_selectData,'value');
+calc = get(h.tm.popupmenu_selectCalc,'value');
+nTag = numel(h.tm.molTagNames);
+
+dat3.range = [dat3.range;cell(1,2)];
+dat3.range{end,1} = [str2num(get(h.tm.edit_xrangeLow,'string')), ...
+    str2num(get(h.tm.edit_xrangeUp,'string'));...
+    str2num(get(h.tm.edit_yrangeLow,'string')), ...
+    str2num(get(h.tm.edit_yrangeUp,'string'));...
+    get(h.tm.popupmenu_units,'value')...
+    get(h.tm.popupmenu_cond,'value');...
+    str2num(get(h.tm.edit_conf1,'string')), ...
+    str2num(get(h.tm.edit_conf2,'string'))];
+dat3.range{end,2} = [data,calc];
+dat3.rangeTags = [dat3.rangeTags;false(1,nTag)];
+
+set(h.tm.axes_histSort,'userdata',dat3);
+
+R = size(dat3.range,1);
+set(h.tm.listbox_ranges,'string',cellstr(num2str((1:R)'))','value',R);
+ud_panRanges(h_fig);
+
+end
+
+
+function pushbutton_dismissRange_Callback(obj,evd,h_fig)
+
+h = guidata(h_fig);
+
+range = get(h.tm.listbox_ranges,'value');
+str_range = get(h.tm.listbox_ranges,'string');
+if strcmp(str_range{range},'no range')
+    return;
+end
+
+dat3 = get(h.tm.axes_histSort,'userdata');
+
+dat3.range(range,:) = [];
+dat3.rangeTags(range,:) = [];
+
+set(h.tm.axes_histSort,'userdata',dat3);
+
+ud_panRanges(h_fig);
+plotData_autoSort(h_fig);
+
+end
+
+
+function listbox_ranges_Callback(obj,evd,h_fig)
+
+h = guidata(h_fig);
+
+range = get(obj,'value');
+str = get(obj,'string');
+if strcmp(str{range},'no range')
+    return;
+end
+
+dat3 = get(h.tm.axes_histSort,'userdata');
+prm = dat3.range(range,:);
+
+set(h.tm.edit_xrangeLow,'string',num2str(prm{1}(1,1)));
+set(h.tm.edit_xrangeUp,'string',num2str(prm{1}(1,2)));
+set(h.tm.edit_yrangeLow,'string',num2str(prm{1}(2,1)));
+set(h.tm.edit_yrangeUp,'string',num2str(prm{1}(2,2)));
+set(h.tm.popupmenu_units,'value',prm{1}(3,1));
+set(h.tm.popupmenu_cond,'value',prm{1}(3,2));
+set(h.tm.edit_conf1,'string',num2str(prm{1}(4,1)));
+set(h.tm.edit_conf2,'string',num2str(prm{1}(4,2)));
+
+set(h.tm.popupmenu_selectData,'value',prm{2}(1));
+set(h.tm.popupmenu_selectCalc,'value',prm{2}(2));
+
+popupmenu_selectData_Callback(h.tm.popupmenu_selectData,[],h_fig);
+
+end
+
+
+function edit_xrangeLow_Callback(obj,evd,h_fig)
+h = guidata(h_fig);
+lowval = str2num(get(obj,'string'));
+upval = str2num(get(h.tm.edit_xrangeUp,'string'));
+
+if lowval>upval
+    lowval = upval;
+    disp('The lower bound can not be higher than the upper bound.');
+end
+
+set(obj,'string',num2str(lowval));
+
+ud_panRanges(h_fig);
+plotData_autoSort(h_fig);
+end
+
+
+function edit_xrangeUp_Callback(obj,evd,h_fig)
+h = guidata(h_fig);
+upval = str2num(get(obj,'string'));
+lowval = str2num(get(h.tm.edit_xrangeLow,'string'));
+
+if upval<lowval
+    upval = lowval;
+    disp('The upper bound can not be smaller than the lower bound.');
+end
+
+set(obj,'string',num2str(upval));
+
+ud_panRanges(h_fig);
+plotData_autoSort(h_fig);
+end
+
+
+function edit_yrangeLow_Callback(obj,evd,h_fig)
+h = guidata(h_fig);
+lowval = str2num(get(obj,'string'));
+upval = str2num(get(h.tm.edit_yrangeUp,'string'));
+
+if lowval>upval
+    lowval = upval;
+    disp('The lower bound can not be higher than the upper bound.');
+end
+
+set(obj,'string',num2str(lowval));
+
+ud_panRanges(h_fig);
+plotData_autoSort(h_fig);
+end
+
+
+function edit_yrangeUp_Callback(obj,evd,h_fig)
+h = guidata(h_fig);
+upval = str2num(get(obj,'string'));
+lowval = str2num(get(h.tm.edit_yrangeLow,'string'));
+
+if upval<lowval
+    upval = lowval;
+    disp('The upper bound can not be smaller than the lower bound.');
+end
+
+set(obj,'string',num2str(upval));
+
+ud_panRanges(h_fig);
+plotData_autoSort(h_fig);
+end
+
+
+function popupmenu_cond_Callback(obj,evd,h_fig)
+ud_panRanges(h_fig);
+end
+
+
+function edit_conf_Callback(obj,evd,h_fig)
+h = guidata(h_fig);
+conf = str2num(get(obj,'string'));
+units = get(h.tm.popupmenu_units,'value');
+if units==1 % percentage
+    if conf>100
+        disp('warning: confidence level 1 is greater than 100%');
+    end
+    if conf>100
+        disp('warning: confidence level 2 is greater than 100%');
+    end
+end
+
+ud_panRanges(h_fig);
+end
+
+
+function popupmenu_units_Callback(obj,evd,h_fig)
+h = guidata(h_fig);
+conf1 = str2num(get(h.tm.edit_conf1,'string'));
+conf2 = str2num(get(h.tm.edit_conf2,'string'));
+units = get(obj,'value');
+if units==1 % percentage
+    if conf1>100
+        disp('warning: confidence level 1 is greater than 100%');
+    end
+    if conf2>100
+        disp('warning: confidence level 2 is greater than 100%');
+    end
+end
+
+ud_panRanges(h_fig);
+end
+
+
+function pushbutton_addTag2pop_Callback(obj,evd,h_fig)
+h = guidata(h_fig);
+range = get(h.tm.listbox_ranges,'value');
+str_range = get(h.tm.listbox_ranges,'string');
+if strcmp(str_range{range},'no range')
+    return;
+end
+
+tag = get(h.tm.popupmenu_defTagPop,'value');
+str_tag = get(h.tm.popupmenu_defTagPop,'string');
+if strcmp(str_tag{tag},'no default tag')
+    return;
+end
+
+dat3 = get(h.tm.axes_histSort,'userdata');
+dat3.rangeTags(range,tag) = true;
+set(h.tm.axes_histSort,'userdata',dat3);
+
+update_taglist_AS(h_fig);
+
+end
+
+
+function pushbutton_remPopTag_Callback(obj,evd,h_fig)
+h = guidata(h_fig);
+range = get(h.tm.listbox_ranges,'value');
+str_range = get(h.tm.listbox_ranges,'string');
+if strcmp(str_range{range},'no range')
+    return;
+end
+
+tag = get(h.tm.listbox_popTag,'value');
+str_tag = get(h.tm.listbox_popTag,'string');
+if strcmp(str_tag{tag},'no tag')
+    return;
+end
+
+dat3 = get(h.tm.axes_histSort,'userdata');
+tagid = find(dat3.rangeTags(range,:));
+dat3.rangeTags(range,tagid(tag)) = false;
+set(h.tm.axes_histSort,'userdata',dat3);
+
+update_taglist_AS(h_fig);
+
+end
+
+
+function pushbutton_applyTag_Callback(obj,evd,h_fig)
+
+choice = questdlg({cat(2,'Applying tags to moelcules belonging to this ',...
+    'subgroup not reversible automatically.'),'',...
+    'Do you wish to continue?'},'Apply molecule tag',...
+    'Yes tag molecule subgroup','Cancel','Cancel');
+
+if ~strcmp(choice,'Yes tag molecule subgroup')
+    return;
+end
+
+h = guidata(h_fig);
+
+listbox_ranges_Callback(h.tm.listbox_ranges,[],h_fig);
+h = guidata(h_fig);
+
+dat3 = get(h.tm.axes_histSort,'userdata');
+range = get(h.tm.listbox_ranges,'value');
+
+disp('sort molecules...');
+molIncl = ud_popCalc(h_fig);
+disp('sorting complete!');
+
+if ~sum(molIncl) || ~sum(dat3.rangeTags(range,:))
+    return;
+end
+
+h.tm.molTag(molIncl,~~dat3.rangeTags(range,:)) = true;
+
+guidata(h_fig,h);
+
+update_taglist_OV(h_fig,str2num(get(h.tm.edit_nbTotMol,'string')));
+
+end
 
 
 %% closerequest function
