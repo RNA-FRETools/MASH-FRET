@@ -564,274 +564,282 @@ function openMngrTool(h_fig)
 
 %% - build figure and toolbar
 
-    % get MASH figure dimensions
-    prev_u = get(h_fig, 'Units');
-    set(h_fig, 'Units', 'pixels');
-    posFig = get(h_fig, 'Position');
-    set(h_fig, 'Units', prev_u);
-    prev_u = get(0, 'Units');
-    set(0, 'Units', 'pixels');
-    pos_scr = get(0, 'ScreenSize');
-    set(0, 'Units', prev_u);
-    
-    % set TM figure dimensions
-    wFig = 900;
-    hFig = 800;
-    xFig = posFig(1) + (posFig(3) - wFig)/2;
-    yFig = min([hFig pos_scr(4)]) - hFig;
-    pos_fig = [xFig yFig wFig hFig];
-    
-    % set margins
-    mg = 10;
-    mg_big = 2*mg;
-    mg_win = 0;
-    mg_ttl = 10;
-    
-    % set font sizes
-    fntS = 10.6666666;
-    fntS_big = 12;
-    
-    % set UI control dimensions
-    h_edit = 20;
-    w_edit = 40;
-    h_pop = h_edit;
-    w_pop = 120; % RB 2018-01-03: adapt width of popupmenu for FRET-S-Histogram 
-    h_but = h_edit;
-    w_but = (w_pop-mg)/2;
-    h_but_big = 30;
-    w_but_big = 120;
-    h_txt = 14;
-    
-    % set panels dimensions
-    w_pan = wFig - 2*mg;
-    h_pan_all = mg_ttl + 3*mg + mg_big + 2*h_edit + 2*h_txt + h_but;
-    h_toolbar = h_but_big + 2*mg;
-    h_pan_sgl = hFig - mg_win - 2*mg - h_pan_all - h_toolbar;
-    h_pan_tool = hFig - h_toolbar + mg;
-    
-    % set axes dimensions
-    h_axes_all = h_pan_all - mg_ttl - 2*mg - h_edit;
-    w_axes2 = 2*mg + 3*w_edit;
-    w_axes1 = w_pan - 4*mg - w_pop - w_axes2;
-    
-    % set sliding bar dimensions
-    w_sld = 20;
-    h_sld = h_pan_sgl - 3*mg - mg_ttl - h_but;
-    
-    h = guidata(h_fig);
-    
-    h.tm.figure_traceMngr = figure('Visible', 'on', 'Units', 'pixels', ...
-        'Position', pos_fig, 'Color', [0.94 0.94 0.94], ...
-        'CloseRequestFcn', {@figure_traceMngr, h_fig}, 'NumberTitle', ...
-        'off', 'Name', ['Trace manager - ' get(h_fig, 'Name')]);
-    
-    % add debugging mode where all other windows are not deactivated
-    % added by FS, 24.4.2018
-    debugMode = 1;
-    if ~debugMode
-        set(h.tm.figure_traceMngr, 'WindowStyle', 'modal')
-    end
-    
-    x_0 = mg;
-    y_0 = hFig - mg_win;
+% defaults
+defNperPage = 3; % molecules/ page
+wFig = 900; hFig = 800; % figure dimensions
+mg = 10; % margin
+fntS = 10.6666666; % font size
+fntS_big = 12; % font size
+h_edit = 20; w_edit = 40; % edit field dimensions
+h_but_big = 30; w_but_big = 120; % large pushbutton dimension
+w_sld = 20; % slider bar x-dimension
+h_txt = 14; % text y-dimension
+w_pop = 120; % RB 2018-01-03: adapt width of popupmenu for FRET-S-Histogram 
+w_txt1 = 65; % medium text x-diemension
+w_txt2 = 105; % large text x-diemension
+% pushbutton cdata
+arrow_up = [0.92 0.92 0.92 0.92 0.92 0.92 0 0.92 0.92 0.92 0.92 0.92;
+            0.92 0.92 0.92 1    1    0    0 0    0.92 0.92 0.92 0.92;
+            0.92 0.92 1    1    0    0    0 0    0    0.92 0.92 0.92;
+            0.92 1    1    0    0    0    0 0    0    0    0.92 0.92;
+            1    1    0    0    0    0    0 0    0    0    0    0.85;
+            1    0    0    0    0    0    0 0    0    0    0    0;
+            1    1    1    1    1    1    1 1    1    1    1    0.85];
 
-    xNext = x_0;
-    yNext = y_0 - mg - h_but_big;
-    
-    h.tm.togglebutton_overview = uicontrol('style','togglebutton','parent',...
-        h.tm.figure_traceMngr,'units','pixels','position',...
-        [xNext,yNext,w_but_big,h_but_big],'string','Overview','fontweight',...
-        'bold','fontunits','pixels','fontsize',fntS_big,'callback',...
-        {@switchPan_TM,h_fig});
-    
-    xNext = xNext + w_but_big + mg;
-    
-    h.tm.togglebutton_autoSorting = uicontrol('style','togglebutton',...
-        'parent',h.tm.figure_traceMngr,'units','pixels','position',...
-        [xNext,yNext,w_but_big,h_but_big],'string','Auto sorting',...
-        'fontweight','bold','fontunits','pixels','fontsize',fntS_big,...
-        'callback',{@switchPan_TM,h_fig});
-    
-    xNext = xNext + w_but_big + mg;
-    
-    h.tm.togglebutton_videoView = uicontrol('style','togglebutton','parent',...
-        h.tm.figure_traceMngr,'units','pixels','position',...
-        [xNext,yNext,w_but_big,h_but_big],'string','View on video',...
-        'fontweight','bold','fontunits','pixels','fontsize',fntS_big,...
-        'callback',{@switchPan_TM,h_fig});
-    
+% get MASH figure dimensions
+prev_u = get(h_fig, 'Units');
+set(h_fig, 'Units', 'pixels');
+posFig = get(h_fig, 'Position');
+set(h_fig, 'Units', prev_u);
+prev_u = get(0, 'Units');
+set(0, 'Units', 'pixels');
+pos_scr = get(0, 'ScreenSize');
+set(0, 'Units', prev_u);
+
+% set TM figure dimensions
+xFig = posFig(1) + (posFig(3) - wFig)/2;
+yFig = min([hFig pos_scr(4)]) - hFig;
+pos_fig = [xFig yFig wFig hFig];
+
+% set margins
+mg_big = 2*mg;
+
+% set UI control dimensions
+h_pop = h_edit;
+h_but = h_edit;
+w_but = (w_pop-mg)/2;
+
+% set panels dimensions
+w_pan = wFig - 2*mg;
+h_pan_all = mg + 3*mg + mg_big + 2*h_edit + 2*h_txt + h_but;
+h_toolbar = h_but_big + 2*mg;
+h_pan_sgl = hFig - 2*mg - h_pan_all - h_toolbar;
+h_pan_tool = hFig - h_toolbar + mg;
+
+% set axes dimensions
+h_axes_all = h_pan_all - mg - 2*mg - h_edit;
+w_axes2 = 2*mg + 3*w_edit;
+w_axes1 = w_pan - 4*mg - w_pop - w_axes2;
+
+% adjust sliding bar dimensions
+h_sld = h_pan_sgl - 3*mg - mg - h_but;
+
+% fetch main figure's handles
+h = guidata(h_fig);
+
+% create TM figure
+h.tm.figure_traceMngr = figure('Visible', 'on', 'Units', 'pixels', ...
+    'Position', pos_fig, 'Color', [0.94 0.94 0.94], ...
+    'CloseRequestFcn', {@figure_traceMngr, h_fig}, 'NumberTitle', ...
+    'off', 'Name', ['Trace manager - ' get(h_fig, 'Name')]);
+
+% add debugging mode where all other windows are not deactivated
+% added by FS, 24.4.2018
+debugMode = 1;
+if ~debugMode
+    set(h.tm.figure_traceMngr, 'WindowStyle', 'modal')
+end
+
+x_0 = mg;
+y_0 = hFig;
+
+xNext = x_0;
+yNext = y_0 - mg - h_but_big;
+
+h.tm.togglebutton_overview = uicontrol('style','togglebutton','parent',...
+    h.tm.figure_traceMngr,'units','pixels','position',...
+    [xNext,yNext,w_but_big,h_but_big],'string','Overview','fontweight',...
+    'bold','fontunits','pixels','fontsize',fntS_big,'callback',...
+    {@switchPan_TM,h_fig});
+
+xNext = xNext + w_but_big + mg;
+
+h.tm.togglebutton_autoSorting = uicontrol('style','togglebutton',...
+    'parent',h.tm.figure_traceMngr,'units','pixels','position',...
+    [xNext,yNext,w_but_big,h_but_big],'string','Auto sorting',...
+    'fontweight','bold','fontunits','pixels','fontsize',fntS_big,...
+    'callback',{@switchPan_TM,h_fig});
+
+xNext = xNext + w_but_big + mg;
+
+h.tm.togglebutton_videoView = uicontrol('style','togglebutton','parent',...
+    h.tm.figure_traceMngr,'units','pixels','position',...
+    [xNext,yNext,w_but_big,h_but_big],'string','View on video',...
+    'fontweight','bold','fontunits','pixels','fontsize',fntS_big,...
+    'callback',{@switchPan_TM,h_fig});
+
 %% - build main panels
-    
-    xNext = mg;
-    yNext = yNext - mg - h_pan_all;
-    
-    h.tm.uipanel_overall = uipanel('Parent', h.tm.figure_traceMngr, ...
-        'Units', 'pixels', 'Position', [xNext yNext w_pan h_pan_all], ...
-        'Title', 'Overall plots', 'FontUnits', 'pixels', 'FontSize', fntS);
-    
-    yNext = yNext - mg - h_pan_sgl;
-    
-    h.tm.uipanel_overview = uipanel('Parent', h.tm.figure_traceMngr, ...
-        'Units', 'pixels', 'Position', [xNext yNext w_pan h_pan_sgl], ...
-        'Title','Molecule selection','FontUnits','pixels','FontSize',fntS);
-    
-    xNext = -mg;
-    yNext = y_0 - mg - h_but_big - mg - h_pan_tool;
-    
-    h.tm.uipanel_autoSorting = uipanel('Parent', h.tm.figure_traceMngr, ...
-        'Units', 'pixels', 'Position', [xNext yNext wFig+2*mg h_pan_tool], ...
-        'Title', '', 'FontUnits', 'pixels', ...
-        'FontSize', fntS, 'Visible', 'off');
-    
-    h.tm.uipanel_videoView = uipanel('Parent', h.tm.figure_traceMngr, ...
-        'Units', 'pixels', 'Position', [xNext yNext wFig+2*mg h_pan_tool], ...
-        'Title', '', 'FontUnits', 'pixels', ...
-        'FontSize', fntS, 'Visible', 'off');
-    
-    
+
+xNext = mg;
+yNext = yNext - mg - h_pan_all;
+
+h.tm.uipanel_overall = uipanel('Parent', h.tm.figure_traceMngr, ...
+    'Units', 'pixels', 'Position', [xNext yNext w_pan h_pan_all], ...
+    'Title', 'Overall plots', 'FontUnits', 'pixels', 'FontSize', fntS);
+
+yNext = yNext - mg - h_pan_sgl;
+
+h.tm.uipanel_overview = uipanel('Parent', h.tm.figure_traceMngr, ...
+    'Units', 'pixels', 'Position', [xNext yNext w_pan h_pan_sgl], ...
+    'Title','Molecule selection','FontUnits','pixels','FontSize',fntS);
+
+xNext = -mg;
+yNext = y_0 - mg - h_but_big - mg - h_pan_tool;
+
+h.tm.uipanel_autoSorting = uipanel('Parent', h.tm.figure_traceMngr, ...
+    'Units', 'pixels', 'Position', [xNext yNext wFig+2*mg h_pan_tool], ...
+    'Title', '', 'FontUnits', 'pixels', ...
+    'FontSize', fntS, 'Visible', 'off');
+
+h.tm.uipanel_videoView = uipanel('Parent', h.tm.figure_traceMngr, ...
+    'Units', 'pixels', 'Position', [xNext yNext wFig+2*mg h_pan_tool], ...
+    'Title', '', 'FontUnits', 'pixels', ...
+    'FontSize', fntS, 'Visible', 'off');
+
+
 %% - build panel overall plots
-    
-    xNext = mg;
-    yNext = h_pan_all - mg_ttl - mg - h_txt;
-    
-    h.tm.text1 = uicontrol('Style', 'text', 'Parent', ...
-        h.tm.uipanel_overall, 'Units', 'pixels', 'String', ...
-        'Plot axes1:', 'HorizontalAlignment', 'center', 'Position', ...
-        [xNext yNext w_pop h_txt], 'FontUnits', 'pixels', 'FontSize', ...
-        fntS);
-    
-    yNext = yNext - h_edit;
 
-    % RB 2017-12-15: update str_plot
-    str_plot = getStrPlot_overall(h_fig); % added by MH, 25.4.2019
-    h.tm.popupmenu_axes1 = uicontrol('Style', 'popupmenu', 'Parent', ...
-        h.tm.uipanel_overall, 'String', str_plot{1}, 'Units', 'pixels', ...
-        'Position', [xNext yNext w_pop h_edit], 'BackgroundColor', ...
-        [1 1 1], 'Callback', {@popupmenu_axes_Callback, h_fig}, ...
-        'FontUnits', 'pixels', 'FontSize', fntS);
-    
-    yNext = yNext - mg - h_txt;
-    
-    h.tm.text2 = uicontrol('Style', 'text', 'Parent', ...
-        h.tm.uipanel_overall, 'Units', 'pixels', 'String', ...
-        'Plot axes2:', 'HorizontalAlignment', 'center', 'Position', ...
-        [xNext yNext w_pop h_txt], 'FontUnits', 'pixels', 'FontSize', ...
-        fntS);
-    
-    yNext = yNext - h_edit;
-    
-    % RB 2017-12-15: update str_plot 
-    h.tm.popupmenu_axes2 = uicontrol('Style', 'popupmenu', 'Parent', ...
-        h.tm.uipanel_overall, 'Units', 'pixels', 'String', str_plot{2}, ...
-        'Position', [xNext yNext w_pop h_edit], 'BackgroundColor', ...
-        [1 1 1], 'Callback', {@popupmenu_axes_Callback, h_fig}, ...
-        'FontUnits', 'pixels', 'FontSize', fntS);
-    
-    yNext = yNext - mg_big - h_but;
-    
-    h.tm.pushbutton_update = uicontrol('Style', 'pushbutton', 'Parent', ...
-        h.tm.uipanel_overall, 'Units', 'pixels', 'Position', ...
-        [xNext yNext w_but h_but], 'String', 'UPDATE', 'TooltipString', ...
-        'Update the graphs with new parameters', 'Callback', ...
-        {@pushbutton_update_Callback, h_fig}, 'FontUnits', 'pixels', ...
-        'FontSize', fntS);
-    
-    xNext = xNext + mg + w_but;
-    
-    h.tm.pushbutton_export = uicontrol('Style', 'pushbutton', 'Parent', ...
-        h.tm.uipanel_overall, 'Units', 'pixels','FontWeight', 'bold', ...
-        'String', 'TO MASH', 'Position', [xNext yNext w_but h_but], ...
-        'TooltipString', 'Export selection to MASH', 'Callback', ...
-        {@menu_export_Callback, h_fig}, 'FontUnits', 'pixels', ...
-        'FontSize', fntS);
+xNext = mg;
+yNext = h_pan_all - mg - mg - h_txt;
 
-    xNext = w_pop + 2*mg;
-    yNext = mg;
-    
-    h.tm.axes_ovrAll_1 = axes('Parent', h.tm.uipanel_overall, 'Units', ...
-        'pixels', 'FontUnits', 'pixels', 'FontSize', fntS, ...
-        'ActivePositionProperty', 'OuterPosition', 'GridLineStyle', ':',...
-        'NextPlot', 'replacechildren');
-    pos = getRealPosAxes([xNext yNext w_axes1 h_axes_all], ...
-        get(h.tm.axes_ovrAll_1, 'TightInset'), 'traces');
-    pos(3:4) = pos(3:4) - fntS;
-    pos(1:2) = pos(1:2) + fntS;
-    set(h.tm.axes_ovrAll_1, 'Position', pos);
-    
-    xNext = xNext + mg + w_axes1;
-    yNext = mg;
-    
-    h.tm.axes_ovrAll_2 = axes('Parent', h.tm.uipanel_overall, 'Units', ...
-        'pixels', 'FontUnits', 'pixels', 'FontSize', fntS, ...
-        'ActivePositionProperty', 'OuterPosition', 'GridLineStyle', ':',...
-        'NextPlot', 'replacechildren');
-    pos1 = pos;
-    pos = getRealPosAxes([xNext yNext w_axes2 h_axes_all], ...
-        get(h.tm.axes_ovrAll_2, 'TightInset'), 'traces'); 
-    pos([2 4]) = pos1([2 4]);
-    pos(3) = pos(3) - fntS;
-    pos(1) = pos(1) + fntS;
-    set(h.tm.axes_ovrAll_2, 'Position', pos);
-    
-    yNext = h_pan_all - mg_ttl - mg - h_edit;
-    
-    h.tm.edit_xlim_low = uicontrol('Style', 'edit', 'Parent', ...
-        h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit], ...
-        'Callback', {@edit_xlim_low_Callback, h_fig}, 'String', '0', ...
-        'BackgroundColor', [1 1 1], 'TooltipString', ...
-        'lower interval value');
-    
-    xNext = xNext + mg + w_edit;
-    
-    h.tm.edit_nbiv = uicontrol('Style', 'edit', 'Parent', ...
-        h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit], ...
-        'Callback', {@edit_nbiv_Callback, h_fig}, 'String', '200', ...
-        'BackgroundColor', [1 1 1], 'TooltipString', 'number of interval');
-    
-    xNext = xNext + mg + w_edit;
-    
-    h.tm.edit_xlim_up = uicontrol('Style', 'edit', 'Parent', ...
-        h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit], ...
-        'Callback', {@edit_xlim_up_Callback, h_fig}, 'String', '1', ...
-        'BackgroundColor', [1 1 1], 'TooltipString', ...
-        'upper interval value');
-   
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
-   % RB 2018-01-05 to do: include y-axes control for FRET-S-Histogram
-   %     yNext = h_pan_all - mg_ttl - mg - h_edit;
-   %     
-   %     h.tm.edit_xlim_low = uicontrol('Style', 'edit', 'Parent', ...
-   %         h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit],
-   %         ... 'Callback', {@edit_xlim_low_Callback, h_fig}, 'String', '0',
-   %         ... 'BackgroundColor', [1 1 1], 'TooltipString', ... 'lower
-   %         interval value');
-   %
-   %     xNext = xNext + mg + w_edit;
-   %
-   %     h.tm.edit_nbiv = uicontrol('Style', 'edit', 'Parent', ...
-   %         h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit],
-   %         ... 'Callback', {@edit_nbiv_Callback, h_fig}, 'String', '200',
-   %         ... 'BackgroundColor', [1 1 1], 'TooltipString', 'number of
-   %         interval');
-   %
-   %     xNext = xNext + mg + w_edit;
-   %
-   %     h.tm.edit_xlim_up = uicontrol('Style', 'edit', 'Parent', ...
-   %         h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit],
-   %         ... 'Callback', {@edit_xlim_up_Callback, h_fig}, 'String', '1',
-   %         ... 'BackgroundColor', [1 1 1], 'TooltipString', ... 'upper
-   %         interval value');
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
-   
-   
+h.tm.text1 = uicontrol('Style', 'text', 'Parent', ...
+    h.tm.uipanel_overall, 'Units', 'pixels', 'String', ...
+    'Plot axes1:', 'HorizontalAlignment', 'center', 'Position', ...
+    [xNext yNext w_pop h_txt], 'FontUnits', 'pixels', 'FontSize', ...
+    fntS);
+
+yNext = yNext - h_edit;
+
+% RB 2017-12-15: update str_plot
+str_plot = getStrPlot_overall(h_fig); % added by MH, 25.4.2019
+h.tm.popupmenu_axes1 = uicontrol('Style', 'popupmenu', 'Parent', ...
+    h.tm.uipanel_overall, 'String', str_plot{1}, 'Units', 'pixels', ...
+    'Position', [xNext yNext w_pop h_edit], 'BackgroundColor', ...
+    [1 1 1], 'Callback', {@popupmenu_axes_Callback, h_fig}, ...
+    'FontUnits', 'pixels', 'FontSize', fntS);
+
+yNext = yNext - mg - h_txt;
+
+h.tm.text2 = uicontrol('Style', 'text', 'Parent', ...
+    h.tm.uipanel_overall, 'Units', 'pixels', 'String', ...
+    'Plot axes2:', 'HorizontalAlignment', 'center', 'Position', ...
+    [xNext yNext w_pop h_txt], 'FontUnits', 'pixels', 'FontSize', ...
+    fntS);
+
+yNext = yNext - h_edit;
+
+% RB 2017-12-15: update str_plot 
+h.tm.popupmenu_axes2 = uicontrol('Style', 'popupmenu', 'Parent', ...
+    h.tm.uipanel_overall, 'Units', 'pixels', 'String', str_plot{2}, ...
+    'Position', [xNext yNext w_pop h_edit], 'BackgroundColor', ...
+    [1 1 1], 'Callback', {@popupmenu_axes_Callback, h_fig}, ...
+    'FontUnits', 'pixels', 'FontSize', fntS);
+
+yNext = yNext - mg_big - h_but;
+
+h.tm.pushbutton_update = uicontrol('Style', 'pushbutton', 'Parent', ...
+    h.tm.uipanel_overall, 'Units', 'pixels', 'Position', ...
+    [xNext yNext w_but h_but], 'String', 'UPDATE', 'TooltipString', ...
+    'Update the graphs with new parameters', 'Callback', ...
+    {@pushbutton_update_Callback, h_fig}, 'FontUnits', 'pixels', ...
+    'FontSize', fntS);
+
+xNext = xNext + mg + w_but;
+
+h.tm.pushbutton_export = uicontrol('Style', 'pushbutton', 'Parent', ...
+    h.tm.uipanel_overall, 'Units', 'pixels','FontWeight', 'bold', ...
+    'String', 'TO MASH', 'Position', [xNext yNext w_but h_but], ...
+    'TooltipString', 'Export selection to MASH', 'Callback', ...
+    {@menu_export_Callback, h_fig}, 'FontUnits', 'pixels', ...
+    'FontSize', fntS);
+
+xNext = w_pop + 2*mg;
+yNext = mg;
+
+h.tm.axes_ovrAll_1 = axes('Parent', h.tm.uipanel_overall, 'Units', ...
+    'pixels', 'FontUnits', 'pixels', 'FontSize', fntS, ...
+    'ActivePositionProperty', 'OuterPosition', 'GridLineStyle', ':',...
+    'NextPlot', 'replacechildren');
+pos = getRealPosAxes([xNext yNext w_axes1 h_axes_all], ...
+    get(h.tm.axes_ovrAll_1, 'TightInset'), 'traces');
+pos(3:4) = pos(3:4) - fntS;
+pos(1:2) = pos(1:2) + fntS;
+set(h.tm.axes_ovrAll_1, 'Position', pos);
+
+xNext = xNext + mg + w_axes1;
+yNext = mg;
+
+h.tm.axes_ovrAll_2 = axes('Parent', h.tm.uipanel_overall, 'Units', ...
+    'pixels', 'FontUnits', 'pixels', 'FontSize', fntS, ...
+    'ActivePositionProperty', 'OuterPosition', 'GridLineStyle', ':',...
+    'NextPlot', 'replacechildren');
+pos1 = pos;
+pos = getRealPosAxes([xNext yNext w_axes2 h_axes_all], ...
+    get(h.tm.axes_ovrAll_2, 'TightInset'), 'traces'); 
+pos([2 4]) = pos1([2 4]);
+pos(3) = pos(3) - fntS;
+pos(1) = pos(1) + fntS;
+set(h.tm.axes_ovrAll_2, 'Position', pos);
+
+yNext = h_pan_all - mg - mg - h_edit;
+
+h.tm.edit_xlim_low = uicontrol('Style', 'edit', 'Parent', ...
+    h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit], ...
+    'Callback', {@edit_xlim_low_Callback, h_fig}, 'String', '0', ...
+    'BackgroundColor', [1 1 1], 'TooltipString', ...
+    'lower interval value');
+
+xNext = xNext + mg + w_edit;
+
+h.tm.edit_nbiv = uicontrol('Style', 'edit', 'Parent', ...
+    h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit], ...
+    'Callback', {@edit_nbiv_Callback, h_fig}, 'String', '200', ...
+    'BackgroundColor', [1 1 1], 'TooltipString', 'number of interval');
+
+xNext = xNext + mg + w_edit;
+
+h.tm.edit_xlim_up = uicontrol('Style', 'edit', 'Parent', ...
+    h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit], ...
+    'Callback', {@edit_xlim_up_Callback, h_fig}, 'String', '1', ...
+    'BackgroundColor', [1 1 1], 'TooltipString', ...
+    'upper interval value');
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+% RB 2018-01-05 to do: include y-axes control for FRET-S-Histogram
+%     yNext = h_pan_all - mg - mg - h_edit;
+%     
+%     h.tm.edit_xlim_low = uicontrol('Style', 'edit', 'Parent', ...
+%         h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit],
+%         ... 'Callback', {@edit_xlim_low_Callback, h_fig}, 'String', '0',
+%         ... 'BackgroundColor', [1 1 1], 'TooltipString', ... 'lower
+%         interval value');
+%
+%     xNext = xNext + mg + w_edit;
+%
+%     h.tm.edit_nbiv = uicontrol('Style', 'edit', 'Parent', ...
+%         h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit],
+%         ... 'Callback', {@edit_nbiv_Callback, h_fig}, 'String', '200',
+%         ... 'BackgroundColor', [1 1 1], 'TooltipString', 'number of
+%         interval');
+%
+%     xNext = xNext + mg + w_edit;
+%
+%     h.tm.edit_xlim_up = uicontrol('Style', 'edit', 'Parent', ...
+%         h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit],
+%         ... 'Callback', {@edit_xlim_up_Callback, h_fig}, 'String', '1',
+%         ... 'BackgroundColor', [1 1 1], 'TooltipString', ... 'upper
+%         interval value');
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
+
+
 %% - build panel molecule selection
-    
-    xNext = mg;
-    yNext = h_pan_sgl - mg_ttl - mg - h_but;
-    
-    % cancelled by MH, 24.4.2019
-    % replace "all" checkbox and "inverse selection" pushbutton by a
-    % popupmenu
+
+xNext = mg;
+yNext = h_pan_sgl - mg - mg - h_but;
+
+% cancelled by MH, 24.4.2019
+% replace "all" checkbox and "inverse selection" pushbutton by a
+% popupmenu
 %     h.tm.checkbox_all = uicontrol('Style', 'checkbox', 'Parent', ...
 %         h.tm.uipanel_overview, 'Units', 'pixels', 'FontUnits', 'pixels',...
 %         'FontSize', fntS, 'String', 'Check all', 'TooltipString', ...
@@ -916,13 +924,6 @@ h.tm.pushbutton_deleteMolTag = uicontrol('Style', 'pushbutton', 'Parent', ...
 
 xNext = w_pan - mg - w_but;
 
-arrow_up = [0.92 0.92 0.92 0.92 0.92 0.92 0 0.92 0.92 0.92 0.92 0.92;
-            0.92 0.92 0.92 1    1    0    0 0    0.92 0.92 0.92 0.92;
-            0.92 0.92 1    1    0    0    0 0    0    0.92 0.92 0.92;
-            0.92 1    1    0    0    0    0 0    0    0    0.92 0.92;
-            1    1    0    0    0    0    0 0    0    0    0    0.85;
-            1    0    0    0    0    0    0 0    0    0    0    0;
-            1    1    1    1    1    1    1 1    1    1    1    0.85];
 arrow_up = cat(3,arrow_up,arrow_up,arrow_up);
 h.tm.pushbutton_reduce = uicontrol('Style', 'pushbutton', 'Parent', ...
     h.tm.uipanel_overview, 'Units', 'pixels', 'Position', ...
@@ -951,10 +952,10 @@ yNext = mg;
 
 % define the number of molecule displayed per page
 nb_mol = numel(h.tm.molValid);
-if nb_mol < 3
+if nb_mol < defNperPage
     nb_mol_disp = nb_mol;
 else
-    nb_mol_disp = 3;
+    nb_mol_disp = defNperPage;
 end
 % adjust sliding parameters and visibility
 if nb_mol <= nb_mol_disp || nb_mol_disp == 0
@@ -993,8 +994,6 @@ h_axes3 = 0.5*(h_pan_tool-4*mg)-h_pop-h_txt-2*mg;
 w_pan_slct = (w_axes3-mg)/2;
 h_pan_slct = h_pan_tool-h_axes3-h_pop-h_txt-mg-5*mg;
 w_pan_sg = w_axes3-mg-w_pan_slct;
-w_txt1 = 65;
-w_txt2 = 105;
 
 xNext = 2*mg;
 yNext = 2*mg;
