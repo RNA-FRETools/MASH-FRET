@@ -34,26 +34,37 @@ function traceManager(h_fig)
     
     if ~(isfield(h.tm, 'figure_traceMngr') && ...
             ishandle(h.tm.figure_traceMngr))
-        loadData2Mngr(h_fig);
+        ok = loadData2Mngr(h_fig);
+        if ~ok
+            h = guidata(h_fig);
+            close(h.tm.figure_traceMngr);
+            return;
+        end
     end
     
 end
 
 %% data handling
 
-function loadData2Mngr(h_fig)
+function ok = loadData2Mngr(h_fig)
 
     % build GUI
     openMngrTool(h_fig);
 
     % load data from MASH
-    loadDataFromMASH(h_fig);
+    ok = loadDataFromMASH(h_fig);
+    if ~ok
+        return;
+    end
     
     % assign data-specific plot colors and axis labels
     setDataPlotPrm(h_fig);
     
     % concatenate data and assign axis limits
-    concatenateData(h_fig);
+    ok = concatenateData(h_fig);
+    if ~ok
+        return;
+    end
     
     % plot data in panel "Overall plot" and "Molecule selection"
     plotData_overall(h_fig)
@@ -65,77 +76,81 @@ function loadData2Mngr(h_fig)
 end
 
 
-function loadDataFromMASH(h_fig)
+function ok = loadDataFromMASH(h_fig)
 
-    h = guidata(h_fig);
-    m = h.param.ttPr;
-    proj = m.curr_proj;
-    nMol = numel(h.tm.molValid);
-    nChan = m.proj{proj}.nb_channel;
+ok = true;
 
-    % loading bar parameters-----------------------------------------------
-    err = loading_bar('init',h_fig ,nMol,'Collecting data from MASH ...');
+h = guidata(h_fig);
+m = h.param.ttPr;
+proj = m.curr_proj;
+nMol = numel(h.tm.molValid);
+nChan = m.proj{proj}.nb_channel;
+
+% loading bar parameters-----------------------------------------------
+err = loading_bar('init',h_fig ,nMol,'Collecting data from MASH ...');
+if err
+    ok = false;
+    return;
+end
+h = guidata(h_fig); % update:  get current guidata 
+h.barData.prev_var = h.barData.curr_var;
+guidata(h_fig, h); % update: set current guidata 
+% ---------------------------------------------------------------------
+
+for i = 1:nMol
+    dtaCurr = m.proj{proj}.curr{i}{4};
+    if ~isempty(m.proj{proj}.prm{i})
+        dtaPrm = m.proj{proj}.prm{i}{4};
+    else
+        dtaPrm = [];
+    end
+
+    [m,opt] = resetMol(i, m);
+
+    m = plotSubImg(i, m, []);
+
+    isBgCorr = ~isempty(m.proj{proj}.intensities_bgCorr) && ...
+        sum(~prod(prod(double(~isnan(m.proj{proj}.intensities_bgCorr(:, ...
+        ((i-1)*nChan+1):i*nChan,:))),3),2),1)~= ...
+        size(m.proj{proj}.intensities_bgCorr,1);
+
+    if ~isBgCorr
+        opt = 'ttBg';
+    end
+
+    if strcmp(opt, 'ttBg') || strcmp(opt, 'ttPr')
+        m = bgCorr(i, m);
+    end
+    if strcmp(opt, 'corr') || strcmp(opt, 'ttBg') || ...
+            strcmp(opt, 'ttPr')
+        m = crossCorr(i, m);
+    end
+    if strcmp(opt, 'denoise') || strcmp(opt, 'corr') || ...
+            strcmp(opt, 'ttBg') || strcmp(opt, 'ttPr')
+        m = denoiseTraces(i, m);
+    end
+    if strcmp(opt, 'debleach') || strcmp(opt, 'denoise') || ...
+            strcmp(opt, 'corr') || strcmp(opt, 'ttBg') || ...
+            strcmp(opt, 'ttPr')
+        m = calcCutoff(i, m);
+    end
+    m.proj{proj}.curr{i} = m.proj{proj}.prm{i};
+    m.proj{proj}.prm{i}{4} = dtaPrm;
+    m.proj{proj}.curr{i}{4} = dtaCurr;
+
+    % loading bar update-----------------------------------
+    err = loading_bar('update', h_fig);
+    % -----------------------------------------------------
+
     if err
+        ok = false;
         return;
     end
-    h = guidata(h_fig); % update:  get current guidata 
-    h.barData.prev_var = h.barData.curr_var;
-    guidata(h_fig, h); % update: set current guidata 
-    % ---------------------------------------------------------------------
+end
+loading_bar('close', h_fig);
 
-    for i = 1:nMol
-        dtaCurr = m.proj{proj}.curr{i}{4};
-        if ~isempty(m.proj{proj}.prm{i})
-            dtaPrm = m.proj{proj}.prm{i}{4};
-        else
-            dtaPrm = [];
-        end
-       
-        [m,opt] = resetMol(i, m);
-        
-        m = plotSubImg(i, m, []);
-
-        isBgCorr = ~isempty(m.proj{proj}.intensities_bgCorr) && ...
-            sum(~prod(prod(double(~isnan(m.proj{proj}.intensities_bgCorr(:, ...
-            ((i-1)*nChan+1):i*nChan,:))),3),2),1)~= ...
-            size(m.proj{proj}.intensities_bgCorr,1);
-
-        if ~isBgCorr
-            opt = 'ttBg';
-        end
-        
-        if strcmp(opt, 'ttBg') || strcmp(opt, 'ttPr')
-            m = bgCorr(i, m);
-        end
-        if strcmp(opt, 'corr') || strcmp(opt, 'ttBg') || ...
-                strcmp(opt, 'ttPr')
-            m = crossCorr(i, m);
-        end
-        if strcmp(opt, 'denoise') || strcmp(opt, 'corr') || ...
-                strcmp(opt, 'ttBg') || strcmp(opt, 'ttPr')
-            m = denoiseTraces(i, m);
-        end
-        if strcmp(opt, 'debleach') || strcmp(opt, 'denoise') || ...
-                strcmp(opt, 'corr') || strcmp(opt, 'ttBg') || ...
-                strcmp(opt, 'ttPr')
-            m = calcCutoff(i, m);
-        end
-        m.proj{proj}.curr{i} = m.proj{proj}.prm{i};
-        m.proj{proj}.prm{i}{4} = dtaPrm;
-        m.proj{proj}.curr{i}{4} = dtaCurr;
-            
-        % loading bar update-----------------------------------
-        err = loading_bar('update', h_fig);
-        % -----------------------------------------------------
-
-        if err
-            return;
-        end
-    end
-    loading_bar('close', h_fig);
-    
-    h.param.ttPr = m;
-    guidata(h_fig,h);
+h.param.ttPr = m;
+guidata(h_fig,h);
     
 end
 
@@ -251,7 +266,7 @@ set(h.tm.axes_histSort,'UserData',dat3);
 end
 
 
-function concatenateData(h_fig)
+function ok = concatenateData(h_fig)
 % Concatenates traces and calculate new axis limits if necessary
 
 % Last update by MH, 25.4.2019
@@ -273,6 +288,7 @@ function concatenateData(h_fig)
 % defaults
 defMin = -0.2;
 defMax = 1.2;
+ok = true;
 
 % collect project parameters
 h = guidata(h_fig);
@@ -321,6 +337,7 @@ dat3.hist = cell(nChan*nExc+nFRET+nS+nFRET*nS,nCalc);
 % loading bar parameters-----------------------------------------------
 err = loading_bar('init',h_fig,nMol,'Concatenate and calculate data ...');
 if err
+    ok = false;
     return;
 end
 h = guidata(h_fig);
@@ -405,6 +422,7 @@ for i = 1:nMol
     % -----------------------------------------------------
 
     if err
+        ok = false;
         return;
     end
 end
@@ -421,6 +439,7 @@ err = loading_bar('init', h_fig , (nChan*nExc+nFRET+nS+nFRET*nS), ...
     'Histogram data ...');
 
 if err
+    ok = false;
     return;
 end
 h = guidata(h_fig);
@@ -488,6 +507,7 @@ for ind = 1:(size(dat1.trace,2)+nFRET*nS) % counts for nChan*nExc Intensity chan
     % -----------------------------------------------------
 
     if err
+        ok = false;
         return;
     end
 end
@@ -628,10 +648,10 @@ h_sld = h_pan_sgl - 3*mg - mg - h_but;
 h = guidata(h_fig);
 
 % create TM figure
-h.tm.figure_traceMngr = figure('Visible', 'on', 'Units', 'pixels', ...
-    'Position', pos_fig, 'Color', [0.94 0.94 0.94], ...
-    'CloseRequestFcn', {@figure_traceMngr, h_fig}, 'NumberTitle', ...
-    'off', 'Name', ['Trace manager - ' get(h_fig, 'Name')]);
+h.tm.figure_traceMngr = figure('Visible','on','Units','pixels','Position',...
+    pos_fig,'Color',[0.94 0.94 0.94],'CloseRequestFcn',...
+    {@figure_traceMngr, h_fig},'NumberTitle','off','Name',...
+    ['Trace manager - ' get(h_fig, 'Name')],'MenuBar','none');
 
 % add debugging mode where all other windows are not deactivated
 % added by FS, 24.4.2018
@@ -700,7 +720,7 @@ h.tm.uipanel_videoView = uipanel('Parent', h.tm.figure_traceMngr, ...
 %% - build panel overall plots
 
 xNext = mg;
-yNext = h_pan_all - mg - mg - h_txt;
+yNext = h_pan_all - 1.5*mg - h_txt;
 
 h.tm.text1 = uicontrol('Style', 'text', 'Parent', ...
     h.tm.uipanel_overall, 'Units', 'pixels', 'String', ...
@@ -760,6 +780,7 @@ h.tm.axes_ovrAll_1 = axes('Parent', h.tm.uipanel_overall, 'Units', ...
     'pixels', 'FontUnits', 'pixels', 'FontSize', fntS, ...
     'ActivePositionProperty', 'OuterPosition', 'GridLineStyle', ':',...
     'NextPlot', 'replacechildren');
+ylim(h.tm.axes_ovrAll_1,[0 10000]);
 pos = getRealPosAxes([xNext yNext w_axes1 h_axes_all], ...
     get(h.tm.axes_ovrAll_1, 'TightInset'), 'traces');
 pos(3:4) = pos(3:4) - fntS;
@@ -773,6 +794,7 @@ h.tm.axes_ovrAll_2 = axes('Parent', h.tm.uipanel_overall, 'Units', ...
     'pixels', 'FontUnits', 'pixels', 'FontSize', fntS, ...
     'ActivePositionProperty', 'OuterPosition', 'GridLineStyle', ':',...
     'NextPlot', 'replacechildren');
+ylim(h.tm.axes_ovrAll_2,[0 10000]);
 pos1 = pos;
 pos = getRealPosAxes([xNext yNext w_axes2 h_axes_all], ...
     get(h.tm.axes_ovrAll_2, 'TightInset'), 'traces'); 
@@ -782,24 +804,26 @@ pos(1) = pos(1) + fntS;
 set(h.tm.axes_ovrAll_2, 'Position', pos);
 
 yNext = h_pan_all - mg - mg - h_edit;
+xNext = pos(1);
+w_edit_hist = (pos(3)-2*mg/2)/3;
 
 h.tm.edit_xlim_low = uicontrol('Style', 'edit', 'Parent', ...
-    h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit], ...
+    h.tm.uipanel_overall, 'Position', [xNext yNext w_edit_hist h_edit], ...
     'Callback', {@edit_xlim_low_Callback, h_fig}, 'String', '0', ...
     'BackgroundColor', [1 1 1], 'TooltipString', ...
     'lower interval value');
 
-xNext = xNext + mg + w_edit;
+xNext = xNext + mg/2 + w_edit_hist;
 
 h.tm.edit_nbiv = uicontrol('Style', 'edit', 'Parent', ...
-    h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit], ...
+    h.tm.uipanel_overall, 'Position', [xNext yNext w_edit_hist h_edit], ...
     'Callback', {@edit_nbiv_Callback, h_fig}, 'String', '200', ...
     'BackgroundColor', [1 1 1], 'TooltipString', 'number of interval');
 
-xNext = xNext + mg + w_edit;
+xNext = xNext + mg/2 + w_edit_hist;
 
 h.tm.edit_xlim_up = uicontrol('Style', 'edit', 'Parent', ...
-    h.tm.uipanel_overall, 'Position', [xNext yNext w_edit h_edit], ...
+    h.tm.uipanel_overall, 'Position', [xNext yNext w_edit_hist h_edit], ...
     'Callback', {@edit_xlim_up_Callback, h_fig}, 'String', '1', ...
     'BackgroundColor', [1 1 1], 'TooltipString', ...
     'upper interval value');
@@ -2027,7 +2051,10 @@ function pushbutton_update_Callback(obj, evd, h_fig)
 %    updating the data set
     
     % refresh data set
-    concatenateData(h_fig);
+    ok = concatenateData(h_fig);
+    if ~ok
+        return;
+    end
     
     % plot new data set
     plotData_overall(h_fig);
@@ -2086,27 +2113,30 @@ function menu_export_Callback(obj, evd, h_fig)
 %
 %
 
-    saveNclose = questdlg(['Do you want to export the traces to ' ...
-        'MASH and close the trace manager?'], ...
-        'Close and export to MASH-FRET', 'Yes', 'No', 'No');
+saveNclose = questdlg(['Do you want to export the traces to ' ...
+    'MASH and close the trace manager?'], ...
+    'Close and export to MASH-FRET', 'Yes', 'No', 'No');
+
+if strcmp(saveNclose, 'Yes')
+    h = guidata(h_fig);
+    h.param.ttPr.proj{h.param.ttPr.curr_proj}.coord_incl = ...
+        h.tm.molValid;
+    h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTag = ...
+        h.tm.molTag; % added by FS, 24.4.2018
+    h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTagNames = ...
+        h.tm.molTagNames; % added by FS, 24.4.2018
+
+    % added by MH, 24.4.2019
+    h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTagClr = ...
+        h.tm.molTagClr;
+
+    h.tm.ud = true;
+    guidata(h_fig,h);
     
-    if strcmp(saveNclose, 'Yes')
-        h = guidata(h_fig);
-        h.param.ttPr.proj{h.param.ttPr.curr_proj}.coord_incl = ...
-            h.tm.molValid;
-        h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTag = ...
-            h.tm.molTag; % added by FS, 24.4.2018
-        h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTagNames = ...
-            h.tm.molTagNames; % added by FS, 24.4.2018
-        
-        % added by MH, 24.4.2019
-        h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTagClr = ...
-            h.tm.molTagClr;
-        
-        h.tm.ud = true;
-        guidata(h_fig,h);
-        uiresume(h.tm.figure_traceMngr);
-    end
+    updateFields(h.figure_MASH, 'ttPr');
+    
+    close(h.tm.figure_traceMngr);
+end
 
 end
 
