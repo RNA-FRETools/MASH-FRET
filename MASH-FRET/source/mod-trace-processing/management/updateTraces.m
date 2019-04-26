@@ -71,8 +71,6 @@ if ~isempty(p.proj)
         p = gammaCorr(h_fig, mol, p);
         p = discrTraces(h_fig, mol, p);
     end
-
-    proj = p.curr_proj;
     
     if (strcmp(opt2, 'plot') || strcmp(opt2, 'gamma') || ...
             strcmp(opt2, 'DTA') || strcmp(opt2, 'debleach') || ...
