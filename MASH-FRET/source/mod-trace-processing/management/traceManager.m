@@ -32,9 +32,6 @@ function traceManager(h_fig)
     
     guidata(h_fig, h);
     
-    global intensities;
-    intensities = nan(size(p.proj{proj}.intensities));
-    
     if ~(isfield(h.tm, 'figure_traceMngr') && ...
             ishandle(h.tm.figure_traceMngr))
         loadData2Mngr(h_fig);
@@ -42,10 +39,11 @@ function traceManager(h_fig)
     
 end
 
+%% data handling
 
 function loadData2Mngr(h_fig)
 
-    % build figure and panel "Molecule selection"
+    % build GUI
     openMngrTool(h_fig);
 
     % load data from MASH
@@ -61,10 +59,11 @@ function loadData2Mngr(h_fig)
     plotData_overall(h_fig)
     plotDataTm(h_fig);
     
+    % plot data in panel "Auto sorting"
+    plotData_autoSort(h_fig);
+    
 end
 
-
-%% data handling
 
 function loadDataFromMASH(h_fig)
 
@@ -73,8 +72,6 @@ function loadDataFromMASH(h_fig)
     proj = m.curr_proj;
     nMol = numel(h.tm.molValid);
     nChan = m.proj{proj}.nb_channel;
-    
-    global intensities;
 
     % loading bar parameters-----------------------------------------------
     err = loading_bar('init',h_fig ,nMol,'Collecting data from MASH ...');
@@ -126,10 +123,6 @@ function loadDataFromMASH(h_fig)
         m.proj{proj}.curr{i} = m.proj{proj}.prm{i};
         m.proj{proj}.prm{i}{4} = dtaPrm;
         m.proj{proj}.curr{i}{4} = dtaCurr;
-
-        intensities(:,(nChan*(i-1)+1):nChan*i,:) = ...
-            m.proj{proj}.intensities_denoise(:, ...
-            (nChan*(i-1)+1):nChan*i,:);
             
         % loading bar update-----------------------------------
         err = loading_bar('update', h_fig);
@@ -149,100 +142,111 @@ end
 
 function setDataPlotPrm(h_fig)
 % Assign data-specific plot colors and axis labels
-    
-    % get project parameters
-    h = guidata(h_fig);
-    p = h.param.ttPr;
-    proj = p.curr_proj;
-    nChan = p.proj{proj}.nb_channel;
-    nExc = p.proj{proj}.nb_excitations;
-    nFRET = size(p.proj{proj}.FRET,1);
-    nS = numel(p.proj{proj}.S);
-    clr = p.proj{proj}.colours;
-    perSec = p.proj{proj}.fix{2}(4);
-    perPix = p.proj{proj}.fix{2}(5);
-    inSec = p.proj{proj}.fix{2}(7);
 
-    % get existing plot data
-    dat1 = get(h.tm.axes_ovrAll_1,'UserData');
-    dat2 = get(h.tm.axes_ovrAll_2,'UserData');
+% defaults
+def_niv = 200;
 
-    % initializes plot parameters
-    dat1.color = cell(1,nChan*nExc+nFRET+nS);
-    dat1.ylabel = cell(1,nChan*nExc+nFRET+nS+4);
-    if inSec
-        dat1.xlabel = 'time (s)';
-    else
-        dat1.xlabel = 'frame number';
-    end   
+% get project parameters
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+nExc = p.proj{proj}.nb_excitations;
+nFRET = size(p.proj{proj}.FRET,1);
+nS = numel(p.proj{proj}.S);
+clr = p.proj{proj}.colours;
+perSec = p.proj{proj}.fix{2}(4);
+perPix = p.proj{proj}.fix{2}(5);
+inSec = p.proj{proj}.fix{2}(7);
 
-    % define axis labels
-    str_extra = [];
-    if perSec
-        str_extra = [str_extra ' per s.'];
-    end
-    if perPix
-        str_extra = [str_extra ' per pix.'];
-    end
-    
-    i = 0;
-    for l = 1:nExc % number of excitation channels
-        for c = 1:nChan % number of emission channels
-            i = i + 1;
-            dat1.ylabel{i} = ['counts' str_extra];
-            dat2.ylabel{i} = 'freq. counts'; % RB 2018-01-04
-            dat2.xlabel{i} = ['counts' str_extra]; % RB 2018-01-04
-            dat1.color{i} = clr{1}{l,c};
-        end
-    end
-    for n = 1:nFRET
-        i = i + 1;
-        dat1.ylabel{i} = 'FRET';
-        dat2.ylabel{i} = 'freq. counts'; % RB 2018-01-04
-        dat2.xlabel{i} = 'FRET'; % RB 2018-01-04
-        dat1.color{i} = clr{2}(n,:);
-    end
-    for n = 1:nS
-        i = i + 1;
-        dat1.ylabel{i} = 'S';
-        dat2.ylabel{i} = 'freq. counts'; % RB 2018-01-04
-        dat2.xlabel{i} = 'S'; % RB 2018-01-04
-        dat1.color{i} = clr{3}(n,:);
-    end
-    if nChan > 1 || nExc > 1
+% get existing plot data
+dat1 = get(h.tm.axes_ovrAll_1,'UserData');
+dat2 = get(h.tm.axes_ovrAll_2,'UserData');
+dat3 = get(h.tm.axes_histSort,'UserData');
+
+% initializes interval number
+nCalc = numel(get(h.tm.popupmenu_selectCalc,'string'))-1;
+dat1.niv = repmat(def_niv,nChan*nExc+nFRET+nS+nFRET*nS,2);
+dat3.niv = repmat(def_niv,nChan*nExc+nFRET+nS+nFRET*nS,2,nCalc);
+
+% initializes plot parameters
+dat1.color = cell(1,nChan*nExc+nFRET+nS);
+dat1.ylabel = cell(1,nChan*nExc+nFRET+nS+4);
+if inSec
+    dat1.xlabel = 'time (s)';
+else
+    dat1.xlabel = 'frame number';
+end
+
+% define y-axis labels
+str_extra = [];
+if perSec
+    str_extra = [str_extra ' per s.'];
+end
+if perPix
+    str_extra = [str_extra ' per pix.'];
+end
+
+% set plot colors and axis labels
+i = 0;
+for l = 1:nExc % number of excitation channels
+    for c = 1:nChan % number of emission channels
         i = i + 1;
         dat1.ylabel{i} = ['counts' str_extra];
-        % no dat2.xlabel{size(str_plot,2)} = ['counts' str_extra]; % RB 2018-01-04
+        dat2.ylabel{i} = 'freq. counts'; % RB 2018-01-04
+        dat2.xlabel{i} = ['counts' str_extra]; % RB 2018-01-04
+        dat1.color{i} = clr{1}{l,c};
     end
-    if nFRET > 1
+end
+for n = 1:nFRET
+    i = i + 1;
+    dat1.ylabel{i} = 'FRET';
+    dat2.ylabel{i} = 'freq. counts'; % RB 2018-01-04
+    dat2.xlabel{i} = 'FRET'; % RB 2018-01-04
+    dat1.color{i} = clr{2}(n,:);
+end
+for n = 1:nS
+    i = i + 1;
+    dat1.ylabel{i} = 'S';
+    dat2.ylabel{i} = 'freq. counts'; % RB 2018-01-04
+    dat2.xlabel{i} = 'S'; % RB 2018-01-04
+    dat1.color{i} = clr{3}(n,:);
+end
+if nChan > 1 || nExc > 1
+    i = i + 1;
+    dat1.ylabel{i} = ['counts' str_extra];
+    % no dat2.xlabel{size(str_plot,2)} = ['counts' str_extra]; % RB 2018-01-04
+end
+if nFRET > 1
+    i = i + 1;
+    dat1.ylabel{i} = 'FRET';
+    % no dat2.xlabel{size(str_plot,2)} = 'FRET'; % RB 2018-01-04
+end
+% String for all Stoichiometry Channels in popup menu
+if nS > 1
+    i = i + 1;
+    dat1.ylabel{i} = 'S';
+    % no dat2.xlabel{size(str_plot,2)} = 'S'; % RB 2018-01-04
+end
+% String for all FRET and Stoichiometry Channels in popup menu
+if nFRET > 0 && nS > 0
+    i = i + 1;
+    dat1.ylabel{i} = 'FRET or S';
+    % no dat2.xlabel{size(str_plot,2)} = 'FRET or S'; % RB 2018-01-04
+end
+i = 0;
+for fret = 1:nFRET
+    for s = 1:nS
         i = i + 1;
-        dat1.ylabel{i} = 'FRET';
-        % no dat2.xlabel{size(str_plot,2)} = 'FRET'; % RB 2018-01-04
+        % no dat1.ylabel{nChan*nExc+nFRET+nS+n} = 'FRET or S'; % RB 2018-01-04
+        dat2.ylabel{nChan*nExc+nFRET+nS+i} = 'S'; % RB 2018-01-04: change index as str_plot and str_plot2 are different
+        dat2.xlabel{nChan*nExc+nFRET+nS+i} = 'E'; % RB 2018-01-04: change index as str_plot and str_plot2 are different
     end
-    % String for all Stoichiometry Channels in popup menu
-    if nS > 1
-        i = i + 1;
-        dat1.ylabel{i} = 'S';
-        % no dat2.xlabel{size(str_plot,2)} = 'S'; % RB 2018-01-04
-    end
-    % String for all FRET and Stoichiometry Channels in popup menu
-    if nFRET > 0 && nS > 0
-        i = i + 1;
-        dat1.ylabel{i} = 'FRET or S';
-        % no dat2.xlabel{size(str_plot,2)} = 'FRET or S'; % RB 2018-01-04
-    end
-    i = 0;
-    for fret = 1:nFRET
-        for s = 1:nS
-            i = i + 1;
-            % no dat1.ylabel{nChan*nExc+nFRET+nS+n} = 'FRET or S'; % RB 2018-01-04
-            dat2.ylabel{nChan*nExc+nFRET+nS+i} = 'S'; % RB 2018-01-04: change index as str_plot and str_plot2 are different
-            dat2.xlabel{nChan*nExc+nFRET+nS+i} = 'E'; % RB 2018-01-04: change index as str_plot and str_plot2 are different
-        end
-    end
-    
-    set(h.tm.axes_ovrAll_1,'UserData',dat1);
-    set(h.tm.axes_ovrAll_2,'UserData',dat2);
+end
+
+set(h.tm.axes_ovrAll_1,'UserData',dat1);
+set(h.tm.axes_ovrAll_2,'UserData',dat2);
+set(h.tm.axes_histSort,'UserData',dat3);
     
 end
 
@@ -250,7 +254,13 @@ end
 function concatenateData(h_fig)
 % Concatenates traces and calculate new axis limits if necessary
 
-% Last update by MH, 27.3.2019
+% Last update by MH, 25.4.2019
+% >> isolate code to calculate 1D & 2D histogram to separate function
+%    getHistTm
+% >> concatenate mean, maxima, minima, medians and state trajectories for
+%    automatic sorting
+%
+% update by MH, 27.3.2019
 % >> correct update for ES histograms for multiple FRET and stoichiometries
 %
 % Last update: by RB, 4.1.2018
@@ -260,186 +270,269 @@ function concatenateData(h_fig)
 % >> include FRET-S-Histogram
 % >> restructured dat2.hist, dat2.iv and dat1.lim
 
-    % defaults
-    def_niv = 200;
+% defaults
+defMin = -0.2;
+defMax = 1.2;
 
-    % collect project parameters
-    h = guidata(h_fig);
-    p = h.param.ttPr;
-    proj = p.curr_proj;
-    nMol = numel(h.tm.molValid);
-    nChan = p.proj{proj}.nb_channel;
-    exc = p.proj{proj}.excitations;
-    chanExc = p.proj{proj}.chanExc;
-    nExc = p.proj{proj}.nb_excitations;
-    FRET = p.proj{proj}.FRET;
-    nFRET = size(FRET,1);
-    S = p.proj{proj}.S;
-    nS = size(S,1);
-    perSec = p.proj{proj}.fix{2}(4);
-    perPix = p.proj{proj}.fix{2}(5);
-    rate = p.proj{proj}.frame_rate;
-    nPix = p.proj{proj}.pix_intgr(2);
-    
-    % get existing plot data
-    dat1 = get(h.tm.axes_ovrAll_1,'UserData');
-    dat2 = get(h.tm.axes_ovrAll_2,'UserData');
-    
-    % allocate cells
-    dat1.trace = cell(1,nChan*nExc+nFRET+nS);
-    dat1.lim = dat1.trace;
-    %dat2.hist = dat1.trace; %old
-    %dat2.iv = dat1.trace; %old
-    dat2.hist = cell(1,nChan*nExc+nFRET+nS+nFRET); % RB 2018-01-03:
-    dat1.niv = repmat(def_niv,1,nChan*nExc+nFRET+nS+nFRET*nS);
-    
-    global intensities;
+% collect project parameters
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nMol = numel(h.tm.molValid);
+nChan = p.proj{proj}.nb_channel;
+exc = p.proj{proj}.excitations;
+chanExc = p.proj{proj}.chanExc;
+nExc = p.proj{proj}.nb_excitations;
+FRET = p.proj{proj}.FRET;
+nFRET = size(FRET,1);
+S = p.proj{proj}.S;
+nS = size(S,1);
+perSec = p.proj{proj}.fix{2}(4);
+perPix = p.proj{proj}.fix{2}(5);
+rate = p.proj{proj}.frame_rate;
+nPix = p.proj{proj}.pix_intgr(2);
 
-    % loading bar parameters-----------------------------------------------
-    err = loading_bar('init', h_fig , nMol, ...
-        'Concatenate and calculate data ...');
-    if err
-        return;
-    end
-    h = guidata(h_fig);
-    h.barData.prev_var = h.barData.curr_var;
-    guidata(h_fig, h);
-    % ---------------------------------------------------------------------
-    
-    for i = 1:nMol
-        if h.tm.molValid(i)
-            for l = 1:nExc
-                for c = 1:nChan
-                    ind = (l-1)*nChan+c;
-                    incl = p.proj{proj}.bool_intensities(:,i);
-                    I = intensities(incl,nChan*(i-1)+c,l);
-                    if perSec
-                        I = I/rate;
-                    end
-                    if perPix
-                        I = I/nPix;
-                    end
-                    dat1.trace{ind} = [dat1.trace{ind}; reshape(I, ...
-                        [numel(I), 1])];
+% get time traces
+intensities = p.proj{proj}.intensities_denoise;
+intensities_DTA = p.proj{proj}.intensities_DTA;
+FRET_DTA = p.proj{proj}.FRET_DTA;
+S_DTA = p.proj{proj}.S_DTA;
+
+% get existing plot data
+dat1 = get(h.tm.axes_ovrAll_1,'UserData');
+dat2 = get(h.tm.axes_ovrAll_2,'UserData');
+dat3 = get(h.tm.axes_histSort,'UserData');
+
+% allocate cells
+dat1.trace = cell(1,nChan*nExc+nFRET+nS);
+dat1.lim = dat1.trace;
+%dat2.hist = dat1.trace; %old
+%dat2.iv = dat1.trace; %old
+dat2.hist = cell(1,nChan*nExc+nFRET+nS+nFRET*nS); % RB 2018-01-03:
+dat2.iv = cell(1,nChan*nExc+nFRET+nS+nFRET*nS);
+
+% added by MH, 25.4.2019
+nCalc = numel(get(h.tm.popupmenu_selectCalc,'string'))-1;
+dat3.val = cell(nChan*nExc+nFRET+nS,nCalc);
+dat3.lim = cell(1,nChan*nExc+nFRET+nS);
+dat3.iv =  cell(nChan*nExc+nFRET+nS+nFRET*nS,nCalc);
+dat3.hist = cell(nChan*nExc+nFRET+nS+nFRET*nS,nCalc);
+
+% loading bar parameters-----------------------------------------------
+err = loading_bar('init',h_fig,nMol,'Concatenate and calculate data ...');
+if err
+    return;
+end
+h = guidata(h_fig);
+h.barData.prev_var = h.barData.curr_var;
+guidata(h_fig, h);
+% ---------------------------------------------------------------------
+
+for i = 1:nMol
+    if h.tm.molValid(i)
+        for l = 1:nExc
+            for c = 1:nChan
+                ind = (l-1)*nChan+c;
+                incl = p.proj{proj}.bool_intensities(:,i);
+                I = intensities(incl,nChan*(i-1)+c,l);
+                I_DTA = intensities_DTA(incl,nChan*(i-1)+c,l);
+                if perSec
+                    I = I/rate;
+                    I_DTA = I_DTA/rate;
                 end
-            end
-            
-            I = intensities(incl,(nChan*(i-1)+1):nChan*i,:);
-            gamma = p.proj{proj}.curr{i}{5}{3};
-            fret = calcFRET(nChan, nExc, exc, chanExc, FRET, I, gamma);
-            for n = 1:nFRET
-                ind = ind + 1;
-                FRET_tr = fret(:,n);
-                FRET_tr(FRET_tr == Inf) = 1000000;
-                FRET_tr(FRET_tr == -Inf) = -1000000;
-                dat1.trace{ind} = [dat1.trace{ind}; ...
-                    reshape(FRET_tr, [numel(FRET_tr) 1])];
-            end
-            for n = 1:nS
-                ind = ind + 1;
-                [o,l_s,o] = find(exc==chanExc(S(n)));
-                Inum = sum(intensities(incl, ...
-                    (nChan*(i-1)+1):nChan*i,l_s),2);
-                Iden = sum(sum(intensities(incl, ...
-                    (nChan*(i-1)+1):nChan*i,:),2),3);
-                S_tr = Inum./Iden;
-                S_tr(S_tr == Inf) = 1000000; % prevent for Inf
-                S_tr(S_tr == -Inf) = -1000000; % prevent for Inf
-                dat1.trace{ind} = [dat1.trace{ind}; ...
-                    reshape(S_tr, [numel(S_tr) 1])];
+                if perPix
+                    I = I/nPix;
+                    I_DTA = I_DTA/nPix;
+                end
+
+                % concatenate traces
+                dat1.trace{ind} = [dat1.trace{ind};I];
+
+                % concatenate mean, max, min, median and states
+                dat3.val{ind,1} = [dat3.val{ind,1};mean(I)];
+                dat3.val{ind,2} = [dat3.val{ind,2};min(I)];
+                dat3.val{ind,3} = [dat3.val{ind,3};max(I)];
+                dat3.val{ind,4} = [dat3.val{ind,4};median(I)];
+                dat3.val{ind,5} = [dat3.val{ind,5};I_DTA];
             end
         end
 
-        % loading bar update-----------------------------------
-        err = loading_bar('update', h_fig);
-        % -----------------------------------------------------
+        I = intensities(incl,(nChan*(i-1)+1):nChan*i,:);
+        gamma = p.proj{proj}.curr{i}{5}{3};
+        fret = calcFRET(nChan, nExc, exc, chanExc, FRET, I, gamma);
+        for n = 1:nFRET
+            ind = ind + 1;
+            FRET_tr = fret(:,n);
+            FRET_tr(FRET_tr == Inf) = 1000000;
+            FRET_tr(FRET_tr == -Inf) = -1000000;
 
-        if err
-            return;
+            % concatenate traces
+            dat1.trace{ind} = [dat1.trace{ind};FRET_tr];
+
+            % concatenate mean, max, min, median and states
+            dat3.val{ind,1} = [dat3.val{ind,1};mean(FRET_tr)];
+            dat3.val{ind,2} = [dat3.val{ind,2};min(FRET_tr)];
+            dat3.val{ind,3} = [dat3.val{ind,3};max(FRET_tr)];
+            dat3.val{ind,4} = [dat3.val{ind,4};median(FRET_tr)];
+            dat3.val{ind,5} = [dat3.val{ind,5};...
+                FRET_DTA(:,nFRET*(i-1)+n)];
+        end
+        for n = 1:nS
+            ind = ind + 1;
+            [o,l_s,o] = find(exc==chanExc(S(n)));
+            Inum = sum(intensities(incl, ...
+                (nChan*(i-1)+1):nChan*i,l_s),2);
+            Iden = sum(sum(intensities(incl, ...
+                (nChan*(i-1)+1):nChan*i,:),2),3);
+            S_tr = Inum./Iden;
+            S_tr(S_tr == Inf) = 1000000; % prevent for Inf
+            S_tr(S_tr == -Inf) = -1000000; % prevent for Inf
+
+            % concatenate traces
+            dat1.trace{ind} = [dat1.trace{ind};S_tr];
+
+           % concatenate mean, max, min, median and states
+            dat3.val{ind,1} = [dat3.val{ind,1};mean(S_tr)];
+            dat3.val{ind,2} = [dat3.val{ind,2};min(S_tr)];
+            dat3.val{ind,3} = [dat3.val{ind,3};max(S_tr)];
+            dat3.val{ind,4} = [dat3.val{ind,4};median(S_tr)];
+            dat3.val{ind,5} = [dat3.val{ind,5};S_DTA(:,nS*(i-1)+n)];
         end
     end
-    disp('data successfully concatenated !');
-    loading_bar('close', h_fig);
-    
-    % RB 2018-01-04: adapted for FRET-S-Histogram, hist2 is rather slow
-    % RB 2018-01-05: hist2 replaced by hist2D
-    % loading bar parameters-----------------------------------------------
-    
-    % corrected by MH, 27.3.2019
-%     err = loading_bar('init', h_fig , (nChan*nExc+nFRET+nS+nFRET), ...
-    err = loading_bar('init', h_fig , (nChan*nExc+nFRET+nS+nFRET*nS), ...
-        'Histogram data ...');
-    
+
+    % loading bar update-----------------------------------
+    err = loading_bar('update', h_fig);
+    % -----------------------------------------------------
+
     if err
         return;
     end
-    h = guidata(h_fig);
-    h.barData.prev_var = h.barData.curr_var;
-    guidata(h_fig, h);
-    % ---------------------------------------------------------------------
-    
-    % RB 2018-01-04: adapted for FRET-S-Histogram
-    ES = []; % local array
-    
-    % MH 2019-03-27: collect ES indexes
-%     for ind = 1:(size(dat1.trace,2)+nS)
-    ind_es = [];
-    for fret = 1:nFRET
-        for s = 1:nS
-            ind_es = cat(1,ind_es,[fret,s]);
-        end
-    end
-    for ind = 1:(size(dat1.trace,2)+nFRET*nS) % counts for nChan*nExc Intensity channels, nFRET channles, nS channels and nFRET ES histograms
-        
-        if ind <= nChan*nExc % intensity histogram 1D 
-            dat1.lim{ind} = [min(dat1.trace{ind}) max(dat1.trace{ind})];
-            bin = (dat1.lim{ind}(2) - dat1.lim{ind}(1)) / dat1.niv(ind);
-            iv = (dat1.lim{ind}(1) - bin):bin:(dat1.lim{ind}(2) + bin);
-            [dat2.hist{ind}, dat2.iv{ind}] = hist(dat1.trace{ind}, iv); % HISTOGRAM replaces hist since 2015! 
-            
-        elseif ind <= (nChan*nExc + nFRET + nS) % FRET and S histogram 1D
-            dat1.lim{ind} = [-0.2 1.2];
-            bin = (dat1.lim{ind}(2) - dat1.lim{ind}(1)) / dat1.niv(ind);
-            iv = (dat1.lim{ind}(1) - bin):bin:(dat1.lim{ind}(2) + bin);
-            
-            [dat2.hist{ind}, dat2.iv{ind}] = hist(dat1.trace{ind}, iv); % HISTOGRAM replaces hist since 2015! 
-        else  % FRET-S histogram 2D, adapted from getTDPmat.m
-            dat1.lim{ind} = [-0.2 1.2; -0.2 1.2];
-            %binx = (dat1.lim{ind}(2,2) - dat1.lim{ind}(2,1)) / dat1.niv(ind);
-            %biny = (dat1.lim{ind}(1,2) - dat1.lim{ind}(1,1)) / dat1.niv(ind);
-            %ivx = (dat1.lim{ind}(2,1) - binx):binx:(dat1.lim{ind}(2,2) + binx);
-            %ivy = (dat1.lim{ind}(1,1) - biny):biny:(dat1.lim{ind}(1,2) + biny);
-            
-            % corrected by MH, 27.3.2019
-%             ES = [dat1.trace{ind-nFRET-nS},dat1.trace{ind-nS}]; % build [N-by-2] or ' ... '[2-by-N] data matrix.']
-            ind_fret = ind_es(ind-nChan*nExc-nFRET-nS,1) + nChan*nExc;
-            ind_s = ind_es(ind-nChan*nExc-nFRET-nS,2) + nChan*nExc + nFRET;
-            ES = [dat1.trace{ind_fret},dat1.trace{ind_s}]; % build [N-by-2] or ' ... '[2-by-N] data matrix.']
-            
-            %[dat2.hist{ind},o,o,dat2.iv{ind}] = hist2(ES, [ivx;ivy]); % hist2 by MCASH rather slow
-            binEdges_minmaxN_xy = [dat1.lim{ind}(1,1) dat1.lim{ind}(1,2) dat1.niv(ind); dat1.lim{ind}(2,1) dat1.lim{ind}(2,2) dat1.niv(ind)];
-            [dat2.hist{ind},dat2.iv{ind}(1,:),dat2.iv{ind}(2,:)] = hist2D(ES, binEdges_minmaxN_xy); % hist2D by tudima at zahoo dot com, inlcuded in \traces\processing\management
-        end
-        
-        % old from MCASH
-        %bin = (dat1.lim{ind}(2) - dat1.lim{ind}(1)) / dat1.niv(ind);
-        %iv = (dat1.lim{ind}(1) - bin):bin:(dat1.lim{ind}(2) + bin);
-        %[dat2.hist{ind}, dat2.iv{ind}] = hist(dat1.trace{ind}, iv); % HISTOGRAM replaces hist since 2015! 
-        
-        % loading bar update-----------------------------------
-        err = loading_bar('update', h_fig);
-        % -----------------------------------------------------
+end
+disp('data successfully concatenated !');
+loading_bar('close', h_fig);
 
-        if err
-            return;
-        end
+% RB 2018-01-04: adapted for FRET-S-Histogram, hist2 is rather slow
+% RB 2018-01-05: hist2 replaced by hist2D
+% loading bar parameters-----------------------------------------------
+
+% corrected by MH, 27.3.2019
+%     err = loading_bar('init', h_fig , (nChan*nExc+nFRET+nS+nFRET), ...
+err = loading_bar('init', h_fig , (nChan*nExc+nFRET+nS+nFRET*nS), ...
+    'Histogram data ...');
+
+if err
+    return;
+end
+h = guidata(h_fig);
+h.barData.prev_var = h.barData.curr_var;
+guidata(h_fig, h);
+% ---------------------------------------------------------------------
+
+% RB 2018-01-04: adapted for FRET-S-Histogram
+% MH 2019-03-27: collect ES indexes
+%     for ind = 1:(size(dat1.trace,2)+nS)
+ind_es = [];
+for fret = 1:nFRET
+    for s = 1:nS
+        ind_es = cat(1,ind_es,[fret,s]);
     end
-    disp('data successfully histogrammed !');
-    loading_bar('close', h_fig);
+end
+for ind = 1:(size(dat1.trace,2)+nFRET*nS) % counts for nChan*nExc Intensity channels, nFRET channles, nS channels and nFRET ES histograms
+
+    if ind <= nChan*nExc % intensity histogram 1D
+        dat1.lim{ind} = [min(dat1.trace{ind}) max(dat1.trace{ind})];
+        [dat2.hist{ind},dat2.iv{ind}] = getHistTM(dat1.trace{ind},...
+            dat1.lim{ind},dat1.niv(ind,1));
+
+        % build histogram with mean,max,min,median and states
+        for j = 1:nCalc
+            dat3.lim{ind,j} = [min(dat3.val{ind,j}) max(dat3.val{ind,j})];
+            [dat3.hist{ind,j},dat3.iv{ind,j}] = getHistTM(dat3.val{ind,j},...
+                dat3.lim{ind,j},dat3.niv(ind,1,j));
+        end
+
+
+    elseif ind <= (nChan*nExc + nFRET + nS) % FRET and S histogram 1D
+        dat1.lim{ind} = [defMin defMax];
+        [dat2.hist{ind},dat2.iv{ind}] = getHistTM(dat1.trace{ind},...
+            dat1.lim{ind},dat1.niv(ind,1));
+
+        % build histogram with mean,max,min,median and states
+        for j = 1:nCalc
+            dat3.lim{ind,j} = [defMin defMax];
+            [dat3.hist{ind,j},dat3.iv{ind,j}] = getHistTM(dat3.val{ind,j},...
+                dat3.lim{ind,j},dat3.niv(ind,1,j));
+        end
+
+    else  % FRET-S histogram 2D, adapted from getTDPmat.m
+        ind_fret = ind_es(ind-nChan*nExc-nFRET-nS,1) + nChan*nExc;
+        ind_s = ind_es(ind-nChan*nExc-nFRET-nS,2) + nChan*nExc + nFRET;
+        
+        dat1.lim{ind} = repmat([defMin defMax],[2,1]);
+        ES = [dat1.trace{ind_fret},dat1.trace{ind_s}]; 
+        [dat2.hist{ind},dat2.iv{ind}] = ...
+            getHistTM(ES,dat1.lim{ind},dat1.niv(ind,:));
+
+        % build ES histograms with mean,max,min and median values
+        for j = 1:nCalc
+            dat3.lim{ind,j} = repmat([defMin defMax],[2,1]);
+            ES = [dat3.val{ind_fret,j},dat3.val{ind_s,j}]; 
+            [dat3.hist{ind,j},dat3.iv{ind,j}] = getHistTM(ES,...
+                dat3.lim{ind,j},dat3.niv(ind,[1 2],j));
+        end
+
+    end
     
-    % store data in axes
-    set(h.tm.axes_ovrAll_1, 'UserData', dat1);
-    set(h.tm.axes_ovrAll_2, 'UserData', dat2);
+    % loading bar update-----------------------------------
+    err = loading_bar('update', h_fig);
+    % -----------------------------------------------------
+
+    if err
+        return;
+    end
+end
+disp('data successfully histogrammed !');
+loading_bar('close', h_fig);
+
+% store data in axes
+set(h.tm.axes_ovrAll_1, 'UserData', dat1);
+set(h.tm.axes_ovrAll_2, 'UserData', dat2);
+set(h.tm.axes_histSort, 'UserData', dat3);
+end
+
+
+function [P,iv] = getHistTM(trace,lim,niv)
+% Build and return 1D or 2D histogram depending on the second dimension of
+% input data
+
+% Last update by MH, 24.4.2019
+% >> isolate here the code to calculate 1D & 2D histogram to allow easier 
+%    function call and avoid extensive repetitions
+%
+% RB 2018-01-04: adapted for FRET-S-Histogram, hist2 is rather slow
+% RB 2018-01-05: hist2 replaced by hist2D
+% RB 2018-01-04: adapted for FRET-S-Histogram
+
+if sum(sum(isnan(trace),2),1)
+    P = [];
+    iv = [];
+    return;
+end
+
+if size(trace,2)==1 % 1D histogram
+    bin = (lim(2)-lim(1))/niv;
+    iv = (lim(1)-bin):bin:(lim(2)+bin);
+    [P,iv] = hist(trace,iv); % RB: HISTOGRAM replaces hist since 2015! 
+
+else % 2D histogram
+    if sum(sum(isnan(trace)))
+        P = [];
+        iv = [];
+        return;
+    end
+    prm = [lim(1,:),niv(1);lim(2,:),niv(2)];
+    [P,iv{1},iv{2}] = hist2D(trace,prm); % RB: hist2D by tudima at zahoo dot com, inlcuded in \traces\processing\management
+end
 end
 
 
@@ -468,6 +561,8 @@ function openMngrTool(h_fig)
 % >> update popupmenu_axes1 and popupmenu_axes2 string
 %
 %
+
+%% - build figure and toolbar
 
     % get MASH figure dimensions
     prev_u = get(h_fig, 'Units');
@@ -565,6 +660,8 @@ function openMngrTool(h_fig)
         'fontweight','bold','fontunits','pixels','fontsize',fntS_big,...
         'callback',{@switchPan_TM,h_fig});
     
+%% - build main panels
+    
     xNext = mg;
     yNext = yNext - mg - h_pan_all;
     
@@ -592,7 +689,7 @@ function openMngrTool(h_fig)
         'FontSize', fntS, 'Visible', 'off');
     
     
-    % all results panel
+%% - build panel overall plots
     
     xNext = mg;
     yNext = h_pan_all - mg_ttl - mg - h_txt;
@@ -727,7 +824,7 @@ function openMngrTool(h_fig)
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
    
    
-    % TM panel overview
+%% - build panel molecule selection
     
     xNext = mg;
     yNext = h_pan_sgl - mg_ttl - mg - h_but;
@@ -753,228 +850,351 @@ function openMngrTool(h_fig)
 %         {@pushbutton_all_inverse_Callback, h_fig}, 'FontUnits', 'pixels', ...
 %         'FontSize', fntS);
     
-    % added by MH, 24.4.2019
-    h.tm.text_selection = uicontrol('style','text','parent',...
-        h.tm.uipanel_overview,'units','pixels','string','Selection:',...
-        'position',[xNext,yNext,0.5*w_pop,h_txt],'fontunits','pixels', ...
-        'fontsize', fntS,'fontweight','bold');
-    
-    xNext = xNext + 0.5*w_pop + mg/2 ;
+% added by MH, 24.4.2019
+h.tm.text_selection = uicontrol('style','text','parent',...
+    h.tm.uipanel_overview,'units','pixels','string','Selection:',...
+    'position',[xNext,yNext,0.5*w_pop,h_txt],'fontunits','pixels', ...
+    'fontsize', fntS,'fontweight','bold');
 
-    % added by MH, 24.4.2019
-    str_pop = getStrPop_select(h_fig);
-    h.tm.popupmenu_selection = uicontrol('style','popupmenu','parent',...
-        h.tm.uipanel_overview,'units','pixels','string',str_pop,'value',1,...
-        'position',[xNext,yNext,4/5*w_pop,h_but],'fontunits','pixels', ...
-        'fontsize', fntS,'callback',{@popupmenu_selection_Callback,h_fig});
-    
-    xNext = xNext + 4/5*w_pop + 2*mg;
-    
-    % edit box to define a molecule tag, added by FS, 24.4.2018
-    h.tm.edit_molTag = uicontrol('Style', 'edit', 'Parent', ...
-        h.tm.uipanel_overview, 'Units', 'pixels', ...
-        'String', 'define a new tag', 'Position', [xNext yNext w_pop h_but], ...
-        'Callback', {@edit_addMolTag_Callback, h_fig}, ...
-        'FontUnits', 'pixels', ...
-        'FontSize', fntS);
-    
-    xNext = xNext + w_pop + mg;
+xNext = xNext + 0.5*w_pop + mg/2 ;
 
-    % popup menu to select molecule tag, added by FS, 24.4.2018
-    % add callback, MH 24.4.2019
-    str_lst = colorTagNames(h_fig);
-    h.tm.popup_molTag = uicontrol('Style', 'popup', 'Parent', ...
-        h.tm.uipanel_overview, 'Units', 'pixels', ...
-        'String', str_lst, ...
-        'Position', [xNext yNext w_pop h_but], ...
-        'TooltipString', 'select a molecule tag', ...
-        'FontUnits', 'pixels', ...
-        'FontSize', fntS, 'Callback', {@popup_molTag_Callback,h_fig});
-    
-    xNext = xNext + w_pop + mg;
-    
-    % added by MH, 24.4.2019
-    hexclr = h.tm.molTagClr{get(h.tm.popup_molTag,'value')}(2:end);
-    h.tm.edit_tagClr = uicontrol('Style','edit','Parent', ...
-        h.tm.uipanel_overview,'Units','pixels','String',num2str(hexclr), ...
-        'Position',[xNext yNext w_edit h_but],'TooltipString', ...
-        'define the tag color','FontUnits','pixels','FontSize',fntS, ...
-        'Backgroundcolor',hex2rgb(hexclr)/255,'callback',...
-        {@edit_tagClr_Callback,h_fig});
-    
-    xNext = xNext + w_edit + mg;
+% added by MH, 24.4.2019
+str_pop = getStrPop_select(h_fig);
+h.tm.popupmenu_selection = uicontrol('style','popupmenu','parent',...
+    h.tm.uipanel_overview,'units','pixels','string',str_pop,'value',1,...
+    'position',[xNext,yNext,4/5*w_pop,h_but],'fontunits','pixels', ...
+    'fontsize', fntS,'callback',{@popupmenu_selection_Callback,h_fig});
 
-    % popup menu to select molecule tag, added by FS, 24.4.2018
-    h.tm.pushbutton_deleteMolTag = uicontrol('Style', 'pushbutton', 'Parent', ...
-        h.tm.uipanel_overview, 'Units', 'pixels', ...
-        'String', 'delete tag', ...
-        'Position', [xNext yNext 1/2*w_pop h_but], ...
-        'TooltipString', 'select a molecule tag', ...
-        'Callback', {@pushbutton_deleteMolTag_Callback, h_fig}, ...    
-        'FontUnits', 'pixels', ...
-        'FontSize', fntS);
+xNext = xNext + 4/5*w_pop + 2*mg;
+
+% edit box to define a molecule tag, added by FS, 24.4.2018
+h.tm.edit_molTag = uicontrol('Style', 'edit', 'Parent', ...
+    h.tm.uipanel_overview, 'Units', 'pixels', ...
+    'String', 'define a new tag', 'Position', [xNext yNext w_pop h_but], ...
+    'Callback', {@edit_addMolTag_Callback, h_fig}, ...
+    'FontUnits', 'pixels', ...
+    'FontSize', fntS);
+
+xNext = xNext + w_pop + mg;
+
+% popup menu to select molecule tag, added by FS, 24.4.2018
+% add callback, MH 24.4.2019
+str_lst = colorTagNames(h_fig);
+h.tm.popup_molTag = uicontrol('Style', 'popup', 'Parent', ...
+    h.tm.uipanel_overview, 'Units', 'pixels', ...
+    'String', str_lst, ...
+    'Position', [xNext yNext w_pop h_but], ...
+    'TooltipString', 'select a molecule tag', ...
+    'FontUnits', 'pixels', ...
+    'FontSize', fntS, 'Callback', {@popup_molTag_Callback,h_fig});
+
+xNext = xNext + w_pop + mg;
+
+% added by MH, 24.4.2019
+hexclr = h.tm.molTagClr{get(h.tm.popup_molTag,'value')}(2:end);
+h.tm.edit_tagClr = uicontrol('Style','edit','Parent', ...
+    h.tm.uipanel_overview,'Units','pixels','String',num2str(hexclr), ...
+    'Position',[xNext yNext w_edit h_but],'TooltipString', ...
+    'define the tag color','FontUnits','pixels','FontSize',fntS, ...
+    'Backgroundcolor',hex2rgb(hexclr)/255,'callback',...
+    {@edit_tagClr_Callback,h_fig});
+
+xNext = xNext + w_edit + mg;
+
+% popup menu to select molecule tag, added by FS, 24.4.2018
+h.tm.pushbutton_deleteMolTag = uicontrol('Style', 'pushbutton', 'Parent', ...
+    h.tm.uipanel_overview, 'Units', 'pixels', ...
+    'String', 'delete tag', ...
+    'Position', [xNext yNext 1/2*w_pop h_but], ...
+    'TooltipString', 'select a molecule tag', ...
+    'Callback', {@pushbutton_deleteMolTag_Callback, h_fig}, ...    
+    'FontUnits', 'pixels', ...
+    'FontSize', fntS);
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+xNext = w_pan - mg - w_but;
+
+arrow_up = [0.92 0.92 0.92 0.92 0.92 0.92 0 0.92 0.92 0.92 0.92 0.92;
+            0.92 0.92 0.92 1    1    0    0 0    0.92 0.92 0.92 0.92;
+            0.92 0.92 1    1    0    0    0 0    0    0.92 0.92 0.92;
+            0.92 1    1    0    0    0    0 0    0    0    0.92 0.92;
+            1    1    0    0    0    0    0 0    0    0    0    0.85;
+            1    0    0    0    0    0    0 0    0    0    0    0;
+            1    1    1    1    1    1    1 1    1    1    1    0.85];
+arrow_up = cat(3,arrow_up,arrow_up,arrow_up);
+h.tm.pushbutton_reduce = uicontrol('Style', 'pushbutton', 'Parent', ...
+    h.tm.uipanel_overview, 'Units', 'pixels', 'Position', ...
+    [xNext yNext w_but h_but], 'CData', arrow_up, 'TooltipString', ...
+    'Hide overall panel', 'Callback', ...
+    {@pushbutton_reduce_Callback, h_fig});
+
+xNext = xNext - mg_big - w_edit;
+
+h.tm.edit_nbTotMol = uicontrol('Style', 'edit', 'Parent', ...
+    h.tm.uipanel_overview, 'Units', 'pixels', 'Position', ...
+    [xNext yNext w_edit h_edit], 'String', '3', 'TooltipString', ...
+    'Number of molecule per view', 'BackgroundColor', [1 1 1], ...
+    'Callback', {@edit_nbTotMol_Callback, h_fig});
+
+xNext = xNext - mg - w_pop;
+
+h.tm.textNmol = uicontrol('Style', 'text', 'Parent', ...
+    h.tm.uipanel_overview, 'Units', 'pixels', 'String', ...
+    'molecules per page:', 'HorizontalAlignment', 'right', ...
+    'Position', [xNext yNext w_pop h_txt], 'FontUnits', 'pixels', ...
+    'FontSize', fntS);
+
+xNext = w_pan - mg - w_sld;
+yNext = mg;
+
+% define the number of molecule displayed per page
+nb_mol = numel(h.tm.molValid);
+if nb_mol < 3
+    nb_mol_disp = nb_mol;
+else
+    nb_mol_disp = 3;
+end
+% adjust sliding parameters and visibility
+if nb_mol <= nb_mol_disp || nb_mol_disp == 0
+    min_step = 1;
+    maj_step = 1;
+    min_val = 0;
+    max_val = 1;
+    vis = 'off';
+else
+    vis = 'on';
+    min_val = 1;
+    max_val = nb_mol-nb_mol_disp+1;
+    min_step = 1/(nb_mol-nb_mol_disp);
+    maj_step = nb_mol_disp/(nb_mol-nb_mol_disp);
+end
+h.tm.slider = uicontrol('Style', 'slider', 'Parent', ...
+    h.tm.uipanel_overview, 'Units', 'pixels', 'Position', ...
+    [xNext yNext w_sld h_sld], 'Value', max_val, 'Max', max_val, ...
+    'Min', min_val, 'Callback', {@slider_Callback, h_fig}, ...
+    'SliderStep', [min_step maj_step], 'Visible', vis);
+
+% save controls
+guidata(h_fig, h);
+
+% build controls and axes in panel "Molecule selection"
+updatePanel_single(h_fig, nb_mol_disp);
+
+% recover new controls
+h = guidata(h_fig);
     
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    xNext = w_pan - mg - w_but;
-    
-    arrow_up = [0.92 0.92 0.92 0.92 0.92 0.92 0 0.92 0.92 0.92 0.92 0.92;
-                0.92 0.92 0.92 1    1    0    0 0    0.92 0.92 0.92 0.92;
-                0.92 0.92 1    1    0    0    0 0    0    0.92 0.92 0.92;
-                0.92 1    1    0    0    0    0 0    0    0    0.92 0.92;
-                1    1    0    0    0    0    0 0    0    0    0    0.85;
-                1    0    0    0    0    0    0 0    0    0    0    0;
-                1    1    1    1    1    1    1 1    1    1    1    0.85];
-    arrow_up = cat(3,arrow_up,arrow_up,arrow_up);
-    h.tm.pushbutton_reduce = uicontrol('Style', 'pushbutton', 'Parent', ...
-        h.tm.uipanel_overview, 'Units', 'pixels', 'Position', ...
-        [xNext yNext w_but h_but], 'CData', arrow_up, 'TooltipString', ...
-        'Hide overall panel', 'Callback', ...
-        {@pushbutton_reduce_Callback, h_fig});
-    
-    xNext = xNext - mg_big - w_edit;
-    
-    h.tm.edit_nbTotMol = uicontrol('Style', 'edit', 'Parent', ...
-        h.tm.uipanel_overview, 'Units', 'pixels', 'Position', ...
-        [xNext yNext w_edit h_edit], 'String', '3', 'TooltipString', ...
-        'Number of molecule per view', 'BackgroundColor', [1 1 1], ...
-        'Callback', {@edit_nbTotMol_Callback, h_fig});
-    
-    xNext = xNext - mg - w_pop;
-    
-    h.tm.textNmol = uicontrol('Style', 'text', 'Parent', ...
-        h.tm.uipanel_overview, 'Units', 'pixels', 'String', ...
-        'molecules per page:', 'HorizontalAlignment', 'right', ...
-        'Position', [xNext yNext w_pop h_txt], 'FontUnits', 'pixels', ...
-        'FontSize', fntS);
-    
-    xNext = w_pan - mg - w_sld;
-    yNext = mg;
-    
-    % define the number of molecule displayed per page
-    nb_mol = numel(h.tm.molValid);
-    if nb_mol < 3
-        nb_mol_disp = nb_mol;
-    else
-        nb_mol_disp = 3;
-    end
-    % adjust sliding parameters and visibility
-    if nb_mol <= nb_mol_disp || nb_mol_disp == 0
-        min_step = 1;
-        maj_step = 1;
-        min_val = 0;
-        max_val = 1;
-        vis = 'off';
-    else
-        vis = 'on';
-        min_val = 1;
-        max_val = nb_mol-nb_mol_disp+1;
-        min_step = 1/(nb_mol-nb_mol_disp);
-        maj_step = nb_mol_disp/(nb_mol-nb_mol_disp);
-    end
-    h.tm.slider = uicontrol('Style', 'slider', 'Parent', ...
-        h.tm.uipanel_overview, 'Units', 'pixels', 'Position', ...
-        [xNext yNext w_sld h_sld], 'Value', max_val, 'Max', max_val, ...
-        'Min', min_val, 'Callback', {@slider_Callback, h_fig}, ...
-        'SliderStep', [min_step maj_step], 'Visible', vis);
-    
-    
-    % panel auto-sorting
+%% - build panel auto-sorting
    
-    w_axes3 = wFig - 2*mg;
-    h_axes3 = 0.5*(h_pan_tool-4*mg)-h_pop-mg;
-    w_pan_slct = (w_axes3-mg)/2;
-    h_pan_slct = h_pan_tool-h_axes3-h_pop-mg-4*mg;
-    w_pan_sg = w_axes3-mg-w_pan_slct;
-    w_txt = 140;
-   
-    xNext = 2*mg;
-    yNext = 2*mg;
-   
-	h.tm.uipanel_selection = uipanel('parent',h.tm.uipanel_autoSorting, ...
-        'units','pixels','position',[xNext yNext w_pan_slct h_pan_slct], ...
-        'title','Selection','fontunits','pixels','fontsize',fntS);
+w_axes3 = wFig - 2*mg;
+h_axes3 = 0.5*(h_pan_tool-4*mg)-h_pop-h_txt-2*mg;
+w_pan_slct = (w_axes3-mg)/2;
+h_pan_slct = h_pan_tool-h_axes3-h_pop-h_txt-mg-5*mg;
+w_pan_sg = w_axes3-mg-w_pan_slct;
+w_txt1 = 65;
+w_txt2 = 105;
+
+xNext = 2*mg;
+yNext = 2*mg;
+
+h.tm.uipanel_selection = uipanel('parent',h.tm.uipanel_autoSorting, ...
+    'units','pixels','position',[xNext yNext w_pan_slct h_pan_slct], ...
+    'title','Selection','fontunits','pixels','fontsize',fntS);
+
+xNext = xNext + w_pan_slct + mg;
+
+h.tm.uipanel_subgroups = uipanel('parent',h.tm.uipanel_autoSorting, ...
+    'units', 'pixels', 'position', [xNext yNext w_pan_sg h_pan_slct], ...
+    'title','Subgroup tag','fontunits','pixels','fontsize',fntS);
+
+xNext = 2*mg;
+yNext = yNext + h_pan_slct + 2*mg;
+
+h.tm.axes_histSort = axes('parent',h.tm.uipanel_autoSorting,...
+    'units','pixels','fontunits','pixels','fontsize',fntS,...
+    'activepositionproperty','outerposition','gridlineStyle',':',...
+    'nextPlot','replacechildren');
+pos = getRealPosAxes([xNext,yNext,w_axes3,h_axes3], ...
+get(h.tm.axes_histSort,'TightInset'),'traces'); 
+pos(3) = pos(3) - fntS;
+pos(1) = pos(1) + fntS;
+set(h.tm.axes_histSort,'Position',pos);
+
+yNext = yNext + h_axes3 + mg;
+
+h.tm.text_selectData = uicontrol('style','text','parent',...
+    h.tm.uipanel_autoSorting,'string','Select data:','position',...
+    [xNext,yNext,w_txt1,h_txt],'fontunits','pixels','fontsize',fntS,...
+    'fontweight','bold','horizontalalignment','left');
+
+xNext = xNext + w_txt1 + mg;
+
+str_pop = getStrPlot_overall(h_fig);
+h.tm.popupmenu_selectData = uicontrol('style','popupmenu','parent',...
+    h.tm.uipanel_autoSorting,'string',str_pop{2},'tooltipstring',...
+    'Select the data to histogram','position',[xNext,yNext,w_pop,h_pop],...
+    'fontunits','pixels','fontsize',fntS,'callback',...
+    {@popupmenu_selectData_Callback,h_fig});
+ 
+xNext = xNext + w_pop + 2*mg;
+
+h.tm.text_selectCalc = uicontrol('style','text','parent',...
+    h.tm.uipanel_autoSorting,'string','Select calculation:','position',...
+    [xNext,yNext,w_txt2,h_txt],'fontunits','pixels','fontsize',fntS,...
+    'fontweight','bold','horizontalalignment','left');
+ 
+xNext = xNext + w_txt2 + mg;
+ 
+str_pop = {'original time traces','means','minima','maxima','medians',...
+    'state trajectories'};
+h.tm.popupmenu_selectCalc = uicontrol('style','popupmenu','parent',...
+    h.tm.uipanel_autoSorting,'string',str_pop,'tooltipstring',...
+    'Select the calculated value to histogram','position',...
+    [xNext,yNext,w_pop,h_pop],'fontunits','pixels','fontsize',fntS,...
+    'callback',{@popupmenu_selectData_Callback,h_fig});
+
+xNext = xNext + w_pop + 2*mg;
+
+h.tm.text_histogram = uicontrol('style','text','parent',...
+    h.tm.uipanel_autoSorting,'string','Histogram:','position',...
+    [xNext,yNext,w_txt1,h_txt],'fontunits','pixels','fontsize',fntS,...
+    'fontweight','bold','horizontalalignment','left');
+
+xNext = xNext + w_txt1 + mg;
+
+h.tm.edit_xlow = uicontrol('style','edit','parent',...
+    h.tm.uipanel_autoSorting,'string','','tooltipstring',...
+    'Lower bound of x-axis','position',[xNext,yNext,w_edit,h_edit],...
+    'fontunits','pixels','fontsize',fntS,'callback',...
+    {@edit_xlow_Callback,h_fig});
+
+yNext = yNext + h_edit;
+
+h.tm.text_xlow = uicontrol('style','text','parent',...
+    h.tm.uipanel_autoSorting,'string','x min','position',...
+    [xNext,yNext,w_edit,h_txt],'fontunits','pixels','fontsize',fntS,...
+    'horizontalalignment','center');
+
+xNext = xNext + w_edit + mg/5;
+yNext = yNext - h_edit;
+
+h.tm.edit_xup = uicontrol('style','edit','parent',...
+    h.tm.uipanel_autoSorting,'string','','tooltipstring',...
+    'Upper bound of x-axis','position',[xNext,yNext,w_edit,h_edit],...
+    'fontunits','pixels','fontsize',fntS,'callback',...
+    {@edit_xup_Callback,h_fig});
+
+yNext = yNext + h_edit;
+
+h.tm.text_xup = uicontrol('style','text','parent',...
+    h.tm.uipanel_autoSorting,'string','x max','position',...
+    [xNext,yNext,w_edit,h_txt],'fontunits','pixels','fontsize',fntS,...
+    'horizontalalignment','center');
+
+xNext = xNext + w_edit + mg/5;
+yNext = yNext - h_edit;
+
+h.tm.edit_xniv = uicontrol('style','edit','parent',...
+    h.tm.uipanel_autoSorting,'string','','tooltipstring',...
+    'Number of binning intervals in x-axis','position',...
+    [xNext,yNext,w_edit,h_edit],'fontunits','pixels','fontsize',fntS,...
+    'callback',{@edit_xniv_Callback,h_fig});
+
+yNext = yNext + h_edit;
+
+h.tm.text_xniv = uicontrol('style','text','parent',...
+    h.tm.uipanel_autoSorting,'string','nbins','position',...
+    [xNext,yNext,w_edit,h_txt],'fontunits','pixels','fontsize',fntS,...
+    'horizontalalignment','center');
+
+xNext = xNext + w_edit + mg;
+yNext = yNext - h_edit;
+
+h.tm.edit_ylow = uicontrol('style','edit','parent',...
+    h.tm.uipanel_autoSorting,'string','','tooltipstring',...
+    'Lower bound of y-axis','position',[xNext,yNext,w_edit,h_edit],...
+    'fontunits','pixels','fontsize',fntS,'callback',...
+    {@edit_ylow_Callback,h_fig},'enable','off');
+
+yNext = yNext + h_edit;
+
+h.tm.text_ylow = uicontrol('style','text','parent',...
+    h.tm.uipanel_autoSorting,'string','y min','position',...
+    [xNext,yNext,w_edit,h_txt],'fontunits','pixels','fontsize',fntS,...
+    'horizontalalignment','center','enable','off');
+
+xNext = xNext + w_edit + mg/5;
+yNext = yNext - h_edit;
+
+h.tm.edit_yup = uicontrol('style','edit','parent',...
+    h.tm.uipanel_autoSorting,'string','','tooltipstring',...
+    'Upper bound of y-axis','position',[xNext,yNext,w_edit,h_edit],...
+    'fontunits','pixels','fontsize',fntS,'callback',...
+    {@edit_yup_Callback,h_fig},'enable','off');
+
+yNext = yNext + h_edit;
+
+h.tm.text_yup = uicontrol('style','text','parent',...
+    h.tm.uipanel_autoSorting,'string','y max','position',...
+    [xNext,yNext,w_edit,h_txt],'fontunits','pixels','fontsize',fntS,...
+    'horizontalalignment','center','enable','off');
+
+xNext = xNext + w_edit + mg/5;
+yNext = yNext - h_edit;
+
+h.tm.edit_yniv = uicontrol('style','edit','parent',...
+    h.tm.uipanel_autoSorting,'string','','tooltipstring',...
+    'Number of binning intervals in y-axis','position',...
+    [xNext,yNext,w_edit,h_edit],'fontunits','pixels','fontsize',fntS,...
+    'callback',{@edit_yniv_Callback,h_fig},'enable','off');
+
+yNext = yNext + h_edit;
+
+h.tm.text_yniv = uicontrol('style','text','parent',...
+    h.tm.uipanel_autoSorting,'string','nbins','position',...
+    [xNext,yNext,w_edit,h_txt],'fontunits','pixels','fontsize',fntS,...
+    'horizontalalignment','center','enable','off');
+
     
-    xNext = xNext + w_pan_slct + mg;
-    
-    h.tm.uipanel_subgroups = uipanel('parent',h.tm.uipanel_autoSorting, ...
-        'units', 'pixels', 'position', [xNext yNext w_pan_sg h_pan_slct], ...
-        'title','Subgroup tag','fontunits','pixels','fontsize',fntS);
-    
-    xNext = 2*mg;
-    yNext = yNext + h_pan_slct + mg;
-   
-    h.tm.axes_histSort = axes('parent',h.tm.uipanel_autoSorting,...
-        'units','pixels','fontunits','pixels','fontsize',fntS,...
-        'activepositionproperty','outerposition','gridlineStyle',':',...
-        'nextPlot','replacechildren');
-     pos = getRealPosAxes([xNext,yNext,w_axes3,h_axes3], ...
-         get(h.tm.axes_histSort,'TightInset'),'traces'); 
-     pos(3) = pos(3) - fntS;
-     pos(1) = pos(1) + fntS;
-     set(h.tm.axes_histSort,'Position',pos);
+%% - build panel selection
      
-     yNext = yNext + h_axes3 + mg;
-     
-     h.tm.text_selectDistrib = uicontrol('style','text','parent',...
-         h.tm.uipanel_autoSorting,'string','Select data distribution:',...
-         'position',[xNext,yNext,w_txt,h_txt],'fontunits','pixels',...
-         'fontsize',fntS,'fontweight','bold');
-     
-     xNext = xNext + w_txt + mg;
-     
-     str_pop = getStrPlot_overall(h_fig);
-     h.tm.popupmenu_selectDistrib = uicontrol('style','popupmenu','parent',...
-         h.tm.uipanel_autoSorting,'string',str_pop{2},'tooltipstring',...
-         'Select data distribution:','position',[xNext,yNext,w_txt,h_pop],...
-         'fontunits','pixels','fontsize',fntS);
-     
+
     
-	% panel selection
-     
-     
+%% - save and finalize figure
     
-    
-    % Save and finalize figure
-    
-    % save controls
-    guidata(h_fig, h);
-    
-    % build controls and axes in panel "Molecule selection"
-    updatePanel_single(h_fig, nb_mol_disp);
-    
-    % recover new controls
-    h = guidata(h_fig);
-    
-    % set all positions and dimensions to normalized 
-    setProp(get(h.tm.figure_traceMngr, 'Children'), 'Units', 'normalized');
-    
-    % set all font units to pixels
-    setProp(get(h.tm.figure_traceMngr, 'Children'), 'FontUnits', 'pixels');
-    
-    % store relevant parameters to used when reducing panel "Overall plot"
-    pos_button = get(h.tm.pushbutton_reduce, 'Position');
-    pos_panelAll_open = get(h.tm.uipanel_overall, 'Position');
-    pos_panelSingle_open = get(h.tm.uipanel_overview, 'Position');
-    dat.arrow = flipdim(arrow_up,1);% close
-    dat.open = 1;
-    h_panelAll_close = pos_button(4);
-    dat.pos_all = [pos_panelAll_open(1) ...
-        pos_panelAll_open(2)+pos_panelAll_open(4)-h_panelAll_close ...
-        pos_panelAll_open(3) h_panelAll_close];% close
-    dat.pos_single = [pos_panelSingle_open(1) pos_panelSingle_open(2) ...
-        pos_panelAll_open(3) (pos_panelSingle_open(4)+ ...
-        pos_panelAll_open(4)-h_panelAll_close)];% close
-    dat.tooltip = 'Show overall panel';% close
-    dat.visible = 'off';
-    set(h.tm.pushbutton_reduce, 'UserData', dat);
-    
-    % make figure visible
-    set(h.tm.figure_traceMngr, 'Visible', 'on');
-    
-    % switch to default tool interface
-    switchPan_TM(h.tm.togglebutton_overview,[],h_fig);
+% save controls
+guidata(h_fig, h);
+
+% set all positions and dimensions to normalized 
+setProp(get(h.tm.figure_traceMngr, 'Children'), 'Units', 'normalized');
+
+% set all font units to pixels
+setProp(get(h.tm.figure_traceMngr, 'Children'), 'FontUnits', 'pixels');
+
+% store relevant parameters to used when reducing panel "Overall plot"
+pos_button = get(h.tm.pushbutton_reduce, 'Position');
+pos_panelAll_open = get(h.tm.uipanel_overall, 'Position');
+pos_panelSingle_open = get(h.tm.uipanel_overview, 'Position');
+dat.arrow = flipdim(arrow_up,1);% close
+dat.open = 1;
+h_panelAll_close = pos_button(4);
+dat.pos_all = [pos_panelAll_open(1) ...
+    pos_panelAll_open(2)+pos_panelAll_open(4)-h_panelAll_close ...
+    pos_panelAll_open(3) h_panelAll_close];% close
+dat.pos_single = [pos_panelSingle_open(1) pos_panelSingle_open(2) ...
+    pos_panelAll_open(3) (pos_panelSingle_open(4)+ ...
+    pos_panelAll_open(4)-h_panelAll_close)];% close
+dat.tooltip = 'Show overall panel';% close
+dat.visible = 'off';
+set(h.tm.pushbutton_reduce, 'UserData', dat);
+
+% make figure visible
+set(h.tm.figure_traceMngr, 'Visible', 'on');
+
+% switch to default tool interface
+switchPan_TM(h.tm.togglebutton_overview,[],h_fig);
     
 end
 
@@ -992,185 +1212,185 @@ function updatePanel_single(h_fig, nb_mol_disp)
 %
 %
     
-    h = guidata(h_fig);
-    p = h.param.ttPr;
-    proj = p.curr_proj;
-    
-    nFRET = size(p.proj{proj}.FRET,1);
-    nS = size(p.proj{proj}.S,1);
-    isBot = double(nS | nFRET);
-    
-    % get panel pixel dimensions
-    pan_units = get(h.tm.uipanel_overview,'units');
-    set(h.tm.uipanel_overview,'units','pixels');
-    pos_pan = get(h.tm.uipanel_overview,'position');
-    set(h.tm.uipanel_overview,'units',pan_units);
-    w_pan = pos_pan(3);
-    h_pan = pos_pan(4);
-    
-    % get button pixel dimensions
-    but_units = get(h.tm.pushbutton_reduce,'units');
-    set(h.tm.pushbutton_reduce,'units','pixels');
-    pos_pan = get(h.tm.pushbutton_reduce,'position');
-    set(h.tm.pushbutton_reduce,'units',but_units);
-    y_but = pos_pan(2);
-    
-    % get slide bar pixel dimensions
-    sb_units = get(h.tm.slider,'units');
-    set(h.tm.slider,'units','pixels');
-    pos_sb = get(h.tm.slider,'position');
-    set(h.tm.slider,'units',sb_units);
-    w_sb = pos_sb(3);
-    
-    % calculate control and axes dimensions
-    mg = 10;
-    mg_top = h_pan-y_but;
-    h_line = (h_pan-mg_top-2*mg)/nb_mol_disp;
-    w_line = w_pan-w_sb-2*mg;
-    w_cb = 40;
-    w_pop = 60; 
-    h_pop = 20;
-    w_but = 40; 
-    h_but = h_pop;
-    w_col = w_cb+w_pop+w_but+4*mg;
-    w_lst = w_col-w_cb-3*mg; 
-    h_lst = h_line-h_pop-h_but-4*mg;
-    h_lst(h_lst<h_pop) = h_pop;
-    w_axes_tt = (5/6)*(w_line-w_col);
-    w_axes_hist = (1/6)*(w_line-w_col);
-    h_axes = h_line/(1+isBot);
-    
-    fntS = get(h.tm.axes_ovrAll_1, 'FontSize');
-    
-    % modified by MH, 24.4.2019
-    % update field reset with new controls
-    if isfield(h.tm, 'checkbox_molNb')
-        for i = 1:size(h.tm.checkbox_molNb,2)
-            if ishandle(h.tm.checkbox_molNb(i))
-                delete([h.tm.checkbox_molNb(i),h.tm.axes_itt(i),...
-                    h.tm.axes_itt_hist(i),h.tm.pushbutton_remLabel(i),...
-                    h.tm.listbox_molLabel(i),h.tm.popup_molNb(i),...
-                    h.tm.pushbutton_addTag2mol(i)]);
-                if isBot
-                    delete([h.tm.axes_frettt(i),h.tm.axes_hist(i)]);
-                end
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+
+nFRET = size(p.proj{proj}.FRET,1);
+nS = size(p.proj{proj}.S,1);
+isBot = double(nS | nFRET);
+
+% get panel pixel dimensions
+pan_units = get(h.tm.uipanel_overview,'units');
+set(h.tm.uipanel_overview,'units','pixels');
+pos_pan = get(h.tm.uipanel_overview,'position');
+set(h.tm.uipanel_overview,'units',pan_units);
+w_pan = pos_pan(3);
+h_pan = pos_pan(4);
+
+% get button pixel dimensions
+but_units = get(h.tm.pushbutton_reduce,'units');
+set(h.tm.pushbutton_reduce,'units','pixels');
+pos_pan = get(h.tm.pushbutton_reduce,'position');
+set(h.tm.pushbutton_reduce,'units',but_units);
+y_but = pos_pan(2);
+
+% get slide bar pixel dimensions
+sb_units = get(h.tm.slider,'units');
+set(h.tm.slider,'units','pixels');
+pos_sb = get(h.tm.slider,'position');
+set(h.tm.slider,'units',sb_units);
+w_sb = pos_sb(3);
+
+% calculate control and axes dimensions
+mg = 10;
+mg_top = h_pan-y_but;
+h_line = (h_pan-mg_top-2*mg)/nb_mol_disp;
+w_line = w_pan-w_sb-2*mg;
+w_cb = 40;
+w_pop = 60; 
+h_pop = 20;
+w_but = 40; 
+h_but = h_pop;
+w_col = w_cb+w_pop+w_but+4*mg;
+w_lst = w_col-w_cb-3*mg; 
+h_lst = h_line-h_pop-h_but-4*mg;
+h_lst(h_lst<h_pop) = h_pop;
+w_axes_tt = (5/6)*(w_line-w_col);
+w_axes_hist = (1/6)*(w_line-w_col);
+h_axes = h_line/(1+isBot);
+
+fntS = get(h.tm.axes_ovrAll_1, 'FontSize');
+
+% modified by MH, 24.4.2019
+% update field reset with new controls
+if isfield(h.tm, 'checkbox_molNb')
+    for i = 1:size(h.tm.checkbox_molNb,2)
+        if ishandle(h.tm.checkbox_molNb(i))
+            delete([h.tm.checkbox_molNb(i),h.tm.axes_itt(i),...
+                h.tm.axes_itt_hist(i),h.tm.pushbutton_remLabel(i),...
+                h.tm.listbox_molLabel(i),h.tm.popup_molNb(i),...
+                h.tm.pushbutton_addTag2mol(i)]);
+            if isBot
+                delete([h.tm.axes_frettt(i),h.tm.axes_hist(i)]);
             end
         end
-        h.tm = rmfield(h.tm,{'checkbox_molNb','axes_itt','axes_itt_hist',...
-            'pushbutton_remLabel','listbox_molLabel','popup_molNb',...
-            'pushbutton_addTag2mol'});
-        if isBot
-            h.tm = rmfield(h.tm,{'axes_frettt','axes_hist'});
-        end
     end
+    h.tm = rmfield(h.tm,{'checkbox_molNb','axes_itt','axes_itt_hist',...
+        'pushbutton_remLabel','listbox_molLabel','popup_molNb',...
+        'pushbutton_addTag2mol'});
+    if isBot
+        h.tm = rmfield(h.tm,{'axes_frettt','axes_hist'});
+    end
+end
 
-    for i = nb_mol_disp:-1:1
-        
-        y_0 = mg + (nb_mol_disp-i)*h_line;
-        x_0 = mg;
-        
-        x_next = x_0;
-        y_next = y_0;
-        
-        h.tm.checkbox_molNb(i) = uicontrol('Style','checkbox','Parent',...
-            h.tm.uipanel_overview,'Units','pixel','Position',...
-            [x_next y_next w_col-mg h_line],'String',num2str(i),'Value', ...
-            h.tm.molValid(i),'Callback',{@checkbox_molNb_Callback,h_fig},...
-            'FontSize',12,'BackgroundColor', ...
-            0.05*[mod(i,2) mod(i,2) mod(i,2)]+0.85);
-        
-        x_next = x_next + w_cb + mg;
-        y_next = y_next + mg;
-        
-        h.tm.pushbutton_remLabel(i) = uicontrol('Style', 'pushbutton', ...
-            'Parent', h.tm.uipanel_overview, 'Units', 'pixel', ...
-            'Position', [x_next y_next w_lst h_but], 'Callback', ...
-            {@pushbutton_remLabel_Callback,h_fig,i}, 'String', ...
-            'Untag');
-        
-        y_next = y_next + h_but + mg;
-        
-        str_lst = colorTagLists(h_fig,i);
+for i = nb_mol_disp:-1:1
 
-        h.tm.listbox_molLabel(i) = uicontrol('Style', 'listbox', ...
-            'Parent', h.tm.uipanel_overview, 'Units', 'pixel', ...
-            'Position', [x_next y_next w_lst h_lst],'string',str_lst);
+    y_0 = mg + (nb_mol_disp-i)*h_line;
+    x_0 = mg;
 
-        x_next = x_0 + w_cb + mg;
-        y_next = y_next + h_lst + mg;
-        
-        % added by FS, 24.4.2018
-        str_pop = colorTagNames(h_fig);
-        
-        % modified by MH, 24.4.2019
-        % adjust popupmenu to first label in default list and remove 
-        % callback
+    x_next = x_0;
+    y_next = y_0;
+
+    h.tm.checkbox_molNb(i) = uicontrol('Style','checkbox','Parent',...
+        h.tm.uipanel_overview,'Units','pixel','Position',...
+        [x_next y_next w_col-mg h_line],'String',num2str(i),'Value', ...
+        h.tm.molValid(i),'Callback',{@checkbox_molNb_Callback,h_fig},...
+        'FontSize',12,'BackgroundColor', ...
+        0.05*[mod(i,2) mod(i,2) mod(i,2)]+0.85);
+
+    x_next = x_next + w_cb + mg;
+    y_next = y_next + mg;
+
+    h.tm.pushbutton_remLabel(i) = uicontrol('Style', 'pushbutton', ...
+        'Parent', h.tm.uipanel_overview, 'Units', 'pixel', ...
+        'Position', [x_next y_next w_lst h_but], 'Callback', ...
+        {@pushbutton_remLabel_Callback,h_fig,i}, 'String', ...
+        'Untag');
+
+    y_next = y_next + h_but + mg;
+
+    str_lst = colorTagLists(h_fig,i);
+
+    h.tm.listbox_molLabel(i) = uicontrol('Style', 'listbox', ...
+        'Parent', h.tm.uipanel_overview, 'Units', 'pixel', ...
+        'Position', [x_next y_next w_lst h_lst],'string',str_lst);
+
+    x_next = x_0 + w_cb + mg;
+    y_next = y_next + h_lst + mg;
+
+    % added by FS, 24.4.2018
+    str_pop = colorTagNames(h_fig);
+
+    % modified by MH, 24.4.2019
+    % adjust popupmenu to first label in default list and remove 
+    % callback
 %         if h.tm.molTag(i) > length(str_pop)
 %             val = 1;
 %         else
 %             val = h.tm.molTag(i);
 %         end
-        h.tm.popup_molNb(i) = uicontrol('Style', 'popup', ...
-            'Parent', h.tm.uipanel_overview, 'Units', 'pixel', ...
-            'Position', [x_next y_next w_pop h_pop], 'String',  str_pop, ...
-            'Value', 1);
-        
-        % deactivate the popupmenu if the molecule is not selected
-        % added by FS, 24.4.2018
-        % cancelled by MH, 24.4.2019: allow labelling even if not selected
+    h.tm.popup_molNb(i) = uicontrol('Style', 'popup', ...
+        'Parent', h.tm.uipanel_overview, 'Units', 'pixel', ...
+        'Position', [x_next y_next w_pop h_pop], 'String',  str_pop, ...
+        'Value', 1);
+
+    % deactivate the popupmenu if the molecule is not selected
+    % added by FS, 24.4.2018
+    % cancelled by MH, 24.4.2019: allow labelling even if not selected
 %         if h.tm.molValid(i) == 0
 %             set(h.tm.popup_molNb(i), 'Enable', 'off')
 %         else
 %             set(h.tm.popup_molNb(i), 'Enable', 'on')
 %         end
-        
-        x_next = x_next + w_pop + mg;
-        
-        h.tm.pushbutton_addTag2mol(i) = uicontrol('Style','pushbutton', ...
-            'Parent',h.tm.uipanel_overview,'Units','pixel','Position', ...
-            [x_next y_next w_but h_but],'String','Tag','Callback', ...
-            {@pushbutton_addTag2mol_Callback,h_fig,i});
 
-        y_next = y_0;
+    x_next = x_next + w_pop + mg;
+
+    h.tm.pushbutton_addTag2mol(i) = uicontrol('Style','pushbutton', ...
+        'Parent',h.tm.uipanel_overview,'Units','pixel','Position', ...
+        [x_next y_next w_but h_but],'String','Tag','Callback', ...
+        {@pushbutton_addTag2mol_Callback,h_fig,i});
+
+    y_next = y_0;
+    x_next = w_col;
+
+    h.tm.axes_itt(i) = axes('Parent', h.tm.uipanel_overview, ...
+        'Units', 'pixel', 'Position', [x_next y_next w_axes_tt h_axes], ...
+        'YAxisLocation', 'right', 'NextPlot', 'replacechildren', ...
+        'GridLineStyle', ':', 'FontUnits', 'pixels', 'FontSize', fntS);
+
+    x_next = x_next + w_axes_tt;
+
+    h.tm.axes_itt_hist(i) = axes('Parent', h.tm.uipanel_overview, ...
+        'Units','pixel','Position',[x_next y_next w_axes_hist h_axes], ...
+        'YAxisLocation','right','GridLineStyle',':','FontUnits', ...
+        'pixels','FontSize',fntS);
+
+    if isBot
         x_next = w_col;
-        
-        h.tm.axes_itt(i) = axes('Parent', h.tm.uipanel_overview, ...
-            'Units', 'pixel', 'Position', [x_next y_next w_axes_tt h_axes], ...
-            'YAxisLocation', 'right', 'NextPlot', 'replacechildren', ...
-            'GridLineStyle', ':', 'FontUnits', 'pixels', 'FontSize', fntS);
-        
+        y_next = y_next + h_axes;
+
+        h.tm.axes_frettt(i) = axes('Parent', h.tm.uipanel_overview, ...
+            'Units', 'pixel', 'Position', ...
+            [x_next y_next w_axes_tt h_line/2], 'YAxisLocation', ...
+            'right', 'NextPlot', 'replacechildren', 'GridLineStyle',...
+            ':', 'FontUnits', 'pixels', 'FontSize', fntS);
+
         x_next = x_next + w_axes_tt;
-        
-        h.tm.axes_itt_hist(i) = axes('Parent', h.tm.uipanel_overview, ...
-            'Units','pixel','Position',[x_next y_next w_axes_hist h_axes], ...
-            'YAxisLocation','right','GridLineStyle',':','FontUnits', ...
-            'pixels','FontSize',fntS);
-        
-        if isBot
-            x_next = w_col;
-            y_next = y_next + h_axes;
-        
-            h.tm.axes_frettt(i) = axes('Parent', h.tm.uipanel_overview, ...
-                'Units', 'pixel', 'Position', ...
-                [x_next y_next w_axes_tt h_line/2], 'YAxisLocation', ...
-                'right', 'NextPlot', 'replacechildren', 'GridLineStyle',...
-                ':', 'FontUnits', 'pixels', 'FontSize', fntS);
-            
-            x_next = x_next + w_axes_tt;
-            
-            h.tm.axes_hist(i) = axes('Parent', h.tm.uipanel_overview, ...
-                'Units', 'pixel', 'Position', ...
-                [x_next y_next w_axes_hist h_line/2], 'YAxisLocation',...
-                'right', 'GridLineStyle', ':', 'FontUnits', 'pixels', ...
-                'FontSize', fntS);
-        end
+
+        h.tm.axes_hist(i) = axes('Parent', h.tm.uipanel_overview, ...
+            'Units', 'pixel', 'Position', ...
+            [x_next y_next w_axes_hist h_line/2], 'YAxisLocation',...
+            'right', 'GridLineStyle', ':', 'FontUnits', 'pixels', ...
+            'FontSize', fntS);
     end
-    
-    setProp(get(h.tm.uipanel_overview, 'children'),'units','normalized');
-    setProp(get(h.tm.uipanel_overview, 'children'),'fontunits',...
-        'normalized');
-    
-    guidata(h_fig, h);
+end
+
+setProp(get(h.tm.uipanel_overview, 'children'),'units','normalized');
+setProp(get(h.tm.uipanel_overview, 'children'),'fontunits',...
+    'normalized');
+
+guidata(h_fig, h);
 
 end
 
@@ -1218,53 +1438,50 @@ end
 
 %% plots
 
+%% - plots in "Overview"
+
 function plotDataTm(h_fig)
 
-    global intensities;
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nFRET = size(p.proj{proj}.FRET,1);
+nS = size(p.proj{proj}.S,1);
+isBot = nFRET | nS;
 
-    h = guidata(h_fig);
-    p = h.param.ttPr;
-    proj = p.curr_proj;
-    nFRET = size(p.proj{proj}.FRET,1);
-    nS = size(p.proj{proj}.S,1);
-    isBot = nFRET | nS;
-    
-    m = p;
-    m.proj{proj}.intensities_denoise = intensities;
-    
-    mol = p.curr_mol(proj);
-    prm = p.proj{proj}.prm{mol};
+mol = p.curr_mol(proj);
+prm = p.proj{proj}.prm{mol};
 
-    for i = 1:size(h.tm.checkbox_molNb,2)
-        mol_nb = str2num(get(h.tm.checkbox_molNb(i), 'String'));
-        
-        axes.axes_traceTop = h.tm.axes_itt(i);
-        axes.axes_histTop = h.tm.axes_itt_hist(i);
-        if isBot
-            axes.axes_traceBottom = h.tm.axes_frettt(i);
-            axes.axes_histBottom = h.tm.axes_hist(i);
-        end
-        
-        plotData(mol_nb, m, axes, prm, 0);
-        
-        if h.tm.molValid(mol_nb)
-            shad = [1 1 1];
-        else
-            shad = get(h.tm.checkbox_molNb(i), 'BackgroundColor');
-        end
-        set([h.tm.axes_itt(i) h.tm.axes_itt_hist(i)], 'Color', shad);
-        if isBot
-            set([h.tm.axes_frettt(i), h.tm.axes_hist(i)], 'Color', shad);
-            if i ~= size(h.tm.checkbox_molNb,2)
-                set(get(h.tm.axes_frettt(i), 'Xlabel'), 'String', '');
-                set(get(h.tm.axes_itt_hist(i), 'Xlabel'), 'String', '');
-            end
-        elseif i ~= size(h.tm.checkbox_molNb,2)
-            set(get(h.tm.axes_itt(i), 'Xlabel'), 'String', '');
-            set(get(axes.axes_histTop, 'Xlabel'), 'String', '');
-        end
-        set(h.tm.checkbox_molNb(i), 'Value', h.tm.molValid(mol_nb));
+for i = 1:size(h.tm.checkbox_molNb,2)
+    mol_nb = str2num(get(h.tm.checkbox_molNb(i), 'String'));
+
+    axes.axes_traceTop = h.tm.axes_itt(i);
+    axes.axes_histTop = h.tm.axes_itt_hist(i);
+    if isBot
+        axes.axes_traceBottom = h.tm.axes_frettt(i);
+        axes.axes_histBottom = h.tm.axes_hist(i);
     end
+
+    plotData(mol_nb, p, axes, prm, 0);
+
+    if h.tm.molValid(mol_nb)
+        shad = [1 1 1];
+    else
+        shad = get(h.tm.checkbox_molNb(i), 'BackgroundColor');
+    end
+    set([h.tm.axes_itt(i) h.tm.axes_itt_hist(i)], 'Color', shad);
+    if isBot
+        set([h.tm.axes_frettt(i), h.tm.axes_hist(i)], 'Color', shad);
+        if i ~= size(h.tm.checkbox_molNb,2)
+            set(get(h.tm.axes_frettt(i), 'Xlabel'), 'String', '');
+            set(get(h.tm.axes_itt_hist(i), 'Xlabel'), 'String', '');
+        end
+    elseif i ~= size(h.tm.checkbox_molNb,2)
+        set(get(h.tm.axes_itt(i), 'Xlabel'), 'String', '');
+        set(get(axes.axes_histTop, 'Xlabel'), 'String', '');
+    end
+    set(h.tm.checkbox_molNb(i), 'Value', h.tm.molValid(mol_nb));
+end
 end
 
 
@@ -1284,162 +1501,276 @@ function plotData_overall(h_fig)
 
 warning('off','MATLAB:hg:EraseModeIgnored');
 
-    h = guidata(h_fig);
-    p = h.param.ttPr;
-    proj = p.curr_proj;
-    nChan = p.proj{proj}.nb_channel;
-    nExc = p.proj{proj}.nb_excitations;
-    FRET = p.proj{proj}.FRET;
-    nFRET = size(FRET,1);
-    S = p.proj{proj}.S;
-    nS = size(S,1);
-    inSec = p.proj{proj}.fix{2}(7);
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+nExc = p.proj{proj}.nb_excitations;
+FRET = p.proj{proj}.FRET;
+nFRET = size(FRET,1);
+S = p.proj{proj}.S;
+nS = size(S,1);
+inSec = p.proj{proj}.fix{2}(7);
 
-    plot1 = get(h.tm.popupmenu_axes1, 'Value');
-    plot2 = get(h.tm.popupmenu_axes2, 'Value');
-    
-    dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
-    dat2 = get(h.tm.axes_ovrAll_2, 'UserData');
-    
-    disp('plot data ...');
+plot1 = get(h.tm.popupmenu_axes1, 'Value');
+plot2 = get(h.tm.popupmenu_axes2, 'Value');
 
-    if plot1 <= nChan*nExc+nFRET+nS % single channel/FRET/S
-        x_axis = 1:size(dat1.trace{plot1},1);
-        if inSec
-            rate = p.proj{proj}.frame_rate;
-            x_axis = x_axis*rate;
-        end
-        plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{plot1}, 'Color', ...
-            dat1.color{plot1});
-        xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
-        if plot1 <= nChan*nExc
-            ylim(h.tm.axes_ovrAll_1, [min(dat1.trace{plot1}) ...
-                max(dat1.trace{plot1})]);
-        else
-            ylim(h.tm.axes_ovrAll_1, [-0.2 1.2]);
-        end
-        xlabel(h.tm.axes_ovrAll_1, dat1.xlabel);
-        ylabel(h.tm.axes_ovrAll_1, dat1.ylabel{plot1});
-        
-        
-    elseif plot1 == nChan*nExc+nFRET+nS+1 && nChan > 1% all intensities
-        x_axis = 1:size(dat1.trace{1},1);
-        if inSec
-            rate = p.proj{proj}.frame_rate;
-            x_axis = x_axis*rate;
-        end
-        min_y = Inf;
-        max_y = -Inf;
-        for l = 1:nExc
-            for c = 1:nChan
-                %ind = (l-1)+c; % RB 2018-01-03: indizes/colour bug solved
-                ind = 2*(l-1)+c;
-                plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{ind}, ...
-                    'Color', dat1.color{ind});
-                min_y = min([min_y min(dat1.trace{ind})]);
-                max_y = max([max_y max(dat1.trace{ind})]);
-                
-                % added by MH, 24.4.2019
-                if l==1 && c==1
-                    set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
-                end
-            end
-        end
-        set(h.tm.axes_ovrAll_1, 'NextPlot', 'replacechildren');
-        xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
-        ylim(h.tm.axes_ovrAll_1, [min_y max_y]);
-        xlabel(h.tm.axes_ovrAll_1, dat1.xlabel);
-        ylabel(h.tm.axes_ovrAll_1, dat1.ylabel{plot1});
-        
-    elseif plot1 == nChan*nExc+nFRET+nS+2 && nFRET > 1% all FRET
-        x_axis = 1:size(dat1.trace{nChan*nExc+1},1);
-        if inSec
-            rate = p.proj{proj}.frame_rate;
-            x_axis = x_axis*rate;
-        end
-        for n = 1:nFRET
-            ind = nChan*nExc+n;
+dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
+dat2 = get(h.tm.axes_ovrAll_2, 'UserData');
+
+disp('plot data ...');
+
+if plot1 <= nChan*nExc+nFRET+nS % single channel/FRET/S
+    x_axis = 1:size(dat1.trace{plot1},1);
+    if inSec
+        rate = p.proj{proj}.frame_rate;
+        x_axis = x_axis*rate;
+    end
+    plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{plot1}, 'Color', ...
+        dat1.color{plot1});
+    xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
+    if plot1 <= nChan*nExc
+        ylim(h.tm.axes_ovrAll_1, [min(dat1.trace{plot1}) ...
+            max(dat1.trace{plot1})]);
+    else
+        ylim(h.tm.axes_ovrAll_1, [-0.2 1.2]);
+    end
+    xlabel(h.tm.axes_ovrAll_1, dat1.xlabel);
+    ylabel(h.tm.axes_ovrAll_1, dat1.ylabel{plot1});
+
+
+elseif plot1 == nChan*nExc+nFRET+nS+1 && nChan > 1% all intensities
+    x_axis = 1:size(dat1.trace{1},1);
+    if inSec
+        rate = p.proj{proj}.frame_rate;
+        x_axis = x_axis*rate;
+    end
+    min_y = Inf;
+    max_y = -Inf;
+    for l = 1:nExc
+        for c = 1:nChan
+            %ind = (l-1)+c; % RB 2018-01-03: indizes/colour bug solved
+            ind = 2*(l-1)+c;
             plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{ind}, ...
                 'Color', dat1.color{ind});
+            min_y = min([min_y min(dat1.trace{ind})]);
+            max_y = max([max_y max(dat1.trace{ind})]);
+
             % added by MH, 24.4.2019
-            if n==1
+            if l==1 && c==1
                 set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
             end
         end
-        set(h.tm.axes_ovrAll_1, 'NextPlot', 'replacechildren');
-        xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
-        ylim(h.tm.axes_ovrAll_1, [-0.2 1.2]);
-        xlabel(h.tm.axes_ovrAll_1, dat1.xlabel);
-        ylabel(h.tm.axes_ovrAll_1, dat1.ylabel{plot1});
+    end
+    set(h.tm.axes_ovrAll_1, 'NextPlot', 'replacechildren');
+    xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
+    ylim(h.tm.axes_ovrAll_1, [min_y max_y]);
+    xlabel(h.tm.axes_ovrAll_1, dat1.xlabel);
+    ylabel(h.tm.axes_ovrAll_1, dat1.ylabel{plot1});
+
+elseif plot1 == nChan*nExc+nFRET+nS+2 && nFRET > 1% all FRET
+    x_axis = 1:size(dat1.trace{nChan*nExc+1},1);
+    if inSec
+        rate = p.proj{proj}.frame_rate;
+        x_axis = x_axis*rate;
+    end
+    for n = 1:nFRET
+        ind = nChan*nExc+n;
+        plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{ind}, ...
+            'Color', dat1.color{ind});
+        % added by MH, 24.4.2019
+        if n==1
+            set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
+        end
+    end
+    set(h.tm.axes_ovrAll_1, 'NextPlot', 'replacechildren');
+    xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
+    ylim(h.tm.axes_ovrAll_1, [-0.2 1.2]);
+    xlabel(h.tm.axes_ovrAll_1, dat1.xlabel);
+    ylabel(h.tm.axes_ovrAll_1, dat1.ylabel{plot1});
+
+elseif (plot1 == nChan*nExc+nFRET+nS+2 && nFRET == 1 && nS > 1) || ...
+        (plot1 == nChan*nExc+nFRET+nS+3 && nFRET > 1 && nS > 1)% all S
+    x_axis = 1:size(dat1.trace{nChan*nExc+nFRET+1},1);
+    if inSec
+        rate = p.proj{proj}.frame_rate;
+        x_axis = x_axis*rate;
+    end
+    for n = 1:nS
+        ind = nChan*nExc+nFRET+n;
+        plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{ind}, ...
+            'Color', dat1.color{ind});
+        if n==1
+            set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
+        end
+    end
+    set(h.tm.axes_ovrAll_1, 'NextPlot', 'replacechildren');
+    xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
+    ylim(h.tm.axes_ovrAll_1, [-0.2 1.2]);
+    xlabel(h.tm.axes_ovrAll_1, dat1.xlabel);
+    ylabel(h.tm.axes_ovrAll_1, dat1.ylabel{plot1});
+
+elseif (plot1 == nChan*nExc+nFRET+nS+2 && nFRET == 1 && nS == 1) || ...
+        (plot1 == nChan*nExc+nFRET+nS+3 && ((nFRET > 1 && nS == 1) ...
+        || (nFRET == 1 && nS > 1))) || (plot1 == ...
+        nChan*nExc+nFRET+nS+4 && nFRET > 1 && nS > 1) % all FRET & S
+    x_axis = 1:size(dat1.trace{nChan*nExc+1},1);
+    if inSec
+        rate = p.proj{proj}.frame_rate;
+        x_axis = x_axis*rate;
+    end
+    for n = 1:(nFRET+nS)
+        ind = nChan*nExc+n;
+        plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{ind}, ...
+            'Color', dat1.color{ind});
+        if n==1
+            set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
+        end
+    end
+    set(h.tm.axes_ovrAll_1, 'NextPlot', 'replacechildren');
+    xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
+    ylim(h.tm.axes_ovrAll_1, [-0.2 1.2]);
+    xlabel(h.tm.axes_ovrAll_1, dat1.xlabel);
+    ylabel(h.tm.axes_ovrAll_1, dat1.ylabel{plot1});
+end
+
+% RB 2017-12-15: implement FRET-S-histograms in plot2
+if plot2 <= nChan*nExc+nFRET+nS
+    bar(h.tm.axes_ovrAll_2, dat2.iv{plot2}, dat2.hist{plot2}, ...
+        'FaceColor', dat1.color{plot2}, 'EdgeColor', ...
+    dat1.color{plot2});
+
+    xlabel(h.tm.axes_ovrAll_2, dat2.xlabel{plot2});
+    ylabel(h.tm.axes_ovrAll_2, dat2.ylabel{plot2}); % RB 2018-01-04:
+
+    xlim(h.tm.axes_ovrAll_2, [dat1.lim{plot2}(1),dat1.lim{plot2}(2)]);
+    ylim(h.tm.axes_ovrAll_2, 'auto');
+    
+else  % draw FRET-S histogram
+    cla(h.tm.axes_ovrAll_2);
+    %lim = [-0.2 1.2; -0.2,1.2];
+    imagesc(dat1.lim{plot2}(1,:),dat1.lim{plot2}(1,:),dat2.hist{plot2}, 'Parent', h.tm.axes_ovrAll_2);
+    set(h.tm.axes_ovrAll_2,'CLim',[min(min(dat2.hist{plot2})) max(max(dat2.hist{plot2}))]);
+
+    xlabel(h.tm.axes_ovrAll_2, dat2.xlabel{plot2});
+    ylabel(h.tm.axes_ovrAll_2, dat2.ylabel{plot2});
+
+    xlim(h.tm.axes_ovrAll_2, dat1.lim{plot2}(1,:));
+    ylim(h.tm.axes_ovrAll_2, dat1.lim{plot2}(2,:));
+end
+
+% display histogram parameters
+set(h.tm.edit_xlim_low,'string',num2str(dat1.lim{plot2}(1,1)));
+set(h.tm.edit_xlim_up,'string',num2str(dat1.lim{plot2}(1,2)));
+set(h.tm.edit_nbiv,'string',num2str(dat1.niv(plot2,1)));
+
+end
+
+
+%% - plots in "Auto sorting"
+
+function plotData_autoSort(h_fig)
+
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+nExc = p.proj{proj}.nb_excitations;
+nFRET = size(p.proj{proj}.FRET,1);
+nS = size(p.proj{proj}.S,1);
+
+
+dat1 = get(h.tm.axes_ovrAll_1,'userdata');
+dat2 = get(h.tm.axes_ovrAll_2,'userdata');
+dat3 = get(h.tm.axes_histSort,'userdata');
+
+ind = get(h.tm.popupmenu_selectData,'value');
+j = get(h.tm.popupmenu_selectCalc,'value');
+
+if ind<=(nChan*nExc+nFRET+nS) % 1D histograms
+    if j==1 % original data
+        P = dat2.hist{ind};
+        iv = dat2.iv{ind};
         
-    elseif (plot1 == nChan*nExc+nFRET+nS+2 && nFRET == 1 && nS > 1) || ...
-            (plot1 == nChan*nExc+nFRET+nS+3 && nFRET > 1 && nS > 1)% all S
-        x_axis = 1:size(dat1.trace{nChan*nExc+nFRET+1},1);
-        if inSec
-            rate = p.proj{proj}.frame_rate;
-            x_axis = x_axis*rate;
+    else % calculated/discretized data
+        if isempty(dat3.hist{ind,j-1})
+            setContPan(cat(2,'No calculated data available: start ',...
+                'calculation or select another type of calculation.'),...
+                'error',h_fig);
+            return;
         end
-        for n = 1:nS
-            ind = nChan*nExc+nFRET+n;
-            plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{ind}, ...
-                'Color', dat1.color{ind});
-            if n==1
-                set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
-            end
-        end
-        set(h.tm.axes_ovrAll_1, 'NextPlot', 'replacechildren');
-        xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
-        ylim(h.tm.axes_ovrAll_1, [-0.2 1.2]);
-        xlabel(h.tm.axes_ovrAll_1, dat1.xlabel);
-        ylabel(h.tm.axes_ovrAll_1, dat1.ylabel{plot1});
-        
-    elseif (plot1 == nChan*nExc+nFRET+nS+2 && nFRET == 1 && nS == 1) || ...
-            (plot1 == nChan*nExc+nFRET+nS+3 && ((nFRET > 1 && nS == 1) ...
-            || (nFRET == 1 && nS > 1))) || (plot1 == ...
-            nChan*nExc+nFRET+nS+4 && nFRET > 1 && nS > 1) % all FRET & S
-        x_axis = 1:size(dat1.trace{nChan*nExc+1},1);
-        if inSec
-            rate = p.proj{proj}.frame_rate;
-            x_axis = x_axis*rate;
-        end
-        for n = 1:(nFRET+nS)
-            ind = nChan*nExc+n;
-            plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{ind}, ...
-                'Color', dat1.color{ind});
-            if n==1
-                set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
-            end
-        end
-        set(h.tm.axes_ovrAll_1, 'NextPlot', 'replacechildren');
-        xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
-        ylim(h.tm.axes_ovrAll_1, [-0.2 1.2]);
-        xlabel(h.tm.axes_ovrAll_1, dat1.xlabel);
-        ylabel(h.tm.axes_ovrAll_1, dat1.ylabel{plot1});
+        P = dat3.hist{ind,j-1};
+        iv = dat3.iv{ind,j-1};
     end
     
-    % RB 2017-12-15: implement FRET-S-histograms in plot2
-    if plot2 <= nChan*nExc+nFRET+nS
-        bar(h.tm.axes_ovrAll_2, dat2.iv{plot2}, dat2.hist{plot2}, ...
-            'FaceColor', dat1.color{plot2}, 'EdgeColor', ...
-        dat1.color{plot2});
+    % plot histogram
+    bar(h.tm.axes_histSort,iv,P,'edgecolor',dat1.color{ind},'facecolor',...
+        dat1.color{ind});
     
-        xlabel(h.tm.axes_ovrAll_2, dat2.xlabel{plot2});
-        ylabel(h.tm.axes_ovrAll_2, dat2.ylabel{plot2}); % RB 2018-01-04:
+    % set axis labels as in overall plot
+    xlabel(h.tm.axes_histSort, dat2.xlabel{ind});
+    ylabel(h.tm.axes_histSort, dat2.ylabel{ind});
+    
+    % set axis limits
+    xlim(h.tm.axes_histSort, [iv(1),iv(end)]);
+    ylim(h.tm.axes_histSort, 'auto');
+    
+else % E-S histograms
+    
+    if j==1 % original data
+        P2D = dat2.hist{ind};
+        ivx = dat2.iv{ind}{1};
+        ivy = dat2.iv{ind}{2};
         
-        xlim(h.tm.axes_ovrAll_2, [dat1.lim{plot2}(1),dat1.lim{plot2}(2)]);
-        ylim(h.tm.axes_ovrAll_2, 'auto');
-    else  % draw FRET-S histogram
-        cla(h.tm.axes_ovrAll_2);
-        %lim = [-0.2 1.2; -0.2,1.2];
-        imagesc(dat1.lim{plot2}(1,:),dat1.lim{plot2}(1,:),dat2.hist{plot2}, 'Parent', h.tm.axes_ovrAll_2);
-        set(h.tm.axes_ovrAll_2,'CLim',[min(min(dat2.hist{plot2})) max(max(dat2.hist{plot2}))]);
-        
-        xlabel(h.tm.axes_ovrAll_2, dat2.xlabel{plot2});
-        ylabel(h.tm.axes_ovrAll_2, dat2.ylabel{plot2});
-        
-        xlim(h.tm.axes_ovrAll_2, dat1.lim{plot2}(1,:));
-        ylim(h.tm.axes_ovrAll_2, dat1.lim{plot2}(2,:));
+    else % calculated/discretized data
+        if isempty(dat3.hist{ind,j-1})
+            setContPan(cat(2,'No calculated data available: start ',...
+                'calculation or select another type of calculation.'),...
+                'error',h_fig);
+            return;
+        end
+        P2D = dat3.hist{ind,j-1};
+        ivx = dat3.iv{ind,j-1}{1};
+        ivy = dat3.iv{ind,j-1}{2};
     end
+       
+    imagesc([ivy(1),ivy(end)],[ivx(1),ivx(end)],P2D,'parent',...
+        h.tm.axes_histSort);
+    
+    if sum(sum(P2D))
+        set(h.tm.axes_histSort,'CLim',[0,max(max(P2D))]);
+    else
+        set(h.tm.axes_histSort,'CLim',[0,1]);
+    end
+
+    xlabel(h.tm.axes_histSort,dat2.xlabel{ind});
+    ylabel(h.tm.axes_histSort,dat2.ylabel{ind});
+
+    xlim(h.tm.axes_histSort,[ivx(1),ivx(end)]);
+    ylim(h.tm.axes_histSort,[ivy(1),ivy(end)]);
+end
+
+% display histogram parameters
+if j==1
+    lim = dat1.lim{ind};
+    niv = dat1.niv(ind,:);
+else
+    lim = dat3.lim{ind,j-1};
+    niv = dat3.niv(ind,:,j-1);
+end
+set(h.tm.edit_xlow,'string',num2str(lim(1,1)));
+set(h.tm.edit_xup,'string',num2str(lim(1,2)));
+set(h.tm.edit_xniv,'string',num2str(niv(1)));
+if ind>(nChan*nExc+nFRET+nS)
+    set(h.tm.edit_ylow,'enable','on','string',num2str(lim(2,1)));
+    set(h.tm.edit_yup,'enable','on','string',num2str(lim(2,2)));
+    set(h.tm.edit_yniv,'enable','on','string',num2str(niv(2)));
+else
+    set(h.tm.edit_ylow,'enable','off','string','');
+    set(h.tm.edit_yup,'enable','off','string','');
+    set(h.tm.edit_yniv,'enable','off','string','');
+end
+
 end
 
 
@@ -1686,6 +2017,247 @@ end
 
 %% callbacks
 
+%% - callbaks for panel overall plot
+
+function pushbutton_update_Callback(obj, evd, h_fig)
+
+% Last update: MH, 24.4.2019
+% >> shorten callback by moving content in specific functions 
+%    concatenateData, setDataPlotPrm and getStrPlot_overall: this also 
+%    avoid re-defining popupmenu string, axis labels and colors everytime 
+%    updating the data set
+    
+    % refresh data set
+    concatenateData(h_fig);
+    
+    % plot new data set
+    plotData_overall(h_fig);
+
+    % display new histogram limits and bins
+    h = guidata(h_fig);
+    dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
+    plot2 = get(h.tm.popupmenu_axes2, 'Value');
+    
+    set(h.tm.edit_xlim_low, 'String', dat1.lim{plot2}(1));
+    set(h.tm.edit_xlim_up, 'String', dat1.lim{plot2}(2));
+    set(h.tm.edit_nbiv, 'String', dat1.niv(plot2));
+    
+end
+
+
+function popupmenu_axes_Callback(obj, evd, h_fig)
+
+    h = guidata(h_fig);
+    p = h.param.ttPr;
+    proj = p.curr_proj;
+    nChan = p.proj{proj}.nb_channel;
+    nExc = p.proj{proj}.nb_excitations;
+    FRET = p.proj{proj}.FRET;
+    nFRET = size(FRET,1);
+    S = p.proj{proj}.S;
+    nS = size(S,1);
+    
+    if obj == h.tm.popupmenu_axes2
+        plot2 = get(obj, 'Value');
+        if plot2 <= nChan*nExc+nFRET+nS
+            dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
+            set(h.tm.edit_xlim_low, 'String', dat1.lim{plot2}(1));
+            set(h.tm.edit_xlim_up, 'String', dat1.lim{plot2}(2));
+            set(h.tm.edit_nbiv, 'String', dat1.niv(plot2));
+        else % double check RB 2018-01-04
+            dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
+            set(h.tm.edit_xlim_low, 'String',  dat1.lim{plot2}(1,1));
+            set(h.tm.edit_xlim_up, 'String', dat1.lim{plot2}(1,2));
+            set(h.tm.edit_nbiv, 'String', dat1.niv(plot2));
+        end
+    end
+    
+    plotData_overall(h_fig);
+    
+end
+
+
+function menu_export_Callback(obj, evd, h_fig)
+
+% Last update: by MH, 24.4.2019
+% >> save tag colors
+%
+% update by FS, 24.4.2018
+% >> save molecule tags and tag names
+%
+%
+
+    saveNclose = questdlg(['Do you want to export the traces to ' ...
+        'MASH and close the trace manager?'], ...
+        'Close and export to MASH-FRET', 'Yes', 'No', 'No');
+    
+    if strcmp(saveNclose, 'Yes')
+        h = guidata(h_fig);
+        h.param.ttPr.proj{h.param.ttPr.curr_proj}.coord_incl = ...
+            h.tm.molValid;
+        h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTag = ...
+            h.tm.molTag; % added by FS, 24.4.2018
+        h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTagNames = ...
+            h.tm.molTagNames; % added by FS, 24.4.2018
+        
+        % added by MH, 24.4.2019
+        h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTagClr = ...
+            h.tm.molTagClr;
+        
+        h.tm.ud = true;
+        guidata(h_fig,h);
+        uiresume(h.tm.figure_traceMngr);
+    end
+
+end
+
+
+function edit_xlim_low_Callback(obj, evd, h_fig)
+
+% Last update: by RB, 4.1.2018
+% >> adapted for FRET-S-histograms
+% >> hist2 rather slow replaced by hist2D
+%
+%
+
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+nExc = p.proj{proj}.nb_excitations;
+FRET = p.proj{proj}.FRET;
+nFRET = size(FRET,1);
+S = p.proj{proj}.S;
+nS = size(S,1);
+
+dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
+dat2 = get(h.tm.axes_ovrAll_2, 'UserData');
+plot2 = get(h.tm.popupmenu_axes2, 'Value');
+xlim_low = str2num(get(obj,'String'));
+
+if xlim_low >= dat1.lim{plot2}(2)
+    setContPan('Lower bound must be lower than higher bound.','error',...
+        h_fig);
+    return;
+end
+
+if plot2 <= nChan*nExc+nFRET+nS
+    dat1.lim{plot2}(1) = xlim_low;
+    [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(dat1.trace{plot2},...
+        dat1.lim{plot2},dat1.niv(plot2,1));
+    
+else%% double check RB 2018-01-04
+    dat1.lim{plot2}([1,2],1) = xlim_low;
+    ES = [dat1.trace{plot2-nFRET-nS},dat1.trace{plot2-nS}];
+    [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(ES,...
+        dat1.lim{plot2},dat1.niv(plot2,[1,2]));
+end
+
+set(h.tm.axes_ovrAll_1, 'UserData', dat1);
+set(h.tm.axes_ovrAll_2, 'UserData', dat2);
+plotData_overall(h_fig);
+    
+end
+
+function edit_xlim_up_Callback(obj, evd, h_fig)
+
+% Last update: by RB, 4.1.2018
+% >> adapted for FRET-S-histograms
+% >> hist2 rather slow replaced by hist2D
+%
+%
+
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+nExc = p.proj{proj}.nb_excitations;
+FRET = p.proj{proj}.FRET;
+nFRET = size(FRET,1);
+S = p.proj{proj}.S;
+nS = size(S,1);
+
+dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
+dat2 = get(h.tm.axes_ovrAll_2, 'UserData');
+plot2 = get(h.tm.popupmenu_axes2, 'Value');
+xlim_up = str2num(get(obj,'String'));
+
+if xlim_up <= dat1.lim{plot2}(1)
+    setContPan('Higher bound must be higher than lower bound.','error',...
+        h_fig);
+    return;
+end
+
+if plot2 <= nChan*nExc+nFRET+nS
+    dat1.lim{plot2}(2) = xlim_up;
+    [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(dat1.trace{plot2},...
+        dat1.lim{plot2},dat1.niv(plot2,1));
+    
+else%% double check RB 2018-01-04
+    dat1.lim{plot2}([1,2],2) = xlim_up;
+    ES = [dat1.trace{plot2-nFRET-nS},dat1.trace{plot2-nS}];
+    [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(ES,...
+        dat1.lim{plot2},dat1.niv(plot2,[1,2]));
+end
+
+set(h.tm.axes_ovrAll_1, 'UserData', dat1);
+set(h.tm.axes_ovrAll_2, 'UserData', dat2);
+plotData_overall(h_fig);
+    
+end
+
+
+function edit_nbiv_Callback(obj, evd, h_fig)
+
+% Last update: by RB 5.1.2018
+% >> adapted for FRET-S-histograms
+% >> hist2 rather slow replaced by hist2D
+%
+%
+    
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+nExc = p.proj{proj}.nb_excitations;
+FRET = p.proj{proj}.FRET;
+nFRET = size(FRET,1);
+S = p.proj{proj}.S;
+nS = size(S,1);
+
+dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
+dat2 = get(h.tm.axes_ovrAll_2, 'UserData');
+plot2 = get(h.tm.popupmenu_axes2, 'Value');
+nbiv = round(str2num(get(obj, 'String')));
+
+if ~isnumeric(nbiv) || nbiv < 1
+    setContPan('Number of binning interval must be a number.','error',...
+        h_fig);
+    return;
+end
+
+if plot2 <= nChan*nExc+nFRET+nS
+    dat1.niv(plot2,1) = nbiv;
+    [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(dat1.trace{plot2},...
+        dat1.lim{plot2},dat1.niv(plot2,1));
+    
+else%% double check RB 2018-01-05
+    dat1.niv(plot2,:) = nbiv;
+    ES = [dat1.trace{plot2-nFRET-nS},dat1.trace{plot2-nS}];
+    [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(ES,dat1.lim{plot2},...
+        dat1.niv(plot2,:));
+
+end
+
+set(h.tm.axes_ovrAll_1, 'UserData', dat1);
+set(h.tm.axes_ovrAll_2, 'UserData', dat2);
+
+plotData_overall(h_fig);
+
+end
+
+
+%% - panel molecule selection
 
 function checkbox_molNb_Callback(obj, evd, h_fig)
 
@@ -1941,270 +2513,6 @@ function edit_nbTotMol_Callback(obj, evd, h_fig)
         'SliderStep', [min_step maj_step]);
     
     plotDataTm(h_fig);
-
-end
-
-
-function pushbutton_update_Callback(obj, evd, h_fig)
-
-% Last update: MH, 24.4.2019
-% >> shorten callback by moving content in specific functions 
-%    concatenateData, setDataPlotPrm and getStrPlot_overall: this also 
-%    avoid re-defining popupmenu string, axis labels and colors everytime 
-%    updating the data set
-    
-    % refresh data set
-    concatenateData(h_fig);
-    
-    % plot new data set
-    plotData_overall(h_fig);
-
-    % display new histogram limits and bins
-    h = guidata(h_fig);
-    dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
-    plot2 = get(h.tm.popupmenu_axes2, 'Value');
-    
-    set(h.tm.edit_xlim_low, 'String', dat1.lim{plot2}(1));
-    set(h.tm.edit_xlim_up, 'String', dat1.lim{plot2}(2));
-    set(h.tm.edit_nbiv, 'String', dat1.niv(plot2));
-    
-end
-
-
-function popupmenu_axes_Callback(obj, evd, h_fig)
-
-    h = guidata(h_fig);
-    p = h.param.ttPr;
-    proj = p.curr_proj;
-    nChan = p.proj{proj}.nb_channel;
-    nExc = p.proj{proj}.nb_excitations;
-    FRET = p.proj{proj}.FRET;
-    nFRET = size(FRET,1);
-    S = p.proj{proj}.S;
-    nS = size(S,1);
-    
-    if obj == h.tm.popupmenu_axes2
-        plot2 = get(obj, 'Value');
-        if plot2 <= nChan*nExc+nFRET+nS
-            dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
-            set(h.tm.edit_xlim_low, 'String', dat1.lim{plot2}(1));
-            set(h.tm.edit_xlim_up, 'String', dat1.lim{plot2}(2));
-            set(h.tm.edit_nbiv, 'String', dat1.niv(plot2));
-        else % double check RB 2018-01-04
-            dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
-            set(h.tm.edit_xlim_low, 'String',  dat1.lim{plot2}(1,1));
-            set(h.tm.edit_xlim_up, 'String', dat1.lim{plot2}(1,2));
-            set(h.tm.edit_nbiv, 'String', dat1.niv(plot2));
-        end
-    end
-    
-    plotData_overall(h_fig);
-    
-end
-
-
-function menu_export_Callback(obj, evd, h_fig)
-
-% Last update: by MH, 24.4.2019
-% >> save tag colors
-%
-% update by FS, 24.4.2018
-% >> save molecule tags and tag names
-%
-%
-
-    saveNclose = questdlg(['Do you want to export the traces to ' ...
-        'MASH and close the trace manager?'], ...
-        'Close and export to MASH-FRET', 'Yes', 'No', 'No');
-    
-    if strcmp(saveNclose, 'Yes')
-        h = guidata(h_fig);
-        h.param.ttPr.proj{h.param.ttPr.curr_proj}.coord_incl = ...
-            h.tm.molValid;
-        h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTag = ...
-            h.tm.molTag; % added by FS, 24.4.2018
-        h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTagNames = ...
-            h.tm.molTagNames; % added by FS, 24.4.2018
-        
-        % added by MH, 24.4.2019
-        h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTagClr = ...
-            h.tm.molTagClr;
-        
-        h.tm.ud = true;
-        guidata(h_fig,h);
-        uiresume(h.tm.figure_traceMngr);
-    end
-
-end
-
-
-function edit_xlim_low_Callback(obj, evd, h_fig)
-
-% Last update: by RB, 4.1.2018
-% >> adapted for FRET-S-histograms
-% >> hist2 rather slow replaced by hist2D
-%
-%
-
-    h = guidata(h_fig);
-    xlim_low = str2num(get(obj, 'String'));
-    xlim_up = str2num(get(h.tm.edit_xlim_up, 'String'));
-    
-    p = h.param.ttPr;
-    proj = p.curr_proj;
-    nChan = p.proj{proj}.nb_channel;
-    nExc = p.proj{proj}.nb_excitations;
-    FRET = p.proj{proj}.FRET;
-    nFRET = size(FRET,1);
-    S = p.proj{proj}.S;
-    nS = size(S,1);
-    
-    ES = [];
-    if xlim_low < xlim_up
-        dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
-        dat2 = get(h.tm.axes_ovrAll_2, 'UserData');
-        plot2 = get(h.tm.popupmenu_axes2, 'Value');
-        
-        if plot2 <= nChan*nExc+nFRET+nS
-            dat1.lim{plot2} = [xlim_low xlim_up];
-        
-            bin = (dat1.lim{plot2}(2) - dat1.lim{plot2}(1)) / dat1.niv(plot2);
-            iv = (dat1.lim{plot2}(1) - bin):bin:(dat1.lim{plot2}(2) + bin);
-            [dat2.hist{plot2}, dat2.iv{plot2}] = hist(dat1.trace{plot2}, iv);
-        
-        else%% double check RB 2018-01-04
-            dat1.lim{plot2} = [xlim_low xlim_up; xlim_low xlim_up];
-            
-            %binx = (dat1.lim{plot2}(2,2) - dat1.lim{plot2}(2,1)) / dat1.niv(plot2);
-            %biny = (dat1.lim{plot2}(1,2) - dat1.lim{plot2}(1,1)) / dat1.niv(plot2);
-            %ivx = (dat1.lim{plot2}(2,1) - binx):binx:(dat1.lim{plot2}(2,2) + binx);
-            %ivy = (dat1.lim{plot2}(1,1) - biny):biny:(dat1.lim{plot2}(1,2) + biny);
-            ES = [dat1.trace{plot2-nFRET-nS},dat1.trace{plot2-nS}]; % build [N-by-2] or ' ... '[2-by-N] data matrix.']
-            %[dat2.hist{plot2},o,o,dat2.iv{plot2}] = hist2(ES, [ivx;ivy]); % hist2 by MCASH
-            binEdges_minmaxN_xy = [dat1.lim{plot2}(1,1) dat1.lim{plot2}(1,2) dat1.niv(plot2); dat1.lim{plot2}(2,1) dat1.lim{plot2}(2,2) dat1.niv(plot2)];
-            [dat2.hist{plot2},dat2.iv{plot2}(1,:),dat2.iv{plot2}(2,:)] = hist2D(ES, binEdges_minmaxN_xy); % hist2D by tudima at zahoo dot com, inlcuded in \traces\processing\management
-        end
-        set(h.tm.axes_ovrAll_1, 'UserData', dat1);
-        set(h.tm.axes_ovrAll_2, 'UserData', dat2);
-        
-        plotData_overall(h_fig);
-        
-    else
-        str = 'The low x limit must be lower than the up x limit.';
-        errordlg(str);
-        disp(str);
-    end
-    
-end
-
-function edit_xlim_up_Callback(obj, evd, h_fig)
-
-% Last update: by RB 5.1.2018
-% >> adapted for FRET-S-histograms
-% >> hist2 rather slow replaced by hist2D
-%
-%
-
-    h = guidata(h_fig);
-    xlim_up = str2num(get(obj, 'String'));
-    xlim_low = str2num(get(h.tm.edit_xlim_low, 'String'));
-    
-    p = h.param.ttPr;
-    proj = p.curr_proj;
-    nChan = p.proj{proj}.nb_channel;
-    nExc = p.proj{proj}.nb_excitations;
-    FRET = p.proj{proj}.FRET;
-    nFRET = size(FRET,1);
-    S = p.proj{proj}.S;
-    nS = size(S,1);
-    
-    ES = [];
-    if xlim_low < xlim_up
-        dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
-        dat2 = get(h.tm.axes_ovrAll_2, 'UserData');
-        plot2 = get(h.tm.popupmenu_axes2, 'Value');
-        
-        if plot2 <= nChan*nExc+nFRET+nS
-            dat1.lim{plot2} = [xlim_low xlim_up];
-        
-            bin = (dat1.lim{plot2}(2) - dat1.lim{plot2}(1)) / dat1.niv(plot2);
-            iv = (dat1.lim{plot2}(1) - bin):bin:(dat1.lim{plot2}(2) + bin);
-            [dat2.hist{plot2}, dat2.iv{plot2}] = hist(dat1.trace{plot2}, iv);
-        
-        else%% double check RB 2018-01-04
-            dat1.lim{plot2} = [xlim_low xlim_up; xlim_low xlim_up];
-            
-            %binx = (dat1.lim{plot2}(2,2) - dat1.lim{plot2}(2,1)) / dat1.niv(plot2);
-            %biny = (dat1.lim{plot2}(1,2) - dat1.lim{plot2}(1,1)) / dat1.niv(plot2);
-            %ivx = (dat1.lim{plot2}(2,1) - binx):binx:(dat1.lim{plot2}(2,2) + binx);
-            %ivy = (dat1.lim{plot2}(1,1) - biny):biny:(dat1.lim{plot2}(1,2) + biny);
-            ES = [dat1.trace{plot2-nFRET-nS},dat1.trace{plot2-nS}]; % build [N-by-2] or ' ... '[2-by-N] data matrix.']
-            %[dat2.hist{plot2},o,o,dat2.iv{plot2}] = hist2(ES, [ivx;ivy]); % hist2 by MCASH
-            binEdges_minmaxN_xy = [dat1.lim{plot2}(1,1) dat1.lim{plot2}(1,2) dat1.niv(plot2); dat1.lim{plot2}(2,1) dat1.lim{plot2}(2,2) dat1.niv(plot2)];
-            [dat2.hist{plot2},dat2.iv{plot2}(1,:),dat2.iv{plot2}(2,:)] = hist2D(ES, binEdges_minmaxN_xy); % hist2D by tudima at zahoo dot com, inlcuded in \traces\processing\management
-     
-        end
-        
-        set(h.tm.axes_ovrAll_1, 'UserData', dat1);
-        set(h.tm.axes_ovrAll_2, 'UserData', dat2);
-        
-        plotData_overall(h_fig);
-        
-    else
-        str = 'The low x limit must be lower than the up x limit.';
-        errordlg(str);
-        disp(str);
-    end
-
-end
-
-
-function edit_nbiv_Callback(obj, evd, h_fig)
-
-% Last update: by RB 5.1.2018
-% >> adapted for FRET-S-histograms
-% >> hist2 rather slow replaced by hist2D
-%
-%
-    
-    h = guidata(h_fig);
-    nbiv = round(str2num(get(obj, 'String')));
-    if ~isnumeric(nbiv) || nbiv < 1
-        nbiv = 1;
-    end
-    
-    p = h.param.ttPr;
-    proj = p.curr_proj;
-    nChan = p.proj{proj}.nb_channel;
-    nExc = p.proj{proj}.nb_excitations;
-    FRET = p.proj{proj}.FRET;
-    nFRET = size(FRET,1);
-    S = p.proj{proj}.S;
-    nS = size(S,1);
-    
-    dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
-    dat2 = get(h.tm.axes_ovrAll_2, 'UserData');
-    plot2 = get(h.tm.popupmenu_axes2, 'Value');
-
-    dat1.niv(plot2) = nbiv;
-   
-    ES = [];
-    if plot2 <= nChan*nExc+nFRET+nS
-        bin = (dat1.lim{plot2}(2) - dat1.lim{plot2}(1)) / dat1.niv(plot2);
-        iv = (dat1.lim{plot2}(1) - bin):bin:(dat1.lim{plot2}(2) + bin);
-        [dat2.hist{plot2}, dat2.iv{plot2}] = hist(dat1.trace{plot2}, iv);
-    else%% double check RB 2018-01-05
-        ES = [dat1.trace{plot2-nFRET-nS},dat1.trace{plot2-nS}]; % build [N-by-2] or ' ... '[2-by-N] data matrix.']
-        binEdges_minmaxN_xy = [dat1.lim{plot2}(1,1) dat1.lim{plot2}(1,2) dat1.niv(plot2); dat1.lim{plot2}(2,1) dat1.lim{plot2}(2,2) dat1.niv(plot2)];
-        dat2.iv{plot2}=[]; % delete cell array content to avoid dimension mismatch in cells after changing the number of bins
-        [dat2.hist{plot2},dat2.iv{plot2}(1,:),dat2.iv{plot2}(2,:)] = hist2D(ES, binEdges_minmaxN_xy); % hist2D by tudima at zahoo dot com, inlcuded in \traces\processing\management
-
-    end
-        
-    set(h.tm.axes_ovrAll_1, 'UserData', dat1);
-    set(h.tm.axes_ovrAll_2, 'UserData', dat2);
-    
-    plotData_overall(h_fig);
 
 end
 
@@ -2534,6 +2842,474 @@ function pushbutton_deleteMolTag_Callback(obj, evd, h_fig)
 end
 
 
+%% - callbacks for panel auto sorting
+
+
+function popupmenu_selectData_Callback(obj, evd, h_fig)
+
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+nExc = p.proj{proj}.nb_excitations;
+nFRET = size(p.proj{proj}.FRET,1);
+nS = size(p.proj{proj}.S,1);
+
+j = get(h.tm.popupmenu_selectCalc,'value');
+
+% control the presence of discretized data
+if j==6
+    h = guidata(h_fig);
+    p = h.param.ttPr;
+    proj = p.curr_proj;
+    
+    ind = get(h.tm.popupmenu_selectData,'Value');
+    
+    str_axes = 'bottom';
+    
+    n = 0;
+    if ind<=nChan*nExc
+        for l = 1:nExc
+            for c = 1:nChan
+                n = n+1;
+                if n==ind
+                    break;
+                end
+            end
+        end
+        discr = p.proj{proj}.intensities_DTA(:,c:nChan:end,l);
+        
+        str_axes = 'top';
+        
+    elseif ind<=(nChan*nExc+nFRET)
+        n = ind-nChan*nExc;
+        discr = p.proj{proj}.FRET_DTA(:,n:nFRET:end);
+        
+    elseif ind<=(nChan*nExc+nFRET+nS)
+        n = ind-(nChan*nExc+nFRET);
+        discr = p.proj{proj}.S_DTA(:,n:nS:end);
+        
+    else
+        n = 0;
+        for fret = 1:nFRET
+            for s = 1:nS
+                n = n+1;
+                if n==(ind+nChan*nExc+nFRET+nS)
+                    break;
+                end
+            end
+        end
+        discr = cat(3,p.proj{proj}.FRET_DTA(:,fret:nFRET:end),...
+            p.proj{proj}.S_DTA(:,s:nS:end));
+    end
+    
+    isdiscr = ~all(isnan(sum(sum(discr,3),2)));
+    if ~isdiscr
+        msgbox({cat(2,'This method requires the individual time-traces ',...
+            'in ',str_axes,' axes to be discretized.'),cat(2,'Please ',...
+            'return to Trace processing and infer the corresponding state',...
+            ' trajectories.')},'Missing states trajectories');
+            return;
+    end
+end
+
+plotData_autoSort(h_fig);
+
+end
+
+
+function edit_xlow_Callback(obj,evd,h_fig)
+
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+nExc = p.proj{proj}.nb_excitations;
+FRET = p.proj{proj}.FRET;
+nFRET = size(FRET,1);
+S = p.proj{proj}.S;
+nS = size(S,1);
+
+dat1 = get(h.tm.axes_ovrAll_1,'userdata');
+dat2 = get(h.tm.axes_ovrAll_2,'userdata');
+dat3 = get(h.tm.axes_histSort,'userdata');
+ind = get(h.tm.popupmenu_selectData,'value');
+j = get(h.tm.popupmenu_selectCalc,'value');
+
+if j==1
+    xlim_sup = dat1.lim{ind}(1,2);
+else
+    xlim_sup = dat3.lim{ind,j-1}(1,2);
+end
+
+xlim_low = str2num(get(obj,'String'));
+
+if xlim_low >= xlim_sup
+    setContPan('Lower bound must be lower than higher bound.','error',...
+        h_fig);
+    return;
+end
+
+if j==1
+    dat1.lim{ind}(1,1) = xlim_low;
+else
+    dat3.lim{ind,j-1}(1,1) = xlim_low;
+end
+
+if ind <= nChan*nExc+nFRET+nS
+    if j==1
+        [dat2.hist{ind},dat2.iv{ind}] = getHistTM(dat1.trace{ind},...
+            dat1.lim{ind},dat1.niv(ind,1));
+    else
+        [dat3.hist{ind,j-1},dat3.iv{ind,j-1}] = getHistTM(...
+            dat3.val{ind,j-1},dat3.lim{ind,j-1},dat3.niv(ind,1,j-1));
+    end
+    
+else
+    if j==1
+        ES = [dat1.trace{ind-nFRET-nS},dat1.trace{ind-nS}];
+        [dat2.hist{ind},dat2.iv{ind}] = getHistTM(ES,dat1.lim{ind},...
+            dat1.niv(ind,[1,2]));
+    else
+        ES = [dat3.val{ind-nFRET-nS,j-1},dat3.val{ind-nS,j-1}];
+        [dat3.hist{ind,j-1},dat3.iv{ind,j-1}] = getHistTM(ES,...
+            dat3.lim{ind,j-1},dat3.niv(ind,[1,2],j-1));
+    end
+end
+
+set(h.tm.axes_ovrAll_1, 'UserData', dat1);
+set(h.tm.axes_ovrAll_2, 'UserData', dat2);
+set(h.tm.axes_histSort, 'UserData', dat3);
+
+plotData_autoSort(h_fig);
+
+end
+
+
+function edit_xup_Callback(obj,evd,h_fig)
+
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+nExc = p.proj{proj}.nb_excitations;
+FRET = p.proj{proj}.FRET;
+nFRET = size(FRET,1);
+S = p.proj{proj}.S;
+nS = size(S,1);
+
+dat1 = get(h.tm.axes_ovrAll_1,'userdata');
+dat2 = get(h.tm.axes_ovrAll_2,'userdata');
+dat3 = get(h.tm.axes_histSort,'userdata');
+ind = get(h.tm.popupmenu_selectData,'value');
+j = get(h.tm.popupmenu_selectCalc,'value');
+
+if j==1
+    xlim_low = dat1.lim{ind}(1,1);
+else
+    xlim_low = dat3.lim{ind,j-1}(1,1);
+end
+
+xlim_sup = str2num(get(obj,'String'));
+
+if xlim_sup<=xlim_low
+    setContPan('Higher bound must be higher than lower bound.','error',...
+        h_fig);
+    return;
+end
+
+if j==1
+    dat1.lim{ind}(1,2) = xlim_sup;
+else
+    dat3.lim{ind,j-1}(1,2) = xlim_sup;
+end
+
+if ind <= nChan*nExc+nFRET+nS
+    if j==1
+        [dat2.hist{ind},dat2.iv{ind}] = getHistTM(dat1.trace{ind},...
+            dat1.lim{ind},dat1.niv(ind,1));
+    else
+        [dat3.hist{ind,j-1},dat3.iv{ind,j-1}] = getHistTM(...
+            dat3.val{ind,j-1},dat3.lim{ind,j-1},dat3.niv(ind,1,j-1));
+    end
+    
+else
+    if j==1
+        ES = [dat1.trace{ind-nFRET-nS},dat1.trace{ind-nS}];
+        [dat2.hist{ind},dat2.iv{ind}] = getHistTM(ES,dat1.lim{ind},...
+            dat1.niv(ind,[1,2]));
+    else
+        ES = [dat3.val{ind-nFRET-nS,j-1},dat3.val{ind-nS,j-1}];
+        [dat3.hist{ind,j-1},dat3.iv{ind,j-1}] = getHistTM(ES,...
+            dat3.lim{ind,j-1},dat3.niv(ind,[1,2],j-1));
+    end
+end
+
+set(h.tm.axes_ovrAll_1, 'UserData', dat1);
+set(h.tm.axes_ovrAll_2, 'UserData', dat2);
+set(h.tm.axes_histSort, 'UserData', dat3);
+
+plotData_autoSort(h_fig);
+
+end
+
+function edit_xniv_Callback(obj,evd,h_fig)
+
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+nExc = p.proj{proj}.nb_excitations;
+FRET = p.proj{proj}.FRET;
+nFRET = size(FRET,1);
+S = p.proj{proj}.S;
+nS = size(S,1);
+
+dat1 = get(h.tm.axes_ovrAll_1,'userdata');
+dat2 = get(h.tm.axes_ovrAll_2,'userdata');
+dat3 = get(h.tm.axes_histSort,'userdata');
+ind = get(h.tm.popupmenu_selectData,'value');
+j = get(h.tm.popupmenu_selectCalc,'value');
+
+niv = str2num(get(obj,'string'));
+
+if ~(isnumeric(niv) && ~isempty(niv))
+    setContPan('Number of bins must be a numeric.','error',h_fig);
+    return;
+end
+
+if j==1
+    dat1.niv(ind,1) = niv;
+else
+    dat3.niv(ind,1,j-1) = niv;
+end
+
+if ind <= nChan*nExc+nFRET+nS
+    if j==1
+        [dat2.hist{ind},dat2.iv{ind}] = getHistTM(dat1.trace{ind},...
+            dat1.lim{ind},dat1.niv(ind,1));
+    else
+        [dat3.hist{ind,j-1},dat3.iv{ind,j-1}] = getHistTM(...
+            dat3.val{ind,j-1},dat3.lim{ind,j-1},dat3.niv(ind,1,j-1));
+    end
+    
+else
+    if j==1
+        ES = [dat1.trace{ind-nFRET-nS},dat1.trace{ind-nS}];
+        [dat2.hist{ind},dat2.iv{ind}] = getHistTM(ES,dat1.lim{ind},...
+            dat1.niv(ind,[1,2]));
+    else
+        ES = [dat3.val{ind-nFRET-nS,j-1},dat3.val{ind-nS,j-1}];
+        [dat3.hist{ind,j-1},dat3.iv{ind,j-1}] = getHistTM(ES,...
+            dat3.lim{ind,j-1},dat3.niv(ind,[1,2],j-1));
+    end
+end
+
+set(h.tm.axes_ovrAll_1, 'UserData', dat1);
+set(h.tm.axes_ovrAll_2, 'UserData', dat2);
+set(h.tm.axes_histSort, 'UserData', dat3);
+
+plotData_autoSort(h_fig);
+
+end
+
+
+function edit_ylow_Callback(obj,evd,h_fig)
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+nExc = p.proj{proj}.nb_excitations;
+FRET = p.proj{proj}.FRET;
+nFRET = size(FRET,1);
+S = p.proj{proj}.S;
+nS = size(S,1);
+
+dat1 = get(h.tm.axes_ovrAll_1,'userdata');
+dat2 = get(h.tm.axes_ovrAll_2,'userdata');
+dat3 = get(h.tm.axes_histSort,'userdata');
+ind = get(h.tm.popupmenu_selectData,'value');
+j = get(h.tm.popupmenu_selectCalc,'value');
+
+if j==1
+    ylim_sup = dat1.lim{ind}(2,2);
+else
+    ylim_sup = dat3.lim{ind,j-1}(2,2);
+end
+
+ylim_low = str2num(get(obj,'String'));
+
+if ylim_low >= ylim_sup
+    setContPan('Lower bound must be lower than higher bound.','error',...
+        h_fig);
+    return;
+end
+
+if j==1
+    dat1.lim{ind}(2,1) = ylim_low;
+else
+    dat3.lim{ind,j-1}(2,1) = ylim_low;
+end
+
+if ind <= nChan*nExc+nFRET+nS
+    if j==1
+        [dat2.hist{ind},dat2.iv{ind}] = getHistTM(dat1.trace{ind},...
+            dat1.lim{ind},dat1.niv(ind,1));
+    else
+        [dat3.hist{ind,j-1},dat3.iv{ind,j-1}] = getHistTM(...
+            dat3.val{ind,j-1},dat3.lim{ind,j-1},dat3.niv(ind,1,j-1));
+    end
+    
+else
+    if j==1
+        ES = [dat1.trace{ind-nFRET-nS},dat1.trace{ind-nS}];
+        [dat2.hist{ind},dat2.iv{ind}] = getHistTM(ES,dat1.lim{ind},...
+            dat1.niv(ind,[1,2]));
+    else
+        ES = [dat3.val{ind-nFRET-nS,j-1},dat3.val{ind-nS,j-1}];
+        [dat3.hist{ind,j-1},dat3.iv{ind,j-1}] = getHistTM(ES,...
+            dat3.lim{ind,j-1},dat3.niv(ind,[1,2],j-1));
+    end
+end
+
+set(h.tm.axes_ovrAll_1, 'UserData', dat1);
+set(h.tm.axes_ovrAll_2, 'UserData', dat2);
+set(h.tm.axes_histSort, 'UserData', dat3);
+
+plotData_autoSort(h_fig);
+end
+
+
+function edit_yup_Callback(obj,evd,h_fig)
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+nExc = p.proj{proj}.nb_excitations;
+FRET = p.proj{proj}.FRET;
+nFRET = size(FRET,1);
+S = p.proj{proj}.S;
+nS = size(S,1);
+
+dat1 = get(h.tm.axes_ovrAll_1,'userdata');
+dat2 = get(h.tm.axes_ovrAll_2,'userdata');
+dat3 = get(h.tm.axes_histSort,'userdata');
+ind = get(h.tm.popupmenu_selectData,'value');
+j = get(h.tm.popupmenu_selectCalc,'value');
+
+if j==1
+    ylim_low = dat1.lim{ind}(2,1);
+else
+    ylim_low = dat3.lim{ind,j-1}(2,1);
+end
+
+ylim_sup = str2num(get(obj,'String'));
+
+if ylim_sup<=ylim_low
+    setContPan('Higher bound must be higher than lower bound.','error',...
+        h_fig);
+    return;
+end
+
+if j==1
+    dat1.lim{ind}(2,2) = ylim_sup;
+else
+    dat3.lim{ind,j-1}(2,2) = ylim_sup;
+end
+
+if ind <= nChan*nExc+nFRET+nS
+    if j==1
+        [dat2.hist{ind},dat2.iv{ind}] = getHistTM(dat1.trace{ind},...
+            dat1.lim{ind},dat1.niv(ind,1));
+    else
+        [dat3.hist{ind,j-1},dat3.iv{ind,j-1}] = getHistTM(...
+            dat3.val{ind,j-1},dat3.lim{ind,j-1},dat3.niv(ind,1,j-1));
+    end
+    
+else
+    if j==1
+        ES = [dat1.trace{ind-nFRET-nS},dat1.trace{ind-nS}];
+        [dat2.hist{ind},dat2.iv{ind}] = getHistTM(ES,dat1.lim{ind},...
+            dat1.niv(ind,[1,2]));
+    else
+        ES = [dat3.val{ind-nFRET-nS,j-1},dat3.val{ind-nS,j-1}];
+        [dat3.hist{ind,j-1},dat3.iv{ind,j-1}] = getHistTM(ES,...
+            dat3.lim{ind,j-1},dat3.niv(ind,[1,2],j-1));
+    end
+end
+
+set(h.tm.axes_ovrAll_1, 'UserData', dat1);
+set(h.tm.axes_ovrAll_2, 'UserData', dat2);
+set(h.tm.axes_histSort, 'UserData', dat3);
+
+plotData_autoSort(h_fig);
+end
+
+
+function edit_yniv_Callback(obj,evd,h_fig)
+
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+nExc = p.proj{proj}.nb_excitations;
+FRET = p.proj{proj}.FRET;
+nFRET = size(FRET,1);
+S = p.proj{proj}.S;
+nS = size(S,1);
+
+dat1 = get(h.tm.axes_ovrAll_1,'userdata');
+dat2 = get(h.tm.axes_ovrAll_2,'userdata');
+dat3 = get(h.tm.axes_histSort,'userdata');
+ind = get(h.tm.popupmenu_selectData,'value');
+j = get(h.tm.popupmenu_selectCalc,'value');
+
+niv = str2num(get(obj,'string'));
+
+if ~(isnumeric(niv) && ~isempty(niv))
+    setContPan('Number of bins must be a numeric.','error',h_fig);
+    return;
+end
+
+if j==1
+    dat1.niv(ind,2) = niv;
+else
+    dat3.niv(ind,2,j-1) = niv;
+end
+
+if ind <= nChan*nExc+nFRET+nS
+    if j==1
+        [dat2.hist{ind},dat2.iv{ind}] = getHistTM(dat1.trace{ind},...
+            dat1.lim{ind},dat1.niv(ind,1));
+    else
+        [dat3.hist{ind,j-1},dat3.iv{ind,j-1}] = getHistTM(...
+            dat3.val{ind,j-1},dat3.lim{ind,j-1},dat3.niv(ind,1,j-1));
+    end
+    
+else
+    if j==1
+        ES = [dat1.trace{ind-nFRET-nS},dat1.trace{ind-nS}];
+        [dat2.hist{ind},dat2.iv{ind}] = getHistTM(ES,dat1.lim{ind},...
+            dat1.niv(ind,[1,2]));
+    else
+        ES = [dat3.val{ind-nFRET-nS,j-1},dat3.val{ind-nS,j-1}];
+        [dat3.hist{ind,j-1},dat3.iv{ind,j-1}] = getHistTM(ES,...
+            dat3.lim{ind,j-1},dat3.niv(ind,[1,2],j-1));
+    end
+end
+
+set(h.tm.axes_ovrAll_1, 'UserData', dat1);
+set(h.tm.axes_ovrAll_2, 'UserData', dat2);
+set(h.tm.axes_histSort, 'UserData', dat3);
+
+plotData_autoSort(h_fig);
+
+end
+
+
+
+
+%% closerequest function
 
 function figure_traceMngr(obj, evd, h_fig)
 
