@@ -882,16 +882,16 @@ h.tm.pushbutton_export = uicontrol('Style', 'pushbutton', 'Parent', ...
 xNext = mg + w_txt3 + mg + w_pop + mg;
 yNext = mg;
 
-h.tm.axes_ovrAll_1 = axes('Parent', h.tm.uipanel_overall, 'Units', ...
-    'pixels', 'FontUnits', 'pixels', 'FontSize', fntS, ...
-    'ActivePositionProperty', 'OuterPosition', 'GridLineStyle', ':',...
-    'NextPlot', 'replacechildren');
+h.tm.axes_ovrAll_1 = axes('Parent',h.tm.uipanel_overall,'Units','pixels',...
+    'FontUnits','pixels','FontSize',fntS,'ActivePositionProperty',...
+    'OuterPosition','GridLineStyle',':','NextPlot','replacechildren',...
+    'ButtonDownFcn',{@axes_ovrAll_1_ButtonDownFcn,h_fig});
 ylim(h.tm.axes_ovrAll_1,[0 10000]);
 pos = getRealPosAxes([xNext yNext w_axes1 h_axes_all], ...
-    get(h.tm.axes_ovrAll_1, 'TightInset'), 'traces');
+    get(h.tm.axes_ovrAll_1,'TightInset'),'traces');
 pos(3:4) = pos(3:4) - fntS;
 pos(1:2) = pos(1:2) + fntS;
-set(h.tm.axes_ovrAll_1, 'Position', pos);
+set(h.tm.axes_ovrAll_1,'Position',pos);
 
 xNext = xNext + mg + w_axes1;
 yNext = mg;
@@ -1897,6 +1897,9 @@ function plotData_overall(h_fig)
 %
 %
 
+% defaults
+fcn = {@axes_ovrAll_1_ButtonDownFcn,h_fig};
+
 warning('off','MATLAB:hg:EraseModeIgnored');
 
 h = guidata(h_fig);
@@ -1909,23 +1912,24 @@ nFRET = size(FRET,1);
 S = p.proj{proj}.S;
 nS = size(S,1);
 inSec = p.proj{proj}.fix{2}(7);
+expT = p.proj{proj}.frame_rate; % this is truely the exposure time
 
-plot1 = get(h.tm.popupmenu_axes1, 'Value');
-plot2 = get(h.tm.popupmenu_axes2, 'Value');
+plot1 = get(h.tm.popupmenu_axes1,'value');
+plot2 = get(h.tm.popupmenu_axes2,'value');
 
-dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
-dat2 = get(h.tm.axes_ovrAll_2, 'UserData');
+dat1 = get(h.tm.axes_ovrAll_1,'userdata');
+dat2 = get(h.tm.axes_ovrAll_2,'userdata');
 
 disp('plot data ...');
 
 if plot1 <= nChan*nExc+nFRET+nS % single channel/FRET/S
     x_axis = 1:size(dat1.trace{plot1},1);
     if inSec
-        rate = p.proj{proj}.frame_rate;
-        x_axis = x_axis*rate;
+        expT = p.proj{proj}.frame_rate;
+        x_axis = x_axis*expT;
     end
-    plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{plot1}, 'Color', ...
-        dat1.color{plot1});
+    plot(h.tm.axes_ovrAll_1,x_axis,dat1.trace{plot1},'buttondownfcn',fcn,...
+        'color',dat1.color{plot1});
     xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
     if plot1 <= nChan*nExc
         ylim(h.tm.axes_ovrAll_1, [min(dat1.trace{plot1}) ...
@@ -1940,8 +1944,8 @@ if plot1 <= nChan*nExc+nFRET+nS % single channel/FRET/S
 elseif plot1 == nChan*nExc+nFRET+nS+1 && nChan > 1% all intensities
     x_axis = 1:size(dat1.trace{1},1);
     if inSec
-        rate = p.proj{proj}.frame_rate;
-        x_axis = x_axis*rate;
+        expT = p.proj{proj}.frame_rate;
+        x_axis = x_axis*expT;
     end
     min_y = Inf;
     max_y = -Inf;
@@ -1949,18 +1953,18 @@ elseif plot1 == nChan*nExc+nFRET+nS+1 && nChan > 1% all intensities
         for c = 1:nChan
             %ind = (l-1)+c; % RB 2018-01-03: indizes/colour bug solved
             ind = 2*(l-1)+c;
-            plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{ind}, ...
-                'Color', dat1.color{ind});
+            plot(h.tm.axes_ovrAll_1,x_axis,dat1.trace{ind},'color',...
+                dat1.color{ind},'buttondownfcn',fcn);
             min_y = min([min_y min(dat1.trace{ind})]);
             max_y = max([max_y max(dat1.trace{ind})]);
 
             % added by MH, 24.4.2019
             if l==1 && c==1
-                set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
+                set(h.tm.axes_ovrAll_1,'nextplot','add');
             end
         end
     end
-    set(h.tm.axes_ovrAll_1, 'NextPlot', 'replacechildren');
+    set(h.tm.axes_ovrAll_1,'nextplot','replacechildren');
     xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
     ylim(h.tm.axes_ovrAll_1, [min_y max_y]);
     xlabel(h.tm.axes_ovrAll_1, dat1.xlabel);
@@ -1969,13 +1973,13 @@ elseif plot1 == nChan*nExc+nFRET+nS+1 && nChan > 1% all intensities
 elseif plot1 == nChan*nExc+nFRET+nS+2 && nFRET > 1% all FRET
     x_axis = 1:size(dat1.trace{nChan*nExc+1},1);
     if inSec
-        rate = p.proj{proj}.frame_rate;
-        x_axis = x_axis*rate;
+        expT = p.proj{proj}.frame_rate;
+        x_axis = x_axis*expT;
     end
     for n = 1:nFRET
         ind = nChan*nExc+n;
-        plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{ind}, ...
-            'Color', dat1.color{ind});
+        plot(h.tm.axes_ovrAll_1,x_axis,dat1.trace{ind},'color',...
+            dat1.color{ind},'buttondownfcn',fcn);
         % added by MH, 24.4.2019
         if n==1
             set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
@@ -1991,18 +1995,18 @@ elseif (plot1 == nChan*nExc+nFRET+nS+2 && nFRET == 1 && nS > 1) || ...
         (plot1 == nChan*nExc+nFRET+nS+3 && nFRET > 1 && nS > 1)% all S
     x_axis = 1:size(dat1.trace{nChan*nExc+nFRET+1},1);
     if inSec
-        rate = p.proj{proj}.frame_rate;
-        x_axis = x_axis*rate;
+        expT = p.proj{proj}.frame_rate;
+        x_axis = x_axis*expT;
     end
     for n = 1:nS
         ind = nChan*nExc+nFRET+n;
-        plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{ind}, ...
-            'Color', dat1.color{ind});
+        plot(h.tm.axes_ovrAll_1,x_axis,dat1.trace{ind},'color',...
+            dat1.color{ind},'buttondownfcn',fcn);
         if n==1
-            set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
+            set(h.tm.axes_ovrAll_1,'nextplot','add');
         end
     end
-    set(h.tm.axes_ovrAll_1, 'NextPlot', 'replacechildren');
+    set(h.tm.axes_ovrAll_1,'nextplot','replacechildren');
     xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
     ylim(h.tm.axes_ovrAll_1, [-0.2 1.2]);
     xlabel(h.tm.axes_ovrAll_1, dat1.xlabel);
@@ -2014,28 +2018,29 @@ elseif (plot1 == nChan*nExc+nFRET+nS+2 && nFRET == 1 && nS == 1) || ...
         nChan*nExc+nFRET+nS+4 && nFRET > 1 && nS > 1) % all FRET & S
     x_axis = 1:size(dat1.trace{nChan*nExc+1},1);
     if inSec
-        rate = p.proj{proj}.frame_rate;
-        x_axis = x_axis*rate;
+        x_axis = x_axis*expT;
     end
     for n = 1:(nFRET+nS)
         ind = nChan*nExc+n;
-        plot(h.tm.axes_ovrAll_1, x_axis, dat1.trace{ind}, ...
-            'Color', dat1.color{ind});
+        plot(h.tm.axes_ovrAll_1,x_axis,dat1.trace{ind},'color',...
+            dat1.color{ind},'buttondownfcn',fcn);
         if n==1
-            set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
+            set(h.tm.axes_ovrAll_1,'nextplot','add');
         end
     end
-    set(h.tm.axes_ovrAll_1, 'NextPlot', 'replacechildren');
+    set(h.tm.axes_ovrAll_1,'nextplot','replacechildren');
     xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
     ylim(h.tm.axes_ovrAll_1, [-0.2 1.2]);
     xlabel(h.tm.axes_ovrAll_1, dat1.xlabel);
     ylabel(h.tm.axes_ovrAll_1, dat1.ylabel{plot1});
 end
 
+drawMask_slct(h_fig);
+
 % RB 2017-12-15: implement FRET-S-histograms in plot2
 if plot2 <= nChan*nExc+nFRET+nS
-    bar(h.tm.axes_ovrAll_2, dat2.iv{plot2}, dat2.hist{plot2}, ...
-        'FaceColor', dat1.color{plot2}, 'EdgeColor', ...
+    bar(h.tm.axes_ovrAll_2, dat2.iv{plot2}, dat2.hist{plot2},'facecolor',...
+        dat1.color{plot2},'edgecolor', ...
     dat1.color{plot2});
 
     xlabel(h.tm.axes_ovrAll_2, dat2.xlabel{plot2});
@@ -2048,12 +2053,12 @@ else  % draw FRET-S histogram
     cla(h.tm.axes_ovrAll_2);
     %lim = [-0.2 1.2; -0.2,1.2];
     imagesc(dat1.lim{plot2}(1,:),dat1.lim{plot2}(2,:),dat2.hist{plot2},...
-        'Parent', h.tm.axes_ovrAll_2);
+        'parent', h.tm.axes_ovrAll_2);
     if sum(sum(dat2.hist{plot2}))
-        set(h.tm.axes_ovrAll_2,'CLim',[min(min(dat2.hist{plot2})) ...
+        set(h.tm.axes_ovrAll_2,'clim',[min(min(dat2.hist{plot2})) ...
             max(max(dat2.hist{plot2}))]);
     else
-        set(h.tm.axes_ovrAll_2,'CLim',[0 1]);
+        set(h.tm.axes_ovrAll_2,'clim',[0 1]);
     end
 
     xlabel(h.tm.axes_ovrAll_2, dat2.xlabel{plot2});
@@ -2080,6 +2085,72 @@ else
     set(h.tm.edit_ynbiv,'string','','enable','off');
     set(h.tm.text4,'enable','off');
 end
+
+end
+
+
+function drawMask_slct(h_fig)
+% Draw mask over data in plot 1
+
+% defaults
+clr = [0.5,0.5,0.5];
+a = 0.5;
+fcn = {@axes_ovrAll_1_ButtonDownFcn,h_fig};
+
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+incl = p.proj{proj}.bool_intensities;
+inSec = p.proj{proj}.fix{2}(7);
+expT = p.proj{proj}.frame_rate; % this is truely the exposure time
+dat3 = get(h.tm.axes_histSort,'userdata');
+mol = str2num(get(h.tm.checkbox_molNb(1),'string'));
+mol_disp = str2num(get(h.tm.edit_nbTotMol,'string'));
+
+% get plot coordinates
+xdata = [];
+ydata = [];
+yaxis = get(h.tm.axes_ovrAll_1,'ylim');
+L = sum(sum(incl(:,dat3.slct(1:mol-1))));
+for m = mol:mol+mol_disp-1
+    if m<=numel(dat3.slct) && dat3.slct(m)
+        
+        % initialize x data
+        if isempty(xdata)
+            if inSec
+                xdata = L*expT;
+            else
+                xdata = L;
+            end
+            ydata = yaxis(2)+1;
+        end
+        
+        % append x data
+        L = L + sum(incl(:,m));
+        if inSec
+            T = L*expT;
+        else
+            T = L;
+        end
+        xdata = [xdata,T];
+        ydata = [ydata,yaxis(2)+1];
+    end
+end
+
+if isempty(xdata)
+    return;
+end
+
+if isfield(h.tm,'area_slct') && ishandle(h.tm.area_slct)
+    set(h.tm.area_slct,'xdata',xdata,'ydata',ydata);
+else
+    set(h.tm.axes_ovrAll_1,'nextplot','add');
+    h.tm.area_slct = area(h.tm.axes_ovrAll_1,xdata,ydata,'linestyle','none',...
+        'facecolor',clr,'facealpha',a,'buttondownfcn',fcn);
+    set(h.tm.axes_ovrAll_1,'nextplot','replacechildren');
+    guidata(h_fig,h);
+end
+drawnow;
 
 end
 
@@ -3199,53 +3270,58 @@ function slider_Callback(obj, evd, h_fig)
 %
 %
 
-    h = guidata(h_fig);
-    nMol = numel(h.tm.molValid);
+% defaults
+clrOffset = 0.85;
+clrFactor = 0.05;
+
+h = guidata(h_fig);
+nMol = numel(h.tm.molValid);
+
+pos_slider = round(get(obj, 'Value'));
+max_slider = get(obj, 'Max');
+
+nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
+if nb_mol_disp > nMol
+    nb_mol_disp = nMol;
+end
+
+for i = 1:nb_mol_disp
     
-    pos_slider = round(get(obj, 'Value'));
-    max_slider = get(obj, 'Max');
+    mol = max_slider - pos_slider + i;
+    clr = clrFactor*repmat(mod(mol,2),1,3) + clrOffset;
     
-    nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
-    if nb_mol_disp > nMol
-        nb_mol_disp = nMol;
-    end
-    
-    for i = 1:nb_mol_disp
-        set(h.tm.checkbox_molNb(i), 'String', ...
-            num2str(max_slider-pos_slider+i), 'Value', ...
-            h.tm.molValid(max_slider-pos_slider+i), 'BackgroundColor', ...
-            0.05*[mod(max_slider-pos_slider+i,2) ...
-            mod(max_slider-pos_slider+i,2) ...
-            mod(max_slider-pos_slider+i,2)]+0.85);
-        
-        
-        % added by FS, 24.4.2018
-        % cancelled by MH, 24.4.2019
-%         str_lst = colorTagNames(h_fig);
-%         if h.tm.molTag(max_slider-pos_slider+i) > length(str_lst)
-%             val = 1;
-%         else
-%             val = h.tm.molTag(max_slider-pos_slider+i);
-%         end
-%         set(h.tm.popup_molNb(i), 'String', ...
-%             str_lst, 'Value', ...
-%             val, 'BackgroundColor', ...
-%             0.05*[mod(max_slider-pos_slider+i,2) ...
-%             mod(max_slider-pos_slider+i,2) ...
-%             mod(max_slider-pos_slider+i,2)]+0.85);
-        
-        % deactivate the popupmenu if the molecule is not selected
-        % added by FS, 24.4.2018
-        % cancelled by MH, 24.4.2019: allow labelling even if not selected
-%         if h.tm.molValid(max_slider-pos_slider+i) == 0
-%             set(h.tm.popup_molNb(i), 'Enable', 'off')
-%         else
-%             set(h.tm.popup_molNb(i), 'Enable', 'on')
-%         end
-    end
-   
-    update_taglist_OV(h_fig,nb_mol_disp);
-    plotDataTm(h_fig);
+    set(h.tm.checkbox_molNb(i),'String',num2str(mol),'Value',...
+        h.tm.molValid(mol),'BackgroundColor',clr);
+
+
+    % added by FS, 24.4.2018
+    % cancelled by MH, 24.4.2019
+%     str_lst = colorTagNames(h_fig);
+%     if h.tm.molTag(max_slider-pos_slider+i) > length(str_lst)
+%         val = 1;
+%     else
+%         val = h.tm.molTag(max_slider-pos_slider+i);
+%     end
+%     set(h.tm.popup_molNb(i), 'String', ...
+%         str_lst, 'Value', ...
+%         val, 'BackgroundColor', ...
+%         0.05*[mod(max_slider-pos_slider+i,2) ...
+%         mod(max_slider-pos_slider+i,2) ...
+%         mod(max_slider-pos_slider+i,2)]+0.85);
+
+    % deactivate the popupmenu if the molecule is not selected
+    % added by FS, 24.4.2018
+    % cancelled by MH, 24.4.2019: allow labelling even if not selected
+%     if h.tm.molValid(max_slider-pos_slider+i) == 0
+%         set(h.tm.popup_molNb(i), 'Enable', 'off')
+%     else
+%         set(h.tm.popup_molNb(i), 'Enable', 'on')
+%     end
+end
+
+update_taglist_OV(h_fig,nb_mol_disp);
+drawMask_slct(h_fig)
+plotDataTm(h_fig);
 
 end
 
@@ -3259,10 +3335,10 @@ function edit_nbTotMol_Callback(obj, evd, h_fig)
     if nb_mol_disp > nb_mol
         nb_mol_disp = nb_mol;
     end
+    
     updatePanel_single(h_fig, nb_mol_disp);
     
-    nb_mol_page = str2num(get(h.tm.edit_nbTotMol, 'String'));
-    if nb_mol <= nb_mol_page || nb_mol_page == 0
+    if nb_mol <= nb_mol_disp || nb_mol_disp == 0
         min_step = 1;
         maj_step = 1;
         min_val = 0;
@@ -3271,14 +3347,15 @@ function edit_nbTotMol_Callback(obj, evd, h_fig)
     else
         set(h.tm.slider, 'Visible', 'on');
         min_val = 1;
-        max_val = nb_mol-nb_mol_page+1;
+        max_val = nb_mol-nb_mol_disp+1;
         min_step = 1/(max_val-min_val);
-        maj_step = nb_mol_page/(max_val-min_val);
+        maj_step = nb_mol_disp/(max_val-min_val);
     end
     
     set(h.tm.slider, 'Value', max_val, 'Max', max_val, 'Min', min_val, ...
         'SliderStep', [min_step maj_step]);
     
+    drawMask_slct(h_fig)
     plotDataTm(h_fig);
 
 end
@@ -4754,6 +4831,53 @@ else % E-S histograms
     feval(fcn{1},h_edit_y(idy),[],h_fig);
 end
 
+end
+
+
+function axes_ovrAll_1_ButtonDownFcn(obj,evd,h_fig)
+h = guidata(h_fig);
+
+% get project parameters
+p = h.param.ttPr;
+proj = p.curr_proj;
+inSec = p.proj{proj}.fix{2}(7);
+expT = p.proj{proj}.frame_rate; % this is truely the exposure time
+incl = p.proj{proj}.bool_intensities;
+
+% get clicked position on axes
+pos = get(h.tm.axes_ovrAll_1,'currentpoint');
+
+% get frame at click
+l = pos(1);
+if inSec
+    l = l/expT;
+end
+
+% get molecule selection at last update
+dat3 = get(h.tm.axes_histSort,'userdata');
+mol_slct = dat3.slct;
+
+% determine the corresponding molecule index
+L = 0;
+M = numel(mol_slct);
+for m = 1:M
+    if mol_slct(m)
+        L = L + sum(incl(:,m));
+        if L>l
+            break;
+        end
+    end
+end
+m = m - 1;
+
+% set slider at molecule position & update
+mol_disp = str2num(get(h.tm.edit_nbTotMol,'string'));
+valSld = (M-m)-mol_disp+1;
+if valSld<=0
+    valSld = 1;
+end
+set(h.tm.slider,'value',valSld);
+slider_Callback(h.tm.slider,[],h_fig);
 end
 
 
