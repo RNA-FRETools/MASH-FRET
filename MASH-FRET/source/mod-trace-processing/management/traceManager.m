@@ -916,6 +916,14 @@ h.tm.popupmenu_selection = uicontrol('style','popupmenu','parent',...
 
 xNext = xNext + 4/5*w_pop + 2*mg;
 
+h.tm.pushbutton_untagAll = uicontrol('style','pushbutton','parent', ...
+    h.tm.uipanel_overview,'units','pixels','string','Untag all', ...
+    'position',[xNext yNext 0.5*w_pop h_but],'tooltipString',...
+    'Remove tags to all molecules','fontunits','pixels','fontsize',fntS,...
+    'callback',{@pushbutton_untagAll_Callback,h_fig});
+
+xNext = xNext + 0.5*w_pop + mg;
+
 % edit box to define a molecule tag, added by FS, 24.4.2018
 h.tm.edit_molTag = uicontrol('Style', 'edit', 'Parent', ...
     h.tm.uipanel_overview, 'Units', 'pixels', ...
@@ -960,9 +968,6 @@ h.tm.pushbutton_deleteMolTag = uicontrol('Style', 'pushbutton', 'Parent', ...
     'FontUnits', 'pixels', ...
     'FontSize', fntS);
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 xNext = w_pan - mg - w_but;
 
 arrow_up = cat(3,arrow_up,arrow_up,arrow_up);
@@ -974,20 +979,19 @@ h.tm.pushbutton_reduce = uicontrol('Style', 'pushbutton', 'Parent', ...
 
 xNext = xNext - mg_big - w_edit;
 
-h.tm.edit_nbTotMol = uicontrol('Style', 'edit', 'Parent', ...
-    h.tm.uipanel_overview, 'Units', 'pixels', 'Position', ...
-    [xNext yNext w_edit h_edit], 'String', '3', 'TooltipString', ...
-    'Number of molecule per view', 'BackgroundColor', [1 1 1], ...
-    'Callback', {@edit_nbTotMol_Callback, h_fig});
+h.tm.edit_nbTotMol = uicontrol('Style','edit','Parent',...
+    h.tm.uipanel_overview,'Units','pixels','Position',...
+    [xNext yNext w_edit h_edit],'String',num2str(defNperPage),...
+    'TooltipString','Number of molecule per view','BackgroundColor',...
+    [1 1 1],'Callback',{@edit_nbTotMol_Callback, h_fig});
 
-xNext = xNext - mg - 0.8*w_pop;
+xNext = xNext - mg - w_edit;
 yNext = yNext + (h_edit-h_txt)/2;
 
-h.tm.textNmol = uicontrol('Style', 'text', 'Parent', ...
-    h.tm.uipanel_overview, 'Units', 'pixels', 'String', ...
-    'molecules per page:', 'HorizontalAlignment', 'right', ...
-    'Position', [xNext yNext 0.8*w_pop h_txt], 'FontUnits', 'pixels', ...
-    'FontSize', fntS);
+h.tm.textNmol = uicontrol('Style','text','Parent',h.tm.uipanel_overview,...
+    'Units','pixels','String','disp:','HorizontalAlignment','right',...
+    'Position',[xNext yNext w_edit h_txt],'FontUnits','pixels','FontSize',...
+    fntS);
 
 xNext = w_pan - mg - w_sld;
 yNext = mg;
@@ -1055,6 +1059,7 @@ h.tm.axes_histSort = axes('parent',h.tm.uipanel_autoSorting,...
 ylim(h.tm.axes_histSort,[0 10000]);
 ylabel(h.tm.axes_histSort,'freq. counts');
 xlabel(h.tm.axes_histSort,'counts per s. per pix.');
+title(h.tm.axes_histSort,'1D-histogram for molecule selection');
 pos = getRealPosAxes([xNext,yNext,w_axes3,h_axes3], ...
 get(h.tm.axes_histSort,'TightInset'),'traces'); 
 pos(3) = pos(3) - fntS;
@@ -1982,6 +1987,8 @@ if ind<=(nChan*nExc+nFRET+nS) % 1D histograms
     yaxis = get(h.tm.axes_histSort,'ylim');
     drawMask(h_fig,[iv(1) iv(end)],yaxis,1);
     
+    str_d = '1D';
+    
 else % E-S histograms
     
     if j==1 % original data
@@ -2019,6 +2026,8 @@ else % E-S histograms
 
     xlim(h.tm.axes_histSort,[ivx(1),ivx(end)]);
     ylim(h.tm.axes_histSort,[ivy(1),ivy(end)]);
+    
+    str_d = '2D';
 end
 
 % display histogram parameters
@@ -2043,6 +2052,8 @@ else
     set([h.tm.text_ylow,h.tm.edit_ylow,h.tm.text_yup,h.tm.edit_yup,...
         h.tm.text_yniv,h.tm.edit_yniv],'enable','off');
 end
+
+title(h.tm.axes_histSort,cat(2,str_d,'-histogram for molecule selection'));
 
 end
 
@@ -2645,6 +2656,35 @@ end
 
 
 %% callbacks for panel "Molecule selection"
+
+function pushbutton_untagAll_Callback(obj, evd, h_fig)
+
+h = guidata(h_fig);
+
+% abort if no molecule tag is defined
+if ~sum(sum(h.tm.molTag))
+    return;
+end
+
+% ask confirmation to user
+choice = questdlg({cat(2,'All molecule-specific tags will be lost after ',...
+    'completion.'),'',cat(2,'Do you want to continue and remove tags to ',...
+    'all molecules?')},'Remove molecule tags','Yes, remove all tags',...
+    'Cancel','Cancel');
+if ~strcmp(choice,'Yes, remove all tags')
+    return;
+end
+
+% set all molecule tags to false
+h.tm.molTag = false(size(h.tm.molTag));
+guidata(h_fig,h);
+
+% update molecule tag lists
+nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
+update_taglist_OV(h_fig,nb_mol_disp);
+
+end
+
 
 function checkbox_molNb_Callback(obj, evd, h_fig)
 
