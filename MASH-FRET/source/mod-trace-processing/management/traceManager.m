@@ -3444,10 +3444,7 @@ if ~strcmp(obj.String, 'define a new tag') && ...
     % add random colors
     nTag = numel(h.tm.molTagNames);
     if numel(h.tm.molTagClr)<nTag
-        clr = round(255*rand(1,3));
-        h.tm.molTagClr = [h.tm.molTagClr cat(2,'#',...
-            num2str(dec2hex(clr(1))),num2str(dec2hex(clr(2))),...
-            num2str(dec2hex(clr(3))))];
+        h.tm.molTagClr = [h.tm.molTagClr cat(2,'#',randHexRgb())];
     end
 
     % added by MH, 24.4.2019
