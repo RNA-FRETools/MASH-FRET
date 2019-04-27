@@ -1461,7 +1461,7 @@ yNext = yNext - (h_pop-h_txt)/2;
 str_pop = {'selected','unselected','all'};
 h.tm.popupmenu_VV_mol = uicontrol('style','popup','parent',...
     h.tm.uipanel_videoView,'units','pixel','value',3,'position',...
-    [xNext,yNext,0.5*w_cb,h_pop],'string',str_pop,'value',1,'callback',...
+    [xNext,yNext,0.5*w_cb,h_pop],'string',str_pop,'callback',...
     {@popupmenu_VV_mol_Callback,h_fig});
 
 xNext = 2*mg;
@@ -2607,6 +2607,14 @@ function update_taglist_AS(h_fig)
 
 h = guidata(h_fig);
 
+str_lst = colorRangeList(h_fig);
+R = numel(str_lst);
+range = get(h.tm.listbox_ranges,'value');
+if range>R
+    range = R;
+end
+set(h.tm.listbox_ranges,'string',str_lst,'value',range);
+
 str_lst = colorTagNames(h_fig);
 nTag = numel(str_lst);
 currTag = get(h.tm.popupmenu_defTagPop,'value');
@@ -2615,7 +2623,6 @@ if currTag>nTag
 end
 set(h.tm.popupmenu_defTagPop, 'String', str_lst, 'Value', currTag);
 
-range = get(h.tm.listbox_ranges,'value');
 str_lst = colorTagLists_AS(h_fig,range);
 nTag = numel(str_lst);
 currTag = get(h.tm.listbox_popTag,'value');
@@ -2656,6 +2663,42 @@ end
 end
 
 
+function str_lst = colorRangeList(h_fig)
+% Defines colored strings for listboxes listing ranges in tool
+% "Auto sorting"
+
+h = guidata(h_fig);
+dat3 = get(h.tm.axes_histSort,'userdata');
+rangeTag = dat3.rangeTags;
+tagClr = h.tm.molTagClr;
+R = size(rangeTag,1);
+
+if R==0
+    str_lst = {'no range'};
+    return;
+end
+
+str_lst = {};
+for r = 1:R
+    tags = find(rangeTag(r,:));
+    nTag = numel(tags);
+    if nTag>0
+        str_r = cat(2,'<html><font color="white"><span bgcolor=',...
+            tagClr{tags(1)},'>',num2str(r),'</span></font>');
+        for t = 2:nTag
+            str_r = cat(2,str_r,'<span bgcolor=',tagClr{tags(t)},...
+                '>&#160;&#160;</span>');
+        end
+        str_r = cat(2,str_r,'</html>');
+    else
+        str_r = num2str(r);
+    end
+    
+    str_lst = [str_lst str_r];
+end
+end
+
+
 %% update tag lists in panel "Video view"
 function update_taglist_VV(h_fig)
 
@@ -2685,8 +2728,11 @@ function pushbutton_update_Callback(obj, evd, h_fig)
         return;
     end
     
-    % plot new data set
+    % plot new data set in "Plot overall"
     plotData_overall(h_fig);
+    
+    % update panel and plot in "Automatic sorting"
+    ud_panRanges(h_fig);
     plotData_autoSort(h_fig);
 
     % display new histogram limits and bins
@@ -4102,34 +4148,19 @@ else
     set(h.tm.pushbutton_saveRange,'enable','on');
 end
 
+update_taglist_AS(h_fig);
+
 if R==0
-    set(h.tm.listbox_ranges,'string',{'no range'},'value',1);
-    set(h.tm.listbox_popTag,'string',{'no tag'},'value',1);
-    
     set([h.tm.pushbutton_dismissRange,h.tm.listbox_ranges,h.tm.text_pop,...
         h.tm.text_tag,h.tm.pushbutton_addTag2pop,h.tm.popupmenu_defTagPop,...
         h.tm.listbox_popTag,h.tm.pushbutton_remPopTag,...
         h.tm.pushbutton_applyTag],'enable','off');
 
 else
-    range = get(h.tm.listbox_ranges,'value');
-    if range>R
-        range = R;
-    end
-    str_lst = cellstr(num2str((1:R)'))';
-    set(h.tm.listbox_ranges,'string',str_lst,'value',range);
-    
     set([h.tm.pushbutton_dismissRange,h.tm.listbox_ranges,h.tm.text_pop,...
         h.tm.text_tag,h.tm.pushbutton_addTag2pop,h.tm.popupmenu_defTagPop,...
         h.tm.listbox_popTag,h.tm.pushbutton_remPopTag,...
         h.tm.pushbutton_applyTag],'enable','on');
-    
-    str_lst = colorTagLists_AS(h_fig,range);
-    currTag = get(h.tm.listbox_popTag,'value');
-    if currTag>numel(str_lst)
-        currTag = numel(str_lst);
-    end
-    set(h.tm.listbox_popTag,'string',str_lst,'value',currTag);
 end
    
 end
