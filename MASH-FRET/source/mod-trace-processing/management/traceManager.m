@@ -338,9 +338,12 @@ dat3.val = cell(nChan*nExc+nFRET+nS,nCalc);
 dat3.lim = cell(1,nChan*nExc+nFRET+nS);
 dat3.iv =  cell(nChan*nExc+nFRET+nS+nFRET*nS,nCalc);
 dat3.hist = cell(nChan*nExc+nFRET+nS+nFRET*nS,nCalc);
+
 % added by MH, 26.4.2019
-dat3.range = {};
-dat3.rangeTags = [];
+if ~isfield(dat3,'range')
+    dat3.range = {};
+    dat3.rangeTags = [];
+end
 
 % loading bar parameters-----------------------------------------------
 err = loading_bar('init',h_fig,nMol,'Concatenate and calculate data ...');
@@ -1057,7 +1060,8 @@ h.tm.axes_histSort = axes('parent',h.tm.uipanel_autoSorting,...
 ylim(h.tm.axes_histSort,[0 10000]);
 ylabel(h.tm.axes_histSort,'freq. counts');
 xlabel(h.tm.axes_histSort,'counts per s. per pix.');
-title(h.tm.axes_histSort,'1D-histogram for molecule selection');
+title(h.tm.axes_histSort,...
+    '1D-histogram for molecule selection at last update');
 pos = getRealPosAxes([xNext,yNext,w_axes3,h_axes3], ...
 get(h.tm.axes_histSort,'TightInset'),'traces'); 
 pos(3) = pos(3) - fntS;
@@ -2051,7 +2055,8 @@ else
         h.tm.text_yniv,h.tm.edit_yniv],'enable','off');
 end
 
-title(h.tm.axes_histSort,cat(2,str_d,'-histogram for molecule selection'));
+title(h.tm.axes_histSort,cat(2,str_d,...
+    '-histogram for molecule selection at last update'));
 
 end
 
@@ -2065,41 +2070,46 @@ fcn = {@axes_histSort_ButtonDownFcn,h_fig};
 
 h = guidata(h_fig);
 
-xlow = str2num(get(h.tm.edit_xrangeLow,'string'));
-xup = str2num(get(h.tm.edit_xrangeUp,'string'));
-ylow = str2num(get(h.tm.edit_yrangeLow,'string'));
-yup = str2num(get(h.tm.edit_yrangeUp,'string'));
+xrange = [str2num(get(h.tm.edit_xrangeLow,'string')) ...
+    str2num(get(h.tm.edit_xrangeUp,'string'))];
+yrange = [str2num(get(h.tm.edit_yrangeLow,'string')) ...
+    str2num(get(h.tm.edit_yrangeUp,'string'))];
+
+xrange(xrange==-Inf) = x(1)-1;
+yrange(yrange==-Inf) = y(1)-1;
+xrange(xrange==Inf) = x(2)+1;
+yrange(yrange==Inf) = y(2)+1;
 
 set(h.tm.axes_histSort,'nextplot','add');
 
 switch D
     case 1 %1D mask
-        xdata = [x(1)-1,xlow,xlow,xup,xup,x(2)+1];
+        xdata = [x(1)-1,xrange(1),xrange(1),xrange(2),xrange(2),x(2)+1];
         ydata = [y(2)+1,y(2)+1,-1,-1,y(2)+1,y(2)+1];
         area(xdata,ydata,'edgecolor',clr,'facecolor',clr,'facealpha',a,...
             'linewidth',width,'buttondownfcn',fcn);
         set(h.tm.axes_histSort,'ylim',[0,y(2)]);
     
     case 2 % 2D mask
-        area(h.tm.axes_histSort,[x(1),xlow],[y(2),y(2)],'facecolor',clr,...
+        area(h.tm.axes_histSort,[x(1),xrange(1)],[y(2),y(2)],'facecolor',clr,...
             'facealpha',a,'linestyle','none','basevalue',y(1),...
             'buttondownfcn',fcn);
 
-        area(h.tm.axes_histSort,[xlow,xup],[ylow,ylow],'facecolor',...
+        area(h.tm.axes_histSort,[xrange(1),xrange(2)],[yrange(1),yrange(1)],'facecolor',...
             [0.5,0.5,0.5],'facealpha',a,'linestyle','none','basevalue',...
             y(1),'ButtonDownFcn',{@axes_histSort_ButtonDownFcn,h_fig});
 
-        area(h.tm.axes_histSort,[xup,x(2)],[y(2),y(2)],'facecolor',clr,...
+        area(h.tm.axes_histSort,[xrange(2),x(2)],[y(2),y(2)],'facecolor',clr,...
             'facealpha',a,'linestyle','none','basevalue',y(1),...
             'buttondownfcn',fcn);
 
         % draw upper area: only patch allows transparency AND different baseline
-        patch(h.tm.axes_histSort,'xdata',[xlow,xup,xup,xlow],'ydata',...
-            [y(2),y(2),yup,yup],'facecolor',clr,'facealpha',a,'linestyle',...
+        patch(h.tm.axes_histSort,'xdata',[xrange(1),xrange(2),xrange(2),xrange(1)],'ydata',...
+            [y(2),y(2),yrange(2),yrange(2)],'facecolor',clr,'facealpha',a,'linestyle',...
             'none','buttondownfcn',fcn);
 
         % draw recatngle around the target
-        pos = [xlow,ylow,(xup-xlow),(yup-ylow)];
+        pos = [xrange(1),yrange(1),(xrange(2)-xrange(1)),(yrange(2)-yrange(1))];
         pos(pos==Inf) = max([x(2) y(2)]);
         pos(pos==-Inf) = min([x(1) y(1)]);
 
@@ -2425,6 +2435,7 @@ function pushbutton_update_Callback(obj, evd, h_fig)
     
     % plot new data set
     plotData_overall(h_fig);
+    plotData_autoSort(h_fig);
 
     % display new histogram limits and bins
     h = guidata(h_fig);
@@ -3829,6 +3840,7 @@ end
 
 if R==0
     set(h.tm.listbox_ranges,'string',{'no range'},'value',1);
+    set(h.tm.listbox_popTag,'string',{'no tag'},'value',1);
     
     set([h.tm.pushbutton_dismissRange,h.tm.listbox_ranges,h.tm.text_pop,...
         h.tm.text_tag,h.tm.pushbutton_addTag2pop,h.tm.popupmenu_defTagPop,...
@@ -3897,7 +3909,7 @@ if j==1 % original time traces
     else % 2D
         ind = data-nChan*nExc-nFRET-nS;
         data_e = ceil(ind/nS)+nChan*nExc;
-        data_s = ind-fix(ind/nS)*nS+nChan*nExc+nFRET;
+        data_s = ind-(ceil(ind/nS)-1)*nS+nChan*nExc+nFRET;
         trace = [dat1.trace{data_e} dat1.trace{data_s}];
     end
     molIncl = molsWithConf(trace,'trace',prm,incl);
@@ -3908,7 +3920,7 @@ elseif j==6 % state trajectories
     else % 2D
         ind = data-nChan*nExc-nFRET-nS;
         data_e = ceil(ind/nS)+nChan*nExc;
-        data_s = ind-fix(ind/nS)*nS+nChan*nExc+nFRET;
+        data_s = ind-(ceil(ind/nS)-1)*nS+nChan*nExc+nFRET;
         trace = [dat3.val{data_e,j-1} dat3.val{data_s,j-1}];
     end
     molIncl = molsWithConf(trace,'trace',prm,incl);
@@ -3919,7 +3931,7 @@ else % calculated values
     else
         ind = data-nChan*nExc-nFRET-nS;
         data_e = ceil(ind/nS) + nChan*nExc;
-        data_s = ind - fix(ind/nS)*nS + nChan*nExc+nFRET;
+        data_s = ind - (ceil(ind/nS)-1)*nS + nChan*nExc+nFRET;
         values = [dat3.val{data_e,j-1} dat3.val{data_s,j-1}] ;
     end
     molIncl = molsWithConf(values,'value',prm);
