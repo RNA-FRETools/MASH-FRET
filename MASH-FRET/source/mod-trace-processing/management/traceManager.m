@@ -1439,11 +1439,14 @@ h.tm.text_exc = uicontrol('style','text','parent',h.tm.uipanel_videoView,...
 xNext = xNext + 0.7*w_cb + mg;
 yNext = yNext - (h_pop-h_txt)/2;
 
-str_pop = [getStrPop('exc',...
-    h.param.ttPr.proj{h.param.ttPr.curr_proj}.excitations),'all'];
+str_pop = getStrPop('exc',...
+    h.param.ttPr.proj{h.param.ttPr.curr_proj}.excitations);
+if numel(str_pop)>1
+    str_pop = [str_pop 'all'];
+end
 h.tm.popupmenu_VV_exc = uicontrol('style','popup','parent',...
-    h.tm.uipanel_videoView,'units','pixel','position',...
-    [xNext,yNext,0.3*w_cb,h_pop],'string',str_pop,'value',3,'callback',...
+    h.tm.uipanel_videoView,'units','pixel','string',str_pop,'position',...
+    [xNext,yNext,0.3*w_cb,h_pop],'value',numel(str_pop),'callback',...
     {@popupmenu_VV_exc_Callback,h_fig});
 
 xNext = 2*mg;
@@ -2273,6 +2276,7 @@ function plotData_videoView(h_fig)
 % defaults 
 width = 2;
 a = 0.8;
+mg_top = 0.4;
 
 h = guidata(h_fig);
 p = h.param.ttPr;
@@ -2283,8 +2287,32 @@ clr = h.tm.molTagClr;
 coord = p.proj{proj}.coord;
 molTags = h.tm.molTag;
 
-% abort if no average image is available in project
-if ~(isfield(p.proj{proj},'aveImg') && size(p.proj{proj}.aveImg,2)==nExc)
+% abort if no average image or coordinates are available in project
+if ~(isfield(p.proj{proj},'aveImg') && size(p.proj{proj}.aveImg,2)==nExc && ...
+        ~isempty(coord)) && ~isfield(h.tm,'text_novid')
+    
+    xLim = get(h.tm.axes_videoView,'xlim');
+    yLim = get(h.tm.axes_videoView,'ylim');
+    
+    h.tm.text_novid(1) = text(h.tm.axes_videoView,0,0,...
+        'View on video is not available:');
+    h.tm.text_novid(2) = text(h.tm.axes_videoView,0,0,cat(2,'no video ',...
+        'and/or molecule coordinates are assigned to the project.'));
+    
+    pos1 = get(h.tm.text_novid(1),'extent');
+    pos2 = get(h.tm.text_novid(2),'extent');
+    pos1(1) = xLim(1)+(abs(diff(xLim))-pos1(3))/2;
+    pos1(2) = yLim(2)-mg_top*abs(diff(yLim));
+    pos2(1) = xLim(1)+(abs(diff(xLim))-pos2(3))/2;
+    pos2(2) = pos1(2) - 2*pos2(4);
+    
+    set(h.tm.text_novid(1),'position',pos1([1,2]));
+    set(h.tm.text_novid(2),'position',pos2([1,2]));
+    
+    set(h.tm.axes_videoView,'visible','off');
+    
+    guidata(h_fig,h);
+    
     return;
 end
 
@@ -2310,7 +2338,7 @@ imagesc(h.tm.axes_videoView,[0.5,w_vid-0.5],y_data,img);
 
 % plot channel bounds
 set(h.tm.axes_videoView,'nextplot','add');
-for c = 1:nChan
+for c = 1:nChan-1
     x_data = repmat(c*(w_vid/nChan),1,2);
     plot(h.tm.axes_videoView,x_data,y_data,'--w');
 end
@@ -2336,8 +2364,7 @@ if get(h.tm.checkbox_VV_tag0,'value')
 end
 
 % plot tagged coordinates
-if isfield(h.tm,'checkbox_VV_tag') && ishandle(h.tm.checkbox_VV_tag(1)) && ...
-        ~isempty(coord)
+if isfield(h.tm,'checkbox_VV_tag') && ishandle(h.tm.checkbox_VV_tag(1))
     nTag = numel(h.tm.checkbox_VV_tag);
     for t = 1:nTag
         if get(h.tm.checkbox_VV_tag(t),'value')
