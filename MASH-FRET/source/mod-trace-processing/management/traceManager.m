@@ -1050,7 +1050,8 @@ xNext = xNext + w_pan_slct + mg;
 h.tm.axes_histSort = axes('parent',h.tm.uipanel_autoSorting,...
     'units','pixels','fontunits','pixels','fontsize',fntS,...
     'activepositionproperty','outerposition','gridlineStyle',':',...
-    'nextPlot','replacechildren');
+    'nextPlot','replacechildren','buttondownfcn',...
+    {@axes_histSort_ButtonDownFcn,h_fig});
 ylim(h.tm.axes_histSort,[0 10000]);
 ylabel(h.tm.axes_histSort,'freq. counts');
 xlabel(h.tm.axes_histSort,'counts per s. per pix.');
@@ -1976,18 +1977,10 @@ if ind<=(nChan*nExc+nFRET+nS) % 1D histograms
     % set axis limits
     xlim(h.tm.axes_histSort, [iv(1),iv(end)]);
     ylim(h.tm.axes_histSort, 'auto');
-    
-    % plot range
+
+    % add mask
     yaxis = get(h.tm.axes_histSort,'ylim');
-    xlow = str2num(get(h.tm.edit_xrangeLow,'string'));
-    xup = str2num(get(h.tm.edit_xrangeUp,'string'));
-    set(h.tm.axes_histSort,'nextplot','add');
-    xdata = [iv(1)-1,xlow,xlow,xup,xup,iv(end)+1];
-    ydata = [yaxis(2)+1,yaxis(2)+1,-1,-1,yaxis(2)+1,yaxis(2)+1];
-    area(xdata,ydata,'edgecolor',[0.5,0.5,0.5],'facecolor',[0.5,0.5,0.5],...
-        'facealpha',0.5,'linewidth',2);
-    set(h.tm.axes_histSort,'nextplot','replacechildren');
-    set(h.tm.axes_histSort,'ylim',[0,yaxis(end)]);
+    drawMask(h_fig,[iv(1) iv(end)],yaxis,1);
     
 else % E-S histograms
     
@@ -2009,29 +2002,11 @@ else % E-S histograms
     end
        
     imagesc([ivx(1),ivx(end)],[ivy(1),ivy(end)],P2D,'parent',...
-        h.tm.axes_histSort);
+        h.tm.axes_histSort,'ButtonDownFcn',...
+        {@axes_histSort_ButtonDownFcn,h_fig});
     
     % plot range
-    set(h.tm.axes_histSort,'nextplot','add');
-    xlow = str2num(get(h.tm.edit_xrangeLow,'string'));
-    xup = str2num(get(h.tm.edit_xrangeUp,'string'));
-    ylow = str2num(get(h.tm.edit_yrangeLow,'string'));
-    yup = str2num(get(h.tm.edit_yrangeUp,'string'));
-    pos = [xlow,ylow,(xup-xlow),(yup-ylow)];
-    pos(pos==Inf) = max([ivx(end) ivy(end)]);
-    pos(pos==-Inf) = min([ivx(1) ivy(1)]);
-    area(h.tm.axes_histSort,[ivx(1),xlow],[ivy(end),ivy(end)],'facecolor',[0.5,0.5,0.5],...
-        'facealpha',0.5,'linestyle','none','basevalue',ivy(1));
-    area(h.tm.axes_histSort,[xlow,xup],[ylow,ylow],'facecolor',[0.5,0.5,0.5],'facealpha',0.5,...
-        'linestyle','none','basevalue',ivy(1));
-    area(h.tm.axes_histSort,[xup,ivx(end)],[ivy(end),ivy(end)],'facecolor',[0.5,0.5,0.5],...
-        'facealpha',0.5,'linestyle','none','basevalue',ivy(1));
-    patch(h.tm.axes_histSort,'xdata',[xlow,xup,xup,xlow],'ydata',...
-        [ivy(end),ivy(end),yup,yup],'facecolor',[0.5,0.5,0.5],'facealpha',...
-        0.5,'linestyle','none');
-    rectangle(h.tm.axes_histSort,'position',pos,'edgecolor',[0.5,0.5,0.5],...
-        'linewidth',2);
-    set(h.tm.axes_histSort,'nextplot','replacechildren');
+    drawMask(h_fig,[ivx(1) ivx(end)],[ivy(1) ivy(end)],2);
     
     if sum(sum(P2D))
         set(h.tm.axes_histSort,'CLim',[0,max(max(P2D))]);
@@ -2068,6 +2043,62 @@ else
     set([h.tm.text_ylow,h.tm.edit_ylow,h.tm.text_yup,h.tm.edit_yup,...
         h.tm.text_yniv,h.tm.edit_yniv],'enable','off');
 end
+
+end
+
+function drawMask(h_fig,x,y,D)
+
+% defaults
+clr = [0.5,0.5,0.5];
+a = 0.5;
+width = 2;
+fcn = {@axes_histSort_ButtonDownFcn,h_fig};
+
+h = guidata(h_fig);
+
+xlow = str2num(get(h.tm.edit_xrangeLow,'string'));
+xup = str2num(get(h.tm.edit_xrangeUp,'string'));
+ylow = str2num(get(h.tm.edit_yrangeLow,'string'));
+yup = str2num(get(h.tm.edit_yrangeUp,'string'));
+
+set(h.tm.axes_histSort,'nextplot','add');
+
+switch D
+    case 1 %1D mask
+        xdata = [x(1)-1,xlow,xlow,xup,xup,x(2)+1];
+        ydata = [y(2)+1,y(2)+1,-1,-1,y(2)+1,y(2)+1];
+        area(xdata,ydata,'edgecolor',clr,'facecolor',clr,'facealpha',a,...
+            'linewidth',width,'buttondownfcn',fcn);
+        set(h.tm.axes_histSort,'ylim',[0,y(2)]);
+    
+    case 2 % 2D mask
+        area(h.tm.axes_histSort,[x(1),xlow],[y(2),y(2)],'facecolor',clr,...
+            'facealpha',a,'linestyle','none','basevalue',y(1),...
+            'buttondownfcn',fcn);
+
+        area(h.tm.axes_histSort,[xlow,xup],[ylow,ylow],'facecolor',...
+            [0.5,0.5,0.5],'facealpha',a,'linestyle','none','basevalue',...
+            y(1),'ButtonDownFcn',{@axes_histSort_ButtonDownFcn,h_fig});
+
+        area(h.tm.axes_histSort,[xup,x(2)],[y(2),y(2)],'facecolor',clr,...
+            'facealpha',a,'linestyle','none','basevalue',y(1),...
+            'buttondownfcn',fcn);
+
+        % draw upper area: only patch allows transparency AND different baseline
+        patch(h.tm.axes_histSort,'xdata',[xlow,xup,xup,xlow],'ydata',...
+            [y(2),y(2),yup,yup],'facecolor',clr,'facealpha',a,'linestyle',...
+            'none','buttondownfcn',fcn);
+
+        % draw recatngle around the target
+        pos = [xlow,ylow,(xup-xlow),(yup-ylow)];
+        pos(pos==Inf) = max([x(2) y(2)]);
+        pos(pos==-Inf) = min([x(1) y(1)]);
+
+        rectangle(h.tm.axes_histSort,'position',pos,'edgecolor',clr,...
+            'linewidth',width,'buttondownfcn',fcn);
+end
+
+set(h.tm.axes_histSort,'nextplot','replacechildren');
 
 end
 
@@ -4187,6 +4218,50 @@ h.tm.molTag(molIncl,~~dat3.rangeTags(range,:)) = true;
 guidata(h_fig,h);
 
 update_taglist_OV(h_fig,str2num(get(h.tm.edit_nbTotMol,'string')));
+
+end
+
+
+%% buttondown function
+
+function axes_histSort_ButtonDownFcn(obj,evd,h_fig)
+
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+nExc = p.proj{proj}.nb_excitations;
+nFRET = size(p.proj{proj}.FRET,1);
+nS = size(p.proj{proj}.S,1);
+
+h_edit_x = [h.tm.edit_xrangeLow,h.tm.edit_xrangeUp];
+h_edit_y = [h.tm.edit_yrangeLow,h.tm.edit_yrangeUp];
+
+pos = get(h.tm.axes_histSort,'currentpoint');
+ind = get(h.tm.popupmenu_selectData,'value');
+j = get(h.tm.popupmenu_selectCalc,'value');
+x = [str2num(get(h_edit_x(1),'string')) ...
+    str2num(get(h_edit_x(2),'string'))];
+y = [str2num(get(h_edit_y(1),'string')) ...
+    str2num(get(h_edit_y(2),'string'))];
+
+if ind<=(nChan*nExc+nFRET+nS) % 1D histograms
+    [o,id] = min(abs(x-pos(1,1)));
+    set(h_edit_x(id),'string',num2str(pos(1,1)));
+    fcn = get(h_edit_x(id),'callback');
+    feval(fcn{1},h_edit_x(id),[],h_fig);
+    
+else % E-S histograms
+    [o,idx] = min(abs(x-pos(1,1)));
+    set(h_edit_x(idx),'string',num2str(pos(1,1)));
+    fcn = get(h_edit_x(idx),'callback');
+    feval(fcn{1},h_edit_x(idx),[],h_fig);
+    
+    [o,idy] = min(abs(y-pos(1,2)));
+    set(h_edit_y(idy),'string',num2str(pos(1,2)));
+    fcn = get(h_edit_y(idy),'callback');
+    feval(fcn{1},h_edit_y(idy),[],h_fig);
+end
 
 end
 
