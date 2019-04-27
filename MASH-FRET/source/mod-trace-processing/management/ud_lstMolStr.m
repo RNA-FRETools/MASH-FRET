@@ -35,8 +35,7 @@ if ~isempty(p.proj)
                 
                 for t = 2:numel(tag)
                     str_lst{m} = [str_lst{m},'<span  bgcolor="' ...
-                        colorlist{tag(t)} '"><font color="white">',...
-                        '&#160;&#160;</font></span>'];
+                        colorlist{tag(t)} '">&#160;&#160;</span>'];
                 end
                     
                 str_lst{m} = [str_lst{m},'</html>'];
