@@ -925,12 +925,10 @@ h.tm.pushbutton_untagAll = uicontrol('style','pushbutton','parent', ...
 xNext = xNext + 0.5*w_pop + mg;
 
 % edit box to define a molecule tag, added by FS, 24.4.2018
-h.tm.edit_molTag = uicontrol('Style', 'edit', 'Parent', ...
-    h.tm.uipanel_overview, 'Units', 'pixels', ...
-    'String', 'define a new tag', 'Position', [xNext yNext w_pop h_but], ...
-    'Callback', {@edit_addMolTag_Callback, h_fig}, ...
-    'FontUnits', 'pixels', ...
-    'FontSize', fntS);
+h.tm.edit_molTag = uicontrol('Style','edit','Parent',h.tm.uipanel_overview,...
+    'Units','pixels','String','Define a new default tag','Position',...
+    [xNext yNext w_pop h_but],'Callback',{@edit_addMolTag_Callback, h_fig}, ...
+    'FontUnits','pixels','FontSize',fntS);
 
 xNext = xNext + w_pop + mg;
 
@@ -961,9 +959,9 @@ xNext = xNext + w_edit + mg;
 % popup menu to select molecule tag, added by FS, 24.4.2018
 h.tm.pushbutton_deleteMolTag = uicontrol('Style', 'pushbutton', 'Parent', ...
     h.tm.uipanel_overview, 'Units', 'pixels', ...
-    'String', 'delete tag', ...
+    'String', 'Delete tag', ...
     'Position', [xNext yNext 1/2*w_pop h_but], ...
-    'TooltipString', 'select a molecule tag', ...
+    'TooltipString', 'Delete a default tag', ...
     'Callback', {@pushbutton_deleteMolTag_Callback, h_fig}, ...    
     'FontUnits', 'pixels', ...
     'FontSize', fntS);
@@ -3087,53 +3085,61 @@ function edit_addMolTag_Callback(obj, evd, h_fig)
 %
 %
 
-    h = guidata(h_fig);
-    if ~strcmp(obj.String, 'define a new tag') && ...
-            ~ismember(obj.String, h.tm.molTagNames)
-        h.tm.molTagNames{end+1} = obj.String;
-        
-        % added by MH, 24.4.2019
-        % add random colors
-        nTag = numel(h.tm.molTagNames);
-        if numel(h.tm.molTagClr)<nTag
-            clr = round(255*rand(1,3));
-            h.tm.molTagClr = [h.tm.molTagClr cat(2,'#',...
-                num2str(dec2hex(clr(1))),num2str(dec2hex(clr(2))),...
-                num2str(dec2hex(clr(3))))];
-        end
-        
-        % added by MH, 24.4.2019
-        % adjust molecule tag structure
-        h.tm.molTag = [h.tm.molTag, false(size(h.tm.molTag,1),1)];
-        
-        % adjust range tag structure
-        dat3 = get(h.tm.axes_histSort,'userdata');
-        dat3.rangeTags = [dat3.rangeTags false(size(dat3.rangeTags,1),1)];
-        set(h.tm.axes_histSort,'userdata',dat3);
-        
-        % added by MH, 24.4.2019
+h = guidata(h_fig);
+if ~strcmp(obj.String, 'define a new tag') && ...
+        ~ismember(obj.String, h.tm.molTagNames)
+    
+    % added by MH, 27.4.2019
+    if strcmp(obj.String, 'no tag') || strcmp(obj.String, 'no default tag')
+        msgbox('Simply, no.');
         set(obj,'string','define a new tag');
-        
-        guidata(h_fig, h);
-        str_lst = colorTagNames(h_fig);
-        set(h.tm.popup_molTag,'String',str_lst,'value',numel(str_lst));
-        nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
-        guidata(h_fig, h);
-        
-        update_taglist_OV(h_fig, nb_mol_disp);
-        update_taglist_AS(h_fig);
-        
-        % added by MH, 24.4.2019
-        % update color edit field with new current tag
-        popup_molTag_Callback(h.tm.popup_molTag,[],h_fig);
-        % update string of selection popupmenu
-        str_pop = getStrPop_select(h_fig);
-        curr_slct = get(h.tm.popupmenu_selection,'value');
-        if curr_slct>numel(str_pop)
-            curr_slct = numel(str_pop);
-        end
-        set(h.tm.popupmenu_selection,'value',curr_slct,'string',str_pop);
+        return
     end
+    
+    h.tm.molTagNames{end+1} = obj.String;
+
+    % added by MH, 24.4.2019
+    % add random colors
+    nTag = numel(h.tm.molTagNames);
+    if numel(h.tm.molTagClr)<nTag
+        clr = round(255*rand(1,3));
+        h.tm.molTagClr = [h.tm.molTagClr cat(2,'#',...
+            num2str(dec2hex(clr(1))),num2str(dec2hex(clr(2))),...
+            num2str(dec2hex(clr(3))))];
+    end
+
+    % added by MH, 24.4.2019
+    % adjust molecule tag structure
+    h.tm.molTag = [h.tm.molTag, false(size(h.tm.molTag,1),1)];
+
+    % adjust range tag structure
+    dat3 = get(h.tm.axes_histSort,'userdata');
+    dat3.rangeTags = [dat3.rangeTags false(size(dat3.rangeTags,1),1)];
+    set(h.tm.axes_histSort,'userdata',dat3);
+
+    % added by MH, 24.4.2019
+    set(obj,'string','define a new tag');
+
+    guidata(h_fig, h);
+    str_lst = colorTagNames(h_fig);
+    set(h.tm.popup_molTag,'String',str_lst,'value',numel(str_lst));
+    nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
+    guidata(h_fig, h);
+
+    update_taglist_OV(h_fig, nb_mol_disp);
+    update_taglist_AS(h_fig);
+
+    % added by MH, 24.4.2019
+    % update color edit field with new current tag
+    popup_molTag_Callback(h.tm.popup_molTag,[],h_fig);
+    % update string of selection popupmenu
+    str_pop = getStrPop_select(h_fig);
+    curr_slct = get(h.tm.popupmenu_selection,'value');
+    if curr_slct>numel(str_pop)
+        curr_slct = numel(str_pop);
+    end
+    set(h.tm.popupmenu_selection,'value',curr_slct,'string',str_pop);
+end
 end
 
 
