@@ -632,11 +632,13 @@ h_edit = 20; w_edit = 40; % edit field dimensions
 h_but_big = 30; w_but_big = 120; % large pushbutton dimension
 w_sld = 20; % slider bar x-dimension
 w_cb = 200;
+w_cb2 = 60;
+h_cb = 20;
 h_txt = 14; % text y-dimension
 w_txt1 = 65; % medium text x-dimension
 w_txt2 = 105; % large text x-dimension
 w_txt3 = 32; % small text x-dimension
-w_txt4 = 150; % very large text
+
 % pushbutton cdata
 arrow_up = [0.92 0.92 0.92 0.92 0.92 0.92 0 0.92 0.92 0.92 0.92 0.92;
             0.92 0.92 0.92 1    1    0    0 0    0.92 0.92 0.92 0.92;
@@ -669,6 +671,7 @@ h_pop = h_edit;
 w_pop = 3*w_edit+2*mg/2;
 h_but = h_edit;
 w_but = (w_pop+w_txt3)/2;
+w_edit2 = w_cb-w_cb2;
 
 % set panels dimensions
 w_pan = wFig - 2*mg;
@@ -1440,11 +1443,44 @@ str_pop = [getStrPop('exc',...
     h.param.ttPr.proj{h.param.ttPr.curr_proj}.excitations),'all'];
 h.tm.popupmenu_VV_exc = uicontrol('style','popup','parent',...
     h.tm.uipanel_videoView,'units','pixel','position',...
-    [xNext,yNext,0.3*w_cb,h_pop],'string',str_pop,'value',1,'callback',...
+    [xNext,yNext,0.3*w_cb,h_pop],'string',str_pop,'value',3,'callback',...
     {@popupmenu_VV_exc_Callback,h_fig});
 
+xNext = 2*mg;
+yNext = yNext - mg_big - h_pop + (h_pop-h_txt)/2;
+
+h.tm.text_VV_mol = uicontrol('style','text','parent',...
+    h.tm.uipanel_videoView,'units','pixels','position',...
+    [xNext,yNext,0.5*w_cb,h_txt],'fontunits','pixels','fontsize',fntS,...
+    'string','Show molecules:','fontweight','bold','horizontalalignment',...
+    'left');
+
+xNext = xNext + 0.5*w_cb + mg;
+yNext = yNext - (h_pop-h_txt)/2;
+
+str_pop = {'selected','unselected','all'};
+h.tm.popupmenu_VV_mol = uicontrol('style','popup','parent',...
+    h.tm.uipanel_videoView,'units','pixel','value',3,'position',...
+    [xNext,yNext,0.5*w_cb,h_pop],'string',str_pop,'value',1,'callback',...
+    {@popupmenu_VV_mol_Callback,h_fig});
+
+xNext = 2*mg;
+yNext = yNext - mg_big - h_pop;
+
+h.tm.checkbox_VV_tag0 = uicontrol('style','checkbox','parent',...
+    h.tm.uipanel_videoView,'units','pixels','fontunits','pixels',...
+    'fontsize',fntS,'position',[xNext,yNext,w_cb2,h_cb],'string',...
+    'show','callback',{@checkbox_VV_tag0_Callback,h_fig});
+
+xNext = xNext + w_cb2 + mg;
+
+h.tm.edit_VV_tag0 = uicontrol('style','edit','parent',...
+    h.tm.uipanel_videoView,'units','pixels','fontunits','pixels',...
+    'fontsize',fntS,'position',[xNext,yNext,w_edit2,h_cb],'string',...
+    'not labelled','enable','off');
+
 xNext = w_cb + 3*mg;
-yNext = yNext - mg - h_axes4;
+yNext = h_pan_tool - h_pop - mg - h_axes4;
 
 h.tm.axes_videoView = axes('parent',h.tm.uipanel_videoView,'units',...
     'pixels','fontunits','pixels','fontsize',fntS,'activepositionproperty',...
@@ -1528,13 +1564,13 @@ if isfield(h.tm, 'checkbox_VV_tag')
     h.tm = rmfield(h.tm,{'checkbox_VV_tag','edit_VV_tag'});
 end
 
-axes_units = get(h.tm.axes_videoView,'units');
-set(h.tm.axes_videoView,'units','pixels');
-pos_axes = get(h.tm.axes_videoView,'position');
-set(h.tm.axes_videoView,'units',axes_units);
+edit_units = get(h.tm.edit_VV_tag0,'units');
+set(h.tm.edit_VV_tag0,'units','pixels');
+pos_edit = get(h.tm.edit_VV_tag0,'position');
+set(h.tm.edit_VV_tag0,'units',edit_units);
 
 xNext = 2*mg;
-yNext = pos_axes(2) + pos_axes(4) - h_cb;
+yNext = pos_edit(2) - mg - h_cb;
 
 str_tag = colorTagNames(h_fig);
 for t = 1:nTag
@@ -2245,6 +2281,7 @@ nExc = p.proj{proj}.nb_excitations;
 nChan = p.proj{proj}.nb_channel;
 clr = h.tm.molTagClr;
 coord = p.proj{proj}.coord;
+molTags = h.tm.molTag;
 
 % abort if no average image is available in project
 if ~(isfield(p.proj{proj},'aveImg') && size(p.proj{proj}.aveImg,2)==nExc)
@@ -2278,13 +2315,33 @@ for c = 1:nChan
     plot(h.tm.axes_videoView,x_data,y_data,'--w');
 end
 
+% get proper coordinates selection to plot
+meth = get(h.tm.popupmenu_VV_mol,'value');
+switch meth
+    case 1 % selected molecules
+        incl = h.tm.molValid;
+    case 2 % unselected molecules
+        incl = ~h.tm.molValid;
+    case 3 % all molecules
+        incl = true(size(h.tm.molValid));
+end
+
+% plot untagged coordinates
+if get(h.tm.checkbox_VV_tag0,'value')
+    mols = ~sum(molTags,2)' & incl;
+    x_coord = coord(mols,1:2:end);
+    y_coord = coord(mols,2:2:end);
+    scatter(h.tm.axes_videoView,x_coord(:),y_coord(:),'marker','o',...
+        'markeredgecolor','white','linewidth',width,'markeredgealpha',a);
+end
+
 % plot tagged coordinates
 if isfield(h.tm,'checkbox_VV_tag') && ishandle(h.tm.checkbox_VV_tag(1)) && ...
         ~isempty(coord)
     nTag = numel(h.tm.checkbox_VV_tag);
     for t = 1:nTag
         if get(h.tm.checkbox_VV_tag(t),'value')
-            mols = h.tm.molTag(:,t)';
+            mols = molTags(:,t)' & incl;
             x_coord = coord(mols,1:2:end);
             y_coord = coord(mols,2:2:end);
             scatter(h.tm.axes_videoView,x_coord(:),y_coord(:),'marker','o',...
@@ -4498,6 +4555,29 @@ end
 
 %% callbacks for panel "Viveo view"
 
+function popupmenu_VV_mol_Callback(obj,evd,h_fig)
+plotData_videoView(h_fig);
+end
+
+
+function checkbox_VV_tag0_Callback(obj,evd,h_fig)
+
+h = guidata(h_fig);
+
+switch get(obj,'value')
+    case 1
+        set(obj,'fontweight','bold');
+        set(h.tm.edit_VV_tag0,'enable','inactive');
+    case 0
+        set(obj,'fontweight','normal');
+        set(h.tm.edit_VV_tag0,'enable','off');
+end
+
+plotData_videoView(h_fig);
+
+end
+
+
 function checkbox_VV_tag_Callback(obj,evd,h_fig,t)
 
 h = guidata(h_fig);
@@ -4515,13 +4595,11 @@ switch get(obj,'value')
 end
 
 plotData_videoView(h_fig);
-
 end
 
+
 function popupmenu_VV_exc_Callback(obj,evd,h_fig)
-
 plotData_videoView(h_fig);
-
 end
 
 
