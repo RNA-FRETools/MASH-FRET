@@ -76,6 +76,9 @@ function ok = loadData2Mngr(h_fig)
     % plot data in panel "Auto sorting"
     plotData_autoSort(h_fig);
     
+    % plot data in panel "Video view"
+    plotData_videoView(h_fig);
+    
 end
 
 
@@ -338,6 +341,10 @@ dat3.val = cell(nChan*nExc+nFRET+nS,nCalc);
 dat3.lim = cell(1,nChan*nExc+nFRET+nS);
 dat3.iv =  cell(nChan*nExc+nFRET+nS+nFRET*nS,nCalc);
 dat3.hist = cell(nChan*nExc+nFRET+nS+nFRET*nS,nCalc);
+
+% added by MH, 27.4.2019 to remember molecule selection at last update
+% (used when applying tags in AS)
+dat3.slct = h.tm.molValid;
 
 % added by MH, 26.4.2019
 if ~isfield(dat3,'range')
@@ -624,10 +631,12 @@ fntS_big = 12; % font size
 h_edit = 20; w_edit = 40; % edit field dimensions
 h_but_big = 30; w_but_big = 120; % large pushbutton dimension
 w_sld = 20; % slider bar x-dimension
+w_cb = 200;
 h_txt = 14; % text y-dimension
 w_txt1 = 65; % medium text x-dimension
 w_txt2 = 105; % large text x-dimension
 w_txt3 = 32; % small text x-dimension
+w_txt4 = 150; % very large text
 % pushbutton cdata
 arrow_up = [0.92 0.92 0.92 0.92 0.92 0.92 0 0.92 0.92 0.92 0.92 0.92;
             0.92 0.92 0.92 1    1    0    0 0    0.92 0.92 0.92 0.92;
@@ -673,6 +682,8 @@ h_axes_all = h_pan_all - 2.5*mg;
 w_axes_all = w_pan - w_txt3 - w_pop - 3*mg;
 w_axes1 = (w_axes_all-2*mg)*0.75;
 w_axes2 = w_axes_all - 2*mg - w_axes1;
+w_axes4 = w_pan - w_cb - 3*mg;
+h_axes4 = h_pan_tool -h_pop - 5*mg;
 
 % adjust sliding bar dimensions
 h_sld = h_pan_sgl - 3*mg - mg - h_but;
@@ -1411,6 +1422,47 @@ h.tm.pushbutton_applyTag = uicontrol('style','pushbutton','parent',...
     'APPLY TAG TO MOLECULES','callback',...
     {@pushbutton_applyTag_Callback,h_fig},'fontweight','bold');
 
+
+%% build panel video view
+
+xNext = 2*mg;
+yNext = h_pan_tool - 2*mg - h_pop + (h_pop-h_txt)/2;
+
+h.tm.text_exc = uicontrol('style','text','parent',h.tm.uipanel_videoView,...
+    'units','pixels','position',[xNext,yNext,0.7*w_cb,h_txt],'fontunits',...
+    'pixels','fontsize',fntS,'string','Select laser wavelength:',...
+    'fontweight','bold','horizontalalignment','left');
+
+xNext = xNext + 0.7*w_cb + mg;
+yNext = yNext - (h_pop-h_txt)/2;
+
+str_pop = [getStrPop('exc',...
+    h.param.ttPr.proj{h.param.ttPr.curr_proj}.excitations),'all'];
+h.tm.popupmenu_VV_exc = uicontrol('style','popup','parent',...
+    h.tm.uipanel_videoView,'units','pixel','position',...
+    [xNext,yNext,0.3*w_cb,h_pop],'string',str_pop,'value',1,'callback',...
+    {@popupmenu_VV_exc_Callback,h_fig});
+
+xNext = w_cb + 3*mg;
+yNext = yNext - mg - h_axes4;
+
+h.tm.axes_videoView = axes('parent',h.tm.uipanel_videoView,'units',...
+    'pixels','fontunits','pixels','fontsize',fntS,'activepositionproperty',...
+    'outerposition','gridlineStyle',':','nextPlot','replacechildren');
+ylim(h.tm.axes_videoView,[0 10000]);
+ylabel(h.tm.axes_videoView,'x-position (pixel)');
+xlabel(h.tm.axes_videoView,'y-position (pixel)');
+title(h.tm.axes_videoView,'Average video frame');
+pos = getRealPosAxes([xNext,yNext,w_axes4,h_axes4],...
+    get(h.tm.axes_videoView,'tightinset'),'traces'); 
+pos(3) = pos(3) - fntS;
+pos(1) = pos(1) + fntS;
+set(h.tm.axes_videoView,'Position',pos);
+
+guidata(h_fig,h);
+updatePanel_VV(h_fig);
+h = guidata(h_fig);
+
     
 %% save and finalize figure
     
@@ -1450,6 +1502,64 @@ colormap(h.tm.figure_traceMngr,'jet');
 switchPan_TM(h.tm.togglebutton_overview,[],h_fig);
     
 end
+
+
+function updatePanel_VV(h_fig)
+
+% defaults
+fntS = 10.666666;
+w_cb = 200;
+w_edit = 60;
+w_txt = w_cb - w_edit;
+h_cb = 20;
+mg = 10;
+
+h = guidata(h_fig);
+tagNames = h.tm.molTagNames;
+nTag = numel(tagNames);
+
+% reset old controls
+if isfield(h.tm, 'checkbox_VV_tag')
+    for t = 1:size(h.tm.checkbox_VV_tag,2)
+        if ishandle(h.tm.checkbox_VV_tag(t))
+            delete([h.tm.checkbox_VV_tag(t),h.tm.edit_VV_tag(t)]);
+        end
+    end
+    h.tm = rmfield(h.tm,{'checkbox_VV_tag','edit_VV_tag'});
+end
+
+axes_units = get(h.tm.axes_videoView,'units');
+set(h.tm.axes_videoView,'units','pixels');
+pos_axes = get(h.tm.axes_videoView,'position');
+set(h.tm.axes_videoView,'units',axes_units);
+
+xNext = 2*mg;
+yNext = pos_axes(2) + pos_axes(4) - h_cb;
+
+str_tag = colorTagNames(h_fig);
+for t = 1:nTag
+    h.tm.checkbox_VV_tag(t) = uicontrol('style','checkbox','parent',...
+        h.tm.uipanel_videoView,'units','pixels','fontunits','pixels',...
+        'fontsize',fntS,'position',[xNext,yNext,w_edit,h_cb],'string',...
+        'show','callback',{@checkbox_VV_tag_Callback,h_fig,t});
+    
+    xNext = xNext + w_edit + mg;
+    
+    h.tm.edit_VV_tag(t) = uicontrol('style','edit','parent',...
+        h.tm.uipanel_videoView,'units','pixels','fontunits','pixels',...
+        'fontsize',fntS,'position',[xNext,yNext,w_txt,h_cb],'string',...
+        removeHtml(str_tag{t}),'enable','off');
+    
+    xNext = 2*mg;
+    yNext = yNext - mg - h_cb;
+end
+
+setProp(get(h.tm.uipanel_videoView, 'children'),'units','normalized');
+
+guidata(h_fig,h);
+
+end
+
 
 function updatePanel_single(h_fig, nb_mol_disp)
 
@@ -1640,8 +1750,6 @@ for i = nb_mol_disp:-1:1
 end
 
 setProp(get(h.tm.uipanel_overview, 'children'),'units','normalized');
-setProp(get(h.tm.uipanel_overview, 'children'),'fontunits',...
-    'normalized');
 
 guidata(h_fig, h);
 
@@ -2086,8 +2194,8 @@ switch D
     case 1 %1D mask
         xdata = [x(1)-1,xrange(1),xrange(1),xrange(2),xrange(2),x(2)+1];
         ydata = [y(2)+1,y(2)+1,-1,-1,y(2)+1,y(2)+1];
-        area(xdata,ydata,'edgecolor',clr,'facecolor',clr,'facealpha',a,...
-            'linewidth',width,'buttondownfcn',fcn);
+        area(h.tm.axes_histSort,xdata,ydata,'edgecolor',clr,'facecolor',...
+            clr,'facealpha',a,'linewidth',width,'buttondownfcn',fcn);
         set(h.tm.axes_histSort,'ylim',[0,y(2)]);
     
     case 2 % 2D mask
@@ -2118,6 +2226,80 @@ switch D
 end
 
 set(h.tm.axes_histSort,'nextplot','replacechildren');
+
+end
+
+
+%% plots in tool "Video view"
+
+function plotData_videoView(h_fig)
+
+% defaults 
+width = 2;
+a = 0.8;
+
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nExc = p.proj{proj}.nb_excitations;
+nChan = p.proj{proj}.nb_channel;
+clr = h.tm.molTagClr;
+coord = p.proj{proj}.coord;
+
+% abort if no average image is available in project
+if ~(isfield(p.proj{proj},'aveImg') && size(p.proj{proj}.aveImg,2)==nExc)
+    return;
+end
+
+% get proper average image
+exc = get(h.tm.popupmenu_VV_exc,'value');
+if exc>nExc
+    img = p.proj{proj}.aveImg{1}/nExc;
+    for l = 2:nExc
+        img = img + p.proj{proj}.aveImg{l}/nExc;
+    end
+else
+    img = p.proj{proj}.aveImg{exc};
+end
+
+% get image size
+[h_vid,w_vid] = size(img);
+
+% get image limits in y-direction
+y_data = [0.5,h_vid-0.5];
+
+% plot image
+imagesc(h.tm.axes_videoView,[0.5,w_vid-0.5],y_data,img);
+
+% plot channel bounds
+set(h.tm.axes_videoView,'nextplot','add');
+for c = 1:nChan
+    x_data = repmat(c*(w_vid/nChan),1,2);
+    plot(h.tm.axes_videoView,x_data,y_data,'--w');
+end
+
+% plot tagged coordinates
+if isfield(h.tm,'checkbox_VV_tag') && ishandle(h.tm.checkbox_VV_tag(1)) && ...
+        ~isempty(coord)
+    nTag = numel(h.tm.checkbox_VV_tag);
+    for t = 1:nTag
+        if get(h.tm.checkbox_VV_tag(t),'value')
+            mols = h.tm.molTag(:,t)';
+            x_coord = coord(mols,1:2:end);
+            y_coord = coord(mols,2:2:end);
+            scatter(h.tm.axes_videoView,x_coord(:),y_coord(:),'marker','o',...
+                'markeredgecolor',hex2rgb(clr{t})/255,'linewidth',width,...
+                'markeredgealpha',a);
+        end
+    end
+end
+set(h.tm.axes_videoView,'nextplot','replacechildren');
+
+% set image limits
+xlim(h.tm.axes_videoView,[0,size(img,2)+1]);
+ylim(h.tm.axes_videoView,[0,size(img,1)+1]);
+
+
 
 end
 
@@ -2417,6 +2599,19 @@ end
 end
 
 
+%% update tag lists in panel "Video view"
+function update_taglist_VV(h_fig)
+
+h = guidata(h_fig);
+
+nTag = numel(h.tm.molTagNames);
+for t = 1:nTag
+    checkbox_VV_tag_Callback(h.tm.checkbox_VV_tag(t),[],h_fig,t);
+end
+
+end
+
+
 %% callbaks for panel "Overall plot"
 
 function pushbutton_update_Callback(obj, evd, h_fig)
@@ -2692,6 +2887,9 @@ guidata(h_fig,h);
 nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
 update_taglist_OV(h_fig,nb_mol_disp);
 
+% update viveo view plot
+plotData_videoView(h_fig);
+
 end
 
 
@@ -2705,28 +2903,28 @@ function checkbox_molNb_Callback(obj, evd, h_fig)
 %
 %
 
-    h = guidata(h_fig);
-    p = h.param.ttPr;
-    proj = p.curr_proj;
-    nFRET = size(p.proj{proj}.FRET,1);
-    nS = size(p.proj{proj}.S,1);
-    isBot = nFRET | nS;
-    
-    mol = str2num(get(obj, 'String'));
-    [o,ind_h,o] = find(h.tm.checkbox_molNb == obj);
-    h.tm.molValid(mol) = logical(get(obj, 'Value'));
-    guidata(h_fig, h);
-    
-    if get(obj, 'Value')
-        shad = [1 1 1];
-    else
-        shad = get(h.tm.checkbox_molNb(ind_h), 'BackgroundColor');
-    end
-    set([h.tm.axes_itt(ind_h), h.tm.axes_itt_hist(ind_h)], 'Color', shad);
-    if isBot
-        set([h.tm.axes_frettt(ind_h), h.tm.axes_hist(ind_h)], 'Color', ...
-            shad);
-    end
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nFRET = size(p.proj{proj}.FRET,1);
+nS = size(p.proj{proj}.S,1);
+isBot = nFRET | nS;
+
+mol = str2num(get(obj, 'String'));
+[o,ind_h,o] = find(h.tm.checkbox_molNb == obj);
+h.tm.molValid(mol) = logical(get(obj, 'Value'));
+guidata(h_fig, h);
+
+if get(obj, 'Value')
+    shad = [1 1 1];
+else
+    shad = get(h.tm.checkbox_molNb(ind_h), 'BackgroundColor');
+end
+set([h.tm.axes_itt(ind_h), h.tm.axes_itt_hist(ind_h)], 'Color', shad);
+if isBot
+    set([h.tm.axes_frettt(ind_h), h.tm.axes_hist(ind_h)], 'Color', ...
+        shad);
+end
     
     % deactivate the popupmenu if the molecule is not selected
     % added by FS, 24.4.2018
@@ -2766,6 +2964,9 @@ guidata(h_fig,h);
 % update molecule tag lists
 nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
 update_taglist_OV(h_fig,nb_mol_disp);
+
+% update viveo view plot
+plotData_videoView(h_fig);
 
 end
 
@@ -3139,6 +3340,8 @@ if ~strcmp(obj.String, 'define a new tag') && ...
 
     update_taglist_OV(h_fig, nb_mol_disp);
     update_taglist_AS(h_fig);
+    updatePanel_VV(h_fig);
+    update_taglist_VV(h_fig);
 
     % added by MH, 24.4.2019
     % update color edit field with new current tag
@@ -3219,6 +3422,7 @@ n_mol_disp = str2num(get(h.tm.edit_nbTotMol,'string'));
 
 update_taglist_OV(h_fig,n_mol_disp);
 update_taglist_AS(h_fig);
+update_taglist_VV(h_fig);
 
 % update color in string of selection popupmenu
 str_pop = getStrPop_select(h_fig);
@@ -3285,6 +3489,9 @@ function pushbutton_deleteMolTag_Callback(obj, evd, h_fig)
     
     update_taglist_OV(h_fig, nb_mol_disp);
     update_taglist_AS(h_fig);
+    updatePanel_VV(h_fig);
+    update_taglist_VV(h_fig);
+    plotData_videoView(h_fig);
     
     % added by MH, 24.4.2019
     % update color edit field with new current tag
@@ -3883,7 +4090,6 @@ FRET = p.proj{proj}.FRET;
 nFRET = size(FRET,1);
 S = p.proj{proj}.S;
 nS = numel(S);
-incl =  p.proj{proj}.bool_intensities(:,h.tm.molValid);
 
 % get stored data
 dat1 = get(h.tm.axes_ovrAll_1,'userdata');
@@ -3901,6 +4107,10 @@ prm = [str2num(get(h.tm.edit_xrangeLow,'string')), ...
     get(h.tm.popupmenu_cond,'value');...
     str2num(get(h.tm.edit_conf1,'string')), ...
     str2num(get(h.tm.edit_conf2,'string'))];
+
+% molecule selection at last update
+slct = dat3.slct;
+incl =  p.proj{proj}.bool_intensities(:,slct);
 
 if j==1 % original time traces
     if data<=(nChan*nExc+nFRET+nS) % 1D
@@ -4264,18 +4474,53 @@ dat3 = get(h.tm.axes_histSort,'userdata');
 range = get(h.tm.listbox_ranges,'value');
 
 disp('sort molecules...');
-molIncl = ud_popCalc(h_fig);
+molIncl_slct = ud_popCalc(h_fig);
 disp('sorting complete!');
 
-if ~sum(molIncl) || ~sum(dat3.rangeTags(range,:))
+if ~sum(molIncl_slct) || ~sum(dat3.rangeTags(range,:))
     return;
 end
 
-h.tm.molTag(molIncl,~~dat3.rangeTags(range,:)) = true;
+% molecule selection at last update
+molId = find(dat3.slct);
+h.tm.molTag(molId(molIncl_slct),~~dat3.rangeTags(range,:)) = true;
 
 guidata(h_fig,h);
 
+% update molecule tag lists
 update_taglist_OV(h_fig,str2num(get(h.tm.edit_nbTotMol,'string')));
+
+% update plot in VV
+plotData_videoView(h_fig);
+
+end
+
+
+%% callbacks for panel "Viveo view"
+
+function checkbox_VV_tag_Callback(obj,evd,h_fig,t)
+
+h = guidata(h_fig);
+tagClr =  h.tm.molTagClr;
+
+switch get(obj,'value')
+    case 1
+        set(obj,'fontweight','bold');
+        set(h.tm.edit_VV_tag(t),'enable','inactive','backgroundcolor',...
+        hex2rgb(tagClr{t})/255,'foregroundcolor','white');
+    case 0
+        set(obj,'fontweight','normal');
+        set(h.tm.edit_VV_tag(t),'enable','off','foregroundcolor','black',...
+            'backgroundcolor','white');
+end
+
+plotData_videoView(h_fig);
+
+end
+
+function popupmenu_VV_exc_Callback(obj,evd,h_fig)
+
+plotData_videoView(h_fig);
 
 end
 
@@ -4306,13 +4551,24 @@ ylim = get(h.tm.axes_histSort,'ylim');
 
 if ind<=(nChan*nExc+nFRET+nS) % 1D histograms
     x = xrange;
-    if xrange(2)>xlim(2)
+    if x(2)>xlim(2)
         x(2) = xlim(2);
     end
-    if xrange(1)<xlim(1)
+    if x(2)<xlim(1)
+        x(2) = xlim(1);
+    end
+    if x(1)<xlim(1)
         x(1) = xlim(1);
     end
-    [o,id] = min(abs(x-pos(1,1)));
+    if x(1)>xlim(2)
+        x(1) = xlim(2);
+    end
+    if x(1)==x(2) && pos(1,1)>x(1)
+        id = 2;
+    else
+        [o,id] = min(abs(x-pos(1,1)));
+    end
+    
     set(h_edit_x(id),'string',num2str(pos(1,1)));
     fcn = get(h_edit_x(id),'callback');
     feval(fcn{1},h_edit_x(id),[],h_fig);
@@ -4320,25 +4576,46 @@ if ind<=(nChan*nExc+nFRET+nS) % 1D histograms
 else % E-S histograms
     x = xrange;
     y = yrange;
-    if xrange(2)>xlim(2) || xrange(2)<xlim(1)
+    if x(2)>xlim(2)
         x(2) = xlim(2);
     end
-    if xrange(1)<xlim(1) || xrange(1)>xlim(2)
+    if x(2)<xlim(1)
+        x(2) = xlim(1);
+    end
+    if x(1)<xlim(1)
         x(1) = xlim(1);
     end
-    if yrange(2)>ylim(2) || yrange(2)<ylim(1)
-        y(2) = ylim(2);
+    if x(1)>xlim(2)
+        x(1) = xlim(2);
     end
-    if yrange(1)<ylim(1) || yrange(1)>ylim(2)
-        y(1) = ylim(1);
+    if x(1)==x(2) && pos(1,1)>x(1)
+        idx = 2;
+    else
+        [o,idx] = min(abs(x-pos(1,1)));
     end
     
-    [o,idx] = min(abs(x-pos(1,1)));
     set(h_edit_x(idx),'string',num2str(pos(1,1)));
     fcn = get(h_edit_x(idx),'callback');
     feval(fcn{1},h_edit_x(idx),[],h_fig);
     
-    [o,idy] = min(abs(y-pos(1,2)));
+    if y(2)>ylim(2)
+        y(2) = ylim(2);
+    end
+    if y(2)<ylim(1)
+        y(2) = ylim(1);
+    end
+    if y(1)<ylim(1)
+        y(1) = ylim(1);
+    end
+    if y(1)>ylim(2)
+        y(1) = ylim(2);
+    end
+    if y(1)==y(2) && pos(1,2)>y(1)
+        idy = 2;
+    else
+        [o,idy] = min(abs(y-pos(1,2)));
+    end
+    
     set(h_edit_y(idy),'string',num2str(pos(1,2)));
     fcn = get(h_edit_y(idy),'callback');
     feval(fcn{1},h_edit_y(idy),[],h_fig);
