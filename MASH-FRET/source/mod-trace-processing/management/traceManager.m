@@ -4239,19 +4239,42 @@ h_edit_y = [h.tm.edit_yrangeLow,h.tm.edit_yrangeUp];
 
 pos = get(h.tm.axes_histSort,'currentpoint');
 ind = get(h.tm.popupmenu_selectData,'value');
-j = get(h.tm.popupmenu_selectCalc,'value');
-x = [str2num(get(h_edit_x(1),'string')) ...
+xrange = [str2num(get(h_edit_x(1),'string')) ...
     str2num(get(h_edit_x(2),'string'))];
-y = [str2num(get(h_edit_y(1),'string')) ...
+yrange = [str2num(get(h_edit_y(1),'string')) ...
     str2num(get(h_edit_y(2),'string'))];
+xlim = get(h.tm.axes_histSort,'xlim');
+ylim = get(h.tm.axes_histSort,'ylim');
 
 if ind<=(nChan*nExc+nFRET+nS) % 1D histograms
+    x = xrange;
+    if xrange(2)>xlim(2)
+        x(2) = xlim(2);
+    end
+    if xrange(1)<xlim(1)
+        x(1) = xlim(1);
+    end
     [o,id] = min(abs(x-pos(1,1)));
     set(h_edit_x(id),'string',num2str(pos(1,1)));
     fcn = get(h_edit_x(id),'callback');
     feval(fcn{1},h_edit_x(id),[],h_fig);
     
 else % E-S histograms
+    x = xrange;
+    y = yrange;
+    if xrange(2)>xlim(2)
+        x(2) = xlim(2);
+    end
+    if xrange(1)<xlim(1)
+        x(1) = xlim(1);
+    end
+    if yrange(2)>ylim(2)
+        y(2) = ylim(2);
+    end
+    if yrange(1)<ylim(1)
+        y(1) = ylim(1);
+    end
+    
     [o,idx] = min(abs(x-pos(1,1)));
     set(h_edit_x(idx),'string',num2str(pos(1,1)));
     fcn = get(h_edit_x(idx),'callback');
