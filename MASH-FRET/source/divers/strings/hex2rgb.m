@@ -9,7 +9,7 @@ function rgb = hex2rgb(clr_hex)
 rgb = [];
 
 % remove potential '#' character
-if numel(clr_hex)==7 && clr(1)=='#'
+if numel(clr_hex)==7 && clr_hex(1)=='#'
     clr_hex = clr_hex(2:end);
 end
 
