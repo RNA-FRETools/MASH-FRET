@@ -4262,16 +4262,16 @@ if ind<=(nChan*nExc+nFRET+nS) % 1D histograms
 else % E-S histograms
     x = xrange;
     y = yrange;
-    if xrange(2)>xlim(2)
+    if xrange(2)>xlim(2) || xrange(2)<xlim(1)
         x(2) = xlim(2);
     end
-    if xrange(1)<xlim(1)
+    if xrange(1)<xlim(1) || xrange(1)>xlim(2)
         x(1) = xlim(1);
     end
-    if yrange(2)>ylim(2)
+    if yrange(2)>ylim(2) || yrange(2)<ylim(1)
         y(2) = ylim(2);
     end
-    if yrange(1)<ylim(1)
+    if yrange(1)<ylim(1) || yrange(1)>ylim(2)
         y(1) = ylim(1);
     end
     
