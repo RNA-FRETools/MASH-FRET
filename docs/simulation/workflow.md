@@ -35,7 +35,7 @@ The operation is repeated until the sequence length reaches the observation time
 The observation time is limited by the video length 
 [*L*](){: .math_var } but can be randomly distributed by introducing fluorophore photobleaching.
 
-![FRET state sequence](../assets/images/figures/sim-workflow-scheme-state-sequence.png "Generate FRET state sequences")
+<a href="../assets/images/figures/sim-workflow-scheme-state-sequence.png">![FRET state sequence](../assets/images/figures/sim-workflow-scheme-state-sequence.png "Generate FRET state sequences")</a>
 
 To generate FRET state sequences:
 
@@ -69,13 +69,13 @@ Imperfect experimental setup is simulated by adding channel-specific bleedthroug
 [*bt*](){: .math_var } and direct excitation 
 [*dE*](){: .math_var } to the respective fluorescence intensities.
 
-![Conversion to fluorescence](../assets/images/figures/sim-workflow-scheme-convert-to-intensity.png "Convert sequences to fluorescence intensities")
+<a href="../assets/images/figures/sim-workflow-scheme-convert-to-intensity.png">![Conversion to fluorescence](../assets/images/figures/sim-workflow-scheme-convert-to-intensity.png "Convert sequences to fluorescence intensities")</a>
 
 Final camera-detected intensity-time traces are obtained by adding channel-specific background and uniform camera noise.
 If the chosen noise model does not include shot noise of photon emission, intensities are distributed following a Poisson distribution prior adding the camera contribution; see 
 [Camera SNR characteristics](panels/panel-video-parameters.html#camera-snr-characteristics) for more information.
 
-![Conversion to image counts](../assets/images/figures/sim-workflow-scheme-convert-to-image-count.png "Convert fluorescence intensities to image counts")
+<a href="../assets/images/figures/sim-workflow-scheme-convert-to-image-count.png">![Conversion to image counts](../assets/images/figures/sim-workflow-scheme-convert-to-image-count.png "Convert fluorescence intensities to image counts")</a>
 
 Images in the single molecule video (SMV) are created one by one, with the first image corresponding to the first time point in intensity-time traces.
 Like in a 2-color FRET experiment, horizontal dimensions of the video are equally split into donor (left) and acceptor (right) channels. 
@@ -86,7 +86,7 @@ Channel-specific background is added to consider all sources of detected lights.
 Pixels are then convolved with channel-specific point spread functions to obtain realistic diffraction-limited images. 
 Finally, uniform camera noise is added to all pixels to convert fluorescence intensities to camera-detected signal. 
 
-![Building SMV](../assets/images/figures/sim-workflow-scheme-build-video.gif "Building SMV from fluorescence intensity-time traces")
+<a href="../assets/images/figures/sim-workflow-scheme-build-video.gif">![Building SMV](../assets/images/figures/sim-workflow-scheme-build-video.gif "Building SMV from fluorescence intensity-time traces")</a>
 
 To create intensity trajectories and images:
 
