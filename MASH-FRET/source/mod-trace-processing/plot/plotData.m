@@ -124,9 +124,9 @@ if curr_chan_top > 0
     end
 
     for exc = curr_exc
+        x = x_axis(exc:nExc:end)';
         for c = curr_chan_top
             colr = clr{1}{exc,c};
-            x = x_axis(exc:nExc:end)';
             if isfield(axes, 'axes_traceTop')
                 plot(axes.axes_traceTop, x, I(:,c,exc), 'Color', colr);
                 if plotDscr
