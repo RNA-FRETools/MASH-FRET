@@ -1049,11 +1049,12 @@ h = guidata(h_fig);
     
     
 %% build panel auto-sorting
-   
+
 w_pan_slct = 0.5*w_pop + 2*w_edit + w_txt3 + 2.5*mg;
 h_pan_slct = h_pan_tool-h_pop-h_txt-4*mg;
 w_axes3 = wFig - w_pan_slct - 3*mg;
-h_axes3 = h_pan_slct;
+h_axes3a = (h_pan_slct-mg)*0.8;
+h_axes3b = h_pan_slct-mg-h_axes3a;
 w_lst = w_pan_slct-2*mg;
 h_lst = 3*h_txt + 2*h_edit + 1.5*mg;
 
@@ -1066,6 +1067,36 @@ h.tm.uipanel_range = uipanel('parent',h.tm.uipanel_autoSorting, ...
 
 xNext = xNext + w_pan_slct + mg;
 
+h.tm.axes_traceSort = axes('parent',h.tm.uipanel_autoSorting,...
+    'units','pixels','fontunits','pixels','fontsize',fntS,...
+    'activepositionproperty','outerposition','gridlineStyle',':',...
+    'nextPlot','replacechildren');
+ylim(h.tm.axes_traceSort,[0 10000]);
+ylabel(h.tm.axes_traceSort,'counts per s. per pix.');
+xlabel(h.tm.axes_traceSort,'time (s)');
+t = title(h.tm.axes_traceSort,cat(2,'concatenated traces for molecule ',...
+    'selection at last update'),'units','pixels');
+pos = getRealPosAxes([xNext,yNext,w_axes3,h_axes3b], ...
+get(h.tm.axes_traceSort,'TightInset'),'traces'); 
+pos(3) = pos(3) - fntS;
+pos(1) = pos(1) + fntS;
+set(h.tm.axes_traceSort,'Position',pos);
+pos_t = get(t,'extent');
+set(t,'position',[(pos_t(3)+pos(3)-pos_t(3)-w_pop)/2,pos_t(2)]);
+
+yNext = pos(2) + pos(4) + mg/2;
+xNext = pos(1) + pos(3) - w_pop;
+
+str_plot = getStrPlot_overall(h_fig);
+h.tm.popupmenu_AS_plot1 = uicontrol('style','popupmenu','parent', ...
+    h.tm.uipanel_autoSorting,'string',str_plot{1},'units','pixels',...
+    'position',[xNext yNext w_pop h_pop],'backgroundcolor',[1 1 1],...
+    'callback',{@popupmenu_axes_Callback,h_fig},'fontunits','pixels',...
+    'fontsize',fntS);
+
+xNext = w_pan_slct + 3*mg;
+yNext = h_axes3b + 3*mg;
+
 h.tm.axes_histSort = axes('parent',h.tm.uipanel_autoSorting,...
     'units','pixels','fontunits','pixels','fontsize',fntS,...
     'activepositionproperty','outerposition','gridlineStyle',':',...
@@ -1076,14 +1107,14 @@ ylabel(h.tm.axes_histSort,'freq. counts');
 xlabel(h.tm.axes_histSort,'counts per s. per pix.');
 title(h.tm.axes_histSort,...
     '1D-histogram for molecule selection at last update');
-pos = getRealPosAxes([xNext,yNext,w_axes3,h_axes3], ...
+pos = getRealPosAxes([xNext,yNext,w_axes3,h_axes3a], ...
 get(h.tm.axes_histSort,'TightInset'),'traces'); 
 pos(3) = pos(3) - fntS;
 pos(1) = pos(1) + fntS;
 set(h.tm.axes_histSort,'Position',pos);
 
 xNext = 2*mg;
-yNext = yNext + h_axes3 + mg;
+yNext = yNext + h_axes3a + mg;
 
 h.tm.text_selectData = uicontrol('style','text','parent',...
     h.tm.uipanel_autoSorting,'string','Select data:','position',...
@@ -1897,9 +1928,6 @@ function plotData_overall(h_fig)
 %
 %
 
-% defaults
-fcn = {@axes_ovrAll_1_ButtonDownFcn,h_fig};
-
 warning('off','MATLAB:hg:EraseModeIgnored');
 
 h = guidata(h_fig);
@@ -1911,8 +1939,6 @@ FRET = p.proj{proj}.FRET;
 nFRET = size(FRET,1);
 S = p.proj{proj}.S;
 nS = size(S,1);
-inSec = p.proj{proj}.fix{2}(7);
-expT = p.proj{proj}.frame_rate; % this is truely the exposure time
 
 plot1 = get(h.tm.popupmenu_axes1,'value');
 plot2 = get(h.tm.popupmenu_axes2,'value');
@@ -1922,119 +1948,8 @@ dat2 = get(h.tm.axes_ovrAll_2,'userdata');
 
 disp('plot data ...');
 
-if plot1 <= nChan*nExc+nFRET+nS % single channel/FRET/S
-    x_axis = 1:size(dat1.trace{plot1},1);
-    if inSec
-        expT = p.proj{proj}.frame_rate;
-        x_axis = x_axis*expT;
-    end
-    plot(h.tm.axes_ovrAll_1,x_axis,dat1.trace{plot1},'buttondownfcn',fcn,...
-        'color',dat1.color{plot1});
-    xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
-    if plot1 <= nChan*nExc
-        ylim(h.tm.axes_ovrAll_1, [min(dat1.trace{plot1}) ...
-            max(dat1.trace{plot1})]);
-    else
-        ylim(h.tm.axes_ovrAll_1, [-0.2 1.2]);
-    end
-    xlabel(h.tm.axes_ovrAll_1, dat1.xlabel);
-    ylabel(h.tm.axes_ovrAll_1, dat1.ylabel{plot1});
-
-
-elseif plot1 == nChan*nExc+nFRET+nS+1 && nChan > 1% all intensities
-    x_axis = 1:size(dat1.trace{1},1);
-    if inSec
-        expT = p.proj{proj}.frame_rate;
-        x_axis = x_axis*expT;
-    end
-    min_y = Inf;
-    max_y = -Inf;
-    for l = 1:nExc
-        for c = 1:nChan
-            %ind = (l-1)+c; % RB 2018-01-03: indizes/colour bug solved
-            ind = 2*(l-1)+c;
-            plot(h.tm.axes_ovrAll_1,x_axis,dat1.trace{ind},'color',...
-                dat1.color{ind},'buttondownfcn',fcn);
-            min_y = min([min_y min(dat1.trace{ind})]);
-            max_y = max([max_y max(dat1.trace{ind})]);
-
-            % added by MH, 24.4.2019
-            if l==1 && c==1
-                set(h.tm.axes_ovrAll_1,'nextplot','add');
-            end
-        end
-    end
-    set(h.tm.axes_ovrAll_1,'nextplot','replacechildren');
-    xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
-    ylim(h.tm.axes_ovrAll_1, [min_y max_y]);
-    xlabel(h.tm.axes_ovrAll_1, dat1.xlabel);
-    ylabel(h.tm.axes_ovrAll_1, dat1.ylabel{plot1});
-
-elseif plot1 == nChan*nExc+nFRET+nS+2 && nFRET > 1% all FRET
-    x_axis = 1:size(dat1.trace{nChan*nExc+1},1);
-    if inSec
-        expT = p.proj{proj}.frame_rate;
-        x_axis = x_axis*expT;
-    end
-    for n = 1:nFRET
-        ind = nChan*nExc+n;
-        plot(h.tm.axes_ovrAll_1,x_axis,dat1.trace{ind},'color',...
-            dat1.color{ind},'buttondownfcn',fcn);
-        % added by MH, 24.4.2019
-        if n==1
-            set(h.tm.axes_ovrAll_1, 'NextPlot', 'add');
-        end
-    end
-    set(h.tm.axes_ovrAll_1, 'NextPlot', 'replacechildren');
-    xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
-    ylim(h.tm.axes_ovrAll_1, [-0.2 1.2]);
-    xlabel(h.tm.axes_ovrAll_1, dat1.xlabel);
-    ylabel(h.tm.axes_ovrAll_1, dat1.ylabel{plot1});
-
-elseif (plot1 == nChan*nExc+nFRET+nS+2 && nFRET == 1 && nS > 1) || ...
-        (plot1 == nChan*nExc+nFRET+nS+3 && nFRET > 1 && nS > 1)% all S
-    x_axis = 1:size(dat1.trace{nChan*nExc+nFRET+1},1);
-    if inSec
-        expT = p.proj{proj}.frame_rate;
-        x_axis = x_axis*expT;
-    end
-    for n = 1:nS
-        ind = nChan*nExc+nFRET+n;
-        plot(h.tm.axes_ovrAll_1,x_axis,dat1.trace{ind},'color',...
-            dat1.color{ind},'buttondownfcn',fcn);
-        if n==1
-            set(h.tm.axes_ovrAll_1,'nextplot','add');
-        end
-    end
-    set(h.tm.axes_ovrAll_1,'nextplot','replacechildren');
-    xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
-    ylim(h.tm.axes_ovrAll_1, [-0.2 1.2]);
-    xlabel(h.tm.axes_ovrAll_1, dat1.xlabel);
-    ylabel(h.tm.axes_ovrAll_1, dat1.ylabel{plot1});
-
-elseif (plot1 == nChan*nExc+nFRET+nS+2 && nFRET == 1 && nS == 1) || ...
-        (plot1 == nChan*nExc+nFRET+nS+3 && ((nFRET > 1 && nS == 1) ...
-        || (nFRET == 1 && nS > 1))) || (plot1 == ...
-        nChan*nExc+nFRET+nS+4 && nFRET > 1 && nS > 1) % all FRET & S
-    x_axis = 1:size(dat1.trace{nChan*nExc+1},1);
-    if inSec
-        x_axis = x_axis*expT;
-    end
-    for n = 1:(nFRET+nS)
-        ind = nChan*nExc+n;
-        plot(h.tm.axes_ovrAll_1,x_axis,dat1.trace{ind},'color',...
-            dat1.color{ind},'buttondownfcn',fcn);
-        if n==1
-            set(h.tm.axes_ovrAll_1,'nextplot','add');
-        end
-    end
-    set(h.tm.axes_ovrAll_1,'nextplot','replacechildren');
-    xlim(h.tm.axes_ovrAll_1, [x_axis(1) x_axis(end)]);
-    ylim(h.tm.axes_ovrAll_1, [-0.2 1.2]);
-    xlabel(h.tm.axes_ovrAll_1, dat1.xlabel);
-    ylabel(h.tm.axes_ovrAll_1, dat1.ylabel{plot1});
-end
-
+plotData_conctrace(h.tm.axes_ovrAll_1,plot1,h_fig);
+plotData_conctrace(h.tm.axes_traceSort,plot1,h_fig);
 drawMask_slct(h_fig);
 
 % RB 2017-12-15: implement FRET-S-histograms in plot2
@@ -2084,6 +1999,145 @@ else
     set(h.tm.edit_ylim_up,'string','','enable','off');
     set(h.tm.edit_ynbiv,'string','','enable','off');
     set(h.tm.text4,'enable','off');
+end
+
+end
+
+
+function plotData_conctrace(h_axes,ind,h_fig)
+
+% defaults
+fcn_ovrAll_1 = {@axes_ovrAll_1_ButtonDownFcn,h_fig};
+
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+nExc = p.proj{proj}.nb_excitations;
+FRET = p.proj{proj}.FRET;
+nFRET = size(FRET,1);
+S = p.proj{proj}.S;
+nS = size(S,1);
+inSec = p.proj{proj}.fix{2}(7);
+expT = p.proj{proj}.frame_rate; % this is truely the exposure time
+
+if h_axes==h.tm.axes_ovrAll_1
+    fcn = fcn_ovrAll_1;
+else
+    fcn = {}; 
+end
+
+dat1 = get(h.tm.axes_ovrAll_1,'userdata');
+
+if ind<=nChan*nExc+nFRET+nS % single channel/FRET/S
+    x_axis = 1:size(dat1.trace{ind},1);
+    if inSec
+        x_axis = x_axis*expT;
+    end
+    plot(h_axes,x_axis,dat1.trace{ind},'buttondownfcn',fcn,...
+        'color',dat1.color{ind});
+    xlim(h_axes, [x_axis(1) x_axis(end)]);
+    if ind <= nChan*nExc
+        ylim(h_axes, [min(dat1.trace{ind}) ...
+            max(dat1.trace{ind})]);
+    else
+        ylim(h_axes, [-0.2 1.2]);
+    end
+    xlabel(h_axes, dat1.xlabel);
+    ylabel(h_axes, dat1.ylabel{ind});
+
+
+elseif ind==nChan*nExc+nFRET+nS+1 && nChan>1% all intensities
+    x_axis = 1:size(dat1.trace{1},1);
+    if inSec
+        x_axis = x_axis*expT;
+    end
+    min_y = Inf;
+    max_y = -Inf;
+    for l = 1:nExc
+        for c = 1:nChan
+            %ind = (l-1)+c; % RB 2018-01-03: indizes/colour bug solved
+            ind = 2*(l-1)+c;
+            plot(h_axes,x_axis,dat1.trace{ind},'color',dat1.color{ind},...
+                'buttondownfcn',fcn);
+            min_y = min([min_y min(dat1.trace{ind})]);
+            max_y = max([max_y max(dat1.trace{ind})]);
+
+            % added by MH, 24.4.2019
+            if l==1 && c==1
+                set(h_axes,'nextplot','add');
+            end
+        end
+    end
+    set(h_axes,'nextplot','replacechildren');
+    xlim(h_axes, [x_axis(1) x_axis(end)]);
+    ylim(h_axes, [min_y max_y]);
+    xlabel(h_axes, dat1.xlabel);
+    ylabel(h_axes, dat1.ylabel{ind});
+
+elseif ind==nChan*nExc+nFRET+nS+2 && nFRET>1% all FRET
+    x_axis = 1:size(dat1.trace{nChan*nExc+1},1);
+    if inSec
+        expT = p.proj{proj}.frame_rate;
+        x_axis = x_axis*expT;
+    end
+    for n = 1:nFRET
+        ind = nChan*nExc+n;
+        plot(h_axes,x_axis,dat1.trace{ind},'color',dat1.color{ind},...
+            'buttondownfcn',fcn);
+        % added by MH, 24.4.2019
+        if n==1
+            set(h_axes,'nextplot','add');
+        end
+    end
+    set(h_axes,'nextplot','replacechildren');
+    xlim(h_axes, [x_axis(1) x_axis(end)]);
+    ylim(h_axes, [-0.2 1.2]);
+    xlabel(h_axes, dat1.xlabel);
+    ylabel(h_axes, dat1.ylabel{ind});
+
+elseif (ind==nChan*nExc+nFRET+nS+2 && nFRET==1 && nS>1) || ...
+        (ind==nChan*nExc+nFRET+nS+3 && nFRET>1 && nS>1)% all S
+    x_axis = 1:size(dat1.trace{nChan*nExc+nFRET+1},1);
+    if inSec
+        expT = p.proj{proj}.frame_rate;
+        x_axis = x_axis*expT;
+    end
+    for n = 1:nS
+        ind = nChan*nExc+nFRET+n;
+        plot(h_axes,x_axis,dat1.trace{ind},'color',...
+            dat1.color{ind},'buttondownfcn',fcn);
+        if n==1
+            set(h_axes,'nextplot','add');
+        end
+    end
+    set(h_axes,'nextplot','replacechildren');
+    xlim(h_axes, [x_axis(1) x_axis(end)]);
+    ylim(h_axes, [-0.2 1.2]);
+    xlabel(h_axes, dat1.xlabel);
+    ylabel(h_axes, dat1.ylabel{ind});
+
+elseif (ind==nChan*nExc+nFRET+nS+2 && nFRET==1 && nS==1) || ...
+        (ind==nChan*nExc+nFRET+nS+3 && ((nFRET>1 && nS==1) ...
+        || (nFRET==1 && nS>1))) || ...
+        (ind==nChan*nExc+nFRET+nS+4 && nFRET>1 && nS>1) % all FRET & S
+    x_axis = 1:size(dat1.trace{nChan*nExc+1},1);
+    if inSec
+        x_axis = x_axis*expT;
+    end
+    for n = 1:(nFRET+nS)
+        ind = nChan*nExc+n;
+        plot(h_axes,x_axis,dat1.trace{ind},'color',...
+            dat1.color{ind},'buttondownfcn',fcn);
+        if n==1
+            set(h_axes,'nextplot','add');
+        end
+    end
+    set(h_axes,'nextplot','replacechildren');
+    xlim(h_axes, [x_axis(1) x_axis(end)]);
+    ylim(h_axes, [-0.2 1.2]);
+    xlabel(h_axes, dat1.xlabel);
+    ylabel(h_axes, dat1.ylabel{ind});
 end
 
 end
@@ -2142,15 +2196,15 @@ if isempty(xdata)
 end
 
 if isfield(h.tm,'area_slct') && ishandle(h.tm.area_slct)
-    set(h.tm.area_slct,'xdata',xdata,'ydata',ydata);
+    set(h.tm.area_slct,'xdata',xdata,'ydata',ydata,'basevalue',yaxis(1)-1);
 else
     set(h.tm.axes_ovrAll_1,'nextplot','add');
     h.tm.area_slct = area(h.tm.axes_ovrAll_1,xdata,ydata,'linestyle','none',...
-        'facecolor',clr,'facealpha',a,'buttondownfcn',fcn);
+        'facecolor',clr,'facealpha',a,'buttondownfcn',fcn,'basevalue',...
+        yaxis(1)-1);
     set(h.tm.axes_ovrAll_1,'nextplot','replacechildren');
     guidata(h_fig,h);
 end
-drawnow;
 
 end
 
@@ -2305,7 +2359,7 @@ switch D
         xdata = [x(1)-1,xrange(1),xrange(1),xrange(2),xrange(2),x(2)+1];
         ydata = [y(2)+1,y(2)+1,-1,-1,y(2)+1,y(2)+1];
         area(h.tm.axes_histSort,xdata,ydata,'edgecolor',clr,'facecolor',...
-            clr,'facealpha',a,'linewidth',width,'buttondownfcn',fcn);
+            clr,'facealpha',a,'linestyle','none','buttondownfcn',fcn);
         set(h.tm.axes_histSort,'ylim',[0,y(2)]);
     
     case 2 % 2D mask
@@ -2337,6 +2391,67 @@ end
 
 set(h.tm.axes_histSort,'nextplot','replacechildren');
 
+end
+
+
+function drawMask_subpop(h_fig,molIncl)
+
+% defaults
+clr = [0.5 0.5 0.5];
+a = 0.5;
+
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+incl = p.proj{proj}.bool_intensities;
+inSec = p.proj{proj}.fix{2}(7);
+expT = p.proj{proj}.frame_rate; % this is truely the exposure time
+
+if isfield(h.tm,'area_subpop')
+    if ishandle(h.tm.area_subpop)
+        delete(h.tm.area_subpop);
+    end
+    h.tm.area_subpop = [];
+end
+
+M = numel(molIncl);
+yaxis = get(h.tm.axes_traceSort,'ylim');
+
+% initialize x & y data
+xdata = 0;
+ydata = yaxis(1)-1;
+L = 0; T = 0;
+for m = 1:M
+    if ~molIncl(m)
+        xdata = [xdata,T];
+        ydata = [ydata,yaxis(2)+1];    
+    else
+        xdata = [xdata,T];
+        ydata = [ydata,yaxis(1)-1];    
+    end
+    
+    L = L + sum(incl(:,m));
+    if inSec
+        T = L*expT;
+    else
+        T = L;
+    end
+    
+    if ~molIncl(m)
+        xdata = [xdata,T];
+        ydata = [ydata,yaxis(2)+1];    
+    else
+        xdata = [xdata,T];
+        ydata = [ydata,yaxis(1)-1];    
+    end
+    
+end
+
+set(h.tm.axes_traceSort,'nextplot','add');
+h.tm.area_subpop = area(h.tm.axes_traceSort,xdata,ydata,'linestyle','none',...
+    'facecolor',clr,'facealpha',a,'basevalue',yaxis(1)-1);
+set(h.tm.axes_traceSort,'nextplot','replacechildren');
+guidata(h_fig,h);
 end
 
 
@@ -2857,7 +2972,7 @@ function popupmenu_axes_Callback(obj, evd, h_fig)
     S = p.proj{proj}.S;
     nS = size(S,1);
     
-    if obj == h.tm.popupmenu_axes2
+    if obj==h.tm.popupmenu_axes2
         plot2 = get(obj, 'Value');
         if plot2 <= nChan*nExc+nFRET+nS
             dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
@@ -2872,7 +2987,17 @@ function popupmenu_axes_Callback(obj, evd, h_fig)
         end
     end
     
+    if obj==h.tm.popupmenu_axes1 || obj==h.tm.popupmenu_AS_plot1
+        plot1 = get(obj,'value');
+        set([h.tm.popupmenu_axes1,h.tm.popupmenu_AS_plot1],'value',plot1);
+    end
+    
     plotData_overall(h_fig);
+    
+    if obj==h.tm.popupmenu_axes1 || obj==h.tm.popupmenu_AS_plot1
+        % refresh subpopulations & plot on concatenated traces
+        ud_panRanges(h_fig);
+    end
     
 end
 
@@ -4234,6 +4359,8 @@ end
 disp('sort molecules...');
 molIncl = ud_popCalc(h_fig);
 disp('sorting complete!');
+
+drawMask_subpop(h_fig,molIncl);
 
 nMol = sum(molIncl);
 str_mol = cat(2,'subgroup size: ',num2str(nMol),' molecule');
