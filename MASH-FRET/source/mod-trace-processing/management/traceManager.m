@@ -352,6 +352,14 @@ if ~isfield(dat3,'range')
     dat3.rangeTags = [];
 end
 
+if ~sum(h.tm.molValid)
+    % store data in axes
+    set(h.tm.axes_ovrAll_1, 'UserData', dat1);
+    set(h.tm.axes_ovrAll_2, 'UserData', dat2);
+    set(h.tm.axes_histSort, 'UserData', dat3);
+    return;
+end
+
 % loading bar parameters-----------------------------------------------
 err = loading_bar('init',h_fig,nMol,'Concatenate and calculate data ...');
 if err
@@ -482,8 +490,10 @@ for ind = 1:(size(dat1.trace,2)+nFRET*nS) % counts for nChan*nExc Intensity chan
             dat1.lim{ind},dat1.niv(ind,1));
         
         % overflow first & last bins
-        dat2.hist{ind}([1 end]) = [];
-        dat2.iv{ind}([1 end]) = [];
+        if  numel(dat2.hist{ind})>2
+            dat2.hist{ind}([1 end]) = [];
+            dat2.iv{ind}([1 end]) = [];
+        end
 
         % build histogram with mean,max,min,median and states
         for j = 1:nCalc
@@ -492,7 +502,7 @@ for ind = 1:(size(dat1.trace,2)+nFRET*nS) % counts for nChan*nExc Intensity chan
                 dat3.lim{ind,j},dat3.niv(ind,1,j));
             
             % overflow first & last bins
-            if ~isempty(dat3.hist{ind,j})
+            if ~isempty(dat3.hist{ind,j}) && numel(dat3.hist{ind,j})>2
                 dat3.hist{ind,j}([1,end]) = [];
                 dat3.iv{ind,j}([1,end]) = [];
             end
@@ -505,8 +515,10 @@ for ind = 1:(size(dat1.trace,2)+nFRET*nS) % counts for nChan*nExc Intensity chan
             dat1.lim{ind},dat1.niv(ind,1));
         
         % overflow first & last bins
-        dat2.hist{ind}([1 end]) = [];
-        dat2.iv{ind}([1 end]) = [];
+        if  numel(dat2.hist{ind})>2
+            dat2.hist{ind}([1 end]) = [];
+            dat2.iv{ind}([1 end]) = [];
+        end
 
         % build histogram with mean,max,min,median and states
         for j = 1:nCalc
@@ -515,7 +527,7 @@ for ind = 1:(size(dat1.trace,2)+nFRET*nS) % counts for nChan*nExc Intensity chan
                 dat3.lim{ind,j},dat3.niv(ind,1,j));
             
             % overflow first & last bins
-            if ~isempty(dat3.hist{ind,j})
+            if ~isempty(dat3.hist{ind,j}) && numel(dat3.hist{ind,j})>2
                 dat3.hist{ind,j}([1 end]) = [];
                 dat3.iv{ind,j}([1 end]) = [];
             end
@@ -1880,8 +1892,30 @@ isBot = nFRET | nS;
 
 mol = p.curr_mol(proj);
 prm = p.proj{proj}.prm{mol};
+nDisp = size(h.tm.checkbox_molNb,2);
 
-for i = 1:size(h.tm.checkbox_molNb,2)
+for i = 1:nDisp
+    cla(h.tm.axes_itt(i));
+    cla(h.tm.axes_itt_hist(i));
+    if isBot
+        cla(h.tm.axes_frettt(i));
+        cla(h.tm.axes_hist(i));
+    end
+    
+    mol_nb = str2num(get(h.tm.checkbox_molNb(i),'String'));
+    if h.tm.molValid(mol_nb)
+        shad = 'white';
+    else
+        shad = get(h.tm.checkbox_molNb(i),'BackgroundColor');
+    end
+    set([h.tm.axes_itt(i),h.tm.axes_itt_hist(i)],'Color',shad);
+    if isBot
+        set([h.tm.axes_frettt(i),h.tm.axes_hist(i)],'Color',shad);
+    end
+end
+drawnow;
+
+for i = 1:nDisp
     mol_nb = str2num(get(h.tm.checkbox_molNb(i), 'String'));
 
     axes.axes_traceTop = h.tm.axes_itt(i);
@@ -1892,15 +1926,15 @@ for i = 1:size(h.tm.checkbox_molNb,2)
     end
 
     plotData(mol_nb, p, axes, prm, 0);
-
+    
     if h.tm.molValid(mol_nb)
-        shad = [1 1 1];
+        shad = 'white';
     else
-        shad = get(h.tm.checkbox_molNb(i), 'BackgroundColor');
+        shad = get(h.tm.checkbox_molNb(i),'BackgroundColor');
     end
-    set([h.tm.axes_itt(i) h.tm.axes_itt_hist(i)], 'Color', shad);
+    set([h.tm.axes_itt(i),h.tm.axes_itt_hist(i)],'Color',shad);
     if isBot
-        set([h.tm.axes_frettt(i), h.tm.axes_hist(i)], 'Color', shad);
+        set([h.tm.axes_frettt(i),h.tm.axes_hist(i)],'Color',shad);
         if i ~= size(h.tm.checkbox_molNb,2)
             set(get(h.tm.axes_frettt(i), 'Xlabel'), 'String', '');
             set(get(h.tm.axes_itt_hist(i), 'Xlabel'), 'String', '');
@@ -1910,6 +1944,7 @@ for i = 1:size(h.tm.checkbox_molNb,2)
         set(get(axes.axes_histTop, 'Xlabel'), 'String', '');
     end
     set(h.tm.checkbox_molNb(i), 'Value', h.tm.molValid(mol_nb));
+    drawnow;
 end
 end
 
@@ -1945,6 +1980,15 @@ plot2 = get(h.tm.popupmenu_axes2,'value');
 
 dat1 = get(h.tm.axes_ovrAll_1,'userdata');
 dat2 = get(h.tm.axes_ovrAll_2,'userdata');
+dat3 = get(h.tm.axes_histSort,'userdata');
+
+cla(h.tm.axes_ovrAll_1);
+cla(h.tm.axes_ovrAll_2);
+cla(h.tm.axes_traceSort);
+
+if ~sum(dat3.slct)
+    return;
+end
 
 disp('plot data ...');
 
@@ -2027,7 +2071,14 @@ else
     fcn = {}; 
 end
 
+cla(h_axes);
+
 dat1 = get(h.tm.axes_ovrAll_1,'userdata');
+dat3 = get(h.tm.axes_histSort,'userdata');
+
+if ~sum(dat3.slct)
+    return;
+end
 
 if ind<=nChan*nExc+nFRET+nS % single channel/FRET/S
     x_axis = 1:size(dat1.trace{ind},1);
@@ -2162,22 +2213,28 @@ mol = str2num(get(h.tm.checkbox_molNb(1),'string'));
 mol_disp = str2num(get(h.tm.edit_nbTotMol,'string'));
 
 % get plot coordinates
-xdata = [];
-ydata = [];
+xaxis = get(h.tm.axes_ovrAll_1,'xlim');
 yaxis = get(h.tm.axes_ovrAll_1,'ylim');
 L = sum(sum(incl(:,dat3.slct(1:mol-1))));
+if inSec
+    T = L*expT;
+else
+    T = L;
+end
+xdata = [xaxis(1)-1 T];
+ydata = [yaxis(2)+1 yaxis(2)+1];
 for m = mol:mol+mol_disp-1
-    if m<=numel(dat3.slct) && dat3.slct(m)
+    if m<=numel(dat3.slct)
         
-        % initialize x data
-        if isempty(xdata)
-            if inSec
-                xdata = L*expT;
-            else
-                xdata = L;
-            end
-            ydata = yaxis(2)+1;
-        end
+%         % initialize x data
+%         if isempty(xdata)
+%             if inSec
+%                 xdata = L*expT;
+%             else
+%                 xdata = L;
+%             end
+%             ydata = yaxis(2)+1;
+%         end
         
         % append x data
         L = L + sum(incl(:,m));
@@ -2186,14 +2243,18 @@ for m = mol:mol+mol_disp-1
         else
             T = L;
         end
-        xdata = [xdata,T];
-        ydata = [ydata,yaxis(2)+1];
+        if dat3.slct(m)
+            xdata = [xdata,xdata(end),T];
+            ydata = [ydata,yaxis(1)-1,yaxis(1)-1];
+
+        elseif ~dat3.slct(m)
+            xdata = [xdata,xdata(end),T];
+            ydata = [ydata,yaxis(2)+1,yaxis(2)+1];
+        end
     end
 end
-
-if isempty(xdata)
-    return;
-end
+xdata = [xdata,xdata(end),xaxis(2)+1];
+ydata = [ydata,yaxis(2)+1,yaxis(2)+1];
 
 if isfield(h.tm,'area_slct') && ishandle(h.tm.area_slct)
     set(h.tm.area_slct,'xdata',xdata,'ydata',ydata,'basevalue',yaxis(1)-1);
@@ -2221,10 +2282,15 @@ nExc = p.proj{proj}.nb_excitations;
 nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
 
+cla(h.tm.axes_histSort);
 
 dat1 = get(h.tm.axes_ovrAll_1,'userdata');
 dat2 = get(h.tm.axes_ovrAll_2,'userdata');
 dat3 = get(h.tm.axes_histSort,'userdata');
+
+if ~sum(dat3.slct)
+    return;
+end
 
 ind = get(h.tm.popupmenu_selectData,'value');
 j = get(h.tm.popupmenu_selectCalc,'value');
@@ -2460,9 +2526,8 @@ end
 function plotData_videoView(h_fig)
 
 % defaults 
-width = 2;
-a = 0.8;
 mg_top = 0.4;
+mkSize = 10;
 
 h = guidata(h_fig);
 p = h.param.ttPr;
@@ -2545,8 +2610,8 @@ if get(h.tm.checkbox_VV_tag0,'value')
     mols = ~sum(molTags,2)' & incl;
     x_coord = coord(mols,1:2:end);
     y_coord = coord(mols,2:2:end);
-    scatter(h.tm.axes_videoView,x_coord(:),y_coord(:),'marker','o',...
-        'markeredgecolor','white','linewidth',width,'markeredgealpha',a);
+    plot(h.tm.axes_videoView,x_coord(:),y_coord(:),'linestyle','none',...
+        'marker','o','markersize',mkSize,'markeredgecolor','white');
 end
 
 % plot tagged coordinates
@@ -2557,9 +2622,9 @@ if isfield(h.tm,'checkbox_VV_tag') && ishandle(h.tm.checkbox_VV_tag(1))
             mols = molTags(:,t)' & incl;
             x_coord = coord(mols,1:2:end);
             y_coord = coord(mols,2:2:end);
-            scatter(h.tm.axes_videoView,x_coord(:),y_coord(:),'marker','o',...
-                'markeredgecolor',hex2rgb(clr{t})/255,'linewidth',width,...
-                'markeredgealpha',a);
+            plot(h.tm.axes_videoView,x_coord(:),y_coord(:),'linestyle',...
+                'none','marker','o','markersize',mkSize,'markeredgecolor',...
+                hex2rgb(clr{t})/255);
         end
     end
 end
@@ -2568,8 +2633,6 @@ set(h.tm.axes_videoView,'nextplot','replacechildren');
 % set image limits
 xlim(h.tm.axes_videoView,[0,size(img,2)+1]);
 ylim(h.tm.axes_videoView,[0,size(img,1)+1]);
-
-
 
 end
 
@@ -2950,12 +3013,19 @@ function pushbutton_update_Callback(obj, evd, h_fig)
 
     % display new histogram limits and bins
     h = guidata(h_fig);
-    dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
-    plot2 = get(h.tm.popupmenu_axes2, 'Value');
+    dat1 = get(h.tm.axes_ovrAll_1,'userdata');
+    dat3 = get(h.tm.axes_histSort,'userdata');
     
-    set(h.tm.edit_xlim_low, 'String', dat1.lim{plot2}(1));
-    set(h.tm.edit_xlim_up, 'String', dat1.lim{plot2}(2));
-    set(h.tm.edit_xnbiv, 'String', dat1.niv(plot2));
+    if ~sum(dat3.slct)
+        set([h.tm.edit_xlim_low,h.tm.edit_xlim_up,h.tm.edit_xnbiv],...
+            'enable','off');
+    else
+        plot2 = get(h.tm.popupmenu_axes2,'value');
+        set(h.tm.edit_xlim_low,'string',dat1.lim{plot2}(1,1),'enable',...
+            'on');
+        set(h.tm.edit_xlim_up,'string',dat1.lim{plot2}(1,2),'enable','on');
+        set(h.tm.edit_xnbiv,'string',dat1.niv(plot2,1),'enable','on');
+    end
     
 end
 
@@ -2963,6 +3033,12 @@ end
 function popupmenu_axes_Callback(obj, evd, h_fig)
 
     h = guidata(h_fig);
+    
+    dat3 = get(h.tm.axes_histSort,'userdata');
+    if ~sum(dat3.slct)
+        return;
+    end
+    
     p = h.param.ttPr;
     proj = p.curr_proj;
     nChan = p.proj{proj}.nb_channel;
@@ -3382,7 +3458,7 @@ function pushbutton_reduce_Callback(obj, evd, h_fig)
 end
 
 
-function slider_Callback(obj, evd, h_fig)
+function slider_Callback(obj,evd,h_fig)
 
 % Last update by MH, 24.4.2019
 % >> cancel change in popupmenu's background color: no need as width and 
@@ -3404,6 +3480,11 @@ nMol = numel(h.tm.molValid);
 
 pos_slider = round(get(obj, 'Value'));
 max_slider = get(obj, 'Max');
+
+prev_topMol = str2num(get(h.tm.checkbox_molNb(1),'String'));
+if prev_topMol==(max_slider-pos_slider+1)
+    return;
+end
 
 nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
 if nb_mol_disp > nMol
@@ -3533,9 +3614,24 @@ if meth>4
 end
 
 set(obj,'value',1);
-
 guidata(h_fig,h);
-plotDataTm(h_fig);
+
+% update view in panel "Molecule selection"
+nDisp = numel(h.tm.axes_itt);
+isBot = isfield(h.tm,'axes_frettt');
+for i = 1:nDisp
+    m = str2num(get(h.tm.checkbox_molNb(i),'string'));
+    set(h.tm.checkbox_molNb(i),'value',h.tm.molValid(m));
+    if h.tm.molValid(m)
+        shad = [1,1,1];
+    else
+        shad = get(h.tm.checkbox_molNb(i),'backgroundcolor');
+    end
+    set([h.tm.axes_itt,h.tm.axes_itt_hist],'color',shad);
+    if isBot
+        set([h.tm.axes_frettt,h.tm.axes_hist],'color',shad);
+    end
+end
 
 end
 
