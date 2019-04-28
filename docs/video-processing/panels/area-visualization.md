@@ -53,7 +53,7 @@ MASH-FRET\source\graphic_files\exportMovie.m
 The current video frame is displayed with colors defined in the 
 [Color map](panel-plot.html#color-map).
 Pixel intensities are given by the color bar located on the right of the image with intensity units defined by 
-[Intensity units](panel-plot.html#intensity-units). 
+[Pixel intensity units](panel-plot.html#pixel-intensity-units). 
 To change the current video frame in display, use 
 [Navigation](#navigation).
 
@@ -98,7 +98,9 @@ Intensity data can be exported to MATLAB's workspace by pressing **Yes** in the 
 <a href="../../assets/images/gui/VP-area-visu-traces.png"><img src="../../assets/images/gui/VP-area-visu-traces.png" /></a>
 
 Intensities are calculated as described in 
-[Integration parameters](panel-intensity-integration.html#integration-parameters).
+[Integration parameters](panel-intensity-integration.html#integration-parameters) and given according to the 
+[Pixel intensity units](panel-plot.html#pixel-intensity-units).
+
 
 ---
 

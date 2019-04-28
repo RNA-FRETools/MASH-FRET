@@ -2,7 +2,7 @@
 layout: default
 title: (*.mash) MASH-FRET project
 parent: /output-files.html
-nav_order: 1
+nav_order: 18
 nav_exclude: 1
 ---
 
@@ -18,6 +18,9 @@ MASH-FRET project files are Matlab binary files with the extension `.mash`. They
 1. TOC
 {:toc}
 
+
+---
+
 ## Description
 
 MASH project files are the <u>main analysis files</u>. They contain information about loaded experimental data, calculated data and method settings.
@@ -30,6 +33,9 @@ They are created/updated when:
 - the user save modifications and calculations in 
 [Trace processing](../trace-processing.html), [Histogram analysis](../histogram-analysis.html) or 
 [Transition analysis](../transition-analysis.html).
+
+
+---
 
 ## File name
 
@@ -44,9 +50,12 @@ By default, the file is named after:
 [Trace processing](../trace-processing.html). 
 
 
+---
+
 ## Structure
 
 MASH-FRET project files consist in data structures with the following fields:
+
 
 ### Project-related fields:
 {: .no_toc }
@@ -58,6 +67,7 @@ MASH-FRET project files consist in data structures with the following fields:
 | `MASH_version`    | version of MASH when project was created                         | string    | `'1.1.2'`                                   |
 | `proj_file`       | path to project file                                             | string    | `'C:\MyDataFolder\experiment_01\data.mash'` |
 
+
 ### Video-related fields
 {: .no_toc }
 
@@ -66,6 +76,7 @@ MASH-FRET project files consist in data structures with the following fields:
 | `movie_dim`  | video dimensions in pixel (width,height)          | 1-by-2 double | `[256,256]`                                 |
 | `movie_dat`  | parameters used to read pixel data in video file  | 1-by-3 cell   |                                             |
 | `frame_rate` | acquisition **time** of one video frame in second | double        | `0.1`                                       |
+
 
 ### Experiment settings fields
 {: .no_toc }
@@ -78,6 +89,7 @@ MASH-FRET project files consist in data structures with the following fields:
 | `colours`        | RGB colors used to plot trajectories and labels (intensities, FRET, S) | 1-by-3 cell      | for 2 channel and 2 alternated lasers: `{ {[0,0.5,0],[0.5,0.5,0];[0,1,0],[1,1,0]}, [0,0,0], [0,0,1] }`     |
 |`exp_parameters`  | a number `nP` of user-defined project parameters (name, value, units)  | `nP`-by-3 cell   | `{ 'Project title','data_D135_01',[]; 'Molecule name','D135',[]; '[Mg2+]','100','mM'; '[K+]','500','mM' }` |
 
+
 ### Molecule fields
 {: .no_toc }
 
@@ -88,6 +100,7 @@ MASH-FRET project files consist in data structures with the following fields:
 | `coord_incl`      | molecule is selected/unselected                                    | 1-by-`M` true/false  |                                                                                           |
 | `molTag`          | molecule's tag (1,2 or 3)                                          | 1-by-`M` double      |                                                                                           |
 | `molTagNames`     | names of possible molecule tags                                    | 1-by-3 cell          | `{ unlabeled, static, dynamic }`                                                          |
+
 
 ### Intensity fields
 {: .no_toc }
@@ -102,6 +115,7 @@ MASH-FRET project files consist in data structures with the following fields:
 | `intensities_DTA`       | discretized intensity trajectories                               | `L`-by-`nC*M` double  |         |
 | `bool_intensities`      | included/ignored intensity data points                           | `L`-by-`M` true/false |         |
 
+
 ### FRET- and stoichiometry- fields
 {: .no_toc }
 
@@ -109,6 +123,7 @@ MASH-FRET project files consist in data structures with the following fields:
 | `FRET_DTA` | discretized FRET trajectories                                              | `L`-by-`nF*M` double |                                   |
 | `S`        | a number `nS` of different channel indexes for stoichiometry calculations  | 1-by-`nS` double     | S of channel 1: `[1]`             |
 | `S_DTA`    | discretized stoichiometry trajectories                                     | `L`-by-`nS*M` double |                                   |
+
 
 ### Analysis settings
 {: .no_toc }
@@ -128,13 +143,16 @@ MASH-FRET/source/project/setDefPrm_thm.m
 MASH-FRET/source/project/setDefPrm_TDP.m
 ```
 
+
+---
+
 ## Compatibility
 
-MASH project files are Matlab binary files and can be loaded in Matlab's workspace using the command:
+MASH project files are MATLAB binary files and can be imported in MATLAB's workspace by typing in MATLAB's command window:
 
 ```matlab
 load('datafolder\project-file.mash','-mat');
 ```
 
-
 and replacing `datafolder\project-file.mash` by your actual file name and directory.
+
