@@ -40,7 +40,7 @@ By selecting the proper format in list **(c)**, time traces can be exported to a
 - [HaMMy-compatible (*.dat)](../../output-files/dat-hammy-traces)
 - [vbFRET-compatible (*.mat)](../../output-files/mat-vbfret-traces)
 - [SMART-compatible (*.traces)](../../output-files/traces-smart-traces)
-- [QUB-compatible (*.txt)](../../output-files/txt-qub-processed-traces)
+- [QUB-compatible (*.txt)](../../output-files/txt-qub-traces)
 - [ebFRET-compatible (*.dat)](../../output-files/dat-ebfret-traces)
 
 Processing parameters can be exported in the header of files with customed format, or to individual files by selecting the proper option in list **(i)**; see 

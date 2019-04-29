@@ -1,6 +1,6 @@
 function openExpTtpr(h_fig)
 
-%% Last update by MH, 10.4.2019
+% Last update by MH, 10.4.2019
 % >> link the "infos" button to online documentation
 % >> set edit fields with empty strings and checkboxes unchecked when 
 %    main export options are deactivated
@@ -20,11 +20,7 @@ function openExpTtpr(h_fig)
 %      process)
 %    - correct panel title's font weight to bold
 %    - correct extra space in GUI
-%
-% update by FS, 24.4.2018
-% >> add popup for exporting tagged molecules individually
-%
-%%
+
 
 h = guidata(h_fig);
 p = h.param.ttPr;
@@ -611,7 +607,7 @@ h.optExpTr.checkbox_molValid = uicontrol('Style', 'checkbox', 'Units', ...
 % added by FS, 24.4.2018
 xNext = mg + 2/3*w_full_pan;
 str_lst = colorTagNames(h_fig);
-molTagStr = [str_lst, 'all molecules'];
+molTagStr = [str_lst, 'all selected'];
 h.optExpTr.popup_molTagged = uicontrol('Style', 'popup', 'Units', ...
     'pixels', 'Parent', h.optExpTr.figure_optExpTr, 'String', molTagStr,...
     'Value', length(molTagStr), 'Callback', ...
@@ -657,19 +653,11 @@ function str_lst = colorTagNames(h_fig)
 h = guidata(h_fig);
 p = h.param.ttPr;
 proj = p.curr_proj;
-
-% modified by MH, 24.4.2019
-% colorlist = p.proj{proj}.molTagClr;
-colorlist = p.proj{proj}.molTagClr;
-
+colorlist = {'transparent', '#4298B5', '#DD5F32', '#92B06A', '#ADC4CC', '#E19D29'};
 str_lst = cell(1,length(p.proj{proj}.molTagNames));
-
-% cancelled by MH, 24.4.2019
-% str_lst{1} = p.proj{proj}.molTagNames{1};
-
-% modified by MH, 24.4.2019
-for k = 1:numel(p.proj{proj}.molTagNames)
-% for k = 2:length(p.proj{proj}.molTagNames)
+str_lst{1} = p.proj{proj}.molTagNames{1};
+ 
+for k = 2:length(p.proj{proj}.molTagNames)
     str_lst{k} = ['<html><body  bgcolor="' colorlist{k} '">' ...
         '<font color="white">' p.proj{proj}.molTagNames{k} '</font></body></html>'];
 end

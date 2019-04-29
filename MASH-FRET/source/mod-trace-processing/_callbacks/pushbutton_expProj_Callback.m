@@ -1,23 +1,14 @@
 function pushbutton_expProj_Callback(obj, evd, h)
 
-%% Last update: 25.4.2019 by MH
-% >> save current project tage names and colors in interface's default 
-%    parameters (default_param.ini)
-%
-% update: 2.4.2019 by MH
+% Last update: 2.4.2019 by MH
 % >> update current project parameters with saved project parameters: this
 %    mimic the subsequent load of saved project and closing of previous one
 %
 % update: 29.3.2019 by MH
 % >> adapt reorganization of cross-talk coefficients to new parameter 
 %    structure (see project/setDefPrm_traces.m)
-%%
 
 p = h.param.ttPr;
-
-% added by MH, 24.4.2019
-pMov = h.param.movPr;
-
 if ~isempty(p.proj);
     
     % collect current project
@@ -77,10 +68,6 @@ if ~isempty(p.proj);
             % set interface default param. to project's default param.
             p.defProjPrm = p.proj{proj}.def;
             
-            % added by MH, 24.4.2019
-            pMov.defTagNames = p.proj{proj}.molTagNames;
-            pMov.defTagClr = p.proj{proj}.molTagClr;
-            
             chanExc = p.proj{proj}.chanExc;
             exc = p.proj{proj}.excitations;
             
@@ -115,10 +102,6 @@ if ~isempty(p.proj);
             % update exported file path to current project
             p.proj{proj}.proj_file = dat.proj_file;
             h.param.ttPr = p;
-            
-            % added by MH, 24.4.2019
-            h.param.movPr = pMov;
-            
             guidata(h.figure_MASH,h);
         end
     end
