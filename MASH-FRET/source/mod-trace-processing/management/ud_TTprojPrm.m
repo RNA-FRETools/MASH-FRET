@@ -330,7 +330,7 @@ if ~isempty(p.proj)
             param.extra = p.proj{proj}.movie_dat; 
             for l = 1:nExc
                 param.start = l;
-                [img ok] = createAveIm(param, 0, h_fig);
+                [img,ok] = createAveIm(param,false,false,h_fig);
                 if ~ok
                     return;
                 end
