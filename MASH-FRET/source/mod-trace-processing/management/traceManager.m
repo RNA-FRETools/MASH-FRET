@@ -2224,18 +2224,8 @@ end
 xdata = [xaxis(1)-1 T];
 ydata = [yaxis(2)+1 yaxis(2)+1];
 for m = mol:mol+mol_disp-1
-    if m<=numel(dat3.slct)
-        
-%         % initialize x data
-%         if isempty(xdata)
-%             if inSec
-%                 xdata = L*expT;
-%             else
-%                 xdata = L;
-%             end
-%             ydata = yaxis(2)+1;
-%         end
-        
+    if m<=numel(dat3.slct) && dat3.slct(m)
+
         % append x data
         L = L + sum(incl(:,m));
         if inSec
@@ -2243,14 +2233,8 @@ for m = mol:mol+mol_disp-1
         else
             T = L;
         end
-        if dat3.slct(m)
-            xdata = [xdata,xdata(end),T];
-            ydata = [ydata,yaxis(1)-1,yaxis(1)-1];
-
-        elseif ~dat3.slct(m)
-            xdata = [xdata,xdata(end),T];
-            ydata = [ydata,yaxis(2)+1,yaxis(2)+1];
-        end
+        xdata = [xdata,xdata(end),T];
+        ydata = [ydata,yaxis(1)-1,yaxis(1)-1];
     end
 end
 xdata = [xdata,xdata(end),xaxis(2)+1];
