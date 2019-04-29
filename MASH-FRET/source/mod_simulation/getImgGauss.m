@@ -1,4 +1,24 @@
 function [imgGauss,matGauss] = getImgGauss(lim, p, volume, varargin)
+% [imgGauss,matGauss] = getImgGauss(lim, p, volume, varargin)
+%
+% This function can be used to obtain an image with a number G of ...
+% 2D-Gaussians at specified positions, with specified Gaussian 
+% volumes/amplitudes and with specified standard deviations
+%
+% >> imgGauss: image with Gaussians
+% >> matGauss: 2D-Gaussian coefficients
+%
+% >> lim.x: [1-by-2] image limits in the x-direction
+% >> lim.y: [1-by-2] image limits in the y-direction
+% >> p.amp: [G-by-1] 2D-Gaussian volume or amplitude
+% >> p.mu: [G-by-2] 2D-Gaussian means (x,y)
+% >> p.sig: [G-by-2] 2D-Gaussian standard deviations (o_x,o_y)
+% >> volume: true/false if p.amp is the 2-D Gaussian volume/amplitude
+%
+% The last argument matGauss is optional and contain the 2D-Gaussian 
+% coefficients previously calculated with same 2D-Gaussian means and 
+% standard deviations: this prevents the re-calculation of numerical 
+% Gaussian integrals.
     
     if ~isempty(varargin) && ~isempty(varargin{1})
         isMat = 1;
@@ -24,7 +44,7 @@ function [imgGauss,matGauss] = getImgGauss(lim, p, volume, varargin)
     end
 
     for g = 1:nGauss
-        I_0 = p.amp(g,1);
+        I_0 = p.amp(g,1); % volume or amplitude
         x_0 = p.mu(g,1); % PSF coordinates
         y_0 = p.mu(g,2);
         %z_0 = p.mu(g,3);
@@ -34,12 +54,14 @@ function [imgGauss,matGauss] = getImgGauss(lim, p, volume, varargin)
         %o_z = p.sig(g,3);
         
         if ~isMat
-            if volume
+            
+            if volume % Gaussian normalized by the volume
                 mltp_gauss_str = [];
                 A = 1/(2*pi*o_x*o_y);
                 %A = 1/(2*pi*o_x*o_y*o_z)
-            else
-                A = I_0;
+                
+            else % Gaussian normalized by 1
+                A = 1;
             end
 
             if isempty(mltp_gauss_str)
@@ -100,22 +122,21 @@ function [imgGauss,matGauss] = getImgGauss(lim, p, volume, varargin)
                 imgGauss(y_pix(i),x_pix(i)) = ...
                     imgGauss(y_pix(i),x_pix(i))+z(i);
             end
+            
+            if ~isMat && round(100*g/(nGauss))>n
+                fprintf(['PSF numerical integration for each ' ...
+                    'pixel: %d%%\n'], round(100*g/(nGauss)));
+                n = n+1;
+            end
+            
+        else
+            mltp_gauss = @(X,Y) eval(mltp_gauss_str);
+            [X_pix,Y_pix] = meshgrid(lim.x(1):lim.x(2),lim.y(1):lim.y(2));
+            X_pix = reshape(X_pix,[numel(X_pix),1]) - 0.5;
+            Y_pix = reshape(Y_pix,[numel(Y_pix),1]) - 0.5;
+            V = I_0*mltp_gauss(X_pix,Y_pix);
+            imgGauss = reshape(V,size(imgGauss));
         end
-        if ~isMat && round(100*g/(nGauss))>n
-            fprintf(['PSF numerical integration for each ' ...
-                'pixel: %d%%\n'], round(100*g/(nGauss)));
-            n = n+1;
-        end
-        
-    end
-    
-    if ~volume
-        mltp_gauss = @(X,Y) eval(mltp_gauss_str);
-        [X_pix,Y_pix] = meshgrid(lim.x(1):lim.x(2),lim.y(1):lim.y(2));
-        X_pix = reshape(X_pix,[numel(X_pix),1]) - 0.5;
-        Y_pix = reshape(Y_pix,[numel(Y_pix),1]) - 0.5;
-        V = mltp_gauss(X_pix,Y_pix);
-        imgGauss = reshape(V,size(imgGauss));
     end
 end
 
