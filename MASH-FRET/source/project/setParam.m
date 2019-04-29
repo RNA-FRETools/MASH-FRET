@@ -333,9 +333,10 @@ end
 p.chanExc = adjustParam('chanExc', chanExc, p_input);
 p.labels_def = adjustParam('labels_def', labels, p_input);
 p.labels = adjustParam('labels', labels, p_input);
-p.defTagNames = adjustParam('defTagNames', {'static', 'dynamic'}, p_input);
-p.defTagClr = adjustParam('defTagClr', {'#4298B5','#DD5F32','#92B06A',...
-    '#ADC4CC','#E19D29'}, p_input);
+p.defTagNames = adjustParam('defTagNames', ...
+    {'static', 'dynamic','D-only','A-only'}, p_input);
+p.defTagClr = adjustParam('defTagClr', {'#4298B5','#4298B5','#33CC33',...
+    '#FF6666','#E19D29'}, p_input);
 
 % Trace processing pannel
 
