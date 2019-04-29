@@ -47,7 +47,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             'Define a root name the exported files', ...
             setCorrectPath('simulations', h_fig));
     end
-    
+
     if ~isempty(fName) && sum(fName)
         cd(pName);
         [~,fName,~] = fileparts(fName);
@@ -142,6 +142,51 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         str_exp_dt = 'no';
         str_exp_coord = 'no';
         str_action = '';
+        
+         % check for file overwriting
+        if isMov
+            fName_mov = [fName '.sira'];
+            str_exp_mov = 'yes';
+            fName_mov = overwriteIt(fName_mov,pName,h_fig);
+            if isempty(fName_mov)
+                return;
+            end
+        end
+        if isAvi
+            fName_mov_avi = [fName '.avi'];
+            fName_mov_avi = overwriteIt(fName_mov_avi,pName,h_fig);
+            if isempty(fName_mov_avi)
+                return;
+            end
+            str_exp_avi = 'yes';
+        end
+        if isTr
+            fName_traces = [fName '.mat'];
+            fName_traces = overwriteIt(fName_traces,pName,h_fig);
+            if isempty(fName_traces)
+                return;
+            end
+            str_exp_traces = 'yes';
+        end
+        if isCrd
+            if ~exist([pName 'coordinates'], 'dir')
+                mkdir([pName 'coordinates']);
+            end
+            fName_coord = [fName '.crd'];
+            fName_coord = overwriteIt(fName_coord,[pName 'coordinates'],...
+                h_fig);
+            if isempty(fName_coord)
+                return;
+            end
+            str_exp_coord = 'yes';
+        end
+        if isPrm
+            fName_param = [fName '_param.log'];
+            fName_param = overwriteIt(fName_param,pName,h_fig);
+            if isempty(fName_param)
+                return;
+            end
+        end
         
         % Results from buildModel function
         res         = h.results.sim; % results/simulated data
@@ -309,9 +354,6 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             
             % open blank movie file
             if isMov
-                fName_mov = [fName '.sira'];
-                str_exp_mov = 'yes';
-                
                 f = fopen([pName fName_mov], 'w');
                 
                 % SIRA header for Version MASH-FRET movie processing
@@ -327,8 +369,6 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             end
             
             if isAvi
-                fName_mov_avi = [fName '.avi'];
-                str_exp_avi = 'yes';
                 v = VideoWriter(cat(2,pName,fName_mov_avi),'Uncompressed AVI');
                 v.FrameRate = 1/expT;
 
@@ -585,8 +625,6 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             setContPan('Write trace data to file ...', 'process', h_fig);
             
             if isTr
-                fName_traces = [fName '.mat'];
-                str_exp_traces = 'yes';
                 tr_all = [expT*(1:N)' (1:N)'];
             end
             if isProcTr
@@ -750,6 +788,11 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                         fName_procTraces = [pName 'traces_ASCII' ...
                             filesep fName '_mol' num2str(m) 'of'...
                             num2str(M) '.txt'];
+                        fName_procTraces = overwriteIt(fName_procTraces,...
+                            [pName 'traces_ASCII'],h_fig);
+                        if isempty(fName_procTraces)
+                            return;
+                        end
 
                         str_header2 = ['coordinates \t' ...
                             num2str(crd(m,1)) ',' num2str(crd(m,2)) ...
@@ -786,6 +829,11 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
                         fName_dt = cat(2,pName,'dwell-times',filesep,fName,...
                             '_mol',num2str(m),'of',num2str(M),...
                             '_FRET1to2.dt');
+                        fName_dt = overwriteIt(fName_dt,...
+                            [pName,'dwell-times'],h_fig);
+                        if isempty(fName_dt)
+                            return;
+                        end
                         dt = res.dt_final{m};
                         for j = 1:numel(states)
                             dt(dt(:,2)==j,2) = states(j);
@@ -820,12 +868,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         if isCrd
             
             setContPan('Write coordinates to file ...', 'process', h_fig);
-            
-            if ~exist([pName 'coordinates'], 'dir')
-                mkdir([pName 'coordinates']);
-            end
-            fName_coord = [fName '.crd'];
-            str_exp_coord = 'yes';
+
             save([pName 'coordinates' filesep fName_coord], 'crd', ...
                 '-ascii');
             
@@ -839,7 +882,6 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
             setContPan('Write simulation parameters to file ...','process',...
                 h_fig);
             
-            fName_param = [fName '_param.log'];
             f = fopen([pName fName_param], 'Wt');
             fprintf(f,'VIDEO PARAMETERS\n');
             fprintf(f,cat(2,'> frame rate (s-1): ',num2str(1/expT),'\n'));
