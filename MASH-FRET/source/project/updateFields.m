@@ -5,12 +5,12 @@ function updateFields(h_fig, varargin)
 % input argument 2: what to update ('all', 'sim', 'imgAxes', 'movPr',
 % 'ttPr', 'thm', TDP'
 %
-% Requires external files: 
+% Last update: 19.4.2019 by MH
+% >> set empty fields in transtion matrix when rates are loaded from
+%    presets to avoid confusion
 %
-% Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
-% Last update: 7th of March 2018 by Richard Börner
-%
-% Comments adapted for Boerner et al, PONE, 2017.
+% update: 7th of March 2018 by Richard Börner
+% >> Comments adapted for Boerner et al, PONE, 2017.
 
 if ~isempty(varargin)
     opt = varargin{1};
@@ -39,7 +39,7 @@ if strcmp(opt, 'sim') || strcmp(opt, 'all')
         h.edit_simBtA h.edit_simDeD h.edit_simDeA], ...
         'BackgroundColor', [1 1 1]);
     
-    set(h.edit_nbStates, 'String', num2str(p.nbStates));
+    set(h.edit_nbStates, 'Enable', 'on', 'String', num2str(p.nbStates));
     set(h.edit_nbMol, 'String', num2str(p.molNb));
     if ~(p.impPrm && isfield(p.molPrm, 'kx'))
         setTransMat(p.kx, h_fig);
@@ -101,7 +101,7 @@ if strcmp(opt, 'sim') || strcmp(opt, 'all')
         
         if isfield(p.molPrm, 'stateVal')
             set([h.edit_nbStates h.popupmenu_states h.edit_stateVal ...
-                h.edit_simFRETw], 'Enable', 'off');
+                h.edit_simFRETw h.edit_nbStates], 'Enable', 'off');
         else
             set([h.edit_nbStates h.popupmenu_states h.edit_stateVal ...
                 h.edit_simFRETw], 'Enable', 'on');
@@ -110,6 +110,7 @@ if strcmp(opt, 'sim') || strcmp(opt, 'all')
         if isfield(p.molPrm, 'kx')
             set([reshape(transMat_h,[1 numel(transMat_h)]) ...
                 h.edit_nbStates], 'Enable', 'off');
+            set(transMat_h,'string','');
         else
             set(reshape(transMat_h,[1 numel(transMat_h)]),'Enable','on');
         end
