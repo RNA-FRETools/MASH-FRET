@@ -976,12 +976,17 @@ xNext = xNext + w_pop + mg;
 
 % added by MH, 24.4.2019
 hexclr = h.tm.molTagClr{get(h.tm.popup_molTag,'value')}(2:end);
-h.tm.edit_tagClr = uicontrol('Style','edit','Parent', ...
-    h.tm.uipanel_overview,'Units','pixels','String',num2str(hexclr), ...
-    'Position',[xNext yNext w_edit h_but],'TooltipString', ...
-    'define the tag color','FontUnits','pixels','FontSize',fntS, ...
-    'Backgroundcolor',hex2rgb(hexclr)/255,'callback',...
-    {@edit_tagClr_Callback,h_fig});
+if sum(double((hex2rgb(hexclr)/255)>0.5))==3
+    fntClr = 'black';
+else
+    fntClr = 'white';
+end
+h.tm.pushbutton_tagClr = uicontrol('style','pushbutton','parent', ...
+    h.tm.uipanel_overview,'units','pixels','string','Set', ...
+    'position',[xNext yNext w_edit h_but],'tooltipstring', ...
+    'define the tag color','fontunits','pixels','fontsize',fntS, ...
+    'backgroundcolor',hex2rgb(hexclr)/255,'foregroundcolor',fntClr,...
+    'callback',{@pushbutton_tagClr_Callback,h_fig});
 
 xNext = xNext + w_edit + mg;
 
@@ -2669,8 +2674,14 @@ nTag = numel(tagNames);
 str_lst = {};
 for t = 1:nTag
     if molTag(i,t)
+        if sum(double((hex2rgb(tagClr{t})/255)>0.5))==3
+            fntClr = 'black';
+        else
+            fntClr = 'white';
+        end
         str_lst = [str_lst cat(2,'<html><span bgcolor=',tagClr{t},'>',...
-            '<font color="white">',tagNames{t},'</font></body></html>')];
+            '<font color="',fntClr,'">',tagNames{t},...
+            '</font></body></html>')];
     end
 end
 if ~sum(molTag(i,:))
@@ -2707,9 +2718,14 @@ str_lst = cell(1,nTag);
 % modified by MH, 24.4.2019
 % for k = 2:length(h.tm.molTagNames)
 for k = 1:nTag
-    
+    if sum(double((hex2rgb(colorlist{k})/255)>0.5))==3
+        fntClr = 'black';
+    else
+        fntClr = 'white';
+    end
     str_lst{k} = ['<html><body  bgcolor="' colorlist{k} '">' ...
-        '<font color="white">' h.tm.molTagNames{k} '</font></body></html>'];
+        '<font color="',fntClr,'">' h.tm.molTagNames{k} ...
+        '</font></body></html>'];
 end
 
 % added by MH, 24.4.2019
@@ -2913,8 +2929,14 @@ end
 str_lst = {};
 for t = 1:nTag
     if rangeTag(i,t)
+        if sum(double((hex2rgb(tagClr{t})/255)>0.5))==3
+            fntClr = 'black';
+        else
+            fntClr = 'white';
+        end
         str_lst = [str_lst cat(2,'<html><span bgcolor=',tagClr{t},'>',...
-            '<font color="white">',tagNames{t},'</font></body></html>')];
+            '<font color="',fntClr,'">',tagNames{t},...
+            '</font></body></html>')];
     end
 end
 if ~sum(rangeTag(i,:))
@@ -2943,7 +2965,12 @@ for r = 1:R
     tags = find(rangeTag(r,:));
     nTag = numel(tags);
     if nTag>0
-        str_r = cat(2,'<html><font color="white"><span bgcolor=',...
+        if sum(double((hex2rgb(tagClr{tags(1)})/255)>0.5))==3
+            fntClr = 'black';
+        else
+            fntClr = 'white';
+        end
+        str_r = cat(2,'<html><font color="',fntClr,'"><span bgcolor=',...
             tagClr{tags(1)},'>',num2str(r),'</span></font>');
         for t = 2:nTag
             str_r = cat(2,str_r,'<span bgcolor=',tagClr{tags(t)},...
@@ -3779,19 +3806,25 @@ h = guidata(h_fig);
 tag = get(obj,'value');
 str_pop = get(obj, 'string');
 if strcmp(str_pop{tag},'no default tag')
-    set(h.tm.edit_tagClr,'string','','enable','off');
+    set(h.tm.pushbutton_tagClr,'enable','off','backgroundcolor',...
+        get(h_fig,'color'),'foregroundcolor','black');
     return;
 end
 
 % update edit field background color
 clr_hex = h.tm.molTagClr{tag}(2:end);
-set(h.tm.edit_tagClr,'string',clr_hex,'enable','on','backgroundcolor',...
-    hex2rgb(clr_hex)/255,'foregroundcolor','white');
+if sum(double((hex2rgb(clr_hex)/255)>0.5))==3
+    fntClr = 'black';
+else
+    fntClr = 'white';
+end
+set(h.tm.pushbutton_tagClr,'enable','on','backgroundcolor',...
+    hex2rgb(clr_hex)/255,'foregroundcolor',fntClr);
 
 end
 
 
-function edit_tagClr_Callback(obj,evd,h_fig)
+function pushbutton_tagClr_Callback(obj,evd,h_fig)
 % Defines the tag color with hexadecimal input
 
 % Created by MH, 24.4.2019
@@ -3808,11 +3841,15 @@ if strcmp(str_pop{tag},'no default tag')
 end
 
 % control color value
-clr_str = get(obj,'string');
-if ~ishexclr(clr_str)
-    setContPan(cat(2,'Tag color must be a RGB value in the hexadecimal ',...
-        'format (ex:92B06A)'),'error',h_fig);
+rgb = uisetcolor('Select a tag color');
+if numel(rgb)==1
     return;
+end
+
+rgb = round(255*rgb);
+clr_str = '';
+for c = 1:3
+    clr_str = cat(2,clr_str,dec2hex(rgb(c)));
 end
 
 % save color
