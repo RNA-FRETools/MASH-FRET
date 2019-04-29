@@ -1,4 +1,4 @@
-function [data ok] = readSira(fullFname, n, fDat, h_fig)
+function [data,ok] = readSira(fullFname, n, fDat, h_fig)
 % Read data from bits in a *.sira file. Returns useful movie parameters and
 % image data of all movie frames.
 %
@@ -6,20 +6,275 @@ function [data ok] = readSira(fullFname, n, fDat, h_fig)
 
 data = [];
 ok = 1;
+h = guidata(h_fig);
+isMov = 0; % no movie variable was defined before (no memory is allocated)
+if ~isempty(h_fig)
+    if isfield(h,'movie') && isfield(h.movie,'movie')
+        isMov = 1; % the movie variable exist and is free (free memory already allocated)
+        if ~isempty(h.movie.movie)
+            isMov = 2; % the movie variable exist and contain the video data
+        end
+    end
+end
 
+% initializes potentially undefined video data
+cycleTime = []; % time delay between each frame
+movie = [];
+
+% first read
+if isempty(fDat)
+    
+    % get MASH-FRET version & reading parameters
+    [vers,is_os,is_sgl] = getSiraDat(fullFname,h_fig);
+    if isempty(vers)
+        return;
+    end
+
+    % get precision of pixel values
+    if is_sgl
+        prec = 'single';
+    else
+        prec = 'uint16';
+    end
+    
+    f = fopen(fullFname, 'r');
+    if f<0
+        disp('Invalid file identifer.')
+        ok = 0;
+        return;
+    end
+    fgetl(f);
+
+    % Get the exposure time
+    cycleTime = fread(f,1,'double');
+
+    % Get movie dimensions
+    pixelX = fread(f,1,prec);
+    pixelY = fread(f,1,prec);
+    frameLen = fread(f,1,prec);
+    
+    if ~isempty(h_fig) && (strcmp(n,'all') || n==1)
+        updateActPan(['MASH smFRET Graphic File Format(*.sira)\n' ...
+                      'MASH smFRET Version: ' vers '\n' ...
+                      'Cycle time = ' num2str(cycleTime) 's\n' ...
+                      'Movie dimensions = ' num2str(pixelX) 'x' ...
+                      num2str(pixelY) ' pixels\n' ...
+                      'Movie length = ' num2str(frameLen) ' frames'], ...
+                      h_fig);
+    elseif (strcmp(n,'all') || n==1)
+        disp(sprintf(['MASH smFRET Graphic File Format(*.sira)\n' ...
+                      'MASH smFRET Version: ' vers '\n' ...
+                      'Cycle time = ' num2str(cycleTime) 's\n' ...
+                      'Movie dimensions = ' num2str(pixelX) 'x' ...
+                      num2str(pixelY) ' pixels\n' ...
+                      'Movie length = ' num2str(frameLen) ' frames']));
+    end
+
+    % Get cursor position where graphic data begin
+    fCurs = ftell(f);
+    
+    % copy file data in fDat for use in case MATLAB is out of memory
+    fDat{1} = fCurs;
+    fDat{2}(1) = pixelX; % Width of the movie
+    fDat{2}(2) = pixelY; % Height of the movie
+    fDat{3} = frameLen; % number total of frames
+    
+else
+    fCurs = fDat{1};
+    pixelX = fDat{2}(1); % Width of the movie
+    pixelY = fDat{2}(2); % Height of the movie
+    frameLen = fDat{3}; % number total of frames
+end
+
+if strcmp(n,'all')
+    
+    % Get requested graphic data
+    if ~exist('f','var')
+        f = fopen(fullFname,'r');
+        if f<0
+            disp('Invalid file identifier.');
+            ok = 0;
+            return;
+        end
+    end
+    
+	if isMov==0 && ~memAlloc(pixelX*pixelY*(frameLen+1)*4)
+        str = cat(2,'Out of memory: MASH is obligated to load the video ',...
+            'one frame at a time to function\nThis will slow down all ',...
+            'operations requiring video data, including the creation of ',...
+            'time traces.');
+        if ~isempty(h_fig)
+            setContPan(str,'warning',h_fig);
+        else
+            disp(sprintf(str));
+        end
+
+        [data,ok] = readSira(fullFname,1,fDat,h_fig);
+
+        frameCur = data.frameCur;
+
+	else
+        if ~isempty(h_fig)
+            pleaseWait('start', h_fig);
+            h = guidata(h_fig);
+        else
+            disp('Please wait ...');
+        end
+
+        if ~exist('vers','var')
+            % get MASH-FRET version & reading parameters
+            [vers,is_os,is_sgl] = getSiraDat(fullFname,h_fig);
+            if isempty(vers)
+                return;
+            end
+
+            % get precision of pixel values
+            if is_sgl
+                prec = 'single';
+            else
+                prec = 'uint16';
+            end
+        end
+    
+        % get video pixel data
+        fseek(f,fCurs,-1);
+        
+        if isMov==0
+            
+            % allocate new memory
+            movie = zeros(pixelY,pixelX,frameLen);
+            if is_os
+                for l = 1:frameLen
+                    movie(:,:,l) = reshape(fread(f,pixelY*pixelX,...
+                        [prec '=>single']) + fread(f,1,[prec '=>single']),...
+                        [pixelY pixelX]);
+                end
+            else
+                for l = 1:frameLen
+                    movie(:,:,l) = reshape(fread(f,pixelY*pixelX,...
+                        [prec '=>single']),[pixelY pixelX]);
+                end
+            end
+            frameCur = movie(:,:,1);
+            
+        else
+            
+            % re-use previously allocated memory
+            h.movie.movie = zeros(pixelY,pixelX,frameLen);
+            if is_os
+                for l = 1:frameLen
+                    h.movie.movie(:,:,l) = reshape(fread(f,pixelY*pixelX,...
+                        [prec '=>single']) + fread(f,1,[prec '=>single']),...
+                        [pixelY pixelX]);
+                end
+            else
+                for l = 1:frameLen
+                    h.movie.movie(:,:,l) = reshape(fread(f,pixelY*pixelX,...
+                        [prec '=>single']),[pixelY pixelX]);
+                end
+            end
+            guidata(h_fig,h);
+            frameCur = h.movie.movie(:,:,1);
+        end
+        
+        if ~isempty(h_fig)
+            pleaseWait('close',h_fig);
+        end
+	end
+
+else
+    if isMov==2
+        frameCur = h.movie.movie(:,:,n);
+    else
+        
+        if ~exist('vers','var')
+            % get MASH-FRET version & reading parameters
+            [vers,is_os,is_sgl] = getSiraDat(fullFname,h_fig);
+            if isempty(vers)
+                return;
+            end
+
+            % get precision of pixel values
+            if is_sgl
+                prec = 'single';
+            else
+                prec = 'uint16';
+            end
+        end
+        
+        if ~exist('f','var')
+            f = fopen(fullFname,'r');
+            if f<0
+                ok = 0;
+                disp('Invalid file identifier.');
+                return;
+            end
+        end
+
+        fseek(f,fCurs,-1);
+        fseek(f,((pixelX*pixelY+1)*2*(1+double(is_sgl))*(n-1)),'cof');
+        frameCur = fread(f,(pixelX*pixelY+double(is_os)),[prec '=>single']);
+        frameCur = reshape(frameCur(1:end-double(is_os)),[pixelY,pixelX]) - ...
+            single(is_os)*frameCur(end);
+    end
+end
+
+if exist('f','var')
+    fclose(f);
+end
+
+data = struct('cycleTime', cycleTime, ...
+              'pixelY', pixelY, ...
+              'pixelX', pixelX, ...
+              'frameLen', frameLen, ...
+              'fCurs', fCurs, ...
+              'frameCur', frameCur, ...
+              'movie', movie);
+
+
+function [vers,is_sgl,is_os] = getSiraDat(fullFname,h_fig)
+
+vers = [];
+is_sgl = false;
+is_os = false;
+
+% check if the movie can be read and is from SIRA
 f = fopen(fullFname, 'r');
-% Get SIRA version
+if f < 0
+    if ~isempty(h_fig)
+        updateActPan('Could not open the file, no file loaded.',h_fig,...
+            'error');
+    else
+        disp('Error: could not open the file, no file loaded.');
+    end
+    fclose(f);
+    return;
+end
+
 tline = fgetl(f);
-is_os = false; % intensity offset for each frame
-is_sgl = false; % data written in single precision
+if isempty(strfind(tline,'SIRA exported binary graphic')) && ...
+    isempty(strfind(tline,'MASH smFRET exported binary graphic')) && ...
+    isempty(strfind(tline,'MASH-FRET exported binary graphic'))
+    if ~isempty(h_fig)
+        updateActPan(['Not a SIRA exported graphic file, no file ',...
+            loaded.'], h_fig, 'error');
+    else
+        disp('Not a SIRA exported graphic file, no file loaded.');
+    end
+    fclose(f);
+    return;
+end
+
 if isempty(tline)
     vers = 'older than 1.001';
 else
-    vers = tline(length(['MASH-FRET exported binary graphic ' ...
-        'Version: ']):end);
-    if isempty(vers)
+    if ~isempty(strfind(tline,'MASH-FRET exported binary graphic Version'))
+        vers = tline(length(['MASH-FRET exported binary graphic ' ...
+            'Version: ']):end);
+    elseif ~isempty(strfind(tline,['MASH smFRET exported binary graphic ',...
+            'Version']))
         vers = tline(length(['MASH smFRET exported binary graphic ' ...
-        'Version: ']):end);
+            'Version: ']):end);
     end
     if isempty(vers)
         vers = 'older than 1.003.37';
@@ -39,180 +294,4 @@ else
         end
     end
 end
-
-
-if is_sgl
-    prec = 'single';
-else
-    prec = 'uint16';
-end
-
-if isempty(fDat)
-
-    % Get the frame rate
-    cycleTime = fread(f,1,'double');
-
-    % Get movie dimensions
-    pixelX = fread(f,1,prec);
-    pixelY = fread(f,1,prec);
-    frameLen = fread(f,1,prec);
-    
-    if ~isempty(h_fig) && (strcmp(n,'all') || n==1)
-        updateActPan(['MASH smFRET Graphic File Format(*.sira)\n' ...
-                      'MASH smFRET Version: ' vers '\n' ...
-                      'Cycle time = ' num2str(cycleTime) 's-1\n' ...
-                      'Movie dimensions = ' num2str(pixelX) 'x' ...
-                      num2str(pixelY) ' pixels\n' ...
-                      'Movie length = ' num2str(frameLen) ' frames'], ...
-                      h_fig);
-    elseif (strcmp(n,'all') || n==1)
-        disp(sprintf(['MASH smFRET Graphic File Format(*.sira)\n' ...
-                      'MASH smFRET Version: ' vers '\n' ...
-                      'Cycle time = ' num2str(cycleTime) 's-1\n' ...
-                      'Movie dimensions = ' num2str(pixelX) 'x' ...
-                      num2str(pixelY) ' pixels\n' ...
-                      'Movie length = ' num2str(frameLen) ' frames']));
-    end
-
-    % Get cursor position where graphic data begin
-    fCurs = ftell(f);
-
-    % Get requested graphic data
-    fseek(f, fCurs, -1);
-    
-    if strcmp(n, 'all')
-        
-        if ~isempty(h_fig)
-            pleaseWait('start', h_fig);
-        else
-            disp('Please wait ...');
-        end
-
-        % Get image data of each movie frame
-        try
-            if is_os
-                movie = fread(f, frameLen*(1+pixelY*pixelX), ...
-                    [prec '=>single']);
-                id = (pixelY*pixelX+1):(pixelY*pixelX+1):numel(movie);
-                os = single(movie(id));
-                movie(id) = [];
-                movie = reshape(movie, [pixelY pixelX frameLen]);
-                for i = 1:frameLen
-                    movie(:,:,i) = movie(:,:,i) - os(i);
-                end
-            else
-                movie = reshape(fread(f, frameLen*pixelY*pixelX, ...
-                    [prec '=>single']), [pixelY pixelX frameLen]);
-                frameCur = movie(:,:,1);
-                if ~isempty(h_fig)
-                    pleaseWait('close', h_fig);
-                end
-            end
-
-        catch exception
-            if (strcmp(exception.identifier, 'MATLAB:nomem'))
-                ok = 0;
-                fclose(f);
-                if ~isempty(h_fig)
-                    pleaseWait('close', h_fig);
-                    updateActPan('Out of memory, no file loaded.', ...
-                        h_fig, 'error');
-                else
-                    disp('Error: out of memory, no file loaded.');
-                end
-
-                error('MATLAB:nomem', 'Memory too small for file size.');
-
-            else
-                throw(exception);
-            end
-        end
-        
-    else
-        fseek(f, ((pixelX*pixelY+single(is_os))*2*(1+ ...
-            single(is_sgl))*(n-1)),'cof');
-        frameCur = fread(f, (pixelX*pixelY+double(is_os)), [prec ...
-            '=>single']);
-        frameCur = reshape(frameCur(1:end-double(is_os)), ...
-            [pixelY pixelX]) - single(is_os)*frameCur(end);
-        movie = [];
-    end
-    
-    fclose(f);
-    
-else
-    fseek(f, fDat{1}, -1);
-    s = [fDat{2}(2) fDat{2}(1)]; % [y,x]
-    frameLen = fDat{3};
-    
-    if strcmp(n, 'all')
-        if ~isempty(h_fig)
-            pleaseWait('start', h_fig);
-        else
-            disp('Please wait ...');
-        end
-
-        % Get image data of each movie frame
-        try
-            if is_os
-                movie = fread(f, frameLen*(1+prod(s)), [prec '=>single']);
-                os = single(movie((prod(s)+1):(prod(s)+1):end));
-                movie((prod(s)+1):(prod(s)+1):end) = [];
-                movie = reshape(movie,[s(:,1:2) frameLen]);
-                for i = 1:frameLen
-                    movie(:,:,i) = movie(:,:,i) - os(i);
-                end
-            else
-                movie = reshape(fread(f, frameLen*prod(s), [prec ...
-                    '=>single']), [s(:,1:2) frameLen]);
-                frameCur = movie(:,:,1);
-            end
-            if ~isempty(h_fig)
-                pleaseWait('close', h_fig);
-            end
-
-        catch exception
-            if (strcmp(exception.identifier, 'MATLAB:nomem'))
-                ok = 0;
-                fclose(f);
-                if ~isempty(h_fig)
-                    pleaseWait('close', h_fig);
-                    updateActPan('Out of memory, no file loaded.', h_fig);
-                else
-                    disp('Error: out of memory, no file loaded.');
-                end
-
-                error('MATLAB:nomem', 'Memory too small for file size.');
-
-            else
-                throw(exception);
-            end
-        end
-        
-    else
-        fseek(f, ((prod(s)+double(is_os))*2*(1+double(is_sgl))* ...
-            (n-1)),'cof');
-        frameCur = fread(f, (prod(s)+double(is_os)), [prec '=>single']);
-        frameCur = reshape(frameCur(1:end-double(is_os)), s) - ...
-            single(is_os)*frameCur(end);
-        movie = [];
-    end
-    
-    frameLen = fDat{3}; % number total of frames
-    cycleTime = []; % time delay between each frame
-    pixelX = s(2); % Width of the movie
-    pixelY = s(1); % Height of the movie
-    fCurs = fDat{1};
-    
-    fclose(f);
-end
-
-data = struct('cycleTime', cycleTime, ...
-              'pixelY', pixelY, ...
-              'pixelX', pixelX, ...
-              'frameLen', frameLen, ...
-              'fCurs', fCurs, ...
-              'frameCur', frameCur, ...
-              'movie', movie);
-
-
+fclose(f);

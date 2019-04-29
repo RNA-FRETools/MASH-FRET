@@ -3,6 +3,7 @@ function [data,ok] = readPng(fullFname, n, fDat, h_fig)
 % Last update: 20.4.2019 by Mélodie Hadzic
 % >> fix error occuring when loading background image for simulation
 
+% default
 data = [];
 ok = 1;
 

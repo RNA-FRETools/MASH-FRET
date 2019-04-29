@@ -3,11 +3,24 @@ function ok = export2Sira(h_fig, nameMain, pathName)
 %
 % Requires functions: loading_bar, updateActPan, updateBgCorr.
 
+% defaults
+iv = 1;
+isMov = 0;
+isBgCorr = 0;
+
 h = guidata(h_fig);
+
+if isfield(h,'movie') && isfield(h.movie,'movie') && ...
+    ~isempty(h.movie.movie)
+    isMov = 1;
+end
+
+if isfield(h.param.movPr, 'bgCorr') && ~isempty(h.param.movPr.bgCorr)
+    isBgCorr = 1;
+end
 
 startFrame = h.param.movPr.mov_start;
 lastFrame = h.param.movPr.mov_end;
-iv = 1;
 L = numel(startFrame:iv:lastFrame);
 
 ok = 1;
@@ -37,15 +50,21 @@ else
         % ------------------------------------------------------------
 
         for i = startFrame:iv:lastFrame
-            [data ok] = getFrames([h.movie.path h.movie.file], i, ...
-                {h.movie.speCursor [h.movie.pixelX h.movie.pixelY] ...
-                h.movie.framesTot}, h_fig);
-            if ~ok
-                return
+            
+            if isMov
+                img = h.movie.movie(:,:,i);
+            else
+                [data,ok] = getFrames([h.movie.path h.movie.file], i, ...
+                    {h.movie.speCursor [h.movie.pixelX h.movie.pixelY] ...
+                    h.movie.framesTot}, h_fig);
+                if ~ok
+                    return
+                end
+                img = data.frameCur;
             end
-            img = data.frameCur;
+            
             % Apply background corrections if exist
-            if isfield(h.param.movPr, 'bgCorr')
+            if isBgCorr
                 avBg = h.param.movPr.movBg_one;
                 if ~avBg
                     img = updateBgCorr(img, h_fig);
@@ -55,13 +74,16 @@ else
                     end
                 end
             end
+            
             min_img = min(min(img));
             if min_img >= 0
                 min_img = 0;
             end
+            
             img = single(img+abs(min_img));
             imgBin = [reshape(img, 1, h.movie.pixelY*h.movie.pixelX) ...
                 single(abs(min_img))];
+            
             fwrite(f, imgBin, 'single');
             % loading bar updating-----------------------------------------
             if ~intrupt

@@ -11,36 +11,50 @@ function ok = loadMovFile(n, txt, setMovParam, h_fig)
 ok = 0;
 
 if ~iscell(txt)
-    [fname, pname, o] = uigetfile({ ...
-        '*.sif;*.sira;*.tif;*.gif;*.png;*.spe;*.pma;*.crd;*.spots;*.coord;*.avi', ...
-        ['Supported Graphic File Format' ...
-        '(*.sif,*.sira,*.tif,*.gif,*.png,*.spe,*.pma,*.crd,*.spots,*.coord,*.avi)']; ...
-        '*.*', 'All File Format(*.*)'}, txt);
+    [fname,pname,o] = uigetfile({cat(2,'*.sif;*.sira;*.tif;*.gif;*.png;',...
+        '*.spe;*.pma;*.crd;*.spots;*.coord;*.avi'), ...
+        ['Supported Graphic File Format',cat(2,'(*.sif,*.sira,*.tif,',...
+        '*.gif,*.png,*.spe,*.pma,*.crd,*.spots,*.coord,*.avi)')]; ...
+        '*.*','All File Format(*.*)'},txt);
 else
     pname = txt{1}; % ex: C:\Users\MASH\Documents\MATLAB\
     fname = txt{2}; % ex: movie.sif
 end
 
 if ~isempty(fname) && sum(fname)
-    cd(pname);
-    
-    h = guidata(h_fig);
-    if isfield(h, 'axes_movie')
-        set(h.axes_movie, 'NextPlot', 'replace');
-    end
     
     updateActPan(['Loading file ' fname ' from path :\n', pname], h_fig);
+    cd(pname);
     
-    % remove previous movie data
-    if isfield(h, 'movie')
-        h = rmfield(h, 'movie');
+    % prepare video axes for refresh
+    h = guidata(h_fig);
+    if isfield(h, 'axes_movie')
+        set(h.axes_movie,'NextPlot','replace');
     end
+
+    % remove previous video data
+    h.movie.movie = [];
     
-    [data ok] = getFrames([pname fname], n, [], h_fig);
+    % reset video processing parameters
+    h.param.movPr.SFres = {};
+    h.param.movPr.coordTrsf = [];
+    h.param.movPr.coordTrsf_file = [];
+    h.param.movPr.coordItg = [];
+    h.param.movPr.coordItg_file = [];
+    h.param.movPr.itg_movFullPth = [];
+    h.param.movPr.itg_coordFullPth = [];
     
+    % save changes
+    guidata(h_fig,h);
+    
+    % get video data
+    [data,ok] = getFrames([pname fname], n, [], h_fig);
     if ~ok
         return;
     end
+    
+    % recover possibly refilled video data if previously allocated
+    h = guidata(h_fig);
     
     [o, o, fExt] = fileparts(fname);
     switch fExt
@@ -72,16 +86,8 @@ if ~isempty(fname) && sum(fname)
             updateActPan('File format not supported.', h_fig, 'error');
             return;
     end
-    
-    % Store useful movie data in hanldes.movie variable
-    h.param.movPr.SFres = {};
-    h.param.movPr.coordTrsf = [];
-    h.param.movPr.coordTrsf_file = [];
-    h.param.movPr.coordItg = [];
-    h.param.movPr.coordItg_file = [];
-    h.param.movPr.itg_movFullPth = [];
-    h.param.movPr.itg_coordFullPth = [];
-    
+
+    % store movie parameters
     h.movie.format = fExt;
     h.movie.file = fname;
     h.movie.path = pname;
@@ -93,7 +99,11 @@ if ~isempty(fname) && sum(fname)
     end
     h.movie.cyctime = data.cycleTime;
     h.param.movPr.rate = data.cycleTime;
-    h.movie.movie = data.movie;
+    
+    if ~(isfield(h.movie,'movie') && ~isempty(h.movie.movie))
+        h.movie.movie = data.movie;
+    end
+    
     h.movie.frameCur = data.frameCur; % image data of input (displayed) frame
     h.movie.pixelX = data.pixelX; % width of the movie
     h.movie.pixelY = data.pixelY; % height of the movie
@@ -102,18 +112,16 @@ if ~isempty(fname) && sum(fname)
     sub_w = floor(h.movie.pixelX/n_channel);
     h.movie.split = (1:n_channel-1)*sub_w;
     
+    % store video processing parameters
     h.param.movPr.mov_start = 1;
     h.param.movPr.mov_end = h.movie.framesTot;
     h.param.movPr.ave_start = 1;
     h.param.movPr.ave_stop = h.movie.framesTot;
-    
-    h.param.movPr.SFres = {};
-        
+
     guidata(h_fig, h);
     
+    % update VP fields if specified as such
     if setMovParam
-        % If the movie is loaded from the Movie_analysis window, fields are set
-        % to their correct value
         txt_split = [];
         for i = 1:size(h.movie.split,2)
             txt_split = [txt_split ' ' num2str(h.movie.split(i))];
@@ -139,6 +147,8 @@ if ~isempty(fname) && sum(fname)
                 'Min', 1, 'Max', h.movie.framesTot, 'Value', 1, ...
                 'Visible', 'on');
         end
+        
+        % update VP axes
         updateImgAxes(h_fig);
         
     end
