@@ -17,9 +17,16 @@ newPnt = newPnt(1,[1 2]);
 
 pleaseWait('start', h_fig);
 
-fDat = {[h.movie.path h.movie.file], h.movie.speCursor, ...
-    [h.movie.pixelY h.movie.pixelX], h.movie.framesTot};
-[o,data] = create_trace(newPnt, aDim, nPix, fDat);
+fDat{1} = [h.movie.path h.movie.file];
+fDat{2}{1} = h.movie.speCursor;
+if isfield(h, 'movie') && ~isempty(h.movie.movie)
+    fDat{2}{2} = h.movie.movie;
+else
+    fDat{2}{2} = [];
+end
+fDat{3} = [h.movie.pixelY h.movie.pixelX];
+fDat{4} = h.movie.framesTot;
+[o,data] = create_trace(newPnt,aDim,nPix,fDat);
 
 str_ave = [];
 str_sec = [];

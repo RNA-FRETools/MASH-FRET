@@ -35,14 +35,15 @@ if ~isempty(p.proj)
             coord = p.proj{proj}.coord(mol,(2*chan-1):2*chan);
             aDim = p.proj{proj}.pix_intgr(1);
             nPix = p.proj{proj}.pix_intgr(2);
-            mov_file = p.proj{proj}.movie_file;
-            fCurs = p.proj{proj}.movie_dat{1};
-            res_x = p.proj{proj}.movie_dat{2}(1);
-            res_y = p.proj{proj}.movie_dat{2}(2);
             nFrames = p.proj{proj}.movie_dat{3};
+            fDat{1} = p.proj{proj}.movie_file;
+            fDat{2}{1} = p.proj{proj}.movie_dat{1};
+            fDat{2}{2} = [];
+            fDat{3} = [p.proj{proj}.movie_dat{2}(1) ...
+                p.proj{proj}.movie_dat{2}(2)];
+            fDat{4} = nFrames;
 
-            [coord,trace] = create_trace(coord, aDim, nPix, ...
-                {mov_file, fCurs, [res_y res_x], nFrames});
+            [coord,trace] = create_trace(coord,aDim,nPix,fDat);
 
             nFrames = size(p.proj{proj}.intensities,1);
             nExc = size(p.proj{proj}.intensities,3);

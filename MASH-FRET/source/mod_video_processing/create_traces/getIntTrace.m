@@ -8,179 +8,176 @@ function trace = getIntTrace(lim, aDim, nPix, fDat)
 
 trace = [];
 movFile = fDat{1};
+fCurs = fDat{2}{1};
+vid = fDat{2}{2};
+s = fDat{3};
+zTot = fDat{4};
+
+nCoord = numel(lim.Xinf);
+isMov = ~isempty(vid);
 
 [o,o,fFormat] = fileparts(movFile);
 
 switch fFormat
     
     case '.sif'
-        s = fDat{3}; %[y x]
-        zTot = fDat{4};
-        nCoord = numel(lim.Xinf);
-
-        if numel(fDat{2})>1
-            trace_vect = zeros(zTot,nCoord,aDim^2);
-            for c = 1:nCoord
-                kk = 1;
-                y0 = lim.Yinf(c)-1;
-                x0 = lim.Xinf(c)-1;
-                for yy = 1:aDim
-                    for xx = 1:aDim
-                        trace_vect(:,c,kk) = ...
-                            permute(fDat{2}(x0+xx,y0+yy,:),[3 2 1]);
-                        kk = kk + 1;
-                    end
-                end
-            end
-        else
-            fCurs = fDat{2};
-            f = fopen(movFile, 'r');
-            if f < 0 
-                errordlg('Could not open the file.');
+        if isMov
+            if memAlloc(yTot*nCoord*aDim^2*4);
+                trace = tracesFromMatrix(vid,zTot,lim,aDim,nPix);
                 return;
-            else
-                tline = fgetl(f);
-                if ~isequal(tline,'Andor Technology Multi-Channel File')
-                    fclose(f);
-                    errordlg('Not an Andor SIF image file.');
-                end
-
-                nCoord = numel(lim.Xinf);
-                prev = 0;
-                trace_vect = zeros(zTot,nCoord,aDim^2);
-                for zz = 1:zTot
-                    for c = 1:nCoord
-                        kk = 1;
-                        vect = zeros(1,1,aDim^2);
-
-                        % Move cursor from (1,1,1) to (Yinf,Xinf-1,zz)
-                        fseek(f, fCurs + 4*((zz-1)*prod(s) + ...
-                            s(2)*(lim.Yinf(c)-1) + (lim.Xinf(c)-1)), -1);
-
-                        for yy = 1:aDim
-                            if yy ~= 1
-                                % Move cursor to coord 
-                                % ((Xinf-1),(Yinf+yy),zz)
-                                fseek(f, 4*(s(2)-aDim), 0);
-                            end
-                            for xx = 1:aDim
-                                % Read (move one step forward) and store 
-                                % one intensity (4bytes)
-                                I = fread(f, 1, '*single');
-                                vect(1,1,kk) = I;
-                                kk = kk + 1;
-                            end
-                        end
-                        trace_vect(zz,c,1:numel(vect)) = vect;
-                    end
-
-                    if round(100*zz/zTot) > prev
-                        prev = round(100*zz/zTot);
-                        disp(['Generating intensity-time traces: ' ...
-                            num2str(prev) '%']);
-                    end
-                end
-                fclose(f);
             end
         end
-        trace = getNpixFromVect(trace_vect, nPix);
-        
-    case '.sira'
         f = fopen(movFile, 'r');
         if f < 0 
             errordlg('Could not open the file.');
-        else
-            tline = fgetl(f);
-            if isempty(strfind(tline, 'SIRA exported binary graphic'))
-                if isempty(strfind(tline, ...
-                        'MASH smFRET exported binary graphic'))
-                if isempty(strfind(tline, ...
-                        'MASH-FRET exported binary graphic'))
-                    fclose(f);
-                    errordlg('Not a SIRA graphic file.');
-                    return;
+            return;
+        end
+        tline = fgetl(f);
+        if ~isequal(tline,'Andor Technology Multi-Channel File')
+            fclose(f);
+            errordlg('Not an Andor SIF image file.');
+        end
+
+        nCoord = numel(lim.Xinf);
+        prev = 0;
+        trace_vect = zeros(zTot,nCoord,aDim^2);
+        for zz = 1:zTot
+            for c = 1:nCoord
+                kk = 1;
+                vect = zeros(1,1,aDim^2);
+
+                % Move cursor from (1,1,1) to (Yinf,Xinf-1,zz)
+                fseek(f, fCurs + 4*((zz-1)*prod(s) + ...
+                    s(2)*(lim.Yinf(c)-1) + (lim.Xinf(c)-1)), -1);
+
+                for yy = 1:aDim
+                    if yy ~= 1
+                        % Move cursor to coord 
+                        % ((Xinf-1),(Yinf+yy),zz)
+                        fseek(f, 4*(s(2)-aDim), 0);
+                    end
+                    for xx = 1:aDim
+                        % Read (move one step forward) and store 
+                        % one intensity (4bytes)
+                        I = fread(f, 1, '*single');
+                        vect(1,1,kk) = I;
+                        kk = kk + 1;
+                    end
                 end
-                end
+                trace_vect(zz,c,1:numel(vect)) = vect;
             end
-            is_os = false; % intensity offset for each frame
-            is_sgl = false; % data written in single precision
-            if ~isempty(tline)
-                vers = tline(length(['MASH-FRET exported binary graphic ' ...
-                    'Version: ']):end);
-                if isempty(vers)
-                vers = tline(length(['MASH smFRET exported binary graphic ' ...
-                    'Version: ']):end);
-                end
-                if str2num(vers(1:end-3)) == 1.003
-                    subvers = getValueFromStr('1.003.', vers);
-                    if subvers>=39
-                        is_os = true;
-                    end
-                    if subvers>=41
-                        is_sgl = true;
-                    end
-                else
-                %elseif str2num(vers) > 1.003
+
+            if round(100*zz/zTot) > prev
+                prev = round(100*zz/zTot);
+                disp(['Generating intensity-time traces: ' ...
+                    num2str(prev) '%']);
+            end
+        end
+        fclose(f);
+        
+        trace = getNpixFromVect(trace_vect, nPix);
+        return;
+        
+    case '.sira'
+
+        if isMov
+            if memAlloc(zTot*nCoord*aDim^2*4);
+                trace = tracesFromMatrix(vid,zTot,lim,aDim,nPix);
+                return;
+            end
+        end
+        
+        f = fopen(movFile, 'r');
+        if f < 0 
+            errordlg('Could not open the file.');
+            return;
+        end
+        tline = fgetl(f);
+        if isempty(strfind(tline, 'SIRA exported binary graphic'))
+            if isempty(strfind(tline, ...
+                    'MASH smFRET exported binary graphic'))
+            if isempty(strfind(tline, ...
+                    'MASH-FRET exported binary graphic'))
+                fclose(f);
+                errordlg('Not a SIRA graphic file.');
+                return;
+            end
+            end
+        end
+        is_os = false; % intensity offset for each frame
+        is_sgl = false; % data written in single precision
+        if ~isempty(tline)
+            vers = tline(length(['MASH-FRET exported binary graphic ' ...
+                'Version: ']):end);
+            if isempty(vers)
+            vers = tline(length(['MASH smFRET exported binary graphic ' ...
+                'Version: ']):end);
+            end
+            if str2num(vers(1:end-3)) == 1.003
+                subvers = getValueFromStr('1.003.', vers);
+                if subvers>=39
                     is_os = true;
+                end
+                if subvers>=41
                     is_sgl = true;
                 end
-            end
-            if is_sgl
-                prec = 'single';
             else
-                prec = 'uint16';
+            %elseif str2num(vers) > 1.003
+                is_os = true;
+                is_sgl = true;
             end
-            
-            fCurs = fDat{2};
-            s = fDat{3}; %[y x]
-            zTot = fDat{4};
-            nCoord = numel(lim.Xinf);
-            prev = 0;
-            trace_vect = zeros(zTot,nCoord,aDim^2);
-            for zz = 1:zTot
-                for c = 1:nCoord
-                    kk = 1;
-                    vect = zeros(1,1,aDim^2);
-
-                    % Move cursor from (1,1,1) to ((Yinf-1),Xinf,zz)
-                    fseek(f,fCurs+2*(1+double(is_sgl))*((zz-1)* ...
-                        (prod(s)+double(is_os))+s(1)*(lim.Xinf(c)-1)+ ...
-                        (lim.Yinf(c)-1)),-1);
-
-                    for xx = 1:aDim
-                        if xx ~= 1
-                            % Move cursor to coord ((Yinf-1),(Xinf+xx),zz)
-                            fseek(f,2*(1+double(is_sgl))*(s(1)-aDim),0);
-                        end
-                        for yy = 1:aDim
-                            % Read (move one step forward) and store one 
-                            % intensity (2bytes)
-                            I = fread(f, 1, prec);
-                            vect(1,1,kk) = I;
-                            kk = kk + 1;
-                        end
-                    end
-                    trace_vect(zz,c,1:numel(vect)) = vect;
-
-                    if round(100*zz/zTot) > prev
-                        prev = round(100*zz/zTot);
-                        disp(['Generating intensity-time traces: ' ...
-                            num2str(prev) '%']);
-                    end
-                end
-                if is_os
-                    % Move cursor from (1,1,1) to (end,end,zz)
-                    fseek(f, fCurs + 2*(1+double(is_sgl))*((zz-1)* ...
-                        (prod(s)+is_os)+prod(s)),-1);
-                    os = fread(f, 1, prec);
-                    trace_vect(zz,:,:) = trace_vect(zz,:,:)-os;
-                end
-            end
-            
-            trace = getNpixFromVect(trace_vect, nPix);
-            
-            fclose(f);
         end
+        if is_sgl
+            prec = 'single';
+        else
+            prec = 'uint16';
+        end
+
+        prev = 0;
+        trace_vect = zeros(zTot,nCoord,aDim^2);
+        for zz = 1:zTot
+            for c = 1:nCoord
+                kk = 1;
+                vect = zeros(1,1,aDim^2);
+
+                % Move cursor from (1,1,1) to ((Yinf-1),Xinf,zz)
+                fseek(f,fCurs+2*(1+double(is_sgl))*((zz-1)* ...
+                    (prod(s)+double(is_os))+s(1)*(lim.Xinf(c)-1)+ ...
+                    (lim.Yinf(c)-1)),-1);
+
+                for xx = 1:aDim
+                    if xx ~= 1
+                        % Move cursor to coord ((Yinf-1),(Xinf+xx),zz)
+                        fseek(f,2*(1+double(is_sgl))*(s(1)-aDim),0);
+                    end
+                    for yy = 1:aDim
+                        % Read (move one step forward) and store one 
+                        % intensity (2bytes)
+                        I = fread(f,1,prec);
+                        vect(1,1,kk) = I;
+                        kk = kk + 1;
+                    end
+                end
+                trace_vect(zz,c,1:numel(vect)) = vect;
+
+                if round(100*zz/zTot) > prev
+                    prev = round(100*zz/zTot);
+                    disp(['Generating intensity-time traces: ' ...
+                        num2str(prev) '%']);
+                end
+            end
+            if is_os
+                % Move cursor from (1,1,1) to (end,end,zz)
+                fseek(f, fCurs + 2*(1+double(is_sgl))*((zz-1)* ...
+                    (prod(s)+is_os)+prod(s)),-1);
+                os = fread(f, 1, prec);
+                trace_vect(zz,:,:) = trace_vect(zz,:,:)-os;
+            end
+        end
+        fclose(f);
+
+        trace = getNpixFromVect(trace_vect, nPix);
+        return;
         
     case '.tif'
         imgInfo = imfinfo(movFile);
@@ -204,6 +201,7 @@ switch fFormat
         end
         
         trace = getNpixFromVect(trace_vect, nPix);
+        return;
         
     case '.gif'
         imgInfo = imfinfo(movFile);
@@ -227,6 +225,7 @@ switch fFormat
         end
         
         trace = getNpixFromVect(trace_vect, nPix);
+        return;
         
     case '.png'
         
@@ -255,17 +254,13 @@ switch fFormat
         end
         
         trace = getNpixFromVect(trace_vect, nPix);
+        return;
         
     case '.pma'
         f = fopen(movFile, 'r');
         if f < 0 
             errordlg('Could not open the file.');
         else
-            
-            fCurs = fDat{2};
-            s = fDat{3};
-            zTot = fDat{4};
-            nCoord = numel(lim.Xinf);
             prev = 0;
             trace_vect = zeros(zTot,nCoord,aDim^2);
             for zz = 1:zTot;
@@ -303,6 +298,34 @@ switch fFormat
         end
         
         trace = getNpixFromVect(trace_vect, nPix);
+        return;
+end
+
+
+function trace = tracesFromMatrix(matrix,zTot,lim,aDim,nPix)
+nCoord = numel(lim.Xinf);
+aDim2 = aDim^2;
+trace = zeros(zTot,nCoord);
+prev = 0;
+for c = 1:nCoord
+    
+    if round(100*c/nCoord)>prev
+        prev = round(100*c/nCoord);
+        disp(cat(2,'Generating intensity-time traces: ',num2str(prev),...
+            '%'));
+    end
+    
+    y0 = lim.Yinf(c);
+    x0 = lim.Xinf(c);
+    
+    % get average sub-image
+    id_x = x0:(x0+aDim-1);
+    id_y = y0:(y0+aDim-1);
+    trace_vect = reshape(matrix(id_y,id_x,:),[aDim2,zTot])';
+    [o,id] = sort(mean(trace_vect,1),2,'descend');
+
+    trace(:,c) = sum(trace_vect(:,id(1:nPix)),2);
+
 end
 
 
@@ -321,4 +344,5 @@ id_pix = id_pix(1:nPix,:);
 for m = 1:nMol
     trace(:,m) = sum(trace_vect(:,m,id_pix(:,m)'),3);
 end
+
 

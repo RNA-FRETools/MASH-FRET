@@ -35,7 +35,7 @@ if ~isempty(p.proj)
                     nFrames = p.proj{proj}.movie_dat{3};
 
                     [o,trace] = create_trace(new_coord,q.itgArea,nPix, ...
-                        {mov_file,fCurs,[res_y,res_x],nFrames});
+                        {mov_file,{fCurs []},[res_y,res_x],nFrames});
                     nFrames = size(p.proj{proj}.intensities,1);
                     nExc = p.proj{proj}.nb_excitations;
                     I = nan(nFrames,1,nExc);

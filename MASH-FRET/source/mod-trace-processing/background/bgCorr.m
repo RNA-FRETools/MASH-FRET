@@ -92,9 +92,11 @@ if ~isBgCorr
                     autoDark = prm(6);
                     res_y = p.proj{proj}.movie_dim(2);
                     res_x = p.proj{proj}.movie_dim(1);
-                    fDat = [p.proj{proj}.movie_file ...
-                        p.proj{proj}.movie_dat(1) [res_y res_x] ...
-                        p.proj{proj}.movie_dat(3:end)];
+                    fDat{1} = p.proj{proj}.movie_file;
+                    fDat{2}{1} = p.proj{proj}.movie_dat{1};
+                    fDat{2}{2} = [];
+                    fDat{3} = [res_y res_x];
+                    fDat{4} = p.proj{proj}.movie_dat{end};
                     if autoDark
                         coord_dark = getDarkCoord(l,mol,c,p,sub_w);
                     else
@@ -108,12 +110,12 @@ if ~isBgCorr
                         coord_dark(coord_dark(:,2)>=max_y)=max_y-1;
                     end
                     p.proj{proj}.prm{mol}{3}{3}{l,c}(6,4:5) = coord_dark;
-                    [o I_bg] = create_trace(coord_dark,aDim,nPix,fDat);
+                    [o,I_bg] = create_trace(coord_dark,aDim,nPix,fDat);
                     I_bg = slideAve(I_bg(l:size(I,3):end,:), prm(1));
                     bg = I_bg(1:size(I,1));
                     
                 case 7 % Median value
-                    [bg o] = determine_bg(15, img, prm(1));
+                    [bg,o] = determine_bg(15, img, prm(1));
                     bg = nPix*bg;
             end
 
