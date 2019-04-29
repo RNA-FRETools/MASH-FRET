@@ -47,7 +47,7 @@ gen{1}(1) = 1; % excitation
 gen{1}(2) = 0; % nothing (ex-subimage window size)
 gen{1}(3) = 0; % brightness
 gen{1}(4) = 0; % contrast
-gen{1}(5) = 0; % refocus
+gen{1}(5) = 0; % mothing (ex-refocus)
 
 % Trace calculation and plot
 if nExc > 1 % excitation to plot

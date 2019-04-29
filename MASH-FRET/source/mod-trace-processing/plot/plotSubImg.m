@@ -1,4 +1,9 @@
 function p = plotSubImg(mol, p, h_axes)
+% returns dark coordinates if appropriate background correction method is
+% selected
+%
+% Last update by MH, 29.4.2019: move molecule position recentering to
+% separate function "pushbutton_refocus_Callback"
 
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -16,7 +21,6 @@ if ~isempty(p.proj)
         q.itgArea = p.proj{proj}.pix_intgr(1);
         
         p_bg = p.proj{proj}.curr{mol}{3};
-        refocus = p.proj{proj}.fix{1}(5);
 
         for c = 1:nChan
             q.lim.x = [lim_x(c) lim_x(c+1)];
@@ -25,30 +29,6 @@ if ~isempty(p.proj)
             q.dimImg = p_bg{3}{exc,c}(meth,2);
             q.dimImg(q.dimImg<=0) = 20;
             coord = p.proj{proj}.coord(:,2*c-1:2*c);
-            if refocus
-                new_coord = recenterSpot(img,coord(mol,:),q.itgArea,q.lim);
-                if ~isequal(new_coord, coord(mol,:))
-                    p.proj{proj}.coord(mol,(2*c-1):2*c) = new_coord;
-                    nPix = p.proj{proj}.pix_intgr(2);
-                    mov_file = p.proj{proj}.movie_file;
-                    fCurs = p.proj{proj}.movie_dat{1};
-                    nFrames = p.proj{proj}.movie_dat{3};
-
-                    [o,trace] = create_trace(new_coord,q.itgArea,nPix, ...
-                        {mov_file,{fCurs []},[res_y,res_x],nFrames});
-                    nFrames = size(p.proj{proj}.intensities,1);
-                    nExc = p.proj{proj}.nb_excitations;
-                    I = nan(nFrames,1,nExc);
-                    for i = 1:nExc
-                        I(:,1,i) = trace(i:nExc:nFrames*nExc,:);
-                    end
-                    p.proj{proj}.coord(mol,(2*c-1):2*c) = new_coord;
-                    p.proj{proj}.intensities(:,((mol-1)*nChan+c),:) = I;
-                    p.proj{proj}.intensities_bgCorr(:, ...
-                        ((mol-1)*nChan+c),:) = NaN;
-                end
-                coord(mol,:) = new_coord;
-            end
             
             if ~isempty(h_axes)
                 plotChanCoord(h_axes(c),mol,coord, q);

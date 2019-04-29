@@ -4,7 +4,7 @@ p = h.param.ttPr.proj;
 if ~isempty(p)
     proj = h.param.ttPr.curr_proj;
     mol = h.param.ttPr.curr_mol(proj);
-    refocus = p{proj}.fix{1}(5);
+%     refocus = p{proj}.fix{1}(5);
     nExc = p{proj}.nb_excitations;
     nChan = p{proj}.nb_channel;
     coord = p{proj}.coord;
@@ -29,7 +29,7 @@ if ~isempty(p)
         meth = p{proj}.prm{mol}{3}{2}(l,c);
         subdim = p{proj}.prm{mol}{3}{3}{l,c}(meth,2);
         set(h.popupmenu_subImg_exc, 'Value', p_panel(1));
-        set(h.checkbox_refocus, 'Value', refocus);
+%         set(h.checkbox_refocus, 'Value', refocus);
         set(h.edit_subImg_dim, 'String', num2str(subdim), ...
             'BackgroundColor', [1 1 1]);
         
