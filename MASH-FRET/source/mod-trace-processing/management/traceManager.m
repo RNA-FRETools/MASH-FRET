@@ -3,8 +3,8 @@
 % Enables trace selection upon visual inspection or defined criteria 
 % "h_fig" >> 
 
-% Created the ??th of ???? 201? by Mélodie C.A.S. Hadzic
-% Last update: the 5rd of January 2018 by Richard Börner
+% Created the ??th of ???? 201? by MÃ©lodie C.A.S. Hadzic
+% Last update: the 5rd of January 2018 by Richard BÃ¶rner
 % >> include FRET-S-Histogram
 % >> include inverse selection button
 % >> restructured dat2.hist, dat2.iv and dat1.lim
@@ -58,6 +58,29 @@ end
 end
 
 function openMngrTool(h_fig)
+
+%% Last update by MH, 24.4.2019
+% >> add toolbar and empty tools "Auto sorting" and "View of video"
+% >> rename "Overview" panel in "Molecule selection"
+%
+% update: by FS, 24.4.2018
+% >> add debugging mode where all other windows are not deactivated
+% >> add edit box to define a molecule tag
+% >> add popup menu to select molecule tag
+% >> add popup menu to select molecule tag
+%
+% update: by RB, 5.1.2018
+% >> new pushbutton to inverse the selection of individual molecules
+% >> add "to do" section: include y-axes control for FRET-S-Histogram
+%
+% update: by RB, 3.1.2018
+% >> adapt width of popupmenu for FRET-S-Histogram 
+%
+% update: by RB, 15.12.2017
+% >> update popupmenu_axes1 and popupmenu_axes2 string
+%
+%%
+
     
     h = guidata(h_fig);
     p = h.param.ttPr;
@@ -83,14 +106,20 @@ function openMngrTool(h_fig)
     mg_win = 0;
     mg_ttl = 10;
     fntS = 10.6666666;
+    fntS_big = 12;
     h_edit = 20; w_edit = 40;
-    h_but = 22; w_but = 45;
+
+    w_pop = 120; % RB 2018-01-03: adapt width of popupmenu for FRET-S-Histogram 
+    h_but = 20; w_but = (w_pop-mg)/2;
+    h_but_big = 30; w_but_big = 120;
+
     h_txt = 14;
     w_pan = wFig - 2*mg;
-    w_pop = 120; % RB 2018-01-03: adapt width of popupmenu for FRET-S-Histogram 
 
     h_pan_all = mg_ttl + 3*mg + mg_big + 2*h_edit + 2*h_txt + h_but;
-    h_pan_sgl = hFig - mg_win - 3*mg - h_pan_all;
+    h_toolbar = h_but_big + 2*mg;
+    h_pan_sgl = hFig - mg_win - 4*mg - h_pan_all - h_toolbar;
+    h_pan_tool = h_pan_all + mg + h_pan_sgl;
     
     h_axes_all = h_pan_all - mg_ttl - 2*mg - h_edit;
     w_axes2 = 2*mg + 3*w_edit;
@@ -121,8 +150,36 @@ function openMngrTool(h_fig)
         set(h.tm.figure_traceMngr, 'WindowStyle', 'modal')
     end
     
+    x_0 = mg;
+    y_0 = hFig - mg_win;
+
+    xNext = x_0;
+    yNext = y_0 - mg - h_but_big;
+    
+    h.tm.togglebutton_overview = uicontrol('style','togglebutton','parent',...
+        h.tm.figure_traceMngr,'units','pixels','position',...
+        [xNext,yNext,w_but_big,h_but_big],'string','Overview','fontweight',...
+        'bold','fontunits','pixels','fontsize',fntS_big,'callback',...
+        {@switchPan_TM,h_fig});
+    
+    xNext = xNext + w_but_big + mg;
+    
+    h.tm.togglebutton_autoSorting = uicontrol('style','togglebutton',...
+        'parent',h.tm.figure_traceMngr,'units','pixels','position',...
+        [xNext,yNext,w_but_big,h_but_big],'string','Auto sorting',...
+        'fontweight','bold','fontunits','pixels','fontsize',fntS_big,...
+        'callback',{@switchPan_TM,h_fig});
+    
+    xNext = xNext + w_but_big + mg;
+    
+    h.tm.togglebutton_videoView = uicontrol('style','togglebutton','parent',...
+        h.tm.figure_traceMngr,'units','pixels','position',...
+        [xNext,yNext,w_but_big,h_but_big],'string','View on video',...
+        'fontweight','bold','fontunits','pixels','fontsize',fntS_big,...
+        'callback',{@switchPan_TM,h_fig});
+    
     xNext = mg;
-    yNext = hFig - mg_win - mg - h_pan_all;
+    yNext = yNext - mg - h_pan_all;
     
     h.tm.uipanel_overall = uipanel('Parent', h.tm.figure_traceMngr, ...
         'Units', 'pixels', 'Position', [xNext yNext w_pan h_pan_all], ...
@@ -132,7 +189,19 @@ function openMngrTool(h_fig)
     
     h.tm.uipanel_overview = uipanel('Parent', h.tm.figure_traceMngr, ...
         'Units', 'pixels', 'Position', [xNext yNext w_pan h_pan_sgl], ...
-        'Title', 'Overview', 'FontUnits', 'pixels', 'FontSize', fntS);
+        'Title','Molecule selection','FontUnits','pixels','FontSize',fntS);
+    
+    yNext = y_0 - mg - h_but_big - mg - h_pan_tool;
+    
+    h.tm.uipanel_autoSorting = uipanel('Parent', h.tm.figure_traceMngr, ...
+        'Units', 'pixels', 'Position', [xNext yNext w_pan h_pan_tool], ...
+        'Title', '', 'FontUnits', 'pixels', ...
+        'FontSize', fntS, 'Visible', 'off');
+    
+    h.tm.uipanel_videoView = uipanel('Parent', h.tm.figure_traceMngr, ...
+        'Units', 'pixels', 'Position', [xNext yNext w_pan h_pan_tool], ...
+        'Title', '', 'FontUnits', 'pixels', ...
+        'FontSize', fntS, 'Visible', 'off');
     
     
     %% all results panel
@@ -413,6 +482,46 @@ function openMngrTool(h_fig)
 
     set(h.tm.figure_traceMngr, 'Visible', 'on');
     
+    switchPan_TM(h.tm.togglebutton_overview,[],h_fig);
+    
+end
+
+function switchPan_TM(obj,evd,h_fig)
+% Render the selected tool visible and other tools invisible
+
+%% Created by MH, 24.4.2019
+%
+%%
+
+h = guidata(h_fig);
+
+green = [0.76 0.87 0.78];
+grey = [240/255 240/255 240/255];
+
+set(obj,'Value',1,'BackgroundColor',green);
+
+switch obj
+    case h.tm.togglebutton_overview
+        set([h.tm.togglebutton_autoSorting,h.tm.togglebutton_videoView],...
+            'Value',0,'BackgroundColor',grey);
+        set([h.tm.uipanel_autoSorting,h.tm.uipanel_videoView],'Visible',...
+            'off');
+        set([h.tm.uipanel_overall,h.tm.uipanel_overview], 'Visible', 'on');
+        
+    case h.tm.togglebutton_autoSorting
+        set([h.tm.togglebutton_overview,h.tm.togglebutton_videoView],...
+            'Value',0,'BackgroundColor',grey);
+        set([h.tm.uipanel_overall,h.tm.uipanel_overview,...
+            h.tm.uipanel_videoView],'Visible','off');
+        set(h.tm.uipanel_autoSorting, 'Visible', 'on');
+        
+    case h.tm.togglebutton_videoView
+        set([h.tm.togglebutton_overview,h.tm.togglebutton_autoSorting],...
+            'Value',0,'BackgroundColor',grey);
+        set([h.tm.uipanel_overall,h.tm.uipanel_overview,...
+            h.tm.uipanel_autoSorting],'Visible','off');
+        set(h.tm.uipanel_videoView, 'Visible', 'on');
+end
 end
 
 
@@ -1545,7 +1654,82 @@ function edit_addMolTag_Callback(obj, evd, h_fig)
     end
 end
 
-% added by FS, 24.4.2018
+function popup_molTag_Callback(obj,evd,h_fig)
+% Updates the tag color in corresponding edit field
+
+%% Created by MH, 24.4.2019
+%
+%%
+
+h = guidata(h_fig);
+
+% control empty tag
+tag = get(obj,'value');
+str_pop = get(obj, 'string');
+if strcmp(str_pop{tag},'no default tag')
+    set(h.tm.edit_tagClr,'string','','enable','off');
+    return;
+end
+
+% update edit field background color
+clr_hex = h.tm.molTagClr{tag}(2:end);
+set(h.tm.edit_tagClr,'string',clr_hex,'enable','on','backgroundcolor',...
+    hex2rgb(clr_hex)/255,'foregroundcolor','white');
+
+end
+
+
+function edit_tagClr_Callback(obj,evd,h_fig)
+% Defines the tag color with hexadecimal input
+
+%% Created by MH, 24.4.2019
+%
+%%
+
+h = guidata(h_fig);
+
+% control empty tag
+tag = get(h.tm.popup_molTag,'value');
+str_pop = get(h.tm.popup_molTag, 'string');
+if strcmp(str_pop{tag},'no default tag')
+    return;
+end
+
+% control color value
+clr_str = get(obj,'string');
+if ~ishexclr(clr_str)
+    setContPan(cat(2,'Tag color must be a RGB value in the hexadecimal ',...
+        'format (ex:92B06A)'),'error',h_fig);
+    return;
+end
+
+% save color
+h.tm.molTagClr{tag} = cat(2,'#',clr_str);
+guidata(h_fig,h);
+
+% update edit field background color
+popup_molTag_Callback(h.tm.popup_molTag,[],h_fig);
+
+% update color in default tag popup
+str_lst = colorTagNames(h_fig);
+set(h.tm.popup_molTag,'String',str_lst);
+
+% update color in molecule tag listboxes and popups
+n_mol_disp = str2num(get(h.tm.edit_nbTotMol,'string'));
+update_popups(h_fig,n_mol_disp);
+
+% update color in string of selection popupmenu
+str_pop = getStrPop_select(h_fig);
+curr_slct = get(h.tm.popupmenu_selection,'value');
+if curr_slct>numel(str_pop)
+    curr_slct = numel(str_pop);
+end
+set(h.tm.popupmenu_selection,'value',curr_slct,'string',str_pop);
+
+end
+
+
+
 function pushbutton_deleteMolTag_Callback(obj, evd, h_fig)
     h = guidata(h_fig);
     selectMolTag = get(h.tm.popup_molTag, 'Value');
