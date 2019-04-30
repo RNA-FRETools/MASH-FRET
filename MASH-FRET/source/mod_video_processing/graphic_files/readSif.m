@@ -122,6 +122,13 @@ if isempty(fDat)
 
     else % manage older versions with SIFImport
         
+        % check for correct compilation of mex file for method SIFImport
+        if ~exist('SIFImport')
+            setContPan(cat(2,'SIF files of older versions can not be ',...
+                'imported: problem with mex compilation.'),'error',h_fig);
+            return;
+        end
+        
         [imgDat,dat] = SIFImport(fullFname);
 
         movie = imgDat;
