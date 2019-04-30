@@ -12,6 +12,17 @@ h_fig = h.figure_MASH;
 pMov = h.param.movPr;
 p = pMov.itg_expMolFile;
 
+if ~(isfield(pMov,'itg_movFullPth') && ~isempty(pMov.itg_movFullPth))
+    set(h.edit_movItg,'BackgroundColor',[1 0.75 0.75]);
+    updateActPan('No movie loaded.',h_fig,'error');
+    return;
+end
+if ~(isfield(pMov, 'coordItg') && ~isempty(pMov.coordItg))
+        set(h.edit_itg_coordFile,'BackgroundColor',[1,0.75,0.75]);
+        updateActPan('No coordinates loaded.',h_fig,'error');
+    return;
+end
+
 mg = 10;
 big_mg = 15;
 h_txt = 14;
@@ -208,6 +219,8 @@ h.param.movPr.itg_expMolFile = [ ...
 guidata(h_fig, h);
 
 close(h.figure_itgFileOpt);
+
+TTgenGo(h_fig);
 
 
 function pushbutton_itgFileOpt_cancel_Callback(obj, evd, h_fig)
