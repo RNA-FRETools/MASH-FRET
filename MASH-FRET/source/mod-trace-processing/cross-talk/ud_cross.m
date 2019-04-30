@@ -78,6 +78,8 @@ if ~isempty(p)
 %         set(h.edit_bt, 'String', ...
 %             num2str(p_panel{1}{curr_exc,curr_chan}(curr_btChan)));
         set(h.edit_bt,'String',num2str(p_panel{1}(curr_chan,curr_btChan)));
+    else
+        set(h.edit_bt,'String','0','enable','off');
     end
     
     if nExc > 1
@@ -107,13 +109,7 @@ if ~isempty(p)
         
     else
         % modified by MH, 29.3.2019
-%         set(h.popupmenu_excDirExc,'Visible','off');
-%         set([h.text_dirExc,h.edit_dirExc,h.popupmenu_excDirExc,...
-%              h.edit_dirExc],'Enable','off');
-%         set(h.text_dirExc,'String','DE coefficient:');
-        set([h.text_TP_cross_by,h.popupmenu_corr_exc],'Visible','off');
-        set([h.text_TP_cross_de,h.edit_dirExc],'Enable','off');
-        set(h.edit_dirExc,'String',num2str(0));
+        set(h.edit_dirExc,'Enable','off','String','0');
     end
     
     % modified by MH, 3.4.2019
