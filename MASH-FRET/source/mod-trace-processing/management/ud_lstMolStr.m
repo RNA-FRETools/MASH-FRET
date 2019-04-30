@@ -12,10 +12,30 @@ if ~isempty(p.proj)
             str_lst{m} = num2str(m); 
             
             % color according to molecule tag; added by FS, 24.4.2018
+<<<<<<< HEAD
             if molTag(m) > 1
                 colorlist = {'transparent', '#4298B5', '#DD5F32', '#92B06A', '#ADC4CC', '#E19D29'};
                 str_lst{m} = ['<html><body  bgcolor="' colorlist{molTag(m)} '">' ...
                 '<font color="white">' num2str(m) '</font></body></html>'];
+=======
+            % modified by MH, 24.4.2019
+%             if molTag(m) > 1
+%                 colorlist = {'transparent', '#4298B5', '#DD5F32', '#92B06A', '#ADC4CC', '#E19D29'};
+%                 str_lst{m} = ['<html><body  bgcolor="' colorlist{molTag(m)} '">' ...
+%                 '<font color="white">' num2str(m) '</font></body></html>'];
+            tag = find(molTag(m,:));
+            if ~isempty(tag)
+                str_lst{m} = ['<html><span  bgcolor="' colorlist{tag(1)} ...
+                    '"><font color="white">' num2str(m) ...
+                    '</font></span>'];
+                
+                for t = 2:numel(tag)
+                    str_lst{m} = [str_lst{m},'<span  bgcolor="' ...
+                        colorlist{tag(t)} '">&#160;&#160;</span>'];
+                end
+                    
+                str_lst{m} = [str_lst{m},'</html>'];
+>>>>>>> MASH-code-5
             end
             
         else

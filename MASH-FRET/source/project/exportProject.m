@@ -29,6 +29,12 @@ for i = 1:nExc
     I(:,:,i) = traces(i:nExc:nFrames_min*nExc,:);
 end
 
+% correct ill-defined project parameters
+if p.nChan==1
+    p.itg_expFRET = [];
+    p.itg_expS = [];
+end
+
 nFRET = size(p.itg_expFRET,1);
 nS = size(p.itg_expS,1);
 
