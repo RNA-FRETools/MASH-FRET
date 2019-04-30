@@ -7,13 +7,13 @@ function setContPan(str, state, h_fig)
 h = guidata(h_fig);
 switch state
     case 'error'
-        colBg = [1 0.5 0.5];
+        colBg = [1 0.9 0.9];
     case 'success'
-        colBg = [0.5 1 0.5];
+        colBg = [0.9 1 0.9];
     case 'process'
-        colBg = [1 1 0.5];
+        colBg = [1 1 0.9];
     case 'warning'
-        colBg = [1 0.75 0.5];
+        colBg = [1 0.95 0.9];
     otherwise
         colBg = [1 1 1];
 end
