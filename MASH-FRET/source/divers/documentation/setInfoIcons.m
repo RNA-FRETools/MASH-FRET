@@ -193,6 +193,7 @@ w_but = 22;
 h_but = 20;
 h_txt = 15;
 mg = 5;
+mgShift = -3;
 incr = 2;
 pixperchar = 3;
 
@@ -220,8 +221,8 @@ if strcmp(get(obj,'type'),'uipanel')
         postxt(3) = postxt(3) + incr;
     end
 
-    extra_x = mg + postxt(3);
-    extra_y = - 1.5*mg - h_but/2;
+    extra_x = postxt(3) + mgShift;
+    extra_y = - 2*mg - h_but/2;
     
     data{3} = [0,1];
     
