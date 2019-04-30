@@ -4,17 +4,13 @@ function updateFields(h_fig, varargin)
 % input argument 1: MASh figure handle
 % input argument 2: what to update ('all', 'sim', 'imgAxes', 'movPr',
 % 'ttPr', 'thm', TDP'
-
-%% Last update by MH, 24.4.2019
-% >> remove double update of molecule list
 %
-% update: 19.4.2019 by MH
+% Last update: 19.4.2019 by MH
 % >> set empty fields in transtion matrix when rates are loaded from
 %    presets to avoid confusion
 %
 % update: 7th of March 2018 by Richard Börner
 % >> Comments adapted for Boerner et al, PONE, 2017.
-%%
 
 if ~isempty(varargin)
     opt = varargin{1};
@@ -533,13 +529,9 @@ if strcmp(opt, 'ttPr') || strcmp(opt, 'subImg') || strcmp(opt, 'all')
     p = h.param.ttPr;
     
     if ~isempty(p.proj)
-        
-        % update moleule list; moved by MH, 24.4.2019
-        ud_trSetTbl(h_fig);
-        
         proj = p.curr_proj;
         mol = p.curr_mol(proj);
-
+        
         set(h.edit_currMol, 'String', num2str(mol), 'BackgroundColor', ...
             [1 1 1]);
         set(h.listbox_molNb, 'Value', mol);
@@ -559,8 +551,7 @@ if strcmp(opt, 'ttPr') || strcmp(opt, 'subImg') || strcmp(opt, 'all')
         guidata(h_fig, h);
 
         % update parameters
-        % cancelled by MH, 24.4.2019
-%         ud_trSetTbl(h_fig);
+        ud_trSetTbl(h_fig);
         ud_subImg(h_fig);
         ud_denoising(h_fig);
         ud_bleach(h_fig);

@@ -4,11 +4,9 @@ function ok = setParam(h_fig)
 
 % Requires external function: adjustParam
 
-%% Last update by MH, 25.4.2019
-% >> set default tag names and colors in Video processing interface's 
-%    defaults
+% Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
 %
-% update: 28th of March 2019 by Melodie Hadzic
+% Last update: 28th of March 2019 by Melodie Hadzic
 % --> add gamma file import in Trace processing
 %
 % update: 20th of February by Mélodie Hadzic
@@ -17,9 +15,6 @@ function ok = setParam(h_fig)
 % update: 7th of March 2018 by Richard Börner
 % --> Comments adapted for Boerner et al 2017
 % --> Simulation default parameters adapted for Boerner et al 2017.
-%
-% Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
-%%
 
 h = guidata(h_fig);
 h.param = [];
@@ -333,9 +328,6 @@ end
 p.chanExc = adjustParam('chanExc', chanExc, p_input);
 p.labels_def = adjustParam('labels_def', labels, p_input);
 p.labels = adjustParam('labels', labels, p_input);
-p.defTagNames = adjustParam('defTagNames', {'static', 'dynamic'}, p_input);
-p.defTagClr = adjustParam('defTagClr', {'#4298B5','#DD5F32','#92B06A',...
-    '#ADC4CC','#E19D29'}, p_input);
 
 % Trace processing pannel
 
@@ -368,8 +360,6 @@ p.impS = adjustParam('impS', [], p_input);
 p.proj = {};
 p.curr_proj = 0;
 p.curr_mol = [];
-p.defTagNames = {'static', 'dynamic'};
-p.defTagClr = {'#4298B5','#DD5F32','#92B06A','#ADC4CC','#E19D29'};
 
 % Themodynamics processing pannel
 function p = setParamThm(p_input)

@@ -1,11 +1,13 @@
 function pushbutton_addTraces_Callback(obj, evd, h)
 
-%% Last update: 3.4.2019 by MH
+%%
+
+% update: 3.4.2019 by MH
 % >> adapt gamma factor import for more than one FRET calculation
 % >> correct MH's past modifications: gamma factors must be saved in prm
 %    and in curr parameters to be taken into account
 %
-% update: 2.4.2019 by MH
+% Last update: 2.4.2019 by MH
 % >> fix error when importing ASCII traces: correct dimensions of 
 %    bleedthrough coefficients when resetting cross-talks to 0.
 % >> reset cross-talks to 0 whether or not gamma files were successfully

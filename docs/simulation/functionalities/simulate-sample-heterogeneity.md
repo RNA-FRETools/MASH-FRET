@@ -90,7 +90,7 @@ To build and export the pre-set parameter file:
 ![...](../../assets/images/gui/sim-but-3p.png "...") in 
 [Pre-set parameters](../panels/panel-molecules.html#pre-set-parameters) and selecting the corresponding file
 
-
+<!--
 ---
 
 ## Partitioned transition rate matrix
@@ -113,3 +113,4 @@ As an example, this partition of the transition rate matrix produces two distinc
 | **5**   | 0       | 0       | 0       | **0.1** | 0       |
 
 The size of the two sub-populations depends on the overall probability to start the state trajectory with one of the states of the respective network.
+-->
