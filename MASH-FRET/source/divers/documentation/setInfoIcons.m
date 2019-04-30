@@ -1,15 +1,25 @@
 function hBut = setInfoIcons(obj,h_fig,image_file)
+% hBut = setInfoIcons(obj,h_fig,image_file)
+%
+% Create help pushbuttons corresponding to input reference objects.
+% Links to the documentation are defined manually in getDocLink.m.
+%
+% hBut: handle to the created help button
+%
+% obj: vector of reference object handles for which help buttons must be 
+%      created; if the reference object is a panel, the help button will be
+%      positionned right next to the panel's title, otherwise, the 
+%      positionning must be specifically defined when calling mkbutton.
+% h_fig: handle to main figure where all object handles are stored
+% image_file: image file containing the icon for help buttons
 
-cdata = imread(image_file);
+
+% initialized output
+hBut = [];
 
 h = guidata(h_fig);
 
-O = numel(obj);
-hBut = [];
-
-un = get(h_fig,'units');
-set(h_fig,'units','pixels');
-
+% collect reference object's handle in temporary figures
 if isfield(h,'itgExpOpt')
     h_pushbutton_itgExpOpt_cancel = ...
         h.itgExpOpt.pushbutton_itgExpOpt_cancel;
@@ -53,6 +63,11 @@ else
     h_pushbutton_optExpTdp_cancel = [];
 end
 
+% get help button's icon
+cdata = imread(image_file);
+
+% build buttons for each reference object
+O = numel(obj);
 for o = 1:O
     switch obj(o)
         case h.uipanel_S_videoParameters
@@ -176,10 +191,10 @@ for o = 1:O
     end
 end
 
-set(h_fig,'units',un);
-
 
 function pos = getPixPos(obj)
+% get input object's property 'position' in pixels
+
 un = get(obj,'units');
 set(obj,'units','pixels');
 pos = get(obj,'position');
@@ -187,6 +202,29 @@ set(obj,'units',un);
 
 
 function hBut = mkbutton(cdat,link,obj,varargin)
+% create a pushbutton opening a web page and positionned it according to a 
+% reference object.
+% 
+% cdat: background image
+% link: url to the web page
+% obj: reference object's handle
+% varargin (if obj is not a panel): [1-by-2] x- and y- positionning indexes 
+%     equal to 1 or 2 to use the left/bottom or right/top border of the 
+%     reference object as a baseline, and being negative or positive if the
+%     button is placed on the left/bottom or right/top of the baseline.
+%     Positionning respects the following margins:
+%           _____          _____
+%          | 1, 2|        |-2, 2|
+%   _____   ____________________   _____
+%  |-1,-2| |  _____      _____  | | 2,-2|
+%          | | 1,-2|    |-2,-2| |
+%          |                    |
+%          |  REFERENCE OBJECT  |
+%          |  _____      _____  |
+%   _____  | | 1, 1|    |-2, 1| |  _____
+%  |-1, 1| |____________________| | 2, 1|
+%           _____          _____
+%          | 1,-1|        |-2,-1|
 
 % defaults
 w_but = 22;
