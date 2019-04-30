@@ -22,7 +22,7 @@ switch fFormat
     
     case '.sif'
         if isMov
-            if memAlloc(yTot*nCoord*aDim^2*4);
+            if memAlloc(zTot*nCoord*aDim^2*4);
                 trace = tracesFromMatrix(vid,zTot,lim,aDim,nPix);
                 return;
             end
