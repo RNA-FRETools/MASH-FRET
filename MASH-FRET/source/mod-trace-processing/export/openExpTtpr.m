@@ -626,18 +626,16 @@ h = guidata(h_fig);
 
 xNext = wFig - 3*w_but - 3*mg;
 yNext = mg;
-
-h.optExpTr.pushbutton_infos = uicontrol('Style', 'pushbutton', ...
-    'Parent', h.optExpTr.figure_optExpTr, 'Units', 'pixels', ...
-    'Position', [xNext yNext w_but h_but], 'String', 'Infos', ...
-    'Callback', {@pushbutton_infos_Callback, h_fig});
-
 xNext = xNext + w_but + mg;
 
 h.optExpTr.pushbutton_cancel = uicontrol('Style', 'pushbutton', ...
     'Parent', h.optExpTr.figure_optExpTr, 'Units', 'pixels', ...
     'Position', [xNext yNext w_but h_but], 'String', 'Cancel', ...
     'Callback', {@pushbutton_cancel_Callback, h_fig});
+
+guidata(h_fig,h);
+h.optExpTr.pushbutton_help = setInfoIcons(h.optExpTr.pushbutton_cancel,...
+    h_fig,h.param.movPr.infos_icon_file);
 
 xNext = xNext + w_but + mg;
 
@@ -1184,16 +1182,6 @@ h = guidata(h_fig);
 h.param.ttPr.proj{h.param.ttPr.curr_proj}.exp.mol_TagVal = val;
 guidata(h_fig, h);
 ud_optExpTr('all', h_fig);
-
-
-
-function pushbutton_infos_Callback(obj, evd, h_fig)
-
-% modified by MH, 10.4.2019
-% msgbox('Soon avaiblable');
-disp('open MASH online documentation, please wait...');
-web(cat(2,'https://rna-fretools.github.io/MASH-FRET/trace-processing/',...
-    'functionalities/set-export-options.html'));
 
 
 function pushbutton_cancel_Callback(obj, evd, h_fig)

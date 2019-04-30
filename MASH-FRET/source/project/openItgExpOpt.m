@@ -233,6 +233,11 @@ h.itgExpOpt.pushbutton_itgExpOpt_cancel = uicontrol('Style', ...
     [xNext yNext w_but h_but], 'Callback', ...
     {@pushbutton_itgExpOpt_cancel_Callback, h_fig});
 
+guidata(h_fig,h);
+h.itgExpOpt.pushbutton_help = setInfoIcons(...
+    h.itgExpOpt.pushbutton_itgExpOpt_cancel,h_fig,...
+    h.param.movPr.infos_icon_file);
+
 yNext = hFig - mg - h_pan_prm;
 xNext = mg;
 
@@ -611,7 +616,7 @@ end
 yNext = mg;
 xNext = mg + w_full - 2*w_short;
 
-if sum(double(curr_clr>0.5))==3
+if sum(curr_clr)>=1.5
     fntClr = 'black';
 else
     fntClr = 'white';
@@ -896,7 +901,7 @@ end
 guidata(h.figure_itgExpOpt, p);
 
 % update pushutton color
-if sum(double(rgb>0.5))==3
+if sum(rgb)>=1.5
     fntClr = 'black';
 else
     fntClr = 'white';
@@ -950,7 +955,7 @@ else
     clr = p{5}{1}{l,c};
 end
 
-if sum(double(clr>0.5))==3
+if sum(clr)>=1.5
     fntClr = 'black';
 else
     fntClr = 'white';

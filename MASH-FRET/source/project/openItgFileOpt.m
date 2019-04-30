@@ -9,7 +9,8 @@ function openItgFileOpt(obj, evd, h)
 % --> created function from scratch
 
 h_fig = h.figure_MASH;
-p = h.param.movPr.itg_expMolFile;
+pMov = h.param.movPr;
+p = pMov.itg_expMolFile;
 
 mg = 10;
 big_mg = 15;
@@ -72,6 +73,10 @@ h.itgFileOpt.pushbutton_itgFileOpt_cancel = uicontrol('Style', ...
     'Units', 'pixels', 'BackgroundColor', bgCol, 'Position', ...
     [xNext yNext w_but h_but], 'Callback', ...
     {@pushbutton_itgFileOpt_cancel_Callback, h_fig});
+
+guidata(h_fig,h);
+h.itgFileOpt.pushbutton_help = setInfoIcons(...
+    h.itgFileOpt.pushbutton_itgFileOpt_cancel,h_fig,pMov.infos_icon_file);
 
 yNext = yNext + h_but + mg;
 xNext = mg;

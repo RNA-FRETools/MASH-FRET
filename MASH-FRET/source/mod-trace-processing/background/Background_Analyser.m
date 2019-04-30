@@ -34,6 +34,12 @@ if ~ok
 end
 g.res = [];
 
+h = guidata(g.figure_MASH);
+h.bga = g;
+guidata(g.figure_MASH,h);
+g.pushbutton_help = setInfoIcons(g.pushbutton_save,g.figure_MASH,...
+    h.param.movPr.infos_icon_file);
+
 % update g structure
 guidata(obj, g);
 ud_fields(obj);
@@ -65,6 +71,10 @@ param.gen = prm(2:3);
 
 [mfile_path,o,o] = fileparts(mfilename('fullpath'));
 save([mfile_path filesep 'default_param.ini'], '-struct', 'param');
+
+if isfield(h,'bga')
+    rmfield(h,'bga');
+end
 
 delete(obj);
 

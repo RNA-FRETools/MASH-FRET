@@ -747,6 +747,11 @@ h.tm.togglebutton_videoView = uicontrol('style','togglebutton','parent',...
     'fontweight','bold','fontunits','pixels','fontsize',fntS_big,...
     'callback',{@switchPan_TM,h_fig});
 
+guidata(h_fig,h);
+h.tm.pushbutton_help = setInfoIcons(h.tm.togglebutton_videoView,...
+    h_fig,h.param.movPr.infos_icon_file);
+
+
 %% build main panels
 
 xNext = mg;

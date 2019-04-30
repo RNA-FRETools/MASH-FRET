@@ -600,8 +600,8 @@ if strcmp(opt, 'thm') || strcmp(opt, 'all')
         cla(h.axes_thm_BIC);
         set([h.axes_hist1,h.axes_hist2,h.axes_hist_BOBA, ...
             h.axes_thm_BIC], 'Visible','off');
-        set([h.pushbutton_thm_impASCII h.pushbutton_thm_addProj], ...
-         'Enable', 'on');
+        set([h.pushbutton_help h.pushbutton_thm_impASCII ...
+            h.pushbutton_thm_addProj],'Enable', 'on');
     end
 end
 
@@ -613,9 +613,9 @@ if strcmp(opt, 'TDP') || strcmp(opt, 'all')
     set(h.edit_TDPcontPan, 'Enable', 'inactive');
     if ~isempty(p.proj)
         
-        set([h.listbox_TDPprojList h.text_TDPproj ...
-            h.pushbutton_TDPremProj h.pushbutton_TDPsaveProj ...
-            h.pushbutton_TDPexport], 'Enable', 'on');
+        set([h.listbox_TDPprojList h.pushbutton_TDPremProj ...
+            h.pushbutton_TDPsaveProj h.pushbutton_TDPexport],'Enable',...
+            'on');
         set(h.listbox_TDPprojList, 'Max', 2, 'Min', 0);
         ud_TDPplot(h_fig);
         ud_TDPmdlSlct(h_fig);
@@ -626,8 +626,8 @@ if strcmp(opt, 'TDP') || strcmp(opt, 'all')
         set([h.togglebutton_TDPkmean h.togglebutton_TDPgauss], ...
             'Value', 0, 'FontWeight', 'normal');
         setProp(get(h.uipanel_TA, 'Children'), 'Enable', 'off');
-        set([h.pushbutton_TDPimpOpt h.pushbutton_TDPaddProj], 'Enable', ...
-            'on');
+        set([h.pushbutton_help h.pushbutton_TDPimpOpt ...
+            h.pushbutton_TDPaddProj], 'Enable', 'on');
         set(h.listbox_TDPtrans, 'String', {''}, 'Value', 1);
         cla(h.axes_TDPplot1); cla(h.axes_TDPplot2); cla(h.axes_TDPplot3);
         cla(h.axes_tdp_BIC);
