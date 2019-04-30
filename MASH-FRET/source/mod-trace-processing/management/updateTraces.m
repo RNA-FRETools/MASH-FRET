@@ -24,7 +24,6 @@ if ~isempty(p.proj)
         return;
     end
     
-    proj = p.curr_proj;
     nC = p.proj{proj}.nb_channel;
     gammaPb = p.proj{proj}.prm{mol}{5}{4}(1);
 
@@ -72,8 +71,6 @@ if ~isempty(p.proj)
         p = gammaCorr(h_fig, mol, p);
         p = discrTraces(h_fig, mol, p);
     end
-
-    proj = p.curr_proj;
     
     if (strcmp(opt2, 'plot') || strcmp(opt2, 'gamma') || ...
             strcmp(opt2, 'DTA') || strcmp(opt2, 'debleach') || ...

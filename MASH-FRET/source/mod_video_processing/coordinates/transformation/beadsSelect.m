@@ -36,8 +36,6 @@ if minN > 0
         pnt(1:minN,2*i) = pntCoord{i}(1:minN,2);
     end
 end
-
-pouet = 0;
     
 
 function h = initFig(img, lim)
