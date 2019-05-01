@@ -185,8 +185,7 @@ To calculate and export the intensity-time traces:
      
 1. Calculate and export intensity-time traces to a 
    [.mash project](../output-files/mash-mash-project.html) and to selected ASCII files by pressing 
-   ![Create & Export...](../assets/images/gui/VP-but-export.png "Create & Export..."). 
-   The process is rather slow; see 
+   ![Create & Export...](../assets/images/gui/VP-but-export.png "Create & Export..."); see 
    [Remarks](#remarks) for more details.
 
 
@@ -204,5 +203,5 @@ Even though background correction is more accurate when performed in module Trac
 In that case, the background-corrected video file can be used to create intensity-time traces, but background correction must be deactivated in module Trace processing; see
 [Background correction](../trace-processing/panels/panel-subimage-background-correction.html#background-correction) for more information.
 
-Creating intensity-time traces is a rather slow process because the script was written for low-RAM computers; see 
+Creating intensity-time traces can be a slow process if not enough free RAM is available; see 
 [Create and export intensity-time traces](panels/panel-intensity-integration.html#create-and-export-intensity-time-traces) for more information.

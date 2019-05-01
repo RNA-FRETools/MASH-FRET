@@ -90,8 +90,8 @@ After saving export options, intensity calculations start for each molecule coor
 [Integration parameters](#integration-parameters), and exports single molecule intensity-time traces to files selected in 
 [Export options](#export-options).
 
-This process can be relatively slow if nor enough memory is available.
-In this case, pixel values in the video are not loaded all at once in memory but the video file is browsed every time a pixel value is needed for calculation. 
+This process can be relatively slow if not enough free memory is available on the computer.
+In this case the video file is browsed every time a pixel value is needed for calculation. 
 For more information, please refer to the respective functions in the source code:
 
 ```
