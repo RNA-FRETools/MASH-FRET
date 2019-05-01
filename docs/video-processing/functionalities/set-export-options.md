@@ -9,6 +9,14 @@ nav_order: 4
 # Set export options
 {: .no_toc }
 
+Export options define the particular files to export after completion of time trace calculations in module Video processing.
+The window is accessed by pressing 
+![Create & Export...](../../assets/images/gui/VP-but-export.png "Create & Export...") in 
+[Intensity integration](../panels/panel-intensity-integration.html).
+
+Press 
+![Next >>](../../assets/images/gui/TP-but-next-supsup.png "Next >>") to start calculating time traces and export files.
+
 <a href="../../assets/images/gui/VP-panel-integration-expopt.png"><img src="../../assets/images/gui/VP-panel-integration-expopt.png" style="max-width: 286px;"/></a>
 
 

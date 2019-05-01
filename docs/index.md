@@ -22,6 +22,9 @@ Clone or
 git clone https://github.com/RNA-FRETools/MASH-FRET.git
 ```
 
+For more information about system requirements, please refer to the documentation section 
+[System requirements](System_requirements.html).
+
 
 ## Getting involved
 

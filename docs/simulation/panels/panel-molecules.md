@@ -144,6 +144,7 @@ To simulate a system with more than five states, please refer to
 
 
 ### References
+{: .no_toc }
 
 1. S. Schmid, T. Hugel, *Efficient use of single molecule time traces to resolve kinetic rates, models and uncertainties*, *J. Chem. Phys.* **2017**, DOI: [10.1063/1.5006604](https://doi.org/10.1063/1.5006604)
 
