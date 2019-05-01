@@ -129,6 +129,8 @@ Denoised intensity-time traces are obtained by inversion of the wavelet transfor
 Denoising can either be performed in one simple process by setting **(d)** = 1, or by several iterative processes including time-shifting by setting **(d)** = 2. 
 In the latter case, the final trace is averaged over the different process iterations.
 
+**Note:** *The use of hard thresholding can be time consuming and requires a bit of patience.*
+
 
 ### References
 {: .no_toc }
