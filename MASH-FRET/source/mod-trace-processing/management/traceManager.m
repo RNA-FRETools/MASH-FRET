@@ -40,8 +40,10 @@ function traceManager(h_fig)
         ok = loadData2Mngr(h_fig);
         if ~ok
             h = guidata(h_fig);
-            close(h.tm.figure_traceMngr);
-            return;
+            if ishandle(h.tm.figure_traceMngr)
+                close(h.tm.figure_traceMngr);
+                return;
+            end
         end
     end
     
@@ -960,7 +962,7 @@ xNext = xNext + 0.5*w_pop + mg;
 
 % edit box to define a molecule tag, added by FS, 24.4.2018
 h.tm.edit_molTag = uicontrol('Style','edit','Parent',h.tm.uipanel_overview,...
-    'Units','pixels','String','Define a new default tag','Position',...
+    'Units','pixels','String','define a new tag','Position',...
     [xNext yNext w_pop h_but],'Callback',{@edit_addMolTag_Callback, h_fig}, ...
     'FontUnits','pixels','FontSize',fntS);
 
@@ -980,18 +982,11 @@ h.tm.popup_molTag = uicontrol('Style', 'popup', 'Parent', ...
 xNext = xNext + w_pop + mg;
 
 % added by MH, 24.4.2019
-hexclr = h.tm.molTagClr{get(h.tm.popup_molTag,'value')}(2:end);
-if sum(double((hex2rgb(hexclr)/255)>0.5))==3
-    fntClr = 'black';
-else
-    fntClr = 'white';
-end
 h.tm.pushbutton_tagClr = uicontrol('style','pushbutton','parent', ...
     h.tm.uipanel_overview,'units','pixels','string','Set', ...
     'position',[xNext yNext w_edit h_but],'tooltipstring', ...
-    'define the tag color','fontunits','pixels','fontsize',fntS, ...
-    'backgroundcolor',hex2rgb(hexclr)/255,'foregroundcolor',fntClr,...
-    'callback',{@pushbutton_tagClr_Callback,h_fig});
+    'define the tag color','fontunits','pixels','fontsize',fntS,...
+    'callback',{@pushbutton_tagClr_Callback,h_fig},'enable','off');
 
 xNext = xNext + w_edit + mg;
 
@@ -1640,7 +1635,7 @@ for t = 1:nTag
     h.tm.edit_VV_tag(t) = uicontrol('style','edit','parent',...
         h.tm.uipanel_videoView,'units','pixels','fontunits','pixels',...
         'fontsize',fntS,'position',[xNext,yNext,w_txt,h_cb],'string',...
-        removeHtml(str_tag{t}),'enable','off');
+        removeHtml(str_tag{t+1}),'enable','off');
     
     xNext = 2*mg;
     yNext = yNext - mg - h_cb;
@@ -2522,6 +2517,7 @@ function plotData_videoView(h_fig)
 % defaults 
 mg_top = 0.4;
 mkSize = 10;
+lineWidth = 2;
 
 h = guidata(h_fig);
 p = h.param.ttPr;
@@ -2605,20 +2601,31 @@ if get(h.tm.checkbox_VV_tag0,'value')
     x_coord = coord(mols,1:2:end);
     y_coord = coord(mols,2:2:end);
     plot(h.tm.axes_videoView,x_coord(:),y_coord(:),'linestyle','none',...
-        'marker','o','markersize',mkSize,'markeredgecolor','white');
+        'marker','o','markersize',mkSize,'markeredgecolor','white',...
+        'linewidth',lineWidth);
 end
 
 % plot tagged coordinates
 if isfield(h.tm,'checkbox_VV_tag') && ishandle(h.tm.checkbox_VV_tag(1))
     nTag = numel(h.tm.checkbox_VV_tag);
+    N = size(molTags,1);
+    allm = 1:N;
+    mkSize = repmat(mkSize,1,N);
+    prevt = 0;
     for t = 1:nTag
         if get(h.tm.checkbox_VV_tag(t),'value')
             mols = molTags(:,t)' & incl;
+            if prevt>0
+                mkSize = mkSize + (lineWidth+3)*molTags(:,prevt)';
+            end
             x_coord = coord(mols,1:2:end);
             y_coord = coord(mols,2:2:end);
-            plot(h.tm.axes_videoView,x_coord(:),y_coord(:),'linestyle',...
-                'none','marker','o','markersize',mkSize,'markeredgecolor',...
-                hex2rgb(clr{t})/255);
+            for n = allm(mols)
+                plot(h.tm.axes_videoView,x_coord(:),y_coord(:),'linestyle',...
+                    'none','marker','o','markersize',mkSize(n),'linewidth',...
+                    lineWidth,'markeredgecolor',hex2rgb(clr{t})/255);
+            end
+            prevt = t;
         end
     end
 end
@@ -2714,29 +2721,30 @@ colorlist = h.tm.molTagClr;
 
 % added by MH, 24.4.2019
 nTag = numel(h.tm.molTagNames);
+if nTag==0
+    str_lst = {'no default tag'};
+    return;
+end
 
-str_lst = cell(1,nTag);
+str_lst = cell(1,nTag+1);
 
 % cancelled by MH, 24.4.2019
 % str_lst{1} = h.tm.molTagNames{1};
 
 % modified by MH, 24.4.2019
 % for k = 2:length(h.tm.molTagNames)
-for k = 1:nTag
-    if sum(double((hex2rgb(colorlist{k})/255)>0.5))==3
+str_lst{1} = 'select tag';
+for k = 2:nTag+1
+    if sum(double((hex2rgb(colorlist{k-1})/255)>0.5))==3
         fntClr = 'black';
     else
         fntClr = 'white';
     end
-    str_lst{k} = ['<html><body  bgcolor="' colorlist{k} '">' ...
-        '<font color="',fntClr,'">' h.tm.molTagNames{k} ...
+    str_lst{k} = ['<html><body  bgcolor="' colorlist{k-1} '">' ...
+        '<font color="',fntClr,'">' h.tm.molTagNames{k-1} ...
         '</font></body></html>'];
 end
 
-% added by MH, 24.4.2019
-if isempty(str_lst)
-    str_lst = {'no default tag'};
-end
 end
 
 
@@ -3153,22 +3161,25 @@ nS = size(S,1);
 dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
 dat2 = get(h.tm.axes_ovrAll_2, 'UserData');
 plot2 = get(h.tm.popupmenu_axes2, 'Value');
-xlim_low = str2num(get(obj,'String'));
+lim_low = str2num(get(obj,'String'));
 
-if xlim_low >= dat1.lim{plot2}(row,2)
+if lim_low >= dat1.lim{plot2}(row,2)
     setContPan('Lower bound must be lower than higher bound.','error',...
         h_fig);
     return;
 end
 
-dat1.lim{plot2}(row,1) = xlim_low;
+dat1.lim{plot2}(row,1) = lim_low;
 
 if plot2 <= nChan*nExc+nFRET+nS
     [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(dat1.trace{plot2},...
         dat1.lim{plot2},dat1.niv(plot2,1));
     
-else%% double check RB 2018-01-04
-    ES = [dat1.trace{plot2-nFRET-nS},dat1.trace{plot2-nS}];
+else
+    ind = plot2-nChan*nExc-nFRET-nS;
+    ind_e = ceil(ind/nS) + nChan*nExc;
+    ind_s = ind - (ceil(ind/nS)-1)*nS + nChan*nExc + nFRET;
+    ES = [dat1.trace{ind_e},dat1.trace{ind_s}];
     [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(ES,...
         dat1.lim{plot2},dat1.niv(plot2,[1,2]));
 end
@@ -3178,6 +3189,7 @@ set(h.tm.axes_ovrAll_2, 'UserData', dat2);
 plotData_overall(h_fig);
     
 end
+
 
 function edit_lim_up_Callback(obj,evd,h_fig,row)
 
@@ -3214,8 +3226,11 @@ if plot2 <= nChan*nExc+nFRET+nS
     [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(dat1.trace{plot2},...
         dat1.lim{plot2},dat1.niv(plot2,1));
     
-else%% double check RB 2018-01-04
-    ES = [dat1.trace{plot2-nFRET-nS},dat1.trace{plot2-nS}];
+else
+    ind = plot2-nChan*nExc-nFRET-nS;
+    ind_e = ceil(ind/nS) + nChan*nExc;
+    ind_s = ind - (ceil(ind/nS)-1)*nS + nChan*nExc + nFRET;
+    ES = [dat1.trace{ind_e},dat1.trace{ind_s}];
     [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(ES,...
         dat1.lim{plot2},dat1.niv(plot2,[1,2]));
 end
@@ -3262,11 +3277,13 @@ if plot2 <= nChan*nExc+nFRET+nS
     [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(dat1.trace{plot2},...
         dat1.lim{plot2},dat1.niv(plot2,1));
     
-else%% double check RB 2018-01-05
-    ES = [dat1.trace{plot2-nFRET-nS},dat1.trace{plot2-nS}];
-    [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(ES,dat1.lim{plot2},...
-        dat1.niv(plot2,:));
-
+else
+    ind = plot2-nChan*nExc-nFRET-nS;
+    ind_e = ceil(ind/nS) + nChan*nExc;
+    ind_s = ind - (ceil(ind/nS)-1)*nS + nChan*nExc + nFRET;
+    ES = [dat1.trace{ind_e},dat1.trace{ind_s}];
+    [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(ES,...
+        dat1.lim{plot2},dat1.niv(plot2,[1,2]));
 end
 
 set(h.tm.axes_ovrAll_1, 'UserData', dat1);
@@ -3370,8 +3387,11 @@ h = guidata(h_fig);
 % get tag to add
 tagNames = get(h.tm.popup_molNb(i),'string');
 tag = get(h.tm.popup_molNb(i),'value');
-if strcmp(tagNames{tag},'no default tag')
+if strcmp(tagNames{tag},'no default tag') || ...
+        strcmp(tagNames{tag},'select tag')
     return;
+else
+    tag = tag-1;
 end
 
 % update and save molecule tags
@@ -3382,6 +3402,8 @@ guidata(h_fig,h);
 % update molecule tag lists
 nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
 update_taglist_OV(h_fig,nb_mol_disp);
+
+set(h.tm.popup_molNb(i),'value',1);
 
 % update viveo view plot
 plotData_videoView(h_fig);
@@ -3643,9 +3665,9 @@ for i = 1:nDisp
     else
         shad = get(h.tm.checkbox_molNb(i),'backgroundcolor');
     end
-    set([h.tm.axes_itt,h.tm.axes_itt_hist],'color',shad);
+    set([h.tm.axes_itt(i),h.tm.axes_itt_hist(i)],'color',shad);
     if isBot
-        set([h.tm.axes_frettt,h.tm.axes_hist],'color',shad);
+        set([h.tm.axes_frettt(i),h.tm.axes_hist(i)],'color',shad);
     end
 end
 
@@ -3746,7 +3768,8 @@ if ~strcmp(obj.String, 'define a new tag') && ...
         ~ismember(obj.String, h.tm.molTagNames)
     
     % added by MH, 27.4.2019
-    if strcmp(obj.String, 'no tag') || strcmp(obj.String, 'no default tag')
+    if strcmp(obj.String, 'no tag') || strcmp(obj.String, 'no default tag') ....
+            || strcmp(obj.String, 'select tag')
         msgbox('Simply, no.');
         set(obj,'string','define a new tag');
         return
@@ -3810,10 +3833,13 @@ h = guidata(h_fig);
 % control empty tag
 tag = get(obj,'value');
 str_pop = get(obj, 'string');
-if strcmp(str_pop{tag},'no default tag')
+if strcmp(str_pop{tag},'no default tag') || ...
+        strcmp(str_pop{tag},'select tag')
     set(h.tm.pushbutton_tagClr,'enable','off','backgroundcolor',...
         get(h_fig,'color'),'foregroundcolor','black');
     return;
+else
+    tag = tag-1;
 end
 
 % update edit field background color
@@ -3841,8 +3867,11 @@ h = guidata(h_fig);
 % control empty tag
 tag = get(h.tm.popup_molTag,'value');
 str_pop = get(h.tm.popup_molTag, 'string');
-if strcmp(str_pop{tag},'no default tag')
+if strcmp(str_pop{tag},'no default tag') || ...
+        strcmp(str_pop{tag},'select tag')
     return;
+else
+     tag = tag-1;
 end
 
 % control color value
@@ -3852,10 +3881,7 @@ if numel(rgb)==1
 end
 
 rgb = round(255*rgb);
-clr_str = '';
-for c = 1:3
-    clr_str = cat(2,clr_str,dec2hex(rgb(c)));
-end
+clr_str = rgb2hex(rgb);
 
 % save color
 h.tm.molTagClr{tag} = cat(2,'#',clr_str);
@@ -3903,16 +3929,22 @@ function pushbutton_deleteMolTag_Callback(obj, evd, h_fig)
     
     % added by MH, 24.4.2019
     str_pop = get(h.tm.popup_molTag, 'string');
-    if strcmp(str_pop{selectMolTag},'no default tag')
+    if strcmp(str_pop{selectMolTag},'no default tag') || ...
+            strcmp(str_pop{selectMolTag},'select tag')
         return;
+    else
+        selectMolTag = selectMolTag-1;
     end
-    choice = questdlg({cat(2,'After deleting the molecule tag, the ',...
-        'corresponding molecule sorting will be lost.'),'',cat(2,'Do you ',...
-        'want to delete tag "',removeHtml(str_pop{selectMolTag}),'" and ',...
-        'forget the corresponding molecule sorting?')},'Delete tag',...
-        'Yes, forget sorting','Cancel','Cancel');
-    if ~strcmp(choice,'Yes, forget sorting')
-        return;
+    if sum(h.tm.molTag(:,selectMolTag))
+        choice = questdlg({cat(2,'After deleting the molecule tag, the ',...
+            'corresponding molecule sorting will be lost.'),'',...
+            cat(2,'Do you want to delete tag "',...
+            removeHtml(str_pop{selectMolTag}),'" and forget the ',...
+            'corresponding molecule sorting?')},'Delete tag',...
+            'Yes, forget sorting','Cancel','Cancel');
+        if ~strcmp(choice,'Yes, forget sorting')
+            return;
+        end
     end
     
     % cancelled by MH, 24.4.2019
@@ -4855,13 +4887,18 @@ end
 
 tag = get(h.tm.popupmenu_defTagPop,'value');
 str_tag = get(h.tm.popupmenu_defTagPop,'string');
-if strcmp(str_tag{tag},'no default tag')
+if strcmp(str_tag{tag},'no default tag') || ...
+        strcmp(str_tag{tag},'select tag')
     return;
+else
+    tag = tag-1;
 end
 
 dat3 = get(h.tm.axes_histSort,'userdata');
 dat3.rangeTags(range,tag) = true;
 set(h.tm.axes_histSort,'userdata',dat3);
+
+set(h.tm.popupmenu_defTagPop,'value',1);
 
 update_taglist_AS(h_fig);
 
