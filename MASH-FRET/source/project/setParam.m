@@ -4,17 +4,22 @@ function ok = setParam(h_fig)
 
 % Requires external function: adjustParam
 
-% Created the 23rd of April 2014 by Mï¿½lodie C.A.S Hadzic
+%% Last update by MH, 25.4.2019
+% >> set default tag names and colors in Video processing interface's 
+%    defaults
 %
-% Last update: 28th of March 2019 by Melodie Hadzic
+% update: 28th of March 2019 by Melodie Hadzic
 % --> add gamma file import in Trace processing
 %
-% update: 20th of February by Mï¿½lodie Hadzic
+% update: 20th of February by Mélodie Hadzic
 % --> add ebFRET-compatible export in Video processing
 %
-% update: 7th of March 2018 by Richard Bï¿½rner
+% update: 7th of March 2018 by Richard Börner
 % --> Comments adapted for Boerner et al 2017
 % --> Simulation default parameters adapted for Boerner et al 2017.
+%
+% Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
+%%
 
 h = guidata(h_fig);
 h.param = [];
@@ -91,7 +96,7 @@ nChan = 2;
 
 % general parameters
 p.nbStates = adjustParam('nbStates', 2, p_input); % nb of FRET states
-p.molNb = adjustParam('molNb', 100, p_input); % nb of simulated molecules
+p.molNb = adjustParam('molNb', 100, p_input); % nb of simulated molecules 
 p.nbFrames = adjustParam('nbFrames', 4000, p_input); % nb of video frames
 p.rate = adjustParam('rate', 10, p_input); % frame rate (s-1)
 p.bleach = adjustParam('bleach', 0, p_input); % fluorophore bleaching (0/1)
@@ -110,7 +115,7 @@ p.stateVal = adjustParam('stateVal', val, p_input);
 p.FRETw = adjustParam('FRETw', zeros(1,p.nbStates), p_input); % FRET width for heterogenous broadening
 p.gamma = adjustParam('gamma', 1, p_input); % gamma factor (correction for different quantum yields and detection efficiencies of the fluorophors)
 p.gammaW = adjustParam('gammaW', 0, p_input); % gamma width for molecule variations
-p.totInt = adjustParam('totInt', 36, p_input); % total emitted intennsity
+p.totInt = adjustParam('totInt', 36, p_input); % total emitted intennsity 
 p.totInt_width = adjustParam('totInt_width', 0, p_input); % total emitted Intensity width for heterogenous broadening
 p.coord = adjustParam('coord', [], p_input); % only allocation of sm coordinates
 p.molPrm = adjustParam('molPrm', [], p_input); % only allocation of sm parameters
@@ -123,7 +128,7 @@ if strcmp(p.noiseType,'poiss')
     p.noiseType = 'none';
 end
 p.movDim = adjustParam('movDim', [256 256], p_input);
-p.bgType = adjustParam('bgType', 1, p_input); % 1: constant, 2: TIRF profile, 3: patterned
+p.bgType = adjustParam('bgType', 1, p_input); % 1: constant, 2: TIRF profile, 3: patterned 
 p.TIRFdim = adjustParam('TIRFdim', [floor(p.movDim(1)/(2*nChan)) ...
     p.movDim(2)/2], p_input);
 p.pixDim = adjustParam('pixDim', 0.53, p_input);
@@ -145,8 +150,8 @@ camNoise = [113   0     0.95 0    1    0       % mu.d /     eta /     1 /       
             113   0.067 0.95 0    57.8 0       % mu.d s_d   eta s_q   K mr.s    % default N- or Gaussian Model
             106.9 0.02  0.95 2    57.7 20.5    % mu.d A_CIC eta sig_d K tau_CIC % default NexpN or Exp.-CIC Model
             113   0     1    0    1    0       % mu.d /     1   /     1 /       % default no noise but camera offset
-            113   0.067 0.95 0.02 300  5.199]; % mu.d s_d   eta CIC   g s       % default PGN- or Hirsch Model
-
+            113   0.067 0.95 0.02 300  5.199]; % mu.d s_d   eta CIC   g s       % default PGN- or Hirsch Model 
+        
 p.camNoise = adjustParam('camNoise', camNoise, p_input);
 
 % instrumental imperfections
@@ -217,7 +222,7 @@ q = {};
 for i = 1:p.nChan
     q = [q u];
 end
-
+ 
 p.movBg_p = adjustParam('movBg_p', q, p_input);
 for i = 1:p.nChan
     if size(p.movBg_p,1)<19
@@ -367,6 +372,8 @@ p.impS = adjustParam('impS', [], p_input);
 p.proj = {};
 p.curr_proj = 0;
 p.curr_mol = [];
+p.defTagNames = {'static', 'dynamic'};
+p.defTagClr = {'#4298B5','#DD5F32','#92B06A','#ADC4CC','#E19D29'};
 
 % Themodynamics processing pannel
 function p = setParamThm(p_input)
@@ -432,3 +439,7 @@ p.cmap = adjustParam('cmap', cmap, p_input);
 function p = setParamGath(p_input)
 % empty
 p = p_input;
+
+
+
+

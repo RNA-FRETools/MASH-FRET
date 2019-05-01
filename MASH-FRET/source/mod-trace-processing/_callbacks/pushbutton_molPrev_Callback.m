@@ -1,4 +1,9 @@
 function pushbutton_molPrev_Callback(obj, evd, h)
+
+%% Last update by MH, 24.4.2019
+% >> remove double update of molecule list
+%%
+
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -16,8 +21,10 @@ if ~isempty(p.proj)
         end
         h.param.ttPr = p;
         guidata(h.figure_MASH, h);
+        
+        % cancelled by MH, 24.4.2019
+%         ud_trSetTbl(h.figure_MASH);
 
-        ud_trSetTbl(h.figure_MASH);
         updateFields(h.figure_MASH, 'ttPr');
     end
 end

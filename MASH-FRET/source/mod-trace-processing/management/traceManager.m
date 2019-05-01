@@ -1,8 +1,8 @@
+function traceManager(h_fig)
 % traceManager(h_fig)
 %
 % Enables trace selection upon visual inspection or defined criteria 
-% "h_fig" >> 
-
+% "h_fig" >> handle to the main figure
 
 % Last update by MH, 25.4.2019
 % >> move molecule selection here
@@ -12,7 +12,6 @@
 %
 % update: by FS, 24.4.2018
 % >> add molecule tags
-
    
     h = guidata(h_fig);
     h.tm.ud = false;
@@ -83,7 +82,6 @@ function ok = loadData2Mngr(h_fig)
     plotData_videoView(h_fig);
     
 end
-
 
 
 function ok = loadDataFromMASH(h_fig)
@@ -611,6 +609,7 @@ else % 2D histogram
 end
 end
 
+
 function openMngrTool(h_fig)
 
 % Last update by MH, 24.4.2019
@@ -632,6 +631,7 @@ function openMngrTool(h_fig)
 %
 % update: by RB, 15.12.2017
 % >> update popupmenu_axes1 and popupmenu_axes2 string
+%
 %
 
 %% build figure and toolbar

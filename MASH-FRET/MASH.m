@@ -145,7 +145,7 @@ for o = 1:numel(h.pushbutton_help)
 
     pos_pan = get(data{1},'position');
     pos_but = get(h.pushbutton_help(o),'position');
-
+    
     % shift position according to reference object
     if data{3}(1)==0 % baseline is left border
         pos_but(1) = pos_pan(1) + data{2}(1);
@@ -157,7 +157,7 @@ for o = 1:numel(h.pushbutton_help)
     else % baseline is top border
         pos_but(2) = pos_pan(2) + pos_pan(4) + data{2}(2);
     end
-
+    
     % do not resize buttons
     pos_but([3,4]) = data{2}([3,4]);
 
@@ -183,3 +183,4 @@ uimenu(obj,'Label','routine 03','Callback', ...
     {@ttPr_routine,3,h_fig});
 uimenu(obj,'Label','routine 04','Callback', ...
     {@ttPr_routine,4,h_fig});
+
