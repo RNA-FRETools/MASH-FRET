@@ -70,6 +70,14 @@ q.pushbutton_cancel = uicontrol('Style','pushbutton', 'Units','pixels', ...
     'Position',[x y w_but h_ed], ...
     'Callback',{@pushbutton_cancel_Callback, h_fig});
 
+
+h = guidata(h_fig);
+h.optExpTdp = q;
+guidata(h_fig,h);
+q.pushbutton_help = setInfoIcons(h.optExpTdp.pushbutton_cancel,...
+    h_fig,h.param.movPr.infos_icon_file);
+
+
 %% Kinetic analysis
 
 x = wFig-mg-w_pan;

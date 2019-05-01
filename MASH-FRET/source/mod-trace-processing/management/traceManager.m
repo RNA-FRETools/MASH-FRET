@@ -41,8 +41,10 @@
         ok = loadData2Mngr(h_fig);
         if ~ok
             h = guidata(h_fig);
-            close(h.tm.figure_traceMngr);
-            return;
+            if ishandle(h.tm.figure_traceMngr)
+                close(h.tm.figure_traceMngr);
+                return;
+            end
         end
     end
     
@@ -354,6 +356,14 @@ if ~isfield(dat3,'range')
     dat3.rangeTags = [];
 end
 
+if ~sum(h.tm.molValid)
+    % store data in axes
+    set(h.tm.axes_ovrAll_1, 'UserData', dat1);
+    set(h.tm.axes_ovrAll_2, 'UserData', dat2);
+    set(h.tm.axes_histSort, 'UserData', dat3);
+    return;
+end
+
 % loading bar parameters-----------------------------------------------
 err = loading_bar('init',h_fig,nMol,'Concatenate and calculate data ...');
 if err
@@ -484,8 +494,10 @@ for ind = 1:(size(dat1.trace,2)+nFRET*nS) % counts for nChan*nExc Intensity chan
             dat1.lim{ind},dat1.niv(ind,1));
         
         % overflow first & last bins
-        dat2.hist{ind}([1 end]) = [];
-        dat2.iv{ind}([1 end]) = [];
+        if  numel(dat2.hist{ind})>2
+            dat2.hist{ind}([1 end]) = [];
+            dat2.iv{ind}([1 end]) = [];
+        end
 
         % build histogram with mean,max,min,median and states
         for j = 1:nCalc
@@ -494,7 +506,7 @@ for ind = 1:(size(dat1.trace,2)+nFRET*nS) % counts for nChan*nExc Intensity chan
                 dat3.lim{ind,j},dat3.niv(ind,1,j));
             
             % overflow first & last bins
-            if ~isempty(dat3.hist{ind,j})
+            if ~isempty(dat3.hist{ind,j}) && numel(dat3.hist{ind,j})>2
                 dat3.hist{ind,j}([1,end]) = [];
                 dat3.iv{ind,j}([1,end]) = [];
             end
@@ -507,8 +519,10 @@ for ind = 1:(size(dat1.trace,2)+nFRET*nS) % counts for nChan*nExc Intensity chan
             dat1.lim{ind},dat1.niv(ind,1));
         
         % overflow first & last bins
-        dat2.hist{ind}([1 end]) = [];
-        dat2.iv{ind}([1 end]) = [];
+        if  numel(dat2.hist{ind})>2
+            dat2.hist{ind}([1 end]) = [];
+            dat2.iv{ind}([1 end]) = [];
+        end
 
         % build histogram with mean,max,min,median and states
         for j = 1:nCalc
@@ -517,7 +531,7 @@ for ind = 1:(size(dat1.trace,2)+nFRET*nS) % counts for nChan*nExc Intensity chan
                 dat3.lim{ind,j},dat3.niv(ind,1,j));
             
             % overflow first & last bins
-            if ~isempty(dat3.hist{ind,j})
+            if ~isempty(dat3.hist{ind,j}) && numel(dat3.hist{ind,j})>2
                 dat3.hist{ind,j}([1 end]) = [];
                 dat3.iv{ind,j}([1 end]) = [];
             end
@@ -735,6 +749,11 @@ h.tm.togglebutton_videoView = uicontrol('style','togglebutton','parent',...
     'fontweight','bold','fontunits','pixels','fontsize',fntS_big,...
     'callback',{@switchPan_TM,h_fig});
 
+guidata(h_fig,h);
+h.tm.pushbutton_help = setInfoIcons(h.tm.togglebutton_videoView,...
+    h_fig,h.param.movPr.infos_icon_file);
+
+
 %% build main panels
 
 xNext = mg;
@@ -943,7 +962,7 @@ xNext = xNext + 0.5*w_pop + mg;
 
 % edit box to define a molecule tag, added by FS, 24.4.2018
 h.tm.edit_molTag = uicontrol('Style','edit','Parent',h.tm.uipanel_overview,...
-    'Units','pixels','String','Define a new default tag','Position',...
+    'Units','pixels','String','define a new tag','Position',...
     [xNext yNext w_pop h_but],'Callback',{@edit_addMolTag_Callback, h_fig}, ...
     'FontUnits','pixels','FontSize',fntS);
 
@@ -963,13 +982,11 @@ h.tm.popup_molTag = uicontrol('Style', 'popup', 'Parent', ...
 xNext = xNext + w_pop + mg;
 
 % added by MH, 24.4.2019
-hexclr = h.tm.molTagClr{get(h.tm.popup_molTag,'value')}(2:end);
-h.tm.edit_tagClr = uicontrol('Style','edit','Parent', ...
-    h.tm.uipanel_overview,'Units','pixels','String',num2str(hexclr), ...
-    'Position',[xNext yNext w_edit h_but],'TooltipString', ...
-    'define the tag color','FontUnits','pixels','FontSize',fntS, ...
-    'Backgroundcolor',hex2rgb(hexclr)/255,'callback',...
-    {@edit_tagClr_Callback,h_fig});
+h.tm.pushbutton_tagClr = uicontrol('style','pushbutton','parent', ...
+    h.tm.uipanel_overview,'units','pixels','string','Set', ...
+    'position',[xNext yNext w_edit h_but],'tooltipstring', ...
+    'define the tag color','fontunits','pixels','fontsize',fntS,...
+    'callback',{@pushbutton_tagClr_Callback,h_fig},'enable','off');
 
 xNext = xNext + w_edit + mg;
 
@@ -1322,28 +1339,12 @@ h.tm.text_yrangeUp = uicontrol('style','text','parent',...
 xNext = mg;
 yNext = yNext - h_edit - mg - h_txt;
 
-h.tm.text_conf1 = uicontrol('style','text','parent',h.tm.uipanel_range,...
-    'string','Confidence:','position',...
-    [xNext,yNext,w_pan_slct-2*mg,h_txt],'fontunits','pixels','fontsize',...
-    fntS,'horizontalalignment','left','fontweight','bold');
+h.tm.text_conf1 =  uicontrol('style','text','parent',h.tm.uipanel_range,...
+    'string','Select trace if:','fontunits','pixels','position',...
+    [xNext,yNext,w_pan_slct-2*mg,h_txt],'fontsize',fntS,...
+    'horizontalalignment','left');
 
-yNext = yNext - h_txt;
-
-h.tm.text_conf2 = uicontrol('style','text','parent',h.tm.uipanel_range,...
-    'string','(for trajectories only)','position',...
-    [xNext,yNext,w_pan_slct-2*mg,h_txt],'fontunits','pixels','fontsize',...
-    fntS,'horizontalalignment','left','fontangle','italic');
-
-yNext = yNext - mg - h_pop;
-
-str_pop = {'confidence in percent','confidence in data points'};
-h.tm.popupmenu_units = uicontrol('style','popupmenu','parent',...
-    h.tm.uipanel_range,'string',str_pop,'tooltipstring',...
-    'Select a condition','position',[xNext,yNext,w_pan_slct-2*mg,h_pop],...
-    'fontunits','pixels','fontsize',fntS,'callback',...
-    {@popupmenu_units_Callback,h_fig});
-
-yNext = yNext - mg - h_pop;
+yNext = yNext - mg - h_txt;
 
 str_pop = {'at least','at most','between'};
 h.tm.popupmenu_cond = uicontrol('style','popupmenu','parent',...
@@ -1375,12 +1376,28 @@ h.tm.edit_conf2 = uicontrol('style','edit','parent',h.tm.uipanel_range,...
     'enable','off');
 
 xNext = mg;
+yNext = yNext - mg - h_pop;
+
+str_pop = {'percents of the trace','data points'};
+h.tm.popupmenu_units = uicontrol('style','popupmenu','parent',...
+    h.tm.uipanel_range,'string',str_pop,'tooltipstring',...
+    'Select a condition','position',[xNext,yNext,w_pan_slct-2*mg,h_pop],...
+    'fontunits','pixels','fontsize',fntS,'callback',...
+    {@popupmenu_units_Callback,h_fig});
+
 yNext = yNext - mg - h_txt;
+
+h.tm.text_conf2 =  uicontrol('style','text','parent',h.tm.uipanel_range,...
+    'string','are included in the range.','position',...
+    [xNext,yNext,w_pan_slct-2*mg,h_txt],'fontunits','pixels','fontsize',...
+    fntS,'horizontalalignment','left');
+
+yNext = yNext - mg_big - h_txt;
 
 h.tm.text_Npop = uicontrol('style','text','parent',h.tm.uipanel_range,...
     'string','subgroup size: 0 molecule','position',...
     [xNext,yNext,w_pan_slct-2*mg,h_txt],'fontunits','pixels','fontsize',...
-    fntS,'horizontalalignment','left');
+    fntS,'horizontalalignment','left','fontweight','bold');
 
 yNext = yNext - mg - h_but;
 
@@ -1618,7 +1635,7 @@ for t = 1:nTag
     h.tm.edit_VV_tag(t) = uicontrol('style','edit','parent',...
         h.tm.uipanel_videoView,'units','pixels','fontunits','pixels',...
         'fontsize',fntS,'position',[xNext,yNext,w_txt,h_cb],'string',...
-        removeHtml(str_tag{t}),'enable','off');
+        removeHtml(str_tag{t+1}),'enable','off');
     
     xNext = 2*mg;
     yNext = yNext - mg - h_cb;
@@ -1880,8 +1897,30 @@ isBot = nFRET | nS;
 
 mol = p.curr_mol(proj);
 prm = p.proj{proj}.prm{mol};
+nDisp = size(h.tm.checkbox_molNb,2);
 
-for i = 1:size(h.tm.checkbox_molNb,2)
+for i = 1:nDisp
+    cla(h.tm.axes_itt(i));
+    cla(h.tm.axes_itt_hist(i));
+    if isBot
+        cla(h.tm.axes_frettt(i));
+        cla(h.tm.axes_hist(i));
+    end
+    
+    mol_nb = str2num(get(h.tm.checkbox_molNb(i),'String'));
+    if h.tm.molValid(mol_nb)
+        shad = 'white';
+    else
+        shad = get(h.tm.checkbox_molNb(i),'BackgroundColor');
+    end
+    set([h.tm.axes_itt(i),h.tm.axes_itt_hist(i)],'Color',shad);
+    if isBot
+        set([h.tm.axes_frettt(i),h.tm.axes_hist(i)],'Color',shad);
+    end
+end
+drawnow;
+
+for i = 1:nDisp
     mol_nb = str2num(get(h.tm.checkbox_molNb(i), 'String'));
 
     axes.axes_traceTop = h.tm.axes_itt(i);
@@ -1892,15 +1931,15 @@ for i = 1:size(h.tm.checkbox_molNb,2)
     end
 
     plotData(mol_nb, p, axes, prm, 0);
-
+    
     if h.tm.molValid(mol_nb)
-        shad = [1 1 1];
+        shad = 'white';
     else
-        shad = get(h.tm.checkbox_molNb(i), 'BackgroundColor');
+        shad = get(h.tm.checkbox_molNb(i),'BackgroundColor');
     end
-    set([h.tm.axes_itt(i) h.tm.axes_itt_hist(i)], 'Color', shad);
+    set([h.tm.axes_itt(i),h.tm.axes_itt_hist(i)],'Color',shad);
     if isBot
-        set([h.tm.axes_frettt(i), h.tm.axes_hist(i)], 'Color', shad);
+        set([h.tm.axes_frettt(i),h.tm.axes_hist(i)],'Color',shad);
         if i ~= size(h.tm.checkbox_molNb,2)
             set(get(h.tm.axes_frettt(i), 'Xlabel'), 'String', '');
             set(get(h.tm.axes_itt_hist(i), 'Xlabel'), 'String', '');
@@ -1910,6 +1949,7 @@ for i = 1:size(h.tm.checkbox_molNb,2)
         set(get(axes.axes_histTop, 'Xlabel'), 'String', '');
     end
     set(h.tm.checkbox_molNb(i), 'Value', h.tm.molValid(mol_nb));
+    drawnow;
 end
 end
 
@@ -1945,6 +1985,15 @@ plot2 = get(h.tm.popupmenu_axes2,'value');
 
 dat1 = get(h.tm.axes_ovrAll_1,'userdata');
 dat2 = get(h.tm.axes_ovrAll_2,'userdata');
+dat3 = get(h.tm.axes_histSort,'userdata');
+
+cla(h.tm.axes_ovrAll_1);
+cla(h.tm.axes_ovrAll_2);
+cla(h.tm.axes_traceSort);
+
+if ~sum(dat3.slct)
+    return;
+end
 
 disp('plot data ...');
 
@@ -2027,7 +2076,14 @@ else
     fcn = {}; 
 end
 
+cla(h_axes);
+
 dat1 = get(h.tm.axes_ovrAll_1,'userdata');
+dat3 = get(h.tm.axes_histSort,'userdata');
+
+if ~sum(dat3.slct)
+    return;
+end
 
 if ind<=nChan*nExc+nFRET+nS % single channel/FRET/S
     x_axis = 1:size(dat1.trace{ind},1);
@@ -2162,23 +2218,19 @@ mol = str2num(get(h.tm.checkbox_molNb(1),'string'));
 mol_disp = str2num(get(h.tm.edit_nbTotMol,'string'));
 
 % get plot coordinates
-xdata = [];
-ydata = [];
+xaxis = get(h.tm.axes_ovrAll_1,'xlim');
 yaxis = get(h.tm.axes_ovrAll_1,'ylim');
 L = sum(sum(incl(:,dat3.slct(1:mol-1))));
+if inSec
+    T = L*expT;
+else
+    T = L;
+end
+xdata = [xaxis(1)-1 T];
+ydata = [yaxis(2)+1 yaxis(2)+1];
 for m = mol:mol+mol_disp-1
     if m<=numel(dat3.slct) && dat3.slct(m)
-        
-        % initialize x data
-        if isempty(xdata)
-            if inSec
-                xdata = L*expT;
-            else
-                xdata = L;
-            end
-            ydata = yaxis(2)+1;
-        end
-        
+
         % append x data
         L = L + sum(incl(:,m));
         if inSec
@@ -2186,14 +2238,12 @@ for m = mol:mol+mol_disp-1
         else
             T = L;
         end
-        xdata = [xdata,T];
-        ydata = [ydata,yaxis(2)+1];
+        xdata = [xdata,xdata(end),T];
+        ydata = [ydata,yaxis(1)-1,yaxis(1)-1];
     end
 end
-
-if isempty(xdata)
-    return;
-end
+xdata = [xdata,xdata(end),xaxis(2)+1];
+ydata = [ydata,yaxis(2)+1,yaxis(2)+1];
 
 if isfield(h.tm,'area_slct') && ishandle(h.tm.area_slct)
     set(h.tm.area_slct,'xdata',xdata,'ydata',ydata,'basevalue',yaxis(1)-1);
@@ -2221,10 +2271,15 @@ nExc = p.proj{proj}.nb_excitations;
 nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
 
+cla(h.tm.axes_histSort);
 
 dat1 = get(h.tm.axes_ovrAll_1,'userdata');
 dat2 = get(h.tm.axes_ovrAll_2,'userdata');
 dat3 = get(h.tm.axes_histSort,'userdata');
+
+if ~sum(dat3.slct)
+    return;
+end
 
 ind = get(h.tm.popupmenu_selectData,'value');
 j = get(h.tm.popupmenu_selectCalc,'value');
@@ -2460,9 +2515,9 @@ end
 function plotData_videoView(h_fig)
 
 % defaults 
-width = 2;
-a = 0.8;
 mg_top = 0.4;
+mkSize = 10;
+lineWidth = 2;
 
 h = guidata(h_fig);
 p = h.param.ttPr;
@@ -2545,21 +2600,32 @@ if get(h.tm.checkbox_VV_tag0,'value')
     mols = ~sum(molTags,2)' & incl;
     x_coord = coord(mols,1:2:end);
     y_coord = coord(mols,2:2:end);
-    scatter(h.tm.axes_videoView,x_coord(:),y_coord(:),'marker','o',...
-        'markeredgecolor','white','linewidth',width,'markeredgealpha',a);
+    plot(h.tm.axes_videoView,x_coord(:),y_coord(:),'linestyle','none',...
+        'marker','o','markersize',mkSize,'markeredgecolor','white',...
+        'linewidth',lineWidth);
 end
 
 % plot tagged coordinates
 if isfield(h.tm,'checkbox_VV_tag') && ishandle(h.tm.checkbox_VV_tag(1))
     nTag = numel(h.tm.checkbox_VV_tag);
+    N = size(molTags,1);
+    allm = 1:N;
+    mkSize = repmat(mkSize,1,N);
+    prevt = 0;
     for t = 1:nTag
         if get(h.tm.checkbox_VV_tag(t),'value')
             mols = molTags(:,t)' & incl;
+            if prevt>0
+                mkSize = mkSize + (lineWidth+3)*molTags(:,prevt)';
+            end
             x_coord = coord(mols,1:2:end);
             y_coord = coord(mols,2:2:end);
-            scatter(h.tm.axes_videoView,x_coord(:),y_coord(:),'marker','o',...
-                'markeredgecolor',hex2rgb(clr{t})/255,'linewidth',width,...
-                'markeredgealpha',a);
+            for n = allm(mols)
+                plot(h.tm.axes_videoView,x_coord(:),y_coord(:),'linestyle',...
+                    'none','marker','o','markersize',mkSize(n),'linewidth',...
+                    lineWidth,'markeredgecolor',hex2rgb(clr{t})/255);
+            end
+            prevt = t;
         end
     end
 end
@@ -2568,8 +2634,6 @@ set(h.tm.axes_videoView,'nextplot','replacechildren');
 % set image limits
 xlim(h.tm.axes_videoView,[0,size(img,2)+1]);
 ylim(h.tm.axes_videoView,[0,size(img,1)+1]);
-
-
 
 end
 
@@ -2622,8 +2686,14 @@ nTag = numel(tagNames);
 str_lst = {};
 for t = 1:nTag
     if molTag(i,t)
+        if sum(double((hex2rgb(tagClr{t})/255)>0.5))==3
+            fntClr = 'black';
+        else
+            fntClr = 'white';
+        end
         str_lst = [str_lst cat(2,'<html><span bgcolor=',tagClr{t},'>',...
-            '<font color="white">',tagNames{t},'</font></body></html>')];
+            '<font color="',fntClr,'">',tagNames{t},...
+            '</font></body></html>')];
     end
 end
 if ~sum(molTag(i,:))
@@ -2651,24 +2721,30 @@ colorlist = h.tm.molTagClr;
 
 % added by MH, 24.4.2019
 nTag = numel(h.tm.molTagNames);
+if nTag==0
+    str_lst = {'no default tag'};
+    return;
+end
 
-str_lst = cell(1,nTag);
+str_lst = cell(1,nTag+1);
 
 % cancelled by MH, 24.4.2019
 % str_lst{1} = h.tm.molTagNames{1};
 
 % modified by MH, 24.4.2019
 % for k = 2:length(h.tm.molTagNames)
-for k = 1:nTag
-    
-    str_lst{k} = ['<html><body  bgcolor="' colorlist{k} '">' ...
-        '<font color="white">' h.tm.molTagNames{k} '</font></body></html>'];
+str_lst{1} = 'select tag';
+for k = 2:nTag+1
+    if sum(double((hex2rgb(colorlist{k-1})/255)>0.5))==3
+        fntClr = 'black';
+    else
+        fntClr = 'white';
+    end
+    str_lst{k} = ['<html><body  bgcolor="' colorlist{k-1} '">' ...
+        '<font color="',fntClr,'">' h.tm.molTagNames{k-1} ...
+        '</font></body></html>'];
 end
 
-% added by MH, 24.4.2019
-if isempty(str_lst)
-    str_lst = {'no default tag'};
-end
 end
 
 
@@ -2866,8 +2942,14 @@ end
 str_lst = {};
 for t = 1:nTag
     if rangeTag(i,t)
+        if sum(double((hex2rgb(tagClr{t})/255)>0.5))==3
+            fntClr = 'black';
+        else
+            fntClr = 'white';
+        end
         str_lst = [str_lst cat(2,'<html><span bgcolor=',tagClr{t},'>',...
-            '<font color="white">',tagNames{t},'</font></body></html>')];
+            '<font color="',fntClr,'">',tagNames{t},...
+            '</font></body></html>')];
     end
 end
 if ~sum(rangeTag(i,:))
@@ -2896,7 +2978,12 @@ for r = 1:R
     tags = find(rangeTag(r,:));
     nTag = numel(tags);
     if nTag>0
-        str_r = cat(2,'<html><font color="white"><span bgcolor=',...
+        if sum(double((hex2rgb(tagClr{tags(1)})/255)>0.5))==3
+            fntClr = 'black';
+        else
+            fntClr = 'white';
+        end
+        str_r = cat(2,'<html><font color="',fntClr,'"><span bgcolor=',...
             tagClr{tags(1)},'>',num2str(r),'</span></font>');
         for t = 2:nTag
             str_r = cat(2,str_r,'<span bgcolor=',tagClr{tags(t)},...
@@ -2950,12 +3037,19 @@ function pushbutton_update_Callback(obj, evd, h_fig)
 
     % display new histogram limits and bins
     h = guidata(h_fig);
-    dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
-    plot2 = get(h.tm.popupmenu_axes2, 'Value');
+    dat1 = get(h.tm.axes_ovrAll_1,'userdata');
+    dat3 = get(h.tm.axes_histSort,'userdata');
     
-    set(h.tm.edit_xlim_low, 'String', dat1.lim{plot2}(1));
-    set(h.tm.edit_xlim_up, 'String', dat1.lim{plot2}(2));
-    set(h.tm.edit_xnbiv, 'String', dat1.niv(plot2));
+    if ~sum(dat3.slct)
+        set([h.tm.edit_xlim_low,h.tm.edit_xlim_up,h.tm.edit_xnbiv],...
+            'enable','off');
+    else
+        plot2 = get(h.tm.popupmenu_axes2,'value');
+        set(h.tm.edit_xlim_low,'string',dat1.lim{plot2}(1,1),'enable',...
+            'on');
+        set(h.tm.edit_xlim_up,'string',dat1.lim{plot2}(1,2),'enable','on');
+        set(h.tm.edit_xnbiv,'string',dat1.niv(plot2,1),'enable','on');
+    end
     
 end
 
@@ -2963,6 +3057,12 @@ end
 function popupmenu_axes_Callback(obj, evd, h_fig)
 
     h = guidata(h_fig);
+    
+    dat3 = get(h.tm.axes_histSort,'userdata');
+    if ~sum(dat3.slct)
+        return;
+    end
+    
     p = h.param.ttPr;
     proj = p.curr_proj;
     nChan = p.proj{proj}.nb_channel;
@@ -3061,22 +3161,25 @@ nS = size(S,1);
 dat1 = get(h.tm.axes_ovrAll_1, 'UserData');
 dat2 = get(h.tm.axes_ovrAll_2, 'UserData');
 plot2 = get(h.tm.popupmenu_axes2, 'Value');
-xlim_low = str2num(get(obj,'String'));
+lim_low = str2num(get(obj,'String'));
 
-if xlim_low >= dat1.lim{plot2}(row,2)
+if lim_low >= dat1.lim{plot2}(row,2)
     setContPan('Lower bound must be lower than higher bound.','error',...
         h_fig);
     return;
 end
 
-dat1.lim{plot2}(row,1) = xlim_low;
+dat1.lim{plot2}(row,1) = lim_low;
 
 if plot2 <= nChan*nExc+nFRET+nS
     [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(dat1.trace{plot2},...
         dat1.lim{plot2},dat1.niv(plot2,1));
     
-else%% double check RB 2018-01-04
-    ES = [dat1.trace{plot2-nFRET-nS},dat1.trace{plot2-nS}];
+else
+    ind = plot2-nChan*nExc-nFRET-nS;
+    ind_e = ceil(ind/nS) + nChan*nExc;
+    ind_s = ind - (ceil(ind/nS)-1)*nS + nChan*nExc + nFRET;
+    ES = [dat1.trace{ind_e},dat1.trace{ind_s}];
     [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(ES,...
         dat1.lim{plot2},dat1.niv(plot2,[1,2]));
 end
@@ -3086,6 +3189,7 @@ set(h.tm.axes_ovrAll_2, 'UserData', dat2);
 plotData_overall(h_fig);
     
 end
+
 
 function edit_lim_up_Callback(obj,evd,h_fig,row)
 
@@ -3122,8 +3226,11 @@ if plot2 <= nChan*nExc+nFRET+nS
     [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(dat1.trace{plot2},...
         dat1.lim{plot2},dat1.niv(plot2,1));
     
-else%% double check RB 2018-01-04
-    ES = [dat1.trace{plot2-nFRET-nS},dat1.trace{plot2-nS}];
+else
+    ind = plot2-nChan*nExc-nFRET-nS;
+    ind_e = ceil(ind/nS) + nChan*nExc;
+    ind_s = ind - (ceil(ind/nS)-1)*nS + nChan*nExc + nFRET;
+    ES = [dat1.trace{ind_e},dat1.trace{ind_s}];
     [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(ES,...
         dat1.lim{plot2},dat1.niv(plot2,[1,2]));
 end
@@ -3170,11 +3277,13 @@ if plot2 <= nChan*nExc+nFRET+nS
     [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(dat1.trace{plot2},...
         dat1.lim{plot2},dat1.niv(plot2,1));
     
-else%% double check RB 2018-01-05
-    ES = [dat1.trace{plot2-nFRET-nS},dat1.trace{plot2-nS}];
-    [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(ES,dat1.lim{plot2},...
-        dat1.niv(plot2,:));
-
+else
+    ind = plot2-nChan*nExc-nFRET-nS;
+    ind_e = ceil(ind/nS) + nChan*nExc;
+    ind_s = ind - (ceil(ind/nS)-1)*nS + nChan*nExc + nFRET;
+    ES = [dat1.trace{ind_e},dat1.trace{ind_s}];
+    [dat2.hist{plot2},dat2.iv{plot2}] = getHistTM(ES,...
+        dat1.lim{plot2},dat1.niv(plot2,[1,2]));
 end
 
 set(h.tm.axes_ovrAll_1, 'UserData', dat1);
@@ -3278,8 +3387,11 @@ h = guidata(h_fig);
 % get tag to add
 tagNames = get(h.tm.popup_molNb(i),'string');
 tag = get(h.tm.popup_molNb(i),'value');
-if strcmp(tagNames{tag},'no default tag')
+if strcmp(tagNames{tag},'no default tag') || ...
+        strcmp(tagNames{tag},'select tag')
     return;
+else
+    tag = tag-1;
 end
 
 % update and save molecule tags
@@ -3290,6 +3402,8 @@ guidata(h_fig,h);
 % update molecule tag lists
 nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
 update_taglist_OV(h_fig,nb_mol_disp);
+
+set(h.tm.popup_molNb(i),'value',1);
 
 % update viveo view plot
 plotData_videoView(h_fig);
@@ -3382,7 +3496,7 @@ function pushbutton_reduce_Callback(obj, evd, h_fig)
 end
 
 
-function slider_Callback(obj, evd, h_fig)
+function slider_Callback(obj,evd,h_fig)
 
 % Last update by MH, 24.4.2019
 % >> cancel change in popupmenu's background color: no need as width and 
@@ -3404,6 +3518,11 @@ nMol = numel(h.tm.molValid);
 
 pos_slider = round(get(obj, 'Value'));
 max_slider = get(obj, 'Max');
+
+prev_topMol = str2num(get(h.tm.checkbox_molNb(1),'String'));
+if prev_topMol==(max_slider-pos_slider+1)
+    return;
+end
 
 nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
 if nb_mol_disp > nMol
@@ -3533,9 +3652,24 @@ if meth>4
 end
 
 set(obj,'value',1);
-
 guidata(h_fig,h);
-plotDataTm(h_fig);
+
+% update view in panel "Molecule selection"
+nDisp = numel(h.tm.axes_itt);
+isBot = isfield(h.tm,'axes_frettt');
+for i = 1:nDisp
+    m = str2num(get(h.tm.checkbox_molNb(i),'string'));
+    set(h.tm.checkbox_molNb(i),'value',h.tm.molValid(m));
+    if h.tm.molValid(m)
+        shad = [1,1,1];
+    else
+        shad = get(h.tm.checkbox_molNb(i),'backgroundcolor');
+    end
+    set([h.tm.axes_itt(i),h.tm.axes_itt_hist(i)],'color',shad);
+    if isBot
+        set([h.tm.axes_frettt(i),h.tm.axes_hist(i)],'color',shad);
+    end
+end
 
 end
 
@@ -3634,7 +3768,8 @@ if ~strcmp(obj.String, 'define a new tag') && ...
         ~ismember(obj.String, h.tm.molTagNames)
     
     % added by MH, 27.4.2019
-    if strcmp(obj.String, 'no tag') || strcmp(obj.String, 'no default tag')
+    if strcmp(obj.String, 'no tag') || strcmp(obj.String, 'no default tag') ....
+            || strcmp(obj.String, 'select tag')
         msgbox('Simply, no.');
         set(obj,'string','define a new tag');
         return
@@ -3698,20 +3833,29 @@ h = guidata(h_fig);
 % control empty tag
 tag = get(obj,'value');
 str_pop = get(obj, 'string');
-if strcmp(str_pop{tag},'no default tag')
-    set(h.tm.edit_tagClr,'string','','enable','off');
+if strcmp(str_pop{tag},'no default tag') || ...
+        strcmp(str_pop{tag},'select tag')
+    set(h.tm.pushbutton_tagClr,'enable','off','backgroundcolor',...
+        get(h_fig,'color'),'foregroundcolor','black');
     return;
+else
+    tag = tag-1;
 end
 
 % update edit field background color
 clr_hex = h.tm.molTagClr{tag}(2:end);
-set(h.tm.edit_tagClr,'string',clr_hex,'enable','on','backgroundcolor',...
-    hex2rgb(clr_hex)/255,'foregroundcolor','white');
+if sum(double((hex2rgb(clr_hex)/255)>0.5))==3
+    fntClr = 'black';
+else
+    fntClr = 'white';
+end
+set(h.tm.pushbutton_tagClr,'enable','on','backgroundcolor',...
+    hex2rgb(clr_hex)/255,'foregroundcolor',fntClr);
 
 end
 
 
-function edit_tagClr_Callback(obj,evd,h_fig)
+function pushbutton_tagClr_Callback(obj,evd,h_fig)
 % Defines the tag color with hexadecimal input
 
 % Created by MH, 24.4.2019
@@ -3723,17 +3867,21 @@ h = guidata(h_fig);
 % control empty tag
 tag = get(h.tm.popup_molTag,'value');
 str_pop = get(h.tm.popup_molTag, 'string');
-if strcmp(str_pop{tag},'no default tag')
+if strcmp(str_pop{tag},'no default tag') || ...
+        strcmp(str_pop{tag},'select tag')
     return;
+else
+     tag = tag-1;
 end
 
 % control color value
-clr_str = get(obj,'string');
-if ~ishexclr(clr_str)
-    setContPan(cat(2,'Tag color must be a RGB value in the hexadecimal ',...
-        'format (ex:92B06A)'),'error',h_fig);
+rgb = uisetcolor('Select a tag color');
+if numel(rgb)==1
     return;
 end
+
+rgb = round(255*rgb);
+clr_str = rgb2hex(rgb);
 
 % save color
 h.tm.molTagClr{tag} = cat(2,'#',clr_str);
@@ -3781,16 +3929,22 @@ function pushbutton_deleteMolTag_Callback(obj, evd, h_fig)
     
     % added by MH, 24.4.2019
     str_pop = get(h.tm.popup_molTag, 'string');
-    if strcmp(str_pop{selectMolTag},'no default tag')
+    if strcmp(str_pop{selectMolTag},'no default tag') || ...
+            strcmp(str_pop{selectMolTag},'select tag')
         return;
+    else
+        selectMolTag = selectMolTag-1;
     end
-    choice = questdlg({cat(2,'After deleting the molecule tag, the ',...
-        'corresponding molecule sorting will be lost.'),'',cat(2,'Do you ',...
-        'want to delete tag "',removeHtml(str_pop{selectMolTag}),'" and ',...
-        'forget the corresponding molecule sorting?')},'Delete tag',...
-        'Yes, forget sorting','Cancel','Cancel');
-    if ~strcmp(choice,'Yes, forget sorting')
-        return;
+    if sum(h.tm.molTag(:,selectMolTag))
+        choice = questdlg({cat(2,'After deleting the molecule tag, the ',...
+            'corresponding molecule sorting will be lost.'),'',...
+            cat(2,'Do you want to delete tag "',...
+            removeHtml(str_pop{selectMolTag}),'" and forget the ',...
+            'corresponding molecule sorting?')},'Delete tag',...
+            'Yes, forget sorting','Cancel','Cancel');
+        if ~strcmp(choice,'Yes, forget sorting')
+            return;
+        end
     end
     
     % cancelled by MH, 24.4.2019
@@ -4733,13 +4887,18 @@ end
 
 tag = get(h.tm.popupmenu_defTagPop,'value');
 str_tag = get(h.tm.popupmenu_defTagPop,'string');
-if strcmp(str_tag{tag},'no default tag')
+if strcmp(str_tag{tag},'no default tag') || ...
+        strcmp(str_tag{tag},'select tag')
     return;
+else
+    tag = tag-1;
 end
 
 dat3 = get(h.tm.axes_histSort,'userdata');
 dat3.rangeTags(range,tag) = true;
 set(h.tm.axes_histSort,'userdata',dat3);
+
+set(h.tm.popupmenu_defTagPop,'value',1);
 
 update_taglist_AS(h_fig);
 

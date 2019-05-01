@@ -119,7 +119,7 @@ for ff = 1:F
 %         u = extractBetween(head{ii},'(',')');
         u = regexp(head{ii},'\(\w*\)','match');
         if ~isempty(u)
-            u = u(2:end-1);
+            u = u{1}(2:end-1);
             units{ff} = u;
         end
         head{ii} = regexprep(head{ii},'\(\w+\)','');
@@ -299,23 +299,23 @@ for ff = 1:F
             for ii = 1:nCol2-1
                 headStr = cat(2,headStr,allHead2{ii},'\t');
             end
-            headStr = cat(2,headStr,allHead2{nCol2},'\n');
-        end
+            headStr = cat(2,headStr,allHead2{nCol2});
         
-        % added by FS, 15.11.18
-        headStr2 = strsplit(headStr, '\\t');
-        headStr = [];
-        for ii = 1:size(headStr2,2)
-            if ~isempty(strfind(headStr2{ii},'I_'))
-                if ~strcmp(units{ff}, 'None')
-                    headStr2{ii} = strcat(headStr2{ii},'(',units{ff}{:},')');  % added by FS,15.11.2018
-                else
-                    headStr2{ii} = regexprep(headStr2{ii},'\(\w+\)','');  % added by FS,15.11.2018
+            % added by FS, 15.11.18
+            headStr2 = strsplit(headStr, '\\t');
+            headStr = [];
+            for ii = 1:size(headStr2,2)
+                if ~isempty(strfind(headStr2{ii},'I_'))
+                    if ~strcmp(units{ff}, 'None')
+                        headStr2{ii} = cat(2,headStr2{ii},'(',units{ff},')');  % added by FS,15.11.2018
+                    else
+                        headStr2{ii} = regexprep(headStr2{ii},'\(\w+\)','');  % added by FS,15.11.2018
+                    end
                 end
+                headStr = cat(2,headStr,headStr2{ii},'\t');
             end
-            headStr = cat(2,headStr,headStr2{ii},'\t');
+            headStr = cat(2,headStr(1:end-2),'\n');
         end
-        headStr = headStr(1:end-2);
 
         f = fopen(cat(2,out_pname,filesep,fList(ff,1).name),'Wt');
         fprintf(f,headStr);

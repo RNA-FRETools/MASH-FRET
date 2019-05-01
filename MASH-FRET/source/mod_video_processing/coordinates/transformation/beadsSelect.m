@@ -75,6 +75,9 @@ h.menuDelSet = uimenu(h.menu, 'Label', 'Delete last set', ...
 h.menuClose = uimenu(h.menu, 'Label', 'Close and Save', ...
     'Callback', {@fig_CloseRequestFcn, h.fig});
 
+h.menu_help = uimenu('Label','Help','Callback',...
+    {@pushbutton_help_Callback,getDocLink('mapping tool')});
+
 yNext = 0;
 xNext = 0;
 

@@ -59,14 +59,14 @@ if ~isempty(p.proj)
             h.checkbox_autoDark h.pushbutton_showDark h.text_TP_bg_param...
             h.edit_trBgCorrParam_01 h.text_TP_subImg_brightness ...
             h.text_TP_subImg_contrast h.text_TP_subImg_coordinates], ...
-            'Visible', 'off');
+            'enable', 'off');
         set(h.popupmenu_trBgCorr, 'Value', 1, 'String', {'Manual'});
 
     elseif ~isMov
         set([h.text_TP_subImg_coordinates h.text_TP_subImg_channel ...
             h.popupmenu_TP_subImg_channel h.text_TP_subImg_x ...
             h.edit_TP_subImg_x h.text_TP_subImg_y h.edit_TP_subImg_y], ...
-            'Visible', 'on');
+            'enable', 'off');
         set([h.edit_TP_subImg_x,h.edit_TP_subImg_y],'Enable','inactive');
         set(h.popupmenu_TP_subImg_channel,'Enable','on');
         setProp([ h.text_TP_subImg_exc h.popupmenu_subImg_exc ...
@@ -76,7 +76,7 @@ if ~isempty(p.proj)
             h.text_yDark h.edit_yDark h.checkbox_autoDark ...
             h.pushbutton_showDark h.edit_trBgCorrParam_01 ...
             h.text_TP_bg_param h.text_TP_subImg_brightness ...
-            h.text_TP_subImg_contrast], 'Visible', 'off');
+            h.text_TP_subImg_contrast], 'enable', 'off');
         set(h.popupmenu_trBgCorr, 'Value', 1, 'String', {'Manual'});
 
     else
@@ -91,101 +91,44 @@ if ~isempty(p.proj)
             h.checkbox_autoDark h.pushbutton_showDark h.text_TP_bg_param ...
             h.edit_trBgCorrParam_01 h.text_TP_subImg_brightness ...
             h.text_TP_subImg_contrast h.text_TP_subImg_coordinates], ...
-            'Visible','on');
+            'enable','on');
         set(h.popupmenu_trBgCorr, 'Value', 1, 'String', {'Manual', ...
             '<N median values>', 'Mean value', 'Most frequent value', ...
             'Histothresh', 'Dark trace', 'Median value'});
-    end
-    
-    % manage panel visibility for sub-images
-    if ~isCoord && ~isMov
-        set(h.uipanel_TP_subImages,'Visible','off');
-    else
-        set(h.uipanel_TP_subImages,'Visible','on');
-    end
-    
-    % manage control visibility for sub-image laser selection
-    if nExc == 1
-        set([h.text_TP_subImg_exc,h.popupmenu_subImg_exc],'Visible','off');
-    else
-        set([h.text_TP_subImg_exc,h.popupmenu_subImg_exc],'Visible','on');
-    end
-    
-    % manage control visibility for bleedthrough correction
-    if nC == 1
-        
-        % modified by MH, 29.3.2019
-%         setProp([h.text_bt h.popupmenu_bt h.edit_bt], 'Visible', 'off');
-        setProp([h.text_TP_cross_into h.text_TP_cross_bt h.popupmenu_bt ...
-            h.edit_bt], 'Visible', 'off');
-        
-    else
-        
-        % modified by MH, 29.3.2019
-%         setProp([h.text_bt h.popupmenu_bt h.edit_bt], 'Visible', 'on');
-        setProp([h.text_TP_cross_into h.text_TP_cross_bt h.popupmenu_bt ...
-            h.edit_bt], 'Visible', 'on');
-        
-    end
-    
-    % manage panel visibility for factor corrections
-    if nExc == 1 && nC == 1
-        set(h.uipanel_TP_factorCorrections, 'Visible', 'off');
-    else
-        set(h.uipanel_TP_factorCorrections, 'Visible', 'on');
     end
     
     % manage control visibility for gamma correction
     if nFRET>0
         
         % modified MH, 3.4.2019
-%         set([h.text_TP_factors_data h.popupmenu_gammaFRET ...
-%             h.text_TP_factors_method h.popupmenu_TP_factors_method ...
-%             h.text_TP_factors_gamma h.edit_gammaCorr ...
-%             h.pushbutton_optGamma],'Visible','on');
         set([h.text_TP_factors_data h.popupmenu_gammaFRET ...
             h.text_TP_factors_method h.popupmenu_TP_factors_method ...
             h.text_TP_factors_gamma h.edit_gammaCorr ...
-            h.pushbutton_optGamma h.text_TP_cross_gammafactor],'Visible',...
-            'on');
+            h.pushbutton_optGamma h.text_TP_cross_gammafactor],'enable',...
+            'off');
         
     else
         
         % modified MH, 3.4.2019
-%         set([h.text_TP_factors_data h.popupmenu_gammaFRET ...
-%             h.text_TP_factors_method h.popupmenu_TP_factors_method ...
-%             h.text_TP_factors_gamma h.edit_gammaCorr ...
-%             h.pushbutton_optGamma],'Visible','off');
         set([h.text_TP_factors_data h.popupmenu_gammaFRET ...
             h.text_TP_factors_method h.popupmenu_TP_factors_method ...
             h.text_TP_factors_gamma h.edit_gammaCorr ...
-            h.pushbutton_optGamma h.text_TP_cross_gammafactor],'Visible',...
+            h.pushbutton_optGamma h.text_TP_cross_gammafactor],'enable',...
             'off');
         
-    end
-    
-    % manage control visibility for selection of intensity data
-    if nC==1 && nExc==1
-        set([h.text_TP_subImg_channel h.popupmenu_TP_subImg_channel ...
-            h.text_trBgCorr_data h.popupmenu_trBgCorr_data], 'Visible', ...
-            'off');
-    else
-        set([h.text_TP_subImg_channel h.popupmenu_TP_subImg_channel ...
-            h.text_trBgCorr_data h.popupmenu_trBgCorr_data], 'Visible', ...
-            'on');
     end
     
     % manage control visibility for selection of ratio data
     if (nFRET + nS) == 0
         set([h.popupmenu_TP_states_applyTo h.text_TP_states_applyTo ...
-            h.popupmenu_plotBottom h.text_plotBottom], 'Visible', 'off');
+            h.popupmenu_plotBottom h.text_plotBottom], 'enable', 'off');
         set(h.text_topAxes, 'String', 'channel');
     else
         set(h.popupmenu_plotBottom, 'String', getStrPop('plot_botChan', ...
             {FRET S exc p.proj{proj}.colours labels}), 'Value', ...
             p_fix{2}(3));
         set([h.popupmenu_TP_states_applyTo h.text_TP_states_applyTo ...
-            h.popupmenu_plotBottom h.text_plotBottom], 'Visible', 'on');
+            h.popupmenu_plotBottom h.text_plotBottom], 'enable', 'on');
         set(h.text_topAxes, 'String', 'top axes:');
     end
     
@@ -317,7 +260,7 @@ if ~isempty(p.proj)
             param.extra = p.proj{proj}.movie_dat; 
             for l = 1:nExc
                 param.start = l;
-                [img ok] = createAveIm(param, 0, h_fig);
+                [img,ok] = createAveIm(param,false,false,h_fig);
                 if ~ok
                     return;
                 end
@@ -342,6 +285,13 @@ else
     setProp(get(h.uipanel_TP, 'Children'), 'Enable', 'off');
     setProp([h.pushbutton_traceImpOpt h.pushbutton_addTraces], ...
         'Enable', 'on');
+    set(h.pushbutton_help,'enable','on');
+    set([h.popupmenu_plotTop h.popupmenu_bleachChan h.popupmenu_corr_chan ...
+        h.popupmenu_bt h.popupmenu_TP_states_data ...
+        h.popupmenu_trBgCorr_data h.popupmenu_subImg_exc ...
+        h.popupmenu_trBgCorr_data h.popupmenu_corr_exc ...
+        h.popupmenu_ttPlotExc h.popupmenu_TP_subImg_channel],'Value',1,...
+        'string',{'none'});
 end
 
 % clear and sett off-visible all axes

@@ -9,7 +9,19 @@ function openItgFileOpt(obj, evd, h)
 % --> created function from scratch
 
 h_fig = h.figure_MASH;
-p = h.param.movPr.itg_expMolFile;
+pMov = h.param.movPr;
+p = pMov.itg_expMolFile;
+
+if ~(isfield(pMov,'itg_movFullPth') && ~isempty(pMov.itg_movFullPth))
+    set(h.edit_movItg,'BackgroundColor',[1 0.75 0.75]);
+    updateActPan('No movie loaded.',h_fig,'error');
+    return;
+end
+if ~(isfield(pMov, 'coordItg') && ~isempty(pMov.coordItg))
+        set(h.edit_itg_coordFile,'BackgroundColor',[1,0.75,0.75]);
+        updateActPan('No coordinates loaded.',h_fig,'error');
+    return;
+end
 
 mg = 10;
 big_mg = 15;
@@ -60,7 +72,7 @@ yNext = mg;
 xNext = wFig - mg - w_but;
 
 h.itgFileOpt.pushbutton_itgFileOpt_ok = uicontrol('Style', ...
-    'pushbutton', 'Parent', h.figure_itgFileOpt, 'String', 'Save', ...
+    'pushbutton', 'Parent', h.figure_itgFileOpt, 'String', 'Next>>', ...
     'Units', 'pixels', 'BackgroundColor', bgCol, 'Position', ...
     [xNext yNext w_but h_but], 'Callback', ...
     {@pushbutton_itgFileOpt_ok_Callback, h_fig});
@@ -72,6 +84,10 @@ h.itgFileOpt.pushbutton_itgFileOpt_cancel = uicontrol('Style', ...
     'Units', 'pixels', 'BackgroundColor', bgCol, 'Position', ...
     [xNext yNext w_but h_but], 'Callback', ...
     {@pushbutton_itgFileOpt_cancel_Callback, h_fig});
+
+guidata(h_fig,h);
+h.itgFileOpt.pushbutton_help = setInfoIcons(...
+    h.itgFileOpt.pushbutton_itgFileOpt_cancel,h_fig,pMov.infos_icon_file);
 
 yNext = yNext + h_but + mg;
 xNext = mg;
@@ -203,6 +219,8 @@ h.param.movPr.itg_expMolFile = [ ...
 guidata(h_fig, h);
 
 close(h.figure_itgFileOpt);
+
+TTgenGo(h_fig);
 
 
 function pushbutton_itgFileOpt_cancel_Callback(obj, evd, h_fig)

@@ -7,6 +7,21 @@ function updateActPan(act, h_fig, varargin)
 % Last update: 19th of February 2019 by Mélodie C.A.S Hadzic
 % --> append log file for each action displayed
 
+% default
+colBg = [1 1 1];
+if ~isempty(varargin)
+    switch varargin{1}
+        case 'error'
+            colBg = [1 0.9 0.9];
+        case 'success'
+            colBg = [0.9 1 0.9];
+        case 'process'
+            colBg = [1 1 0.9];
+        case 'warning'
+            colBg = [1 0.95 0.9];
+    end
+end
+
 newAct = act;
 
 if ~iscell(newAct)
@@ -101,15 +116,9 @@ if isfield(h, 'figure_actPan') && ishandle(h.figure_actPan)
                 str_err = act;
             end
             helpdlg(str_err);
-            set(h_pan.text_actions, 'BackgroundColor', [1 0.75 0.75]);
-        elseif strcmp(varargin{1}, 'success')
-            set(h_pan.text_actions, 'BackgroundColor', [0.75 1 0.75]);
-        elseif strcmp(varargin{1}, 'process')
-            set(h_pan.text_actions, 'BackgroundColor', [1 1 0.75]);
         end
-    else
-        set(h_pan.text_actions, 'BackgroundColor', [1 1 1]);
     end
+    set(h_pan.text_actions,'BackgroundColor',colBg);
 end
 
 for i = 1:size(newAct,1)

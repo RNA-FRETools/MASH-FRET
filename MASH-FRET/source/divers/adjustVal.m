@@ -12,6 +12,10 @@ if (iscell(p_def) && ~iscell(p_input)) || ...
     return;
 end
 
+if isempty(p_input)
+    p_input = p_def;
+end
+
 for cz = 1:size(p_def,3)
     if cz > size(p_input,3)
         p_input(:,:,cz:size(p_def,3)) = p_def(:,:,cz:size(p_def,3));

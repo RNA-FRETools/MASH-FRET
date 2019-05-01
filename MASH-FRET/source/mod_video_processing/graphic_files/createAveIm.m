@@ -1,7 +1,11 @@
-function [img_ave ok] = createAveIm(param, corr, h_fig)
+function [img_ave,ok] = createAveIm(param,corr,useMov,h_fig)
 % Create the average image for all frames obtained at donor excitation
 % (first cell) and for all frames obtained at acceptor excitation (second
 % cell)
+%
+% useMov allows the use of the video stored in VP, for VP, in h.movie.movie
+
+h = guidata(h_fig);
 
 startFrame = param.start; % start data
 stopFrame = param.stop; % stop data
@@ -12,10 +16,27 @@ resX = fDat{2}(1);
 resY = fDat{2}(2);
 frameLength = fDat{3};
 ok = 0;
+isMov = 0;
+if useMov && isfield(h,'movie') && isfield(h.movie,'movie') && ...
+    ~isempty(h.movie.movie)
+    isMov = 1;
+end
+isBgcorr = 0;
+if corr && isfield(h.param.movPr,'bgCorr') && ...
+    ~isempty(h.param.movPr.bgCorr)
+    isBgcorr = 1;
+end
 
 if (stopFrame<=frameLength && startFrame>=1)
     img_ave = zeros(resY,resX);
     realLength = numel(startFrame:iv:stopFrame);
+    
+    % original average image
+    if isMov && ~isBgcorr
+        img_ave = sum(h.movie.movie,3)/frameLength;
+        ok = 1;
+        return;
+    end
     
     if ~isempty(h_fig)
         % loading bar parameters-------------------------------------------
@@ -29,14 +50,20 @@ if (stopFrame<=frameLength && startFrame>=1)
         guidata(h_fig, h);
         % -----------------------------------------------------------------
     end
-
+    
     for i = startFrame:iv:stopFrame
-        [data ok] = getFrames(fullname, i, param.extra, h_fig);
-        if ~ok
-            return;
+        
+        if isMov
+            imgNext = h.movie.movie(:,:,i);
+        else
+            [data,ok] = getFrames(fullname, i, param.extra, h_fig);
+            if ~ok
+                return;
+            end
+            imgNext = data.frameCur;
         end
-        imgNext = data.frameCur;
-        if corr && isfield(h.param.movPr, 'bgCorr') && ~isempty(h_fig)
+
+        if isBgcorr && ~isempty(h_fig)
             avBg = h.param.movPr.movBg_one;
             if ~avBg
                 imgNext = updateBgCorr(imgNext, h_fig);
@@ -45,12 +72,10 @@ if (stopFrame<=frameLength && startFrame>=1)
                     imgNext = updateBgCorr(imgNext, h_fig);
                 end
             end
-        elseif (corr && isfield(h.param.movPr, 'bgCorr')) && isempty(h_fig)
-            disp(['Background calculation impossible: MASH figure ' ...
-                'handle empty.']);
         end
+
         img_ave = img_ave + single(imgNext)/realLength;
-        
+
         if ~isempty(h_fig)
             % loading bar update-------------------------------------------
             intrupt = loading_bar('update', h_fig);
@@ -61,11 +86,11 @@ if (stopFrame<=frameLength && startFrame>=1)
             % -------------------------------------------------------------
         end
     end
-    
+
     if ~isempty(h_fig)
         loading_bar('close', h_fig);
     end
-    
+
 else
     if ~isempty(h_fig)
         updateActPan('Input parameters inconsitents.', h_fig, 'error');

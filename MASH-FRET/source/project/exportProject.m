@@ -1,42 +1,46 @@
-function s = exportProject(p, fname, h_fig)
+function s = exportProject(p,fname,h_fig)
 
 h = guidata(h_fig);
 
+% initializes project stucture
 s = [];
-     
-[data,ok] = getFrames(p.itg_movFullPth, 1, [], h_fig);
-if ~ok
-    return;
-end
 
-fCurs = data.fCurs;
-res_x = data.pixelX;
-res_y = data.pixelY;
-nFrames = data.frameLen;
+% collect video file parameters
+fDat{1} = p.itg_movFullPth;
+fDat{2}{1} = h.movie.speCursor;
 if isfield(h, 'movie') && ~isempty(h.movie.movie)
-    fCurs = h.movie.movie;
+    fDat{2}{2} = h.movie.movie;
+else
+    fDat{2}{2} = [];
 end
+fDat{3} = [h.movie.pixelY,h.movie.pixelX];
+fDat{4} = h.movie.framesTot;
 
-fDat = {p.itg_movFullPth, fCurs, [res_y res_x], nFrames};
-[p.coordItg,traces] = create_trace(p.coordItg, p.itg_dim, p.itg_n, fDat);
+% build traces
+[p.coordItg,traces] = create_trace(p.coordItg,p.itg_dim,p.itg_n,fDat);
 
+nChan = p.nChan;
 nExc = p.itg_nLasers;
 nCoord = size(p.coordItg,1);
-nFrames_min = floor(nFrames/nExc);
-
-I = zeros(nFrames_min, p.nChan*nCoord, nExc);
-for i = 1:nExc
-    I(:,:,i) = traces(i:nExc:nFrames_min*nExc,:);
-end
+L = h.movie.framesTot;
 
 % correct ill-defined project parameters
-if p.nChan==1
+if nChan==1
     p.itg_expFRET = [];
     p.itg_expS = [];
 end
-
+if nExc==1
+    p.itg_expS = [];
+end
 nFRET = size(p.itg_expFRET,1);
 nS = size(p.itg_expS,1);
+
+% initializes intensity matrix
+L_min = floor(L/nExc);
+I = zeros(L_min,nChan*nCoord,nExc);
+for i = 1:nExc
+    I(:,:,i) = traces(i:nExc:L_min*nExc,:);
+end
 
 if ~isempty(I)
     s.date_creation = datestr(now);
@@ -50,18 +54,18 @@ if ~isempty(I)
     
     s.movie_file = p.itg_movFullPth; % movie path/file
     s.is_movie = 1;
-    s.movie_dim = [res_x res_y];
-    s.movie_dat = {fCurs, [res_x res_y], nFrames};
+    s.movie_dim = [h.movie.pixelX h.movie.pixelY];
+    s.movie_dat = {h.movie.speCursor,[h.movie.pixelX h.movie.pixelY],L};
 
     s.coord_file = p.itg_coordFullPth; % coordinates path/file
     s.coord_imp_param = p.itg_impMolPrm; % coordinates import parameters
     s.coord = p.coordItg; % molecule coordinates in all channels
-    s.coord_incl = true(1,size(I,2)/p.nChan);
+    s.coord_incl = true(1,size(I,2)/nChan);
     s.is_coord = 1;
     
     s.proj_file = fname; % project file
     
-    s.nb_channel = p.nChan; % nb of channel
+    s.nb_channel = nChan; % nb of channel
     s.frame_rate = p.rate;
     s.exp_parameters = p.itg_expMolPrm; % user-defined parameters
     s.pix_intgr = [p.itg_dim p.itg_n]; % intgr. area dim. + nb of intgr pix
@@ -81,13 +85,25 @@ if ~isempty(I)
     s.intensities_DTA = nan(size(I));
     s.FRET_DTA = nan(size(I,1), nCoord*nFRET);
     s.S_DTA = nan(size(I,1), nCoord*nS);
-    s.bool_intensities = true(size(I,1), size(I,2)/p.nChan);
+    s.bool_intensities = true(size(I,1), size(I,2)/nChan);
     
     s.colours = p.itg_clr; % plot colours
     
     % added by FS, 24.4.2018
+<<<<<<< HEAD
     s.molTag = ones(1,size(I,2)/p.nChan);
     s.molTagNames = {'unlabeled', 'static', 'dynamic'};
+=======
+    % modified by MH, 24.4.2019: remove label 'unlabelled', use second 
+    % dimension for label indexes and first dimension for molecule idexes
+%     s.molTag = ones(1,size(I,2)/nChan);
+%     s.molTagNames = {'unlabeled', 'static', 'dynamic'};
+    s.molTagNames = p.defTagNames;
+    s.molTag = false((size(I,2)/nChan),numel(s.molTagNames));
+    
+    % added by MH, 24.4.2019
+    s.molTagClr = p.defTagClr;
+>>>>>>> MASH-code-6
 
 end
 

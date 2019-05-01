@@ -233,6 +233,11 @@ h.itgExpOpt.pushbutton_itgExpOpt_cancel = uicontrol('Style', ...
     [xNext yNext w_but h_but], 'Callback', ...
     {@pushbutton_itgExpOpt_cancel_Callback, h_fig});
 
+guidata(h_fig,h);
+h.itgExpOpt.pushbutton_help = setInfoIcons(...
+    h.itgExpOpt.pushbutton_itgExpOpt_cancel,h_fig,...
+    h.param.movPr.infos_icon_file);
+
 yNext = hFig - mg - h_pan_prm;
 xNext = mg;
 
@@ -608,62 +613,22 @@ else
     curr_clr = p{5}{1}{l,c};
 end
 
-xNext = mg;
 yNext = mg;
+xNext = mg + w_full - 2*w_short;
 
-h.itgExpOpt.edit_red = uicontrol('Style', 'edit', 'Parent', ...
-    h.itgExpOpt.uipanel_clr, 'BackgroundColor', [1 1 1], 'String', ...
-    num2str(curr_clr(1)), 'Position', [xNext yNext w_short h_edit], ...
-    'Callback', {@edit_red_Callback, h_fig});
-
-xNext = xNext + w_short + mg;
-
-h.itgExpOpt.edit_green = uicontrol('Style', 'edit', 'Parent', ...
-    h.itgExpOpt.uipanel_clr, 'BackgroundColor', [1 1 1], 'String', ...
-    num2str(curr_clr(2)), 'Position', [xNext yNext w_short h_edit], ...
-    'Callback', {@edit_green_Callback, h_fig});
-
-xNext = xNext + w_short + mg;
-
-h.itgExpOpt.edit_blue = uicontrol('Style', 'edit', 'Parent', ...
-    h.itgExpOpt.uipanel_clr, 'BackgroundColor', [1 1 1], 'String', ...
-    num2str(curr_clr(3)), 'Position', [xNext yNext w_short h_edit], ...
-    'Callback', {@edit_blue_Callback, h_fig});
-
-xNext = xNext + w_short + mg;
-
-h.itgExpOpt.edit_viewClr = uicontrol('Style', 'edit', 'Parent', ...
-    h.itgExpOpt.uipanel_clr, 'BackgroundColor', curr_clr, 'Position', ...
-    [xNext yNext w_short/2 h_edit], 'Enable', 'inactive');
-
-xNext = xNext + w_short/2 + mg;
-
-h.itgExpOpt.pushbutton_clr = uicontrol('Style', 'pushbutton', 'Parent', ...
-    h.itgExpOpt.uipanel_clr, 'BackgroundColor', bgCol, 'String', ...
-    'update', 'Position', [xNext yNext w_but-mg h_but], ...
-    'Callback', {@pushbutton_clr_Callback, h_fig});
+if sum(curr_clr)>=1.5
+    fntClr = 'black';
+else
+    fntClr = 'white';
+end
+h.itgExpOpt.pushbutton_viewClr = uicontrol('Style','pushbutton','Parent', ...
+    h.itgExpOpt.uipanel_clr,'BackgroundColor',curr_clr,'Position', ...
+    [xNext yNext w_short*2 h_edit],'Enable','on','callback',...
+    {@pushbutton_viewClr_Callback,h_fig},'ForegroundColor',fntClr,'String',...
+    'Set color');
 
 xNext = mg;
-yNext = yNext + h_but;
-
-uicontrol('Style', 'text', 'Parent', h.itgExpOpt.uipanel_clr, ...
-    'BackgroundColor', bgCol, 'String', 'red', 'HorizontalAlignment', ...
-    'center', 'Position', [xNext yNext w_short h_txt]);
-
-xNext = xNext + w_short + mg;
-
-uicontrol('Style', 'text', 'Parent', h.itgExpOpt.uipanel_clr, ...
-    'BackgroundColor', bgCol, 'String', 'green', 'HorizontalAlignment', ...
-    'center', 'Position', [xNext yNext w_short h_txt]);
-
-xNext = xNext + w_short + mg;
-
-uicontrol('Style', 'text', 'Parent', h.itgExpOpt.uipanel_clr, ...
-    'BackgroundColor', bgCol, 'String', 'blue', 'HorizontalAlignment', ...
-    'center', 'Position', [xNext yNext w_short h_txt]);
-
-xNext = mg;
-yNext = yNext + mg + h_txt;
+yNext = yNext + h_but + mg;
 
 h.itgExpOpt.popupmenu_clrChan = uicontrol('Style', 'popupmenu', ...
     'Parent', h.itgExpOpt.uipanel_clr, 'BackgroundColor', [1 1 1], ...
@@ -676,10 +641,7 @@ guidata(h_fig, h);
 uistack(h.itgExpOpt.pushbutton_itgExpOpt_ok, 'bottom');
 uistack(h.itgExpOpt.pushbutton_itgExpOpt_cancel, 'bottom');
 
-uistack(h.itgExpOpt.pushbutton_clr, 'bottom');
-uistack(h.itgExpOpt.edit_blue, 'bottom');
-uistack(h.itgExpOpt.edit_green, 'bottom');
-uistack(h.itgExpOpt.edit_red, 'bottom');
+uistack(h.itgExpOpt.pushbutton_viewClr, 'bottom');
 uistack(h.itgExpOpt.popupmenu_clrChan, 'bottom');
 
 if isS
@@ -897,154 +859,58 @@ set(h.itgExpOpt.popupmenu_dyeLabel,'String',p{7}{1});
 popupmenu_dyeLabel_Callback(h.itgExpOpt.popupmenu_dyeLabel,evd,h_fig);
 
 
-function edit_red_Callback(obj, evd, h_fig)
+function pushbutton_viewClr_Callback(obj, evd, h_fig)
+
+rgb = uisetcolor('Set a trace color');
+if numel(rgb)==1
+    return;
+end
+
 h = guidata(h_fig);
 p = guidata(h.figure_itgExpOpt);
-str_chan = get(h.itgExpOpt.popupmenu_dyeChan,'String');
-nChan = size(str_chan,1);
+
 str_exc = get(h.itgExpOpt.popupmenu_dyeExc,'String');
-nExc = size(str_exc,1)-1;
+str_chan = get(h.itgExpOpt.popupmenu_dyeChan,'String');
+nExc = numel(str_exc)-1;
+nChan = size(str_chan,1);
 
-val = str2num(get(obj,'String'));
-set(obj, 'String', num2str(val));
-if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0 && ...
-        val <= 1)
-    set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    updateActPan('Color values must be >= 0 and <= 1.', h_fig, ...
-        'error');
+chan = get(h.itgExpOpt.popupmenu_clrChan, 'Value');
+if chan <= size(p{3},1)
+    p{5}{2}(chan,:) = rgb;
+
+elseif chan <= size(p{3},1)+numel(p{4})
+    p{5}{3}((chan-size(p{3},1)),:) = rgb;
+
 else
-    set(obj, 'BackgroundColor', [1 1 1]);
-    chan = get(h.itgExpOpt.popupmenu_clrChan, 'Value');
-    if chan <= size(p{3},1)
-        p{5}{2}(chan,1) = val;
-        clr = p{5}{2}(chan,:);
-
-    elseif chan <= size(p{3},1)+numel(p{4})
-        p{5}{3}((chan-size(p{3},1)),1) = val;
-        clr = p{5}{3}((chan-size(p{3},1)),:);
-
-    else
-        ind = chan-size(p{3},1)-numel(p{4});
-        i = 0;
-        for l = 1:nExc
-            for c = 1:nChan
-                i = i + 1;
-                if ind == i
-                    break;
-                end
-            end
+    ind = chan-size(p{3},1)-numel(p{4});
+    i = 0;
+    for l = 1:nExc
+        for c = 1:nChan
+            i = i + 1;
             if ind == i
                 break;
             end
         end
-        p{5}{1}{l,c}(1) = val;
-        clr = p{5}{1}{l,c};
-    end
-    guidata(h.figure_itgExpOpt, p);
-    set(h.itgExpOpt.edit_viewClr, 'BackgroundColor', clr);
-end
-
-
-function edit_green_Callback(obj, evd, h_fig)
-h = guidata(h_fig);
-p = guidata(h.figure_itgExpOpt);
-str_chan = get(h.itgExpOpt.popupmenu_dyeChan,'String');
-nChan = size(str_chan,1);
-str_exc = get(h.itgExpOpt.popupmenu_dyeExc,'String');
-nExc = size(str_exc,1)-1;
-
-val = str2num(get(obj,'String'));
-set(obj, 'String', num2str(val));
-if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0 && ...
-        val <= 1)
-    set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    updateActPan('Color values must be >= 0 and <= 1.', h_fig, ...
-        'error');
-else
-    set(obj, 'BackgroundColor', [1 1 1]);
-    chan = get(h.itgExpOpt.popupmenu_clrChan, 'Value');
-    if chan <= size(p{3},1)
-        p{5}{2}(chan,2) = val;
-        clr =  p{5}{2}(chan,:);
-
-    elseif chan <= size(p{3},1)+numel(p{4})
-        p{5}{3}((chan-size(p{3},1)),2) = val;
-        clr = p{5}{3}((chan-size(p{3},1)),:);
-
-    else
-        ind = chan-size(p{3},1)-numel(p{4});
-        i = 0;
-        for l = 1:nExc
-            for c = 1:nChan
-                i = i + 1;
-                if ind == i
-                    break;
-                end
-            end
-            if ind == i
-                break;
-            end
+        if ind == i
+            break;
         end
-        p{5}{1}{l,c}(2) = val;
-        clr = p{5}{1}{l,c};
     end
-    guidata(h.figure_itgExpOpt, p);
-    set(h.itgExpOpt.edit_viewClr, 'BackgroundColor', clr);
+    p{5}{1}{l,c} = rgb;
 end
 
+guidata(h.figure_itgExpOpt, p);
 
-function edit_blue_Callback(obj, evd, h_fig)
-h = guidata(h_fig);
-p = guidata(h.figure_itgExpOpt);
-str_chan = get(h.itgExpOpt.popupmenu_dyeChan,'String');
-nChan = size(str_chan,1);
-str_exc = get(h.itgExpOpt.popupmenu_dyeExc,'String');
-nExc = size(str_exc,1)-1;
-
-val = str2num(get(obj,'String'));
-set(obj, 'String', num2str(val));
-if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0 && ...
-        val <= 1)
-    set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    updateActPan('Color values must be >= 0 and <= 1.', h_fig, ...
-        'error');
+% update pushutton color
+if sum(rgb)>=1.5
+    fntClr = 'black';
 else
-    set(obj, 'BackgroundColor', [1 1 1]);
-    chan = get(h.itgExpOpt.popupmenu_clrChan, 'Value');
-    if chan <= size(p{3},1)
-        p{5}{2}(chan,3) = val;
-        clr = p{5}{2}(chan,:);
-
-    elseif chan <= size(p{3},1)+numel(p{4})
-        p{5}{3}((chan-size(p{3},1)),3) = val;
-        clr = p{5}{3}((chan-size(p{3},1)),:);
-
-    else
-        ind = chan-size(p{3},1)-numel(p{4});
-        i = 0;
-        for l = 1:nExc
-            for c = 1:nChan
-                i = i + 1;
-                if ind == i
-                    break;
-                end
-            end
-            if ind == i
-                break;
-            end
-        end
-        p{5}{1}{l,c}(3) = val;
-        clr = p{5}{1}{l,c};
-    end
-    guidata(h.figure_itgExpOpt, p);
-    set(h.itgExpOpt.edit_viewClr, 'BackgroundColor', clr);
+    fntClr = 'white';
 end
+set(h.itgExpOpt.pushbutton_viewClr,'backgroundcolor',rgb,'foregroundcolor',...
+    fntClr);
 
-
-function pushbutton_clr_Callback(obj, evd, h_fig)
-h = guidata(h_fig);
-p = guidata(h.figure_itgExpOpt);
-str_exc = get(h.itgExpOpt.popupmenu_dyeExc,'String');
+% update color in trace list
+exc = zeros(1,nExc);
 for i = 1:size(str_exc,1)-1
     exc(i) = getValueFromStr('', str_exc{i,1});
 end
@@ -1053,8 +919,7 @@ val_clrChan = get(h.itgExpOpt.popupmenu_clrChan, 'Value');
 if val_clrChan > size(str_clrChan,2)
     val_clrChan = size(str_clrChan,2);
 end
-set(h.itgExpOpt.popupmenu_clrChan, 'Value', val_clrChan, 'String', ...
-  str_clrChan); 
+set(h.itgExpOpt.popupmenu_clrChan,'Value',val_clrChan,'String',str_clrChan); 
 
 
 function popupmenu_clrChan_Callback(obj, evd, h_fig)
@@ -1089,10 +954,14 @@ else
     end
     clr = p{5}{1}{l,c};
 end
-set(h.itgExpOpt.edit_red, 'String', num2str(clr(1)));
-set(h.itgExpOpt.edit_green, 'String', num2str(clr(2)));
-set(h.itgExpOpt.edit_blue, 'String', num2str(clr(3)));
-set(h.itgExpOpt.edit_viewClr, 'BackgroundColor', clr);
+
+if sum(clr)>=1.5
+    fntClr = 'black';
+else
+    fntClr = 'white';
+end
+set(h.itgExpOpt.pushbutton_viewClr,'backgroundcolor',clr,'foregroundcolor',...
+    fntClr);
 
 
 function pushbutton_remFRET_Callback(obj, evd, h_fig)

@@ -39,6 +39,13 @@ coordTrsf_i = cell(1,nChan);
 
 for i = 1:nChan
     for j = 1:nChan
+        if isempty(coord_tr_i{i}{j})
+            updateActPan(['Unconsistent number of channel.'...
+                '\n\nPlease check the number of channels in the reference',...
+                ' image used in the creation of the transformation file.'],...
+                h_fig,'error');
+            return;
+        end
         coordTrsf_i{i} = cat(1,coordTrsf_i{i},coord_tr_i{i}{j}(:,[1,2]));
     end
 end

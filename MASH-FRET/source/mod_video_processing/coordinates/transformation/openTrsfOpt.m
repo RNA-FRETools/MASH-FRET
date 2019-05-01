@@ -96,6 +96,10 @@ if ~(isfield(h, 'figure_trsfOpt') && ishandle(h.figure_trsfOpt))
         'BackgroundColor', bgCol, 'Position', [xNext yNext dim_but], ...
         'Callback', {@pushbutton_trsfOpt_cancel_Callback, h_fig});
     
+    guidata(h_fig,h);
+    h.trsfOpt.pushbutton_help = setInfoIcons(...
+        h.trsfOpt.pushbutton_trsfOpt_cancel,h_fig,p.infos_icon_file);
+    
     yNext = yNext + dim_but(2) + mg;
     xNext = mg;
 

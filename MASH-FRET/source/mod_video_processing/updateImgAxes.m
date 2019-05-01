@@ -9,22 +9,23 @@ h = guidata(h_fig);
 p = h.param.movPr;
 
 frameCurNb = h.movie.frameCurNb;
-bgCorr = isfield(p, 'bgCorr') && ...
-    ~isempty(p.bgCorr);
-SFapply = isfield(p, 'SFres') && ...
-    ~isempty(p.SFres);
+bgCorr = isfield(p,'bgCorr') && ~isempty(p.bgCorr);
+SFapply = isfield(p,'SFres') && ~isempty(p.SFres);
 SFall = p.SF_all;
-trsfApply = isfield(p, 'coordTrsf') && ...
-    ~isempty(p.coordTrsf);
-[dat ok] = getFrames([h.movie.path h.movie.file], frameCurNb, ...
-    {h.movie.speCursor, [h.movie.pixelX h.movie.pixelY], ...
-    h.movie.framesTot}, h_fig);
+trsfApply = isfield(p,'coordTrsf') && ~isempty(p.coordTrsf);
+isMov = isfield(h.movie,'movie') && ~isempty(h.movie.movie);
 
-if ~ok
-    return;
+if isMov
+    frameCur = h.movie.movie(:,:,frameCurNb);
+else
+    [dat,ok] = getFrames([h.movie.path h.movie.file], frameCurNb, ...
+        {h.movie.speCursor, [h.movie.pixelX h.movie.pixelY], ...
+        h.movie.framesTot}, h_fig);
+    if ~ok
+        return;
+    end
+    frameCur = dat.frameCur;
 end
-
-frameCur = dat.frameCur;
 
 % Apply background corrections if exist
 if bgCorr
@@ -44,7 +45,7 @@ spots = [];
 
 if SFapply
     frameSF = p.SFres{1,1}(3);
-    if (~SFall && frameCurNb == frameSF) || SFall
+    if (~SFall && frameCurNb==frameSF) || SFall
         h.param.movPr = p;
         guidata(h_fig, h);
         updateSF(frameCur, false, h_fig);
@@ -56,10 +57,10 @@ if SFapply
             end
         end
     end
+    
 elseif trsfApply
     for i = 1:nChan
-        if ~isempty(p.coordTrsf) && ...
-                size(p.coordTrsf,2) >= 2*i
+        if ~isempty(p.coordTrsf) && size(p.coordTrsf,2)>=2*i
             spots = [spots;p.coordTrsf(:,2*i-1:2*i)];
         end
     end
@@ -68,21 +69,18 @@ end
 if p.perSec
     frameCur = frameCur/h.movie.cyctime;
 end
+
 h.movie.frameCur = frameCur;
 
 cla(h.axes_movie);
+zoom(h_fig,'on');
 
-set(0, 'CurrentFigure', h.figure_MASH);
-zoom on;
+h.imageMov = imagesc(h.axes_movie,[0.5 h.movie.pixelX-0.5],...
+    [0.5 h.movie.pixelY-0.5],frameCur);
+set(h.axes_movie,'nextplot','add');
 
-h.imageMov = imagesc([0.5 h.movie.pixelX-0.5], [0.5 h.movie.pixelY-0.5],...
-    frameCur, 'Parent', h.axes_movie);
-
-set(h.axes_movie, 'NextPlot', 'add');
-
-
-for i = 1:size(spots,1)
-    plot(h.axes_movie, spots(i,1), spots(i,2), 'or', 'MarkerSize', 10);
+if ~isempty(spots)
+    plot(h.axes_movie,spots(:,1),spots(:,2),'or','markersize',10);
 end
     
 for i = 1:size(h.movie.split,2)

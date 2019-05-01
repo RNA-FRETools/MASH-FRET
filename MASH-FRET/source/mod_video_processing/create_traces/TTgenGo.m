@@ -1,4 +1,4 @@
-function pushbutton_TTgenGo_Callback(obj, evd, h)
+function TTgenGo(h_fig)
 % Save traces to MASH project and other files after pressing "create & 
 % export" button in Video processing.
 % "obj" >> button handle
@@ -13,7 +13,7 @@ function pushbutton_TTgenGo_Callback(obj, evd, h)
 % --> change default folder to video_processing
 % --> comment code
 
-h_fig = h.figure_MASH;
+h = guidata(h_fig);
 p = h.param.movPr;
 
 % update data

@@ -34,7 +34,7 @@ if isfield(h, 'movie')
         param.extra{2} = [h.movie.pixelX h.movie.pixelY]; 
         param.extra{3} = h.movie.framesTot;
 
-        [img_ave,ok] = createAveIm(param,1,h.figure_MASH);
+        [img_ave,ok] = createAveIm(param,true,true,h.figure_MASH);
 
         if ~ok
             return;
