@@ -99,7 +99,8 @@ MASH-FRET project files consist in data structures with the following fields:
 | `coord_imp_param` | parameters that were used to import molecule coordinates from file | 1-by-`nC` cell       |                                                                                           |
 | `coord_incl`      | molecule is selected/unselected                                    | 1-by-`M` true/false  |                                                                                           |
 | `molTag`          | molecule's tag (1,2 or 3)                                          | 1-by-`M` double      |                                                                                           |
-| `molTagNames`     | names of possible molecule tags                                    | 1-by-3 cell          | `{ unlabeled, static, dynamic }`                                                          |
+| `molTagNames`     | default tag  name                                                  | cell array           | `{ static, dynamic, D-only, A-only }`                                                     |
+| `molTagClr`       | hexadecimal default tag colors                                     | cell array           | `{ '#B3D9FF, '#0066CC }`                                                                  |
 
 
 ### Intensity fields
