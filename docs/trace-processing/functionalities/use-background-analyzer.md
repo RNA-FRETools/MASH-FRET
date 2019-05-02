@@ -3,7 +3,7 @@ layout: default
 title: Use Background analyzer
 parent: /trace-processing/functionalities.html
 grand_parent: /trace-processing.html
-nav_order: 4
+nav_order: 7
 ---
 
 # Use Background analyzer

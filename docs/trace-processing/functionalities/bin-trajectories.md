@@ -3,7 +3,7 @@ layout: default
 title: Bin trajectories
 parent: /trace-processing/functionalities.html
 grand_parent: /trace-processing.html
-nav_order: 6
+nav_order: 9
 ---
 
 # Bin trajectories
