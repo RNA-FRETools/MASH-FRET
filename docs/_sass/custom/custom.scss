@@ -1,6 +1,8 @@
 $link-color: $blue-100;
 $var-color: $body-text-color;
 $eq-color: $link-color;
+$tm-green: #c2dec7;
+$tm-gray: #eaeaea;
 
 .equation {
   display: block;
@@ -33,4 +35,45 @@ $eq-color: $link-color;
     position: absolute;
     margin-left: 1rem;
   }
+ }
+  
+ .btn-tm{
+  display: inline-block;
+  box-sizing: border-box;
+  padding-top: 0.4em;
+  padding-right: 1.5em;
+  padding-bottom: 0.4em;
+  padding-left: 1.5em;
+  margin: 0;
+  margin-right: 15px;
+  color: #000000;
+  background-color: $tm-gray;
+  border: solid;
+  border-color: #acacac;
+  font-family: "Arial";
+  font-size: 12px;
+  font-weight: bold;
+  text-decoration: none;
+  vertical-align: baseline;
+  cursor: pointer;
+ }
+ 
+ .btn-tm-green{
+  display: inline-block;
+  box-sizing: border-box;
+  padding-top: 0.4em;
+  padding-right: 1.5em;
+  padding-bottom: 0.4em;
+  padding-left: 1.5em;
+  margin: 0;
+  margin-right: 15px;
+  color: #000000;
+  background-color: $tm-green;
+  border-style: ridge;
+  font-family: "Arial";
+  font-size: 12px;
+  font-weight: bold;
+  text-decoration: none;
+  vertical-align: baseline;
+  cursor: pointer;
  }

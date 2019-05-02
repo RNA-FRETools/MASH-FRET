@@ -1,14 +1,25 @@
 ---
 layout: default
-title: Use Trace manager - Video view
+title: Use Trace manager
+sub_title: Video view
 parent: /trace-processing/functionalities.html
 grand_parent: /trace-processing.html
-nav_order: 6
-select_with_nav_order: 1
+main_nav: /trace-processing/functionalities/use-trace-manager.html
+nav_order: 3
+subnav_order: 4
+nav_exclude: true
+toc_exclude: true
 ---
 
-# Use Trace manager - Video view
+# Use Trace manager
 {: .no_toc }
+
+The trace manager allows to visualize data of all single molecules in the project, and is used to sort molecules into sub-groups and/or exclude irrelevant traces from the set.
+Trace manager is accessed by pressing 
+![TM](../../assets/images/gui/TP-but-tm.png "TM") in the 
+[Sample management](../panels/panel-sample-management.html#trace-manager) panel of module Trace processing.
+
+{% include tm_head.html %}
 
 <a href="../../assets/images/gui/TP-panel-sample-tm-videoview.png"><img src="../../assets/images/gui/TP-panel-sample-tm-videoview.png"/></a>
 
