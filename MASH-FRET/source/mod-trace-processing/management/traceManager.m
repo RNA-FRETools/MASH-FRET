@@ -2612,16 +2612,16 @@ if isfield(h.tm,'checkbox_VV_tag') && ishandle(h.tm.checkbox_VV_tag(1))
     allm = 1:N;
     mkSize = repmat(mkSize,1,N);
     prevt = 0;
-    x_coord = coord(:,1:2:end);
-    y_coord = coord(:,2:2:end);
     for t = 1:nTag
         if get(h.tm.checkbox_VV_tag(t),'value')
             mols = molTags(:,t)' & incl;
             if prevt>0
                 mkSize = mkSize + (lineWidth+3)*molTags(:,prevt)';
             end
+            x_coord = coord(mols,1:2:end);
+            y_coord = coord(mols,2:2:end);
             for n = allm(mols)
-                plot(h.tm.axes_videoView,x_coord(n,:),y_coord(n,:),'linestyle',...
+                plot(h.tm.axes_videoView,x_coord(:),y_coord(:),'linestyle',...
                     'none','marker','o','markersize',mkSize(n),'linewidth',...
                     lineWidth,'markeredgecolor',hex2rgb(clr{t})/255);
             end
@@ -5170,10 +5170,12 @@ end
 %% closerequest function
 
 function figure_traceMngr(obj, evd, h_fig)
-
-    h = guidata(h_fig);
-    h = rmfield(h, 'tm');
-    guidata(h_fig, h);
+    
+    if ishandle(h_fig)
+        h = guidata(h_fig);
+        h = rmfield(h, 'tm');
+        guidata(h_fig, h);
+    end
     delete(obj);
 
 end
