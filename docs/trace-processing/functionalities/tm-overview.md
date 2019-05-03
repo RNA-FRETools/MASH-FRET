@@ -38,8 +38,8 @@ Use this interface to identify outliers and control the homogeneity of data dist
 
 Overall plot shows the following cumulated data plots for the molecule sample selected in panel 
 [Molecule selection](#molecule-selection):
-- [Concatenated traces](#concatenated-traces)
-- [Histograms](#histograms)
+- [Concatenated traces](#concatenated-traces) shown in axes **(c)**
+- [Histograms](#histograms) shown in axes **(d)**
 
 Data plots must be updated after modification of the molecule selection by pressing 
 ![UPDATE](../../assets/images/gui/TP-but-update-tm.png "UPDATE").
@@ -55,7 +55,7 @@ The final molecule selection is exported to module Trace processing by pressing
 ### Concatenated traces
 {: .no_toc }
 
-Concatenated time traces of selected molecules are shown in axes **(c)** and allow to identify outliers. 
+Concatenated time traces of selected molecules allow to identify outliers. 
 For instance, intensity-time traces with abnormally high or low intensities are easily visible and are good candidates for exclusion from the set.
 Data available in menu **(a)** for concatenated trace plot are:
 * intensity-time traces
@@ -66,15 +66,14 @@ Data available in menu **(a)** for concatenated trace plot are:
 ### Histograms
 {: .no_toc }
 
-Overall 1D- or 2D-data histograms and are shown in axes **(d)**.
-Data are sorted into bins defined by the x- and y-axis parameters set in row **(e)** and **(f)** respectively, and in columns **(g)** (lowest limit), **(h)** (bin size) and **(l)** (highest limit).
-Histogram plots are used to identify different sub-populations in the sample and to control the homogeneity of data distribution.
+Overall 1D- or 2D-data histograms are used to identify different sub-populations in the sample and to control the homogeneity of data distribution.
 For instance, the presence of single labelled species is easily identified on the overall stoichiometry histogram and indicates the need for further sample refinement.
 Data available in menu **(b)** for histogram plot are:
 * intensities histograms
 * FRET histograms
 * Stoichiometry histograms
 * E-S histograms
+Data are sorted into bins defined by the x- and y-axis parameters set in row **(e)** and **(f)** respectively, and in columns **(g)** (lowest limit), **(h)** (bin size) and **(l)** (highest limit).
 
 
 ---
