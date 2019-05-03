@@ -20,6 +20,8 @@ Trace manager is accessed by pressing
 
 {% include tm_head.html %}
 
+Overview is used to browse individual molecules and assemble a molecule selection.
+
 <a href="../../assets/images/gui/TP-panel-sample-tm-overview.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview.png"/></a>
 
 ## Window components
@@ -28,11 +30,12 @@ Trace manager is accessed by pressing
 1. TOC
 {:toc}
 
+
 ---
 
-## Overall plot
+## Overall plots
 
-Use this interface to identify outliers and control the homogeneity of data distributions.
+Use this interface to identify outliers in the molecule selection by controlling irregularities in data distribution.
 
 <a href="../../assets/images/gui/TP-panel-sample-tm-overview-overallplot.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview-overallplot.png"/></a>
 
@@ -47,20 +50,23 @@ Data plots must be updated after modification of the molecule selection by press
 <a href="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png"><img src="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png" style="max-width:389px;"/></a>
 
 The final molecule selection is exported to module Trace processing by pressing 
-![TO MASH](../../assets/images/gui/TP-but-to-mash.png "TO MASH"); as the operation can not be undone, a warning pops up.
-
-<a href="../../assets/images/gui/TP-panel-sample-tm-overview-overallplot-warn.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview-overallplot-warn.png" style="max-width:479px"></a>
+![TO MASH](../../assets/images/gui/TP-but-to-mash.png "TO MASH"); as the operation can not be reversed, a warning pops up.
 
 
 ### Concatenated traces
 {: .no_toc }
 
-Concatenated time traces of selected molecules allow to identify outliers. 
+Concatenated time traces of selected molecules allow to identify outliers.
 For instance, intensity-time traces with abnormally high or low intensities are easily visible and are good candidates for exclusion from the set.
-Data available in menu **(a)** for concatenated trace plot are:
-* intensity-time traces
-* FRET-time traces
-* Stoichiometry-time traces
+
+Data available for concatenated trace plot are listed in menu **(a)** and include:
+* `[E] at [W]nm` for intensity-time traces, with `[E]` the emitter-specific detection channel label and `[W]` the laser wavelength
+* `FRET [D]>[A]` for FRET-time traces, with `[D]` and `[A]` the labels of donor- and acceptor-specific detection channels respectively
+* `S [E]` for stoichiometry-time traces
+
+Selected molecules that are in view in panel
+[Molecule selection](#molecule-selection) are highlighted with a white background, and excluded or out-of-view molecules covered with a transparent black mask.
+Individual molecules can be accessed by simply clicking on the corresponding portion of the concatenated time trace.
 
 
 ### Histograms
@@ -68,23 +74,29 @@ Data available in menu **(a)** for concatenated trace plot are:
 
 Overall 1D- or 2D-data histograms are used to identify different sub-populations in the sample and to control the homogeneity of data distribution.
 For instance, the presence of single labelled species is easily identified on the overall stoichiometry histogram and indicates the need for further sample refinement.
-Data available in menu **(b)** for histogram plot are:
-* intensities histograms
-* FRET histograms
-* Stoichiometry histograms
-* E-S histograms
+
+Data available for histogram plot are listed in menu **(b)** and include:
+* `[E] at [W]nm` for intensity histograms
+* `FRET [D]>[A]` for FRET histograms
+* `S [E]` for stoichiometry histograms
+* `FRET [D]>[A]-S [E]` for 2D FRET-Stoichiometry histograms 
+
 Data are sorted into bins defined by the x- and y-axis parameters set in row **(e)** and **(f)** respectively, and in columns **(g)** (lowest limit), **(h)** (bin size) and **(l)** (highest limit).
+
+The building of 2D histograms uses the MATLAB script `hist2` developed by Tudor Dima that can be found in the 
+[MATLAB exchange platform](https://www.mathworks.com/matlabcentral/fileexchange/18386-2d-histogram-exact-and-fast-binning-crop-and-stretch-grid-adjustment?s_tid=prof_contriblnk).
 
 
 ---
 
 ## Molecule selection
 
-Use this interface to assemble the molecule selection.
+Use this interface to assemble or review the molecule selection.
 
 <a href="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection.png"/></a>
 
-Molecule sleection shows individual single molecule data plots that can be browsed using the sliding bar in **(i)**. 
+Molecule selection shows individual single molecule data plots defined by 
+[Plot](../panels/panel-plot.html) and that can be browsed using the sliding bar in **(i)**. 
 The interface can be optimized by adjusting the number of molecules per page in **(d)**, and by hiding the panel 
 [Overall plot](#overall-plot) when pressing 
 ![\^](../../assets/images/gui/TP-but-triangle.png "^").
@@ -96,6 +108,12 @@ Individual single molecule data are inspected one by one to define their status,
 * [Subgroup affiliation](#subgroup-affiliation)
 
 For instance, single molecules with incoherent intensity-time traces can be excluded from the selection and static FRET traces can be affiliated to the `static` subgroup. 
+
+[Overall plots](#overall-plots) must be updated after modification of the molecule selection by pressing 
+![UPDATE](../../assets/images/gui/TP-but-update-tm.png "UPDATE").
+
+<a href="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png"><img src="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png" style="max-width:389px;"/></a>
+
 
 
 ### Sample exclusion
@@ -112,7 +130,7 @@ Selection criteria are:
 - `add [Tag]`: add molecules affiliated to subgroup `[Tag]` to the current selection
 - `remove [Tag]`: remove molecules affiliated to subgroup `[Tag]` from the current selection
 
-As the operation can not be undone, a warning pops up.
+As the operation can not be reversed, a confirmation warning pops up.
 
 <a href="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection-warn1.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection-warn1.png" style="max-width:409px"></a>
 
@@ -132,10 +150,11 @@ To help with molecule tagging, groups of molecules can be tagged at the same tim
 To identify molecule subgroups in the video, molecule tags can be visualized on the average video image with tool 
 [Video view](tm-video-view.html).
 
-Customed subgroup tags can be created in **(b)** by simply typing the tag name and 
+Subgroup tags are listed in **(c)**.
+New subgroup tags can be created by simply typing the new tag name in **(b)**, and 
 tag color can be modified any time by pressing 
 ![Set](../../assets/images/gui/TP-but-set.png "Set").
 Specific tags can be deleted pressing 
-![Delete tag](../../assets/images/gui/TP-but-delete-tag.png "Delete tag"); as the operation can not be undone, a warning pops up if some molecules are affiliated to the corresponding subgroup.
+![Delete tag](../../assets/images/gui/TP-but-delete-tag.png "Delete tag"); as the operation can not be reversed, a confirmation warning pops up if some molecules are affiliated to the corresponding subgroup.
 
 <a href="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection-warn2.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection-warn2.png" style="max-width:489px"></a>
