@@ -310,7 +310,7 @@ To sort molecules and save a particular subgroup:
    ![TM](../assets/images/gui/TP-but-tm.png "TM").  
      
 1. Sort single molecule data into subgroups by referring to  
-   [Use Trace manager](functionalities/use-trace-manager.html); 
+   [Use Trace manager](functionalities/tm-overview.html); 
    in order to save the original data set with manual sorting, it is recommended to save modifications by pressing 
    ![Save](../assets/images/gui/TP-but-save.png "Save") and overwriting the project file.  
      

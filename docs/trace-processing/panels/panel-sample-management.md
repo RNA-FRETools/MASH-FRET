@@ -108,8 +108,14 @@ Pressing
 ![TM](../../assets/images/gui/TP-but-tm.png "Export ASCII...") opens the tool
 Trace manager used to sort single molecules and set molecule statuses in the sample.
 
+At opening, Trace manager import and process all single molecule data in the project up to gamma correction of FRET-time trace; see Trace processing 
+[Woekflow](../workflow.html). 
+Resulting time traces are then concatenated into on single trace and overall data histograms are built.
+
+<a href="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png"><img src="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png" style="max-width:389px;"/></a>
+
 To use Trace manager, refer to 
-[Use Trace manager](../functionalities/use-trace-manager.html).
+[Use Trace manager](../functionalities/tm-overview.html).
 
 
 ---
@@ -132,4 +138,4 @@ To assign a specific tag to the current molecule, press
 Tags assigned to the current molecule are listed in **(b)** and can be dismissed by pressing 
 ![Del.](../../assets/images/gui/TP-but-delp.png "Del.").
 To define customed tags, please refer to 
-[Use Trace manager](../functionalities/use-trace-manager/overview.html#molecule-selection).
+[Use Trace manager](../functionalities/tm-overview.html#molecule-selection).
