@@ -2283,6 +2283,7 @@ end
 
 ind = get(h.tm.popupmenu_selectData,'value');
 j = get(h.tm.popupmenu_selectCalc,'value');
+fcn = {@axes_histSort_ButtonDownFcn,h_fig};
 
 if ind<=(nChan*nExc+nFRET+nS) % 1D histograms
     if j==1 % original data
@@ -2302,7 +2303,7 @@ if ind<=(nChan*nExc+nFRET+nS) % 1D histograms
     
     % plot histogram
     bar(h.tm.axes_histSort,iv,P,'edgecolor',dat1.color{ind},'facecolor',...
-        dat1.color{ind});
+        dat1.color{ind},'buttondownfcn',fcn);
     
     % set axis labels as in overall plot
     xlabel(h.tm.axes_histSort, dat2.xlabel{ind});
@@ -2338,8 +2339,7 @@ else % E-S histograms
     end
        
     imagesc([ivx(1),ivx(end)],[ivy(1),ivy(end)],P2D,'parent',...
-        h.tm.axes_histSort,'ButtonDownFcn',...
-        {@axes_histSort_ButtonDownFcn,h_fig});
+        h.tm.axes_histSort,'buttondownfcn',fcn);
     
     % plot range
     drawMask(h_fig,[ivx(1) ivx(end)],[ivy(1) ivy(end)],2);
@@ -2612,16 +2612,17 @@ if isfield(h.tm,'checkbox_VV_tag') && ishandle(h.tm.checkbox_VV_tag(1))
     allm = 1:N;
     mkSize = repmat(mkSize,1,N);
     prevt = 0;
+    x_coord = coord(:,1:2:end);
+    y_coord = coord(:,2:2:end);
     for t = 1:nTag
         if get(h.tm.checkbox_VV_tag(t),'value')
             mols = molTags(:,t)' & incl;
             if prevt>0
                 mkSize = mkSize + (lineWidth+3)*molTags(:,prevt)';
             end
-            x_coord = coord(mols,1:2:end);
-            y_coord = coord(mols,2:2:end);
+            
             for n = allm(mols)
-                plot(h.tm.axes_videoView,x_coord(:),y_coord(:),'linestyle',...
+                plot(h.tm.axes_videoView,x_coord(n,:),y_coord(n,:),'linestyle',...
                     'none','marker','o','markersize',mkSize(n),'linewidth',...
                     lineWidth,'markeredgecolor',hex2rgb(clr{t})/255);
             end
@@ -3372,6 +3373,9 @@ end
 %         set(h.tm.popup_molNb(ind_h), 'Enable', 'on')
 %     end
 
+% update plot in "Video view"
+plotData_videoView(h_fig);
+
 end
 
 
@@ -3670,6 +3674,9 @@ for i = 1:nDisp
         set([h.tm.axes_frettt(i),h.tm.axes_hist(i)],'color',shad);
     end
 end
+
+% update plot in "Video view"
+plotData_videoView(h_fig);
 
 end
 
@@ -5000,12 +5007,17 @@ function checkbox_VV_tag_Callback(obj,evd,h_fig,t)
 
 h = guidata(h_fig);
 tagClr =  h.tm.molTagClr;
+if sum(double((hex2rgb(tagClr{t})/255)>0.5))==3
+    fntClr = 'black';
+else
+    fntClr = 'white';
+end
 
 switch get(obj,'value')
     case 1
         set(obj,'fontweight','bold');
         set(h.tm.edit_VV_tag(t),'enable','inactive','backgroundcolor',...
-        hex2rgb(tagClr{t})/255,'foregroundcolor','white');
+        hex2rgb(tagClr{t})/255,'foregroundcolor',fntClr);
     case 0
         set(obj,'fontweight','normal');
         set(h.tm.edit_VV_tag(t),'enable','off','foregroundcolor','black',...
