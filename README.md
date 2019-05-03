@@ -38,7 +38,7 @@ Please report any **bugs** or **feature requests** through the [issue tracker](h
 The various submodules of MASH-FRET (simulation, movie / trace processing, bootstrapping) have been described in several articles. If you use MASH-FRET in your work, please refer to the respective publication listed below.
 
 
-### Simulation routine
+### Simulation
 
 R. Börner, D. Kowerko, M.C.A.S. Hadzic, S.L.B. König, M. Ritter, R.K.O. Sigel, "Simulations of Camera-Based Single-Molecule Fluorescence Experiments", *PLoS One* **2018**, *13*, e0195277. [![](https://img.shields.io/badge/DOI-10.1371/journal.pone.0195277-blue.svg)](https://doi.org/10.1371/journal.pone.0195277)
 
