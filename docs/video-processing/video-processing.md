@@ -16,4 +16,4 @@ Video processing framework is limited to <u>surface-immobilized</u> molecules.
 
 Video processing supports the following video formats: *.<u>sif</u>, *.<u>spe</u>, *.<u>pma</u>, *.<u>avi</u>, *.<u>tif</u>, *.<u>gif</u> and 
 *.[<u>sira</u>](output-files/sira-mash-video.html); see 
-[Import video/image](video-processing/panels/area-visualization#load-videoimage-file.html) for more information.
+[Import video/image](video-processing/panels/area-visualization.html#load-videoimage-file) for more information.
