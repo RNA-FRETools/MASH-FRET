@@ -12,4 +12,8 @@ permalink: /transition-analysis.html
 
 Use this module to identify the most probable <u>state configuration</u> and quantify state <u>transition rates</u>.
 
-Transition analysis framework is limited to:
+Transition analysis framework is limited to <u>intensity</u>, <u>FRET</u> and <u>stoichiometry</u> state trajectories.
+
+Transition analysis supports the following trace formats: ASCII and 
+*.[<u>mash</u>](output-files/mash-mash-project.html); see 
+[Import single molecule data](transition-analysis/workflow.html#import-single-molecule-data) for more information.

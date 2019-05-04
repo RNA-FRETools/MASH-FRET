@@ -12,4 +12,8 @@ permalink: /trace-processing.html
 
 Use this module to sort single molecules and obtain state trajectories from intensity-time traces.
 
-Trace processing framework is limited to:
+Trace processing framework is limited to <u>intensity</u>-time traces and to calculated <u>FRET</u>- and <u>stoichiometry</u>-time traces.
+
+Trace processing supports the following trace formats: ASCII and 
+*.[<u>mash</u>](output-files/mash-mash-project.html); see 
+[Import single molecule data](trace-processing/workflow.html#import-single-molecule-data) for more information.

@@ -12,4 +12,7 @@ permalink: /histogram-analysis.html
 
 Use this module to identify the most probable <u>state configuration</u> and quantify state <u>relative populations</u>.
 
-Histogram analysis framework is limited to:
+Histogram analysis framework is limited to <u>intensity</u> histograms and to calculated <u>FRET</u> and <u>stoichiometry</u> histograms.
+
+Histogram analysis supports only the *.[<u>mash</u>](output-files/mash-mash-project.html) format; see 
+[Import single molecule data](histogram-analysis/workflow.html#import-single-molecule-data) for more information.
