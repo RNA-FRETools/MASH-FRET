@@ -10,7 +10,7 @@ nav_exclude: 1
 # Daily log files
 {: .no_toc }
 
-Daily log files are ASCII files with the extension `.log`. They are usually found in the main`/log` analysis folder.
+Daily log files are ASCII files with the extension `.log`. They are usually found in the `MASH-FRET/log` installation folder.
 
 ## Table of contents
 {: .no_toc .text-delta }
@@ -25,7 +25,7 @@ Daily log files are ASCII files with the extension `.log`. They are usually foun
 
 Daily log files contain logs of the <u>action history</u> window.
 
-They are automatically created at the `rootfolder/log` location, with rootfolder the current root folder.
+They are automatically created at the `[...]/MASH-FRET/log` location, with `[...]` the installation folder.
 
 They are automatically updated when:
 - new actions are added to the action history,
