@@ -19,17 +19,19 @@ Trace manager is accessed by pressing
 ![TM](../../assets/images/gui/TP-but-tm.png "TM") in the 
 [Sample management](../panels/panel-sample-management.html#trace-manager) panel of module Trace processing.
 
+---
+
 {% include tm_head.html %}
 
 Automatic sorting is used to tag groups of molecules based on specific data criteria.
 
-<a href="../../assets/images/gui/TP-panel-sample-tm-autosorting.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting.png"/></a>
-
-## Window components
+## Interface components
 {: .no_toc .text-delta }
 
 1. TOC
 {:toc}
+
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-autosorting.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting.png"/></a>
 
 
 ---
@@ -38,7 +40,7 @@ Automatic sorting is used to tag groups of molecules based on specific data crit
 
 Use this interface to define the data to be sorted and displayed.
 
-<a href="../../assets/images/gui/TP-panel-sample-tm-autosorting-histogram.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-histogram.png"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-autosorting-histogram.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-histogram.png"/></a>
 
 Data available for sorting are listed in menu **(a)** and include:
 * `[E] at [W]nm` for intensity data, with `[E]` the emitter-specific detection channel label and `[W]` the laser wavelength
@@ -58,7 +60,7 @@ The type of data sets can be selected in menu **(b)** and include:
 To use the option `state trajectories`, all the molecules of the selection must have the corresponding data-time trace discretized.
 If some state trajectories are missing, a data-customed warning pops up.
 
-<a href="../../assets/images/gui/TP-panel-sample-tm-autosorting-warn1.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-warn1.png" style="max-width:443px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-autosorting-warn1.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-warn1.png" style="max-width:443px;"/></a>
 
 To represent the sample assembled with tool 
 [Overview](tm-overview.html), an overall 1D- or 2D-data histogram is plotted in 
@@ -74,7 +76,7 @@ The building of 2D histograms uses the MATLAB script `hist2` developed by Tudor 
 
 Use this interface to define the sorting criteria.
 
-<a href="../../assets/images/gui/TP-panel-sample-tm-autosorting-range.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-range.png" style="max-width:182px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-autosorting-range.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-range.png" style="max-width:182px;"/></a>
 
 Individual molecule data are sorted according to a specific value range.
 The range is defined by a minimum value set in **(a)** or **(c)** and a maximum value set in **(b)** or **(d)**  for the x- or y-axis respectively.
@@ -105,7 +107,7 @@ Additionally, when saved, range settings can be accessed any time in
 
 Use this interface to define subgroup affiliations.
 
-<a href="../../assets/images/gui/TP-panel-sample-tm-autosorting-subgroup.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-subgroup.png" style="max-width:182px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-autosorting-subgroup.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-subgroup.png" style="max-width:182px;"/></a>
 
 Ranges saved in 
 [Data range](#data-range) are listed in **(a)** and can be dismissed by pressing
@@ -119,7 +121,7 @@ All tags assigned to the selected range are listed in **(c)** and can be removed
 Molecule tags are eventually applied to individual molecules after pressing 
 ![APPLY TAG TO MOLECULES](../../assets/images/gui/TP-but-apply-tag-to-molecules.png "APPLY TAG TO MOLECULES"); as the operation can not be reversed, a confirmation warning pops up.
 
-<a href="../../assets/images/gui/TP-panel-sample-tm-autosorting-warn2.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-warn2.png" style="max-width:471px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-autosorting-warn2.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-warn2.png" style="max-width:471px;"/></a>
 
 
 ---
@@ -134,8 +136,8 @@ Ranges defined in
 [Data range](#data-range) or defined by clicking on the plot, are highlighted in white for 1D-histograms and within a gray rectangle for 2D-histograms.
 Out-of-range data covered with a transparent black mask.
 
-<a href="../../assets/images/gui/TP-panel-sample-tm-autosorting-plot1D.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-plot1D.png" style="max-width:45%;margin-right:auto;margin-left:auto;"/></a>
-<a href="../../assets/images/gui/TP-panel-sample-tm-autosorting-plot2D.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-plot2D.png" style="max-width:45%;margin-right:auto;margin-left:auto;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-autosorting-plot1D.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-plot1D.png" style="max-width:45%;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-autosorting-plot2D.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-plot2D.png" style="max-width:45%;"/></a>
 
 
 
@@ -145,7 +147,7 @@ Out-of-range data covered with a transparent black mask.
 
 Use this interface to visualize the time-traces affiliated to the current molecule subgroup.
 
-<a href="../../assets/images/gui/TP-panel-sample-tm-autosorting-concatenatedtrace.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-concatenatedtrace.png"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-autosorting-concatenatedtrace.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-concatenatedtrace.png"/></a>
 
 The concatenated trace plot shows time-traces of the molecule selection at last update in panel
 [Overall plots](tm-overview.html#overall-plots).

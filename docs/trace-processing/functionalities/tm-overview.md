@@ -18,17 +18,21 @@ Trace manager is accessed by pressing
 ![TM](../../assets/images/gui/TP-but-tm.png "TM") in the 
 [Sample management](../panels/panel-sample-management.html#trace-manager) panel of module Trace processing.
 
+---
+
 {% include tm_head.html %}
 
 Overview is used to browse individual molecules and assemble a molecule selection.
+The final molecule selection is exported to module Trace processing by pressing 
+![TO MASH](../../assets/images/gui/TP-but-to-mash.png "TO MASH"); as the operation can not be reversed, a warning pops up.
 
-<a href="../../assets/images/gui/TP-panel-sample-tm-overview.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview.png"/></a>
-
-## Window components
+## Interface components
 {: .no_toc .text-delta }
 
 1. TOC
 {:toc}
+
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-overview.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview.png"/></a>
 
 
 ---
@@ -37,7 +41,7 @@ Overview is used to browse individual molecules and assemble a molecule selectio
 
 Use this interface to identify outliers in the molecule selection by controlling irregularities in data distribution.
 
-<a href="../../assets/images/gui/TP-panel-sample-tm-overview-overallplot.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview-overallplot.png"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-overview-overallplot.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview-overallplot.png"/></a>
 
 Overall plot shows the following cumulated data plots for the molecule sample selected in panel 
 [Molecule selection](#molecule-selection):
@@ -47,10 +51,7 @@ Overall plot shows the following cumulated data plots for the molecule sample se
 Data plots must be updated after modification of the molecule selection by pressing 
 ![UPDATE](../../assets/images/gui/TP-but-update-tm.png "UPDATE").
 
-<a href="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png"><img src="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png" style="max-width:389px;"/></a>
-
-The final molecule selection is exported to module Trace processing by pressing 
-![TO MASH](../../assets/images/gui/TP-but-to-mash.png "TO MASH"); as the operation can not be reversed, a warning pops up.
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png"><img src="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png" style="max-width:389px;"/></a>
 
 
 ### Concatenated traces
@@ -93,7 +94,7 @@ The building of 2D histograms uses the MATLAB script `hist2` developed by Tudor 
 
 Use this interface to assemble or review the molecule selection.
 
-<a href="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection.png"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection.png"/></a>
 
 Molecule selection shows individual single molecule data plots defined by 
 [Plot](../panels/panel-plot.html) and that can be browsed using the sliding bar in **(i)**. 
@@ -112,7 +113,7 @@ For instance, single molecules with incoherent intensity-time traces can be excl
 [Overall plots](#overall-plots) must be updated after modification of the molecule selection by pressing 
 ![UPDATE](../../assets/images/gui/TP-but-update-tm.png "UPDATE").
 
-<a href="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png"><img src="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png" style="max-width:389px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png"><img src="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png" style="max-width:389px;"/></a>
 
 
 
@@ -132,7 +133,7 @@ Selection criteria are:
 
 As the operation can not be reversed, a confirmation warning pops up.
 
-<a href="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection-warn1.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection-warn1.png" style="max-width:409px"></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection-warn1.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection-warn1.png" style="max-width:409px;"></a>
 
 
 ### Subgroup affiliation
@@ -157,4 +158,4 @@ tag color can be modified any time by pressing
 Specific tags can be deleted pressing 
 ![Delete tag](../../assets/images/gui/TP-but-delete-tag.png "Delete tag"); as the operation can not be reversed, a confirmation warning pops up if some molecules are affiliated to the corresponding subgroup.
 
-<a href="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection-warn2.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection-warn2.png" style="max-width:489px"></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection-warn2.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection-warn2.png" style="max-width:489px;"></a>
