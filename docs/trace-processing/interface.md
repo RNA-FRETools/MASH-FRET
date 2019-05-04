@@ -8,15 +8,16 @@ nav_order: 1
 # Trace processing interface
 {: .no_toc }
 
-The module Trace processing is the third component of the software MASH-FRET and can be selected in the main 
+Trace processing is the third module of MASH-FRET and is accessed by pressing 
+![Trace processing](../assets/images/gui/TP-but-trace-processing.png "Trace processing") in the main 
 [tool bar](../Getting_started.html#interface).
 
-The interface can be divided into several subunits that respectively allow to:
-* <u>manage</u> project and sample data
-* <u>process</u> intensity data
-* <u>visualize</u> processed and calculated data
+The interface can be divided into three subunits that respectively allow to:
+* <u>import</u> and <u>export</u> data
+* <u>process</u> time traces
+* <u>visualize</u> trace processing
 
-<a href="../assets/images/gui/interface-trace-processing.png"><img src="../assets/images/gui/interface-trace-processing.png"/></a>
+<a class="plain" href="../assets/images/gui/interface-trace-processing.png"><img src="../assets/images/gui/interface-trace-processing.png"/></a>
 
 Learn about individual components of the interface in the 
 [Panels](panels.html) section.
