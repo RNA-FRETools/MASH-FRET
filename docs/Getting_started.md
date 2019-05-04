@@ -49,20 +49,23 @@ When you start MASH-FRET the **main user interface** and **action history** open
 <a href="assets/images/gui/interface-default.png"><img src="assets/images/gui/interface-default.png" /></a>
 
 The main user interface appears in its default layout and includes:
-* a **tool bar** that allows to access the different <u>modules</u> (default: Video Processing) and to set the default <u>destination directory</u> where files will be exported,
+* a **tool bar** that allows the access the different <u>modules</u> (default: Video Processing) and to set the default <u>root folder</u> where files will be exported,
 * a **main area** that contains the selected module,
-* a **menu bar** to set the action history <u>view</u>, set <u>overwrite</u> file options and execute program <u>routines</u> (*advanced use*).
+* a **menu bar** that allows to modify the action history <u>view</u>, set <u>file overwriting</u> options and execute program <u>routines</u> (*advanced use*).
 
 The action history lists the main events occurring in the program.
-
-**Note:** *Keep the action history or the command window of MATLAB visible when using MASH-FRET: information about running processes and failures are streaming in live.
 To keep track, logs are automatically written in a 
-[daily log file](output-files/log-daily-logs.html)*.
+[daily log file](output-files/log-daily-logs.html).
+
+**Note:** *Keep the action history or the command window of MATLAB visible when using MASH-FRET: information about running processes and failures are streaming in live.*
 
 
 ---
 
 ## Modules and tutorials
+
+MASH-FRET's modules were originally created for the simulation, processing and analysis of video-based surface-immobilized single molecule FRET (smFRET) experiments.
+Nonetheless, functionalities can be used for any type of video or trajectories requiring the same treatment.
 
 The program offers five modules to work with:
 
@@ -72,10 +75,7 @@ The program offers five modules to work with:
 - [Histogram analysis](histogram-analysis.html)
 - [Transition analysis](transition-analysis.html)
 
-Modules were originally created for the simulation, processing and analysis of video-based surface-immobilized single molecule FRET (smFRET) experiments.
-Nonetheless, functionalities can be used for any type of video or trajectories requiring the same treatment.
-
-Learn about module's <u>individual functionalities</u> in the respective documentation sections, or follow the 
+Learn about module's individual functionalities in the respective documentation sections, or follow the 
 [Tutorials](tutorials.html) to perform common tasks listed below:
 
 * [Analyze experimental data](tutorials/analyze-data.html)
