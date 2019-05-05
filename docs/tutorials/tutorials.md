@@ -7,8 +7,11 @@ has_toc: true
 permalink: /tutorials.html
 ---
 
+<img src="assets/images/logos/logo-tutorials.png" width="260" style="float:right; margin-left: 15px;"/>
+
 # Tutorials
 {: .no_toc }
 
-Module functionalities can be used separately or following a specific procedure. 
-Follow the <u>tutorials</u> to perform the common tasks listed below.
+Use this section to learn the main procedures of MASH-FRET.
+
+Main procedures are described step-by-step and allow to perform the following tasks:

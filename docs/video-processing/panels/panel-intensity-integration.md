@@ -9,7 +9,7 @@ nav_order: 6
 # Intensity integration
 {: .no_toc }
 
-<a href="../../assets/images/gui/VP-panel-integration.png"><img src="../../assets/images/gui/VP-panel-integration.png" style="max-width: 562px;"/></a>
+<a href="../../assets/images/gui/VP-panel-integration.png"><img src="../../assets/images/gui/VP-panel-integration.png" style="max-width: 565px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -77,25 +77,21 @@ In this case, the y-axis of intensity-time trace plots when using the
 
 ---
 
-## Export options
+## Create and export intensity-time traces
 
-These settings define the file formats to export.
+Command that opens the export options prior starting intensity-time trace calculations. 
 
 To set export options, please refer to 
 [Set export options](../functionalities/set-export-options.html).
 
-
----
-
-## Create and export intensity-time traces
-
-Command that starts intensity calculations for each molecule coordinates present in 
+After saving export options, intensity calculations start for each molecule coordinates present in 
 [Input coordinates](#input-coordinates), on each video frame present in 
 [Input video](#input-video), with parameters defined in 
 [Integration parameters](#integration-parameters), and exports single molecule intensity-time traces to files selected in 
 [Export options](#export-options).
 
-This process is relatively slow as the underlying algorithm is adapted to low-RAM computer: pixel values in the video are not loaded all at once in memory but the video file is browsed every time a pixel value is needed for calculation. 
+This process can be relatively slow if not enough free memory is available on the computer.
+In this case the video file is browsed every time a pixel value is needed for calculation. 
 For more information, please refer to the respective functions in the source code:
 
 ```

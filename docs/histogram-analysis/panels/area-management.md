@@ -58,6 +58,12 @@ The type of exported files depends on which analysis was carried on:
 * [_config.txt](../../output-files/txt-histogram-state-configurations.html) are saved when state configurations were determined, 
 * [_thresh or _gauss.txt](../../output-files/txt-histogram-gaussian-populations.html) are saved when state populations were calculated.
 
+PDF export uses the MATLAB script `append_pdfs` developed by Oliver Woodford that can be found in the 
+[MATLAB exchange platform](https://www.mathworks.com/matlabcentral/fileexchange/31215-append_pdfs).
+
+**Note:** *Exporting PDF figures requires the installation of Ghostscript that can be downloaded 
+[here](https://www.ghostscript.com/)
+
 
 ---
 

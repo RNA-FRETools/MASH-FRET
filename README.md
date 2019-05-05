@@ -38,24 +38,27 @@ Please report any **bugs** or **feature requests** through the [issue tracker](h
 The various submodules of MASH-FRET (simulation, movie / trace processing, bootstrapping) have been described in several articles. If you use MASH-FRET in your work, please refer to the respective publication listed below.
 
 
-### Simulation routine
+### Simulation
 
 R. Börner, D. Kowerko, M.C.A.S. Hadzic, S.L.B. König, M. Ritter, R.K.O. Sigel, "Simulations of Camera-Based Single-Molecule Fluorescence Experiments", *PLoS One* **2018**, *13*, e0195277. [![](https://img.shields.io/badge/DOI-10.1371/journal.pone.0195277-blue.svg)](https://doi.org/10.1371/journal.pone.0195277)
 
 > **Note:** Supporting Information for parameter optimization and benchmarking of different single-molecule localization methods (including test data sets) is available for download at http://skinner.informatik.tu-chemnitz.de:9081/#/.
 
-### Model selection and state transition analysis
 
-M.C.A.S. Hadzic, R. Börner, D. Kowerko, S.L.B. König, R.K.O. Sigel, "Reliable State Identification and State Transition Detection in Fluorescence Intensity-Based Single-Molecule FRET Data", *J. Phys. Chem. B* **2018**, *122*, 6134-6147. [![](https://img.shields.io/badge/DOI-10.1021/acs.jpcb.7b12483-blue.svg)](https://doi.org/10.1021/acs.jpcb.7b12483)
-
-and
+### Video processing and algorithm testing
 
 M.C.A.S. Hadzic, D. Kowerko, R. Börner, S. Zelger-Paulus, R.K.O. Sigel, "Detailed analysis of complex single molecule FRET data with the software MASH", *Proc. SPIE* **2016**, *9711*, 971119. [![](https://img.shields.io/badge/DOI-10.1117/12.2211191-blue.svg)](https://doi.org/10.1117/12.2211191)
 
 
-### Bootstrapping BOBA-FRET
+### Histogram analysis and BOBA-FRET
 
 S.L.B König, M.C.A.S. Hadzic, E. Fiorini, R. Börner, D. Kowerko, W. Blanckenhorn, R.K.O. Sigel, "Reliable State Identification and State Transition Detection in Fluorescence Intensity-Based Single-Molecule FRET Data", *Plos One* **2013**, *8*, 1-17. [![](https://img.shields.io/badge/DOI-10.1371/journal.pone.0084157-blue.svg)](https://doi.org/10.1371/journal.pone.0084157)
+
+
+### Transition analysis and algorithm testing
+
+M.C.A.S. Hadzic, R. Börner, D. Kowerko, S.L.B. König, R.K.O. Sigel, "Reliable State Identification and State Transition Detection in Fluorescence Intensity-Based Single-Molecule FRET Data", *J. Phys. Chem. B* **2018**, *122*, 6134-6147. [![](https://img.shields.io/badge/DOI-10.1021/acs.jpcb.7b12483-blue.svg)](https://doi.org/10.1021/acs.jpcb.7b12483)
+
 
 ## Licence
 

@@ -8,15 +8,16 @@ nav_order: 1
 # Transition analysis interface
 {: .no_toc }
 
-The module Transition analysis is the fifth and last component of the software MASH-FRET and can be selected in the main 
+Transition analysis is the fifth module of MASH-FRET and is accessed by pressing 
+![Transition analysis](../assets/images/gui/TA-but-transition-analysis.png "Transition analysis") in the main 
 [tool bar](../Getting_started.html#interface).
 
 The interface can be divided into three subunits that respectively allow to:
-* <u>browse and process</u> imported data
-* <u>analyze</u> transition data
-* <u>visualize</u> the calculated data
+* <u>import</u> and <u>export</u> data
+* <u>analyze</u> state transitions
+* <u>visualize</u> transition analysis
 
-<a href="../assets/images/gui/interface-transition-analysis.png"><img src="../assets/images/gui/interface-transition-analysis.png" /></a>
+<a class="plain" href="../assets/images/gui/interface-transition-analysis.png"><img src="../assets/images/gui/interface-transition-analysis.png" /></a>
 
 Learn about individual components of the interface in the 
 [Panels](panels.html) section.

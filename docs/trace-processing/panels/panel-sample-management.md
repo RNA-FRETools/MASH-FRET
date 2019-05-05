@@ -9,7 +9,7 @@ nav_order: 2
 # Sample management
 {: .no_toc }
 
-<a href="../../assets/images/gui/TP-panel-sample.png"><img src="../../assets/images/gui/TP-panel-sample.png" style="max-width: 185px;"/></a>
+<a href="../../assets/images/gui/TP-panel-sample.png"><img src="../../assets/images/gui/TP-panel-sample.png" style="max-width: 288px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -19,7 +19,6 @@ nav_order: 2
 
 
 ---
-
 
 ## Molecule list
 
@@ -54,6 +53,7 @@ Editing the current molecule updates the
 [Denoising](panel-denoising.html) and 
 [Find states](panel-find-states.html) for the defined molecule index.
 
+
 ---
 
 ## Process current molecule data
@@ -69,6 +69,7 @@ Pressing
 [Find states](panel-find-states.html) for the current molecule.
 
 Usually, this functionality is used after changing any processing parameters in the sub-mentioned panels.
+
 
 ---
 
@@ -86,9 +87,6 @@ Pressing
 
 Usually, this functionality is used before exporting the MASH project.
 
-**Note:** *If the recentering options is activated in panel 
-[Sub-images](panel-subimage.html), all single molecule coordinates will be automatically recentered. If not desired, deactivate the recentering option prior processing all data; see 
-[Single molecule coordinates](panel-subimage.html#single-molecule-coordinates) for more information.*
 
 ---
 
@@ -107,23 +105,37 @@ To set export options, refer to
 ## Trace manager
 
 Pressing 
-![TM](../../assets/images/gui/TP-but-tm.png "Export ASCII...") opens the tool.
-Trace manager is used to sort single molecules and set molecule statuses in the sample.
+![TM](../../assets/images/gui/TP-but-tm.png "Export ASCII...") opens the tool
+Trace manager used to sort single molecules and set molecule statuses in the sample.
+
+At opening, Trace manager import and process all single molecule data in the project up to gamma correction of FRET-time trace; see Trace processing 
+[Woekflow](../workflow.html). 
+Resulting time traces are then concatenated into on single trace and overall data histograms are built.
+
+<a href="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png"><img src="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png" style="max-width:389px;"/></a>
 
 To use Trace manager, refer to 
-[Use Trace manager](../functionalities/use-trace-manager.html).
+[Use Trace manager](../functionalities/tm-overview.html).
 
 
 ---
 
 ## Molecule status
 
-The molecule status is defined by sample inclusion/exclusion and group assignment.
+The molecule status is defined by sample inclusion/exclusion and subgroup assignment.
 
-<a href="../../assets/images/gui/TP-panel-sample-mol.png"><img src="../../assets/images/gui/TP-panel-sample-mol.png" style="max-width: 173px;"/></a>
+<a href="../../assets/images/gui/TP-panel-sample-mol.png"><img src="../../assets/images/gui/TP-panel-sample-mol.png" style="max-width: 271px;"/></a>
 
-To include the current molecule in, or exclude from, the sample, activate or deactivate respectively the box in **(a)**.
+The current molecule can be deselected by deactivating the option in **(a)**. 
+Deselected molecules can be deleted from the project by pressing 
+![Clear](../../assets/images/gui/TP-but-clear.png "Clear").
+Time traces of deselected molecules are plotted on a darker background in the 
+[Visualization area](area-visualization.html#intensity-time-traces-and-histograms) for easier identification.
 
-To assign the current molecule to an existing group, select the group label in list **(b)**.
-To add customed group labels, please refer to 
-[Use Trace manager](../functionalities/use-trace-manager.html).
+The current molecule can also be tagged to mark its assignment to specific molecule subgroups.
+To assign a specific tag to the current molecule, press 
+![Add>>](../../assets/images/gui/TP-but-addsupsup.png "Add>>") and select a tag in list **(c)**.
+Tags assigned to the current molecule are listed in **(b)** and can be dismissed by pressing 
+![Del.](../../assets/images/gui/TP-but-delp.png "Del.").
+To define customed tags, please refer to 
+[Use Trace manager](../functionalities/tm-overview.html#molecule-selection).

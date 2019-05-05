@@ -3,7 +3,7 @@ layout: default
 title: Merge projects
 parent: /trace-processing/functionalities.html
 grand_parent: /trace-processing.html
-nav_order: 5
+nav_order: 8
 ---
 
 # Merge projects

@@ -22,9 +22,9 @@ nav_order: 10
 
 ## Single molecule images
 
-Single molecule images displays a close-up of the laser-specific average image on the current single molecule position.
-Image laser illumination, as well as image brightness and contrast, can be modifies in panel
-[Sub-images](panel-subimage.html).
+Single molecule images show a close-up of the current single molecule position in each detection channel.
+Average image at specific laser illumination are used that can be modified in panel 
+[Sub-images](panel-subimage.html), together with image brightness and contrast.
 
 Single molecule positions are indicated by crosses and framed by squares of dimensions used for intensity integration; see 
 [Integration parameters](../../video-processing/panels/panel-intensity-integration.html#integration-parameters) for more information.
@@ -54,6 +54,10 @@ Histogram axes show the current single molecule intensity histograms selected in
 [Intensity units](panel-plot.html#intensity-units).
 Histograms are built by sorting intensities in 100 bins between the minimum and maximum intensities.
 
+![Top time traces of a selected molecule](../../assets/images/gui/TP-area-visu-toptraces-selected.png "Selected molecule")
+
+![Top time traces of a deselected molecule](../../assets/images/gui/TP-area-visu-toptraces-deselected.png "deselected molecule")
+
 Colors used in trace and histogram axes are defined in the project options; see 
 [Edit project options](area-project-management.html#edit-project-options) for more information.
 
@@ -74,6 +78,10 @@ The time axis can be truncated by setting the starting point in
 Histogram axes show the current single molecule FRET and stoichiometry histograms selected in 
 [Plot in bottom axes](panel-plot.html#plot-in-bottom-axes).
 Histograms are built by sorting FRET and stoichiometry values into bins of size 0.01 between -0.2 and 1.2.
+
+![Bottom time traces of a selected molecule](../../assets/images/gui/TP-area-visu-bottomtraces-selected.png "Selected molecule")
+
+![Bottom time traces of a deselected molecule](../../assets/images/gui/TP-area-visu-bottomtraces-deselected.png "deselected molecule")
 
 FRET and stoichiometry calculations, as well as colors used in trace and histogram axes, are defined in the project options; see 
 [Edit project options](area-project-management.html#edit-project-options) for more information.

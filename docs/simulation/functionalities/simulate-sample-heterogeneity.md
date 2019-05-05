@@ -20,7 +20,10 @@ It can be simulated for various characteristics by using one of the following me
 
 ## Parameter deviations
 
-This method can be used to introduce sample heterogeneity in FRET states 
+This method produces a continuous sample heterogeneity, *i.e.*, molecule characteristics are broadened. 
+This is opposed to the creation of sub-populations of molecules with distinguishable characteristics.
+
+Sample heterogeneity can be introduced in FRET states 
 [*FRET*<sub>*j*</sub>](){: .math_var }, donor emission in absence of acceptor 
 [*I*<sub>tot,em</sub>](){: .math_var } and gamma factors 
 [*&#947;*](){: .math_var }.
@@ -28,14 +31,16 @@ This method can be used to introduce sample heterogeneity in FRET states
 Parameters are randomly generated for each molecule by drawing from Gaussian distributions with means respectively defined in fields 
 `FRETj`, `Itot,em`, `γ`, and standard deviation in fields `wFRETj`, `wItot,em` and `wγ`.
 
-This method produces a continuous sample heterogeneity, *i.e.*, a broadening of molecule characteristics as opposed to the creation of sub-populations of molecules with distinguishable characteristics.
+<a class="plain" href="../../assets/images/figures/VP-functionalities-scheme-sample-heterogenity.png"><img src="../../assets/images/figures/VP-functionalities-scheme-sample-heterogenity.png" style="max-width:500px;"></a>
 
 
 ---
 
 ## Molecule-specific pre-sets
 
-This method can be used to introduce sample heterogeneity in FRET states 
+This method allows to custom the type of sample heterogeneity by either producing a broadening of molecule characteristics, or by creating sub-populations of molecules with distinguishable characteristics, or both.
+
+Sample heterogeneity can be introduced in FRET states 
 [*FRET*<sub>*j*</sub>](){: .math_var }, state transition rates 
 [*k*<sub>*jj'*</sub>](){: .math_var }, donor emission in absence of acceptor 
 [*I*<sub>tot,em</sub>](){: .math_var }, gamma factors 
@@ -45,8 +50,6 @@ This method can be used to introduce sample heterogeneity in FRET states
 Parameters are pre-defined for individual molecules in a pre-set parameter file containing the respective variables `FRET`, `trans_rates`, `tot_intensity`, `gamma` and/or `psf_width`. 
 For more information about the structure and use of pre-set parameter file, please refer to 
 [Pre-set parameters](../panels/panel-molecules.html#pre-set-parameters).
-
-This method allows to custom the type of sample heterogeneity by either producing a broadening of molecule characteristics or by creating sub-populations of molecules with distinguishable characteristics.
 
 As an example, the script below creates two distinct molecule sub-populations of equal size, with one population allowing step-wise and reversible state transitions, and one getting trapped after an off-path state transition:
 

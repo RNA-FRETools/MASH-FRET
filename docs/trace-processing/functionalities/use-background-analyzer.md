@@ -3,7 +3,7 @@ layout: default
 title: Use Background analyzer
 parent: /trace-processing/functionalities.html
 grand_parent: /trace-processing.html
-nav_order: 4
+nav_order: 7
 ---
 
 # Use Background analyzer
@@ -53,7 +53,7 @@ To configure a method, set parameters **(d - i)** according to the detailed desc
 | `Dark trace`                                      | The background trace is calculated from a dark pixel located at position x=**(f)** and y=**(g)** that can be detected automatically in a **(d)**-by-**(d)** sub-image if **(h)** is activated. The trace is smoothed with an average window size of **(c)** frames prior being subtracted                                                                                                                                                                                                                                     |  **(c)** = 10, **(d)** = 20, **(e)** = 0, **(f)** = 0, **(g)** activated  |
 | `Manual`                                          | The background intensity in estimated by the user and set in [Background intensity](#background-intensity)                                                                                                                                                                                                                                                                                                                                                                                                                    |                                                                           |
 
-**Note:** *As the method `Dark tarce` calculates a background trajectory and not an intensity, the mean value of the dark trace is taken for point estimate of the background intensity*
+**Note:** *As the method `Dark trace` calculates a background trajectory and not an intensity, the mean value of the dark trace is taken for point estimate of the background intensity*
 
 
 ---

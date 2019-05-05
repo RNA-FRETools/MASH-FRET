@@ -11,11 +11,10 @@ nav_order: 1
 
 Import options define the particular file structure and annexed files used to create a project from ASCII trace files in modules Trace processing and Transition analysis.
 The window is accessed by pressing 
-![ASCII options ...](../../assets/images/gui/TP-but-ascii-options-3p.png "ASCII options ...") in the project management area of module Trace processing, or by pressing 
-![ASCII Import](../../assets/images/gui/TA-but-ascii-import.png "ASCII Import") in the project management area of module Transition analysis.
+![ASCII options ...](../../assets/images/gui/TP-but-ascii-options-3p.png "ASCII options ...") in the project management area of module Trace processing or Transition analysis.
 
 Press 
-![Save](../../assets/images/gui/TP-but-save-bga.png "Save") to export settings to MASH.
+![Save](../../assets/images/gui/TP-but-save-bga.png "Save") to save import settings.
 
 <a href="../../assets/images/gui/TP-area-proj-impopt.png"><img src="../../assets/images/gui/TP-area-proj-impopt.png" style="max-width: 286px;"/></a>
 
@@ -53,6 +52,7 @@ Coordinates are sorted according to the specific x-range of each channel which i
 Import settings are saved only after pressing 
 ![Ok](../../assets/images/gui/TP-but-ok.png "Ok").
 
+
 ---
 
 ## Single molecule video
@@ -64,12 +64,18 @@ Defines import options for single molecule video (SMV).
 The SMV is used to re-calculate intensity-time traces in case molecule positions are modified, and to calculate background intensities
 If no video is available, only manual background setting will be allowed.
 
+By default, intensity-time traces are recalculated by summing up 1-by-1 pixel area; see 
+[Integration parameters](../../video-processing/panels/panel-intensity-integration.html#integration-parameters) for more information about intensity calculation.
+This include the background intensity-time traces in the case 
+[Background correction settings](../panels/panel-background-correction.html#background-correction-settings) include the background correction `Dark trace`.
+
 The SMV file can be imported along with the ASCII traces by activating the option in **(a)**, pressing 
 ![...](../../assets/images/gui/TP-but-3p.png "...") and selecting the proper file. 
 The imported file name is then displayed in **(b)**.
 If possible, it is recommended to convert the file to the 
 [.sira file](../../output-files/sira-mash-video.html) format to increase speed of execution; see 
 [Export video to file](../../video-processing/panels/panel-edit-video.html#export-video-to-file) for help.
+
 
 ---
 
@@ -96,6 +102,7 @@ Alternated lasers are named "exc
 Set laser wavelentgth in **(j)** after changing selection in list **(i)**. 
 
 If the files contain specific time data that must be imported, activate the option in **(e)** and set in **(f)** the file column where time data are located.
+
 
 ---
 
