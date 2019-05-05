@@ -6,6 +6,7 @@ function exportMovie(h_fig)
 %                              export2Sira, export2Tiff.
 
 h = guidata(h_fig);
+ok = 0;
 
 [o, movName, o] = fileparts(h.movie.file);
 str_format = {'*.sira', 'SIRA Graphic File Format(*.sira)'; ...
@@ -40,6 +41,10 @@ if ~isempty(fName) && sum(fName)
             ok = export2Avi(h_fig, fName, pName);
         case 6
             ok = export2Png(h_fig, fName, pName);
+    end
+    
+    if ~ok
+        return;
     end
     
     startFrame = h.param.movPr.mov_start;
