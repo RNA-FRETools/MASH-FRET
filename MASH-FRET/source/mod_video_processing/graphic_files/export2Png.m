@@ -6,6 +6,7 @@ function ok = export2Png(h_fig, nameMain, pathName)
 % defaults
 isMov = 0;
 isBgCorr = 0;
+ok = 1;
 
 h = guidata(h_fig);
 

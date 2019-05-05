@@ -91,7 +91,9 @@ if ~isDenoise
                        '"upper_th.dat" missing.'], h_fig, 'error');
                     return;
                 end
-                I_den = run_control(fret_shrink, I_corr);
+                for l = 1:nExc
+                    I_den(:,:,l) = run_control(fret_shrink, I_corr(:,:,l));
+                end
         end
     end
 

@@ -66,8 +66,14 @@ if ~isempty(p.proj)
     if addOn
         str_lst = cell(1,length(tagNames));
         for t = 1:nTag
+            if sum(double((hex2rgb(colorlist{t})/255)>0.5))==3
+                fntClr = 'black';
+            else
+                fntClr = 'white';
+            end
             str_lst{t} = ['<html><body  bgcolor="' colorlist{t} '">' ...
-                '<font color="white">' tagNames{t} '</font></body></html>'];
+                '<font color=',fntClr,'>' tagNames{t} ...
+                '</font></body></html>'];
         end
         if isempty(str_lst)
             set(h.lisbox_TP_defaultTags,'visible','on','value',1,...
@@ -95,8 +101,13 @@ if ~isempty(p.proj)
     str_pop = {};
     for t = 1:nTag
         if molTag(currMol,t)
+            if sum(double((hex2rgb(colorlist{t})/255)>0.5))==3
+                fntClr = 'black';
+            else
+                fntClr = 'white';
+            end
             str_pop = [str_pop,cat(2,'<html><body  bgcolor="', ...
-                colorlist{t},'"><font color="white">',tagNames{t}, ...
+                colorlist{t},'"><font color=',fntClr,'>',tagNames{t}, ...
                 '</font></body></html>')];
         end
     end

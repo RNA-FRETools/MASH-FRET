@@ -4,20 +4,29 @@ function success = saveActPan(actions, h_fig)
 % "actions" >> action strings to write
 
 % Requires external function: updateActPan.
-% Last update: 19th of February 2019 by Mélodie C.A.S Hadzic
+%
+% Last update: by MH, 4.5.2019
+% --> save logs in MASH-FRET/log
+%
+% update: 19th of February 2019 by Mélodie C.A.S Hadzic
 % --> manage error invalid root folder
 
 h = guidata(h_fig);
 success = 1;
 
 try
-    if isfield(h, 'folderRoot')
-        pname = cat(2,h.folderRoot,filesep,'log');
-        if ~exist(pname, 'dir')
-            mkdir(pname)
-        end
-    else
-        pname = pwd;
+%     if isfield(h, 'folderRoot')
+%         pname = cat(2,h.folderRoot,filesep,'log');
+%         if ~exist(pname, 'dir')
+%             mkdir(pname)
+%         end
+%     else
+%         pname = pwd;
+%     end
+    [src,o,o] = fileparts(which('MASH.m'));
+    pname = cat(2,src,filesep,'log');
+    if ~exist(pname,'dir')
+        mkdir(pname);
     end
     
 catch err

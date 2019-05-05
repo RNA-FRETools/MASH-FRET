@@ -104,6 +104,10 @@ if ~isempty(fname) && sum(fname)
         h.movie.movie = data.movie;
     end
     
+    if isfield(h.movie,'movie') && ~isempty(h.movie.movie)
+        set(h.pushbutton_VP_freeMem,'backgroundcolor',[1,0.6,0.6]);
+    end
+    
     h.movie.frameCur = data.frameCur; % image data of input (displayed) frame
     h.movie.pixelX = data.pixelX; % width of the movie
     h.movie.pixelY = data.pixelY; % height of the movie

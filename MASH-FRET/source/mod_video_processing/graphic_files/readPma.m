@@ -2,7 +2,7 @@ function [data,ok] = readPma(fullFname, n, fDat, h_fig)
 % Read data from bits in a *.sira file. Returns useful movie parameters and
 % image data of all movie frames.
 %
-% Requires external functions: loading_bar, updateActPan, pleaseWait.
+% Requires external functions: loading_bar, updateActPan.
 
 % defaults
 data = [];
@@ -80,8 +80,15 @@ if strcmp(n, 'all')
 
     else
 
-        pleaseWait('start', h_fig);
+        intrupt = loading_bar('init',h_fig,100,'Import PMA video...');
+        if intrupt
+            ok = 0;
+            return;
+        end
         h = guidata(h_fig);
+        h.barData.prev_var = h.barData.curr_var;
+        guidata(h_fig, h);
+        prevCount = 0;
         
         if ~exist('f','var')
             f = fopen(fullFname,'r');
@@ -93,7 +100,16 @@ if strcmp(n, 'all')
             for i = 1:frameLen
                 fseek(f, 2*i + pixelX*pixelY*(i-1), 0);
                 movie(:,:,i) = reshape(fread(f, pixelX*pixelY, ...
-                    'uint8=>single'), [pixelX pixelY])';          
+                    'uint8=>single'), [pixelX pixelY])';
+                
+                if i/frameLen>prevCount
+                    intrupt = loading_bar('update', h_fig);
+                    if intrupt
+                        ok = 0;
+                        return;
+                    end
+                    prevCount = prevCount+1/100;
+                end
             end
             frameCur = movie(:,:,1); % Get image data of the input frame
         else
@@ -101,11 +117,22 @@ if strcmp(n, 'all')
             for i = 1:frameLen
                 fseek(f, 2*i + pixelX*pixelY*(i-1), 0);
                 h.movie.movie(:,:,i) = reshape(fread(f, pixelX*pixelY, ...
-                    'uint8=>single'), [pixelX pixelY])';          
+                    'uint8=>single'), [pixelX pixelY])';
+                
+                if i/frameLen>prevCount
+                    intrupt = loading_bar('update', h_fig);
+                    if intrupt
+                        ok = 0;
+                        return;
+                    end
+                    prevCount = prevCount+1/100;
+                end
             end
             guidata(h_fig,h);
             frameCur = h.movi.movie(:,:,1); % Get image data of the input frame
         end
+        
+        loading_bar('close', h_fig);
     end
 
 else

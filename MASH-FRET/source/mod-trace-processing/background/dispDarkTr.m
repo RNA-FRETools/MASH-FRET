@@ -38,12 +38,15 @@ if method == 6
     guidata(h_fig, h);
     nExc = p.proj{proj}.nb_excitations;
     nPix = p.proj{proj}.pix_intgr(2);
-    fDat = [p.proj{proj}.movie_file p.proj{proj}.movie_dat(1) [res_y ...
-        res_x] p.proj{proj}.movie_dat(3:end)];
+    fDat{1} = p.proj{proj}.movie_file;
+    fDat{2}{1} = p.proj{proj}.movie_dat{1};
+    fDat{2}{2} = [];
+    fDat{3} = [res_y res_x];
+    fDat{4} = p.proj{proj}.movie_dat{3};
     fact = p.proj{proj}.curr{mol}{3}{3}{l,c}(method,1);
     nFrames = size(p.proj{proj}.intensities,1)* ...
         p.proj{proj}.nb_excitations;
-    [o I_bg] = create_trace(coord_dark, aDim, nPix, fDat);
+    [o,I_bg] = create_trace(coord_dark, aDim, nPix, fDat);
     I_bg = slideAve(I_bg(l:nExc:nFrames,:), fact);
 
     perSec = p.proj{proj}.fix{2}(4);

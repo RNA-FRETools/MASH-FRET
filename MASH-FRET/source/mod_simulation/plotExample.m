@@ -475,6 +475,8 @@ if strcmp(opUnits, 'photon')
     img = arb2phtn(img, mu_y_dark, K, eta);
     I_don_plot = arb2phtn(I_don_plot, mu_y_dark, K, eta);
     I_acc_plot = arb2phtn(I_acc_plot, mu_y_dark, K, eta);
+else
+    opUnits = 'image';
 end
 
 % Histogram first trace
