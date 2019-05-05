@@ -29,8 +29,13 @@ if ~isempty(p.proj)
 %                 '<font color="white">' num2str(m) '</font></body></html>'];
             tag = find(molTag(m,:));
             if ~isempty(tag)
+                if sum(double((hex2rgb(colorlist{tag(1)})/255)>0.5))==3
+                    fntClr = 'black';
+                else
+                    fntClr = 'white';
+                end
                 str_lst{m} = ['<html><span  bgcolor="' colorlist{tag(1)} ...
-                    '"><font color="white">' num2str(m) ...
+                    '"><font color=',fntClr,'>' num2str(m) ...
                     '</font></span>'];
                 
                 for t = 2:numel(tag)
