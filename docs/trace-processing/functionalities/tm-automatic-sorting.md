@@ -24,6 +24,8 @@ Trace manager is accessed by pressing
 {% include tm_head.html %}
 
 Automatic sorting is used to tag groups of molecules based on specific data criteria.
+Tags are eventually applied to individual molecules after pressing 
+![APPLY TAG TO MOLECULES](../../assets/images/gui/TP-but-apply-tag-to-molecules.png "APPLY TAG TO MOLECULES").
 
 ## Interface components
 {: .no_toc .text-delta }

@@ -24,7 +24,7 @@ Trace manager is accessed by pressing
 
 Overview is used to browse individual molecules and assemble a molecule selection.
 The final molecule selection is exported to module Trace processing by pressing 
-![TO MASH](../../assets/images/gui/TP-but-to-mash.png "TO MASH"); as the operation can not be reversed, a warning pops up.
+![TO MASH](../../assets/images/gui/TP-but-to-mash.png "TO MASH").
 
 ## Interface components
 {: .no_toc .text-delta }
@@ -52,6 +52,9 @@ Data plots must be updated after modification of the molecule selection by press
 ![UPDATE](../../assets/images/gui/TP-but-update-tm.png "UPDATE").
 
 <a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png"><img src="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png" style="max-width:389px;"/></a>
+
+The final molecule selection is exported to module Trace processing by pressing 
+![TO MASH](../../assets/images/gui/TP-but-to-mash.png "TO MASH"); as the operation can not be reversed, a warning pops up.
 
 
 ### Concatenated traces
@@ -114,7 +117,6 @@ For instance, single molecules with incoherent intensity-time traces can be excl
 ![UPDATE](../../assets/images/gui/TP-but-update-tm.png "UPDATE").
 
 <a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png"><img src="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png" style="max-width:389px;"/></a>
-
 
 
 ### Sample exclusion
