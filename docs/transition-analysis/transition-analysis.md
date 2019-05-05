@@ -6,7 +6,7 @@ has_children: true
 permalink: /transition-analysis.html
 ---
 
-<img src="assets/images/logos/logo-transition-analysis_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+<img src="assets/images/logos/logo-transition-analysis.png" width="260" style="float:right; margin-left: 15px;"/>
 
 # Transition analysis
 
