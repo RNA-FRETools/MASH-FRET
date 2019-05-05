@@ -115,7 +115,7 @@ To create intensity trajectories and images:
 ## Export trajectories and video to files
 
 Simulated data and simulation parameters can be exported to various file formats.
-Intensities can be converted into photon counts or electron counts before writing in files.
+Intensities can be converted into photon counts or image counts before writing in files.
 When exporting the SMV, video frames are successively written in files until the video length is reached.
 
 To export data to files:
@@ -136,9 +136,10 @@ To export data to files:
 ## Remarks
 {: .no_toc }
 
-Updating intensity data and writing SMVs to files can be very time consuming depending on which camera characteristics are chosen; see 
+Updating intensity data and writing SMVs to files can be relatively time consuming depending on which camera characteristics are chosen; see 
 [Camera SNR characteristics](panels/panel-video-parameters.html#camera-snr-characteristics) for more information.
 
-Some parameters can be set by loading external files. This allows to bypass the limitations of the user interface in order to work with more than five states or set parameters for individual molecules; see 
+Some parameters can be set by loading external files. 
+This allows to bypass the limitations of the user interface and work with more than five states or set parameters for individual molecules; see 
 [Pre-set parameters](panels/panel-molecules.html#pre-set-parameters) for more information.
 
