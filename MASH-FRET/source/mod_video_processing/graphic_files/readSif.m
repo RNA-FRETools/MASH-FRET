@@ -200,12 +200,16 @@ if strcmp(n, 'all')
        	frameCur = data.frameCur;
         
     else
-        if ~isempty(h_fig)
-            pleaseWait('start',h_fig);
-            h = guidata(h_fig);
-        else
-            disp('Please wait ...');
+        
+        intrupt = loading_bar('init',h_fig,100,'Import SIF video...');
+        if intrupt
+            ok = 0;
+            return;
         end
+        h = guidata(h_fig);
+        h.barData.prev_var = h.barData.curr_var;
+        guidata(h_fig, h);
+        prevCount = 0;
 
         % get video pixel data
         if isMov==0
@@ -216,7 +220,17 @@ if strcmp(n, 'all')
             for l = 1:frameLen
                 movie(:,:,l) = reshape(fread(f,pixelX*pixelY,...
                     'single=>single'),[pixelX,pixelY])';
+                
+                if l/frameLen>prevCount
+                    intrupt = loading_bar('update', h_fig);
+                    if intrupt
+                        ok = 0;
+                        return;
+                    end
+                    prevCount = prevCount+1/100;
+                end
             end
+            
             frameCur = movie(:,:,1);
             
         else
@@ -227,15 +241,24 @@ if strcmp(n, 'all')
             for l = 1:frameLen
                 h.movie.movie(:,:,l) = reshape(fread(f,pixelX*pixelY,...
                     'single=>single'),[pixelX,pixelY])';
+                
+                if l/frameLen>prevCount
+                    intrupt = loading_bar('update', h_fig);
+                    if intrupt
+                        ok = 0;
+                        return;
+                    end
+                    prevCount = prevCount+1/100;
+                end
             end
+            
             frameCur = h.movie.movie(:,:,1);
             guidata(h_fig,h);
         end
 
-        if ~isempty(h_fig)
-            pleaseWait('close',h_fig);
-        end
+        loading_bar('close', h_fig);
     end
+    
 else
     if isMov==2
         frameCur = h.movie.movie(:,:,n)'; 
