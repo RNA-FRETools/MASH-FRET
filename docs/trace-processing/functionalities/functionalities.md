@@ -12,4 +12,7 @@ permalink: /trace-processing/functionalities.html
 # Functionalities
 {: .no_toc }
 
-Follow the suggested procedures to achieve more <u>specific tasks</u> with the Trace processing module.
+In this section, you can learn how to achieve specific trace processing tasks.
+Procedures are described step-by-step and relevant details about the graphical interface are given.
+
+Go to the specific task you would like to achieve by clicking on the corresponding link below:

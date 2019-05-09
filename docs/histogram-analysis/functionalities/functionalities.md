@@ -12,4 +12,7 @@ permalink: /histogram-analysis/functionalities.html
 # Functionalities
 {: .no_toc }
 
-Follow the suggested procedures to achieve more <u>specific tasks</u> with the Histogram analysis module.
+In this section, you can learn how to achieve specific histogram analysis tasks.
+Procedures are described step-by-step and relevant details about the graphical interface are given.
+
+Go to the specific task you would like to achieve by clicking on the corresponding link below:
