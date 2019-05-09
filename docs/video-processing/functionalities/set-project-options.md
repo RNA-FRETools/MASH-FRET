@@ -98,7 +98,7 @@ In a FRET network composed of
 [*A*](){: .math_var } is calculated as:
 
 {: .equation }
-<img src="../../assets/images/equations/VP-eq-fret-calc-01.gif" alt="E_{D,A}^{*} = {}\frac{I_{A,em}^{D,ex}}{\left [ 1 - \sum_{k>A} \left ( E_{A,k}^{*}  \right ) \right ] \times \sum_{k} \left ( I_{k,em}^{D,ex}  \right )} - \sum_{k>D}^{A-1} \left \{\E_{D,k}^{*} \times \prod_{k'> k}^{A} \left [E_{k,k'}^{*} \times \prod_{k''> k'}^{A} \left (E_{k',k'''}^{*}  \right )  \right ]  \right \}">
+<img src="../../assets/images/equations/VP-eq-fret-calc-01.gif" alt="E_{D,A}^{*} = {}\frac{I_{A,em}^{D,ex}}{\left [ 1 - \sum_{k>A} \left ( E_{A,k}^{*}  \right ) \right ] \times \sum_{k} \left ( I_{k,em}^{D,ex}  \right )} - \sum_{k>D}^{A-1} \left \{\E_{D,k}^{*} \times \prod_{k'> k}^{A} \left [E_{k,k'}^{*} \times \prod_{k''> k'}^{A} \left (E_{k',k''}^{*}  \right )  \right ]  \right \}">
 
 <!--
 {: .equation }
