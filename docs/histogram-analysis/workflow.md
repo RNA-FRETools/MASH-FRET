@@ -30,7 +30,7 @@ Single molecules are imported from a
 
 After successful import, the list of available data in the project (*e.g.*, intensities, FRET or stoichiometry) is shown in the 
 [Data list](panels/panel-histogram-and-plot.html#data-list), and the overall normalized and cumulative normalized histograms are displayed in the 
-[Visualization area](panels/area-visualization.html) for the first data of the list - the intensities collected in the left-most video channel upon first laser illumination.
+[Visualization area](panels/area-visualization.html) for the first data of the list - intensities collected in the left-most video channel upon first laser illumination.
 
 To import single molecule data:
 
