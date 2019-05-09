@@ -8,7 +8,7 @@ numbered_toc: true
 permalink: /trace-processing/panels.html
 ---
 
-<img src="../assets/images/logos/logo-trace-processing_400px.png" width="260" style="float:right; margin-left: 15px; margin-bottom: 15px;"/>
+<img src="../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px; margin-bottom: 15px;"/>
 
 # Panels
 {: .no_toc }

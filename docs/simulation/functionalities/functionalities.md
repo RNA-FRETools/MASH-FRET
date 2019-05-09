@@ -7,7 +7,7 @@ has_children: true
 permalink: /simulation/functionalities.html
 ---
 
-<img src="../assets/images/logos/logo-simulation_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+<img src="../assets/images/logos/logo-simulation_400px.png" width="170" style="float:right; margin-left: 15px;"/>
 
 # Functionalities
 {: .no_toc }
