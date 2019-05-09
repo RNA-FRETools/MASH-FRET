@@ -8,7 +8,9 @@ numbered_toc: true
 permalink: /histogram-analysis/panels.html
 ---
 
-# Histogram analysis panels
+<img src="../assets/images/logos/logo-histogram-analysis_400px.png" width="260" style="float:right; margin-left: 15px; margin-bottom: 15px;"/>
+
+# Panels
 {: .no_toc }
 
 Histogram analysis is composed of one project management area **(1)**, three panels **(2-4)** and one visualization area **(5)**.

@@ -8,7 +8,9 @@ numbered_toc: true
 permalink: /video-processing/panels.html
 ---
 
-# Video processing panels
+<img src="../assets/images/logos/logo-video-processing_400px.png" width="260" style="float:right; margin-left: 15px; margin-bottom: 15px;"/>
+
+# Panels
 {: .no_toc }
 
 Video processing is composed of one visualization area **(1)** and five panels **(2-6)**.

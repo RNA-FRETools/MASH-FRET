@@ -5,10 +5,12 @@ parent: /video-processing.html
 nav_order: 2
 ---
 
-# Video processing workflow
+<img src="../assets/images/logos/logo-video-processing_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+
+# Workflow
 {: .no_toc }
 
-In this section you will learn how to process single molecule videos to obtain single molecule coordinates and intensity-time traces. Exported data, in particular to the 
+In this section you will learn how to process single molecule videos to obtain single molecule coordinates and intensity-time traces. Exported data, in particular the 
 [mash project](../output-files/mash-mash-project.html) file, can further be used in module Trace processing for 
 [data analysis](../tutorials/analyze-data.html).
 
@@ -56,16 +58,16 @@ MASH offers a set of basic or smFRET-specific image filters that can be used for
 Some image filters can also be used as background correction prior creating intensity-time traces; see 
 [Remarks](#remarks) for more details.
 
-<a href="../assets/images/figures/VP-workflow-scheme-filter-video.png">![Apply image filter to video](../assets/images/figures/VP-workflow-scheme-filter-video.png "Apply image filter to video")</a>
+<a class="plain" href="../assets/images/figures/VP-workflow-scheme-filter-video.png">![Apply image filter to video](../assets/images/figures/VP-workflow-scheme-filter-video.png "Apply image filter to video")</a>
 
-Image filter or not, it is recommended to export every video analyzed to a 
-[.sira file](../output-files/sira-mash-video.html). 
-This will eventually reduce the processing time.
+In any case, it is recommended to export SMVs to 
+[.sira files](../output-files/sira-mash-video.html). 
+This will eventually reduce the processing time in module Trace processing.
 
 To get rid of brightness variations in time and smooth the background noise, video frames are averaged into one average image.
 Finally, spot detection is performed on the average image with the Spotfinder tool.
 
-<a href="../assets/images/figures/VP-workflow-scheme-average-sf.png">![Average image and spot detection](../assets/images/figures/VP-workflow-scheme-average-sf.png "Average video and detect spots")</a>
+<a class="plain" href="../assets/images/figures/VP-workflow-scheme-average-sf.png">![Average image and spot detection](../assets/images/figures/VP-workflow-scheme-average-sf.png "Average video and detect spots")</a>
 
 To localize bright spots in the SMV:
 
@@ -79,7 +81,7 @@ To localize bright spots in the SMV:
    [Filter list](panels/panel-edit-video.html#filter-list).  
      
 1. Set parameters in 
-   [Frame range](panels/panel-edit-video.html#frame-range) and export the modified (or not) video to a 
+   [Frame range](panels/panel-edit-video.html#frame-range) and export the original or modified video to a 
    [.sira file](../output-files/sira-mash-video.html) by pressing 
    ![Export...](../assets/images/gui/VP-but-export.png "Export...").   
      
@@ -106,12 +108,12 @@ To localize bright spots in the SMV:
 ## Transform spots coordinates
 
 To obtain single molecules coordinates, spots coordinates must be transformed into other channels.
-This implies that the spatial transformation specific to your setup must be calculated.
+This implies the calculation of a spatial transformation specific to your setup.
 
 The spatial transformation is calculated from an already co-localized set of coordinates called the reference coordinates.
 They are mapped manually using a reference image where reference samples emits in all channels.
 
-<a href="../assets/images/figures/VP-workflow-scheme-map-reference.gif">![Transformation calculation](../assets/images/figures/VP-workflow-scheme-map-reference.gif)</a>
+<a class="plain" href="../assets/images/figures/VP-workflow-scheme-map-reference.gif">![Map reference coordinates](../assets/images/figures/VP-workflow-scheme-map-reference.gif "Map reference coordinates")</a>
 
 The transformation from one channel to another uses a combination of symmetry operations which is specific to the recording setup. 
 A list of transformation types is available for such purpose, going from the most simple to the most complex combination.
@@ -122,7 +124,7 @@ The quality of the transformation is judged by the user's eye from the superposi
 If the transformation is correct, reference emitters will appear as yellow dots on a dark background.
 If the quality is poor, red and green dots will be visible and the operation must be repeated with increasing complexity of the combination.
 
-<a href="../assets/images/figures/VP-workflow-scheme-transformation-calculation.png">![Transformation calculation](../assets/images/figures/VP-workflow-scheme-transformation-calculation.png)</a>
+<a class="plain" href="../assets/images/figures/VP-workflow-scheme-transformation-calculation.png">![Transform spots coordinates](../assets/images/figures/VP-workflow-scheme-transformation-calculation.png "Transform spots coordinates")</a>
 
 To calculate and export the spatial transformation:
 

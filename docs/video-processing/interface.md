@@ -5,7 +5,9 @@ parent: /video-processing.html
 nav_order: 1
 ---
 
-# Video processing interface
+<img src="../assets/images/logos/logo-video-processing_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+
+# Interface
 {: .no_toc }
 
 Video processing is the second module of MASH-FRET and is accessed by pressing 

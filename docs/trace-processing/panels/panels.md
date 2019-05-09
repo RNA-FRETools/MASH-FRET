@@ -8,7 +8,9 @@ numbered_toc: true
 permalink: /trace-processing/panels.html
 ---
 
-# Trace processing panels
+<img src="../assets/images/logos/logo-trace-processing_400px.png" width="260" style="float:right; margin-left: 15px; margin-bottom: 15px;"/>
+
+# Panels
 {: .no_toc }
 
 Trace processing is composed of one project management area **(1)**, eight panels **(2-9)** and one visualization area **(10)**.

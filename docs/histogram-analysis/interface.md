@@ -5,7 +5,9 @@ parent: /histogram-analysis.html
 nav_order: 1
 ---
 
-# Histogram analysis interface
+<img src="../assets/images/logos/logo-histogram-analysis_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+
+# Interface
 {: .no_toc }
 
 Histogram analysis is the fourth module of MASH-FRET and is accessed by pressing 

@@ -7,7 +7,7 @@ has_toc: true
 permalink: /tutorials.html
 ---
 
-<img src="assets/images/logos/logo-tutorials.png" width="260" style="float:right; margin-left: 15px;"/>
+<img src="assets/images/logos/logo-tutorials_400px.png" width="260" style="float:right; margin-left: 15px;"/>
 
 # Tutorials
 {: .no_toc }

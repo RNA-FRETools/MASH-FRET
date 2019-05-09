@@ -5,7 +5,9 @@ parent: /simulation.html
 nav_order: 2
 ---
 
-# Simulation workflow
+<img src="../assets/images/logos/logo-simulation_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+
+# Workflow
 {: .no_toc }
 
 In this section you will learn how to create synthetic single molecule videos and trajectories. 

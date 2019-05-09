@@ -5,7 +5,9 @@ parent: /trace-processing.html
 nav_order: 2
 ---
 
-# Trace processing workflow
+<img src="../assets/images/logos/logo-trace-processing_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+
+# Workflow
 {: .no_toc }
 
 In this section you will learn how to correct single molecule intensity-time traces from experimental bias and obtain state trajectories. 
