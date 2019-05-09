@@ -48,13 +48,14 @@ Model overfitting can be penalized in two ways:
 * using the Bayesian information criterion (BIC), by activating the option in **(c)**
 
 
-### Defined improvement in likelihood
+### Minimum improvement in likelihood
 {: .no_toc }
 
-With this penalty, a certain improvement in the model likelihood is expected when adding a new component to the model. 
-The improvement is expressed as a multiplication factor that can be set in **(b)**: *e. g.* 1.2 for an improvement of 20%.
+With this penalty, a certain improvement in the model <u>log</u>-likelihood is expected when adding a new component to the model. 
+The improvement is expressed as a multiplication factor that can be set in **(b)**.
+For instance, set a penalty of 1.2 for an improvement of 20% in the <u>log</u>-likelihood, or of 10<sup>0.2 in the likelihood.
 
-The most sufficient model is the first model for which adding a component does not fulfil this requirement.
+The most sufficient model is the least complex model for which adding a component does not fulfil this requirement.
 
 
 ### Bayesian information criterion

@@ -62,7 +62,7 @@ PDF export uses the MATLAB script `append_pdfs` developed by Oliver Woodford tha
 [MATLAB exchange platform](https://www.mathworks.com/matlabcentral/fileexchange/31215-append_pdfs).
 
 **Note:** *Exporting PDF figures requires the installation of Ghostscript that can be downloaded 
-[here](https://www.ghostscript.com/)
+[here](https://www.ghostscript.com/)*
 
 
 ---
