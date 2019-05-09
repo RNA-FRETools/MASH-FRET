@@ -8,6 +8,7 @@ nav_order: 10
 
 If MASH-FRET or one of its functionalities is useful for your own work, we kindly ask you to cite the corresponding publication(s) listed below.
 
+<img src="assets/images/logos/logo-simulation_400px.png" width="150" style="float:right; margin-left: 15px;"/>
 
 ### Simulation, Algorithm testing
 
@@ -25,6 +26,7 @@ R. Börner, D. Kowerko, M.C.A.S. Hadzic, S.L.B. König, M. Ritter, R.K.O. Sigel,
     doi = {10.1371/journal.pone.0195277}}
 ```
 
+<img src="assets/images/logos/logo-transition-analysis_400px.png" width="150" style="float:right; margin-left: 15px;"/>
 
 ### Transition analysis, Algorithm testing
 
@@ -42,6 +44,8 @@ M.C.A.S. Hadzic, R. Börner, D. Kowerko, S.L.B. König, R.K.O. Sigel, *J. Phys. 
     doi = {10.1021/acs.jpcb.7b12483}}
 ```
 
+<img src="assets/images/logos/logo-video-processing_400px.png" width="150" style="float:right; margin-left: 15px;"/>
+
 ### Video processing, Algorithm testing
 
 M.C.A.S. Hadzic, D. Kowerko, R. Börner, S. Zelger-Paulus, R.K.O. Sigel, *Proc. SPIE* **2016**, *9711*, 971119. [![](https://img.shields.io/badge/DOI-10.1117/12.2211191-blue.svg)](https://doi.org/10.1117/12.2211191)
@@ -56,6 +60,8 @@ M.C.A.S. Hadzic, D. Kowerko, R. Börner, S. Zelger-Paulus, R.K.O. Sigel, *Proc. 
     pages = {1-8},
     doi = {10.1117/12.2211191}}
 ```
+
+<img src="assets/images/logos/logo-histogram-analysis_400px.png" width="150" style="float:right; margin-left: 15px;"/>
 
 
 ### Histogram analysis, transition rates, bootstrapping

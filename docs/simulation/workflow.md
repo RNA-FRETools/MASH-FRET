@@ -5,10 +5,13 @@ parent: /simulation.html
 nav_order: 2
 ---
 
-# Simulation workflow
+<img src="../assets/images/logos/logo-simulation_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+
+# Workflow
 {: .no_toc }
 
-In this section you will learn how to create synthetic single molecule videos and trajectories. Exported data can then be used for 
+In this section you will learn how to create synthetic single molecule videos and trajectories. 
+Exported data can be used for 
 [result validation](../tutorials/validate-results.html), 
 [algorithm testing](../tutorials/test-algorithms.html) or external illustration.
 
@@ -22,20 +25,69 @@ The procedure includes three steps:
 
 ## Generate random FRET state sequences
 
-A FRET state sequence is the ideal FRET trajectory followed by a single molecule. 
+A FRET state sequence is the ideal FRET trajectory of a single molecule. 
 It consists in a succession of plateaus dwelling at a particular 
 [*FRET*<sub>*j*</sub>](){: .math_var } value before transiting to the next 
-[*FRET*<sub>*j'*</sub>](){: .math_var }. 
+[*FRET*<sub>*j'*</sub>](){: .math_var } value. 
 
-Sequences are created by randomly drawing FRET values and dwell times from the thermodynamic model, which includes possible 
-[*FRET*<sub>*j*</sub>](){: .math_var } values and state transition rates 
+Sequences are started by randomly drawing a FRET value from the pre-defined state configuration 
+[*FRET*<sub>*j*</sub>](){: .math_var } and using the vector of normalized initial state probabilities 
+[&#928;](){: .math_var } such as:
+
+{: .equation }
+![\Pi_{n}=\begin{pmatrix}\pi_{1}\\ \pi_{2}\\ ...\\ \pi_{n}\end{pmatrix}](../assets/images/equations/sim-eq-transition-probability-05.gif "Initial state probabilities")
+
+with 
+[*&#960;*<sub>*j*</sub>](){: .math_var } the probability to start a chain in state 
+[*j*](){: .math_var }, and with
+
+{: .equation }
+![\Pi_{n}=\begin{pmatrix}\pi_{1}\\ \pi_{2}\\ ...\\ \pi_{n}\end{pmatrix}](../assets/images/equations/sim-eq-transition-probability-06.gif "Initial state probabilities")
+
+Considering a population of unsynchronized molecules, the probability 
+[*&#960;*<sub>*j*</sub>](){: .math_var } is the probability to be in state 
+[*j*](){: .math_var } at a random time of the process, obtained by solving the equation system:
+
+{: .equation }
+![\textup{P}\Pi=\Pi](../assets/images/equations/sim-eq-transition-probability-03.gif "Overall state probability")
+
+with 
+[P](){: .math_var } the transition probability matrix described such as:
+
+{: .equation }
+![\textup{P}=\begin{pmatrix}p_{1,1} & p_{1,2} & ... & p_{1,n}\\ p_{2,1} & p_{2,2} & ... & p_{2,n}\\ ... & ...& ...& ... \\p_{n,1} & p_{n,2} & ... & p_{n,n}\end{pmatrix}](../assets/images/equations/sim-eq-transition-probability-04.gif "Transition probability matrix")
+
+This approach comes down to browsing an infinitely long chain and stop at random positions to choose the state to start with. 
+Therefore, it is only valid for circular networks of states, meaning with no discontinuity in folding kinetics like kinetic traps or other irreversible sudden changes in folding dynamics.
+
+In MASH-FRET, transition probabilities are expressed in function of transition rate coefficients 
+[*k*<sub>*jj'*</sub>](){: .math_var } given in second<sup>-1</sup> and the exposure time per frame
+[*t*<sub>exp</sub>](){: .math_var } given in second, with off-diagonal terms calculated as:
+
+{: .equation }
+![p_{jj'}=k_{jj'}\times t_{\textup{exp}}](../assets/images/equations/sim-eq-transition-probability-01.gif "Off-diagonal transition probabilities")
+
+and diagonal terms, such as:
+
+{: .equation }
+![p_{jj}=1-\sum_{j'\neq j}\left( k_{jj'}\times t_{\textup{exp}}\right )](../assets/images/equations/sim-eq-transition-probability-02.gif "Diagonal transition probabilities")
+
+FRET state sequences are elongated by randomly drawing a next FRET value using the normalized off-diagonal transition probabilities 
+[*p*<sub>*jj'*</sub>](){: .math_var } such as:
+
+{: .equation }
+![p_{jj'}=\frac{p_{jj'}}{\sum_{i\neq j}\left(p_{ji} \right )}](../assets/images/equations/sim-eq-transition-probability-07.gif "Normalized off-diagonal transition probabilities")
+
+The duration of the corresponding plateau is randomly generated from an exponential distribution using the decay constant
 [*k*<sub>*jj'*</sub>](){: .math_var }. 
+The advantage of random dwell time generation as opposed to time-step simulation is the possibility to include the time-averaging of abrupt state transitions within a time step.
+
 The operation is repeated until the sequence length reaches the observation time and the number of sequences equals the number of molecules 
 [*N*](){: .math_var }. 
 The observation time is limited by the video length 
 [*L*](){: .math_var } but can be randomly distributed by introducing fluorophore photobleaching.
 
-<a href="../assets/images/figures/sim-workflow-scheme-state-sequence.png">![FRET state sequence](../assets/images/figures/sim-workflow-scheme-state-sequence.png "Generate FRET state sequences")</a>
+<a class="plain" href="../assets/images/figures/sim-workflow-scheme-state-sequence.png">![FRET state sequence](../assets/images/figures/sim-workflow-scheme-state-sequence.png "Generate FRET state sequences")</a>
 
 To generate FRET state sequences:
 
@@ -45,8 +97,10 @@ To generate FRET state sequences:
    [Video length](panels/panel-video-parameters.html#video-length)  
    [Frame rate](panels/panel-video-parameters.html#frame-rate)  
    [Number of molecules](panels/panel-molecules.html#number-of-molecules)  
-   [State configuration](panels/panel-molecules.html#state-configuration)  
-   [Transition rates](panels/panel-molecules.html#transition-rates)  
+   [State configuration](panels/panel-molecules.html#state-configuration); see 
+   [Remarks](#remarks) for more details  
+   [Transition rates](panels/panel-molecules.html#transition-rates); see 
+   [Remarks](#remarks) for more details  
    [Photobleaching](panels/panel-molecules.html#photobleaching)  
      
 1. Press 
@@ -69,24 +123,25 @@ Imperfect experimental setup is simulated by adding channel-specific bleedthroug
 [*bt*](){: .math_var } and direct excitation 
 [*dE*](){: .math_var } to the respective fluorescence intensities.
 
-<a href="../assets/images/figures/sim-workflow-scheme-convert-to-intensity.png">![Conversion to fluorescence](../assets/images/figures/sim-workflow-scheme-convert-to-intensity.png "Convert sequences to fluorescence intensities")</a>
+<a class="plain" href="../assets/images/figures/sim-workflow-scheme-convert-to-intensity.png">![Conversion to fluorescence](../assets/images/figures/sim-workflow-scheme-convert-to-intensity.png "Convert sequences to fluorescence intensities")</a>
 
 Final camera-detected intensity-time traces are obtained by adding channel-specific background and uniform camera noise.
 If the chosen noise model does not include shot noise of photon emission, intensities are distributed following a Poisson distribution prior adding the camera contribution; see 
 [Camera SNR characteristics](panels/panel-video-parameters.html#camera-snr-characteristics) for more information.
 
-<a href="../assets/images/figures/sim-workflow-scheme-convert-to-image-count.png">![Conversion to image counts](../assets/images/figures/sim-workflow-scheme-convert-to-image-count.png "Convert fluorescence intensities to image counts")</a>
+<a class="plain" href="../assets/images/figures/sim-workflow-scheme-convert-to-image-count.png">![Conversion to image counts](../assets/images/figures/sim-workflow-scheme-convert-to-image-count.png "Convert fluorescence intensities to image counts")</a>
 
 Images in the single molecule video (SMV) are created one by one, with the first image corresponding to the first time point in intensity-time traces.
+
 Like in a 2-color FRET experiment, horizontal dimensions of the video are equally split into donor (left) and acceptor (right) channels. 
-Single molecules are then spread randomly on the donor channel and directly translated into the acceptor channel.
+Single molecules are then spread randomly on the donor channel and translated into the acceptor channel.
 
-At molecule coordinates, pixel values are set to donor or acceptor pure fluorescence intensities, including donor anisotropy and setup cross-talks.
-Channel-specific background is added to consider all sources of detected lights. 
-Pixels are then convolved with channel-specific point spread functions to obtain realistic diffraction-limited images. 
-Finally, uniform camera noise is added to all pixels to convert fluorescence intensities to camera-detected signal. 
+At molecule coordinates, pixel values are set to donor or acceptor pure fluorescence intensities, including gamma factor and setup bias.
+All other sources of detected lights are then added as channel-specific background intensities that can be uniform, spatially distributed and/or dynamic in time. 
 
-<a href="../assets/images/figures/sim-workflow-scheme-build-video.gif">![Building SMV](../assets/images/figures/sim-workflow-scheme-build-video.gif "Building SMV from fluorescence intensity-time traces")</a>
+Pixels are then convolved with channel-specific point spread functions to obtain realistic diffraction-limited images and uniform camera noise is added to all pixels to convert fluorescence intensities to camera-detected signal. 
+
+<a class="plain" href="../assets/images/figures/sim-workflow-scheme-build-video.gif">![Building SMV](../assets/images/figures/sim-workflow-scheme-build-video.gif "Building SMV from fluorescence intensity-time traces")</a>
 
 To create intensity trajectories and images:
 
@@ -136,10 +191,9 @@ To export data to files:
 ## Remarks
 {: .no_toc }
 
+To bypass the limitations of the user interface and work with more than five states or set parameters for individual molecules, some parameters can be set by loading external files; see 
+[Pre-set parameters](panels/panel-molecules.html#pre-set-parameters) for more information.
+
 Updating intensity data and writing SMVs to files can be relatively time consuming depending on which camera characteristics are chosen; see 
 [Camera SNR characteristics](panels/panel-video-parameters.html#camera-snr-characteristics) for more information.
-
-Some parameters can be set by loading external files. 
-This allows to bypass the limitations of the user interface and work with more than five states or set parameters for individual molecules; see 
-[Pre-set parameters](panels/panel-molecules.html#pre-set-parameters) for more information.
 

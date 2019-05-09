@@ -5,7 +5,9 @@ parent: /transition-analysis.html
 nav_order: 2
 ---
 
-# Transition analysis workflow
+<img src="../assets/images/logos/logo-transition-analysis_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+
+# Workflow
 {: .no_toc }
 
 In this section you will learn how to determine the most sufficient state configuration from state transitions, obtain state transition rates and estimate the associated variability in the molecule sample. 

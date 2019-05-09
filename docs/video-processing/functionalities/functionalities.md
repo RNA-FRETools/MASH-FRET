@@ -7,7 +7,9 @@ has_children: true
 permalink: /video-processing/functionalities.html
 ---
 
-# Video processing functionalities
+<img src="../assets/images/logos/logo-video-processing_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+
+# Functionalities
 {: .no_toc }
 
 Follow the suggested procedures to achieve more <u>specific tasks</u> with the Video processing module.

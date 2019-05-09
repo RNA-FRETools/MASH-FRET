@@ -8,7 +8,9 @@ numbered_toc: true
 permalink: /transition-analysis/panels.html
 ---
 
-# Transition analysis panels
+<img src="../assets/images/logos/logo-transition-analysis_400px.png" width="260" style="float:right; margin-left: 15px; margin-bottom: 15px;"/>
+
+# Panels
 {: .no_toc }
 
 Transition analysis is composed of one project management area **(1)** and three panels **(2-4)**.

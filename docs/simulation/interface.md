@@ -5,7 +5,9 @@ parent: /simulation.html
 nav_order: 1
 ---
 
-# Simulation interface
+<img src="../assets/images/logos/logo-simulation_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+
+# Interface
 {: .no_toc }
 
 Simulation is the first module of MASH-FRET and is accessed by pressing 

@@ -7,7 +7,9 @@ has_children: true
 permalink: /simulation/functionalities.html
 ---
 
-# Simulation functionalities
+<img src="../assets/images/logos/logo-simulation_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+
+# Functionalities
 {: .no_toc }
 
 Follow the suggested procedures to achieve more <u>specific tasks</u> with the Simulation module.

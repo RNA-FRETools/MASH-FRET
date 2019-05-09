@@ -5,7 +5,9 @@ parent: /trace-processing.html
 nav_order: 1
 ---
 
-# Trace processing interface
+<img src="../assets/images/logos/logo-trace-processing_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+
+# Interface
 {: .no_toc }
 
 Trace processing is the third module of MASH-FRET and is accessed by pressing 

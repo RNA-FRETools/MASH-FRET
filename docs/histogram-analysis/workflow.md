@@ -5,7 +5,9 @@ parent: /histogram-analysis.html
 nav_order: 2
 ---
 
-# Histogram analysis workflow
+<img src="../assets/images/logos/logo-histogram-analysis_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+
+# Workflow
 {: .no_toc }
 
 In this section you will learn how to determine the most sufficient state configuration from histograms, obtain relative population and estimate the associated variability in the molecule sample. 
