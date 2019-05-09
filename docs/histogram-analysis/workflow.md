@@ -11,6 +11,7 @@ nav_order: 2
 {: .no_toc }
 
 In this section you will learn how to determine the most sufficient state configuration from histograms, to obtain the relative state populations and to estimate the associated cross-sample variability. 
+
 Histogram analysis results are saved in the 
 [mash project](../output-files/mash-mash-project.html) and/or exported to ASCII files for traceability.
 
