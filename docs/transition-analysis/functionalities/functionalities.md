@@ -7,7 +7,7 @@ has_children: true
 permalink: /transition-analysis/functionalities.html
 ---
 
-<img src="../assets/images/logos/logo-transition-analysis_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+<img src="../assets/images/logos/logo-transition-analysis_400px.png" width="170" style="float:right; margin-left: 15px;"/>
 
 # Functionalities
 {: .no_toc }
