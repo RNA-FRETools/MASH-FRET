@@ -7,7 +7,7 @@ M = 500; % maximum number of E-M cycles
 N = size(val,2); % number of data points
 
 % initialisation of results
-L_t = -Inf*ones(1,Jmax); % negative log likelihood
+LogL_t = -Inf*ones(1,Jmax); % negative log likelihood
 BIC_t = Inf*ones(1,Jmax);
 mu_t = cell(1,Jmax);
 sig_t = cell(1,Jmax);
@@ -34,16 +34,16 @@ for J = 1:Jmax
         % initialize GMM
         [a, mu, sig] = init_guess(J, val, t);
         
-        % re-initialize current maximum L and minimum BIC
-        L = -Inf;
+        % re-initialize current maximum LogL and minimum BIC
+        LogL = -Inf;
         BIC = Inf;
         
         I = false(J,N); % binary operator (data affiliation to a Gaussian)
         
         if size(mu,1)==J % GMM properly initialized
             
-            % set current maximum L and minimum BIC
-            L_prev = L; BIC_prev = BIC; I_prev = I;
+            % set current maximum LogL and minimum BIC
+            LogL_prev = LogL; BIC_prev = BIC; I_prev = I;
             
             % set current optimum coefficients
             a_prev = a; mu_prev = mu; sig_prev = sig;
@@ -64,7 +64,7 @@ for J = 1:Jmax
                 if ~(size(mu,1)==J)
                     msgerr{J} = [msgerr{J}; ['M-step converged to an ' ...
                         'insufficient number of states']];
-                    L = L_prev;
+                    LogL = LogL_prev;
                     BIC = BIC_prev;
                     I = I_prev;
                     a = a_prev;
@@ -73,15 +73,15 @@ for J = 1:Jmax
                     break;
                 end
                 
-                % calculate L and BIC
-                [BIC,L,I] = calc_L(a, mu, sig, val);
+                % calculate LogL and BIC
+                [BIC,LogL,I] = calc_L(a, mu, sig, val);
                 
                 % when the GOF is worse, E-M stops
-                if isnan(L) || (L/sum(val(2,:)))<(L_prev/sum(val(2,:)))
-                    if isnan(L)
+                if isnan(LogL) || (LogL/sum(val(2,:)))<(LogL_prev/sum(val(2,:)))
+                    if isnan(LogL)
                         msgerr{J} = [msgerr{J}; 'Likelihood null.'];
                     end
-                    L = L_prev;
+                    LogL = LogL_prev;
                     BIC = BIC_prev;
                     I = I_prev;
                     a = a_prev;
@@ -95,7 +95,7 @@ for J = 1:Jmax
                     break;
                     
                 else
-                    L_prev = L;
+                    LogL_prev = LogL;
                     BIC_prev = BIC;
                     I_prev = I;
                     a_prev = a;
@@ -105,8 +105,8 @@ for J = 1:Jmax
             end
             
             % update optimum GMM for J
-            if (isBIC && BIC<BIC_t(J)) || (~isBIC && L>L_t(J))
-                L_t(J) = L;
+            if (isBIC && BIC<BIC_t(J)) || (~isBIC && LogL>LogL_t(J))
+                LogL_t(J) = LogL;
                 BIC_t(J) = BIC;
                 mu_t{J} = mu;
                 sig_t{J} = sig;
@@ -119,9 +119,9 @@ for J = 1:Jmax
     end
     
     % Display results
-    if L_t(J)>-Inf
+    if LogL_t(J)>-Inf
         disp(sprintf(['GMM of ' num2str(J) ' Gaussians:' ...
-            ' LogL=' num2str(L_t(J)/sum(val(2,:))) ...
+            ' LogL=' num2str(LogL_t(J)/sum(val(2,:))) ...
             ' BIC=' num2str(BIC_t(J)/sum(val(2,:)))]));
     else
         disp(sprintf(['GMM of ' num2str(J) ' Gaussians:\n' ...
@@ -130,13 +130,13 @@ for J = 1:Jmax
 end
 
 % model selection
-if (isBIC && sum(BIC_t ~= Inf)) || (~isBIC && sum(L_t ~= -Inf))
+if (isBIC && sum(BIC_t ~= Inf)) || (~isBIC && sum(LogL_t ~= -Inf))
     
     [o,Kopt_BIC] = min(BIC_t);
     
     Kopt_pen = 1;
     for k = 2:Jmax
-        if ((L_t(k)-L_t(k-1))/abs(L_t(k-1)))> ...
+        if ((LogL_t(k)-LogL_t(k-1))/abs(LogL_t(k-1)))> ...
                 (penalty-1)
             Kopt_pen = k;
         else
@@ -144,13 +144,13 @@ if (isBIC && sum(BIC_t ~= Inf)) || (~isBIC && sum(L_t ~= -Inf))
         end
     end
     
-    % normalize L and BIC
+    % normalize LogL and BIC
     BIC_t = BIC_t/sum(val(2,:));
-    L_t = L_t/sum(val(2,:));
+    LogL_t = LogL_t/sum(val(2,:));
 
     for J = 1:Jmax
    
-        if L_t(J)>-Inf % calculate relative population
+        if LogL_t(J)>-Inf % calculate relative population
             sum_k = 0;
             pop = zeros(J,1);
             for k = 1:J
@@ -160,7 +160,7 @@ if (isBIC && sum(BIC_t ~= Inf)) || (~isBIC && sum(L_t ~= -Inf))
                     mu_t{J}(k,1),sig_t{J}(k,1)));
             end
             pop = pop/sum_k;
-            res{1,1} = [L_t' BIC_t'];
+            res{1,1} = [LogL_t' BIC_t'];
             
             % convert sigma to FWHM
             FWHM = (2*sqrt(2*log(2)))*sig_t{J};
