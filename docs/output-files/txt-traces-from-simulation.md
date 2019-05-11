@@ -52,9 +52,9 @@ Simulate time traces and state trajectories are organized column-wise with:
 * column `time(s)` containing time data in second
 * column `frame` containing frame indexes
 * columns `Idon noise(a.u.)` and `Iacc noise(a.u.)` containing donor and acceptor intensity-time traces respectively, in image or photon counts
-* columns `Idon ideal(a.u.)` and `Iacc ideal(a.u.)` containing donor and acceptor intensity state trajectories respectively, in image or photon counts
+* columns `Idon ideal(a.u.)` and `Iacc ideal(a.u.)` containing the noiseless, background-free and gamma factor-free photon count-time traces of donor and acceptor respectively
 * column `FRET` containing FRET-time traces
-* column `FRET ideal` containing FRET state trajectories
+* column `FRET ideal` containing noiseless, background-free and gamma factor-free FRET-time traces
 * column `state sequence` containing state indexes
 
 ```

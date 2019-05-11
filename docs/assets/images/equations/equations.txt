@@ -51,7 +51,7 @@ Hirsch noise (equation 10):
 >> Units conversion (equation 01):
 	\mu_{\textup{ic}} = \mu_{\textup{pc}} \times \eta \times K
 	and (equation 02):
-	\mu_{ic} = \mu_{pc} \times \eta \times K + \mu_{ic,d}
+	\mu_{\textup{ic}} = \mu_{\textup{pc}} \times \eta \times K + \mu_{\textup{ic,d}}
 
 >> Exposure time:
 	t_{exp} = \frac{1}{f}
