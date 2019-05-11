@@ -190,17 +190,13 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         
         % Results from buildModel function
         res         = h.results.sim; % results/simulated data
-        Idon        = res.dat{1};    % ideal traces including heterogeneous FRET and 
-        Iacc        = res.dat{2};    % fluorescence broadening
+        Idon        = res.dat{1};    % ideal traces including gamma factor bias
+        Iacc        = res.dat{2};    % 
         crd         = res.dat{3};    % coordinates
-        
-        Idon_id     = res.dat_id{1}; % ideal traces excluding heterogeneous
-        Iacc_id     = res.dat_id{2}; % FRET and fluorescence broadening
-        
-        discr_id    = res.dat_id{3}; % ideal FRET traces excluding 
-                                     % heterogeneous FRET broadening
-                                  
-        discr_seq   = res.dat_id{4}; % FRET state sequence (numbered 1,2,...)
+        Idon_id     = res.dat_id{1}; % ideal traces excluding gamma factor bias
+        Iacc_id     = res.dat_id{2}; %
+        discr_id    = res.dat_id{3}; % ideal FRET traces
+        discr_seq   = res.dat_id{4}; % state sequence (indexed 1,2,...)
 
         % end of intitialization
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
