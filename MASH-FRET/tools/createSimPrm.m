@@ -17,8 +17,8 @@ function createSimPrm(varargin)
 
 
 %% %% STATE CONFIGURATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% FRET = [N-by-2*J] matrix containing FRET values in odd columns and 
-% FRET state heterogeneous broadening widths in even columns
+% FRET = [J-by-2-by-N] matrix containing FRET values column 1 and FRET 
+% deviations in column 2
 
 % example: 9-state model with:
 % - 2 degenerated states at FRETj=0.08 and no heterogemeity
@@ -26,15 +26,15 @@ function createSimPrm(varargin)
 % - 3 degenerated states at FRETj=0.38 and no heterogeneity
 % - 1 state at FRETj=0.6 with deviation wFRETj=0.02
 % 
-% FRET = cat(2, ...
-%     repmat([0.08 0],[1 2]), ...
-%     repmat([0.24 0],[1 6]), ...
-%     repmat([0.38 0],[1 3]), ...
+% FRET = cat(1, ...
+%     repmat([0.08 0],[2 1]), ...
+%     repmat([0.24 0],[6 1]), ...
+%     repmat([0.38 0],[3 1]), ...
 %     [0.60 0.02]);
 %
 % N = 56; % number of molecules to simulate 
 %
-% FRET = repmat(FRET,[N,1]);
+% FRET = repmat(FRET,[1,1,N]);
 
 %%%%% EDIT HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

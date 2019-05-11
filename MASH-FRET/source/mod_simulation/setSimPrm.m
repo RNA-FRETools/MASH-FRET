@@ -3,7 +3,7 @@ function p = setSimPrm(s, movDim)
 %
 % Import parameters of N molecule specified in the structure s
 %
-% s.FRET >> [N-by-2*J] matrix containing values (odd column nb.) and 
+% s.FRET >> [J-by-2-by-N] matrix containing values (odd column nb.) and 
 %           distribution width (even column nb.) of the J FRET states
 % s.trans_rates >> [J-by-J-by-N] matrix containing transition rates from
 %                  the state j (row nb.) to the state i (column nb.)
