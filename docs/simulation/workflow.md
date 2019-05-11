@@ -104,7 +104,7 @@ To generate FRET state sequences:
    [Photobleaching](panels/panel-molecules.html#photobleaching)  
      
 1. Press 
-![Generate](../assets/images/gui/but-sim-generate.png "Generate") to generate random FRET state sequences,  
+![Generate](../assets/images/gui/sim-but-generate.png "Generate") to generate random FRET state sequences,  
      
 1. Generate new state sequences whenever one of the parameters is changed.
 
@@ -159,7 +159,7 @@ To create intensity trajectories and images:
    [Background](panels/panel-experimental-setup.html#background)  
      
 1. Press 
-![Update](../assets/images/gui/but-sim-update.png "Update") to convert FRET state sequences into camera-detected intensity trajectories and images. The execution time can be long; see 
+![Update](../assets/images/gui/sim-but-update.png "Update") to convert FRET state sequences into camera-detected intensity trajectories and images. The execution time can be long; see 
 [Remarks](#remarks) for details.  
      
 1. Update intensity data whenever one of the parameters is changed.
@@ -182,7 +182,7 @@ To export data to files:
    [Intensity units](panels/panel-export-options.html#intensity-units)
      
 1. Press 
-![Export files](../assets/images/gui/but-sim-export.png "Export files") to start writing data in files. The execution time can be long; see 
+![Export files](../assets/images/gui/sim-but-export.png "Export files") to start writing data in files. The execution time can be long; see 
 [Remarks](#remarks) for details.
 
 
