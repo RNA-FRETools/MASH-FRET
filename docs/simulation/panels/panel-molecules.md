@@ -89,6 +89,32 @@ In that case:
 * imported file name is displayed in **(a)**
 * loaded pre-sets can me removed by pressing **(c)**
 
+After successful import:
+- the field used to edit the 
+[Number of molecules](#number-of*molecules) will be locked as it is defined in any of the field
+- the field used to edit the number of states in 
+[State configuration](#state-configuration) will be locked if `FRET` or `trans_rates` are defined
+- the fields used to edit the
+[*FRET*<sub>*j*</sub>](){: .math_var } and 
+[*wFRET*<sub>*j*</sub>](){: .math_var } values in 
+[State configuration](#state-configuration) will be locked if `FRET` is defined
+- the fields used to edit the 
+[Transition rates](#transition-rates) will be locked if `trans_rates` is defined
+- the fields used to edit the 
+[*I*<sub>tot,em</sub>](){: .math_var } and 
+[*wI*<sub>tot,em</sub>](){: .math_var } values in 
+[Donor emission](#donor-emission) will be locked if `tot_intensity` is defined
+- the fields used to edit the 
+[*&#947;*](){: .math_var } and 
+[*w&#947;*](){: .math_var } values in 
+[Gamma factor](#gamma-factor) will be locked if `gamma` is defined
+- the fields used to edit the 
+[*w*<sub>det,D</sub>](){: .math_var } and
+[*w*<sub>det,A</sub>](){: .math_var } values in
+[Point spread functions](panel-experimental-setup.html#point-spread-functions) will be locked if `psf_width` is defined
+
+Fields will be rendered editable when removing the pre-set file.
+
 A *.m template file is provided with the source code at:
 
 ```
