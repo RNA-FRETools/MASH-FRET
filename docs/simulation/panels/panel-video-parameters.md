@@ -226,7 +226,7 @@ This model is purely empirical: model parameters are obtained by fitting the dis
 To fit dark count distribution with the NExpN model, you can use our home-written script located at:
 
 ```
-MASH-FRET/fit_NExpN.m
+MASH-FRET/tools/fit_NExpN.m
 ```
 
 <u>default</u>: values taken from the literature (reference 

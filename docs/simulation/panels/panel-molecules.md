@@ -92,7 +92,7 @@ In that case:
 A *.m template file is provided with the source code at:
 
 ```
-MASH-FRET/source/project/createSimPrm.m
+MASH-FRET/tools/createSimPrm.m
 ```
 
 <u>default</u>: no parameter file is loaded, all parameters are set via the GUI.
