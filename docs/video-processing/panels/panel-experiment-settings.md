@@ -6,7 +6,7 @@ grand_parent: /video-processing.html
 nav_order: 3
 ---
 
-<img src="../assets/images/logos/logo-video-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+<img src="../../assets/images/logos/logo-video-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
 
 # Experiment settings
 {: .no_toc }
