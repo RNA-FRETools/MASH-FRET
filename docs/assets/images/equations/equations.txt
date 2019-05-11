@@ -46,7 +46,7 @@ Hirsch noise (equation 10):
 	\sigma_{\textup{ic}} = \frac {\sigma_{\textup{d}}}{s}
 
 >> Gamma bias:
-	I_{D,em} = \frac{I_{D,em,0}}{\gamma}
+	I_{\textup{D,em}}\left ( t\right ) = \frac{I_{\textup{D,em,0}}} {\gamma}
 
 >> Units conversion (equation 01):
 	\mu_{ic} = \mu_{pc} \times \eta \times K
