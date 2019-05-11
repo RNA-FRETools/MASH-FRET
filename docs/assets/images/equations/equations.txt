@@ -49,7 +49,7 @@ Hirsch noise (equation 10):
 	I_{\textup{D,em}}\left ( t\right ) = \frac{I_{\textup{D,em,0}}} {\gamma}
 
 >> Units conversion (equation 01):
-	\mu_{ic} = \mu_{pc} \times \eta \times K
+	\mu_{\textup{ic}} = \mu_{\textup{pc}} \times \eta \times K
 	and (equation 02):
 	\mu_{ic} = \mu_{pc} \times \eta \times K + \mu_{ic,d}
 
