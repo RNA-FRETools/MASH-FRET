@@ -16,7 +16,7 @@ They are accessed from panel
 [Coordinates transformation](../panels/panel-molecule-coordinates.html#coordinates-transformation) by pressing 
 ![Options...](../../assets/images/gui/VP-but-options3p.png "Options...").
 
-<a href="../../assets/images/gui/VP-panel-molcoord-transf-impopt.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf-impopt.png" style="max-width: 310px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-molcoord-transf-impopt.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf-impopt.png" style="max-width: 310px;"/></a>
 
 
 ## Window components
@@ -31,7 +31,7 @@ They are accessed from panel
 
 Modify these settings according to the structure of the file containing the reference coordinates.
 
-<a href="../../assets/images/gui/VP-panel-molcoord-transf-impopt-refcoord.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf-impopt-refcoord.png" style="max-width: 274px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-molcoord-transf-impopt-refcoord.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf-impopt-refcoord.png" style="max-width: 274px;"/></a>
 
 Reference coordinates are coordinates co-localized in each channel.
 Channel-specific coordinates can be written in a column-wise or row-wise fashion to the file.
@@ -66,7 +66,7 @@ For each channel, give in **(h)** the file line where channel-specific coordinat
 
 Modify these settings according to the structure of the file containing the spots coordinates.
 
-<a href="../../assets/images/gui/VP-panel-molcoord-transf-impopt-spotscoord.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf-impopt-spotscoord.png" style="max-width: 274px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-molcoord-transf-impopt-spotscoord.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf-impopt-spotscoord.png" style="max-width: 274px;"/></a>
 
 Give in **(a)** and **(b)** the column indexes in the file where x- and y- coordinates are written.
 
@@ -76,7 +76,7 @@ Give in **(a)** and **(b)** the column indexes in the file where x- and y- coord
 
 Update these settings to the dimensions of the reference image used to calculate the transformation.
 
-<a href="../../assets/images/gui/VP-panel-molcoord-transf-impopt-viddim.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf-impopt-viddim.png" style="max-width: 197px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-molcoord-transf-impopt-viddim.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf-impopt-viddim.png" style="max-width: 197px;"/></a>
 
 They are the dimensions in the x-, set in **(a)**, and y-, set in **(b)**, direction of the reference image used to calculate the transformation.
 

@@ -19,7 +19,7 @@ The window is accessed by pressing
 Press 
 ![Next >>](../../assets/images/gui/TP-but-next-supsup.png "Next >>") to start calculating time traces and export files.
 
-<a href="../../assets/images/gui/VP-panel-integration-expopt.png"><img src="../../assets/images/gui/VP-panel-integration-expopt.png" style="max-width: 286px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-integration-expopt.png"><img src="../../assets/images/gui/VP-panel-integration-expopt.png" style="max-width: 286px;"/></a>
 
 
 ## Window components
@@ -33,7 +33,7 @@ Press
 
 ## ASCII traces
 
-<a href="../../assets/images/gui/VP-panel-integration-expopt-ascii.png"><img src="../../assets/images/gui/VP-panel-integration-expopt-ascii.png" style="max-width: 144px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-integration-expopt-ascii.png"><img src="../../assets/images/gui/VP-panel-integration-expopt-ascii.png" style="max-width: 144px;"/></a>
 
 Export single molecule data to one common ASCII file, by checking the box in **(a)**, and/or to individual ASCII files, by checking the box in **(b)**.
 

@@ -15,7 +15,7 @@ Edit video is the third panel of module Video processing.
 
 Use this panel to apply image corrections to the single molecule video and to export the video to various file formats.
 
-<a href="../../assets/images/gui/VP-panel-videdit.png"><img src="../../assets/images/gui/VP-panel-videdit.png" style="max-width: 562px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-videdit.png"><img src="../../assets/images/gui/VP-panel-videdit.png" style="max-width: 562px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -29,7 +29,7 @@ Use this panel to apply image corrections to the single molecule video and to ex
 
 Use these settings to configure an image filter to apply to the loaded video or image.
 
-<a href="../../assets/images/gui/VP-panel-videdit-filterprm.png"><img src="../../assets/images/gui/VP-panel-videdit-filterprm.png" style="max-width: 231px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-videdit-filterprm.png"><img src="../../assets/images/gui/VP-panel-videdit-filterprm.png" style="max-width: 231px;"/></a>
 
 Image filters treat video channels separately. 
 To configure a filter, select first the channel in list **(c)** and then the image filter in list **(a)**. 
@@ -135,7 +135,7 @@ MASH-FRET\source\graphic_files\exportMovie.m
 
 It defines the range of video frames to export.
 
-<a href="../../assets/images/gui/VP-panel-videdit-framerange.png"><img src="../../assets/images/gui/VP-panel-videdit-framerange.png" style="max-width: 106px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-videdit-framerange.png"><img src="../../assets/images/gui/VP-panel-videdit-framerange.png" style="max-width: 106px;"/></a>
 
 Sometimes, the frame range of a video needs to be re-adjusted, because of partial failure in recording, or simply to export light animated GIF files for illustration.
 

@@ -19,7 +19,7 @@ It is used to map the reference coordinates needed to calculate the spatial tran
 It is an adaptation of the 
 [Control Point Selection tool](https://www.mathworks.com/help/images/ref/cpselect.html) of MATLAB for images containing more than two channels.
 
-<a href="../../assets/images/gui/VP-panel-molcoord-transf-maptool.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf-maptool.png" style="max-width: 546px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-molcoord-transf-maptool.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf-maptool.png" style="max-width: 546px;"/></a>
 
 To map and export the reference coordinates, follow the procedure described below.
 

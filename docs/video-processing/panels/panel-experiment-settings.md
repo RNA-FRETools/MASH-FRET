@@ -15,7 +15,7 @@ Experiment settings is the second panel of module Video processing.
 
 Use this panel to inform MASH-FRET about your experiment setup and to set project options.
 
-<a href="../../assets/images/gui/VP-panel-expset.png"><img src="../../assets/images/gui/VP-panel-expset.png" style="max-width: 426px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-expset.png"><img src="../../assets/images/gui/VP-panel-expset.png" style="max-width: 426px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -39,7 +39,7 @@ For continuous-wavelength excitation, e.g. for videos simulated in MASH, it is s
 
 They are the relevant wavelengths in nanometers of each alternated laser. 
 
-<a href="../../assets/images/gui/VP-panel-expset-laser.png"><img src="../../assets/images/gui/VP-panel-expset-laser.png" style="max-width: 138px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-expset-laser.png"><img src="../../assets/images/gui/VP-panel-expset-laser.png" style="max-width: 138px;"/></a>
 
 Laser wavelengths are used to label data and identify which channel is directly excited by the laser; see 
 [Video channels](../functionalities/set-project-options.html#video-channels) for more details.

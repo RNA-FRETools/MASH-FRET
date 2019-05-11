@@ -15,7 +15,7 @@ Molecule coordinates is the fourth panel of module Video processing.
 
 Use this panel to target single molecules in the video and obtain single molecule coordinates.
 
-<a href="../../assets/images/gui/VP-panel-molcoord.png"><img src="../../assets/images/gui/VP-panel-molcoord.png" style="max-width: 562px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-molcoord.png"><img src="../../assets/images/gui/VP-panel-molcoord.png" style="max-width: 562px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -29,7 +29,7 @@ Use this panel to target single molecules in the video and obtain single molecul
 
 Use this tool to load or export an average image of the video.
 
-<a href="../../assets/images/gui/VP-panel-molcoord-aveim.png"><img src="../../assets/images/gui/VP-panel-molcoord-aveim.png" style="max-width: 232px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-molcoord-aveim.png"><img src="../../assets/images/gui/VP-panel-molcoord-aveim.png" style="max-width: 232px;"/></a>
 
 The average image is calculated over a frame range defined by the starting frame index, set in **(a)**, the frame interval, set in **(b)**, and the ending frame index, set in **(c)**.
 
@@ -52,7 +52,7 @@ To rapidly access the average image folder and load an average image file, press
 
 Use this tool to find bright spots and export coordinates.
 
-<a href="../../assets/images/gui/VP-panel-molcoord-sf.png"><img src="../../assets/images/gui/VP-panel-molcoord-sf.png" style="max-width: 241px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-molcoord-sf.png"><img src="../../assets/images/gui/VP-panel-molcoord-sf.png" style="max-width: 241px;"/></a>
 
 Spotfinder is limited to the detection of bright spots in video frames and does not include tracking.
 
@@ -203,7 +203,7 @@ It processes as described below:
 
 Use this tool to transform spots coordinates into other video channels and obtain single molecule coordinates.
 
-<a href="../../assets/images/gui/VP-panel-molcoord-transf.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf.png" style="max-width: 289px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-molcoord-transf.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf.png" style="max-width: 289px;"/></a>
 
 Spots coordinates are translated in other channels after applying a group of specific symmetry operations, called the spatial transformation.
 Transformed coordinates are called single molecule coordinates and are exported to a 

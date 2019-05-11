@@ -16,7 +16,7 @@ Plot is the first panel module Video processing.
 Use this panel to set the appearance and units in the 
 [Visualization area](area-visualization.html).
 
-<a href="../../assets/images/gui/VP-panel-plot.png"><img src="../../assets/images/gui/VP-panel-plot.png" style="max-width: 130px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-plot.png"><img src="../../assets/images/gui/VP-panel-plot.png" style="max-width: 130px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }

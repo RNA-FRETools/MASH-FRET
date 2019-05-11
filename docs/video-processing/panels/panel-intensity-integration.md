@@ -15,7 +15,7 @@ Intensity integration is the fifth panel of module Video processing.
 
 Use this panel to create and export single molecule intensity-time traces.
 
-<a href="../../assets/images/gui/VP-panel-integration.png"><img src="../../assets/images/gui/VP-panel-integration.png" style="max-width: 565px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-integration.png"><img src="../../assets/images/gui/VP-panel-integration.png" style="max-width: 565px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -30,7 +30,7 @@ Use this panel to create and export single molecule intensity-time traces.
 
 Manages the import of single molecule video used to build intensity-time traces.
 
-<a href="../../assets/images/gui/VP-panel-integration-loadvid.png"><img src="../../assets/images/gui/VP-panel-integration-loadvid.png" style="max-width: 345px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-integration-loadvid.png"><img src="../../assets/images/gui/VP-panel-integration-loadvid.png" style="max-width: 345px;"/></a>
 
 The single molecule video is imported from a file by pressing 
 ![...](../../assets/images/gui/VP-but-3p.png).
@@ -45,7 +45,7 @@ The imported file name is then displayed in **(a)**.
 
 Manages the import of single molecule coordinates used to build intensity-time traces.
 
-<a href="../../assets/images/gui/VP-panel-integration-loadcoord.png"><img src="../../assets/images/gui/VP-panel-integration-loadcoord.png" style="max-width: 426px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-integration-loadcoord.png"><img src="../../assets/images/gui/VP-panel-integration-loadcoord.png" style="max-width: 426px;"/></a>
 
 Single molecule coordinates are imported from an ASCII file by pressing 
 ![...](../../assets/images/gui/VP-but-3p.png).
@@ -56,7 +56,7 @@ Import settings can be accessed and modified by pressing
 ![Options ...](../../assets/images/gui/VP-but-options3p.png).
 In that case the import option window opens:
 
-<a href="../../assets/images/gui/VP-panel-integration-loadcoord-impopt.png"><img src="../../assets/images/gui/VP-panel-integration-loadcoord-impopt.png" style="max-width: 226px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-integration-loadcoord-impopt.png"><img src="../../assets/images/gui/VP-panel-integration-loadcoord-impopt.png" style="max-width: 226px;"/></a>
 
 Single molecule coordinates are coordinates co-localized in each channel, with each channel corresponding to a specific x-range.
 The number of file header lines set in **(b)** is skipped before reading coordinates data and channel-specific x- and y-coordinates are read from columns set in **(c)** and **(d)** respectively.
@@ -71,7 +71,7 @@ Import settings are saved only after pressing
 
 These are the settings used to calculate intensities in intensity-time traces.
 
-<a href="../../assets/images/gui/VP-panel-integration-calculation.png"><img src="../../assets/images/gui/VP-panel-integration-calculation.png" style="max-width: 214px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-integration-calculation.png"><img src="../../assets/images/gui/VP-panel-integration-calculation.png" style="max-width: 214px;"/></a>
 
 To obtain the single molecule intensity at one particular frame or time point, a square area of dimension **(a)** pixels around the molecule coordinates is defined and the **(b)** brightest pixel values in this area are summed up.
 

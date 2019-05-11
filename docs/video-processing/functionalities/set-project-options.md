@@ -19,7 +19,7 @@ They are initially set in module Video processing by pressing
 ![Edit ...](../../assets/images/gui/TP-but-edit-3p.png "Edit ...") in the 
 [Project management area](.././trace-processing/panels/area-project-management.html) .
 
-<a href="../../assets/images/gui/VP-panel-expset-opt.png"><img src="../../assets/images/gui/VP-panel-expset-opt.png" style="max-width: 546px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-expset-opt.png"><img src="../../assets/images/gui/VP-panel-expset-opt.png" style="max-width: 546px;"/></a>
 
 
 ## Window components
@@ -34,7 +34,7 @@ They are initially set in module Video processing by pressing
 
 They concern the project title and some optional parameters.
 
-<a href="../../assets/images/gui/VP-panel-expset-opt-projprm.png"><img src="../../assets/images/gui/VP-panel-expset-opt-projprm.png" style="max-width: 250px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-expset-opt-projprm.png"><img src="../../assets/images/gui/VP-panel-expset-opt-projprm.png" style="max-width: 250px;"/></a>
 
 The project title is the name appearing in the project lists. 
 It can be modified in **(a)**.
@@ -64,7 +64,7 @@ For the moment, optional parameters solely act as project "tags" saved with the
 
 They are the channel labels and excitation selectivity.
 
-<a href="../../assets/images/gui/VP-panel-expset-opt-channels.png"><img src="../../assets/images/gui/VP-panel-expset-opt-channels.png" style="max-width: 250px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-expset-opt-channels.png"><img src="../../assets/images/gui/VP-panel-expset-opt-channels.png" style="max-width: 250px;"/></a>
 
 Channel labels are used to easily identify calculated and plotted data. 
 Usually, the channel is labelled after the emitter from which photons are collected (ex: `Cy5`).
@@ -86,7 +86,7 @@ Labels can be removed from the list any time by pressing
 
 They are the possible energy transfer occurring between the detected emitters.
 
-<a href="../../assets/images/gui/VP-panel-expset-opt-fret.png"><img src="../../assets/images/gui/VP-panel-expset-opt-fret.png" style="max-width: 250px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-expset-opt-fret.png"><img src="../../assets/images/gui/VP-panel-expset-opt-fret.png" style="max-width: 250px;"/></a>
 
 To define a donor-acceptor pair in the FRET network, respective labels must be selected in list **(a)** and **(b)** prior pressing 
 ![Add](../../assets/images/gui/VP-but-add.png "Add").
@@ -198,7 +198,7 @@ MASH-FRET/source/traces/processing/FRET/calcFRET.m
 
 They are the desired emitter stoichiometries to be calculated and plotted.
 
-<a href="../../assets/images/gui/VP-panel-expset-opt-s.png"><img src="../../assets/images/gui/VP-panel-expset-opt-s.png" style="max-width: 250px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-expset-opt-s.png"><img src="../../assets/images/gui/VP-panel-expset-opt-s.png" style="max-width: 250px;"/></a>
 
 The stoichiometry of an emitter is usually used to estimate the ratio of different emitters on the single molecule under observation.
 
@@ -239,7 +239,7 @@ All desired stoichiometry calculations are listed in **(b)** and can be removed 
 
 They are the colors used to identify calculated and plotted traces
 
-<a href="../../assets/images/gui/VP-panel-expset-opt-colors.png"><img src="../../assets/images/gui/VP-panel-expset-opt-colors.png" style="max-width: 250px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-expset-opt-colors.png"><img src="../../assets/images/gui/VP-panel-expset-opt-colors.png" style="max-width: 250px;"/></a>
 
 To set the RGB color of a specific trace, select the data in list **(a)** and set the red, green and blue values in **(b)**, **(c)** and **(d)** respectively.
 Red, green and blue takes values between 0 and 1.
