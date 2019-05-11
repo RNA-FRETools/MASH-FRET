@@ -19,6 +19,9 @@ They are initially set in module Video processing by pressing
 ![Edit ...](../../assets/images/gui/TP-but-edit-3p.png "Edit ...") in the 
 [Project management area](.././trace-processing/panels/area-project-management.html) .
 
+Press 
+![Save](../../assets/images/gui/VP-but-save.png "Save") to save and apply immediately the modifications to the project.
+
 <a class="plain" href="../../assets/images/gui/VP-panel-expset-opt.png"><img src="../../assets/images/gui/VP-panel-expset-opt.png" style="max-width: 546px;"/></a>
 
 

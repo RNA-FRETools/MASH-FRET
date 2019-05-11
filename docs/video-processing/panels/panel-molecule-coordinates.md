@@ -78,7 +78,7 @@ The number of spots found after applying the exclusion rules is displayed in **(
 
 The final set of spot coordinates can be exported to a 
 [.spots file](../../output-files/spots-spots-coordinates) by pressing 
-![Save](../../assets/images/gui/VP-but-save.png "Save").
+![Save...](../../assets/images/gui/VP-but-save3p.png "Save...").
 
 
 ### Gaussian fitting

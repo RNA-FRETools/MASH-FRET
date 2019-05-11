@@ -83,7 +83,7 @@ To localize bright spots in the SMV:
 1. Set parameters in 
    [Frame range](panels/panel-edit-video.html#frame-range) and export the original or modified video to a 
    [.sira file](../output-files/sira-mash-video.html) by pressing 
-   ![Export...](../assets/images/gui/VP-but-export.png "Export...").   
+   ![Create & Export...](../assets/images/gui/VP-but-export.png "Create & Export...").   
      
 1. [Load](panels/area-visualization.html#load-videoimage-file) the newly exported SMV file by pressing 
    ![Load...](../assets/images/gui/VP-but-load.png "Load...")  
@@ -100,7 +100,7 @@ To localize bright spots in the SMV:
 1. Detect bright spots with 
    [Spotfinder](panels/panel-molecule-coordinates.html#spotfinder) in each channel and export spots coordinates to a 
    [.spots file](../output-files/spots-spots-coordinates.html) by pressing 
-   ![Save](../assets/images/gui/VP-but-save.png "Save")
+   ![Save...](../assets/images/gui/VP-but-save3p.png "Save...")
 
 
 ---
