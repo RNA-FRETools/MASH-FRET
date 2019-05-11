@@ -6,6 +6,8 @@ grand_parent: /video-processing.html
 nav_order: 1
 ---
 
+<img src="../assets/images/logos/logo-video-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Set project options
 {: .no_toc }
 

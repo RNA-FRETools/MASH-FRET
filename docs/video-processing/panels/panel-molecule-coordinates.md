@@ -6,8 +6,14 @@ grand_parent: /video-processing.html
 nav_order: 5
 ---
 
+<img src="../assets/images/logos/logo-video-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Molecule coordinates
 {: .no_toc }
+
+Molecule coordinates is the fourth panel of module Video processing.
+
+Use this panel to target single molecules in the video and obtain single molecule coordinates.
 
 <a href="../../assets/images/gui/VP-panel-molcoord.png"><img src="../../assets/images/gui/VP-panel-molcoord.png" style="max-width: 562px;"/></a>
 

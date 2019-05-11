@@ -6,8 +6,14 @@ grand_parent: /video-processing.html
 nav_order: 3
 ---
 
+<img src="../assets/images/logos/logo-video-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Experiment settings
 {: .no_toc }
+
+Experiment settings is the second panel of module Video processing.
+
+Use this panel to inform MASH-FRET about your experiment setup and to set project options.
 
 <a href="../../assets/images/gui/VP-panel-expset.png"><img src="../../assets/images/gui/VP-panel-expset.png" style="max-width: 426px;"/></a>
 

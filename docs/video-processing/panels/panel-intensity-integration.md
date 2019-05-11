@@ -6,8 +6,14 @@ grand_parent: /video-processing.html
 nav_order: 6
 ---
 
+<img src="../assets/images/logos/logo-video-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Intensity integration
 {: .no_toc }
+
+Intensity integration is the fifth panel of module Video processing.
+
+Use this panel to create and export single molecule intensity-time traces.
 
 <a href="../../assets/images/gui/VP-panel-integration.png"><img src="../../assets/images/gui/VP-panel-integration.png" style="max-width: 565px;"/></a>
 

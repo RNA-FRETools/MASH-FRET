@@ -6,8 +6,14 @@ grand_parent: /video-processing.html
 nav_order: 1
 ---
 
+<img src="../assets/images/logos/logo-video-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Visualization area
 {: .no_toc }
+
+The visualization area is the main display of module Video processing.
+
+Use this area to visualize single molecule video or images.
 
 <a class="plain" href="../../assets/images/gui/VP-area-visu.png"><img src="../../assets/images/gui/VP-area-visu.png" style="max-width: 516px;"/></a>
 

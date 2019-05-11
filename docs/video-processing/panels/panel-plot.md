@@ -6,8 +6,15 @@ grand_parent: /video-processing.html
 nav_order: 2
 ---
 
+<img src="../assets/images/logos/logo-video-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Plot
 {: .no_toc }
+
+Plot is the first panel module Video processing.
+
+Use this panel to set the appearance and units in the 
+[Visualization area](area-visualization.html).
 
 <a href="../../assets/images/gui/VP-panel-plot.png"><img src="../../assets/images/gui/VP-panel-plot.png" style="max-width: 130px;"/></a>
 

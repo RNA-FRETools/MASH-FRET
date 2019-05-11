@@ -6,8 +6,14 @@ grand_parent: /video-processing.html
 nav_order: 4
 ---
 
+<img src="../assets/images/logos/logo-video-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Edit video
 {: .no_toc }
+
+Edit video is the third panel of module Video processing.
+
+Use this panel to apply image corrections to the single molecule video and to export the video to various file formats.
 
 <a href="../../assets/images/gui/VP-panel-videdit.png"><img src="../../assets/images/gui/VP-panel-videdit.png" style="max-width: 562px;"/></a>
 
@@ -75,7 +81,7 @@ mex 'xxxxx\MASH-FRET\source\extern\package\FilterArray.c'
 
 with `xxxxx` the path on your computer to the MASH-FRET folder.
 
-If the error persists, please inform us via the  
+If the error persists, please inform us via the 
 [issue tracker](https://github.com/RNA-FRETools/MASH-FRET/issues) on Github.
 
 
