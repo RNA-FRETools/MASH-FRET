@@ -6,10 +6,16 @@ grand_parent: /simulation.html
 nav_order: 1
 ---
 
+<img src="../../assets/images/logos/logo-simulation_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Video parameters
 {: .no_toc }
 
-<a href="../../assets/images/gui/sim-panel-video-parameters.png"><img src="../../assets/images/gui/sim-panel-video-parameters.png" style="max-width: 217px;"/></a>
+Video parameters is the first panel of module Simulation.
+
+Use this panel to define the settings of data acquisition like camera noise and video characteristics.
+
+<a class="plain" href="../../assets/images/gui/sim-panel-video-parameters.png"><img src="../../assets/images/gui/sim-panel-video-parameters.png" style="max-width: 217px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -19,85 +25,84 @@ nav_order: 1
 
 ---
 
+
 ## Video length
 
-It is the total number of image frames in the video. 
+Defines the total number of image frames in the video. 
 
 It is usually noted 
 [*L*](){: .math_var }
 
-**<u>default</u>:** 
+<u>default</u>: 
 [*L*](){: .math_var } = 4000 frames
 
 ---
 
+
 ## Frame rate
 
-It is acquisition rate of the video in frames per second (fps). 
+Defines the acquisition rate of the video in frames per second (fps). 
 
 It is usually noted 
-[*f*](){: .math_var }. 
-It is linked to the acquisition time 
+[*f*](){: .math_var } and is linked to the acquisition time 
 [*t*<sub>exp</sub>](){: .math_var } by the relation:
 
 {: .equation }
-<img src="../../assets/images/equations/sim-eq-frame-rate.gif" alt="f = \frac{1}{t_{exp}}">
-
-<!--
-{: .equation }
-*f* = 1 / *t*<sub>exp</sub>
--->
+<img src="../../assets/images/equations/sim-eq-frame-rate.gif" alt="f = \frac{1}{t_{\textup{exp}}}">
 
 with 
 [*t*<sub>exp</sub>](){: .math_var } in seconds
 
-**<u>default</u>:** 
+<u>default</u>: 
 [*f*](){: .math_var } = 10 fps
 
 ---
 
+
 ## Pixel size
 
-It is the x- and y-dimensions of a pixel in micrometers. 
+Defines the square dimensions of a pixel in micrometers. 
 
 It is used in the conversion of PSF widths from micrometers to pixels.
 
-**<u>default</u>:** 0.53 &#956;m
+<u>default</u>: 0.53 &#956;m
 
 ---
+
 
 ## Bit rate
 
-It is the camera digitization bit depth in bit/pixel and defines the range of pixel values. 
+Defines the camera digitization bit depth in bit/pixel and defines the range of pixel values. 
 
-It is used to calculate the saturation value in the video.
+It is used to calculate the saturation pixel value in the video.
 
-**<u>default</u>:** 14 bit/pixel
+<u>default</u>: 14 bit/pixel
 
 ---
+
 
 ## Video dimensions
 
-They are the dimensions of video frames in pixels , following the x- **(a)** and y- **(b)** directions.
+Define the dimensions of video frames in pixels , following the x- **(a)** and y- **(b)** directions.
 
-**<u>default</u>:** 256-by-256 pixels
+<u>default</u>: 256-by-256 pixels
 
 ---
 
+
 ## Camera SNR characteristics
 
-They are the settings to convert photon counts to images counts and generate camera noise.
+Use this interface to define the camera noise distribution and the conversion of photon counts to images counts.
 
-<a href="../../assets/images/gui/sim-panel-video-parameters-camera.png"><img src="../../assets/images/gui/sim-panel-video-parameters-camera.png" style="max-width: 198px" /></a>
+<a class="plain" href="../../assets/images/gui/sim-panel-video-parameters-camera.png"><img src="../../assets/images/gui/sim-panel-video-parameters-camera.png" style="max-width: 198px" /></a>
 
-Select the model to generate camera noise in **(a)**. 
-Model parameters to be set in **(b)** are automatically adapted to the model selected in **(a)**.
+Select the camera noise model in **(a)** and set the corresponding parameters in **(b)**.
 
 Available camera noise models are:
 * [Offset only](#offset-only)
 * [P- or Poisson](#p--or-poisson)
 * [N- or Gaussian](#n--or-gaussian)
-* [NExpN- or Gaussian + exponential tail](#nexpn--or-gaussian--exponential-tail)
+* [NExpN- or Gaussian + exponential tail](#nexpn--or-gaussian--exponential-tail) which is relatively time consuming; expect spending around 20 minutes to simulate a 256-by-256-wide and 4000 frame-long video
 * [PGN- or Hirsch](#pgn--or-hirsch)
 
 Refer to table 
@@ -112,17 +117,12 @@ Photon counts
 [*&#956;*<sub>ic</sub>](){: .math_var } such as:
 
 {: .equation }
-<img src="../../assets/images/equations/sim-eq-cam-noise-01.gif" alt="\mu_{ic} = \mu_{pc}">
-
-<!--
-{: .equation }
-*&#956;*<sub>ic</sub> = *&#956;*<sub>pc</sub>
--->
+<img src="../../assets/images/equations/sim-eq-cam-noise-01.gif" alt="\mu_{\textup{ic}} = \mu_{\textup{pc}}">
 
 A constant camera dark count 
 [*&#956;*<sub>ic,d</sub>](){: .math_var } is then added.
 
-**<u>default</u>:** 
+<u>default</u>: 
 [*&#956;*<sub>ic,d</sub>](){: .math_var } = 113 ic
 
 
@@ -135,28 +135,18 @@ Photon counts
 [*&#951;*](){: .math_var } such as:
 
 {: .equation }
-<img src="../../assets/images/equations/sim-eq-cam-noise-02.gif" alt="\mu_{ec} = \mu_{pc} \times \eta">
-
-<!--
-{: .equation }
-*&#956;*<sub>ec</sub> = *&#956;*<sub>pc</sub> &#215; *&#951;*
--->
+<img src="../../assets/images/equations/sim-eq-cam-noise-02.gif" alt="\mu_{\textup{ec}} = \mu_{\textup{pc}} \times \eta">
 
 Electron counts are distributed following a Poisson distribution and are ideally converted to image counts 
 [*&#956;*<sub>ic</sub>](){: .math_var } such as:
 
 {: .equation }
-<img src="../../assets/images/equations/sim-eq-cam-noise-03.gif" alt="\mu_{ic} = \mu_{ec}">
-
-<!--
-{: .equation }
-*&#956;*<sub>ic</sub> = *&#956;*<sub>ec</sub>
--->
+<img src="../../assets/images/equations/sim-eq-cam-noise-03.gif" alt="\mu_{\textup{ic}} = \mu_{\textup{ec}}">
 
 A constant camera dark count 
 [*&#956;*<sub>ic,d</sub>](){: .math_var } is then added.
 
-**<u>default</u>:**
+<u>default</u>:
 * [*&#956;*<sub>ic,d</sub>](){: .math_var } = 113 ic
 * [*&#951;*](){: .math_var } = 0.95 ec/pc
 
@@ -170,42 +160,29 @@ Photon counts
 [*&#951;*](){: .math_var } such as:
 
 {: .equation }
-<img src="../../assets/images/equations/sim-eq-cam-noise-04.gif" alt="\mu_{ec} = \mu_{pc} \times \eta">
-
-<!--
-{: .equation }
-*&#956;*<sub>ec</sub> = *&#956;*<sub>pc</sub> &#215; *&#951;*
--->
+<img src="../../assets/images/equations/sim-eq-cam-noise-04.gif" alt="\mu_{\textup{ec}} = \mu_{\textup{pc}} \times \eta">
 
 Electron counts are converted to image counts 
 [*&#956;*<sub>ic</sub>](){: .math_var } with an overall gain 
 [*K*](){: .math_var } such as:
 
 {: .equation }
-<img src="../../assets/images/equations/sim-eq-cam-noise-05.gif" alt="\mu_{ic} = \mu_{ec} \times K">
-
-<!--
-{: .equation }
-*&#956;*<sub>ic</sub> = *&#956;*<sub>ec</sub> &#215; *K*
--->
+<img src="../../assets/images/equations/sim-eq-cam-noise-05.gif" alt="\mu_{\textup{ic}} = \mu_{\textup{ec}} \times K">
 
 A constant camera dark count 
 [*&#956;*<sub>ic,d</sub>](){: .math_var } is added and image counts are distributed following a Gaussian distribution of mean 
 [*&#956;*<sub>ic</sub>](){: .math_var } and standard deviation 
-[*&#963;*<sub>ic</sub>](){: .math_var } that depends on 
+[*&#963;*<sub>ic</sub>](){: .math_var }.
+
+[*&#963;*<sub>ic</sub>](){: .math_var } depends on 
 [*&#956;*<sub>ic</sub>](){: .math_var }, the readout noise standard deviation 
 [*&#963;*<sub>d</sub>](){: .math_var } and the analog-to-digital noise standard deviation 
 [*&#963;*<sub>q</sub>](){: .math_var } such as:
 
 {: .equation }
-<img src="../../assets/images/equations/sim-eq-cam-noise-06.gif" alt="\sigma_{ic} = \sqrt{\mu_{ic} + ( K × \sigma_{d} )^{2} + \sigma_{q}^{2}}">
+<img src="../../assets/images/equations/sim-eq-cam-noise-06.gif" alt="\sigma_{\textup{ic}} = \sqrt{\mu_{\textup{ic}} + ( K × \sigma_{\textup{d}} )^{2} + \sigma_{\textup{q}}^{2}}">
 
-<!--
-{: .equation }
-*&#963;*<sub>ic</sub> = (  *&#956;*<sub>ic</sub> + ( *K* &#215; *&#963;*<sub>d</sub> )<sup>2</sup> + *&#963;*<sub>q</sub><sup>2</sup> )<sup>0.5</sup>
--->
-
-**<u>default</u>:** values taken from the literature (reference 
+<u>default</u>: values taken from the literature (reference 
 [here](../../citations.html#simulation-algorithm-testing)):
 * [*&#956;*<sub>ic,d</sub>](){: .math_var } = 113 ic
 * [*&#951;*](){: .math_var } = 0.95 ec/pc
@@ -223,30 +200,20 @@ Photon counts
 [*&#951;*](){: .math_var } such as:
 
 {: .equation }
-<img src="../../assets/images/equations/sim-eq-cam-noise-07.gif" alt="\mu_{ec} = \mu_{pc} \times \eta">
-
-<!--
-{: .equation }
-*&#956;*<sub>ec</sub> = *&#956;*<sub>pc</sub> &#215; *&#951;*
--->
+<img src="../../assets/images/equations/sim-eq-cam-noise-07.gif" alt="\mu_{\textup{ec}} = \mu_{\textup{pc}} \times \eta">
 
 Electron counts are converted to image counts 
 [*&#956;*<sub>ic</sub>](){: .math_var } with an overall gain 
 [*K*](){: .math_var } such as:
 
 {: .equation }
-<img src="../../assets/images/equations/sim-eq-cam-noise-08.gif" alt="\mu_{ic} = \mu_{ec} \times K">
-
-<!--
-{: .equation }
-*&#956;*<sub>ic</sub> = *&#956;*<sub>ec</sub> &#215; *K*
--->
+<img src="../../assets/images/equations/sim-eq-cam-noise-08.gif" alt="\mu_{\textup{ic}} = \mu_{\textup{ec}} \times K">
 
 A constant camera dark count 
 [*&#956;*<sub>ic,d</sub>](){: .math_var } is added and image counts are distributed following an exponential-tailed Gaussian distribution with mean 
 [*&#956;*<sub>ic</sub>](){: .math_var }, standard deviation 
 [*&#963;*<sub>ic</sub>](){: .math_var }, tail contribution 
-[*A*<sub>CIC</sub>](){: .math_var } and exponential decay 
+[*A*<sub>CIC</sub>](){: .math_var } and exponential decay constant 
 [*&#964;*<sub>CIC</sub>](){: .math_var }.
 
 This model is purely empirical: model parameters are obtained by fitting the distribution 
@@ -254,12 +221,7 @@ This model is purely empirical: model parameters are obtained by fitting the dis
 [*&#956;*<sub>ic,0</sub>](){: .math_var } with the function:
 
 {: .equation }
-<img src="../../assets/images/equations/sim-eq-cam-noise-09.gif" alt="\textup{P}(\mu_{ic,0}) = ( 1-A_{CIC} )\textup{exp}\left [ -\frac{( \mu_{ic,0} - \mu_{ic,d} )^{2}}{2\sigma_{ic}^{2}} \right ] + A_{CIC}\textup{exp}\left ( - \frac{\mu_{ic,0}}{\tau_{CIC}}  \right )">
-
-<!--
-{: .equation }
-P(*&#956;*<sub>ic,0</sub>) = ( 1-*A*<sub>CIC</sub> ) &#215; exp[ -( *&#956;*<sub>ic,0</sub> - *&#956;*<sub>ic,d</sub> )<sup>2</sup> / ( 2 &#215; *&#963;*<sub>ic</sub><sup>2</sup> ) ] + *A*<sub>CIC</sub> &#215; exp( - *&#956;*<sub>ic,0</sub> / *&#964;*<sub>CIC</sub> )
--->
+<img src="../../assets/images/equations/sim-eq-cam-noise-09.gif" alt="\textup{P}(\mu_{\textup{ic,0}}) = ( 1-A_{\textup{CIC}} )\textup{exp}\left [ -\frac{( \mu_{\textup{ic,0}} - \mu_{\textup{ic,d}} )^{2}}{2\sigma_{\textup{ic}}^{2}} \right ] + A_{\textup{CIC}}\textup{exp}\left ( - \frac{\mu_{\textup{ic,0}}}{\tau_{\textup{CIC}}}  \right )">
 
 To fit dark count distribution with the NExpN model, you can use our home-written script located at:
 
@@ -267,10 +229,7 @@ To fit dark count distribution with the NExpN model, you can use our home-writte
 MASH-FRET/fit_NExpN.m
 ```
 
-**Note:** *Random generation of NExpN noise is relatively time consuming. 
-Expect spending around 20 minutes to simulate a 256-by-256-wide and 4000 frame-long video.*
-
-**<u>default</u>:** values taken from the literature (reference 
+<u>default</u>: values taken from the literature (reference 
 [here](../../citations.html#simulation-algorithm-testing)):
 * [*&#956;*<sub>ic,d</sub>](){: .math_var } = 106.9 ic
 * [*A*<sub>CIC</sub>](){: .math_var } = 0.02 
@@ -278,6 +237,7 @@ Expect spending around 20 minutes to simulate a 256-by-256-wide and 4000 frame-l
 * [*&#964;*<sub>CIC</sub>](){: .math_var } = 20.5 ic
 * [*&#951;*](){: .math_var } = 0.95 ec/pc
 * [*K*](){: .math_var } = 57.8 ic/ec
+
 
 ### PGN- or Hirsch
 {: .no_toc }
@@ -289,12 +249,7 @@ Photon counts
 [*CIC*](){: .math_var } such as:
 
 {: .equation }
-<img src="../../assets/images/equations/sim-eq-cam-noise-10.gif" alt="\mu_{ec} = \mu_{pc} \times \eta + CIC">
-
-<!--
-{: .equation }
-*&#956;*<sub>ec</sub> = *&#956;*<sub>pc</sub> &#215; *&#951;* + *CIC*
--->
+<img src="../../assets/images/equations/sim-eq-cam-noise-10.gif" alt="\mu_{\textup{ec}} = \mu_{\textup{pc}} \times \eta + CIC">
 
 Electron counts are distributed following a Poisson distribution of mean 
 [*&#956;*<sub>ec</sub>](){: .math_var } and are then multiplied in the electron-multiplier (EM) register following a gamma distribution with shape parameter 
@@ -306,12 +261,7 @@ Multiplied electron counts are converted to image counts
 [*s*](){: .math_var } such as:
 
 {: .equation }
-<img src="../../assets/images/equations/sim-eq-cam-noise-11.gif" alt="\mu_{ic} = \frac {\mu_{ic}}{s}">
-
-<!--
-{: .equation }
-*&#956;*<sub>ic</sub> = *&#956;*<sub>ec</sub> / *s*
--->
+<img src="../../assets/images/equations/sim-eq-cam-noise-11.gif" alt="\mu_{\textup{ic}} = \frac {\mu_{\textup{ic}}}{s}">
 
 A constant camera dark count 
 [*&#956;*<sub>ic,d</sub>](){: .math_var } is added and image counts are distributed following a Gaussian distribution of mean 
@@ -321,14 +271,9 @@ A constant camera dark count
 [*s*](){: .math_var } such as:
 
 {: .equation }
-<img src="../../assets/images/equations/sim-eq-cam-noise-12.gif" alt="\sigma_{ic} = \frac {\sigma_{d}}{s}">
+<img src="../../assets/images/equations/sim-eq-cam-noise-12.gif" alt="\sigma_{\textup{ic}} = \frac {\sigma_{\textup{d}}}{s}">
 
-<!--
-{: .equation }
-*&#963;*<sub>ic</sub> = *&#963;*<sub>d</sub> / *s*
--->
-
-**<u>default</u>:** values taken from the literature (reference [here](../../citations.html#simulation-algorithm-testing)):
+<u>default</u>: values taken from the literature (reference [here](../../citations.html#simulation-algorithm-testing)):
 * [*&#956;*<sub>ic,d</sub>](){: .math_var } = 113 ic
 * [*&#951;*](){: .math_var } = 0.95 ec/pc
 * [*g*](){: .math_var } = 300
@@ -340,7 +285,7 @@ A constant camera dark count
 ### Model parameters
 {: .no_toc }
 
-Parameters specific to camera noise model:
+The parameters used in camera noise models are summarized in the table below:
 
 | parameter                                     | units             | description                                  | in model               |
 | :-------------------------------------------: | :---------------: | -------------------------------------------- | ---------------------- |
@@ -356,6 +301,15 @@ Parameters specific to camera noise model:
 | [*g*](){: .math_var }                         |                   | system gain                                  | PGN                    |
 | [*s*](){: .math_var }                         | ec/ic             | analog-to-digital factor                     | PGN                    |
 | [*CIC*](){: .math_var }                       | ec                | CIC offset                                   | PGN                    |
+
+
+The saturation value is calculated from random distributions using the 
+[Bit rate](#bit-rate). 
+For more information about the saturation value calculations, please refer to the source code at:
+
+```
+MASH-FRET/source/mod_simulation/Saturation.m
+```
 
 <u>Abbreviations</u>:
 * **ic**: image count
