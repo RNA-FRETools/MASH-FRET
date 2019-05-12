@@ -11,19 +11,27 @@ nav_exclude: true
 toc_exclude: true
 ---
 
+<img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Use Trace manager
 {: .no_toc }
 
-The trace manager allows to visualize data of all single molecules in the project, and is used to sort molecules into sub-groups and/or exclude irrelevant traces from the set.
-Trace manager is accessed by pressing 
+The trace manager gives an overview of all single molecules in the project and allows to assemble a molecule selection and create molecule subgroups.
+
+It is accessed by pressing 
 ![TM](../../assets/images/gui/TP-but-tm.png "TM") in the 
 [Sample management](../panels/panel-sample-management.html#trace-manager) panel of module Trace processing.
+
+Trace manager is used to sort molecules into sub-groups and/or exclude irrelevant traces from the set.
+It is composed of three modules:
+
 
 ---
 
 {% include tm_head.html %}
 
-Video view is used to visualize single molecules statuses in the video.
+Video view is used to visualize single molecule statuses in the video. 
+Video view uses the single molecule video and single molecule coordinates associated with the project.
 
 ## Interface components
 {: .no_toc .text-delta }
@@ -42,6 +50,7 @@ Use this menu to define the video frames taken into account for building the ave
 [Visualization area](#visualization-area).
 
 For experiments using alternated laser excitation (ALEX), video frames can be averaged over each laser illuminations.
+
 Laser-specific average images allow to visualize the molecules labelled with the emitters that are specifically excited at this wavelength.
 For instance, molecules labelled with Cy5 will be better visualized on the video frames recorded upon illumination at 638nm.
 
@@ -56,8 +65,8 @@ Use this menu to define which molecule selection is shown in the
 [Visualization area](#visualization-area).
 
 To show:
-- only selected molecules, choose the `selected` option
-- only excluded molecules, choose the `unselected` option
+- selected molecules only, choose the `selected` option
+- excluded molecules only, choose the `unselected` option
 - selected and excluded molecules, choose the `all` option
 
 
@@ -72,7 +81,8 @@ Adjust these options to show/hide specific molecule subgroups.
 The affiliation of molecules to subgroups is defined by the molecule tags, with each subgroup tag being defined by a specific name and color.
 When molecules have no tag, they are automatically affiliated to the `not labelled` subgroup colored in white.
 
-To show or hide molecule subgroups whose tag name is written and colored in **(b)**, respectively activate or deactivate the corresponding options in **(a)**.
+To show molecule subgroups in the
+[Visualization area](#visualization-area) whose tag name is written in **(b)**, activate the corresponding option in **(a)**.
 
 
 ---
@@ -81,7 +91,7 @@ To show or hide molecule subgroups whose tag name is written and colored in **(b
 
 Use this interface to visualize molecule subgroups in the video.
 
-If the project is associated with a single molecule video and single molecule coordinates, single molecules are shown on the average video frame upon the chosen
+If the project is associated with a single molecule video and single molecule coordinates, single molecules are shown on the average video frame calculated for the chosen
 [Laser illumination](#laser-illumination) with colored circles centered on the corresponding molecule positions.
 Circles are colored according to the tag-specific color and can be multiple if the same molecule is affiliated to several subgroups.
 
