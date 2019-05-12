@@ -33,13 +33,15 @@ Overview is used to browse individual molecules and assemble a molecule selectio
 The final molecule selection is exported to module Trace processing by pressing 
 ![TO MASH](../../assets/images/gui/TP-but-to-mash.png "TO MASH").
 
+Overview is divided into two panels **(1-2)**.
+
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-overview.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview.png"/></a>
+
 ## Interface components
 {: .no_toc .text-delta }
 
 1. TOC
 {:toc}
-
-<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-overview.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview.png"/></a>
 
 
 ---

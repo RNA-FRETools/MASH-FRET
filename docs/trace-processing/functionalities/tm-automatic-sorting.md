@@ -34,13 +34,15 @@ Automatic sorting is used to tag groups of molecules based on specific data crit
 Tags are eventually applied to individual molecules after pressing 
 ![APPLY TAG TO MOLECULES](../../assets/images/gui/TP-but-apply-tag-to-molecules.png "APPLY TAG TO MOLECULES").
 
+Automatic sorting is divided into one processing area **(1)**, one panel **(2-3)** and one visualization area **(4-5)**.
+
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-autosorting.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting.png"/></a>
+
 ## Interface components
 {: .no_toc .text-delta }
 
 1. TOC
 {:toc}
-
-<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-autosorting.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting.png"/></a>
 
 
 ---

@@ -33,13 +33,15 @@ It is composed of three modules:
 Video view is used to visualize single molecule statuses in the video. 
 Video view uses the single molecule video and single molecule coordinates associated with the project.
 
+Video view is divided into one management area **(1-3)** and one visualization area **(4)**.
+
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-videoview.png" ><img src="../../assets/images/gui/TP-panel-sample-tm-videoview.png"/></a>
+
 ## Interface components
 {: .no_toc .text-delta }
 
 1. TOC
 {:toc}
-
-<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-videoview.png" ><img src="../../assets/images/gui/TP-panel-sample-tm-videoview.png"/></a>
 
 
 ---
