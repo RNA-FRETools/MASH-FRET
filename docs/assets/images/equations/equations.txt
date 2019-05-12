@@ -54,7 +54,7 @@ Hirsch noise (equation 10):
 	\mu_{\textup{ic}} = \mu_{\textup{pc}} \times \eta \times K + \mu_{\textup{ic,d}}
 
 >> Exposure time:
-	t_{exp} = \frac{1}{f}
+	t_{\textup{exp}} = \frac{1}{f}
 
 >> Gaussian spots (equation 01):
 	I(x,y) = offset + I_{0}\textup{exp}\left \{ - \left [ a(x - x_{0})^{2} + 2b(x - x_{0})(y - y_{0}) + c(y - y_{0})^{2} \right ] \right \}
