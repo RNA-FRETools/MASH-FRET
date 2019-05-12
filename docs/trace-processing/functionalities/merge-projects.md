@@ -6,12 +6,16 @@ grand_parent: /trace-processing.html
 nav_order: 8
 ---
 
+<img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Merge projects
 {: .no_toc }
 
-In some cases, it is interesting to merge traces of different projects to build a common data set, *e. g.* with the same experimental conditions, used for further analysis.
-For the moment, the merging process is performed on ASCII traces and externally to MASH.
-In the future, the merging functionality will be directly available in MASH.
+In some cases, it is interesting to merge traces of different projects to build a common data set, *e. g.* with the same experimental conditions.
+
+For the moment, the merging process is performed on ASCII traces and independently of MASH-FRET.
+In the future, the merging functionality will be directly available in MASH-FRET.
+
 To merge several projects into one, follow the procedure described below.
 
 ## Procedure
@@ -31,7 +35,7 @@ To bin trajectories to lower recording rates, please refer to
 ## Export traces to ASCII files
 
 The merging process is performed on ASCII traces.
-Therefore, intensity-time traces in project must be exported to ASCII files.
+Therefore, intensity-time traces in the project must be exported to ASCII files.
 
 To export traces to ASCII files:
 
@@ -58,6 +62,7 @@ To export traces to ASCII files:
 ## Restructure ALEX data
 
 If single molecule data are recorded upon alternated laser excitation (ALEX), exported files need to be restructured to a MASH-importable format.
+
 File reformatting is performed by using the function `restruct_trace_file` in MATLAB's command window.
 After completion, the set of restructured ASCII files are available in a new sub-folder appended with the actual date: `\restructured DD-Mmm-YYYY`
 
@@ -72,18 +77,21 @@ To restructure ALEX trace files:
 {: .procedure }
 1. Group all ASCII trace files to merge together into one directory
      
-1. In MATLAB's command window, type in  
+1. If not already done, add MASH-FRET to MATLAB's search path by going to `HOME → Set Path → Add with Subfolders`
      
-   `restruct_trace_file`  
+1. In MATLAB's command window, type in `restruct_trace_file` and select the group directory; a window pops up:  
      
-   and select the group directory  
+   <img src="../../assets/images/gui/TP-merge-project-warn1.png" style="max-width:555px;">  
      
 1. Choose the proper file format by pressing 
    ![for Trace processing](../../assets/images/gui/TP-but-for-trace-processing.png)  to start formatting, or 
-   ![for Transition analysis](../../assets/images/gui/TP-but-for-transition-analysis.png)  
+   ![for Transition analysis](../../assets/images/gui/TP-but-for-transition-analysis.png) to assign laser wavelengths to each ratio data  
      
-1. If format for Transition analysis is chosen, assign laser wavelengths to each ratio data and press 
+   <img src="../../assets/images/gui/TP-merge-project-warn2.png" style="max-width:206px;">  
+	 
+1. After assigning laser wavelengths press 
    ![Save](../../assets/images/gui/TP-but-save.png "Save") to start formatting
+
 
 ---
 
@@ -92,6 +100,7 @@ To restructure ALEX trace files:
 To merge all traces into one project, the ASCII files need to be imported together in module Trace processing and saved to a new common 
 [.mash file](../../output-files/mash-mash-project.html).
 To correctly import data, MASH must be informed about the particular structure of the files.
+
 Once the merged project is created, project parameters including FRET and stoichiometry calculations, must be re-defined.
 
 To create the merged project:
@@ -102,12 +111,12 @@ To create the merged project:
      
 1. Set the import settings by pressing 
    ![ASCII options ...](../../assets/images/gui/TP-but-ascii-options-3p.png "ASCII options ..."); see 
-   [Set project import options](set-import-options.html) for help  
+   [Set import options](set-import-options.html) for help  
      
 1. Import data by pressing 
    ![Add](../../assets/images/gui/TP-but-add.png "Add") and selecting the ASCII files to merge; this will add a new project to the project list  
      
-1. Set the project parameters by selecting the new project in the project list and pressing 
+1. Set the project parameters by pressing 
    ![Edit...](../../assets/images/gui/TP-but-edit-3p.png "Edit..."); see 
    [Set project options](../../video-processing/functionalities/set-project-options.html) for more information.
      
