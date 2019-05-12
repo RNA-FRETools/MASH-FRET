@@ -162,7 +162,7 @@ To know more about how multi-color apparent FRET data are calculated, please ref
 
 ```
 MASH-FRET/tools/buildFretexpr.m
-MASH-FRET/source/traces/processing/FRET/calcFRET.m
+MASH-FRET/source/mod-trace-processing/FRET/calcFRET.m
 ```
 
 ---
