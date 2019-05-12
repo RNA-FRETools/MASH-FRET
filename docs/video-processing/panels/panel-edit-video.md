@@ -13,7 +13,7 @@ nav_order: 4
 
 Edit video is the third panel of module Video processing.
 
-Use this panel to apply image corrections to the single molecule video and to export the video to various file formats.
+Use this panel to apply image filters or correct the single molecule video and to export the video to various file formats.
 
 <a class="plain" href="../../assets/images/gui/VP-panel-videdit.png"><img src="../../assets/images/gui/VP-panel-videdit.png" style="max-width: 562px;"/></a>
 
@@ -27,22 +27,25 @@ Use this panel to apply image corrections to the single molecule video and to ex
 
 ## Filter settings
 
-Use these settings to configure an image filter to apply to the loaded video or image.
+Use this interface to apply one or several image filters to the loaded video or image.
 
 <a class="plain" href="../../assets/images/gui/VP-panel-videdit-filterprm.png"><img src="../../assets/images/gui/VP-panel-videdit-filterprm.png" style="max-width: 231px;"/></a>
 
-Image filters treat video channels separately. 
-To configure a filter, select first the channel in list **(c)** and then the image filter in list **(a)**. 
-Each filter uses zero to two parameters that can be set in **(c)** and **(d)**.
+Image filters treat video channels separately and uses zero to two parameters.
+To configure a filter, select first the channel in list **(c)**, then the image filter in list **(a)** and set filter parameters in **(c)** and **(d)**. 
 
 A detailed description of each filter is given in 
 [Filters](#filters) and references to the scientific literature are given in 
 [References](#references).
 
-After configuration, the filter can be applied to the loaded video or image by pressing **Add**. 
-Filters can be applied to the current video frame only or to all video frames by uncheking or checking the box in **(e)**. 
+Filters can be applied to the current video frame only or to all video frames by deactivating or activating the option in **(e)**. 
+
+After configuration, the filter can be applied to the loaded video or image by pressing 
+![Add](../../assets/images/gui/VP-but-add.png "Add"). 
+
 All filters used on the video or image are listed in the 
-[Filter list](#filter-list) and can be removed by pressing **Remove filter**
+[Filter list](#filter-list) and can be removed by pressing 
+![Remove filter](../../assets/images/gui/VP-but-remove-filter.png "Remove filter").
 
 
 ### Filters
@@ -73,13 +76,11 @@ Filters `Gaussian filter`, `mean filter`, `median filter`, `Crocker-Grier filter
 These filters were written in C and were compiled to .mex files via the `mex` function of MATLAB. 
 The .mex files may work with certain MATLAB versions and lead to errors with others. 
 
-If the use of one of these filters gives an error, please recompile the .mex files by typing in MATLAB's command window:
+If the use of one of these filters gives an error, please recompile the .mex files by following the instructions from file:
 
-```matlab
-mex 'xxxxx\MASH-FRET\source\extern\package\FilterArray.c'
 ```
-
-with `xxxxx` the path on your computer to the MASH-FRET folder.
+MASH-FRET/source/extern/README-MEX-FILES.txt
+```
 
 If the error persists, please inform us via the 
 [issue tracker](https://github.com/RNA-FRETools/MASH-FRET/issues) on Github.
@@ -92,21 +93,25 @@ If the error persists, please inform us via the
 1. P.R. Selvin, T. Ha, *Single molecule Techniques: A Laboratory Manual*, Cold Spring Harbor laboratory Press **2008**, ISBN: 978-087969775-4.
 1. A.N. Kapanidis, N.K. Lee, T.A. Laurence, S. Doose, E.Margeat, S. Weiss, *Defining the Limits of Single-Molecule FRET Resolution in TIRF Microscopy*, *Proc. Nat. Acad. Sci.* **2004**, DOI: [10.1016/j.bpj.2010.09.005](https://doi.org/10.1016/j.bpj.2010.09.005)
 
+
 ---
 
 ## Filter list
 
-It is the list of all filters applied to the current frame, with the top-filter being applied first.
+Use this list to visualize or cancel filters applied to the current frame, with the top-filter being applied first.
 
-Filters can be cancelled by selecting the corresponding name in the list and pressing **Remove filter**.
+To cancel a filter, select the corresponding name in the list and press 
+![Remove filter](../../assets/images/gui/VP-but-remove-filter.png "Remove filter").
+
 
 ---
 
 ## Export video to file
 
-Use this command to export the modified video or image to a file.
+Press
+![Export...](../../assets/images/gui/VP-but-export3p.png "Export...") to export the video or image to a file.
 
-The exported image/video will be truncated according to the  
+The exported image/video will be truncated according to the 
 [Frame range](#frame-range) and modified according to the filters in the 
 [Filter list](#filter-list).
 
@@ -119,7 +124,7 @@ Supported file formats are:
 * Portable Network Graphics (<u>.png</u>)
 
 For further use with MASH-FRET, it is recommended to export modified or original videos in the 
-[MASH video format](../../output-files/sira-mash-video.html): further processes and calculations will be less time consuming.
+[MASH video format](../../output-files/sira-mash-video.html): processes and calculations will be less time consuming.
 
 File formats <u>.avi</u> and <u>.gif</u> can be used to export animated illustration but not for further analysis as the data accuracy and coherence between frames are lost during the writing process.
 
@@ -133,10 +138,11 @@ MASH-FRET\source\graphic_files\exportMovie.m
 
 ## Frame range
 
-It defines the range of video frames to export.
+Defines the range of video frames to export.
 
 <a class="plain" href="../../assets/images/gui/VP-panel-videdit-framerange.png"><img src="../../assets/images/gui/VP-panel-videdit-framerange.png" style="max-width: 106px;"/></a>
 
 Sometimes, the frame range of a video needs to be re-adjusted, because of partial failure in recording, or simply to export light animated GIF files for illustration.
 
-To define the frame range to export, set the starting frame index in **(a)** and the ending frame index in **(b)**
+To do so, set the starting frame index in **(a)** and the ending frame index in **(b)** prior exporting the video in 
+[Export video to file](#export-video-to-file).
