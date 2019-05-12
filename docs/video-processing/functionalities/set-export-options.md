@@ -12,8 +12,9 @@ nav_order: 4
 {: .no_toc }
 
 Export options define the particular files to export after completion of time trace calculations in module Video processing.
+
 The window is accessed by pressing 
-![Create & Export...](../../assets/images/gui/VP-but-export.png "Create & Export...") in 
+![Create & Export...](../../assets/images/gui/VP-but-export.png "Create & Export...") in
 [Intensity integration](../panels/panel-intensity-integration.html).
 
 Press 
@@ -33,9 +34,11 @@ Press
 
 ## ASCII traces
 
+Export processing parameters and intensity-time traces to one or multiple ASCII files.
+
 <a class="plain" href="../../assets/images/gui/VP-panel-integration-expopt-ascii.png"><img src="../../assets/images/gui/VP-panel-integration-expopt-ascii.png" style="max-width: 144px;"/></a>
 
-Export single molecule data to one common ASCII file, by checking the box in **(a)**, and/or to individual ASCII files, by checking the box in **(b)**.
+Export single molecule data to one common ASCII file, by activating the option in **(a)**, and/or to individual ASCII files, by checking the box in **(b)**.
 
 Exported single molecule data comprise: 
 * experiment settings
