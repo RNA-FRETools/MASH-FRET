@@ -27,15 +27,14 @@ Use this panel to target single molecules in the video and obtain single molecul
 
 ## Average image
 
-Use this tool to load or export an average image of the video.
+Use this interface to import or export an average image of the video.
 
 <a class="plain" href="../../assets/images/gui/VP-panel-molcoord-aveim.png"><img src="../../assets/images/gui/VP-panel-molcoord-aveim.png" style="max-width: 232px;"/></a>
 
 The average image is calculated over a frame range defined by the starting frame index, set in **(a)**, the frame interval, set in **(b)**, and the ending frame index, set in **(c)**.
 
-To start the calculation and export the average image to a 
-[_ave.* file](../../output-files/ave-average-image.html), press 
-![Go](../../assets/images/gui/VP-but-go.png "Go").
+Press 
+![Go](../../assets/images/gui/VP-but-go.png "Go") to calculate and export the average image.
 
 Supported file formats are:
 * [MASH video format](../../output-files/sira-mash-video.html) (<u>.sira</u>)
@@ -50,14 +49,14 @@ To rapidly access the average image folder and load an average image file, press
 
 ## Spotfinder
 
-Use this tool to find bright spots and export coordinates.
+Use this panel to find bright spots in the average image or video and export coordinates.
 
 <a class="plain" href="../../assets/images/gui/VP-panel-molcoord-sf.png"><img src="../../assets/images/gui/VP-panel-molcoord-sf.png" style="max-width: 241px;"/></a>
 
 Spotfinder is limited to the detection of bright spots in video frames and does not include tracking.
 
 To configure the search algorithm, select the detection method in **(a)**.
-The four detection methods available are described in detail in the respective sections:
+The four detection methods available are described in the respective sections:
 * [in-series screening](#in-series-screening)
 * [houghpeaks](#houghpeaks)
 * [Schmied2012](#schmied2012)
@@ -65,14 +64,16 @@ The four detection methods available are described in detail in the respective s
 
 As the search algorithm looks for bright spots in individual video channels, method parameters are different for each channel.
 To configure the method, select the channel in list **(c)** and set parameters in **(d)**, **(g)** and/or **(h)** according to the method description.
-Bright spot intensity profiles can be fitted with 2D-Gaussians to extract shape features by checking the box in **(b)**; see 
+
+Bright spot intensity profiles can be fitted with 2D-Gaussians to extract shape features by activating the option in **(b)**; see 
 [Gaussian fitting](#gaussian-fitting) for more details.
 
 Start spot detection and subsequent Gaussian fitting by pressing 
 ![Find](../../assets/images/gui/VP-but-find.png "Find").
-Detected spots are automatically shown on the display with red circles.
+Detected spots are automatically shown on the 
+[Visualization area](area-visualization.html#video-visualization) with red circles.
 
-The spots are then sorted according to user-defined criteria on the number, position, intensity and shape of spots; see 
+Spots are then sorted according to user-defined criteria on the number, position, intensity and shape of spots; see 
 [Exclusion rules](#exclusion-rules) for more details.
 The number of spots found after applying the exclusion rules is displayed in **(q)**.
 
@@ -84,14 +85,10 @@ The final set of spot coordinates can be exported to a
 ### Gaussian fitting
 {: .no_toc }
 
-When Gaussian fitting is activated, a pixel area of **(e)**-by-**(f)** pixels centered on the spot position is fitted with a tilted ellipsoid Gaussian function:
+When Gaussian fitting is activated, a pixel area of **(e)**-by-**(f)** pixels centered on the spot position is fitted with a tilted ellipsoid Gaussian function expressed as:
 
 {: .equation }
 <img src="../../assets/images/equations/VP-eq-spots-01.gif" alt="I(x,y) = offset + I_{0}\textup{exp}\left \{ - \left [ a(x - x_{0})^{2} + 2b(x - x_{0})(y - y_{0}) + c(y - y_{0})^{2} \right ] \right \}">
-
-<!--
-*I*(*x*,*y*) = *offset* + *I*<sub>0</sub>exp{ - [ *a*(*x* - *x*<sub>0</sub>)<sup>2</sup> + 2*b*(*x* - *x*<sub>0</sub>)(*y* - *y*<sub>0</sub>) + *c*(*y* - *y*<sub>0</sub>)<sup>2</sup> ] }
--->
 
 with 
 [*offset*](){: .math_var } the Gaussian offset, 
@@ -103,15 +100,9 @@ with
 [*c*](){: .math_var } containing information about Gaussian width and orientation:
 
 {: .equation }
-<img src="../../assets/images/equations/VP-eq-spots-02.gif" alt="a = \frac{cos^{2}( \theta )}{2\sigma_{x}^{2}} + \frac{sin^{2}( \theta )}{2\sigma_{y}^{2}}"><br>
-<img src="../../assets/images/equations/VP-eq-spots-03.gif" alt="b = - \frac{sin( 2\theta )}{4\sigma_{x}^{2}} + \frac{sin( 2\theta )}{4\sigma_{y}^{2}}"><br>
-<img src="../../assets/images/equations/VP-eq-spots-04.gif" alt="c = \frac{sin^{2}( \theta )}{2\sigma_{x}^{2}} +  \frac{cos^{2}( \theta )}{2\sigma_{y}^{2}}">
-
-<!--
-*a* = cos<sup>2</sup>( *&#952;* ) / ( 2*&#963;*<sub>x</sub><sup>2</sup> ) + sin<sup>2</sup>( *&#952;* ) / ( 2*&#963;*<sub>y</sub><sup>2</sup> )<br><br>
-*b* = - sin( 2*&#952;* ) / ( 4*&#963;*<sub>x</sub><sup>2</sup> ) + sin( 2*&#952;* ) / ( 4*&#963;*<sub>y</sub><sup>2</sup> )<br><br>
-*c* = sin<sup>2</sup>( *&#952;* ) / (2*&#963;*<sub>x</sub><sup>2</sup>) + cos<sup>2</sup>( *&#952;* ) / (2*&#963;*<sub>y</sub><sup>2</sup>)
--->
+<img src="../../assets/images/equations/VP-eq-spots-02.gif" alt="a = \frac{\textup{cos}^{2}( \theta )}{2\sigma_{\textup{x}}^{2}} + \frac{\textup{sin}^{2}( \theta )}{2\sigma_{\textup{y}}^{2}}"><br>
+<img src="../../assets/images/equations/VP-eq-spots-03.gif" alt="b = - \frac{\textup{sin}( 2\theta )}{4\sigma_{\textup{x}}^{2}} + \frac{\textup{sin}( 2\theta )}{4\sigma_{\textup{y}}^{2}}"><br>
+<img src="../../assets/images/equations/VP-eq-spots-04.gif" alt="c = \frac{\textup{sin}^{2}( \theta )}{2\sigma_{\textup{x}}^{2}} +  \frac{\textup{cos}^{2}( \theta )}{2\sigma_{\textup{y}}^{2}}">
 
 with 
 [*&#963;*<sub>x</sub>](){: .math_var } and 
@@ -201,7 +192,7 @@ It processes as described below:
 
 ## Coordinates transformation
 
-Use this tool to transform spots coordinates into other video channels and obtain single molecule coordinates.
+Use this panel to transform spots coordinates into other video channels and obtain single molecule coordinates.
 
 <a class="plain" href="../../assets/images/gui/VP-panel-molcoord-transf.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf.png" style="max-width: 289px;"/></a>
 
@@ -270,9 +261,8 @@ Each type necessitates a minimum number of reference coordinates, which is indic
 ### Import options
 {: .no_toc }
 
-They are the settings to import reference and spots coordinates from ASCII files.
-Import options can be accessed by pressing 
-![Options...](../../assets/images/gui/VP-but-options3p.png "Options...").
+Press 
+![Options...](../../assets/images/gui/VP-but-options3p.png "Options...") to open the settings to import reference and spots coordinates from ASCII files.
 
 To set the import options, please refer to 
 [Set coordinates import options](../functionalities/set-coordinates-import-options.html).

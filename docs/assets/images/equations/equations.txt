@@ -59,11 +59,11 @@ Hirsch noise (equation 10):
 >> Gaussian spots (equation 01):
 	I(x,y) = offset + I_{0}\textup{exp}\left \{ - \left [ a(x - x_{0})^{2} + 2b(x - x_{0})(y - y_{0}) + c(y - y_{0})^{2} \right ] \right \}
 	and (equation 02):
-	a = \frac{cos^{2}( \theta )}{2\sigma_{x}^{2}} + \frac{sin^{2}( \theta )}{2\sigma_{y}^{2}}
+	a = \frac{\textup{cos}^{2}( \theta )}{2\sigma_{\textup{x}}^{2}} + \frac{\textup{sin}^{2}( \theta )}{2\sigma_{\textup{y}}^{2}}
 	and (equation 03):
-	b = - \frac{sin( 2\theta )}{4\sigma_{x}^{2}} + \frac{sin( 2\theta )}{4\sigma_{y}^{2}}
+	b = - \frac{\textup{sin}( 2\theta )}{4\sigma_{\textup{x}}^{2}} + \frac{\textup{sin}( 2\theta )}{4\sigma_{\textup{y}}^{2}}
 	and (equation 04):
-	c = \frac{sin^{2}( \theta )}{2\sigma_{x}^{2}} +  \frac{cos^{2}( \theta )}{2\sigma_{y}^{2}}
+	c = \frac{\textup{sin}^{2}( \theta )}{2\sigma_{\textup{x}}^{2}} +  \frac{\textup{cos}^{2}( \theta )}{2\sigma_{\textup{y}}^{2}}
 
 >> Intensity corrections:
 Background correction (equation 01):
