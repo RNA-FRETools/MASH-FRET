@@ -65,9 +65,9 @@ This will speed the general processing time up in MASH-FRET.
 New video formats can be added programmatically by updating the following functions in the source code:
 
 ```
-MASH-FRET\source\graphic_files\loadMovFile.m
-MASH-FRET\source\graphic_files\getFrames.m
-MASH-FRET\source\graphic_files\exportMovie.m
+MASH-FRET/source/mod_video_processing/graphic_files/loadMovFile.m
+MASH-FRET/source/mod_video_processing/graphic_files/getFrames.m
+MASH-FRET/source/mod_video_processing/graphic_files/exportMovie.m
 ```
 
 ---

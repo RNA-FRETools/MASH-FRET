@@ -131,7 +131,7 @@ File formats <u>.avi</u> and <u>.gif</u> can be used to export animated illustra
 To programmatically add new video formats, update the following function in the source code:
 
 ```
-MASH-FRET\source\graphic_files\exportMovie.m
+MASH-FRET/source/mod_video_processing/graphic_files/exportMovie.m
 ```
 
 ---
