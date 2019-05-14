@@ -6,11 +6,15 @@ grand_parent: /trace-processing.html
 nav_order: 9
 ---
 
+<img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Bin trajectories
 {: .no_toc }
 
 Binning trajectories in time can be used to merge projects with different recording rates or to artificially change experimental conditions.
-The binning process is performed on ASCII traces and by using MATLAB's command window.
+
+The binning process is performed on ASCII trace files using MATLAB's command window.
+
 To bin trajectories, follow the procedure described below.
 
 ## Procedure
@@ -19,7 +23,7 @@ To bin trajectories, follow the procedure described below.
 1. TOC
 {:toc}
 
-**Note:** *As binned trajectories and the initial single molecule video are desynchronized, the binning process induces a loss of video data.
+**Note:** *As binned trajectories are not synchronized with the initial single molecule video, video data gets lost after completing the binning procedure.
 Therefore, it is recommended to perform all adjustments of molecule positions and background corrections prior binning.*
 
 
@@ -28,7 +32,7 @@ Therefore, it is recommended to perform all adjustments of molecule positions an
 ## Export traces to ASCII files
 
 The binning process is performed on ASCII traces.
-Therefore, intensity-time traces in project must be exported to ASCII files.
+Therefore, intensity-time traces in the project must be exported to ASCII files.
 
 To export traces to ASCII files:
 
@@ -42,7 +46,7 @@ To export traces to ASCII files:
      
 1. Open export options by pressing 
    ![Export ASCII...](../../assets/images/gui/TP-but-export-ascii-3p.png "Export ASCII...") and set the options as desired; please refer to 
-   [Set export options](functionalities/set-export-options.html) for help.
+   [Set export options](set-export-options.html) for help.
      
 1. Press 
    ![Next >>](../../assets/images/gui/TP-but-next-supsup.png "Next >>") to start writing processed data to files. 
@@ -55,30 +59,33 @@ To export traces to ASCII files:
 Trace binning is performed by using the function `binTrajfiles` in MATLAB's command window.
 After completion, the set of binned ASCII files are available in a new sub-folder appended with the actual date: `\binned DD-Mmm-YYYY`
 
-Binning can be combined with selective data export but will not be illustrated here; for more information, type `help binTrajfiles` in MATLAB's command window.
-
 To bin data, the script must be informed about the new time bin in seconds. 
 The new time bin must be greater than the original one.
+
+File columns can be selectively exported to new binned files; for more information, type `help binTrajfiles` in MATLAB's command window.
 
 To bin trace files:
 
 {: .procedure }
 1. Group into one directory the ASCII trace files to bin 
      
+1. If not already done, add MASH-FRET to MATLAB's search path by going to `HOME → Set Path → Add with Subfolders`
+     
 1. In MATLAB's command window, type in  
      
    `binTrajfiles(bin_time)`  
      
-   by replacing `bin_time` with the actual desired bin time (ex: 0.2) and select the group directory to start binning.
+   by replacing `bin_time` with the new bin time (ex: 0.2) and select the group directory to start trace binning and export.
 
 
 ---
 
 ## Create a new MASH project
 
-To create a project out of binned traces and use it for further analysis, the ASCII files need to be imported together in module Trace processing and saved to a new common 
+To create a project out of binned traces, the ASCII files need to be imported together in module Trace processing and saved to a new common 
 [.mash file](../../output-files/mash-mash-project.html).
 To correctly import data, MASH must be informed about the particular structure of the files.
+
 Once the new project is created, project parameters including FRET and stoichiometry calculations, must be re-defined.
 
 To create the project out of binned traces:
