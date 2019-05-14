@@ -28,7 +28,7 @@ switch mode
         for i = 1:length(files)
             filelist{i} = [files(i).folder,'\', files(i).name];
         end
-
+        [~,pList] = matlab.codetools.requiredFilesAndProducts(filelist);
         fprintf('The following toolboxes are required to run MASH-FRET:\n');
         for i = 1:length(pList)
            fprintf('- %s (version installed %s)\n', pList(i).Name, pList(i).Version);
