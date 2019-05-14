@@ -4,7 +4,7 @@ function check_dependencies(mode)
 % Input Arguments
 % Discovery mode: find required toolboxes among the installed ones and writes them to a file requirements.md
 %                 Note 1: run check_dependencies.m in Discovery mode only on an installation where all toolboxes are available, otherwise the list may be incomplete)
-%                 Note 2: Running check_dependencies.m in Discovery mode requires MATLAB >2014a
+%                 Note 2: Running check_dependencies.m in Discovery mode requires MATLAB >2016b
 % Analysis mode: check whether the required toolboxes (specified in requirements.md) are installed on the current system)
 
 root = fileparts(which('MASH'));
@@ -17,8 +17,8 @@ requirementsFile = [root, '/requirements.md'];
 switch mode
     case 'discovery'
     
-        if verLessThan('matlab', '8.3')
-            fprintf('Discovery mode requires MATLAB version > 2014a. You may still run check_dependencies.m in analysis mode')
+        if verLessThan('matlab', '9.1')
+            fprintf('Discovery mode requires MATLAB version > 2016b. You may still run check_dependencies.m in analysis mode')
             return
         end
        
@@ -26,7 +26,7 @@ switch mode
         files = dir(filepath);
         filelist = cell(1, length(files));
         for i = 1:length(files)
-            filelist{i} = [files(i).folder,'\', files(i).name];
+            filelist{i} = fullfile(files(i).folder,files(i).name);
         end
         [~,pList] = matlab.codetools.requiredFilesAndProducts(filelist);
         fprintf('The following toolboxes are required to run MASH-FRET:\n');
