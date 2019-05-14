@@ -49,7 +49,7 @@ To export traces to ASCII files:
      
 1. Open export options by pressing 
    ![Export ASCII...](../../assets/images/gui/TP-but-export-ascii-3p.png "Export ASCII...") and set the options as desired; please refer to 
-   [Set export options](functionalities/set-export-options.html) for help.
+   [Set export options](set-export-options.html) for help.
      
 1. Press 
    ![Next >>](../../assets/images/gui/TP-but-next-supsup.png "Next >>") to start writing processed molecule data in files. 
