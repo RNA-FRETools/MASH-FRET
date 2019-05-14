@@ -6,10 +6,16 @@ grand_parent: /trace-processing.html
 nav_order: 1
 ---
 
+<img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Project management
 {: .no_toc }
 
-<a href="../../assets/images/gui/TP-area-proj.png"><img src="../../assets/images/gui/TP-area-proj.png" style="max-width: 192px;"/></a>
+The project management area is the first component of module Trace processing.
+
+Use this area to import, edit and export MASH projects.
+
+<a class="plain" href="../../assets/images/gui/TP-area-proj.png"><img src="../../assets/images/gui/TP-area-proj.png" style="max-width: 192px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -22,11 +28,12 @@ nav_order: 1
 
 ## ASCII import options
 
-ASCII files are imported according to the file structure defined by the import options. 
-Import options can be modified by pressing 
-![ASCII options ...](../../assets/images/gui/TP-but-ascii-options-3p.png "ASCII options ...").
+Press 
+![ASCII options ...](../../assets/images/gui/TP-but-ascii-options-3p.png "ASCII options ...") to open options for trace import.
 
-To set the options, please refer to 
+Import options define the structure of ASCII files from which intensity-time traces are imported and the potential annexed files associated with the traces.
+
+To set the import options, please refer to 
 [Set project import options](../functionalities/set-import-options.html).
 
 
@@ -34,7 +41,7 @@ To set the options, please refer to
 
 ## Project list
 
-Use this area to manage your projects imported in module Trace processing.
+Use this list to browse and manage imported projects.
 
 Projects contain original single molecule data, calculated data and parameters necessary for calculations in all modules of MASH-FRET.
 
@@ -46,11 +53,12 @@ Single molecule data can be imported in module Trace processing from:
 Import single molecule data by pressing 
 ![Add](../../assets/images/gui/TP-but-add.png "Add") and selecting the 
 [.mash file](../../output-files/mash-mash-project.html) or the set of ASCII files to import.
+
 If a video is assigned to the imported data, laser-specific average images used for sub-images and background correction are calculated during the import process; see 
 [Sub-images](panel-subimage.html) and 
 [Background correction](panel-background-correction.html) for more information.
 
-<a href="../../assets/images/gui/TP-area-proj-loadingbar.png"><img src="../../assets/images/gui/TP-area-proj-loadingbar.png" style="max-width: 300px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-area-proj-loadingbar.png"><img src="../../assets/images/gui/TP-area-proj-loadingbar.png" style="max-width: 300px;"/></a>
 
 After import, the new project is added to the project list and the 
 [Sample management](panel-sample-management.html) panel is updated to the first molecule in the project.
@@ -59,23 +67,24 @@ Project settings such as relations between channels and lasers, FRET calculation
 ![Edit...](../../assets/images/gui/TP-but-edit-3p.png "Edit..."); see 
 [Edit project options](#edit-project-options) for more details.
 
-To close a project and remove it from the project list, select the project in the list and press 
-![Remove](../../assets/images/gui/TP-but-remove.png "Remove").
+Press 
+![Remove](../../assets/images/gui/TP-but-remove.png "Remove") to close a project and remove it from the project list.
 
 
 ---
 
 ## Edit project options
 
-Project settings are opened by selecting the project in list **(a)** and pressing 
-![Edit...](../../assets/images/gui/TP-but-edit-3p.png "Edit...").
+Press 
+![Edit...](../../assets/images/gui/TP-but-edit-3p.png "Edit...") to open the project settings.
 
 To modify project settings, please refer to 
 [Set project options](../../video-processing/functionalities/set-project-options.html).
 
 If the project was imported from a 
-[.mash file](../../output-files/mash-mash-project.html) that was created in module Video processing, initial project options are taken from the pre-set
+[.mash file](../../output-files/mash-mash-project.html) that was created in module Video processing, settings were pre-defined in 
 [Experiment settings](../../video-processing/panels/panel-experiment-settings.html#project-options).
+
 If the project was imported from ASCII files, project options are set to default values.
 
 
@@ -83,10 +92,10 @@ If the project was imported from ASCII files, project options are set to default
 
 ## Save project
 
-Projects can be exported to 
-[.mash files](../../output-files/mash-mash-project.html) by selecting the project in list **(a)** and pressing 
-![Save](../../assets/images/gui/TP-but-save.png "Save").
-To save modifications of one project, simply overwrite the existing 
+Press ![Save](../../assets/images/gui/TP-but-save.png "Save") to export the project to a 
+[.mash file](../../output-files/mash-mash-project.html).
+
+To save project modifications, simply overwrite the existing 
 [.mash file](../../output-files/mash-mash-project.html).
 
 
