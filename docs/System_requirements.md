@@ -6,7 +6,9 @@ nav_order: 9
 
 # System requirements
 
-MASH-FRET requires the following MATLAB toolboxes:
+MASH-FRET is tested to run under MATLAB 7.12 (2011a) and above.
+
+MASH-FRET additionally requires the following MATLAB toolboxes:
 - Symbolic Math Toolbox
 - Image Processing Toolbox
 - Statistics and Machine Learning Toolbox
