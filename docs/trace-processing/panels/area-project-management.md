@@ -11,7 +11,7 @@ nav_order: 1
 # Project management
 {: .no_toc }
 
-The project management area is the first component of module Trace processing.
+The project management area is the main import/export interface of module Trace processing.
 
 Use this area to import, edit and export MASH projects.
 
