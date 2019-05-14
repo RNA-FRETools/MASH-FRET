@@ -67,7 +67,7 @@ switch mode
             end
         end
         if error == 0
-            fprintf('-> Sucess: All required toolboxes are installed\n')
+            fprintf('-> Success: All required toolboxes are installed\n')
         else
             fprintf('-> Warning: Not all required toolboxes are installed. Parts of MASH-FRET may not function properly\n')
         end
