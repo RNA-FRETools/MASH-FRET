@@ -123,7 +123,7 @@ The Gaussian shape used for clustering is set in
 
 ## Clusters
 
-Use thus panel to define the initial cluster configuration.
+Use this panel to define the initial cluster configuration.
 
 The interface changes depending on which clustering method is used (left 
 [GM clustering](#gm-clustering) and right 
