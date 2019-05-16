@@ -93,14 +93,18 @@ Press
 To set export options, please refer to 
 [Set export options](../functionalities/set-export-options.html).
 
-After saving export options, intensity calculations start for each molecule coordinates present in 
-[Input coordinates](#input-coordinates), on each video frame present in 
-[Input video](#input-video), with parameters defined in 
-[Integration parameters](#integration-parameters), and exports single molecule intensity-time traces to files selected in 
-[Export options](../functionalities/set-export-options.html).
+After saving export options, intensity calculations start for each 
+[Input coordinates](#input-coordinates) and each video frame in the
+[Input video](#input-video) with parameters defined in 
+[Integration parameters](#integration-parameters).
 
-This process can be relatively slow if not enough free memory is available on the computer.
-In this case the video file is browsed every time a pixel value is needed for calculation. 
+After completion, single molecule intensity-time traces are exported to files selected in 
+[Export options](../functionalities/set-export-options.html) along with:
+
+* a [.mash project file](../../output-files/mash-mash-project.html) that can be used for further processing with MASH-FRET
+* a [.tbl file](../../output-files/tbl-intensity-statistics.html) containing statistics on intensity-time traces
+
+This process can be relatively slow if not enough free memory is available on the computer; in this case the video file is browsed every time a pixel value is needed for calculation. 
 For more information, please refer to the respective functions in the source code:
 
 ```
