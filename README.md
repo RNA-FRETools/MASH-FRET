@@ -1,4 +1,4 @@
-# ![](docs/assets/images/logos/logo-MASH-75x65.png) MASH-FRET
+# <a class="plain" href="https://rna-fretools.github.io/MASH-FRET/"><img src="docs/assets/images/logos/logo-MASH-75x65.png"></a> MASH-FRET
 
 
 ## What is MASH-FRET?
