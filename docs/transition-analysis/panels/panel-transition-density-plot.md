@@ -15,7 +15,7 @@ Transition density plot (TDP) is the first panel of module Transition analysis.
 
 Use this panel to select data and build the TDP.
 
-<a href="../../assets/images/gui/TA-panel-transition-density-plot.png"><img src="../../assets/images/gui/TA-panel-transition-density-plot.png" style="max-width:200px;"></a>
+<a class="plain" href="../../assets/images/gui/TA-panel-transition-density-plot.png"><img src="../../assets/images/gui/TA-panel-transition-density-plot.png" style="max-width:200px;"></a>
 
 ## Panel components
 {: .no_toc .text-delta }
