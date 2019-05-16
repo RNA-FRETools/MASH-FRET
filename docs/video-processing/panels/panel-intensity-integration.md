@@ -97,7 +97,7 @@ After saving export options, intensity calculations start for each molecule coor
 [Input coordinates](#input-coordinates), on each video frame present in 
 [Input video](#input-video), with parameters defined in 
 [Integration parameters](#integration-parameters), and exports single molecule intensity-time traces to files selected in 
-[Export options](#export-options).
+[Export options](../functionalities/set-export-options.html).
 
 This process can be relatively slow if not enough free memory is available on the computer.
 In this case the video file is browsed every time a pixel value is needed for calculation. 
