@@ -28,7 +28,7 @@ Use this panel to estimate state relative populations and cross-sample variabili
 
 ## Method settings
 
-Use this interface to the method to calculate state populations.
+Use this interface to define a method to calculate state populations.
 
 <img src="../../assets/images/gui/HA-panel-state-populations-method.png" style="max-width: 156px;"/>
 
