@@ -15,7 +15,7 @@ The project management area is the main import/export interface of module Transi
 
 Use this area to import state trajectories and save analysis results.
 
-<a href="../../assets/images/gui/TA-area-project-management.png"><img src="../../assets/images/gui/TA-area-project-management.png" style="max-width:199px;"></a>
+<a class="plain" href="../../assets/images/gui/TA-area-project-management.png"><img src="../../assets/images/gui/TA-area-project-management.png" style="max-width:199px;"></a>
 
 ## Panel components
 {: .no_toc .text-delta }
