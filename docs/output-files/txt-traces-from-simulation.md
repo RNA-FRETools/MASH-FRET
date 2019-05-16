@@ -6,6 +6,7 @@ nav_order: 28
 nav_exclude: 1
 ---
 
+<img src="../assets/images/logos/logo-output-files_400px.png" width="170" style="float:right; margin-left: 15px;"/>
 
 # Trace file from simulation
 {: .no_toc }

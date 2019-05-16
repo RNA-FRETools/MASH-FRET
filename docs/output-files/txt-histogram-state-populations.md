@@ -6,6 +6,7 @@ nav_order: 34
 nav_exclude: 1
 ---
 
+<img src="../assets/images/logos/logo-output-files_400px.png" width="170" style="float:right; margin-left: 15px;"/>
 
 # State population files from Histogram analysis
 {: .no_toc }
