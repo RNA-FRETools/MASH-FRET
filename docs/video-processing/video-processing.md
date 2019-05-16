@@ -10,7 +10,7 @@ permalink: /video-processing.html
 
 # Video processing
 
-Use this module to obtain single molecule **intensity-time traces** from a single molecule video.
+Use this module to obtain single molecule intensity-time traces from a single molecule video.
 
 Video processing framework is limited to <u>surface-immobilized</u> molecules.
 

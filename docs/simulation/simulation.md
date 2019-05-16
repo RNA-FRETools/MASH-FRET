@@ -11,7 +11,7 @@ permalink:  /simulation.html
 # Simulation
 {: .no_toc }
 
-Use this module to  **generate synthetic data** (single molecule videos and trajectories).
+Use this module to  generate synthetic data (single molecule videos and trajectories).
 
 Simulation framework is limited to:
 - <u>surface-immobilized</u> molecules,

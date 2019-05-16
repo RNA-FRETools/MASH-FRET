@@ -10,7 +10,7 @@ permalink: /histogram-analysis.html
 
 # Histogram analysis
 
-Use this module to identify the most probable <u>state configuration</u> and quantify state <u>relative populations</u>.
+Use this module to identify the most probable state configuration and quantify state relative populations.
 
 Histogram analysis framework is limited to <u>intensity</u> histograms and to calculated <u>FRET</u> and <u>stoichiometry</u> histograms.
 

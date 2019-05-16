@@ -10,7 +10,7 @@ permalink: /transition-analysis.html
 
 # Transition analysis
 
-Use this module to identify the most probable <u>state configuration</u> and quantify state <u>transition rates</u>.
+Use this module to identify the most probable state configuration and quantify state transition rates.
 
 Transition analysis framework is limited to <u>intensity</u>, <u>FRET</u> and <u>stoichiometry</u> state trajectories.
 
