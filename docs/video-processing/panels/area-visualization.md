@@ -96,7 +96,7 @@ It is possible to zoom in the display and create intensity-time traces at specif
 [Zoom tool](#zoom-tool) and 
 [Create trace tool](#create-trace-tool) respectively.
 
-Any graphics in MASH-FRET can be exported to an image file by left-clicking on the axes and selecting `Export graph`.
+Any graphics in MASH-FRET can be exported to an image file by right-clicking on the axes and selecting `Export graph`.
 
 
 ---

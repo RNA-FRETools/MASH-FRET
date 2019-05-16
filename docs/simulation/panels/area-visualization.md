@@ -45,7 +45,7 @@ Histograms are built with the MATLAB built-in function `histcounts` that determi
 Intensity units are set in 
 [Intensity units](panel-export-options.html#intensity-units).
 
-Any graphics in MASH can be exported to an image file by left-clicking on the axes and selecting `Export graph`.
+Any graphics in MASH can be exported to an image file by right-clicking on the axes and selecting `Export graph`.
 
 ---
 
@@ -57,7 +57,7 @@ Shows the simulated donor (blue) and acceptor (red) intensity-time traces for mo
 Intensity units are set in 
 [Intensity units](panel-export-options.html#intensity-units).
 
-Any graphics in MASH can be exported to an image file by left-clicking on the axes and selecting `Export graph`.
+Any graphics in MASH can be exported to an image file by right-clicking on the axes and selecting `Export graph`.
 
 ---
 
@@ -69,4 +69,4 @@ Shows the first frame of the simulated single molecule video.
 The color scale for pixel values is indicated by the color bar. Pixel intensity units are set in 
 [Intensity units](panel-export-options.html#intensity-units).
 
-Any graphics in MASH can be exported to an image file by left-clicking on the axes and selecting `Export graph`.
+Any graphics in MASH can be exported to an image file by right-clicking on the axes and selecting `Export graph`.

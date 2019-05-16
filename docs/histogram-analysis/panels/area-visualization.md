@@ -22,6 +22,8 @@ nav_order: 5
 
 The top axes display various histogram plots depending on which stage the histogram analysis is at.
 
+Any graphics in MASH can be exported to an image file by right-clicking on the axes and selecting `Export graph`.
+
 
 ### Default
 {: .no_toc }
@@ -70,6 +72,8 @@ After setting the thresholds used to calculate state relative populations with t
 ## Bottom axes
 
 The bottom axes display various scatter plots depending on which stage the histogram analysis is at.
+
+Any graphics in MASH can be exported to an image file by right-clicking on the axes and selecting `Export graph`.
 
 ### Default
 {: .no_toc }

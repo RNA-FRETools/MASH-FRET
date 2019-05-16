@@ -171,6 +171,8 @@ Clustering can be reset any time by pressing
 
 The axes display two types of plots depending on which stage the transition analysis is at.
 
+Any graphics in MASH can be exported to an image file by right-clicking on the axes and selecting `Export graph`.
+
 
 ### Transition density plot
 {: .no_toc }

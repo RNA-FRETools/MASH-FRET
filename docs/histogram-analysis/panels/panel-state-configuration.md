@@ -107,3 +107,5 @@ Analysis results are summarized in a bar plot where the BIC or the increase in l
 [Model penalty](#model-penalty), in function of the number of components.
 
 <img src="../../assets/images/gui/HA-panel-state-configuration-bic.png" style="max-width: 294px;"/>
+
+Any graphics in MASH can be exported to an image file by right-clicking on the axes and selecting `Export graph`.

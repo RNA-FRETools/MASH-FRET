@@ -106,6 +106,8 @@ When using BOBA-FRET, the bootstrap mean and standard deviation of fitting param
 The axes display the cumulative dwell time histogram with fitting results depending on the 
 [Method settings](#method-settings) and the stage the transition analysis is at.
 
+Any graphics in MASH can be exported to an image file by right-clicking on the axes and selecting `Export graph`.
+
 
 ### Default
 {: .no_toc }
