@@ -6,10 +6,16 @@ grand_parent: /trace-processing.html
 nav_order: 7
 ---
 
+<img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Denoising
 {: .no_toc }
 
-<a href="../../assets/images/gui/TP-panel-denoise.png"><img src="../../assets/images/gui/TP-panel-denoise.png" style="max-width: 290px;"/></a>
+Denoising is the sixth panel of module Trace processing.
+
+Use this panel to reduce artificially the noise amplitude in time traces.
+
+<a class="plain" href="../../assets/images/gui/TP-panel-denoise.png"><img src="../../assets/images/gui/TP-panel-denoise.png" style="max-width: 290px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -22,20 +28,21 @@ nav_order: 7
 
 ## Denoising settings
 
-Defines settings used to smooth trajectories.
+Use this interface to define a denoising method.
 
-<a href="../../assets/images/gui/TP-panel-denoise-param.png"><img src="../../assets/images/gui/TP-panel-denoise-param.png" style="max-width: 273px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-denoise-param.png"><img src="../../assets/images/gui/TP-panel-denoise-param.png" style="max-width: 273px;"/></a>
 
 Denoising applies to intensity-time traces. 
-Intensity ratio-time traces are then recalculated from smoothed intensity trajectories.
+Intensity ratio-time traces are recalculated from smoothed intensity trajectories.
 
-Three methods are available to smooth intensity-time traces:
+Three denoising methods are available and are described in the following sections:
+
 * [Sliding average](#sliding-average)
 * [NL filter (Haran)](#nl-filter-haran)
 * [Wavelet (Taylor)](#wavelet-taylor)
 
-The method can be selected in list **(a)** and corresponding parameters in **(b-d)** must be set.
-Method parametrizations are described in the table below.
+Select the denoising method in menu **(a)** and set the corresponding parameters in **(b-d)**.
+Method parametrizations are described in details in the table below.
 
 | method                                         | parametrization                                                                                                                                                                     | default parameters              |
 | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
@@ -44,6 +51,7 @@ Method parametrizations are described in the table below.
 | `Wavelet (Taylor)`[<sup>2</sup>](#references)  | **(b)**: thresholding strength, **(c)**: threshold calculation for each decomposition level (1) or constant thresholds (2) , **(d)**: single (1) or iterative (2) denoising process | **(b)**=3, **(c)**=2, **(d)**=1 |
 
 The MATLAB scripts for method `NL fitler (Haran)` was generously provided by Dr Stefan Krause from the Institute of Physics, Chemnitz University of Technology.
+
 The MATLAB scripts for method `Wavelet (Taylor)` was downloaded from 
 [LandesLab](https://github.com/LandesLab/Wavelet-Denoise) Github repository.
 
@@ -129,7 +137,7 @@ Denoised intensity-time traces are obtained by inversion of the wavelet transfor
 Denoising can either be performed in one simple process by setting **(d)** = 1, or by several iterative processes including time-shifting by setting **(d)** = 2. 
 In the latter case, the final trace is averaged over the different process iterations.
 
-**Note:** *The use of hard thresholding can be time consuming and requires a bit of patience.*
+**Note:** *The use of hard thresholding can be relatively time consuming and requires a bit of patience.*
 
 
 ### References
@@ -143,7 +151,7 @@ In the latter case, the final trace is averaged over the different process itera
 
 ## Apply denoising
 
-Activate or deactivate this option to denoise or visualize the original intensity-time trace respectively.
+Activate or deactivate this option to smooth or visualize the original intensity-time trace respectively.
 
 For more information about the use of denoising in smFRET data analysis, see 
 [Smooth trajectories](../workflow.html#smooth-trajectories) in Trace processing workflow.
@@ -153,10 +161,11 @@ For more information about the use of denoising in smFRET data analysis, see
 
 ## Apply settings to all molecules
 
-Use this command to apply 
+Press 
+![all](../../assets/images/gui/TP-but-all.png "all") to apply 
 [Denoising settings](#denoising-settings) to all molecules.
 
-Corrections are applied to other molecules only when the corresponding data is processed, *i.e.*, when pressing 
+Corrections are applied to other molecules only when the corresponding data is processed, *e. g.* when pressing 
 ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL"); see 
 [Process all molecules data](panel-sample-management.html#process-all-molecules-data) for more information.
 
