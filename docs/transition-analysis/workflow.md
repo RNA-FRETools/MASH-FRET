@@ -167,7 +167,7 @@ To determine the most sufficient state configuration:
 1. Set parameters:  
      
    [Method settings](panels/panel-state-configuration.html#method-settings)  
-   [Cluster settings](panels/panel-state-configuration.html#cluster-settings)  
+   [Clusters](panels/panel-state-configuration.html#clusters)  
      
 1. Start inference of state configurations by pressing 
    ![cluster](../assets/images/gui/TA-but-cluster.png "cluster"); after completion, the display is instantly updated with the most sufficient Gaussian mixture
@@ -223,7 +223,7 @@ To determine the transition rate coefficients:
 
 {: .procedure }
 1. Select the state transition in the 
-   [Transition list](panels/panel-state-transition-rates.html#transition-list)  
+   [Transitions](panels/panel-state-transition-rates.html#transitions)  
      
 1. Set parameters:  
      

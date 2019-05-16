@@ -13,7 +13,7 @@ nav_order: 4
 
 State populations is the third panel of module Histograms analysis.
 
-Use this panel to estimate state relative populations and cross-sample variability.
+Use this panel to estimate state relative populations and associated cross-sample variability.
 
 <a class="plain" href="../../assets/images/gui/HA-panel-state-populations.png"><img src="../../assets/images/gui/HA-panel-state-populations.png" style="max-width: 388px;"/></a>
 
