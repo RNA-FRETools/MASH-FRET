@@ -134,9 +134,9 @@ and (equation 07)
 >> BIC (equation 01):
 	BIC = p(J) \times \textup{log}( N_{\textup{total}} ) - \textup{log}\left [ likelihood( J ) \right ]
 	and (equation 02):
-	p_{J} = p_{\textup{means}} + p_{\textup{widths}} + p_{\textup{weights}} = 3J - 1
+	p\left ( J\right ) = p_{\textup{means}} + p_{\textup{widths}} + p_{\textup{weights}} = 3J - 1
 	and (equation 03):
-	p_{J} = p_{\textup{means}} + p_{\textup{widths}} + p_{\textup{weights}} = J + p_{\textbf{widths}} + J^{2} - 1
+	p\left ( J\right ) = p_{\textup{means}} + p_{\textup{widths}} + p_{\textup{weights}} = J + p_{\textbf{widths}} + J^{2} - 1
 
 >> Histogram populations:
 	X_{j} = \frac{S_{j}}{\sum_{j'=1}^{J}( S_{j'})}
