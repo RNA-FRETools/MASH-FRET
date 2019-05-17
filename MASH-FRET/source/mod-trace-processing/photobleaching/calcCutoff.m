@@ -5,6 +5,8 @@ function p = calcCutoff(mol, p)
 %    intensities collected at emitter-specific excitations because zero-
 %    signals collected at unspecific illuminations are constantly 
 %    "photobleached" and make the method unsuable
+% >> "all intensities" uses intensities summed over all channels; this
+%    allows to detect true photobleaching and not 0 FRET
 %
 % update: by MH, 3.4.2019
 % >> manage missing intensities when loading ASCII traces with different 
@@ -66,14 +68,15 @@ else
         trace = Inf(size(I_den,1),1);
         for c = 1:nChan
             if chanExc(c)>0
-                trace = min([trace,I_den(:,c,exc==chanExc(c))], [], 2);
+                trace = min([trace,sum(I_den(:,:,exc==chanExc(c)),2)],[],...
+                    2);
             end
         end
     else % summed intensities
         trace = zeros(size(I_den,1),1);
         for c = 1:nChan
             if chanExc>0
-                trace = trace + I_den(:,c,exc==chanExc(c));
+                trace = trace + sum(I_den(:,:,exc==chanExc(c)),2);
             end
         end
     end
