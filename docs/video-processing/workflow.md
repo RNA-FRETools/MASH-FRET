@@ -141,7 +141,7 @@ To calculate and export the spatial transformation:
      
 1. Load the reference image by pressing 
    ![Check quality...](../assets/images/gui/VP-but-check-quality.png "Check quality...") and judge the transformation quality; 
-   if the quality is not satisfying, return to step 3.  
+   if the quality is not satisfying, return to step 2 by increasing transformation type complexity.  
      
 1. Recalculate the transformation whenever the setup is realigned. 
    Otherwise, the same transformation [.mat file](../output-files/mat-transformation.html) can be re-used; see 
