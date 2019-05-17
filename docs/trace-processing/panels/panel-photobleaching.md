@@ -77,7 +77,20 @@ Us this interface to define the settings for automatic detection of photobleachi
 
 <a class="plain" href="../../assets/images/gui/TP-panel-pb-param.png"><img src="../../assets/images/gui/TP-panel-pb-param.png" style="max-width: 237px;"/></a>
 
-Photobleaching is detected when the time trace selected in list **(a)** drops below a certain threshold defined in **(b)** and providing a minimum cutoff value set in **(d)**.
+Photobleaching is detected when the time trace selected in menu **(a)** drops below a certain threshold defined in **(b)** and providing a minimum cutoff value set in **(d)**.
+
+Traces available for photobleaching detection are:
+
+* `FRET [D]>[A]` the FRET-time trace of the pair donor emitter `[D]` -acceptor emitter `[A]`
+* `S [E]` the stoichiometry-time trace of emitter `[E]`
+* `[E] at [L]nm` the single intensity-time trace of emitter `[E]` upon illumination with laser wavelength `[L]` (in nm)
+* `all intensities` the minimum values found in all intensity-time traces
+* `summed intensities` the sum of all intensity-time traces
+
+Traces `all intensities` and `summed intensities` are calculated from intensities in absence of any acceptors, *i. e.* summed over all channels at emitter-specific illumination.
+This allows to exclude the zero-intensity signals collected at unspecific illuminations that are constantly "photobleached" and prevent the automatic photobleaching detection to function.
+Only emitters having a specific illumination defined in 
+[Video channels](../../video-processing/functionalities/set-project-options.html#video-channels) are considered in these calculations.
 
 To ensure detection at the very beginning of acceptor photobleaching, the detected cutoff position can be shifted downwards by a certain number of frames set in **(c)**.
 
