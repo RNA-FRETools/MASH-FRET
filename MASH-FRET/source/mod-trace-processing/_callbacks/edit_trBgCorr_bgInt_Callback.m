@@ -15,9 +15,9 @@ if ~isempty(p.proj)
             if chan==selected_chan
                 break;
             end
-            if chan==selected_chan
-                break;
-            end
+        end
+        if chan==selected_chan
+            break;
         end
     end
     
