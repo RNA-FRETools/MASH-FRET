@@ -2530,30 +2530,30 @@ molTags = h.tm.molTag;
 
 % abort if no average image or coordinates are available in project
 if ~(isfield(p.proj{proj},'aveImg') && size(p.proj{proj}.aveImg,2)==nExc && ...
-        ~isempty(coord)) && ~isfield(h.tm,'text_novid')
-    
-    xLim = get(h.tm.axes_videoView,'xlim');
-    yLim = get(h.tm.axes_videoView,'ylim');
-    
-    h.tm.text_novid(1) = text(h.tm.axes_videoView,0,0,...
-        'View on video is not available:');
-    h.tm.text_novid(2) = text(h.tm.axes_videoView,0,0,cat(2,'no video ',...
-        'and/or molecule coordinates are assigned to the project.'));
-    
-    pos1 = get(h.tm.text_novid(1),'extent');
-    pos2 = get(h.tm.text_novid(2),'extent');
-    pos1(1) = xLim(1)+(abs(diff(xLim))-pos1(3))/2;
-    pos1(2) = yLim(2)-mg_top*abs(diff(yLim));
-    pos2(1) = xLim(1)+(abs(diff(xLim))-pos2(3))/2;
-    pos2(2) = pos1(2) - 2*pos2(4);
-    
-    set(h.tm.text_novid(1),'position',pos1([1,2]));
-    set(h.tm.text_novid(2),'position',pos2([1,2]));
-    
-    set(h.tm.axes_videoView,'visible','off');
-    
-    guidata(h_fig,h);
-    
+        ~isempty(coord))
+    if ~isfield(h.tm,'text_novid')
+        xLim = get(h.tm.axes_videoView,'xlim');
+        yLim = get(h.tm.axes_videoView,'ylim');
+
+        h.tm.text_novid(1) = text(h.tm.axes_videoView,0,0,...
+            'View on video is not available:');
+        h.tm.text_novid(2) = text(h.tm.axes_videoView,0,0,cat(2,'no video',...
+            ' and/or molecule coordinates are assigned to the project.'));
+
+        pos1 = get(h.tm.text_novid(1),'extent');
+        pos2 = get(h.tm.text_novid(2),'extent');
+        pos1(1) = xLim(1)+(abs(diff(xLim))-pos1(3))/2;
+        pos1(2) = yLim(2)-mg_top*abs(diff(yLim));
+        pos2(1) = xLim(1)+(abs(diff(xLim))-pos2(3))/2;
+        pos2(2) = pos1(2) - 2*pos2(4);
+
+        set(h.tm.text_novid(1),'position',pos1([1,2]));
+        set(h.tm.text_novid(2),'position',pos2([1,2]));
+
+        set(h.tm.axes_videoView,'visible','off');
+
+        guidata(h_fig,h);
+    end
     return;
 end
 
@@ -4943,7 +4943,7 @@ choice = questdlg({cat(2,'Applying tags to molecules belonging to this ',...
     'Do you wish to continue?'},'Apply molecule tag',...
     'Yes, tag molecules','Cancel','Cancel');
 
-if ~strcmp(choice,'Yes tag molecule subgroup')
+if ~strcmp(choice,'Yes, tag molecules')
     return;
 end
 
