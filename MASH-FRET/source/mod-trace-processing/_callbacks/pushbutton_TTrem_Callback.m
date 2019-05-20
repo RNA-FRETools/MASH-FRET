@@ -9,8 +9,8 @@ function pushbutton_TTrem_Callback(obj, evd, h)
 %%
 
 if ~isempty(h.param.ttPr.proj)
-    del = questdlg('Clear selected molecules from the project?', ...
-        'Clear molecule list', 'Yes', 'No', 'No');
+    del = questdlg('Clear unselected molecules from the project?', ...
+        'Clear molecules', 'Yes', 'No', 'No');
     
     if strcmp(del, 'Yes')
         
