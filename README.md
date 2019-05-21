@@ -17,7 +17,7 @@ Clone or download MASH-FRET into a directory of your choice.
 ```
 git clone https://github.com/RNA-FRETools/MASH-FRET.git
 ```
-Within Matlab, add MASH-FRET to you path by going to `Home → Set Path → Add with Subfolders`
+Within Matlab, add MASH-FRET to your path by going to `Home → Set Path → Add with Subfolders`
 
 **Note:** *MASH-FRET is tested to run under Matlab version R2011a and above*
 
