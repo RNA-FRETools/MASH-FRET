@@ -5,7 +5,7 @@ parent: /video-processing.html
 nav_order: 1
 ---
 
-<img src="../assets/images/logos/logo-video-processing_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+<img src="../assets/images/logos/logo-video-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
 
 # Interface
 {: .no_toc }

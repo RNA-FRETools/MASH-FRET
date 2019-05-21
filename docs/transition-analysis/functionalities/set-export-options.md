@@ -6,10 +6,13 @@ grand_parent: /transition-analysis.html
 nav_order: 1
 ---
 
+<img src="../../assets/images/logos/logo-transition-analysis_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Set export options
 {: .no_toc }
 
 Export options define the particular files to export from an analysis with module Transition analysis.
+
 The window is accessed by pressing 
 ![Export](../../assets/images/gui/TA-but-export.png "Export") in the project management area of module Transition analysis.
 
@@ -29,7 +32,7 @@ Press
 
 ## Transition density plot (TDP)
 
-Defines the file formats to export the TDP and clustering results.
+Use this panel to define the file formats to export the TDP and clustering results.
 
 <img src="../../assets/images/gui/TA-area-project-management-export-tdp.png" style="max-width: 219px;"/>
 
@@ -57,15 +60,16 @@ The TDP matrix can also be exported to a PNG image file by activating the option
 
 ## Kinetic analysis
 
-Defines the file formats to export the dwell time histogram and fitting results.
+Use this panel to define the file formats to export dwell time histograms and fitting results.
 
 <img src="../../assets/images/gui/TA-area-project-management-export-kin.png" style="max-width: 218px;"/>
 
-Dwell time histograms can be exported to ASCII files, more specifically to 
-[.hdt files](../../output-files/hdt-dwelltime-histogram.html), by activating the options in **(a)**.
+Dwell time histograms can be exported to ASCII 
+[.hdt files](../../output-files/hdt-dwelltime-histogram.html) by activating the options in **(a)**.
 
-Fitting results can also be exported to separated ASCII files, more specifically to 
-[.fit files](../../output-files/fit-dwelltime-fit.html), by activating the option in **(b)**. 
-If the 
-[Method settings](../panels/panel-state-transition-rates.html#method-settings) used for fitting include BOBA-FRET, the same exported file can be appended with bootstrapping parameters and results by activating the option in **(c)**.
+Fitting results can also be exported to separated ASCII
+[.fit files](../../output-files/fit-dwelltime-fit.html) by activating the option in **(b)**. 
+
+If the fitting 
+[Method settings](../panels/panel-state-transition-rates.html#method-settings) include BOBA-FRET, the same exported file can be appended with bootstrapping parameters and results by activating the option in **(c)**.
 

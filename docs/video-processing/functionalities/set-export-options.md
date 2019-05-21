@@ -6,18 +6,21 @@ grand_parent: /video-processing.html
 nav_order: 4
 ---
 
+<img src="../../assets/images/logos/logo-video-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Set export options
 {: .no_toc }
 
 Export options define the particular files to export after completion of time trace calculations in module Video processing.
+
 The window is accessed by pressing 
-![Create & Export...](../../assets/images/gui/VP-but-export.png "Create & Export...") in 
+![Create & Export...](../../assets/images/gui/VP-but-export.png "Create & Export...") in
 [Intensity integration](../panels/panel-intensity-integration.html).
 
 Press 
 ![Next >>](../../assets/images/gui/TP-but-next-supsup.png "Next >>") to start calculating time traces and export files.
 
-<a href="../../assets/images/gui/VP-panel-integration-expopt.png"><img src="../../assets/images/gui/VP-panel-integration-expopt.png" style="max-width: 286px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-integration-expopt.png"><img src="../../assets/images/gui/VP-panel-integration-expopt.png" style="max-width: 286px;"/></a>
 
 
 ## Window components
@@ -31,9 +34,11 @@ Press
 
 ## ASCII traces
 
-<a href="../../assets/images/gui/VP-panel-integration-expopt-ascii.png"><img src="../../assets/images/gui/VP-panel-integration-expopt-ascii.png" style="max-width: 144px;"/></a>
+Export processing parameters and intensity-time traces to one or multiple ASCII files.
 
-Export single molecule data to one common ASCII file, by checking the box in **(a)**, and/or to individual ASCII files, by checking the box in **(b)**.
+<a class="plain" href="../../assets/images/gui/VP-panel-integration-expopt-ascii.png"><img src="../../assets/images/gui/VP-panel-integration-expopt-ascii.png" style="max-width: 144px;"/></a>
+
+Export single molecule data to one common ASCII file, by activating the option in **(a)**, and/or to individual ASCII files, by checking the box in **(b)**.
 
 Exported single molecule data comprise: 
 * experiment settings

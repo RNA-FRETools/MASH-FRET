@@ -9,6 +9,7 @@ permalink: /tutorials/analyze-data.html
 select_with_child: true
 ---
 
+<img src="../assets/images/logos/logo-tutorials_400px.png" width="170" style="float:right; margin-left: 15px;"/>
 
 # Analyze data
 

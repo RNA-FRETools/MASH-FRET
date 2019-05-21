@@ -8,15 +8,13 @@ numbered_toc: true
 permalink: /simulation/panels.html
 ---
 
-<img src="../assets/images/logos/logo-simulation_400px.png" width="260" style="float:right; margin-left: 15px; margin-bottom: 15px;"/>
+<img src="../assets/images/logos/logo-simulation_400px.png" width="170" style="float:right; margin-left: 15px;"/>
 
 # Panels
 {: .no_toc }
 
-Module Simulation contains four panels **(1-4)** and one visualization area **(5)**.
-
-<a class="plain" href="../assets/images/gui/panel-simulation.png"><img src="../assets/images/gui/panel-simulation.png" /></a>
+Simulation is composed of four panels **(1-4)** and one visualization area **(5)**.
 
 To learn about individual components, please refer to the corresponding content:
 
-
+<a class="plain" href="../assets/images/gui/panel-simulation.png"><img src="../assets/images/gui/panel-simulation.png" width="65%" style="float:right; margin-left: 15px; margin-top: 50px;"/></a>

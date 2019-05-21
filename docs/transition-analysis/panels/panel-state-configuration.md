@@ -6,10 +6,16 @@ grand_parent: /transition-analysis.html
 nav_order: 3
 ---
 
+<img src="../../assets/images/logos/logo-transition-analysis_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # State configuration
 {: .no_toc }
 
-<a href="../../assets/images/gui/TA-panel-state-configuration.png"><img src="../../assets/images/gui/TA-panel-state-configuration.png" style="max-width:512px;"></a>
+State configuration is the second panel of module Transition analysis.
+
+Use this panel to determine the optimum number of transition clusters and associated cross-sample variability.
+
+<a class="plain" href="../../assets/images/gui/TA-panel-state-configuration.png"><img src="../../assets/images/gui/TA-panel-state-configuration.png" style="max-width:512px;"></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -22,24 +28,28 @@ nav_order: 3
 
 ## Method settings
 
-Defines the method used to cluster transitions in the TDP.
+Use this interface to define a method to cluster transitions.
 
 <img src="../../assets/images/gui/TA-panel-state-configuration-method.png" style="max-width:113px;">
 
-Two clustering methods are available:
-* k-mean clustering, by selecting 
+Transition clustering consists partitioning the TDP into groups of transitions by determining the optimum number and positions of transition clusters.
+
+Two clustering algorithms are available and are described in the following sections:
+
+* [k-mean clustering](#k-mean-clustering), by pressing 
 ![k-mean](../../assets/images/gui/TA-but-k-mean.png "k-mean")
-* clustering with a Gaussian mixture (GM), by selecting 
+* [Gaussian mixture (GM) clustering](#gm-clustering), by pressing
 ![GM](../../assets/images/gui/TA-but-gm.png "GM")
 
 In both cases, the algorithms look for 
 [*J*<sup>2</sup>](){: .math_var} clusters in the TDP, with 
-[*J*](){: .math_var} the number of states in the configuration. 
-Once clusters are identified, states are deduced from the x- and y- coordinates of their centers.
+[*J*](){: .math_var} the number of states in the configuration.
 The 
 [*J*](){: .math_var } clusters on the TDP diagonal are included to the model to cluster the small-amplitude jumps together, *e. g.* transitions to blur states, and exclude them from dwell time histograms.
 
-Transition clustering can be combined with TDP bootstrapping by activating the option in **(c)**, to estimate the cross-sample variability of state configurations.
+Once the clusters are identified, states are deduced from the x- and y- coordinates of their centers.
+
+To estimate the cross-sample variability of state configurations, transition clustering can be combined with TDP bootstrapping by activating the option in **(c)**.
 In that case, the number of replicates used to build a bootstrap TDP sample must be set in **(f)** and the number of bootstrap samples in **(g)**.
 By default, the number of replicates is set to the number of molecules in the project.
 
@@ -49,11 +59,12 @@ By default, the number of replicates is set to the number of molecules in the pr
 
 This algorithm uses a starting guess for initial cluster positions and assigns each data point to the nearest cluster center providing a minimum distance to the center, called the tolerance radius. 
 Cluster centers are then recalculated as the mean data assigned to each cluster.
+
 Centers are iteratively calculated until a maximum number of iterations is reached, or when calculations converged to a stable state configuration.
 
 The maximum number of states to look for is set in **(a)** and the maximum number of process iterations in **(b)**.
 The starting guess and state-specific tolerance radius are set in 
-[Cluster settings](#cluster-settings).
+[Clusters](#clusters).
 
 
 ### GM clustering
@@ -63,38 +74,43 @@ The GM clustering algorithm has the particularity to infer cluster configuration
 The method is adapted from the smFRET literature 
 [<sup>1</sup>](#references).
 
-With GM clustering, transition clusters are modelled with a 2D-Gaussian.
-Therefore, the TDP is modelled as a mixture of 2D-Gaussian and each data point has a specific probability to belong to a cluster.
+With GM clustering, a transition cluster is modelled with a 2D-Gaussian.
+Therefore, the TDP is modelled with a mixture of 2D-Gaussian and each data point has a specific probability to belong to a cluster.
+
 Gaussian mixtures with increasing 
-[*J*](){: .math_var } are optimized for the data with an expectation-maximization (E-M) algorithm and a define number of randomly distributed starting guess.
-The most sufficient state configuration is then determined by comparing the Bayesian information criteria (BIC) of each optimum model.
+[*J*](){: .math_var } are optimized for the data with an expectation-maximization (E-M) algorithm repeated a defined number of times with new model initializations.
+
+The most sufficient state configuration is then determined using the Bayesian information criterion (BIC).
 
 The 
 [*BIC*](){: .math_var } is similar to a penalized likelihood and is expressed such as:
 
 {: .equation }
-<img src="../../assets/images/equations/HA-eq-bic.gif" alt="BIC = p(J) \times log( N_{\textup{total}} ) - \textup{log}\left [ likelihood( J ) \right ]">
+<img src="../../assets/images/equations/HA-eq-bic.gif" alt="BIC(J) = p(J) \times log( N_{\textup{total}} ) - \textup{log}\left [ likelihood( J ) \right ]">
 
 with 
-[*p*<sub>*J*</sub>](){: .math_var } the number of parameters necessary to describe the model with 
+[*p*](){: .math_var } the number of parameters necessary to describe the model with 
 [*J*](){: .math_var } components and
 [*N*<sub>total</sub>](){: .math_var } the total number of counts in the TDP.
+
 The number of parameters necessary to describe the model includes the number of Gaussian means, 
 [*p*<sub>means</sub>](){: .math_var }, the number of parameters to describe Gaussian covariances, 
-[*p*<sub>widths</sub>](){: .math_var } and Gaussian weights, 
+[*p*<sub>widths</sub>](){: .math_var } and Gaussian relative weights, 
 [*p*<sub>weights</sub>](){: .math_var }, and is calculated such as:
 
 {: .equation }
-<img src="../../assets/images/equations/TA-eq-bic-03.gif" alt="p_{J} = p_{\textup{means}} + p_{\textup{widths}} + p_{\textup{weights}} = J + p_{\textbf{widths}} + J^{2} - 1">
+<img src="../../assets/images/equations/TA-eq-bic-03.gif" alt="p(J) = p_{\textup{means}} + p_{\textup{widths}} + p_{\textup{weights}} = J + p_{\textbf{widths}} + J^{2} - 1">
 
-The number of parameters that describe the all 2D-Gaussian covariances, [*p*<sub>widths</sub>](){: .math_var }, depends on the Gaussian shape used in the mixture:
+The number of parameters necessary to describe all 2D-Gaussian covariances, [*p*<sub>widths</sub>](){: .math_var }, depends on the Gaussian shape:
+
 * for `spherical` Gaussians: [*p*<sub>widths</sub> = *J*<sup>2</sup>](){: .math_var }
 * for `ellipsoid straight` or `ellipsoid diagonal` Gaussians: [*p*<sub>widths</sub> = 2*J*<sup>2</sup>](){: .math_var }
 * for `free`-shaped Gaussians: [*p*<sub>widths</sub> = 3*J*<sup>2</sup>](){: .math_var }
 
-The maximum number of states to look for is set in **(a)** and the number of E-M restart with new starting guess in **(b)**.
+The maximum number of states to look for is set in **(a)** and the number of E-M initializations in **(b)**.
+
 The Gaussian shape used for clustering is set in 
-[Cluster settings](#cluster-settings).
+[Clusters](#clusters).
 
 
 ### References
@@ -105,33 +121,39 @@ The Gaussian shape used for clustering is set in
 
 ---
 
-## Cluster settings
+## Clusters
 
-Defines the clusters used in the clustering procedure.
+Use this panel to define the initial cluster configuration.
 
 The interface changes depending on which clustering method is used (left 
-[GM](#gm-clustering) and right 
-[k-mean](#k-mean-clustering)):
+[GM clustering](#gm-clustering) and right 
+[k-mean clustering](#k-mean-clustering)):
 
 <img src="../../assets/images/gui/TA-panel-state-configuration-clusters-gm.png" style="max-width:137px;">
 <img src="../../assets/images/gui/TA-panel-state-configuration-clusters-kmean.png" style="max-width:137px;">
 
 For 
-[GM clustering](#gm-clustering), select the appropriate cluster shape in the list **(a)**.
+[GM clustering](#gm-clustering), select the appropriate cluster shape in the menu **(a)**.
 Four shapes are available:
+
 * `spherical`: Gaussian widths are equal in the x- and y- direction
 * `ellipsoid straight`: Gaussian widths are different in the x- and y- direction and the Gaussian orientation is fixed and defined with 0° inclination
 * `ellispoid diagonal`: Gaussian widths are different in the x- and y- direction and the Gaussian orientation is fixed and defined with 45° inclination
 * `free`: Gaussian widths are different in the x- and y- direction and the Gaussian orientation is free
 
 For 
-[k-mean clustering](#k-mean-clustering), set the starting guess in **(b)** and tolerance radius in **(c)** of each state by browsing the state list in **(a)**.
-Starting guesses can also be automatically set by pressing 
-![default prm.](../../assets/images/gui/TA-but-default-prmp.png "default prm.").
-In this case, states will be evenly distributed within the TDP limits.
+[k-mean clustering](#k-mean-clustering) and for each state selected in menu **(a)**, set tolerance radius in **(c)** and the starting guess for the state value.
 
-After setting the cluster parameters, the clustering procedure is started by pressing 
-![cluster](../../assets/images/gui/TA-but-cluster.png "cluster").
+Starting guesses can be set:
+
+* manually in **(b)**
+* by activating the `Target centroid` cursor and clicking on the 
+[Transition density plot](#trasition-density-plot); `Target centroid` is activated by right-clicking on the axes and selecting the option with the same name
+* automatically by pressing 
+![default prm.](../../assets/images/gui/TA-but-default-prmp.png "default prm."); in this case, states will be evenly distributed within the TDP limits
+
+Press
+![cluster](../../assets/images/gui/TA-but-cluster.png "cluster") to start clustering transitions.
 If the 
 [Method settings](#method-settings) include BOBA-FRET, TDP bootstrapping and subsequent clustering will be performed.
 
@@ -146,11 +168,12 @@ After completion, the interface
 
 ## Clustering results
 
-Use this interface to visualize the results of state configuration analysis.
+Use this interface to visualize results of a state configuration analysis.
 
 <img src="../../assets/images/gui/TA-panel-state-configuration-results.png" style="max-width:246px;">
 
-After the clustering procedure is completed, analysis results are summarized in a bar plot where the BIC is presented in function of the number of components.
+After transition clustering, results are summarized in a bar plot where the BIC is presented in function of the number of components.
+
 The number of components in the most sufficient model is displayed in **(b)**.
 When using BOBA-FRET, the bootstrap mean and standard deviation of the most sufficient number of components are respectively displayed in **(b)** and **(c)**.
 
@@ -161,15 +184,19 @@ Transition clusters of any model can be imported in
 [State transition rates](panel-state-transition-rates.html) for dwell time analysis, by pressing 
 ![>>](../../assets/images/gui/TA-but-supsup.png ">>").
 
-Clustering can be reset any time by pressing 
-![reset](../../assets/images/gui/TA-but-reset.png "reset").
+Press
+![reset](../../assets/images/gui/TA-but-reset.png "reset") to reset TDP clustering. 
 
 
 ---
 
 ## Visualization area
 
+Use this interface to visualize the TDP and analysis results.
+
 The axes display two types of plots depending on which stage the transition analysis is at.
+
+Any graphics in MASH can be exported to an image file by right-clicking on the axes and selecting `Export graph`.
 
 
 ### Transition density plot
@@ -189,8 +216,10 @@ The transition density is color-coded according to the color scale located on th
 {: .no_toc }
 
 After completing TDP clustering, clustered transition are indicated by cross markers that are colored according to the cluster they belong to.
+
 Cluster colors can be modified in the 
-[Transition list](panel-state-transition-rates.html#transition-list).
+[Transitions](panel-state-transition-rates.html#transitions).
+
 When the 
 [Method settings](#method-settings) include the use of GM clustering, the contour of each Gaussian-shaped cluster is plotted as a blue solid line.
 

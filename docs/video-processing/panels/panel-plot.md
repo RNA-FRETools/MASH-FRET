@@ -6,10 +6,17 @@ grand_parent: /video-processing.html
 nav_order: 2
 ---
 
+<img src="../../assets/images/logos/logo-video-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Plot
 {: .no_toc }
 
-<a href="../../assets/images/gui/VP-panel-plot.png"><img src="../../assets/images/gui/VP-panel-plot.png" style="max-width: 130px;"/></a>
+Plot is the first panel of module Video processing.
+
+Use this panel to set the appearance and pixel intensity units in the 
+[Visualization area](area-visualization.html).
+
+<a class="plain" href="../../assets/images/gui/VP-panel-plot.png"><img src="../../assets/images/gui/VP-panel-plot.png" style="max-width: 130px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -17,27 +24,28 @@ nav_order: 2
 1. TOC
 {:toc}
 
+
 ---
 
 ## Pixel intensity units
 
-Pixel intensities are expressed in (image) counts and can be given in counts per second by checking the **Units per s.** box.
+Activate/deactivate this option to show pixel intensities in image counts per second/per frame.
 
 Intensity units are used for 
 [Video visualization](area-visualization.html#video-visualization), in the 
 [Create trace tool](area-visualization.html#create-trace-tool) and in
 [.spots files](../..//output-files/spots-spots-coordinates.html).
 
-**<u>default</u>:** intensities are given in count per second.
+<u>default</u>: intensities are given in count per second.
+
 
 ---
 
 ## Color map
 
-It is the color palette used to display pixel intensities.
+Use this list to define the color palette used to display pixel intensities.
 
-It can be changed by selecting a new color map in the list. 
-The list offers the standard color maps in MATLAB:
+The list contains the standard color maps of MATLAB:
 
 | name     | palette                                                           |
 | :------: | :---------------------------------------------------------------: |
@@ -53,6 +61,6 @@ The list offers the standard color maps in MATLAB:
 | `Bone`   | <img src="../../assets/images/gui/VP-panel-plot-mapbone.png" />   |
 | `Copper` | <img src="../../assets/images/gui/VP-panel-plot-mapcopper.png" /> |
 
-**<u>default</u>:** `Jet`
+<u>default</u>: `Jet`
 
 

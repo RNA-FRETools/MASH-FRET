@@ -6,18 +6,23 @@ grand_parent: /video-processing.html
 nav_order: 2
 ---
 
+<img src="../../assets/images/logos/logo-video-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Use the mapping tool
 {: .no_toc }
 
-The mapping tool allows to manually localize the position of a single emitter in each video channel and is accessed by pressing 
+The mapping tool allows to manually localize the position of single emitters in each video channel
+
+The tool is accessed by pressing 
 ![Map](../../assets/images/gui/VP-but-map.png "Map") in the 
 [Coordinates transformation](../panels/panel-molecule-coordinates#coordinates-transformation) panel of module Video processing.
+
 It is used to map the reference coordinates needed to calculate the spatial transformation and export them to a 
 [.map file](../../output-files/map-mapped-coordinates.html).
-It is an adaptation of the 
+The mapping tool is an adaptation of the 
 [Control Point Selection tool](https://www.mathworks.com/help/images/ref/cpselect.html) of MATLAB for images containing more than two channels.
 
-<a href="../../assets/images/gui/VP-panel-molcoord-transf-maptool.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf-maptool.png" style="max-width: 546px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-molcoord-transf-maptool.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf-maptool.png" style="max-width: 546px;"/></a>
 
 To map and export the reference coordinates, follow the procedure described below.
 
@@ -58,7 +63,7 @@ Parts of the images shown in close-ups are indicated by a red rectangle on the f
 
 You can slide the rectangle along the full-length image with the sliding bars located on the right-hand side of the close-ups.
 
-Any graphics in MASH can be exported to an image file by left-clicking on the axes and selecting `Export graph`.
+Any graphics in MASH can be exported to an image file by right-clicking on the axes and selecting `Export graph`.
 
 
 ---
@@ -80,6 +85,7 @@ You can cancel the localization of the last emitter in all channels by going to 
 
 Map a consequent number of emitters in the reference image using the sliding bars to move through the image and considering the minimum number required for the transformation; see 
 [Tranformation types](../panels/panel-molecule-coordinates.html#transformation-types) for an exhaustive list of minimum number of reference coordinates required for each transformation type.
+
 The goal is to cover the whole image area in an homogeneous fashion in order to give an accurate representation of the space in each channel.
 
 | inhomogeneous mapping                                                                                  | homogeneous mapping                                                                                  |
@@ -99,10 +105,10 @@ If the number of emitters mapped in the reference image is insufficient to use c
 <img src="../../assets/images/gui/VP-panel-molcoord-transf-maptool-msgbox.png" style="max-width:404px;"/>
 
 Press 
-![No](../../assets/images/gui/VP-but-no.png "No") to continue mapping and extend the number of emitters or press 
+![No](../../assets/images/gui/VP-but-no.png "No") to continue mapping and extend the number of emitters, or press 
 ![Yes](../../assets/images/gui/VP-but-yes.png "Yes") to export the present set of mapped coordinates.
 
 After export, the newly created 
 [.map file](../../output-files/map-mapped-coordinates.html) is automatically imported in panel
-[Coordinates transformation](../panels/panel-molecule-coordinates.html#coordinates-transformation) to calculates the spatial transformation.
+[Coordinates transformation](../panels/panel-molecule-coordinates.html#coordinates-transformation) to calculate the spatial transformation.
 

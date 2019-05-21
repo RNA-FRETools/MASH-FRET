@@ -6,10 +6,16 @@ grand_parent: /histogram-analysis.html
 nav_order: 4
 ---
 
+<img src="../../assets/images/logos/logo-histogram-analysis_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # State populations
 {: .no_toc }
 
-<a href="../../assets/images/gui/HA-panel-state-populations.png"><img src="../../assets/images/gui/HA-panel-state-populations.png" style="max-width: 388px;"/></a>
+State populations is the third panel of module Histograms analysis.
+
+Use this panel to estimate state relative populations and associated cross-sample variability.
+
+<a class="plain" href="../../assets/images/gui/HA-panel-state-populations.png"><img src="../../assets/images/gui/HA-panel-state-populations.png" style="max-width: 388px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -22,7 +28,7 @@ nav_order: 4
 
 ## Method settings
 
-Defines the method to calculate state populations.
+Use this interface to define a method to calculate state populations.
 
 <img src="../../assets/images/gui/HA-panel-state-populations-method.png" style="max-width: 156px;"/>
 
@@ -44,7 +50,7 @@ This is done by activating the option in **(f)**.
 
 ## Thresholding
 
-Defines settings to calculate state populations with the Thresholding method.
+Use this interface to define settings to calculate state populations with the Thresholding method.
 
 <img src="../../assets/images/gui/HA-panel-state-populations-thresholding.png" style="max-width: 215px;"/>
 
@@ -54,18 +60,20 @@ With the thresholding method, histogram peaks are separated by fixed thresholds,
 To calculate the relative populations of 
 [*J*](){: .math_var } states, a number of 
 [*J*-1](){: .math_var } thresholds must be used.
-The number of threshold must be set in **(a)**, and each threshold in **(c)** after browsing the list in **(b)**.
-Threshold can also be calculated from an inferred model; see 
-[Inferred models](panel-state-configuration.html#inferred-models) for more information.
+The number of threshold is set in **(a)**, and threshold values in **(c)** after selecting the threshold index in menu **(b)**.
 
-Calculation of state relative populations can be started after setting thresholds and by pressing 
-![Start](../../assets/images/gui/HA-but-start.png).
+Threshold can also be automatically calculated and imported from an inferred model in 
+[Inferred models](panel-state-configuration.html#inferred-models).
+
+Press
+![Start](../../assets/images/gui/HA-but-start.png "Start") to start calculation of state relative populations.
 If the 
 [Method settings](#method-settings) include BOBA-FRET, histogram bootstrapping and subsequent thresholding will be performed.
 
 <img src="../../assets/images/gui/HA-panel-state-populations-threshold-loadingbar.png" style="max-width:389px;">
 
-After completion, relative population of the histogram peak selected in list **(d)** and corresponding to the color **(g)**, is displayed in **(e)**.
+After completion, relative population of the histogram peak selected in menu **(d)** and corresponding to the color **(g)**, is displayed in **(e)**.
+
 When using BOBA-FRET, the bootstrap mean and standard deviation of the state relative population are respectively displayed in **(e)** and **(f)**.
 
 
@@ -73,7 +81,7 @@ When using BOBA-FRET, the bootstrap mean and standard deviation of the state rel
 
 ## Gaussian fitting
 
-Defines settings to calculate state populations with the Gaussian fitting method.
+Use this interface to define settings to calculate state populations with the Gaussian fitting method.
 
 <img src="../../assets/images/gui/HA-panel-state-populations-gaussian-fitting.png" style="max-width: 365px;"/>
 
@@ -94,25 +102,27 @@ After fitting, Gaussian integrals
 
 To calculate the relative populations of 
 [*J*](){: .math_var } states, a number of 
-[*J*](){: .math_var } Gaussian functions must be used.
-The number of Gaussian functions must be set in **(a)**
-Fitting parameters must be defined in **(b)**in **(d-i)** in terms of starting guesses and boundaries, for each Gaussian selected in list **(b)**.
+[*J*](){: .math_var } Gaussian functions are used.
+The number of Gaussian functions is set in **(a)** and fitting parameters are set in rows **(d-i)** for each Gaussian selected in menu **(b)**.
+Fitting parameters are defined in terms of starting guesses and parameter boundaries.
 
 Parameters 
 [*A*<sub>*j*</sub>](){: .math_var },
 [*&#956;*<sub>*j*</sub>](){: .math_var } and 
-[*&#963;*<sub>*j*</sub>](){: .math_var } must be respectively set in rows **(d)**, **(e)** and **(f)**, with the staring guess in column **(h)**, the lower bound in column **(g)** and higher bound in column **(i)**.
-Starting guess of fitting parameters can also be imported from an inferred model; see 
-[Inferred models](panel-state-configuration.html#inferred-models) for more information.
+[*&#963;*<sub>*j*</sub>](){: .math_var } are respectively set in rows **(d)**, **(e)** and **(f)**, with the staring guesses in column **(h)**, the lower bound in column **(g)** and higher bound in column **(i)**.
 
-After setting parameters, Gaussian fitting can be started by pressing 
-![Start](../../assets/images/gui/HA-but-start.png).
+Starting guess of fitting parameters can also be imported from an inferred model in
+[Inferred models](panel-state-configuration.html#inferred-models).
+
+Press
+![Fit](../../assets/images/gui/HA-but-fit.png "Fit") to start Gaussian fitting.
 If the 
 [Method settings](#method-settings) include BOBA-FRET, histogram bootstrapping and subsequent Gaussian fitting will be performed.
 
 <img src="../../assets/images/gui/HA-panel-state-populations-gaussian-fitting-loadingbar.png" style="max-width:389px;">
 
-After completion, relative population of the Gaussian selected in list **(b)** and corresponding to the color **(c)**, is displayed in row **(j)** and column **(k)**.
+After completion, relative population of the Gaussian selected in menu **(b)** and corresponding to the color **(c)**, is displayed in row **(j)** and column **(k)**.
+
 When using BOBA-FRET, the bootstrap mean and standard deviation of the state relative population are respectively displayed in column **(k)** and **(l)**.
 Similarly, the bootstrap mean and standard deviation of fit parameters 
 [*A*<sub>*j*</sub>](){: .math_var },

@@ -6,11 +6,11 @@ has_children: true
 permalink: /transition-analysis.html
 ---
 
-<img src="assets/images/logos/logo-transition-analysis_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+<img src="assets/images/logos/logo-transition-analysis_noname_400px.png" width="260" style="float:right; margin-left: 15px;"/>
 
 # Transition analysis
 
-Use this module to identify the most probable <u>state configuration</u> and quantify state <u>transition rates</u>.
+Use this module to identify the most probable state configuration and quantify state transition rates.
 
 Transition analysis framework is limited to <u>intensity</u>, <u>FRET</u> and <u>stoichiometry</u> state trajectories.
 

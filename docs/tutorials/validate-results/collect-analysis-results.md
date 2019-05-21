@@ -8,7 +8,7 @@ nav_exclude: true
 has_toc: false
 ---
 
-
+<img src="../../assets/images/logos/logo-tutorials_400px.png" width="170" style="float:right; margin-left: 15px;"/>
 
 # Validate results
 {: .no_toc }

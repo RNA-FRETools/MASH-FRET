@@ -10,13 +10,20 @@ subnav_order: 1
 select_with_subnav: true
 ---
 
+<img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Use Trace manager
 {: .no_toc }
 
-The trace manager allows to visualize data of all single molecules in the project, and is used to sort molecules into sub-groups and/or exclude irrelevant traces from the set.
-Trace manager is accessed by pressing 
+The trace manager gives an overview of all single molecules in the project and allows to assemble a molecule selection and create molecule subgroups.
+
+It is accessed by pressing 
 ![TM](../../assets/images/gui/TP-but-tm.png "TM") in the 
 [Sample management](../panels/panel-sample-management.html#trace-manager) panel of module Trace processing.
+
+Trace manager is used to sort molecules into sub-groups and/or exclude irrelevant traces from the set.
+It is composed of three modules:
+
 
 ---
 
@@ -26,13 +33,15 @@ Overview is used to browse individual molecules and assemble a molecule selectio
 The final molecule selection is exported to module Trace processing by pressing 
 ![TO MASH](../../assets/images/gui/TP-but-to-mash.png "TO MASH").
 
+Overview is divided into two panels **(1-2)**.
+
+<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-overview.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview.png"/></a>
+
 ## Interface components
 {: .no_toc .text-delta }
 
 1. TOC
 {:toc}
-
-<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-overview.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview.png"/></a>
 
 
 ---
@@ -43,7 +52,7 @@ Use this interface to identify outliers in the molecule selection by controlling
 
 <a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-overview-overallplot.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview-overallplot.png"/></a>
 
-Overall plot shows the following cumulated data plots for the molecule sample selected in panel 
+Overall plots show the following cumulated data plots for the molecule selection assembled in panel 
 [Molecule selection](#molecule-selection):
 - [Concatenated traces](#concatenated-traces) shown in axes **(c)**
 - [Histograms](#histograms) shown in axes **(d)**
@@ -56,28 +65,34 @@ Data plots must be updated after modification of the molecule selection by press
 The final molecule selection is exported to module Trace processing by pressing 
 ![TO MASH](../../assets/images/gui/TP-but-to-mash.png "TO MASH"); as the operation can not be reversed, a warning pops up.
 
+<img src="../../assets/images/gui/TP-panel-sample-tm-overview-overallplot-warn.png" style="max-width:479px;"/>
+
 
 ### Concatenated traces
 {: .no_toc }
 
 Concatenated time traces of selected molecules allow to identify outliers.
+
 For instance, intensity-time traces with abnormally high or low intensities are easily visible and are good candidates for exclusion from the set.
 
 Data available for concatenated trace plot are listed in menu **(a)** and include:
-* `[E] at [W]nm` for intensity-time traces, with `[E]` the emitter-specific detection channel label and `[W]` the laser wavelength
-* `FRET [D]>[A]` for FRET-time traces, with `[D]` and `[A]` the labels of donor- and acceptor-specific detection channels respectively
+* `[E] at [W]nm` for intensity-time traces, with `[E]` the emitter and `[W]` the laser wavelength
+* `FRET [D]>[A]` for FRET-time traces, with `[D]` and `[A]` the donor and acceptor emitters respectively
 * `S [E]` for stoichiometry-time traces
 
 Selected molecules that are in view in panel
-[Molecule selection](#molecule-selection) are highlighted with a white background, and excluded or out-of-view molecules covered with a transparent black mask.
-Individual molecules can be accessed by simply clicking on the corresponding portion of the concatenated time trace.
+[Molecule selection](#molecule-selection) are highlighted with a white background, whereas excluded or out-of-view molecules are covered with a transparent black mask.
+
+Individual molecules can be accessed and shown in 
+[Molecule selection](#molecule-selection) by simply clicking on the corresponding portion of the concatenated time trace.
 
 
 ### Histograms
 {: .no_toc }
 
 Overall 1D- or 2D-data histograms are used to identify different sub-populations in the sample and to control the homogeneity of data distribution.
-For instance, the presence of single labelled species is easily identified on the overall stoichiometry histogram and indicates the need for further sample refinement.
+
+For instance, the presence of single labelled species is easily identified by peaks centered on 0 and 1 in the overall stoichiometry histogram and indicates the need for further sample refinement.
 
 Data available for histogram plot are listed in menu **(b)** and include:
 * `[E] at [W]nm` for intensity histograms
@@ -85,9 +100,9 @@ Data available for histogram plot are listed in menu **(b)** and include:
 * `S [E]` for stoichiometry histograms
 * `FRET [D]>[A]-S [E]` for 2D FRET-Stoichiometry histograms 
 
-Data are sorted into bins defined by the x- and y-axis parameters set in row **(e)** and **(f)** respectively, and in columns **(g)** (lowest limit), **(h)** (bin size) and **(l)** (highest limit).
+Data are sorted into bins defined in columns **(g)** (lowest limit), **(h)** (bin size) and **(l)** (highest limit) and in row **(e)** or **(f)** for the x- or y-axis respectively,.
 
-The building of 2D histograms uses the MATLAB script `hist2` developed by Tudor Dima that can be found in the 
+2D histograms are built with the MATLAB script `hist2` developed by Tudor Dima that can be found in the 
 [MATLAB exchange platform](https://www.mathworks.com/matlabcentral/fileexchange/18386-2d-histogram-exact-and-fast-binning-crop-and-stretch-grid-adjustment?s_tid=prof_contriblnk).
 
 
@@ -99,13 +114,14 @@ Use this interface to assemble or review the molecule selection.
 
 <a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection.png"/></a>
 
-Molecule selection shows individual single molecule data plots defined by 
-[Plot](../panels/panel-plot.html) and that can be browsed using the sliding bar in **(i)**. 
-The interface can be optimized by adjusting the number of molecules per page in **(d)**, and by hiding the panel 
-[Overall plot](#overall-plot) when pressing 
+Panel Molecule selection shows individual data plots defined by 
+[Plot](../panels/panel-plot.html) for individual molecules that can be browsed using the sliding bar in **(i)**. 
+
+The interface can be optimized by adjusting the number of molecules per page in **(d)**, and hiding the panel 
+[Overall plot](#overall-plot) by pressing 
 ![\^](../../assets/images/gui/TP-but-triangle.png "^").
 
-Single molecule intensity-time traces and histograms are respectively shown in axes **(h)** and **(l)**, whereas FRET- and stoichiometry-time traces and histograms are respectively shown in axes **(j)** and **(k)**. 
+Intensity-time traces and histograms are respectively shown in axes **(h)** and **(l)**, whereas FRET- and stoichiometry-time traces and histograms are respectively shown in axes **(j)** and **(k)**. 
 
 Individual single molecule data are inspected one by one to define their status, which includes:
 * [Sample exclusion](#sample-exclusion) 
@@ -113,7 +129,8 @@ Individual single molecule data are inspected one by one to define their status,
 
 For instance, single molecules with incoherent intensity-time traces can be excluded from the selection and static FRET traces can be affiliated to the `static` subgroup. 
 
-[Overall plots](#overall-plots) must be updated after modification of the molecule selection by pressing 
+[Overall plots](#overall-plots) must be updated after finishing modifications in 
+[Sample exclusion](#sample-exclusion) by pressing 
 ![UPDATE](../../assets/images/gui/TP-but-update-tm.png "UPDATE").
 
 <a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png"><img src="../../assets/images/gui/TP-panel-sample-tm-loadingbar.png" style="max-width:389px;"/></a>
@@ -135,7 +152,7 @@ Selection criteria are:
 
 As the operation can not be reversed, a confirmation warning pops up.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection-warn1.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection-warn1.png" style="max-width:409px;"></a>
+<img src="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection-warn3.png" style="max-width:492px;">
 
 
 ### Subgroup affiliation
@@ -146,9 +163,13 @@ Subgroup affiliations of individual molecules are listed in **(f)** and can be e
 ![Untag](../../assets/images/gui/TP-but-untag.png "Untag").
 
 Tag removal can also be performed for all molecules at once by pressing 
-![Untag all](../../assets/images/gui/TP-but-untag.png "Untag").
+![Untag all](../../assets/images/gui/TP-but-untag-all.png "Untag all").
+In this case, all molecule tag listed in **(f)** will be irreversibly cleared.
+As the operation can not be reversed, a confirmation warning pops up.
 
-To help with molecule tagging, groups of molecules can be tagged at the same time using specific data criteria with tool 
+<img src="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection-warn1.png" style="max-width:409px;">
+
+To help with molecule tagging, groups of molecules can be tagged at the same time using specific data criteria and with the tool 
 [Automatic sorting](tm-automatic-sorting.html).
 To identify molecule subgroups in the video, molecule tags can be visualized on the average video image with tool 
 [Video view](tm-video-view.html).
@@ -160,4 +181,4 @@ tag color can be modified any time by pressing
 Specific tags can be deleted pressing 
 ![Delete tag](../../assets/images/gui/TP-but-delete-tag.png "Delete tag"); as the operation can not be reversed, a confirmation warning pops up if some molecules are affiliated to the corresponding subgroup.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection-warn2.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection-warn2.png" style="max-width:489px;"></a>
+<img src="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection-warn2.png" style="max-width:489px;">

@@ -6,10 +6,16 @@ grand_parent: /trace-processing.html
 nav_order: 8
 ---
 
+<img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Photobleaching
 {: .no_toc }
 
-<a href="../../assets/images/gui/TP-panel-pb.png"><img src="../../assets/images/gui/TP-panel-pb.png" style="max-width: 290px;"/></a>
+Photobleaching is the seventh panel of module Trace processing.
+
+Use this panel to detect dye photobleaching and suppress photobleached data.
+
+<a class="plain" href="../../assets/images/gui/TP-panel-pb.png"><img src="../../assets/images/gui/TP-panel-pb.png" style="max-width: 290px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -29,7 +35,7 @@ Emitter photobleaching can either be detected visually or automatically, by resp
 For visual detection, the photobleaching cutoff must be set by hand in 
 [Photobleaching cutoff](#photobleaching-cutoff).
 
-Automatic detection is performed by thresholding using the settings in 
+Automatic detection is performed by thresholding using the settings defined in 
 [Automatic detection settings](#automatic-detection-settings).
 
 
@@ -37,21 +43,23 @@ Automatic detection is performed by thresholding using the settings in
 
 ## Photobleaching cutoff
 
-It displays the photobleaching cutoff detected with the method defined in 
-[Automatic detection settings](#automatic-detection-settings).
+Shows the photobleaching position given in seconds or frame according to time-axis units defined in 
+[Time axis](panel-plot.html#time-axis).
+
+For method `Threshold`, with the photobleaching cutoff detected with 
+[Automatic detection settings](#automatic-detection-settings) is shown here.
 
 For method `Manual`, the photobleaching cutoff must be set here.
-
-Photobleaching cutoff is given in seconds or frame according to time-axis units defined in 
-[Time axis](panel-plot.html#time-axis).
 
 
 ---
 
 ## Truncate trajectories
 
-Activate this option to truncate the time traces at the cutoff position displayed in 
-[Photobleaching cutoff](#photobleaching-cutoff), or deactivate this option to visualize a blue cursor at the cutoff position in top and bottom axes.
+Activate this option to truncate time traces at the 
+[Photobleaching cutoff](#photobleaching-cutoff), or deactivate this option to visualize a blue cursor at the cutoff position in 
+[Intensity-time traces](visualization-area.html#intensity-time-traces-and-histograms) and 
+[Ratio-time traces](visualization-area.html#ratio-time-traces-and-histograms).
 
 <img src="../../assets/images/figures/TP-panel-photobleaching-disp.png" style="max-width:538px;">
 
@@ -65,11 +73,25 @@ For more information about how photobleaching correction is used in smFRET data 
 
 ## Automatic detection settings
 
-Defines the settings used to detect photobleaching in intensity-time traces
+Us this interface to define the settings for automatic detection of photobleaching.
 
-<a href="../../assets/images/gui/TP-panel-pb-param.png"><img src="../../assets/images/gui/TP-panel-pb-param.png" style="max-width: 237px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-pb-param.png"><img src="../../assets/images/gui/TP-panel-pb-param.png" style="max-width: 237px;"/></a>
 
-Photobleaching is detected when the time trace selected in list **(a)** drops below a certain threshold defined in **(b)** and providing a minimum cutoff value set in **(d)**.
+Photobleaching is detected when the time trace selected in menu **(a)** drops below a certain threshold defined in **(b)** and providing a minimum cutoff value set in **(d)**.
+
+Traces available for photobleaching detection are:
+
+* `FRET [D]>[A]` the FRET-time trace of the pair donor emitter `[D]` -acceptor emitter `[A]`
+* `S [E]` the stoichiometry-time trace of emitter `[E]`
+* `[E] at [L]nm` the single intensity-time trace of emitter `[E]` upon illumination with laser wavelength `[L]` (in nm)
+* `all intensities` the minimum values found in all intensity-time traces
+* `summed intensities` the sum of all intensity-time traces
+
+Traces `all intensities` and `summed intensities` are calculated from intensities in absence of any acceptors, *i. e.* summed over all channels at emitter-specific illumination.
+This allows to exclude the zero-intensity signals collected at unspecific illuminations that are constantly "photobleached" and prevent the automatic photobleaching detection to function.
+Only emitters having a specific illumination defined in 
+[Video channels](../../video-processing/functionalities/set-project-options.html#video-channels) are considered in these calculations.
+
 To ensure detection at the very beginning of acceptor photobleaching, the detected cutoff position can be shifted downwards by a certain number of frames set in **(c)**.
 
 The resulting photobleaching cutoff displayed in 
@@ -82,7 +104,8 @@ The resulting photobleaching cutoff displayed in
 
 ## Apply settings to all molecules
 
-Use this command to apply the 
+Press 
+![all](../../assets/images/gui/TP-but-all.png "all") to apply the 
 [Photobleaching detection method](#photobleaching-detection-method) and 
 [Automatic detection settings](#automatic-detection-settings) to all molecules.
 

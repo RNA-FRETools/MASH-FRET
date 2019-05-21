@@ -6,11 +6,11 @@ has_children: true
 permalink: /histogram-analysis.html
 ---
 
-<img src="assets/images/logos/logo-histogram-analysis_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+<img src="assets/images/logos/logo-histogram-analysis_noname_400px.png" width="260" style="float:right; margin-left: 15px;"/>
 
 # Histogram analysis
 
-Use this module to identify the most probable <u>state configuration</u> and quantify state <u>relative populations</u>.
+Use this module to identify the most probable state configuration and quantify state relative populations.
 
 Histogram analysis framework is limited to <u>intensity</u> histograms and to calculated <u>FRET</u> and <u>stoichiometry</u> histograms.
 

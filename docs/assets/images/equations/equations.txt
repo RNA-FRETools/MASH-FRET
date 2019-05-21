@@ -17,53 +17,53 @@ Initial state probabilities (equation 05):
 	\pi_{j}=\frac{\pi_{j}}{\sum_{j'}\left(\pi_{j'} \right )}
 
 >> Simulated frame rate
-	f = \frac{1}{t_{exp}}
+	f = \frac{1}{t_{\textup{exp}}}
 
 >> Camera noise:
 Offset only (equation 01):
-	\mu_{ic} = \mu_{pc}
+	\mu_{\textup{ic}} = \mu_{\textup{pc}}
 Poission noise (equation 02):
-	\mu_{ec} = \mu_{pc} \times \eta
+	\mu_{\textup{ec}} = \mu_{\textup{pc}} \times \eta
 	and (equation 03)
-	\mu_{ic} = \mu_{ec}
+	\mu_{\textup{ic}} = \mu_{\textup{ec}}
 Gaussian noise (equation 04):
-	\mu_{ec} = \mu_{pc} \times \eta
+	\mu_{\textup{ec}} = \mu_{\textup{pc}} \times \eta
 	and (equation 05):
-	\mu_{ic} = \mu_{ec} \times K
+	\mu_{\textup{ic}} = \mu_{\textup{ec}} \times K
 	and (equation 06):
-	\sigma_{ic} = \sqrt{\mu_{ic} + ( K × \sigma_{d} )^{2} + \sigma_{q}^{2}}
+	\sigma_{\textup{ic}} = \sqrt{\mu_{\textup{ic}} + ( K × \sigma_{\textup{d}} )^{2} + \sigma_{\textup{q}}^{2}}
 User-defined noise (equation 07):
-	\mu_{ec} = \mu_{pc} \times \eta
+	\mu_{\textup{ec}} = \mu_{\textup{pc}} \times \eta
 	and (equation 08):
-	\mu_{ic} = \mu_{ec} \times K
+	\mu_{\textup{ic}} = \mu_{\textup{ec}} \times K
 	and (equation 09):
-	\textup{P}(\mu_{ic,0}) = ( 1-A_{CIC} )\textup{exp}\left [ -\frac{( \mu_{ic,0} - \mu_{ic,d} )^{2}}{2\sigma_{ic}^{2}} \right ] + A_{CIC}\textup{exp}\left ( - \frac{\mu_{ic,0}}{\tau_{CIC}}  \right )
+	\textup{P}(\mu_{\textup{ic,0}}) = ( 1-A_{\textup{CIC}} )\textup{exp}\left [ -\frac{( \mu_{\textup{ic,0}} - \mu_{\textup{ic,d}} )^{2}}{2\sigma_{\textup{ic}}^{2}} \right ] + A_{\textup{CIC}}\textup{exp}\left ( - \frac{\mu_{\textup{ic,0}}}{\tau_{\textup{CIC}}}  \right )
 Hirsch noise (equation 10):
-	\mu_{ec} = \mu_{pc} \times \eta + CIC
+	\mu_{\textup{ec}} = \mu_{\textup{pc}} \times \eta + CIC
 	and (equation 11):
-	\mu_{ic} = \frac {\mu_{ic}}{s}
+	\mu_{\textup{ic}} = \frac {\mu_{\textup{ic}}}{s}
 	and (equation 12):
-	\sigma_{ic} = \frac {\sigma_{d}}{s}
+	\sigma_{\textup{ic}} = \frac {\sigma_{\textup{d}}}{s}
 
 >> Gamma bias:
-	I_{D,em} = \frac{I_{D,em,0}}{\gamma}
+	I_{\textup{D,em}}\left ( t\right ) = \frac{I_{\textup{D,em,0}}} {\gamma}
 
 >> Units conversion (equation 01):
-	\mu_{ic} = \mu_{pc} \times \eta \times K
+	\mu_{\textup{ic}} = \mu_{\textup{pc}} \times \eta \times K
 	and (equation 02):
-	\mu_{ic} = \mu_{pc} \times \eta \times K + \mu_{ic,d}
+	\mu_{\textup{ic}} = \mu_{\textup{pc}} \times \eta \times K + \mu_{\textup{ic,d}}
 
 >> Exposure time:
-	t_{exp} = \frac{1}{f}
+	t_{\textup{exp}} = \frac{1}{f}
 
 >> Gaussian spots (equation 01):
 	I(x,y) = offset + I_{0}\textup{exp}\left \{ - \left [ a(x - x_{0})^{2} + 2b(x - x_{0})(y - y_{0}) + c(y - y_{0})^{2} \right ] \right \}
 	and (equation 02):
-	a = \frac{cos^{2}( \theta )}{2\sigma_{x}^{2}} + \frac{sin^{2}( \theta )}{2\sigma_{y}^{2}}
+	a = \frac{\textup{cos}^{2}( \theta )}{2\sigma_{\textup{x}}^{2}} + \frac{\textup{sin}^{2}( \theta )}{2\sigma_{\textup{y}}^{2}}
 	and (equation 03):
-	b = - \frac{sin( 2\theta )}{4\sigma_{x}^{2}} + \frac{sin( 2\theta )}{4\sigma_{y}^{2}}
+	b = - \frac{\textup{sin}( 2\theta )}{4\sigma_{\textup{x}}^{2}} + \frac{\textup{sin}( 2\theta )}{4\sigma_{\textup{y}}^{2}}
 	and (equation 04):
-	c = \frac{sin^{2}( \theta )}{2\sigma_{x}^{2}} +  \frac{cos^{2}( \theta )}{2\sigma_{y}^{2}}
+	c = \frac{\textup{sin}^{2}( \theta )}{2\sigma_{\textup{x}}^{2}} +  \frac{\textup{cos}^{2}( \theta )}{2\sigma_{\textup{y}}^{2}}
 
 >> Intensity corrections:
 Background correction (equation 01):
@@ -134,9 +134,9 @@ and (equation 07)
 >> BIC (equation 01):
 	BIC = p(J) \times \textup{log}( N_{\textup{total}} ) - \textup{log}\left [ likelihood( J ) \right ]
 	and (equation 02):
-	p_{J} = p_{\textup{means}} + p_{\textup{widths}} + p_{\textup{weights}} = 3J - 1
+	p\left ( J\right ) = p_{\textup{means}} + p_{\textup{widths}} + p_{\textup{weights}} = 3J - 1
 	and (equation 03):
-	p_{J} = p_{\textup{means}} + p_{\textup{widths}} + p_{\textup{weights}} = J + p_{\textbf{widths}} + J^{2} - 1
+	p\left ( J\right ) = p_{\textup{means}} + p_{\textup{widths}} + p_{\textup{weights}} = J + p_{\textbf{widths}} + J^{2} - 1
 
 >> Histogram populations:
 	X_{j} = \frac{S_{j}}{\sum_{j'=1}^{J}( S_{j'})}

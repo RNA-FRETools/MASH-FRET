@@ -5,12 +5,13 @@ parent: /histogram-analysis.html
 nav_order: 2
 ---
 
-<img src="../assets/images/logos/logo-histogram-analysis_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+<img src="../assets/images/logos/logo-histogram-analysis_400px.png" width="170" style="float:right; margin-left: 15px;"/>
 
 # Workflow
 {: .no_toc }
 
-In this section you will learn how to determine the most sufficient state configuration from histograms, obtain relative population and estimate the associated variability in the molecule sample. 
+In this section you will learn how to determine the most sufficient state configuration from histograms, to obtain the relative state populations and to estimate the associated cross-sample variability. 
+
 Histogram analysis results are saved in the 
 [mash project](../output-files/mash-mash-project.html) and/or exported to ASCII files for traceability.
 
@@ -24,12 +25,12 @@ The procedure includes five steps:
 
 ## Import single molecule data
 
-Single molecule are be imported from a 
-[.mash file](../output-files/mash-mash-project.html), ideally processed in module Trace processing.
+Single molecules are imported from a 
+[.mash file](../output-files/mash-mash-project.html), which ideally contains time traces that were processed in module Trace processing.
 
-After successful import, the list of data available in the project (*e.g.*, intensities, FRET or stoichiometry) is updated in 
-[Data list](panels/panel-histogram-and-plot.html#data-list), and the overall normalized and cumulative normalized histograms of the first data in the list (usually intensities in first channel upon first illumination) are displayed in the 
-[Visualization area](panels/area-visualization.html).
+After successful import, the list of available data in the project (*e.g.*, intensities, FRET or stoichiometry) is shown in the 
+[Data list](panels/panel-histogram-and-plot.html#data-list), and the overall normalized and cumulative normalized histograms are displayed in the 
+[Visualization area](panels/area-visualization.html) for the first data of the list - intensities collected in the left-most video channel upon first laser illumination.
 
 To import single molecule data:
 
@@ -47,8 +48,11 @@ To build an histogram, data are limited to specific boundaries and sorted into b
 Ideally, each state population appears as a Gaussian-shaped peak in the histogram.
 
 The bin size has a substantial influence on the histogram shape: large bins will increase the overlap between neighbouring peaks until the extreme case where all peaks are merged in one, whereas short bins will flatten the peaks until the extreme case where no peak is distinguishable.
-Histogram boundaries are important to exclude out-of range data that would bias the state analysis.
-This is why the data-specific histogram limits and bin size have to be carefully chosen in order to enhance the natural shape of data distribution without altering it.
+
+Histogram boundaries are important as they define the range of data considered for analysis.
+Large data ranges can include outliers that would bias the state analysis and narrow ranges can exclude relevant contribution for population analysis.
+
+The histogram limits and bin size have to be carefully chosen in order to enhance the natural shape of data distribution without altering it.
 
 ![Effect of histogram bin size](../assets/images/figures/HA-workflow-scheme-bin-size.png "Effect of histogram bin size")
 
@@ -64,32 +68,35 @@ To build the histogram:
    [Histogram bin size](panels/panel-histogram-and-plot.html#histogram-bin-size)  
    [Overflow bins](panels/panel-histogram-and-plot.html#overflow-bins)  
      
-   The histogram is instantly built with the new parameters and displayed 
+   The histogram is instantly built with the new parameters and displayed in the 
+   [Visualization area](panels/area-visualization.html)
 
 
 ---
 
 ## Determine the most sufficient state configuration
 
-As state populations are ideally modelled by a Gaussian distribution, the overall histogram can be described by the sum of 
+In histogram analysis, states are identified as histogram peaks that are ideally modelled by a Gaussian distribution.
+Therefore, the overall histogram can be described by the sum of 
 [*J*](){: .math_var } Gaussian distributions, with 
 [*J*](){: .math_var } the number of states.
-In the case of well-separated peaks, it is easy to determine 
-[*J*](){: .math_var } by eye, but most of the time, peaks overlap to great extend and can't be accurately identified.
+
+In the case of well-separated peaks, 
+[*J*](){: .math_var } is easily determined by eye, but most of the time, the histogram peaks overlap each other and can't be accurately distinguished.
 
 ![Histogram peak overlap](../assets/images/figures/HA-workflow-scheme-peak-overlap.png "Histogram peak overlap")
 
-One way of objectively identifying the number of peaks in an histogram is to, first, find the Gaussian mixtures that describe the data the best for different 
+One way of objectively identifying the number of overlapping peaks in a histogram is to, first, find the Gaussian mixtures that describe the data the best for different 
 [*J*](){: .math_var }, and then to compare optimum models with each other.
-As the model likelihood fundamentally increases with the number of components, inferred models can be compared via:
+As the goodness of fit, or model likelihood, fundamentally increases with the number of components, inferred models can be compared via:
 
 * the improvement in goodness of fit
-* by their Bayesian information criterion (BIC)
+* the Bayesian information criterion (BIC)
 
-In the first case, a certain improvement in goodness of fit is expected when adding a new component to the model, *e. g.* an increase of 20% in goodness of fit.
-Here, the most sufficient model is the first model for which adding a component does not fulfil this requirement.
+In the first case, a certain improvement in model likelihood is expected when adding a new component to the model, *e. g.* an increase of 20%.
+Here, the most sufficient model is the least complex model for which adding a component does not fulfil this requirement.
 
-In the second case, the BIC are used to rank models according to their sufficiency, with the most sufficient model having the lowest BIC.
+In the second case, the BIC is used to rank models according to their sufficiency, with the most sufficient model having the lowest BIC.
 
 To determine the most sufficient state configuration:
 
@@ -112,18 +119,14 @@ To determine the most sufficient state configuration:
 
 The relative population 
 [*X*<sub>*j*</sub>](){: .math_var} of a state 
-[*j*](){: .math_var } is associated to the probability to find at any time a molecule of the sample in state 
-[*j*](){: .math_var }.
+[*j*](){: .math_var } is associated to the probability of finding a molecule in state 
+[*j*](){: .math_var } any time in the sample.
+
 It can be estimated from the histogram by integrating each peak to a value 
 [*S*<sub>*j*</sub>](){: .math_var } and calculating the ratio:
 
 {: .equation }
 <img src="../assets/images/equations/HA-eq-pop.gif" alt="X_{j} = \frac{S_{j}}{\sum_{j'=1}^{J}( S_{j'})}">
-
-<!--
-{: .equation }
-*X*<sub>*j*</sub> = *S*<sub>*j*</sub> / &#931;<sub>1&#8805;*j'*&#8805;*J*</sub>(  *S*<sub>*j'*</sub> )
--->
 
 For well-separated histogram peaks, 
 [*S*<sub>*j*</sub>](){: .math_var } values are calculated using thresholds between peaks.
@@ -133,8 +136,9 @@ For overlapping peaks, a mixture of
 
 ![Estimation of state's relative populations](../assets/images/figures/HA-workflow-scheme-populations.png "Estimation of state's relative populations")
 
-These relative state populations are single estimates and carry no information about how much they vary from molecule to molecule.
-One way to estimate the cross-sample variability of relative state populations is to use the bootstrap-based analysis called BOBA-FRET.
+The outcome of such analysis are single estimates of relative state populations, meaning that they carry no information about the variability across the molecule sample.
+
+One way to evaluate the cross-sample variability of relative state populations is to use the bootstrap-based analysis called BOBA-FRET.
 BOBA-FRET applies to both threshold and Gaussian-fitting methods, and infers the bootstrap mean 
 [*&#956;*<sub>*X*,*j*</sub>](){: .math_var } and bootstrap standard deviation
 [*&#963;*<sub>*X*,*j*</sub>](){: .math_var } of state populations for the given sample.

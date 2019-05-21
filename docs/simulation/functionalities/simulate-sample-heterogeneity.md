@@ -6,6 +6,8 @@ grand_parent: /simulation.html
 nav_order: 3
 ---
 
+<img src="../../assets/images/logos/logo-simulation_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Simulate sample heterogeneity
 {: .no_toc }
 
@@ -29,7 +31,9 @@ Sample heterogeneity can be introduced in FRET states
 [*&#947;*](){: .math_var }.
 
 Parameters are randomly generated for each molecule by drawing from Gaussian distributions with means respectively defined in fields 
-`FRETj`, `Itot,em`, `γ`, and standard deviation in fields `wFRETj`, `wItot,em` and `wγ`.
+`FRETj`, `Itot,em`, `γ`, and standard deviation in fields `wFRETj`, `wItot,em` and `wγ` of the graphical interface.
+
+[*I*<sub>tot,em</sub>](){: .math_var } can be used to introduce heterogeneity in signal-to-noise ratio as shown in the following figure.
 
 <a class="plain" href="../../assets/images/figures/VP-functionalities-scheme-sample-heterogenity.png"><img src="../../assets/images/figures/VP-functionalities-scheme-sample-heterogenity.png" style="max-width:500px;"></a>
 
@@ -38,7 +42,7 @@ Parameters are randomly generated for each molecule by drawing from Gaussian dis
 
 ## Molecule-specific pre-sets
 
-This method allows to custom the type of sample heterogeneity by either producing a broadening of molecule characteristics, or by creating sub-populations of molecules with distinguishable characteristics, or both.
+This method allows to custom the type of sample heterogeneity by either (1) producing a broadening of molecule characteristics, or (2) creating sub-populations of molecules with distinguishable characteristics, or (3) both.
 
 Sample heterogeneity can be introduced in FRET states 
 [*FRET*<sub>*j*</sub>](){: .math_var }, state transition rates 
@@ -51,7 +55,7 @@ Parameters are pre-defined for individual molecules in a pre-set parameter file 
 For more information about the structure and use of pre-set parameter file, please refer to 
 [Pre-set parameters](../panels/panel-molecules.html#pre-set-parameters).
 
-As an example, the script below creates two distinct molecule sub-populations of equal size, with one population allowing step-wise and reversible state transitions, and one getting trapped after an off-path state transition:
+As an example, the script below creates two distinct molecule sub-populations of equal size, with one population allowing step-wise and reversible state transitions, and one allowing reversible transitions from state 1 only:
 
 ```matlab
 %%%%% EDIT HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -62,10 +66,10 @@ trans_rates1 = [ 0   0.1 0   0
 		 0   0   0.1 0];
 		
 % defines 4-by-4 transition rates for the second population
-trans_rates2 = [ 0   0.1 0   0
-		 0.1 0   0   0.1
-		 0   0   0   0
-		 0   0   0   0];
+trans_rates2 = [ 0   0.1 0.1 0.1
+		 0.1 0   0   0
+		 0.1 0   0   0
+		 0.1 0   0   0];
 		 
 % defines the number of trajectories to simulate
 N = 60;
@@ -83,11 +87,11 @@ trans_rates = cat(3,trans_rates1,trans_rates2);
 To build and export the pre-set parameter file:
 
 {: .procedure }
-1. Open the pre-set template in MATLAB's editor by going to MATLAB's menu `Open → Open ...` and selecting the file `MASH-FRET/createSimPrm.m`.  
+1. Open the pre-set template in MATLAB's editor by going to MATLAB's menu `HOME → Open → Open ...` and selecting the file `MASH-FRET/tools/createSimPrm.m`.  
       
-1. Define the variable `trans_rates` in the corresponding section of the template  
+1. Define the desired variables in the corresponding section of the template (`trans_rates` for the sub-mentioned example)  
      
-1. Type `createSimPrm` in MATLAB's command window to run the script and export the pre-set parameter file.  
+1. Run the script by pressing `Run` in MATLAB's menu `EDITOR` and export the pre-set file.
      
 1. load the pre-sets by pressing 
 ![...](../../assets/images/gui/sim-but-3p.png "...") in 

@@ -6,10 +6,16 @@ grand_parent: /histogram-analysis.html
 nav_order: 1
 ---
 
+<img src="../../assets/images/logos/logo-histogram-analysis_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Project management
 {: .no_toc }
 
-<a href="../../assets/images/gui/HA-area-project-management.png"><img src="../../assets/images/gui/HA-area-project-management.png" style="max-width: 186px;"/></a>
+The project management area is the main import/export interface of module Histogram analysis.
+
+Use this area to import MASH projects and save analysis results.
+
+<a class="plain" href="../../assets/images/gui/HA-area-project-management.png"><img src="../../assets/images/gui/HA-area-project-management.png" style="max-width: 186px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -29,7 +35,7 @@ nav_order: 1
 
 ## Project list
 
-Use this area to manage your projects imported in module Trace processing.
+Use this list to access your projects imported in module Histogram analysis.
 
 Projects contain original single molecule data, calculated data and parameters necessary for calculations in all modules of MASH-FRET.
 
@@ -41,8 +47,8 @@ Single molecule data can be imported in module Histogram analysis from a
 After import, the new project is added to the project list and the 
 [Visualization area](panel-visualization-area.html) area is updated with the first data available in the project.
 
-To close a project and remove it from the project list, select the project in the list and press 
-![Remove](../../assets/images/gui/HA-but-remove.png "Remove").
+Press 
+![Remove](../../assets/images/gui/HA-but-remove.png "Remove") to close a project and remove it from the project list.
 
 
 ---
@@ -53,25 +59,27 @@ Press
 ![Export...](../../assets/images/gui/HA-but-export3p.png "Export...") and select a destination directory to export the overall histogram and analysis results of the current data to files.
 
 The type of exported files depends on which analysis was carried on: 
+
 * [.hist files](../../output-files/hist-histograms.html) are systematically saved, 
 * [.pdf files](../../output-files/pdf-histogram-analysis-figures.html) are saved when bootstrap analysis was used, 
 * [_config.txt](../../output-files/txt-histogram-state-configurations.html) are saved when state configurations were determined, 
-* [_thresh or _gauss.txt](../../output-files/txt-histogram-gaussian-populations.html) are saved when state populations were calculated.
+* [_thresh or _gauss.txt](../../output-files/txt-histogram-state-populations.html) are saved when state populations were calculated.
 
 PDF export uses the MATLAB script `append_pdfs` developed by Oliver Woodford that can be found in the 
 [MATLAB exchange platform](https://www.mathworks.com/matlabcentral/fileexchange/31215-append_pdfs).
 
 **Note:** *Exporting PDF figures requires the installation of Ghostscript that can be downloaded 
-[here](https://www.ghostscript.com/)
+[here](https://www.ghostscript.com/)*
 
 
 ---
 
 ## Save project
 
-Projects can be exported to 
-[.mash files](../../output-files/mash-mash-project.html) by selecting the project in list **(a)** and pressing 
-![Save](../../assets/images/gui/HA-but-save.png "Save").
+Press 
+![Save](../../assets/images/gui/HA-but-save.png "Save") to a project to a
+[.mash files](../../output-files/mash-mash-project.html).
+
 To save modifications of one project, simply overwrite the existing 
 [.mash file](../../output-files/mash-mash-project.html).
 

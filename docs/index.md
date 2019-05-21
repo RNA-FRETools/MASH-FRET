@@ -4,40 +4,43 @@ title: Home
 nav_order: 0
 ---
 
-<img src="assets/images/logos/logo-MASH_260px.png" width="260" style="float:right"/>
+<img src="assets/images/logos/logo-MASH_400px.png" width="260" style="float:right; margin-left: 15px;"/>
 
 ## What is MASH-FRET?
 MASH-FRET is a **Matlab**-based software package for the analysis of **single-molecule FRET videos and trajectories**.
 The framework encompasses the entire workflow from localizing single molecule on videos to characterizing molecule dynamics.
 
-First visit? Learn how to use MASH-FRET with 
+First visit? Learn how to use MASH-FRET with
 [Getting started](Getting_started.html).
 
 
 ## Download
 
-Clone or 
+Clone or
 [download](https://github.com/RNA-FRETools/MASH-FRET/archive/master.zip) MASH-FRET into a directory of your choice.
 ```
 git clone https://github.com/RNA-FRETools/MASH-FRET.git
 ```
 
-For more information about system requirements, please refer to 
+For more information about system requirements, please refer to
 [System requirements](System_requirements.html).
 
+## Updates
+
+MASH-FRET will constantly develop. If you are interested in updates and future release notes, please subscribe to our email list https://www.chem.uzh.ch/en/sigel/software/MASH.html .
 
 ## Getting involved
 
-Please report any **bugs** or **feature requests** through the 
+Please report any **bugs** or **feature requests** through the
 [issue tracker](https://github.com/RNA-FRETools/MASH-FRET/issues) on Github.
 
-If you have any questions, do not hesitate to contact us at 
+If you have any questions, do not hesitate to contact us at
 [rnafretools@chem.uzh.ch](mailto:rnafretools@chem.uzh.ch).
 
 
 ## Citing MASH-FRET
 
-The functionalities of MASH-FRET have been described in several articles. If you use MASH-FRET in your work, please refer to the respective publication listed 
+The functionalities of MASH-FRET have been described in several articles. If you use MASH-FRET in your work, please refer to the respective publication listed
 [here](citations.html).
 
 

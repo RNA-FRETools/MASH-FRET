@@ -6,10 +6,16 @@ grand_parent: /simulation.html
 nav_order: 2
 ---
 
+<img src="../../assets/images/logos/logo-simulation_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Molecules
 {: .no_toc }
 
-<a href="../../assets/images/gui/sim-panel-molecules.png"><img src="../../assets/images/gui/sim-panel-molecules.png" style="max-width: 570px;" /></a>
+Molecules is the second panel of module Simulation.
+
+Use this panel to define the molecule sample in terms of size, positions, molecule and dye properties, and to start simulation.
+
+<a class="plain" href="../../assets/images/gui/sim-panel-molecules.png"><img src="../../assets/images/gui/sim-panel-molecules.png" style="max-width: 570px;" /></a>
 
 
 ## Panel components
@@ -20,85 +26,115 @@ nav_order: 2
 
 ---
 
+
 ## Number of molecules
 
-It is the number of single molecules to simulate, noted 
+Defines the number of single molecules to simulate, noted 
 [*N*](){: .math_var }.
 
-If single molecules coordinates or pre-set parameters are loaded from external files, the number of molecules is derived from the file dimensions; see
+If single molecule coordinates or pre-set parameters are loaded from external files, the number of molecules is derived from the dimensions of the file content; see
 [Molecule coordinates](#molecule-coordinates) and 
 [Pre-set parameters](#pre-set-parameters) for more details. 
 
-**<u>default</u>:** 100
+<u>default</u>: [*N*](){: .math_var } = 100
 
 ---
+
 
 ## Molecule coordinates
 
-They are the (x,y) pixel coordinates of single molecules in the simulated video.
+Use this interface to import and/or visualize the (x,y) pixel coordinates of single molecules in simulation.
 
-<a href="../../assets/images/gui/sim-panel-molecules-coordinates.png"><img src="../../assets/images/gui/sim-panel-molecules-coordinates.png" style="max-width: 136px;" /></a>
+<a class="plain" href="../../assets/images/gui/sim-panel-molecules-coordinates.png"><img src="../../assets/images/gui/sim-panel-molecules-coordinates.png" style="max-width: 136px;" /></a>
 
-The `N`-by-4 molecule coordinates are displayed in table **(d)** where x- and y-positions are written in columns 1 and 2 for left channel and 3 and 4 for right channel.
+The 
+[*N*](){: .math_var }-by-4 molecule coordinates are displayed in table **(d)** where x- and y-positions are written in columns 1 and 2 for left channel and 3 and 4 for right channel.
 
-Coordinates can be loaded from an external ASCII file by pressing **(b)**. In this case:
-* loaded file name is displayed in **(a)**
-* the file must be structured in two or four columns, with x and y positions written in odd and even columns respectively.
+Coordinates can be imported from an external ASCII file by pressing **(b)**. 
+In this case:
+* the file must be structured in two or four columns, with x- and y-positions written in odd and even columns respectively.
 * if the file contains left- or right-channel coordinates only, coordinates in the other channel are automatically calculated by adding or subtracting one channel width to x-positions. 
-* loaded coordinates can me removed by pressing **(c)**
+* imported file name is displayed in **(a)**
+* imported coordinates can me removed by pressing **(c)**
 
-
-Coordinates can also be defined in pre-set parameters; see
+Coordinates can also be imported from a pre-set parameter file; see
 [Pre-set parameters](#pre-set-parameters) for more details.
 
-**<u>default</u>:** `N` pairs of random coordinates uniformly distributed within the video dimensions.
+<u>default</u>: [*N*](){: .math_var } pairs of random coordinates uniformly distributed within the video dimensions.
 
 ---
+
 
 ## Pre-set parameters
 
-They are pre-defined parameters set for individual molecules and loaded from an external Matlab binary file.
+Use this interface to import pre-defined parameters for individual molecules from an external MATLAB binary file (.mat).
 
-<a href="../../assets/images/gui/sim-panel-molecules-preset.png"><img src="../../assets/images/gui/sim-panel-molecules-preset.png"  style="max-width: 136px;" /></a>
+<a class="plain" href="../../assets/images/gui/sim-panel-molecules-preset.png"><img src="../../assets/images/gui/sim-panel-molecules-preset.png"  style="max-width: 136px;" /></a>
 
-Pre-set parameters file can be loaded by pressing **(b)**. In that case:
-* loaded file name is displayed in **(a)**
-* the file must contain a structure with at least one of the following fields:
+Pre-set parameters can be imported from an external .mat file by pressing **(b)**. 
+In that case:
+* the file must contain a MATLAB structure with at least one of the following fields:
 
-| field name      | description                                                                                                                  | data type               |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| `FRET`          | [*FRET<sub>j</sub>*](){: .math_var } values and deviations [*wFRET<sub>j</sub>*](){: .math_var } for a `J`-state model       | `N`-by-`2*J`double      |
-| `trans_rates`   | [*k<sub>jj'</sub>*](){: .math_var } transition rate matrix                                                                   | `J`-by-`J`-by`N` double |
-| `gamma`         | gamma factors and deviations                                                                                                 | `N`-by-2 double         |
-| `tot_intensity` | intensities [*I*<sub>tot,em</sub>](){: .math_var } of donor emission in absence of acceptor and deviations                   | `N`-by-2 double         |
-| `coordinates`   | x- and y- molecule coordinates in donor and/or acceptor channel                                                              | `N`-by-2 or -4 double   |
-| `psf_width`     | PSF standard deviations in donor and/or acceptor channel                                                                     | `N`-by-1 or -2 double   |
+| field name      | description                                                                                                                                                                                                                                  | data type                                                                      |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `FRET`          | [*FRET<sub>j</sub>*](){: .math_var } values and deviations [*wFRET<sub>j</sub>*](){: .math_var } for a [*J*](){: .math_var }-state model; see [State configuration](#state-configuration) for more details about the meaning of these values | [*J*](){: .math_var }-by-2-by-[*N*](){: .math_var }double                      |
+| `trans_rates`   | transition rate matrix [*k<sub>jj'</sub>*](){: .math_var }                                                                                                                                                                                   | [*J*](){: .math_var }-by-[*J*](){: .math_var }-by-[*N*](){: .math_var } double |
+| `gamma`         | [*&#947;*](){: .math_var } factors and deviations [*w&#947;*](){: .math_var }; see [Gamma factor](#gamma-factor) for more details about the meaning of these values                                                                          | [*N*](){: .math_var }-by-2 double                                              |
+| `tot_intensity` | intensities [*I*<sub>tot,em</sub>](){: .math_var } and deviations [*wI*<sub>tot,em</sub>](){: .math_var }; see [Donor emission](#donor-emission) for more details about the meaning of these values                                          | [*N*](){: .math_var }-by-2 double                                              |
+| `coordinates`   | x- and y- molecule coordinates in donor and/or acceptor channel                                                                                                                                                                              | [*N*](){: .math_var }-by-2 or -4 double                                        |
+| `psf_width`     | PSF standard deviations [*w*<sub>det,D</sub>](){: .math_var } and/or [*w*<sub>det,A</sub>](){: .math_var } in donor and/or acceptor channel respectively                                                                                     | [*N*](){: .math_var }-by-1 or -2 double                                        |
 
-* if parameter `coordinates` concerns one channel only, x-positions are automatically translated to obtain coordinates in the other channel. 
-* if parameter `psf_width` is of dimension `N`-by-1,  values applies automatically to both channels.
+* if parameter `coordinates` contains coordinates in only one channel, x-positions are automatically translated to obtain coordinates in the other channel. 
+* if parameter `psf_width` is of dimension [*N*](){: .math_var }-by-1, PSF widths are applied to both channels.
+* imported file name is displayed in **(a)**
 * loaded pre-sets can me removed by pressing **(c)**
 
-A template *.m file is provided in the source code to help building a pre-set parameter file. It can be found at:
+After successful import:
+- the field used to edit the 
+[Number of molecules](#number-of*molecules) will be locked as it is defined in any of the field
+- the field used to edit the number of states in 
+[State configuration](#state-configuration) will be locked if `FRET` or `trans_rates` are defined
+- the fields used to edit the
+[*FRET*<sub>*j*</sub>](){: .math_var } and 
+[*wFRET*<sub>*j*</sub>](){: .math_var } values in 
+[State configuration](#state-configuration) will be locked if `FRET` is defined
+- the fields used to edit the 
+[Transition rates](#transition-rates) will be locked if `trans_rates` is defined
+- the fields used to edit the 
+[*I*<sub>tot,em</sub>](){: .math_var } and 
+[*wI*<sub>tot,em</sub>](){: .math_var } values in 
+[Donor emission](#donor-emission) will be locked if `tot_intensity` is defined
+- the fields used to edit the 
+[*&#947;*](){: .math_var } and 
+[*w&#947;*](){: .math_var } values in 
+[Gamma factor](#gamma-factor) will be locked if `gamma` is defined
+- the fields used to edit the 
+[*w*<sub>det,D</sub>](){: .math_var } and
+[*w*<sub>det,A</sub>](){: .math_var } values in
+[Point spread functions](panel-experimental-setup.html#point-spread-functions) will be locked if `psf_width` is defined
+
+Fields will be rendered editable when removing the pre-set file.
+
+A *.m template file is provided with the source code at:
 
 ```
-MASH-FRET/source/project/createSimPrm.m
+MASH-FRET/tools/createSimPrm.m
 ```
 
-**<u>default</u>:** no parameters file is loaded, all parameters are set by the GUI.
+<u>default</u>: no parameter file is loaded, all parameters are set via the GUI.
 
 ---
 
+
 ## State configuration
 
-It is the FRET state model used in the simulation.
+Use this interface to define the number of states and corresponding FRET values.
 
-<a href="../../assets/images/gui/sim-panel-molecules-state-configuration.png"><img src="../../assets/images/gui/sim-panel-molecules-state-configuration.png"  style="max-width: 291px;" /></a>
+<a class="plain" href="../../assets/images/gui/sim-panel-molecules-state-configuration.png"><img src="../../assets/images/gui/sim-panel-molecules-state-configuration.png"  style="max-width: 291px;" /></a>
 
-The model consists of a number 
-[*J*](){: .math_var } of FRET states, set in **(a)**, and the corresponding 
-[*FRET<sub>j</sub>*](){: .math_var } values. 
-[*FRET<sub>j</sub>*](){: .math_var } values can be set in **(c)** by first selecting "state 
-[*j*](){: .math_var }" in list **(b)**.
+The state configuration is described by a number 
+[*J*](){: .math_var } of states set in **(a)**, and the corresponding 
+[*FRET<sub>j</sub>*](){: .math_var } values set in **(c)** after selecting `state [j]` in list **(b)**, with `[j]` the state index.
 
 If needed, sample heterogeneity can be introduce by attributing a strictly positive deviation 
 [*wFRET<sub>j</sub>*](){: .math_var } **(d)** to the 
@@ -107,7 +143,7 @@ In this case, a random *FRET* value is drawn for each molecule, using a Gaussian
 [*FRET<sub>j</sub>*](){: .math_var } and standard deviation 
 [*wFRET<sub>j</sub>*](){: .math_var }.
 
-**<u>default</u>:** 
+<u>default</u>: 
 * [*J*](){: .math_var } = 2
 * for state 1: 
 [*FRET*<sub>1</sub>](){: .math_var } = 0, 
@@ -120,7 +156,7 @@ In this case, a random *FRET* value is drawn for each molecule, using a Gaussian
 
 ## Transition rates
 
-They are the rate constants that govern state transitions, noted 
+Use this interface to define the rate coefficients that govern state transitions, noted 
 [*k<sub>jj'</sub>*](){: .math_var }.
 
 Transition rates are given in second<sup>-1</sup> and are organized in a matrix, where the cell (row 
@@ -129,14 +165,14 @@ Transition rates are given in second<sup>-1</sup> and are organized in a matrix,
 [*j*](){: .math_var } to state 
 [*j'*](){: .math_var }. 
 
-When a rate equal to zero, the transition is considered forbidden.
+A rate set to zero defines a forbidden transition.
 
-Heterogeneous transition kinetics characterized by multiple rate coefficients can be simulated by using degenerated states, *i.e.*, using states with same 
+Heterogeneous transition kinetics are characterized by multiple rate coefficients and can be simulated by using degenerated states, *i.e.*, using states with same 
 [*FRET*<sub>*j*</sub>](){: .math_var } value but different transition rate coefficients.
 For an example, please refer to the 
-literature [1](#references).
+literature<sup>[1](#references)</sup>.
 
-**<u>default</u>:** 0.1 second<sup>-1</sup>.
+<u>default</u>: 0.1 second<sup>-1</sup>.
 
 **Note:** *For more practicability, the transition rate matrix is limited to five states. 
 To simulate a system with more than five states, please refer to 
@@ -151,32 +187,45 @@ To simulate a system with more than five states, please refer to
 
 ---
 
-## Generate data
+## Start simulation
 
-Command to generate new FRET state sequences.
+Press 
+![Generate](../../assets/images/gui/sim-but-generate.png "Generate") generate new FRET state sequences.
 
-It generates random FRET state sequences using the state configuration, the transition rates and the photobleaching parameters.
+Random FRET state sequences are automatically generated using the 
+[State configuration](#state-configuration), the 
+[Transition rates](#transition-rates) and the 
+[Photobleaching](#photobleaching) parameters.
+
+FRET state sequences are then automatically converted to intensity-time traces and single molecule images as in 
+[Update intensities](panel-export-options.html#update-intensities).
 
 See
-[Simulation workflow](../workflow.html#generate-random-fret-state-sequences) for more information
+[Simulation workflow](../workflow.html#generate-random-fret-state-sequences) for more information.
 
 ---
 
+
 ## Donor emission
 
-It is the donor emission intensity in absence of acceptor, noted 
+Sets the donor emission intensity in absence of acceptor, noted 
 [*I*<sub>tot,em</sub>](){: .math_var }.
 
-<a href="../../assets/images/gui/sim-panel-molecules-intensity.png"><img src="../../assets/images/gui/sim-panel-molecules-intensity.png"  style="max-width: 99px;" /></a>
+<a class="plain" href="../../assets/images/gui/sim-panel-molecules-intensity.png"><img src="../../assets/images/gui/sim-panel-molecules-intensity.png"  style="max-width: 99px;" /></a>
 
 Intensity 
-[*I*<sub>tot,em</sub>](){: .math_var } is et in **(a)**
+[*I*<sub>tot,em</sub>](){: .math_var } is set in **(a)** and is given in units defined in 
+[Intensity units](#intensity-units).
 
 If needed, sample heterogeneity can be introduced by attributing a strictly positive deviation 
 [*wI*<sub>tot,em</sub>](){: .math_var } **(b)**.
 In this case, a random intensity value is drawn for each molecule, using a Gaussian distribution with mean 
 [*I*<sub>tot,em</sub>](){: .math_var } and standard deviation 
 [*wI*<sub>tot,em</sub>](){: .math_var }.
+
+Donor intensity can be placed on a different scale than acceptor intensity by introducing a
+[Gamma factor](#gamma-factor) lower or higher than 1.
+
 
 ### Gamma factor
 {: .no_toc}
@@ -186,12 +235,7 @@ Differences in donor and acceptor quantum yields and detection efficiencies can 
 Donor emission is affected according to the relation:
 
 {: .equation }
-<img src="../../assets/images/equations/sim-eq-gamma.gif" alt="I_{D,em} = \frac{I_{D,em,0}}{\gamma}">
-
-<!--
-{: .equation }
-*I*<sub>D,em</sub> = *I*<sub>D,em,0</sub> / *&#947;*
--->
+<img src="../../assets/images/equations/sim-eq-gamma.gif" alt="I_{\textup{D,em}}\left ( t\right ) = \frac{I_{\textup{D,em,0}}} {\gamma}">
 
 with 
 [*I*<sub>D,em,0</sub>](){: .math_var } the original donor fluorescence intensity in presence of acceptor, and 
@@ -205,7 +249,7 @@ Similarly, sample heterogeneity in gamma factor can be introduced by setting a s
 
 Intensity units of 
 [*I*<sub>tot,em</sub>](){: .math_var } and 
-[*wI*<sub>tot,em</sub>](){: .math_var } can be set in photon counts (pc) or camera offset-free image counts (ic) when the box in **(c)** is checked or unchecked respectively.
+[*wI*<sub>tot,em</sub>](){: .math_var } can be set in photon counts (pc) or camera offset-free image counts (ic) when the option in **(c)** is activated or inactivated respectively.
 This choice also affects the units of background intensities set in 
 [Background](panel-experimental-setup.html#background).
 
@@ -214,14 +258,11 @@ Photon counts
 [*&#956;*<sub>ic</sub>](){: .math_var } are linked by the relation:
 
 {: .equation }
-<img src="../../assets/images/equations/sim-eq-units-conversion-01.gif" alt="\mu_{ic} = \mu_{pc} \times \eta \times K">
+<img src="../../assets/images/equations/sim-eq-units-conversion-01.gif" alt="\mu_{\textup{ic}} = \mu_{\textup{pc}} \times \eta \times K">
 
-<!--
-{: .equation }
-*&#956;*<sub>ic</sub> = *&#956;*<sub>pc</sub> &#215; *&#951;* &#215; *K*
--->
-
-with camera characteristics: detection efficiency *&#951;* and overall gain *K*.
+with camera characteristics 
+[*&#951;*](){: .math_var } and 
+[*K*](){: .math_var }, the detection efficiency and overall gain respectively.
 
 Camera offset-free image counts are used here because experimental 
 [*I*<sub>tot,em</sub>](){: .math_var } value can be obtained by averaging the sum of donor and acceptor intensity-time traces in Trace processing after background correction, which includes subtraction of camera offset.
@@ -235,12 +276,11 @@ See
 
 Only photon counts 
 [*&#956;*<sub>pc</sub>](){: .math_var } are registered in memory.
-If intensities are recorded in image counts, they will be converted to photon counts before being saved in memory.
-This means that selecting another camera noise model will change the image counts intensities as they are convert and using the new camera parameters 
+Image counts are recalculated every time another camera noise model with different 
 [*&#951;*](){: .math_var } and 
-[*K*](){: .math_var }.
+[*K*](){: .math_var } is selected.
 
-**<u>default</u>:** 
+<u>default</u>: 
 * [*I*<sub>tot,em</sub>](){: .math_var } = 36 pc
 * [*wI*<sub>tot,em</sub>](){: .math_var } = 0 pc
 * [*&#947;*](){: .math_var } = 1
@@ -251,21 +291,25 @@ This means that selecting another camera noise model will change the image count
 
 ## Cross-talks
 
-They are the bias in collected intensities caused by instrumental imperfections.
+Use this interface to set the direct excitation and bleedthrough coefficients.
 
-<a href="../../assets/images/gui/sim-panel-molecules-crosstalks.png"><img src="../../assets/images/gui/sim-panel-molecules-crosstalks.png"  style="max-width: 99px;" /></a>
+<a class="plain" href="../../assets/images/gui/sim-panel-molecules-crosstalks.png"><img src="../../assets/images/gui/sim-panel-molecules-crosstalks.png"  style="max-width: 99px;" /></a>
+
+Cross-talks bias the measured fluorescence intensities because of instrumental imperfections.
 
 The donor and acceptor direct excitation coefficients 
 [*dE*<sub>D</sub>](){: .math_var } and 
-[*dE*<sub>A</sub>](){: .math_var }, i.e., the fraction of signal collected when illuminated by the pair's excitation wavelength, can be set in **(a)** and **(b)** respectively.
+[*dE*<sub>A</sub>](){: .math_var } are the fractions of signal collected when illuminated by the pair's excitation wavelength.
+They can be set in **(a)** and **(b)** respectively.
 Here, setting 
 [*dE*<sub>D</sub>](){: .math_var } is senseless as simulations are limited to continuous- (donor-) wavelength excitation.
 
 The donor and acceptor bleedthrough coefficients 
 [*bt*<sub>D</sub>](){: .math_var } and 
-[*bt*<sub>A</sub>](){: .math_var }, i.e., the fraction of signal leaking in the pair's channel, can be set in **(c)** and **(d)** respectively.
+[*bt*<sub>A</sub>](){: .math_var } are the fractions of signal leaking in the pair's channel.
+They can be set in **(c)** and **(d)** respectively.
 
-**<u>default</u>:** default coefficients are based on our experimental setup:
+<u>default</u>: default coefficients are based on our experimental setup:
 * [*dE*<sub>D</sub>](){: .math_var } = 0
 * [*dE*<sub>A</sub>](){: .math_var } = 0.02
 * [*bt*<sub>D</sub>](){: .math_var } = 0.07
@@ -273,16 +317,17 @@ The donor and acceptor bleedthrough coefficients
 
 ---
 
+
 ## Photobleaching
 
-It is the time-settings of fluorophore photochemical destruction.
+Defines the time spent before photochemical destruction of the donor fluorophore.
 
-<a href="../../assets/images/gui/sim-panel-molecules-photobleaching.png"><img src="../../assets/images/gui/sim-panel-molecules-photobleaching.png"  style="max-width: 100px;" /></a>
+<a class="plain" href="../../assets/images/gui/sim-panel-molecules-photobleaching.png"><img src="../../assets/images/gui/sim-panel-molecules-photobleaching.png"  style="max-width: 100px;" /></a>
 
-Photochemical destruction of the donor, i.e., photobleaching, can be activated by checking the box in **(a)**.
-In that case, intensity-time traces are interrupted at the photobleaching time by a sudden and irreversible extinction of donor emission.
+Photochemical destruction of the donor, *i.e.*, photobleaching, can be activated by activating the option in **(a)**.
+In that case, intensity-time traces are interrupted at random photobleaching time by a sudden and irreversible extinction of donor emission.
 
-Photobleaching times are randomly drawn from an exponential distribution with a decay constant set by **(b)**.
+Photobleaching times are randomly drawn for each molecule from an exponential distribution with a decay constant set by **(b)**.
 
-**<u>default</u>:** no photobleaching, the observation time is set by video length 
+<u>default</u>: no photobleaching, the observation time is set by video length 
 [*L*](){: .math_var }. 

@@ -6,10 +6,16 @@ grand_parent: /trace-processing.html
 nav_order: 9
 ---
 
+<img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Find states
 {: .no_toc }
 
-<a href="../../assets/images/gui/TP-panel-findstates.png"><img src="../../assets/images/gui/TP-panel-findstates.png"/></a>
+Find states is the eighth panel of module Trace processing.
+
+Use this panel to obtain state trajectories.
+
+<a class="plain" href="../../assets/images/gui/TP-panel-findstates.png"><img src="../../assets/images/gui/TP-panel-findstates.png"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -22,21 +28,25 @@ nav_order: 9
 
 ## Discretization method
 
-Use this list to select the state finding algorithm to apply to traces selected in 
+Use this menu to select the state finding algorithm.
+
+State finding algorithm are applied to the traces selected in 
 [Data to discretize](#data-to-discretize).
 
-The list contains five different algorithms:
-* [Thresholds](#thresholds)
-* [vbFRET](#vbfret) [<sup>1</sup>](#references)
-* [One state](#one-state)
-* [CPA](#cpa) [<sup>2</sup>](#references)
-* [STaSI](#stasi) [<sup>3</sup>](#references)
+Five state finding algorithms are available and are described in the following sections:
 
-Each method requires parameters in 
-[Method parameters](#method-parameters) to be set as described in the corresponding section.
+* [`Thresholds`](#thresholds)
+* [`vbFRET`](#vbfret) [<sup>1</sup>](#references)
+* [`One state`](#one-state)
+* [`CPA`](#cpa) [<sup>2</sup>](#references)
+* [`STaSI`](#stasi) [<sup>3</sup>](#references)
+
+After selecting an algorithm, set the corresponding parameters in 
+[Method parameters](#method-parameters).
 
 The MATLAB scripts for method `vbFRET` was  downloaded from 
 [vbFRET sourceforge](http://vbfret.sourceforge.net/) page.
+
 The MATLAB scripts for method `STaSI` was downloaded from 
 [LandesLab](https://github.com/LandesLab/STaSI) Github repository.
 
@@ -44,15 +54,16 @@ The MATLAB scripts for method `STaSI` was downloaded from
 ### Thresholds
 {: .no_toc }
 
-The threshold method does not make any assumption about the nature of FRET transitions or noise in the time trace.
-The number and values of states to be found in the time trace are predefined and for each state is assigned a lower and a higher threshold.
+The threshold method is fast and efficient for well-separated states but is not recommended for overlapping state populations.
 
-It analyzes data points in the time trace one by one starting with the first point. 
-The first data point of the time trace is assigned to the state having a lower threshold being inferior to the data point and being the closest in value to the data point.
-A transition to another state is detected when the next data point goes beyond the lower of higher threshold of the current state.
+The state algorithm makes no assumption about the nature of state transitions or noise in the time trace.
+The number and values of states are predefined and for each state is assigned a lower and a higher threshold.
+
+The algorithm analyzes data points one by one starting with the first point in the time trace.
+The first data point is assigned to the state the closest in value and having a lower threshold below the data point.
+Transition to another state is detected when the next data point goes beyond the lower of higher threshold of the current state.
 The operation is repeated until every point in the time trace is assigned to a state.
 
-The threshold method is fast and efficient for well-separated states but is not recommended to use for overlapping populations.
 More representative results are obtained when the threshold method is combined with post-processing methods 
 [State refinement](#state-refinement) and 
 [Adjust states to data](#adjust-states-to-data).
@@ -62,8 +73,9 @@ More representative results are obtained when the threshold method is combined w
 {: .no_toc }
 
 The vbFRET 
-[<sup>1</sup>](#references) method models time traces as Markov chains, *i.e.*, with exponentially distributed dwell-times, hidden in Gaussian noise. 
-The method iteratively infers state trajectories determines the optimum state configuration in the trajectory by maximizing the evidence.
+[<sup>1</sup>](#references) algorithm models time traces as Markov chains - with exponentially distributed dwell-times - with states hidden in Gaussian noise. 
+
+The method iteratively infers state trajectories and determines the optimum state configuration by maximizing the evidence.
 
 If the noise distribution in the time trace deviates from a Gaussian distribution, recurrent low-amplitude transition to blurr states might occurs. 
 This artefact can be corrected by using the post processing method 
@@ -73,21 +85,22 @@ This artefact can be corrected by using the post processing method
 ### One state
 {: .no_toc }
 
-The One state method is meant only for use on static time traces to save computation time.
-It assumes no FRET transitions and considers the noise to be symmetrically distributed in the time trace.
-
 The One state method averages the whole time trace into one state.
+
+It assumes no FRET transitions and considers the noise to be symmetrically distributed in the time trace.
+The One state method is meant for use on static time traces to save computation time.
 
 
 ### CPA
 {: .no_toc }
 
 The change-point analysis (CPA) 
-[<sup>2</sup>](#references) method does not make any assumption about the kinetic nature of FRET transitions, but considers the noise to be uniformly distributed in the time trace.
-The method uses the uniform noise distribution in each state to detect state transitions, or change points.
+[<sup>2</sup>](#references) method makes no assumption about the kinetic nature of state transitions, but considers the noise to be uniformly distributed around each state.
+The method uses the uniform noise distribution to detect state transitions, called change points.
 
-The maximum amplitude jump induced by the noise in the time trace is first estimated by shuffling data points in the time trace to build a certain number of bootstrap samples, and record the maximum jump amplitude in each sample.
-If the maximum jump amplitude found in the initial time trace is higher than for the samples with a certain confidence level, it is detected as a change point.
+The maximum amplitude jump induced by noise is first estimated by shuffling data points in the time trace to build a certain number of bootstrap samples.
+A change point is detected when the maximum jump amplitude found in the initial time trace is higher than in bootstrap samples considering a certain confidence level.
+
 The exact change point can be assigned to the position where the maximum amplitude jump finishes, or at the point where the sum of root-mean squares before and after the change point is minimum.
 
 More representative results are obtained when the CPA method is combined with post-processing methods 
@@ -99,7 +112,8 @@ More representative results are obtained when the CPA method is combined with po
 {: .no_toc }
 
 The STaSI 
-[<sup>3</sup>](#references) method does not make any assumption about the nature of FRET transitions, but considers the noise to be uniformly distributed in the time trace. 
+[<sup>3</sup>](#references) method makes no assumption about the nature of state transitions, but considers the noise to be uniformly distributed in the time trace. 
+
 The method uses the uniform noise distribution in each state to detect state transitions with the Student's t-test and groups the resulting segments into the state configuration that minimizes the minimum description length.
 
 
@@ -115,14 +129,15 @@ The method uses the uniform noise distribution in each state to detect state tra
 
 ## Data to discretize
 
-Use this list to select the data to discretize and the way discretization is calculated.
+Use this menu to define which data are discretized.
 
-Three discretization mode are available:
-* `bottom` to infer state trajectories in FRET- and stoichiometry-time traces only
-* `top` to infer state trajectories in intensity-time traces and deduce from shared transitions the state trajectories in FRET- and stoichiometry-time traces
-* `all` to infer state trajectories in all time traces
+Three options are available:
 
-In the case of a `top` discretization mode, the post-processing method
+* `bottom` to infer state trajectories of FRET- and stoichiometry-time traces only
+* `top` to infer state trajectories of intensity-time traces and deduce state trajectories of FRET- and stoichiometry-time traces from shared transitions
+* `all` to infer state trajectories of all time traces
+
+In the case of a `top` discretization, the post-processing method
 [Find shared transitions](#find-shared-transitions) is applied to intensity state trajectories.
 
 
@@ -130,17 +145,16 @@ In the case of a `top` discretization mode, the post-processing method
 
 ## Method parameters
 
-Defines the settings used to discretize the selected trajectory.
+Use this interface to define settings of the [Discretization method](#discretization-method).
 
-<a href="../../assets/images/gui/TP-panel-findstates-param.png"><img src="../../assets/images/gui/TP-panel-findstates-param.png" style="max-width: 289px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-findstates-param.png"><img src="../../assets/images/gui/TP-panel-findstates-param.png" style="max-width: 289px;"/></a>
 
-Parametrization of the method selected in 
-[Discretization method](#discretization-method) must be specifically set for each time-trace.
-Time traces are be selected in list **(a)** prior setting parameters **(b-h)** as described in the table below.
+Parameters are specific to each time-trace.
+Select the time trace in menu **(a)** prior setting parameters in **(b-h)** as described in the table below.
 
 | method                                         | parametrization                                                                                                                                                                                                     | default parameters                |
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
-| `Threshold`                                    | **(b)**: maximum number of states, **(e)**: state selection, **(f)**: state's lower threshold, **(g)**: state's value, **(h)**: state's higher threshold                                                            | **(f)**=3, **(g)**=3, **(h)**=3   |
+| `Threshold`                                    | **(b)**: maximum number of states, **(e)**: state, **(f)**: state's lower threshold, **(g)**: state's value, **(h)**: state's higher threshold                                                                      | **(f)**=3, **(g)**=3, **(h)**=3   |
 | `vbFRET` [<sup>1</sup>](#references)           | **(b)**: minimum number of states , **(c)**: maximum number of states, **(d)**: number of process iterations                                                                                                        | **(b)**=1, **(c)**=2, **(d)**=5   |
 | `One state`                                    | no parameter to be set                                                                                                                                                                                              |                                   |
 | `CPA` [<sup>2</sup>](#references)              | **(b)**: number of bootstrap samples, **(c)**: confidence level to identify a transition (%), **(d)**: change point localization by (1) maximum jump amplitude, or (2) minimum RMSE before and after change point   | **(b)**=50, **(c)**=90, **(d)**=2 |
@@ -151,12 +165,15 @@ Time traces are be selected in list **(a)** prior setting parameters **(b-h)** a
 
 ## Post-processing methods
 
-Defines parameters to process states trajectories.
+Use this interface to define state trajectory processing methods.
 
-<a href="../../assets/images/gui/TP-panel-findstates-postparam.png"><img src="../../assets/images/gui/TP-panel-findstates-postparam.png" style="max-width: 158px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-findstates-postparam.png"><img src="../../assets/images/gui/TP-panel-findstates-postparam.png" style="max-width: 158px;"/></a>
 
-Post-processing methods are algorithms that applies to state trajectories inferred by discretization methods. 
-Four post-processing methods are available, following the post-processing order:
+Post-processing methods are algorithms that applies to state trajectories inferred by 
+the [Discretization method](#discretization-method). 
+
+Four post-processing methods are available and can be cumulated following the post-processing order:
+
 * [State binning](#state-binning)
 * [State refinement](#state-refinement)
 * [Adjust states to data](#adjust-states-to-data)
@@ -168,13 +185,14 @@ Four post-processing methods are available, following the post-processing order:
 
 The state binning method bins segments in the state trajectories with a bin size set in **(c)**.
 
-This method is useful in case small amplitude jumps to blur states are occurring in state trajectories.
+This method is useful in case artefactual small amplitude jumps, *e .g* to blur states, are occurring in state trajectories.
 
 
 ### State refinement
 {: .no_toc }
 
 The refinement method corrects state assignment without modifying the values. 
+
 Each segment is reassigned to the state having the closest value to the average data behind the segment.
 The state refinement method is an iterative process with each iteration refining the new state trajectory.
 The number of refinement iterations in set in **(b)**.
@@ -186,6 +204,7 @@ This method is useful to correct state trajectories from noise-induced transitio
 {: .no_toc }
 
 Adjusting states to data consists in recalculating states without modifying state transitions.
+
 States are recalculated as the average data behind each segment of the state trajectory.
 
 This method is useful to obtain more representative states when using predefined levels, *e. g.* with the Threshold method.
@@ -194,9 +213,11 @@ This method is useful to obtain more representative states when using predefined
 ### Find shared transitions
 {: .no_toc }
 
-Finding shared transitions is used after each `top` discretization, in order to build FRET- and stoichiometry- state trajectories from intensity state trajectories; see 
+Finding shared transitions is used after each `top` discretization, in order to obtain FRET- and stoichiometry- state trajectories from intensity state trajectories; see 
 [Data to discretize](#data-to-discretize) for more details.
+
 For FRET transitions, the algorithm looks for transitions detected in donor and acceptor state trajectories that occurs less than a certain number of frame away.
+
 For stoichiometry transitions, intensity state trajectories are first summed over all channels and (1) over the emitter's specific excitation, and (2) over all laser illumination, prior looking for shared transitions.
 
 The maximum frame gap between donor and acceptor transitions or emitter's sum and overall sum transitions, is set in **(a)** for FRET or stoichiometry data respectively.
@@ -206,20 +227,22 @@ The maximum frame gap between donor and acceptor transitions or emitter's sum an
 
 ## Found states
 
-Shows states found in selected trajectory.
+Use this interface to look at states present in final state trajectories.
 
-<a href="../../assets/images/gui/TP-panel-findstates-results.png"><img src="../../assets/images/gui/TP-panel-findstates-results.png" style="max-width: 217px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-findstates-results.png"><img src="../../assets/images/gui/TP-panel-findstates-results.png" style="max-width: 217px;"/></a>
 
-The values of states found after discretizattion and post processing can be displayed in **(b)** after selecting the state index in list **(a)**.
+States found after discretizattion and post processing are displayed in **(b)** after selecting the state index in menu **(a)**.
 
 
 ---
 
 ## Apply settings to all molecules
 
-Use this command to apply the 
-[Discretization method](#discretization-method), 
-[Method parameters](#method-parameters) to all molecules.
+Press 
+![all](../../assets/images/gui/TP-but-all.png "all") to apply the 
+[Discretization method](#discretization-method),
+[Method parameters](#method-parameters) and 
+[Post-processing methods](#post-processing-methods) to all molecules.
 
 Corrections are applied to other molecules only when the corresponding data is processed, *i.e.*, when pressing 
 ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL"); see 

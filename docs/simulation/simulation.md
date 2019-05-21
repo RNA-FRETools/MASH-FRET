@@ -6,12 +6,12 @@ has_children: true
 permalink:  /simulation.html
 ---
 
-<img src="assets/images/logos/logo-simulation_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+<img src="assets/images/logos/logo-simulation_noname_400px.png" width="260" style="float:right; margin-left: 15px;"/>
 
 # Simulation
 {: .no_toc }
 
-Use this module to  **generate synthetic data** (single molecule videos and trajectories).
+Use this module to  generate synthetic data (single molecule videos and trajectories).
 
 Simulation framework is limited to:
 - <u>surface-immobilized</u> molecules,

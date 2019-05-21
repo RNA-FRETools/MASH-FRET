@@ -1,9 +1,10 @@
 {% assign pages_list = site.html_pages | sort: "nav_order" | sort: "subnav_order"%}
+<span id="tm-menu"></span>
 <p><span class="fs-3">
 {% for node in pages_list %}
  {% if page.main_nav %}
   {% if node.main_nav == page.main_nav %}
-   <a href="{{ node.url | absolute_url}}" class="{% if node.url == page.url %}btn-tm-green{% else %}btn-tm{% endif %}">{{ node.sub_title }}</a>
+   <a href="{{ node.url | absolute_url}}#tm-menu" class="{% if node.url == page.url %}btn-tm-green{% else %}btn-tm{% endif %}">{{ node.sub_title }}</a>
   {% endif %}
  {% endif %}
 {% endfor %}

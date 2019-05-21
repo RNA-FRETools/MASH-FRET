@@ -6,11 +6,11 @@ has_children: true
 permalink: /video-processing.html
 ---
 
-<img src="assets/images/logos/logo-video-processing_400px.png" width="260" style="float:right; margin-left: 15px;"/>
+<img src="assets/images/logos/logo-video-processing_noname_400px.png" width="260" style="float:right; margin-left: 15px;"/>
 
 # Video processing
 
-Use this module to obtain single molecule **intensity-time traces** from a single molecule video.
+Use this module to obtain single molecule intensity-time traces from a single molecule video.
 
 Video processing framework is limited to <u>surface-immobilized</u> molecules.
 

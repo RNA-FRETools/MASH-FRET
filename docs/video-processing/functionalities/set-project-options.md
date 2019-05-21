@@ -6,6 +6,8 @@ grand_parent: /video-processing.html
 nav_order: 1
 ---
 
+<img src="../../assets/images/logos/logo-video-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
+
 # Set project options
 {: .no_toc }
 
@@ -17,7 +19,10 @@ They are initially set in module Video processing by pressing
 ![Edit ...](../../assets/images/gui/TP-but-edit-3p.png "Edit ...") in the 
 [Project management area](.././trace-processing/panels/area-project-management.html) .
 
-<a href="../../assets/images/gui/VP-panel-expset-opt.png"><img src="../../assets/images/gui/VP-panel-expset-opt.png" style="max-width: 546px;"/></a>
+Press 
+![Save](../../assets/images/gui/VP-but-save.png "Save") to save and apply immediately the modifications to the project.
+
+<a class="plain" href="../../assets/images/gui/VP-panel-expset-opt.png"><img src="../../assets/images/gui/VP-panel-expset-opt.png" style="max-width: 546px;"/></a>
 
 
 ## Window components
@@ -30,14 +35,14 @@ They are initially set in module Video processing by pressing
 
 ## Project parameters
 
-They concern the project title and some optional parameters.
+Use this panel to define the project title and some optional parameters.
 
-<a href="../../assets/images/gui/VP-panel-expset-opt-projprm.png"><img src="../../assets/images/gui/VP-panel-expset-opt-projprm.png" style="max-width: 250px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-expset-opt-projprm.png"><img src="../../assets/images/gui/VP-panel-expset-opt-projprm.png" style="max-width: 250px;"/></a>
 
 The project title is the name appearing in the project lists. 
-It can be modified in **(a)**.
-Default titles are named after the
-[MASH project file](../../output-files/mash-mash-project.html) or by the directory containing imported ASCII trajectories.
+It can be defined in **(a)** or default title can be used by leaving **(a)** empty.
+By default, projects are titled after the corresponding 
+[.mash file](../../output-files/mash-mash-project.html) or after the source directory when traces are imported from ASCII files.
 
 Optional project parameters include the name of the molecule under study, set in **(b)**, and a group of experimental parameters, set in **(c)**.
 By default, the group in **(c)** contains parameters:
@@ -60,9 +65,9 @@ For the moment, optional parameters solely act as project "tags" saved with the
 
 ## Video channels
 
-They are the channel labels and excitation selectivity.
+Use this panel to define the channel labels and excitation selectivity.
 
-<a href="../../assets/images/gui/VP-panel-expset-opt-channels.png"><img src="../../assets/images/gui/VP-panel-expset-opt-channels.png" style="max-width: 250px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-expset-opt-channels.png"><img src="../../assets/images/gui/VP-panel-expset-opt-channels.png" style="max-width: 250px;"/></a>
 
 Channel labels are used to easily identify calculated and plotted data. 
 Usually, the channel is labelled after the emitter from which photons are collected (ex: `Cy5`).
@@ -82,16 +87,16 @@ Labels can be removed from the list any time by pressing
 
 ## FRET calculations
 
-They are the possible energy transfer occurring between the detected emitters.
+Use this panel to define the FRET pairs.
 
-<a href="../../assets/images/gui/VP-panel-expset-opt-fret.png"><img src="../../assets/images/gui/VP-panel-expset-opt-fret.png" style="max-width: 250px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-expset-opt-fret.png"><img src="../../assets/images/gui/VP-panel-expset-opt-fret.png" style="max-width: 250px;"/></a>
 
-To define a donor-acceptor pair in the FRET network, respective labels must be selected in list **(a)** and **(b)** prior pressing 
+To define a donor-acceptor pair in the multiple FRET-pair network, labels must be selected in list **(a)** and **(b)** respectively prior pressing 
 ![Add](../../assets/images/gui/VP-but-add.png "Add").
-All transfers included in the network are listed in list **(c)** and can be removed any time by pressing 
+All FRET pairs included in the network are listed in **(c)** and can be removed any time by pressing 
 ![Remove](../../assets/images/gui/VP-but-remove.png "Remove").
 
-In a FRET network composed of 
+In a FRET-pair network composed of 
 [*K*](){: .math_var } emitters and where emitters are indexed according to the red-shift of their emission spectra (1 for the most blue-shifted and K for the most red-shifted), the apparent FRET value 
 [*E*\*<sub>*D*,*A*</sub>](){: .math_var } of a pair donor-acceptor with respective indexes 
 [*D*](){: .math_var } and 
@@ -99,13 +104,6 @@ In a FRET network composed of
 
 {: .equation }
 <img src="../../assets/images/equations/VP-eq-fret-calc-01.gif" alt="E_{D,A}^{*} = {}\frac{I_{A,em}^{D,ex}}{\left [ 1 - \sum_{k>A} \left ( E_{A,k}^{*}  \right ) \right ] \times \sum_{k} \left ( I_{k,em}^{D,ex}  \right )} - \sum_{k>D}^{A-1} \left \{\E_{D,k}^{*} \times \prod_{k'> k}^{A} \left [E_{k,k'}^{*} \times \prod_{k''> k'}^{A} \left (E_{k',k''}^{*}  \right )  \right ]  \right \}">
-
-<!--
-{: .equation }
-*E*\*<sub>*D*,*A*</sub> = *I*<sub>*A*</sub><sup>*D*</sup> / { [ 1 - &#931;<sub>*A*>*k*&#8805;*K*</sub>( *E*\*<sub>*A*,*k*</sub> ) ] &#215; &#931;<sub>*D*&#8805;*k*&#8805;*K*</sub>( *I*<sub>*k*</sub><sup>*D*</sup> ) }<br><br>
-&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
-            - &#931;<sub>*D*>*k*>*A*</sub>{ *E*\*<sub>*D*,*k*</sub> &#215; &#928;<sub>*k*>*k'*&#8805;*A*</sub>[ *E*\*<sub>*k*,*k'*</sub> &#215; &#928;<sub>*k'*>*k''*&#8805;*A*</sub>( *E*\*<sub>*k'*,*k''*</sub> ) ] }
--->
 
 with 
 [*I*<sub>*k*,em</sub><sup>*k'*,ex</sup>](){: .math_var } the intensity collected in detection channel of emitter 
@@ -126,25 +124,14 @@ In this case, the expression is simplified to a simple 2-color apparent FRET equ
 {: .equation }
 <img src="../../assets/images/equations/VP-eq-fret-calc-02.gif" alt="E_{K-1,K}^{*}= \fract{I_{K-1,em}^{K,ex}}{\sum_{k \geq K-1} \left ( I_{K-1,em}^{K,ex} \right )}">
 
-<!--
-{: .equation }
-*E*\*<sub>*K*-1,*K*</sub> = *I*<sub>*K*</sub><sup>*K*-1</sup> / &#931;<sub>*K*-1&#8805;*k*&#8805;*K*</sub>( *I*<sub>*k*</sub><sup>*K*-1</sup> )
--->
-
 giving:
 
 {: .equation }
 <img src="../../assets/images/equations/VP-eq-fret-calc-03.gif" alt="E_{K-1,K}^{*}= \frac{I_{K,em}^{K-1,ex}}{I_{K,em}^{K-1,ex}+I_{K-1,em}^{K-1,ex}}">
 
-<!--
-{: .equation }
-*E*\*<sub>*K*-1,*K*</sub> = *I*<sub>*K*</sub><sup>*K*-1</sup> / ( *I*<sub>*K*</sub><sup>*K*-1</sup> + *I*<sub>*K*-1</sub><sup>*K*-1</sup> )
--->
-
 where 
 [*E*\*<sub>*K*-1,*K*</sub>](){: .math_var } depends only on acquired intensity-time traces and thus, can be readily calculated.
 
-Calculated 
 [*E*\*<sub>*K*-1,*K*</sub>](){: .math_var } can then be used to solve the equation for the next most red-shifted donor, *i.e.*, for pairs 
 ([*D*](){: .math_var } = [*K*](){: .math_var }-2, 
 [*A*](){: .math_var } = [*K*](){: .math_var }-1, ) and 
@@ -157,46 +144,34 @@ In this case, the expression is simplified to a 3-color apparent FRET equation s
 <img src="../../assets/images/equations/VP-eq-fret-calc-04.gif" alt="E_{K-2,K-1}^{*} = \frac{ I_{K-1,em}^{K-2,ex} }{ \left [ 1 - \sum_{k>K-1}\left ( E_{K-1,k}^{*} \right ) \right ] \times \sum_{k \geq  K-2}\left ( I_{k,em}^{K-2,ex} \right )  }"><br>
 <img src="../../assets/images/equations/VP-eq-fret-calc-05.gif" alt="E_{K-2,K}^{*} = \frac{ I_{K,em}^{K-2ex} }{ \sum_{k\geq K-2}\left ( I_{k,em}^{K-2,ex} \right ) - \sum_{k> K-2}\left [ E_{K-2,k}^{*} \times \prod_{k'>k} \left ( E_{k,k'}^{*} \right ) \right ]}">
 
-<!--
-{: .equation }
-*E*\*<sub>*K*-2,*K*-1</sub> = *I*<sub>*K*-1</sub><sup>*K*-2</sup> / { [ 1 - &#931;<sub>*K*-1>*k*&#8805;*K*</sub>( *E*\*<sub>*K*-1,*k*</sub> ) ] &#215; &#931;<sub>*K*-2&#8805;*k*&#8805;*K*</sub>( *I*<sub>*k*</sub><sup>*K*-2</sup> ) }<br><br>
-*E*\*<sub>*K*-2,*K*</sub> = *I*<sub>*K*</sub><sup>*K*-2</sup> / &#931;<sub>*K*-2&#8805;*k*&#8805;*K*</sub>( *I*<sub>*k*</sub><sup>*K*-2</sup> ) - &#931;<sub>*K*-2>*k*>*K*</sub>[ *E*\*<sub>*K*-2,*k*</sub> &#215; &#928;<sub>*k*>*k'*&#8805;*K*</sub>( *E*\*<sub>*k*,*k'*</sub> ) ]
--->
-
 giving:
 
 {: .equation }
 <img src="../../assets/images/equations/VP-eq-fret-calc-06.gif" alt="E_{K-2,K-1}^{*} = \frac{I_{K-1,em}^{K-2,ex}}{\left ( 1 - E_{K-1,K}^{*} \right ) \times \left ( I_{K,em}^{K-2,ex} + I_{K-1,em}^{K-2,ex} + I_{K-2,em}^{K-2,ex} \right )}"><br>
 <img src="../../assets/images/equations/VP-eq-fret-calc-07.gif" alt="E_{K-2,K}^{*} = \frac{I_{K,em}^{K-2,ex}}{ I_{K,em}^{K-2,ex} + I_{K-1,em}^{K-2,ex} + I_{K-2,em}^{K-2,ex}} - E_{K-2,K-1}^{*}\times E_{K-1,K}^{*}">
 
-<!--
-{: .equation }
-*E*\*<sub>*K*-2,*K*-1</sub> = *I*<sub>*K*-1</sub><sup>*K*-2</sup> / ( 1 - *E*<sub>*K*-1,*K*</sub> ) &#215; ( *I*<sub>*K*</sub><sup>*K*-2</sup> + *I*<sub>*K*-1</sub><sup>*K*-2</sup> + *I*<sub>*K*-2</sub><sup>*K*-2</sup> )<br><br>
-*E*\*<sub>*K*-2,*K*</sub> = *I*<sub>*K*</sub><sup>*K*-2</sup> / ( *I*<sub>*K*</sub><sup>*K*-2</sup> + *I*<sub>*K*-1</sub><sup>*K*-2</sup> + *I*<sub>*K*-2</sub><sup>*K*-2</sup> ) - *E*<sub>*K*-2,*K*-1</sub> &#215; *E*<sub>*K*-1,*K*</sub> 
--->
-
 where 
 [*E*\*<sub>*K*-2,*K*-1</sub>](){: .math_var } depends on acquired intensity-time traces and the previously calculated 
 [*E*\*<sub>*K*-1,*K*</sub>](){: .math_var }.
 
-Calculated 
 [*E*\*<sub>*K*-2,*K*-1</sub>](){: .math_var } and 
-[*E*\*<sub>*K*-2,*K*</sub>](){: .math_var } can then be used to solve the equation for the next most red-shifted donor and so on ...
+[*E*\*<sub>*K*-2,*K*</sub>](){: .math_var } can then be used to solve the equation for the next most red-shifted donor.
+The operation is repeated until apparent FRET values are solved for all FRET-pairs.
 
 To know more about how multi-color apparent FRET data are calculated, please refer to the respective functions in the source code:
 
 ```
-MASH-FRET/buildFretexpr.m
-MASH-FRET/source/traces/processing/FRET/calcFRET.m
+MASH-FRET/tools/buildFretexpr.m
+MASH-FRET/source/mod-trace-processing/FRET/calcFRET.m
 ```
 
 ---
 
 ## Stoichiometry calculations
 
-They are the desired emitter stoichiometries to be calculated and plotted.
+Use this panel to define the emitter stoichiometries to be calculated and plotted.
 
-<a href="../../assets/images/gui/VP-panel-expset-opt-s.png"><img src="../../assets/images/gui/VP-panel-expset-opt-s.png" style="max-width: 250px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-expset-opt-s.png"><img src="../../assets/images/gui/VP-panel-expset-opt-s.png" style="max-width: 250px;"/></a>
 
 The stoichiometry of an emitter is usually used to estimate the ratio of different emitters on the single molecule under observation.
 
@@ -210,11 +185,6 @@ The stoichiometry
 {: .equation }
 <img src="../../assets/images/equations/VP-eq-s-calc.gif" alt="S_{D} = \frac{\sum_{k}\left (I_{k,em}^{D,ex} \right )}{\sum_{k}\left[ \sum_{k'}\left( I_{k',em}^{k,ex} \right ) \right ]}">
 
-<!--
-{: .equation }
-*S*<sub>*D*</sub> = &#931;<sub>1&#8805;*k*&#8805;*K*</sub>( *I*<sub>*k*,em</sub><sup>*D*,ex</sup> ) / &#931;<sub>1&#8805;*k*&#8805;*K*</sub>[ &#931;<sub>1&#8805;*k'*&#8805;*K*</sub>( *I*<sub>*k*,em</sub><sup>*k'*,ex</sup> ) ]
--->
-
 with 
 [*I*<sub>*k*,em</sub><sup>*k'*,ex</sup>](){: .math_var } the intensity collected from emitter 
 [*k*](){: .math_var } specifically detected in channel 
@@ -226,7 +196,7 @@ A stoichiometry
 [*S*<sub>*D*</sub>](){: .math_var } = 0.5 means that 50% of the total number of collected photons belongs to the emitter 
 [*D*](){: .math_var }.
 
-To activate the calculation of an emitter stoichiometry, the corresponding channel label must be selected in **(a)** prior pressing 
+To activate the stoichiometry calculation for an emitter in particular, the emitter's label must be selected in **(a)** prior pressing 
 ![Add](../../assets/images/gui/VP-but-add.png "Add").
 All desired stoichiometry calculations are listed in **(b)** and can be removed any time by pressing 
 ![Remove](../../assets/images/gui/VP-but-remove.png "Remove").
@@ -235,13 +205,10 @@ All desired stoichiometry calculations are listed in **(b)** and can be removed 
 
 ## Color code
 
-They are the colors used to identify calculated and plotted traces
+Use this panel to define the colors used to plot and identify the time traces.
 
-<a href="../../assets/images/gui/VP-panel-expset-opt-colors.png"><img src="../../assets/images/gui/VP-panel-expset-opt-colors.png" style="max-width: 250px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-expset-opt-colors.png"><img src="../../assets/images/gui/VP-panel-expset-opt-colors.png" style="max-width: 250px;"/></a>
 
-To set the RGB color of a specific trace, select the data in list **(a)** and set the red, green and blue values in **(b)**, **(c)** and **(d)** respectively.
-Red, green and blue takes values between 0 and 1.
-
-The resulting color is displayed in **(e)** and can be exported to list **(a)** by pressing 
-![update](../../assets/images/gui/VP-but-update.png "update").
+To set the RGB color of a specific trace, select the data in list **(a)** and press
+![Set color](../../assets/images/gui/VP-but-set-color.png "Set color") to open the color picker.
 
