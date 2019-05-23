@@ -11,20 +11,35 @@ function FRET = calcFRET(nChan, nExc, allExc, chanExc, p, traces, gamma)
 % "gamma" >> [L-by-nFRET] gamma factors
 % "FRET" >> [L-by-nFRET] calculated single molecule FRET data
 
-% Last update the 17th of April by Mélodie C.A.S. Hadzic
+% Last update 23.5.2019 by MH
+% --> correct FRET calculation for multiple acceptors by correcting
+%     apparent FRET efficiencies from the presence of other acceptors
+%     Back-calculations checked for 3-color FRET with:
+%     I_32 = E23*I_02;
+%     I_22 = (1-E23)*I_02;
+%     I_11 = I_01/(1 + E12/(1-E12) + E13/(1-E13));
+%     I_21 = I_11*E12*(1-E23)/(1-E12);
+%     I_31 = I_01 - I_21;
+%
+% update 17.4.2019 by MH
 % --> Fix calculations for more than 2 channels and comment code
 
 warning('off','symbolic:solve:DeprecateStringInputWarning');
 warning('off','symbolic:sym:sym:DeprecateExpressions');
 
-FRET = [];
 nFRET = size(p,1); % number of FRET pairs
 L = size(traces,1); % trajectory length
+FRET = nan(L,nFRET);
 
 if nFRET > 0 && nExc>=1
     E_eq = cell(nChan);
     donors = (sort(unique(p(:,1)), 'ascend'))';
-
+    exc = zeros(1,donors(end));
+    
+    % express transferred intensity Q in function of the fluorescence 
+    % intensity in absence of transfer I_0 and apparent FRET
+    % efficiencies in presence of multiple acceptors E 
+    q_eq = cell(1,donors(end));
     for d = donors
         
         % record donor direct excitation for later
@@ -33,59 +48,87 @@ if nFRET > 0 && nExc>=1
             exc(d) = excD;
         end
         
-        % initialize transfer matrix (true if transfer after d excitation)
+        % list FRET pairs having directly/subsequently involved in energy transfers
+        p_d = p(p(:,1)==d,:); % direct transfers donor->acceptors
+        p_d = getSubsqPairs(p_d,p,d); % subsequent transfers acceptor->acceptors
+
+        % fill in transfer matrix (true if transfer occurs at d excitation)
         isE = false(nChan);
-        
-        % direct transfer donor1->acceptor1
-        p_d = p(p(:,1)==d,:);
-        
-        % consequent transfer acceptor1->acceptor2
-        acc = p(p(:,1)==d,2);
-        for a = 1:size(acc,1)
-            p_d = [p_d;p(p(:,1)==acc(a,1),:)];
-        end
-        
-        % update in transfer matrix
         for f = 1:size(p_d,1)
             isE(p_d(f,1),p_d(f,2)) = true;
         end
         
-        % express the transferred intensity in function of I_0, the 
-        % fluorescence intensity in absence of transfer 
+        % express transfer probabilities in function of apparent FRET
+        % efficiencies in presence of multiple acceptors E 
         q_eq{d} = cell(nChan);
-        q_eq{d}(d,d:end) = {'I_0'};
-        
         for h = d:nChan % direct (donor1) and indirect (acceptor1) donors
-            for i = (h+1):nChan % acceptors
+            for i =(h+1):nChan % acceptors
                 if isE(h,i)
-                    
                     % express intensity absorbed by the acceptor
-                    str_q = '';
-                    for j = 1:nChan
-                        if ~isempty(q_eq{d}{j,h})
-                            if strcmp(str_q, '')
-                                str_q = strcat(str_q, q_eq{d}{j,h});
-                            else
-                                str_q = strcat(str_q, '+', q_eq{d}{j,h});
+                    if h==d
+                        q_eq{d}{h,i} = sprintf('E_%i%i',h,i);
+                    else
+                        str_q = '';
+                        for j = 1:nChan
+                            if ~isempty(q_eq{d}{j,h}) && ...
+                                    ~strcmp(q_eq{d}{j,h},'0')
+                                if isempty(str_q)
+                                    str_q = strcat(str_q,q_eq{d}{j,h});
+                                else
+                                    str_q = strcat(str_q,'+',q_eq{d}{j,h});
+                                end
                             end
                         end
+
+                        % express intensity emitted by the acceptor
+                        q_eq{d}{h,i} = sprintf('(%s)*E_%i%i',str_q,h,i);
                     end
                     
-                    % express intensity emitted by the acceptor
-                    q_eq{d}(h,i) = {sprintf('(%s)*E_%i%i', str_q, h, i)};
-                    
-                else
-                    % no transfer
-                    q_eq{d}(h,i) = {'0'}; 
+                else % no energy transferred
+                    q_eq{d}{h,i} = '0'; 
                 end
             end
         end
+        
+        % diagonal cells = dye emission
+        q_eq{d}{d,d} = '1';
+        for h = 1:nChan
+            for i = 1:h-1
+                if ~isempty(q_eq{d}{i,h}) && ~strcmp(q_eq{d}{i,h},'0')
+                    q_eq{d}{h,h} = strcat(q_eq{d}{h,h},q_eq{d}{i,h},'+');
+                end
+            end
+            if ~isempty(q_eq{d}{h,h}) && q_eq{d}{h,h}(end)=='+'
+                q_eq{d}{h,h} = q_eq{d}{h,h}(1:end-1);
+            end
+            for i = h+1:nChan
+                if ~isempty(q_eq{d}{h,i}) && ~strcmp(q_eq{d}{h,i},'0')
+                    if isempty(q_eq{d}{h,h}) || (~isempty(q_eq{d}{h,h}) &&...
+                            q_eq{d}{h,h}(end)~='-')
+                        q_eq{d}{h,h} = strcat(q_eq{d}{h,h},'-');
+                    end
+                    q_eq{d}{h,h} = strcat(q_eq{d}{h,h},q_eq{d}{h,i},'-');
+                end
+            end
+            if ~isempty(q_eq{d}{h,h}) && q_eq{d}{h,h}(end)=='-'
+                q_eq{d}{h,h} = q_eq{d}{h,h}(1:end-1);
+            end
+        end
+        
+        % convert probabilities to intensities
+        for i = 1:numel(q_eq{d})
+            if ~isempty(q_eq{d}{i}) && ~strcmp(q_eq{d}{i},'0')
+                q_eq{d}{i} = strcat('I_0*(',q_eq{d}{i},')');
+            end
+        end
+        
     end
     
+    % express apparent FRET efficiencies E
     for d = donors 
         for c = (d+1):nChan % acceptors
             str_I = 'Ic';
-            for don = 1:nChan % FRET transfered to c
+            for don = 1:c-1 % FRET transfered to c
                 if ~isempty(q_eq{d}{don,c})
                     str_I = strcat(str_I, '-', q_eq{d}{don,c});
                 end
@@ -137,15 +180,14 @@ if nFRET > 0 && nExc>=1
         end
     end
     
+    % solve apparent FRET efficiencies E
     for i = 1:numel(E_eq)
         if ~isempty(E_eq{i})
             E_eq{i} = strrep(char(E_eq{i}), '*', '.*');
             E_eq{i} = strrep(char(E_eq{i}), '/', './');
         end
     end
-
     E = zeros(L,nChan,nChan);
-    
     % from reddest- to greenest-excited donor
     for d = flip(donors,2) % /!\ this assumes that chanel 1,2,3... are 
                            % directly ecxited with increasing wavelength
@@ -158,8 +200,9 @@ if nFRET > 0 && nExc>=1
                             sum(traces(:,:,exc(d)),2), E);
                         for i = 1:numel(E_eq)
                             if ~isempty(E_eq{i})
-                                E_eq{i} = strrep(E_eq{i}, sprintf('E_%i%i', d, c), ...
-                                    sprintf('E(:,%i,%i)', d, c));
+                                E_eq{i} = strrep(E_eq{i},...
+                                    sprintf('E_%i%i',d,c), ...
+                                    sprintf('E(:,%i,%i)',d,c));
                             end
                         end
                     end
@@ -167,8 +210,35 @@ if nFRET > 0 && nExc>=1
             end
         end
     end
+    
+    % solve transferred intensity Q with calculated apparent FRET 
+    % efficiencies E
+    Q_eq = q_eq{1};
+    Q = zeros(L,nChan,nChan);
+    d0 = donors(1);
+    for d = 1:nChan
+        for a = 1:nChan
+            if ~isempty(Q_eq{d,a})
+                Q_eq{d,a} = strrep(char(Q_eq{d,a}), '*', '.*');
+                Q_eq{d,a} = strrep(char(Q_eq{d,a}), '/', './');
+                for d2 = flip(donors,2)
+                    for a2 = (d2+1):nChan
+                        Q_eq{d,a} = strrep(Q_eq{d,a},sprintf('E_%i%i',d2,a2), ...
+                            sprintf('E(:,%i,%i)',d2,a2));
+                    end
+                end
+                q_da = @(I_0,E) eval(Q_eq{d,a});
+                Q(:,d,a) = q_da(sum(traces(:,:,exc(d0)),2),E);
+            end
+        end
+    end
+    
+    % calculate true FRET efficiencies (in absence of other acceptors) with
+    % transferred intensity Q
     for n = 1:nFRET
-        FRET(:,n) = E(:,p(n,1),p(n,2));
+%         FRET(:,n) = E(:,p(n,1),p(n,2));
+        d = p(n,1); a = p(n,2);
+        FRET(:,n) = Q(:,d,a)./(Q(:,d,d)+Q(:,d,a));
         FRET(:,n) = FRET(:,n)./(gamma(:,n)-FRET(:,n).*(gamma(:,n)-1));
     end
 end
@@ -196,4 +266,22 @@ for i = 1:numel(ind);
         E_str = [E_str,Ei_str];
     end
 end
+
+
+function p_d = getSubsqPairs(p_d,p,d)
+
+% get possible acceptors
+acc = p(p(:,1)==d,2);
+
+for a = acc'
+    if ~isempty(find(p(:,1),a))
+        % add donor-acceptor to list
+        p_d = cat(1,p_d,p(p(:,1)==a,:));
+
+        % add possible subsequent pairs
+        p_d = getSubsqPairs(p_d,p,a);
+    end
+end
+
+p_d = unique(p_d,'rows');
 
