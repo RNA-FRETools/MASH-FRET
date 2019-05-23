@@ -1,0 +1,21 @@
+{% assign pages_list = site.html_pages | sort:"nav_order" %}
+<ul>
+{% for node in pages_list %}
+	{% if page.grand_parent %}
+		{% if node.parent == page.parent %}
+			<li>
+			{% if node.url == page.url %}
+				<strong>Step {{ node.nav_order }}: {{ node.subtitle }}</strong>
+			{% else %}
+				<a href="{{ node.url | absolute_url}}">Step {{ node.nav_order }}: {{ node.subtitle }}</a>
+			{% endif %}
+			</li>
+		{% endif %}
+		
+	{% else %}
+		{% if node.parent == page.url %}
+			<li><a href="{{ node.url | absolute_url}}">Step {{ node.nav_order }}: {{ node.subtitle }}</a></li>
+		{% endif %}
+	{% endif %}
+{% endfor %}
+</ul>

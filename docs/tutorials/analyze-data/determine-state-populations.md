@@ -1,11 +1,12 @@
 ---
 layout: default
-title: Determine state populations
+title: Step 4
+subtitle: Determine state populations
 grand_parent: /tutorials.html
 parent: /tutorials/analyze-data.html
 nav_order: 4
-nav_exclude: true
 has_toc: false
+nav_exclude: true
 ---
 
 <img src="../../assets/images/logos/logo-tutorials_400px.png" width="170" style="float:right; margin-left: 15px;"/>
@@ -16,7 +17,12 @@ has_toc: false
 Follow this procedure to process your single molecule videos (SMVs) or trajectories and characterize the molecule dynamics in your sample.
 
 **Note:** *Skip step 1 if already in possession of intensity-time traces files (ASCII or 
-[mash project](../../output-files/mash-mash-project.html)).*
+[mash project](../../output-files/mash-mash-project)).*
+
+{% include tutorial_toc.html %}
+
+
+---
 
 {% include tutorial_head.html %}
 
