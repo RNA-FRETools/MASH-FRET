@@ -8,18 +8,22 @@ function p = gammaCorr(h_fig, mol, p)
 % >> correct the control of presence of discretized intensities according
 %    to FS suggestions
 %
+
+% last update: 23.5.2019 by MH
+% >> reset discretized FRET traces when gamma factors was changed manually
+%
 % created: by MH, 27.3.2019
 
 proj = p.curr_proj;
 prm = p.proj{proj}.prm{mol}{5};
 pbGamma = prm{4}(1);
+nFRET = size(p.proj{proj}.FRET,1);
 
 if pbGamma
     
     FRET = p.proj{proj}.FRET;
     nExc = p.proj{proj}.nb_excitations;
     nChan = p.proj{proj}.nb_channel;
-    nFRET = size(p.proj{proj}.FRET,1);
     chanExc = p.proj{proj}.chanExc;
     exc = p.proj{proj}.excitations;
     
@@ -77,4 +81,7 @@ if pbGamma
         end
         
     end
+else
+    % reset discretized FRET data
+    p.proj{proj}.FRET_DTA(:,(mol-1)*nFRET+1:mol*nFRET) = NaN;
 end

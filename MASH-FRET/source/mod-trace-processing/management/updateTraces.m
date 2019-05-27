@@ -55,20 +55,19 @@ if ~isempty(p.proj)
         p = calcCutoff(mol, p);
     end
     
-    if strcmp(opt2, 'DTA') || strcmp(opt2, 'debleach') || ...
-            strcmp(opt2, 'denoise') || strcmp(opt2, 'corr') || ...
-            strcmp(opt2, 'ttBg') || strcmp(opt2, 'ttPr')
-        p = discrTraces(h_fig, mol, p);
-    end
-    
     % added by FS, 8.1.2018
     % edit by MH, 27.3.2019 (use gammaCorr.m and condition gammaPb)
+    % edit by MH, 23.5.2019 (fusion DTA & gamma)
     if (strcmp(opt2, 'gamma') || strcmp(opt2, 'DTA') || ...
             strcmp(opt2, 'debleach') || ... 
             strcmp(opt2, 'denoise') || strcmp(opt2, 'corr') || ...
-            strcmp(opt2, 'ttBg') || strcmp(opt2, 'ttPr')) && nFRET > 0 && ...
-            gammaPb
-        p = gammaCorr(h_fig, mol, p);
+            strcmp(opt2, 'ttBg') || strcmp(opt2, 'ttPr'))
+        if nFRET>0 && gammaPb
+            p = discrTraces(h_fig, mol, p);
+        end
+        if nFRET>0
+            p = gammaCorr(h_fig, mol, p);
+        end
         p = discrTraces(h_fig, mol, p);
     end
     

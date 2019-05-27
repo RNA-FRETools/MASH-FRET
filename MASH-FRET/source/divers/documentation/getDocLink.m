@@ -71,7 +71,7 @@ switch sect
     case 'tp export options'
         link_str = cat(2,base_tp,'functionalities/set-export-options.html');
     case 'trace manager'
-        link_str = cat(2,base_tp,'functionalities/use-trace-manager.html');
+        link_str = cat(2,base_tp,'functionalities/tm-overview.html');
     case 'background analyzer'
         link_str = cat(2,base_tp,'functionalities/use-background-analyzer.html');
         
