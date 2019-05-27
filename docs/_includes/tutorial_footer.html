@@ -1,11 +1,13 @@
-<p><span class="fs-3">
+<p style="margin-left:auto; margin-right:auto; text-align:center;"><span class="fs-3">
 {% for node in pages_list %}
 	{% if node.parent == page.parent %}
-		<a href="{{ node.url | absolute_url}}#steps_bottom" class="{% if node.url == page.url %}btn btn-green mr-4{% else %}btn mr-4{% endif %}">STEP {{ node.nav_order }}</a>
+		{% assign prev_nav_order = page.nav_order | minus: 1 %}
+		{% assign next_nav_order = page.nav_order | plus: 1 %}
+		{% if node.nav_order == prev_nav_order %}
+			<a href="{{ node.url | absolute_url}}#tutorials_steps" class="btn btn-green mr-4"><< PREVIOUS: {{ node.subtitle }}</a>
+		{% elsif node.nav_order == next_nav_order %}
+			<a href="{{ node.url | absolute_url}}#tutorials_steps" class="btn btn-green mr-4">NEXT: {{ node.subtitle }} >></a>
+		{% endif %}
 	{% endif %}
 {% endfor %}
 </span></p>
-
----
-
-<span id="steps_bottom"></span>
