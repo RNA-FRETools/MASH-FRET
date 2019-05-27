@@ -2,17 +2,18 @@ function check_dependencies(mode)
 % Check toolbox dependencies of MASH-FRET
 
 % Input Arguments
-% Discovery mode: find required toolboxes among the installed ones and writes them to a file requirements.md
+% Discovery mode: find required toolboxes among the installed ones and
+%                 writes them to a file requirements.txt
 %                 Note 1: run check_dependencies.m in Discovery mode only on an installation where all toolboxes are available, otherwise the list may be incomplete)
 %                 Note 2: Running check_dependencies.m in Discovery mode requires MATLAB >2016b
-% Analysis mode: check whether the required toolboxes (specified in requirements.md) are installed on the current system)
+% Analysis mode: check whether the required toolboxes (specified in requirements.txt) are installed on the current system)
 
 root = fileparts(which('MASH'));
 if isempty(root)
     fprintf('MASH-FRET root not found!');
     return
 end
-requirementsFile = [root, '/requirements.md'];
+requirementsFile = [root, '/requirements.txt'];
 
 switch mode
     case 'discovery'
@@ -44,13 +45,13 @@ switch mode
             end
             fclose(fileID);
         else
-            fprintf('Note: requirements.md already exists.\n')
+            fprintf('Note: requirements.txt already exists.\n')
         end
 
         
     case 'analysis'
         if ~exist(requirementsFile, 'file')
-            fprintf('Error: requirements.md file does not exist\n')
+            fprintf('Error: requirements.txt file does not exist\n')
             return
         end
         
