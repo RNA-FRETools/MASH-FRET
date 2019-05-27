@@ -1,6 +1,14 @@
 function p = calcCutoff(mol, p)
 
-% Last update: by MH, 3.4.2019
+% Last update: by MH, 17.5.2019
+% >> For now on, "summed intensities" and "all intensities" concern only
+%    intensities collected at emitter-specific excitations because zero-
+%    signals collected at unspecific illuminations are constantly 
+%    "photobleached" and make the method unsuable
+% >> "all intensities" uses intensities summed over all channels; this
+%    allows to detect true photobleaching and not 0 FRET
+%
+% update: by MH, 3.4.2019
 % >> manage missing intensities when loading ASCII traces with different 
 %    lengths: cut-off frame is automatically set to last number in trace
 %    and saved no matter if photobleaching correction is applied or not
@@ -14,6 +22,9 @@ chanExc = p.proj{proj}.chanExc;
 incl = false(size(p.proj{proj}.bool_intensities(:,mol)));
 intensities = p.proj{proj}.intensities(:,(mol-1)*nChan+1:mol*nChan,:);
 FRET = p.proj{proj}.FRET;
+nFRET = size(p.proj{proj}.FRET,1);
+S = p.proj{proj}.S;
+nS = size(S,1);
 gamma = p.proj{proj}.prm{mol}{5}{3};
 prm = p.proj{proj}.prm{mol}{2};
 
@@ -24,10 +35,6 @@ method = prm{1}(2);
 if method == 1
     cutOff = floor(prm{1}(4+method)/nExc);
 else
-    nChan = p.proj{proj}.nb_channel;
-    nFRET = size(p.proj{proj}.FRET,1);
-    nS = size(p.proj{proj}.S,1);
-
     I_den = p.proj{proj}.intensities_denoise(:, ...
         ((mol-1)*nChan+1):mol*nChan,:);
     chan = prm{1}(3);
@@ -41,7 +48,7 @@ else
 
     elseif chan <= (nFRET+nS) % single stoichiometry channel
         i_s = chan - nFRET;
-        S_chan = p.proj{proj}.S(i_s,:);
+        S_chan = S(i_s,:);
         [o,l_s,o] = find(exc==chanExc(S_chan));
         trace = sum(I_den(:,:,S_chan(1)),2)./sum(sum(I_den(:,:,:),2),3);
 
@@ -50,11 +57,28 @@ else
         i_c = (chan - nFRET - nS)-(i_exc-1)*nChan;
         trace = I_den(:,i_c,i_exc);
 
+    % modified by MH, 17.5.2019
+%     elseif chan == (nFRET+nS+nExc*nChan+1) % all intensities
+%         trace = min(min(I_den, [], 3), [], 2);
+% 
+%     else % summed intensities
+%         trace = sum(sum(I_den,3),2);
+%     end
     elseif chan == (nFRET+nS+nExc*nChan+1) % all intensities
-        trace = min(min(I_den, [], 3), [], 2);
-
+        trace = Inf(size(I_den,1),1);
+        for c = 1:nChan
+            if chanExc(c)>0
+                trace = min([trace,sum(I_den(:,:,exc==chanExc(c)),2)],[],...
+                    2);
+            end
+        end
     else % summed intensities
-        trace = sum(sum(I_den,3),2);
+        trace = zeros(size(I_den,1),1);
+        for c = 1:nChan
+            if chanExc>0
+                trace = trace + sum(I_den(:,:,exc==chanExc(c)),2);
+            end
+        end
     end
     
     nbFrames = numel(trace);

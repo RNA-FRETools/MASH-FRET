@@ -1,0 +1,179 @@
+Having a 64 Bit Windows:
+
+1. copy all files from ./runtime64 directory to your project folder
+
+2. Data Import
+
+SPE Import:
+in Matlab run command [data,info] = SPEImport("c:\path_to_data\file.spe");
+data = [height, width, frames] array with the data, info = structure which contains additional information about the imported data such as  
+exposure time and dataformat
+
+SIF Import:
+in Matlab run command [data,info] = SIFImport("c:\path_to_data\file.spe");
+data = [height, width, frames] array with the data, info = structure which contains additional information about the imported data such as  
+exposure time and dataformat
+
+AVI Import: //supports up to now only 8 Bit Greyscale Videos or RBG Videos where the first channel is read out
+in Matlab run command [data,info] = AVIImport("c:\path_to_data\file.spe");
+data = [height, width, frames] array with the data, info = structure which contains additional information about the imported data such as  
+exposure time and dataformat
+*Note* there exists a bug which is related to the opencv library where the last pixels of each row are not properly read out, hopefully it get fixed soon
+
+General File Import ->depending on the file ending (".spe",".avi",".sif") the proper import is done
+in Matlab run command [data,info] = FileImport("c:\path_to_data\file.someending");
+data = [height, width, frames] array with the data, info = structure which contains additional information about the imported data such as  
+exposure time and dataformat
+
+
+3. Conversion to AVI Video
+in Matlab run command ConvertToAVI("c:\path_to_data\file.someending");
+files with ending ".spe" or ".sif" are converted to file.avi with huffman lossless codec
+
+4. for filtering, setup filter structure, e.g.
+myfilter(1).filter = 'ggf';
+myfilter(1).P1 = 3;
+myfilter(1).P2 = 1;
+myfilter(2).filter = 'outlier';
+myfilter(2).P1 = 3;
+myfilter(2).P2 = 0.99;
+5. in Matlab run command datafiltered = FilterArray(data,myfilter); the input data can be a single image of size [height,width] or a  
+sequence of images as array [height,width,frames], the input format can be any numeric matlab type as signed or unsigned integer from 8 to  
+64 bit and floating point values in 32 or 64 bit, Additional information about the filter structure is given below
+
+6. a second possibility is to run the command [datafiltered,background] = FilterArray(data,myfilter); in order to obtain the background image after filtering, in fact it is the difference image between the original image and the filtered image
+
+
+7. Tracking
+
+setup trackconfig structure, e.g.
+trackconfig.method = 0; 
+trackconfig.cutoffRadius = 1.0;
+trackconfig.memSize = 1;
+
+run command TrackPoints(points,trackconfig) to obtain trajectories
+
+the points array should have at least three columns, where the first column is the ordered frameIndex, 
+the second is the x coordinate and the third is the y-coordinate. column 4 and 5 are optional and may contain for instance size or intensity information of the spots
+
+the returned array contains in the first column the trajectory index, in the second column the frameIndex, in the third column x-coordinate, in the fourth column the y-coordinate 
+and in the optional 5th and 6th column the provided information of the input array. It could be used to create an intensity trace of the trajectory
+
+the trackconfig options are
+
+method = 0 -> for memSize > 1, this method prefers persistent random walks, i.e. spots are prefered which are close to all spots in the memory range.
+It is a suitable method for subdiffusive brownian motion
+method = 1 -> method proposed by I.F. Sbalzarini and P. Koumoutsakos (doi:10.1016/j.jsb.2005.06.002) which connects in the first step the spots of subsequent frames which have closest distance 
+and in the seconds step pairs of trajectories which have endpoints or startpoints respectively which are within the memory range close enough are connected to a longe single trajectory
+
+memSize -> number of frames which are looked into the past for teh decision of the current spot. For purely diffusive processes memSize should be set to 1 and the both methods above coincide
+
+cutoffRadius -> maximum distance which a spot could have in order to be considered for connection
+
+ 
+
+
+if error install visual studio redistributable package "vcredist64.exe", try again step 2
+
+Having a 32 Bit Windows:
+
+1. copy *.mexw32 and all  *.dll files from runtime32 folder to your project folder
+2. do step 2-5 from above
+
+if error install visual studio redistributable  package "vcredist32.exe", try again step 4
+
+Having 32 or 64 bit linux, ask me (mario.heidernaetsch@physik.tu-chemnitz.de) to compile the library in linux 
+
+
+Having an older Matlab Version than R2011a:
+
+1. in Matlab go to the ./package folder
+
+2. run the commands
+
+for 32 Bit: mex SPEImport.c -L./lib -lITASL32
+	    mex FilterArray.c -L./lib -lITASL32
+	    and so forth for all *.c files
+
+for 64 Bit: mex SPEImport.c -L./lib -lITASL64
+ 	    mex FilterArray.c -L./lib -lITASL64
+	    and so forth for all *.c files
+
+in order to compile the matlab functions
+3. put the compiled *.mex32 or *.mex64 files in the runtime32 or, respectively, runtime64 folder
+
+
+Filterinformation:
+
+the typical filter set contains the following fields
+filter = 'nameofthefilter'; =>string with the name of the filter
+P1 = value; => Parameter 1 of that filter
+P2 = value; => sometimes optional Parameter 2 of the filter
+
+the filter structure can contain up to 2 image filters and 1 background subtractor and can be set up like the example given above
+
+List and explanation of image filters
+filter = 'none';
+P1 = 0;
+P2 = 0;
+=> empty filter
+
+filter = 'gauss';
+P1 = 3; => halfwindow size and standard deviation value of the gaussfilter
+P2 = 0; => unnecessary
+=> gaussian filter, the P1 neighborhood of is weighted with a Gauss function with variance P1*P1 and the integrate value the new pixel  
+value, in other words the image is convoluted with this Gauss function
+
+filter = 'mean';
+P1 = 3; => halfwindow size
+P2 = 0; => unnecessary
+=> mean or box average filter, the mean value of the P1 neighborhood of the pixel is taken as new pixel value, in other words the image is  
+convoluted with a heaviside pi or rectangle function
+
+filter = 'median';
+P1 = 3; => halfwindow size
+P2 = 0; => unnecessary
+=> median filter, the median value of the P1 neighborhood of the pixel is taken as new pixel value
+
+filter = 'ggf';
+P1 = 3; => halfwindow size;
+P2 = 1; => standard deviation
+=> Grocker - Grier filter (J. Colloid Interf. Sc., 179, 1996) => basically a combination of Gauss filter with subtracted mean filter, from  
+the Gaussian weighted value (Gaussian standard deviation = P2) the mean value of the P1 neighborhood is subtracted, enhances Gaussian like  
+spots, but P1 and P2 has to match the actual spotsizes
+
+filter = 'lwf';
+P1 = 3; => halfwindow size
+P2 = 25; => estimated noise per pixel
+=> local Wiener filter => classic filter of signal processing, reduces Gaussian additive noise if the estimated noise per pixel values P2  
+is properly estimated, the P2 has to be set accordingly to the intensity range, e.g. intensity range [0-255) => P2 = 25 means around 10%  
+estimated noise per pixel, if intensity range is [0-1) P1 should be set to 0.1 for 10 % noise per pixel, the filter is applied in the  
+intensity frequency spectrum of the P1 neighborhood of each pixel, Important: if P2 is set to zero, the noise level is estimated from the  
+intensity histogram
+
+filter = 'gwf';
+P1 = 25; => estimated noise per pixel
+P2 = 0; => unnecessary
+=> global wiener filter, same as above but now the filter is applied in the intensity frequency spectrum of the whole image
+
+List and explanation of background subtractors
+filter = 'outlier';
+P1 = 3; => estimated radius of a spot
+P2 = 0.99; => confidence level
+=> outlier test to identify spots => basically a spot search algorithm which identifies spots via local maximas of intensities, but it  
+detects a lot of spurious or false spots, by making statistics on the 1st and 2nd moment of their intensity distribution the true spots  
+are identified as outliers of all detections, after that all which is not spot area is deleted, i.e. set to zero intensity value,
+it works very good on bad noise conditions especially in combination with the Grocker-Grier Filter with same P1 value, has problems with  
+identifying nonbright spots, the lower the confidence level is set, the more spots are identified but also the more false spots.
+
+filter = 'histotresh'
+P1 = 90; => percentage of background
+P2 = 0; => unnecessary
+=> background subtraction via histogram threshold, this subtractor makes a histogram of the intensity distribution of the current image  
+than the lower P1% of intensities are identified as background and are subtracted from the image
+
+filter = 'simpletresh'
+P1 = 25; => intensity threshold
+P2 = 0; => unnecessary
+=> simple threshold subtractor=> each pixelvalue lower than P1 threshold is set to zero, has to be set accordingly to the intensity range of  
+the image, i.e. if it ranges from 0 to 1, P1 has also to be in this range

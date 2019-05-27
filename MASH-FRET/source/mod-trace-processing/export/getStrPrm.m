@@ -177,7 +177,7 @@ else
 end
 
 % molecule tags
-nTag = numel(tagName);
+nTag = sum(tag(m,:));
 if nTag==0
     str_tags = 'none';
 else
