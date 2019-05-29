@@ -32,34 +32,19 @@ switch menu
             curr_exc = param{2};
             clr = param{3};
             for c = 1:size(labels,2)
-                clr_bg_c = sprintf('rgb(%i,%i,%i)', ...
-                    round(clr{curr_exc,c}(1:3)*255));
-                clr_fbt_c = sprintf('rgb(%i,%i,%i)', ...
-                    [255 255 255]*(sum(clr{curr_exc,c}(1:3)) <= 1.5));
-                str_pop = [str_pop ...
-                    ['<html><span style= "background-color: ' clr_bg_c ...
-                    ';color: ' clr_fbt_c ';">' labels{c} ...
-                    '</span></html>']];
+                str_pop = [str_pop labels{c}];
             end
         else
             str_pop = labels;
         end
         
     case 'bt_chan'
-        labels = param{1}; chan = param{2}; curr_exc = param{3};
-        clr = param{4};
+        labels = param{1}; chan = param{2};
         nChan = size(labels,2);
         if nChan > 1
             for i = 1:nChan
                 if i ~= chan
-                    clr_bg_c = sprintf('rgb(%i,%i,%i)', ...
-                        round(clr{curr_exc,i}(1:3)*255));
-                    clr_fbt_c = sprintf('rgb(%i,%i,%i)', ...
-                        [255 255 255]*(sum(clr{curr_exc,i}(1:3)) <= 1.5));
-                    str_pop = [str_pop ...
-                        ['<html><span style= "background-color: ' ...
-                        clr_bg_c ';color: ' clr_fbt_c ';">' labels{i} ...
-                        '</span></html>']];
+                    str_pop = [str_pop labels{i}];
                 end
             end
         else
