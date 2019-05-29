@@ -5,6 +5,10 @@ function [img_ave,ok] = createAveIm(param,corr,useMov,h_fig)
 %
 % useMov allows the use of the video stored in VP, for VP, in h.movie.movie
 
+% Last update: MH, 29.5.2019
+% >> correct calculation of intervalled average image when full-length
+%    movie is loaded in memory
+
 h = guidata(h_fig);
 
 startFrame = param.start; % start data
@@ -33,7 +37,8 @@ if (stopFrame<=frameLength && startFrame>=1)
     
     % original average image
     if isMov && ~isBgcorr
-        img_ave = sum(h.movie.movie,3)/frameLength;
+        img_ave = sum(h.movie.movie(:,:,startFrame:iv:stopFrame),3)/...
+            frameLength;
         ok = 1;
         return;
     end
