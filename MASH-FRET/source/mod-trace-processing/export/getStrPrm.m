@@ -182,7 +182,7 @@ if nTag==0
     str_tags = 'none';
 else
     str_tags = '';
-    for t = 1:nTag
+    for t = 1:numel(tagName)
         if tag(m,t)
             str_tags = cat(2,str_tags,' ',tagName{t},',');
         end
