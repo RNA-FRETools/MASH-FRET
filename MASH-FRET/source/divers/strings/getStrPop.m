@@ -1,6 +1,9 @@
 function str_pop = getStrPop(menu, param)
 
-% Last update: 29.3.2019 by MH
+% Last update: 29.5.2019 by MH
+% --> reove colors in 'chan' and 'bt_chan' menus
+%
+% update: 29.3.2019 by MH
 % --> Change 'dir_exc' string: remove colors (menu lists laser wavelength 
 %     and colors are for channels) and list all lasers but emitter-specific
 %     illumination (for which DE=1 and no correction is expected). For this
