@@ -612,7 +612,10 @@ end
 
 function openMngrTool(h_fig)
 
-% Last update by MH, 24.4.2019
+% Last update by MH, 24.8.2019
+% >> solve issue in "View of video": video was shown upside down.
+%
+% update by MH, 24.4.2019
 % >> add toolbar and empty tools "Auto sorting" and "View of video"
 % >> rename "Overview" panel in "Molecule selection"
 %
@@ -1533,9 +1536,12 @@ h.tm.edit_VV_tag0 = uicontrol('style','edit','parent',...
 xNext = w_cb + 3*mg;
 yNext = h_pan_tool - h_pop - mg - h_axes4;
 
+% modified by MH, 24.8.2019
 h.tm.axes_videoView = axes('parent',h.tm.uipanel_videoView,'units',...
     'pixels','fontunits','pixels','fontsize',fntS,'activepositionproperty',...
-    'outerposition','gridlineStyle',':','nextPlot','replacechildren');
+    'outerposition','gridlineStyle',':','nextPlot','replace');
+%     'outerposition','gridlineStyle',':','nextPlot','replacechildren');
+
 ylim(h.tm.axes_videoView,[0 10000]);
 ylabel(h.tm.axes_videoView,'x-position (pixel)');
 xlabel(h.tm.axes_videoView,'y-position (pixel)');
@@ -1888,6 +1894,10 @@ end
 
 function plotDataTm(h_fig)
 
+% Last update by MH, 26.7.2019
+% >> handle error occurring when changing molecule in display before plot 
+%    is completed
+
 h = guidata(h_fig);
 p = h.param.ttPr;
 proj = p.curr_proj;
@@ -1921,6 +1931,12 @@ end
 drawnow;
 
 for i = 1:nDisp
+    
+    % MH, 26.7.2019
+    if ~ishandle(h.tm.checkbox_molNb(i))
+        break;
+    end
+    
     mol_nb = str2num(get(h.tm.checkbox_molNb(i), 'String'));
 
     axes.axes_traceTop = h.tm.axes_itt(i);
@@ -2514,6 +2530,9 @@ end
 
 function plotData_videoView(h_fig)
 
+% Last update: 24.8.2019 by MH
+% >> adjust axes limits
+
 % defaults 
 mg_top = 0.4;
 mkSize = 10;
@@ -2633,8 +2652,11 @@ end
 set(h.tm.axes_videoView,'nextplot','replacechildren');
 
 % set image limits
-xlim(h.tm.axes_videoView,[0,size(img,2)+1]);
-ylim(h.tm.axes_videoView,[0,size(img,1)+1]);
+% modified by MH, 24.08.2019
+xlim(h.tm.axes_videoView,[0,size(img,2)]);
+ylim(h.tm.axes_videoView,[0,size(img,1)]);
+% xlim(h.tm.axes_videoView,[0,size(img,2)+1]);
+% ylim(h.tm.axes_videoView,[0,size(img,1)+1]);
 
 end
 
