@@ -242,24 +242,10 @@ if strcmp(get(obj,'type'),'uipanel')
     fntSz = get(obj,'fontsize');
     fntWght = get(obj,'fontweight');
     txt = get(obj,'title');
-    if isempty(strfind(txt,''))
-        txt = cat(2,txt,' .');
-    end
     
-    min_w = pixperchar*length(txt);
-    postxt = [0 0 min_w h_txt];
-    outstr = [' ';' '];
-    
-    while numel(outstr)>1
-        dummy = uicontrol('style','text','visible','off','fontunits',fntUn,...
-            'fontsize',fntSz,'fontweight',fntWght,'string',txt,'position',...
-            postxt);
-        outstr = textwrap(dummy,{txt});
-        delete(dummy);
-        postxt(3) = postxt(3) + incr;
-    end
+    [wtitle,o] = getUItextWidth(txt,fntUn,fntSz,fntWght);
 
-    extra_x = postxt(3) + mgShift;
+    extra_x = wtitle + mgShift;
     extra_y = - 2*mg - h_but/2;
     
     data{3} = [0,1];
