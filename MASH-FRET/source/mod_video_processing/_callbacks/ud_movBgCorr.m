@@ -1,5 +1,6 @@
-function ud_movBgCorr(obj, evd, h)
+function ud_movBgCorr(obj, evd, h_fig)
 
+h = guidata(h_fig);
 p = h.param.movPr;
 
 method = get(obj, 'Value');
