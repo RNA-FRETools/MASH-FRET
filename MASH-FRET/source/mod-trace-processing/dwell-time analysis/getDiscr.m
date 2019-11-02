@@ -1,12 +1,17 @@
 function d_traces = getDiscr(method, traces, incl, prm, thresh, calc, ...
     str_discr, h_fig)
 
-% Last update: MH, 30.3.2019
+% Last update: MH, 29.5.2019
+% >> handle error better for ratio data: if less than 2 data points remains 
+%    because of out-of-range [-0.2;1.2] data, include all data point back 
+%    and discretize out-of-range data.
+%
+% update: MH, 30.3.2019
 % >> fix error for ratio data: if all data points were excluded because 
 %    out-of-range [-0.2;1.2], include all data point back and discretize
 %    out-of-range data.
 
-if isempty(incl)
+if sum(incl)<2
     incl = true(size(traces));
 end
 

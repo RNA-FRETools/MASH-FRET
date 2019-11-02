@@ -192,9 +192,9 @@ try
             datdfret = NaN(frmPerExc, nMol*nFRET, nExc);
             exc = zeros(1,nFRET);
             for l = 1:nExc
-                datdfret(1:frmPerExc,:,l) = dfretNum(l:nExc:end,:,l);
+                datdfret(1:frmPerExc,:,l) = dfretNum(l:nExc:end,:);
                 for j = 1:nFRET
-                    if all(datdfret(:,j:nFRET:end,l))
+                    if ~all(isnan(datdfret(:,j:nFRET:end,l)))
                         exc(j) = l;
                     end
                 end
@@ -202,13 +202,7 @@ try
             dFRET = NaN(frmPerExc, nMol*nFRET);
             for j = 1:nFRET
                 dFRET(:,j:nFRET:end) = datdfret(:,j:nFRET:end,exc(j));
-            end
-            
-            % added by MH, 3.4.2019
-            % extend missing length and fill with NaN
-            dFRET = cat(1,dFRET,NaN(frmPerExc_max-frmPerExc,nFRET*nMol,...
-                nExc));
-            
+            end            
         end
         
         if i==1
