@@ -5,7 +5,7 @@ function openItgExpOpt(obj, evd, h)
 %          has been called (usually empty)
 % "h" >> main data structure stored in figure_MASH's handle
 
-% Last update: 3rd of April 2019 by MH
+% Last update: 3.4.2019 by MH
 % --> Add project's labels to default labels (FRET and S popupmenus were 
 %     updated with project's labels and channel popupmenu with defaults
 %     that are different when importing ASCII traces)
@@ -19,7 +19,7 @@ function openItgExpOpt(obj, evd, h)
 % --> avoid exporting empty parameters with non-zero dimensions, correct 
 %     typos and remove caps-lock in message boxes 
 %
-% update: 4th of February 2019 by Mélodie Hadzic
+% update: 4.2.2019 by Mélodie Hadzic
 % --> remove "file options" panel (displaced in an other option window
 %     created by function openItgExpOpt.m, called by control 
 %     pushbutton_TTgen_FileOpt)
@@ -71,6 +71,10 @@ buildWinOpt(p, nExc, nChan, obj, h_fig);
 
 
 function buildWinOpt(p, nExc, nChan, obj, h_fig)
+
+% Last update: 26.7.2019 by MH
+% >> reduce height of panel "color code" by removing extra space
+
 h = guidata(h_fig);
 nPrm = size(p{1},1);
 nFixPrm = 4 + nExc;
@@ -161,7 +165,10 @@ h_pan_prm = 10 + 5*mg + big_mg + 3*h_txt + 4*h_edit + h_lb + ...
 h_pan_fret = 10 + h_lb + h_edit + 3*mg;
 h_pan_S = 10 + h_lb + h_edit + 3*mg;
 h_pan_chan = 10 + h_txt + 3*h_edit + h_but + big_mg + 4*mg;
-h_pan_clr = 10 + h_txt + h_edit + h_but + 3*mg;
+
+% 26.7.2019, MH: remove extra space
+% h_pan_clr = 10 + h_txt + h_edit + h_but + 3*mg;
+h_pan_clr = 10 + h_edit + h_but + 3*mg;
 
 w_pan = w_full + 2*mg;
 wFig = 2*w_pan + 3*mg;
@@ -554,7 +561,6 @@ if isFRET
         [1 1 1], 'Position', [xNext yNext w_pop h_edit], 'String', ...
         p{7}{2}, 'Value', val_FRETprm(2));
 end
-
 
 if isS
     %% Stoichiometry parameters
