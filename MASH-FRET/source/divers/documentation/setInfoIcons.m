@@ -1,4 +1,4 @@
-function hBut = setInfoIcons(obj,h_fig,image_file)
+function hBut = setInfoIcons(obj,h_fig,image_file,tbl)
 % hBut = setInfoIcons(obj,h_fig,image_file)
 %
 % Create help pushbuttons corresponding to input reference objects.
@@ -12,6 +12,8 @@ function hBut = setInfoIcons(obj,h_fig,image_file)
 %      positionning must be specifically defined when calling mkbutton.
 % h_fig: handle to main figure where all object handles are stored
 % image_file: image file containing the icon for help buttons
+% tbl: reference table listing pixel dimensions of characters for different
+%      font sizes and weights
 
 
 % initialized output
@@ -72,16 +74,16 @@ for o = 1:O
     switch obj(o)
         case h.uipanel_S_videoParameters
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('video parameters'),obj(o)));
+                getDocLink('video parameters'),obj(o),tbl));
         case h.uipanel_S_molecules
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('molecules'),obj(o)));
+                getDocLink('molecules'),obj(o),tbl));
         case h.uipanel_S_experimentalSetup
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('experimental setup'),obj(o)));
+                getDocLink('experimental setup'),obj(o),tbl));
         case h.uipanel_S_exportOptions
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('sim export options'),obj(o)));
+                getDocLink('sim export options'),obj(o),tbl));
         case h.axes_example_hist
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('sim visualization'),obj(o),[-2,-2]));
@@ -91,25 +93,25 @@ for o = 1:O
                 getDocLink('vp visualization'),obj(o),[-1,1]));
         case h.uipanel_VP_plot
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('vp plot'),obj(o)));
+                getDocLink('vp plot'),obj(o),tbl));
         case h.uipanel_VP_experimentSettings
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('experiment settings'),obj(o)));
+                getDocLink('experiment settings'),obj(o),tbl));
         case h_pushbutton_itgExpOpt_cancel
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('project options'),obj(o),[-1,1]));
         case h.uipanel_VP_editAndExportVideo
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('edit video'),obj(o)));
+                getDocLink('edit video'),obj(o),tbl));
         case h.uipanel_VP_moleculeCoordinates
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('molecule coordinates'),obj(o)));
+                getDocLink('molecule coordinates'),obj(o),tbl));
         case h_pushbutton_trsfOpt_cancel
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('vp import options'),obj(o),[2,1]));
         case h.uipanel_VP_intensityIntegration
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('intensity integration'),obj(o)));
+                getDocLink('intensity integration'),obj(o),tbl));
         case h_pushbutton_itgFileOpt_cancel
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('vp export options'),obj(o),[-1,1]));
@@ -122,7 +124,7 @@ for o = 1:O
                 getDocLink('tp project management'),obj(o),[-1,1]));
         case h.uipanel_TP_sampleManagement
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('sample management'),obj(o)));
+                getDocLink('sample management'),obj(o),tbl));
         case h_pushbutton_optExpTr_cancel
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('tp export options'),obj(o),[-1,1]));
@@ -131,28 +133,28 @@ for o = 1:O
                 getDocLink('trace manager'),obj(o),[2,1]));
         case h.uipanel_TP_plot
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('tp plot'),obj(o)));
+                getDocLink('tp plot'),obj(o),tbl));
         case h.uipanel_TP_subImages
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('sub-images'),obj(o)));
+                getDocLink('sub-images'),obj(o),tbl));
         case h.uipanel_TP_backgroundCorrection
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('background correction'),obj(o)));
+                getDocLink('background correction'),obj(o),tbl));
         case h_pushbutton_bga_save
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('background analyzer'),obj(o),[2,1]));
         case h.uipanel_TP_factorCorrections
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('factor corrections'),obj(o)));
+                getDocLink('factor corrections'),obj(o),tbl));
         case h.uipanel_TP_denoising
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('denoising'),obj(o)));
+                getDocLink('denoising'),obj(o),tbl));
         case h.uipanel_TP_photobleaching
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('photobleaching'),obj(o)));
+                getDocLink('photobleaching'),obj(o),tbl));
         case h.uipanel_TP_findStates
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('find states'),obj(o)));
+                getDocLink('find states'),obj(o),tbl));
         case h.axes_topRight
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('tp visualization'),obj(o),[-2,-2]));
@@ -162,13 +164,13 @@ for o = 1:O
                 getDocLink('ha project management'),obj(o),[-1,1]));
         case h.uipanel_HA_histogramAndPlot
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('ha plot'),obj(o)));
+                getDocLink('ha plot'),obj(o),tbl));
         case h.uipanel_HA_stateConfiguration
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('ha state configuration'),obj(o)));
+                getDocLink('ha state configuration'),obj(o),tbl));
         case h.uipanel_HA_statePopulations
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('state populations'),obj(o)));
+                getDocLink('state populations'),obj(o),tbl));
         case h.axes_hist1
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('ha visualization'),obj(o),[-2,-2]));
@@ -181,13 +183,13 @@ for o = 1:O
                 getDocLink('ta project management'),obj(o),[-1,1]));
         case h.uipanel_TA_transitionDensityPlot
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('ta plot'),obj(o)));
+                getDocLink('ta plot'),obj(o),tbl));
         case h.uipanel_TA_stateConfiguration
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('ta state configuration'),obj(o)));
+                getDocLink('ta state configuration'),obj(o),tbl));
         case h.uipanel_TA_stateTransitionRates
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('transition rates'),obj(o)));
+                getDocLink('transition rates'),obj(o),tbl));
     end
 end
 
@@ -208,6 +210,8 @@ function hBut = mkbutton(cdat,link,obj,varargin)
 % cdat: background image
 % link: url to the web page
 % obj: reference object's handle
+% varargin (if obj is a panel): reference table listing character
+%     dimensions for different font sizes and weights.
 % varargin (if obj is not a panel): [1-by-2] x- and y- positionning indexes 
 %     equal to 1 or 2 to use the left/bottom or right/top border of the 
 %     reference object as a baseline, and being negative or positive if the
@@ -229,11 +233,8 @@ function hBut = mkbutton(cdat,link,obj,varargin)
 % defaults
 w_but = 22;
 h_but = 20;
-h_txt = 15;
 mg = 5;
 mgShift = -3;
-incr = 2;
-pixperchar = 3;
 
 posObj = getPixPos(obj);
 
@@ -242,8 +243,9 @@ if strcmp(get(obj,'type'),'uipanel')
     fntSz = get(obj,'fontsize');
     fntWght = get(obj,'fontweight');
     txt = get(obj,'title');
+    tbl = varargin{1};
     
-    [wtitle,o] = getUItextWidth(txt,fntUn,fntSz,fntWght);
+    [wtitle,o] = getUItextWidth(txt,fntUn,fntSz,fntWght,tbl);
 
     extra_x = wtitle + mgShift;
     extra_y = - 2*mg - h_but/2;
