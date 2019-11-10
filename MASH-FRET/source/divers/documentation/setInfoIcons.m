@@ -234,7 +234,7 @@ function hBut = mkbutton(cdat,link,obj,varargin)
 w_but = 22;
 h_but = 20;
 mg = 5;
-mgShift = -3;
+mgShift = 5;
 
 posObj = getPixPos(obj);
 
