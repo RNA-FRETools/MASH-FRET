@@ -139,7 +139,7 @@ for k = 1:n_spl
             % save sample's best inferred model
             param{k} = {mu_spl};
             
-            if ~boba
+            if ~boba || (boba && k==1)
                 % save inferred models for original TDP
                 origin = cell(1,Jmax);
                 origin{Jopt}.mu = mu_spl;
@@ -175,24 +175,29 @@ for k = 1:n_spl
             % find sample's best inferred model
             [BIC_min,Jopt] = min(BIC_t);
             
-            % save sample's best inferred model
-            mu_spl = model{Jopt}.mu;
-            clust_spl = model{Jopt}.clusters;
-            BIC_spl = model{Jopt}.BIC;
-            a_spl = model{Jopt}.w;
-            sig_spl = model{Jopt}.o;
-            param{k} = {mu_spl clust_spl BIC_spl a_spl sig_spl};
+            if ~isempty(model{Jopt})
+                % save sample's best inferred model
+                mu_spl = model{Jopt}.mu;
+                clust_spl = model{Jopt}.clusters;
+                BIC_spl = model{Jopt}.BIC;
+                a_spl = model{Jopt}.w;
+                sig_spl = model{Jopt}.o;
+                param{k} = {mu_spl clust_spl BIC_spl a_spl sig_spl};
+                
+                % update action
+                if n_spl==1
+                    setContPan(cat(2,'Most sufficient model: J=',num2str(Jopt),...
+                        ', LogL=',num2str(L_t(Jopt)),', BIC=',...
+                        num2str(BIC_t(Jopt))),'success',h_fig);
+                else
+                    str = cat(2,'Sample ',num2str(k),', most sufficient ',...
+                        'model: J=',num2str(Jopt),', LogL=',num2str(L_t(Jopt)),...
+                        ', BIC=',num2str(BIC_t(Jopt)));
+                    setContPan(str,'process',h_fig);
+                end
             
-            % update action
-            if n_spl==1
-                setContPan(cat(2,'Most sufficient model: J=',num2str(Jopt),...
-                    ', LogL=',num2str(L_t(Jopt)),', BIC=',...
-                    num2str(BIC_t(Jopt))),'success',h_fig);
             else
-                str = cat(2,'Sample ',num2str(k),', most sufficient ',...
-                    'model: J=',num2str(Jopt),', LogL=',num2str(L_t(Jopt)),...
-                    ', BIC=',num2str(BIC_t(Jopt)));
-                setContPan(str,'process',h_fig);
+                Jopt = NaN;
             end
     end
     
