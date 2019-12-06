@@ -27,8 +27,8 @@ setProp([obj; get(obj, 'Children')], 'Units', 'normalized');
 set(h.text_actions, 'Position', [0 0 1 1]);
 
 h.figure_MASH = varargin{1};
-pos = get(h.figure_MASH, 'OuterPosition');
-set(obj, 'OuterPosition', [pos(1), 0.05, pos(3), pos(2)-0.1]);
+opos = get(h.figure_MASH, 'OuterPosition');
+set(obj, 'OuterPosition', [opos(1),0,opos(3),1-opos(4)]);
 h.output = obj;
 guidata(obj, h);
 
