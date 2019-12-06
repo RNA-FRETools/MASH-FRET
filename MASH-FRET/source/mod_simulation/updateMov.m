@@ -1,15 +1,19 @@
 function updateMov(h_fig)
-
 % updateMov create and plot the intensity-time traces of one donor and
 % acceptor according to the simulated discretised FRET time course and to
 % the background/noise intensity.
 %
 % Requires external file: setContPan.m
+
+% Last update by MH, 6.12.2019
+% >> reset PSF factorisation matrix (matGauss) when coordinates are 
+%  imported from a pre-set file and some are excluded along the way: size 
+%  conflict was happenning after two successive "generate" runs
+%
+% Last update: 7th of March 2018 by Richard Börner
+% >> Comments adapted for Boerner et al 2017
 %
 % Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
-% Last update: 7th of March 2018 by Richard Börner
-%
-% Comments adapted for Boerner et al 2017
 
 h = guidata(h_fig);
 
@@ -144,12 +148,18 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
     discr(excl) = [];
     coord(excl,:) = [];
     
-    if ~isempty(matGauss{1})
-        matGauss{1}(excl) = [];
+    % added by MH, 6.12.2019
+    if sum(excl) && impPrm && isfield(molPrm, 'coord') 
+        matGauss = cell(2,1);
+    else
+        if ~isempty(p.matGauss{1})
+            matGauss{1}(excl) = [];
+        end
+        if ~isempty(p.matGauss{2})
+            matGauss{2}(excl) = [];
+        end
     end
-    if ~isempty(matGauss{2})
-        matGauss{2}(excl) = [];
-    end
+    
     h.results.sim.dat = {Idon Iacc coord};
     h.results.sim.dat_id = {Idon_id Iacc_id discr discr_seq};
     h.param.sim.coord = coord;
