@@ -31,13 +31,16 @@ if ~isempty(p.proj)
         cutOff = cutOff*rate;
         prm(2:3) = prm(2:3)*rate;
     end
+    str_un = 'counts';
     if chan > nFRET+nS % intensity channel
         if perSec
             prm(1) = prm(1)/rate;
+            str_un = cat(2,str_un,' /second');
         end
         if perPix
             nPix = p.proj{proj}.pix_intgr(2);
             prm(1) = prm(1)/nPix;
+            str_un = cat(2,str_un,' /pixel');
         end
     end
     
@@ -73,19 +76,27 @@ if ~isempty(p.proj)
     else
         set(h.popupmenu_bleachChan, 'Value', 1, 'String', {'none'});
     end
-    set(h.edit_photoblParam_01, 'String', num2str(prm(1)));
+    set(h.edit_photoblParam_01,'string',num2str(prm(1)),'tooltipstring',...
+        cat(2,'<html><b>Data threshold ',str_un,':</b> photobleaching is ',...
+        'detected when the selected data-time trace drops below the ',...
+        'threshold.</html>'));
     set(h.edit_photoblParam_02, 'String', num2str(prm(2)));
     set(h.edit_photoblParam_03, 'String', num2str(prm(3)));
     
     if inSec
-        set(h.edit_photoblParam_02, 'TooltipString', ...
-            'Extra time to subtract (s)');
-        set(h.edit_photoblParam_03, 'TooltipString', ...
-            'Min. cutoff time (s)');
+        set(h.edit_photoblParam_02, 'tooltipstring',cat(2,'<html><b>Tolerance ',...
+            '(in seconds):</b> extra time to subtract to the detected ',...
+            'photobleaching time</html>'));
+        set(h.edit_photoblParam_03, 'tooltipstring',cat(2,'<html><b>Minimum ',...
+            'cutoff time (in seconds):</b> photobleaching events detected',...
+            ' below this time are ignored.</html>'));
     else
-        set(h.edit_photoblParam_02, 'TooltipString', ...
-            'Extra frames to subtract');
-        set(h.edit_photoblParam_03, 'TooltipString', 'Min. cutoff frame');
+        set(h.edit_photoblParam_02, 'tooltipstring',cat(2,'<html><b>Tolerance ',...
+            '(in frames):</b> extra frames to subtract to the detected ',...
+            'photobleaching position</html>'));
+        set(h.edit_photoblParam_03, 'tooltipstring',cat(2,'<html><b>Minimum ',...
+            'cutoff position (in frames):</b> photobleaching events ',...
+            'detected below this position are ignored.</html>'));
     end
     
 end
