@@ -17,7 +17,11 @@ function plotTDP(h_axes, TDP, plot_prm, clust_prm, varargin)
 %                  plot ellipses
 % (optional) "varagin" >> MASH figure handle
 
-% Last update: 18th of March 2019 by Mélodie Hadzic
+% Last update by MH, 29.11.2019
+% >> remove systemic axes clearance to keep original properties (font size,
+%  color bar etc..)
+%
+% update: 18th of March 2019 by Mélodie Hadzic
 % >> update help section
 
 lim = plot_prm{1};
@@ -62,7 +66,9 @@ if norm
 end
 
 %% draw TDP image
-cla(h_axes);
+% cancelled by MH, 29.11.2019
+% cla(h_axes);
+
 im = imagesc(lim(1,:), lim(2,:), TDP, 'Parent', h_axes);
 if sum(sum(TDP))
     set(h_axes,'CLim',[min(min(TDP)) max(max(TDP))]);
@@ -137,13 +143,22 @@ if exist('h_fig', 'var')
     set([h_axes im], 'ButtonDownFcn', {@target_centroids, h_fig});
 end
 
-%% add density colorbar
-colorbar(h_axes,'off');
-h_c = colorbar('peer', h_axes);
-if norm
-    ylabel(h_c, 'normalized occurrence');
-else
-    ylabel(h_c, 'occurrence');
+% modified by MH, 29.11.2019
+% colorbar(h_axes,'off');
+% h_c = colorbar('peer', h_axes);
+% if norm
+%     ylabel(h_c, 'normalized occurrence');
+% else
+%     ylabel(h_c, 'occurrence');
+% end
+if ~isempty(varargin)
+    % name colorbar
+    h = guidata(h_fig);
+    if norm
+        ylabel(h.colorbar_TA, 'normalized occurrence');
+    else
+        ylabel(h.colorbar_TA, 'occurrence');
+    end
 end
 
 

@@ -26,11 +26,8 @@ if ~isempty(fname) && sum(fname)
     updateActPan(['Loading file ' fname ' from path :\n', pname], h_fig);
     cd(pname);
     
-    % prepare video axes for refresh
+    % collect data from figure
     h = guidata(h_fig);
-    if isfield(h, 'axes_movie')
-        set(h.axes_movie,'NextPlot','replace');
-    end
 
     % remove previous video data
     h.movie.movie = [];

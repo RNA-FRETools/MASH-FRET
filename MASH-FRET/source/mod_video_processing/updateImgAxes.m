@@ -5,8 +5,23 @@ function updateImgAxes(h_fig)
 %
 % Requires external fucntions: getFrame, updateBgCorr, updateSF.
 
+% Last update by MH, 29.11.2019
+% >> adapt axes visibility to wether or not a video/image is loaded.
+% >> remove systemic axes clearance to keep original properties (font size,
+%  color bar etc..) 
+% >> remove useless zoom activation
+
 h = guidata(h_fig);
 p = h.param.movPr;
+
+% add by MH, 29.11.2019
+isLoad = isfield(h,'movie');
+if ~isLoad
+    set(h.axes_movie,'visible','off');
+    return;
+else
+    set(h.axes_movie,'visible','on');
+end
 
 frameCurNb = h.movie.frameCurNb;
 bgCorr = isfield(p,'bgCorr') && ~isempty(p.bgCorr);
@@ -72,22 +87,25 @@ end
 
 h.movie.frameCur = frameCur;
 
-cla(h.axes_movie);
-zoom(h_fig,'on');
+% cancelled by MH, 29.11.2019
+% cla(h.axes_movie);
+% zoom(h_fig,'on');
 
 h.imageMov = imagesc(h.axes_movie,[0.5 h.movie.pixelX-0.5],...
     [0.5 h.movie.pixelY-0.5],frameCur);
 set(h.axes_movie,'nextplot','add');
-
 if ~isempty(spots)
     plot(h.axes_movie,spots(:,1),spots(:,2),'or','markersize',10);
 end
-    
 for i = 1:size(h.movie.split,2)
     plot(h.axes_movie, [h.movie.split(i) h.movie.split(i)], ...
         [0 h.movie.pixelY], '--w', 'LineWidth', 2);
 end
-set(h.axes_movie, 'NextPlot', 'replace');
+
+% modified by MH, 29.11.2019
+% set(h.axes_movie, 'NextPlot', 'replace');
+set(h.axes_movie,'nextPlot','replacechildren','xlim',[0,h.movie.pixelX],...
+    'ylim',[0,h.movie.pixelY]);
 
 if get(h.togglebutton_target, 'Value')
     set(0, 'CurrentFigure', h_fig);
@@ -99,16 +117,18 @@ else
     zoom on;
 end
 
-set(h.axes_movie, 'NextPlot', 'replacechildren', 'DataAspectRatio', ...
-    [1 1 1], 'DataAspectRatioMode', 'manual', 'PlotBoxAspectRatio', ...
-    [1 1 1], 'PlotBoxAspectRatioMode', 'auto');
+% cancelled by MH, 29.11.2019
+% set(h.axes_movie, 'NextPlot', 'replacechildren', 'DataAspectRatio', ...
+%     [1 1 1], 'DataAspectRatioMode', 'manual', 'PlotBoxAspectRatio', ...
+%     [1 1 1], 'PlotBoxAspectRatioMode', 'auto');
+% 
+% if isfield(h, 'colorbar') && ishandle(h.colorbar)
+%     colorbar(h.colorbar, 'delete');
+% end
+% 
+% h.colorbar = colorbar('peer', h.axes_movie, 'EastOutside', 'Units', ...
+%     'normalized');
 
-if isfield(h, 'colorbar') && ishandle(h.colorbar)
-    colorbar(h.colorbar, 'delete');
-end
-
-h.colorbar = colorbar('peer', h.axes_movie, 'EastOutside', 'Units', ...
-    'normalized');
 if p.perSec
     ylabel(h.colorbar, 'intensity(counts /pix /s)');
 else

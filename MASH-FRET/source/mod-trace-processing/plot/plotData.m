@@ -1,5 +1,8 @@
 function plotData(mol, p, axes, prm, plotDscr)
 
+% Last update by MH, 29.11.2019
+% >> remove double axis labels when both axes (intensity & ratio) are used
+%
 % Last update: MH, 3.4.2019
 % >> correct data selection for plotting in bottom axes (curr_chan_bottom)
 
@@ -284,6 +287,11 @@ if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
         xlim(axes.axes_histBottom, 'auto');
         xlabel(axes.axes_histBottom, 'norm. freq.');
         grid(axes.axes_histBottom, 'on');
+        
+        % added by MH, 3.4.2019
+        if isfield(axes,'axes_histTop')
+            xlabel(axes.axes_histTop, '');
+        end
     end
     if isfield(axes,'axes_traceBottom')
         if x_inSec
@@ -293,6 +301,11 @@ if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
         end
         ylabel(axes.axes_traceBottom, 'FRET / S');
         grid(axes.axes_traceBottom, 'on');
+        
+        % added by MH, 3.4.2019
+        if isfield(axes, 'axes_traceTop')
+            xlabel(axes.axes_traceTop, '');
+        end
     end
 
     if isfield(axes,'axes_histTop') && isfield(axes,'axes_histBottom')

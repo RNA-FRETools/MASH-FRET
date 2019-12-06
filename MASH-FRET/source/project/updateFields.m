@@ -470,7 +470,7 @@ if strcmp(opt,'imgAxes') || strcmp(opt, 'movPr') || strcmp(opt, 'all')
     set(h.popupmenu_bgCorr, 'Value', p.movBg_method);
     set(h.checkbox_bgCorrAll, 'Value', ~p.movBg_one);
     
-    ud_movBgCorr(h.popupmenu_bgCorr, [], h_fig)
+    ud_movBgCorr(h.popupmenu_bgCorr, [], h_fig);
     h = guidata(h_fig);
     p = h.param.movPr;
     
@@ -629,8 +629,8 @@ if strcmp(opt, 'TDP') || strcmp(opt, 'all')
         set([h.pushbutton_help h.pushbutton_TDPimpOpt ...
             h.pushbutton_TDPaddProj], 'Enable', 'on');
         set(h.listbox_TDPtrans, 'String', {''}, 'Value', 1);
-        cla(h.axes_TDPplot1); cla(h.axes_TDPplot2); cla(h.axes_TDPplot3);
-        cla(h.axes_tdp_BIC);
+%         cla(h.axes_TDPplot1); cla(h.axes_TDPplot2); cla(h.axes_TDPplot3);
+%         cla(h.axes_tdp_BIC);
         set([h.axes_TDPplot1 h.axes_TDPplot2 h.axes_TDPplot3 ...
             h.axes_TDPcmap h.axes_tdp_BIC], 'Visible', 'off');
     end
