@@ -4,18 +4,25 @@ function setContPan(str, state, h_fig)
 % Last update: 20th of February 2019 by Mélodie C.A.S Hadzic
 % --> fix find edit fields to display action in
 
+% default
+colRed = [1 0.9 0.9];
+colGreen = [0.9 1 0.9];
+colYellow = [1 1 0.9];
+colOrange = [1 0.95 0.9];
+colWhite = [1 1 1];
+
 h = guidata(h_fig);
 switch state
     case 'error'
-        colBg = [1 0.9 0.9];
+        colBg = colRed;
     case 'success'
-        colBg = [0.9 1 0.9];
+        colBg = colGreen;
     case 'process'
-        colBg = [1 1 0.9];
+        colBg = colYellow;
     case 'warning'
-        colBg = [1 0.95 0.9];
+        colBg = colOrange;
     otherwise
-        colBg = [1 1 1];
+        colBg = colWhite;
 end
 
 if ~iscell(str)
@@ -64,7 +71,9 @@ else
 end
 
 if ~isempty(h_edit)
-    set(h_edit, 'String', textwrap(h_edit, str), 'BackgroundColor', colBg);
+    str = wrapActionString('none',h_edit,[h.figure_dummy,h.text_dummy],...
+        str);
+    set(h_edit, 'String', str, 'BackgroundColor', colBg);
     drawnow;
 end
 
