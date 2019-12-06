@@ -147,11 +147,7 @@ if ~isempty(fname) && sum(fname)
             set(h.slider_img, 'SliderStep', [1/h.movie.framesTot 0.1], ...
                 'Min', 1, 'Max', h.movie.framesTot, 'Value', 1, ...
                 'Visible', 'on');
-        end
-        
-        % update VP axes
-        updateImgAxes(h_fig);
-        
+        end        
     end
     
     updateActPan('File loaded!', h_fig, 'success');
