@@ -1,34 +1,20 @@
 function MASH(varargin)
 
-% define figure name from folder name
-[pname,o,o] = fileparts(which('MASH'));
-issep = true;
-while issep
-    possep = strfind(pname,filesep);
-    if isempty(possep)
-        break;
-    else
-        pname = pname(possep+1:end);
-    end
-end
-%figName = strrep(pname,'_',' '); % Versioning with folder structure 2018-03-07
-
-% Add source folders to Matlab search path
+% add source folders to Matlab search path
 codePath = fileparts(mfilename('fullpath'));
 addpath(genpath(codePath));
 
+% get MATLAB version
 mtlbDat = ver;
-% check for proper Matlab version
 for i = 1:size(mtlbDat,2)
     if strcmp(mtlbDat(1,i).Name, 'MATLAB')
         break;
     end
 end
 
+% get MASH-FRET version
 %----------------
-% version number
 % version_number = 'x.x.x'; % Versioning without folder structure %2018-03-07
-
 % versioning based on latest git tag and current commit hash; FS, 27.3.2019
 release_version_file = fullfile(codePath, '.release_version.json');
 if exist(release_version_file, 'file') == 2
@@ -44,21 +30,37 @@ else
 end
 %----------------
 
+% define figure name from MASH-FRET version
 figName = sprintf('%s %s','MASH-FRET', version_str);
-
 if str2num(mtlbDat(1,i).Version) < 7.12
     disp(['WARNING: The Matlab version installed on this computer (' ...
         mtlbDat(1,i).Version ') is older than the one used to write ' ...
         figName ', i.e. 7.12. Be aware that compatibility problems can ',...
         'occur.']);
 end
+% % define figure name from folder name
+% [pname,o,o] = fileparts(which('MASH'));
+% issep = true;
+% while issep
+%     possep = strfind(pname,filesep);
+%     if isempty(possep)
+%         break;
+%     else
+%         pname = pname(possep+1:end);
+%     end
+% end
+%figName = strrep(pname,'_',' '); % Versioning with folder structure 2018-03-07
 
-% build MASH graphical interface
+% build MASH-FRET graphical interface
 h_fig = buildMASHfig;
 
-% initialize MASH
+% initialize main figure
 initMASH(h_fig, figName);
 
-% make figure visible
+% make main figure visible
 set(h_fig,'visible','on');
+
+% display opening message
+updateActPan(cat(2,'--- WELCOME ----------------------------------------',...
+    '--------------------'),h_fig);
 
