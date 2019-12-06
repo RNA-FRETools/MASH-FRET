@@ -1,4 +1,5 @@
-function pushbutton_TP_addTag_Callback(obj, evd, h)
+function pushbutton_TP_addTag_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     green = [0.76 0.87 0.78];
@@ -9,5 +10,5 @@ if ~isempty(p.proj)
         case 0
             set(obj, 'BackgroundColor', grey);
     end
-    ud_trSetTbl(h.figure_MASH);
+    ud_trSetTbl(h_fig);
 end

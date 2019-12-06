@@ -1,4 +1,5 @@
-function pushbutton_trGo_Callback(obj, evd, h)
+function pushbutton_trGo_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 if h.param.movPr.nChan > 1 && h.param.movPr.nChan <= 3
 
     if isfield(h.param.movPr, 'trsf_tr') && ...
@@ -14,7 +15,7 @@ if h.param.movPr.nChan > 1 && h.param.movPr.nChan <= 3
         q.edgeDmin = h.param.movPr.SF_minDedge;
 
         coordTrsf = applyTrafo(h.param.movPr.trsf_tr, ...
-            h.param.movPr.coordMol, q, h.figure_MASH);
+            h.param.movPr.coordMol, q, h_fig);
         if isempty(coordTrsf)
             return;
         end
@@ -22,11 +23,11 @@ if h.param.movPr.nChan > 1 && h.param.movPr.nChan <= 3
         h.param.movPr.coordTrsf = coordTrsf;
         h.param.movPr.SFres = {};
         
-        guidata(h.figure_MASH, h);
+        guidata(h_fig, h);
         nC = h.param.movPr.nChan;
 
-        updateFields(h.figure_MASH, 'imgAxes');
-        h = guidata(h.figure_MASH);
+        updateFields(h_fig, 'imgAxes');
+        h = guidata(h_fig);
 
         saved = 0;
         if ~isempty(h.param.movPr.coordMol_file)
@@ -34,7 +35,7 @@ if h.param.movPr.nChan > 1 && h.param.movPr.nChan <= 3
         else
             fname = 'transformed_coordinates';
         end
-        defName = [setCorrectPath('transformed', h.figure_MASH) fname ...
+        defName = [setCorrectPath('transformed', h_fig) fname ...
             '.coord'];
         [fname,pname,o] = uiputfile({...
             '*.coord', 'Transformed coordinates files(*.coord)'; ...
@@ -44,7 +45,7 @@ if h.param.movPr.nChan > 1 && h.param.movPr.nChan <= 3
         if ~isempty(fname) && sum(fname)
             cd(pname);
             [o,fname,o] = fileparts(fname);
-            fname = getCorrName([fname '.coord'], pname, h.figure_MASH);
+            fname = getCorrName([fname '.coord'], pname, h_fig);
             if ~isempty(fname) && sum(fname)
 
                 str_header = 'x1\ty1'; str_fmt = '%d\t%d';
@@ -62,20 +63,20 @@ if h.param.movPr.nChan > 1 && h.param.movPr.nChan <= 3
                 fclose(f);
 
                 h.param.movPr.coordTrsf_file = fname;
-                guidata(h.figure_MASH, h);
+                guidata(h_fig, h);
 
                 saved = 1;
 
                 updateActPan(['Transformed coordinates have been saved' ...
                     ' to file: ' fname '\n in folder: ' pname], ...
-                    h.figure_MASH, 'success');
+                    h_fig, 'success');
             end
         end
         if ~saved
             h.param.movPr.coordTrsf_file = [];
-            guidata(h.figure_MASH, h);
+            guidata(h_fig, h);
             updateActPan(['Transformed coordinates loaded but not ' ...
-                'saved'], h.figure_MASH, 'process');
+                'saved'], h_fig, 'process');
         end
 
         if nC == 1 && isempty(h.param.movPr.coordItg)
@@ -83,14 +84,14 @@ if h.param.movPr.nChan > 1 && h.param.movPr.nChan <= 3
             h.param.movPr.itg_coordFullPth = [pname ...
                 h.param.movPr.coordTrsf_file];
             h.param.movPr.coordItg = h.param.movPr.coordTrsf;
-            guidata(h.figure_MASH, h);
+            guidata(h_fig, h);
         end
-        updateFields(h.figure_MASH, 'movPr');
+        updateFields(h_fig, 'movPr');
     else
         updateActPan('No input coordinates or transformation loaded.', ...
-            h.figure_MASH, 'error');
+            h_fig, 'error');
     end
 else
     updateActPan(['This functionality is available for 2 or 3 ' ...
-        'channels only.'], h.figure_MASH, 'error');
+        'channels only.'], h_fig, 'error');
 end

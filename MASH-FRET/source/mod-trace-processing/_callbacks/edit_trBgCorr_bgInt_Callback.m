@@ -1,4 +1,5 @@
-function edit_trBgCorr_bgInt_Callback(obj, evd, h)
+function edit_trBgCorr_bgInt_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -27,7 +28,7 @@ if ~isempty(p.proj)
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val))
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
             updateActPan('Background intensity must be a number.', ...
-                h.figure_MASH, 'error');
+                h_fig, 'error');
         else
             set(obj, 'BackgroundColor', [1 1 1]);
             perSec = p.proj{proj}.fix{2}(4);
@@ -42,8 +43,8 @@ if ~isempty(p.proj)
             end
             p.proj{proj}.curr{mol}{3}{3}{l,c}(method,3) = val;
             h.param.ttPr = p;
-            guidata(h.figure_MASH, h);
-            ud_ttBg(h.figure_MASH);
+            guidata(h_fig, h);
+            ud_ttBg(h_fig);
         end
     end
 end

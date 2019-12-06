@@ -1,4 +1,5 @@
-function edit_photoblParam_03_Callback(obj, evd, h)
+function edit_photoblParam_03_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -26,7 +27,7 @@ if ~isempty(p.proj)
                 val >= minVal && val <= maxVal)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
             updateActPan(['Minimum cutoff must be >= ' num2str(minVal) ...
-                ' and <= ' num2str(maxVal)], h.figure_MASH, 'error');
+                ' and <= ' num2str(maxVal)], h_fig, 'error');
 
         else
             set(obj, 'BackgroundColor', [1 1 1]);
@@ -36,8 +37,8 @@ if ~isempty(p.proj)
             chan = p.proj{proj}.curr{mol}{2}{1}(3);
             p.proj{proj}.curr{mol}{2}{2}(chan,3) = val;
             h.param.ttPr = p;
-            guidata(h.figure_MASH, h);
-            ud_bleach(h.figure_MASH);
+            guidata(h_fig, h);
+            ud_bleach(h_fig);
         end
     end
 end

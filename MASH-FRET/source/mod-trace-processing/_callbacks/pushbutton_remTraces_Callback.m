@@ -1,4 +1,5 @@
-function pushbutton_remTraces_Callback(obj, evd, h)
+function pushbutton_remTraces_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     
@@ -50,16 +51,16 @@ if ~isempty(p.proj)
         % update project list
         p = ud_projLst(p, h.listbox_traceSet);
         h.param.ttPr = p;
-        guidata(h.figure_MASH, h);
+        guidata(h_fig, h);
         
         % update GUI with current project parameters
-        ud_TTprojPrm(h.figure_MASH);
+        ud_TTprojPrm(h_fig);
         
         % update sample management area
-        ud_trSetTbl(h.figure_MASH);
+        ud_trSetTbl(h_fig);
         
         % update calculations and GUI
-        updateFields(h.figure_MASH, 'ttPr');
+        updateFields(h_fig, 'ttPr');
         
         % display action
         if numel(slct)>1
@@ -69,6 +70,6 @@ if ~isempty(p.proj)
             str_act = cat(2,'Projects have been sucessfully removed form ',...
                 'the list:\n',str_act);
         end
-        setContPan(str_act,'none',h.figure_MASH);
+        setContPan(str_act,'none',h_fig);
     end
 end

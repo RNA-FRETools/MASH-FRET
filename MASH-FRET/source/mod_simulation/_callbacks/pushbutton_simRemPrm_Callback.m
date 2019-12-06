@@ -1,4 +1,5 @@
-function pushbutton_simRemPrm_Callback(obj, evd, h)
+function pushbutton_simRemPrm_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.sim;
 
 if isfield(p.molPrm, 'coord')
@@ -15,11 +16,11 @@ p.prmFile = [];
 p.matGauss = cell(1,4);
 h.param.sim = p;
 
-guidata(h.figure_MASH, h);
+guidata(h_fig, h);
 
 if h.param.sim.nbStates>5
     set(h.edit_nbStates,'string','5');
-    edit_nbStates_Callback(h.edit_nbStates,[],h);
+    edit_nbStates_Callback(h.edit_nbStates,[],h_fig);
 end
 
-updateFields(h.figure_MASH, 'sim');
+updateFields(h_fig, 'sim');

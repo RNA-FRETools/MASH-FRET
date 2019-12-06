@@ -470,7 +470,7 @@ if strcmp(opt,'imgAxes') || strcmp(opt, 'movPr') || strcmp(opt, 'all')
     set(h.popupmenu_bgCorr, 'Value', p.movBg_method);
     set(h.checkbox_bgCorrAll, 'Value', ~p.movBg_one);
     
-    ud_movBgCorr(h.popupmenu_bgCorr, [], h)
+    ud_movBgCorr(h.popupmenu_bgCorr, [], h_fig)
     h = guidata(h_fig);
     p = h.param.movPr;
     

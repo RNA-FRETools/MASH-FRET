@@ -1,26 +1,4 @@
-function varargout = MASH(varargin)
-% Last Modified by GUIDE v2.5 05-May-2019 05:42:20
-
-% Begin initialization code - DO NOT EDIT
-gui_Singleton = 1;
-gui_State = struct('gui_Name',       mfilename, ...
-                   'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @MASH_OpeningFcn, ...
-                   'gui_OutputFcn',  @MASH_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
-                   'gui_Callback',   []);
-if nargin && ischar(varargin{1})
-    gui_State.gui_Callback = str2func(varargin{1});
-end
-
-if nargout
-    [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
-else
-    gui_mainfcn(gui_State, varargin{:});
-end % End initialization code - DO NOT EDIT
-
-
-function MASH_OpeningFcn(obj, evd, h, varargin)
+function MASH(varargin)
 
 % define figure name from folder name
 [pname,o,o] = fileparts(which('MASH'));
@@ -69,119 +47,18 @@ end
 figName = sprintf('%s %s','MASH-FRET', version_str);
 
 if str2num(mtlbDat(1,i).Version) < 7.12
-    updateActPan(['WARNING: The Matlab version installed on this ' ...
-        'computer (' mtlbDat(1,i).Version ') is older than the one ' ...
-        'used to write ' figName ', i.e. 7.12.\nBe aware that '...
-        'compatibility problems can occur.'], obj, 'error');
+    disp(['WARNING: The Matlab version installed on this computer (' ...
+        mtlbDat(1,i).Version ') is older than the one used to write ' ...
+        figName ', i.e. 7.12. Be aware that compatibility problems can ',...
+        'occur.']);
 end
 
+% build MASH graphical interface
+h_fig = buildMASHfig;
 
-% initialise MASH
-initMASH(obj, h, figName);
+% initialize MASH
+initMASH(h_fig, figName);
 
-
-function varargout = MASH_OutputFcn(obj, evd, h)
-varargout{1} = [];
-
-
-function figure_MASH_CloseRequestFcn(obj, evd, h)
-if isfield(h, 'figure_actPan') && ishandle(h.figure_actPan)
-    h_pan = guidata(h.figure_actPan);
-    success = saveActPan(get(h_pan.text_actions, 'String'), h.figure_MASH);
-    if ~success
-        return
-    end
-    delete(h.figure_actPan);
-end
-if isfield(h, 'wait') && isfield(h.wait, 'figWait') && ...
-        ishandle(h.wait.figWait)
-    delete(h.wait.figWait);
-end
-if isfield(h, 'figure_trsfOpt') && ishandle(h.figure_trsfOpt)
-    delete(h.figure_trsfOpt);
-end
-if isfield(h, 'figure_itgOpt') && ishandle(h.figure_itgOpt)
-    delete(h.figure_itgOpt);
-end
-if isfield(h, 'figure_itgExpOpt') && ishandle(h.figure_itgExpOpt)
-    delete(h.figure_itgExpOpt);
-end
-if isfield(h, 'figure_optBg') && ishandle(h.figure_optBg)
-    delete(h.figure_optBg)
-end
-
-param = h.param;
-if ~isempty(param.ttPr.proj)
-    % remove background intensities
-    for c = 1:size(param.ttPr.defProjPrm.mol{3}{3},2)
-        for l = 1:size(param.ttPr.defProjPrm.mol{3}{3},1)
-            param.ttPr.defProjPrm.mol{3}{3}{l,c}(3) = 0;
-        end
-    end
-
-    % remove discretisation results
-    param.ttPr.defProjPrm.mol{3}{4} = [];
-end
-[mfile_path,o,o] = fileparts(mfilename('fullpath'));
-save([mfile_path filesep 'default_param.ini'], '-struct', 'param');
-
-delete(obj);
-
-
-function figure_MASH_SizeChangedFcn(obj,evd,h)
-
-if ~isfield(h,'pushbutton_help')
-    return;
-end
-
-for o = 1:numel(h.pushbutton_help)
-    data = get(h.pushbutton_help(o),'userdata');
-
-    un_but = get(h.pushbutton_help(o),'units');
-    un_pan = get(data{1},'units');
-
-    set(data{1},'units','pixels');
-    set(h.pushbutton_help(o),'units','pixels');
-
-    pos_pan = get(data{1},'position');
-    pos_but = get(h.pushbutton_help(o),'position');
-    
-    % shift position according to reference object
-    if data{3}(1)==0 % baseline is left border
-        pos_but(1) = pos_pan(1) + data{2}(1);
-    else % baseline is right border
-        pos_but(1) = pos_pan(1) + pos_pan(3) + data{2}(1);
-    end
-    if data{3}(2)==0 % baseline is bottom border
-        pos_but(2) = pos_pan(2) + data{2}(2);
-    else % baseline is top border
-        pos_but(2) = pos_pan(2) + pos_pan(4) + data{2}(2);
-    end
-    
-    % do not resize buttons
-    pos_but([3,4]) = data{2}([3,4]);
-
-    set(h.pushbutton_help(o),'position',pos_but);
-
-    set(data{1},'units',un_pan);
-    set(h.pushbutton_help(o),'units',un_but);
-end
-
-
-
-%% CreateFcns %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-function menu_routine_CreateFcn(obj, evd, h)
-
-h_fig = get(obj,'Parent');
-
-uimenu(obj,'Label','routine 01','Callback', ...
-    {@ttPr_routine,1,h_fig});
-uimenu(obj,'Label','routine 02','Callback', ...
-    {@ttPr_routine,2,h_fig});
-uimenu(obj,'Label','routine 03','Callback', ...
-    {@ttPr_routine,3,h_fig});
-uimenu(obj,'Label','routine 04','Callback', ...
-    {@ttPr_routine,4,h_fig});
-
+% make figure visible
+set(h_fig,'visible','on');
 

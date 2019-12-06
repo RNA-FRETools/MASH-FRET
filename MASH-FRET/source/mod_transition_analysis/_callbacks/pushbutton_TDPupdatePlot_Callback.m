@@ -1,4 +1,5 @@
-function pushbutton_TDPupdatePlot_Callback(obj, evd, h)
+function pushbutton_TDPupdatePlot_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.TDP;
 if ~isempty(p.proj)
     proj = p.curr_proj; % current project
@@ -12,7 +13,7 @@ if ~isempty(p.proj)
     a{4} = prm.plot{1}(4,1); % one/total transition count per molecule
     
     % create TDP matrix and get binned transitions + TDP coord. assignment
-    [TDP,dt_bin] = getTDPmat(dt_raw, a, h.figure_MASH);
+    [TDP,dt_bin] = getTDPmat(dt_raw, a, h_fig);
     
     if isnan(TDP)
         return;
@@ -24,7 +25,7 @@ if ~isempty(p.proj)
         prm.plot{3} = dt_bin;
         p.proj{proj}.prm{tpe} = prm;
         h.param.TDP = p;
-        guidata(h.figure_MASH, h);
+        guidata(h_fig, h);
         
         plot_prm{1} = a{2}; % TDP x & y limits
         plot_prm{2} = a{1}; % TDP x & y binning
@@ -42,7 +43,7 @@ if ~isempty(p.proj)
             clust{3} = [];
         end
         
-        plotTDP(h.axes_TDPplot1, TDP, plot_prm, clust, h.figure_MASH);
+        plotTDP(h.axes_TDPplot1, TDP, plot_prm, clust, h_fig);
         
     else
         prm.plot{2} = []; % TDP matrix
@@ -50,7 +51,7 @@ if ~isempty(p.proj)
         
         p.proj{proj}.prm{tpe} = prm;
         h.param.TDP = p;
-        guidata(h.figure_MASH, h);
+        guidata(h_fig, h);
     end
-    updateFields(h.figure_MASH, 'TDP');
+    updateFields(h_fig, 'TDP');
 end

@@ -1,18 +1,19 @@
-function pushbutton_trMap_Callback(obj, evd, h)
+function pushbutton_trMap_Callback(obj, evd, h_fig)
 [fname, pname, o] = uigetfile({ ...
     '*.png;*.tif', 'Image file(*.png;*.tif)';
     '*.*',  'All Files (*.*)'}, ...
     'Select an image file for mapping', ...
-    setCorrectPath('average_images', h.figure_MASH));
+    setCorrectPath('average_images', h_fig));
 
 if ~isempty(fname) && sum(fname)
     [o,o,fext] = fileparts(fname);
     if ~(strcmp(fext,'.png') || strcmp(fext,'.tif'))
         updateActPan(...
             'Wrong file format. Only PNG and TIF files are supported', ...
-            h.figure_MASH, 'success');
+            h_fig, 'success');
     end
     cd(pname);
+    h = guidata(h_fig);
     p = h.param.movPr;
     img = imread([pname fname]);
     nC = p.nChan;
@@ -46,7 +47,7 @@ if ~isempty(fname) && sum(fname)
         saved = 0;
 
         [o,defName,o] = fileparts(fname);
-        defName = [setCorrectPath('mapping', h.figure_MASH) defName ...
+        defName = [setCorrectPath('mapping', h_fig) defName ...
             '.map'];
         [fname,pname,o] = uiputfile({...
             '*.map', 'Mapped coordinates files(*.map)'; ...
@@ -56,7 +57,7 @@ if ~isempty(fname) && sum(fname)
         if ~isempty(fname) && sum(fname)
             cd(pname);
             [o,fname,o] = fileparts(fname);
-            fname = getCorrName([fname '.map'], pname, h.figure_MASH);
+            fname = getCorrName([fname '.map'], pname, h_fig);
 
             if ~isempty(fname) && sum(fname)
                 if nC > 1
@@ -72,7 +73,7 @@ if ~isempty(fname) && sum(fname)
                 fclose(f);
                 updateActPan(['Reference coordinates successfully ' ...
                     'loaded and saved to file: ' fname '\n in folder: ' ...
-                    pname], h.figure_MASH, 'success');
+                    pname], h_fig, 'success');
                
                 saved = 1;
             end
@@ -86,10 +87,10 @@ if ~isempty(fname) && sum(fname)
                 p.itg_coordFullPth = [];
             end
             updateActPan('Reference coordinates loaded but not saved', ...
-                h.figure_MASH, 'process');
+                h_fig, 'process');
         end
         h.param.movPr = p;
-        guidata(h.figure_MASH, h);
-        updateFields(h.figure_MASH, 'movPr');
+        guidata(h_fig, h);
+        updateFields(h_fig, 'movPr');
     end
 end

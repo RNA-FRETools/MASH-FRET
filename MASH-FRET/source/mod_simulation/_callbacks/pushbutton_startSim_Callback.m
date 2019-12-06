@@ -1,9 +1,9 @@
-function pushbutton_startSim_Callback(obj, evd, h)
+function pushbutton_startSim_Callback(obj, evd, h_fig)
 % Make sure all Parameters are updated.
-updateFields(h.figure_MASH, 'sim');
+updateFields(h_fig, 'sim');
 
 % Simulate trajectories and initialize movie simulation
-buildModel(h.figure_MASH);
+buildModel(h_fig);
 
 % Make sure all Parameters are updated.
-updateFields(h.figure_MASH, 'sim');
+updateFields(h_fig, 'sim');

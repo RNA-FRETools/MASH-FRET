@@ -1,4 +1,4 @@
-function pushbutton_simImpPrm_Callback(obj, evd, h)
+function pushbutton_simImpPrm_Callback(obj, evd, h_fig)
 if ~iscell(obj)
     [fname, pname, o] = uigetfile({'*.mat', 'Matlab file(*.mat)'; ...
         '*.*', 'All files(*.*)'}, 'Select a parameters file');
@@ -8,10 +8,11 @@ else
 end
 if ~isempty(fname) && sum(fname)
     cd(pname);
+    h = guidata(h_fig);
     p = h.param.sim;
-    p = impSimPrm(fname, pname, p, h.figure_MASH);
+    p = impSimPrm(fname, pname, p, h_fig);
     p.matGauss = cell(1,4);
     h.param.sim = p;
-    guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'sim');
+    guidata(h_fig, h);
+    updateFields(h_fig, 'sim');
 end

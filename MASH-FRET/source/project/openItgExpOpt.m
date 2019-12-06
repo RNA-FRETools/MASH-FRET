@@ -1,4 +1,4 @@
-function openItgExpOpt(obj, evd, h)
+function openItgExpOpt(obj, evd, h_fig)
 % Open a window to modify project parameters
 % "obj" >> handle of pushbutton from which the function has been called
 % "evd" >> eventdata structure of the pushbutton from which the function
@@ -24,7 +24,7 @@ function openItgExpOpt(obj, evd, h)
 %     created by function openItgExpOpt.m, called by control 
 %     pushbutton_TTgen_FileOpt)
 
-h_fig = h.figure_MASH;
+h = guidata(h_fig);
 switch obj
     case h.pushbutton_chanOpt
         p{1} = h.param.movPr.itg_expMolPrm;

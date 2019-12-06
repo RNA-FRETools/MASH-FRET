@@ -1,4 +1,5 @@
-function edit_TDP_nExp_Callback(obj, evd, h)
+function edit_TDP_nExp_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.TDP;
 if ~isempty(p.proj)
     val = round(str2num(get(obj, 'String')));
@@ -6,7 +7,7 @@ if ~isempty(p.proj)
     if ~(numel(val)==1 && ~isnan(val) && val > 0)
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
         setContPan('Number of exponential decays must be positive', ...
-            'error', h.figure_MASH);
+            'error', h_fig);
         return;
     else
         proj = p.curr_proj;
@@ -28,8 +29,8 @@ if ~isempty(p.proj)
             p.proj{proj}.prm{tpe}.kin_start = kin_k;
             p.proj{proj}.prm{tpe}.kin_res(trs,:) = cell(1,5);
             h.param.TDP = p;
-            guidata(h.figure_MASH, h);
-            updateFields(h.figure_MASH, 'TDP');
+            guidata(h_fig, h);
+            updateFields(h_fig, 'TDP');
         end
     end
 end

@@ -1,4 +1,5 @@
-function pushbutton_tdp_impModel_Callback(obj, evd, h)
+function pushbutton_tdp_impModel_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.TDP;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -9,6 +10,6 @@ if ~isempty(p.proj)
     prm = ud_kinPrm(prm,prm.clst_res{3});
 
     h.param.TDP.proj{proj}.prm{tpe} = prm;
-    guidata(h.figure_MASH,h);
-    updateFields(h.figure_MASH, 'TDP');
+    guidata(h_fig,h);
+    updateFields(h_fig, 'TDP');
 end

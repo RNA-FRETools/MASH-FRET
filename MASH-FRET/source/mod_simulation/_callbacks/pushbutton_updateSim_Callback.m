@@ -1,16 +1,19 @@
-function pushbutton_updateSim_Callback(obj, evd, h)
+function pushbutton_updateSim_Callback(obj, evd, h_fig)
+
+h = guidata(h_fig);
+
 % Set fields to proper values
-updateFields(h.figure_MASH, 'sim');
+updateFields(h_fig, 'sim');
 
 if h.param.sim.bgType == 3 % pattern
     p = h.param.sim;
-    [ok p] = checkBgPattern(p, h.figure_MASH);
+    [ok p] = checkBgPattern(p, h_fig);
     if ~ok
         return;
     end
     h.param.sim = p;
-    guidata(h.figure_MASH, h);
+    guidata(h_fig, h);
 end
 
-updateMov(h.figure_MASH);
-updateFields(h.figure_MASH, 'sim');
+updateMov(h_fig);
+updateFields(h_fig, 'sim');

@@ -1,4 +1,5 @@
-function pushbutton_TDPremProj_Callback(obj, evd, h)
+function pushbutton_TDPremProj_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.TDP;
 if ~isempty(p.proj)
     
@@ -50,12 +51,12 @@ if ~isempty(p.proj)
         % update project list
         p = ud_projLst(p, h.listbox_TDPprojList);
         h.param.TDP = p;
-        guidata(h.figure_MASH, h);
+        guidata(h_fig, h);
         
         % clear axes
         cla(h.axes_TDPplot1);
         
         % update calculations and GUI
-        updateFields(h.figure_MASH, 'TDP');
+        updateFields(h_fig, 'TDP');
     end
 end

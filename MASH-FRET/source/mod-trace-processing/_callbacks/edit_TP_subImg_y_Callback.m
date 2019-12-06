@@ -1,4 +1,5 @@
-function edit_TP_subImg_y_Callback(obj, evd, h)
+function edit_TP_subImg_y_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -23,7 +24,7 @@ if ~isempty(p.proj)
             updateActPan(['y-coordinates must be > ' ...
                 num2str(lim(1)+floor(itg_dim/2)) ' and < ' ...
                 num2str(lim(2)-floor(itg_dim/2))], ...
-                h.figure_MASH, 'error');
+                h_fig, 'error');
             
             return;
 
@@ -58,11 +59,11 @@ if ~isempty(p.proj)
         
     else
         updateActPan('Impossible to modify coordinates in "recenter" mode', ...
-            h.figure_MASH, 'error');
+            h_fig, 'error');
         return;
     end
 
     h.param.ttPr = p;
-    guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'ttPr');
+    guidata(h_fig, h);
+    updateFields(h_fig, 'ttPr');
 end

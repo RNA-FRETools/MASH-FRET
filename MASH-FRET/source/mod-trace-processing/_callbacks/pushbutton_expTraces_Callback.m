@@ -1,2 +1,2 @@
-function pushbutton_expTraces_Callback(obj, evd, h)
-openExpTtpr(h.figure_MASH);
+function pushbutton_expTraces_Callback(obj, evd, h_fig)
+openExpTtpr(h_fig);

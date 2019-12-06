@@ -1,17 +1,18 @@
-function pushbutton_calcTfr_Callback(obj, evd, h)
+function pushbutton_calcTfr_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 if h.param.movPr.nChan > 1 && h.param.movPr.nChan <= 3
     tform_type = h.param.movPr.trsf_type;
     if isfield(h.param.movPr, 'trsf_coordRef') && ...
             ~isempty(h.param.movPr.trsf_coordRef)
         if tform_type > 1
             tr = createTrafo(tform_type, h.param.movPr.trsf_coordRef,...
-                h.figure_MASH);
+                h_fig);
             if isempty(tr)
                 return;
             end
 
             h.param.movPr.trsf_tr = tr;
-            guidata(h.figure_MASH, h);
+            guidata(h_fig, h);
 
             saved = 0;
             
@@ -21,7 +22,7 @@ if h.param.movPr.nChan > 1 && h.param.movPr.nChan <= 3
             else
                 fname = 'transformation';
             end
-            defName = [setCorrectPath('transformed', h.figure_MASH) ...
+            defName = [setCorrectPath('transformed', h_fig) ...
                 fname '.mat'];
             [fname,pname,o] = uiputfile({ ...
                 '*.mat', 'Matlab files(*.mat)'; ...
@@ -35,37 +36,37 @@ if h.param.movPr.nChan > 1 && h.param.movPr.nChan <= 3
                 cd(pname);
                 [o,fname,o] = fileparts(fname);
                 fname_tr = getCorrName([fname '_trs.mat'], pname, ...
-                    h.figure_MASH);
+                    h_fig);
                 if ~isempty(fname_tr) && sum(fname_tr)
                     save([pname fname_tr], '-mat', 'tr' );
                     h.param.movPr.trsf_tr_file = fname_tr;
-                    guidata(h.figure_MASH, h);
+                    guidata(h_fig, h);
 
                     updateActPan(['Transformation matrices calculated ' ...
                         'from type "' str_type '" are loaded and have ' ...
                         'been saved to file: ' fname_tr ...
-                        '\n in folder: ' pname], h.figure_MASH, 'success');
+                        '\n in folder: ' pname], h_fig, 'success');
                     saved = 1;
                 end
             end
             if ~saved
                 h.param.movPr.trsf_tr_file = [];
-                guidata(h.figure_MASH, h);
+                guidata(h_fig, h);
                 updateActPan( ['Transformations matrices calculated ' ...
                     'from type "' str_type '" loaded but not saved.'], ...
-                    h.figure_MASH, 'process');
+                    h_fig, 'process');
             end
-            updateFields(h.figure_MASH, 'movPr');
+            updateFields(h_fig, 'movPr');
         else
             updateActPan('Select a transformation type.', ...
-                h.figure_MASH, 'error');
+                h_fig, 'error');
         end
     else
         updateActPan('No reference coordinates loaded.', ...
-            h.figure_MASH, 'error');
+            h_fig, 'error');
     end
 
 else
     updateActPan(['This functionality is available for 2 or 3 ' ...
-        'channels only.'], h.figure_MASH, 'error');
+        'channels only.'], h_fig, 'error');
 end

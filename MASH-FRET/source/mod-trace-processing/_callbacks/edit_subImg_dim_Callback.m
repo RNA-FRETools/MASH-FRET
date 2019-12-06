@@ -1,4 +1,5 @@
-function edit_subImg_dim_Callback(obj, evd, h)
+function edit_subImg_dim_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -13,7 +14,7 @@ if ~isempty(p.proj)
                 && val <= minVal)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
             updateActPan(['Subimage dimensions must be > 0 and <= ' ...
-                num2str(minVal)], h.figure_MASH , 'error');
+                num2str(minVal)], h_fig , 'error');
             
         else
             set(obj, 'BackgroundColor', [1 1 1]);
@@ -40,8 +41,8 @@ if ~isempty(p.proj)
             method = p.proj{proj}.curr{mol}{3}{2}(l,c);
             p.proj{proj}.curr{mol}{3}{3}{l,c}(method,2) = val;
             h.param.ttPr = p;
-            guidata(h.figure_MASH, h);
-            updateFields(h.figure_MASH, 'ttPr');
+            guidata(h_fig, h);
+            updateFields(h_fig, 'ttPr');
         end
     end
 end

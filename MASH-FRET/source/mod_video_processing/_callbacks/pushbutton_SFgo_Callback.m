@@ -1,5 +1,4 @@
-function pushbutton_SFgo_Callback(obj, evd, h)
-h_fig = h.figure_MASH;
+function pushbutton_SFgo_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 p = h.param.movPr;
 

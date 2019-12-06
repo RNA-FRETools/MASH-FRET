@@ -1,7 +1,8 @@
-function pushbutton_TP_updateAll_Callback(obj, evd, h)
+function pushbutton_TP_updateAll_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
-    h_fig = h.figure_MASH;
+    h_fig = h_fig;
     proj = p.curr_proj;
     nMol = size(p.proj{proj}.coord_incl,2);
     
