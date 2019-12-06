@@ -1,11 +1,13 @@
 function updateFields(h_fig, varargin)
-
 % Update all uicontrol properties of MASH
-% input argument 1: MASh figure handle
-% input argument 2: what to update ('all', 'sim', 'imgAxes', 'movPr',
-% 'ttPr', 'thm', TDP'
+% input argument 1: MASH figure handle
+% input argument 2: what to update ('all', 'sim', 'imgAxes', 'movPr', 'ttPr', 'thm', TDP')
 
-%% Last update by MH, 24.4.2019
+% Last update by MH, 9.11.2019
+% >> review update of transition rate edit fields in order to keep field in 
+%  selection after tabbing
+%
+% update by MH, 24.4.2019
 % >> remove double update of molecule list
 %
 % update: 19.4.2019 by MH
@@ -14,8 +16,8 @@ function updateFields(h_fig, varargin)
 %
 % update: 7th of March 2018 by Richard Börner
 % >> Comments adapted for Boerner et al, PONE, 2017.
-%%
 
+% set default option
 if ~isempty(varargin)
     opt = varargin{1};
 else
@@ -53,15 +55,20 @@ if strcmp(opt, 'sim') || strcmp(opt, 'all')
                   h.edit13 h.edit23 h.edit33 h.edit43 h.edit53
                   h.edit14 h.edit24 h.edit34 h.edit44 h.edit54
                   h.edit15 h.edit25 h.edit35 h.edit45 h.edit55];
-    set(transMat_h, 'Enable', 'off', 'BackgroundColor', [1 1 1]);
-    J = min([p.nbStates 5]);
-    set(transMat_h(1:J,1:J), 'Enable', 'on');
-    str = {};
-    for s = 1:p.nbStates
-        if s <= J
-            set(transMat_h(s,s), 'Enable', 'off', 'String', '0');
+    set(transMat_h, 'BackgroundColor', [1 1 1]);
+    
+    if ~(p.impPrm && isfield(p.molPrm,'kx'))
+        J = p.nbStates;
+        set(transMat_h, 'Enable', 'on');
+        for s = 1:size(transMat_h,2)
+            if s>J
+                set(transMat_h(s,:), 'Enable', 'off');
+                set(transMat_h(:,s), 'Enable', 'off');
+            else
+                set(transMat_h(s,s), 'Enable', 'off', 'String', '0');
+            end
+            
         end
-        str = [str, ['state ' num2str(s)]];
     end
     set(h.edit_length, 'String', num2str(p.nbFrames));
     set(h.edit_simRate, 'String', num2str(p.rate));
@@ -87,6 +94,10 @@ if strcmp(opt, 'sim') || strcmp(opt, 'all')
     state = get(h.popupmenu_states, 'Value');
     if state > p.nbStates
         state = p.nbStates;
+    end
+    str = {};
+    for s = 1:p.nbStates
+        str = [str, ['state ' num2str(s)]];
     end
     set(h.popupmenu_states, 'Value', state, 'String', str);
     set(h.edit_stateVal, 'String', num2str(p.stateVal(state)));
