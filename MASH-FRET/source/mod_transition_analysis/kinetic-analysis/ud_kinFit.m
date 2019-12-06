@@ -1,4 +1,11 @@
 function ud_kinFit(h_fig)
+% Set properties of all controls in panel "Transition rates" to proper 
+% values and refresh associated plots.
+%
+% h_fig: handle to main figure
+
+% Last update by MH, 6.12.2019
+% >> cancel axes clearance to keep the properties set originally.
 
 %% collect parameters
 h = guidata(h_fig);
@@ -29,7 +36,7 @@ if ~isempty(clust_res{1})
     %% build exponential list
     str_e = cell(1,nExp);
     for i = 1:nExp
-        str_e{i} = sprintf('exponential n:°%i', i);
+        str_e{i} = sprintf('exponential n°:%i', i);
     end
 
     %% set general parameters
@@ -205,7 +212,10 @@ else
     setProp(get(h.uipanel_TA_stateTransitionRates, 'Children'), 'Enable', ...
         'off');
     set(h.popupmenu_TDP_expNum, 'Value', 1, 'String', {''});
-    cla(h.axes_TDPplot2);
+    
+    % cancelled by MH, 6.12.2019
+%     cla(h.axes_TDPplot2);
+
     set(h.axes_TDPplot2, 'Visible', 'off');
     
     [ico_pth,o,o] = fileparts(mfilename('fullpath'));
@@ -220,7 +230,10 @@ else
                 []);
             
         catch err
-            cla(h.axes_TDPplot3);
+            
+            % cancelled by MH, 6.12.2019
+%             cla(h.axes_TDPplot3);
+
             set(h.axes_TDPplot3, 'Visible', 'off');
             return;
         end
