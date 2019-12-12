@@ -1,4 +1,8 @@
 function pushbutton_simRemPrm_Callback(obj, evd, h_fig)
+
+% Last update by MH, 12.12.2019:
+% >> update coordinates after removing pre-sets
+
 h = guidata(h_fig);
 p = h.param.sim;
 
@@ -17,6 +21,8 @@ p.matGauss = cell(1,4);
 h.param.sim = p;
 
 guidata(h_fig, h);
+
+setSimCoordTable(h.param.sim,h.uitable_simCoord);
 
 if h.param.sim.nbStates>5
     set(h.edit_nbStates,'string','5');
