@@ -9,6 +9,8 @@ function updateMov(h_fig)
 % >> reset PSF factorisation matrix (matGauss) when coordinates are 
 %  imported from a pre-set file and some are excluded along the way: size 
 %  conflict was happenning after two successive "generate" runs
+% >> modify first input argument of setSimCoordTable to display coordinates 
+%  imported from preset files
 %
 % Last update: 7th of March 2018 by Richard Börner
 % >> Comments adapted for Boerner et al 2017
@@ -16,6 +18,7 @@ function updateMov(h_fig)
 % Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
 
 h = guidata(h_fig);
+p = h.param.sim;
 
 if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         isfield(h.results.sim, 'mix') && ~isempty(h.results.sim.mix)
@@ -24,17 +27,17 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
     
     mix = h.results.sim.mix;
     discr_seq = h.results.sim.discr_seq;
-    totInt = h.param.sim.totInt;
-    Itot_w = h.param.sim.totInt_width;
-    gamma = h.param.sim.gamma;
-    gammaW = h.param.sim.gammaW;
-    genCoord = h.param.sim.genCoord;
-    impPrm = h.param.sim.impPrm;
-    molPrm = h.param.sim.molPrm;
-    fretVal_id = h.param.sim.stateVal;
-    fret_w = h.param.sim.FRETw;
-    matGauss = h.param.sim.matGauss;
-    N = h.param.sim.nbFrames;
+    totInt = p.totInt;
+    Itot_w = p.totInt_width;
+    gamma = p.gamma;
+    gammaW = p.gammaW;
+    genCoord = p.genCoord;
+    impPrm = p.impPrm;
+    molPrm = p.molPrm;
+    fretVal_id = p.stateVal;
+    fret_w = p.FRETw;
+    matGauss = p.matGauss;
+    N = p.nbFrames;
     
     if size(mix{1},2)<N
         setContPan({['Error: The kinetic model has to few data points ' ...
@@ -43,8 +46,8 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         return;
     end
 
-    res_x = h.param.sim.movDim(1);
-    res_y = h.param.sim.movDim(2);
+    res_x = p.movDim(1);
+    res_y = p.movDim(2);
     Iacc = {};
     Iacc_id = {};
     Idon = {};
@@ -55,8 +58,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         genCoord = 1;
     end
     
-    if genCoord && (size(h.param.sim.coord,1)~=size(mix,2) || ...
-            size(h.param.sim.coord,2)~=4 || ...
+    if genCoord && (size(p.coord,1)~=size(mix,2) || size(p.coord,2)~=4 || ...
             size(matGauss{1},2)~=size(mix,2))
         coord = zeros(size(mix,2),4);
         matGauss = cell(1,4);
@@ -67,7 +69,7 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
         if impPrm && isfield(molPrm, 'coord')
             coord = molPrm.coord;
         else
-            coord = h.param.sim.coord;
+            coord = p.coord;
         end
     end
     
@@ -166,8 +168,9 @@ if isfield(h, 'results') && isfield(h.results, 'sim') && ...
     h.param.sim.matGauss = matGauss;
     guidata(h_fig, h);
 
-    setSimCoordTable(h.param.sim.coord, h.uitable_simCoord);
-    
+    % modified by MH, 6.12.2019
+%     setSimCoordTable(h.param.sim.coord, h.uitable_simCoord);
+    setSimCoordTable(h.param.sim, h.uitable_simCoord);
     
     plotExample(h_fig);
     

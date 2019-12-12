@@ -1,4 +1,9 @@
 function pushbutton_simImpCoord_Callback(obj, evd, h_fig)
+
+% Last update by MH, 6.12.2019
+% >> modify first input argument of setSimCoordTable to display coordinates 
+%  imported from preset files
+
 if ~iscell(obj)
     [fname, pname, o] = uigetfile({'*.txt', 'ASCII file(*.txt)'; ...
         '*.*', 'All files(*.*)'}, 'Select a coordinates file');
@@ -14,8 +19,10 @@ if ~isempty(fname) && sum(fname)
     p.matGauss = cell(1,4);
     h.param.sim = p;
     guidata(h_fig, h);
-
-    setSimCoordTable(h.param.sim.coord, h.uitable_simCoord);
+    
+    % modified by MH, 6.12.2019
+%     setSimCoordTable(h.param.sim.coord, h.uitable_simCoord);
+    setSimCoordTable(h.param.sim, h.uitable_simCoord);
 
     updateFields(h_fig, 'sim');
 end
