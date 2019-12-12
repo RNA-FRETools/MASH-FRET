@@ -1,5 +1,5 @@
-function pushbutton_exportSim_Callback(obj, evd, h)
+function pushbutton_exportSim_Callback(obj, evd, h_fig)
 % Set fields to proper values
-updateFields(h.figure_MASH, 'sim');
-exportResults(h.figure_MASH);
-updateFields(h.figure_MASH, 'sim');
+updateFields(h_fig, 'sim');
+exportResults(h_fig);
+updateFields(h_fig, 'sim');
