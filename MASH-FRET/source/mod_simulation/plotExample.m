@@ -575,7 +575,7 @@ axis(h.axes_example_mov, 'image');
 % colorbar('delete');
 % h_colorbar = colorbar('peer', h.axes_example_mov);
 % ylabel(h_colorbar, [opUnits ' counts/time bin']);
-ylabel(h.cb_example_mov, [units,' counts/time bin']);
+ylabel(h.cb_example_mov, [opUnits,' counts/time bin']);
 
 h.param.sim.matGauss = gaussMat;
 guidata(h_fig, h);
