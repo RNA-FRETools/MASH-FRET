@@ -78,10 +78,10 @@ set(h_fig, 'Name', figName,'OuterPosition',[oxfig,oyfig,owfig,ohfig]);
 h.figure_actPan = actionPanel(h_fig);
 
 % set all axes invisible
-h_axes = [h.axes_example_hist,h.axes_example,h.example_mov,h.axes_movie,...
-    h.axes_top,h.axes_topRight,h.axes_bottom,h.axes_bottomRight,...
-    h.axes_hist1,h.axes_hist2,h.axes_thm_BIC,h.axes_TDPplot1,...
-    h.axes_tdp_BIC,h.axes_TDPplot2,h.axes_TDPplot3];
+h_axes = [h.axes_example_hist,h.axes_example,h.axes_example_mov,...
+    h.axes_movie,h.axes_top,h.axes_topRight,h.axes_bottom,...
+    h.axes_bottomRight,h.axes_hist1,h.axes_hist2,h.axes_thm_BIC,...
+    h.axes_TDPplot1,h.axes_tdp_BIC,h.axes_TDPplot2,h.axes_TDPplot3];
 set(h_axes,'visible','off');
 
 % recover root folder from default parameters and add to handle structure
@@ -94,7 +94,6 @@ h.param.OpFiles.overwrite_ask = def_ask;
 h.param.OpFiles.overwrite = ~def_ask;
 
 % add zoom and pan objects
-h = guidata(h_fig);
 h.TTpan = pan(h_fig);
 h.TTzoom = zoom(h_fig);
 set(h.TTpan, 'Enable', 'off');
