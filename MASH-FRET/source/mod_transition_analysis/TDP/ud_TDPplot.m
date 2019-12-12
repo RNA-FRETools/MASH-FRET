@@ -1,5 +1,9 @@
 function ud_TDPplot(h_fig)
 
+% Last update by MH, 12.12.2019:
+% >> give the colorbar's handle in plotTDP's input to prevent dependency on 
+%  MASH main figure's handle and allow external use.
+
 h = guidata(h_fig);
 p = h.param.TDP;
 proj = p.curr_proj;
@@ -110,7 +114,7 @@ clust_prm{2} = clust; % cluster assigment of TDP coordinates
 clust_prm{3}.a = a; % converged Gaussian weights
 clust_prm{3}.o = o; % converged Gaussian deviations
 
-plotTDP(h.axes_TDPplot1, TDP, plot_prm, clust_prm, h_fig);
+plotTDP(h.axes_TDPplot1, h.colorbar_TA, TDP, plot_prm, clust_prm, h_fig);
 
 %% adjust colormap
 p.cmap = colormap(h.axes_TDPplot1);

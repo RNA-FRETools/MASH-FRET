@@ -7,6 +7,7 @@ function h_fig = buildMASHfig()
 
 % default
 fname_ref = 'charDimTable.mat'; % reference file containing character pixel dimensions
+fname_boba = 'boba.png'; % image file containing BOBA FRET icon
 field_name = 'tbl'; % file's field containing character pixel dimensions
 posun = 'pixels'; % position and dimension units
 fntun = 'points'; % font units
@@ -47,10 +48,19 @@ ttstr1 = wrapStrToWidth('<b>Open browser</b> to set the new location of the dest
 % load reference table listing character widths
 h.charDimTable = getfield(load(fname_ref),field_name);
 
+% check if boba icon exists
+[ico_pth,o,o] = fileparts(mfilename('fullpath'));
+if exist([ico_pth,filesep,fname_boba],'file')
+    fname_boba = [ico_pth,filesep,fname_boba];
+else
+    fname_boba = [];
+end
+
 % build often-used parameter structure
 p = struct('posun',posun,'fntun',fntun,'fntsz1',fntsz1,'mg',mg,'mgpan',...
     mgpan,'wbrd',wbrd,'wbox',wbox,'warr',warr,'wttstr',wttstr,'fntclr1',...
-    fntclr1,'fntclr2',fntclr2,'wbuth',wbuth,'hndls',hndls);
+    fntclr1,'fntclr2',fntclr2,'wbuth',wbuth,'hndls',hndls,'fname_boba',...
+    fname_boba);
 p.tbl = h.charDimTable; % table listing character pixel dimensions
 
 % dimensions

@@ -580,6 +580,10 @@ ylabel(h.cb_example_mov, [opUnits,' counts/time bin']);
 h.param.sim.matGauss = gaussMat;
 guidata(h_fig, h);
 
+% make all axes visible
+set([h.axes_example,h.axes_example_hist,h.axes_example_mov,...
+    h.cb_example_mov],'visible','on');
+
 
 
 

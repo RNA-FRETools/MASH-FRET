@@ -1,6 +1,7 @@
-function plotTDP(h_axes, TDP, plot_prm, clust_prm, varargin)
+function plotTDP(h_axes, h_cb, TDP, plot_prm, clust_prm, varargin)
 % Plot transition density plot and clusters
 % "h_axes" >> axes handle
+% "h_cb" >> colorbar handle
 % "plot_prm >> {1-by-5} cell array:
 %  plot_prm{1} >> [m-by-n] TDP matrix
 %  plot_prm{2} >> [2-by-2] x-limits and y-limits
@@ -17,7 +18,11 @@ function plotTDP(h_axes, TDP, plot_prm, clust_prm, varargin)
 %                  plot ellipses
 % (optional) "varagin" >> MASH figure handle
 
-% Last update by MH, 29.11.2019
+% Last update by MH, 12.12.2019:
+% >> give the colorbar's handle in plotTDP's input to prevent dependency on 
+%  MASH main figure's handle and allow external use.
+%
+% update by MH, 29.11.2019
 % >> remove systemic axes clearance to keep original properties (font size,
 %  color bar etc..)
 %
@@ -138,7 +143,7 @@ xlabel(h_axes, 'Value before transition');
 ylabel(h_axes, 'Value after transition');
 set(h_axes, 'XAxisLocation', 'top', 'YAxisLocation', 'right', 'XLim', ...
     lim(1,:), 'YLim', lim(2,:), 'YDir', 'normal', 'NextPlot', ...
-    'replacechildren', 'Visible', 'on');
+    'replacechildren');
 if exist('h_fig', 'var')
     set([h_axes im], 'ButtonDownFcn', {@target_centroids, h_fig});
 end
@@ -151,15 +156,14 @@ end
 % else
 %     ylabel(h_c, 'occurrence');
 % end
-if ~isempty(varargin)
-    % name colorbar
-    h = guidata(h_fig);
-    if norm
-        ylabel(h.colorbar_TA, 'normalized occurrence');
-    else
-        ylabel(h.colorbar_TA, 'occurrence');
-    end
+% name colorbar
+if norm
+    ylabel(h_cb, 'normalized occurrence');
+else
+    ylabel(h_cb, 'occurrence');
 end
+
+set([h_axes h_cb],'visible','on');
 
 
 

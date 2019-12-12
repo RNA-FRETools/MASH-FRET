@@ -26,7 +26,11 @@ function h = buildPanelHA(h,p)
 %   p.wbuth: pixel width of help buttons
 %   p.tbl: reference table listing character pixel dimensions
 %   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
+%   p.fname_boba: image file containing BOBA FRET icon
 
+% Last update by MH, 12.12.2019
+% >> plot boba icon in corresponding axes
+%
 % Created by MH, 19.10.2019
 
 % default
@@ -166,12 +170,19 @@ tiaxes = get(h_axes,'tightinset');
 posaxes = getRealPosAxes([x,y,waxes0,haxes0],tiaxes,'traces');
 set(h_axes,'position',posaxes);
 
-x = posaxes(1)+posaxes(3)-waxes1;
-y = posaxes(2)+posaxes(4)-waxes1;
+if ~isempty(p.fname_boba)
+    x = posaxes(1)+posaxes(3)-waxes1;
+    y = posaxes(2)+posaxes(4)-waxes1;
 
-h.axes_hist_BOBA = axes('parent',h_pan,'units',p.posun,'fontunits',p.fntun,...
-    'fontsize',p.fntsz1,'position',[x,y,waxes1,waxes1],'xtick',[],'ytick',...
-    []);
+    h.axes_hist_BOBA = axes('parent',h_pan,'units',p.posun,'fontunits',...
+        p.fntun,'fontsize',p.fntsz1,'position',[x,y,waxes1,waxes1]);
+    
+    ico_boba = imread(p.fname_boba);
+    ico_boba = repmat(ico_boba, [1,1,3]);
+    image(ico_boba,'parent',h.axes_hist_BOBA);
+    axis(h.axes_hist_BOBA,'image');
+    set(h.axes_hist_BOBA,'xtick',[],'ytick',[]);
+end
 
 x = pospan(3)-p.mg-waxes0;
 y = p.mg;

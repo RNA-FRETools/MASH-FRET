@@ -18,7 +18,12 @@ function h = buildPanelTAstateTransitionRates(h,p)
 %   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character pixel dimensions
 %   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
+%   p.fname_boba: image file containing BOBA FRET icon
 
+% Last update by MH, 12.12.2019
+% >> move script that plots boba fret icon from ud_kinFit.m to here (plot 
+% is now done only once when building GUI)
+%
 % Created by MH, 9.11.2019
 
 % defaults
@@ -161,12 +166,19 @@ tiaxes = get(h_axes,'tightinset');
 posaxes = getRealPosAxes([x,y,waxes0,haxes0],tiaxes,'traces');
 set(h_axes,'position',posaxes);
 
-x = posaxes(1)+posaxes(3)-waxes1;
-y = posaxes(2)+posaxes(4)-waxes1;
-
-h.axes_TDPplot3 = axes('parent',h_pan,'units',p.posun,'fontunits',p.fntun,...
-    'fontsize',p.fntsz1,'position',[x,y,waxes1,waxes1],'xtick',[],'ytick',...
-    []);
+if ~isempty(p.fname_boba)
+    x = posaxes(1)+posaxes(3)-waxes1;
+    y = posaxes(2)+posaxes(4)-waxes1;
+    
+    h.axes_TDPplot3 = axes('parent',h_pan,'units',p.posun,'fontunits',...
+        p.fntun,'fontsize',p.fntsz1,'position',[x,y,waxes1,waxes1]);
+    
+    ico_boba = imread(p.fname_boba);
+    ico_boba = repmat(ico_boba, [1,1,3]);
+    image(ico_boba,'parent',h.axes_TDPplot3);
+    axis(h.axes_TDPplot3,'image');
+    set(h.axes_TDPplot3,'xtick',[],'ytick',[]);
+end
 
 x = pospan(3)-p.mg-wbut0;
 y = p.mg;

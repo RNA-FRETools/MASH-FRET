@@ -5,7 +5,10 @@ function updateImgAxes(h_fig)
 %
 % Requires external fucntions: getFrame, updateBgCorr, updateSF.
 
-% Last update by MH, 29.11.2019
+% Last update by MH, 12.12.2019:
+% >> adapt colorbar visibility to wether or not a video/image is loaded.
+%
+% update by MH, 29.11.2019
 % >> adapt axes visibility to wether or not a video/image is loaded.
 % >> remove systemic axes clearance to keep original properties (font size,
 %  color bar etc..) 
@@ -17,10 +20,10 @@ p = h.param.movPr;
 % add by MH, 29.11.2019
 isLoad = isfield(h,'movie');
 if ~isLoad
-    set(h.axes_movie,'visible','off');
+    set([h.axes_movie,h.colorbar],'visible','off');
     return;
 else
-    set(h.axes_movie,'visible','on');
+    set([h.axes_movie,h.colorbar],'visible','on');
 end
 
 frameCurNb = h.movie.frameCurNb;

@@ -4,7 +4,12 @@ function ud_kinFit(h_fig)
 %
 % h_fig: handle to main figure
 
-% Last update by MH, 6.12.2019
+% Last update by MH, 12.12.2019
+% >> move script that plots boba fret icon from here to 
+%  buildPanelTAstateTransitionRates.m (plot is now done only once when 
+%  building GUI)
+%
+% update by MH, 6.12.2019
 % >> cancel axes clearance to keep the properties set originally.
 
 %% collect parameters
@@ -218,25 +223,26 @@ else
 
     set(h.axes_TDPplot2, 'Visible', 'off');
     
-    [ico_pth,o,o] = fileparts(mfilename('fullpath'));
-
-    if exist([ico_pth filesep 'boba.png'], 'file')
-        try
-            ico_boba = imread([ico_pth filesep 'boba.png']);
-            ico_boba = repmat(ico_boba, [1 1 3]);
-            image(ico_boba, 'Parent', h.axes_TDPplot3);
-            axis(h.axes_TDPplot3, 'image');
-            set(h.axes_TDPplot3, 'Visible', 'on', 'XTick', [], 'YTick', ...
-                []);
-            
-        catch err
-            
-            % cancelled by MH, 6.12.2019
-%             cla(h.axes_TDPplot3);
-
-            set(h.axes_TDPplot3, 'Visible', 'off');
-            return;
-        end
-    end
+    % cancelled by MH, 12.12.2019
+%     [ico_pth,o,o] = fileparts(mfilename('fullpath'));
+% 
+%     if exist([ico_pth filesep 'boba.png'], 'file')
+%         try
+%             ico_boba = imread([ico_pth filesep 'boba.png']);
+%             ico_boba = repmat(ico_boba, [1 1 3]);
+%             image(ico_boba, 'Parent', h.axes_TDPplot3);
+%             axis(h.axes_TDPplot3, 'image');
+%             set(h.axes_TDPplot3, 'Visible', 'on', 'XTick', [], 'YTick', ...
+%                 []);
+%             
+%         catch err
+%             
+%             % cancelled by MH, 6.12.2019
+% %             cla(h.axes_TDPplot3);
+% 
+%             set(h.axes_TDPplot3, 'Visible', 'off');
+%             return;
+%         end
+%     end
 end
 

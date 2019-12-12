@@ -3,7 +3,12 @@ function updateFields(h_fig, varargin)
 % input argument 1: MASH figure handle
 % input argument 2: what to update ('all', 'sim', 'imgAxes', 'movPr', 'ttPr', 'thm', TDP')
 
-% Last update by MH, 9.11.2019
+% Last update by MH, 12.12.2019
+% >> cancel clearing of image axes to keep properties/boba fret image 
+% defined when building GUI
+% >> make TDP colorbar invisible when no project is loaded
+%
+% update by MH, 9.11.2019
 % >> review update of transition rate edit fields in order to keep field in 
 %  selection after tabbing
 %
@@ -607,10 +612,13 @@ if strcmp(opt, 'thm') || strcmp(opt, 'all')
         set([h.radiobutton_thm_gaussFit h.radiobutton_thm_thresh], ...
             'Value', 0, 'FontWeight', 'normal');
         setProp(get(h.uipanel_HA, 'Children'), 'Enable', 'off');
-        cla(h.axes_hist1); cla(h.axes_hist2); cla(h.axes_hist_BOBA);
-        cla(h.axes_thm_BIC);
-        set([h.axes_hist1,h.axes_hist2,h.axes_hist_BOBA, ...
-            h.axes_thm_BIC], 'Visible','off');
+        
+        % cancelled by MH, 12.12.2019
+%         cla(h.axes_hist_BOBA);
+
+        cla(h.axes_hist1); cla(h.axes_hist2); cla(h.axes_thm_BIC);
+
+        set([h.axes_hist1,h.axes_hist2,h.axes_thm_BIC], 'Visible','off');
         set([h.pushbutton_help h.pushbutton_thm_impASCII ...
             h.pushbutton_thm_addProj],'Enable', 'on');
     end
@@ -640,10 +648,14 @@ if strcmp(opt, 'TDP') || strcmp(opt, 'all')
         set([h.pushbutton_help h.pushbutton_TDPimpOpt ...
             h.pushbutton_TDPaddProj], 'Enable', 'on');
         set(h.listbox_TDPtrans, 'String', {''}, 'Value', 1);
-%         cla(h.axes_TDPplot1); cla(h.axes_TDPplot2); cla(h.axes_TDPplot3);
-%         cla(h.axes_tdp_BIC);
-        set([h.axes_TDPplot1 h.axes_TDPplot2 h.axes_TDPplot3 ...
-            h.axes_TDPcmap h.axes_tdp_BIC], 'Visible', 'off');
+        
+        % cancelled by MH, 12.12.2019
+%         cla(h.axes_TDPplot1); cla(h.axes_TDPplot3);
+
+        cla(h.axes_TDPplot2); cla(h.axes_tdp_BIC);
+
+        set([h.axes_TDPplot1 h.colorbar_TA h.axes_TDPplot2 h.axes_TDPcmap ...
+            h.axes_tdp_BIC], 'Visible', 'off');
     end
 end
 
