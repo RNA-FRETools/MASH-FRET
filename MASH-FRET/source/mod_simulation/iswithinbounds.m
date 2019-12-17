@@ -1,0 +1,9 @@
+function res = iswithinbounds(res_x,res_y,xy)
+
+lim_x = [0,round(res_x/2),res_x];
+lim_y = [0,res_y];
+
+res = xy(:,1)> lim_x(1) & xy(:,1)<lim_x(2) & ...
+      xy(:,3)>=lim_x(2) & xy(:,3)<lim_x(3) & ...
+      sum(double(xy(:,[2 4])>lim_y(1)),2) & ...
+      sum(double(xy(:,[2 4])<lim_y(2)),2);

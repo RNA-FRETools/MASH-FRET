@@ -3,8 +3,13 @@ function buildModel(h_fig)
 % kinetic rates and the FRET states defined by the user.
 %
 % Requires external files: setContPan.m
-%                          updateMov.m
-% To be checked 2018-03-06 
+
+% Last update by MH, 17.12.2019
+% >> remove dependency on updateMov.m (called from the pushbutton callback 
+% function)
+%
+% update by RB, 6.3.2018
+% >> comment: To be checked 2018-03-06 
 
 
 h = guidata(h_fig);
@@ -248,7 +253,5 @@ h.results.sim.discr_seq = discr_seq;
 h.results.sim.dt_final = dt_final;
 guidata(h_fig,h);
 
-% Start acutal intensity trajectory and SMV simulation
-
-updateMov(h_fig);
-
+% cancelled by MH, 17.12.2019
+% updateMov(h_fig);
