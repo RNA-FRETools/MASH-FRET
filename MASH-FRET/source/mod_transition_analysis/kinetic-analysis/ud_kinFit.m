@@ -8,9 +8,6 @@ function ud_kinFit(h_fig)
 % >> move script that plots boba fret icon from here to 
 %  buildPanelTAstateTransitionRates.m (plot is now done only once when 
 %  building GUI)
-%
-% update by MH, 6.12.2019
-% >> cancel axes clearance to keep the properties set originally.
 
 %% collect parameters
 h = guidata(h_fig);
@@ -218,8 +215,7 @@ else
         'off');
     set(h.popupmenu_TDP_expNum, 'Value', 1, 'String', {''});
     
-    % cancelled by MH, 6.12.2019
-%     cla(h.axes_TDPplot2);
+    cla(h.axes_TDPplot2);
 
     set(h.axes_TDPplot2, 'Visible', 'off');
     
