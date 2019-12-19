@@ -43,7 +43,7 @@ if ~isempty(p.proj)
             clust{3} = [];
         end
         
-        plotTDP(h.axes_TDPplot1, TDP, plot_prm, clust, h_fig);
+        plotTDP(h.axes_TDPplot1, h.colorbar_TA, TDP, plot_prm, clust, h_fig);
         
     else
         prm.plot{2} = []; % TDP matrix
