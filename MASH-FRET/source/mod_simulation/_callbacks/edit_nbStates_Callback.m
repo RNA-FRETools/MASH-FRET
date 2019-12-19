@@ -1,6 +1,10 @@
 function edit_nbStates_Callback(obj, evd, h_fig)
 
-% Last update: 19.4.2019 by MH
+% Last update by MH, 19.12.2019
+% >> delete previous state sequences (and associated results) when the
+%  number of states changes
+%
+% update: 19.4.2019 by MH
 % >> move function from MASH.m to separate file
 % >> include tip in error message
 
@@ -24,7 +28,9 @@ else
     end
     h.param.sim.stateVal = h.param.sim.stateVal(1:h.param.sim.nbStates);
     h.param.sim.FRETw = h.param.sim.FRETw(1:h.param.sim.nbStates);
-    h.results.sim.mix = [];
+    if isfield(h,'results') && isfield(h.results,'sim')
+        h.results = rmfield(h.results,'sim');
+    end
     guidata(h_fig, h);
 
     set(h.popupmenu_states, 'Value', 1);
