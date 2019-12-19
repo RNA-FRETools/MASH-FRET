@@ -86,7 +86,7 @@ y = 3*p.mg+hsld0+htxt0;
 h.axes_movie = axes('parent',h_pan,'units',p.posun,'fontunits',p.fntun,...
     'fontsize',p.fntsz1,'xlim',limMov,'ylim',limMov,'clim',lim,'nextplot',...
     'replacechildren','DataAspectRatioMode','manual','DataAspectRatio',...
-    [1 1 1]);
+    [1 1 1],'ydir','reverse');
 h_axes = h.axes_movie;
 tiaxes = get(h_axes,'tightinset');
 % adjust axes dimensions
@@ -95,10 +95,7 @@ posaxes = getRealPosAxes([x,y,waxes0,haxes0],tiaxes,'traces');
 h.colorbar = colorbar(h_axes,'units',p.posun);
 ylabel(h.colorbar,ylbl0);
 set(h_axes,'position',posaxes);
-% reduce height of colorbar to make 10^x factor visible
 pos_cb = get(h.colorbar,'position');
-pos_cb(4) = pos_cb(4) - p.mg;
-set(h.colorbar,'position',pos_cb);
 
 % dimensions (complement)
 wedit0 = posaxes(3)-4*p.mg/fact-p.mg-wbut0-wbut1-wbut2*2-wtxt0-p.wbuth;

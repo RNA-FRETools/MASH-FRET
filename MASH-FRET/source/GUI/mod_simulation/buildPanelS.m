@@ -83,12 +83,12 @@ x = pospan(3)-p.mg-waxes0;
 y = p.mg;
 
 h.axes_example_mov = axes('parent',h_pan,'units',p.posun,'fontunits',...
-    p.fntun,'fontsize',p.fntsz1,'activepositionproperty','outerposition',...
-    'xlim',limMov,'ylim',limMov,'clim',lim,'nextplot','replacechildren');
+    p.fntun,'fontsize',p.fntsz1,'xlim',limMov,'ylim',limMov,'clim',lim,...
+    'nextplot','replacechildren','DataAspectRatioMode','manual',...
+    'DataAspectRatio',[1 1 1],'ydir','reverse');
 h_axes = h.axes_example_mov;
 
 % adjust axes dimensions
-axis(h_axes,'square');
 pos = getRealPosAxes([x,y,waxes0,haxes0],get(h_axes,'tightinset'),'traces');
 
 % add color bar and shift axes x-position
@@ -97,11 +97,6 @@ ylabel(h.cb_example_mov,ylbl0);
 pos_cb = get(h.cb_example_mov,'position');
 pos(1) = pos(1) - 3*pos_cb(3);
 set(h_axes,'position',pos);
-
-% reduce height of colorbar to make 10^x factor visible
-pos_cb = get(h.cb_example_mov,'position');
-pos_cb(4) = pos_cb(4) - p.mg;
-set(h.cb_example_mov,'position',pos_cb);
 
 x = p.mg;
 y = pospan(4)-2*p.mg-hpan-hedit0;
