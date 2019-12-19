@@ -4,7 +4,11 @@ function buildModel(h_fig)
 %
 % Requires external files: setContPan.m
 
-% Last update by MH, 17.12.2019
+% Last update by MH, 19.12.2019
+% >> fix error occuring when the sum of one of the rows/columns in the rate
+%  matrix is null
+%
+% update by MH, 17.12.2019
 % >> remove dependency on updateMov.m (called from the pushbutton callback 
 % function)
 %
@@ -13,10 +17,6 @@ function buildModel(h_fig)
 
 
 h = guidata(h_fig);
-
-if isfield(h, 'results')
-    h = rmfield(h, 'results');
-end
 
 % genCoord = h.param.sim.genCoord;
 % if n_max == 0
@@ -64,6 +64,21 @@ if K>1 && isTrans
     while n <= n_max
         if n==1 && ~imp_kx
             kx = kx(1:K,1:K);
+            
+            % identify zero sums in rate matrix
+            if ~sum(kx,1) || ~sum(kx,2)
+                setContPan(cat(2,'Simulation aborted: at least one ',...
+                    'transition from and to each state must be defined ',...
+                    '(rate non-null).'),'error',h_fig);
+
+                % clear any results to avoid conflict
+                if isfield(h,'results') && isfield(h.results,'sim')
+                    h.results = rmfield(h.results,'sim');
+                end
+                guidata(h_fig,h);
+                return
+            end
+            
 %             P = kx*N; // M.CAS Hadzic 2012
 %             P = double(~~(kx)); %  M.CAS Hadzic 2014, to be updated
             P = kx.*expT; % simple rate-to-prob-model for Markov chains, 2018-03-12 RB
@@ -83,6 +98,21 @@ if K>1 && isTrans
             Prob = W(:,i)./sum(W(:,i));
         elseif imp_kx
             kx = kx_all(1:K,1:K,n);
+            
+            % identify zero sums in rate matrix
+            if ~sum(kx,1) || ~sum(kx,2)
+                setContPan(cat(2,'Simulation aborted: at least one ',...
+                    'transition from and to each state must be defined ',...
+                    '(rate non-null).'),'error',h_fig);
+
+                % clear any results to avoid conflict
+                if isfield(h,'results') && isfield(h.results,'sim')
+                    h.results = rmfield(h.results,'sim');
+                end
+                guidata(h_fig,h);
+                return
+            end
+            
 %             P = kx*N; // M.CAS Hadzic 2012
 %             P = double(~~(kx)); %  M.CAS Hadzic 2014, to be updated
             P = kx.*expT; % simple rate-to-prob-model for Markov chains, 2018-03-12 RB
@@ -246,6 +276,11 @@ else
             mix{n}(1,1+end_t/expT:N) = -1;
         end
     end
+end
+
+% clear previous results
+if isfield(h,'results') && isfield(h.results,'sim')
+    h.results = rmfield(h.results,'sim');
 end
 
 h.results.sim.mix = mix;
