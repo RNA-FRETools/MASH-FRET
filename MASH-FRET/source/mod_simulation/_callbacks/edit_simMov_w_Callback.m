@@ -12,9 +12,13 @@ if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val > 0)
         h_fig);
 else
     set(obj, 'BackgroundColor', [1 1 1]);
-    h = guidata(h_fig);
-    h.param.sim.movDim(1) = val;
     
+    h = guidata(h_fig);
+    if val==h.param.sim.movDim(1)
+        return
+    end
+    
+    h.param.sim.movDim(1) = val;
     h.param.sim = resetSimCoord(h.param.sim,h_fig);
     
     guidata(h_fig, h);
