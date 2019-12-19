@@ -70,14 +70,14 @@ else
     h_edit = [];
 end
 
+updateActPan(str,h_fig,state);
+
 if ~isempty(h_edit)
     str = wrapActionString('none',h_edit,[h.figure_dummy,h.text_dummy],...
         str);
     set(h_edit, 'String', str, 'BackgroundColor', colBg);
     drawnow;
 end
-
-updateActPan(str,h_fig,state);
 
 guidata(h_fig, h);
 
