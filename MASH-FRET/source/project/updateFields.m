@@ -3,7 +3,11 @@ function updateFields(h_fig, varargin)
 % input argument 1: MASH figure handle
 % input argument 2: what to update ('all', 'sim', 'imgAxes', 'movPr', 'ttPr', 'thm', TDP')
 
-% Last update by MH, 12.12.2019
+% Last update by MH, 19.12.2019
+% >> allows coordinates import from ASCII file when a preset file 
+%  containing only out-of-range coordinates is loaded
+%
+% update by MH, 12.12.2019
 % >> cancel clearing of image axes to keep properties/boba fret image 
 % defined when building GUI
 % >> make TDP colorbar invisible when no project is loaded
@@ -147,7 +151,7 @@ if strcmp(opt, 'sim') || strcmp(opt, 'all')
             set([h.edit_totInt h.edit_dstrbNoise], 'Enable', 'on');
         end
         
-        if isfield(p.molPrm, 'coord')
+        if isfield(p.molPrm, 'coord') && ~isempty(p.molPrm.coord)
             set(h.pushbutton_simImpCoord, 'Enable', 'off');
         else
             set(h.pushbutton_simImpCoord, 'Enable', 'on');

@@ -9,7 +9,11 @@ function [ok,str] = updateMov(h_fig)
 %
 % Requires external files: setContPan.m
 
-% Last update by MH, 17.12.2019
+% Last update by MH, 19.12.2019
+% >> remove control of coordinates and PSF factorization matrix (done 
+%  upstream at import or when video dimensions change) 
+%
+% update by MH, 17.12.2019
 % >> check for sufficient number of data points in state sequences
 % >> return success/failure variable and potential error message
 % >> correct how coordinates are collected genCoord=1 --> randomly
@@ -55,8 +59,9 @@ end
 % check for a sufficient number of simulated state sequences
 if size(mix,2)<N
     setContPan({['Error: Not enough state sequences were simulated to ',...
-        'satisfy the sample size N.'],['Push the "Generate" button',...
-        ' to re-simulate state sequences.']},'error',h_fig);
+        'satisfy the sample size N=',num2str(N),'.'],['Push the ',...
+        '"Generate" button to re-simulate state sequences.']},'error',...
+        h_fig);
     ok = 0;
     return
 end
@@ -80,11 +85,8 @@ stateVal = p.stateVal;
 FRETw = p.FRETw;
 gamma = p.gamma;
 gammaW = p.gammaW;
-genCoord = p.genCoord;
-coord = p.coord;
 impPrm = p.impPrm;
 molPrm = p.molPrm;
-matGauss = p.matGauss;
 res_x = p.movDim(1);
 res_y = p.movDim(2);
 splt = round(res_x/2);
@@ -96,35 +98,18 @@ Idon = {};
 Idon_id = {};
 discr = cell(1,N);
 
-if genCoord % randomly generated coordinates
-    if size(coord,1)~=N
-        % sample size has changed: generate new coordinates
-        coord = zeros(N,4);
-        matGauss = cell(1,4);
-        newCoord = 1; 
-    else
-        % keep previous coordinates
-        newCoord = 0; 
-    end
-else % imported coordinates (N set at import and unchangeable)
-    if impPrm && isfield(molPrm, 'coord')
-        % from pre-set file
-        coord = molPrm.coord;
-    end
+genNewCoord = isempty(p.coord);
+if genNewCoord
+    coord = zeros(N,4);
+else
+    coord = p.coord;
 end
 
 excl = []; % excluded coordinates
 
 for n = 1:N
-    % excludes sequences corresponding to (imported) out-of-range coordinates
-    if ~genCoord && ~iswithinbounds(res_x,res_y,coord(n,:))
-        excl = [excl n];
-        str = [str cat(2,'coordinates ',num2str(coord(n,:)),...
-            ' excluded (out-of-range)')];
-        continue
     
-    % generates new random coordinates
-    elseif genCoord && newCoord 
+    if genNewCoord
         coord(n,1:2) = [rand(1)*splt rand(1)*res_y];
         coord(n,3:4) = [(coord(n,1)+splt) coord(n,2)];
     end
@@ -169,26 +154,12 @@ for n = 1:N
     Idon{size(Idon,2)+1} = Idon_id{size(Idon_id,2)}/g_mol;
 end
 
-% discard data corresponding to out-of-range (imported) coordinates
-discr_seq(excl) = [];
-discr(excl) = [];
-coord(excl,:) = [];
-% added by MH, 6.12.2019
-if sum(excl) && impPrm && isfield(molPrm, 'coord') 
-    matGauss = cell(2,1);
-else
-    if ~isempty(matGauss{1})
-        matGauss{1}(excl) = [];
-    end
-    if ~isempty(matGauss{2})
-        matGauss{2}(excl) = [];
-    end
-end
+discr_seq = discr_seq(1:N);
+discr = discr(1:N);
 
 % save results
+h.param.sim.coord = coord;
 h.results.sim.dat = {Idon Iacc coord};
 h.results.sim.dat_id = {Idon_id Iacc_id discr discr_seq};
-h.param.sim.coord = coord;
-h.param.sim.matGauss = matGauss;
 guidata(h_fig, h);
 

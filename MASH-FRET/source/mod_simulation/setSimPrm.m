@@ -1,5 +1,5 @@
-function p = setSimPrm(s, movDim)
-% function p = setSimPrm(s, J)
+function [p,errmsg] = setSimPrm(s, movDim)
+% function p = setSimPrm(s, movDim)
 %
 % Import parameters of N molecule specified in the structure s
 %
@@ -15,27 +15,41 @@ function p = setSimPrm(s, movDim)
 % s.coordinates >> [N-by-2] or [N-by-4] matrix containing moelcule 
 %                  coordinates
 
-% Last update: 19.4.2019 by MH
+% Last update by MH, 18.12.2019
+% >> change second input argument J (number of states, unused) to movDim 
+%  (video dimensions)
+% >> fix error when importing FRET states by adjusting size of FRET matrix
+% >> cancel import of FRET values when transition rates are ill-defined
+% >> maintain empty field "coord" even if all coordinates in presets 
+%  file were discarded (allows re-sorting when video dimensions change)
+% >> return error messages in errmsg to inform the user via the control 
+%  panel (more visible)
+%
+% update: 19.4.2019 by MH
 % >> Manage communication with user by handling ill-defined presets
 %
 % update: the 16th of September 2018 by Richard Börner
 
+% initialize returned variables
 p = [];
+errmsg = {};
 
 if isfield(s,'FRET') && ~isempty(s.FRET)
     if size(s.FRET,2)==2
-        p.stateVal = s.FRET(:,1,:);
-        p.FRETw = s.FRET(:,2,:);
+        
+        % modified by MH, 18.12.2019
+%         p.stateVal = s.FRET(:,1,:);
+%         p.FRETw = s.FRET(:,2,:);
+        p.stateVal = permute(s.FRET(:,1,:),[3,1,2]);
+        p.FRETw = permute(s.FRET(:,2,:),[3,1,2]);
+        
         p.molNb = size(s.FRET,3);
         p.nbStates = size(s.FRET,1);
-        disp(cat(2,'Import presets for ',num2str(p.molNb),' molecules and',...
-            ' ',num2str(p.nbStates),' FRET states ...'));
-        disp('FRET values and deviations successfully imported');
     else
-        disp('No FRET matrix imported:');
-        disp(cat(2,'>> the number of columns in the FRET matrix is not ',...
-            'consistent: at least two columns are expected for FRET ',...
-            'values and FRET deviations.'));
+        errmsg = cat(2,errmsg,'No FRET matrix imported:',cat(2,'>> the ',...
+            'number of columns in the FRET matrix is not consistent: at ',...
+            'least two columns are expected for FRET values and FRET ',...
+            'deviations.'),' ');
     end
 end
 
@@ -44,18 +58,30 @@ if isfield(s, 'trans_rates') && ~isempty(s.trans_rates)
         if size(s.trans_rates,3)==p.molNb && ...
                 size(s.trans_rates,2)==p.nbStates
             p.kx = s.trans_rates;
-            disp('transition rates successfully imported');
+            disp(cat(2,'Import presets for ',num2str(p.molNb),' molecules and',...
+                ' ',num2str(p.nbStates),' FRET states ...'));
+            disp('FRET values and deviations successfully imported');
+            
+            disp('Transition rates successfully imported');
             
         elseif size(s.trans_rates,3)~=p.molNb
-            disp('No transition rate matrix imported:');
-            disp(cat(2,'>> the number of transition rate matrices is not ', ...
-                'consistent with the number of molecules defined in the FRET ',...
-                'matrix.'));
+            errmsg = cat(2,errmsg,cat(2,'No FRET or transition rate ',...
+                'matrices imported:'),cat(2,'>> the numbers of molecules ',...
+                'defined by transition rates and by the FRET matrix are ',...
+                'not consistent.'),' ');
+            
+            % added by MH, 18.12.2019
+            p = rmfield(p,{'stateVal','FRETw','molNb','nbStates'});
+            
         else
-            disp('No transition rate matrix imported:');
-            disp(cat(2,'>> the number of states defined in transition',...
-                'rate matrices is not consistent with the number of ',...
-                'states defined in the FRET matrix.'));
+            errmsg = cat(2,errmsg,cat(2,'No FRET or transition rate ',...
+                'matrices imported:'),cat(2,'>> the numbers of states ',...
+                'defined in transition rate matrices and in the FRET ',...
+                'matrix are not consistent.'),' ');
+            
+            % added by MH, 18.12.2019
+            p = rmfield(p,{'stateVal','FRETw','molNb','nbStates'});
+            
         end
         
     else % FRET matrix not loaded
@@ -64,7 +90,7 @@ if isfield(s, 'trans_rates') && ~isempty(s.trans_rates)
         p.nbStates = size(s.trans_rates,2);
         disp(cat(2,'Import presets for ',num2str(p.molNb),' molecules and',...
             ' ',num2str(p.nbStates),' FRET states ...'));
-        disp('transition rates successfully imported');
+        disp('Transition rates successfully imported');
     end
 end
 
@@ -73,17 +99,17 @@ if isfield(s, 'gamma') && ~isempty(s.gamma)
         if size(s.gamma,1)==p.molNb && size(s.gamma,2)==2
             p.gamma = s.gamma(:,1);
             p.gammaW = s.gamma(:,2);
-            disp('gamma factors successfully imported');
+            disp('Gamma factors successfully imported');
         elseif size(s.gamma,1)~=p.molNb
-            disp('No gamma factor matrix imported:');
-            disp(cat(2,'>> the number of gamma factors is not consistent ',...
-                'with the number of molecules defined in the FRET ',...
-                'and/or transition rate matrix.'));
+            errmsg = cat(2,errmsg,'No gamma factor matrix imported:',...
+                cat(2,'>> the numbers of molecules defined in the gamma ',...
+                'factors matrix and in the FRET/transition rate matrices ',...
+                'are not consistent.'),' ');
         else
-            disp('No gamma factor matrix imported:');
-            disp(cat(2,'>> the number of columns in the gamma factor ',...
+            errmsg = cat(2,errmsg,'No gamma factor matrix imported:',...
+                cat(2,'>> the number of columns in the gamma factor ',...
                 'matrix is not consistent: at least two columns are ',...
-                'expected for factor values and factor deviations.'));
+                'expected for factor values and factor deviations.'),' ');
         end
         
     elseif size(s.gamma,2)==2 % no FRET or transition rate matrices loaded
@@ -91,13 +117,13 @@ if isfield(s, 'gamma') && ~isempty(s.gamma)
         p.gamma = s.gamma(:,1);
         p.gammaW = s.gamma(:,2);
         disp(cat(2,'Import presets for ',num2str(p.molNb),' molecules'));
-        disp('gamma factors successfully imported');
+        disp('Gamma factors successfully imported');
         
     else
-        disp('No gamma factor matrix imported:');
-        disp(cat(2,'>> the number of columns in the gamma factor ',...
+        errmsg = cat(2,errmsg,'No gamma factor matrix imported:',...
+            cat(2,'>> the number of columns in the gamma factor ',...
             'matrix is not consistent: at least two columns are ',...
-            'expected for factor values and factor deviations.'));
+            'expected for factor values and factor deviations.'),' ');
     end
 end
 
@@ -106,17 +132,17 @@ if isfield(s, 'tot_intensity') && ~isempty(s.tot_intensity)
         if size(s.tot_intensity,1)==p.molNb && size(s.tot_intensity,2)==2
             p.totInt = s.tot_intensity(:,1);
             p.totInt_width = s.tot_intensity(:,2);
-            disp('intensities successfully imported');
+            disp('Intensities successfully imported');
         elseif size(s.tot_intensity,1)~=p.molNb
-            disp('No intensity matrix imported:');
-            disp(cat(2,'>> the number of intensities is not consistent ',...
-                'with the number of molecules defined in the FRET, ',...
-                'transition rate, and/or gamma factor matrix.'));
+            errmsg = cat(2,errmsg,'No intensity matrix imported:',...
+                cat(2,'>> the numbers of molecules defined in the ',...
+                'intensity matrix and in the FRET/transition rate/gamma ',...
+                'factor matrices are not consistent.'),' ');
         else
-            disp('No intensity matrix imported:');
-            disp(cat(2,'>> the number of columns in the intensity matrix ',...
+            errmsg = cat(2,errmsg,'No intensity matrix imported:',...
+                cat(2,'>> the number of columns in the intensity matrix ',...
                 'is not consistent: at least two columns are expected for',...
-                ' intensity values and intensity deviations.'));
+                ' intensity values and intensity deviations.'),' ');
         end
         
     elseif size(s.tot_intensity,2)==2 % no FRET, transition rate or gamma factor matrices loaded
@@ -124,71 +150,43 @@ if isfield(s, 'tot_intensity') && ~isempty(s.tot_intensity)
         p.totInt = s.tot_intensity(:,1);
         p.totInt_width = s.tot_intensity(:,2);
         disp(cat(2,'Import presets for ',num2str(p.molNb),' molecules'));
-        disp('intensities successfully imported');
+        disp('Intensities successfully imported');
     else
-        disp('No intensity matrix imported:');
-        disp(cat(2,'>> the number of columns in the intensity matrix ',...
+        errmsg = cat(2,errmsg,'No intensity matrix imported:',...
+            cat(2,'>> the number of columns in the intensity matrix ',...
             'is not consistent: at least two columns are expected for',...
-            ' intensity values and intensity deviations.'));
+            ' intensity values and intensity deviations.'),' ');
     end
 end
 
 if isfield(s, 'coordinates') && ~isempty(s.coordinates)
-    x1 = []; y1 = []; x2 = []; y2 = [];
-    res_x = movDim(1);
-    for col = 1:2:size(s.coordinates,2) % x-coordinates
-        x1 = [x1; s.coordinates(s.coordinates(:,col) < ...
-            round(res_x/2),col)];
-        y1 = [y1; s.coordinates(s.coordinates(:,col) < ...
-            round(res_x/2),col+1)];
-        x2 = [x2; s.coordinates(s.coordinates(:,col) >= ...
-            round(res_x/2),col)];
-        y2 = [y2; s.coordinates(s.coordinates(:,col) >= ...
-            round(res_x/2),col+1)];
+    if isfield(p,'molNb') % FRET, transition rate, gamma factor and/or intensity matrices loaded
+        N_0 = p.molNb;
+    else % no FRET, transition rate, gamma factor and/or intensity matrices loaded
+        N_0 = 0;
     end
-
-    if ~(isempty(x1) && isempty(x2))
-        if isempty(x2) && ~isempty(x1)
-            disp(cat(2,'coordinates in right channel automatically ', ...
-                'calculated.'));
-            x2 = x1+round(res_x/2);
-            y2 = y1;
-
-        elseif isempty(x1) && ~isempty(x2)
-            disp(cat(2,'coordinates in left channel automatically ', ...
-                'calculated.'));
-            x1 = x2-round(res_x/2);
-            y1 = y2;
-
-        else
-            minN = min([numel(x1) numel(x2)]);
-            x1 = x1(1:minN,1); y1 = y1(1:minN,1);
-            x2 = x2(1:minN,1); y2 = y2(1:minN,1);
-        end
-        coord = [x1 y1 x2 y2];
-        
-        if isfield(p,'molNb') % FRET, transition rate, gamma factor and/or intensity matrices loaded
-            if size(coord,1)==p.molNb
-                p.coord = coord;
-                disp('coordinates successfully imported');
-            else
-                disp('No coordinates imported:');
-                disp(cat(2,'>> the number of coordinates is not consistent ',...
-                    'with the number of molecules defined in the FRET, ',...
-                    'transition rate, gamma factor, and/or intensity matrix.'));
+    [ferr,coord,errmsg] = sortSimCoord(s.coordinates, movDim, N_0);
+    if ferr || isempty(coord)
+        if iscell(errmsg)
+            for i = 1:numel(errmsg)
+                disp(errmsg{i});
             end
-        else % no FRET, transition rate, gamma factor and/or intensity matrices loaded
-            p.molNb = size(coord,1);
-            p.coord = coord;
-            disp(cat(2,'Import presets for ',num2str(p.molNb),' molecules'));
-            disp('coordinates successfully imported');
+        else
+            disp(errmsg);
         end
-        
+        if ~ferr
+            % if error is not due to file data, keep empty field 'coord' in 
+            % structure to indicates that coordinates are present in file but 
+            % are out of current video dimensions
+            p.coord = [];
+        end
     else
-        disp('No coordinates imported:');
-        disp(cat(2,'>> all coordinates are out of video dimensions: ',...
-            'please modify the video dimensions in panel "Video ',...
-            'parameters" or review the coordinates in the pre-set file.'));
+        if ~isfield(p,'molNb') % no FRET, transition rate, gamma factor and/or intensity matrices loaded
+            disp(cat(2,'Import presets for ',num2str(p.molNb),' molecules'));
+            p.molNb = size(coord,1);
+        end
+        p.coord = coord;
+        disp('Coordinates successfully imported');
     end
 end
 
@@ -208,17 +206,17 @@ if isfield(s, 'psf_width') && ~isempty(s.psf_width)
             disp('PSF widths successfully imported');
             
         elseif size(s.psf_width,1)~=p.molNb
-            disp('No PSF width imported:');
-            disp(cat(2,'>> the number of PSF widths is not consistent ',...
+            errmsg = cat(2,errmsg,'No PSF width imported:',...
+                cat(2,'>> the number of PSF widths is not consistent ',...
                 'with the number of molecules defined in the FRET, ',...
                 'transition rate, gamma factors, intensity and/or ',...
-                'coordinates matrix.'));
+                'coordinates matrix.'),' ');
         else
-            disp('No PSF widths imported:');
-            disp(cat(2,'>> the number of columns in the PSF width ',...
+            errmsg = cat(2,errmsg,'No PSF widths imported:',...
+                cat(2,'>> the number of columns in the PSF width ',...
                 'matrix is not consistent: at least one column is ',...
                 'expected for widths in the left channel, and at most two',...
-                'columns for widths in the left and right channels.'));
+                'columns for widths in the left and right channels.'),' ');
         end
         
     elseif size(s.psf_width,2)==1 || size(s.psf_width,2)==2 % no FRET, transition rate, gamma factor, intensity and/or coordinates matrices loaded
@@ -236,11 +234,11 @@ if isfield(s, 'psf_width') && ~isempty(s.psf_width)
             disp('PSF widths successfully imported');
             
     else
-        disp('No PSF widths imported:');
-        disp(cat(2,'>> the number of columns in the PSF width ',...
-            'matrix is not consistent: at least one column is ',...
-            'expected for widths in the left channel, and at most two',...
-            'columns for widths in the left and right channels.'));
+        errmsg = cat(2,errmsg,'No PSF widths imported:',cat(2,'>> the ',...
+            'number of columns in the PSF width matrix is not consistent:',...
+            ' at least one column is expected for widths in the left ',...
+            'channel, and at most two columns for widths in the left and ',...
+            'right channels.'),' ');
     end
 end
 
