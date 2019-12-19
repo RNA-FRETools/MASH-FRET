@@ -42,7 +42,7 @@ if ~isempty(param.ttPr.proj)
     % remove discretisation results
     param.ttPr.defProjPrm.mol{3}{4} = [];
 end
-[mfile_path,o,o] = fileparts(mfilename('fullpath'));
+[mfile_path,o,o] = fileparts(which('MASH'));
 save([mfile_path filesep 'default_param.ini'], '-struct', 'param');
 
 delete(obj);
