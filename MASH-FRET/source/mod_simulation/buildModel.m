@@ -1,4 +1,4 @@
-function buildModel(h_fig)
+function ok = buildModel(h_fig)
 % buildModel simulates a set of discretised FRET time course from the
 % kinetic rates and the FRET states defined by the user.
 %
@@ -7,6 +7,7 @@ function buildModel(h_fig)
 % Last update by MH, 19.12.2019
 % >> fix error occuring when the sum of one of the rows/columns in the rate
 %  matrix is null
+% >> return execution success/failure in "ok"
 %
 % update by MH, 17.12.2019
 % >> remove dependency on updateMov.m (called from the pushbutton callback 
@@ -15,24 +16,14 @@ function buildModel(h_fig)
 % update by RB, 6.3.2018
 % >> comment: To be checked 2018-03-06 
 
+% initialize execution failure/success
+ok = 0;
 
-h = guidata(h_fig);
-
-% genCoord = h.param.sim.genCoord;
-% if n_max == 0
-%     if ~genCoord
-%         setContPan('Error: no coordinates loaded.', 'error', h_fig);
-%     else
-%         setContPan('Error: the number of molecules must be > 0.', ...
-%             'error', h_fig);
-%     end
-%     return;
-% end
-
+% display action
 setContPan(cat(2,'Generate random state sequences...'),'process',h_fig);
 
-%  Parameter initialization
-
+% collect parameters
+h = guidata(h_fig);
 n_max = h.param.sim.molNb;
 bleach = h.param.sim.bleach;
 expT = 1/h.param.sim.rate;
@@ -66,7 +57,7 @@ if K>1 && isTrans
             kx = kx(1:K,1:K);
             
             % identify zero sums in rate matrix
-            if ~sum(kx,1) || ~sum(kx,2)
+            if sum(sum(kx,1)>0)~=K || sum(sum(kx,2)>0)~=K
                 setContPan(cat(2,'Simulation aborted: at least one ',...
                     'transition from and to each state must be defined ',...
                     '(rate non-null).'),'error',h_fig);
@@ -290,3 +281,6 @@ guidata(h_fig,h);
 
 % cancelled by MH, 17.12.2019
 % updateMov(h_fig);
+
+% return execution success
+ok = 1;

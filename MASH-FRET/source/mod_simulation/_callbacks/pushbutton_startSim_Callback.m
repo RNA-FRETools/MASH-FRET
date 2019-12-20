@@ -1,6 +1,9 @@
 function pushbutton_startSim_Callback(obj, evd, h_fig)
 
-% Last update by MH, 17.12.2019
+% Last update by MH, 19.12.2019
+% >> adapt code to new output argument of buildModel.m
+%
+% update by MH, 17.12.2019
 % >> call updateMov.m from here and adapt code to new output arguments of 
 %  updateMov.m (call plotExample.m and setSimCoordTable from here)
 
@@ -8,7 +11,10 @@ function pushbutton_startSim_Callback(obj, evd, h_fig)
 updateFields(h_fig, 'sim');
 
 % Simulate state sequences
-buildModel(h_fig);
+ok = buildModel(h_fig);
+if ~ok
+    return
+end
 
 % Check for correct patterned background image
 h = guidata(h_fig);
@@ -16,7 +22,7 @@ if h.param.sim.bgType == 3 % pattern
     p = h.param.sim;
     [ok,p] = checkBgPattern(p, h_fig);
     if ~ok
-        return;
+        return
     end
     h.param.sim = p;
     guidata(h_fig, h);
@@ -27,6 +33,10 @@ end
 if ~ok
     return
 end
+
+% update table with potentially new coordinates
+h = guidata(h_fig);
+setSimCoordTable(h.param.sim, h.uitable_simCoord);
 
 % Build and plot traces of first molecule in set and first frame in video
 plotExample(h_fig);

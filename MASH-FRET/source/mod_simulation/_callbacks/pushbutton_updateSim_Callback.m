@@ -29,8 +29,6 @@ end
 h = guidata(h_fig);
 setSimCoordTable(h.param.sim, h.uitable_simCoord);
 
-updateFields(h_fig, 'sim');
-
 % Build and plot traces of first molecule in set and first frame in video
 plotExample(h_fig);
 
