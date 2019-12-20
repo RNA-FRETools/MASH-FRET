@@ -1,29 +1,27 @@
 function [model,L_t,BIC_t] = find_best_model(z,x,y,J_min,J_max,T_max,M, ...
     corr,shape,lim,plotIt)
-% example: [mu, clust, BIC, w, sig, rho, model, L_t, BIC_t] = ...
-%    find_best_model(TDP, [], [], 1, 5, 10, 1000, 1, 'free', 1);
-
-% z stores occurences of the frequency pair (y,x) must be size [m-by-n].
-% J_min is the minimum number of components in the Gaussian mixture to fit.
-% J_max is the maximum number of components in the Gaussian mixture to fit.
-% T_max is the maximum number of parameter initialisations of each GMM.
-% M is the maximum number of E-M iterations.
-% corr=1 if cluster centers are correlated with each other (J states -> 
-%     J*(J-1) clusters)
-% shape is 'spherical', 'diagonal' or 'free' dependaing on the symetry of
-%     the Gaussians
-% plotIt=1 to plot in real time the E-M results
-
-% mu is the [J-by-2] coordinates (x,y) of the Gaussian centers.
-% clust is an [N-by-4] array contaning (x,y,z) data points and the nemuber 
-%     of the Gaussian they belong to.
-% BIC is the Bayesian information criterion of the optimum GMM (lowest BIC)
-% w is the [J-by-1] mixture coefficients of the J components in the optimum
-%     GMM.
-% sig is the [2-by-2-by-J] covariance matrix of the J components in the
-%     optimum GMM.
-% rho is the [J-by-1] correlation coefficient for each J components in the
-%     optimum GMM.
+% [model,L_t,BIC_t] = find_best_model(z,x,y,J_min,J_max,T_max,M,corr,shape,lim,plotIt)
+%
+% z: [m-by-n] occurences/frequencies of the pairs (y,x)
+% x: empty or [1-by-n] coordinates of each column's center of the TDP
+% y: empty or [1-by-m] coordinates of each row's center of the TDP
+% J_min: minimum number of components in the Gaussian mixture to fit.
+% J_max: maximum number of components in the Gaussian mixture to fit.
+% T_max: maximum number of model initialisations.
+% M: maximum number of E-M iterations.
+% corr: true if cluster centers are correlated with each other, false otherwise
+% shape: cluster shape ('spherical','ellipsoid straight','ellipsoid diagonal','free')
+% plotIt: true to plot in real time the E-M results, false otherwise
+% model: {1-by-J_max} structure containing fields:
+%  model.L: normalized log-Likelihood (best inferred model)
+%  model.BIC: normalized Bayesian information criterion (best inferred model)
+%  model.I: [J-by-N] classification of transitions into clusters (best inferred model)
+%  model.mu: [J-by-2] coordinates (x,y) of the Gaussian centers (best inferred model)
+%  model.o: [2-by-2-by-J] covariance matrix (best inferred model)
+%  model.w: [J-by-1] mixture coefficients (best inferred model)
+%  model.clusters: [m-by-n] cluster indexes for each TDP bin (best inferred model)
+% L_t: [1-by-J_max] highest inferred Likelihoods
+% BIC_t: [1-by-J_max] lowest inferred Bayesian information criterion
 
 % define variables
 dL = 1E-6; %  minimum difference in log likelihood
