@@ -27,7 +27,7 @@ if ~isempty(p.proj)
         set(obj, 'String', num2str(val));
     
         if method == 2 % VbFRET
-            minVal = p.proj{proj}.curr{mol}{4}{2}(method,2,chan_in);
+            minVal = p.proj{proj}.curr{mol}{4}{2}(method,1,chan_in);
             maxVal = Inf;
         else
             minVal = 0;
