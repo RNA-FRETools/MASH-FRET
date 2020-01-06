@@ -1,4 +1,4 @@
-function MASH(varargin)
+function h_fig = MASH(varargin)
 
 % add source folders to Matlab search path
 codePath = fileparts(mfilename('fullpath'));
@@ -59,8 +59,4 @@ initMASH(h_fig, figName);
 
 % make main figure visible
 set(h_fig,'visible','on');
-
-% display opening message
-updateActPan(cat(2,'--- WELCOME ----------------------------------------',...
-    '--------------------'),h_fig);
 
