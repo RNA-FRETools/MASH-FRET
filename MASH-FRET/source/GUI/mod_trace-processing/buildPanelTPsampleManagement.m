@@ -22,7 +22,7 @@ function h = buildPanelTPsampleManagement(h,p)
 % created by MH, 19.10.2019
 
 % default
-[pname,o,o] = fileparts(which('buildTPsampleManagement'));
+[pname,o,o] = fileparts(mfilename('fullpath'));
 cdata = imread(cat(2,pname,filesep,'arrow.png'));
 hedit0 = 20;
 htxt0 = 13;
