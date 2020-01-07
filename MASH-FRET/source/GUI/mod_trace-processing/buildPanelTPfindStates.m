@@ -34,49 +34,56 @@ str3 = 'param';
 str4 = 'tol';
 str5 = 'refine';
 str6 = 'binning';
-str7 = {'Thresholds','vbFRET','One state','CPA','STaSI'};
-str8 = {'bottom','top','all'};
-str9 = {'Select a trace'};
-str10 = 'Results (states):';
-str11 = {'Select a state'};
-str12 = 'state';
-str13 = 'thresholds:';
-str14 = 'low';
-str15 = 'high';
-str16 = 'Adjust to data';
-str17 = 'all';
+str7 = 'deblurr';
+str8 = {'Thresholds','vbFRET','One state','CPA','STaSI'};
+str9 = {'bottom','top','all'};
+str10 = {'Select a trace'};
+str11 = 'Results (states):';
+str12 = {'Select a state'};
+str13 = 'state';
+str14 = 'thresholds:';
+str15 = 'low';
+str16 = 'high';
+str17 = 'Adjust to data';
+str18 = 'all';
 ttstr0 = wrapStrToWidth('Select a <b>state-finding algorithm</b> to discretize time-traces.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr1 = wrapStrToWidth('Select the <b>axes</b> to apply the state-finding algorithm to: traces in bottom axes, traces in top axes (use shared state transitions in top axes for bottom axes), or traces in both top and bottom axes',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr2 = wrapStrToWidth('Select the <b>data-time trace</b> to configure the state-finding algorithm for.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr3 = wrapStrToWidth('Post-processing parameter <b>tolerance window size:</b> the parameter is used to identify a state transition as "shared" among top-axes time traces in order to deduce transitions in bottom-axes time traces (only when apply to top axes).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr4 = wrapStrToWidth('Post-processing parameter <b>number of refinement cycles:</b> each step in the state sequence is iteratively reassigned to the state having the closest value to the averaged data behind the step.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr5 = wrapStrToWidth('Post-processing parameter <b>state bin size</b>: states close in value within a bin size are binned together in one averaged state.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr6 = wrapStrToWidth('Select a <b>state</b> to show the corresponding final value: found states are numbered from the lowest to the greatest value.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr7 = wrapStrToWidth('<b>Final sate value</b> (after post-processing) corresponding to the selected state.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr8 = wrapStrToWidth('Select an <b>initial state</b> to set the corresponding thresholds: states are numbered from the lowest to the greatest value.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr9 = wrapStrToWidth('<b>Lower threshold:</b> when the trajectory goes below this threshold, the state sequence transits to the next lower state value.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr10 = wrapStrToWidth('<b>State value:</b> when the original trajectory remains between the low and high thresholds, the state sequence dwells at this value.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr11 = wrapStrToWidth('<b>Higher threshold:</b> when the trajectory goes above this threshold, the state sequence transits to the next higher state value.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr12 = wrapStrToWidth('Post processing action <b>adjust state value</b> to data: positions of state transitions are preserved but state values are recalculated by averaging the data points behind.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr13 = wrapStrToWidth('Apply current state-finding method settings to all molecules.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr6 = wrapStrToWidth('Post-processing method <b>remove blurr states</b>: states dwelling one time bin are ignored.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr7 = wrapStrToWidth('Select a <b>state</b> to show the corresponding final value: found states are numbered from the lowest to the greatest value.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr8 = wrapStrToWidth('<b>Final sate value</b> (after post-processing) corresponding to the selected state.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr9 = wrapStrToWidth('Select an <b>initial state</b> to set the corresponding thresholds: states are numbered from the lowest to the greatest value.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr10 = wrapStrToWidth('<b>Lower threshold:</b> when the trajectory goes below this threshold, the state sequence transits to the next lower state value.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr11 = wrapStrToWidth('<b>State value:</b> when the original trajectory remains between the low and high thresholds, the state sequence dwells at this value.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr12 = wrapStrToWidth('<b>Higher threshold:</b> when the trajectory goes above this threshold, the state sequence transits to the next higher state value.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr13 = wrapStrToWidth('Post processing action <b>adjust state value</b> to data: positions of state transitions are preserved but state values are recalculated by averaging the data points behind.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr14 = wrapStrToWidth('Apply current state-finding method settings to all molecules.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 
 % parents
 h_fig = h.figure_MASH;
 h_pan = h.uipanel_TP_findStates;
 
 % dimensions
-pospan = get(h_pan,'position');
-wpop0 = getUItextWidth(str10,p.fntun,p.fntsz1,'normal',p.tbl);
+wpop0 = getUItextWidth(str11,p.fntun,p.fntsz1,'normal',p.tbl);
 wpop1 = 2*wedit0+p.mg/fact;
-wtxt0 = getUItextWidth(str13,p.fntun,p.fntsz1,'normal',p.tbl);
+wtxt0 = getUItextWidth(str14,p.fntun,p.fntsz1,'normal',p.tbl);
 wpop2 = wtxt0+p.mg/fact+wedit0;
-wcb0 = getUItextWidth(str16,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
-wbut0 = getUItextWidth(str17,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-mgsts = pospan(3)-p.mg-7*p.mg/fact-wpop0-wpop1-wpop2-6*wedit0;
+wcb0 = getUItextWidth(str17,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
+wbut0 = getUItextWidth(str18,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
+wpan = p.mg/2+wpop0+p.mg/fact+wpop1+p.mg+wpop2+p.mg/fact+7*wedit0+...
+    6*p.mg/fact+p.mg/2;
+hpan = p.mgpan+htxt0+hpop0+p.mg/fact+htxt0+hpop0+p.mg;
+
+% adjust panel dimensions
+pospan = get(h_pan,'position');
+set(h_pan,'position',[pospan(1:2),wpan,hpan]);
 
 % GUI
 x = p.mg/2;
-y = pospan(4)-p.mgpan-htxt0;
+y = hpan-p.mgpan-htxt0;
 
 h.text_TP_states_method = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
@@ -88,7 +95,7 @@ h.text_TP_states_applyTo = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wpop1,htxt0],'string',str1);
 
-x = x+wpop1+mgsts;
+x = x+wpop1+p.mg;
 
 h.text_TP_states_data = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
@@ -130,26 +137,32 @@ h.text_TP_states_paramBin = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wedit0,htxt0],'string',str6);
 
+x = x+wedit0+p.mg/fact;
+
+h.text_TP_states_deblurr = uicontrol('style','text','parent',h_pan,'units',...
+    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wedit0,htxt0],'string',str7);
+
 x = p.mg/2;
 y = y-hpop0;
 
 h.popupmenu_TP_states_method = uicontrol('style','popupmenu','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
-    'position',[x,y,wpop0,hpop0],'string',str7,'tooltipstring',ttstr0,...
+    'position',[x,y,wpop0,hpop0],'string',str8,'tooltipstring',ttstr0,...
     'callback',{@popupmenu_TP_states_method_Callback,h_fig});
 
 x = x+wpop0+p.mg/fact;
 
 h.popupmenu_TP_states_applyTo = uicontrol('style','popupmenu','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
-    'position',[x,y,wpop1,hpop0],'string',str8,'tooltipstring',ttstr1,...
+    'position',[x,y,wpop1,hpop0],'string',str9,'tooltipstring',ttstr1,...
     'callback',{@popupmenu_TP_states_applyTo_Callback,h_fig});
 
-x = x+wpop1+mgsts;
+x = x+wpop1+p.mg;
 
 h.popupmenu_TP_states_data = uicontrol('style','popupmenu','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
-    'position',[x,y,wpop2,hpop0],'string',str9,'tooltipstring',ttstr2,...
+    'position',[x,y,wpop2,hpop0],'string',str10,'tooltipstring',ttstr2,...
     'callback',{@popupmenu_TP_states_data_Callback,h_fig});
 
 x = x+wpop2+p.mg/fact;
@@ -192,12 +205,19 @@ h.edit_TP_states_paramBin = uicontrol('style','edit','parent',h_pan,'units',...
     [x,y,wedit0,hedit0],'tooltipstring',ttstr5,'callback',...
     {@edit_TP_states_paramBin_Callback,h_fig});
 
+x = x+wedit0+p.mg/fact;
+
+h.edit_TP_states_deblurr = uicontrol('style','edit','parent',h_pan,'units',...
+    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wedit0,hedit0],'tooltipstring',ttstr6,'callback',...
+    {@edit_TP_states_deblurr_Callback,h_fig});
+
 x = p.mg/2;
 y = p.mg/2+(hpop0-htxt0)/2;
 
 h.text_TP_states_resultsStates = uicontrol('style','text','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontangle',...
-    'italic','position',[x,y,wpop0,htxt0],'string',str10,...
+    'italic','position',[x,y,wpop0,htxt0],'string',str11,...
     'horizontalalignment','right');
 
 x = x+wpop0+p.mg/fact;
@@ -205,7 +225,7 @@ y = y-(hpop0-htxt0)/2;
 
 h.popupmenu_TP_states_index = uicontrol('style','popupmenu','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
-    'position',[x,y,wedit0,hpop0],'string',str11,'tooltipstring',ttstr6,...
+    'position',[x,y,wedit0,hpop0],'string',str12,'tooltipstring',ttstr7,...
     'callback',{@popupmenu_TP_states_index_Callback,h_fig});
 
 x = x+wedit0+p.mg/fact;
@@ -213,20 +233,20 @@ y = p.mg/2+(hpop0-hedit0)/2;
 
 h.edit_TP_states_result = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,hedit0],'tooltipstring',ttstr7);
+    [x,y,wedit0,hedit0],'tooltipstring',ttstr8);
 
 y = y+hedit0+(hpop0-hedit0)/2;
 
 h.text_TP_states_result = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,htxt0],'string',str12);
+    [x,y,wedit0,htxt0],'string',str13);
 
 y = y-hpop0+(hpop0-htxt0)/2;
-x = x+wedit0+mgsts;
+x = x+wedit0+p.mg;
 
 h.text_TP_states_thresholds = uicontrol('style','text','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontangle',...
-    'italic','position',[x,y,wtxt0,htxt0],'string',str13,...
+    'italic','position',[x,y,wtxt0,htxt0],'string',str14,...
     'horizontalalignment','right');
 
 x = x+wtxt0+p.mg/fact;
@@ -234,7 +254,7 @@ y = y-(hpop0-htxt0)/2;
 
 h.popupmenu_TP_states_indexThresh = uicontrol('style','popupmenu','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
-    'position',[x,y,wedit0,hpop0],'string',str11,'tooltipstring',ttstr8,...
+    'position',[x,y,wedit0,hpop0],'string',str12,'tooltipstring',ttstr9,...
     'callback',{@popupmenu_TP_states_indexThresh_Callback,h_fig});
 
 x = x+wedit0+p.mg/fact;
@@ -242,56 +262,56 @@ y = y+(hpop0-hedit0)/2;
 
 h.edit_TP_states_lowThresh = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,hedit0],'tooltipstring',ttstr9,'callback',...
+    [x,y,wedit0,hedit0],'tooltipstring',ttstr10,'callback',...
     {@edit_TP_states_lowThresh_Callback,h_fig});
 
 y = y+hedit0+(hpop0-hedit0)/2;
 
 h.text_TP_states_lowThresh = uicontrol('style','text','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,htxt0],'string',str14);
+    [x,y,wedit0,htxt0],'string',str15);
 
 x = x+wedit0+p.mg/fact;
 y = y-hedit0-(hpop0-hedit0)/2;
 
 h.edit_TP_states_state = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,hedit0],'tooltipstring',ttstr10,'callback',...
+    [x,y,wedit0,hedit0],'tooltipstring',ttstr11,'callback',...
     {@edit_TP_states_state_Callback,h_fig});
 
 y = y+hedit0+(hpop0-hedit0)/2;
 
 h.text_TP_states_state = uicontrol('style','text','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,htxt0],'string',str12);
+    [x,y,wedit0,htxt0],'string',str13);
 
 x = x+wedit0+p.mg/fact;
 y = y-hedit0-(hpop0-hedit0)/2;
 
 h.edit_TP_states_highThresh = uicontrol('style','edit','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,hedit0],'tooltipstring',ttstr11,'callback',...
+    [x,y,wedit0,hedit0],'tooltipstring',ttstr12,'callback',...
     {@edit_TP_states_highThresh_Callback,h_fig});
 
 y = y+hedit0+(hpop0-hedit0)/2;
 
 h.text_TP_states_highThresh = uicontrol('style','text','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,htxt0],'string',str15);
+    [x,y,wedit0,htxt0],'string',str16);
 
 x = x+wedit0+p.mg/fact;
 y = y-hedit0-(hpop0-hedit0)/2;
 
 h.checkbox_recalcStates = uicontrol('style','checkbox','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wcb0,hedit0],'string',str16,'tooltipstring',ttstr12,...
+    [x,y,wcb0,hedit0],'string',str17,'tooltipstring',ttstr13,...
     'callback',{@checkbox_recalcStates_Callback,h_fig});
 
-x = pospan(3)-p.mg/2-wbut0;
+x = wpan-p.mg/2-wbut0;
 
 h.pushbutton_applyAll_DTA = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight',...
-    'bold','position',[x,y,wbut0,hedit0],'string',str17,'tooltipstring',...
-    ttstr13,'callback',{@pushbutton_applyAll_DTA_Callback,h_fig},...
+    'bold','position',[x,y,wbut0,hedit0],'string',str18,'tooltipstring',...
+    ttstr14,'callback',{@pushbutton_applyAll_DTA_Callback,h_fig},...
     'foregroundcolor',p.fntclr2);
 

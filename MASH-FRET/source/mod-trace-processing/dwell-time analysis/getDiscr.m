@@ -125,7 +125,10 @@ for n = 1:N
         end
     end
     d_traces(n,isnan(d_traces(n,:))) = 0;
-
+    
+    if prm(n,7)
+        d_traces(n,:) = deblurrSeq(d_traces(n,:));
+    end
     d_traces(n,:) = binDiscrVal(prm(n,6), d_traces(n,:));
     d_traces(n,:) = refineDiscr(prm(n,5), d_traces(n,:), traces(n,:));
     if calc

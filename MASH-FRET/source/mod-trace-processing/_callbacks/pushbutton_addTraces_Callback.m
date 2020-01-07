@@ -229,26 +229,37 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
                 p.proj{i}.prm{n}{5}{2} = newDePrm;
             end
             
-            % reshape old and already-applied "find states" parameters to 
-            % new format
+            % state sequences were previously calculated
             if size(p.proj{i}.prm{n},2)>=4 && ...
-                    size(p.proj{i}.prm{n}{4},2)>=2 && ...
-                    size(p.proj{i}.prm{n}{4}{2},2)==8
-                for j = 1:size(p.proj{i}.prm{n}{4}{2},3)
-                    p.proj{i}.prm{n}{4}{2}(1,1:6,j) = ...
-                        p.proj{i}.prm{n}{4}{2}(1,[2,1,5,8,3,4],j);
-                    p.proj{i}.prm{n}{4}{2}(2,1:6,j) = ...
-                        p.proj{i}.prm{n}{4}{2}(2,[1,2,5,8,3,4],j);
-                    p.proj{i}.prm{n}{4}{2}(3,1:6,j) = ...
-                        p.proj{i}.prm{n}{4}{2}(3,[1,2,5,8,3,4],j);
-                    p.proj{i}.prm{n}{4}{2}(4,1:6,j) = ...
-                        p.proj{i}.prm{n}{4}{2}(4,[5,6,7,8,3,4],j);
-                    p.proj{i}.prm{n}{4}{2}(5,1:6,j) = ...
-                        p.proj{i}.prm{n}{4}{2}(5,[2,1,5,8,3,4],j);
+                    size(p.proj{i}.prm{n}{4},2)>=2
+                
+                % reshape old format
+                if size(p.proj{i}.prm{n}{4}{2},2)==8
+                    for j = 1:size(p.proj{i}.prm{n}{4}{2},3)
+                        p.proj{i}.prm{n}{4}{2}(1,1:6,j) = ...
+                            p.proj{i}.prm{n}{4}{2}(1,[2,1,5,8,3,4],j);
+                        p.proj{i}.prm{n}{4}{2}(2,1:6,j) = ...
+                            p.proj{i}.prm{n}{4}{2}(2,[1,2,5,8,3,4],j);
+                        p.proj{i}.prm{n}{4}{2}(3,1:6,j) = ...
+                            p.proj{i}.prm{n}{4}{2}(3,[1,2,5,8,3,4],j);
+                        p.proj{i}.prm{n}{4}{2}(4,1:6,j) = ...
+                            p.proj{i}.prm{n}{4}{2}(4,[5,6,7,8,3,4],j);
+                        p.proj{i}.prm{n}{4}{2}(5,1:6,j) = ...
+                            p.proj{i}.prm{n}{4}{2}(5,[2,1,5,8,3,4],j);
+                    end
+                    p.proj{i}.prm{n}{4}{2} = ...
+                        p.proj{i}.prm{n}{4}{2}(:,1:6,:);
+                
+                % add parameter for method "deblurr"
+                elseif size(p.proj{i}.prm{n}{4}{2},2)==6
+                    cat(2,p.proj{i}.prm{n}{4}{2},...
+                        zeros(size(p.proj{i}.prm{n}{4}{2},1),1,...
+                        size(p.proj{i}.prm{n}{4}{2},3)));
                 end
-                p.proj{i}.prm{n}{4}{2} = p.proj{i}.prm{n}{4}{2}(:,1:6,:);
             end
-
+            
+            % if size of already applied parameters is different from
+            % defaults, used defaults
             p.proj{i}.curr{n} = adjustVal(p.proj{i}.prm{n}, ...
                 p.proj{i}.def.mol);
             
