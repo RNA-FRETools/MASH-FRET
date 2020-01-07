@@ -3,6 +3,7 @@ function res = clustTrans(dt_bin, TDP, plot_prm, clust_prm, varargin)
 M_def = 500; % default max. number of maximization iteration
 plotIter_def = 0; % plot/not EM results while iterating
 Jmin_def = 2; % minimum configuration
+clstStat = 1; % generate cluster for diagonal transitions
 
 meth = clust_prm{1}(1); % clustering method
 shape = clust_prm{1}(2); % cluster shape
@@ -165,7 +166,7 @@ for k = 1:n_spl
             
             % fit and cluster data
             [model,L_t,BIC_t] = find_best_model(TDP_spl,x,y,Jmin_def,Jmax,...
-                T, M_def,true,shape_str,max(bins),plotIter_def);
+                T, M_def,true,shape_str,0,plotIter_def);
             
             % save inferred models for original TDP
             if k == 1
@@ -320,6 +321,9 @@ for J = Jmin:Jmax
     id_j = [];
     for j1 = 1:J
         for j2 = 1:J
+            if ~clstStat && j1==j2
+                continue
+            end
             id_j = cat(1,id_j,[j1 j2]);
         end
     end
