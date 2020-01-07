@@ -34,6 +34,7 @@ wbut3 = 127;
 lbl0 = 'View';
 lbl1 = 'Routines';
 lbl2 = 'Options';
+lbl3 = 'Tools';
 str0 = 'Simulation';
 str1 = 'Video processing';
 str2 = 'Trace processing';
@@ -92,6 +93,9 @@ h = buildMenuRoutine(h);
 
 h.menu_options = uimenu(h_fig,'label',lbl2);
 h = buildMenuOptions(h);
+
+h.menu_tools = uimenu(h_fig,'label',lbl3);
+h = buildMenuTools(h);
 
 
 %% tool bar
