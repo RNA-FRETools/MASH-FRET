@@ -22,8 +22,12 @@ function [TDP,dt_bin] = getTDPmat(dt, prm, varargin)
 % "TDP" >> TDP matrix built from input dwell-times
 % "dt_bin" >> dwell time table excluding molecules without transitions
 
-% Created the 29th of April 2014 by Mélodie C.A.S. Hadzic
-% Last update: the 5th of May 2014 by Mélodie C.A.S. Hadzic
+% Last update 7.1.2020 by MH,
+% >> correct frame rate for dwell-time calculations when using ALEX data
+%
+% update 5.5.2014 by MH
+%
+% Created the 29.4.2014 by MH
 
 TDP = [];
 dt_bin = [];
