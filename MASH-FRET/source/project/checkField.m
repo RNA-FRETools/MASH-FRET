@@ -283,8 +283,7 @@ for m = 1:nMol
     j = 1;
     for i_l = 1:s.nb_excitations
         for i_c = 1:s.nb_channel
-            I = s.intensities_DTA( ...
-                incl,(m-1)*s.nb_channel+i_c,i_l);
+            I = s.intensities_DTA(incl,(m-1)*s.nb_channel+i_c,i_l);
             if perSec
                 I = I/s.frame_rate;
             end
@@ -292,7 +291,8 @@ for m = 1:nMol
                 I = I/s.pix_intgr(2);
             end
             if sum(double(~isnan(I)))
-                s.dt{m,j} = getDtFromDiscr(I, s.frame_rate);
+                s.dt{m,j} = getDtFromDiscr(I,...
+                    s.nb_excitations*s.frame_rate);
             else
                 s.dt{m,j} = [];
             end
@@ -302,7 +302,7 @@ for m = 1:nMol
     for i_f = 1:size(s.FRET,1)
         tr = s.FRET_DTA(incl,(m-1)*nFRET+i_f);
         if sum(double(~isnan(tr)))
-            s.dt{m,j} = getDtFromDiscr(tr, s.frame_rate);
+            s.dt{m,j} = getDtFromDiscr(tr,s.nb_excitations*s.frame_rate);
         else
             s.dt{m,j} = {};
         end
@@ -311,7 +311,7 @@ for m = 1:nMol
     for i_s = 1:size(s.S,1)
         tr = s.S_DTA(incl,(m-1)*nS+i_s);
         if sum(double(~isnan(tr)))
-            s.dt{m,j} = getDtFromDiscr(tr, s.frame_rate);
+            s.dt{m,j} = getDtFromDiscr(tr,s.nb_excitations*s.frame_rate);
         else
             s.dt{m,j} = {};
         end
