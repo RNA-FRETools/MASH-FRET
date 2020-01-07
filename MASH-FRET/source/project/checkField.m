@@ -1,6 +1,9 @@
 function s = checkField(s_in, fname, h_fig)
 
-%% Last update by MH, 25.4.2019
+% Last update by MH, 7.1.2020
+% >> correct frame rate for dwell-time calculations when using ALEX data
+%
+% update by MH, 25.4.2019
 % >> correct random generation of tag colors
 % >> fetch default tag names and colors in interface's default parameters
 %    (default_param.ini)
