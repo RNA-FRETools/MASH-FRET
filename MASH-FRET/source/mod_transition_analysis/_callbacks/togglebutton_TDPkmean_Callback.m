@@ -4,7 +4,8 @@ p = h.param.TDP;
 if ~isempty(p.proj)
     proj = p.curr_proj;
     tpe = p.curr_type(proj);
-    p.proj{proj}.prm{tpe}.clst_start{1}(1) = 1;
+    tag = p.curr_tag(proj);
+    p.proj{proj}.prm{tag,tpe}.clst_start{1}(1) = 1;
     h.param.TDP = p;
     guidata(h_fig, h);
     set(h.zMenu_target, 'Enable', 'on');

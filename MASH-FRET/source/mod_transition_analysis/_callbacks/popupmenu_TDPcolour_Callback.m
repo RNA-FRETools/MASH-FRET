@@ -5,8 +5,9 @@ if ~isempty(p.proj)
     val = get(obj, 'Value');
     proj = p.curr_proj;
     tpe = p.curr_type(proj);
-    trans = p.proj{proj}.prm{tpe}.clst_start{1}(4);
-    p.proj{proj}.prm{tpe}.clst_start{3}(trans,:) = p.colList(val,:);
+    tag = p.curr_tag(proj);
+    trans = p.proj{proj}.prm{tag,tpe}.clst_start{1}(4);
+    p.proj{proj}.prm{tag,tpe}.clst_start{3}(trans,:) = p.colList(val,:);
     h.param.TDP = p;
     guidata(h_fig, h);
     updateFields(h_fig, 'TDP');

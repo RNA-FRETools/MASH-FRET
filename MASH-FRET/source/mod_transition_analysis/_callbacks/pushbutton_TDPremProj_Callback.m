@@ -16,33 +16,16 @@ if ~isempty(p.proj)
         'Remove project', 'Yes', 'No', 'No');
     
     if strcmp(del, 'Yes')
-        
-        % build action
-        list_str = get(h.listbox_TDPprojList,'String');
-        str_act = '';
-        for i = slct
-            str_act = cat(2,str_act,'"',list_str{i},'" (',...
-                p.proj{i}.proj_file,')\n');
-        end
-        str_act = str_act(1:end-2);
-        
         % delete projects and reorganize project and current data 
         % structures
-        projLst = {};
-        curr_type = [];
-        for i = 1:size(p.proj,2)
-            if prod(double(i ~= slct))
-                projLst{size(projLst,2)+1} = p.proj{i};
-                curr_type(size(curr_type,2)+1) = p.curr_type(i);
-            end
-        end
-        p.proj = projLst;
-        p.curr_type = curr_type;
+        p.proj(slct) = [];
+        p.curr_type(slct) = [];
+        p.curr_tag(slct) = [];
         
         % set new current project
-        if size(projLst,2) <= 1
+        if size(p.proj,2) <= 1
             p.curr_proj = 1;
-        elseif slct(end) < size(p.proj,2)
+        elseif slct(end)<size(p.proj,2)
             p.curr_proj = slct(end)-numel(slct) + 1;
         else
             p.curr_proj = slct(end)-numel(slct);

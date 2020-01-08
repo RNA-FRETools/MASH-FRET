@@ -6,7 +6,8 @@ if ~isempty(p.proj)
     set(obj, 'String', num2str(val));
     proj = p.curr_proj;
     tpe = p.curr_type(proj);
-    meth = p.proj{proj}.prm{tpe}.clst_start{1}(1);
+    tag = p.curr_tag(proj);
+    meth = p.proj{proj}.prm{tag,tpe}.clst_start{1}(1);
 
     if ~(numel(val)==1 && ~isnan(val) && val >= 0)
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -22,10 +23,10 @@ if ~isempty(p.proj)
         switch meth
             case 1 % kmean
                 state = get(h.popupmenu_TDPstate, 'Value');
-                p.proj{proj}.prm{tpe}.clst_start{2}(state,2) = val;
+                p.proj{proj}.prm{tag,tpe}.clst_start{2}(state,2) = val;
 
             case 2 % gaussian model based
-                p.proj{proj}.prm{tpe}.clst_start{2}(1,2) = val;
+                p.proj{proj}.prm{tag,tpe}.clst_start{2}(1,2) = val;
         end
         h.param.TDP = p;
         guidata(h_fig, h);

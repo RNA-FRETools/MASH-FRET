@@ -1,4 +1,4 @@
-function h = buildPanelTAtransitionDensityPlot(h,p)
+function [h,pospan] = buildPanelTAtransitionDensityPlot(h,p)
 % h = buildPanelTAtransitionDensityPlot(h,p);
 %
 % Builds panel "Transition density plot" in "Transition analysis" module.
@@ -6,6 +6,7 @@ function h = buildPanelTAtransitionDensityPlot(h,p)
 % h: structure to update with handles to new UI components and that must contain fields:
 %   h.figure_MASH: handle to main figure
 %   h.uipanel_TA_transitionDensityPlot: handle to panel "Transition density plot"
+%   h.listbox_thm_projLst: handle to project list
 % p: structure containing default and often-used parameters which must contain fields:
 %   p.posun: position units
 %   p.fntun: font size units
@@ -17,6 +18,7 @@ function h = buildPanelTAtransitionDensityPlot(h,p)
 %   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character pixel dimensions
 %   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
+% pospan: [1-by-4] panel position (x,y,w,h)
 
 % Created by MH, 8.11.2019
 
@@ -27,47 +29,57 @@ hpop0 = 22;
 fact = 5;
 str0 = 'Data:';
 str1 = {'Select data'};
-str2 = 'x start';
-str3 = 'binning';
-str4 = 'x end';
-str5 = 'y start';
-str6 = 'y end';
+str2 = 'Tag:';
+str3 = {'Select subgroup'};
+str4 = 'min';
+str5 = 'binning';
+str6 = 'max';
 str7 = 'Single count per mol.';
-str8 = 'Gaussian filter';
-str9 = 'Norm.';
-str10 = 'Update';
-str11 = 'Cmap';
+str8 = 'Re-arrange sequences';
+str9 = 'Gaussian filter';
+str10 = 'Norm.';
+str11 = 'Update';
+str12 = 'Cmap';
 ttstr0 = wrapStrToWidth('<b>Select data</b> to histogram in 2D and analyze.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>TDP boundaries:</b> lower limit of x-axis (value before transition).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>TDP binning:</b> bin size in x-axis (value before transition).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>TDP boundaries:</b> upper limit of x-axis (value before transition).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>TDP boundaries:</b> lower limit of y-axis (value after transition).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('<b>TDP binning:</b> bin size in y-axis (value after transition).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr6 = wrapStrToWidth('<b>TDP boundaries:</b> upper limit of y-axis (value after transition).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr7 = wrapStrToWidth('<b>Transition count:</b> when activated, transitions appearing multiple times in the same trajectories are counted as a single count, otherwise each apperance in the trajectory counts as one; single transition count allows to scale equally the rapid and slow state interconversions in the TDP (modified TDP is used for clustering only).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr8 = wrapStrToWidth('<b>Gaussian filter:</b> when activated, the TDP is convoluted with a 2D Gaussian, otherwise the initial transition probability distribution is used; Gaussian convolution eases the identification of transition clusters (modified TDP is used for clustering only)',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr9 = wrapStrToWidth('<b>Normalized counts:</b> when activated, the TDP is displayed in counts normalized by the sum.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr10 = wrapStrToWidth('<b>Refresh TDP:</b> the TDP is rebuilt according to current processing settings.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr11 = wrapStrToWidth('<b>TDP''s color scale:</b> opens MATLAB''s colormap editor to define the color scale that maps transition counts.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr1 = wrapStrToWidth('<b>Select molecule subgroup</b> to histogram in 2D and analyze.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr2 = wrapStrToWidth('<b>TDP boundaries:</b> lower limit of TDP.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr3 = wrapStrToWidth('<b>TDP binning:</b> bin size of TDP.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr4 = wrapStrToWidth('<b>TDP boundaries:</b> upper limit of TDP.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr5 = wrapStrToWidth('<b>Transition count:</b> when activated, transitions appearing multiple times in the same trajectories are counted as a single count, otherwise each apperance in the trajectory counts as one; single transition count allows to scale equally the rapid and slow state interconversions in the TDP (modified TDP is used for clustering only).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr6 = wrapStrToWidth('<b>Re-arrange sequences:</b> when activated, state sequences are re-built to contain transitions visible in the TDP only; out-of-TDP-range transitions are deleted from state sequences and durations of states prior these transitions are elongated (modified state sequences are used in dwell time histograms).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr7 = wrapStrToWidth('<b>Gaussian filter:</b> when activated, the TDP is convoluted with a 2D Gaussian, otherwise the initial transition probability distribution is used; Gaussian convolution eases the identification of transition clusters (modified TDP is used for clustering only)',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr8 = wrapStrToWidth('<b>Normalized counts:</b> when activated, the TDP is displayed in counts normalized by the sum.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr9 = wrapStrToWidth('<b>Refresh TDP:</b> the TDP is rebuilt according to current processing settings.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr10 = wrapStrToWidth('<b>TDP''s color scale:</b> opens MATLAB''s colormap editor to define the color scale that maps transition counts.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 
 % parents
 h_fig = h.figure_MASH;
 h_pan = h.uipanel_TA_transitionDensityPlot;
+h_lst = h.listbox_thm_projLst;
 
 % dimensions
-pospan = get(h_pan,'position');
+poslst = get(h_lst,'position');
 wtxt0 = getUItextWidth(str0,p.fntun,p.fntsz1,'normal',p.tbl);
-wpop0 = pospan(3)-2*p.mg-p.mg/fact-wtxt0;
-wedit0 = (pospan(3)-2*p.mg-2*p.mg/fact)/3;
-wcb0 = pospan(3)-2*p.mg;
-wbut0 = getUItextWidth(str10,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wcb1 = pospan(3)-2*p.mg-p.mg/fact-wbut0;
-wbut1 = getUItextWidth(str11,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-waxes0 = pospan(3)-2*p.mg-p.mg/fact-wbut1;
+wpop0 = poslst(3)-2*p.mg-p.mg/fact-wtxt0;
+wedit0 = (poslst(3)-2*p.mg-2*p.mg/fact)/3;
+wcb0 = poslst(3)-2*p.mg;
+wbut0 = getUItextWidth(str11,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
+wcb1 = poslst(3)-2*p.mg-p.mg/fact-wbut0;
+wbut1 = getUItextWidth(str12,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
+waxes0 = poslst(3)-2*p.mg-p.mg/fact-wbut1;
+
+% adjust panel position
+hpan = p.mgpan+2*hpop0+p.mg/fact+p.mg/2+htxt0+hedit0+p.mg/fact+...
+    4*hedit0+p.mg/2+hedit0+p.mg/2;
+wpan = poslst(3);
+xpan = p.mg;
+ypan = p.mg;
+pospan = [xpan,ypan,wpan,hpan];
+set(h_pan,'position',pospan);
 
 % GUI
 x = p.mg;
-y = pospan(4)-p.mgpan-hpop0+(hpop0-htxt0)/2;
+y = hpan-p.mgpan-hpop0+(hpop0-htxt0)/2;
 
 h.text_TDPdataType = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
@@ -81,121 +93,106 @@ h.popupmenu_TDPdataType = uicontrol('style','popupmenu','parent',h_pan,...
     [x,y,wpop0,hpop0],'string',str1,'tooltipstring',ttstr0,'callback',...
     {@popupmenu_TDPdataType_Callback,h_fig});
 
+x = p.mg;
+y = y-p.mg/fact-hpop0+(hpop0-htxt0)/2;
+
+h.text_TDPtag = uicontrol('style','text','parent',h_pan,'units',...
+    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wtxt0,htxt0],'string',str2,'horizontalalignment','left');
+
+x = x+wtxt0+p.mg/fact;
+y = y-(hpop0-htxt0)/2;
+
+h.popupmenu_TDPtag = uicontrol('style','popupmenu','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wpop0,hpop0],'string',str3,'tooltipstring',ttstr1,'callback',...
+    {@popupmenu_TDPtag_Callback,h_fig});
+
 y = y-p.mg/2-htxt0;
 x = p.mg;
 
-h.text_TDPxLow = uicontrol('style','text','parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,htxt0],...
-    'string',str2);
-
-x = x+wedit0+p.mg/fact;
-
-h.text_TDPxBin = uicontrol('style','text','parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,htxt0],...
-    'string',str3);
-
-x = x+wedit0+p.mg/fact;
-
-h.text_TDPxUp = uicontrol('style','text','parent',h_pan,'units',p.posun,...
+h.text_TDPmin = uicontrol('style','text','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,htxt0],...
     'string',str4);
 
-x = p.mg;
-y = y-hedit0;
-
-h.edit_TDPxLow = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,hedit0],...
-    'tooltipstring',ttstr1,'callback',{@edit_TDPxLow_Callback,h_fig});
-
 x = x+wedit0+p.mg/fact;
 
-h.edit_TDPxBin = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,hedit0],...
-    'tooltipstring',ttstr2,'callback',{@edit_TDPxBin_Callback,h_fig});
-
-x = x+wedit0+p.mg/fact;
-
-h.edit_TDPxUp = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,hedit0],...
-    'tooltipstring',ttstr3,'callback',{@edit_TDPxUp_Callback,h_fig});
-
-x = p.mg;
-y = y-p.mg/fact-htxt0;
-
-h.text_TDPyLow = uicontrol('style','text','parent',h_pan,'units',p.posun,...
+h.text_TDPbin = uicontrol('style','text','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,htxt0],...
     'string',str5);
 
 x = x+wedit0+p.mg/fact;
 
-h.text_TDPyBin = uicontrol('style','text','parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,htxt0],...
-    'string',str3);
-
-x = x+wedit0+p.mg/fact;
-
-h.text_TDPyUp = uicontrol('style','text','parent',h_pan,'units',p.posun,...
+h.text_TDPmax = uicontrol('style','text','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,htxt0],...
     'string',str6);
 
 x = p.mg;
 y = y-hedit0;
 
-h.edit_TDPyLow = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
+h.edit_TDPmin = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,hedit0],...
-    'tooltipstring',ttstr4,'callback',{@edit_TDPyLow_Callback,h_fig});
+    'tooltipstring',ttstr2,'callback',{@edit_TDPmin_Callback,h_fig});
 
 x = x+wedit0+p.mg/fact;
 
-h.edit_TDPyBin = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
+h.edit_TDPbin = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,hedit0],...
-    'tooltipstring',ttstr5,'callback',{@edit_TDPyBin_Callback,h_fig});
+    'tooltipstring',ttstr3,'callback',{@edit_TDPbin_Callback,h_fig});
 
 x = x+wedit0+p.mg/fact;
 
-h.edit_TDPyUp = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
+h.edit_TDPmax = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,hedit0],...
-    'tooltipstring',ttstr6,'callback',{@edit_TDPyUp_Callback,h_fig});
+    'tooltipstring',ttstr4,'callback',{@edit_TDPmax_Callback,h_fig});
 
 x = p.mg;
 y = y-p.mg/2-hedit0;
 
 h.checkbox_TDP_onecount = uicontrol('style','checkbox','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wcb0,hedit0],'string',str7,'tooltipstring',ttstr7,'callback',...
+    [x,y,wcb0,hedit0],'string',str7,'tooltipstring',ttstr5,'callback',...
     {@checkbox_TDP_onecount_Callback,h_fig});
 
-y = y-p.mg/fact-hedit0;
+y = y-hedit0;
+
+h.checkbox_TDPignore = uicontrol('style','checkbox','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wcb0,hedit0],'string',str8,'tooltipstring',ttstr6,'callback',...
+    {@checkbox_TDPignore_Callback,h_fig});
+
+y = y-hedit0;
 
 h.checkbox_TDPgconv = uicontrol('style','checkbox','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wcb0,hedit0],'string',str8,'tooltipstring',ttstr8,'callback',...
+    [x,y,wcb0,hedit0],'string',str9,'tooltipstring',ttstr7,'callback',...
     {@checkbox_TDPgconv_Callback,h_fig});
 
-y = y-p.mg/fact-hedit0;
+y = y-hedit0;
 
 h.checkbox_TDPnorm = uicontrol('style','checkbox','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wcb1,hedit0],'string',str9,'tooltipstring',ttstr9,'callback',...
+    [x,y,wcb1,hedit0],'string',str10,'tooltipstring',ttstr8,'callback',...
     {@checkbox_TDPnorm_Callback,h_fig});
 
 x = x+wcb1+p.mg/fact;
 
 h.pushbutton_TDPupdatePlot = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wbut0,hedit0],'string',str10,'tooltipstring',ttstr10,'callback',...
+    [x,y,wbut0,hedit0],'string',str11,'tooltipstring',ttstr9,'callback',...
     {@pushbutton_TDPupdatePlot_Callback,h_fig});
 
 x = p.mg;
-y = p.mg;
+y = p.mg/2;
 
 h.pushbutton_TDPcmap = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wbut1,hedit0],'string',str11,'tooltipstring',ttstr11,'callback',...
+    [x,y,wbut1,hedit0],'string',str12,'tooltipstring',ttstr10,'callback',...
     {@pushbutton_TDPcmap_Callback,h_fig});
 
 x = x+wbut1+p.mg/fact;
+y = y+(hedit0-htxt0)/2;
 
 h.axes_TDPcmap = axes('parent',h_pan,'units',p.posun,'fontunits',p.fntun,...
-    'fontsize',p.fntsz1,'position',[x,y,waxes0,hedit0],'xticklabelmode',...
+    'fontsize',p.fntsz1,'position',[x,y,waxes0,htxt0],'xticklabelmode',...
     'manual','yticklabelmode','manual');
