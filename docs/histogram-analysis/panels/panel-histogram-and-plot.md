@@ -15,7 +15,7 @@ Histogram and plot is the first panel of module Histograms analysis.
 
 Use this panel to select data and build histogram.
 
-<a class="plain" href="../../assets/images/gui/HA-panel-plot.png"><img src="../../assets/images/gui/HA-panel-plot.png" style="max-width: 200px;"/></a>
+<a class="plain" href="../../assets/images/gui/HA-panel-plot.png"><img src="../../assets/images/gui/HA-panel-plot.png" style="max-width: 170px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -38,6 +38,24 @@ Supported data are:
 * FRET from states trajectories (`discr. FRET`)
 * stoichiometries from time traces (`S`)
 * stoichiometries from states trajectories (`discr. S`)
+
+
+---
+
+## Molecule subgroup list
+
+Use this list to select the molecule subgroup to be analyzed in Histogram analysis.
+
+Molecule subgroups are defined by the molecule tags that are created and assigned to molecules in module 
+[Trace processing](../../trace-processing.html) exclusively.
+
+Molecule tags are created in 
+[Molecule selection](../../trace-processing/functionalities/tm-overview.html#molecule-selection) and can be assigned to individual molecules in 
+[Molecule selection](../../trace-processing/functionalities/tm-overview.html#molecule-selection) or in 
+[Molecule status](../../trace-processing/panels/panel-sample-management.html#molecule-status).
+
+Molecule tags can also be assigned to groups of molecules defined by specific data ranges with 
+[Automatic sorting](../../trace-processing/functionalities/tm-automatic-sorting.html#tm-menu).
 
 
 ---
