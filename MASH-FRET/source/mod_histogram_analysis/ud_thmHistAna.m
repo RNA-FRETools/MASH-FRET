@@ -8,6 +8,17 @@ p = h.param.thm;
 proj = p.curr_proj;
 tpe = p.curr_tpe(proj);
 prm = p.proj{proj}.prm{tpe};
+
+if isempty(prm.plot{2})
+    setProp([h.uipanel_HA_stateConfiguration,...
+        h.uipanel_HA_statePopulations],'Enable', 'off');
+    set(h.axes_thm_BIC,'visible','off');
+    return
+else
+    setProp([h.uipanel_HA_stateConfiguration,...
+        h.uipanel_HA_statePopulations],'Enable', 'on');
+end
+
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
 start = prm.thm_start;
@@ -43,8 +54,6 @@ set([h.edit_thm_nRep h.edit_thm_nSpl h.edit_thm_threshNb ...
 
 rmse_start = start{4}; % [apply penalty, penalty, max. nb. of Gaussian]
 rmse_res = res{3,1}; % [logL BIC]
-
-setProp(h.uipanel_HA_stateConfiguration,'Enable', 'on');
 
 set(h.radiobutton_thm_penalty, 'Value', rmse_start(1));
 set(h.radiobutton_thm_BIC, 'Value', ~rmse_start(1));

@@ -33,6 +33,14 @@ if ~isempty(p.proj)
                     'Gaussian fitting analysis.');
                 
             case 2 % Modify Thersholding parameters
+                
+                if K==1
+                    setContPan(cat(2,'A minimum number of 2 states is ',...
+                        'necessary to use the Threshold method.'),'error',...
+                        h_fig);
+                    return
+                end
+                
                 A = fitprm(:,1);
                 mu = fitprm(:,2);
                 sig = fitprm(:,3)/(2*sqrt(2*log(2)));

@@ -1,5 +1,9 @@
 function plotHist(h_axes, P, lim, start, res, clr, boba, intUnits, h_fig)
 
+if isempty(P)
+    return
+end
+
 isInt = ~isempty(intUnits);
 if isInt
     perSec = intUnits{1,1};

@@ -168,6 +168,7 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
         end
         p.proj{i}.prm = prm;
         p.curr_tpe(i) = 1;
+        p.curr_tag(i) = 0;
     end
 
     % set last-imported project as current project
