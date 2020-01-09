@@ -5,17 +5,9 @@ h = guidata(h_fig);
 p = h.param.TDP;
 proj = p.curr_proj;
 
-exc = p.proj{proj}.excitations;
-nExc = p.proj{proj}.nb_excitations;
-nChan = p.proj{proj}.nb_channel;
-labels = p.proj{proj}.labels;
-FRET = p.proj{proj}.FRET;
-nFRET = size(FRET,1);
-S = p.proj{proj}.S;
-nS = size(S,1);
-
 tpe = p.curr_type(proj);
-prm = p.proj{proj}.prm{tpe};
+tag = p.curr_tag(proj);
+prm = p.proj{proj}.prm{tag,tpe};
 
 meth = prm.clst_start{1}(1);
 mode = prm.clst_start{1}(2);
@@ -26,20 +18,6 @@ boba = prm.clst_start{1}(6);
 clr = prm.clst_start{3}(curr_k,:);
 res = prm.clst_res;
 
-
-%% build data type list
-str_pop = {};
-for l = 1:nExc
-    for c = 1:nChan
-        str_pop = [str_pop [labels{c} ' at ' num2str(exc(l)) 'nm']];
-    end
-end
-for n = 1:nFRET
-    str_pop = [str_pop ['FRET ' labels{FRET(n,1)} '>' labels{FRET(n,2)}]];
-end
-for n = 1:nS
-    str_pop = [str_pop ['S ' labels{S(n)}]];
-end
 
 
 %% set general parameters
@@ -56,7 +34,6 @@ set([h.text_TDPdataType h.popupmenu_TDPdataType ...
 set([h.edit_TDPnStates h.edit_TDPiniVal h.edit_TDPradius ...
     h.edit_TDPmaxiter h.listbox_TDPtrans], 'BackgroundColor', [1 1 1]);
 
-set(h.popupmenu_TDPdataType, 'Value', tpe, 'String', str_pop);
 set(h.edit_TDPnStates, 'String', num2str(Jmax));
 
 [id_clr,o,o] = find(p.colList(:,1)==clr(1) & p.colList(:,2)==clr(2) & ...

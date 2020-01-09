@@ -1,4 +1,4 @@
-function openItgFileOpt(obj, evd, h)
+function openItgFileOpt(obj, evd, h_fig)
 % Open a window to modify file options for export of raw traces
 % "obj" >> handle of pushbutton from which the function has been called
 % "evd" >> eventdata structure of the pushbutton from which the function
@@ -8,7 +8,7 @@ function openItgFileOpt(obj, evd, h)
 % Last update: 4th of February 2019 by M�lodie Hadzic
 % --> created function from scratch
 
-h_fig = h.figure_MASH;
+h = guidata(h_fig);
 pMov = h.param.movPr;
 p = pMov.itg_expMolFile;
 

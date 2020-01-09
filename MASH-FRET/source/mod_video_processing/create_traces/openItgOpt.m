@@ -1,4 +1,4 @@
-function openItgOpt(but_obj, evd, h)
+function openItgOpt(but_obj, evd, h_fig)
 
 % Last update: 28.3.2019 by MH
 % >> Correct parameter saving (in pushbutton_itgOpt_ok_Callback) and import
@@ -6,7 +6,7 @@ function openItgOpt(but_obj, evd, h)
 %    Trace import options's window, parameters must be saved in/imported 
 %    from figure_trImpOpt's handle instead of figure_MASH's handle.
 
-h_fig = h.figure_MASH;
+h = guidata(h_fig);
 switch but_obj
     case h.pushbutton_TTgen_loadOpt
         nChan = h.param.movPr.nChan;

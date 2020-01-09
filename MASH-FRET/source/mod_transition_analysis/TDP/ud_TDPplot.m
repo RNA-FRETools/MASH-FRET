@@ -1,57 +1,95 @@
 function ud_TDPplot(h_fig)
 
+% Last update by MH, 12.12.2019:
+% >> give the colorbar's handle in plotTDP's input to prevent dependency on 
+%  MASH main figure's handle and allow external use.
+
 h = guidata(h_fig);
 p = h.param.TDP;
 proj = p.curr_proj;
 tpe = p.curr_type(proj);
-prm = p.proj{proj}.prm{tpe};
+tag = p.curr_tag(proj);
 
-x_bin = prm.plot{1}(1,1);
-x_lim = prm.plot{1}(1,2:3);
-y_bin = prm.plot{1}(2,1);
-y_lim = prm.plot{1}(2,2:3);
+prm = p.proj{proj}.prm{tag,tpe};
+exc = p.proj{proj}.excitations;
+nExc = p.proj{proj}.nb_excitations;
+nChan = p.proj{proj}.nb_channel;
+labels = p.proj{proj}.labels;
+FRET = p.proj{proj}.FRET;
+nFRET = size(FRET,1);
+S = p.proj{proj}.S;
+nS = size(S,1);
+tagNames = p.proj{proj}.molTagNames;
+colorlist = p.proj{proj}.molTagClr;
+nTag = size(tagNames,2);
+
+bin = prm.plot{1}(1,1);
+lim = prm.plot{1}(1,2:3);
 gconv = prm.plot{1}(3,2);
 norm = prm.plot{1}(3,3);
 onecount = prm.plot{1}(4,1);
+rearrng = prm.plot{1}(4,2);
 TDP = prm.plot{2};
 meth = prm.clst_start{1}(1);
 
-%% set fields to parameter values
-setProp(get(h.uipanel_TA_transitionDensityPlot,'Children'),'Enable','on');
+% build data type list
+str_pop = {};
+for l = 1:nExc
+    for c = 1:nChan
+        str_pop = cat(2,str_pop,cat(2,labels{c},' at ',num2str(exc(l)),...
+            'nm'));
+    end
+end
+for n = 1:nFRET
+    str_pop = cat(2,str_pop,cat(2,'FRET ',labels{FRET(n,1)},'>',...
+        labels{FRET(n,2)}));
+end
+for n = 1:nS
+    str_pop = cat(2,str_pop,cat(2,'S ',labels{S(n)}));
+end
+set(h.popupmenu_TDPdataType,'value',tpe,'string',str_pop);
 
-set([h.edit_TDPxBin h.edit_TDPxLow h.edit_TDPxUp h.edit_TDPyBin ...
-    h.edit_TDPyLow h.edit_TDPyUp], 'BackgroundColor', [1 1 1]);
+% build tag list
+str_pop = getStrPopTags(tagNames,colorlist);
+if nTag>1
+    str_pop = cat(2,'all molecules',str_pop);
+end
+set(h.popupmenu_TDPtag,'string',str_pop,'value',tag);
 
-set(h.edit_TDPxBin, 'String', num2str(x_bin));
-set(h.edit_TDPyBin, 'String', num2str(y_bin));
-set(h.edit_TDPxLow, 'String', num2str(x_lim(1)));
-set(h.edit_TDPxUp, 'String', num2str(x_lim(2)));
-set(h.edit_TDPyLow, 'String', num2str(y_lim(1)));
-set(h.edit_TDPyUp, 'String', num2str(y_lim(2)));
+% build TDP matrix
+dt_raw = p.proj{proj}.dt(:,tpe); % {1-by-nMol} transitions
+TDP_prm{1} = bin; % TDP binning
+TDP_prm{2} = lim; % TDP limits
+TDP_prm{3} = p.proj{proj}.frame_rate; % rate
+TDP_prm{4} = [onecount,rearrng]; % transition count/rearrange sequences
+
+% create TDP matrix and get binned transitions + TDP coord. assignment
+if isempty(TDP)
+    [TDP,dt_bin] = getTDPmat(dt_raw, TDP_prm, h_fig);
+    prm.plot{2} = TDP;
+    prm.plot{3} = dt_bin;
+    p.proj{proj}.prm{tag,tpe} = prm;
+end
+if numel(TDP)==1 && isnan(TDP)
+    setProp(h.uipanel_TA_transitionDensityPlot,'enable','off');
+    set([h.text_TDPdataType,h.popupmenu_TDPdataType,h.text_TDPtag,...
+        h.popupmenu_TDPtag],'enable','on');
+    return
+end
+
+setProp(h.uipanel_TA_transitionDensityPlot,'enable','on');
+
+set([h.edit_TDPbin h.edit_TDPmin h.edit_TDPmax],'BackgroundColor',[1 1 1]);
+
+set(h.edit_TDPbin, 'String', num2str(bin));
+set(h.edit_TDPmin, 'String', num2str(lim(1)));
+set(h.edit_TDPmax, 'String', num2str(lim(2)));
 set(h.checkbox_TDPgconv, 'Enable', 'on', 'Value', gconv);
 set(h.checkbox_TDPnorm, 'Enable', 'on', 'Value', norm);
 set(h.checkbox_TDP_onecount, 'Enable', 'on', 'Value', onecount);
+set(h.checkbox_TDPignore, 'Enable', 'on', 'Value', rearrng);
 
-%% if not calculated yet, build TDp matrix
-if isempty(TDP)
-    dt_raw = p.proj{proj}.dt(:,tpe); % {1-by-nMol} transitions
-    TDP_prm{1} = [x_bin y_bin]; % TDP x & y binning
-    TDP_prm{2} = [x_lim;y_lim]; % TDP x & y limits
-    TDP_prm{3} = p.proj{proj}.frame_rate; % rate
-    TDP_prm{4} = onecount; % one/total transition count per mol.
-    
-    % create TDP matrix and get binned transitions + TDP coord. assignment
-    [TDP,dt_bin] = getTDPmat(dt_raw, TDP_prm, h_fig);
-    if isempty(TDP) || (numel(TDP)==1 && isnan(TDP))
-        return;
-    end
-    
-    prm.plot{2} = TDP;
-    prm.plot{3} = dt_bin;
-    p.proj{proj}.prm{tpe} = prm;
-end
-
-%% plot TDP matrix and clusters data
+% plot TDP matrix and clusters data
 clr = prm.clst_start{3};
 mu = [];
 a = [];
@@ -80,7 +118,7 @@ if ~isempty(prm.clst_res{1})
         a = prm.clst_res{1}.a{J};
         o = prm.clst_res{1}.o{J};
         
-        %% plot BIC results
+        % plot BIC results
         Jmax = size(prm.clst_res{1}.BIC,2);
         BICs = prm.clst_res{1}.BIC;
         barh(h.axes_tdp_BIC,1:Jmax,BICs);
@@ -99,8 +137,8 @@ else
     end
 end
 
-plot_prm{1} = [x_lim;y_lim]; % TDP x & y limits
-plot_prm{2} = [x_bin y_bin]; % TDP x & y binning
+plot_prm{1} = lim; % TDP limits
+plot_prm{2} = bin; % TDP binning
 plot_prm{3} = gconv; % conv./not TDP with Gaussian, o^2=0.0005
 plot_prm{4} = norm; % normalize/not TDP z-axis
 plot_prm{5} = clr; % cluster colours
@@ -110,14 +148,14 @@ clust_prm{2} = clust; % cluster assigment of TDP coordinates
 clust_prm{3}.a = a; % converged Gaussian weights
 clust_prm{3}.o = o; % converged Gaussian deviations
 
-plotTDP(h.axes_TDPplot1, TDP, plot_prm, clust_prm, h_fig);
+plotTDP(h.axes_TDPplot1, h.colorbar_TA, TDP, plot_prm, clust_prm, h_fig);
 
-%% adjust colormap
+% adjust colormap
 p.cmap = colormap(h.axes_TDPplot1);
 set(h.axes_TDPplot1, 'Color', p.cmap(1,:));
 setCmap(h_fig, p.cmap);
 
-%% store modifications
+% store modifications
 h.param.TDP = p;
 guidata(h_fig, h);
 

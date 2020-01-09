@@ -1,5 +1,9 @@
 function plotHist(h_axes, P, lim, start, res, clr, boba, intUnits, h_fig)
 
+if isempty(P)
+    return
+end
+
 isInt = ~isempty(intUnits);
 if isInt
     perSec = intUnits{1,1};
@@ -70,6 +74,14 @@ switch meth
                 mus = res{2,2}(:,2:4:end);
                 pops = res{2,2}(:,4:4:end);
                 K = size(mus,2);
+                if isInt
+                    if perSec
+                        mus = mus/expT;
+                    end
+                    if perPix
+                        mus = mus/nPix;
+                    end
+                end
                 for k = 1:K
                     scatter(h_axes(2), mus(:,k), pops(:,k), 'Marker', ...
                         '+', 'MarkerEdgeColor', clr(k,:), ...

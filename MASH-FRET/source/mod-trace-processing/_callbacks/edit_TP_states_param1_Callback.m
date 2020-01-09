@@ -1,9 +1,10 @@
-function edit_TP_states_param1_Callback(obj, evd, h)
+function edit_TP_states_param1_Callback(obj, evd, h_fig)
 
 % Last update: by MH, 3.4.2019
 % >> adjust selected data index in popupmenu, chan_in, to shorter 
 %    popupmenu size when discretization is only applied to bottom traces
 
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -38,20 +39,20 @@ if ~isempty(p.proj)
             switch method
                 case 1 % Threshold
                     updateActPan('Number of states must be > 0', ...
-                        h.figure_MASH, 'error');
+                        h_fig, 'error');
                     
                 case 2 % VbFRET
                     updateActPan(cat(2,'Minimum number of states must be ',...
-                        '> 0 and < ',num2str(maxVal)),h.figure_MASH,...
+                        '> 0 and < ',num2str(maxVal)),h_fig,...
                         'error');
 
                 case 4 % CPA
                     updateActPan('Number of bootstrap samples must be > 0', ...
-                        h.figure_MASH, 'error');
+                        h_fig, 'error');
                     
                 case 5 % STaSI
                     updateActPan('Maximum number of states must be > 0', ...
-                        h.figure_MASH, 'error');
+                        h_fig, 'error');
             end
 
         else
@@ -68,8 +69,8 @@ if ~isempty(p.proj)
             
             p.proj{proj}.curr{mol}{4}{2}(method,1,chan_in) = val;
             h.param.ttPr = p;
-            guidata(h.figure_MASH, h);
-            ud_DTA(h.figure_MASH);
+            guidata(h_fig, h);
+            ud_DTA(h_fig);
         end
     end
 end

@@ -1,4 +1,5 @@
-function checkbox_simParam_Callback(obj, evd, h)
+function checkbox_simParam_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 h.param.sim.export_param = get(obj, 'Value');
-guidata(h.figure_MASH, h);
-updateFields(h.figure_MASH, 'sim');
+guidata(h_fig, h);
+updateFields(h_fig, 'sim');

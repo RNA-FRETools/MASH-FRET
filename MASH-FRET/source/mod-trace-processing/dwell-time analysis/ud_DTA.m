@@ -74,10 +74,12 @@ if ~isempty(p)
 
     h_param = [h.edit_TP_states_param1 h.edit_TP_states_param2 ...
         h.edit_TP_states_param3 h.edit_TP_states_paramTol ...
-        h.edit_TP_states_paramRefine h.edit_TP_states_paramBin];
+        h.edit_TP_states_paramRefine h.edit_TP_states_paramBin ...
+        h.edit_TP_states_deblurr];
     h_param_txt = [h.text_TP_states_param1 h.text_TP_states_param2 ...
         h.text_TP_states_param3 h.text_states_paramTol ...
-        h.text_TP_states_paramRefine h.text_TP_states_paramBin];
+        h.text_TP_states_paramRefine h.text_TP_states_paramBin ...
+        h.text_TP_states_deblurr];
     
     set(h_param_txt, 'Enable', 'on');
     for i = 1:numel(h_param)
@@ -155,8 +157,8 @@ if ~isempty(p)
                 set(h.popupmenu_TP_states_data, 'Enable', 'on');
                 
             case 3 % One state
-                set(h_param(1:6), 'Enable','off','string','');
-                set(h_param_txt(1:6), 'Enable','off');
+                set(h_param(1:7), 'Enable','off','string','');
+                set(h_param_txt(1:7), 'Enable','off');
                 
                 set(h.popupmenu_TP_states_data,'enable','off');
 
@@ -179,8 +181,8 @@ if ~isempty(p)
     end
     
     if ~toFRET && chan<=nFRET+nS
-        set(h_param(1:3),'Enable','off','string','');
-        set(h_param_txt(1:3),'Enable','off');
+        set(h_param([1:3,5:6]),'Enable','off','string','');
+        set(h_param_txt([1:3,5:6]),'Enable','off');
         set([h.text_TP_states_thresholds h.popupmenu_TP_states_indexThresh ...
             h.text_TP_states_lowThresh h.text_TP_states_state ...
             h.text_TP_states_highThresh],'Enable','off');

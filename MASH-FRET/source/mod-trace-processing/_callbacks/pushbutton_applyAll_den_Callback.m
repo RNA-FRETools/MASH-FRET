@@ -1,4 +1,5 @@
-function pushbutton_applyAll_den_Callback(obj, evd, h)
+function pushbutton_applyAll_den_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     choice = questdlg( {['Overwriting denoising parameters of all ' ...
@@ -15,6 +16,6 @@ if ~isempty(p.proj)
         end
         p.proj{proj}.def.mol{1} = p.proj{proj}.curr{mol}{1};
         h.param.ttPr = p;
-        guidata(h.figure_MASH, h);
+        guidata(h_fig, h);
     end
 end

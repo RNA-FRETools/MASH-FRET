@@ -17,7 +17,10 @@ p = h.param.TDP;
 proj = p.curr_proj;
 q = p.proj{proj}.exp;
 str_tpe = get(h.popupmenu_TDPdataType, 'String');
-nTpe = size(str_tpe,1);
+str_tag = get(h.popupmenu_TDPtag, 'String');
+tpe = p.curr_type(proj);
+tag = p.curr_tag(proj);
+prm = p.proj{proj}.prm{tag,tpe};
 
 % export parameters for TDP
 TDPascii = q{2}(1);
@@ -70,18 +73,29 @@ if sum(bol_tdp)
 
     pname_tdp = setCorrectPath([pname 'clustering'], h_fig);
 
-    for t = 1:nTpe
-        prm = p.proj{proj}.prm{t};
-        if isempty(prm.plot{2})
-            disp(['no TDP built for data: ' str_tpe{t}]);
+    if numel(prm.plot{2})==1 && isnan(prm.plot{2})
+        disp(['no TDP built for data ' str_tpe{tpe}]);
+    elseif isempty(prm.plot{2})
+        if tag==1
+            disp(['no TDP built for data ' str_tpe{tpe}]);
         else
-            [ok,str_tdp] = save_tdpDat(str_tpe{t},prm,pname_tdp,name,...
-                bol_tdp,h_fig);
-            if ~ok
-                return;
-            end
-            str_act = cat(2,str_act,str_tdp);
+            disp(['no TDP built for data ' str_tpe{tpe} ...
+                ' and molecule subgroup ' ...
+                removeHtml(str_tag{tag})]);
         end
+    else
+        if tag==1
+            name_tdp = cat(2,name,'_',str_tpe{tpe});
+        else
+            name_tdp = cat(2,name,'_',str_tpe{tpe},'_',...
+                removeHtml(str_tag{tag}));
+        end
+        [ok,str_tdp] = save_tdpDat(prm,pname_tdp,name_tdp,bol_tdp,...
+            h_fig);
+        if ~ok
+            return;
+        end
+        str_act = cat(2,str_act,str_tdp);
     end
 end
 
@@ -96,63 +110,49 @@ if sum(bol_kin)
     pname_kin = setCorrectPath([pname 'kinetics'], h_fig);
     
     % export dwell-time histogram files & fitting results (if)
-    for t = 1:nTpe
-        prm = p.proj{proj}.prm{t};
-        J = prm.clst_res{3};
-        if J == 0
-            disp(['no clustering for data:' str_tpe{t}]);
+    prm = p.proj{proj}.prm{tag,tpe};
+    J = prm.clst_res{3};
+    if ~isempty(prm.clst_res{4}) && J>0
+
+        if tag==1
+            name_kin0 = cat(2,name,'_',str_tpe{tpe});
+        else
+            name_kin0 = cat(2,name,'_',str_tpe{tpe},'_',...
+                removeHtml(str_tag{tag}));
         end
+
         j = 0;
         for j1 = 1:J
             for j2 = 1:J
-                if j1 ~= j2
-                    j = j+1;
-                    if isempty(prm.clst_res{4})
-                        str_act = cat(2,str_act,'No dwell-time histogram',...
-                            'for data:',str_tpe{t},'\n');
-                        disp(cat(2,'No dwell-time histogram for data:',...
-                            str_tpe{t}));
-                        break;
-
-                    elseif ~(size(prm.clst_res{4},2)>=j && ...
-                            ~isempty(prm.clst_res{4}{j}))
-                        
-                        % update action
-                        states = round(100*prm.clst_res{1}.mu{J}([j1,j2],...
-                            1))/100;
-                        str = strcat(num2str(states(1)),' to '...
-                            ,num2str(states(2)));
-                        str_act = cat(2,str_act,'No dwell-time histogram',...
-                            'for data:',str_tpe{t},', transition: ',str,...
-                            '\n');
-                        disp(cat(2,'No dwell-time histogram for data:',...
-                            str_tpe{t},', transition: ',str));
-
-                    else
-                        states = round(100*prm.clst_res{1}.mu{J}([j1,j2],...
-                            1))/100;
-                        str = strcat(num2str(states(1)), ' to ', ...
-                            num2str(states(2)));
-                        [ok,str_kin] = save_kinDat(bol_kin,prm,j,str_tpe{t},str, ...
-                            pname_kin,[name '_' str_tpe{t}],h_fig);
-                        if ~ok
-                            return;
-                        end
-                        str_act = cat(2,str_act,str_kin);
-                            
-                    end
+                if j1==j2
+                    continue
                 end
+                j = j+1;
+                if ~(size(prm.clst_res{4},2)>=j && ...
+                        ~isempty(prm.clst_res{4}{j}))
+                    continue
+                end
+                val = round(100*prm.clst_res{1}.mu{J}([j1,j2],1))/100;
+
+                name_kin = cat(2,name_kin0,'_',num2str(val(1)),'to',...
+                    num2str(val(2)));
+
+                [ok,str_kin] = save_kinDat(bol_kin,prm,j, ...
+                    pname_kin,name_kin,h_fig);
+                if ~ok
+                    return;
+                end
+                str_act = cat(2,str_act,str_kin);
             end
         end
     end
-
 end
 
 str_act = str_act(1:end-2); % remove last '\n'
-setContPan(cat(2,'Data successfully exported:\n',str_act),'success',h_fig);
+setContPan(cat(2,'Export completed\n',str_act),'success',h_fig);
 
 
-function [ok,str_act] = save_tdpDat(str, prm, pname, name, bol, h_fig)
+function [ok,str_act] = save_tdpDat(prm, pname, name, bol, h_fig)
 % Save transition density plot to ASCII files and image files.
 % Save transition clustering results to ASCII files
 % Return actions to display
@@ -190,12 +190,12 @@ else
 end
         
 str_tdp = sprintf(str_tdp, onecount, prm.plot{1}(1,2:3)', ...
-    prm.plot{1}(1,1), prm.plot{1}(2,2:3)', prm.plot{1}(2,1));
+    prm.plot{1}(1,1), prm.plot{1}(1,2:3)', prm.plot{1}(1,1));
 
 if tdp_mat% save TDP matrix
     
     % build file name
-    fname_mat = strcat(name, '_', str, '.tdp');
+    fname_mat = strcat(name, '.tdp');
     fname_mat = getCorrName(fname_mat, [], h_fig);
     if sum(fname_mat)
         fname_mat = overwriteIt(fname_mat,pname,h_fig);
@@ -226,7 +226,7 @@ end
 if tdp_conv % save gaussian convolution TDP matrix
     
     % build file name
-    fname_mat_conv = strcat(name, '_', str,'_gconv.tdp');
+    fname_mat_conv = strcat(name,'_gconv.tdp');
     fname_mat_conv = getCorrName(fname_mat_conv, [], h_fig);
     if sum(fname_mat_conv)
         fname_mat_conv = overwriteIt(fname_mat_conv,pname,h_fig);
@@ -236,17 +236,13 @@ if tdp_conv % save gaussian convolution TDP matrix
         end
         
         % calculate data
-        lim = prm.plot{1}([1 2],[2 3]);
-        bin_x = (lim(1,2)-lim(1,1))/size(TDP,2);
-        bin_y = (lim(2,2)-lim(2,1))/size(TDP,1);
-        o2 = [0.0005 0.0005];
-        if lim(1,2)>2
-            o2(1) = (4.4721*bin_x)^2;
+        lim = prm.plot{1}(1,[2 3]);
+        bin = (lim(2)-lim(1))/size(TDP,2);
+        o2 = 0.0005;
+        if lim(2)>2
+            o2 = (4.4721*bin)^2;
         end
-        if lim(2,2)>2
-            o2(2) = (4.4721*bin_y)^2;
-        end
-        TDP_conv = convGauss(TDP, o2, lim);
+        TDP_conv = convGauss(TDP, [o2,o2], [lim;lim]);
         Nx = size(TDP_conv,2);
         
         % write data to file
@@ -271,7 +267,7 @@ end
 if tdp_coord % save TDP coordinates
     
     % build file name
-    fname_coord = strcat(name, '_', str, '_coord.txt');
+    fname_coord = strcat(name, '_coord.txt');
     fname_coord = getCorrName(fname_coord, [], h_fig);
     if sum(fname_coord)
         fname_coord = overwriteIt(fname_coord,pname,h_fig);
@@ -281,13 +277,11 @@ if tdp_coord % save TDP coordinates
         end
         
         % format data
-        bins = prm.plot{1}([1 2],1);
-        lim = prm.plot{1}([1 2],[2 3]);
-        iv_x = (lim(1,1):bins(1):lim(1,2));
-        iv_x = mean([iv_x(1:end-1);iv_x(2:end)],1);
-        iv_y = (lim(2,1):bins(2):lim(2,2));
-        iv_y = mean([iv_y(1:end-1);iv_y(2:end)],1);
-        [x,y] = meshgrid(iv_x,iv_y);
+        bin = prm.plot{1}(1,1);
+        lim = prm.plot{1}(1,[2 3]);
+        iv = lim(1):bin:lim(2);
+        iv = mean([iv(1:end-1);iv(2:end)],1);
+        [x,y] = meshgrid(iv,iv);
         x = x(:); y = y(:);
         z = reshape(TDP,[numel(TDP) 1]);
         coord = [x y z]';
@@ -314,7 +308,7 @@ end
 if tdp_png
     
     % build file name
-    fname_png = strcat(name, '_', str, '.png');
+    fname_png = strcat(name, '.png');
     fname_png = getCorrName(fname_png, [], h_fig);
     if sum(fname_png)
         fname_png = overwriteIt(fname_png,pname,h_fig);
@@ -345,7 +339,7 @@ end
 if tdp_png_conv
     
     % build file name
-    fname_png_cv = strcat(name, '_', str, '_gconv.png');
+    fname_png_cv = strcat(name, '_gconv.png');
     fname_png_cv = getCorrName(fname_png_cv, [], h_fig);
     if sum(fname_png_cv)
         fname_png_cv = overwriteIt(fname_png_cv,pname,h_fig);
@@ -355,17 +349,13 @@ if tdp_png_conv
         end
         
         % format data
-        lim = prm.plot{1}([1 2],[2 3]);
-        bin_x = (lim(1,2)-lim(1,1))/size(TDP,2);
-        bin_y = (lim(2,2)-lim(2,1))/size(TDP,1);
-        o2 = [0.0005 0.0005];
-        if lim(1,2)>2
-            o2(1) = (4.4721*bin_x)^2;
+        lim = prm.plot{1}(1,[2 3]);
+        bin = (lim(1,2)-lim(1,1))/size(TDP,2);
+        o2 = 0.0005;
+        if lim(1)>2
+            o2 = (4.4721*bin)^2;
         end
-        if lim(2,2)>2
-            o2(2) = (4.4721*bin_y)^2;
-        end
-        TDP_conv = convGauss(TDP, o2, lim);
+        TDP_conv = convGauss(TDP, [o2,o2], [lim;lim]);
         maxI = max(max(TDP_conv)); minI = min(min(TDP_conv));
         TDP_8bit_conv = uint8(255*(TDP_conv-minI)/(maxI-minI));
         
@@ -390,7 +380,7 @@ isClst = ~isempty(prm.clst_res{1});
 if isClst && tdp_clust
     
     % build file name
-    fname_clust = strcat(name, '_', str, '.clst');
+    fname_clust = strcat(name, '.clst');
     fname_clust = getCorrName(fname_clust, [], h_fig);
     if sum(fname_clust)
         fname_clust = overwriteIt(fname_clust,pname,h_fig);
@@ -532,13 +522,10 @@ if isClst && tdp_clust
             'ASCII file because of invalid file name ',fname_clust,'\n');
         disp(cat(2,'Invalid file name: ',fname_clust));
     end
-else
-    disp(cat(2,'no clustering for data: ',str));
 end
 
 
-function [ok,str_act] = save_kinDat(bol, prm, j, str1, str2, pname, name, ...
-    h_fig)
+function [ok,str_act] = save_kinDat(bol,prm,j,pname,name,h_fig)
 % Save dwell time histograms and fitting results to ASCII files.
 % Return actions to display
 
@@ -557,7 +544,7 @@ kinBoba = bol(3);
 if kinDtHist
     
     % build file name
-    fname_hdt = strcat(name,'_',str2,'.hdt');
+    fname_hdt = strcat(name,'.hdt');
     fname_hdt = getCorrName(fname_hdt, [], h_fig);
     if sum(fname_hdt)
         fname_hdt = overwriteIt(fname_hdt,pname,h_fig);
@@ -592,7 +579,7 @@ end
 if kinFit
     
     % build file name
-    fname_fit = strcat(name,'_',str2,'.fit');
+    fname_fit = strcat(name,'.fit');
     fname_fit = getCorrName(fname_fit, [], h_fig);
     if sum(fname_fit)
         fname_fit = overwriteIt(fname_fit,pname,h_fig);
@@ -707,11 +694,6 @@ if kinFit
             % update action
             str_act = cat(2,str_act,'Fitting results saved to ASCII file:',...
                 ' ',fname_fit,' in folder: ',pname,'\n');
-        else
-            str_act = cat(2,str_act,'No fitting results for data: ',str1,...
-                ', transition: ',str2,'\n');
-            disp(cat(2,'No fitting results for data:',str1,...
-                ', transition: ',str2));
         end
         
     else

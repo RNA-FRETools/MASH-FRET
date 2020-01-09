@@ -8,6 +8,7 @@ h = guidata(h_fig);
 p = h.param.thm;
 proj = p.curr_proj;
 tpe = p.curr_tpe(proj);
+tag = p.curr_tag(proj);
 
 prm_plot = p.proj{proj}.prm{tpe}.plot;
 ovrfl = prm_plot{1}(1,4); % remove (or not) first and last bin
@@ -27,12 +28,19 @@ param = prm_start{3};
 
 J = size(param,1); % number of gaussian functions to fit
 
-nMol = size(p.proj{proj}.coord_incl,2); % inital number of molecules
+m_incl = p.proj{proj}.coord_incl;
+nMol = size(m_incl,2); % inital number of molecules
 
-mols = 1:nMol;
-mols = mols(p.proj{proj}.coord_incl); % molecule index
-
-N = sum(p.proj{proj}.coord_incl); % number of user-selected molecules
+if boba
+    mols = 1:nMol;
+    if ~tag
+        mols = mols(m_incl);
+    else
+        molTag = p.proj{proj}.molTag;
+        mols = mols(m_incl & molTag(:,tag)');
+    end
+    N = size(mols,2); % number of user-selected molecules
+end
 
 % Gaussian function coefficients
 lower = reshape(prm_start{3}(:,1:3:end-3), [1,3*J]); % lower bound

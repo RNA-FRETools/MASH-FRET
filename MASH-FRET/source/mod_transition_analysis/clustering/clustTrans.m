@@ -1,9 +1,20 @@
-function res = clustTrans(dt_bin, TDP, plot_prm, clust_prm, varargin)
+function res = clustTrans(dt_bin, TDP, plot_prm, clust_prm, h_fig)
 
+% initialize results
+res.mu = {};
+res.a = {};
+res.o = {};
+res.clusters = {};
+res.BIC = [];
+res.boba_K = [];
+
+% default
 M_def = 500; % default max. number of maximization iteration
 plotIter_def = 0; % plot/not EM results while iterating
 Jmin_def = 2; % minimum configuration
+clstStat = 1; % generate cluster for diagonal transitions
 
+% collect project parameters
 meth = clust_prm{1}(1); % clustering method
 shape = clust_prm{1}(2); % cluster shape
 Jmax = clust_prm{1}(3); % max. number of states
@@ -13,24 +24,10 @@ tol = clust_prm{2}(:,2); % k-mean tolerance radius around states
 boba = clust_prm{4}(1); % apply/not bootstrapped (BS) clustering
 n_spl = clust_prm{4}(2); % number of BS samples
 n_rep = clust_prm{4}(3); % number of BS replicates in one sample
-
-bins = plot_prm{1};
+bin = plot_prm{1};
 lim = plot_prm{2}; % TDP x & y limits
 onecount = plot_prm{3}(2); % one/total transition count per molecule
 gconv = plot_prm{3}(3); % one/total transition count per molecule
-
-if ~(~isempty(varargin) && ishandle(varargin{1}))
-    h_fig = [];
-else
-    h_fig = varargin{1};
-end
-
-res.mu = {};
-res.a = {};
-res.o = {};
-res.clusters = {};
-res.BIC = [];
-res.boba_K = [];
 
 [mols,o,o] = unique(dt_bin(:,4));
 
@@ -39,7 +36,7 @@ if ~boba
 end
 res.n_rep = n_rep;
 
-if boba && ~isempty(h_fig)
+if boba
     % randomly select dynamic molecules
     err = loading_bar('init', h_fig, n_spl, cat(2,'Performing ',...
         'randomisation and clustering ...'));
@@ -52,24 +49,15 @@ if boba && ~isempty(h_fig)
     
     setContPan(cat(2,'Performing data randomisation and clustering ...'),...
         'process', h_fig);
-    
-elseif boba
-    disp(cat(2,'Performing data randomisation and clustering ...'));
-    
-elseif ~boba && ~isempty(h_fig)
+else
     setContPan('Performing data clustering ...','process', h_fig);
-    
-elseif ~boba
-    disp('Performing data clustering ...');
 end
 
 param = cell(1,n_spl);
 Jopt_k = nan(1,n_spl);
 
-iv_x = lim(1,1):bins(1):lim(1,2);
-iv_y = lim(2,1):bins(2):lim(2,2);
-x = mean([iv_x(1:end-1);iv_x(2:end)],1);
-y = mean([iv_y(1:end-1);iv_y(2:end)],1);
+iv = lim(1,1):bin(1):lim(1,2);
+x = mean([iv(1:end-1);iv(2:end)],1);
 
 for k = 1:n_spl
     
@@ -90,10 +78,9 @@ for k = 1:n_spl
         end
         
         % build sample TDP
-        [TDP_spl,o,o,o] = hist2(data_spl_m(:,[2 3]),[iv_x;iv_y]);
+        [TDP_spl,o,o,o] = hist2(data_spl_m(:,[2 3]),[iv;iv]);
         
     else
-        
         % get original TDP
         TDP_spl = TDP;
     end
@@ -101,17 +88,11 @@ for k = 1:n_spl
     
     % apply Gaussian filter to TDP
     if gconv
-        lim = plot_prm{2};
-        bin_x = (lim(1,2)-lim(1,1))/size(TDP,2);
-        bin_y = (lim(2,2)-lim(2,1))/size(TDP,1);
-        o2 = [0.0005 0.0005];
+        o2 = 0.0005;
         if lim(1,2)>2
-            o2(1) = (4.4721*bin_x)^2;
+            o2 = 4.4721*bin^2;
         end
-        if lim(2,2)>2
-            o2(2) = (4.4721*bin_y)^2;
-        end
-        TDP_spl = convGauss(TDP_spl, o2, lim);
+        TDP_spl = convGauss(TDP_spl, [o2,o2], [lim;lim]);
     end
     
     % get 2D-Gaussian shape
@@ -131,7 +112,7 @@ for k = 1:n_spl
         case 1 %k-mean clustering
             
             % cluster data
-            [mu_spl,clust_spl] = get_kmean(mu_0, tol, T, TDP_spl, x, y, 1);
+            [mu_spl,clust_spl] = get_kmean(mu_0, tol, T, TDP_spl, x, x, 1);
             
             % determine model configuration
             Jopt = size(mu_spl,1);
@@ -139,7 +120,7 @@ for k = 1:n_spl
             % save sample's best inferred model
             param{k} = {mu_spl};
             
-            if ~boba
+            if ~boba || (boba && k==1)
                 % save inferred models for original TDP
                 origin = cell(1,Jmax);
                 origin{Jopt}.mu = mu_spl;
@@ -164,8 +145,8 @@ for k = 1:n_spl
         case 2 % GMM clustering
             
             % fit and cluster data
-            [model,L_t,BIC_t] = find_best_model(TDP_spl,x,y,Jmin_def,Jmax,...
-                T, M_def,true,shape_str,max(bins),plotIter_def);
+            [model,L_t,BIC_t] = find_best_model(TDP_spl,x,x,Jmin_def,Jmax,...
+                T, M_def,true,shape_str,0,plotIter_def);
             
             % save inferred models for original TDP
             if k == 1
@@ -175,24 +156,29 @@ for k = 1:n_spl
             % find sample's best inferred model
             [BIC_min,Jopt] = min(BIC_t);
             
-            % save sample's best inferred model
-            mu_spl = model{Jopt}.mu;
-            clust_spl = model{Jopt}.clusters;
-            BIC_spl = model{Jopt}.BIC;
-            a_spl = model{Jopt}.w;
-            sig_spl = model{Jopt}.o;
-            param{k} = {mu_spl clust_spl BIC_spl a_spl sig_spl};
+            if ~isempty(model{Jopt})
+                % save sample's best inferred model
+                mu_spl = model{Jopt}.mu;
+                clust_spl = model{Jopt}.clusters;
+                BIC_spl = model{Jopt}.BIC;
+                a_spl = model{Jopt}.w;
+                sig_spl = model{Jopt}.o;
+                param{k} = {mu_spl clust_spl BIC_spl a_spl sig_spl};
+                
+                % update action
+                if n_spl==1
+                    setContPan(cat(2,'Most sufficient model: J=',num2str(Jopt),...
+                        ', LogL=',num2str(L_t(Jopt)),', BIC=',...
+                        num2str(BIC_t(Jopt))),'success',h_fig);
+                else
+                    str = cat(2,'Sample ',num2str(k),', most sufficient ',...
+                        'model: J=',num2str(Jopt),', LogL=',num2str(L_t(Jopt)),...
+                        ', BIC=',num2str(BIC_t(Jopt)));
+                    setContPan(str,'process',h_fig);
+                end
             
-            % update action
-            if n_spl==1
-                setContPan(cat(2,'Most sufficient model: J=',num2str(Jopt),...
-                    ', LogL=',num2str(L_t(Jopt)),', BIC=',...
-                    num2str(BIC_t(Jopt))),'success',h_fig);
             else
-                str = cat(2,'Sample ',num2str(k),', most sufficient ',...
-                    'model: J=',num2str(Jopt),', LogL=',num2str(L_t(Jopt)),...
-                    ', BIC=',num2str(BIC_t(Jopt)));
-                setContPan(str,'process',h_fig);
+                Jopt = NaN;
             end
     end
     
@@ -200,7 +186,7 @@ for k = 1:n_spl
     Jopt_k(k) = Jopt;
     
     % update loading bar
-    if boba && ~isempty(h_fig)
+    if boba
         err = loading_bar('update', h_fig);
         if err
             break;
@@ -243,33 +229,10 @@ if boba
         origin{Jopt}.o = [];
         origin{Jopt}.w = [];
         origin{Jopt}.BIC = Inf;
-    
-%     elseif meth==2 % average GMM parameters over models with J=Jopt (samples)
-%         mu = zeros(size(param_opt{1}{1}));
-%         clust = zeros([size(param_opt{1}{2}) round(Jopt_mean)^2]);
-%         BIC = zeros(size(param_opt{1}{3}));
-%         a = zeros(size(param_opt{1}{4}));
-%         sig = zeros(size(param_opt{1}{5}));
-%         
-%         for s = 1:size(param_opt,2)
-%             clust_spl = zeros([size(param_opt{1}{2}) round(Jopt_mean)^2]);
-%             for k = 1:round(Jopt_mean)^2
-%                 clust_spl(:,:,k) = double(param_opt{1}{2}==k);
-%             end
-%             clust = clust + clust_spl;
-%             BIC = BIC + param_opt{s}{3}/size(param_opt,2);
-%             mu = mu + param_opt{s}{1}/size(param_opt,2);
-%             a = a + param_opt{s}{4}/size(param_opt,2);
-%             sig = sig + param_opt{s}{5}/size(param_opt,2);
-%         end
-%         a = a/sum(a);
-%         [o,clust] = max(clust,[],3);
     end
     
     % close loading bar
-    if ~isempty(h_fig)
-        loading_bar('close', h_fig);
-    end
+    loading_bar('close', h_fig);
     
 else
     Jopt_mean = Jopt;
@@ -277,7 +240,6 @@ else
 end
 
 % used for Model selection evaluation paper:
-%
 % if ~isempty(h_fig)
 %     h = guidata(h_fig);
 %     p = h.param.TDP;
@@ -315,6 +277,9 @@ for J = Jmin:Jmax
     id_j = [];
     for j1 = 1:J
         for j2 = 1:J
+            if ~clstStat && j1==j2
+                continue
+            end
             id_j = cat(1,id_j,[j1 j2]);
         end
     end
@@ -330,15 +295,6 @@ for J = Jmin:Jmax
     end
     
     dt_bin_new = dt_bin_j;
-
-%     [mols,o,o] = unique(dt_bin_j(:,4));
-%     dt_bin_new = [];
-%     for m = mols'
-%         dt_bin_m = dt_bin_j(dt_bin_j(:,4)==m,:);
-%     %     dt_bin_m  = adjustDt(dt_bin_m);
-%         dt_bin_new = [dt_bin_new; dt_bin_m];
-%     end
-%     dt_bin_new(:,1) = round(dt_bin_new(:,1)/rate)*rate;
 
     if isempty(dt_bin_new)
         return;
@@ -359,9 +315,7 @@ end
 
 res.boba_K = [Jopt_mean Jopt_sig];
 
-if Jopt<=0 && ~isempty(h_fig)
+if Jopt<=0
     setContPan('Clustering failed','error', h_fig);
-elseif Jopt<=0
-    disp('Clustering failed');
 end
 

@@ -18,6 +18,10 @@ if isempty(fnameGamma) || isempty(pnameGamma) || ~sum(pnameGamma)
     return;
 end
 
+if ~iscell(fnameGamma)
+    fnameGamma = {fnameGamma};
+end
+
 str_file = '';
 if numel(fnameGamma)>1
     str_file = cat(2,str_file,'s:\n\t');
@@ -33,9 +37,6 @@ end
 updateActPan(cat(2,'process import of gamma factors from file',...
     str_file), h_fig, 'process');
 
-if ~iscell(fnameGamma)
-    fnameGamma = {fnameGamma};
-end
 gammasCell = cell(1,length(fnameGamma));
 for f = 1:length(fnameGamma)
     filename = [pnameGamma fnameGamma{f}];

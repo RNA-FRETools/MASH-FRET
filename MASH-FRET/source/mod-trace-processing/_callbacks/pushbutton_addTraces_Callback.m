@@ -1,4 +1,4 @@
-function pushbutton_addTraces_Callback(obj, evd, h)
+function pushbutton_addTraces_Callback(obj, evd, h_fig)
 
 %% Last update: 3.4.2019 by MH
 % >> adapt gamma factor import for more than one FRET calculation
@@ -29,6 +29,7 @@ function pushbutton_addTraces_Callback(obj, evd, h)
 %%
 
 % collect files to import
+h = guidata(h_fig);
 defPth = h.folderRoot;
 [fname,pname,o] = uigetfile({'*.mash', 'MASH project(*.mash)'; '*.*', ...
     'All files(*.*)'}, 'Select trace files', defPth, 'MultiSelect', 'on');
@@ -64,7 +65,7 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
     end
     
     % load project data
-    [dat,ok] = loadProj(pname, fname, 'intensities', h.figure_MASH);
+    [dat,ok] = loadProj(pname, fname, 'intensities', h_fig);
     if ~ok
         return;
     end
@@ -166,7 +167,7 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
 %                 if length(gammas) ~= nMol
                 if size(gammas,1) ~= nMol
                     
-                    updateActPan('number of gamma factors does not match the number of ASCII files loaded. Set all gamma factors to 1.', h.figure_MASH, 'error');
+                    updateActPan('number of gamma factors does not match the number of ASCII files loaded. Set all gamma factors to 1.', h_fig, 'error');
                     fnameGamma = []; % set to empty (will not try to import any gamma factors from file)
                 end    
             end
@@ -228,26 +229,37 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
                 p.proj{i}.prm{n}{5}{2} = newDePrm;
             end
             
-            % reshape old and already-applied "find states" parameters to 
-            % new format
+            % state sequences were previously calculated
             if size(p.proj{i}.prm{n},2)>=4 && ...
-                    size(p.proj{i}.prm{n}{4},2)>=2 && ...
-                    size(p.proj{i}.prm{n}{4}{2},2)==8
-                for j = 1:size(p.proj{i}.prm{n}{4}{2},3)
-                    p.proj{i}.prm{n}{4}{2}(1,1:6,j) = ...
-                        p.proj{i}.prm{n}{4}{2}(1,[2,1,5,8,3,4],j);
-                    p.proj{i}.prm{n}{4}{2}(2,1:6,j) = ...
-                        p.proj{i}.prm{n}{4}{2}(2,[1,2,5,8,3,4],j);
-                    p.proj{i}.prm{n}{4}{2}(3,1:6,j) = ...
-                        p.proj{i}.prm{n}{4}{2}(3,[1,2,5,8,3,4],j);
-                    p.proj{i}.prm{n}{4}{2}(4,1:6,j) = ...
-                        p.proj{i}.prm{n}{4}{2}(4,[5,6,7,8,3,4],j);
-                    p.proj{i}.prm{n}{4}{2}(5,1:6,j) = ...
-                        p.proj{i}.prm{n}{4}{2}(5,[2,1,5,8,3,4],j);
+                    size(p.proj{i}.prm{n}{4},2)>=2
+                
+                % reshape old format
+                if size(p.proj{i}.prm{n}{4}{2},2)==8
+                    for j = 1:size(p.proj{i}.prm{n}{4}{2},3)
+                        p.proj{i}.prm{n}{4}{2}(1,1:6,j) = ...
+                            p.proj{i}.prm{n}{4}{2}(1,[2,1,5,8,3,4],j);
+                        p.proj{i}.prm{n}{4}{2}(2,1:6,j) = ...
+                            p.proj{i}.prm{n}{4}{2}(2,[1,2,5,8,3,4],j);
+                        p.proj{i}.prm{n}{4}{2}(3,1:6,j) = ...
+                            p.proj{i}.prm{n}{4}{2}(3,[1,2,5,8,3,4],j);
+                        p.proj{i}.prm{n}{4}{2}(4,1:6,j) = ...
+                            p.proj{i}.prm{n}{4}{2}(4,[5,6,7,8,3,4],j);
+                        p.proj{i}.prm{n}{4}{2}(5,1:6,j) = ...
+                            p.proj{i}.prm{n}{4}{2}(5,[2,1,5,8,3,4],j);
+                    end
+                    p.proj{i}.prm{n}{4}{2} = ...
+                        p.proj{i}.prm{n}{4}{2}(:,1:6,:);
+                
+                % add parameter for method "deblurr"
+                elseif size(p.proj{i}.prm{n}{4}{2},2)==6
+                    cat(2,p.proj{i}.prm{n}{4}{2},...
+                        zeros(size(p.proj{i}.prm{n}{4}{2},1),1,...
+                        size(p.proj{i}.prm{n}{4}{2},3)));
                 end
-                p.proj{i}.prm{n}{4}{2} = p.proj{i}.prm{n}{4}{2}(:,1:6,:);
             end
-
+            
+            % if size of already applied parameters is different from
+            % defaults, used defaults
             p.proj{i}.curr{n} = adjustVal(p.proj{i}.prm{n}, ...
                 p.proj{i}.def.mol);
             
@@ -338,7 +350,7 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
     % update project list
     p = ud_projLst(p, h.listbox_traceSet);
     h.param.ttPr = p;
-    guidata(h.figure_MASH, h);
+    guidata(h_fig, h);
 
     % display action
     if size(fname,2) > 1
@@ -351,14 +363,14 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
     end
     str_files = str_files(1:end-2);
     setContPan(['Project successfully imported from ' str_files],'success',...
-        h.figure_MASH);
+        h_fig);
     
     % update GUI according to new project parameters
-    ud_TTprojPrm(h.figure_MASH);
+    ud_TTprojPrm(h_fig);
     
     % update sample management area
-    ud_trSetTbl(h.figure_MASH);
+    ud_trSetTbl(h_fig);
     
     % update calculations and GUI
-    updateFields(h.figure_MASH, 'ttPr');
+    updateFields(h_fig, 'ttPr');
 end

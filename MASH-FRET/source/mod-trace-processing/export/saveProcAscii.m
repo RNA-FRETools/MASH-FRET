@@ -973,7 +973,7 @@ if saveTr
                 pname_ascii,'\n');
         end
         
-    else
+    elseif saveAscii
         % update action
         str = cat(2,str,'Traces saved to ASCII files in folder: ',...
             pname_ascii,'\n');

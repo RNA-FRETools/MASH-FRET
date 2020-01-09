@@ -1,4 +1,4 @@
-function pushbutton_expProj_Callback(obj, evd, h)
+function pushbutton_expProj_Callback(obj, evd, h_fig)
 
 %% Last update: 25.4.2019 by MH
 % >> save current project tage names and colors in interface's default 
@@ -13,6 +13,7 @@ function pushbutton_expProj_Callback(obj, evd, h)
 %    structure (see project/setDefPrm_traces.m)
 %%
 
+h = guidata(h_fig);
 p = h.param.ttPr;
 
 % added by MH, 24.4.2019
@@ -31,7 +32,7 @@ if ~isempty(p.proj);
     elseif ~isempty(p.proj{proj}.exp_parameters{1,2})
         pName = pwd;
         projName = getCorrName(p.proj{proj}.exp_parameters{1,2}, [], ...
-            h.figure_MASH);
+            h_fig);
     else
         pName = pwd;
         projName = 'project';
@@ -48,7 +49,7 @@ if ~isempty(p.proj);
         
         % correct file name if necessary
         [o,fname,o] = fileparts(fname);
-        fname_proj = getCorrName([fname '.mash'], pname,h.figure_MASH);
+        fname_proj = getCorrName([fname '.mash'], pname,h_fig);
         
         if ~isempty(fname_proj) && sum(fname_proj)
             
@@ -63,7 +64,7 @@ if ~isempty(p.proj);
             dat.date_last_modif = datestr(now);
             
             % set MASH-FRET version
-            figname = get(h.figure_MASH, 'Name');
+            figname = get(h_fig, 'Name');
             a = strfind(figname, 'MASH-FRET ');
             b = a + numel('MASH-FRET ');
             vers = figname(b:end);
@@ -72,7 +73,7 @@ if ~isempty(p.proj);
             % save project data to file
             save([pname fname_proj], '-struct', 'dat');
             updateActPan(['Project has been successfully saved to file: ' ...
-                pname fname_proj], h.figure_MASH, 'success');
+                pname fname_proj], h_fig, 'success');
             
             % set interface default param. to project's default param.
             p.defProjPrm = p.proj{proj}.def;
@@ -119,7 +120,7 @@ if ~isempty(p.proj);
             % added by MH, 24.4.2019
             h.param.movPr = pMov;
             
-            guidata(h.figure_MASH,h);
+            guidata(h_fig,h);
         end
     end
 end

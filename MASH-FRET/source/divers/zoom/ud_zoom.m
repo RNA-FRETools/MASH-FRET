@@ -47,26 +47,39 @@ switch action
             p = h.param.TDP;
             proj = p.curr_proj;
             tpe = p.curr_type(proj);
-            prm = p.proj{proj}.prm{tpe};
+            tag = p.curr_tag(proj);
+            prm = p.proj{proj}.prm{tag,tpe};
             TDP = prm.plot{2};
 
-            plot_prm{1} = prm.plot{1}([1 2],[2 3]); % TDP x & y limits
-            plot_prm{2} = prm.plot{1}([1 2],1); % TDP x & y binning
+            plot_prm{1} = prm.plot{1}(1,[2 3]); % TDP x & y limits
+            plot_prm{2} = prm.plot{1}(1,1); % TDP x & y binning
             plot_prm{3} = prm.plot{1}(3,2); % conv./not TDP with Gaussian, o^2=0.0005
             plot_prm{4} = prm.plot{1}(3,3); % normalize/not TDP z-axis
             plot_prm{5} = prm.clst_start{3}; % cluster colours
-
-            if ~isempty(prm.clst_res{1})
-                clust{1} = prm.clst_res{1}(:,1); % converged cluster centres (states)
-                clust{2} = prm.clst_res{2}; % cluster assigment of TDP coordinates
-                clust{3} = prm.clst_res{3}; % converged BIC-GMM parameters
-            else
-                clust{1} = prm.clst_start{2}(:,1); % initial cluster centres (states)
-                clust{2} = [];
-                clust{3} = [];
-            end
             
-            plotTDP(curr_axes, TDP, plot_prm, clust, h_fig);
+            meth = prm.clst_start{1}(1);
+            a = [];
+            o = [];
+            mu = [];
+            clust = [];
+            if ~isempty(prm.clst_res{1})
+                if meth == 2 % GM
+                    J = get(h.popupmenu_tdp_model,'Value')+1;
+                    a = prm.clst_res{1}.a{J};
+                    o = prm.clst_res{1}.o{J};
+                else
+                    J = prm.clst_res{3};
+                end
+                mu = prm.clst_res{1}.mu{J};
+                clust = prm.clst_res{1}.clusters{J};
+            end
+                    
+            clust_prm{1} = mu;
+            clust_prm{2} = clust;
+            clust_prm{3}.a = a;
+            clust_prm{3}.o = o;
+            
+            plotTDP(curr_axes,h.colorbar_TA,TDP,plot_prm,clust_prm,h_fig);
             
         else
             xlim(curr_axes, 'auto');

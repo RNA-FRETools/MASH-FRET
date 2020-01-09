@@ -1,9 +1,11 @@
-function pushbutton_TDPautoStart_Callback(obj, evd, h)
+function pushbutton_TDPautoStart_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.TDP;
 if ~isempty(p.proj)
     proj = p.curr_proj;
     tpe = p.curr_type(proj);
-    prm = p.proj{proj}.prm{tpe};
+    tag = p.curr_tag(proj);
+    prm = p.proj{proj}.prm{tag,tpe};
     meth = prm.clst_start{1}(1);
     
     if meth == 1 % kmean
@@ -23,9 +25,9 @@ if ~isempty(p.proj)
             end
         end
         
-        p.proj{proj}.prm{tpe} = prm;
+        p.proj{proj}.prm{tag,tpe} = prm;
         h.param.TDP = p;
-        guidata(h.figure_MASH, h);
-        updateFields(h.figure_MASH, 'TDP');
+        guidata(h_fig, h);
+        updateFields(h_fig, 'TDP');
     end
 end

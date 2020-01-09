@@ -37,11 +37,11 @@ else
     xy_axis = [0.01 -0.2 1.2];
 end
 
-% plotPrm{1} = [bin_x  x_inf  x_sup
-%               bin_y  y_inf  y_sup
-%               excl   gconv  norm 
-%               count  empty  empty]
-plotPrm{1} = [xy_axis; xy_axis; [1 1 1]; [0 0 0]];
+% plotPrm{1} = [bin    min        max
+%               empty  empty      empty
+%               excl   gconv      norm 
+%               count  re-arrange empty]
+plotPrm{1} = [xy_axis; [0 0 0]; [1 1 1]; [0 0 0]];
 % plotPrm{2} = TDP matrix
 plotPrm{2} = [];
 % plotPrm{3} = [dwells, ini. val., fin. val., molecule] >> bin & updated

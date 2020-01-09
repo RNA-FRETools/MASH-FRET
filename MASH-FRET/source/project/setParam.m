@@ -381,6 +381,7 @@ p = p_input;
 p.proj = {};
 p.curr_proj = 0;
 p.curr_tpe = [];
+p.curr_tag = [];
          % R G B
 colList = [1 0 0 % red
            0 1 0 % green
@@ -410,6 +411,7 @@ p = p_input;
 p.proj = {};
 p.curr_proj = 0;
 p.curr_type = [];
+p.curr_tag = [];
          % R G B
 colList = [1 0 0 % red
            0 1 0 % green

@@ -1,6 +1,6 @@
-function openTrsfOpt(obj, evd, h)
+function openTrsfOpt(obj, evd, h_fig)
 
-h_fig = h.figure_MASH;
+h = guidata(h_fig);
 p = h.param.movPr;
 nChan = p.nChan;
 

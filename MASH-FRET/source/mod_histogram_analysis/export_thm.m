@@ -7,10 +7,26 @@ h = guidata(h_fig);
 p = h.param.thm;
 proj = p.curr_proj;
 tpe = p.curr_tpe(proj);
+tag = p.curr_tag(proj);
+
 str_tpe = get(h.popupmenu_thm_tpe, 'String');
 str_tpe = strrep(strrep(strrep(str_tpe{tpe}, ' ', ''),'>',''),'.','');
+if tag>0
+    str_tag = get(h.popupmenu_thm_tag, 'String');
+    str_tag = cat(2,'_',strrep(strrep(strrep(removeHtml(str_tag{tag+1}),...
+        ' ',''),'>',''),'.',''));
+else
+    str_tag = '';
+end
 prm = p.proj{proj}.prm{tpe};
 pplot = prm.plot;
+P = pplot{2};
+
+if isempty(P)
+    disp('There is no histogram or results to export.')
+    return
+end
+
 pstart = prm.thm_start;
 pres = prm.thm_res;
 
@@ -55,7 +71,7 @@ if isempty(defname)
     [o,defname,o] = fileparts(p.proj{proj}.proj_file);
 end
 defname = cat(2,setCorrectPath('histogram_analysis',h_fig),defname,'_',...
-    str_tpe);
+    str_tpe,str_tag);
 [fname,pname,o] = uiputfile({'*.txt', 'Text files(*.txt)'; '*.*', ...
     'All files(*.*)'},'Export analysis',defname);
 
@@ -69,8 +85,6 @@ setContPan('Exporting results from histogram analysis...','process',h_fig);
 expfig = 0;
 
 [o,name,o] = fileparts(fname);
-
-P = pplot{2};
 
 str_action = '';
 
@@ -156,18 +170,19 @@ if ~isempty(pres{3,1})
     fprintf(f,str_head);
     for K = 1:Kmax
         if ~isempty(pres{3,2}{K})
+            outres = pres;
             if isInt
                 if perSec
-                    pres{3,2}{K}(:,[2 3]) = pres{3,2}{K}(:,[2 3])/expT;
+                    outres{3,2}{K}(:,[2 3]) = outres{3,2}{K}(:,[2 3])/expT;
                 end
                 if perPix
-                    pres{3,2}{K}(:,[2 3]) = pres{3,2}{K}(:,[2 3])/nPix;
+                    outres{3,2}{K}(:,[2 3]) = outres{3,2}{K}(:,[2 3])/nPix;
                 end
             end
 
             fprintf(f, cat(2,'%i\t%d\t%d',repmat('\t%d',[1,3*K]), ...
-                '\n'),[K pres{3,1}(K,:),reshape(pres{3,2}{K}', ...
-                [1,numel(pres{3,2}{K})])]);
+                '\n'),[K outres{3,1}(K,:),reshape(outres{3,2}{K}', ...
+                [1,numel(outres{3,2}{K})])]);
         else
             fprintf(f,'%i\tn.a.\n',K);
         end
@@ -185,13 +200,13 @@ switch meth
         
         % Export Gaussian fitting results
         if ~isempty(pres{2,1})
-            
+            outres = pres;
             if isInt
                 if perSec
-                    pres{2,1}(:,3:6) = pres{2,1}(:,3:6)/expT;
+                    outres{2,1}(:,3:6) = outres{2,1}(:,3:6)/expT;
                 end
                 if perPix
-                    pres{2,1}(:,3:6) = pres{2,1}(:,3:6)/nPix;
+                    outres{2,1}(:,3:6) = outres{2,1}(:,3:6)/nPix;
                 end
             end
             
@@ -210,10 +225,10 @@ switch meth
             if boba
                 if isInt
                     if perSec
-                        pres{2,2}(:,[2 3]) = pres{2,2}(:,[2 3])/expT;
+                        outres{2,2}(:,[2 3]) = outres{2,2}(:,[2 3])/expT;
                     end
                     if perPix
-                        pres{2,2}(:,[2 3]) = pres{2,2}(:,[2 3])/nPix;
+                        outres{2,2}(:,[2 3]) = outres{2,2}(:,[2 3])/nPix;
                     end
                 end
             
@@ -227,52 +242,34 @@ switch meth
                 
                 for k = 1:K
                     fprintf(f, '%i\t%d\t%d\t%d\t%d\n', k, ...
-                        pres{2,1}(k,1:2:end));
+                        outres{2,1}(k,1:2:end));
                 end
                 fprintf(f, '\n\nBootstrap standard deviation:\n');
                 fprintf(f, ['Gaussian\tA\tmu\tFWHM\trelative ' ...
                     'occurence\n']);
                 for k = 1:K
                     fprintf(f, '%i\t%d\t%d\t%d\t%d\n', k, ...
-                        pres{2,1}(k,2:2:end));
+                        outres{2,1}(k,2:2:end));
                 end
                 fprintf(f, '\n\nBootstrap samples:\n');
                 fprintf(f, ['sample' repmat(['\tA_%i\tmu_%i\tFWHM_%i\t' ...
                     'relocc_%i'],[1 K]) '\n'], ...
                     reshape(repmat(1:K,[4,1]),[1,4*K]));
                 fprintf(f, ['%i' repmat('\t%d', [1 K*4]) '\n'], ...
-                    [(1:size(pres{2,2},1))' pres{2,2}]');
+                    [(1:size(outres{2,2},1))' outres{2,2}]');
                 
                 expfig = 1;
-                
-                if isInt
-                    if perSec
-                        pres{2,2}(:,[2 3]) = pres{2,2}(:,[2 3])*expT;
-                    end
-                    if perPix
-                        pres{2,2}(:,[2 3]) = pres{2,2}(:,[2 3])*expT;
-                    end
-                end
                 
             else
                 fprintf(f, '\n\nFit parameters:\n');
                 fprintf(f, ['Gaussian\tA\tmu\tFWHM\trelative ' ...
                     'occurence\n']);
                 for k = 1:K
-                    fprintf(f, '%i\t%d\t%d\t%d\t%d\n', ...
-                        k,pres{2,1}(k,1:2:end));
+                    fprintf(f, '%i\t%d\t%d\t%d\t%d\n',k,...
+                        outres{2,1}(k,1:2:end));
                 end
             end
             fclose(f);
-            
-            if isInt
-                if perSec
-                    pres{2,1}(:,3:6) = pres{2,1}(:,3:6)*expT;
-                end
-                if perPix
-                    pres{2,1}(:,3:6) = pres{2,1}(:,3:6)*nPix;
-                end
-            end
             
             % update action
             str_action = cat(2,str_action,'Gaussian fitting results ',...
