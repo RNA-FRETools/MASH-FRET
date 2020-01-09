@@ -62,6 +62,9 @@ To build the histogram:
 1. Select the data to work with in the 
    [Data list](panels/panel-histogram-and-plot.html#data-list)  
      
+1. Select the subgroup of molecules to work with in the 
+   [Molecule subgroup list](panels/panel-histogram-and-plot.html#molecule-subgroup-list)  
+     
 1. Set parameters:  
      
    [Histogram bounds](panels/panel-histogram-and-plot.html#histogram-bounds)  
@@ -176,9 +179,6 @@ Additionally, histograms, analysis results and analysis parameters can be export
 To save project modifications:
 
 {: .procedure }
-1. Select the data to export in the 
-   [Data list](panels/panel-histogram-and-plot.html#data-list)  
-     
 1. Save modifications to the 
    [.mash file](../output-files/mash-mash-project.html) by pressing 
    ![Save](../assets/images/gui/HA-but-save.png "Save") and overwriting existing file.  
@@ -186,6 +186,12 @@ To save project modifications:
 To export data to files:
 
 {: .procedure }
+1. Select the data to export in the 
+   [Data list](panels/panel-histogram-and-plot.html#data-list)  
+     
+1. Select the molecule subgroup to export in the 
+   [Molecule subgroup list](panels/panel-histogram-and-plot.html#molecule-subgroup-list)  
+     
 1. Press
    ![Export...](../../assets/images/gui/HA-but-export3p.png "Export...") and browse the desired destination; files will be automatically created in the destination folder.
 
