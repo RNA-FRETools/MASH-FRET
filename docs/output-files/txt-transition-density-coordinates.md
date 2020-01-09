@@ -41,6 +41,7 @@ Data types supported in transition density coordinates files are:
 * `FRET[D]to[A]`: FRET from donor emitter detected in channel indexed `[D]` to acceptor emitter detected in channel indexed `[A]`
 * `S[Eee]`: stoichiometry of emitter detected in channel labelled `[Eee]`
 
+The extension `_[Ttt]` is added to the data type `[Ddd]` if a particular subgroup of molecules is analyzed, with `[Ttt]` the corresponding molecule tag.
 
 ---
 
