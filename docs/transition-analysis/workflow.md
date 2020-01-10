@@ -82,6 +82,9 @@ The bin size has a substantial influence on the cluster shapes: large bins will 
 TDP boundaries are important as they define the range of data considered for analysis.
 Large data ranges can include outliers that would bias the state analysis and narrow ranges can exclude relevant contribution for state transition rate analysis.
 
+When setting bounds to the TDP, the states laying out-of-TDP-ranges are ignored from the building process. 
+To later work with state trajectories and dwell times consistent with what is seen in the TDP, state trajectories can be re-arranged by suppressing these outliers and linking the neighbouring states together.
+
 TDP limits and bin size have to be carefully chosen in order to make transition clusters visible and sufficiently separated.
 
 <a href="../assets/images/figures/TA-workflow-scheme-bin-size.png" title="Effect of bin size on TDP"><img src="../assets/images/figures/TA-workflow-scheme-bin-size.png" alt="Effect of bin size on TDP"></a>
@@ -103,10 +106,14 @@ To build the TDP:
 1. Select a data type in the 
    [Data list](panels/panel-transition-density-plot.html#data-list)
      
+1. Select a data type in the 
+   [Molecule subgroup list](panels/panel-transition-density-plot.html#molecule-subgroup-list)
+     
 1. Set parameters:
      
    [Bounds and bin size](panels/panel-transition-density-plot.html#bounds-and-bin-size)  
    [Transition count](panels/panel-transition-density-plot.html#transition-count)  
+   [Re-arrange sequences](panels/panel-transition-density-plot.html#re-arrange-sequences)  
    [Gaussian filter](panels/panel-transition-density-plot.html#gaussian-filter)  
      
 1. Update the TDP and display by pressing 
@@ -244,9 +251,6 @@ Additionally, TDP, dwell time histograms, analysis results and analysis paramete
 To save project modifications:
 
 {: .procedure }
-1. Select the data to export in the 
-   [Data list](panels/panel-transition-density-plot.html#data-list)  
-     
 1. Save modifications to the 
    [.mash file](../output-files/mash-mash-project.html) by pressing 
    ![Save](../assets/images/gui/TA-but-save.png "Save") and overwriting existing file.  
@@ -254,6 +258,12 @@ To save project modifications:
 To export data to files:
 
 {: .procedure }
+1. Select the data to export in the 
+   [Data list](panels/panel-transition-density-plot.html#data-list)  
+     
+1. Select the molecule subgroup to export in the 
+   [Molecule subgroup list](panels/panel-transition-density-plot.html#molecule-subgroup-list)  
+     
 1. Open export options by pressing 
    ![Export](../../assets/images/gui/TA-but-export.png "Export") and set the options as desired; please refer to 
    [Set export options](functionalities/set-export-options.html) for help.

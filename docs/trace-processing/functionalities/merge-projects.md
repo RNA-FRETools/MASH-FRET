@@ -13,8 +13,9 @@ nav_order: 8
 
 In some cases, it is interesting to merge traces of different projects to build a common data set, *e. g.* with the same experimental conditions.
 
-For the moment, the merging process is performed on ASCII traces and independently of MASH-FRET.
-In the future, the merging functionality will be directly available in MASH-FRET.
+For the moment, the merging process is performed on ASCII traces.
+In the future, the functionality will be available for projects listed in the 
+[Project list](../panels/area-project-management.html).
 
 To merge several projects into one, follow the procedure described below.
 
@@ -63,7 +64,7 @@ To export traces to ASCII files:
 
 If single molecule data are recorded upon alternated laser excitation (ALEX), exported files need to be restructured to a MASH-importable format.
 
-File reformatting is performed by using the function `restruct_trace_file` in MATLAB's command window.
+File reformatting is performed by using the tool `Restructure files` accessed from MASH-FRET's menu bar.
 After completion, the set of restructured ASCII files are available in a new sub-folder appended with the actual date: `\restructured DD-Mmm-YYYY`
 
 Reformatting can be done in two ways:
@@ -77,9 +78,7 @@ To restructure ALEX trace files:
 {: .procedure }
 1. Group all ASCII trace files to merge together into one directory
      
-1. If not already done, add MASH-FRET to MATLAB's search path by going to `HOME → Set Path → Add with Subfolders`
-     
-1. In MATLAB's command window, type in `restruct_trace_file` and select the group directory; a window pops up:  
+1. In MASH-FRET's menu bar, go to `Tools` > `Restructure files` and select the group directory; a window pops up:  
      
    <img src="../../assets/images/gui/TP-merge-project-warn1.png" style="max-width:555px;">  
      

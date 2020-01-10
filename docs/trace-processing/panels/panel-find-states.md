@@ -77,9 +77,15 @@ The vbFRET
 
 The method iteratively infers state trajectories and determines the optimum state configuration by maximizing the evidence.
 
-If the noise distribution in the time trace deviates from a Gaussian distribution, recurrent low-amplitude transition to blurr states might occurs. 
-This artefact can be corrected by using the post processing method 
+When state transitions occur within a time bin, the averaged value can be detected as a transient artefactual state, or "blurr state".
+This can be corrected by using the post processing method 
+[Remove blurr states](#remove-blurr-states).
+
+Moreover, if the noise distribution in the time trace deviates from a Gaussian distribution, recurrent low-amplitude transition to artefactual states might occurs. 
+This can be corrected by using the post processing method 
 [State binning](#state-binning).
+
+
 
 
 ### One state
@@ -167,25 +173,31 @@ Select the time trace in menu **(a)** prior setting parameters in **(b-h)** as d
 
 Use this interface to define state trajectory processing methods.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-findstates-postparam.png"><img src="../../assets/images/gui/TP-panel-findstates-postparam.png" style="max-width: 158px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-findstates-postparam.png"><img src="../../assets/images/gui/TP-panel-findstates-postparam.png" style="max-width: 184px;"/></a>
 
 Post-processing methods are algorithms that applies to state trajectories inferred by 
 the [Discretization method](#discretization-method). 
 
 Four post-processing methods are available and can be cumulated following the post-processing order:
 
-* [State binning](#state-binning)
-* [State refinement](#state-refinement)
-* [Adjust states to data](#adjust-states-to-data)
 * [Find shared transitions](#find-shared-transitions)
+* [State refinement](#state-refinement)
+* [State binning](#state-binning)
+* [Remove blurr states](#remove-blurr-states)
+* [Adjust states to data](#adjust-states-to-data)
 
 
-### State binning
+### Find shared transitions
 {: .no_toc }
 
-The state binning method bins segments in the state trajectories with a bin size set in **(c)**.
+Finding shared transitions is used after each `top` discretization, in order to obtain FRET- and stoichiometry- state trajectories from intensity state trajectories; see 
+[Data to discretize](#data-to-discretize) for more details.
 
-This method is useful in case artefactual small amplitude jumps, *e .g* to blur states, are occurring in state trajectories.
+For FRET transitions, the algorithm looks for transitions detected in donor and acceptor state trajectories that occurs less than a certain number of frame away.
+
+For stoichiometry transitions, intensity state trajectories are first summed over all channels and (1) over the emitter's specific excitation, and (2) over all laser illumination, prior looking for shared transitions.
+
+The maximum frame gap between donor and acceptor transitions or emitter's sum and overall sum transitions, is set in **(a)** for FRET or stoichiometry data respectively.
 
 
 ### State refinement
@@ -200,6 +212,25 @@ The number of refinement iterations in set in **(b)**.
 This method is useful to correct state trajectories from noise-induced transitions.
 
 
+### State binning
+{: .no_toc }
+
+The state binning method bins segments in the state trajectories with a bin size set in **(c)**.
+
+This method is useful in case artefactual small amplitude jumps are occurring in state trajectories.
+
+
+### Remove blurr states
+{: .no_toc }
+
+The "Remove blurr states" method consists in ignoring the states that dwell one data point in the state trajectories.
+The method is activated by setting **(d)** to 1, or to 0 otherwise.
+
+When a one-data-point state is removed, the previous state is elongated of one frame forwards (or the next state is elongated one frame backwards if the first state of the sequence is ignored). 
+
+This method is useful in case artefactual transient states, *e .g* to blur states, are occurring in state trajectories.
+
+
 ### Adjust states to data
 {: .no_toc }
 
@@ -208,19 +239,6 @@ Adjusting states to data consists in recalculating states without modifying stat
 States are recalculated as the average data behind each segment of the state trajectory.
 
 This method is useful to obtain more representative states when using predefined levels, *e. g.* with the Threshold method.
-
-
-### Find shared transitions
-{: .no_toc }
-
-Finding shared transitions is used after each `top` discretization, in order to obtain FRET- and stoichiometry- state trajectories from intensity state trajectories; see 
-[Data to discretize](#data-to-discretize) for more details.
-
-For FRET transitions, the algorithm looks for transitions detected in donor and acceptor state trajectories that occurs less than a certain number of frame away.
-
-For stoichiometry transitions, intensity state trajectories are first summed over all channels and (1) over the emitter's specific excitation, and (2) over all laser illumination, prior looking for shared transitions.
-
-The maximum frame gap between donor and acceptor transitions or emitter's sum and overall sum transitions, is set in **(a)** for FRET or stoichiometry data respectively.
 
 
 ---

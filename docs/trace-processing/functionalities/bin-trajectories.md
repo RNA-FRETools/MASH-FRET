@@ -13,7 +13,9 @@ nav_order: 9
 
 Binning trajectories in time can be used to merge projects with different recording rates or to artificially change experimental conditions.
 
-The binning process is performed on ASCII trace files using MATLAB's command window.
+The binning process is performed on ASCII trace files.
+In the future, the functionality will be available for projects listed in the 
+[Project list](../panels/area-project-management.html).
 
 To bin trajectories, follow the procedure described below.
 
@@ -56,26 +58,27 @@ To export traces to ASCII files:
 
 ## Bin traces and export ASCII files
 
-Trace binning is performed by using the function `binTrajfiles` in MATLAB's command window.
+Trace binning is performed by using the tool `Bin time axis` accessed from MASH-FRET's menu bar.
 After completion, the set of binned ASCII files are available in a new sub-folder appended with the actual date: `\binned DD-Mmm-YYYY`
 
 To bin data, the script must be informed about the new time bin in seconds. 
 The new time bin must be greater than the original one.
 
-File columns can be selectively exported to new binned files; for more information, type `help binTrajfiles` in MATLAB's command window.
+To export certain file columns and not others, use the function `binTrajfiles` in MATLAB's command window; for more information, type `help binTrajfiles` in MATLAB's command window.
 
 To bin trace files:
 
 {: .procedure }
 1. Group into one directory the ASCII trace files to bin 
      
-1. If not already done, add MASH-FRET to MATLAB's search path by going to `HOME → Set Path → Add with Subfolders`
+1. In MASH-FRET's menu bar, go to `Tools` > `Bin time axis` and select the group directory; a window pops up:  
      
-1. In MATLAB's command window, type in  
+   <img src="../../assets/images/gui/TP-bin-traj-input.png" style="max-width:235px;">  
      
-   `binTrajfiles(bin_time)`  
+1. Enter the new bin time in seconds (ex: 0.2) and validate by pressing 
+   ![OK](../../assets/images/gui/TP-but-ok.png)
      
-   by replacing `bin_time` with the new bin time (ex: 0.2) and select the group directory to start trace binning and export.
+1. Select the group directory to start trace binning and export.
 
 
 ---

@@ -48,6 +48,7 @@ Data types supported in state population files are:
 * `FRET[D]to[A]`: FRET from donor emitter detected in channel indexed `[D]` to acceptor emitter detected in channel indexed `[A]`
 * `S[Eee]`: stoichiometry of emitter detected in channel labelled `[Eee]`
 
+The data type is appended with a first extension `_[Ttt]` if a particular subgroup of molecules was analyzed, with `[Ttt]` the corresponding molecule tag.
 A second extension `_discr` is added when state populations determined from state trajectories are written in the file.
 
 
