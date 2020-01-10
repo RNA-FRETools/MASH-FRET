@@ -403,7 +403,7 @@ for i = 1:nMol
         end
 
         I = intensities(incl,(nChan*(i-1)+1):nChan*i,:);
-        gamma = p.proj{proj}.curr{i}{5}{3};
+        gamma = p.proj{proj}.curr{i}{6}{1};
         fret = calcFRET(nChan, nExc, exc, chanExc, FRET, I, gamma);
         for n = 1:nFRET
             ind = ind + 1;

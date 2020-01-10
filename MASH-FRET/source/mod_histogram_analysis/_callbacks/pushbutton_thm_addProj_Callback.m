@@ -113,16 +113,17 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
 
                 gamma = [];
                 for i_m = 1:nMol
-                    if size(p.proj{i}.prmTT{i_m},2)<5
-                        p.proj{i}.prmTT{i_m} = cell(1,5);
+                    if size(p.proj{i}.prmTT{i_m},2)==5 && ...
+                            size(p.proj{i}.prmTT{i_m}{5},2)==5
+                        gamma_m = p.proj{i}.prmTT{i_m}{5}{3};
+                    elseif size(p.proj{i}.prmTT{i_m},2)==6 && ...
+                            size(p.proj{i}.prmTT{i_m}{6},2)>=1 && ...
+                            size(p.proj{i}.prmTT{i_m}{6}{1})==nFRET
+                        gamma_m = p.proj{i}.prmTT{i_m}{6}{1};
+                    else
+                        gamma_m = ones(1,nFRET);
                     end
-                    if size(p.proj{i}.prmTT{i_m}{5},2)<3
-                        p.proj{i}.prmTT{i_m}{5} = cell(1,3);
-                    end
-                    if size(p.proj{i}.prmTT{i_m}{5}{3}) ~= nFRET
-                        p.proj{i}.prmTT{i_m}{5}{3} = ones(1,nFRET);
-                    end
-                    gamma = [gamma; repmat(p.proj{i}.prmTT{i_m}{5}{3},N,1)];
+                    gamma = [gamma; repmat(gamma_m,N,1)];
                 end
                 allFRET = calcFRET(nChan, nExc, allExc, chanExc, FRET, ...
                     I_re, gamma);

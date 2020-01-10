@@ -1,4 +1,5 @@
 function edit_gammaCorr_Callback(obj, evd, h_fig)
+
 h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
@@ -8,7 +9,7 @@ if ~isempty(p.proj)
             strcmp(clr, 'blue') || strcmp(clr, 'green') || ...
             strcmp(clr, 'gray') || strcmp(clr, 'danny')
         setBgClr(h_fig, clr);
-        ud_cross(h_fig);
+        ud_factors(h_fig)
         return;
     end
     
@@ -23,10 +24,10 @@ if ~isempty(p.proj)
                 h_fig, 'error');
         else
             set(obj, 'BackgroundColor', [1 1 1]);
-            p.proj{proj}.curr{mol}{5}{3}(chan) = val;
+            p.proj{proj}.curr{mol}{6}{1}(chan) = val;
             h.param.ttPr = p;
             guidata(h_fig, h);
-            ud_cross(h_fig);
+            ud_factors(h_fig)
         end
     end
 end

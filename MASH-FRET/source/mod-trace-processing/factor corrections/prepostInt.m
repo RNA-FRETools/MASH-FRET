@@ -24,7 +24,7 @@ if (stop+tol)<L && (stop-tol)>1
         gamma = (I_pre(2)-I_post(2))/(I_post(1)-I_pre(1));
         ok = 1;
     else
-        if I_pre(1)~=I_post(1)
+        if I_pre(1)==I_post(1)
             disp(cat(2,'donor intensities before and after photobleaching',...
                 ' cutoff are identical'));
         else

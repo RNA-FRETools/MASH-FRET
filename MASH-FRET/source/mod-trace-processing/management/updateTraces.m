@@ -1,5 +1,8 @@
 function p = updateTraces(h_fig, opt1, mol, p, axes)
 
+% Last update: by MH, 10.1.2020
+% >> search factor correction in 6th parameter cell
+
 proj = p.curr_proj;
 FRET = p.proj{proj}.FRET;
 nFRET = size(FRET,1);
@@ -25,7 +28,7 @@ if ~isempty(p.proj)
     end
     
     nC = p.proj{proj}.nb_channel;
-    gammaPb = p.proj{proj}.prm{mol}{5}{4}(1);
+    gammaPb = p.proj{proj}.prm{mol}{6}{2}(1);
 
     isBgCorr = ~isempty(p.proj{proj}.intensities_bgCorr) && ...
         sum(~prod(prod(double(~isnan(p.proj{proj}.intensities_bgCorr(:, ...

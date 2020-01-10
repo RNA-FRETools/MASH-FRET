@@ -8,15 +8,14 @@ function p = gammaCorr(h_fig, mol, p)
 % >> correct the control of presence of discretized intensities according
 %    to FS suggestions
 %
-
-% last update: 23.5.2019 by MH
+% update: 23.5.2019 by MH
 % >> reset discretized FRET traces when gamma factors was changed manually
 %
 % created: by MH, 27.3.2019
 
 proj = p.curr_proj;
-prm = p.proj{proj}.prm{mol}{5};
-pbGamma = prm{4}(1);
+prm = p.proj{proj}.prm{mol}{6};
+pbGamma = prm{2}(1);
 nFRET = size(p.proj{proj}.FRET,1);
 
 if pbGamma
@@ -53,11 +52,11 @@ if pbGamma
         % collect donor and acceptor intensity traces
         acc = FRET(i,2); % the acceptor channel
         don = FRET(i,1);
-        I_A = I_den(:,acc,exc==chanExc(don));
+        I_AA = I_den(:,acc,exc==chanExc(acc));
         
         % calculate and save cutoff on acceptor trace
-        stop = calcCutoffGamma(prm{5}(i,2:5),I_A,nExc);
-        p.proj{proj}.prm{mol}{5}{5}(i,6) = stop*nExc;
+        stop = calcCutoffGamma(prm{3}(i,2:5),I_AA,nExc);
+        p.proj{proj}.prm{mol}{6}{3}(i,6) = stop*nExc;
         
         I_DTA_A = I_DTA(:,acc,exc==chanExc(don));
         I_DTA_D = I_DTA(:,don,exc==chanExc(don));
@@ -67,14 +66,14 @@ if pbGamma
         
         % set method to "manual" if gamma calculation did not converge
         if ~ok
-            p.proj{proj}.prm{mol}{5}{4}(1) = 0;
+            p.proj{proj}.prm{mol}{6}{2}(1) = 0;
             setContPan(cat(2,'photobleaching-based gamma factor could not be ',...
                 'calculated: method is set to "manual" and gamma factor ',...
                 'to previous value'),'warning',h_fig);
             
-        elseif round(gamma,2) ~= p.proj{proj}.prm{mol}{5}{3}(i) % gamma changed
+        elseif round(gamma,2) ~= p.proj{proj}.prm{mol}{6}{1}(i) % gamma changed
             % save gamma
-            p.proj{proj}.prm{mol}{5}{3}(i) = round(gamma,2);
+            p.proj{proj}.prm{mol}{6}{1}(i) = round(gamma,2);
         
             % reset discretized FRET data
             p.proj{proj}.FRET_DTA(:,(mol-1)*nFRET+i) = NaN;

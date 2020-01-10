@@ -70,7 +70,8 @@ perSec = s.fix{2}(4); % intensity units per second
 perPix = s.fix{2}(5); % intensity units per pixel
 inSec = s.fix{2}(7); % x-axis in second
 prm_bg = s.prm{m}{3};
-prm_corr = s.prm{m}{5};
+prm_cross = s.prm{m}{5};
+prm_fact = s.prm{m}{6};
 prm_den = s.prm{m}{1};
 prm_bleach = s.prm{m}{2};
 prm_dta = s.prm{m}{4};
@@ -263,7 +264,7 @@ for l = 1:nExc
     end
 end
 
-%% factor corrections
+%% cross-talks
 str_fact = '';
 if nChan>1
     for c = 1:nChan
@@ -273,7 +274,7 @@ if nChan>1
         for c_i = 1:nChan
             if c_i ~= c
                 n = n+1;
-                str_fact = cat(2,str_fact,'Bt=',num2str(prm_corr{1}(c,n)),...
+                str_fact = cat(2,str_fact,'Bt=',num2str(prm_cross{1}(c,n)),...
                     ' in ',labels{c_i});
                 if n<nChan-1
                     str_fact = cat(2,str_fact,', ');
@@ -304,7 +305,7 @@ if nExc>1
         for l = 1:nExc
             if l ~= l_0
                 n = n+1;
-                str_fact = cat(2,str_fact,'DE=',num2str(prm_corr{2}(n,c)),...
+                str_fact = cat(2,str_fact,'DE=',num2str(prm_cross{2}(n,c)),...
                     ' at ',num2str(exc(l)),'nm');
                 if n<nExc-1
                     str_fact = cat(2,str_fact,', ');
@@ -317,11 +318,14 @@ if nExc>1
 else
     str_fact = cat(2,str_fact,'\tno direct excitation possible\n');
 end
+
+
+%% factor corrections
 if nFRET>0
     for i = 1:nFRET
         str_fact = cat(2,str_fact,'\tgamma factor for correction of FRET_',...
             labels{FRET(i,1)},'>',labels{FRET(i,2)},': ',...
-            num2str(prm_corr{3}(i)),'\n');
+            num2str(prm_fact{2}(i)),'\n');
     end
 else
     str_fact = cat(2,str_fact,'\tno gamma correction possible\n');

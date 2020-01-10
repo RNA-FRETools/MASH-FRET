@@ -10,7 +10,7 @@ p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
-    method = p.proj{proj}.curr{mol}{5}{4}(1);
+    method = p.proj{proj}.curr{mol}{6}{2}(1);
     
     % modified by MH, 3.4.2019
 %     gammaOpt(h_fig);
