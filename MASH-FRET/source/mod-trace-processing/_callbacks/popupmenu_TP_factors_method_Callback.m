@@ -18,15 +18,11 @@ if ~isempty(p.proj)
             'set "apply to" to "top" or "all"')},...
             'Photobleaching-based gamma');
         
-    elseif method==1 % manual
-        val = 0;
-        
-    else % photobleaching-based calculation
-        val = 1;
+    else
+        val = method-1;
     end
     
-    p.proj{proj}.curr{mol}{6}{2}(1) = val; % pb based gamma corr checkbox
-    p.proj{proj}.curr{mol}{6}{3}(1) = val; % show cutoff checkbox
+    p.proj{proj}.curr{mol}{6}{2}(1) = val; % method
     
     h.param.ttPr = p;
     guidata(h_fig, h);

@@ -246,7 +246,7 @@ mol{6}{2}(2) = 1;  % current acceptor
 
 % modified by MH, 10.1.2020: store parameters in 6th cell
 % gamma correction via photobleaching, added by FS, 9.1.2018
-% nFRET x 4 matrix; columns are 'pbGamma checkbox', 'threshold', 
+% nFRET x 7 matrix; columns are 'pbGamma checkbox', 'threshold', 
 % 'extra substract', 'min. cutoff frame', 'start frame', 'stop frame'
 % and 'prepostdiff' (i.e is there a difference in the intensity of the donor before and after the cutoff)
 % mol{5}{5} = [zeros(nFRET,1), 1000*ones(nFRET,1) ...
@@ -255,7 +255,7 @@ mol{6}{3} = [zeros(nFRET,1),1000*ones(nFRET,1),zeros(nFRET,1),...
     100*ones(nFRET,1),ones(nFRET,1),nFrames*ones(nFRET,1),zeros(nFRET,1)];
 
 % added by MH, 10.1.2020: ES regression
-mol{6}{4} = [1,0,1,50,1,5,50]; % subgroup,E limits & bin size, 1/S limits & intervals
+mol{6}{4} = repmat([1,0,1,50,1,5,50],nFRET,1); % subgroup,E limits & bin size, 1/S limits & intervals
 
 def.mol = adjustVal(def.mol, mol);
 

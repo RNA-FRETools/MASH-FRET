@@ -20,5 +20,8 @@ if ~isempty(p.proj)
             
         case 1 % photobleaching-based: photo-bleaching otpions
             gammaOpt(h_fig);
+        
+        case 2 % photobleaching-based: photo-bleaching otpions
+            ESlinRegOpt(h_fig);
     end
 end
