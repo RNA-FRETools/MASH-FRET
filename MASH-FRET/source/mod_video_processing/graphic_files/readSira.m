@@ -1,4 +1,4 @@
-function [data,ok] = readSira(fullFname, n, fDat, h_fig)
+function [data,ok] = readSira(fullFname, n, fDat, h_fig, useMov)
 % Read data from bits in a *.sira file. Returns useful movie parameters and
 % image data of all movie frames.
 %
@@ -15,6 +15,10 @@ if ~isempty(h_fig)
             isMov = 2; % the movie variable exist and contain the video data
         end
     end
+end
+
+if ~useMov
+    isMov = 0;
 end
 
 % initializes potentially undefined video data

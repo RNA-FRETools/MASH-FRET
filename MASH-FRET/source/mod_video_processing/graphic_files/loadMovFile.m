@@ -45,7 +45,7 @@ if ~isempty(fname) && sum(fname)
     guidata(h_fig,h);
     
     % get video data
-    [data,ok] = getFrames([pname fname], n, [], h_fig);
+    [data,ok] = getFrames([pname fname], n, [], h_fig, true);
     if ~ok
         return;
     end

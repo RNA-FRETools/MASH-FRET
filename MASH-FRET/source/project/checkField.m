@@ -143,7 +143,7 @@ elseif ~isempty(s.movie_file)
             s = [];
             return;
         end
-        [data ok] = getFrames([pname fname], 1, {}, h_fig);
+        [data,ok] = getFrames([pname fname], 1, {}, h_fig, false);
         if ok
             s.movie_file = [pname fname];
             s.is_movie = 1;
@@ -167,7 +167,7 @@ end
 
 % set movie dimensions if movie exists >> set movie reading infos
 if (isempty(s.movie_dim) || size(s.movie_dim, 2) ~= 2) && s.is_movie
-    [data ok] = getFrames(s.movie_file, 1, {}, h_fig);
+    [data,ok] = getFrames(s.movie_file, 1, {}, h_fig, false);
     if ~ok
         return;
     end
@@ -177,7 +177,7 @@ end
 
 % set movie reading infos if movie exists
 if (isempty(s.movie_dat) || size(s.movie_dat, 2) ~= 3) && s.is_movie
-    [data ok] = getFrames(s.movie_file, 1, {}, h_fig);
+    [data,ok] = getFrames(s.movie_file, 1, {}, h_fig, false);
     if ~ok
         return;
     end
