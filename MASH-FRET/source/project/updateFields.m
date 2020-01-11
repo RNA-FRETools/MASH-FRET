@@ -587,6 +587,7 @@ if strcmp(opt, 'ttPr') || strcmp(opt, 'subImg') || strcmp(opt, 'all')
         ud_ttBg(h_fig);
         ud_DTA(h_fig);
         ud_cross(h_fig);
+        ud_factors(h_fig)
         ud_plot(h_fig);
         
         h = guidata(h_fig);

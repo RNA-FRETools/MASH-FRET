@@ -45,17 +45,23 @@ elseif ~(~isempty(prm_prev{4}) && ...
         p.proj{proj}.S_DTA(:,((m-1)*nS+1):m*nS) = NaN;
     end
 
-% added by FS, 8.1.2018 (check if anything changed in the gamma correction panel, => opt = 'gamma' for updateTraces    
-elseif ~isequal(prm_curr{5}(3:5), prm_prev{5}(3:5))
+% modified by MH, 10.1.2020: factor correction in 6th cell
+% % modified by MH, 27.3.2019 (data are reset in gammaCorr.m called in updateTraces.m)
+% % % added by FS, 8.1.2018 (check if anything changed in the gamma correction panel, => opt = 'gamma' for updateTraces    
+% % elseif ~isequal(prm_curr{5}(3:5), prm_prev{5}(3:5))
+% %     opt = 'gamma';
+% %     p.proj{proj}.intensities_DTA(:,((m-1)*nC+1):m*nC,:) = NaN;
+% %     p.proj{proj}.FRET_DTA(:,((m-1)*nF+1):m*nF) = NaN;
+% elseif ~isequal(prm_curr{5}(3:5), prm_prev{5}(3:5))
+%     opt = 'gamma';
+elseif ~isequal(prm_curr{6}, prm_prev{6})
     opt = 'gamma';
-    % edit by MH, 27.3.2019 (data are reset in gammaCorr.m called in
-    % updateTraces.m)
-%     p.proj{proj}.intensities_DTA(:,((m-1)*nC+1):m*nC,:) = NaN;
-%     p.proj{proj}.FRET_DTA(:,((m-1)*nF+1):m*nF) = NaN;
 else
     opt = 'plot';
 end
 
-p.proj{proj}.prm{m}(1:5) = prm_curr(1:5);
+% modified by MH, 10.1.2020: add 6th cell
+% p.proj{proj}.prm{m}(1:5) = prm_curr(1:5);
+p.proj{proj}.prm{m}(1:6) = prm_curr(1:6);
 
 

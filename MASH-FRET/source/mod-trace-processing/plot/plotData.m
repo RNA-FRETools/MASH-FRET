@@ -89,10 +89,13 @@ if ~isempty(prm)
     cutIt = prm{2}{1}(1);
     method = prm{2}{1}(2);
     cutOff = prm{2}{1}(4+method);
-    if nFRET > 0
-        acc = prm{5}{4}(2);                % added by FS, 12.1.18
-        pbGammaIt = prm{5}{5}(acc,1);      % added by FS, 12.1.18
-        pbGammaOff = prm{5}{5}(acc,6);     % added by FS, 12.1.18
+    pbGamma = prm{6}{2}(1);
+    if nFRET>0 && pbGamma
+        acc = prm{6}{2}(2);                % added by FS, 12.1.18
+        pbGammaIt = prm{6}{3}(acc,1);      % added by FS, 12.1.18
+        pbGammaOff = prm{6}{3}(acc,6);     % added by FS, 12.1.18
+    else
+        pbGammaIt = false;
     end
 else
     cutIt = 0;
@@ -102,7 +105,7 @@ end
 x_axis = x_lim(1):x_lim(2);
 if x_inSec
     cutOff = cutOff*rate;
-    if nFRET > 0
+    if nFRET>0 && pbGamma
         pbGammaOff = pbGammaOff*rate;      % added by FS, 12.1.18
     end
     x_axis = x_axis*rate;
@@ -207,7 +210,7 @@ if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
     
     if nFRET > 0
         trs = p.proj{proj}.FRET;
-        gamma = p.proj{proj}.prm{mol}{5}{3};
+        gamma = p.proj{proj}.prm{mol}{6}{1};
         f_tr = calcFRET(nChan, nExc, allExc, chanExc, trs, I, gamma);
     end
 
@@ -334,20 +337,18 @@ if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
     
     % added by FS, 12.1.18
     % draws the cutoff for the pb based gamma correction
-    if nFRET > 0
-        if pbGammaIt
-            if isfield(axes,'axes_traceTop')
-                set(axes.axes_traceTop, 'NextPlot', 'add');
-                plot(axes.axes_traceTop, [pbGammaOff pbGammaOff], ...
-                    get(axes.axes_traceTop, 'YLim'), '-r');
-                set(axes.axes_traceTop, 'NextPlot', 'replace');
-            end
-            if isfield(axes,'axes_traceBottom')
-                set(axes.axes_traceBottom, 'NextPlot', 'add');
-                plot(axes.axes_traceBottom, [pbGammaOff pbGammaOff], ...
-                    get(axes.axes_traceBottom, 'YLim'), '-r');
-                set(axes.axes_traceBottom, 'NextPlot', 'replace');
-            end
+    if nFRET>0 && pbGammaIt
+        if isfield(axes,'axes_traceTop')
+            set(axes.axes_traceTop, 'NextPlot', 'add');
+            plot(axes.axes_traceTop, [pbGammaOff pbGammaOff], ...
+                get(axes.axes_traceTop, 'YLim'), '-r');
+            set(axes.axes_traceTop, 'NextPlot', 'replace');
+        end
+        if isfield(axes,'axes_traceBottom')
+            set(axes.axes_traceBottom, 'NextPlot', 'add');
+            plot(axes.axes_traceBottom, [pbGammaOff pbGammaOff], ...
+                get(axes.axes_traceBottom, 'YLim'), '-r');
+            set(axes.axes_traceBottom, 'NextPlot', 'replace');
         end
     end
     

@@ -61,7 +61,17 @@ elseif tpe <= 2*nChan*nExc + nFRET % FRET
     i_f = tpe - 2*nChan*nExc;
     gamma = [];
     for i_m = 1:nMol
-        gamma = [gamma; repmat(p.proj{proj}.prmTT{i_m}{5}{3},L,1)];
+        if size(p.proj{proj}.prmTT{i_m},2)==5 && ...
+                size(p.proj{proj}.prmTT{i_m}{5},2)==5
+            gamma_m = p.proj{proj}.prmTT{i_m}{5}{3};
+        elseif size(p.proj{proj}.prmTT{i_m},2)==6 && ...
+                size(p.proj{proj}.prmTT{i_m}{6},2)>=1 && ...
+                size(p.proj{proj}.prmTT{i_m}{6}{1})==nFRET
+            gamma_m = p.proj{proj}.prmTT{i_m}{6}{1};
+        else
+            gamma_m = ones(1,nFRET);
+        end
+        gamma = [gamma; repmat(gamma_m,L,1)];
     end
     allFRET = calcFRET(nChan, nExc, allExc, chanExc, FRET, I_re, gamma);
     trace = allFRET(:,i_f);

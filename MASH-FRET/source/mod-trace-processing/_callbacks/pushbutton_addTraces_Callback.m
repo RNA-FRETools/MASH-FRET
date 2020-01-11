@@ -1,6 +1,10 @@
 function pushbutton_addTraces_Callback(obj, evd, h_fig)
 
-%% Last update: 3.4.2019 by MH
+% Last update: 10.1.2020 by MH
+% >> manage down compatibility by moving factor correction in 6th cell and 
+%  adding default parameters for ES regression
+%
+% update: 3.4.2019 by MH
 % >> adapt gamma factor import for more than one FRET calculation
 % >> correct MH's past modifications: gamma factors must be saved in prm
 %    and in curr parameters to be taken into account
@@ -26,7 +30,6 @@ function pushbutton_addTraces_Callback(obj, evd, h_fig)
 % --> if ASCII file and not MASH project is loaded: load gamma factor file
 %     if it exists; assign gamma value only if number of values in .gam 
 %     file equals the number of loaded restructured ASCII files
-%%
 
 % collect files to import
 h = guidata(h_fig);
@@ -229,6 +232,16 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
                 p.proj{i}.prm{n}{5}{2} = newDePrm;
             end
             
+            % added by MH, 10.1.2020: move factor correction in 6th cell
+            % and add default parameters for ES regression
+            if size(p.proj{i}.prm{n},2)==5 && ...
+                    size(p.proj{i}.prm{n}{5},2)==5
+                factPrm ={p.proj{i}.prm{n}{5}(3:end),...
+                    p.proj{i}.def.mol{6}{4}};
+                p.proj{i}.prm{n} = cat(2,p.proj{i}.prm{n},factPrm);
+                p.proj{i}.prm{n}{5} = p.proj{i}.prm{n}{5}(1:2);
+            end
+            
             % state sequences were previously calculated
             if size(p.proj{i}.prm{n},2)>=4 && ...
                     size(p.proj{i}.prm{n}{4},2)>=2
@@ -271,11 +284,14 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
                     % (FRET is calculated on the spot based on imported and corrected
                     % intensities)
                     
-                    % modified by MH, 3.4.2019
-%                     p.proj{i}.curr{n}{5}{3} = gammas(n);
-%                     p.proj{i}.prm{n}{5}{3} = gammas(n);
-                    p.proj{i}.curr{n}{5}{3} = gammas(n,:);
-                    p.proj{i}.prm{n}{5}{3} = gammas(n,:);
+                    % modified by MH, 10.1.2020: move factor correction in 6th cell
+%                     % modified by MH, 3.4.2019
+% %                     p.proj{i}.curr{n}{5}{3} = gammas(n);
+% %                     p.proj{i}.prm{n}{5}{3} = gammas(n);
+%                     p.proj{i}.curr{n}{5}{3} = gammas(n,:);
+%                     p.proj{i}.prm{n}{5}{3} = gammas(n,:);
+                    p.proj{i}.curr{n}{6}{1} = gammas(n,:);
+                    p.proj{i}.prm{n}{6}{1} = gammas(n,:);
 
 
                 end

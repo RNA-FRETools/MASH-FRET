@@ -352,7 +352,7 @@ try
                     if saveTr_fret
                         % calculate FRET
                         if fromTT
-                            gamma = p.proj{proj}.prm{m}{5}{3};
+                            gamma = p.proj{proj}.prm{m}{6}{1};
                         else
                             gamma = 1;
                         end
@@ -479,7 +479,7 @@ try
                 if saveGam
                     for i = 1:nFRET
                         if fromTT
-                            gammaAll(m,i) = p.proj{proj}.prm{m}{5}{3}(i);
+                            gammaAll(m,i) = p.proj{proj}.prm{m}{6}{1}(i);
                         else
                             gammaAll(m,i) = 1;
                         end
@@ -568,7 +568,7 @@ try
                     
                     % calculate FRET data
                     if fromTT
-                        gamma = p.proj{proj}.prm{m}{5}{3};
+                        gamma = p.proj{proj}.prm{m}{6}{1};
                     else
                         gamma = 1;
                     end

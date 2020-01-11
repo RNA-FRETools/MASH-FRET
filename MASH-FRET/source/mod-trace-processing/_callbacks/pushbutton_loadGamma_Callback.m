@@ -59,7 +59,7 @@ szG = min([nFRET,nG]);
 
 % set the gamma factors from the .gam file
 for n = 1:nMol
-    p.proj{proj}.curr{n}{5}{3}(1:szG) = gammas(n,1:szG);
+    p.proj{proj}.curr{n}{6}{1}(1:szG) = gammas(n,1:szG);
 end
 
 % update the parameters

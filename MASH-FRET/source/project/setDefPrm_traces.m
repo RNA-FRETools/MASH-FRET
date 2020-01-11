@@ -5,7 +5,11 @@ function def = setDefPrm_traces(p, proj)
 % "def" >> 1-by-n cell array containing molecule parameters for each of ...
 %          the n panels
 
-% Last update: by MH 3.4.2019
+% Last update: by MH, 10.1.2020
+% >> separate parameters for factor corrections from cross-talks: store 
+%  parameters for factor corrections in 6th cell
+%
+% update: by MH 3.4.2019
 % >> correct default value for bottom axes plot
 % >> change default state finding algorithm to STaSI
 %
@@ -206,7 +210,7 @@ for j = 1:nExc
 end
 mol{4}{3} = nan(nFRET+nS+nExc*nChan,6);  % States values
              
-% Cross talk and filter corrections
+% Cross talks
 % modified by MH 29.3.2019
 % bleedthrough
 mol{5}{1} = zeros(nChan,nChan-1);
@@ -222,28 +226,52 @@ mol{5}{2} = zeros(nExc-1,nChan);
 % end
 
 % gamma
-mol{5}{3} = [];
+% modified by MH, 10.1.2020
+% mol{5}{3} = [];
+% for i = 1:nFRET
+%     mol{5}{3} = [mol{5}{3} 1];
+% end
+mol{6}{1} = [];
 for i = 1:nFRET
-    mol{5}{3} = [mol{5}{3} 1];
+    mol{6}{1} = [mol{6}{1} 1];
 end
 
+% modified by MH, 10.1.2020: store parameters in 6th cell
 % gamma correction via photobleaching, added by FS, 9.1.2018; 
-% last updated on 10.1.3018
-mol{5}{4}(1) = 0;  % photobleaching based gamma correction checkbox
-mol{5}{4}(2) = 1;  % current acceptor
+% last updated on 10.1.2018
+% mol{5}{4}(1) = 0;  % photobleaching based gamma correction checkbox
+% mol{5}{4}(2) = 1;  % current acceptor
+mol{6}{2}(1) = 0;  % photobleaching based gamma correction checkbox
+mol{6}{2}(2) = 1;  % current acceptor
 
+% modified by MH, 10.1.2020: store parameters in 6th cell
 % gamma correction via photobleaching, added by FS, 9.1.2018
-% nFRET x 4 matrix; columns are 'pbGamma checkbox', 'threshold', 
+% nFRET x 7 matrix; columns are 'pbGamma checkbox', 'threshold', 
 % 'extra substract', 'min. cutoff frame', 'start frame', 'stop frame'
 % and 'prepostdiff' (i.e is there a difference in the intensity of the donor before and after the cutoff)
-mol{5}{5} = [zeros(nFRET,1), 1000*ones(nFRET,1) ...
-    zeros(nFRET,1), 100*ones(nFRET,1), ones(nFRET,1), nFrames*ones(nFRET,1), zeros(nFRET,1)];
+% mol{5}{5} = [zeros(nFRET,1), 1000*ones(nFRET,1) ...
+%     zeros(nFRET,1), 100*ones(nFRET,1), ones(nFRET,1), nFrames*ones(nFRET,1), zeros(nFRET,1)];
+mol{6}{3} = [zeros(nFRET,1),1000*ones(nFRET,1),zeros(nFRET,1),...
+    100*ones(nFRET,1),ones(nFRET,1),nFrames*ones(nFRET,1),zeros(nFRET,1)];
+
+% added by MH, 10.1.2020: ES regression
+mol{6}{4} = repmat([1,0,1,50,1,5,50],nFRET,1); % subgroup,E limits & bin size, 1/S limits & intervals
 
 def.mol = adjustVal(def.mol, mol);
 
-if size(mol{5},2)>=3
+% modified by MH, 10.1.2020: store parameters in 6th cell
+% if size(mol{5},2)>=3
+%     % set null gamma factors to 1
+%     def.mol{5}{3}(def.mol{5}{3}==0) = 1;
+%     % adjust channel for photobleaching cutoff calculation
+%     if def.mol{2}{1}(3) > nFRET+nS*(1 + 2*double(nFRET>1|nS>1)) + ...
+%             nExc*nChan*(1 + 2*double(nChan>1|nExc>1))
+%         def.mol{2}{1}(3) = 1;
+%     end
+% end
+if size(mol,2)>=6
     % set null gamma factors to 1
-    def.mol{5}{3}(def.mol{5}{3}==0) = 1;
+    def.mol{6}{1}(def.mol{6}{1}==0) = 1;
     % adjust channel for photobleaching cutoff calculation
     if def.mol{2}{1}(3) > nFRET+nS*(1 + 2*double(nFRET>1|nS>1)) + ...
             nExc*nChan*(1 + 2*double(nChan>1|nExc>1))
