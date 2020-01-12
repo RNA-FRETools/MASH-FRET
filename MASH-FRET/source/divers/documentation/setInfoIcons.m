@@ -225,7 +225,7 @@ function hBut = mkbutton(cdat,link,obj,varargin)
 w_but = 22;
 h_but = 20;
 mg = 5;
-mgShift = 5;
+mgShift = 0;
 
 posObj = getPixPos(obj);
 
@@ -239,12 +239,12 @@ if strcmp(get(obj,'type'),'uipanel')
     [wtitle,o] = getUItextWidth(txt,fntUn,fntSz,fntWght,tbl);
 
     extra_x = wtitle + mgShift;
-    extra_y = - 2*mg - h_but/2;
+    extra_y = - h_but;
     
     data{3} = [0,1];
     
     x = posObj(1) + extra_x;
-    y = posObj(2) + posObj(4);
+    y = posObj(2) + posObj(4) + extra_y;
     
 else
     posShift = varargin{1};

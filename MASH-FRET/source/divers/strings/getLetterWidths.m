@@ -136,7 +136,7 @@ try
                 end
             end
             
-            w = (L-w0_first-w0_last)/C; % character + space width
+            w = ceil((L-w0_first-w0_last)/C); % character + space width
             if w<minw
                 w = minw;
             end

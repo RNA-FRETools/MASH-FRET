@@ -29,7 +29,7 @@ w_bold = getLetterWidths(letters,fntun,fntsz,'bold');
 % add new characters to reference table
 tbl{1} = cat(2,tbl{1},letters);
 tbl{3}{1} = cat(3,tbl{3}{1},w_normal{3});
-tbl{3}{2} = cat(3,tbl{3}{1},w_bold{3});
+tbl{3}{2} = cat(3,tbl{3}{2},w_bold{3});
 
 % save appended table to reference file
 disp('save modifications to file...');
