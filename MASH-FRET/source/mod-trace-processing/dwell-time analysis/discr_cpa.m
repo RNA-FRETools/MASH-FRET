@@ -43,7 +43,7 @@ discr = zeros(size(trace));
 
 %% Analysis
 
-disp('Determination of significant change points ...');
+disp('CPA: Determination of significant change points ...');
 
 % determination of significant CP
 for n = 1:size(trace,2)
