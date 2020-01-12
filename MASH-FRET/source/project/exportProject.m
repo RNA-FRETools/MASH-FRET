@@ -54,6 +54,12 @@ for i = 1:nExc
     I(:,:,i) = traces(i:nExc:L_min*nExc,:);
 end
 
+if nFRET>0
+    defES = cell(1,nFRET);
+else
+    defES = {};
+end
+
 if ~isempty(I)
     s.date_creation = datestr(now);
     s.date_last_modif = s.date_creation;
@@ -94,6 +100,7 @@ if ~isempty(I)
     s.intensities_bgCorr = nan(size(I));
     s.intensities_crossCorr = nan(size(I));
     s.intensities_denoise = nan(size(I));
+    s.ES = defES;
     s.intensities_DTA = nan(size(I));
     s.FRET_DTA = nan(size(I,1), nCoord*nFRET);
     s.S_DTA = nan(size(I,1), nCoord*nS);

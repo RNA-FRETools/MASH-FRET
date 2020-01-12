@@ -51,7 +51,7 @@ gen{1}(1) = 1; % excitation
 gen{1}(2) = 0; % nothing (ex-subimage window size)
 gen{1}(3) = 0; % brightness
 gen{1}(4) = 0; % contrast
-gen{1}(5) = 0; % mothing (ex-refocus)
+gen{1}(5) = 0; % nothing (ex-refocus)
 
 % Trace calculation and plot
 if nExc > 1 % excitation to plot
@@ -241,8 +241,8 @@ end
 % last updated on 10.1.2018
 % mol{5}{4}(1) = 0;  % photobleaching based gamma correction checkbox
 % mol{5}{4}(2) = 1;  % current acceptor
-mol{6}{2}(1) = 0;  % photobleaching based gamma correction checkbox
-mol{6}{2}(2) = 1;  % current acceptor
+mol{6}{2}(1) = 0;  % method (0: manual, 1: photobleaching, 2: linear regression)
+mol{6}{2}(2) = 1;  % FRET pair index in photobleaching opt. window
 
 % modified by MH, 10.1.2020: store parameters in 6th cell
 % gamma correction via photobleaching, added by FS, 9.1.2018
@@ -255,7 +255,8 @@ mol{6}{3} = [zeros(nFRET,1),1000*ones(nFRET,1),zeros(nFRET,1),...
     100*ones(nFRET,1),ones(nFRET,1),nFrames*ones(nFRET,1),zeros(nFRET,1)];
 
 % added by MH, 10.1.2020: ES regression
-mol{6}{4} = repmat([1,0,1,50,1,5,50],nFRET,1); % subgroup,E limits & bin size, 1/S limits & intervals
+% [nFRET-by-7] subgroup,E limits, E intervals, 1/S limits, 1/S intervals
+mol{6}{4} = repmat([1,0,1,50,1,5,50],nFRET,1);
 
 def.mol = adjustVal(def.mol, mol);
 

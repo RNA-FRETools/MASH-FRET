@@ -10,13 +10,10 @@ if isempty(p.proj)
 end
 
 proj = p.curr_proj;
-FRET = p.proj{proj}.FRET;
-nExc = p.proj{proj}.nb_excitations;
 nChan = p.proj{proj}.nb_channel;
-chanExc = p.proj{proj}.chanExc;
-exc = p.proj{proj}.excitations;
-mol = p.curr_mol(proj);
-p_panel = p.proj{proj}.curr{mol}{6};
+nExc = p.proj{proj}.nb_excitations;
+m = p.curr_mol(proj);
+p_panel = p.proj{proj}.curr{m}{6};
 
 % cutoff parameter
 acc = p_panel{2}(2);
@@ -24,22 +21,16 @@ start = p_panel{3}(acc,5);
 prm = p_panel{3}(acc,2:5);
 
 % collect molecule traces
-I_den = p.proj{proj}.intensities_denoise(:,((mol-1)*nChan+1):mol*nChan,:);
-I_DTA = p.proj{proj}.intensities_DTA(:,((mol-1)*nChan+1):mol*nChan,:);
+incl = p.proj{proj}.bool_intensities(:,m);
+I_den = p.proj{proj}.intensities_denoise(incl,((m-1)*nChan+1):m*nChan,:);
+prm_dta = p.proj{proj}.curr{m}{4};
 
-A = FRET(acc,2); % the acceptor channel
-D = FRET(acc,1);
-I_AA = I_den(:,A,exc==chanExc(A));
-I_DTA_A = I_DTA(:,A,exc==chanExc(D));
-I_DTA_D = I_DTA(:,D,exc==chanExc(D));
+[I_dta,cutOff,gamma,ok] = gammaCorr_pb(acc,I_den,prm,prm_dta,p.proj{proj},...
+    h_fig);
+cutOff = cutOff*nExc;
 
-% calculate cutoff
-cutOff = calcCutoffGamma(prm, I_AA, nExc);
-p.proj{proj}.curr{mol}{6}{3}(acc,6) = cutOff*nExc;
-
-% calculate gamma
-[gamma,p.proj{proj}.curr{mol}{6}{3}(acc,7)] = prepostInt(cutOff,I_DTA_D,...
-    I_DTA_A);
+p.proj{proj}.curr{m}{6}{3}(acc,7) = ok;
+p.proj{proj}.curr{m}{6}{3}(acc,6) = cutOff;
 
 % save curr parameters
 h.param.ttPr = p;
@@ -57,7 +48,7 @@ rate = p.proj{proj}.frame_rate;
 
 if inSec
     start = start*rate;
-    cutOff = cutOff*nExc*rate;
+    cutOff = cutOff*rate;
     prm(2:3) = prm(2:3)*rate;
 end
 if perSec

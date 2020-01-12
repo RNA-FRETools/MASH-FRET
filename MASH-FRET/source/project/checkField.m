@@ -1,6 +1,9 @@
 function s = checkField(s_in, fname, h_fig)
 
-% Last update by MH, 7.1.2020
+% Last update by MH, 11.1.2020
+% >> add "ES" field
+%
+% update by MH, 7.1.2020
 % >> correct frame rate for dwell-time calculations when using ALEX data
 %
 % update by MH, 25.4.2019
@@ -89,6 +92,12 @@ s.intensities_crossCorr = adjustParam('intensities_crossCorr', ...
     nan(L,nMol*nChan), s_in);
 s.intensities_denoise = adjustParam('intensities_denoise', ...
     nan(L,nMol*nChan), s_in);
+if nFRET>0
+    defES = cell(1,nFRET);
+else
+    defES = {};
+end
+s.ES = adjustParam('ES',defES, s_in);
 s.intensities_DTA = adjustParam('intensities_DTA',nan(L,nMol*nChan), s_in);
 s.FRET_DTA = adjustParam('FRET_DTA', nan(L,nMol*nFRET), s_in);
 s.S_DTA = adjustParam('S_DTA', nan(L,nMol*nS), s_in);

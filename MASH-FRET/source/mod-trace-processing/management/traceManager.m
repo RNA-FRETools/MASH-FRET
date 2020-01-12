@@ -89,10 +89,8 @@ function ok = loadDataFromMASH(h_fig)
 ok = true;
 
 h = guidata(h_fig);
-m = h.param.ttPr;
-proj = m.curr_proj;
+p = h.param.ttPr;
 nMol = numel(h.tm.molValid);
-nChan = m.proj{proj}.nb_channel;
 
 % loading bar parameters-----------------------------------------------
 err = loading_bar('init',h_fig ,nMol,'Collecting data from MASH ...');
@@ -106,45 +104,21 @@ guidata(h_fig, h); % update: set current guidata
 % ---------------------------------------------------------------------
 
 for i = 1:nMol
-    dtaCurr = m.proj{proj}.curr{i}{4};
-    if ~isempty(m.proj{proj}.prm{i})
-        dtaPrm = m.proj{proj}.prm{i}{4};
-    else
-        dtaPrm = [];
-    end
 
-    [m,opt] = resetMol(i, m);
+    [p,opt] = resetMol(i, p);
 
-    m = plotSubImg(i, m, []);
+    % get dark coordinates
+    p = plotSubImg(i, p, []);
 
-    isBgCorr = ~isempty(m.proj{proj}.intensities_bgCorr) && ...
-        sum(~prod(prod(double(~isnan(m.proj{proj}.intensities_bgCorr(:, ...
-        ((i-1)*nChan+1):i*nChan,:))),3),2),1)~= ...
-        size(m.proj{proj}.intensities_bgCorr,1);
-
-    if ~isBgCorr
-        opt = 'ttBg';
+    % correct intensities
+    p = updateIntensities(opt,i,p);
+    
+    % get gamma factors
+    if strcmp(opt2, 'gamma') || strcmp(opt2, 'debleach') || ...
+        strcmp(opt2, 'denoise') || strcmp(opt2, 'corr') || ...
+        strcmp(opt2, 'ttBg') || strcmp(opt2, 'ttPr')
+            p = updateGammaFactor(h_fig,i,p);
     end
-
-    if strcmp(opt, 'ttBg') || strcmp(opt, 'ttPr')
-        m = bgCorr(i, m);
-    end
-    if strcmp(opt, 'corr') || strcmp(opt, 'ttBg') || ...
-            strcmp(opt, 'ttPr')
-        m = crossCorr(i, m);
-    end
-    if strcmp(opt, 'denoise') || strcmp(opt, 'corr') || ...
-            strcmp(opt, 'ttBg') || strcmp(opt, 'ttPr')
-        m = denoiseTraces(i, m);
-    end
-    if strcmp(opt, 'debleach') || strcmp(opt, 'denoise') || ...
-            strcmp(opt, 'corr') || strcmp(opt, 'ttBg') || ...
-            strcmp(opt, 'ttPr')
-        m = calcCutoff(i, m);
-    end
-    m.proj{proj}.curr{i} = m.proj{proj}.prm{i};
-    m.proj{proj}.prm{i}{4} = dtaPrm;
-    m.proj{proj}.curr{i}{4} = dtaCurr;
 
     % loading bar update-----------------------------------
     err = loading_bar('update', h_fig);
@@ -157,7 +131,7 @@ for i = 1:nMol
 end
 loading_bar('close', h_fig);
 
-h.param.ttPr = m;
+h.param.ttPr = p;
 guidata(h_fig,h);
     
 end

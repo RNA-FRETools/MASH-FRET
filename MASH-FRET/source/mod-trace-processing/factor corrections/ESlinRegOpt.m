@@ -6,10 +6,14 @@ if isempty(p.proj)
     return
 end
 
-open_ESlinRegOpt(h_fig);
+h_fig2 = build_ESlinRegOpt(h_fig);
+
+setDefPrm_ESlinRegOpt(h_fig,h_fig2);
+
+ud_ESlinRegOpt(h_fig,h_fig2);
 
 
-function open_ESlinRegOpt(h_fig)
+function h_fig2 = build_ESlinRegOpt(h_fig)
 
 % default
 mg = 10;
@@ -81,15 +85,15 @@ waxes0 = hfig-mg-mg;
 haxes0 = hfig-mg-mg;
 wfig = mg+wpan0+mg+waxes0+mg;
 
-h.ESopt = [];
-q = h.ESopt;
+q = struct();
 
 x = posfig(1)+(posfig(3)-wfig)/2;
 y = posfig(2)+(posfig(4)-hfig)/2;
 
-g.figure_ESlinRegOpt = figure('units',posun,'numbertitle','off','menubar',...
-    'none','position',[x,y,wfig,hfig],'visible','on','name',ttl0);
-h_fig2 = g.figure_ESlinRegOpt;
+h.figure_ESlinRegOpt = figure('units',posun,'numbertitle','off','menubar',...
+    'none','position',[x,y,wfig,hfig],'visible','on','name',ttl0,...
+    'closerequestfcn',{@figure_ESlinRegOpt_CloseRequestFcn,h_fig});
+h_fig2 = h.figure_ESlinRegOpt;
 
 x = mg;
 y = hfig-mg-hpop0+(hpop0-htxt0)/2;
@@ -252,15 +256,15 @@ y = mg;
 q.pushbutton_save = uicontrol('style','pushbutton','parent',h_pan,'units',...
     posun,'fontunits',fntun,'fontsize',fntsz,'position',[x,y,wcb0,hbut0],...
     'string',str14,'tooltipstring',ttstr12,'callback',...
-    {@pushbutton_save_ESopt_Callback,h_fig});
+    {@pushbutton_save_ESopt_Callback,h_fig,h_fig2});
 
 x = mg+wpan0+mg;
 y = mg;
 
-g.axes_ES = axes('parent',h_fig2,'units',posun,'fontunits',fntun,...
+q.axes_ES = axes('parent',h_fig2,'units',posun,'fontunits',fntun,...
     'fontsize',fntsz,'activepositionproperty','outerposition','xlim',limx0,...
     'ylim',limy0);
-h_axes = g.axes_ES;
+h_axes = q.axes_ES;
 xlabel(h_axes,xlbl0);
 ylabel(h_axes,ylbl0);
 tiaxes = get(h_axes,'tightinset');
@@ -272,16 +276,31 @@ set(h_axes,'position',posaxes);
 setProp(h_fig2,'units','normalized');
 
 % save gui
-h.ESopt = q;
 guidata(h_fig,h);
+guidata(h_fig2,q);
 
-ud_ESlinRegOpt(h_fig)
 
-
-function ud_ESlinRegOpt(h_fig)
+function setDefPrm_ESlinRegOpt(h_fig,h_fig2)
 
 h = guidata(h_fig);
-g = h.ESopt;
+q = guidata(h_fig2);
+
+p = h.param.ttPr;
+proj = p.curr_proj;
+nFRET = size(p.proj{proj}.FRET,1);
+
+q.prm = cell(1,2);
+q.prm{1} = ones(1,nFRET);
+q.prm{2} = repmat([],nFRET,1);
+q.prm{3} = false; 
+guidata(h_fig2,q);
+
+
+function ud_ESlinRegOpt(h_fig,h_fig2)
+
+h = guidata(h_fig);
+q = guidata(h_fig2);
+
 p = h.param.ttPr;
 proj = p.curr_proj;
 mol = p.curr_mol(proj);
@@ -299,18 +318,18 @@ if prm(1)>nTag
     prm(1) = 1;
 end
 
-set(g.popupmenu_data,'string',str_dat);
-set(g.popupmenu_tag,'string',str_tag,'value',prm(1));
+set(q.popupmenu_data,'string',str_dat);
+set(q.popupmenu_tag,'string',str_tag,'value',prm(1));
 
-set([g.edit_Emin,g.edit_Ebin,g.edit_Emax,g.edit_Smin,g.edit_Sbin,...
-    g.edit_Smax],'backgroundcolor',[1,1,1]);
+set([q.edit_Emin,q.edit_Ebin,q.edit_Emax,q.edit_Smin,q.edit_Sbin,...
+    q.edit_Smax],'backgroundcolor',[1,1,1]);
 
-set(g.edit_Emin,'string',num2str(prm(2)));
-set(g.edit_Emax,'string',num2str(prm(3)));
-set(g.edit_Ebin,'string',num2str(prm(4)));
-set(g.edit_Smin,'string',num2str(prm(5)));
-set(g.edit_Smax,'string',num2str(prm(6)));
-set(g.edit_Sbin,'string',num2str(prm(7)));
+set(q.edit_Emin,'string',num2str(prm(2)));
+set(q.edit_Emax,'string',num2str(prm(3)));
+set(q.edit_Ebin,'string',num2str(prm(4)));
+set(q.edit_Smin,'string',num2str(prm(5)));
+set(q.edit_Smax,'string',num2str(prm(6)));
+set(q.edit_Sbin,'string',num2str(prm(7)));
 
 % save potentially adjusted subgroup
 p.proj{proj}.curr{mol}{6}{4} = prm;
@@ -324,6 +343,15 @@ plot_ESlinRegOpt(h_fig)
 function plot_ESlinRegOpt(h_fig)
 
 
+function pushbutton_linreg_ESopt_Callback(obj,evd,h_fig)
+
+
+function popupmenu_tag_ESopt_Callback(obj,evd,h_fig)
+
+
+function popupmenu_data_ESopt_Callback(obj,evd,h_fig)
+
+
 function edit_Emax_ESopt_Callback(obj,evd,h_fig)
 
 h = guidata(h_fig);
@@ -333,7 +361,7 @@ mol = p.curr_mol(proj);
 
 val = str2double(get(obj,'string'));
 valmin = p.proj{proj}.curr{mol}{6}{4}(2);
-if numel(val)~=1 || val<=valmin
+if ~(numel(val)==1 && ~isnan(val) && val>valmin)
     set(obj,'backgroundcolor',[1,0.5,0.5]);
     setContPan(cat(2,'E-axis upper limit must be > ',num2str(valmin)),...
         'error',h_fig);
@@ -350,7 +378,7 @@ ud_ESlinRegOpt(h_fig)
 function edit_Ebin_ESopt_Callback(obj,evd,h_fig)
 
 val = str2double(get(obj,'string'));
-if numel(val)~=1 || val<=0
+if ~(numel(val)==1 && ~isnan(val) && val>0)
     set(obj,'backgroundcolor',[1,0.5,0.5]);
     setContPan('Number of E intervals must be > 0 ','error',h_fig);
     return
@@ -374,7 +402,7 @@ mol = p.curr_mol(proj);
 
 val = str2double(get(obj,'string'));
 valmax = p.proj{proj}.curr{mol}{6}{4}(3);
-if numel(val)~=1 || val>=valmax
+if ~(numel(val)==1 && ~isnan(val) && val<valmax)
     set(obj,'backgroundcolor',[1,0.5,0.5]);
     setContPan(cat(2,'E-axis lower limit must be < ',num2str(valmax)),...
         'error',h_fig);
@@ -397,7 +425,7 @@ mol = p.curr_mol(proj);
 
 val = str2double(get(obj,'string'));
 valmin = p.proj{proj}.curr{mol}{6}{4}(5);
-if numel(val)~=1 || val<=valmin
+if ~(numel(val)==1 && ~isnan(val) && val>valmin)
     set(obj,'backgroundcolor',[1,0.5,0.5]);
     setContPan(cat(2,'(1/S)-axis upper limit must be > ',num2str(valmin)),...
         'error',h_fig);
@@ -414,7 +442,7 @@ ud_ESlinRegOpt(h_fig)
 function edit_Sbin_ESopt_Callback(obj,evd,h_fig)
 
 val = str2double(get(obj,'string'));
-if numel(val)~=1 || val<=0
+if ~(numel(val)==1 && ~isnan(val) && val>0)
     set(obj,'backgroundcolor',[1,0.5,0.5]);
     setContPan('Number of 1/S intervals must be > 0 ','error',h_fig);
     return
@@ -438,7 +466,7 @@ mol = p.curr_mol(proj);
 
 val = str2double(get(obj,'string'));
 valmax = p.proj{proj}.curr{mol}{6}{4}(6);
-if numel(val)~=1 || val>=valmax
+if ~(numel(val)==1 && ~isnan(val) && val<valmax)
     set(obj,'backgroundcolor',[1,0.5,0.5]);
     setContPan(cat(2,'E-axis lower limit must be < ',num2str(valmax)),...
         'error',h_fig);
@@ -452,19 +480,41 @@ guidata(h_fig,h);
 ud_ESlinRegOpt(h_fig)
 
 
-function pushbutton_save_ESopt_Callback(obj,evd,h_fig)
+function pushbutton_save_ESopt_Callback(obj,evd,h_fig,h_fig2)
+
+h = guidata(h_fig);
+q = guidata(h_fig2);
+
+p = h.param.ttPr;
+proj = p.curr_proj;
+mol = p.curr_mol(proj);
+
+p.proj{proj}.prm{mol}{6}{1} = q.prm{1}; % gamma factors
+p.proj{proj}.prm{mol}{6}{4} = q.prm{2}; % method parameters
+
+% save results
+h.param.ttPr = p;
+guidata(h_fig);
+
+close(h_fig2);
+
 
 function checkbox_show_ESopt_Callback(obj,evd,h_fig)
 
+
 function edit_beta_ESopt_Callback(obj,evd,h_fig)
+
 
 function edit_gamma_ESopt_Callback(obj,evd,h_fig)
 
-function pushbutton_linreg_ESopt_Callback(obj,evd,h_fig)
 
-function popupmenu_tag_ESopt_Callback(obj,evd,h_fig)
+function figure_ESlinRegOpt_CloseRequestFcn(obj,evd,h_fig)
 
-function popupmenu_data_ESopt_Callback(obj,evd,h_fig)
+h = guidata(h_fig);
+h = rmfield(h,'figure_ESlinRegOpt');
+guidata(h_fig,h);
+
+delete(obj);
 
 
 

@@ -1,4 +1,4 @@
-function p = gammaCorr(h_fig, mol, p)
+function p = gammaCorr(h_fig, m, p)
 
 % Last update: by MH, 8.4.2019
 % >> correct the control of presence for multidimensional discretized 
@@ -14,73 +14,70 @@ function p = gammaCorr(h_fig, mol, p)
 % created: by MH, 27.3.2019
 
 proj = p.curr_proj;
-prm = p.proj{proj}.prm{mol}{6};
-pbGamma = prm{2}(1);
 nFRET = size(p.proj{proj}.FRET,1);
+if nFRET<1
+    return
+end
 
-if pbGamma
-    
-    FRET = p.proj{proj}.FRET;
-    nExc = p.proj{proj}.nb_excitations;
-    nChan = p.proj{proj}.nb_channel;
-    chanExc = p.proj{proj}.chanExc;
-    exc = p.proj{proj}.excitations;
+prm = p.proj{proj}.prm{m}{6};
+method = prm{2}(1);
+
+if method==1 % photobleaching-based
     
     % collect molecule traces
-    I_den = p.proj{proj}.intensities_denoise(:, ...
-        ((mol-1)*nChan+1):mol*nChan,:);
-    I_DTA = p.proj{proj}.intensities_DTA(:, ...
-        ((mol-1)*nChan+1):mol*nChan,:);
-    
-    % set method to "manual" if no intensity discretization is found
-    
-    % modified by MH, 2.4.2019
-    % corrected by MH, 8.4.2019
-%     if sum(isnan(I_DTA))
-    if all(all(isnan(I_DTA)))
-        
-        setContPan(cat(2,'intensity-time traces must be discretized to ',...
-            'apply photobleaching-based gamma factor calculation: method ',...
-            'is set to "manual" and gamma factor to previous value.'),...
-            'warning',h_fig);
-        p.proj{proj}.prm{mol}{5}{4}(1) = 0;
-        return;
-    end
+    nC = p.proj{proj}.nb_channel;
+    nExc = p.proj{proj}.nb_excitations;
+    incl = p.proj{proj}.bool_intensities(:,m);
+    I_den = p.proj{proj}.intensities_denoise(incl,((m-1)*nC+1):m*nC,:);
+    I_dta = p.proj{proj}.intensities_DTA(incl,((m-1)*nC+1):m*nC,:);
+    prm_dta = p.proj{proj}.curr{m}{4};
     
     for i = 1:nFRET
         
-        % collect donor and acceptor intensity traces
-        acc = FRET(i,2); % the acceptor channel
-        don = FRET(i,1);
-        I_AA = I_den(:,acc,exc==chanExc(acc));
-        
-        % calculate and save cutoff on acceptor trace
-        stop = calcCutoffGamma(prm{3}(i,2:5),I_AA,nExc);
-        p.proj{proj}.prm{mol}{6}{3}(i,6) = stop*nExc;
-        
-        I_DTA_A = I_DTA(:,acc,exc==chanExc(don));
-        I_DTA_D = I_DTA(:,don,exc==chanExc(don));
-        
-        % calculate gamma
-        [gamma,ok] = prepostInt(stop, I_DTA_D, I_DTA_A);
-        
+        % check validity of previously calculated gamma (valid if donor and 
+        % acceptor state sequences are preserved)
+        don = p.proj{proj}.FRET(i,1);
+        acc = p.proj{proj}.FRET(i,2);
+        ldon = find(p.proj{proj}.excitations==p.proj{proj}.chanExc(don),1);
+        if ~all(isnan(I_dta(:,[don,acc],ldon)))
+            continue
+        end
+
+        [I_dta(:,[don,acc],ldon),stop,gamma,ok] = gammaCorr_pb(i,I_den,...
+            prm{3}(i,2:5),prm_dta,p.proj{proj},h_fig);
+
+        p.proj{proj}.prm{m}{6}{3}(i,6) = stop*nExc;
+
         % set method to "manual" if gamma calculation did not converge
         if ~ok
-            p.proj{proj}.prm{mol}{6}{2}(1) = 0;
-            setContPan(cat(2,'photobleaching-based gamma factor could not be ',...
-                'calculated: method is set to "manual" and gamma factor ',...
-                'to previous value'),'warning',h_fig);
-            
-        elseif round(gamma,2) ~= p.proj{proj}.prm{mol}{6}{1}(i) % gamma changed
+            p.proj{proj}.prm{m}{6}{2}(1) = 0;
+            setContPan(cat(2,'photobleaching-based gamma factor could not',...
+                ' be calculated: method is set to "manual" and gamma ',...
+                'factor to previous value'),'warning',h_fig);
+
+        elseif round(gamma,2) ~= p.proj{proj}.prm{m}{6}{1}(i) % gamma changed
             % save gamma
-            p.proj{proj}.prm{mol}{6}{1}(i) = round(gamma,2);
-        
+            p.proj{proj}.prm{m}{6}{1}(i) = round(gamma,2);
+
             % reset discretized FRET data
-            p.proj{proj}.FRET_DTA(:,(mol-1)*nFRET+i) = NaN;
+            p.proj{proj}.FRET_DTA(:,(m-1)*nFRET+i) = NaN;
+            
+            % store D-A state sequences
+            p.proj{proj}.intensities_DTA(incl,((m-1)*nC+1):m*nC,:) = I_dta;
         end
-        
     end
-else
-    % reset discretized FRET data
-    p.proj{proj}.FRET_DTA(:,(mol-1)*nFRET+1:mol*nFRET) = NaN;
+    
+elseif method==2 % ES linear regression
+
+    p.proj{proj}.prm{m}{6}{2}(1) = 0;
+    setContPan(cat(2,'gamma calculation mehtod "ES linear regression" is ',...
+        'under construction: method is set to "manual" and gamma factor ',...
+        'to previous value'),'warning',h_fig);
+
+% cancelled by MH: FRET state sequences are already reset when panel
+% parameter gamma changes; this prevents the automatic re-discretization
+% although gamma does not change
+% else % manual
+%     % reset discretized FRET data
+%     p.proj{proj}.FRET_DTA(:,(m-1)*nFRET+1:m*nFRET) = NaN;
 end
