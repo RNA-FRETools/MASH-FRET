@@ -224,13 +224,6 @@ h.uipanel_TP_crossTalks = uipanel('parent',h_pan,'units',p.posun,...
     [x,y,wpan1,hpan4],'title',ttl4);
 h = buildPanelTPcrossTalks(h,p);
 
-y = y-p.mg/2-hpan5;
-
-h.uipanel_TP_factorCorrections = uipanel('parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan1,hpan5],'title',ttl5);
-h = buildPanelTPfactorCorrections(h,p);
-
 y = y-p.mg/2-hpan6;
 
 h.uipanel_TP_denoising = uipanel('parent',h_pan,'units',p.posun,...
@@ -238,12 +231,19 @@ h.uipanel_TP_denoising = uipanel('parent',h_pan,'units',p.posun,...
     [x,y,wpan1,hpan6],'title',ttl6);
 h = buildPanelTPdenoising(h,p);
 
-y = p.mg;
+y = y-p.mg/2-hpan7;
 
 h.uipanel_TP_photobleaching = uipanel('parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
     [x,y,wpan1,hpan7],'title',ttl7);
 h = buildPanelTPphotobleaching(h,p);
+
+y = p.mg;
+
+h.uipanel_TP_factorCorrections = uipanel('parent',h_pan,'units',p.posun,...
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
+    [x,y,wpan1,hpan5],'title',ttl5);
+h = buildPanelTPfactorCorrections(h,p);
 
 x = posaxes(1);
 w = pospan(3)-p.mg-wpan1-x-p.mg;
