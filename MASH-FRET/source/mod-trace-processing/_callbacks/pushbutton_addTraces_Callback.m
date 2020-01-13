@@ -236,9 +236,9 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
             % and add default parameters for ES regression
             if size(p.proj{i}.prm{n},2)==5 && ...
                     size(p.proj{i}.prm{n}{5},2)==5
-                factPrm ={p.proj{i}.prm{n}{5}(3:end),...
-                    p.proj{i}.def.mol{6}{4}};
-                p.proj{i}.prm{n} = cat(2,p.proj{i}.prm{n},factPrm);
+                factPrm =[p.proj{i}.prm{n}{5}(3:end),...
+                    p.proj{i}.def.mol{6}{4}];
+                p.proj{i}.prm{n} = cat(2,p.proj{i}.prm{n},{factPrm});
                 p.proj{i}.prm{n}{5} = p.proj{i}.prm{n}{5}(1:2);
             end
             

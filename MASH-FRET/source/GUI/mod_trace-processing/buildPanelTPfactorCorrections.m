@@ -37,7 +37,7 @@ str4 = {'Manual','From acceptor photobleaching','Linear regression'};
 str5 = 'Load';
 str6 = 'all';
 ttstr0 = wrapStrToWidth('Select a <b>FRET pair</b> to configure the gamma correction for.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('Select an <b>estimation method:</b> estimation of gamma factors via acceptor photobleaching requires the acceptor intensity-time trace to be discretized.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr1 = wrapStrToWidth('Select an <b>estimation method:</b> photobleaching-based estimation of gamma factors requires acceptor to photobleach.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr2 = wrapStrToWidth('<b>Gamma factor</b> for the selected FRET pair.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr3 = wrapStrToWidth('Apply current factor corrections settings to all molecules.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 

@@ -256,7 +256,7 @@ mol{6}{3} = [zeros(nFRET,1),1000*ones(nFRET,1),zeros(nFRET,1),...
 
 % added by MH, 10.1.2020: ES regression
 % [nFRET-by-7] subgroup,E limits, E intervals, 1/S limits, 1/S intervals
-mol{6}{4} = repmat([1,0,1,50,1,5,50],nFRET,1);
+mol{6}{4} = repmat([1,-0.2,1.2,50,1,3,50],nFRET,1);
 
 def.mol = adjustVal(def.mol, mol);
 

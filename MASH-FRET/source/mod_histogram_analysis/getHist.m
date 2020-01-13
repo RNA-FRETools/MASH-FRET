@@ -66,7 +66,7 @@ elseif tpe <= 2*nChan*nExc + nFRET % FRET
             gamma_m = p.proj{proj}.prmTT{i_m}{5}{3};
         elseif size(p.proj{proj}.prmTT{i_m},2)==6 && ...
                 size(p.proj{proj}.prmTT{i_m}{6},2)>=1 && ...
-                size(p.proj{proj}.prmTT{i_m}{6}{1})==nFRET
+                size(p.proj{proj}.prmTT{i_m}{6}{1},1)==nFRET
             gamma_m = p.proj{proj}.prmTT{i_m}{6}{1};
         else
             gamma_m = ones(1,nFRET);

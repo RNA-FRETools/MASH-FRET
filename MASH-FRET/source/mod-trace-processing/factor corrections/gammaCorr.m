@@ -55,7 +55,7 @@ if method==1 % photobleaching-based
                 ' be calculated: method is set to "manual" and gamma ',...
                 'factor to previous value'),'warning',h_fig);
 
-        elseif round(gamma,2) ~= p.proj{proj}.prm{m}{6}{1}(i) % gamma changed
+        elseif round(gamma,2)~=p.proj{proj}.prm{m}{6}{1}(i) % gamma changed
             % save gamma
             p.proj{proj}.prm{m}{6}{1}(i) = round(gamma,2);
 
@@ -68,11 +68,26 @@ if method==1 % photobleaching-based
     end
     
 elseif method==2 % ES linear regression
+    
+    prm = p.proj{proj}.prm{m}{6}{4};
+    
+    [ES,gamma,beta,ok,str] = gammaCorr_ES(p.proj{proj},prm,h_fig);
 
-    p.proj{proj}.prm{m}{6}{2}(1) = 0;
-    setContPan(cat(2,'gamma calculation mehtod "ES linear regression" is ',...
-        'under construction: method is set to "manual" and gamma factor ',...
-        'to previous value'),'warning',h_fig);
+    if ~ok
+        p.proj{proj}.prm{m}{6}{2}(1) = 0;
+        setContPan(cat(2,str,': method is set to "manual" and gamma ',...
+            'factor to previous value'),'warning',h_fig);
+
+    elseif ~isequal(round(gamma,2),p.proj{proj}.prm{m}{6}{1}) % gamma changed
+        % save gamma
+        p.proj{proj}.prm{m}{6}{1} = round(gamma,2);
+
+        % reset discretized FRET data
+        p.proj{proj}.FRET_DTA(:,((m-1)*nFRET+1):m*nFRET) = NaN;
+
+        % store ES histogram
+        p.proj{proj}.ES = ES;
+    end
 
 % cancelled by MH: FRET state sequences are already reset when panel
 % parameter gamma changes; this prevents the automatic re-discretization

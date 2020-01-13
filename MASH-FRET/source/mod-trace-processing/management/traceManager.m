@@ -111,7 +111,7 @@ for i = 1:nMol
     p = plotSubImg(i, p, []);
 
     % correct intensities
-    p = updateIntensities(opt,i,p);
+    [p,opt2] = updateIntensities(opt,i,p);
     
     % get gamma factors
     if strcmp(opt2, 'gamma') || strcmp(opt2, 'debleach') || ...
