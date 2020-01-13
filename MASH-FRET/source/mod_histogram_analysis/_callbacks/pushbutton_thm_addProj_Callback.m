@@ -119,7 +119,7 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
                     elseif size(p.proj{i}.prmTT{i_m},2)==6 && ...
                             size(p.proj{i}.prmTT{i_m}{6},2)>=1 && ...
                             size(p.proj{i}.prmTT{i_m}{6}{1},2)==nFRET
-                        gamma_m = p.proj{i}.prmTT{i_m}{6}{1};
+                        gamma_m = p.proj{i}.prmTT{i_m}{6}{1}(1,:);
                     else
                         gamma_m = ones(1,nFRET);
                     end

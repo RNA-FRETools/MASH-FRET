@@ -29,17 +29,19 @@ htxt0 = 13;
 hpop0 = 22;
 wedit0 = 40;
 fact = 5;
-str0 = 'data';
-str1 = 'method';
-str2 = 'gamma';
-str3 = {'Select a FRET pair'};
-str4 = {'Manual','From acceptor photobleaching','Linear regression'};
-str5 = 'Load';
-str6 = 'all';
-ttstr0 = wrapStrToWidth('Select a <b>FRET pair</b> to configure the gamma correction for.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('Select an <b>estimation method:</b> photobleaching-based estimation of gamma factors requires acceptor to photobleach.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+str0 = 'Method:';
+str1 = {'Manual','From acceptor photobleaching','Linear regression'};
+str2 = 'Load';
+str3 = 'Factors:';
+str4 = {'Select a FRET pair'};
+str5 = 'gamma';
+str6 = 'beta';
+str7 = 'all';
+ttstr0 = wrapStrToWidth('Select an <b>estimation method:</b> photobleaching-based estimation of gamma factors requires acceptor to photobleach.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr1 = wrapStrToWidth('Select a <b>FRET pair</b> to configure the gamma correction for.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr2 = wrapStrToWidth('<b>Gamma factor</b> for the selected FRET pair.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('Apply current factor corrections settings to all molecules.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr3 = wrapStrToWidth('<b>Beta factor</b> for the selected FRET pair.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr4 = wrapStrToWidth('Apply current factor corrections settings to all molecules.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 
 % parents
 h_fig = h.figure_MASH;
@@ -47,64 +49,82 @@ h_pan = h.uipanel_TP_factorCorrections;
 
 % dimensions
 pospan = get(h_pan,'position');
-wbut0 = getUItextWidth(str5,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wbut1 = getUItextWidth(str6,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
-wpop0 = (pospan(3)-2*p.mg-4*p.mg/fact-wbut0-wbut1-wedit0)/2;
+wbut0 = getUItextWidth(str2,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
+wtxt0 = getUItextWidth(str3,p.fntun,p.fntsz1,'normal',p.tbl);
+wpop0 = pospan(3)-p.mg-wtxt0-p.mg/fact-wbut0-p.mg;
+wbut1 = getUItextWidth(str7,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
+wpop1 = pospan(3)-2*p.mg-wtxt0-2*(wedit0+p.mg/fact)-p.mg/2-wbut1;
 
 x = p.mg;
-y = pospan(4)-p.mgpan-htxt0;
-
-h.text_TP_factors_data = uicontrol('style','text','parent',h_pan,'units',...
-    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wpop0,htxt0],'string',str0);
-
-x = x+wpop0+p.mg/fact;
+y = pospan(4)-p.mgpan-hpop0+(hpop0-htxt0)/2;
 
 h.text_TP_factors_method = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wpop0,htxt0],'string',str1);
+    [x,y,wtxt0,htxt0],'string',str0,'horizontalalignment','left');
+
+x = x+wtxt0;
+y = y-(hpop0-htxt0)/2;
+
+h.popupmenu_TP_factors_method = uicontrol('style','popupmenu','parent',...
+    h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
+    'position',[x,y,wpop0,hpop0],'string',str1,'tooltipstring',ttstr0,...
+    'callback',{@popupmenu_TP_factors_method_Callback,h_fig});
 
 x = x+wpop0+p.mg/fact;
+y = y+(hpop0-hedit0)/2;
+
+h.pushbutton_optGamma = uicontrol('style','pushbutton','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wbut0,hedit0],'string',str2,'callback',...
+    {@pushbutton_optGamma_Callback,h_fig});
+
+x = p.mg+wtxt0+wpop1+p.mg/fact;
+y = y-(hpop0-hedit0)/2-p.mg/fact-htxt0;
 
 h.text_TP_factors_gamma = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,htxt0],'string',str2);
+    [x,y,wedit0,htxt0],'string',str5);
+
+x = x+wedit0+p.mg/fact;
+
+h.text_TP_factors_beta = uicontrol('style','text','parent',h_pan,'units',...
+    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wedit0,htxt0],'string',str6);
 
 x = p.mg;
-y = y-hpop0;
+y = y-p.mg/fact-hpop0+(hpop0-htxt0)/2;
+
+h.text_TP_factors_fact = uicontrol('style','text','parent',h_pan,'units',...
+    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wtxt0,htxt0],'string',str3,'horizontalalignment','left');
+
+x = x+wtxt0;
+y = y-(hpop0-htxt0)/2;
 
 h.popupmenu_gammaFRET = uicontrol('style','popupmenu','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wpop0,hpop0],'string',str3,'tooltipstring',ttstr0,'callback',...
+    [x,y,wpop1,hpop0],'string',str4,'tooltipstring',ttstr1,'callback',...
     {@popupmenu_gammaFRET_Callback,h_fig});
 
-x = x+wpop0+p.mg/fact;
-
-h.popupmenu_TP_factors_method = uicontrol('style','popupmenu','parent',h_pan,...
-    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wpop0,hpop0],'string',str4,'tooltipstring',ttstr1,'callback',...
-    {@popupmenu_TP_factors_method_Callback,h_fig});
-
-x = x+wpop0+p.mg/fact;
+x = x+wpop1+p.mg/fact;
 y = y+(hpop0-hedit0)/2;
 
 h.edit_gammaCorr = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,hedit0],...
     'callback',{@edit_gammaCorr_Callback,h_fig},'tooltipstring',ttstr2);
 
+x = x+wedit0+p.mg/2;
+
+h.edit_betaCorr = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,hedit0],...
+    'callback',{@edit_betaCorr_Callback,h_fig},'tooltipstring',ttstr3);
+
 x = x+wedit0+p.mg/fact;
-
-h.pushbutton_optGamma = uicontrol('style','pushbutton','parent',h_pan,...
-    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wbut0,hedit0],'string',str5,'callback',...
-    {@pushbutton_optGamma_Callback,h_fig});
-
-x = pospan(3)-p.mg-wbut1;
 
 h.pushbutton_applyAll_corr = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight',...
-    'bold','position',[x,y,wbut1,hedit0],'string',str6,'callback',...
-    {@pushbutton_applyAll_corr_Callback,h_fig},'tooltipstring',ttstr3,...
+    'bold','position',[x,y,wbut1,hedit0],'string',str7,'callback',...
+    {@pushbutton_applyAll_corr_Callback,h_fig},'tooltipstring',ttstr4,...
     'foregroundcolor',p.fntclr2);
 
 

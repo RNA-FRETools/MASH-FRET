@@ -8,6 +8,10 @@ if ~isempty(p.proj)
     if ~strcmp(str_tag{tag},'no default tag')
         mol = p.curr_mol(proj);
         p.proj{proj}.molTag(mol,tag) = true;
+        
+        % added by MH, 13.1.2020: reset ES histograms
+        p.proj{proj}.ES = cell(1,size(p.proj{proj}.FRET,1));
+        
         h.param.ttPr = p;
         guidata(h_fig,h);
         

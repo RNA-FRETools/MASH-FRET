@@ -210,7 +210,7 @@ if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
     
     if nFRET > 0
         trs = p.proj{proj}.FRET;
-        gamma = p.proj{proj}.prm{mol}{6}{1};
+        gamma = p.proj{proj}.prm{mol}{6}{1}(1,:);
         f_tr = calcFRET(nChan, nExc, allExc, chanExc, trs, I, gamma);
     end
 

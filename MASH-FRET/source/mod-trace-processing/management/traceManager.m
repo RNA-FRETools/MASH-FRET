@@ -105,7 +105,7 @@ guidata(h_fig, h); % update: set current guidata
 
 for i = 1:nMol
 
-    [p,opt] = resetMol(i, p);
+    [p,opt] = resetMol(i, '', p);
 
     % get dark coordinates
     p = plotSubImg(i, p, []);
@@ -377,7 +377,7 @@ for i = 1:nMol
         end
 
         I = intensities(incl,(nChan*(i-1)+1):nChan*i,:);
-        gamma = p.proj{proj}.curr{i}{6}{1};
+        gamma = p.proj{proj}.curr{i}{6}{1}(1,:);
         fret = calcFRET(nChan, nExc, exc, chanExc, FRET, I, gamma);
         for n = 1:nFRET
             ind = ind + 1;
@@ -3128,17 +3128,24 @@ saveNclose = questdlg(['Do you want to export the traces to ' ...
 
 if strcmp(saveNclose, 'Yes')
     h = guidata(h_fig);
-    h.param.ttPr.proj{h.param.ttPr.curr_proj}.coord_incl = ...
-        h.tm.molValid;
-    h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTag = ...
-        h.tm.molTag; % added by FS, 24.4.2018
-    h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTagNames = ...
-        h.tm.molTagNames; % added by FS, 24.4.2018
+    p = h.param.ttPr;
+    proj = p.curr_proj;
+    
+    % added by MH, 13.1.2020: reset ES histograms
+    if ~isequal(p.proj{proj}.coord_incl,h.tm.molValid) || ...
+            ~isequal(p.proj{proj}.molTag,h.tm.molTag) || ...
+            ~isequal(p.proj{proj}.molTagNames,h.tm.molTagNames)
+        p.proj{proj}.ES = cell(1,size(p.proj{proj}.FRET,1));
+    end
+    
+    p.proj{proj}.coord_incl = h.tm.molValid;
+    p.proj{proj}.molTag = h.tm.molTag; % added by FS, 24.4.2018
+    p.proj{proj}.molTagNames = h.tm.molTagNames; % added by FS, 24.4.2018
 
     % added by MH, 24.4.2019
-    h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTagClr = ...
-        h.tm.molTagClr;
-
+    p.proj{proj}.molTagClr = h.tm.molTagClr;
+    
+    h.param.ttPr = p;
     h.tm.ud = true;
     guidata(h_fig,h);
     

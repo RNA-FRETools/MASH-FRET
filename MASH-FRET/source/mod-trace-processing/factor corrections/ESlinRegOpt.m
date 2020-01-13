@@ -606,7 +606,7 @@ p = h.param.ttPr;
 proj = p.curr_proj;
 mol = p.curr_mol(proj);
 
-p.proj{proj}.curr{mol}{6}{1} = q.prm{1}(1,:); % gamma factors
+p.proj{proj}.curr{mol}{6}{1} = q.prm{1}; % gamma amd beta factors
 p.proj{proj}.curr{mol}{6}{4} = q.prm{2}; % method parameters
 p.proj{proj}.ES = q.prm{4};
 

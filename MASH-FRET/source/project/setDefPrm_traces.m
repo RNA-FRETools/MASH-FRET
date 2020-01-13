@@ -5,7 +5,12 @@ function def = setDefPrm_traces(p, proj)
 % "def" >> 1-by-n cell array containing molecule parameters for each of ...
 %          the n panels
 
-% Last update: by MH, 10.1.2020
+% Last update: by MH, 13.1.2020
+% >> add beta factors
+% >> move bleethrough and direct excitation coefficients from molecule
+%  to general parameters
+%
+% update: by MH, 10.1.2020
 % >> separate parameters for factor corrections from cross-talks: store 
 %  parameters for factor corrections in 6th cell
 %
@@ -88,14 +93,18 @@ gen{2}(6) = 0; % fix first frame for all molecules
 gen{2}(7) = 1; % x-axis in second
 
 % Main popupmenu values
-gen{3}(1) = 1; % correction excitation
-gen{3}(2) = 1; % correction channel
-gen{3}(3) = 1; % Bleedthrough channel
-gen{3}(4) = 1; % DTA channel
-gen{3}(5) = 0; % nothing (old background excitation)
+gen{3}(1) = 1; % laser for direct excitation
+gen{3}(2) = 1; % emitter for cross-talk correction
+gen{3}(3) = 1; % channel for bleedthrough
+gen{3}(4) = 1; % data for DTA
+gen{3}(5) = 0; % nothing (prev: laser for background)
 gen{3}(6) = 1; % data for background correction
-gen{3}(7) = 1; % Direct excitation coefficient excitation
-gen{3}(8) = 1; % FRET correction channel
+gen{3}(7) = 1; % nothing (prev: laser for DE)
+gen{3}(8) = 1; % FRET pair for factor corrections
+
+% Cross-talks coefficients
+gen{4}{1} = zeros(nChan,nChan-1); % bleedthrough coefficients
+gen{4}{2} = zeros(nExc-1,nChan); % direct excitation coefficients
 
 def.general = adjustVal(def.general, gen);
 
@@ -209,32 +218,36 @@ for j = 1:nExc
     end
 end
 mol{4}{3} = nan(nFRET+nS+nExc*nChan,6);  % States values
-             
-% Cross talks
-% modified by MH 29.3.2019
-% bleedthrough
-mol{5}{1} = zeros(nChan,nChan-1);
-% direct excitation
-mol{5}{2} = zeros(nExc-1,nChan);
-% for l = 1:nExc
-%     for c = 1:nChan
-%         % bleedthrough
-%         mol{5}{1}{l,c} = zeros(1,nChan-1);
-%         % direct excitation
-%         mol{5}{2}{l,c} = zeros(1,nExc-1);
-%     end
-% end
+
+% modified by MH, 13.1.2019
+% % Cross talks
+% % modified by MH 29.3.2019
+% % bleedthrough
+% mol{5}{1} = zeros(nChan,nChan-1);
+% % direct excitation
+% mol{5}{2} = zeros(nExc-1,nChan);
+% % for l = 1:nExc
+% %     for c = 1:nChan
+% %         % bleedthrough
+% %         mol{5}{1}{l,c} = zeros(1,nChan-1);
+% %         % direct excitation
+% %         mol{5}{2}{l,c} = zeros(1,nExc-1);
+% %     end
+% % end
+mol{5} = []; % nothing (prev: cross-talks coefficients)
 
 % gamma
-% modified by MH, 10.1.2020
-% mol{5}{3} = [];
+% modified by MH, 13.1.2020
+% % modified by MH, 10.1.2020
+% % mol{5}{3} = [];
+% % for i = 1:nFRET
+% %     mol{5}{3} = [mol{5}{3} 1];
+% % end
+% mol{6}{1} = [];
 % for i = 1:nFRET
-%     mol{5}{3} = [mol{5}{3} 1];
+%     mol{6}{1} = [mol{6}{1} 1];
 % end
-mol{6}{1} = [];
-for i = 1:nFRET
-    mol{6}{1} = [mol{6}{1} 1];
-end
+mol{6}{1} = ones(2,nFRET);
 
 % modified by MH, 10.1.2020: store parameters in 6th cell
 % gamma correction via photobleaching, added by FS, 9.1.2018; 

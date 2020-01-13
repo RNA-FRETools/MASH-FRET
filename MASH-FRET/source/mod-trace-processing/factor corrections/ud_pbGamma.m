@@ -31,6 +31,9 @@ cutOff = cutOff*nExc;
 
 p.proj{proj}.curr{m}{6}{3}(acc,7) = ok;
 p.proj{proj}.curr{m}{6}{3}(acc,6) = cutOff;
+if ok
+    p.proj{proj}.curr{m}{6}{1}(1,acc) = gamma;
+end
 
 % save curr parameters
 h.param.ttPr = p;

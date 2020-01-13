@@ -549,7 +549,8 @@ end
 
 %% Traces processing fields
 
-if strcmp(opt, 'ttPr') || strcmp(opt, 'subImg') || strcmp(opt, 'all')
+if strcmp(opt, 'ttPr') || strcmp(opt, 'subImg') || strcmp(opt, 'cross') || ...
+        strcmp(opt, 'all')
     p = h.param.ttPr;
     
     if ~isempty(p.proj)

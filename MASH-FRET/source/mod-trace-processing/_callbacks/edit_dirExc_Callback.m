@@ -16,17 +16,18 @@ if ~isempty(p.proj)
     else
         set(obj, 'BackgroundColor', [1 1 1]);
         proj = p.curr_proj;
-        mol = p.curr_mol(proj);
         exc_in = p.proj{proj}.fix{3}(1);
         chan_in = p.proj{proj}.fix{3}(2);
         
-        % modified by MH, 29.3.2019
-%         exc_base = p.proj{proj}.fix{3}(7);
-%         p.proj{proj}.curr{mol}{5}{2}{exc_in,chan_in}(exc_base) = val;
-        p.proj{proj}.curr{mol}{5}{2}(exc_in,chan_in) = val;
+        % modified by MH, 13.1.2020
+%         % modified by MH, 29.3.2019
+% %         exc_base = p.proj{proj}.fix{3}(7);
+% %         p.proj{proj}.curr{mol}{5}{2}{exc_in,chan_in}(exc_base) = val;
+%         p.proj{proj}.curr{mol}{5}{2}(exc_in,chan_in) = val;
+        p.proj{proj}.fix{4}{2}(exc_in,chan_in) = val;
         
         h.param.ttPr = p;
         guidata(h_fig, h);
-        ud_cross(h_fig);
+        updateFields(h_fig,'cross');
     end
 end

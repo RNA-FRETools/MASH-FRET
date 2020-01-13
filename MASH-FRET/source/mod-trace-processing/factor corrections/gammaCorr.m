@@ -55,9 +55,9 @@ if method==1 % photobleaching-based
                 ' be calculated: method is set to "manual" and gamma ',...
                 'factor to previous value'),'warning',h_fig);
 
-        elseif round(gamma,2)~=p.proj{proj}.prm{m}{6}{1}(i) % gamma changed
+        elseif round(gamma,2)~=p.proj{proj}.prm{m}{6}{1}(1,i) % gamma changed
             % save gamma
-            p.proj{proj}.prm{m}{6}{1}(i) = round(gamma,2);
+            p.proj{proj}.prm{m}{6}{1}(1,i) = round(gamma,2);
 
             % reset discretized FRET data
             p.proj{proj}.FRET_DTA(:,(m-1)*nFRET+i) = NaN;
@@ -78,9 +78,9 @@ elseif method==2 % ES linear regression
         setContPan(cat(2,str,': method is set to "manual" and gamma ',...
             'factor to previous value'),'warning',h_fig);
 
-    elseif ~isequal(round(gamma,2),p.proj{proj}.prm{m}{6}{1}) % gamma changed
+    elseif ~isequal(round([gamma;beta],2),p.proj{proj}.prm{m}{6}{1}) % gamma changed
         % save gamma
-        p.proj{proj}.prm{m}{6}{1} = round(gamma,2);
+        p.proj{proj}.prm{m}{6}{1} = round([gamma;beta],2);
 
         % reset discretized FRET data
         p.proj{proj}.FRET_DTA(:,((m-1)*nFRET+1):m*nFRET) = NaN;

@@ -18,6 +18,10 @@ if ~isempty(p.proj)
         
         tagId = find(p.proj{proj}.molTag(mol,:));
         p.proj{proj}.molTag(mol,tagId(tag)) = false;
+        
+        % added by MH, 13.1.2020: reset ES histograms
+        p.proj{proj}.ES = cell(1,size(p.proj{proj}.FRET,1));
+        
         h.param.ttPr = p;
         guidata(h_fig,h);
         

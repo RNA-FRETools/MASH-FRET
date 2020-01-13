@@ -78,6 +78,9 @@ if ~isempty(p.proj);
             % set interface default param. to project's default param.
             p.defProjPrm = p.proj{proj}.def;
             
+            % save current project's cross-talks as default
+            p.defProjPrm.general{4} = p.proj{proj}.fix{4};
+            
             % added by MH, 24.4.2019
             pMov.defTagNames = p.proj{proj}.molTagNames;
             pMov.defTagClr = p.proj{proj}.molTagClr;
@@ -89,7 +92,9 @@ if ~isempty(p.proj);
 %             % reorder the cross talk coefficients as the wavelength
 %             [o,id] = sort(p.proj{proj}.excitations,'ascend'); % chronological index sorted as wl
 
-            mol_prev = p.defProjPrm.mol{5};
+            % modified by MH, 13.1.2020
+%             mol_prev = p.defProjPrm.mol{5};
+            cf_bywl = p.defProjPrm.general{4}{2};
             
             % modified by MH, 29.3.2019
 %             for c = 1:dat.nb_channel
@@ -104,7 +109,10 @@ if ~isempty(p.proj);
                     % to laser wavelength
                     exc_but_c = exc(exc~=chanExc(c));
                     [o,id] = sort(exc_but_c,'ascend'); % chronological index sorted as wl
-                    p.defProjPrm.mol{5}{2}(:,c) = mol_prev{2}(id,c);
+                    
+                    % modified by MH, 13.1.2020
+%                     p.defProjPrm.mol{5}{2}(:,c) = mol_prev{2}(id,c);
+                    p.defProjPrm.general{4}{2}(:,c) = cf_bywl(id,c);
                 end
             end
             

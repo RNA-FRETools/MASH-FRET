@@ -1,4 +1,4 @@
-function [p,opt] = resetMol(m, p)
+function [p,opt] = resetMol(m, opt1, p)
 
 proj = p.curr_proj;
 nC = p.proj{proj}.nb_channel;
@@ -7,6 +7,13 @@ nS = size(p.proj{proj}.S,1);
 
 curr = p.proj{proj}.curr{m};
 prm = p.proj{proj}.prm{m};
+
+if strcmp(opt1,'cross')
+    opt = 'cross';
+    p.proj{proj}.intensities_crossCorr = ...
+        nan(size(p.proj{proj}.intensities_crossCorr));
+    return
+end
 
 if isempty(prm)
     opt = 'ttPr';
@@ -17,7 +24,7 @@ elseif ~isequal(curr{3},prm{3})
     p.proj{proj}.intensities_bgCorr(:,((m-1)*nC+1):m*nC,:) = NaN;
     
 elseif ~isequal(curr{5},prm{5})
-    opt = 'corr';
+    opt = 'cross';
     p.proj{proj}.intensities_crossCorr(:,((m-1)*nC+1):m*nC,:) = NaN;
     
 elseif ~isequal(curr{1},prm{1})

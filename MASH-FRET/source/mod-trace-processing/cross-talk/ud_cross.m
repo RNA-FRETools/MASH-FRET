@@ -45,7 +45,7 @@ chanExc = p.proj{proj}.chanExc;
 curr_exc = p.proj{proj}.fix{3}(1);
 curr_chan = p.proj{proj}.fix{3}(2);
 curr_btChan = p.proj{proj}.fix{3}(3);
-p_panel = p.proj{proj}.curr{mol}{5};
+p_panel = p.proj{proj}.fix{4};
 
 set(h.popupmenu_corr_chan, 'Value', 1, 'String', ...
     getStrPop('chan', {labels curr_exc clr{1}}));

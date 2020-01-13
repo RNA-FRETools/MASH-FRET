@@ -18,19 +18,19 @@ if strcmp(opt2, 'ttBg') || strcmp(opt2, 'ttPr')
 end
 
 % correct cross-talks
-if strcmp(opt2, 'corr') || strcmp(opt2, 'ttBg') || strcmp(opt2, 'ttPr')
+if strcmp(opt2, 'cross') || strcmp(opt2, 'ttBg') || strcmp(opt2, 'ttPr')
     p = crossCorr(m, p);
 end
 
 % smooth traces
-if strcmp(opt2, 'denoise') || strcmp(opt2, 'corr') || ...
+if strcmp(opt2, 'denoise') || strcmp(opt2, 'cross') || ...
         strcmp(opt2, 'ttBg') || strcmp(opt2, 'ttPr')
     p = denoiseTraces(m, p);
 end
 
 % clip traces
 if strcmp(opt2, 'debleach') || strcmp(opt2, 'denoise') || ...
-        strcmp(opt2, 'corr') || strcmp(opt2, 'ttBg') || ...
+        strcmp(opt2, 'cross') || strcmp(opt2, 'ttBg') || ...
         strcmp(opt2, 'ttPr')
     p = calcCutoff(m, p);
 end

@@ -24,7 +24,7 @@ if ~isempty(p.proj)
                 h_fig, 'error');
         else
             set(obj, 'BackgroundColor', [1 1 1]);
-            p.proj{proj}.curr{mol}{6}{1}(chan) = val;
+            p.proj{proj}.curr{mol}{6}{1}(1,chan) = val;
             h.param.ttPr = p;
             guidata(h_fig, h);
             ud_factors(h_fig)

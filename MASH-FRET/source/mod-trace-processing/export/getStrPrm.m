@@ -70,7 +70,7 @@ perSec = s.fix{2}(4); % intensity units per second
 perPix = s.fix{2}(5); % intensity units per pixel
 inSec = s.fix{2}(7); % x-axis in second
 prm_bg = s.prm{m}{3};
-prm_cross = s.prm{m}{5};
+prm_cross = s.fix{4};
 prm_fact = s.prm{m}{6};
 prm_den = s.prm{m}{1};
 prm_bleach = s.prm{m}{2};
@@ -323,9 +323,10 @@ end
 %% factor corrections
 if nFRET>0
     for i = 1:nFRET
-        str_fact = cat(2,str_fact,'\tgamma factor for correction of FRET_',...
-            labels{FRET(i,1)},'>',labels{FRET(i,2)},': ',...
-            num2str(prm_fact{2}(i)),'\n');
+        str_fact = cat(2,str_fact,'\tcorrection factor for FRET_',...
+            labels{FRET(i,1)},'>',labels{FRET(i,2)},': gamma=',...
+            num2str(prm_fact{1}(1,i)),', beta=',num2str(prm_fact{1}(2,i)),...
+            '\n');
     end
 else
     str_fact = cat(2,str_fact,'\tno gamma correction possible\n');

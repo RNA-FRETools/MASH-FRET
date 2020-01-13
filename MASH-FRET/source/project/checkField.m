@@ -1,26 +1,11 @@
 function s = checkField(s_in, fname, h_fig)
 
-% Last update by MH, 11.1.2020
-% >> add "ES" field
-%
-% update by MH, 7.1.2020
-% >> correct frame rate for dwell-time calculations when using ALEX data
-%
-% update by MH, 25.4.2019
-% >> correct random generation of tag colors
-% >> fetch default tag names and colors in interface's default parameters
-%    (default_param.ini)
-%
-% update by MH, 24.4.2019
-% >> modify molecule tag names by removing label 'unlabelled'
-% >> modify molecule tag structure to allow multiple tags per molecule, by 
-%    using the first dimension for molecule idexes and the second dimension 
-%    for label indexes 
-% >> add tag's default colors to project
-% >> adjust tags from older projects to new format
-%
-% update: by MH, 3.4.2019
-% >> if labels are empty (ASCII import), set default labels
+%%
+% update by MH, 11.1.2020: add "ES" field
+% update by MH, 7.1.2020: correct frame rate for dwell-time calculations when using ALEX data
+% update by MH, 25.4.2019: (1) correct random generation of tag colors, (2) fetch default tag names and colors in interface's default parameters (default_param.ini)
+% update by MH, 24.4.2019: (1) modify molecule tag names by removing label 'unlabelled', (2) modify molecule tag structure to allow multiple tags per molecule, by using the first dimension for molecule idexes and the second dimension for label indexes, (3) add tag's default colors to project, (4) adjust tags from older projects to new format
+% update by MH, 3.4.2019: if labels are empty (ASCII import), set default labels
 %%
 
 s = s_in;
@@ -128,8 +113,8 @@ s.molTag = adjustParam('molTag', false(nMol,nTag), s_in);
 %     {'#4298B5','#DD5F32','#92B06A','#ADC4CC','#E19D29'}, s_in);
 s.molTagClr = adjustParam('molTagClr',pMov.defTagClr,s_in);
 
-%% check movie entries
 
+%% check video entries
 % check movie file >> set movie dimensions and reading infos
 if ~isempty(s.movie_file) && exist(s.movie_file, 'file')
     s.is_movie = 1;
@@ -193,6 +178,7 @@ if (isempty(s.movie_dat) || size(s.movie_dat, 2) ~= 3) && s.is_movie
     s.movie_dat = {data.fCurs [data.pixelX data.pixelY] data.frameLen};
 end
 
+%% check emitter label entries
 if isempty(s.labels) || size(s.labels,2) < s.nb_channel
     h = guidata(h_fig);
     label_def = h.param.movPr.labels_def;
@@ -208,6 +194,7 @@ if isempty(s.labels) || size(s.labels,2) < s.nb_channel
     end
 end
 
+%% check emitter specificities
 if isempty(s.chanExc) || size(s.chanExc,2) < s.nb_channel
     s.chanExc = zeros(1,s.nb_channel);
     for c = 1:nChan
@@ -224,6 +211,7 @@ if isempty(s.chanExc) || size(s.chanExc,2) < s.nb_channel
     end
 end
 
+%% check experimental parameters
 if isempty(s.exp_parameters) || size(s.exp_parameters,2) ~= 3
     s.exp_parameters = {'Project title' '' ''
                         'Molecule name' '' ''
@@ -238,7 +226,7 @@ if isempty(s.exp_parameters) || size(s.exp_parameters,2) ~= 3
 end
 
 
-%% coordinates
+%% check coordinates
 if s.is_coord
     if size(s.coord_incl,2) < size(s.coord,1)
         s.coord_incl((size(s.coord_incl,2)+1):size(s.coord,1)) = ...
@@ -251,8 +239,7 @@ if isempty(s.coord_incl)
 end
 
 
-%% check intensity-time traces processing entries
-
+%% check FRET and stoichiometry entries
 if size(s.FRET,2) > 2
     s.FRET = s.FRET(:,1:2);
 end
@@ -263,15 +250,16 @@ if size(s.S,2) > 1
     s.S = don_chan';
 end
 
+%% check colour entries
 if isempty(s.colours) || size(s.colours,2) ~=3
     s.colours = getDefTrClr(nExc,s.excitations,nChan,nFRET,nS);
 end
 
+%% remove processing parameters
 if isfield(s, 'prm')
     s.prmTT = s.prm;
     s = rmfield(s, 'prm');
 end
-
 if isfield(s, 'exp')
     s.expTT = s.exp;
     s = rmfield(s, 'exp');
@@ -279,7 +267,6 @@ end
 
 
 %% check dwell-times entries
-
 if ~s.dt_ascii;
     s.dt_pname = [];
     s.dt_fname = [];
@@ -332,7 +319,7 @@ for m = 1:nMol
 end
 
 % added by MH, 24.4.2019
-%% check molecule label entries
+%% check molecule tag entries
 oldTag = cell2mat(strfind(s.molTagNames,'unlabeled'));
 if ~isempty(oldTag)
     newMolTag = false(nMol,numel(s.molTagNames));
