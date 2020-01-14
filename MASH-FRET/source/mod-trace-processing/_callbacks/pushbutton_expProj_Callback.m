@@ -96,23 +96,28 @@ if ~isempty(p.proj);
 %             mol_prev = p.defProjPrm.mol{5};
             cf_bywl = p.defProjPrm.general{4}{2};
             
-            % modified by MH, 29.3.2019
-%             for c = 1:dat.nb_channel
-%                 p.defProjPrm.mol{5}{1}(:,c) = mol_prev{1}(id,c);
-%                 p.defProjPrm.mol{5}{2}(:,c) = mol_prev{2}(id,c);
-%             end
-            for c = 1:dat.nb_channel
-                if sum(exc==chanExc(c)) % emitter-specific illumination 
-                                        % defined and present in used ALEX 
-                                        % scheme (DE calculation possible)
-                    % reorder the direct excitation coefficients according 
-                    % to laser wavelength
-                    exc_but_c = exc(exc~=chanExc(c));
-                    [o,id] = sort(exc_but_c,'ascend'); % chronological index sorted as wl
-                    
-                    % modified by MH, 13.1.2020
-%                     p.defProjPrm.mol{5}{2}(:,c) = mol_prev{2}(id,c);
-                    p.defProjPrm.general{4}{2}(:,c) = cf_bywl(id,c);
+            if size(cf_bywl,1)>0
+                % modified by MH, 29.3.2019
+    %             for c = 1:dat.nb_channel
+    %                 p.defProjPrm.mol{5}{1}(:,c) = mol_prev{1}(id,c);
+    %                 p.defProjPrm.mol{5}{2}(:,c) = mol_prev{2}(id,c);
+    %             end
+                for c = 1:dat.nb_channel
+                    if sum(exc==chanExc(c)) % emitter-specific illumination 
+                                            % defined and present in used ALEX 
+                                            % scheme (DE calculation possible)
+                        % reorder the direct excitation coefficients according 
+                        % to laser wavelength
+                        exc_but_c = exc(exc~=chanExc(c));
+                        if isempty(exc_but_c)
+                            continue
+                        end
+                        [o,id] = sort(exc_but_c,'ascend'); % chronological index sorted as wl
+
+                        % modified by MH, 13.1.2020
+    %                     p.defProjPrm.mol{5}{2}(:,c) = mol_prev{2}(id,c);
+                        p.defProjPrm.general{4}{2}(:,c) = cf_bywl(id,c);
+                    end
                 end
             end
             

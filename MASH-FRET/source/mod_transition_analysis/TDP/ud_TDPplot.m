@@ -45,7 +45,7 @@ for n = 1:nFRET
         labels{FRET(n,2)}));
 end
 for n = 1:nS
-    str_pop = cat(2,str_pop,cat(2,'S ',labels{S(n)}));
+    str_pop = cat(2,str_pop,cat(2,'S ',labels{S(n,1)},'>',labels{S(n,2)}));
 end
 set(h.popupmenu_TDPdataType,'value',tpe,'string',str_pop);
 

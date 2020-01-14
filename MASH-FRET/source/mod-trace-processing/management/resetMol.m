@@ -17,22 +17,27 @@ end
 
 if isempty(prm)
     opt = 'ttPr';
+    p.proj{proj}.ES = cell(1,nF);
     p.proj{proj}.intensities_bgCorr(:,((m-1)*nC+1):m*nC,:) = NaN;
     
 elseif ~isequal(curr{3},prm{3})
     opt = 'ttBg';
+    p.proj{proj}.ES = cell(1,nF);
     p.proj{proj}.intensities_bgCorr(:,((m-1)*nC+1):m*nC,:) = NaN;
     
 elseif ~isequal(curr{5},prm{5})
     opt = 'cross';
+    p.proj{proj}.ES = cell(1,nF);
     p.proj{proj}.intensities_crossCorr(:,((m-1)*nC+1):m*nC,:) = NaN;
     
 elseif ~isequal(curr{1},prm{1})
     opt = 'denoise';
+    p.proj{proj}.ES = cell(1,nF);
     p.proj{proj}.intensities_denoise(:,((m-1)*nC+1):m*nC,:) = NaN;
     
 elseif ~isequal(curr{2},prm{2})
     opt = 'debleach';
+    p.proj{proj}.ES = cell(1,nF);
     p.proj{proj}.intensities_DTA(:,((m-1)*nC+1):m*nC,:) = NaN;
     if nF > 0
         p.proj{proj}.FRET_DTA(:,((m-1)*nF+1):m*nF) = NaN;
@@ -49,11 +54,14 @@ elseif ~isequal(curr{2},prm{2})
 % %     p.proj{proj}.FRET_DTA(:,((m-1)*nF+1):m*nF) = NaN;
 % elseif ~isequal(prm_curr{5}(3:5), prm_prev{5}(3:5))
 %     opt = 'gamma';
-elseif ~isequal(curr{6}, prm{6})
+elseif ~isequaln(curr{6}, prm{6})
     opt = 'gamma';
     p.proj{proj}.intensities_DTA(:,((m-1)*nC+1):m*nC,:) = NaN;
     if nF > 0
         p.proj{proj}.FRET_DTA(:,((m-1)*nF+1):m*nF) = NaN;
+    end
+    if nS > 0
+        p.proj{proj}.S_DTA(:,((m-1)*nS+1):m*nS) = NaN;
     end
 elseif ~(~isempty(prm{4}) && ...
         isequaln(curr{4}([1 2 4]),prm{4}([1 2 4])))

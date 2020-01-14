@@ -1,4 +1,10 @@
-function [I_DTA,stop,gamma,ok] = gammaCorr_pb(i,I_den,I_thresh,prm_dta,p_proj,h_fig)
+function [I_DTA,stop,gamma,ok,str] = gammaCorr_pb(i,I_den,I_thresh,prm_dta,...
+    p_proj,h_fig)
+
+% initialize results
+I_DTA = [];
+stop = NaN;
+gamma = NaN;
 
 % collect project parameters
 FRET = p_proj.FRET;
@@ -19,6 +25,11 @@ prm_dta = permute(prm_dta{2}(method_dta,:,nFRET+nS+1:end),[3,2,1]);
 acc = FRET(i,2); % the acceptor channel
 don = FRET(i,1);
 lacc = find(exc==chanExc(acc),1);
+if isempty(lacc)
+    ok = false;
+    str = 'No I_AA signal';
+    return
+end
 ldon = find(exc==chanExc(don),1);
 I_AA = I_den(:,acc,lacc);
 
@@ -33,5 +44,5 @@ I_DTA = getDiscr(method_dta, I_den(:,[don,acc],ldon)', [], ...
     'Discretization for gamma factor calculation ...', h_fig)';
 
 % calculate gamma
-[gamma,ok] = prepostInt(stop, I_DTA(:,1), I_DTA(:,2));
+[gamma,ok,str] = prepostInt(stop, I_DTA(:,1), I_DTA(:,2));
 

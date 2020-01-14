@@ -99,7 +99,6 @@ p.proj{proj}.intensities_DTA(:,((m-1)*nC+1):m*nC,:) = NaN;
 nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
 if nFRET > 0
-    p.proj{proj}.ES = cell(1,nFRET);
     p.proj{proj}.FRET_DTA(:,((m-1)*nFRET+1):m*nFRET,:) = NaN;
 end
 if nS > 0

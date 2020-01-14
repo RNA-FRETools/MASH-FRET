@@ -7,7 +7,11 @@ if ~isempty(p.proj)
     p.proj{proj}.coord_incl(mol) = get(obj,'value');
     
     % added by MH, 13.1.2020: reset ES histograms
-    p.proj{proj}.ES = cell(1,size(p.proj{proj}.FRET,1));
+    for i = 1:size(p.proj{proj}.ES,2)
+        if ~(numel(p.proj{proj}.ES{i})==1 && isnan(p.proj{proj}.ES{i}))
+            p.proj{proj}.ES{i} = [];
+        end
+    end
     
     h.param.ttPr = p;
     guidata(h_fig, h);

@@ -5,7 +5,11 @@ function def = setDefPrm_traces(p, proj)
 % "def" >> 1-by-n cell array containing molecule parameters for each of ...
 %          the n panels
 
-% Last update: by MH, 13.1.2020
+% Last update: by MH, 14.1.2020
+% >> make parameters for gamma/beta factor calculations dependent on the
+%  FRET pair (necessary for ES histograms)
+%
+% update: by MH, 13.1.2020
 % >> add beta factors
 % >> move bleethrough and direct excitation coefficients from molecule
 %  to general parameters
@@ -249,13 +253,15 @@ mol{5} = []; % nothing (prev: cross-talks coefficients)
 % end
 mol{6}{1} = ones(2,nFRET);
 
-% modified by MH, 10.1.2020: store parameters in 6th cell
-% gamma correction via photobleaching, added by FS, 9.1.2018; 
-% last updated on 10.1.2018
-% mol{5}{4}(1) = 0;  % photobleaching based gamma correction checkbox
-% mol{5}{4}(2) = 1;  % current acceptor
-mol{6}{2}(1) = 0;  % method (0: manual, 1: photobleaching, 2: linear regression)
-mol{6}{2}(2) = 1;  % FRET pair index in photobleaching opt. window
+% modified by MH, 14.1.2020
+% % modified by MH, 10.1.2020: store parameters in 6th cell
+% % gamma correction via photobleaching, added by FS, 9.1.2018; 
+% % last updated on 10.1.2018
+% % mol{5}{4}(1) = 0;  % photobleaching based gamma correction checkbox
+% % mol{5}{4}(2) = 1;  % current acceptor
+% mol{6}{2}(1) = 0;  % method (0: manual, 1: photobleaching, 2: linear regression)
+% mol{6}{2}(2) = 1;  % FRET pair index in photobleaching opt. window
+mol{6}{2} = zeros(1,nFRET);  % method (0: manual, 1: photobleaching, 2: linear regression)
 
 % modified by MH, 10.1.2020: store parameters in 6th cell
 % gamma correction via photobleaching, added by FS, 9.1.2018
@@ -264,8 +270,7 @@ mol{6}{2}(2) = 1;  % FRET pair index in photobleaching opt. window
 % and 'prepostdiff' (i.e is there a difference in the intensity of the donor before and after the cutoff)
 % mol{5}{5} = [zeros(nFRET,1), 1000*ones(nFRET,1) ...
 %     zeros(nFRET,1), 100*ones(nFRET,1), ones(nFRET,1), nFrames*ones(nFRET,1), zeros(nFRET,1)];
-mol{6}{3} = [zeros(nFRET,1),1000*ones(nFRET,1),zeros(nFRET,1),...
-    100*ones(nFRET,1),ones(nFRET,1),nFrames*ones(nFRET,1),zeros(nFRET,1)];
+mol{6}{3} = repmat([0,1000,0,100,1,nFrames,0],nFRET,1);
 
 % added by MH, 10.1.2020: ES regression
 % [nFRET-by-7] subgroup,E limits, E intervals, 1/S limits, 1/S intervals
@@ -353,6 +358,9 @@ end
 if size(def.mol{3},2)>=4
     def.mol{3}(4) = [];
 end
+
+% prevent ES linear regression by default (time consuming)
+def.mol{6}{2}(def.mol{6}{2}==2) = 0;
 
 
 

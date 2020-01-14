@@ -150,7 +150,7 @@ proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
 nFRET = size(p.proj{proj}.FRET,1);
-nS = numel(p.proj{proj}.S);
+nS = size(p.proj{proj}.S,1);
 clr = p.proj{proj}.colours;
 perSec = p.proj{proj}.fix{2}(4);
 perPix = p.proj{proj}.fix{2}(5);
@@ -378,7 +378,9 @@ for i = 1:nMol
 
         I = intensities(incl,(nChan*(i-1)+1):nChan*i,:);
         gamma = p.proj{proj}.curr{i}{6}{1}(1,:);
+        beta = p.proj{proj}.curr{i}{6}{1}(2,:);
         fret = calcFRET(nChan, nExc, exc, chanExc, FRET, I, gamma);
+        s = calcS(exc, chanExc, S, FRET, I, gamma, beta);
         for n = 1:nFRET
             ind = ind + 1;
             FRET_tr = fret(:,n);
@@ -398,12 +400,7 @@ for i = 1:nMol
         end
         for n = 1:nS
             ind = ind + 1;
-            [o,l_s,o] = find(exc==chanExc(S(n)));
-            Inum = sum(intensities(incl, ...
-                (nChan*(i-1)+1):nChan*i,l_s),2);
-            Iden = sum(sum(intensities(incl, ...
-                (nChan*(i-1)+1):nChan*i,:),2),3);
-            S_tr = Inum./Iden;
+            S_tr = s(:,n);
             S_tr(S_tr == Inf) = 1000000; % prevent for Inf
             S_tr(S_tr == -Inf) = -1000000; % prevent for Inf
 
@@ -3135,7 +3132,11 @@ if strcmp(saveNclose, 'Yes')
     if ~isequal(p.proj{proj}.coord_incl,h.tm.molValid) || ...
             ~isequal(p.proj{proj}.molTag,h.tm.molTag) || ...
             ~isequal(p.proj{proj}.molTagNames,h.tm.molTagNames)
-        p.proj{proj}.ES = cell(1,size(p.proj{proj}.FRET,1));
+        for i = 1:size(p.proj{proj}.ES,2)
+            if ~(numel(p.proj{proj}.ES{i})==1 && isnan(p.proj{proj}.ES{i}))
+                p.proj{proj}.ES{i} = [];
+            end
+        end
     end
     
     p.proj{proj}.coord_incl = h.tm.molValid;
@@ -4494,7 +4495,7 @@ proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
 nFRET = size(p.proj{proj}.FRET,1);
-nS = numel(p.proj{proj}.S);
+nS = size(p.proj{proj}.S,1);
 
 dat3 = get(h.tm.axes_histSort,'userdata');
 data = get(h.tm.popupmenu_selectData,'value');
@@ -4582,7 +4583,7 @@ nExc = numel(exc);
 FRET = p.proj{proj}.FRET;
 nFRET = size(FRET,1);
 S = p.proj{proj}.S;
-nS = numel(S);
+nS = size(S,1);
 
 % get stored data
 dat1 = get(h.tm.axes_ovrAll_1,'userdata');

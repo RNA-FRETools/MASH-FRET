@@ -170,7 +170,8 @@ end
 if nS > 0
     str_s = '';
     for i = 1:nS
-        str_s = cat(2,str_s,'\n\tof ',labels{S(i)});
+        str_s = cat(2,str_s,'\n\tfor pair ',labels{S(i,1)},'-',...
+            labels{S(i,2)});
     end
     str_s = cat(2,str_s,'\n');
 else

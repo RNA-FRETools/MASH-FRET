@@ -61,7 +61,7 @@ elseif size(p.proj{proj}.S_DTA,2) > nS*nMol
 end
 
 % reset ES histograms
-if ~isequal(r{2},q{2})
+if ~isequal(r{2},q{2}) || ~isequal(r{3},q{3})
     if nFRET>0
         p.proj{proj}.ES = cell(1,nFRET);
     else

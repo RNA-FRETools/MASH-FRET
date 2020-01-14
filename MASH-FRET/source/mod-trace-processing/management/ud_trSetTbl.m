@@ -20,21 +20,24 @@ if ~isempty(p.proj)
     exc = projPrm.excitations;
 
     p.defProjPrm.mol = p.proj{proj}.curr{mol};
+    p.defProjPrm.general{4} = p.proj{proj}.fix{4};
 
     % modified by MH, 13.1.2020
 %     mol_prev = p.defProjPrm.mol{5};
     de_bywl = p.defProjPrm.general{4}{2};
     
-    % reorder direct excitation coefficients according to laser wavelength
-    % (in case project parameters were changed)
-    for c = 1:nC
-        if sum(exc==chanExc(c)) % emitter-specific illumination defined and 
-            exc_but_c = exc(exc~=chanExc(c));
-            [o,id] = sort(exc_but_c,'ascend'); % chronological index sorted as wl
-            
-            % modified by MH, 13.1.2020
-%             p.defProjPrm.mol{5}{2}(:,c) = mol_prev{2}(id,c);
-            p.defProjPrm.general{4}{2}(:,c) = de_bywl(id,c);
+    if size(de_bywl,1)>0
+        % reorder direct excitation coefficients according to laser wavelength
+        % (in case project parameters were changed)
+        for c = 1:nC
+            if sum(exc==chanExc(c)) % emitter-specific illumination defined and 
+                exc_but_c = exc(exc~=chanExc(c));
+                [o,id] = sort(exc_but_c,'ascend'); % chronological index sorted as wl
+
+                % modified by MH, 13.1.2020
+    %             p.defProjPrm.mol{5}{2}(:,c) = mol_prev{2}(id,c);
+                p.defProjPrm.general{4}{2}(:,c) = de_bywl(id,c);
+            end
         end
     end
     

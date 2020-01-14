@@ -308,7 +308,7 @@ end
 p.itg_expMolPrm = adjustParam('itg_expMolPrm', p_exp, p_input);
 p.itg_expFRET = adjustParam('itg_expFRET', [], p_input);
 p.itg_expS = adjustParam('itg_expS', [], p_input);
-if size(p.itg_expS,2)>1
+if ~isempty(p.itg_expS) && size(p.itg_expS,2)~=2
     p.itg_expS = [];
 end
 

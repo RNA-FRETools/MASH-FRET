@@ -110,17 +110,22 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
         % modified by MH, 13.1.2020
 %         mol_prev = p.proj{i}.def.mol{5};
         de_bywl = p.proj{i}.def.general{4}{2};
+        
+        if size(de_bywl,2)>0
+            for c = 1:nChan
+                if sum(exc==chanExc(c)) % emitter-specific illumination
+                    % reorder the direct excitation coefficients according to 
+                    % laser chronological order
+                    exc_but_c = exc(exc~=chanExc(c));
+                    if isempty(exc_but_c)
+                        continue
+                    end
+                    [o,id] = sort(exc_but_c,'ascend'); % chronological index sorted as wl
 
-        for c = 1:nChan
-            if sum(exc==chanExc(c)) % emitter-specific illumination
-                % reorder the direct excitation coefficients according to 
-                % laser chronological order
-                exc_but_c = exc(exc~=chanExc(c));
-                [o,id] = sort(exc_but_c,'ascend'); % chronological index sorted as wl
-                
-                % modified by MH, 13.1.2020
-%                 p.proj{i}.def.mol{5}{2}(id,c) = gen_prev{2}(:,c);
-                p.proj{i}.def.general{4}{2}(id,c) = de_bywl(:,c);
+                    % modified by MH, 13.1.2020
+    %                 p.proj{i}.def.mol{5}{2}(id,c) = gen_prev{2}(:,c);
+                    p.proj{i}.def.general{4}{2}(id,c) = de_bywl(:,c);
+                end
             end
         end
 

@@ -70,7 +70,7 @@ nMol = size(s.intensities,2)/nChan;
 s.FRET = adjustParam('FRET', [], s_in);
 nFRET = size(s.FRET,1);
 s.S = adjustParam('S', [], s_in);
-nS = numel(s.S);
+nS = size(s.S,1);
 s.intensities_bgCorr = adjustParam('intensities_bgCorr',nan(L,nMol*nChan), ...
     s_in);
 s.intensities_crossCorr = adjustParam('intensities_crossCorr', ...
@@ -243,11 +243,13 @@ end
 if size(s.FRET,2) > 2
     s.FRET = s.FRET(:,1:2);
 end
-if size(s.S,2) > 1
-    don_exc = s.S(:,1)';
-    exc = s.excitations(don_exc);
-    [o,don_chan,o] = find(s.chanExc==exc);
-    s.S = don_chan';
+if nS>0 && size(s.S,2)~=2
+    [S,s_incl] = getCorrectSid(s.S,s.FRET,s.excitations,s.chanExc);
+    s.S = S;
+    nS = size(s.S,1);
+    if ~isempty(s.S_DTA)
+        s.S_DTA = s.S_DTA(:,repmat(s_incl,[1,nMol]));
+    end
 end
 
 %% check colour entries

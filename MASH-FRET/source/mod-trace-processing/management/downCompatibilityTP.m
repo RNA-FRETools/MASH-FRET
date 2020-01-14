@@ -22,6 +22,8 @@ function proj = downCompatibilityTP(proj,n)
 nChan = proj.nb_channel;
 nExc = proj.nb_excitations;
 chanExc = proj.chanExc;
+nFRET = size(proj.FRET,1);
+nS = size(proj.S,1);
 
 % added by MH, 29.3.2019 reorder already-existing Bt coefficient values 
 % into new format: sum Bt coefficients over the different excitations and 
@@ -117,7 +119,7 @@ end
 
 % if the molecule parameter "window size" does not belong to 
 % the background correction parameters
-if proj.is_movie
+if proj.is_movie && size(proj.prm{n},2)>=3
     for l = 1:nExc
         for c = 1:nChan
             if size(proj.prm{n}{3},2)>=4 && proj.prm{n}{3}(4)>0
@@ -141,7 +143,29 @@ if proj.is_movie
             end
         end
     end
+    if size(proj.prm{n}{3},2)>=4
+        proj.prm{n}{3}(4) = [];
+    end
 end
-if size(proj.prm{n}{3},2)>=4
-    proj.prm{n}{3}(4) = [];
+
+% remove impossible stoichiometry calculations (accroding to new
+% stoichiometry definition)
+if size(proj.prm{n},2)>=2 && ...
+        size(proj.prm{n}{2}{2},1)~=(nFRET+nS+2+nExc*nChan)
+    sz = size(proj.prm{n}{2}{2},1);
+    diffsz = sz-(nFRET+nS+2+nExc*nChan);
+    id_s = (nFRET+1):(sz-2-nExc*nChan);
+    id_excl = id_s((end-diffsz+1):end);
+    if ~isempty(id_excl)
+        proj.prm{n}{2}{2}(id_excl,:) = []; % re-arrange photobleaching
+        proj.prm{n}{4}{2}(:,:,id_excl) = []; % rearrange DTA (param)
+        proj.prm{n}{4}{3}(id_excl,:) = []; % rearrange DTA (states)
+        proj.prm{n}{4}{4}(:,:,id_excl) = []; % rearrange DTA (thresh)
+    end
+end
+
+% recover gamma/beta correction method
+if size(proj.prm{n},2)>=6 && size(proj.prm{n}{6},2)>=2 && ...
+        size(proj.prm{n}{6}{2},2)<nFRET
+   proj.prm{n}{6}{2} = repmat(proj.prm{n}{6}{2}(1),1,nFRET);
 end
