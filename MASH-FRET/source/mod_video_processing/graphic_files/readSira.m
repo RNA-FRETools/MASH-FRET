@@ -255,10 +255,15 @@ else
         end
 
         fseek(f,fCurs,-1);
-        fseek(f,((pixelX*pixelY+1)*2*(1+double(is_sgl))*(n-1)),'cof');
+        fseek(f,((pixelX*pixelY+double(is_os))*2*(1+double(is_sgl))*(n-1)),...
+            'cof');
         frameCur = fread(f,(pixelX*pixelY+double(is_os)),[prec '=>single']);
+        try
         frameCur = reshape(frameCur(1:end-double(is_os)),[pixelY,pixelX]) - ...
             single(is_os)*frameCur(end);
+        catch err
+            pouet = [];
+        end
     end
 end
 
@@ -275,66 +280,4 @@ data = struct('cycleTime', cycleTime, ...
               'movie', movie);
 
 
-function [vers,is_sgl,is_os] = getSiraDat(fullFname,h_fig)
 
-vers = [];
-is_sgl = false;
-is_os = false;
-
-% check if the movie can be read and is from SIRA
-f = fopen(fullFname, 'r');
-if f < 0
-    if ~isempty(h_fig)
-        updateActPan('Could not open the file, no file loaded.',h_fig,...
-            'error');
-    else
-        disp('Error: could not open the file, no file loaded.');
-    end
-    fclose(f);
-    return;
-end
-
-tline = fgetl(f);
-if isempty(strfind(tline,'SIRA exported binary graphic')) && ...
-    isempty(strfind(tline,'MASH smFRET exported binary graphic')) && ...
-    isempty(strfind(tline,'MASH-FRET exported binary graphic'))
-    if ~isempty(h_fig)
-        updateActPan(['Not a SIRA exported graphic file, no file ',...
-            loaded.'], h_fig, 'error');
-    else
-        disp('Not a SIRA exported graphic file, no file loaded.');
-    end
-    fclose(f);
-    return;
-end
-
-if isempty(tline)
-    vers = 'older than 1.001';
-else
-    if ~isempty(strfind(tline,'MASH-FRET exported binary graphic Version'))
-        vers = tline(length(['MASH-FRET exported binary graphic ' ...
-            'Version: ']):end);
-    elseif ~isempty(strfind(tline,['MASH smFRET exported binary graphic ',...
-            'Version']))
-        vers = tline(length(['MASH smFRET exported binary graphic ' ...
-            'Version: ']):end);
-    end
-    if isempty(vers)
-        vers = 'older than 1.003.37';
-    else
-        if str2num(vers(1:end-3)) == 1.003
-            subvers = getValueFromStr('1.003.', vers);
-            if subvers>=39
-                is_os = true;
-            end
-            if subvers>=41
-                is_sgl = true;
-            end
-        %elseif str2num(vers)) > 1.003
-        else
-            is_os = true;
-            is_sgl = true;
-        end
-    end
-end
-fclose(f);
