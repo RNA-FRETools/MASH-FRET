@@ -46,11 +46,11 @@ E_AD = [];
 S_AD = [];
 id_m = [];
 if ~isempty(fact)
-    gamma = repmat(fact(1,:),[L,1]);
-    beta = repmat(fact(2,:),[L,1]);
+    gamma = fact(1,:);
+    beta = fact(2,:);
 else
-    gamma = ones(L,nF);
-    beta = ones(L,nF);
+    gamma = ones(1,nF);
+    beta = ones(1,nF);
 end
 
 lb = 0;
@@ -65,10 +65,9 @@ end
 
 for m = mls(m_i)
     E_AD = cat(1,E_AD,calcFRET(nC,nExc,exc,chanExc,FRET,...
-        I_den(l_i(:,m),((m-1)*nC+1):m*nC,:),gamma(l_i(:,m),1)));
+        I_den(l_i(:,m),((m-1)*nC+1):m*nC,:),gamma));
     S_AD = cat(1,S_AD,calcS(exc,chanExc,S,FRET,...
-        I_den(l_i(:,m),((m-1)*nC+1):m*nC,:),gamma(l_i(:,m),1),...
-        beta(l_i(:,m),1)));
+        I_den(l_i(:,m),((m-1)*nC+1):m*nC,:),gamma,beta));
     id_m = cat(2,id_m,repmat(insubgroup(:,m),1,sum(l_i(:,m))));
     
     if lb

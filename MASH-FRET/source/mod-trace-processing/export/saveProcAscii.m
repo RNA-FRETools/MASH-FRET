@@ -269,13 +269,6 @@ h.barData.prev_var = h.barData.curr_var;
 guidata(h_fig, h);
 % -------------------------------------------------------------------------
 
-if fromTT
-    gamma = p.proj{proj}.prm{m}{6}{1}(1,:);
-    beta = p.proj{proj}.prm{m}{6}{1}(2,:);
-else
-    gamma = ones(1,nFRET);
-    beta = ones(1,nFRET);
-end
 gammaAll = NaN(nMol,nFRET);  % added by FS, 19.3.2018
 
 n = 0;
@@ -331,6 +324,14 @@ try
             str_xp = getStrPrm(p.proj{proj}, m, mol_incl&mol_incl_tag,...
                 h_fig);
         end
+        
+        if fromTT
+            gamma = p.proj{proj}.prm{m}{6}{1}(1,:);
+            beta = p.proj{proj}.prm{m}{6}{1}(2,:);
+        else
+            gamma = ones(1,nFRET);
+            beta = ones(1,nFRET);
+        end
 
         %% export traces
 
@@ -379,7 +380,7 @@ try
                 S_DTA_all = S_DTA(incl,(m-1)*nS+1:m*nS);
 
                 % format Stoichiometry data
-                [head_fret,fmt_fret,dat_fret] = formatS2File(exc,chanExc,...
+                [head_s,fmt_s,dat_s] = formatS2File(exc,chanExc,...
                     [times,frames],cat(2,S_all,S_DTA_all),S);
                 
                 % write data to stoichiometry file
@@ -457,25 +458,25 @@ try
                     end
                 end
             end
-
-            % save parameters
-            if saveTr && fromTT && savePrm==1 
-                % write parameters to file
-                if ~writeDat2file(cat(2,pname_xp,name_mol),'.log',...
-                        {'',str_xp,[]},[fromTT,0],'',h_fig)
-                    return;
-                end
+        end
+        
+        % save parameters
+        if saveTr && fromTT && savePrm==1 
+            % write parameters to file
+            if ~writeDat2file(cat(2,pname_xp,name_mol),'.log',...
+                    {'',str_xp,[]},[fromTT,0],'',h_fig)
+                return
             end
-
-            % format gamma factor data
-            % added by FS, 19.3.2018
-            if saveTr && saveGam
-                for i = 1:nFRET
-                    if fromTT
-                        gammaAll(m,i) = p.proj{proj}.prm{m}{6}{1}(1,i);
-                    else
-                        gammaAll(m,i) = 1;
-                    end
+        end
+        
+        % format gamma factor data
+        % added by FS, 19.3.2018
+        if saveTr && saveGam
+            for i = 1:nFRET
+                if fromTT
+                    gammaAll(m,i) = p.proj{proj}.prm{m}{6}{1}(1,i);
+                else
+                    gammaAll(m,i) = 1;
                 end
             end
         end
@@ -1134,7 +1135,12 @@ if saveFig && figFmt == 1 % *.pdf
     fname_pdf = cat(2,name,'_all',num2str(N),'.pdf');
     fname_pdf = overwriteIt(fname_pdf,pname_fig,h_fig);
     if isempty(fname_pdf)
-        return;
+        return
+    end
+    
+    % delete existing file to not append figures
+    if exist(cat(2,pname_fig,fname_pdf),'file');
+        delete(cat(2,pname_fig,fname_pdf));
     end
     
     % write data to file

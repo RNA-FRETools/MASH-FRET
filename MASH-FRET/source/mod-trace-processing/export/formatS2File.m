@@ -1,5 +1,6 @@
 function [head,fmt,dat] = formatS2File(exc,chanExc,xdat,s_m,S)
 
+nChan = size(chanExc,2);
 nExc = numel(exc);
 times = xdat(:,1);
 frames = xdat(:,2);
