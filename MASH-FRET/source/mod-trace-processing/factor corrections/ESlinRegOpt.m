@@ -327,7 +327,7 @@ nTag = size(str_tag,2);
 if nTag>1
     str_tag = cat(2,'All molecules',str_tag);
 end
-if prm(fret,1)>nTag
+if prm(fret,1)>size(str_tag,2)
     prm(fret,1) = 1;
 end
 set(q.popupmenu_tag,'string',str_tag,'value',prm(fret,1));

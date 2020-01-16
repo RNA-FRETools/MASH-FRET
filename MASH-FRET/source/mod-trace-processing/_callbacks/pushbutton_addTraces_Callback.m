@@ -121,12 +121,12 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
                 end
             end
             betas = cell2mat(betasCell');
-        end
-        if size(betas,1) ~= nMolFiles
-            updateActPan(cat(2,'number of beta factors does not ',...
-                'match the number of ASCII files loaded. Set all ',...
-                'beta factors to 1.'), h_fig, 'error');
-            isBeta = false;
+            if size(betas,1) ~= nMolFiles
+                updateActPan(cat(2,'number of beta factors does not ',...
+                    'match the number of ASCII files loaded. Set all ',...
+                    'beta factors to 1.'), h_fig, 'error');
+                isBeta = false;
+            end
         end
     end
 
