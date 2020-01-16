@@ -97,7 +97,7 @@ hpan5 = p.mgpan+p.mg/2+p.mg/fact+hpop0+hedit0;
 hpan6 = p.mgpan+p.mg/2+p.mg/fact+2*hpop0+2*htxt0;
 hpan7 = p.mgpan+htxt0+hpop0+p.mg/fact+htxt0+hedit0+p.mg;
 hpan8 = p.mgpan+p.mg+p.mg/fact+2*hpop0+2*htxt0;
-mgpan = (pospan(4)-2*p.mg-hpan2-hpan3-hpan4-hpan5-hpan6-hpan7)/5;
+mgpan = (pospan(4)-p.mg-p.mg/2-hpan2-hpan3-hpan4-hpan5-hpan6-hpan7)/5;
 waxes0 = wrelaxes*(pospan(3)-4*p.mg-p.mg/2-wpan0-wpan1);
 waxes1 = (1-wrelaxes)*(pospan(3)-4*p.mg-p.mg/2-wpan0-wpan1);
 haxes0 = pospan(4)-3*p.mg-hpan8;
@@ -204,7 +204,7 @@ h.uipanel_TP_plot = uipanel('parent',h_pan,'units',p.posun,...
 h = buildPanelTPplot(h,p);
 
 x = pospan(3)-p.mg-wpan1;
-y = pospan(4)-p.mg-hpan2;
+y = pospan(4)-p.mg/2-hpan2;
 
 h.uipanel_TP_subImages = uipanel('parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
