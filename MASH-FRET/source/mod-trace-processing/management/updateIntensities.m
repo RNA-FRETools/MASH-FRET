@@ -3,6 +3,11 @@ function [p,opt2] = updateIntensities(opt2,m,p)
 proj = p.curr_proj;
 nC = p.proj{proj}.nb_channel;
 
+isCrossCorr = ~isempty(p.proj{proj}.intensities_crossCorr) && isempty(find(...
+    isnan(p.proj{proj}.intensities_crossCorr(:,((m-1)*nC+1):m*nC,:)),1));
+if ~isCrossCorr
+    opt2 = 'cross';
+end
 isBgCorr = ~isempty(p.proj{proj}.intensities_bgCorr) && isempty(find(...
     isnan(p.proj{proj}.intensities_bgCorr(:,((m-1)*nC+1):m*nC,:)),1));
 if ~isBgCorr

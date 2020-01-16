@@ -33,7 +33,6 @@ end
 
 % project parameters
 proj = p.curr_proj;
-mol = p.curr_mol(proj);
 exc = p.proj{proj}.excitations;
 nChan = p.proj{proj}.nb_channel;
 nExc = numel(exc);

@@ -24,11 +24,12 @@ elseif ~isequal(curr{3},prm{3})
     opt = 'ttBg';
     p.proj{proj}.ES = cell(1,nF);
     p.proj{proj}.intensities_bgCorr(:,((m-1)*nC+1):m*nC,:) = NaN;
-    
-elseif ~isequal(curr{5},prm{5})
-    opt = 'cross';
-    p.proj{proj}.ES = cell(1,nF);
-    p.proj{proj}.intensities_crossCorr(:,((m-1)*nC+1):m*nC,:) = NaN;
+
+% cancelled by MH, 16.1.2020
+% elseif ~isequal(curr{5},prm{5})
+%     opt = 'cross';
+%     p.proj{proj}.ES = cell(1,nF);
+%     p.proj{proj}.intensities_crossCorr(:,((m-1)*nC+1):m*nC,:) = NaN;
     
 elseif ~isequal(curr{1},prm{1})
     opt = 'denoise';
