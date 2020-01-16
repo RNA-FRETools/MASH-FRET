@@ -6,7 +6,10 @@ function saveProcAscii(h_fig, p, xp, pname, name)
 % "pname" >> destination folder
 % "name" >> destination file name
 
-%% Last update by MH, 24.4.2019
+%% Last update by MH, 16.1.2019
+% --> export beta factors
+%
+% update by MH, 24.4.2019
 % --> adapt code to new molecule tag structure
 %
 % update: by MH 22.4.2019 by MH
@@ -112,7 +115,7 @@ if saveTr
     saveSmart = false;
     saveQub = false;
     saveEbfret = false;
-    saveGam = false;
+    saveFact = false;
     
     if sum(double(xp.traces{1}(2) == [1 7]))
         saveAscii = true; % one file/mol
@@ -140,7 +143,7 @@ if saveTr
         pname_ebfret = setCorrectPath(cat(2,pname,'traces_ebFRET'),h_fig);
     end
     if xp.traces{2}(6) && nFRET > 0
-        saveGam = true;  % added by FS, 19.3.2018
+        saveFact = true;  % added by FS, 19.3.2018
     end
     saveTr_I = xp.traces{2}(1);
     saveTr_fret = ~~xp.traces{2}(2) & nFRET > 0;
@@ -270,6 +273,7 @@ guidata(h_fig, h);
 % -------------------------------------------------------------------------
 
 gammaAll = NaN(nMol,nFRET);  % added by FS, 19.3.2018
+betaAll = NaN(nMol,nS); % added by MH, 16.1.2020
 
 n = 0;
 try
@@ -471,12 +475,14 @@ try
         
         % format gamma factor data
         % added by FS, 19.3.2018
-        if saveTr && saveGam
+        if saveTr && saveFact
             for i = 1:nFRET
                 if fromTT
                     gammaAll(m,i) = p.proj{proj}.prm{m}{6}{1}(1,i);
+                    betaAll(m,i) = p.proj{proj}.prm{m}{6}{1}(2,i);
                 else
                     gammaAll(m,i) = 1;
+                    betaAll(m,i) = 1;
                 end
             end
         end
@@ -904,7 +910,7 @@ end
 
 % added by FS, 19.3.2018
 if saveTr
-    if nFRET>0 && saveGam
+    if nFRET>0 && saveFact
         
         % build file name
         curs = strfind(name_mol, '_mol');
@@ -916,25 +922,38 @@ if saveTr
         fname_gam = cat(2,name,'.gam');
         fname_gam = overwriteIt(fname_gam,pname_xp,h_fig);
         if isempty(fname_gam)
-            return;
+            return
+        end
+        fname_bet = cat(2,name,'.bet');
+        fname_bet = overwriteIt(fname_bet,pname_xp,h_fig);
+        if isempty(fname_bet)
+            return
         end
         
         % write data to file
-        f = fopen(cat(2,pname_xp,fname_gam), 'Wt');
+        f1 = fopen(cat(2,pname_xp,fname_gam), 'Wt');
+        f2 = fopen(cat(2,pname_xp,fname_bet), 'Wt');
         
-        % modified by MH, 3.4.2019
-%         fmt = repmat('%0.3f\t',nFRET);
         fmt = repmat('%0.3f\t',1,nFRET);
         
         fmt(end) = 'n';
         
-        % modified by MH, 3.4.2019
-%         gammaAll(isnan(gammaAll)) = [];
-%         fprintf(f, fmt, gammaAll);
         gammaAll(~~sum(isnan(gammaAll),2),:) = [];
-        fprintf(f, fmt, gammaAll');
+        betaAll(~~sum(isnan(betaAll),2),:) = [];
         
-        fclose(f);
+        head = '';
+        for i = 1:nFRET
+            head = cat(2,head,'FRET',num2str(FRET(i,1)),'-',...
+                num2str(FRET(i,2)),'\t');
+        end
+        head(end) = 'n';
+        fprintf(f1, head);
+        fprintf(f2, head);
+        fprintf(f1, fmt, gammaAll');
+        fprintf(f2, fmt, betaAll');
+        
+        fclose(f1);
+        fclose(f2);
     end
 end
 
@@ -973,10 +992,10 @@ if saveTr
         str = cat(2,str,'Parameters saved to files in folder: ',pname_xp,...
             '\n');
     end
-    if saveGam
+    if saveFact
         % update action
-        str = cat(2,str,'Gamma factors saved to  file: ',name,'.gam in ',...
-            'folder: ',pname_xp,'\n');
+        str = cat(2,str,'Gamma and beta factors saved to files: ',...
+            fname_gam,' and ',fname_bet,' in folder: ',pname_xp,'\n');
     end
 
     for j = 1:nFRET

@@ -35,6 +35,11 @@ col_start = p{1}{1}(5); col_end = p{1}{1}(6);
 nChan = p{1}{1}(7);
 nExc = p{1}{1}(8); wl = p{1}{2}(1:nExc);
 isdFRET = p{1}{1}(9); col_dFRET = p{1}{1}(10);
+isGam = p{6}{1} & sum(p{6}{2}) & ~isempty(p{6}{3});
+isBet = p{6}{4} & sum(p{6}{5}) & ~isempty(p{6}{6}) ;
+
+% det default project parameters
+FRET = [];
 
 exp_param = {'Movie name' '' ''
     'Molecule name' '' ''
@@ -75,6 +80,32 @@ else
     coord_tot = [];
     if coordInTrace
         row_coord = p{4}(2);
+    end
+end
+
+if isGam
+    gam_folder = p{6}{2};
+    gam_file_1 = p{6}{3};
+    content = importdata(cat(2,gam_folder,gam_file_1{1}));
+    if isstruct(content)
+        pairs = getFRETfromFactorFiles(content.colheaders);
+        if ~isempty(pairs)
+            FRET = pairs;
+        end
+    end
+end
+
+if isBet
+    bet_folder = p{6}{5};
+    bet_file_1 = p{6}{6};
+    content = importdata(cat(2,bet_folder,bet_file_1{1}));
+    if isstruct(content)
+        pairs = getFRETfromFactorFiles(content.colheaders);
+        if ~isempty(pairs)
+            if isempty(FRET) || (~isempty(FRET) && ~isequal(pairs,FRET))
+                FRET = pairs;
+            end
+        end
     end
 end
 
@@ -152,7 +183,7 @@ try
             updateActPan(['Unable to load discretized FRET from file: ' ...
                 fname{i} '\nPlease check import options.'], h_fig, ...
                 'error');
-            return;
+            return
         end
         
         % get data dimensions
@@ -163,6 +194,15 @@ try
         % added by MH, 3.4.2019
         if isdFRET
             nFRET = size(dfretNum,2);
+            if ~isempty(FRET) && nFRET~=size(FRET,1)
+                updateActPan(['Unable to load discretized FRET from file: ' ...
+                    fname{i} '\nThe number of FRET pairs is not ',...
+                    'consistent with the correction factor files.'], h_fig, ...
+                    'error');
+                return
+            elseif isempty(FRET)
+                FRET = [1 2];
+            end
         end
         
         % get differences in intensity-time traces length in current file
@@ -352,6 +392,9 @@ if isCoord && size(intensities,2)/nChan ~= size(coord_tot,1)
     return;
 end
 
+nS = 0;
+nMol = size(fname,2);
+
 s.date_creation = datestr(now);
 s.date_last_modif = s.date_creation;
 s.MASH_version = getValueFromStr('MASH-FRET ', ...
@@ -379,11 +422,7 @@ s.nb_excitations = numel(wl);
 s.pix_intgr = [1 1]; % intgr. area dim. + nb of intgr pix
 s.cnt_p_pix = 1; % intensities in counts per pixels
 s.cnt_p_sec = 0; % intensities in counts per second
-if isdFRET
-    s.FRET = [1 2];
-else
-    s.FRET = [];
-end
+s.FRET = FRET;
 s.S = [];
 
 s.chanExc = zeros(1,nChan);
@@ -394,14 +433,17 @@ for c = 1:nChan
     end
 end
 
-nS = 0;
-
 s.intensities = intensities;
 s.intensities_bgCorr = intensities;
 s.intensities_crossCorr = intensities;
 s.intensities_denoise = intensities;
 s.intensities_DTA = nan(size(intensities));
+
+if isempty(fret_DTA) && size(FRET,1)>0
+    fret_DTA = nan([size(intensities,1) size(FRET,1)*nMol]);
+end
 s.FRET_DTA = fret_DTA;
+
 s.S_DTA = nan([size(intensities,1) nS*nMol]);
 s.bool_intensities = incl;
 

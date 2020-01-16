@@ -82,13 +82,16 @@ else
     gen{2}(2) = nChan + 1; % + none
 end
 
-if nFRET > 1 && nS >1
+if nFRET>1 && nS>1
     gen{2}(3) = nFRET + nS + 4; % + none + all FRET + all S + all
     
-elseif nS > 1 || nFRET > 1
+elseif (nS>1 && nFRET==1) || (nFRET>1 && nS==1)
     gen{2}(3) = nFRET + nS + 3; % + none + all FRET/all S + all
     
-elseif nFRET == 1 && nS == 1
+elseif (nS>1 && nFRET==0) || (nFRET>1 && nS==0)
+    gen{2}(3) = nFRET + nS + 2; % + none + all FRET/all S
+    
+elseif nFRET==1 && nS==1
     gen{2}(3) = nFRET + nS + 2; % + none + all 
     
 elseif nFRET>0 || nS>0

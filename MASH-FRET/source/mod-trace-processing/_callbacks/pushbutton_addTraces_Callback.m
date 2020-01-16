@@ -72,19 +72,61 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
     p.proj = [p.proj dat];
     
     % load gamma factor file if it exists; added by FS, 28.3.2018
+    isBeta = false;
+    isGamma = false;
     [o,o,fext] = fileparts(fname{1});
     if ~strcmp(fext, '.mash') % if ASCII file and not MASH project is loaded
-        % collect gamma files from import options, added by MH, 28.3.2019
+        nMolFiles = numel(fname);
+        
+        % added by MH, 28.3.2019
         pnameGamma = p.impPrm{6}{2};
         fnameGamma = p.impPrm{6}{3};
         
-        if ~isempty(fnameGamma) && ~isempty(pnameGamma) && sum(pnameGamma)
+        isGamma = p.impPrm{6}{1} & ~isempty(fnameGamma) & sum(pnameGamma);
+        if isGamma
             gammasCell = cell(1,length(fnameGamma));
             for f = 1:length(fnameGamma)
                 filename = [pnameGamma fnameGamma{f}];
-                gammasCell{f} = importdata(filename);
+                content = importdata(filename);
+                if isstruct(content)
+                    gammasCell{f} = content.data;
+                else
+                    gammasCell{f} = content;
+                end
             end
             gammas = cell2mat(gammasCell');
+            
+            % added by FS, 28.3.2018
+            if size(gammas,1) ~= nMolFiles
+                updateActPan(cat(2,'number of gamma factors does not ',...
+                    'match the number of ASCII files loaded. Set all ',...
+                    'gamma factors to 1.'), h_fig, 'error');
+                isGamma = false;
+            end
+        end
+        
+        % added by MH, 16.1.2020
+        pnameBeta = p.impPrm{6}{5};
+        fnameBeta = p.impPrm{6}{6};
+        isBeta = p.impPrm{6}{4} & ~isempty(fnameBeta) & sum(pnameBeta);
+        if isBeta
+            betasCell = cell(1,length(fnameBeta));
+            for f = 1:length(fnameBeta)
+                filename = [pnameBeta fnameBeta{f}];
+                content = importdata(filename);
+                if isstruct(content)
+                    betasCell{f} = content.data;
+                else
+                    betasCell{f} = content;
+                end
+            end
+            betas = cell2mat(betasCell');
+        end
+        if size(betas,1) ~= nMolFiles
+            updateActPan(cat(2,'number of beta factors does not ',...
+                'match the number of ASCII files loaded. Set all ',...
+                'beta factors to 1.'), h_fig, 'error');
+            isBeta = false;
         end
     end
 
@@ -143,19 +185,8 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
             p.proj{i}.prm = p.proj{i}.prmTT;
             p.proj{i} = rmfield(p.proj{i}, 'prmTT');
         end
-        
-        % added by FS, 28.3.2018
+
         if ~strcmp(fext, '.mash')
-            if ~isempty(fnameGamma) && ~isempty(pnameGamma) && ...
-                    sum(pnameGamma)
-                if size(gammas,1) ~= nMol
-                    updateActPan(cat(2,'number of gamma factors does not ',...
-                        'match the number of ASCII files loaded. Set all ',...
-                        'gamma factors to 1.'), h_fig, 'error');
-                    fnameGamma = []; % set to empty (will not try to import any gamma factors from file)
-                end
-            end
-            
             % added by MH, 13.1.2020
             % reset cross-talks if ASCII import
             p.proj{i}.fix{4}{1} = zeros(nChan,nChan-1);
@@ -173,21 +204,42 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
             % defaults, used defaults
             p.proj{i}.curr{n} = adjustVal(p.proj{i}.prm{n}, ...
                 p.proj{i}.def.mol);
-            
+
             % added by FS, 28.3.2018
             % assign gamma value (assignment only works if number of values in .gam file equals the number of loaded restructured ASCII files)
-            if ~strcmp(fext, '.mash') % if ASCII file and not MASH project is loaded
-                if ~isempty(fnameGamma) && ~isempty(pnameGamma) && ...
-                        sum(pnameGamma)
-                    % set the gamma factor from the .gam file 
-                    % (FRET is calculated on the spot based on imported and corrected
-                    % intensities)
-                    p.proj{i}.curr{n}{6}{1} = gammas(n,:);
-                    
-                    % cancelled by MH, 13.1.2020
+            if isGamma
+                
+                % added by MH, 16.1.2020
+                nG = size(gammas,2);
+                if size(p.proj{i}.curr{n}{6}{1},2)<nG
+                    p.proj{i}.curr{n}{6}{1} = cat(2,...
+                        p.proj{i}.curr{n}{6}{1},ones(2,nG-...
+                        size(p.proj{i}.curr{n}{6}{1},2)));
+                end
+                
+                % modified by MH, 16.1.2020
+%                 % set the gamma factor from the .gam file 
+%                 % (FRET is calculated on the spot based on imported and corrected
+%                 % intensities)
+%                 p.proj{i}.curr{n}{6}{1} = gammas(n,:);
+                p.proj{i}.curr{n}{6}{1}(1,1:nG) = gammas(n,:);
+
+                % cancelled by MH, 13.1.2020
 %                     p.proj{i}.prm{n}{6}{1} = gammas(n,:);
 
+            end
+
+            % added by MH, 16.1.2020
+            if isBeta
+                % added by MH, 16.1.2020
+                nB = size(betas,2);
+                if size(p.proj{i}.curr{n}{6}{1},2)<nB
+                    p.proj{i}.curr{n}{6}{1} = cat(2,...
+                        p.proj{i}.curr{n}{6}{1},ones(2,nB-...
+                        size(p.proj{i}.curr{n}{6}{1},2)));
                 end
+                
+                p.proj{i}.curr{n}{6}{1}(2,1:nB) = betas(n,:);
             end
         end
     end

@@ -17,7 +17,7 @@ if ~isempty(p.proj)
 %     gammaOpt(h_fig);
     switch method
         case 0 % manual: load gamma from files
-            pushbutton_loadGamma_Callback(0,[],h_fig);
+            pushbutton_loadFactors_Callback(0,[],h_fig);
             
         case 1 % photobleaching-based: photo-bleaching otpions
             gammaOpt(h_fig);
