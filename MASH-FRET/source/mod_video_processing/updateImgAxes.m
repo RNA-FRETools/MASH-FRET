@@ -108,7 +108,8 @@ end
 % modified by MH, 29.11.2019
 % set(h.axes_movie, 'NextPlot', 'replace');
 set(h.axes_movie,'nextPlot','replacechildren','xlim',[0,h.movie.pixelX],...
-    'ylim',[0,h.movie.pixelY]);
+    'ylim',[0,h.movie.pixelY],'clim',...
+    [min(min(frameCur)),max(max(frameCur))]);
 
 if get(h.togglebutton_target, 'Value')
     set(0, 'CurrentFigure', h_fig);
