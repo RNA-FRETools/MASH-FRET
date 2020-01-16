@@ -45,7 +45,8 @@ for i = 1:nFRET
 
         [I_DA,stop,gamma,ok,str] = gammaCorr_pb(i,I_den,prm{3}(i,1:6),...
             prm_dta,p.proj{proj},h_fig);
-
+        
+        start = find(incl);
         p.proj{proj}.prm{m}{6}{3}(i,7) = stop*nExc;
 
         % set method to "manual" if gamma calculation did not converge
