@@ -143,15 +143,18 @@ for o = 1:O
         case h_pushbutton_bga_save
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('background analyzer'),obj(o),[2,1]));
-        case h.uipanel_TP_factorCorrections
+        case h.uipanel_TP_crossTalks
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('factor corrections'),obj(o),tbl));
+                getDocLink('cross-talks'),obj(o),tbl));
         case h.uipanel_TP_denoising
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('denoising'),obj(o),tbl));
         case h.uipanel_TP_photobleaching
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('photobleaching'),obj(o),tbl));
+        case h.uipanel_TP_factorCorrections
+            hBut = cat(2,hBut,mkbutton(cdata,...
+                getDocLink('factor corrections'),obj(o),tbl));
         case h.uipanel_TP_findStates
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('find states'),obj(o),tbl));
