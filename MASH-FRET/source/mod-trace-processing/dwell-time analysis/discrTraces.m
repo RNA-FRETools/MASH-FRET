@@ -163,12 +163,12 @@ if (toBottom && ~isDiscrBot) || ((~toBottom || toBottom == 2) && ...
             end
 
             if nS>0
-                % calculate FRET-time traces
-                s_tr = calcS(exc,chanExc,S,I_den,gamma,beta);
+                % calculate S-time traces
+                s_tr = calcS(exc,chanExc,S,FRET,I_den,gamma,beta);
                 
-                % calculate discretized FRET-time traces from discretized
+                % calculate discretized S-time traces from discretized
                 % intensity-time traces
-                s_st = calcS(exc,chanExc,S,top_DTA,gamma,beta);
+                s_st = calcS(exc,chanExc,S,FRET,top_DTA,gamma,beta);
             end
 
             % build discretized stoichiometry-time traces
@@ -201,7 +201,9 @@ if (toBottom && ~isDiscrBot) || ((~toBottom || toBottom == 2) && ...
 
                 % modify discretized stoichiometry-time trace preserving 
                 % only  those common changing points
-                bot_DTA(:,n) = get_discrFromCp(cp, s_tr, s_st);
+                S_tr = s_tr(:,n-nF);
+                S_st{1} = s_st(:,n-nF);
+                bot_DTA(:,n) = get_discrFromCp(cp, S_tr, S_st);
                 
                 % identify and sort resulting states
                 states_i = (sort(unique(bot_DTA(:,n)), 'descend'))';

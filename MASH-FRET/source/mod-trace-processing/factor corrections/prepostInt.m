@@ -6,14 +6,13 @@
 % combined function "gammaCorr.m" which is called by "updateTraces.m" (and
 % thus "updateFields.m").
 
-function [gamma,ok,str] = prepostInt(stop, I_D, I_A)
+function [gamma,ok,str] = prepostInt(stop, I_D, I_A, tol)
 
 ok = 0;
 gamma = 1;
 str = '';
 
 L = size(I_A,1);
-tol = 3; % tolerance around cutoff
 
 % determine DTA intensities prior to and after the calculated cutoff
 if (stop+tol)<L && (stop-tol)>1

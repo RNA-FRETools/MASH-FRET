@@ -20,6 +20,7 @@ function proj = downCompatibilityTP(proj,n)
 %    project/setDefPrm_traces.m)
 
 nChan = proj.nb_channel;
+exc = proj.excitations;
 nExc = proj.nb_excitations;
 chanExc = proj.chanExc;
 nFRET = size(proj.FRET,1);
@@ -83,11 +84,29 @@ if size(proj.prm{n},2)==5 && size(proj.prm{n}{5},2)==5
     proj.prm{n}{5} = [];
 end
 
-% added by MH, 13.1.2020: down compatibility by adding beta factors
-if size(proj.prm{n},2)>=6 && size(proj.prm{n}{6},2)>=1 && ...
-        size(proj.prm{n}{6}{1},1)==1
-    proj.prm{n}{6}{1} = cat(1,proj.prm{n}{6}{1},...
-        ones(1,size(proj.prm{n}{6}{1},2)));
+if size(proj.prm{n},2)>=6 
+    % added by MH, 13.1.2020: down compatibility by adding beta factors
+    if size(proj.prm{n}{6},2)>=1 && size(proj.prm{n}{6}{1},1)==1
+        proj.prm{n}{6}{1} = cat(1,proj.prm{n}{6}{1},...
+            ones(1,size(proj.prm{n}{6}{1},2)));
+    end
+    
+    % added by MH, 14.1.2020: recover gamma/beta correction method
+    if size(proj.prm{n}{6},2)>=2 && size(proj.prm{n}{6}{2},2)<nFRET
+        proj.prm{n}{6}{2} = repmat(proj.prm{n}{6}{2}(1),1,nFRET);
+    end
+    
+    % added by MH, 15.1.2020: recover param for photobleaching-based gamma 
+    % calculation, change "show cuttoff" to default laser for pb detection 
+    % and insert default tolerance (= 3)
+    if size(proj.prm{n}{6},2)>=3 && size(proj.prm{n}{6}{3},2)<8
+        ldon = ones(nFRET,1);
+        for i = 1:nFRET
+            ldon(i,1) = find(exc==chanExc(proj.FRET(i,1)));
+        end
+        proj.prm{n}{6}{3} = [ldon,proj.prm{n}{6}{3}(:,2:5),3*ones(nFRET,1),...
+            proj.prm{n}{6}{3}(:,6:end)];
+    end
 end
 
 % state sequences were previously calculated
@@ -164,8 +183,3 @@ if size(proj.prm{n},2)>=2 && ...
     end
 end
 
-% recover gamma/beta correction method
-if size(proj.prm{n},2)>=6 && size(proj.prm{n}{6},2)>=2 && ...
-        size(proj.prm{n}{6}{2},2)<nFRET
-   proj.prm{n}{6}{2} = repmat(proj.prm{n}{6}{2}(1),1,nFRET);
-end

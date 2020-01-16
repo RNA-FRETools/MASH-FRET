@@ -43,10 +43,10 @@ for i = 1:nFRET
             continue
         end
 
-        [I_DA,stop,gamma,ok,str] = gammaCorr_pb(i,I_den,prm{3}(i,2:5),...
+        [I_DA,stop,gamma,ok,str] = gammaCorr_pb(i,I_den,prm{3}(i,1:6),...
             prm_dta,p.proj{proj},h_fig);
 
-        p.proj{proj}.prm{m}{6}{3}(i,6) = stop*nExc;
+        p.proj{proj}.prm{m}{6}{3}(i,7) = stop*nExc;
 
         % set method to "manual" if gamma calculation did not converge
         if ~ok
@@ -85,9 +85,7 @@ for i = 1:nFRET
             for n = 1:N
                 if p.proj{proj}.curr{n}{6}{2}(i)==method(i)
                     p.proj{proj}.curr{n}{6}{1}(:,i) = round([gamma;beta],2);
-                    p.proj{proj}.prm{n}{6}{1}(:,i) = round([gamma;beta],2);
                     p.proj{proj}.curr{n}{6}{4}(i,:) = prm{4}(i,:);
-                    p.proj{proj}.prm{n}{6}{4}(i,:) = prm{4}(i,:);
 
                     % reset discretized FRET data
                     p.proj{proj}.FRET_DTA(:,((n-1)*nFRET+1):n*nFRET) = NaN;

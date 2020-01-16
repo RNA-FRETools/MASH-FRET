@@ -5,7 +5,11 @@ function def = setDefPrm_traces(p, proj)
 % "def" >> 1-by-n cell array containing molecule parameters for each of ...
 %          the n panels
 
-% Last update: by MH, 14.1.2020
+% Last update by MH, 15.1.2020
+% >> add parameter tolerance in photobleaching-based gamma calculation
+%  parameters
+%
+% update: by MH, 14.1.2020
 % >> make parameters for gamma/beta factor calculations dependent on the
 %  FRET pair (necessary for ES histograms)
 %
@@ -46,8 +50,11 @@ end
 def = p.defProjPrm;
 
 nChan = p.proj{proj}.nb_channel;
+exc = p.proj{proj}.excitations;
 nExc = p.proj{proj}.nb_excitations;
-nFRET = size(p.proj{proj}.FRET,1);
+chanExc = p.proj{proj}.chanExc;
+FRET = p.proj{proj}.FRET;
+nFRET = size(FRET,1);
 nS = size(p.proj{proj}.S,1);
 nFrames = size(p.proj{proj}.intensities,1)*nExc;
 isCoord = p.proj{proj}.is_coord;
@@ -263,14 +270,20 @@ mol{6}{1} = ones(2,nFRET);
 % mol{6}{2}(2) = 1;  % FRET pair index in photobleaching opt. window
 mol{6}{2} = zeros(1,nFRET);  % method (0: manual, 1: photobleaching, 2: linear regression)
 
-% modified by MH, 10.1.2020: store parameters in 6th cell
-% gamma correction via photobleaching, added by FS, 9.1.2018
-% nFRET x 7 matrix; columns are 'pbGamma checkbox', 'threshold', 
-% 'extra substract', 'min. cutoff frame', 'start frame', 'stop frame'
-% and 'prepostdiff' (i.e is there a difference in the intensity of the donor before and after the cutoff)
-% mol{5}{5} = [zeros(nFRET,1), 1000*ones(nFRET,1) ...
-%     zeros(nFRET,1), 100*ones(nFRET,1), ones(nFRET,1), nFrames*ones(nFRET,1), zeros(nFRET,1)];
-mol{6}{3} = repmat([0,1000,0,100,1,nFrames,0],nFRET,1);
+% modified by MH, 15.1.2020: insert default tolerance and change 'pbGamma checkbox' to laser used for photobleaching detection
+% % modified by MH, 10.1.2020: store parameters in 6th cell
+% % % gamma correction via photobleaching, added by FS, 9.1.2018
+% % % nFRET x 7 matrix; columns are 'pbGamma checkbox', 'threshold', 
+% % % 'extra substract', 'min. cutoff frame', 'start frame', 'stop frame'
+% % % and 'prepostdiff' (i.e is there a difference in the intensity of the donor before and after the cutoff)
+% % mol{5}{5} = [zeros(nFRET,1), 1000*ones(nFRET,1) ...
+% %     zeros(nFRET,1), 100*ones(nFRET,1), ones(nFRET,1), nFrames*ones(nFRET,1), zeros(nFRET,1)];
+% mol{6}{3} = repmat([1000,0,100,1,nFrames,0],nFRET,1);
+ldon = ones(nFRET,1);
+for i = 1:nFRET
+    ldon(i,1) = find(exc==chanExc(FRET(i,1)));
+end
+mol{6}{3} = [ldon,repmat([1000,0,100,1,3,nFrames,0],nFRET,1)];
 
 % added by MH, 10.1.2020: ES regression
 % [nFRET-by-7] subgroup,E limits, E intervals, 1/S limits, 1/S intervals

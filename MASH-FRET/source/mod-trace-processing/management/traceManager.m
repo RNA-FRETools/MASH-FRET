@@ -1991,8 +1991,7 @@ drawMask_slct(h_fig);
 % RB 2017-12-15: implement FRET-S-histograms in plot2
 if plot2 <= nChan*nExc+nFRET+nS
     bar(h.tm.axes_ovrAll_2, dat2.iv{plot2}, dat2.hist{plot2},'facecolor',...
-        dat1.color{plot2},'edgecolor', ...
-    dat1.color{plot2});
+        dat1.color{plot2},'edgecolor', dat1.color{plot2});
 
     xlabel(h.tm.axes_ovrAll_2, dat2.xlabel{plot2});
     ylabel(h.tm.axes_ovrAll_2, dat2.ylabel{plot2}); % RB 2018-01-04:

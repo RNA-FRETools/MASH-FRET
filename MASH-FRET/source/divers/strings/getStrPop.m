@@ -16,16 +16,16 @@ switch menu
     case 'bg_corr'
         labels = param{1}; exc = param{2}; clr = param{3};
         nChan = size(labels,2);
-        for i = 1:numel(exc)
-            for j = 1:nChan
+        for l = 1:numel(exc)
+            for c = 1:nChan
                 clr_bg_c = sprintf('rgb(%i,%i,%i)', ...
-                    round(clr{1}{i,j}(1:3)*255));
+                    round(clr{1}{l,c}(1:3)*255));
                 clr_fbt_c = sprintf('rgb(%i,%i,%i)', ...
-                    [255 255 255]*(sum(clr{1}{i,j}(1:3)) <= 1.5));
+                    [255 255 255]*(sum(clr{1}{l,c}(1:3)) <= 1.5));
                 str_pop = [str_pop ...
                     ['<html><span style= "background-color: ' ...
-                    clr_bg_c ';color: ' clr_fbt_c ';">' labels{j} ...
-                    ' at ' num2str(exc(i)) 'nm</span></html>']];
+                    clr_bg_c ';color: ' clr_fbt_c ';">' labels{c} ...
+                    ' at ' num2str(exc(l)) 'nm</span></html>']];
             end
         end
         

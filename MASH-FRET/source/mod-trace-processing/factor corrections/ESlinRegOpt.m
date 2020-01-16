@@ -34,20 +34,19 @@ limx0 = [-0.2,1.2];
 limy0 = [1,5];
 xlbl0 = 'FRET';
 ylbl0 = '1/S';
-str0 = 'data:';
-str1 = 'subgroup:';
-str2 = {'Select subgroup'};
-str3 = 'Emin';
-str4 = 'nbin';
-str5 = 'Emax';
-str6 = '1/Smin';
-str7 = 'nbin';
-str8 = '1/Smax';
-str9 = 'refresh calculations';
-str10 = cat(2,char(947),' =');
-str11 = cat(2,char(946),' =');
-str12 = 'show corrected ES';
-str13 = 'Save and close';
+str0 = 'subgroup:';
+str1 = {'Select subgroup'};
+str2 = 'Emin';
+str3 = 'nbin';
+str4 = 'Emax';
+str5 = '1/Smin';
+str6 = 'nbin';
+str7 = '1/Smax';
+str8 = 'refresh calculations';
+str9 = cat(2,char(947),' =');
+str10 = cat(2,char(946),' =');
+str11 = 'show corrected ES';
+str12 = 'Save and close';
 ttl0 = 'Factor calculation via linear regression';
 ttl1 = 'Results';
 
@@ -72,23 +71,26 @@ ttstr11 = wrapStrToWidth('<b>Export to MASH</b> the calculated gamma and beta-fa
 
 % get dimensions
 posfig = getPixPos(h_fig);
-wtxt0 = getUItextWidth(str1,fntun,fntsz,'normal',tbl);
-wtxt1 = getUItextWidth(str10,fntun,fntsz,'normal',tbl);
-wcb0 = getUItextWidth(str12,fntun,fntsz,'normal',tbl) + wbox;
+wtxt0 = getUItextWidth(str0,fntun,fntsz,'normal',tbl);
+wtxt1 = getUItextWidth(str9,fntun,fntsz,'normal',tbl);
+wcb0 = getUItextWidth(str11,fntun,fntsz,'normal',tbl) + wbox;
 wpan0 = mg+wcb0+mg;
 wpop0 = wpan0-wtxt0;
 wedit0 = (wpan0-2*mg/fact)/3;
 hpan0 = mgpan+mg+hedit0+mg/2+hedit0+mg+hedit0+mg+hbut0+mg;
-hfig = mg+hpop0+mg/2+hpop0+mg+htxt0+hedit0+mg/2+htxt0+hedit0+mg+hbut0+mg+...
+hfig = mg+hedit0+mg+hpop0+mg+htxt0+hedit0+mg/2+htxt0+hedit0+mg+hbut0+mg+...
     hpan0+mg;
 waxes0 = hfig-mg-mg;
 haxes0 = hfig-mg-mg;
 wfig = mg+wpan0+mg+waxes0+mg;
 
-str_dat = get(h.popupmenu_gammaFRET,'string');
 p = h.param.ttPr;
 proj = p.curr_proj;
+clr = p.proj{proj}.colours;
 fret = p.proj{proj}.fix{3}(8);
+str_dat = removeHtml(get(h.popupmenu_gammaFRET,'string'));
+bgcol = clr{2}(fret,1:3);
+fntcol = ones(1,3)*(sum(clr{2}(fret,1:3))<=1.5);
 
 q = struct();
 
@@ -101,32 +103,26 @@ h.figure_ESlinRegOpt = figure('units',posun,'numbertitle','off','menubar',...
 h_fig2 = h.figure_ESlinRegOpt;
 
 x = mg;
-y = hfig-mg-hpop0+(hpop0-htxt0)/2;
+y = hfig-mg-hpop0;
 
-q.text_data = uicontrol('style','text','parent',h_fig2,'units',posun,...
+q.edit_data = uicontrol('style','edit','parent',h_fig2,'units',posun,...
+    'fontunits',fntun,'fontsize',fntsz,'position',[x,y,wpan0,hpop0],...
+    'string',str_dat{fret+1},'backgroundcolor',bgcol,'foregroundcolor',...
+    fntcol,'enable','inactive');
+
+x = mg;
+y = y-mg-hpop0+(hpop0-htxt0)/2;
+
+q.text_tag = uicontrol('style','text','parent',h_fig2,'units',posun,...
     'fontunits',fntun,'fontsize',fntsz,'position',[x,y,wtxt0,htxt0],...
     'string',str0,'horizontalalignment','left');
 
 x = x+wtxt0;
 y = y-(hpop0-htxt0)/2;
 
-q.popupmenu_data = uicontrol('style','popupmenu','parent',h_fig2,'units',...
-    posun,'fontunits',fntun,'fontsize',fntsz,'position',[x,y,wpop0,hpop0],...
-    'string',str_dat{fret+1},'tooltipstring',ttstr0,'enable','inactive');
-
-x = mg;
-y = y-mg/2-hpop0+(hpop0-htxt0)/2;
-
-q.text_tag = uicontrol('style','text','parent',h_fig2,'units',posun,...
-    'fontunits',fntun,'fontsize',fntsz,'position',[x,y,wtxt0,htxt0],...
-    'string',str1,'horizontalalignment','left');
-
-x = x+wtxt0;
-y = y-(hpop0-htxt0)/2;
-
 q.popupmenu_tag = uicontrol('style','popupmenu','parent',h_fig2,'units',...
     posun,'fontunits',fntun,'fontsize',fntsz,'position',[x,y,wpop0,hpop0],...
-    'string',str2,'tooltipstring',ttstr0,'callback',...
+    'string',str1,'tooltipstring',ttstr0,'callback',...
     {@popupmenu_tag_ESopt_Callback,h_fig,h_fig2});
 
 x = mg;
@@ -134,19 +130,19 @@ y = y-mg-htxt0;
 
 q.text_Emin = uicontrol('style','text','parent',h_fig2,'units',posun,...
     'fontunits',fntun,'fontsize',fntsz,'position',[x,y,wedit0,htxt0],...
-    'string',str3,'horizontalalignment','center');
+    'string',str2,'horizontalalignment','center');
 
 x = x+wedit0+mg/fact;
 
 q.text_Ebin = uicontrol('style','text','parent',h_fig2,'units',posun,...
     'fontunits',fntun,'fontsize',fntsz,'position',[x,y,wedit0,htxt0],...
-    'string',str4,'horizontalalignment','center');
+    'string',str3,'horizontalalignment','center');
 
 x = x+wedit0+mg/fact;
 
 q.text_Emax = uicontrol('style','text','parent',h_fig2,'units',posun,...
     'fontunits',fntun,'fontsize',fntsz,'position',[x,y,wedit0,htxt0],...
-    'string',str5,'horizontalalignment','center');
+    'string',str4,'horizontalalignment','center');
 
 x = mg;
 y = y-hedit0;
@@ -175,19 +171,19 @@ y = y-mg/2-htxt0;
 
 q.text_Smin = uicontrol('style','text','parent',h_fig2,'units',posun,...
     'fontunits',fntun,'fontsize',fntsz,'position',[x,y,wedit0,htxt0],...
-    'string',str6,'horizontalalignment','center');
+    'string',str5,'horizontalalignment','center');
 
 x = x+wedit0+mg/fact;
 
 q.text_Sbin = uicontrol('style','text','parent',h_fig2,'units',posun,...
     'fontunits',fntun,'fontsize',fntsz,'position',[x,y,wedit0,htxt0],...
-    'string',str7,'horizontalalignment','center');
+    'string',str6,'horizontalalignment','center');
 
 x = x+wedit0+mg/fact;
 
 q.text_Smax = uicontrol('style','text','parent',h_fig2,'units',posun,...
     'fontunits',fntun,'fontsize',fntsz,'position',[x,y,wedit0,htxt0],...
-    'string',str8,'horizontalalignment','center');
+    'string',str7,'horizontalalignment','center');
 
 x = mg;
 y = y-hedit0;
@@ -216,7 +212,7 @@ y = y-mg-hbut0;
 
 q.pushbutton_linreg = uicontrol('style','pushbutton','parent',h_fig2,...
     'units',posun,'fontunits',fntun,'fontsize',fntsz,'position',...
-    [x,y,wpan0,hbut0],'string',str9,'tooltipstring',ttstr7,'callback',...
+    [x,y,wpan0,hbut0],'string',str8,'tooltipstring',ttstr7,'callback',...
     {@pushbutton_linreg_ESopt_Callback,h_fig,h_fig2});
 
 y = y-mg-hpan0;
@@ -230,7 +226,7 @@ y = hpan0-mgpan-mg-hedit0+(hedit0-htxt0)/2;
 
 q.text_gamma = uicontrol('style','text','parent',h_pan,'units',posun,...
     'fontunits',fntun,'fontsize',fntsz,'position',[x,y,wtxt1,htxt0],...
-    'string',str10,'horizontalalignment','left');
+    'string',str9,'horizontalalignment','left');
 
 x = x+wtxt1;
 y = y-(hedit0-htxt0)/2;
@@ -244,7 +240,7 @@ y = y-mg/2-hedit0+(hedit0-htxt0)/2;
 
 q.text_beta = uicontrol('style','text','parent',h_pan,'units',posun,...
     'fontunits',fntun,'fontsize',fntsz,'position',[x,y,wtxt1,htxt0],...
-    'string',str11,'horizontalalignment','left');
+    'string',str10,'horizontalalignment','left');
 
 x = x+wtxt1;
 y = y-(hedit0-htxt0)/2;
@@ -258,14 +254,14 @@ y = y-mg-hedit0;
 
 q.checkbox_show = uicontrol('style','checkbox','parent',h_pan,'units',...
     posun,'fontunits',fntun,'fontsize',fntsz,'position',[x,y,wcb0,hedit0],...
-    'string',str12,'tooltipstring',ttstr10,'callback',...
+    'string',str11,'tooltipstring',ttstr10,'callback',...
     {@checkbox_show_ESopt_Callback,h_fig,h_fig2});
 
 y = mg;
 
 q.pushbutton_save = uicontrol('style','pushbutton','parent',h_pan,'units',...
     posun,'fontunits',fntun,'fontsize',fntsz,'position',[x,y,wcb0,hbut0],...
-    'string',str13,'tooltipstring',ttstr11,'callback',...
+    'string',str12,'tooltipstring',ttstr11,'callback',...
     {@pushbutton_save_ESopt_Callback,h_fig,h_fig2});
 
 x = mg+wpan0+mg;
@@ -434,8 +430,12 @@ ud_ESlinRegOpt(h_fig,h_fig2);
 function popupmenu_tag_ESopt_Callback(obj,evd,h_fig,h_fig2)
 
 val = get(obj,'value');
+
 q = guidata(h_fig2);
-fret = get(q.popupmenu_data,'value');
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+fret = p.proj{proj}.fix{3}(8);
 
 if val==q.prm{2}(fret,1)
     return
@@ -449,16 +449,16 @@ guidata(h_fig2,q);
 ud_ESlinRegOpt(h_fig,h_fig2)
 
 
-function popupmenu_data_ESopt_Callback(obj,evd,h_fig,h_fig2)
-ud_ESlinRegOpt(h_fig,h_fig2);
-
-
 function edit_Emax_ESopt_Callback(obj,evd,h_fig,h_fig2)
 
 q = guidata(h_fig2);
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+fret = p.proj{proj}.fix{3}(8);
+
 
 val = str2double(get(obj,'string'));
-fret = get(q.popupmenu_data,'value');
 valmin = q.prm{2}(fret,2);
 if ~(numel(val)==1 && ~isnan(val) && val>valmin)
     set(obj,'backgroundcolor',[1,0.5,0.5]);
@@ -488,7 +488,10 @@ if ~(numel(val)==1 && ~isnan(val) && val>0)
 end
 
 q = guidata(h_fig2);
-fret = get(q.popupmenu_data,'value');
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+fret = p.proj{proj}.fix{3}(8);
 
 if val==q.prm{2}(fret,4)
     return
@@ -505,8 +508,11 @@ ud_ESlinRegOpt(h_fig,h_fig2)
 function edit_Emin_ESopt_Callback(obj,evd,h_fig,h_fig2)
 
 q = guidata(h_fig2);
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+fret = p.proj{proj}.fix{3}(8);
 
-fret = get(q.popupmenu_data,'value');
 val = str2double(get(obj,'string'));
 valmax = q.prm{2}(fret,3);
 if ~(numel(val)==1 && ~isnan(val) && val<valmax)
@@ -530,8 +536,11 @@ ud_ESlinRegOpt(h_fig,h_fig2)
 function edit_Smax_ESopt_Callback(obj,evd,h_fig,h_fig2)
 
 q = guidata(h_fig2);
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+fret = p.proj{proj}.fix{3}(8);
 
-fret = get(q.popupmenu_data,'value');
 val = str2double(get(obj,'string'));
 valmin = q.prm{2}(fret,5);
 if ~(numel(val)==1 && ~isnan(val) && val>valmin)
@@ -562,7 +571,10 @@ if ~(numel(val)==1 && ~isnan(val) && val>0)
 end
 
 q = guidata(h_fig2);
-fret = get(q.popupmenu_data,'value');
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+fret = p.proj{proj}.fix{3}(8);
 
 if val==q.prm{2}(fret,7)
     return
@@ -579,8 +591,11 @@ ud_ESlinRegOpt(h_fig,h_fig2);
 function edit_Smin_ESopt_Callback(obj,evd,h_fig,h_fig2)
 
 q = guidata(h_fig2);
+h = guidata(h_fig);
+p = h.param.ttPr;
+proj = p.curr_proj;
+fret = p.proj{proj}.fix{3}(8);
 
-fret = get(q.popupmenu_data,'value');
 val = str2double(get(obj,'string'));
 valmax = q.prm{2}(fret,6);
 if ~(numel(val)==1 && ~isnan(val) && val<valmax)

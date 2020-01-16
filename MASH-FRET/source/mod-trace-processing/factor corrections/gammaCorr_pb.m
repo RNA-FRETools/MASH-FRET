@@ -1,10 +1,5 @@
-function [I_DTA,stop,gamma,ok,str] = gammaCorr_pb(i,I_den,I_thresh,prm_dta,...
+function [I_DTA,stop,gamma,ok,str] = gammaCorr_pb(i,I_den,prm,prm_dta,...
     p_proj,h_fig)
-
-% initialize results
-I_DTA = [];
-stop = NaN;
-gamma = NaN;
 
 % collect project parameters
 FRET = p_proj.FRET;
@@ -22,19 +17,13 @@ thresh = prm_dta{4}(:,:,nFRET+nS+1:end);
 prm_dta = permute(prm_dta{2}(method_dta,:,nFRET+nS+1:end),[3,2,1]);
 
 % collect donor and acceptor intensity traces
-acc = FRET(i,2); % the acceptor channel
 don = FRET(i,1);
-lacc = find(exc==chanExc(acc),1);
-if isempty(lacc)
-    ok = false;
-    str = 'No I_AA signal';
-    return
-end
+acc = FRET(i,2);
 ldon = find(exc==chanExc(don),1);
-I_AA = I_den(:,acc,lacc);
+I_AA = I_den(:,acc,prm(1));
 
 % calculate and save cutoff on acceptor trace
-stop = calcCutoffGamma(I_thresh,I_AA,nExc);
+stop = calcCutoffGamma(prm(2:end),I_AA,nExc);
 
 % discretize donor and acceptor traces
 id_don = nC*(ldon-1)+don;
@@ -44,5 +33,5 @@ I_DTA = getDiscr(method_dta, I_den(:,[don,acc],ldon)', [], ...
     'Discretization for gamma factor calculation ...', h_fig)';
 
 % calculate gamma
-[gamma,ok,str] = prepostInt(stop, I_DTA(:,1), I_DTA(:,2));
+[gamma,ok,str] = prepostInt(stop, I_DTA(:,1), I_DTA(:,2), prm(6));
 

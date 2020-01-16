@@ -85,20 +85,10 @@ if perPix
     end
 end
 
-pbGamma = false;
-pbGammaIt = false;
 if ~isempty(prm)
     cutIt = prm{2}{1}(1);
     method = prm{2}{1}(2);
     cutOff = prm{2}{1}(4+method);
-    if nFRET>0
-        fret = p.proj{proj}.fix{3}(8);
-        pbGamma = prm{6}{2}(fret)==1;
-        if pbGamma
-            pbGammaIt = prm{6}{3}(fret,1);      % added by FS, 12.1.18
-            pbGammaOff = prm{6}{3}(fret,6);     % added by FS, 12.1.18
-        end
-    end
 else
     cutIt = 0;
     cutOff = x_lim(2);
@@ -107,9 +97,6 @@ end
 x_axis = x_lim(1):x_lim(2);
 if x_inSec
     cutOff = cutOff*rate;
-    if nFRET>0 && pbGamma
-        pbGammaOff = pbGammaOff*rate;      % added by FS, 12.1.18
-    end
     x_axis = x_axis*rate;
 end
 
@@ -337,24 +324,6 @@ if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
             set(axes.axes_traceBottom, 'NextPlot', 'replace');
         end
     end
-    
-    % added by FS, 12.1.18
-    % draws the cutoff for the pb based gamma correction
-    if nFRET>0 && pbGammaIt
-        if isfield(axes,'axes_traceTop')
-            set(axes.axes_traceTop, 'NextPlot', 'add');
-            plot(axes.axes_traceTop, [pbGammaOff pbGammaOff], ...
-                get(axes.axes_traceTop, 'YLim'), '-r');
-            set(axes.axes_traceTop, 'NextPlot', 'replace');
-        end
-        if isfield(axes,'axes_traceBottom')
-            set(axes.axes_traceBottom, 'NextPlot', 'add');
-            plot(axes.axes_traceBottom, [pbGammaOff pbGammaOff], ...
-                get(axes.axes_traceBottom, 'YLim'), '-r');
-            set(axes.axes_traceBottom, 'NextPlot', 'replace');
-        end
-    end
-    
 end
 
 valid = p.proj{proj}.coord_incl;
