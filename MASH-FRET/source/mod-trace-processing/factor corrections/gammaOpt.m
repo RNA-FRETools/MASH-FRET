@@ -690,7 +690,7 @@ else
 end
 set(obj, 'String', num2str(val));
 
-if ~(numel(val)==1 && ~isnan(val) && val>=minVal && va<=maxVal)
+if ~(numel(val)==1 && ~isnan(val) && val>=minVal && val<=maxVal)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
     updateActPan(['Minimum cutoff must be >= ' num2str(minVal) ' and <= ' ...
         num2str(maxVal)], h_fig, 'error');

@@ -33,5 +33,6 @@ I_DTA = getDiscr(method_dta, I_den(:,[don,acc],ldon)', [], ...
     'Discretization for gamma factor calculation ...', h_fig)';
 
 % calculate gamma
-[gamma,ok,str] = prepostInt(stop, I_DTA(:,1), I_DTA(:,2), prm(6));
+[gamma,ok,str] = prepostInt(stop, I_DTA(:,1), I_DTA(:,2), ...
+    round(prm(6)/nExc));
 
