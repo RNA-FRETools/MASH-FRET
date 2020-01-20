@@ -3,7 +3,7 @@ layout: default
 title: Visualization area
 parent: /trace-processing/panels.html
 grand_parent: /trace-processing.html
-nav_order: 10
+nav_order: 11
 ---
 
 <img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>

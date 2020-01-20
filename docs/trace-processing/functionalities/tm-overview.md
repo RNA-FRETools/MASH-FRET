@@ -78,7 +78,7 @@ For instance, intensity-time traces with abnormally high or low intensities are 
 Data available for concatenated trace plot are listed in menu **(a)** and include:
 * `[E] at [W]nm` for intensity-time traces, with `[E]` the emitter and `[W]` the laser wavelength
 * `FRET [D]>[A]` for FRET-time traces, with `[D]` and `[A]` the donor and acceptor emitters respectively
-* `S [E]` for stoichiometry-time traces
+* `S [D]>[A]` for stoichiometry data  associated to the FRET pair where `[D]` and `[A]` are the donor and acceptor emitters respectively
 
 Selected molecules that are in view in panel
 [Molecule selection](#molecule-selection) are highlighted with a white background, whereas excluded or out-of-view molecules are covered with a transparent black mask.
@@ -97,8 +97,8 @@ For instance, the presence of single labelled species is easily identified by pe
 Data available for histogram plot are listed in menu **(b)** and include:
 * `[E] at [W]nm` for intensity histograms
 * `FRET [D]>[A]` for FRET histograms
-* `S [E]` for stoichiometry histograms
-* `FRET [D]>[A]-S [E]` for 2D FRET-Stoichiometry histograms 
+* `S [D]>[A]` for stoichiometry data  associated to the FRET pair where `[D]` and `[A]` are the donor and acceptor emitters respectively
+* `FRET [D]>[A]-S [D]>[A]` for 2D FRET-Stoichiometry histograms 
 
 Data are sorted into bins defined in columns **(g)** (lowest limit), **(h)** (bin size) and **(l)** (highest limit) and in row **(e)** or **(f)** for the x- or y-axis respectively,.
 

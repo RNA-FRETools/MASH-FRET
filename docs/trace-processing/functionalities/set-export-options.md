@@ -47,7 +47,13 @@ Time traces can be exported in the following file formats by selecting the appro
 - `ebFRET-compatible (*.dat)`; see [ebFRET trace files](../../output-files/dat-ebfret-traces)
 - `All formats` to export all file formats sub mentioned
 
-Processing parameters can be exported in file headers with the customed format by selecting `ASCII file headers` in list **(i)**, or to individual files by selecting `external file(*.log)`; see 
+Gamma and beta correction factors can be collected for all molecules and exported to separated *.gam and *.bet file respectively by activating the option in **(h)**; see 
+[Gamma factor file](../../output-files/gam-gamma-factors.html) and 
+[Beta factor file](../../output-files/bet-beta-factors.html) for more information about the file structures.
+
+Processing parameters can be exported in different ways by selecting the appropriate option in list **(i)**:  
+- in file headers with the customed format by selecting `ASCII file headers` , 
+- to individual files by selecting `external file(*.log)`; see 
 [Processing parameters file](../../output-files/log-processing-parameters.html) for more information about the file structure.
 
 To ignore processing parameters select `none` in list **(i)**.

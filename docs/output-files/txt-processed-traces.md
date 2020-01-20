@@ -53,13 +53,13 @@ Intensity-time traces are organized column-wise with:
 * columns `frame at [L]nm` containing frame indexes upon illumination with laser wavelength `L` (in second)
 * columns `I_[i] at [L]nm` and `discr.I_[i] at [L]nm` containing channel- and illumination-specific intensity-time traces and state trajectories, with `[i]` the channel index
 * columns `FRET_[D]>[A]` and `discr.FRET_[D]>[A]` containing FRET-time traces and state trajectories, with `[D]` and `[A]` the channel indexes where donor and acceptor fluorescence of the FRET pair are specifically detected
-* columns `S_[Eee]` and `discr.S_[Eee]` containing stoichiometry-time traces and state trajectories, with `Eee` the label given to the emitter for which the stoichiometry is calculated
+* columns `S_[D]>[A]` and `discr.S_[D]>[A]` containing stoichiometry-time traces and state trajectories associated with the FRET pair where `[D]` and `[A]` are the channel indexes where donor and acceptor fluorescence of the FRET pair are specifically detected
 
 ```
-time at 532nm	frame at 532nm	I_1 at 532nm(counts)	I_2 at 532nm(counts)	I_3 at 532nm(counts)	time at 638nm	frame at 638nm	I_1 at 638nm(counts)	I_2 at 638nm(counts)	I_3 at 638nm(counts)	time at 532nm	frame at 532nm	FRET_1>2	discr.FRET_1>2	time at 532nm	frame at 532nm	S_Cy3		discr.S_Cy3	time at 638nm	frame at 638nm	S_Cy5		discr.S_Cy5	
-1.017500e-01	1		-3.162304e+02		-1.248107e+02		-4.999781e+01		2.035000e-01	2		-5.944420e+01		-2.638393e+00		1.688481e+01		1.017500e-01	1		2.541767e-01	-7.502669e-01	1.017500e-01	1		9.157130e-01	1.017316e+00	2.035000e-01	2		8.428700e-02	-1.731601e-02	
-3.052500e-01	3		-1.323042e+01		-3.182207e+02		-1.269978e+02		4.070000e-01	4		-2.454442e+02		1.573616e+02		1.368848e+02		3.052500e-01	3		6.941246e-01	-7.502669e-01	3.052500e-01	3		1.119132e+00	1.017316e+00	4.070000e-01	4		-1.191325e-01	-1.731601e-02	
-5.087500e-01	5		-7.123042e+01		-4.542065e+01		-3.699781e+01		6.105000e-01	6		-2.514442e+02		-2.963839e+01		-1.181152e+02		5.087500e-01	5		2.956133e-01	-7.502669e-01	5.087500e-01	5		2.779232e-01	8.296395e-01	6.105000e-01	6		7.220768e-01	1.703605e-01	
+time at 532nm	frame at 532nm	I_1 at 532nm(counts)	I_2 at 532nm(counts)	I_3 at 532nm(counts)	time at 638nm	frame at 638nm	I_1 at 638nm(counts)	I_2 at 638nm(counts)	I_3 at 638nm(counts)	time at 532nm	frame at 532nm	FRET_1>2	discr.FRET_1>2	time at 532nm	frame at 532nm	S_1>2		discr.S_1>2
+1.017500e-01	1		-3.162304e+02		-1.248107e+02		-4.999781e+01		2.035000e-01	2		-5.944420e+01		-2.638393e+00		1.688481e+01		1.017500e-01	1		2.541767e-01	-7.502669e-01	1.017500e-01	1		9.157130e-01	1.017316e+00
+3.052500e-01	3		-1.323042e+01		-3.182207e+02		-1.269978e+02		4.070000e-01	4		-2.454442e+02		1.573616e+02		1.368848e+02		3.052500e-01	3		6.941246e-01	-7.502669e-01	3.052500e-01	3		1.119132e+00	1.017316e+00
+5.087500e-01	5		-7.123042e+01		-4.542065e+01		-3.699781e+01		6.105000e-01	6		-2.514442e+02		-2.963839e+01		-1.181152e+02		5.087500e-01	5		2.956133e-01	-7.502669e-01	5.087500e-01	5		2.779232e-01	8.296395e-01
 ```
 
 For consistency, intensities are always exported as the sum of the brightest pixel intensities per video frame, regardless the units defined in

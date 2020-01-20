@@ -159,13 +159,13 @@ with `[Eee0]` the label of a detection channel and `[L]` an unspecific excitatio
 Factor correction parameters written in file for project including FRET calculations: 
 
 ```
-	gamma factor for correction of FRET_[Ddd]>[Aaa]:
+	correction factors for FRET_[Ddd]>[Aaa]: gamma=..., beta=...
 ```
 
 or otherwise:
 
 ```
-	no gamma correction possible
+	no gamma or beta correction possible
 ```
 
 with `[Ddd]` and `[Aaa]` the labels of detection channels where donor and acceptor fluorescence are specifically detected.

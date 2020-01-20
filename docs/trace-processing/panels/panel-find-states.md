@@ -3,7 +3,7 @@ layout: default
 title: Find states
 parent: /trace-processing/panels.html
 grand_parent: /trace-processing.html
-nav_order: 9
+nav_order: 10
 ---
 
 <img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
@@ -156,7 +156,7 @@ Use this interface to define settings of the [Discretization method](#discretiza
 <a class="plain" href="../../assets/images/gui/TP-panel-findstates-param.png"><img src="../../assets/images/gui/TP-panel-findstates-param.png" style="max-width: 289px;"/></a>
 
 Parameters are specific to each time-trace.
-Select the time trace in menu **(a)** prior setting parameters in **(b-h)** as described in the table below.
+Select the time trace in menu **(a)** to configure the method for and set parameters in **(b-h)** as described in the table below.
 
 | method                                         | parametrization                                                                                                                                                                                                     | default parameters                |
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
