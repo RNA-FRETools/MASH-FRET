@@ -191,30 +191,21 @@ The background-corrected intensity
 <img src="../assets/images/equations/TP-eq-trace-corr-04.gif" alt="I_{em0}^{ex}(n,t)^{**} = I_{em0}^{ex}(n,t)^{*} - \sum_{em\not\equiv em0}\left ( bt_{em,em0}(n) × I_{em}^{ex}(n,t)^{*} \right )"><br>
 <img src="../assets/images/equations/TP-eq-trace-corr-05.gif" alt="I_{em0}^{ex\neq ex0}(n,t)^{***} = I_{em0}^{ex\neq ex0}(n,t)^{**} - dE_{em0}^{ex\neq ex0}(n) × I_{em0}^{ex0}(n,t)^{**}">
 
-<!--
-{: .equation }
-*I*<sup>\*\*</sup><sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*) = *I*<sup>\*</sup><sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*) - &#931;<sub>*em*&#8800;*em*0</sub>[ *bt*<sub>*em*,*em*0</sub>(*n*) &#215; *I*<sup>\*</sup><sub>*em*</sub><sup>*ex*</sup>(*n*,*t*) )]<br><br>
-*I*<sup>\*\*\*</sup><sub>*em*0</sub><sup>*ex*&#8800;*ex*0</sup>(*n*,*t*) = *I*<sup>\*\*</sup><sub>*em*0</sub><sup>*ex*&#8800;*ex*0</sup>(*n*,*t*) - *dE*<sub>*em*0</sub><sup>*ex*&#8800;*ex*0</sup>(*n*) &#215; *I*<sup>\*\*</sup><sub>*em*0</sub><sup>*ex*0</sup>(*n*,*t*)
--->
-
 with 
 [*I*<sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*)<sup>\*\*</sup>](){: .math_var } and 
-[*I*<sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*)<sup>\*\*\*</sup>](){: .math_var }, the intensities corrected from bleedthrough-only and both cross-talks respectively.
+[*I*<sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*)<sup>\*\*\*</sup>](){: .math_var }, the intensities corrected from bleedthrough-only and from both cross-talks respectively.
 
 To correct intensities from cross-talks:
 
 {: .procedure }
-1. If not already done, select the molecule index in the 
-   [Molecule list](panels/panel-sample-management.html#molecule-list).  
+1. For each emitter in the 
+   [Emitter list](panels/panel-crosstalk-corrections.html#emitter-list), set parameters: 
      
-1. For each emitter, set parameters 
-   [Cross-talks settings](panels/panel-factor-corrections.html#cross-talks-settings)  
+   [Bleedthrough coefficients](panels/panel-crosstalk-corrections.html#bleedthrough-coefficients)  
+   [Direct excitation coefficients](panels/panel-crosstalk-corrections.html#direct-excitation-coefficients)  
      
 1. Update data correction and display by pressing 
    ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE").
-     
-1. If desired, apply the same parameter settings to all molecules by pressing 
-   ![all](../../assets/images/gui/TP-but-all.png "all") (usually the case).
 
 
 ---
@@ -372,6 +363,42 @@ Apparent FRET
 
 {: .equation }
 <img src="../assets/images/equations/TP-eq-trace-corr-09.gif" alt="E_{D,A}(n,t) = \left \{ 1+\frac{\gamma_{D,A}(n) I_{D,em}^{D,ex}(n,t)^{***}}{ I_{A,em}^{D,ex}(n,t)^{***} + \sum_{i>A}\left [\frac{E_{A,i}}{1-E_{A,i}}I_{A,em}^{D,ex}(n,t)^{***} \right ] -\sum_{D<i<A}\left[ \frac{E_{i,A}}{1-E_{i,A}}\gamma_{i,A}(n)I_{i,em}^{D,ex}(n,t)^{***}\right ]}  \right \}^{-1}">
+
+Apparent stoichiometry 
+[*S*<sup>\*</sup><sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } of a donor-acceptor pair 
+[*D*](){: .math_var }-[*A*](){: .math_var } is calculated according to 
+[Stoichiometry calculations](../video-processing/functionalities/set-project-options.html#stoichiometry-calculations) and is 
+[*&#947;*](){: .math_var }- and 
+[*&#946;*](){: .math_var }-corrected into 
+[*S*<sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } such as:
+
+{: .equation }
+<img src="../assets/images/equations/TP-eq-trace-corr-10.gif" alt="S_{D,A}(n,t) = \frac{I_{A,em}^{D,ex}(n,t)^{***} + \sum_{i\neq A}\left [\gamma_{i,A}(n) I_{i,em}^{D,ex}(n,t)^{***} \right ]}{I_{A,em}^{D,ex}(n,t)^{***} + \sum_{i\neq A}\left [\gamma_{i,A}(n) I_{i,em}^{D,ex}(n,t)^{***} \right ]+ \beta_{D,A}\times\left\{ I_{A,em}^{A,ex}(n,t)^{***} + \sum_{i\neq A}\left [\gamma_{i,A}(n) I_{i,em}^{A,ex}(n,t)^{***} \right ] \right \} }">
+
+To correct apparent FRET- and stoichiometry-time traces with 
+[*&#947;*](){: .math_var } and 
+[*&#946;*](){: .math_var } factors:
+
+{: .procedure }
+1. If not already done, select the molecule index in the 
+   [Molecule list](panels/panel-sample-management.html#molecule-list).  
+     
+1. For each donor-acceptor FRET pair in the 
+   [FRET pair list](panels/panel-factor-corrections.html#fret-pair-list), set parameters: 
+     
+   [Factor estimation method](panels/panel-factor-corrections.html#factor-estimation-method)  
+   [Gamma factor](panels/panel-factor-corrections.html#gamma-factor)  
+   [Beta factor](panels/panel-factor-corrections.html#beta-factor)  
+     
+1. Update data correction and display by pressing 
+   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE").
+     
+1. If desired, apply the same parameter settings to all molecules by pressing 
+   ![all](../../assets/images/gui/TP-but-all.png "all")   
+
+
+--- 
+
 ## Determine state trajectories
 
 The main goal of module Trace processing is to obtain a reliable set of single molecule intensity- and FRET-time traces in order to infer reliable state trajectories.

@@ -90,7 +90,7 @@ To correct intensities from background light:
 
 {: .procedure }
 1. Define 
-   [Cross-talks settings](../../trace-processing/panels/panel-background-correction.html#background-correction-settings) for each trace selected in menu **(a)**:  
+   [Background correction settings](../../trace-processing/panels/panel-background-correction.html#background-correction-settings) for each trace selected in menu **(a)**:  
      
    <u>default</u>: method `<N median values>`  
    <u>default</u>: parameter **(d)** to 20 pixels  
@@ -105,15 +105,11 @@ To correct intensities from background light:
 To correct intensities from cross-talks (if you are working with single detection channel and single laser illumination, ignore this step):
 
 {: .procedure }
-1. Define 
-   [Cross-talks settings](../../trace-processing/panels/panel-factor-corrections.html#cross-talks-settings) for each emitter selected in menu **(a)**:  
-     
-   <u>default</u>: parameter **(c)** to 0 for each channel in menu **(b)**  
-   <u>default</u>: parameter **(e)** to 0 for each laser in menu **(d)**  
-     
-1. Press 
-   ![all](../../assets/images/gui/TP-but-all.png "all") to apply the same settings to all molecules
-
+1. Set for each emitter selected in the 
+    [Emitter list](../../trace-processing/panels/panel-crosstalk-corrections.html#emitter-list):  
+	  
+   <u>default</u>: [Bleedthrough coefficients](../../trace-processing/panels/panel-crosstalk-corrections.html#bleedthrough-coefficients) set to 0  
+   <u>default</u>: [Direct excitation coefficients](../../trace-processing/panels/panel-crosstalk-corrections.html#direct-excitation-coefficients) set to 0
    
 ---
 
@@ -201,8 +197,8 @@ To clear species missing emitter label `[E]` from the project:
 
 ## Discretize time-traces
 
-To obtain reliable state trajectories, photobleached data must be ignored when applying the state finding algorithm.
-This is done by automatically detecting and truncating the trace at dye photobleaching.
+To obtain reliable state trajectories, photobleached data must be ignored and ratio-time traces must be corrected prior applying the state finding algorithm.
+This is done by automatically detecting and truncating the trace at dye photobleaching and setting/calculating global gamma and beta factors.
 
 To truncate trajectories at photobleaching:
 
@@ -222,7 +218,29 @@ To truncate trajectories at photobleaching:
 1. Press 
    ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL") in 
    [Sample management](../../trace-processing/panels/panel-sample-management.html) to process all molecules in the project and visualize truncated trajectories
-
+   
+To automatically calculate gamma and beta factors (if you are working without FRET calculations, ignore this step):
+{: .procedure }
+1. For each FRET pair listed in the 
+   [FRET pair list](../../trace-processing/panels/panel-factor-corrections.html#fret-pair-list) in 
+   [Factor corrections](../../trace-processing/panels/panel-factor-corrections.html), define:  
+     
+   <u>default</u>: method `ES linear regression`  
+   <u>default</u>: molecule subgroup `All molecules`  
+   <u>default</u>: in 
+   [ES linear regression](../../trace-processing/panels/panel-factor-corrections.html#es-linear-regression), **(b)** to `All molecules`, **(c)** to -0.2, **(d)** to 50, **(e)** to 1.2, **(f)** to 1, **(g)** to 50, **(h)** to 3
+     
+    and press  
+   ![refresh calculations](../../assets/images/gui/TP-but-refresh-calculations.png "refresh calculations") to calculate the ES histogram and perform linear regression, and 
+   ![Save and close](../../assets/images/gui/TP-but-save-and-close.png "Save and close") to save settings  
+     
+1. Press 
+   ![all](../../assets/images/gui/TP-but-all.png "all") to apply the same settings to all molecules  
+     
+1. Press 
+   ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL") in 
+   [Sample management](../../trace-processing/panels/panel-sample-management.html) to process all molecules in the project
+   
 To obtain state trajectories:
 
 {: .procedure }

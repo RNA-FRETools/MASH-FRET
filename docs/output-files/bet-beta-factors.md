@@ -1,17 +1,17 @@
 ---
 layout: default
-title: (*.gam) Gamma factors
+title: (*.bet) Beta factors
 parent: /output-files.html
-nav_order: 10
+nav_order: 1
 nav_exclude: 1
 ---
 
 <img src="../assets/images/logos/logo-output-files_400px.png" width="170" style="float:right; margin-left: 15px;"/>
 
-# Gamma factor files
+# Beta factor files
 {: .no_toc }
 
-Gamma factor files are ASCII files with the extension `.gam`. They are usually found in the main`/traces_processing/parameters` analysis folder.
+Beta factor files are ASCII files with the extension `.bet`. They are usually found in the main`/traces_processing/parameters` analysis folder.
 
 ## Table of contents
 {: .no_toc .text-delta }
@@ -22,9 +22,9 @@ Gamma factor files are ASCII files with the extension `.gam`. They are usually f
 
 ---
 
-The gamma factor files are written in an ASCII format and contains gamma factors to correct all FRET-time traces in the project.
+The beta factor files are written in an ASCII format and contains beta factors to correct all stoichiometry-time traces in the project.
 
-They are created in the `/trace_processing/parameters` analysis sub-folder after exporting .gam files from panel 
+They are created in the `/trace_processing/parameters` analysis sub-folder after exporting .bet files from panel 
 [Sample management](../trace-processing/panels/panel-sample-management.html#export-processed-data)of module Trace processing.
 
 
@@ -42,7 +42,7 @@ By default, the file is named after the <u>project file</u> selected in
 
 ## Structure
 
-FRET pair-specific gamma factors are organized column-wise with each column corresponding to a FRET pair, and row-wise by appending the same columns for each molecule.
+FRET pair-specific beta factors are organized column-wise with each column corresponding to a FRET pair, and row-wise by appending the same columns for each molecule.
 
 ```
 FRET1-2	FRET1-3	FRET2-3
@@ -51,7 +51,7 @@ FRET1-2	FRET1-3	FRET2-3
 0.900	1.000	1.000
 ```
 
-FRET pairs are organized as in the list 
+FRET pairs are organized as listed in 
 [FRET calculations](../video-processing/functionalities/set-project-options.html#fret-calculations).
 
 
@@ -59,7 +59,7 @@ FRET pairs are organized as in the list
 
 ## Compatibility
 
-Gamma factor file can be imported:
+Beta factor file can be imported:
 * along with ASCII traces in MASH's module
 [Trace processing](../trace-processing/workflow.html#import-single-molecule-data) by adjusting the 
 [Import options](../trace-processing/functionalities/set-import-options.html)
