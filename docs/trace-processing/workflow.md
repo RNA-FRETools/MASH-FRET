@@ -219,53 +219,6 @@ To correct intensities from cross-talks:
 
 ---
 
-## Correct FRET values
-
-To recover the absolute distances between a the donor and the acceptor of a FRET pair, it is necessary, but not sufficient, to put donor and acceptor intensities on the same scale.
-For this, the differences in detection efficiencies and quantum yields between donor 
-[*D*](){: .math_var } and acceptor 
-[*A*](){: .math_var } must be corrected.
-These differences are accounted for in the FRET pair-specific
-[*&#947;*<sub>*D*,*A*</sub>](){: .math_var } factor such as:
-
-{: .equation }
-<img src="../assets/images/equations/TP-eq-trace-corr-06.gif" alt="\gamma _{D,A} = \frac{\eta_{A}\phi_{A}}{\eta_{D}\phi_{D}}">
-
-with 
-[*&#934;*<sub>A</sub>](){: .math_var } and 
-[*&#934;*<sub>D</sub>](){: .math_var } the acceptor and donor quantum yield respectively, and 
-[*&#951;*<sub>A</sub>](){: .math_var } and 
-[*&#951;*<sub>D</sub>](){: .math_var } the photon detection efficiency in the respective emission channels.
-
-Apparent FRET values 
-[*E*<sup>\*</sup><sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } of a donor-acceptor pair 
-[*D*](){: .math_var }-[*A*](){: .math_var } are calculated according to 
-[FRET calculations](../video-processing/functionalities/set-project-options.html#fret-calculations) and are 
-[*&#947;*](){: .math_var }-corrected into 
-[*E*<sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } values such as:
-
-{: .equation }
-<img src="../assets/images/equations/TP-eq-trace-corr-07.gif" alt="E_{D,A}(n,t) = \frac{E_{D,A}^{*}(n,t)}{\gamma_{D,A}(n) - E_{D,A}^{*}(n,t) \times \left ( \gamma_{D,A}(n) - 1 \right ) }">
-
-To correct apparent FRET-time traces with 
-[*&#947;*](){: .math_var } factors:
-
-{: .procedure }
-1. If not already done, select the molecule index in the 
-   [Molecule list](panels/panel-sample-management.html#molecule-list).  
-     
-1. For each donor-acceptor FRET pair, set parameters 
-   [Gamma factor settings](panels/panel-factor-corrections.html#gamma-factor-settings)  
-     
-1. Update data correction and display by pressing 
-   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE").
-     
-1. If desired, apply the same parameter settings to all molecules by pressing 
-   ![all](../../assets/images/gui/TP-but-all.png "all")   
-
-
---- 
-
 ## Sort trajectories into subgroups
 
 Single molecules trajectories can be manually or automatically sorted into subgroups to perform category-specific analysis.
@@ -342,12 +295,7 @@ The noise magnitude in a background- and cross-talk-corrected intensity-time tra
 [*SNR*<sub>em</sub><sup>ex</sup>(*n*)](){: .math_var } calculated as:
 
 {: .equation }
-<img src="../assets/images/equations/TP-eq-trace-corr-08.gif" alt="SNR_{em}^{ex}(n) = \frac{\mu_{em}^{ex}(n)^{***}}{\sigma_{em}^{ex}(n)^{***}}">
-
-<!--
-{: .equation }
-*SNR* = *&#956;*( *I*<sup>\*\*\*</sup>(*t*) ) / *&#963;*( *I*<sup>\*\*\*</sup>(*t*) )
--->
+<img src="../assets/images/equations/TP-eq-trace-corr-06.gif" alt="SNR_{em}^{ex}(n) = \frac{\mu_{em}^{ex}(n)^{***}}{\sigma_{em}^{ex}(n)^{***}}"> 
 
 with 
 [*&#956;*<sub>em</sub><sup>ex</sup>(*n*)<sup>\*\*\*</sup>](){: .math_var } and 
@@ -384,6 +332,46 @@ To smooth trajectories:
 
 ---
 
+## Correct ratio values
+
+To recover the labelling efficiencies and absolute distances between the donor and the acceptor of a FRET pair, it is necessary, but not sufficient, to put donor and acceptor intensities on the same scale.
+For this, the differences in detection efficiencies, quantum yields, extinction coefficients and excitation intensities between donor 
+[*D*](){: .math_var } and acceptor 
+[*A*](){: .math_var } must be corrected.
+
+The differences in detection efficiencies and quantum yields are accounted for in the FRET pair-specific
+[*&#947;*<sub>*D*,*A*</sub>](){: .math_var } factor such as:
+
+{: .equation }
+<img src="../assets/images/equations/TP-eq-trace-corr-07.gif" alt="\gamma _{D,A} = \frac{\eta_{A}\phi_{A}}{\eta_{D}\phi_{D}}">
+
+with 
+[*&#934;*<sub>A</sub>](){: .math_var } and 
+[*&#934;*<sub>D</sub>](){: .math_var } the acceptor and donor quantum yield respectively, and 
+[*&#951;*<sub>A</sub>](){: .math_var } and 
+[*&#951;*<sub>D</sub>](){: .math_var } the photon detection efficiency in the respective emission channels.
+
+The differences in extinction coefficients and excitation intensities are accounted for in the FRET pair-specific
+[*&#946;*<sub>*D*,*A*</sub>](){: .math_var } factor such as:
+
+{: .equation }
+<img src="../assets/images/equations/TP-eq-trace-corr-08.gif" alt="\beta _{D,A} = \beta_{D,A} = \frac{I_{A,ex}\sigma_{A,ex}^{A}}{I_{D,ex}\sigma_{D,ex}^{D}}">
+
+with 
+[*I*<sub>*A*,ex</sub>](){: .math_var } and 
+[*I*<sub>*D*,ex</sub>](){: .math_var } the intensities of acceptor- and donor-specific excitations respectively, and 
+[*&#963;*<sub>A,ex</sub><sup>A</sup>](){: .math_var } and 
+[*&#963;*<sub>D,ex</sub><sup>D</sup>](){: .math_var } the respective absorption cross-sections at specific excitation.
+
+Apparent FRET 
+[*E*<sup>\*</sup><sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } of a donor-acceptor pair 
+[*D*](){: .math_var }-[*A*](){: .math_var } is calculated according to 
+[FRET calculations](../video-processing/functionalities/set-project-options.html#fret-calculations) and is 
+[*&#947;*](){: .math_var }-corrected into 
+[*E*<sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } such as:
+
+{: .equation }
+<img src="../assets/images/equations/TP-eq-trace-corr-09.gif" alt="E_{D,A}(n,t) = \left \{ 1+\frac{\gamma_{D,A}(n) I_{D,em}^{D,ex}(n,t)^{***}}{ I_{A,em}^{D,ex}(n,t)^{***} + \sum_{i>A}\left [\frac{E_{A,i}}{1-E_{A,i}}I_{A,em}^{D,ex}(n,t)^{***} \right ] -\sum_{D<i<A}\left[ \frac{E_{i,A}}{1-E_{i,A}}\gamma_{i,A}(n)I_{i,em}^{D,ex}(n,t)^{***}\right ]}  \right \}^{-1}">
 ## Determine state trajectories
 
 The main goal of module Trace processing is to obtain a reliable set of single molecule intensity- and FRET-time traces in order to infer reliable state trajectories.

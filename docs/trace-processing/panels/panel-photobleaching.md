@@ -82,7 +82,7 @@ Photobleaching is detected when the time trace selected in menu **(a)** drops be
 Traces available for photobleaching detection are:
 
 * `FRET [D]>[A]` the FRET-time trace of the pair donor emitter `[D]` -acceptor emitter `[A]`
-* `S [E]` the stoichiometry-time trace of emitter `[E]`
+* `S [D]>[A]` the Stoichiometry-time trace associated to the FRET pair donor emitter `[D]` -acceptor emitter `[A]`
 * `[E] at [L]nm` the single intensity-time trace of emitter `[E]` upon illumination with laser wavelength `[L]` (in nm)
 * `all intensities` the minimum values found in all intensity-time traces
 * `summed intensities` the sum of all intensity-time traces
