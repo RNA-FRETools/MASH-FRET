@@ -15,7 +15,7 @@ dat2 = get(h.tm.axes_ovrAll_2,'userdata');
 dat3 = get(h.tm.axes_histSort,'userdata');
 
 if ~sum(dat3.slct)
-    return;
+    return
 end
 
 ind = get(h.tm.popupmenu_selectData,'value');
@@ -32,7 +32,7 @@ if ind<=(nChan*nExc+nFRET+nS) % 1D histograms
             setContPan(cat(2,'No calculated data available: start ',...
                 'calculation or select another type of calculation.'),...
                 'error',h_fig);
-            return;
+            return
         end
         P = dat3.hist{ind,j-1};
         iv = dat3.iv{ind,j-1};

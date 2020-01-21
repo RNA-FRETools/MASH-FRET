@@ -3,16 +3,16 @@ function q = buildPanelAutoSorting(q,p,h_fig)
 
 % q.uipanel_autoSorting: handle to panel "Auto-sorting"
 %
-% p.posun
-% p.fntun
-% p.fntsz
-% p.mg
-% p.wedit
-% p.hedit
-% p.wtxt3
-% p.htxt
-% p.pop
-% p.wtxt1
+% p.posun: position units
+% p.fntun: font units
+% p.fntsz: font size
+% p.mg: main margin
+% p.wedit: mais edit field width
+% p.hedit: main edit fiels height
+% p.wtxt3: small edit field width
+% p.htxt: main text height
+% p.hpop: main popupmenu height
+% p.wtxt1: large text width
 
 % defaults
 limy = [0 10000];
