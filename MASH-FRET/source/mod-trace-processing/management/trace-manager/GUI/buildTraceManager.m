@@ -1,4 +1,5 @@
 function buildTraceManager(h_fig)
+% Build Trace manage figure
 
 % Last update by MH, 24.8.2019
 % >> solve issue in "View of video": video was shown upside down.
@@ -22,10 +23,6 @@ function buildTraceManager(h_fig)
 %
 % update: by RB, 15.12.2017
 % >> update popupmenu_axes1 and popupmenu_axes2 string
-%
-%
-
-%% build figure and toolbar
 
 % defaults
 defNperPage = 3;
@@ -52,6 +49,7 @@ htxt = 14; % text y-dimension
 wtxt1 = 65; % medium text x-dimension
 wtxt2 = 105; % large text x-dimension
 wtxt3 = 32; % small text x-dimension
+wbrd = 4;
 str0 = 'Overview';
 str1 = 'Auto sorting';
 str2 = 'View on video';
@@ -62,7 +60,12 @@ ttl2 = 'Molecule selection';
 prm = struct('mg',mg,'mgbig',mgbig,'posun',posun,'fntun',fntun,'fntsz',...
     fntsz,'hpop',hpop,'hbut',hbut,'hbut2',hbut2,'hcb',hcb,'hedit',hedit,...
     'htxt',htxt,'wedit',wedit,'wcb',wcb,'wcb2',wcb2,'wtxt1',wtxt1,'wtxt2',...
-    wtxt2,'wtxt3',wtxt3,'wbut2',wbut2,'defNperPage',defNperPage);
+    wtxt2,'wtxt3',wtxt3,'wbut2',wbut2,'defNperPage',defNperPage,'wbrd',...
+    wbrd);
+
+% get reference table lisitng character widths 
+h = guidata(h_fig);
+prm.tbl = h.charDimTable;
 
 % get MASH figure dimensions
 posfig = getPixPos(h_fig);
@@ -74,9 +77,6 @@ htool = hbut2 + 2*mg;
 hpan1 = 5*mg + 2*hpop + 2*hedit + mgbig + hbut;
 hpan2 = hfig - 2*mg - hpan1 - htool;
 hpan3 = hfig - htool + mg;
-
-% fetch main figure's handles
-h = guidata(h_fig);
 
 % get the number of molecules displayed
 N = numel(h.tm.molValid);
