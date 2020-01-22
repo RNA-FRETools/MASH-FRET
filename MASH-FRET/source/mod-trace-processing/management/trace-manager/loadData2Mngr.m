@@ -6,7 +6,7 @@ buildTraceManager(h_fig);
 % load data from MASH
 ok = loadDataFromMASH(h_fig);
 if ~ok
-    return;
+    return
 end
 
 % assign data-specific plot colors and axis labels
@@ -15,7 +15,7 @@ setDataPlotPrm(h_fig);
 % concatenate data and assign axis limits
 ok = concatenateData(h_fig);
 if ~ok
-    return;
+    return
 end
 
 % plot data in panel "Overall plot" and "Molecule selection"

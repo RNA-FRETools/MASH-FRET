@@ -16,16 +16,19 @@ function q = buildPanelOverAll(q,p,h_fig)
 % p.wedit: main edit field width
 
 % default
+fact = 5;
 xlow = 0;
 xnbiv = 200;
 xup = 1;
 limy = [0 10000];
 str0 = 'plot1:';
 str1 = 'plot2:';
-str2 = 'xbins:';
-str3 = 'ybins:';
-str4 = 'UPDATE';
-str5 = 'TO MASH';
+str2 = 'x data';
+str3 = 'y data';
+str4 = 'xbins:';
+str5 = 'ybins:';
+str6 = 'UPDATE';
+str7 = 'TO MASH';
 ttstr0 = 'lower interval value';
 ttstr1 = 'number of interval';
 ttstr2 = 'upper interval value';
@@ -41,6 +44,7 @@ h_pan = q.uipanel_overall;
 % dimensions
 pospan = get(h_pan,'Position');
 wpop = 3*p.wedit+2*p.mg/2;
+wpop2 = (wpop-p.mg/fact)/2;
 wbut = (wpop+p.wtxt3)/2;
 haxes = pospan(4) - 2.5*p.mg;
 waxes = pospan(3) - p.wtxt3 - wpop - 3*p.mg;
@@ -49,35 +53,59 @@ waxes2 = waxes - 2*p.mg - waxes1;
 
 % list strings
 str_plot = getStrPlot_overall(h_fig); % added by MH, 25.4.2019
+str_plotx = str_plot{1};
+str_ploty = ['none' str_plot{1}];
 
 % build GUI
 x = p.mg;
-y = pospan(4) - 1.5*p.mg - p.hpop;
+y = pospan(4)-1.5*p.mg-p.hpop+(p.hpop-p.htxt)/2;
 
 q.text1 = uicontrol('Style','text','Parent',h_pan,'Units',p.posun,'String',...
     str0,'HorizontalAlignment','center','Position',[x y p.wtxt3 p.htxt],...
     'FontUnits',p.fntun,'FontSize',p.fntsz,'FontWeight','bold');
 
 x = x + p.wtxt3 + p.mg;
+y = y-(p.hpop-p.htxt)/2;
 
 % RB 2017-12-15: update str_plot
 q.popupmenu_axes1 = uicontrol('Style','popupmenu','Parent',h_pan,'String',...
-    str_plot{1},'Units',p.posun,'Position',[x y wpop p.hpop],'Callback',...
+    str_plot{2},'Units',p.posun,'Position',[x y wpop p.hpop],'Callback',...
     {@popupmenu_axes_Callback, h_fig},'FontUnits',p.fntun,'FontSize',...
     p.fntsz);
 
+x = p.mg+p.wtxt3+p.mg;
+y = y -p.mg-p.htxt;
+
+q.text_xplot = uicontrol('Style','text','Parent',h_pan,'Units',p.posun,...
+    'String',str2,'Position',[x y wpop2 p.htxt],'FontUnits',p.fntun,...
+    'FontSize',p.fntsz);
+
+x = x+wpop2+p.mg/2;
+
+q.text_yplot = uicontrol('Style','text','Parent',h_pan,'Units',p.posun,...
+    'String',str3,'Position',[x y wpop2 p.htxt],'FontUnits',p.fntun,...
+    'FontSize',p.fntsz);
+
 x = p.mg;
-y = y - p.mg - p.hpop;
+y = y-p.hpop+(p.hpop-p.htxt)/2;
 
 q.text2 = uicontrol('Style','text','Parent',h_pan,'Units',p.posun,'String',...
     str1,'HorizontalAlignment','center','Position',[x y p.wtxt3 p.htxt],...
     'FontUnits',p.fntun,'FontSize',p.fntsz,'FontWeight','bold');
 
 x = x + p.wtxt3 + p.mg;
+y = y-(p.hpop-p.htxt)/2;
 
 % RB 2017-12-15: update str_plot 
-q.popupmenu_axes2 = uicontrol('Style','popupmenu','Parent',h_pan,'Units',...
-    p.posun,'String',str_plot{2},'Position',[x y wpop p.hpop],'Callback',...
+q.popupmenu_axes2x = uicontrol('Style','popupmenu','Parent',h_pan,'Units',...
+    p.posun,'String',str_plotx,'Position',[x y wpop2 p.hpop],'Callback',...
+    {@popupmenu_axes_Callback,h_fig},'FontUnits',p.fntun,'FontSize',...
+    p.fntsz);
+
+x = x + wpop2 + p.mg/2;
+
+q.popupmenu_axes2y = uicontrol('Style','popupmenu','Parent',h_pan,'Units',...
+    p.posun,'String',str_ploty,'Position',[x y wpop2 p.hpop],'Callback',...
     {@popupmenu_axes_Callback,h_fig},'FontUnits',p.fntun,'FontSize',...
     p.fntsz);
 
@@ -85,7 +113,7 @@ x = p.mg;
 y = y - p.mg - p.hpop;
 
 q.text3 = uicontrol('Style','text','Parent',h_pan,'Units',p.posun,'String',...
-    str2,'HorizontalAlignment','center','Position',[x y p.wtxt3 p.htxt],...
+    str4,'HorizontalAlignment','center','Position',[x y p.wtxt3 p.htxt],...
     'FontUnits',p.fntun,'FontSize',p.fntsz);
 
 x = x + p.wtxt3 + p.mg;
@@ -110,7 +138,7 @@ x = p.mg;
 y = y - p.mg/2 - p.hedit;
 
 q.text4 = uicontrol('Style','text','Parent',h_pan,'Units',p.posun,'String',...
-    str3,'HorizontalAlignment','center','Position',[x y p.wtxt3 p.htxt],...
+    str5,'HorizontalAlignment','center','Position',[x y p.wtxt3 p.htxt],...
     'FontUnits',p.fntun,'FontSize',p.fntsz,'Enable','off');
 
 x = x + p.wtxt3 + p.mg;
@@ -132,17 +160,17 @@ q.edit_ylim_up = uicontrol('Style','edit','Parent',h_pan,'Position',...
     'String','','TooltipString',ttstr5,'Enable','off');
 
 x = p.mg;
-y = y - p.mgbig - p.hbut;
+y = y - p.mg - p.hbut;
 
 q.pushbutton_update = uicontrol('Style','pushbutton','Parent',h_pan,...
-    'Units',p.posun,'Position',[x y wbut p.hbut],'String',str4,...
+    'Units',p.posun,'Position',[x y wbut p.hbut],'String',str6,...
     'TooltipString',ttstr6,'Callback',{@pushbutton_update_Callback,h_fig},...
     'FontUnits',p.fntun,'FontSize',p.fntsz);
 
 x = x + p.mg + wbut;
 
 q.pushbutton_export = uicontrol('Style','pushbutton','Parent',h_pan,...
-    'Units',p.posun,'FontWeight','bold','String',str5,'Position',...
+    'Units',p.posun,'FontWeight','bold','String',str7,'Position',...
     [x y wbut p.hbut],'Callback',{@menu_export_Callback,h_fig},...
     'TooltipString',ttstr7,'FontUnits',p.fntun,'FontSize',p.fntsz);
 

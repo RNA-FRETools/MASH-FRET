@@ -60,4 +60,22 @@ switch dat_type
                 dat(:,2)'>=prm(2,1) & dat(:,2)'<=prm(2,2);
         end
         
+    case 'state' % 2D
+        if size(dat,2)==2 % 1D
+            states = dat(:,1)'>=prm(1,1) & dat(:,1)'<=prm(1,2);
+        else % 2D
+            states = dat(:,1)'>=prm(1,1) & dat(:,1)'<=prm(1,2) & ...
+                dat(:,3)'>=prm(2,1) & dat(:,3)'<=prm(2,2);
+        end
+        
+        mols = unique(dat(:,2))';
+        match = unique(dat(states,2))';
+        molIds = [];
+        for m = match
+            molIds = cat(2,molIds,find(mols==m,1));
+        end
+        M = numel(mols);
+        molIncl = false(1,M);
+        molIncl(molIds) = true;
+        
 end

@@ -1,50 +1,56 @@
 function plotData_autoSort(h_fig)
 
 h = guidata(h_fig);
-p = h.param.ttPr;
-proj = p.curr_proj;
-nChan = p.proj{proj}.nb_channel;
-nExc = p.proj{proj}.nb_excitations;
-nFRET = size(p.proj{proj}.FRET,1);
-nS = size(p.proj{proj}.S,1);
 
 cla(h.tm.axes_histSort);
 
 dat1 = get(h.tm.axes_ovrAll_1,'userdata');
-dat2 = get(h.tm.axes_ovrAll_2,'userdata');
 dat3 = get(h.tm.axes_histSort,'userdata');
 
 if ~sum(dat3.slct)
     return
 end
 
-ind = get(h.tm.popupmenu_selectData,'value');
-j = get(h.tm.popupmenu_selectCalc,'value');
+indx = get(h.tm.popupmenu_selectXdata,'value');
+indy = get(h.tm.popupmenu_selectYdata,'value')-1;
+is2D = indy>0;
+jx = get(h.tm.popupmenu_selectXval,'value')-1;
+jy = get(h.tm.popupmenu_selectYval,'value')-1;
 fcn = {@axes_histSort_ButtonDownFcn,h_fig};
+isTDP = (indx==indy & jx==9 & jy==9);
 
-if ind<=(nChan*nExc+nFRET+nS) % 1D histograms
-    if j==1 % original data
-        P = dat2.hist{ind};
-        iv = dat2.iv{ind};
-        
-    else % calculated/discretized data
-        if isempty(dat3.hist{ind,j-1})
-            setContPan(cat(2,'No calculated data available: start ',...
-                'calculation or select another type of calculation.'),...
-                'error',h_fig);
-            return
+if ~is2D % 1D histograms
+    if jx==0
+        trace_x = dat1.trace{indx};
+        limx = dat1.lim(indx,:);
+        nivx = dat1.niv(indx);
+    else
+        if sum(jx==[9,10]) % state-wise
+            trace_x = dat3.val{indx,jx}(:,1);
+        else
+            trace_x = dat3.val{indx,jx};
         end
-        P = dat3.hist{ind,j-1};
-        iv = dat3.iv{ind,j-1};
+        limx = dat3.lim(indx,:,jx);
+        nivx = dat3.niv(jx,indx);
+    end
+    [P,iv] = getHistTM(trace_x,limx,nivx);
+    
+    if isempty(P)
+        setContPan(cat(2,'No calculated data available: start calculation',...
+            ' or select another type of calculation.'),'error',h_fig);
     end
     
     % plot histogram
-    bar(h.tm.axes_histSort,iv,P,'edgecolor',dat1.color{ind},'facecolor',...
-        dat1.color{ind},'buttondownfcn',fcn);
+    bar(h.tm.axes_histSort,iv,P,'edgecolor',dat1.color{indx},'facecolor',...
+        dat1.color{indx},'buttondownfcn',fcn);
     
     % set axis labels as in overall plot
-    xlabel(h.tm.axes_histSort, dat2.xlabel{ind});
-    ylabel(h.tm.axes_histSort, dat2.ylabel{ind});
+    if jx==0
+        xlabel(h.tm.axes_histSort, dat1.ylabel{indx});
+    else
+        xlabel(h.tm.axes_histSort, dat3.label{indx});
+    end
+    ylabel(h.tm.axes_histSort, 'Frequency count');
     
     % set axis limits
     xlim(h.tm.axes_histSort, [iv(1),iv(end)]);
@@ -58,21 +64,54 @@ if ind<=(nChan*nExc+nFRET+nS) % 1D histograms
     
 else % E-S histograms
     
-    if j==1 % original data
-        P2D = dat2.hist{ind};
-        ivx = dat2.iv{ind}{1};
-        ivy = dat2.iv{ind}{2};
-        
-    else % calculated/discretized data
-        if isempty(dat3.hist{ind,j-1})
-            setContPan(cat(2,'No calculated data available: start ',...
-                'calculation or select another type of calculation.'),...
-                'error',h_fig);
-            return;
+    % control coherence of x- and y-data
+    if ~checkXYdataCoherence(indx,indy,jx,jy)
+        return
+    end
+    
+    if isTDP % TDP
+        trace_x = dat3.val{indx,jx}(:,1);
+        trace_y = [dat3.val{indy,jy}(2:end,1);dat3.val{indy,jy}(end,1)];
+        nivx = dat1.niv(indx);
+        limx = dat1.lim(indx,:);
+        nivy = nivx;
+        limy = limx;
+    else
+        if jx==0 
+            trace_x = dat1.trace{indx};
+            nivx = dat1.niv(indx);
+            limx = dat1.lim(indx,:);
+        else
+            if sum(jx==(9:10)) % state-wise (2nd column = molecule index)
+                trace_x = dat3.val{indx,jx}(:,1);
+            else
+                trace_x = dat3.val{indx,jx};
+            end
+            nivx = dat3.niv(jx,indx);
+            limx = dat3.lim(indx,:,jx);
         end
-        P2D = dat3.hist{ind,j-1};
-        ivx = dat3.iv{ind,j-1}{1};
-        ivy = dat3.iv{ind,j-1}{2};
+        if jy==0 
+            trace_y = dat1.trace{indy};
+            nivy = dat1.niv(indy);
+            limy = dat1.lim(indy,:);
+        else
+            if sum(jx==(9:10)) % state-wise (2nd column = molecule index)
+                trace_y = dat3.val{indy,jy}(:,1);
+            else
+                trace_y = dat3.val{indy,jy};
+            end
+            nivy = dat3.niv(jy,indy);
+            limy = dat3.lim(indy,:,jy);
+        end
+    end
+    
+    [P2D,iv] = getHistTM([trace_x,trace_y],[limx;limy],[nivx,nivy]);
+    ivx = iv{1};
+    ivy = iv{2};
+
+    if isempty(P2D)
+        setContPan(cat(2,'No calculated data available: start calculation',...
+            ' or select another type of calculation.'),'error',h_fig);
     end
        
     imagesc([ivx(1),ivx(end)],[ivy(1),ivy(end)],P2D,'parent',...
@@ -87,8 +126,16 @@ else % E-S histograms
         set(h.tm.axes_histSort,'CLim',[0,1]);
     end
 
-    xlabel(h.tm.axes_histSort,dat2.xlabel{ind});
-    ylabel(h.tm.axes_histSort,dat2.ylabel{ind});
+    if jx==0
+        xlabel(h.tm.axes_histSort,dat1.ylabel{indx});
+    else
+        xlabel(h.tm.axes_histSort,dat3.label{indx,jx});
+    end
+    if jy==0
+        ylabel(h.tm.axes_histSort,dat1.ylabel{indy});
+    else
+        ylabel(h.tm.axes_histSort,dat3.label{indy,jy});
+    end
 
     xlim(h.tm.axes_histSort,[ivx(1),ivx(end)]);
     ylim(h.tm.axes_histSort,[ivy(1),ivy(end)]);
@@ -97,20 +144,14 @@ else % E-S histograms
 end
 
 % display histogram parameters
-if j==1
-    lim = dat1.lim{ind};
-    niv = dat1.niv(ind,:);
-else
-    lim = dat3.lim{ind,j-1};
-    niv = dat3.niv(ind,:,j-1);
-end
-set(h.tm.edit_xlow,'string',num2str(lim(1,1)));
-set(h.tm.edit_xup,'string',num2str(lim(1,2)));
-set(h.tm.edit_xniv,'string',num2str(niv(1)));
-if ind>(nChan*nExc+nFRET+nS)
-    set(h.tm.edit_ylow,'string',num2str(lim(2,1)));
-    set(h.tm.edit_yup,'string',num2str(lim(2,2)));
-    set(h.tm.edit_yniv,'string',num2str(niv(2)));
+set(h.tm.edit_xlow,'string',num2str(limx(1)));
+set(h.tm.edit_xup,'string',num2str(limx(2)));
+set(h.tm.edit_xniv,'string',num2str(nivx));
+
+if is2D && ~isTDP
+    set(h.tm.edit_ylow,'string',num2str(limy(1)));
+    set(h.tm.edit_yup,'string',num2str(limy(2)));
+    set(h.tm.edit_yniv,'string',num2str(nivy));
     set([h.tm.text_ylow,h.tm.edit_ylow,h.tm.text_yup,h.tm.edit_yup,...
         h.tm.text_yniv,h.tm.edit_yniv],'enable','on');
 else

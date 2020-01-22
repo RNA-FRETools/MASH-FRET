@@ -20,8 +20,10 @@ set(h.tm.popupmenu_cond,'value',prm{1}(3,2));
 set(h.tm.edit_conf1,'string',num2str(prm{1}(4,1)));
 set(h.tm.edit_conf2,'string',num2str(prm{1}(4,2)));
 
-set(h.tm.popupmenu_selectData,'value',prm{2}(1));
-set(h.tm.popupmenu_selectCalc,'value',prm{2}(2));
+set(h.tm.popupmenu_selectXdata,'value',prm{2}(1,1));
+set(h.tm.popupmenu_selectXval,'value',prm{2}(1,2));
+set(h.tm.popupmenu_selectYdata,'value',prm{2}(2,1));
+set(h.tm.popupmenu_selectYval,'value',prm{2}(2,2));
 
-popupmenu_selectData_Callback(h.tm.popupmenu_selectData,[],h_fig);
+popupmenu_selectData_Callback(h.tm.popupmenu_selectXdata,[],h_fig);
 

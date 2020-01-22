@@ -27,10 +27,10 @@ dat1 = get(h.tm.axes_ovrAll_1,'userdata');
 dat3 = get(h.tm.axes_histSort,'userdata');
 
 if ~sum(dat3.slct)
-    return;
+    return
 end
 
-if ind<=nChan*nExc+nFRET+nS % single channel/FRET/S
+if ind<=(nChan*nExc+nFRET+nS) % single channel/FRET/S
     x_axis = 1:size(dat1.trace{ind},1);
     if inSec
         x_axis = x_axis*expT;
@@ -48,7 +48,7 @@ if ind<=nChan*nExc+nFRET+nS % single channel/FRET/S
     ylabel(h_axes, dat1.ylabel{ind});
 
 
-elseif ind==nChan*nExc+nFRET+nS+1 && nChan>1% all intensities
+elseif ind==(nChan*nExc+nFRET+nS+1) && (nChan>1 || nExc>1)% all intensities
     x_axis = 1:size(dat1.trace{1},1);
     if inSec
         x_axis = x_axis*expT;
@@ -58,11 +58,11 @@ elseif ind==nChan*nExc+nFRET+nS+1 && nChan>1% all intensities
     for l = 1:nExc
         for c = 1:nChan
             %ind = (l-1)+c; % RB 2018-01-03: indizes/colour bug solved
-            ind = 2*(l-1)+c;
-            plot(h_axes,x_axis,dat1.trace{ind},'color',dat1.color{ind},...
+            i = 2*(l-1)+c;
+            plot(h_axes,x_axis,dat1.trace{i},'color',dat1.color{i},...
                 'buttondownfcn',fcn);
-            min_y = min([min_y min(dat1.trace{ind})]);
-            max_y = max([max_y max(dat1.trace{ind})]);
+            min_y = min([min_y min(dat1.trace{i})]);
+            max_y = max([max_y max(dat1.trace{i})]);
 
             % added by MH, 24.4.2019
             if l==1 && c==1
@@ -76,15 +76,15 @@ elseif ind==nChan*nExc+nFRET+nS+1 && nChan>1% all intensities
     xlabel(h_axes, dat1.xlabel);
     ylabel(h_axes, dat1.ylabel{ind});
 
-elseif ind==nChan*nExc+nFRET+nS+2 && nFRET>1% all FRET
+elseif ind==(nChan*nExc+nFRET+nS+(nChan>1 || nExc>1)+1) && nFRET>1% all FRET
     x_axis = 1:size(dat1.trace{nChan*nExc+1},1);
     if inSec
         expT = p.proj{proj}.frame_rate;
         x_axis = x_axis*expT;
     end
     for n = 1:nFRET
-        ind = nChan*nExc+n;
-        plot(h_axes,x_axis,dat1.trace{ind},'color',dat1.color{ind},...
+        i = nChan*nExc+n;
+        plot(h_axes,x_axis,dat1.trace{i},'color',dat1.color{i},...
             'buttondownfcn',fcn);
         % added by MH, 24.4.2019
         if n==1
@@ -97,17 +97,16 @@ elseif ind==nChan*nExc+nFRET+nS+2 && nFRET>1% all FRET
     xlabel(h_axes, dat1.xlabel);
     ylabel(h_axes, dat1.ylabel{ind});
 
-elseif (ind==nChan*nExc+nFRET+nS+2 && nFRET==1 && nS>1) || ...
-        (ind==nChan*nExc+nFRET+nS+3 && nFRET>1 && nS>1)% all S
+elseif ind==(nChan*nExc+nFRET+nS+(nChan>1 || nExc>1)+(nFRET>1)+1) && nS>1% all S
     x_axis = 1:size(dat1.trace{nChan*nExc+nFRET+1},1);
     if inSec
         expT = p.proj{proj}.frame_rate;
         x_axis = x_axis*expT;
     end
     for n = 1:nS
-        ind = nChan*nExc+nFRET+n;
-        plot(h_axes,x_axis,dat1.trace{ind},'color',...
-            dat1.color{ind},'buttondownfcn',fcn);
+        i = nChan*nExc+nFRET+n;
+        plot(h_axes,x_axis,dat1.trace{i},'color',...
+            dat1.color{i},'buttondownfcn',fcn);
         if n==1
             set(h_axes,'nextplot','add');
         end
@@ -118,18 +117,16 @@ elseif (ind==nChan*nExc+nFRET+nS+2 && nFRET==1 && nS>1) || ...
     xlabel(h_axes, dat1.xlabel);
     ylabel(h_axes, dat1.ylabel{ind});
 
-elseif (ind==nChan*nExc+nFRET+nS+2 && nFRET==1 && nS==1) || ...
-        (ind==nChan*nExc+nFRET+nS+3 && ((nFRET>1 && nS==1) ...
-        || (nFRET==1 && nS>1))) || ...
-        (ind==nChan*nExc+nFRET+nS+4 && nFRET>1 && nS>1) % all FRET & S
+elseif ind==(nChan*nExc+nFRET+nS+(nChan>1 || nExc>1)+(nFRET>1)+(nS>1)+1) && ...
+        nFRET>0 && nS>0 % all FRET & S
     x_axis = 1:size(dat1.trace{nChan*nExc+1},1);
     if inSec
         x_axis = x_axis*expT;
     end
     for n = 1:(nFRET+nS)
-        ind = nChan*nExc+n;
-        plot(h_axes,x_axis,dat1.trace{ind},'color',...
-            dat1.color{ind},'buttondownfcn',fcn);
+        i = nChan*nExc+n;
+        plot(h_axes,x_axis,dat1.trace{i},'color',...
+            dat1.color{i},'buttondownfcn',fcn);
         if n==1
             set(h_axes,'nextplot','add');
         end

@@ -6,7 +6,7 @@ choice = questdlg({cat(2,'Applying tags to molecules belonging to this ',...
     'Yes, tag molecules','Cancel','Cancel');
 
 if ~strcmp(choice,'Yes, tag molecules')
-    return;
+    return
 end
 
 h = guidata(h_fig);
@@ -22,7 +22,7 @@ molIncl_slct = ud_popCalc(h_fig);
 disp('sorting complete!');
 
 if ~sum(molIncl_slct) || ~sum(dat3.rangeTags(range,:))
-    return;
+    return
 end
 
 % molecule selection at last update

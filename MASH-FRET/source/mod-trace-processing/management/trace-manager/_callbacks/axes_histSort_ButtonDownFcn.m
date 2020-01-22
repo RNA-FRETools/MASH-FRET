@@ -1,18 +1,14 @@
 function axes_histSort_ButtonDownFcn(obj,evd,h_fig)
 
 h = guidata(h_fig);
-p = h.param.ttPr;
-proj = p.curr_proj;
-nChan = p.proj{proj}.nb_channel;
-nExc = p.proj{proj}.nb_excitations;
-nFRET = size(p.proj{proj}.FRET,1);
-nS = size(p.proj{proj}.S,1);
 
 h_edit_x = [h.tm.edit_xrangeLow,h.tm.edit_xrangeUp];
 h_edit_y = [h.tm.edit_yrangeLow,h.tm.edit_yrangeUp];
 
 pos = get(h.tm.axes_histSort,'currentpoint');
-ind = get(h.tm.popupmenu_selectData,'value');
+indy = get(h.tm.popupmenu_selectYdata,'value')-1;
+is2D = indy>0;
+
 xrange = [str2num(get(h_edit_x(1),'string')) ...
     str2num(get(h_edit_x(2),'string'))];
 yrange = [str2num(get(h_edit_y(1),'string')) ...
@@ -20,7 +16,7 @@ yrange = [str2num(get(h_edit_y(1),'string')) ...
 xlim = get(h.tm.axes_histSort,'xlim');
 ylim = get(h.tm.axes_histSort,'ylim');
 
-if ind<=(nChan*nExc+nFRET+nS) % 1D histograms
+if ~is2D % 1D histograms
     x = xrange;
     if x(2)>xlim(2)
         x(2) = xlim(2);

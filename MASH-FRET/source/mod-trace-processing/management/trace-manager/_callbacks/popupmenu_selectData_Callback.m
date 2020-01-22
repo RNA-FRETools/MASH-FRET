@@ -3,66 +3,38 @@ function popupmenu_selectData_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 p = h.param.ttPr;
 proj = p.curr_proj;
-nChan = p.proj{proj}.nb_channel;
-nExc = p.proj{proj}.nb_excitations;
-nFRET = size(p.proj{proj}.FRET,1);
-nS = size(p.proj{proj}.S,1);
 
-ind = get(h.tm.popupmenu_selectData,'Value');
-j = get(h.tm.popupmenu_selectCalc,'value');
+indx = get(h.tm.popupmenu_selectXdata,'Value');
+indy = get(h.tm.popupmenu_selectXdata,'Value')-1;
+jx = get(h.tm.popupmenu_selectXval,'value')-1;
+jy = get(h.tm.popupmenu_selectXval,'value')-1;
+
+is2D = indy>0;
+needDiscr = sum(jx==[1,6:9]) || sum(jy==[1,6:9]);
 
 % control the presence of discretized data
-if j==6
-    h = guidata(h_fig);
-    p = h.param.ttPr;
-    proj = p.curr_proj;
+if needDiscr
     
-    str_axes = 'bottom';
-    
-    n = 0;
-    if ind<=nChan*nExc
-        for l = 1:nExc
-            for c = 1:nChan
-                n = n+1;
-                if n==ind
-                    break;
-                end
+    [isdiscr,str_axes] = controlDiscrForAS(indx,p.proj{proj});
+    if is2D
+        [isdiscr_y,str_axes_y] = controlDiscrForAS(indy,p.proj{proj});
+        if ~isdiscr_y && ~isempty(str_axes)
+            if ~strcmp(str_axes,str_axes_y)
+               str_axes = cat(2,str_axes,' and ',str_axes_y);
             end
+        elseif ~isdiscr_y
+            str_axes = str_axes_y;
         end
-        discr = p.proj{proj}.intensities_DTA(:,c:nChan:end,l);
-        
-        str_axes = 'top';
-        
-    elseif ind<=(nChan*nExc+nFRET)
-        n = ind-nChan*nExc;
-        discr = p.proj{proj}.FRET_DTA(:,n:nFRET:end);
-        
-    elseif ind<=(nChan*nExc+nFRET+nS)
-        n = ind-(nChan*nExc+nFRET);
-        discr = p.proj{proj}.S_DTA(:,n:nS:end);
-        
-    else
-        n = 0;
-        for fret = 1:nFRET
-            for s = 1:nS
-                n = n+1;
-                if n==(ind+nChan*nExc+nFRET+nS)
-                    break;
-                end
-            end
-        end
-        discr = cat(3,p.proj{proj}.FRET_DTA(:,fret:nFRET:end),...
-            p.proj{proj}.S_DTA(:,s:nS:end));
+        isdiscr = isdiscr | isdiscr_y;
     end
     
-    isdiscr = ~all(isnan(sum(sum(discr,3),2)));
     if ~isdiscr
         str = cat(2,'This method requires the individual time-traces in ',...
             str_axes,' axes to be discretized: please return to Trace ',...
             'processing and infer the corresponding state trajectories.');
         setContPan(str,'error',h_fig);
         set(obj,'value',get(obj,'userdata'));
-            return;
+            return
     end
 end
 
