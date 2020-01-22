@@ -53,8 +53,8 @@ waxes2 = waxes - 2*p.mg - waxes1;
 
 % list strings
 str_plot = getStrPlot_overall(h_fig); % added by MH, 25.4.2019
-str_plotx = str_plot{1};
-str_ploty = ['none' str_plot{1}];
+str_plotx = str_plot{2};
+str_ploty = ['none' str_plot{2}];
 
 % build GUI
 x = p.mg;
@@ -69,7 +69,7 @@ y = y-(p.hpop-p.htxt)/2;
 
 % RB 2017-12-15: update str_plot
 q.popupmenu_axes1 = uicontrol('Style','popupmenu','Parent',h_pan,'String',...
-    str_plot{2},'Units',p.posun,'Position',[x y wpop p.hpop],'Callback',...
+    str_plot{1},'Units',p.posun,'Position',[x y wpop p.hpop],'Callback',...
     {@popupmenu_axes_Callback, h_fig},'FontUnits',p.fntun,'FontSize',...
     p.fntsz);
 

@@ -10,6 +10,9 @@ p = h.param.ttPr;
 proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
+exc = p.proj{proj}.excitations;
+chanExc = p.proj{proj}.chanExc;
+nI0 = sum(chanExc>0);
 nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
 clr = p.proj{proj}.colours;
@@ -24,15 +27,15 @@ dat3 = get(h.tm.axes_histSort,'UserData');
 
 % initializes interval number
 nCalc = numel(get(h.tm.popupmenu_selectXval,'string'))-1;
-dat1.niv = repmat(def_niv,1,nChan*nExc+nFRET+nS); % traces
-dat3.niv = repmat(def_niv,nCalc,nChan*nExc+nFRET+nS);
-dat3.label = cell(nChan*nExc+nFRET+nS,nCalc);
+dat1.niv = repmat(def_niv,1,nChan*nExc+nI0+nFRET+nS); % traces
+dat3.niv = repmat(def_niv,nCalc,nChan*nExc+nI0+nFRET+nS);
+dat3.label = cell(nChan*nExc+nI0+nFRET+nS,nCalc);
 label_calc = {'%s','%s','%s','%s','%s','number of states',...
     'number of state transitions','dwell time (s)','%s','dwell time (s)'};
 
 % initializes plot parameters
-dat1.color = cell(1,nChan*nExc+nFRET+nS);
-dat1.ylabel = cell(1,nChan*nExc+nFRET+nS+4);
+dat1.color = cell(1,nChan*nExc+nI0+nFRET+nS);
+dat1.ylabel = cell(1,nChan*nExc+nI0+nFRET+nS+4);
 if inSec
     dat1.xlabel = 'time (s)';
 else
@@ -60,6 +63,18 @@ for l = 1:nExc % number of excitation channels
         for j = 1:nCalc
             dat3.label{i,j} = sprintf(label_calc{j},dat1.ylabel{i});
         end
+    end
+end
+for c = 1:nChan
+    if chanExc(c)==0
+        continue
+    end
+    i = i + 1;
+    l = find(exc==chanExc(c),1);
+    dat1.ylabel{i} = ['counts' str_extra];
+    dat1.color{i} = clr{1}{l,c};
+    for j = 1:nCalc
+        dat3.label{i,j} = sprintf(label_calc{j},dat1.ylabel{i});
     end
 end
 for n = 1:nFRET

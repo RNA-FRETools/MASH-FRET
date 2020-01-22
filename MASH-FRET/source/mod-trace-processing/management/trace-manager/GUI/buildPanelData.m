@@ -41,7 +41,7 @@ wedit2 = (pospan(3)-2*p.mg-2*p.mg/fact)/3;
 
 % list strings
 str_pop = getStrPlot_overall(h_fig);
-str_popx = str_pop{1};
+str_popx = str_pop{2};
 str_popy = ['none',str_popx];
 
 x = p.mg;

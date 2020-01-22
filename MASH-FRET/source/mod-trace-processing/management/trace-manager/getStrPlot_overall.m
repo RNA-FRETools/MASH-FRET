@@ -19,6 +19,8 @@ exc = p.proj{proj}.excitations;
 labels = p.proj{proj}.labels;
 nExc = p.proj{proj}.nb_excitations;
 FRET = p.proj{proj}.FRET;
+chanExc = p.proj{proj}.chanExc;
+nI0 = sum(chanExc>0);
 nFRET = size(FRET,1);
 S = p.proj{proj}.S;
 nS = size(S,1);
@@ -39,6 +41,20 @@ for l = 1:nExc % number of excitation channels
             clr_bg_c ';color: ' clr_fbt_c ';"> ' labels{c} ...
             ' at ' num2str(exc(l)) 'nm</span></html>']];
     end
+end
+
+for c = 1:nChan
+    if chanExc(c)==0
+        continue
+    end
+    l = find(exc==chanExc(c));
+    clr_bg_c = sprintf('rgb(%i,%i,%i)',round(clr{1}{l,c}(1:3)*255));
+    clr_fbt_c = sprintf('rgb(%i,%i,%i)',...
+        [255 255 255]*sum(double(clr{1}{l,c}(1:3)<=0.5)));
+    str_plot = [str_plot ...
+        ['<html><span style= "background-color: ' ...
+        clr_bg_c ';color: ' clr_fbt_c ';">total ' labels{c} ...
+        ' (at ' num2str(exc(l)) 'nm)</span></html>']];
 end
 
 % String for FRET Channels in popup menu
@@ -66,6 +82,10 @@ end
 % String for all Intensity Channels in popup menu 
 if nChan > 1 || nExc > 1
     str_plot = [str_plot 'all intensity traces'];
+end
+% String for all total intensities in popup menu 
+if nI0>1
+    str_plot = [str_plot 'all total intensity traces'];
 end
 % String for all FRET Channels in popup menu
 if nFRET > 1
@@ -109,7 +129,6 @@ end
 %     end
 % end
 
-str_out{1} = str_plot(1:(size(str_plot,2)-nFRET*nS));
-str_out{2} = [str_plot(1:(nChan*nExc+nFRET+nS)) ...
-    str_plot((size(str_plot,2)-nFRET*nS+1):size(str_plot,2))];
+str_out{1} = str_plot; % trace plot
+str_out{2} = str_plot(1:(nChan*nExc+nI0+nFRET+nS)); % hist plot
 

@@ -34,6 +34,7 @@ nMol = numel(h.tm.molValid);
 nChan = p.proj{proj}.nb_channel;
 exc = p.proj{proj}.excitations;
 chanExc = p.proj{proj}.chanExc;
+nI0 = sum(chanExc>0);
 nExc = p.proj{proj}.nb_excitations;
 FRET = p.proj{proj}.FRET;
 nFRET = size(FRET,1);
@@ -55,13 +56,13 @@ dat1 = get(h.tm.axes_ovrAll_1,'UserData');
 dat3 = get(h.tm.axes_histSort,'UserData');
 
 % allocate cells
-dat1.trace = cell(1,nChan*nExc+nFRET+nS);
-dat1.lim = NaN(nChan*nExc+nFRET+nS,2);
+dat1.trace = cell(1,nChan*nExc+nI0+nFRET+nS);
+dat1.lim = NaN(nChan*nExc+nI0+nFRET+nS,2);
 
 % added by MH, 25.4.2019
 nCalc = numel(get(h.tm.popupmenu_selectXval,'string'))-1;
-dat3.val = cell(nChan*nExc+nFRET+nS,nCalc);
-dat3.lim = NaN(nChan*nExc+nFRET+nS,2,nCalc);
+dat3.val = cell(nChan*nExc+nI0+nFRET+nS,nCalc);
+dat3.lim = NaN(nChan*nExc+nI0+nFRET+nS,2,nCalc);
 
 % added by MH, 27.4.2019 to remember molecule selection at last update
 % (used when applying tags in AS)
@@ -128,6 +129,48 @@ for i = 1:nMol
                     dt(:,1),repmat(i,nTrs,1)]; % state dwell times
             end
         end
+        
+        if nI0>0
+            for c = 1:nChan
+                if chanExc(c)==0
+                    continue
+                end
+                ind = ind+1;
+                incl = p.proj{proj}.bool_intensities(:,i);
+                l = find(exc==chanExc(c),1);
+                I0 = sum(intensities(incl,(nChan*(i-1)+1):nChan*i,l),2);
+                I0_DTA = sum(...
+                    intensities_DTA(incl,(nChan*(i-1)+1):nChan*i,l),2);
+                dt = getDtFromDiscr(I0_DTA,nExc*rate);
+                nTrs = size(dt,1);
+                if perSec
+                    I0 = I0/rate;
+                    I0_DTA = I0_DTA/rate;
+                end
+                if perPix
+                    I0 = I0/nPix;
+                    I0_DTA = I0_DTA/nPix;
+                end
+
+                % concatenate traces
+                dat1.trace{ind} = [dat1.trace{ind};I0]; % intensits-time trace
+
+                % concatenate mean, max, min, median and states
+                dat3.val{ind,1} = [dat3.val{ind,1};I0_DTA]; % state trajectories
+                dat3.val{ind,2} = [dat3.val{ind,2};mean(I0)]; % mean intensity
+                dat3.val{ind,3} = [dat3.val{ind,3};min(I0)]; % minimum intensity
+                dat3.val{ind,4} = [dat3.val{ind,4};max(I0)]; % maximum intensity
+                dat3.val{ind,5} = [dat3.val{ind,5};median(I0)]; % median intensity
+                dat3.val{ind,6} = [dat3.val{ind,6};numel(unique(I0_DTA))]; % number of states
+                dat3.val{ind,7} = [dat3.val{ind,7};size(dt,1)]; % number of transitions
+                dat3.val{ind,8} = [dat3.val{ind,8};mean(dt(:,1))]; % mean state dwell time
+                dat3.val{ind,9} = [dat3.val{ind,9};...
+                    dt(:,2),repmat(i,nTrs,1)]; % state values
+                dat3.val{ind,10} = [dat3.val{ind,10};...
+                    dt(:,1),repmat(i,nTrs,1)]; % state dwell times
+            end
+        end
+        
         if nFRET==0
             continue
         end
@@ -215,7 +258,7 @@ loading_bar('close', h_fig);
 % err = loading_bar('init', h_fig , (nChan*nExc+nFRET+nS+nFRET*nS), ...
 %     'Histogram data ...');
 % loading bar parameters-----------------------------------------------
-err = loading_bar('init', h_fig , (nChan*nExc+nFRET+nS),...
+err = loading_bar('init', h_fig , (nChan*nExc+nI0+nFRET+nS),...
     'Store data limits ...');
 
 if err
@@ -237,11 +280,11 @@ guidata(h_fig, h);
 %         ind_es = cat(1,ind_es,[fret,s]);
 %     end
 % end
-for ind = 1:(nChan*nExc+nFRET+nS)
+for ind = 1:(nChan*nExc+nI0+nFRET+nS)
 
-    if ind<=(nChan*nExc)
+    if ind<=(nChan*nExc+nI0) % intensity
         dat1.lim(ind,:) = [min(dat1.trace{ind}) max(dat1.trace{ind})];
-    else
+    else % ratio
         dat1.lim(ind,:) = [defMin defMax];
     end
     
