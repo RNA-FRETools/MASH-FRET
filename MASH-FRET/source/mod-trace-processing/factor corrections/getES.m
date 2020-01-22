@@ -15,6 +15,11 @@ m_i = p_proj.coord_incl;
 N = size(m_i,2);
 insubgroup = true(nF,N);
 for i = 1:nF
+    s = find(S(:,1)==FRET(i,1) & S(:,2)==FRET(i,2),1);
+    if isempty(s)
+        insubgroup(i,:) = false;
+        continue
+    end
     tag = prm(i,1)-1;
     if tag>0
         insubgroup(i,:) = m_i & p_proj.molTag(:,tag)';
@@ -38,8 +43,8 @@ l_i = p_proj.bool_intensities;
 
 % sample dimensions
 N = size(m_i,2);
-L = size(I_den,1);
 mls = 1:N;
+mls = mls(m_i & sum(insubgroup,1)); % reduce the number of molecules to process to a minimum
 
 % build FRET and stoichiometry traces
 E_AD = [];
@@ -56,14 +61,14 @@ end
 lb = 0;
 h = guidata(h_fig);
 if ~isfield(h, 'barData')
-    loading_bar('init',h_fig,numel(mls(m_i))+nF,'Build ES histograms ...');
+    loading_bar('init',h_fig,numel(mls)+nF,'Build ES histograms ...');
     h = guidata(h_fig);
     h.barData.prev_var = h.barData.curr_var;
     guidata(h_fig, h);
     lb = 1;
 end
 
-for m = mls(m_i)
+for m = mls
     E_AD = cat(1,E_AD,calcFRET(nC,nExc,exc,chanExc,FRET,...
         I_den(l_i(:,m),((m-1)*nC+1):m*nC,:),gamma));
     S_AD = cat(1,S_AD,calcS(exc,chanExc,S,FRET,...
