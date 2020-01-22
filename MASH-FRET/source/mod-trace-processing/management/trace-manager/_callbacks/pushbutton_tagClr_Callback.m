@@ -30,13 +30,6 @@ clr_str = rgb2hex(rgb);
 h.tm.molTagClr{tag} = cat(2,'#',clr_str);
 guidata(h_fig,h);
 
-% update edit field background color
-popup_molTag_Callback(h.tm.popup_molTag,[],h_fig);
-
-% update color in default tag popup
-str_lst = colorTagNames(h_fig);
-set(h.tm.popup_molTag,'String',str_lst);
-
 % update color in molecule tag listboxes and popups
 n_mol_disp = str2num(get(h.tm.edit_nbTotMol,'string'));
 
@@ -44,11 +37,6 @@ update_taglist_OV(h_fig,n_mol_disp);
 update_taglist_AS(h_fig);
 update_taglist_VV(h_fig);
 
-% update color in string of selection popupmenu
-str_pop = getStrPop_select(h_fig);
-curr_slct = get(h.tm.popupmenu_selection,'value');
-if curr_slct>numel(str_pop)
-    curr_slct = numel(str_pop);
-end
-set(h.tm.popupmenu_selection,'value',curr_slct,'string',str_pop);
+% update edit field background color
+popup_molTag_Callback(h.tm.popup_molTag,[],h_fig);
 

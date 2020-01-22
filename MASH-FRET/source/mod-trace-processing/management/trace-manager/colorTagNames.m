@@ -19,7 +19,7 @@ colorlist = h.tm.molTagClr;
 nTag = numel(h.tm.molTagNames);
 if nTag==0
     str_lst = {'no default tag'};
-    return;
+    return
 end
 
 str_lst = cell(1,nTag+1);

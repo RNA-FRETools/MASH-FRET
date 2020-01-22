@@ -4,7 +4,7 @@ h = guidata(h_fig);
 
 % abort if no molecule tag is defined
 if ~sum(sum(h.tm.molTag))
-    return;
+    return
 end
 
 % ask confirmation to user
@@ -13,7 +13,7 @@ choice = questdlg({cat(2,'All molecule-specific tags will be lost after ',...
     'all molecules?')},'Remove molecule tags','Yes, remove all tags',...
     'Cancel','Cancel');
 if ~strcmp(choice,'Yes, remove all tags')
-    return;
+    return
 end
 
 % set all molecule tags to false

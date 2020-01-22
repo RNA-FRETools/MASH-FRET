@@ -25,6 +25,7 @@ function buildTraceManager(h_fig)
 % >> update popupmenu_axes1 and popupmenu_axes2 string
 
 % defaults
+fact = 5;
 defNperPage = 3;
 debugMode = 1;
 posun = 'pixels';
@@ -50,6 +51,7 @@ wtxt1 = 65; % medium text x-dimension
 wtxt2 = 105; % large text x-dimension
 wtxt3 = 32; % small text x-dimension
 wbrd = 4;
+warr = 20;
 str0 = 'Overview';
 str1 = 'Auto sorting';
 str2 = 'View on video';
@@ -61,7 +63,7 @@ prm = struct('mg',mg,'mgbig',mgbig,'posun',posun,'fntun',fntun,'fntsz',...
     fntsz,'hpop',hpop,'hbut',hbut,'hbut2',hbut2,'hcb',hcb,'hedit',hedit,...
     'htxt',htxt,'wedit',wedit,'wcb',wcb,'wcb2',wcb2,'wtxt1',wtxt1,'wtxt2',...
     wtxt2,'wtxt3',wtxt3,'wbut2',wbut2,'defNperPage',defNperPage,'wbrd',...
-    wbrd);
+    wbrd,'warr',warr);
 
 % get reference table lisitng character widths 
 h = guidata(h_fig);
@@ -74,7 +76,8 @@ posscr = getPixPos(0);
 % set panels dimensions
 wpan = wfig - 2*mg;
 htool = hbut2 + 2*mg;
-hpan1 = 5*mg + 2*hpop + 2*hedit + mgbig + hbut;
+hpan1 = 1.5*mg + hpop + mg/2 + htxt + hpop + mg/2 + hedit + mg/fact + ...
+    hedit + mg/2 + hbut + mg;
 hpan2 = hfig - 2*mg - hpan1 - htool;
 hpan3 = hfig - htool + mg;
 

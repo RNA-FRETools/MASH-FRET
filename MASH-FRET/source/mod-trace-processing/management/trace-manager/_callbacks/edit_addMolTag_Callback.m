@@ -46,10 +46,8 @@ set(h.tm.axes_histSort,'userdata',dat3);
 set(obj,'string','define a new tag');
 
 guidata(h_fig, h);
-str_lst = colorTagNames(h_fig);
-set(h.tm.popup_molTag,'String',str_lst,'value',numel(str_lst));
+
 nb_mol_disp = str2num(get(h.tm.edit_nbTotMol, 'String'));
-guidata(h_fig, h);
 
 update_taglist_OV(h_fig, nb_mol_disp);
 update_taglist_AS(h_fig);
@@ -58,12 +56,6 @@ update_taglist_VV(h_fig);
 
 % added by MH, 24.4.2019
 % update color edit field with new current tag
+set(h.tm.popup_molTag,'value',nTag+1);
 popup_molTag_Callback(h.tm.popup_molTag,[],h_fig);
-% update string of selection popupmenu
-str_pop = getStrPop_select(h_fig);
-curr_slct = get(h.tm.popupmenu_selection,'value');
-if curr_slct>numel(str_pop)
-    curr_slct = numel(str_pop);
-end
-set(h.tm.popupmenu_selection,'value',curr_slct,'string',str_pop);
 

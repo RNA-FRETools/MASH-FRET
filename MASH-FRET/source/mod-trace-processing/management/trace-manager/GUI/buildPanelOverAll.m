@@ -18,7 +18,7 @@ function q = buildPanelOverAll(q,p,h_fig)
 % default
 fact = 5;
 xlow = 0;
-xnbiv = 200;
+xnbiv = 50;
 xup = 1;
 limy = [0 10000];
 str0 = 'plot1:';
@@ -43,7 +43,7 @@ h_pan = q.uipanel_overall;
 
 % dimensions
 pospan = get(h_pan,'Position');
-wpop = 3*p.wedit+2*p.mg/2;
+wpop = 3*p.wedit+2*p.mg/fact;
 wpop2 = (wpop-p.mg/fact)/2;
 wbut = (wpop+p.wtxt3)/2;
 haxes = pospan(4) - 2.5*p.mg;
@@ -74,13 +74,13 @@ q.popupmenu_axes1 = uicontrol('Style','popupmenu','Parent',h_pan,'String',...
     p.fntsz);
 
 x = p.mg+p.wtxt3+p.mg;
-y = y -p.mg-p.htxt;
+y = y -p.mg/2-p.htxt;
 
 q.text_xplot = uicontrol('Style','text','Parent',h_pan,'Units',p.posun,...
     'String',str2,'Position',[x y wpop2 p.htxt],'FontUnits',p.fntun,...
     'FontSize',p.fntsz);
 
-x = x+wpop2+p.mg/2;
+x = x+wpop2+p.mg/fact;
 
 q.text_yplot = uicontrol('Style','text','Parent',h_pan,'Units',p.posun,...
     'String',str3,'Position',[x y wpop2 p.htxt],'FontUnits',p.fntun,...
@@ -102,7 +102,7 @@ q.popupmenu_axes2x = uicontrol('Style','popupmenu','Parent',h_pan,'Units',...
     {@popupmenu_axes_Callback,h_fig},'FontUnits',p.fntun,'FontSize',...
     p.fntsz);
 
-x = x + wpop2 + p.mg/2;
+x = x + wpop2 + p.mg/fact;
 
 q.popupmenu_axes2y = uicontrol('Style','popupmenu','Parent',h_pan,'Units',...
     p.posun,'String',str_ploty,'Position',[x y wpop2 p.hpop],'Callback',...
@@ -110,57 +110,59 @@ q.popupmenu_axes2y = uicontrol('Style','popupmenu','Parent',h_pan,'Units',...
     p.fntsz);
 
 x = p.mg;
-y = y - p.mg - p.hpop;
+y = y - p.mg/2 - p.hedit + (p.hedit-p.htxt)/2;
 
 q.text3 = uicontrol('Style','text','Parent',h_pan,'Units',p.posun,'String',...
     str4,'HorizontalAlignment','center','Position',[x y p.wtxt3 p.htxt],...
     'FontUnits',p.fntun,'FontSize',p.fntsz);
 
 x = x + p.wtxt3 + p.mg;
+y = y-(p.hedit-p.htxt)/2;
 
 q.edit_xlim_low = uicontrol('Style','edit','Parent',h_pan,'Position',...
     [x y p.wedit p.hedit],'Callback',{@edit_lim_low_Callback,h_fig,1},...
     'String',num2str(xlow),'TooltipString',ttstr0);
 
-x = x + p.mg/2 + p.wedit;
+x = x + p.mg/fact + p.wedit;
 
 q.edit_xnbiv = uicontrol('Style','edit','Parent',h_pan,'Position',...
     [x y p.wedit p.hedit],'Callback',{@edit_nbiv_Callback,h_fig,1},...
     'String',num2str(xnbiv),'TooltipString',ttstr1);
 
-x = x + p.mg/2 + p.wedit;
+x = x + p.mg/fact + p.wedit;
 
 q.edit_xlim_up = uicontrol('Style','edit','Parent',h_pan,'Position',...
     [x y p.wedit p.hedit],'Callback',{@edit_lim_up_Callback,h_fig,1},...
     'String',num2str(xup),'TooltipString',ttstr2);
 
 x = p.mg;
-y = y - p.mg/2 - p.hedit;
+y = y - p.mg/fact - p.hedit + (p.hedit-p.htxt)/2;
 
 q.text4 = uicontrol('Style','text','Parent',h_pan,'Units',p.posun,'String',...
     str5,'HorizontalAlignment','center','Position',[x y p.wtxt3 p.htxt],...
     'FontUnits',p.fntun,'FontSize',p.fntsz,'Enable','off');
 
 x = x + p.wtxt3 + p.mg;
+y = y - (p.hedit-p.htxt)/2;
 
 q.edit_ylim_low = uicontrol('Style','edit','Parent',h_pan,'Position',...
     [x y p.wedit p.hedit],'Callback',{@edit_lim_low_Callback,h_fig,2},...
     'String','','TooltipString',ttstr3,'Enable','off');
 
-x = x + p.mg/2 + p.wedit;
+x = x + p.mg/fact + p.wedit;
 
 q.edit_ynbiv = uicontrol('Style','edit','Parent',h_pan,'Position',...
     [x y p.wedit p.hedit],'Callback',{@edit_nbiv_Callback,h_fig,2},...
     'String','','TooltipString',ttstr4,'Enable','off');
 
-x = x + p.mg/2 + p.wedit;
+x = x + p.mg/fact + p.wedit;
 
 q.edit_ylim_up = uicontrol('Style','edit','Parent',h_pan,'Position',...
     [x y p.wedit p.hedit],'Callback',{@edit_lim_up_Callback,h_fig,2},...
     'String','','TooltipString',ttstr5,'Enable','off');
 
 x = p.mg;
-y = y - p.mg - p.hbut;
+y = y - p.mg/2 - p.hbut;
 
 q.pushbutton_update = uicontrol('Style','pushbutton','Parent',h_pan,...
     'Units',p.posun,'Position',[x y wbut p.hbut],'String',str6,...
