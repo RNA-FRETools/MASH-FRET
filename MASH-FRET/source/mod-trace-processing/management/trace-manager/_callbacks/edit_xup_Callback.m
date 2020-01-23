@@ -7,13 +7,16 @@ h = guidata(h_fig);
 
 dat1 = get(h.tm.axes_ovrAll_1,'userdata');
 dat3 = get(h.tm.axes_histSort,'userdata');
-ind = get(h.tm.popupmenu_selectXdata,'value');
-j = get(h.tm.popupmenu_selectXval,'value')-1;
+indx = get(h.tm.popupmenu_selectXdata,'value');
+jx = get(h.tm.popupmenu_selectXval,'value')-1;
+indy = get(h.tm.popupmenu_selectYdata,'value')-1;
+jy = get(h.tm.popupmenu_selectYval,'value')-1;
+isTDP = (indx==indy & jx==9 & jy==9);
 
-if j==0
-    xlim_low = dat1.lim(ind,1);
+if jx==0 || isTDP
+    xlim_low = dat1.lim(indx,1);
 else
-    xlim_low = dat3.lim(ind,1,j);
+    xlim_low = dat3.lim(indx,1,jx);
 end
 
 xlim_sup = str2num(get(obj,'String'));
@@ -25,10 +28,10 @@ if ~(numel(xlim_sup)==1 && ~isnan(xlim_sup) && ~isinf(xlim_sup) && ...
     return
 end
 
-if j==0
-    dat1.lim(ind,2) = xlim_sup;
+if jx==0 || isTDP
+    dat1.lim(indx,2) = xlim_sup;
 else
-    dat3.lim(ind,2,j) = xlim_sup;
+    dat3.lim(indx,2,jx) = xlim_sup;
 end
 
 set(h.tm.axes_ovrAll_1, 'UserData', dat1);

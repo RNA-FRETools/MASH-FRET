@@ -7,11 +7,14 @@ h = guidata(h_fig);
 
 dat1 = get(h.tm.axes_ovrAll_1,'userdata');
 dat3 = get(h.tm.axes_histSort,'userdata');
-ind = get(h.tm.popupmenu_selectYdata,'value')-1;
-j = get(h.tm.popupmenu_selectYval,'value')-1;
+indx = get(h.tm.popupmenu_selectXdata,'value');
+jx = get(h.tm.popupmenu_selectXval,'value')-1;
+indy = get(h.tm.popupmenu_selectYdata,'value')-1;
+jy = get(h.tm.popupmenu_selectYval,'value')-1;
+isTDP = (indx==indy & jx==9 & jy==9);
 
 % no y-data: abort
-if ind==0
+if indy==0 || isTDP
     return
 end
 
@@ -22,10 +25,10 @@ if ~(numel(niv)==1 && ~isnan(niv) && ~isinf(niv))
     return
 end
 
-if j==0
-    dat1.niv(ind) = niv;
+if jy==0
+    dat1.niv(indy) = niv;
 else
-    dat3.niv(j,ind) = niv;
+    dat3.niv(jy,indy) = niv;
 end
 
 set(h.tm.axes_ovrAll_1, 'UserData', dat1);
