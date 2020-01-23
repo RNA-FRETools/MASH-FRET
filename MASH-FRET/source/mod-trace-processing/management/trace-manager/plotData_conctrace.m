@@ -41,7 +41,7 @@ if ind<=(nChan*nExc+nI0+nFRET+nS) % single channel/FRET/S
         'color',dat1.color{ind});
     xlim(h_axes, [x_axis(1) x_axis(end)]);
     if ind<=(nChan*nExc+nI0) % intensity
-        ylim(h_axes, [min(dat1.trace{ind}) ...
+        ylim(h_axes, [min([min(dat1.trace{ind}),0]) ...
             max(dat1.trace{ind})]);
     else % ratio
         ylim(h_axes, [-0.2 1.2]);
@@ -74,7 +74,7 @@ elseif ind==(nChan*nExc+nI0+nFRET+nS+1) && (nChan>1 || nExc>1)% all intensities
     end
     set(h_axes,'nextplot','replacechildren');
     xlim(h_axes, [x_axis(1) x_axis(end)]);
-    ylim(h_axes, [min_y max_y]);
+    ylim(h_axes, [min([min_y,0]) max_y]);
     xlabel(h_axes, dat1.xlabel);
     ylabel(h_axes, dat1.ylabel{ind});
     
@@ -104,7 +104,7 @@ elseif ind==(nChan*nExc+nI0+nFRET+nS+(nChan>1 || nExc>1)+1) && nI0>1 % all total
     end
     set(h_axes,'nextplot','replacechildren');
     xlim(h_axes, [x_axis(1) x_axis(end)]);
-    ylim(h_axes, [min_y max_y]);
+    ylim(h_axes, [min([min_y,0]) max_y]);
     xlabel(h_axes, dat1.xlabel);
     ylabel(h_axes, dat1.ylabel{ind});
 

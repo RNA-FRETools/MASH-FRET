@@ -283,7 +283,8 @@ guidata(h_fig, h);
 for ind = 1:(nChan*nExc+nI0+nFRET+nS)
 
     if ind<=(nChan*nExc+nI0) % intensity
-        dat1.lim(ind,:) = [min(dat1.trace{ind}) max(dat1.trace{ind})];
+        dat1.lim(ind,:) = [min([min(dat1.trace{ind}),0]) ...
+            max(dat1.trace{ind})];
     else % ratio
         dat1.lim(ind,:) = [defMin defMax];
     end
