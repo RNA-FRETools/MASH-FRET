@@ -38,7 +38,8 @@ switch D
         xdata = [x(1)-1,xrange(1),xrange(1),xrange(2),xrange(2),x(2)+1];
         ydata = [y(2)+1,y(2)+1,-1,-1,y(2)+1,y(2)+1];
         area(h.tm.axes_histSort,xdata,ydata,'edgecolor',clr,'facecolor',...
-            clr,'facealpha',a,'linestyle','none','buttondownfcn',fcn);
+            clr,'facealpha',a,'linestyle','none','buttondownfcn',fcn,...
+            'basevalue',0);
         set(h.tm.axes_histSort,'ylim',[0,y(2)]);
     
     case 2 % 2D mask
