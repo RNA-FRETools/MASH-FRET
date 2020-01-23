@@ -1,4 +1,4 @@
-function [data,ok] = readTif(fullFname, n, fDat, h_fig)
+function [data,ok] = readTif(fullFname, n, fDat, h_fig, useMov)
 
 % defaults
 ok = 1;
@@ -16,6 +16,10 @@ if ~isempty(h_fig)
             isMov = 2; % the movie variable exist and contain the video data
         end
     end
+end
+
+if ~useMov
+    isMov = 0;
 end
 
 % Store useful movie data in hanldes.movie variable

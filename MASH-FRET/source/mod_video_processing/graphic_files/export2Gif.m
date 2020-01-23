@@ -44,7 +44,7 @@ else
     for i = startFrame:iv:lastFrame
         [dat,ok] = getFrames([h.movie.path h.movie.file], i, ...
             {h.movie.speCursor, [h.movie.pixelX h.movie.pixelY], ...
-            h.movie.framesTot}, h_fig);
+            h.movie.framesTot}, h_fig, true);
         if ~ok
             return;
         end
@@ -73,7 +73,7 @@ for i = startFrame:iv:lastFrame
     else
         [dat,ok] = getFrames([h.movie.path h.movie.file],i, ...
             {h.movie.speCursor,[h.movie.pixelX h.movie.pixelY], ...
-            h.movie.framesTot},h_fig);
+            h.movie.framesTot},h_fig,true);
         if ~ok
             return;
         end
