@@ -18,7 +18,8 @@ end
 
 xlim_sup = str2num(get(obj,'String'));
 
-if xlim_sup<=xlim_low
+if ~(numel(xlim_sup)==1 && ~isnan(xlim_sup) && ~isinf(xlim_sup) && ...
+        xlim_sup>xlim_low)
     setContPan('Higher bound must be higher than lower bound.','error',...
         h_fig);
     return

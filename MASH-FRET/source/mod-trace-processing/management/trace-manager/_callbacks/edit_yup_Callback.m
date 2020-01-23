@@ -22,7 +22,8 @@ end
 
 ylim_sup = str2num(get(obj,'String'));
 
-if ylim_sup<=ylim_low
+if ~(numel(ylim_sup)==1 && ~isnan(ylim_sup) && ~isinf(ylim_sup) && ...
+        ylim_sup>ylim_low)
     setContPan('Higher bound must be higher than lower bound.','error',...
         h_fig);
     return

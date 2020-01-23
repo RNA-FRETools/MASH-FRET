@@ -12,7 +12,7 @@ j = get(h.tm.popupmenu_selectXval,'value')-1;
 
 niv = str2num(get(obj,'string'));
 
-if ~(isnumeric(niv) && ~isempty(niv))
+if ~(numel(niv)==1 && ~isnan(niv) && ~isinf(niv))
     setContPan('Number of bins must be a numeric.','error',h_fig);
     return
 end
