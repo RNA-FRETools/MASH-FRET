@@ -16,7 +16,7 @@ toc_exclude: true
 # Use Trace manager
 {: .no_toc }
 
-The trace manager gives an overview of all single molecules in the project and allows to assemble a molecule selection and create molecule subgroups.
+The trace manager gives an overview of all single molecules in the project and allows to assemble a molecule selection as well as to give molecules specific tags.
 
 It is accessed by pressing 
 ![TM](../../assets/images/gui/TP-but-tm.png "TM") in the 
@@ -32,9 +32,9 @@ It is composed of three modules:
 
 Automatic sorting is used to tag groups of molecules based on specific data criteria.
 Tags are eventually applied to individual molecules after pressing 
-![APPLY TAG TO MOLECULES](../../assets/images/gui/TP-but-apply-tag-to-molecules.png "APPLY TAG TO MOLECULES").
+![TAG MOLECULES](../../assets/images/gui/TP-but-tag-molecules.png "TAG MOLECULES").
 
-Automatic sorting is divided into one processing area **(1)**, one panel **(2-3)** and one visualization area **(4-5)**.
+Automatic sorting is divided into three panels **(1-3)** and one visualization area **(4-5)**.
 
 <a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-autosorting.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting.png"/></a>
 
@@ -47,35 +47,52 @@ Automatic sorting is divided into one processing area **(1)**, one panel **(2-3)
 
 ---
 
-## Data and histogram
+## Data
 
-Use this interface to define the data to be sorted and displayed.
+Use this panel to define the data to be sorted and displayed.
 
 <a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-autosorting-histogram.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-histogram.png"/></a>
 
-Data available for sorting are listed in menu **(a)** and include:
+Auto-sorting works with the molecule selection assembled in 
+[Overview](tm-overview.html).
+The 1D- or 2D- histogram used in Auto-sorting will be recalculated each time the molecule selection changes.
+
+Data available for 1D- or 2D-sorting are listed in menu **(a)** (x-axis) and **(f)** (y-axis) and include:
 * `[E] at [W]nm` for intensity data, with `[E]` the emitter and `[W]` the laser wavelength
+* `total [E] (at [W]nm)` for intensity-time traces of emitter `[E]` in absence of any acceptor and upon emitter-specific excitation wavelength `[W]`
 * `FRET [D]>[A]` for FRET data, with `[D]` and `[A]` the donor and acceptor emitters respectively
 * `S [D]>[A]` for stoichiometry data  associated to the FRET pair where `[D]` and `[A]` are the donor and acceptor emitters respectively
 * `FRET [D]>[A]-S [D]>[A]` for 2D FRET-Stoichiometry data 
 
-Molecule sorting can be performed on full-length data-time traces or state trajectories, but also on different descriptive statistical values.
-The type of data sets can be selected in menu **(b)** and include:
-* `original time traces` for full-length data-time traces
-* `means` for the mean values
-* `minima` for the maximum values
-* `maxima` for the minimum values
-* `medians` for the median values
-* `state trajectories` for full-length data state trajectories
+For 1D-sorting, menu **(f)** must be set to `none`.
 
-To use the option `state trajectories`, all the molecules of the selection must have the corresponding data-time trace discretized.
-If some state trajectories are missing, a data-customed warning pops up.
+Data are sorted into bins defined by **(c)** (lowest limit), **(d)** (highest limit) and **(e)** (bin size) for the x-axis, and by **(h)**, **(i)** and **(j)** for the y-axis.
+
+Molecule sorting can be performed on full-length data-time traces or state trajectories, but also on different descriptive statistics or state data.
+The type of data sets can be selected in menu **(b)** (x-axis) and **(g)** (y-axis) and include:
+* `original time traces (frame-wise)` for full-length data-time traces
+* `state trajectories (frame-wise)` for full-length data state trajectories
+* `means (molecule-wise)` for the means of the data-time traces
+* `minima (molecule-wise)` for the maxima of the data-time traces
+* `maxima (molecule-wise)` for the minima of the data-time traces
+* `medians (molecule-wise)` for the medians of the data-time traces
+* `nb. of states (molecule-wise)` for the number of states in state trajectories
+* `nb. of transitions (molecule-wise)` for the number of state transitions in state trajectories
+* `mean dwell time (molecule-wise)` for the average state dwell times of the state trajectories
+* `state values (state-wise)` for the individual state values in the state trajectories
+* `state dwell times (state-wise)` for the individual state dwell times in the state trajectories
+
+For 2D-sorting, x-axis and y-axis data sets must occur on the same scale (`frame-wise`, `molecule-wise` or `state-wise`).
+
+To use the options `state trajectories`, `nb. of states`, `nb. of transitions`, `mean dwell time`, `state values` or `state dwell times`, all the molecules of the selection must have the corresponding data-time trace discretized.
+If some state trajectories are missing, a warning pops up.
 
 <a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-autosorting-warn1.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-warn1.png" style="max-width:443px;"/></a>
 
-To represent the sample assembled with tool 
-[Overview](tm-overview.html), an overall 1D- or 2D-data histogram is plotted in 
-[Histogram plot](#histogram-plot) with x- and y-axis defined by their respective lower bounds set in **(c)** and **(f)**, bin sizes set in **(d)** and **(g)**, and higher limit set in **(e)** and **(h)**.
+To perform 2D-sorting on the transition density plot, x-axis and y-axis data must be identical and the `state values` set must be chosen for both.
+
+Resulting 1D- or 2D-data histogram is plotted in 
+[Histogram plot](#histogram-plot).
 
 2D-histograms are built with the MATLAB script `hist2` developed by Tudor Dima that can be found in the 
 [MATLAB exchange platform](https://www.mathworks.com/matlabcentral/fileexchange/18386-2d-histogram-exact-and-fast-binning-crop-and-stretch-grid-adjustment?s_tid=prof_contriblnk).
@@ -83,14 +100,14 @@ To represent the sample assembled with tool
 
 ---
 
-## Data range
+## Range
 
-Use this interface to define the sorting criteria.
+Use this interface to configure sorting settings
 
 <a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-autosorting-range.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-range.png" style="max-width:182px;"/></a>
 
-The data set defined in 
-[Data and histogram](#data-and-histogram) is sorted according to a specific value range.
+The data set defined in panel 
+[Data](#data) is sorted according to a specific value range.
 The range is defined by a minimum value set in **(a)** or **(c)** and a maximum value set in **(b)** or **(d)**  for the x- or y-axis respectively.
 Range bounds can also be defined by simply clicking on the 
 [Histogram plot](#histogram-plot).
@@ -98,7 +115,7 @@ Range bounds can also be defined by simply clicking on the
 The range is represented on the
 [Histogram plot](#histogram-plot) with out-of-ranges values being covered by a transparent black mask.
 
-If the data set includes `original time traces` or `state trajectories`, the confidence level for inclusion in the range must be defined.
+If the data set is scaled `frame-wise` (data `original time traces` or `state trajectories`), the confidence level for inclusion in the range must be defined.
 The confidence level can be set as:
 - `at least` with the minimum confidence level set in **(f)**
 - `at most` with the maximum confidence level set in **(f)**
@@ -109,30 +126,30 @@ The confidence levels in **(f)** and **(g)** can be expressed in trace percentag
 The resulting number of molecule included in the current range is displayed in **(i)**.
 
 To define a subgroup affiliation for the molecules included in the current range, settings must be saved by pressing 
-![Save subgroup](../../assets/images/gui/TP-but-save-subgroup.png "Save subgroup"). 
-Additionally, when saved, range settings can be accessed any time in 
-[Molecule subgroups](#molecule-subgroups).
+![Save range](../../assets/images/gui/TP-but-save-range.png "Save range"). 
+Additionally, when saved, range settings can be accessed any time in the subgroup list of panel 
+[Tags](#tags).
 
 
 ---
 
-## Molecule subgroups
+## Tags
 
-Use this interface to define subgroup affiliations.
+Use this interface to define subgroup affiliations (tags).
 
 <a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-autosorting-subgroup.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-subgroup.png" style="max-width:182px;"/></a>
 
-Ranges saved in 
-[Data range](#data-range) are listed in **(a)** and can be dismissed by pressing
-![Dismiss subgroup](../../assets/images/gui/TP-but-dismiss-subgroup.png "Dismiss subgroup").
+Ranges saved in panel 
+[Range](#range) are listed in **(a)** and can be deleted from memory by pressing
+![Dismiss](../../assets/images/gui/TP-but-dismiss.png "Dismiss").
 
-To define a subgroup affiliation for the molecules included in the range selected in list **(a)**, choose a subgroup tag in menu **(b)** and press 
+To define a subgroup affiliation for the molecules included in range selected in list **(a)**, choose a tag in menu **(b)** and press 
 ![Tag](../../assets/images/gui/TP-but-tag.png "Tag").
-All tags assigned to the selected range are listed in **(c)** and can be removed one by one by pressing 
+All tags assigned to the selected subgroup are listed in **(c)** and can be removed one by one by pressing 
 ![Untag](../../assets/images/gui/TP-but-untag.png "Untag").
 
 Molecule tags are eventually applied to individual molecules after pressing 
-![APPLY TAG TO MOLECULES](../../assets/images/gui/TP-but-apply-tag-to-molecules.png "APPLY TAG TO MOLECULES"); as the operation can not be reversed, a confirmation warning pops up.
+![TAG MOLECULES](../../assets/images/gui/TP-but-tag-molecules.png "TAG MOLECULES"); as the operation can not be reversed, a confirmation warning pops up.
 
 <a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-autosorting-warn2.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-warn2.png" style="max-width:471px;"/></a>
 
@@ -144,10 +161,10 @@ Molecule tags are eventually applied to individual molecules after pressing
 Use this interface to visualize the data distribution and define the data range by clicking.
 
 Data is distributed into a 1D- or 2D-histogram built with settings defined in 
-[Data and histogram](#data-and-histogram).
+[Data](#data).
 
 Ranges defined in 
-[Data range](#data-range) or defined by clicking on the plot, are highlighted in white for 1D-histograms and within a gray rectangle for 2D-histograms.
+[Range](#range) or defined by clicking on the plot, are highlighted in white for 1D-histograms and within a gray rectangle for 2D-histograms.
 Out-of-range data covered with a transparent black mask.
 
 <a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-autosorting-plot1D.png"><img src="../../assets/images/gui/TP-panel-sample-tm-autosorting-plot1D.png" style="max-width:45%;"/></a>
@@ -171,5 +188,6 @@ Included time traces are highlighted with a white background and excluded time t
 
 Data available for concatenated trace plot are listed in menu **(a)** and include:
 * `[E] at [W]nm` for intensity-time traces, with `[E]` the emitter and `[W]` the laser wavelength
+* `total [E] (at [W]nm)` for intensity-time traces of emitter `[E]` in absence of any acceptor and upon emitter-specific excitation wavelength `[W]`
 * `FRET [D]>[A]` for FRET-time traces, with `[D]` and `[A]` the donor and acceptor emitters respectively
 * `S [D]>[A]` for stoichiometry data  associated to the FRET pair where `[D]` and `[A]` are the donor and acceptor emitters respectively

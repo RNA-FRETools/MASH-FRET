@@ -16,7 +16,7 @@ toc_exclude: true
 # Use Trace manager
 {: .no_toc }
 
-The trace manager gives an overview of all single molecules in the project and allows to assemble a molecule selection and create molecule subgroups.
+The trace manager gives an overview of all single molecules in the project and allows to assemble a molecule selection as well as to give molecules specific tags.
 
 It is accessed by pressing 
 ![TM](../../assets/images/gui/TP-but-tm.png "TM") in the 
