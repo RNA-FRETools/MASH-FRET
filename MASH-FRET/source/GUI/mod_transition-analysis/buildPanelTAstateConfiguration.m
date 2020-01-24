@@ -37,7 +37,8 @@ str2 = 'Jmax';
 str3 = 'BOBA FRET';
 str4 = 'replicates:';
 str5 = 'samples:';
-str6 = char(9668);
+str6 = 'x=0 y=0';
+str7 = char(9668);
 ttl0 = 'Clusters';
 ttl1 = 'Results';
 ttstr0 = wrapStrToWidth('Transition clustering with <b>k-mean algorithm:</b> iterative process where state transitions are assigned to the nearest cluster center which are then re-calulated with the new TDP partition; iteration stops when the TDP partition does not change or when the maximum iteration is reached.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
@@ -67,10 +68,10 @@ hpan0 = p.mgpan+p.mg+2*p.mg/2+p.mg/fact+2*htxt0+hpop0+3*hedit0;
 mgarea = (hpan0-p.mg-2*p.mg/fact-5*hedit0-htxt0)/2;
 wpan1 = pospan(3)-warea-wpan0-2*p.mg;
 waxes0 = warea+wpan0+wpan1-2*p.mg;
-haxes0 = pospan(4)-p.mgpan-2*p.mg-hpan0;
-wbut2 = getUItextWidth(str6,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
+haxes0 = pospan(4)-p.mgpan-hpan0-p.mg-htxt0-2*p.mg;
+wbut2 = getUItextWidth(str7,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 hpan1 = p.mg/2+hedit0+p.mg/2;
-wpan2 = p.mg/2+4*hedit0+3*p.mg/fact+p.mg/2+wbut2+p.mg/2;
+wpan2 = p.mg/2+5*hedit0+4*p.mg/fact+p.mg/2+wbut2+p.mg/2;
 
 % GUI
 x = p.mg;
@@ -149,13 +150,20 @@ h.edit_TDPnSpl = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit1,hedit0],...
     'tooltipstring',ttstr5,'callback',{@edit_TDPnSpl_Callback,h_fig});
 
-x = 0;
+x = p.mg;
 y = p.mg;
+
+h.text_TA_tdpCoord = uicontrol('style','text','parent',h_pan,'units',...
+    p.posun,'position',[x,y,waxes0,htxt0],'fontunits',p.fntun,'fontsize',...
+    p.fntsz1,'horizontalalignment','left','string',str6);
+
+y = y+htxt0+p.mg;
 
 h.axes_TDPplot1 = axes('parent',h_pan,'units',p.posun,'fontunits',p.fntun,...
     'fontsize',p.fntsz1,'position',[x,y,waxes0,haxes0],'xlim',lim0,'ylim',...
     lim0,'clim',lim1,'nextplot','replacechildren','xaxislocation','top',...
-    'yaxislocation','right');
+    'yaxislocation','right','buttondownfcn',...
+    {@axes_TDPplot1_ButtonDownFcn,h_fig});
 h_axes = h.axes_TDPplot1;
 xlabel(h_axes,xlbl0);
 ylabel(h_axes,ylbl0);
@@ -165,12 +173,12 @@ ylabel(h.colorbar_TA,clbl0);
 pos_cb = get(h.colorbar_TA,'position');
 % adjust axes dimensions
 tiaxes = get(h_axes,'tightinset');
-posaxes = getRealPosAxes([x,y,waxes0-2*pos_cb(3)-p.mg/2,haxes0],tiaxes,'traces');
+posaxes = getRealPosAxes([x,y,waxes0-pos_cb(3)-p.mg/2,haxes0],tiaxes,'traces');
 set(h_axes,'position',posaxes);
-% reduce height of colorbar to make 10^x factor visible
-pos_cb = get(h.colorbar_TA,'position');
-pos_cb(4) = pos_cb(4)-p.mg;
-set(h.colorbar_TA,'position',pos_cb);
+% % reduce height of colorbar to make 10^x factor visible
+% pos_cb = get(h.colorbar_TA,'position');
+% pos_cb(4) = pos_cb(4)-p.mg;
+% set(h.colorbar_TA,'position',pos_cb);
 
 x = warea;
 y = pospan(4)-p.mgpan-hpan0;

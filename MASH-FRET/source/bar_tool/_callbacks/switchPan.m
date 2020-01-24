@@ -18,7 +18,6 @@ switch obj
         set(h.uipanel_HA, 'Visible', 'off');
         set(h.uipanel_TA, 'Visible', 'off');
         set(h.uipanel_S, 'Visible', 'on');
-        set(h.zMenu_target, 'Enable', 'off', 'Checked', 'off');
         
         cmaps = get(h.popupmenu_colorMap, 'String');
         cmap = cmaps{h.param.movPr.cmap};
@@ -35,7 +34,6 @@ switch obj
         set(h.uipanel_HA, 'Visible', 'off');
         set(h.uipanel_TA, 'Visible', 'off');
         set(h.uipanel_VP, 'Visible', 'on');
-        set(h.zMenu_target, 'Enable', 'off', 'Checked', 'off');
         
         cmaps = get(h.popupmenu_colorMap, 'String');
         cmap = cmaps{h.param.movPr.cmap};
@@ -53,7 +51,6 @@ switch obj
         set(h.uipanel_HA, 'Visible', 'off');
         set(h.uipanel_TA, 'Visible', 'off');
         set(h.uipanel_TP, 'Visible', 'on');
-        set(h.zMenu_target, 'Enable', 'off', 'Checked', 'off');
         setContPan('Module "Trace processing" selected.','none',...
             h.figure_MASH);
         
@@ -67,7 +64,6 @@ switch obj
         set(h.uipanel_TP, 'Visible', 'off');
         set(h.uipanel_TA, 'Visible', 'off');
         set(h.uipanel_HA, 'Visible', 'on');
-        set(h.zMenu_target, 'Enable', 'off', 'Checked', 'off');
         setContPan('Module "Histogram analysis" selected.','none',...
             h.figure_MASH);
         
@@ -81,7 +77,6 @@ switch obj
         set(h.uipanel_TP, 'Visible', 'off');
         set(h.uipanel_HA, 'Visible', 'off');
         set(h.uipanel_TA, 'Visible', 'on');
-        set(h.zMenu_target, 'Enable', 'on');
         setContPan('Module "Transition analysis" selected.','none',...
             h.figure_MASH);
 

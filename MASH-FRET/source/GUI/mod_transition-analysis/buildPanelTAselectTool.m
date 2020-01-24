@@ -24,13 +24,15 @@ fact = 5;
 file_icon1 = 'icon_square.png';
 file_icon2 = 'icon_ellips_straight.png';
 file_icon3 = 'icon_ellips_diagonal.png';
-file_icon4 = 'icon_mouse.png';
+file_icon4 = 'icon_clear.png';
+file_icon5 = 'icon_mouse.png';
 str0 = char(9668);
 ttstr0 = wrapStrToWidth('<b>Selection tool:</b> square-shaped',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr1 = wrapStrToWidth('<b>Selection tool:</b> straight elipsoid-shaped',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr2 = wrapStrToWidth('<b>Selection tool:</b> diagonal elipsoid-shaped',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('Deactivate selection tool',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('Close',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr3 = wrapStrToWidth('Reset selection',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr4 = wrapStrToWidth('Deactivate selection tool',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr5 = wrapStrToWidth('Close',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 
 % parents
 h_fig = h.figure_MASH;
@@ -44,6 +46,7 @@ img1 = imread(file_icon1);
 img2 = imread(file_icon2);
 img3 = imread(file_icon3);
 img4 = imread(file_icon4);
+img5 = imread(file_icon5);
 
 % GUI
 x = p.mg/2;
@@ -70,16 +73,23 @@ h.tooglebutton_TDPselectElDiag = uicontrol('style','togglebutton','parent',...
 
 x = x+hedit0+p.mg/fact;
 
-h.pushbutton_TDPselectMouse = uicontrol('style','pushbutton','parent',...
+h.pushbutton_TDPselectClear = uicontrol('style','pushbutton','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
     'position',[x,y,hedit0,hedit0],'tooltipstring',ttstr3,'callback',...
     {@tooglebutton_TDPselect_Callback,h_fig,4},'cdata',img4);
+
+x = x+hedit0+p.mg/fact;
+
+h.pushbutton_TDPselectMouse = uicontrol('style','pushbutton','parent',...
+    h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
+    'position',[x,y,hedit0,hedit0],'tooltipstring',ttstr4,'callback',...
+    {@tooglebutton_TDPselect_Callback,h_fig,5},'cdata',img5);
 
 x = x+hedit0+p.mg/2;
 
 h.pushbutton_TDPmanStart = uicontrol('style','pushbutton','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
-    'position',[x,y,wbut0,hedit0],'string',str0,'tooltipstring',ttstr4,...
+    'position',[x,y,wbut0,hedit0],'string',str0,'tooltipstring',ttstr5,...
     'callback',{@tooglebutton_TDPmanStart_Callback,h_fig,'close'});
 
 

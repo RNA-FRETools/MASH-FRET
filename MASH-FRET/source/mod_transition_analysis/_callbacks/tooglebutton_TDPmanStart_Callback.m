@@ -12,6 +12,7 @@ switch action
             case 0
                 set(h.uipanel_TA_selectTool,'visible','off');
             case 1
+                ud_selectToolPan(h_fig);
                 set(h.uipanel_TA_selectTool,'visible','on');
         end
 end

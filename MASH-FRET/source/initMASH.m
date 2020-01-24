@@ -95,29 +95,15 @@ h.param.OpFiles.overwrite_ask = def_ask;
 h.param.OpFiles.overwrite = ~def_ask;
 
 % add zoom and pan objects
-h.TTpan = pan(h_fig);
-h.TTzoom = zoom(h_fig);
-set(h.TTpan, 'Enable', 'off');
-set(h.TTzoom, 'Enable', 'off');
+h = buildContextmenu_zoom(h);
 
-% build and add context menus
-h_ZMenu = uicontextmenu('Parent', h_fig);
-uimenu('Parent', h_ZMenu, 'Label', 'Reset to original view', ...
-    'Callback', {@ud_zoom, 'reset', h_fig});
-h.zMenu_zoom = uimenu('Parent', h_ZMenu, 'Label', 'Zoom tool', ...
-    'Callback', {@ud_zoom, 'zoom', h_fig}, 'Checked', 'on');
-h.zMenu_pan = uimenu('Parent', h_ZMenu, 'Label', 'Pan tool', ...
-    'Callback', {@ud_zoom, 'pan', h_fig}, 'Checked', 'off');
-h.zMenu_exp = uimenu('Parent', h_ZMenu, 'Label', 'Export graph', ...
-    'Callback', {@exportAxes, h_fig});
-h.zMenu_target = uimenu('Parent', h_ZMenu, 'Label', 'Target centroids', ...
-    'Callback', {@ud_zoom, 'target', h_fig}, 'Checked', 'off', 'Enable', ...
-    'off');
-set(h.TTzoom, 'ActionPostCallback', {@ud_axesLim, h_fig}, ...
-    'RightClickAction', 'PostContextMenu', 'UIContextMenu', h_ZMenu);
-set(h.TTpan, 'ActionPostCallback', {@ud_axesLim, h_fig}, ...
-    'UIContextMenu', h_ZMenu);
-set(h.TTzoom, 'Enable', 'on');
+% configure pointer manager
+% build pointer manager
+iptPointerManager(h_fig,'enable');
+pb.enterFcn = [];
+pb.traverseFcn = @axes_TDPplot1_traverseFcn;
+pb.exitFcn = @axes_TDPplot1_exitFcn;
+iptSetPointerBehavior(h.axes_TDPplot1,pb);
 
 % save handle structure
 guidata(h_fig, h);

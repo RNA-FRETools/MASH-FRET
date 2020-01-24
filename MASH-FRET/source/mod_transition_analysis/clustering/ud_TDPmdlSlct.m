@@ -83,13 +83,7 @@ if meth == 1 % kmean clustering
         '100</b> is a good compromise between<br>execution time and ',...
         'result accuracy.</html>'));
     
-    h_tb = [h.tooglebutton_TDPselectSquare,h.tooglebutton_TDPselectElStr,...
-        h.tooglebutton_TDPselectElDiag];
-    tool = get(h.tooglebutton_TDPmanStart,'userdata');
-    set(h_tb((1:size(h_tb,2))~=tool),'value',0);
-    if tool>0
-        set(h_tb(tool),'value',1);
-    end
+    ud_selectToolPan(h_fig);
     
     set([h.text_tdp_showModel,h.text_tdp_Jequal,h.popupmenu_tdp_model,...
         h.pushbutton_tdp_impModel],'Enable','off');

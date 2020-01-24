@@ -66,7 +66,8 @@ end
 % cancelled by MH, 29.11.2019
 % cla(h_axes);
 
-im = imagesc(lim(1,:), lim(1,:), TDP, 'Parent', h_axes);
+imagesc(lim(1,:),lim(1,:),TDP,'Parent',h_axes,'HitTest','off',...
+ 'PickableParts','none');
 if sum(sum(TDP))
     set(h_axes,'CLim',[min(min(TDP)) max(max(TDP))]);
 else
@@ -133,7 +134,6 @@ ylabel(h_axes, 'Value after transition');
 set(h_axes, 'XAxisLocation', 'top', 'YAxisLocation', 'right', 'XLim', ...
     lim(1,:), 'YLim', lim(1,:), 'YDir', 'normal', 'NextPlot', ...
     'replacechildren');
-set([h_axes im], 'ButtonDownFcn', {@target_centroids, h_fig});
 
 if norm
     ylabel(h_cb, 'normalized occurrence');

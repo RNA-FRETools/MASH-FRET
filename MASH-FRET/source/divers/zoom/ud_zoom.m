@@ -91,19 +91,18 @@ switch action
         set(h.zMenu_pan, 'Checked', 'on');
         set(h.TTzoom, 'Enable', 'off')
         set(h.zMenu_zoom, 'Checked', 'off');
-        set(h.zMenu_target, 'Checked', 'off');
+        
+        % reset cluster selection tool
+        set(h.tooglebutton_TDPmanStart,'userdata',0);
+        ud_selectToolPan(h_fig)
         
     case 'zoom'
         set(h.TTpan, 'Enable', 'off')
         set(h.zMenu_pan, 'Checked', 'off');
         set(h.TTzoom, 'Enable', 'on')
         set(h.zMenu_zoom, 'Checked', 'on');
-        set(h.zMenu_target, 'Checked', 'off');
         
-    case 'target'
-        set(h.TTpan, 'Enable', 'off')
-        set(h.zMenu_pan, 'Checked', 'off');
-        set(h.TTzoom, 'Enable', 'off')
-        set(h.zMenu_zoom, 'Checked', 'off');
-        set(h.zMenu_target, 'Checked', 'on');
+        % reset cluster selection tool
+        set(h.tooglebutton_TDPmanStart,'userdata',0);
+        ud_selectToolPan(h_fig)
 end
