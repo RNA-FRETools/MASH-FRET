@@ -96,7 +96,8 @@ y = min([hfig posscr(4)]) - hfig;
 h.tm.figure_traceMngr = figure('Visible','on','Units',posun,'Position',...
     [x y wfig hfig],'Color',bgcol,'NumberTitle','off','MenuBar','none',...
     'CloseRequestFcn',{@figure_traceMngr_CloseRequestFcn,h_fig},'Name',...
-    [ttl0,get(h_fig,'Name')]);
+    [ttl0,get(h_fig,'Name')],'WindowButtonUpFcn',...
+    {@figure_traceMngr_WindowButtonUpFcn,h_fig});
 h_fig2 = h.tm.figure_traceMngr;
 
 % add debugging mode where all other windows are not deactivated
@@ -184,6 +185,11 @@ h = guidata(h_fig);
 % save controls
 guidata(h_fig, h);
 
+q = h.tm;
+q.isDown = false;
+q.figure_MASH = h_fig;
+guidata(h_fig2,q);
+
 % set all positions and dimensions to normalized 
 setProp(get(h_fig2, 'Children'), 'Units', 'normalized');
 
@@ -203,6 +209,13 @@ dat.pos_single = [pos_panelSingle_open(1) pos_panelSingle_open(2) ...
     pos_panelAll_open(3) (pos_panelSingle_open(4)+ ...
     pos_panelAll_open(4)-h_panelAll_close)];% close
 set(h.tm.pushbutton_reduce, 'UserData', dat);
+
+% build pointer manager
+iptPointerManager(h_fig2,'enable');
+pb.enterFcn = [];
+pb.traverseFcn = @axes_histSort_traverseFcn;
+pb.exitFcn = @axes_histSort_exitFcn;
+iptSetPointerBehavior(h.tm.axes_histSort,pb);
 
 % make figure visible
 set(h_fig2, 'Visible', 'on');

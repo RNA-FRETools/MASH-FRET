@@ -16,7 +16,6 @@ indy = get(h.tm.popupmenu_selectYdata,'value')-1;
 is2D = indy>0;
 jx = get(h.tm.popupmenu_selectXval,'value')-1;
 jy = get(h.tm.popupmenu_selectYval,'value')-1;
-fcn = {@axes_histSort_ButtonDownFcn,h_fig};
 isTDP = (indx==indy & jx==9 & jy==9);
 
 if ~is2D % 1D histograms
@@ -42,7 +41,7 @@ if ~is2D % 1D histograms
     
     % plot histogram
     bar(h.tm.axes_histSort,iv,P,'edgecolor',dat1.color{indx},'facecolor',...
-        dat1.color{indx},'buttondownfcn',fcn);
+        dat1.color{indx},'hittest','off','pickableparts','none');
     
     % set axis labels as in overall plot
     if jx==0
@@ -115,7 +114,7 @@ else % E-S histograms
     end
        
     imagesc([ivx(1),ivx(end)],[ivy(1),ivy(end)],P2D,'parent',...
-        h.tm.axes_histSort,'buttondownfcn',fcn);
+        h.tm.axes_histSort,'hittest','off','pickableparts','none');
     
     % plot range
     drawMask(h_fig,[ivx(1) ivx(end)],[ivy(1) ivy(end)],2);
