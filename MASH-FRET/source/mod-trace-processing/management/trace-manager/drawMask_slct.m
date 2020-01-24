@@ -9,6 +9,7 @@ fcn = {@axes_ovrAll_1_ButtonDownFcn,h_fig};
 h = guidata(h_fig);
 p = h.param.ttPr;
 proj = p.curr_proj;
+nExc = p.proj{proj}.nb_excitations;
 incl = p.proj{proj}.bool_intensities;
 inSec = p.proj{proj}.fix{2}(7);
 expT = p.proj{proj}.frame_rate; % this is truely the exposure time
@@ -19,7 +20,7 @@ mol_disp = str2num(get(h.tm.edit_nbTotMol,'string'));
 % get plot coordinates
 xaxis = get(h.tm.axes_ovrAll_1,'xlim');
 yaxis = get(h.tm.axes_ovrAll_1,'ylim');
-L = sum(sum(incl(:,dat3.slct(1:mol-1))));
+L = sum(sum(incl(:,dat3.slct(1:mol-1))))*nExc;
 if inSec
     T = L*expT;
 else
@@ -31,7 +32,7 @@ for m = mol:mol+mol_disp-1
     if m<=numel(dat3.slct) && dat3.slct(m)
 
         % append x data
-        L = L + sum(incl(:,m));
+        L = L + sum(incl(:,m))*nExc;
         if inSec
             T = L*expT;
         else
