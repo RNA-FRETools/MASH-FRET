@@ -25,14 +25,16 @@ hedit0 = 20;
 htxt0 = 14;
 hpop0 = 22;
 fact = 5;
-str0 = 'default prm.';
-str1 = 'cluster';
-str2 = 'cluster chape';
-str3 = {'spherical','ellipsoid straight','ellipsoid diagonal','free'};
-str4 = 'value';
-str5 = 'radius';
-ttstr0 = wrapStrToWidth('Set automatically the <b>starting guess</b> for cluster centers and tolerance radii.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Start clustering</b> with current method settings.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+str0 = '\default';
+str1 = '+';
+str2 = 'cluster';
+str3 = 'cluster chape';
+str4 = {'spherical','ellipsoid straight','ellipsoid diagonal','free'};
+str5 = 'value';
+str6 = 'radius';
+ttstr0 = wrapStrToWidth('Make cluster centers <u>evenly spaced</u> (<b>starting guess</b>).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr1 = wrapStrToWidth('Choose a <b>selection tool</b> for setting manually cluster centers and associated tolerance radii (<b>starting guess</b>).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr2 = wrapStrToWidth('<b>Start clustering</b> with current method settings.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 
 % parents
 h_fig = h.figure_MASH;
@@ -42,6 +44,8 @@ h_pan = h.uipanel_TA_clusters;
 pospan = get(h_pan,'position');
 wtxt0 = pospan(3)-2*p.mg;
 wedit0 = (pospan(3)-2*p.mg-p.mg/fact)/2;
+wbut1 = getUItextWidth(str1,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
+wbut0 = wtxt0-wbut1-p.mg/fact;
 
 % GUI
 x = p.mg;
@@ -49,26 +53,26 @@ y = pospan(4)-p.mgpan-htxt0;
 
 h.text_TDPstate = uicontrol('style','text','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wtxt0,htxt0],...
-    'string',str2);
+    'string',str3);
 
 y = y-hedit0;
 
 h.popupmenu_TDPstate = uicontrol('style','popupmenu','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wtxt0,hpop0],'callback',{@popupmenu_TDPstate_Callback,h_fig},...
-    'string',str3);
+    'string',str4);
 
 y = y-p.mg/2-htxt0;
 
 h.text_TDPiniVal = uicontrol('style','text','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,htxt0],...
-    'string',str4);
+    'string',str5);
 
 x = x+wedit0+p.mg/fact;
 
 h.text_TDPradius = uicontrol('style','text','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,htxt0],...
-    'string',str5);
+    'string',str6);
 
 x = p.mg;
 y = y-hedit0;
@@ -88,13 +92,23 @@ y = y-p.mg/fact-hedit0;
 
 h.pushbutton_TDPautoStart = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wtxt0,hedit0],'string',str0,'tooltipstring',ttstr0,'callback',...
+    [x,y,wbut0,hedit0],'string',str0,'tooltipstring',ttstr0,'callback',...
     {@pushbutton_TDPautoStart_Callback,h_fig});
 
+x = x+wbut0+p.mg/fact;
+
+h.tooglebutton_TDPmanStart = uicontrol('style','togglebutton','parent',...
+    h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
+    'position',[x,y,wbut1,hedit0],'string',str1,'tooltipstring',ttstr1,...
+    'callback',{@tooglebutton_TDPmanStart_Callback,h_fig,'open'},...
+    'userdata',0);
+
+x = p.mg;
 y = y-p.mg/2-hedit0;
 
-h.pushbutton_TDPupdateClust = uicontrol('style','pushbutton','parent',h_pan,...
-    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wtxt0,hedit0],'string',str1,'tooltipstring',ttstr1,'callback',...
-    {@pushbutton_TDPupdateClust_Callback,h_fig});
+h.pushbutton_TDPupdateClust = uicontrol('style','togglebutton','parent',...
+    h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
+    'position',[x,y,wtxt0,hedit0],'string',str2,'tooltipstring',ttstr2,...
+    'callback',{@pushbutton_TDPupdateClust_Callback,h_fig});
+
 

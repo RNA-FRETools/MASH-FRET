@@ -19,7 +19,6 @@ clr = prm.clst_start{3}(curr_k,:);
 res = prm.clst_res;
 
 
-
 %% set general parameters
 set([h.text_TDPdataType h.popupmenu_TDPdataType ...
     h.togglebutton_TDPkmean h.togglebutton_TDPgauss ...
@@ -62,8 +61,13 @@ if meth == 1 % kmean clustering
     set(h.togglebutton_TDPgauss, 'Value', 0, 'FontWeight', 'normal');
 
     set([h.text_TDPstate h.popupmenu_TDPstate h.text_TDPiniVal ...
-        h.edit_TDPiniVal h.pushbutton_TDPautoStart], 'Enable', 'on');
+        h.edit_TDPiniVal h.pushbutton_TDPautoStart ...
+        h.tooglebutton_TDPmanStart], 'Enable', 'on');
     
+    set(h.uipanel_TA_selectTool,'visible','off');
+    setProp(h.uipanel_TA_selectTool,'enable','on');
+    set(h.tooglebutton_TDPmanStart,'value',0);
+
     set(h.text_TDPstate, 'String', 'state:');
     set(h.text_TDPiter, 'String', 'iter nb.:');
     set(h.text_TDPiniVal, 'String', 'value');
@@ -78,6 +82,14 @@ if meth == 1 % kmean clustering
         cat(2,'<html>Maximum number of <b>k-mean iterations:</b><br><b>',...
         '100</b> is a good compromise between<br>execution time and ',...
         'result accuracy.</html>'));
+    
+    h_tb = [h.tooglebutton_TDPselectSquare,h.tooglebutton_TDPselectElStr,...
+        h.tooglebutton_TDPselectElDiag];
+    tool = get(h.tooglebutton_TDPmanStart,'userdata');
+    set(h_tb((1:size(h_tb,2))~=tool),'value',0);
+    if tool>0
+        set(h_tb(tool),'value',1);
+    end
     
     set([h.text_tdp_showModel,h.text_tdp_Jequal,h.popupmenu_tdp_model,...
         h.pushbutton_tdp_impModel],'Enable','off');
@@ -97,9 +109,11 @@ else % GMM-based clustering
         'TooltipString', cat(2,'<html><b>Cluster shape</b> for <b>GM</b> ',...
         'clustering</html>'));
     
-    set([h.text_TDPiniVal h.edit_TDPiniVal],'String','','Enable','off');
-    set([h.text_TDPradius h.edit_TDPradius],'String','','Enable','off');
-    set(h.pushbutton_TDPautoStart,'Enable','off');
+    set([h.text_TDPiniVal,h.edit_TDPiniVal,h.text_TDPradius,...
+        h.edit_TDPradius],'String','','Enable','off');
+    set([h.pushbutton_TDPautoStart,h.tooglebutton_TDPmanStart],'Enable',...
+        'off');
+    set(h.uipanel_TA_selectTool,'visible','off');
     
     set(h.text_TDPiter, 'String', 'restarts:');
     set(h.edit_TDPmaxiter, 'String', num2str(N), 'TooltipString', ...

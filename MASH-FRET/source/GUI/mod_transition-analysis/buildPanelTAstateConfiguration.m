@@ -37,6 +37,7 @@ str2 = 'Jmax';
 str3 = 'BOBA FRET';
 str4 = 'replicates:';
 str5 = 'samples:';
+str6 = char(9668);
 ttl0 = 'Clusters';
 ttl1 = 'Results';
 ttstr0 = wrapStrToWidth('Transition clustering with <b>k-mean algorithm:</b> iterative process where state transitions are assigned to the nearest cluster center which are then re-calulated with the new TDP partition; iteration stops when the TDP partition does not change or when the maximum iteration is reached.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
@@ -67,6 +68,9 @@ mgarea = (hpan0-p.mg-2*p.mg/fact-5*hedit0-htxt0)/2;
 wpan1 = pospan(3)-warea-wpan0-2*p.mg;
 waxes0 = warea+wpan0+wpan1-2*p.mg;
 haxes0 = pospan(4)-p.mgpan-2*p.mg-hpan0;
+wbut2 = getUItextWidth(str6,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
+hpan1 = p.mg/2+hedit0+p.mg/2;
+wpan2 = p.mg/2+4*hedit0+3*p.mg/fact+p.mg/2+wbut2+p.mg/2;
 
 % GUI
 x = p.mg;
@@ -180,4 +184,12 @@ x = x+wpan0+p.mg;
 h.uipanel_TA_results = uipanel('parent',h_pan,'units',p.posun,'fontunits',...
     p.fntun,'fontsize',p.fntsz1,'position',[x,y,wpan1,hpan0],'title',ttl1);
 h = buildPanelTAresults(h,p);
+
+posbut = get(h.tooglebutton_TDPmanStart,'position');
+pospan1 = get(h.uipanel_TA_clusters,'position');
+x = pospan1(1)+posbut(1)+posbut(3);
+y = pospan1(2)+posbut(2)-(hpan1-posbut(4))/2;
+h.uipanel_TA_selectTool = uipanel('parent',h_pan,'units',p.posun,...
+    'position',[x,y,wpan2,hpan1],'title','','visible','off');
+h = buildPanelTAselectTool(h,p);
 
