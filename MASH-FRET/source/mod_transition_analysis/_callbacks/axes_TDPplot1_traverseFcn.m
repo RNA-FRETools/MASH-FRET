@@ -4,31 +4,33 @@ h = guidata(h_fig);
 
 set(h_fig,'pointer','crosshair');
 
-% convert to pixels
-posfig = getPixPos(h_fig);
-pos(1) = pos(1)*posfig(3);
-pos(2) = pos(2)*posfig(4);
+pos = posFigToAxes(pos,h_fig,h.axes_TDPplot1,'normalized');
 
-% % recenter cursor on position
-% [hp,wp] = size(get(h_fig,'pointershapecdata'));
-% pos(1) = pos(1)+round(wp/2);
-% pos(2) = pos(2)+round(hp/2);
+set(h.text_TA_tdpCoord,'string',cat(2,'x=',num2str(pos(1)),' y=',...
+    num2str(pos(2))));
 
-% convert to axes-referenced position
-h_axes = h.axes_TDPplot1;
-h_p = h_axes;
-while h_p~=h_fig && isprop(h_p,'parent')
-    posparent = getPixPos(h_p);
-    pos(1) = pos(1)-posparent(1);
-    pos(2) = pos(2)-posparent(2);
-    h_p = get(h_p,'parent');
+ud = get(h.axes_TDPplot1,'userdata');
+if size(ud,2)==1
+    isDown = ud;
+    pos0 = [];
+else
+    isDown = ud(1,1);
+    pos0 = ud(1,2:3);
 end
-
-% convert in axis units
-posaxes = getPixPos(h_axes);
-lim_x = get(h_axes,'xlim');
-lim_y = get(h_axes,'ylim');
-x = lim_x(1)+(lim_x(2)-lim_x(1))*pos(1)/posaxes(3);
-y = lim_y(1)+(lim_y(2)-lim_y(1))*pos(2)/posaxes(4);
+if isDown && ~isempty(pos0)
+    p = h.param.TDP;
+    proj = p.curr_proj;
+    tpe = p.curr_type(proj);
+    tag = p.curr_tag(proj);
+    state = get(h.popupmenu_TDPstate, 'Value');
     
-set(h.text_TA_tdpCoord,'string',cat(2,'x=',num2str(x),' y=',num2str(y)));
+    p.proj{proj}.prm{tag,tpe}.clst_start{2}(state,[1,2]) = ...
+        [pos0(1)+(x-pos0(1))/2,abs(pos0(1)-x)/2];
+    
+    h.param.TDP = p;
+    guidata(h_fig, h);
+    updateFields(h_fig, 'TDP');
+    
+elseif isDown
+    set(h.axes_TDPplot1,'userdata',[isDown,x,y]);
+end
