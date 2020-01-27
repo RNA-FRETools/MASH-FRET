@@ -3,28 +3,12 @@ function updateFields(h_fig, varargin)
 % input argument 1: MASH figure handle
 % input argument 2: what to update ('all', 'sim', 'imgAxes', 'movPr', 'ttPr', 'thm', TDP')
 
-% Last update by MH, 19.12.2019
-% >> allows coordinates import from ASCII file when a preset file 
-%  containing only out-of-range coordinates is loaded
-%
-% update by MH, 12.12.2019
-% >> cancel clearing of image axes to keep properties/boba fret image 
-% defined when building GUI
-% >> make TDP colorbar invisible when no project is loaded
-%
-% update by MH, 9.11.2019
-% >> review update of transition rate edit fields in order to keep field in 
-%  selection after tabbing
-%
-% update by MH, 24.4.2019
-% >> remove double update of molecule list
-%
-% update: 19.4.2019 by MH
-% >> set empty fields in transtion matrix when rates are loaded from
-%    presets to avoid confusion
-%
-% update: 7th of March 2018 by Richard Börner
-% >> Comments adapted for Boerner et al, PONE, 2017.
+% Last update by MH, 19.12.2019: allows coordinates import from ASCII file when a preset file containing only out-of-range coordinates is loaded
+% update by MH, 12.12.2019: (1) cancel clearing of image axes to keep properties/boba fret image defined when building GUI (2) make TDP colorbar invisible when no project is loaded
+% update by MH, 9.11.2019: review update of transition rate edit fields in order to keep field in selection after tabbing
+% update by MH, 24.4.2019: remove double update of molecule list
+% update: 19.4.2019 by MH: set empty fields in transtion matrix when rates are loaded from presets to avoid confusion
+% update: 7.3.2018 by Richard Börner: Comments adapted for Boerner et al, PONE, 2017.
 
 % set default option
 if ~isempty(varargin)
@@ -634,17 +618,21 @@ end
 %% TDP analysis fields
 
 if strcmp(opt, 'TDP') || strcmp(opt, 'all')
-    p = h.param.TDP;
     set(h.edit_TDPcontPan, 'Enable', 'inactive');
+    
+    updateTAplots(h_fig);
+    
+    p = h.param.TDP;
     if ~isempty(p.proj)
-        
         set([h.listbox_TDPprojList h.pushbutton_TDPremProj ...
             h.pushbutton_TDPsaveProj h.pushbutton_TDPexport],'Enable',...
             'on');
         set(h.listbox_TDPprojList, 'Max', 2, 'Min', 0);
+        
         ud_TDPplot(h_fig);
         ud_TDPmdlSlct(h_fig);
         ud_kinFit(h_fig);
+        
         h = guidata(h_fig);
 
     else
@@ -654,12 +642,6 @@ if strcmp(opt, 'TDP') || strcmp(opt, 'all')
         set([h.pushbutton_help h.pushbutton_TDPimpOpt ...
             h.pushbutton_TDPaddProj], 'Enable', 'on');
         set(h.listbox_TDPtrans, 'String', {''}, 'Value', 1);
-        
-        % cancelled by MH, 12.12.2019
-%         cla(h.axes_TDPplot1); cla(h.axes_TDPplot3);
-
-        cla(h.axes_TDPplot2); cla(h.axes_tdp_BIC);
-
         set([h.axes_TDPplot1 h.colorbar_TA h.axes_TDPplot2 h.axes_TDPcmap ...
             h.axes_tdp_BIC], 'Visible', 'off');
     end

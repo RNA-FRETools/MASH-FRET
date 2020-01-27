@@ -110,8 +110,7 @@ if sum(bol_kin)
     pname_kin = setCorrectPath([pname 'kinetics'], h_fig);
     
     % export dwell-time histogram files & fitting results (if)
-    prm = p.proj{proj}.prm{tag,tpe};
-    J = prm.clst_res{3};
+    J = prm.kin_start{2}(1);
     if ~isempty(prm.clst_res{4}) && J>0
 
         if tag==1
@@ -238,11 +237,7 @@ if tdp_conv % save gaussian convolution TDP matrix
         % calculate data
         lim = prm.plot{1}(1,[2 3]);
         bin = (lim(2)-lim(1))/size(TDP,2);
-        o2 = 0.0005;
-        if lim(2)>2
-            o2 = (4.4721*bin)^2;
-        end
-        TDP_conv = convGauss(TDP, [o2,o2], [lim;lim]);
+        TDP_conv = gconvTDP(TDP,lim,bin);
         Nx = size(TDP_conv,2);
         
         % write data to file
@@ -351,11 +346,7 @@ if tdp_png_conv
         % format data
         lim = prm.plot{1}(1,[2 3]);
         bin = (lim(1,2)-lim(1,1))/size(TDP,2);
-        o2 = 0.0005;
-        if lim(1)>2
-            o2 = (4.4721*bin)^2;
-        end
-        TDP_conv = convGauss(TDP, [o2,o2], [lim;lim]);
+        TDP_conv = gconvTDP(TDP,lim,bin);
         maxI = max(max(TDP_conv)); minI = min(min(TDP_conv));
         TDP_8bit_conv = uint8(255*(TDP_conv-minI)/(maxI-minI));
         
@@ -591,7 +582,7 @@ if kinFit
         % format data
         isFit = size(prm.kin_res,1)>=j & ~isempty(prm.kin_res{j,2});
         if isFit
-            kin_start = prm.kin_start(j,:);
+            kin_start = prm.kin_start{1}(j,:);
             kin_res = prm.kin_res(j,:);
             
             nExp = kin_start{1}(2);

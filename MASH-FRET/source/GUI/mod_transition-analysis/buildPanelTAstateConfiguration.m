@@ -162,12 +162,12 @@ y = y+htxt0+p.mg;
 h.axes_TDPplot1 = axes('parent',h_pan,'units',p.posun,'fontunits',p.fntun,...
     'fontsize',p.fntsz1,'position',[x,y,waxes0,haxes0],'xlim',lim0,'ylim',...
     lim0,'clim',lim1,'nextplot','replacechildren','xaxislocation','top',...
-    'yaxislocation','right','buttondownfcn',...
+    'yaxislocation','right','userdata',0,'buttondownfcn',...
     {@axes_TDPplot1_ButtonDownFcn,h_fig});
 h_axes = h.axes_TDPplot1;
 xlabel(h_axes,xlbl0);
 ylabel(h_axes,ylbl0);
-axis(h_axes,'square');
+% axis(h_axes,'square');
 h.colorbar_TA = colorbar(h_axes,'units',p.posun);
 ylabel(h.colorbar_TA,clbl0);
 pos_cb = get(h.colorbar_TA,'position');
@@ -175,10 +175,6 @@ pos_cb = get(h.colorbar_TA,'position');
 tiaxes = get(h_axes,'tightinset');
 posaxes = getRealPosAxes([x,y,waxes0-pos_cb(3)-p.mg/2,haxes0],tiaxes,'traces');
 set(h_axes,'position',posaxes);
-% % reduce height of colorbar to make 10^x factor visible
-% pos_cb = get(h.colorbar_TA,'position');
-% pos_cb(4) = pos_cb(4)-p.mg;
-% set(h.colorbar_TA,'position',pos_cb);
 
 x = warea;
 y = pospan(4)-p.mgpan-hpan0;

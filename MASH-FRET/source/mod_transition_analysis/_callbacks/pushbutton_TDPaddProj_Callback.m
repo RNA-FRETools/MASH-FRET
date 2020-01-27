@@ -53,22 +53,17 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
     nS = size(p.proj{i}.S,1);
     nTpe = nChan*nExc + nFRET + nS;
     nTag = numel(p.proj{i}.molTagNames);
-    N = numel(p.proj{i}.coord_incl);
+    
+    p.curr_type(i) = 1;
+    p.curr_tag(i) = 1;
+
+    p.proj{i}.def = setDefPrm_TDP(p,i);
 
     if ~isfield(p.proj{i}, 'prmTDP')
         p.proj{i}.prm = cell(nTag+1,nTpe);
     else
         p.proj{i}.prm = p.proj{i}.prmTDP;
-
-        % down compatibility: add cells for molecule subgroups
-        if size(p.proj{i}.prm,1)==1 && nTag>0
-            p.proj{i}.prm = cat(1,p.proj{i}.prm,cell(nTag,nTpe));
-        end
-        
-        % if the number of tags changed, reset results and resize
-        if size(p.proj{i}.prm,1)~=(nTag+1)
-            p.proj{i}.prm = cat(1,p.proj{i}.prm(1,:),cell(nTag,nTpe));
-        end
+        p.proj{i} = rmfield(p.proj{i}, 'prmTDP');
     end
     if ~isfield(p.proj{i}, 'expTDP')
         p.proj{i}.exp = [];
@@ -77,42 +72,27 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
         p.proj{i} = rmfield(p.proj{i}, 'expTDP');
     end
     
-    prm = p.proj{i}.prm;
+    % if the number of data changed, reset results and resize
+    if size(p.proj{i}.prm,2)~=(nTpe)
+        p.proj{i}.prm = cell(nTag+1,nTpe);
+    end
     
+    % if the number of tags changed, reset results and resize
+    if size(p.proj{i}.prm,1)~=(nTag+1)
+        p.proj{i}.prm = cat(1,p.proj{i}.prm(1,:),cell(nTag,nTpe));
+    end
+
     for tpe = 1:nTpe
         for tag = 1:(nTag+1)
-            
-            isRatio = 0;
-            if tpe <= nChan*nExc % intensity
-                i_c = mod(tpe,nChan); i_c(i_c==0) = nChan;
-                i_l = ceil(tpe/nChan);
-                trace = p.proj{i}.intensities_DTA(:,i_c:nChan:end,i_l);
 
-                if p.proj{i}.cnt_p_sec
-                    trace = trace/p.proj{i}.frame_rate;
-                end
-                if p.proj{i}.cnt_p_pix
-                    trace = trace/p.proj{i}.pix_intgr(2);
-                end
+            p.proj{i} = downCompatibilityTDP(p.proj{i},tpe,tag);
 
-            elseif tpe <= nChan*nExc+nFRET % FRET
-                i_f = tpe - nChan*nExc;
-                trace = p.proj{i}.FRET_DTA(:,i_f:nFRET:end);
-                isRatio = 1;
-
-            elseif tpe <= nChan*nExc + nFRET + nS % Stoichiometry
-                i_s = tpe - nChan*nExc - nFRET;
-                trace = p.proj{i}.S_DTA(:,i_s:nS:end);
-                isRatio = 1;
-            end
-
-            prm{tag,tpe} = setDefPrm_TDP(prm{tag,tpe},trace,isRatio,...
-                p.colList,N);
+            % if size of already applied parameters is different from
+            % defaults, used defaults
+            p.proj{i}.curr{tag,tpe} = checkValTDP(p,p.proj{i}.prm{tag,tpe},...
+                p.proj{i}.def{tag,tpe});
         end
     end
-    p.proj{i}.prm = prm;
-    p.curr_type(i) = 1;
-    p.curr_tag(i) = 1;
 end
 
 % set last-imported project as current project
@@ -120,10 +100,8 @@ p.curr_proj = size(p.proj,2);
 
 % update project list
 p = ud_projLst(p, h.listbox_TDPprojList);
-h.param.TDP = p;
-guidata(h_fig, h);
 
-% display action
+% display import action
 if size(fname,2) > 1
     str_files = 'files:\n';
 else
@@ -136,8 +114,19 @@ str_files = str_files(1:end-2);
 setContPan(['Project successfully imported from ' str_files],'success',...
     h_fig);
 
-% clear axes
-cla(h.axes_TDPplot1);
+% update TDP
+proj = p.curr_proj;
+tag = p.curr_tag(proj);
+tpe = p.curr_type(proj);
+[p,ok,str] = buildTDP(p,tag,tpe);
+if ~ok
+    setContPan(str, 'warning', h_fig);
+end
 
-% update calculations and GUI
+% save modifications
+h.param.TDP = p;
+guidata(h_fig, h);
+
+% update plots and GUI
 updateFields(h_fig, 'TDP');
+

@@ -14,7 +14,7 @@ plotIter_def = 0; % plot/not EM results while iterating
 Jmin_def = 2; % minimum configuration
 clstStat = 1; % generate cluster for diagonal transitions
 
-% collect project parameters
+% collect processing parameters
 meth = clust_prm{1}(1); % clustering method
 shape = clust_prm{1}(2); % cluster shape
 Jmax = clust_prm{1}(3); % max. number of states
@@ -56,7 +56,7 @@ end
 param = cell(1,n_spl);
 Jopt_k = nan(1,n_spl);
 
-iv = lim(1,1):bin(1):lim(1,2);
+iv = lim(1):bin:lim(2);
 x = mean([iv(1:end-1);iv(2:end)],1);
 
 for k = 1:n_spl
@@ -88,11 +88,7 @@ for k = 1:n_spl
     
     % apply Gaussian filter to TDP
     if gconv
-        o2 = 0.0005;
-        if lim(1,2)>2
-            o2 = 4.4721*bin^2;
-        end
-        TDP_spl = convGauss(TDP_spl, [o2,o2], [lim;lim]);
+        TDP_spl = gconvTDP(TDP_spl,lim,bin);
     end
     
     % get 2D-Gaussian shape
@@ -149,7 +145,7 @@ for k = 1:n_spl
                 T, M_def,true,shape_str,0,plotIter_def);
             
             % save inferred models for original TDP
-            if k == 1
+            if k==1
                 origin = model;
             end
             
@@ -189,7 +185,7 @@ for k = 1:n_spl
     if boba
         err = loading_bar('update', h_fig);
         if err
-            break;
+            break
         end
     end
 end
@@ -271,7 +267,7 @@ for J = Jmin:Jmax
         res.a{J} = [];
         res.clusters{J} = [];
         res.fract{J} = [];
-        continue;
+        continue
     end
     
     id_j = [];

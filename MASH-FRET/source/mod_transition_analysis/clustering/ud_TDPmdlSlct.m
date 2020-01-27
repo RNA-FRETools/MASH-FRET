@@ -1,25 +1,28 @@
 function ud_TDPmdlSlct(h_fig)
 
-%% collect parameters
+% Last update by MH, 26.1.2020: adapat to current (curr) and last applied (prm) parameters
+
+% collect parameters
 h = guidata(h_fig);
 p = h.param.TDP;
 proj = p.curr_proj;
-
 tpe = p.curr_type(proj);
 tag = p.curr_tag(proj);
-prm = p.proj{proj}.prm{tag,tpe};
 
-meth = prm.clst_start{1}(1);
-mode = prm.clst_start{1}(2);
-Jmax = prm.clst_start{1}(3);
-curr_k = prm.clst_start{1}(4);
-N = prm.clst_start{1}(5);
-boba = prm.clst_start{1}(6);
-clr = prm.clst_start{3}(curr_k,:);
-res = prm.clst_res;
+curr = p.proj{proj}.curr{tag,tpe};
 
+meth = curr.clst_start{1}(1);
+mode = curr.clst_start{1}(2);
+Jmax = curr.clst_start{1}(3);
+N = curr.clst_start{1}(5);
+boba = curr.clst_start{1}(6);
+if isfield(curr,'clst_res') && ~isempty(curr.clst_res{1})
+    isRes = true;
+else
+    isRes = false;
+end
 
-%% set general parameters
+% set general parameters
 set([h.text_TDPdataType h.popupmenu_TDPdataType ...
     h.togglebutton_TDPkmean h.togglebutton_TDPgauss ...
     h.popupmenu_TDPstate h.text_TDPstate h.text_TDPnStates ...
@@ -35,21 +38,14 @@ set([h.edit_TDPnStates h.edit_TDPiniVal h.edit_TDPradius ...
 
 set(h.edit_TDPnStates, 'String', num2str(Jmax));
 
-[id_clr,o,o] = find(p.colList(:,1)==clr(1) & p.colList(:,2)==clr(2) & ...
-    p.colList(:,3)==clr(3));
-if ~isempty(id_clr)
-    set(h.popupmenu_TDPcolour, 'Value', id_clr(1), 'Enable', 'on');
-end
-set(h.edit_TDPcolour, 'Enable', 'inactive', 'BackgroundColor', clr);
 
-
-%% set starting parameters
+% set starting parameters
 if meth == 1 % kmean clustering
     state = get(h.popupmenu_TDPstate, 'Value');
     if state > Jmax
         state = Jmax;
     end
-    trs_k = prm.clst_start{2}(state,:);
+    trs_k = curr.clst_start{2}(state,:);
     
     set(h.text_TDPstate, 'String', 'state n°:');
     
@@ -117,8 +113,8 @@ else % GMM-based clustering
 end
 
 if boba
-    nSpl = prm.clst_start{1}(7);
-    nRpl = prm.clst_start{1}(8);
+    nSpl = curr.clst_start{1}(7);
+    nRpl = curr.clst_start{1}(8);
     set([h.edit_TDPnRepl h.text_TDPnRepl h.edit_TDPnSpl ...
         h.text_TDPnSpl], 'Enable', 'on');
     set([h.edit_TDPnSpl h.edit_TDPnSpl], 'BackgroundColor', [1 1 1]);
@@ -127,31 +123,15 @@ if boba
 else
     set([h.edit_TDPnRepl h.text_TDPnRepl h.edit_TDPnSpl ...
         h.text_TDPnSpl], 'Enable', 'off');
-    set([h.edit_TDPnSpl h.edit_TDPnSpl], 'String', '');
+    set([h.edit_TDPnRepl h.edit_TDPnSpl], 'String', '');
 end
 set(h.checkbox_TDPboba, 'Value', boba);
 
 
-%% set results
-if isempty(res{1})
-    
-    % build transition list
-    str_list = {};
-    for j1 = 1:Jmax
-        for j2 = 1:Jmax
-            if j1 ~= j2
-                vals = round(100*prm.clst_start{2}([j1 j2],1))/100;
-                str_list = [str_list strcat(num2str(vals(1)), ' to ', ...
-                    num2str(vals(2)))];
-            end
-        end
-    end
-    if isempty(str_list) || meth == 2 %GM
-        str_list = {''};
-        curr_k = 1;
-    end
-    set(h.listbox_TDPtrans, 'String', str_list, 'Value', curr_k, ...
-        'Enable', 'on');
+% set results
+if ~isRes
+    set(h.listbox_TDPtrans, 'String', '', 'Value', 0, 'Enable', 'off');
+    set([h.popupmenu_TDPcolour,h.edit_TDPcolour], 'Enable', 'off');
     set([h.edit_TDPbobaRes h.edit_TDPbobaSig h.text_TDPbobaRes ...
         h.text_TDPbobaSig], 'Enable', 'off');
     set([h.edit_TDPbobaRes h.edit_TDPbobaSig], 'String', '');
@@ -162,32 +142,12 @@ if isempty(res{1})
     cla(h.axes_tdp_BIC);
 
 else
+    % collect results and processing parameters at last update
+    res = curr.clst_res;
+    meth = curr.clst_start{1}(1);
+    boba = curr.clst_start{1}(6);
     J = res{3};
-    if J*(J-1) <= 0
-        curr_k = 1;
-    elseif curr_k > J*(J-1)
-        curr_k = J*(J-1);
-    end
-    
-    % build transition list
-    str_list = {};
-    k = 0;
-    for j1 = 1:J
-        for j2 = 1:J
-            if j1 ~= j2
-                k = k+1;
-                vals = round(100*res{1}.mu{J}([j1 j2],1))/100;
-                str_list = [str_list strcat(num2str(vals(1)), ' to ', ...
-                    num2str(vals(2)))];
-            end
-        end
-    end
-    if isempty(str_list)
-        str_list = {''};
-    end
-    set(h.listbox_TDPtrans, 'String', str_list, 'Value', curr_k, ...
-        'Enable', 'on');
-    
+
     % set optimum state configuration and bootstrap results
     if boba
         set([h.text_TDPbobaRes h.text_TDPbobaSig], 'Enable', 'on');
@@ -202,24 +162,29 @@ else
         else
             for J = 1:Jmax
                 if ~isempty(res{1}.mu{J})
-                    break;
+                    break
                 end
             end
             Jopt = J;
         end
-        
         set([h.edit_TDPbobaSig h.text_TDPbobaSig],'Enable','off');
         set(h.edit_TDPbobaSig, 'String', '');
-        
         set(h.text_TDPbobaRes,'Enable','on');
         set(h.edit_TDPbobaRes,'Enable','inactive','String',num2str(Jopt));
-        
     end
     
     if meth==2
         set([h.text_tdp_showModel,h.text_tdp_Jequal,h.popupmenu_tdp_model,...
             h.pushbutton_tdp_impModel],'Enable','on');
         set(h.axes_tdp_BIC,'Visible','on');
+        
+        str_pop = cell(1,Jmax-1);
+        for j = 2:Jmax
+            str_pop{j-1} = num2str(j);
+        end
+        J = curr.clst_res{3};
+        set(h.popupmenu_tdp_model,'String',str_pop,'Value',J-1);
+        
     else
         set([h.text_tdp_showModel,h.text_tdp_Jequal,h.popupmenu_tdp_model,...
             h.pushbutton_tdp_impModel],'Enable','off');

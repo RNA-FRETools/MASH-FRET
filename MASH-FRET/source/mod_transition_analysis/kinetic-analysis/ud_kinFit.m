@@ -1,223 +1,213 @@
 function ud_kinFit(h_fig)
-% Set properties of all controls in panel "Transition rates" to proper 
-% values and refresh associated plots.
+% Set properties of all controls in panel "Transition rates" to proper values.
 %
 % h_fig: handle to main figure
 
-% Last update by MH, 12.12.2019
-% >> move script that plots boba fret icon from here to 
-%  buildPanelTAstateTransitionRates.m (plot is now done only once when 
-%  building GUI)
+% Last update by MH, 27.1.2020: do not update histogram and plot anymore (done only when pressing "cluster" or "fit"and adapt to current (curr) and last applied (prm) parameters
+% update by MH, 12.12.2019: move script that plots boba fret icon from here to buildPanelTAstateTransitionRates.m (plot is now done only once when building GUI)
 
-%% collect parameters
+% collect interface parameters
 h = guidata(h_fig);
 p = h.param.TDP;
 proj = p.curr_proj;
 tpe = p.curr_type(proj);
 tag = p.curr_tag(proj);
+
+% collect project parameters
+curr = p.proj{proj}.curr{tag,tpe};
 prm = p.proj{proj}.prm{tag,tpe};
-clust_res = prm.clst_res;
 
-if ~isempty(clust_res{1})
-    
-    curr_k = prm.clst_start{1}(4);
-    kin_start = prm.kin_start(curr_k,:);
-    kin_res = prm.kin_res;
-    stchExp = kin_start{1}(1);
-    if stchExp
-        curr_exp = 1;
-        nExp = 1;
-    else
-        curr_exp = kin_start{1}(3);
-        nExp = kin_start{1}(2);
-    end
-    boba = kin_start{1}(4);
-    amp_prm = kin_start{2}(curr_exp,1:3);
-    dec_prm = kin_start{2}(curr_exp,4:6);
-    beta_prm = kin_start{2}(curr_exp,7:9);
-    
-    %% build exponential list
-    str_e = cell(1,nExp);
-    for i = 1:nExp
-        str_e{i} = sprintf('exponential n°:%i', i);
-    end
-
-    %% set general parameters
-    set([h.radiobutton_TDPstretch h.radiobutton_TDPmultExp ...
-        h.checkbox_BOBA h.pushbutton_TDPfit_fit ...
-        h.text_TDPfit_amp h.text_TDPdec_amp h.text_TDPfit_lower ...
-        h.text_TDPfit_start  h.text_TDPfit_upper h.edit_TDPfit_aLow ...
-        h.edit_TDPfit_aStart h.edit_TDPfit_aUp h.edit_TDPfit_decLow ...
-        h.edit_TDPfit_decStart h.edit_TDPfit_decUp ...
-        h.pushbutton_TDPfit_log], 'Enable', 'on');
-    
-    if stchExp
-        set([h.text_TDPfit_beta h.edit_TDPfit_betaLow ...
-            h.edit_TDPfit_betaStart h.edit_TDPfit_betaUp], 'Enable', 'on');
-        set([h.edit_TDP_nExp h.popupmenu_TDP_expNum], 'Enable', 'off');
-    else
-        set([h.text_TDPfit_beta h.edit_TDPfit_betaLow ...
-            h.edit_TDPfit_betaStart h.edit_TDPfit_betaUp], 'Enable', ...
-            'off');
-        set([h.edit_TDP_nExp h.popupmenu_TDP_expNum], 'Enable', 'on');
-    end
-    
-    set([h.edit_TDP_nExp h.edit_TDPfit_aLow h.edit_TDPfit_aStart ...
-        h.edit_TDPfit_aUp h.edit_TDPfit_decLow h.edit_TDPfit_decStart ...
-        h.edit_TDPfit_decUp h.edit_TDPbsprm_01 h.edit_TDPbsprm_02 ...
-        h.edit_TDPfit_betaLow h.edit_TDPfit_betaStart ...
-        h.edit_TDPfit_betaUp], 'BackgroundColor', [1 1 1]);
-    
-    set(h.radiobutton_TDPstretch, 'Value', stchExp);
-    set(h.radiobutton_TDPmultExp, 'Value', ~stchExp);
-    J = clust_res{3};
-    k = 0;
-    for j1 = 1:J
-        for j2 = 1:J
-            if j2 ~= j1
-                k = k+1;
-                if curr_k == k
-                    mu1 = round(100*clust_res{1}.mu{J}(j1,1))/100;
-                    mu2 = round(100*clust_res{1}.mu{J}(j2,1))/100;
-                    break;
-                end
-            end
-        end
-    end
-    set(h.edit_TDP_nExp, 'String', num2str(nExp));
-    set(h.popupmenu_TDP_expNum, 'Value', curr_exp, 'String', str_e);
-    set(h.checkbox_BOBA, 'Value', boba);
-    
-    if boba
-        set([h.text_bs_nRep h.edit_TDPbsprm_01 h.text_bs_nSamp ...
-            h.edit_TDPbsprm_02, h.checkbox_bobaWeight], 'Enable', 'on');
-        n_rep = kin_start{1}(5);
-        n_spl = kin_start{1}(6);
-        w = kin_start{1}(7);
-        set(h.edit_TDPbsprm_01, 'String', num2str(n_rep));
-        set(h.edit_TDPbsprm_02, 'String', num2str(n_spl));
-        set(h.checkbox_bobaWeight, 'Value', w);
-    else
-        set([h.text_bs_nRep h.edit_TDPbsprm_01 h.text_bs_nSamp ...
-            h.edit_TDPbsprm_02 h.checkbox_bobaWeight], 'Enable', 'off');
-    end
-    
-    set(h.edit_TDPfit_aLow, 'String', num2str(amp_prm(1)));
-    set(h.edit_TDPfit_aStart, 'String', num2str(amp_prm(2)));
-    set(h.edit_TDPfit_aUp, 'String', num2str(amp_prm(3)));
-    set(h.edit_TDPfit_decLow, 'String', num2str(dec_prm(1)));
-    set(h.edit_TDPfit_decStart, 'String', num2str(dec_prm(2)));
-    set(h.edit_TDPfit_decUp, 'String', num2str(dec_prm(3)));
-    set(h.edit_TDPfit_betaLow, 'String', num2str(beta_prm(1)));
-    set(h.edit_TDPfit_betaStart, 'String', num2str(beta_prm(2)));
-    set(h.edit_TDPfit_betaUp, 'String', num2str(beta_prm(3)));
-    
-    %% set results
-    if size(kin_res,1)>=curr_k && ~isempty(kin_res{curr_k,2})
-        kin_k = kin_res(curr_k,:);
-        if boba && size(kin_k{1},2)>=4
-            amp_res = kin_k{1}(curr_exp,1:2);
-            dec_res = kin_k{1}(curr_exp,3:4);
-        else
-            amp_res = kin_k{2}(curr_exp,1);
-            dec_res = kin_k{2}(curr_exp,2);
-        end
-        set(h.text_TDPfit_res, 'Enable', 'on');
-        set([h.edit_TDPfit_aRes h.edit_TDPfit_decRes], 'Enable', ...
-            'on', 'BackgroundColor', [0.75 1 0.75]);
-        set(h.edit_TDPfit_aRes, 'String', num2str(amp_res(1)));
-        set(h.edit_TDPfit_decRes, 'String', num2str(dec_res(1)));
-        
-        if stchExp && ((boba && size(kin_k{1},2)>=6) || ...
-                (~boba && size(kin_k{2}(1,:),2)>=3))
-            if boba
-                beta_res = kin_k{1}(1,5:6);
-            else
-                beta_res = kin_k{2}(1,3);
-            end
-            set(h.edit_TDPfit_betaRes, 'Enable', 'on', ...
-                'BackgroundColor', [0.75 1 0.75], 'String', ...
-                num2str(beta_res(1)));
-            if boba
-                set(h.edit_TDPfit_betaBs, 'Enable', 'on', ...
-                    'BackgroundColor', [0.75 1 0.75], 'String', ...
-                    num2str(beta_res(2)));
-            else
-                set(h.edit_TDPfit_betaBs, 'Enable', 'off', 'String', '');
-            end
-            
-        else
-            set([h.edit_TDPfit_betaRes h.edit_TDPfit_betaBs], 'Enable', ...
-                'off', 'String', '');
-        end
-        
-        if boba && size(kin_k{1},2)>=4
-            set(h.text_TDPfit_bsRes, 'Enable', 'on');
-            set([h.edit_TDPfit_ampBs h.edit_TDPfit_decBs], 'Enable', ...
-                'on', 'BackgroundColor', [0.75 1 0.75]);
-            set(h.edit_TDPfit_decBs, 'String', num2str(dec_res(2)));
-            set(h.edit_TDPfit_ampBs, 'String', num2str(amp_res(2)));
-            
-        else
-            set([h.text_TDPfit_bsRes h.edit_TDPfit_ampBs ...
-                h.edit_TDPfit_decBs], 'Enable', 'off');
-            set([h.edit_TDPfit_ampBs h.edit_TDPfit_decBs], 'String', '');
-        end
-        
-    else
-        kin_k = [];
-        
-        set([h.text_TDPfit_res h.edit_TDPfit_aRes h.edit_TDPfit_decRes ...
-            h.edit_TDPfit_betaRes h.text_TDPfit_bsRes ...
-            h.edit_TDPfit_ampBs h.edit_TDPfit_decBs ...
-            h.edit_TDPfit_betaBs], 'Enable', 'off');
-        set([h.edit_TDPfit_aRes h.edit_TDPfit_decRes ...
-            h.edit_TDPfit_betaRes h.edit_TDPfit_ampBs ...
-            h.edit_TDPfit_decBs h.edit_TDPfit_betaBs], 'String', '');
-    end
-    
-    act = get(h.pushbutton_TDPfit_log, 'String');
-    if strcmp(act, 'y-log scale')
-        scl = 'linear';
-    elseif strcmp(act, 'y-linear scale')
-        scl = 'log';
-    end
-    k = 0;
-    for j1 = 1:J
-        for j2 = 1:J
-            if j1 ~= j2
-                k = k + 1;
-            end
-            if k == curr_k
-                break;
-            end
-        end
-        if k == curr_k
-            break;
-        end
-    end
-    
-    excl = prm.kin_start{curr_k,1}(8);
-    
-    clust_k = clust_res{1}.clusters{J}(clust_res{1}.clusters{J}(:,7)==j1 & ...
-        clust_res{1}.clusters{J}(:,8)==j2,:);
-    
-    if size(clust_k,1)>1
-        wght = kin_start{1}(7);
-        mols = unique(clust_res{1}.clusters{J}(:,4));
-        hst = getDtHist(clust_res{1}.clusters{J}, [j1,j2], mols, excl, wght);
-        plotKinFit(h.axes_TDPplot2, hst, kin_k, boba, scl, stchExp);
-    else
-        cla(h.axes_TDPplot2);
-    end
-    
-else
+if ~(isfield(curr,'clst_res') && ~isempty(curr.clst_res{1}))
     setProp(get(h.uipanel_TA_stateTransitionRates, 'Children'), 'Enable', ...
         'off');
     set(h.popupmenu_TDP_expNum, 'Value', 1, 'String', {''});
-    
     cla(h.axes_TDPplot2);
-
     set(h.axes_TDPplot2, 'Visible', 'off');
+    return
+end
+
+% collect processing parameters
+curr_k = curr.kin_start{2}(2);
+J = curr.kin_start{2}(1);
+kin_start = curr.kin_start{1}(curr_k,:);
+if isfield(prm,'kin_res') && ~isempty(prm.kin_res) && ...
+        size(prm.kin_res,1)>=curr_k && ~isempty(prm.kin_res{curr_k,2})
+    isRes = true;
+else
+    isRes = false;
+end
+stchExp = kin_start{1}(1);
+if stchExp
+    curr_exp = 1;
+    nExp = 1;
+else
+    curr_exp = kin_start{1}(3);
+    nExp = kin_start{1}(2);
+end
+boba = kin_start{1}(4);
+amp_prm = kin_start{2}(curr_exp,1:3);
+dec_prm = kin_start{2}(curr_exp,4:6);
+beta_prm = kin_start{2}(curr_exp,7:9);
+clr = prm.clst_start{3}(curr_k,:);
+
+% build transition list
+str_list = {};
+k = 0;
+for j1 = 1:J
+    for j2 = 1:J
+        if j1==j2
+            continue
+        end
+        k = k+1;
+        vals = round(100*curr.clst_res{1}.mu{J}([j1 j2],1))/100;
+        str_list = [str_list strcat(num2str(vals(1)), ' to ', ...
+            num2str(vals(2)))];
+    end
+end
+if isempty(str_list)
+    str_list = {''};
+end
+set(h.listbox_TDPtrans,'String',str_list,'Value',curr_k,'Enable','on');
+[id_clr,o,o] = find(p.colList(:,1)==clr(1) & p.colList(:,2)==clr(2) & ...
+    p.colList(:,3)==clr(3));
+if ~isempty(id_clr)
+    set(h.popupmenu_TDPcolour, 'Value', id_clr(1), 'Enable', 'on');
+end
+set(h.edit_TDPcolour, 'Enable', 'inactive', 'BackgroundColor', clr);
+
+% build exponential list
+str_e = cell(1,nExp);
+for i = 1:nExp
+    str_e{i} = sprintf('exponential n°:%i', i);
+end
+
+% set general parameters
+set([h.radiobutton_TDPstretch h.radiobutton_TDPmultExp ...
+    h.checkbox_BOBA h.pushbutton_TDPfit_fit ...
+    h.text_TDPfit_amp h.text_TDPdec_amp h.text_TDPfit_lower ...
+    h.text_TDPfit_start  h.text_TDPfit_upper h.edit_TDPfit_aLow ...
+    h.edit_TDPfit_aStart h.edit_TDPfit_aUp h.edit_TDPfit_decLow ...
+    h.edit_TDPfit_decStart h.edit_TDPfit_decUp ...
+    h.pushbutton_TDPfit_log], 'Enable', 'on');
+
+if stchExp
+    set([h.text_TDPfit_beta h.edit_TDPfit_betaLow ...
+        h.edit_TDPfit_betaStart h.edit_TDPfit_betaUp], 'Enable', 'on');
+    set([h.edit_TDP_nExp h.popupmenu_TDP_expNum], 'Enable', 'off');
+else
+    set([h.text_TDPfit_beta h.edit_TDPfit_betaLow ...
+        h.edit_TDPfit_betaStart h.edit_TDPfit_betaUp], 'Enable', ...
+        'off');
+    set([h.edit_TDP_nExp h.popupmenu_TDP_expNum], 'Enable', 'on');
+end
+
+set([h.edit_TDP_nExp h.edit_TDPfit_aLow h.edit_TDPfit_aStart ...
+    h.edit_TDPfit_aUp h.edit_TDPfit_decLow h.edit_TDPfit_decStart ...
+    h.edit_TDPfit_decUp h.edit_TDPbsprm_01 h.edit_TDPbsprm_02 ...
+    h.edit_TDPfit_betaLow h.edit_TDPfit_betaStart ...
+    h.edit_TDPfit_betaUp], 'BackgroundColor', [1 1 1]);
+
+set(h.radiobutton_TDPstretch, 'Value', stchExp);
+set(h.radiobutton_TDPmultExp, 'Value', ~stchExp);
+set(h.edit_TDP_nExp, 'String', num2str(nExp));
+set(h.popupmenu_TDP_expNum, 'Value', curr_exp, 'String', str_e);
+set(h.checkbox_BOBA, 'Value', boba);
+
+if boba
+    set([h.text_bs_nRep h.edit_TDPbsprm_01 h.text_bs_nSamp ...
+        h.edit_TDPbsprm_02, h.checkbox_bobaWeight], 'Enable', 'on');
+    n_rep = kin_start{1}(5);
+    n_spl = kin_start{1}(6);
+    w = kin_start{1}(7);
+    set(h.edit_TDPbsprm_01, 'String', num2str(n_rep));
+    set(h.edit_TDPbsprm_02, 'String', num2str(n_spl));
+    set(h.checkbox_bobaWeight, 'Value', w);
+else
+    set([h.text_bs_nRep h.edit_TDPbsprm_01 h.text_bs_nSamp ...
+        h.edit_TDPbsprm_02 h.checkbox_bobaWeight], 'Enable', 'off');
+end
+
+set(h.edit_TDPfit_aLow, 'String', num2str(amp_prm(1)));
+set(h.edit_TDPfit_aStart, 'String', num2str(amp_prm(2)));
+set(h.edit_TDPfit_aUp, 'String', num2str(amp_prm(3)));
+set(h.edit_TDPfit_decLow, 'String', num2str(dec_prm(1)));
+set(h.edit_TDPfit_decStart, 'String', num2str(dec_prm(2)));
+set(h.edit_TDPfit_decUp, 'String', num2str(dec_prm(3)));
+set(h.edit_TDPfit_betaLow, 'String', num2str(beta_prm(1)));
+set(h.edit_TDPfit_betaStart, 'String', num2str(beta_prm(2)));
+set(h.edit_TDPfit_betaUp, 'String', num2str(beta_prm(3)));
+
+% set results
+if isRes
+    kin_k = prm.kin_res(curr_k,:);
+    boba = prm.kin_start{1}{curr_k,1}(4);
+    stchExp = prm.kin_start{1}{curr_k,1}(1);
+    
+    if curr_exp>size(kin_k{1},1)
+        amp_res = NaN;
+        dec_res = NaN;
+    elseif boba && size(kin_k{1},2)>=4 
+        amp_res = kin_k{1}(curr_exp,1:2);
+        dec_res = kin_k{1}(curr_exp,3:4);
+    else
+        amp_res = kin_k{2}(curr_exp,1);
+        dec_res = kin_k{2}(curr_exp,2);
+    end
+    if stchExp
+        if curr_exp>size(kin_k{1},1)
+            beta_res = NaN;
+        elseif boba && size(kin_k{1},2)>=6
+            beta_res = kin_k{1}(1,5:6);
+        else
+            beta_res = kin_k{2}(1,3);
+        end
+    else
+        beta_res = NaN;
+    end
+
+    set(h.text_TDPfit_res, 'Enable', 'on');
+    set([h.edit_TDPfit_aRes,h.edit_TDPfit_ampBs,h.edit_TDPfit_decRes,...
+        h.edit_TDPfit_decBs,h.edit_TDPfit_betaRes,h.edit_TDPfit_betaBs], ...
+        'Enable', 'off', 'String', '');
+    
+    if ~(numel(amp_res)==1 && isnan(amp_res))
+        set(h.edit_TDPfit_aRes, 'String', num2str(amp_res(1)), 'Enable', ...
+            'on', 'BackgroundColor', [0.75 1 0.75]);
+        if boba
+            set(h.edit_TDPfit_ampBs, 'String', num2str(amp_res(2)), ...
+                'Enable', 'on', 'BackgroundColor', [0.75 1 0.75]);
+        end
+    end
+    if ~(numel(dec_res)==1 && isnan(dec_res))
+        set(h.edit_TDPfit_decRes, 'String', num2str(dec_res(1)), 'Enable', ...
+            'on', 'BackgroundColor', [0.75 1 0.75]);
+        if boba
+            set(h.edit_TDPfit_decBs, 'String', num2str(dec_res(2)), ...
+                'Enable', 'on', 'BackgroundColor', [0.75 1 0.75]);
+        end
+    end
+    if ~(numel(beta_res)==1 && isnan(beta_res))
+        set(h.edit_TDPfit_betaRes, 'String', num2str(beta_res(1)), ...
+            'Enable', 'on', 'BackgroundColor', [0.75 1 0.75]);
+        if boba
+            set(h.edit_TDPfit_betaBs, 'String', num2str(beta_res(2)), ...
+                'Enable', 'on', 'BackgroundColor', [0.75 1 0.75]);
+        end
+    end
+
+    if boba 
+        set(h.text_TDPfit_bsRes, 'Enable', 'on');
+    else
+        set(h.text_TDPfit_bsRes, 'Enable', 'off');
+    end
+
+else
+    set([h.text_TDPfit_res h.edit_TDPfit_aRes h.edit_TDPfit_decRes ...
+        h.edit_TDPfit_betaRes h.text_TDPfit_bsRes ...
+        h.edit_TDPfit_ampBs h.edit_TDPfit_decBs ...
+        h.edit_TDPfit_betaBs], 'Enable', 'off');
+    set([h.edit_TDPfit_aRes h.edit_TDPfit_decRes ...
+        h.edit_TDPfit_betaRes h.edit_TDPfit_ampBs ...
+        h.edit_TDPfit_decBs h.edit_TDPfit_betaBs], 'String', '');
 end
 
