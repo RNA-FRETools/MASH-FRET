@@ -7,16 +7,17 @@ if ~isstruct(prm)
     return
 end
 
-if size(prm.plot{1},1)<4
+if isfield(prm,'plot') && size(prm.plot{1},1)<4
     prm.plot = def.plot;
 end
 % add boba parameters if none
-if size(prm.clst_start,2)<8
+if isfield(prm,'clst_start') && size(prm.clst_start,2)<8
     prm.clst_start{1}(6:8) = def.clst_start{1}(6:8);
 end
 
 % restructure old fit results
-if ~isempty(prm.clst_res{1}) && ~isstruct(prm.clst_res{1})
+if isfield(prm,'clst_res') && ~isempty(prm.clst_res{1}) && ...
+        ~isstruct(prm.clst_res{1})
 
     % initialize new result structure
     Jmax = prm.clst_start{1}(3);
@@ -64,6 +65,6 @@ elseif isfield(prm,'clst_start') && size(prm.clst_start{1},2)>=4 && ...
     prm.clst_start{1}(4) = true; % state dependency
 end
 
-p_proj.prm{tpe,tag} = prm;
+p_proj.prm{tag,tpe} = prm;
 
 

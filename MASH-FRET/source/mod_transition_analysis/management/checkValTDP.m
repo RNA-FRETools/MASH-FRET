@@ -20,7 +20,7 @@ clst_start = prm.clst_start;
 clst_res = prm.clst_res;
 kin_def = prm.kin_def;
 kin_start = prm.kin_start;
-kin_res = prm.clst_res;
+kin_res = prm.kin_res;
 
 % adjust TDP parameters
 pplot{1} = adjustVal(pplot{1},def.plot{1});
@@ -71,7 +71,7 @@ end
 
 if ~isempty(clst_res{2})
     method = clst_start{1}(1);
-    corr = clst_start{1}(9);
+    corr = clst_start{1}(4);
     J = kin_start{2}(1);
     if sum(method==[1,2]) && corr % cluster centers are dependent
         nTrs = J*(J-1);
