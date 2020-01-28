@@ -30,7 +30,9 @@ sglcnt = false;
 rearr = false;
 inclDiag = true;
 shape = 1;
-dep = true;
+mat = true; % 
+clstDiag = true; % add diagonal clusters
+logl = 1; % 0: incomplete data, 1: complete data
 nspl_clst = 20;
 niter = 10;
 boba_clst = false;
@@ -117,8 +119,10 @@ for tpe = 1:nTpe
 
         %% Clustering parameters
         % method, shape, max. nb. of states, state-dependant, restart nb., 
-        % BOBA FRET, sample nb., replicate nb.
-        clst_start{1} = [method shape J dep niter boba_clst nspl_clst N];
+        % BOBA FRET, sample nb., replicate nb., cluster diagonal
+        % transitions
+        clst_start{1} = [method shape J mat niter boba_clst nspl_clst N ...
+            clstDiag logl];
         % state value, tol. radius
         clst_start{2} = [];
         % cluster colors

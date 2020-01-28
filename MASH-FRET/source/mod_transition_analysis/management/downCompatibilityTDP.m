@@ -60,9 +60,11 @@ if isfield(prm,'kin_start') && size(prm.kin_start,2)>=2 && ...
     prm.kin_start{1} = kin_start;
     prm.kin_start{2} = [J,curr_k];
     prm.clst_start{1}(4) = true; % state dependency
-elseif isfield(prm,'clst_start') && size(prm.clst_start{1},2)>=4 && ...
-        prm.clst_start{1}(4)>1
-    prm.clst_start{1}(4) = true; % state dependency
+end
+
+% 28.1.2020: add cluster diagonal and log likelihood options
+if isfield(prm,'clst_start') && size(prm.clst_start,2)<10
+    prm.clst_start{1} = cat(2,prm.clst_start{1},[true 1]); % state dependency
 end
 
 p_proj.prm{tag,tpe} = prm;
