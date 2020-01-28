@@ -40,9 +40,12 @@ h_axes_TDP = hndls(1);
 h_cb_TDP = hndls(2);
 h_axes_BIC = hndls(3);
 
+% clear axes
+cla(h_axes_TDP);
+cla(h_axes_BIC);
+set(h_axes_BIC,'visible','off');
+
 if isempty(TDP) || (numel(TDP)==1 && isnan(TDP))
-    cla(h_axes_TDP);
-    cla(h_axes_BIC);
     return
 end
 
@@ -75,6 +78,7 @@ if isRes
         % plot BIC results
         Jmax = size(prm.clst_res{1}.BIC,2);
         BICs = prm.clst_res{1}.BIC;
+        set(h_axes_BIC,'visible','on');
         barh(h_axes_BIC,1:Jmax,BICs);
         xlim(h_axes_BIC,[min(BICs) mean(BICs)]);
         ylim(h_axes_BIC,[0,Jmax+1]);

@@ -61,7 +61,7 @@ y = pospan(4)-p.mgpan-haxes0;
 
 h.axes_tdp_BIC = axes('parent',h_pan,'units',p.posun,'fontunits',p.fntun,...
     'fontsize',p.fntsz1,'position',[x,y,waxes0,haxes0],'ylim',lim0,'xtick',...
-    []);
+    [], 'nextplot', 'replacechildren');
 h_axes = h.axes_tdp_BIC;
 title(h_axes,axttl0);
 tiaxes = get(h_axes,'tightinset');

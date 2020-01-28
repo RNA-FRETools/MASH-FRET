@@ -22,12 +22,14 @@ else
 end
 
 % clear axes and make visible
-set(h_axes, 'Visible', 'on');
+set(h_axes, 'Visible', 'off');
 cla(h_axes);
 
-if ~(isfield(prm,'clst_res') && ~isempty(prm.clst_res{4}))
+if ~(isfield(prm,'clst_res') && ~isempty(prm.clst_res{1}))
     return
 end
+
+set(h_axes, 'Visible', 'on');
 
 % get reference histogram
 J = prm.kin_start{2}(1);
@@ -57,8 +59,13 @@ plot(h_axes, x_data, y_data, markhist, 'linewidth', lwhist);
 grid(h_axes, 'on');
 
 if isequal(kin_res,def.kin_res)
+    xlim(h_axes,'auto');
+    ylim(h_axes,'auto');
     lim = get(h_axes, 'YLim');
     set(h_axes,'YLim',[min(y_data) lim(2)],'Visible','on','YScale',scl);
+    title(h_axes, ttl);
+    xlabel(h_axes, xlbl);
+    ylabel(h_axes, ylbl);
     return
 end
 
@@ -144,6 +151,8 @@ end
 title(h_axes, ttl);
 xlabel(h_axes, xlbl);
 ylabel(h_axes, ylbl);
+xlim(h_axes,'auto');
+ylim(h_axes,'auto');
 lim = get(h_axes, 'YLim');
 
 set(h_axes, 'NextPlot', 'replacechildren', 'YLim', [min(y_data) lim(2)], ...
