@@ -158,7 +158,3 @@ lim = get(h_axes, 'YLim');
 set(h_axes, 'NextPlot', 'replacechildren', 'YLim', [min(y_data) lim(2)], ...
     'YScale', scl);
 
-
-
-
-

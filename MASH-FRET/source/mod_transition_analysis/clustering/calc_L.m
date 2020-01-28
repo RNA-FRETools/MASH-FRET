@@ -1,4 +1,4 @@
-function [BIC,L,I] = calc_L(w, mu, sig, v, corr, shape)
+function [BIC,L,I] = calc_L(w, mu, sig, v, corr, shape, lklhd)
 % w = [K-by-1]
 % s = [K-by-2]
 % sig = [2-by-2-by-K]
@@ -27,8 +27,11 @@ P = zeros(1,N);
 
 for k = 1:size(p,1)
     I(k,:) = (i==k);
-%     P = P + w(k)*p(k,:); % to calculate incomplete-data likelihood 
-    P(I(k,:)) = P(I(k,:)) + w(k)*p(k,I(k,:)); % to calculate complete-data likelihood 
+    if lklhd==1
+        P(I(k,:)) = P(I(k,:)) + w(k)*p(k,I(k,:)); % to calculate complete-data likelihood 
+    else
+        P = P + w(k)*p(k,:); % to calculate incomplete-data likelihood 
+    end
 end
 
 L = sum((v(3,(P>0)).*log(P(P>0))),2);

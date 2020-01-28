@@ -17,25 +17,33 @@ tag = p.curr_tag(proj);
 curr = p.proj{proj}.curr{tag,tpe};
 prm = p.proj{proj}.prm{tag,tpe};
 
+% set all control enabled
+setProp(h.uipanel_TA_stateTransitionRates, 'Enable', 'on');
+
+% reset edit field background color
+set([h.edit_TDP_nExp h.edit_TDPbsprm_01 h.edit_TDPbsprm_02 ...
+    h.edit_TDPfit_aLow h.edit_TDPfit_aStart h.edit_TDPfit_aUp ...
+    h.edit_TDPfit_decLow h.edit_TDPfit_decStart h.edit_TDPfit_decUp ...
+    h.edit_TDPfit_betaLow h.edit_TDPfit_betaStart h.edit_TDPfit_betaUp], ...
+    'backgroundcolor', [1 1 1]);
+
 if ~(isfield(curr,'clst_res') && ~isempty(curr.clst_res{1}))
-    setProp(get(h.uipanel_TA_stateTransitionRates, 'Children'), 'Enable', ...
-        'off');
+    setProp(h.uipanel_TA_stateTransitionRates, 'Enable', 'off');
+    set(h.listbox_TDPtrans, 'String', '', 'Value', 0);
     set(h.popupmenu_TDP_expNum, 'Value', 1, 'String', {''});
-    cla(h.axes_TDPplot2);
-    set(h.axes_TDPplot2, 'Visible', 'off');
     return
 end
 
 % collect processing parameters
 curr_k = curr.kin_start{2}(2);
-J = curr.kin_start{2}(1);
-kin_start = curr.kin_start{1}(curr_k,:);
 if isfield(prm,'kin_res') && ~isempty(prm.kin_res) && ...
         size(prm.kin_res,1)>=curr_k && ~isempty(prm.kin_res{curr_k,2})
     isRes = true;
 else
     isRes = false;
 end
+J = curr.kin_start{2}(1);
+kin_start = curr.kin_start{1}(curr_k,:);
 stchExp = kin_start{1}(1);
 if stchExp
     curr_exp = 1;
@@ -45,12 +53,15 @@ else
     nExp = kin_start{1}(2);
 end
 boba = kin_start{1}(4);
+n_rep = kin_start{1}(5);
+n_spl = kin_start{1}(6);
+w = kin_start{1}(7);
 amp_prm = kin_start{2}(curr_exp,1:3);
 dec_prm = kin_start{2}(curr_exp,4:6);
 beta_prm = kin_start{2}(curr_exp,7:9);
 clr = prm.clst_start{3}(curr_k,:);
 
-% build transition list
+% update transition list
 str_list = {};
 k = 0;
 for j1 = 1:J
@@ -67,82 +78,65 @@ end
 if isempty(str_list)
     str_list = {''};
 end
-set(h.listbox_TDPtrans,'String',str_list,'Value',curr_k,'Enable','on');
+set(h.listbox_TDPtrans, 'String', str_list, 'Value', curr_k);
+
+% update color list
 [id_clr,o,o] = find(p.colList(:,1)==clr(1) & p.colList(:,2)==clr(2) & ...
     p.colList(:,3)==clr(3));
 if ~isempty(id_clr)
-    set(h.popupmenu_TDPcolour, 'Value', id_clr(1), 'Enable', 'on');
+    set(h.popupmenu_TDPcolour, 'Value', id_clr(1));
 end
 set(h.edit_TDPcolour, 'Enable', 'inactive', 'BackgroundColor', clr);
 
-% build exponential list
+% update exponential list
 str_e = cell(1,nExp);
 for i = 1:nExp
     str_e{i} = sprintf('exponential n°:%i', i);
 end
+set(h.popupmenu_TDP_expNum, 'Value', curr_exp, 'String', str_e);
 
-% set general parameters
-set([h.radiobutton_TDPstretch h.radiobutton_TDPmultExp ...
-    h.checkbox_BOBA h.pushbutton_TDPfit_fit ...
-    h.text_TDPfit_amp h.text_TDPdec_amp h.text_TDPfit_lower ...
-    h.text_TDPfit_start  h.text_TDPfit_upper h.edit_TDPfit_aLow ...
-    h.edit_TDPfit_aStart h.edit_TDPfit_aUp h.edit_TDPfit_decLow ...
-    h.edit_TDPfit_decStart h.edit_TDPfit_decUp ...
-    h.pushbutton_TDPfit_log], 'Enable', 'on');
-
-if stchExp
-    set([h.text_TDPfit_beta h.edit_TDPfit_betaLow ...
-        h.edit_TDPfit_betaStart h.edit_TDPfit_betaUp], 'Enable', 'on');
-    set([h.edit_TDP_nExp h.popupmenu_TDP_expNum], 'Enable', 'off');
-else
-    set([h.text_TDPfit_beta h.edit_TDPfit_betaLow ...
-        h.edit_TDPfit_betaStart h.edit_TDPfit_betaUp], 'Enable', ...
-        'off');
-    set([h.edit_TDP_nExp h.popupmenu_TDP_expNum], 'Enable', 'on');
-end
-
-set([h.edit_TDP_nExp h.edit_TDPfit_aLow h.edit_TDPfit_aStart ...
-    h.edit_TDPfit_aUp h.edit_TDPfit_decLow h.edit_TDPfit_decStart ...
-    h.edit_TDPfit_decUp h.edit_TDPbsprm_01 h.edit_TDPbsprm_02 ...
-    h.edit_TDPfit_betaLow h.edit_TDPfit_betaStart ...
-    h.edit_TDPfit_betaUp], 'BackgroundColor', [1 1 1]);
-
+% update fit method
 set(h.radiobutton_TDPstretch, 'Value', stchExp);
 set(h.radiobutton_TDPmultExp, 'Value', ~stchExp);
 set(h.edit_TDP_nExp, 'String', num2str(nExp));
-set(h.popupmenu_TDP_expNum, 'Value', curr_exp, 'String', str_e);
 set(h.checkbox_BOBA, 'Value', boba);
-
 if boba
-    set([h.text_bs_nRep h.edit_TDPbsprm_01 h.text_bs_nSamp ...
-        h.edit_TDPbsprm_02, h.checkbox_bobaWeight], 'Enable', 'on');
-    n_rep = kin_start{1}(5);
-    n_spl = kin_start{1}(6);
-    w = kin_start{1}(7);
     set(h.edit_TDPbsprm_01, 'String', num2str(n_rep));
     set(h.edit_TDPbsprm_02, 'String', num2str(n_spl));
     set(h.checkbox_bobaWeight, 'Value', w);
 else
     set([h.text_bs_nRep h.edit_TDPbsprm_01 h.text_bs_nSamp ...
         h.edit_TDPbsprm_02 h.checkbox_bobaWeight], 'Enable', 'off');
+    set([h.edit_TDPbsprm_01,h.edit_TDPbsprm_02], 'String', '');
 end
 
+% update fit parameters
+if stchExp
+    set([h.edit_TDP_nExp h.popupmenu_TDP_expNum], 'Enable', 'off');
+    set(h.edit_TDPfit_betaLow, 'String', num2str(beta_prm(1)));
+    set(h.edit_TDPfit_betaStart, 'String', num2str(beta_prm(2)));
+    set(h.edit_TDPfit_betaUp, 'String', num2str(beta_prm(3)));
+else
+    set([h.text_TDPfit_beta h.edit_TDPfit_betaLow ...
+        h.edit_TDPfit_betaStart h.edit_TDPfit_betaUp], 'Enable', 'off');
+    set([h.edit_TDPfit_betaLow h.edit_TDPfit_betaStart ...
+        h.edit_TDPfit_betaUp], 'String', '');
+end
 set(h.edit_TDPfit_aLow, 'String', num2str(amp_prm(1)));
 set(h.edit_TDPfit_aStart, 'String', num2str(amp_prm(2)));
 set(h.edit_TDPfit_aUp, 'String', num2str(amp_prm(3)));
 set(h.edit_TDPfit_decLow, 'String', num2str(dec_prm(1)));
 set(h.edit_TDPfit_decStart, 'String', num2str(dec_prm(2)));
 set(h.edit_TDPfit_decUp, 'String', num2str(dec_prm(3)));
-set(h.edit_TDPfit_betaLow, 'String', num2str(beta_prm(1)));
-set(h.edit_TDPfit_betaStart, 'String', num2str(beta_prm(2)));
-set(h.edit_TDPfit_betaUp, 'String', num2str(beta_prm(3)));
 
-% set results
+
+% update fit results
 if isRes
+    
+    % collect results
     kin_k = prm.kin_res(curr_k,:);
     boba = prm.kin_start{1}{curr_k,1}(4);
     stchExp = prm.kin_start{1}{curr_k,1}(1);
-    
     if curr_exp>size(kin_k{1},1)
         amp_res = NaN;
         dec_res = NaN;
@@ -164,12 +158,11 @@ if isRes
     else
         beta_res = NaN;
     end
-
-    set(h.text_TDPfit_res, 'Enable', 'on');
+    
+    % set GUI
     set([h.edit_TDPfit_aRes,h.edit_TDPfit_ampBs,h.edit_TDPfit_decRes,...
         h.edit_TDPfit_decBs,h.edit_TDPfit_betaRes,h.edit_TDPfit_betaBs], ...
         'Enable', 'off', 'String', '');
-    
     if ~(numel(amp_res)==1 && isnan(amp_res))
         set(h.edit_TDPfit_aRes, 'String', num2str(amp_res(1)), 'Enable', ...
             'on', 'BackgroundColor', [0.75 1 0.75]);
@@ -194,10 +187,7 @@ if isRes
                 'Enable', 'on', 'BackgroundColor', [0.75 1 0.75]);
         end
     end
-
-    if boba 
-        set(h.text_TDPfit_bsRes, 'Enable', 'on');
-    else
+    if ~boba 
         set(h.text_TDPfit_bsRes, 'Enable', 'off');
     end
 

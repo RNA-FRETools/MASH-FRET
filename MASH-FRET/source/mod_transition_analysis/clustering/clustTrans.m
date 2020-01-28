@@ -12,13 +12,15 @@ res.boba_K = [];
 M_def = 500; % default max. number of maximization iteration
 plotIter_def = 0; % plot/not EM results while iterating
 Jmin_def = 2; % minimum configuration
-clstStat = 1; % generate cluster for diagonal transitions
 
 % collect processing parameters
 meth = clust_prm{1}(1); % clustering method
 shape = clust_prm{1}(2); % cluster shape
 Jmax = clust_prm{1}(3); % max. number of states
-T = clust_prm{1}(4); % max. number of k-mean iterations/GMM initialisations
+mat = clust_prm{1}(4); % cluster matrix
+T = clust_prm{1}(5); % max. number of k-mean iterations/GMM initialisations
+diagClst = clust_prm{1}(6); % generate cluster for diagonal transitions
+logl = clust_prm{1}(7); % type of likelihood
 mu_0 = clust_prm{2}(:,1); % starting guess for k-mean centers
 tol = clust_prm{2}(:,2); % k-mean tolerance radius around states
 boba = clust_prm{4}(1); % apply/not bootstrapped (BS) clustering
@@ -108,7 +110,7 @@ for k = 1:n_spl
         case 1 %k-mean clustering
             
             % cluster data
-            [mu_spl,clust_spl] = get_kmean(mu_0, tol, T, TDP_spl, x, x, 1);
+            [mu_spl,clust_spl] = get_kmean(mu_0,tol,T,TDP_spl,x,x,mat);
             
             % determine model configuration
             Jopt = size(mu_spl,1);
@@ -142,7 +144,7 @@ for k = 1:n_spl
             
             % fit and cluster data
             [model,L_t,BIC_t] = find_best_model(TDP_spl,x,x,Jmin_def,Jmax,...
-                T, M_def,true,shape_str,0,plotIter_def);
+                T, M_def,mat,shape_str,0,plotIter_def,logl);
             
             % save inferred models for original TDP
             if k==1
@@ -273,7 +275,7 @@ for J = Jmin:Jmax
     id_j = [];
     for j1 = 1:J
         for j2 = 1:J
-            if ~clstStat && j1==j2
+            if ~diagClst && j1==j2
                 continue
             end
             id_j = cat(1,id_j,[j1 j2]);

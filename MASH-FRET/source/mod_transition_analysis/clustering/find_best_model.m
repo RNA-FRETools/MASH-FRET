@@ -1,6 +1,6 @@
 function [model,L_t,BIC_t] = find_best_model(z,x,y,J_min,J_max,T_max,M, ...
-    corr,shape,lim,plotIt)
-% [model,L_t,BIC_t] = find_best_model(z,x,y,J_min,J_max,T_max,M,corr,shape,lim,plotIt)
+    corr,shape,lim,plotIt,lklhd)
+% [model,L_t,BIC_t] = find_best_model(z,x,y,J_min,J_max,T_max,M,corr,shape,lim,plotIt,lklhd)
 %
 % z: [m-by-n] occurences/frequencies of the pairs (y,x)
 % x: empty or [1-by-n] coordinates of each column's center of the TDP
@@ -12,6 +12,7 @@ function [model,L_t,BIC_t] = find_best_model(z,x,y,J_min,J_max,T_max,M, ...
 % corr: true if cluster centers are correlated with each other, false otherwise
 % shape: cluster shape ('spherical','ellipsoid straight','ellipsoid diagonal','free')
 % plotIt: true to plot in real time the E-M results, false otherwise
+% lklhd: 1 for complete data likelihood, 2 for incomplete data likelihood
 % model: {1-by-J_max} structure containing fields:
 %  model.L: normalized log-Likelihood (best inferred model)
 %  model.BIC: normalized Bayesian information criterion (best inferred model)
@@ -23,10 +24,9 @@ function [model,L_t,BIC_t] = find_best_model(z,x,y,J_min,J_max,T_max,M, ...
 % L_t: [1-by-J_max] highest inferred Likelihoods
 % BIC_t: [1-by-J_max] lowest inferred Bayesian information criterion
 
-% define variables
+% default
 dL = 1E-6; %  minimum difference in log likelihood
 n_max = 100; % maximum invalid starting guesses
-
 
 % initialization of fitting results
 model = cell(1,J_max); % model structure
@@ -183,7 +183,7 @@ for J = J_min:J_max
                 end
                 
                 % calculate goodness of fit
-                [BIC,L,I] = calc_L(w, mu, sig, v, corr, shape);
+                [BIC,L,I] = calc_L(w, mu, sig, v, corr, shape, lklhd);
                 
                 % m-inferred model deteriorates compare to m-reference
                 if isnan(L) || (L/sum(v(3,:)))<=(L_prev/sum(v(3,:))) + dL

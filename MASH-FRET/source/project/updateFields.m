@@ -636,8 +636,6 @@ if strcmp(opt, 'TDP') || strcmp(opt, 'all')
         h = guidata(h_fig);
 
     else
-        set([h.togglebutton_TDPkmean h.togglebutton_TDPgauss], ...
-            'Value', 0, 'FontWeight', 'normal');
         setProp(get(h.uipanel_TA, 'Children'), 'Enable', 'off');
         set([h.pushbutton_help h.pushbutton_TDPimpOpt ...
             h.pushbutton_TDPaddProj], 'Enable', 'on');

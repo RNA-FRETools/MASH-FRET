@@ -1,4 +1,4 @@
-function popupmenu_TDPstate_Callback(obj, evd, h_fig)
+function popupmenu_TDPlike_Callback(obj,evd,h_fig)
 
 h = guidata(h_fig);
 p = h.param.TDP;
@@ -11,9 +11,10 @@ tpe = p.curr_type(proj);
 tag = p.curr_tag(proj);
 val = get(obj, 'Value');
 
-nStates = p.proj{proj}.curr{tag,tpe}.clst_start{1}(3);
-if val > nStates
-    set(obj, 'Value', 1);
-end
+p.proj{proj}.curr{tag,tpe}.clst_start{1}(10) = val;
+
+h.param.TDP = p;
+guidata(h_fig, h);
+
 
 ud_TDPmdlSlct(h_fig);
