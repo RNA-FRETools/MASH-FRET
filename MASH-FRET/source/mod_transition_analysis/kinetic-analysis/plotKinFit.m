@@ -33,10 +33,12 @@ set(h_axes, 'Visible', 'on');
 
 % get reference histogram
 J = prm.kin_start{2}(1);
+mat = prm.clst_start{1}(4);
+clstDiag = prm.clst_start{1}(9);
 clst = prm.clst_res{1}.clusters{J};
 wght = prm.kin_start{1}{curr_k,1}(7);
 excl = prm.kin_start{1}{curr_k,1}(8);
-[j1,j2] = getStatesFromTransIndexes(curr_k,J);
+[j1,j2] = getStatesFromTransIndexes(curr_k,J,mat,clstDiag);
 hist_ref = getDtHist(clst, [j1,j2], [], excl, wght);
 
 if isempty(hist_ref)

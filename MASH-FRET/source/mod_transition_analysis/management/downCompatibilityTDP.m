@@ -52,7 +52,7 @@ end
 % 27.1.2020: move model used in kinetic analysis and current transition,
 % add state-dependency option
 if isfield(prm,'kin_start') && size(prm.kin_start,2)>=2 && ...
-        size(prm.kin_start{1},2)<2
+        size(prm.kin_start,1)>0 && ~iscell(prm.kin_start{1})
     J = prm.clst_res{3};
     curr_k = prm.clst_start{1}(4);
     kin_start = prm.kin_start;
@@ -63,8 +63,95 @@ if isfield(prm,'kin_start') && size(prm.kin_start,2)>=2 && ...
 end
 
 % 28.1.2020: add cluster diagonal and log likelihood options
-if isfield(prm,'clst_start') && size(prm.clst_start,2)<10
+if isfield(prm,'clst_start') && size(prm.clst_start,2)>=1 && ...
+        size(prm.clst_start{1},2)<10
     prm.clst_start{1} = cat(2,prm.clst_start{1},[true 1]); % state dependency
+end
+
+% 29.1.2020: correct ill-initialized kinetic analysis results
+if isfield(prm,'kin_res') && size(prm.kin_res,2)~=size(def.kin_res,2) 
+    prm.kin_res = prm.kin_res(:,1:size(def.kin_res,2));
+end
+% 29.1.2020: reformat (state,radius) to (state x,state y,radius x,radius y)
+if isfield(prm,'clst_start') && size(prm.clst_start,2)>=2 && ...
+        size(prm.clst_start{2},2)==2
+    cfg = prm.clst_start{2};
+    J = size(cfg,1);
+    nTrs = getClusterNb(J,true,true);
+    [j1,j2] = getStatesFromTransIndexes(1:nTrs,J,true,true);
+    prm.clst_start{2} = [cfg(j1,1),cfg(j2,1),cfg(j1,2),cfg(j2,2)];
+    
+    nClr = size(prm.clst_start{3},1);
+    if nClr<nTrs
+        prm.clst_start{3} = cat(1,prm.clst_start{3},rand(nTrs-nClr,3));
+    end
+
+    if isfield(prm,'clst_res') && size(prm.clst_res,2)>=2 && ...
+            isfield(prm.clst_res{1},'mu')
+        for J = 1:size(prm.clst_res{1}.mu,2)
+            nTrs = getClusterNb(J,true,true);
+            [j1,j2] = getStatesFromTransIndexes(1:nTrs,J,true,true);
+            mu = prm.clst_res{1}.mu{J};
+            if size(mu,2)==1
+                prm.clst_res{1}.mu{J} = [mu(j1,1),mu(j2,1)];
+            end
+        end
+    
+        J = prm.kin_start{2}(1);
+        nTrs = getClusterNb(J,true,true);
+        if isfield(prm,'kin_start') && size(prm.kin_start,2)>=2 && ...
+                size(prm.kin_start{1},1)~=nTrs
+            isRes = false;
+            if isfield(prm,'kin_res') && size(prm.kin_res,2)>=4 && ...
+                    size(prm.kin_res,1)>1
+                isRes = true;
+            end
+
+            % re-arrange existing clusters
+            nTrs_old = J*(J-1);
+            [j1_old,j2_old] = getStatesFromTransIndexes(1:nTrs_old,J,true,...
+                false);
+            [j1,j2] = getStatesFromTransIndexes(1:nTrs,J,true,true);
+            newkinstart = repmat(def.kin_start{1},nTrs,1);
+            newkinres = repmat(def.kin_res,nTrs,1);
+            newclstres = repmat(def.clst_res(4),1,nTrs);
+            for k = 1:nTrs_old
+                incl = j1==j1_old(k) & j2==j2_old(k);
+                newclstres(incl) = prm.clst_res{4}(k);
+                newkinstart(incl,:) = prm.kin_start{1}(k,:);
+                if isRes
+                    newkinres(incl,:) = prm.kin_res(k,:);
+                end
+            end
+
+            % update missing diagonal clusters
+            clst = prm.clst_res{1}.clusters{J};
+            for k = 1:nTrs
+                if ~isempty(newkinstart{k,1})
+                    continue
+                end
+
+                % set fitting parameters
+                newkinstart(k,:) = prm.kin_def;
+
+                % build histogram
+                wght = newkinstart{k,1}(4)*newkinstart{k,1}(1);
+                clust_k = clst((clst(:,7)==j1(k) & clst(:,8)==j2(k)),1:6);
+                if size(clust_k,1)<2
+                    continue
+                end
+                mols = unique(clst(:,4));
+                excl = newkinstart{k,1}(8);
+                prm.clst_res{4}{k} = getDtHist(clst, [j1(k),j2(k)], mols, ...
+                    excl, wght);
+            end
+
+            % save modifications
+            prm.clst_res{4} = newclstres;
+            prm.kin_start{1} = newkinstart;
+            prm.kin_res = newkinres;
+        end
+    end
 end
 
 p_proj.prm{tag,tpe} = prm;

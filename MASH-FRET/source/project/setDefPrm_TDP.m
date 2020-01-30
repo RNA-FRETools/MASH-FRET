@@ -123,7 +123,7 @@ for tpe = 1:nTpe
         % transitions
         clst_start{1} = [method shape J mat niter boba_clst nspl_clst N ...
             clstDiag logl];
-        % state value, tol. radius
+        % state x, state y, tol. radius x, tol. radius y
         clst_start{2} = [];
         % cluster colors
         clst_start{3} = [];

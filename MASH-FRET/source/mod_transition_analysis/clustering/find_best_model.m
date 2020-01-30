@@ -1,18 +1,20 @@
 function [model,L_t,BIC_t] = find_best_model(z,x,y,J_min,J_max,T_max,M, ...
-    corr,shape,lim,plotIt,lklhd)
-% [model,L_t,BIC_t] = find_best_model(z,x,y,J_min,J_max,T_max,M,corr,shape,lim,plotIt,lklhd)
+    mat,shape,lim,plotIt,clstDiag,lklhd)
+% [model,L_t,BIC_t] = find_best_model(z,x,y,J_min,J_max,T_max,M,mat,shape,lim,plotIt,clstDiag,lklhd)
 %
-% z: [m-by-n] occurences/frequencies of the pairs (y,x)
-% x: empty or [1-by-n] coordinates of each column's center of the TDP
-% y: empty or [1-by-m] coordinates of each row's center of the TDP
+% z: vector or matrix to cluster
+% x: empty or vector of coordinates of each column's center of the TDP
+% y: empty or vector of coordinates of each row's center of the TDP
 % J_min: minimum number of components in the Gaussian mixture to fit.
 % J_max: maximum number of components in the Gaussian mixture to fit.
 % T_max: maximum number of model initialisations.
 % M: maximum number of E-M iterations.
-% corr: true if cluster centers are correlated with each other, false otherwise
+% mat: true to infer a square matrix of clusters, false to remove constraint of cluster centers
 % shape: cluster shape ('spherical','ellipsoid straight','ellipsoid diagonal','free')
 % plotIt: true to plot in real time the E-M results, false otherwise
 % lklhd: 1 for complete data likelihood, 2 for incomplete data likelihood
+% clustDiag: true to include diagonal clusters in cluster matrix, false otherwise
+%
 % model: {1-by-J_max} structure containing fields:
 %  model.L: normalized log-Likelihood (best inferred model)
 %  model.BIC: normalized Bayesian information criterion (best inferred model)
@@ -36,12 +38,14 @@ L_t = -Inf*ones(1,J_max); % likelihood = -Inf
 BIC_t = Inf*ones(1,J_max); % Bayesian information criterion = Inf
 
 % control J input
-if corr
-    J_min = 2;
-    if J_max<=1
-        disp('If coordinates are correlated, J_max>=2.');
-        return;
+if mat
+    if J_max<2
+        disp('Cluster matrix requires J>=2.');
+        return
     end
+elseif clstDiag
+    disp('Diagonal clusters are only for the cluster matrix option.');
+    clstDiag = false;
 end
 
 % create figure to plot fitting iterations
@@ -83,11 +87,7 @@ msgerr = cell(1,J_max);
 for J = J_min:J_max
     
     % update number of possible state transitions
-    if corr
-        nTrs = J^2;
-    else
-        nTrs = J;
-    end
+    nTrs = getClusterNb(J,mat,clstDiag);
     
     % initialize error list
     msgerr{J} = {};
@@ -101,226 +101,149 @@ for J = J_min:J_max
         I = false(J,size(v,2));
         
         % model starting guess
-        [w,mu,sig] = init_guess(J,v,t,corr,shape,lim);
+        [w,mu,sig] = init_guess(J,v,t,mat,shape,lim,clstDiag);
         
         % check starting guess validity
         n = 0;
-        while n<n_max && (isempty(mu) || size(mu,1)~=J)
-            [w,mu,sig] = init_guess(J,v,2,corr,shape,lim);
+        while n<n_max && size(mu,1)~=J
+            [w,mu,sig] = init_guess(J,v,2,mat,shape,lim,clstDiag);
             n = n+1;
         end
         
         % only invalid starting guesses
-        if n==n_max && (isempty(mu) || size(mu,1)~=J)
-            continue;
+        if n==n_max && size(mu,1)~=J
+            msgerr{J} = [msgerr{J}; ...
+                'k-mean converged to an insufficient number of states'];
+            continue
+        end
+            
+        % plot starting guess
+        if plotIt
+            h_axes = subplot(2,1,1, 'replace', 'parent', h_fig);
+            plotGMMinfer(mat, clstDiag, J, mu, sig, w, h_axes);
         end
 
-        if size(mu,1)==J
-            
-            % plot starting guess
-            if plotIt
-                if corr
-                    mu_plot = zeros(nTrs,2);
-                    j = 0;
-                    for j1 = 1:J
-                        for j2 = 1:J
-                            j = j + 1;
-                            mu_plot(j,:) = mu([j1 j2],1)';
-                        end
-                    end
-                else
-                    mu_plot = mu;
-                end
-                haxes = subplot(2,1,1,'replace','parent',hfig);
-                obj = gmdistribution(mu_plot,sig,w');
-                try
-                    Z = reshape(pdf(obj,[x_v y_v]),numel(y),numel(x));
-                    surface(haxes,X,Y,Z,'EdgeColor','none');
-                    hold(haxes,'on');
-                    plot3(haxes,mu_plot(:,1), mu_plot(:,2), ...
-                        repmat(max(Z),[nTrs 1]), '+r');
-                    title(haxes,['fit (J=' num2str(J) ')']);
-                    drawnow;
-                catch err
-                    disp('error');
-                    disp(err.message)
-                end
-            end
-            
-            % initialize m-reference
-            L_prev = L; BIC_prev = BIC; I_prev = I;
-            w_prev = w; mu_prev = mu; sig_prev = sig;
-            
-            % expectation-maximization iterations
-            for m = 1:M
+        % initialize m-reference
+        L_prev = L; BIC_prev = BIC; I_prev = I;
+        w_prev = w; mu_prev = mu; sig_prev = sig;
 
-                % expectation step
-                p = gmm_density(mu, sig, v, corr); % [nTrs-by-N]
-                w = repmat(w,[1 N]); % [nTrs-by-N]
-                h = w.*p ./ repmat(sum(w.*p,1),[size(p,1) 1]); % [nTrs-by-N]
-                h(isnan(h)) = 0;
+        % expectation-maximization iterations
+        for m = 1:M
 
-                % maximization step
-                [w, mu, sig] = calc_hypprm(h, v, shape, mu, corr, lim);
-                
-                % maximization failed
-                if ~(size(mu,1)==J)
-                    
-                    % update error list
-                    msgerr{J} = [msgerr{J}; ['M-step converged to an ' ...
-                        'insufficient number of states']];
-                    
-                    % reinitialize model parameters with m-reference
-                    L = L_prev;
-                    BIC = BIC_prev;
-                    I = I_prev;
-                    w = w_prev;
-                    mu = mu_prev;
-                    sig = sig_prev;
-                    
-                    % go to next t-iteration
-                    break;
-                end
-                
-                % calculate goodness of fit
-                [BIC,L,I] = calc_L(w, mu, sig, v, corr, shape, lklhd);
-                
-                % m-inferred model deteriorates compare to m-reference
-                if isnan(L) || (L/sum(v(3,:)))<=(L_prev/sum(v(3,:))) + dL
-                    
-                    % update error list
-                    if isnan(L)
-                        msgerr{J} = [msgerr{J}; 'Likelihood null.'];
-                    end
-                    
-                    % reinitialize model parameters with m-reference
-                    L = L_prev;
-                    BIC = BIC_prev;
-                    I = I_prev;
-                    w = w_prev;
-                    mu = mu_prev;
-                    sig = sig_prev;
-                    
-                    % go to next t-iteration
-                    break;
-                
-                % m-inferred model identical to m-reference
-                elseif isequal(mu,mu_prev) && isequal(w,w_prev) && ...
-                        isequal(sig,sig_prev)
-                    break;
-                    
-                % m-inferred model improves compare to m-reference
-                else
-                    
-                    % update reference
-                    L_prev = L;
-                    BIC_prev = BIC;
-                    I_prev = I;
-                    w_prev = w;
-                    mu_prev = mu;
-                    sig_prev = sig;
-                    
-                    % plot m-inferred model on top axes
-                    if plotIt
-                        if corr
-                            mu_plot = zeros(nTrs,2);
-                            j = 0;
-                            for j1 = 1:J
-                                for j2 = 1:J
-                                    j = j + 1;
-                                    mu_plot(j,:) = mu([j1 j2],1)';
-                                end
-                            end
-                        else
-                            mu_plot = mu;
-                        end
-                        haxes = subplot(2,1,1,'replace','parent',hfig);
-                        obj = gmdistribution(mu_plot,sig,w');
-                        try
-                            Z = reshape(pdf(obj,[x_v y_v]),numel(y), ...
-                                numel(x));
-                            surface(haxes,X,Y,Z,'EdgeColor','none');
-                            hold(haxes,'on');
-                            plot3(haxes,mu_plot(:,1), mu_plot(:,2), ...
-                                repmat(max(max(Z)),[size(mu_plot,1) 1]),...
-                                '+r');
-                            title(haxes,['fit (J=' num2str(J) ')']);
-                            drawnow;
-                        catch err
-                            disp(err.message);
-                        end
-                    end
-                end
+            % expectation step
+            p = gmm_density(mu, sig, v, mat, clstDiag); % [nTrs-by-N]
+            w = repmat(w,[1 N]); % [nTrs-by-N]
+            h = w.*p ./ repmat(sum(w.*p,1),[size(p,1) 1]); % [nTrs-by-N]
+            h(isnan(h)) = 0;
+
+            % maximization step
+            [w, mu, sig] = calc_hypprm(h, v, shape, mu, mat, lim, ...
+                clstDiag);
+
+            % maximization failed
+            if ~(size(mu,1)==J)
+
+                % update error list
+                msgerr{J} = [msgerr{J}; ['M-step converged to an ' ...
+                    'insufficient number of states']];
+
+                % reinitialize model parameters with m-reference
+                L = L_prev;
+                BIC = BIC_prev;
+                I = I_prev;
+                w = w_prev;
+                mu = mu_prev;
+                sig = sig_prev;
+
+                % go to next t-iteration
+                break
             end
-            
-            % t-inferred model improves compare to t-reference
-            if L > L_t(J)
-                
-                % save results to return
-                L_t(J) = L;
-                BIC_t(J) = BIC;
-                model{J}.L = L/sum(v(3,:));
-                model{J}.BIC = BIC/sum(v(3,:));
-                model{J}.I = I;
-                model{J}.mu = mu;
-                model{J}.o = sig;
-                model{J}.w = w;
-                model{J}.clusters = zeros(1,N);
-                for j = 1:nTrs
-                    model{J}.clusters(I(j,:)) = ...
-                        j*ones(numel(find(I(j,:),1)),1);
+
+            % calculate goodness of fit
+            [BIC,L,I] = calc_L(w, mu, sig, v, mat, shape, lklhd, clstDiag);
+
+            % m-inferred model deteriorates compare to m-reference
+            if isnan(L) || (L/sum(v(3,:)))<=(L_prev/sum(v(3,:))) + dL
+
+                % update error list
+                if isnan(L)
+                    msgerr{J} = [msgerr{J}; 'Likelihood null.'];
                 end
-                model{J}.clusters = reshape(model{J}.clusters,numel(y),...
-                    numel(x));
-                
-                % plot best t-inferred model on top axes
+
+                % reinitialize model parameters with m-reference
+                L = L_prev;
+                BIC = BIC_prev;
+                I = I_prev;
+                w = w_prev;
+                mu = mu_prev;
+                sig = sig_prev;
+
+                % go to next t-iteration
+                break
+
+            % m-inferred model identical to m-reference
+            elseif isequal(mu,mu_prev) && isequal(w,w_prev) && ...
+                    isequal(sig,sig_prev)
+                break
+
+            % m-inferred model improves compare to m-reference
+            else
+
+                % update reference
+                L_prev = L;
+                BIC_prev = BIC;
+                I_prev = I;
+                w_prev = w;
+                mu_prev = mu;
+                sig_prev = sig;
+
+                % plot m-inferred model on top axes
                 if plotIt
-                    if corr
-                        mu_plot = zeros(nTrs,2);
-                        j = 0;
-                        for j1 = 1:J
-                            for j2 = 1:J
-                                j = j + 1;
-                                mu_plot(j,:) = mu([j1 j2],1)';
-                            end
-                        end
-                    else
-                        mu_plot = mu;
-                    end
-                    haxes = subplot(2,1,1,'replace','parent',hfig);
-                    obj = gmdistribution(mu_plot,sig,w');
-                    try
-                        Z = reshape(pdf(obj,[x_v y_v]),numel(y),numel(x));
-                        surface(haxes,X,Y,Z,'EdgeColor','none');
-                        hold(haxes,'on');
-                        plot3(haxes,mu_plot(:,1), mu_plot(:,2), ...
-                            repmat(max(max(Z)),[size(mu_plot,1) 1]), '+r');
-                        title(haxes,['fit (J=' num2str(J) ')']);
-                        drawnow;
-                    catch err
-                        disp(err.message)
-                    end
+                    h_axes = subplot(2,1,1, 'replace', 'parent', h_fig);
+                    plotGMMinfer(mat, clstDiag, J, mu, sig, w, h_axes);
                 end
-                
-                % update action
-                disp(cat(2,'Model J=',num2str(J),' : LogL=',...
-                    num2str(model{J}.L),', BIC=',num2str(model{J}.BIC)));
-                
             end
-            
-            % only one iteration is necessary for one Gaussian
-            if J == 1
-                break;
+        end
+
+        % t-inferred model improves compare to t-reference
+        if L > L_t(J)
+
+            % save results to return
+            L_t(J) = L;
+            BIC_t(J) = BIC;
+            model{J}.L = L/sum(v(3,:));
+            model{J}.BIC = BIC/sum(v(3,:));
+            model{J}.I = I;
+            model{J}.mu = mu;
+            model{J}.o = sig;
+            model{J}.w = w;
+            model{J}.clusters = zeros(1,N);
+            for j = 1:nTrs
+                model{J}.clusters(I(j,:)) = j*ones(sum(I(j,:)),1);
             end
+            model{J}.clusters = reshape(model{J}.clusters,numel(y),...
+                numel(x));
+
+            % plot best t-inferred model on top axes
+            if plotIt
+                h_axes = subplot(2,1,1, 'replace', 'parent', h_fig);
+                plotGMMinfer(mat, clstDiag, J, mu, sig, w, h_axes);
+            end
+
+            % update action
+            disp(cat(2,'Model J=',num2str(J),' : LogL=',...
+                num2str(model{J}.L),', BIC=',num2str(model{J}.BIC)));
+
+        end
             
-        else
-            msgerr{J} = [msgerr{J}; ['k-mean converged to an ' ...
-                'insufficient number of states']];
+        % only one iteration is necessary for one Gaussian
+        if J == 1
+            break
         end
     end
     
     % update action
-    if L_t(J) == -Inf
+    if isinf(L_t(J))
         disp(cat(2,'Model J=',num2str(J),' : convergeance impossible.'));
     end
 end
@@ -330,7 +253,7 @@ BIC_t = BIC_t/sum(v(3,:));
 L_t = L_t/sum(v(3,:));
 
 % plot fitting results
-if sum(BIC_t ~= Inf) && plotIt
+if sum(~isinf(BIC_t)) && plotIt
     hfig2 = figure('Color', [1 1 1]);
     pos = get(hfig2,'Position');
     pos(4) = 2*pos(4);
@@ -341,36 +264,12 @@ if sum(BIC_t ~= Inf) && plotIt
     % plot best inferred models
     for J = J_min:J_max
         if isempty(model{J})
-            continue;
+            continue
         end
-        if corr
-            mu_plot = zeros(J^2,2);
-            j = 0;
-            for j1 = 1:J
-            for j2 = 1:J
-                j = j + 1;
-                mu_plot(j,:) = model{J}.mu([j1 j2],1)';
-            end
-            end
-        else
-            mu_plot = model{J}.mu;
-        end
-        haxes = subplot(2,(J_max-J_min+1),(J-J_min+1),'replace',...
-            'parent',hfig2);
-        obj = gmdistribution(mu_plot,model{J}.o,model{J}.w');
-        try
-            Z = reshape(pdf(obj,[x_v y_v]),numel(y),numel(x));
-            surface(haxes,X,Y,Z,'EdgeColor','none');
-            hold(haxes,'on');
-            plot3(haxes,mu_plot(:,1), mu_plot(:,2), ...
-                repmat(max(max(Z)),[size(mu_plot,1) 1]), '+r');
-            title(haxes,['fit (J=' num2str(J) ')']);
-            xlim(haxes,[v(1,1) v(1,end)]);
-            ylim(haxes,[v(2,1) v(2,end)]);
-            drawnow;
-        catch err
-            disp(cat(2,'Error:',err.message));
-        end
+        h_axes = subplot(2,(J_max-J_min+1),(J-J_min+1),'replace','parent',...
+            hfig2);
+        plotGMMinfer(mat, clstDiag, J, model{J}.mu, model{J}.o, model{J}.w,...
+            h_axes);
     end
     
     % plot original TDP

@@ -1,4 +1,4 @@
-function edit_TDPradius_Callback(obj, evd, h_fig)
+function edit_TDPradius_Callback(obj, evd, ind, h_fig)
 
 h = guidata(h_fig);
 p = h.param.TDP;
@@ -11,28 +11,35 @@ set(obj, 'String', num2str(val));
 proj = p.curr_proj;
 tpe = p.curr_type(proj);
 tag = p.curr_tag(proj);
-meth = p.proj{proj}.curr{tag,tpe}.clst_start{1}(1);
+curr = p.proj{proj}.curr{tag,tpe};
+meth = curr.clst_start{1}(1);
 
-if ~(numel(val)==1 && ~isnan(val) && val >= 0)
-    set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    switch meth
-        case 1 % kmean
-            str = 'Tolerance radii';
-        case 2 % gaussian model based
-            str = 'Min. Gaussian standard deviation.';
-    end
-    setContPan([str ' must be >= 0.'], 'error', h_fig);
+if ~sum(meth==[1,3]) % k-mean or manual
     return
 end
 
+if ~(numel(val)==1 && ~isnan(val) && val >= 0)
+    setContPan('Tolerance radii must be >= 0.', 'error', h_fig);
+    set(obj, 'BackgroundColor', [1 0.75 0.75]);
+    return
+end
 
-switch meth
-    case 1 % kmean
-        state = get(h.popupmenu_TDPstate, 'Value');
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(state,2) = val;
+J = curr.clst_start{1}(3);
+mat = curr.clst_start{1}(4);
+clstDiag = curr.clst_start{1}(9);
 
-    case 2 % gaussian model based
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(1,2) = val;
+% get cluster index(es)
+if mat
+    state = get(h.popupmenu_TDPstate, 'Value');
+    nTrs = getClusterNb(J,mat,clstDiag);
+    [j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
+    kx = j1==state;
+    ky = j2==state;
+    p.proj{proj}.curr{tag,tpe}.clst_start{2}(kx,3) = val;
+    p.proj{proj}.curr{tag,tpe}.clst_start{2}(ky,4) = val;
+else
+    k = get(h.popupmenu_TDPstate, 'Value');
+    p.proj{proj}.curr{tag,tpe}.clst_start{2}(k,2+ind) = val;
 end
 
 h.param.TDP = p;

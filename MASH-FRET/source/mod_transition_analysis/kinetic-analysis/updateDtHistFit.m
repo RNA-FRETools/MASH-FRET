@@ -12,10 +12,12 @@ prm.kin_start = curr.kin_start;
 prm.kin_res = curr.kin_res;
 
 J = prm.kin_start{2}(1);
+mat = prm.clst_start{1}(4);
+clstDiag = prm.clst_start{1}(9);
 ref_k = prm.clst_res{4}{curr_k};
+dat = prm.clst_res{1}.clusters{J};
 kin_k = prm.kin_start{1}(curr_k,:);
 stchExp = kin_k{1}(1);
-dat = prm.clst_res{1}.clusters{J};
 
 % reset results
 prm.kin_res(curr_k,:) = p.proj{proj}.def{tag,tpe}.kin_res;
@@ -60,7 +62,7 @@ end
 prm.kin_start{1}{curr_k,1}(8) = excl;
 
 % collect state indexes for curent transitions
-[j1,j2] = getStatesFromTransIndexes(curr_k,J);
+[j1,j2] = getStatesFromTransIndexes(curr_k,J,mat,clstDiag);
 
 % histogram fitting
 setContPan('Fitting in progress ...', 'process', h_fig);

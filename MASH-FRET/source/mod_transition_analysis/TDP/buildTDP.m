@@ -18,9 +18,10 @@ prm.plot = curr.plot;
 xaxis = prm.plot{1}(1,:);
 onecount = prm.plot{1}(4,1);
 rearrng = prm.plot{1}(4,2);
+incldiag = prm.plot{1}(4,3);
 
 % build TDP matrix
-[TDP,dt_bin,ok,str] = getTDPmat(tpe, tag, [xaxis,onecount,rearrng], ...
+[TDP,dt_bin,ok,str] = getTDPmat(tpe, tag, [xaxis,onecount,rearrng,incldiag], ...
     p.proj{proj});
 
 prm.plot{2} = TDP;

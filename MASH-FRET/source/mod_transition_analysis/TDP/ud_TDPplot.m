@@ -32,6 +32,7 @@ gconv = curr.plot{1}(3,2);
 norm = curr.plot{1}(3,3);
 onecount = curr.plot{1}(4,1);
 rearrng = curr.plot{1}(4,2);
+incldiag = curr.plot{1}(4,3);
 TDP = curr.plot{2};
 
 % build data type list
@@ -76,6 +77,7 @@ set(h.checkbox_TDPgconv, 'Enable', 'on', 'Value', gconv);
 set(h.checkbox_TDPnorm, 'Enable', 'on', 'Value', norm);
 set(h.checkbox_TDP_onecount, 'Enable', 'on', 'Value', onecount);
 set(h.checkbox_TDPignore, 'Enable', 'on', 'Value', rearrng);
+set(h.checkbox_TDP_statics, 'Enable', 'on', 'Value', incldiag);
 
 % adjust and save colormap
 p.cmap = colormap(h.axes_TDPplot1);

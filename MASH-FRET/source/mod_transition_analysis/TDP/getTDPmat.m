@@ -25,9 +25,6 @@ dt_bin = [];
 ok = 0;
 str = '';
 
-% defaults
-inclDiag = true;
-
 % collect project parameters
 dt = p_proj.dt(:,tpe);
 m_incl = p_proj.coord_incl;
@@ -46,6 +43,7 @@ bin = prm(1);
 lim = prm(2:3);
 oneval = prm(4);
 adj = prm(5);
+incldiag = prm(6);
 
 % get molecule indexes
 N = size(m_incl,2);
@@ -128,7 +126,7 @@ catch err
     return
 end
 
-if ~inclDiag
+if ~incldiag
     TDP(~~eye(size(TDP))) = 0;
 end
 

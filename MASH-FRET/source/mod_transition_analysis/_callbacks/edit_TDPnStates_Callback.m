@@ -19,36 +19,12 @@ proj = p.curr_proj;
 tpe = p.curr_type(proj);
 tag = p.curr_tag(proj);
 curr = p.proj{proj}.curr{tag,tpe};
-val_prev = curr.clst_start{1}(3);
 
-% update colour list
-nClr = size(p.colList,1);
-if nClr < val*(val-1)
-    p.colList(nClr+1:val*(val-1),:) = ...
-        round(rand(val*(val-1)-nClr,3)*100)/100;
-end
-
-% update parameters
-for s = 1:val
-    if val_prev < s
-        curr.clst_start{2}(s,:) = curr.clst_start{2}(s-1,:);
-    end
-end
-curr.clst_start{2} = curr.clst_start{2}(1:val,:);
-
-str_clr = get(h.popupmenu_TDPcolour, 'String');
-for v = 1:val*(val-1)
-    if val_prev*(val_prev-1) < v 
-        curr.clst_start{3}(v,:) = p.colList(v,:);
-    end
-    if v > nClr
-        str_clr = [str_clr;sprintf('random %i',v)];
-    end
-end
-curr.clst_start{3} = curr.clst_start{3}(1:val*(val-1),:);
-set(h.popupmenu_TDPcolour, 'String', str_clr);
-
+% update number of states/clusters
 curr.clst_start{1}(3) = val;
+
+% update cluster starting guess and colors
+[curr,p.colList] = ud_clstPrm(curr,p.colList);
 
 % save changes
 p.proj{proj}.curr{tag,tpe} = curr;

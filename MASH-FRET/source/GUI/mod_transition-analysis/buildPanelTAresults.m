@@ -48,7 +48,7 @@ h_pan = h.uipanel_TA_results;
 % dimensions
 pospan = get(h_pan,'position');
 waxes0 = pospan(3)-p.mg-p.mg/2-p.mg/fact-2*wedit0;
-haxes0 = pospan(4)-p.mgpan;
+haxes0 = pospan(4)-p.mgpan-p.mg;
 wtxt0 = pospan(3)-p.mg-p.mg/2-waxes0;
 wtxt1 = getUItextWidth(str3,p.fntun,p.fntsz1,'normal',p.tbl);
 wbut0 = getUItextWidth(str5,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;

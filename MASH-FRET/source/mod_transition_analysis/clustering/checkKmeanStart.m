@@ -4,19 +4,14 @@ function [ok,prm] = checkKmeanStart(prm)
 ok = 0;
 
 % collect processing parameters
-mu_0 = prm.clst_start{2}(:,1);
-J_0 = prm.clst_start{1}(3);
+mu = prm.clst_start{2}(:,[1,2]);
+J = prm.clst_start{1}(3);
+mat = prm.clst_start{1}(4);
+clstDiag = prm.clst_start{1}(9);
 
 % look for doubled
-isdouble = 0;
-for j=1:J_0
-    ind = 1:J_0;
-    ind(ind==j)=[];
-    if sum(mu_0(j)==mu_0(ind))
-        isdouble = 1;
-        break
-    end
-end
+nTrs = getClusterNb(J,mat,clstDiag);
+isdouble = size(mu,1)~=nTrs;
 
 % ask user for modification fo doubled
 if isdouble

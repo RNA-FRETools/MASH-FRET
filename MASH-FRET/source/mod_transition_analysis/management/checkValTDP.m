@@ -41,15 +41,18 @@ end
 
 % adjust cluster starting guesses
 J = clst_start{1}(3);
-if size(clst_start{2},1)<J
+mat = clst_start{1}(4);
+clstDiag = clst_start{1}(9);
+nTrs = getClusterNb(J,mat,clstDiag);
+
+if size(clst_start{2},1)<nTrs
     clst_start{2} = cat(1,clst_start{2},...
-        repmat([state,tol],J-size(clst_start{2},1)));
+        repmat([state,state,tol,tol],J-size(clst_start{2},1),1));
 else
     clst_start{2} = clst_start{2}(1:J,:);
 end
 
 % adjust cluster colors
-nTrs = J*(J-1);
 if size(clr,1)<nTrs
     clr = cat(1,clr,rand(nTrs-size(clr,1),3)); 
 end
@@ -70,14 +73,9 @@ if size(kin_def{2},1)<nExp
 end
 
 if ~isempty(clst_res{2})
-    method = clst_start{1}(1);
-    corr = clst_start{1}(4);
+    mat = clst_start{1}(4);
     J = kin_start{2}(1);
-    if sum(method==[1,2]) && corr % cluster centers are dependent
-        nTrs = J*(J-1);
-    else % cluster centers are independent
-        nTrs = J;
-    end
+    nTrs = getClusterNb(J,mat,clstDiag);
 
     if size(kin_start{1},1)<nTrs
         kin_start{1} = cat(1,kin_start{1},...

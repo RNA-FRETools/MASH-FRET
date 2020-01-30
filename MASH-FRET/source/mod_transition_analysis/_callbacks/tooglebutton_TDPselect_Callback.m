@@ -14,6 +14,19 @@ if sum((1:3)==ind) % selection tool
         set(h.TTpan,'enable','off');
         set([h.zMenu_zoom,h.zMenu_pan],'checked','off');
     end
+    
+    p = h.param.TDP;
+    if tool>0 && ~isempty(p.proj)
+        proj = p.curr_proj;
+        tpe = p.curr_type(proj);
+        tag = p.curr_tag(proj);
+        p.proj{proj}.curr{tag,tpe}.clst_start{1}(2) = tool;
+        h.param.TDP = p;
+        guidata(h_fig,h);
+        
+        updateFields(h_fig,'TDP');
+    end
+    
 elseif ind==5 % reset tool
     tool = 0;
     ud_zoom([],[],'zoom',h_fig);

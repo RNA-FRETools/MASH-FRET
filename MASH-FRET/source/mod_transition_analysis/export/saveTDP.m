@@ -36,7 +36,7 @@ kinBoba = q{3}(3);
 
 if ~(TDPascii || TDPimg || TDPclust || kinDtHist || kinFit || kinBoba)
     setContPan('There is no data to export.', 'warning', h_fig);
-    return;
+    return
 end
 
 % build file name
@@ -111,6 +111,8 @@ if sum(bol_kin)
     
     % export dwell-time histogram files & fitting results (if)
     J = prm.kin_start{2}(1);
+    mat = prm.clst_start{1}(4);
+    clstDiag = prm.clst_start{1}(9);
     if ~isempty(prm.clst_res{4}) && J>0
 
         if tag==1
@@ -119,30 +121,26 @@ if sum(bol_kin)
             name_kin0 = cat(2,name,'_',str_tpe{tpe},'_',...
                 removeHtml(str_tag{tag}));
         end
+        
+        nTrs = getClusterNb(J,mat,clstDiag);
+        [j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
 
-        j = 0;
-        for j1 = 1:J
-            for j2 = 1:J
-                if j1==j2
-                    continue
-                end
-                j = j+1;
-                if ~(size(prm.clst_res{4},2)>=j && ...
-                        ~isempty(prm.clst_res{4}{j}))
-                    continue
-                end
-                val = round(100*prm.clst_res{1}.mu{J}([j1,j2],1))/100;
-
-                name_kin = cat(2,name_kin0,'_',num2str(val(1)),'to',...
-                    num2str(val(2)));
-
-                [ok,str_kin] = save_kinDat(bol_kin,prm,j, ...
-                    pname_kin,name_kin,h_fig);
-                if ~ok
-                    return;
-                end
-                str_act = cat(2,str_act,str_kin);
+        for k = 1:nTrs
+            if ~(size(prm.clst_res{4},2)>=k && ...
+                    ~isempty(prm.clst_res{4}{k}))
+                continue
             end
+            val = round(100*prm.clst_res{1}.mu{J}([j1(k),j2(k)],1))/100;
+
+            name_kin = cat(2,name_kin0,'_',num2str(val(1)),'to',...
+                num2str(val(2)));
+
+            [ok,str_kin] = save_kinDat(bol_kin,prm,k, ...
+                pname_kin,name_kin,h_fig);
+            if ~ok
+                return;
+            end
+            str_act = cat(2,str_act,str_kin);
         end
     end
 end

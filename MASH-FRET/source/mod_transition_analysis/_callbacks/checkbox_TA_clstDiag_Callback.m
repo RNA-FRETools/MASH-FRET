@@ -9,9 +9,15 @@ end
 proj = p.curr_proj;
 tpe = p.curr_type(proj);
 tag = p.curr_tag(proj);
+curr = p.proj{proj}.curr{tag,tpe};
+val = get(obj,'value');
 
-p.proj{proj}.curr{tag,tpe}.clst_start{1}(9) = get(obj, 'Value');
+curr.clst_start{1}(9) = val;
 
+% update cluster starting guess and colors
+[curr,p.colList] = ud_clstPrm(curr,p.colList);
+
+p.proj{proj}.curr{tag,tpe} = curr;
 h.param.TDP = p;
 guidata(h_fig, h);
 

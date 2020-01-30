@@ -1,23 +1,31 @@
-function [mu,clust] = get_kmean(mu_0, tol_0, N, z, x, y, corr)
-% "mu_0" >> [J-by-2] initial guess of center
-% "tol" >> tolerance radius around each center
-% "N" >> max. number of iteration
-% "z" >> [M-by-3] (x,y,z) data to cluster
-% "mu" >> [J-by-2] converged values of the J centers
-% "clust" >> {1-by-J}[M-by-3] clustered data
+function [mu,clust] = get_kmean(mu_0, tol_0, N, z, x, y, mat, clstDiag, ...
+    shape)
+% [mu,clust] = get_kmean(mu_0, tol_0, N, z, x, y, mat, clstDiag)
+%
+% mu_0: [J-by-1 or 2] initial guess of states or cluster (x,y) centers
+% tol_0: [J-by-1 or 2] tolerance radius around states or cluster (x,y) centers
+% N: max. number of iteration
+% z: vector or matrix to cluster
+% x: vector of x coordinates associated to z
+% y: vector of y coordinates associated to z
+% mat: infer a matrix of clusters
+% clustDiag: include diagonal clusters in cluster matrix
+%
+% mu: [J-by-1 or 2] states or cluster (x,y) centers
+% clust: vector or matrix of cluster idexes associated to z
 
 clust = zeros(size(z));
 mu = [];
 
-% Generate cluster for "static" transitions (k to k transitions)
-clstStat = 1;
-
 J = size(mu_0,1);
-if corr
+if mat
     if J<2
-        disp('If coordinates are correlated, K_max>=2.');
-        return;
+        disp('Cluster matrix requires J>=2.');
+        return
     end
+elseif clstDiag
+    disp('Diagonal clusters are only for the cluster matrix option.');
+    clstDiag = false;
 end
 
 clust = reshape(clust,[1 numel(clust)]);
@@ -51,83 +59,53 @@ xy = data(1:2,:); z = data(3,:);
 n = 0; % Nb of k-mean iteration
 ok = 0;
 
-if ~corr
-    nTrs = J;
-    mu = mu_0;
+nTrs = getClusterNb(J,mat,clstDiag);
+[j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
+if ~mat
     tol = tol_0;
 else
-    nTrs = J^2;
-    mu = mu_0;
-    tol = NaN(J^2,2);
-    k = 0;
-    for j1 = 1:J
-        for j2 = 1:J
-            k = k+1;
-            tol(k,1:2) = tol_0([j1 j2]);
-        end
-    end
+    tol = [tol_0(j1,1),tol_0(j2,1)];
 end
-    
+mu = mu_0;
+
 while ~ok && (n<N || (N==0 && n==N))
     
-    % Initialise data pnts parameters for clustering
-    if corr
-        dist = Inf(nTrs,size(xy,2)); % Distances from the centres
-    else
-        dist = Inf(nTrs,size(xy,2)); % Distances from the centres
+    if mat
+        mu = [mu(j1,1),mu(j2,1)];
     end
+   
+    % re-initialize cluster matrix
+    clust = zeros(size(clust));
     
-    if corr
-        mu_0 = mu;
-        mu = NaN(J^2,2);
-        k = 0;
-        for j1 = 1:J
-            for j2 = 1:J
-                k = k+1;
-                mu(k,1:2) = mu_0([j1 j2],1)';
-            end
+    % Initialise data pnts parameters for clustering
+    dist = Inf(nTrs,size(xy,2)); % Distances from the centres
+    
+    for k = 1:nTrs
+        % Find data pnts lying in the tol. elipse of the cluster
+        switch shape
+            case 1 % square
+                c = findInSquare(xy(1,:),xy(2,:),mu(k,1),mu(k,2),2*tol(k,1),...
+                    2*tol(k,2));
+            case 2 % straight ellipse
+                c = findInEllipse(xy(1,:),xy(2,:),mu(k,1),mu(k,2),2*tol(k,1),...
+                    2*tol(k,2),0);
+            case 3 % diagonal ellipse
+                if mu(k,1)>mu(k,2)
+                    tol_x = tol(k,2);
+                    tol_y = tol(k,1);
+                else
+                    tol_x = tol(k,1);
+                    tol_y = tol(k,2);
+                end
+                c = findInEllipse(xy(1,:),xy(2,:),mu(k,1),mu(k,2),2*tol_x,...
+                    2*tol_y,pi/4);
         end
-        
-        k = 0;
-        for j1 = 1:J
-        for j2 = 1:J
-            k = k+1;
-            if (~clstStat && j1~=j2) || clstStat
-                % Find data pnts lying in the tol. elipse of the cluster
-                tol_x = tol(k,1);
-                tol_y = tol(k,2);
-                [o,c,o] = find(xy(2,:)<(tol_y* ...
-                    sqrt(1-((xy(1,:)-mu(k,1))/tol_x).^2) + mu(k,2)) & ...
-                    xy(2,:)>(-tol_y* ...
-                    sqrt(1-((xy(1,:)-mu(k,1))/tol_x).^2) + mu(k,2)));
 
-                % Calculation of mean squared distances from 
-                % centres (a,b)
-                % dist = sqrt((a - x)^2 + (b - y)^2);
-                dist(k,c) = (sum(z)./z(1,c)).* ...
-                    sqrt(((mu(k,1)-xy(1,c)).^2)+((mu(k,2)-xy(2,c)).^2));
-            end
-        end
-        end
-    else
-        for k = 1:nTrs
-            if isempty(find(isnan(tol(k,:))))
-                % Find data pnts lying in the tol. elipse of the cluster
-                tol_x = tol(k,1);
-                tol_y = tol(k,2);
-                [o,c,o] = find( ...
-                    xy(2,:)<(tol_y* ...
-                    sqrt(1-((xy(1,:)-mu(k,1))/tol_x).^2) + mu(k,2)) & ...
-                    xy(2,:)>(-tol_y* ...
-                    sqrt(1-((xy(1,:)-mu(k,1))/tol_x).^2) + mu(k,2)));
-
-                % Calculation of mean squared distances from 
-                % centres (a,b)
-                % dist = sqrt((a - x)^2 + (b - y)^2);
-                dist(k,c) = sqrt(((mu(k,1)-xy(1,c)).^2) + ...
-                    ((mu(k,2)-xy(2,c)).^2));
-            end
-        end
+        % Calculation of mean squared distances from 
+        % centres (a,b)
+        % dist = sqrt((a - x)^2 + (b - y)^2);
+        dist(k,c) = (sum(z)./z(1,c)).* ...
+            sqrt(((mu(k,1)-xy(1,c)).^2)+((mu(k,2)-xy(2,c)).^2));
     end
     
     % Cluster where data pnts have the minimum distance
@@ -137,32 +115,27 @@ while ~ok && (n<N || (N==0 && n==N))
     % Exclude all data pnts that belong to no cluster
     cvg = true;
     
-    if corr
+    if mat
         sum_k = zeros(1,J);
         mu_new = zeros(J,1);
-        k = 0;
-        for j1 = 1:J
-        for j2 = 1:J
-            k = k+1;
-            if (~clstStat && j1 ~=j2) || clstStat
-                xy_k = xy(:,id_k==k); z_k = z(:,id_k==k);
-                mu_new(j1,1) = mu_new(j1,1) + sum(z_k.*xy_k(1,:));
-                mu_new(j2,1) = mu_new(j2,1) + sum(z_k.*xy_k(2,:));
-                sum_k(j1) = sum_k(j1) + sum(z_k);
-                sum_k(j2) = sum_k(j2) + sum(z_k);
-                clust(id_k==k) = k;
-            end
+        for k = 1:nTrs
+            xy_k = xy(:,id_k==k); z_k = z(:,id_k==k);
+            mu_new(j1(k),1) = mu_new(j1(k),1) + sum(z_k.*xy_k(1,:));
+            mu_new(j2(k),1) = mu_new(j2(k),1) + sum(z_k.*xy_k(2,:));
+            sum_k(j1(k)) = sum_k(j1(k)) + sum(z_k);
+            sum_k(j2(k)) = sum_k(j2(k)) + sum(z_k);
+            clust(id_k==k) = k;
         end
-        end
-        mu = sort(mu_new./sum_k');
+        mu = mu_new./sum_k';
         
     else
         for k = 1:nTrs
-            if isempty(find(isnan(tol(k,:))))
-                xy_k = xy(:,id_k==k); z_k = z(:,id_k==k);
-                mu(k,:) = sum(repmat(z_k,[2,1]).*xy_k,2)'/sum(z_k);
-                clust(id_k==k) = k;
+            if ~isempty(find(isnan(tol(k,:)),1))
+                continue
             end
+            xy_k = xy(:,id_k==k); z_k = z(:,id_k==k);
+            mu(k,:) = sum(repmat(z_k,[2,1]).*xy_k,2)'/sum(z_k);
+            clust(id_k==k) = k;
         end
     end
         
@@ -184,26 +157,39 @@ end
 clust = reshape(clust, numel(unique(y)), numel(unique(x)));
 
 [j_excl,o,o] = find(isnan(mu));
-clust_new = clust;
-
 k_excl = [];
-k = 0;
-if corr
-    for j1 = 1:J
-        for j2 = 1:J
-            k = k+1;
-            if sum(j_excl==j1) || sum(j_excl==j2)
-                k_excl = cat(2,k_excl,k);
-            end
+if mat
+    for k = 1:nTrs
+        if sum(j_excl==j1(k)) || sum(j_excl==j2(k))
+            k_excl = cat(2,k_excl,k);
         end
     end
 else
     k_excl = j_excl;
 end
 
+clust_new = clust;
 for k = 1:numel(k_excl)
     clust_new(clust>=k_excl(k)) = clust_new(clust>=k_excl(k))-1;
 end
 clust = clust_new;
 mu(j_excl',:) = [];
+
+
+function id = findInSquare(x,y,x0,y0,w0,h0)
+
+xmin = x0-w0/2;
+xmax = x0+w0/2;
+ymin = y0-h0/2;
+ymax = y0+h0/2;
+
+[o,id,o] = find(y>=ymin & y<=ymax & x>=xmin & x<=xmax);
+
+
+function id = findInEllipse(x,y,x0,y0,w0,h0,theta)
+
+y_elps = ellipsis(x,[],[x0,y0],[w0/2,h0/2],theta);
+
+[o,id,o] = find(~isnan(y_elps(:,1)') & ~isnan(y_elps(:,2)') & ...
+    y>=(y_elps(:,1)') & y<=(y_elps(:,2)'));
 

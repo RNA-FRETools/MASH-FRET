@@ -57,20 +57,22 @@ else
     clr = curr.clst_start{3};
 end
 
-% get cluster properties
-states = [];
+% get cluster centers and dimensions
+val = [];
 a = [];
 sig = [];
 clust = [];
 rad = [];
 if isRes
     meth = prm.clst_start{1}(1);
+    mat = prm.clst_start{1}(4);
+    clstDiag = prm.clst_start{1}(9);
     if meth == 2 % GM
         
         % adjust index of model to display
         J = curr.clst_res{3};
 
-        states = prm.clst_res{1}.mu{J};
+        val = prm.clst_res{1}.mu{J};
         clust = prm.clst_res{1}.clusters{J};
         a = prm.clst_res{1}.a{J};
         sig = prm.clst_res{1}.o{J};
@@ -86,17 +88,26 @@ if isRes
         
     else
         J = curr.clst_res{3};
-        states = prm.clst_res{1}.mu{J};
-        rad = prm.clst_start{2}(:,2);
+        val = prm.clst_res{1}.mu{J};
+        rad = prm.clst_start{2}(:,[3,4]);
         clust = prm.clst_res{1}.clusters{J};
+        slcttool = prm.clst_start{1}(2);
     end
 else
+    J = curr.clst_start{1}(3);
     meth = curr.clst_start{1}(1);
-    if meth == 1 % kmean
-        states = curr.clst_start{2}(:,1);
-        rad = curr.clst_start{2}(:,2);
+    mat = curr.clst_start{1}(4);
+    clstDiag = curr.clst_start{1}(9);
+    if sum(meth==[1,3]) % kmean or manual
+        val = curr.clst_start{2}(:,[1,2]);
+        rad = curr.clst_start{2}(:,[3,4]);
+        slcttool = curr.clst_start{1}(2);
     end
 end
+if isempty(rad)
+    rad = Inf(size(val));
+end
+rad(isinf(rad)) = 2*(lim(2)-lim(1));
 
 % TDP convolution with Gaussian filter
 if gconv
@@ -129,70 +140,57 @@ set(h_axes_TDP,'NextPlot','add');
 plot(h_axes_TDP,lim,lim,'LineStyle',diagstyle,'Color',diagclr);
 
 % plot clustered data with resp. colour code
-J = size(states,1);
-nTrs = J*(J-1);
-if J>0
-    
-    % get cluster coordinates
-    mu = zeros(nTrs,2);
-    tol = Inf(nTrs,2);
-    j = 0;
-    for j1 = 1:J
-        for j2 = 1:J
-            if j1==j2
-                continue
-            end
-            j = j+1;
-            mu(j,:) = states([j1 j2],1)';
-            if ~isempty(rad)
-                tol(j,:) = rad([j1 j2],1)';
-            end
-        end
-    end
-    tol(isinf(tol)) = 2*(lim(2)-lim(1));
-    
+nTrs = getClusterNb(J,mat,clstDiag);
+[j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
+
+if size(val,1)>0
     % plot transitions
     if ~isempty(clust)
-        j = 0;
-        for j1 = 1:J
-            for j2 = 1:J
-                if j1==j2
-                    continue
-                end
-                j = j+1;
-                clust_k = clust((clust(:,end-1)==j1 & clust(:,end)==j2),:);
-                if ~isempty(clust_k)
-                    plot(h_axes_TDP,clust_k(:,2),clust_k(:,3),'Marker',trsmark, ...
-                        'MarkerEdgeColor',clr(j,:),'MarkerSize',trsmarksz, ...
-                        'LineWidth',trslw,'LineStyle','none');
-                end
+        for k = 1:nTrs
+            clust_k = clust((clust(:,7)==j1(k) & clust(:,8)==j2(k)),:);
+            if isempty(clust_k)
+                continue
             end
+            plot(h_axes_TDP,clust_k(:,2),clust_k(:,3),'Marker',trsmark, ...
+                'MarkerEdgeColor',clr(k,:),'MarkerSize',trsmarksz, ...
+                'LineWidth',trslw,'LineStyle','none');
         end
     end
     
     % plot cluster centers
-    for j = 1:nTrs
-        plot(h_axes_TDP, mu(j,1), mu(j,2), 'Marker', mumark, 'MarkerEdgeColor', ...
-            clr(j,:), 'MarkerSize', mumarksz, 'LineWidth', mulw, 'hittest',...
-            'off', 'pickableparts', 'none');
+    for k = 1:nTrs
+        plot(h_axes_TDP,val(k,1),val(k,2),'Marker',mumark,...
+            'MarkerEdgeColor',clr(k,:),'MarkerSize',mumarksz,'LineWidth', ...
+            mulw,'hittest','off','pickableparts','none');
     end
     
     % plot cluster contours
     switch slcttool
         case 1
-            for j = 1:nTrs
-                rectangle(h_axes_TDP,'position',[mu(j,1:2)-tol(j,1:2),...
-                    2*tol(j,1:2)],'linewidth',rectlw,'edgecolor',rectclr);
+            for k = 1:nTrs
+                rectangle(h_axes_TDP,'position',[val(k,1:2)-rad(k,1:2),...
+                    2*rad(k,1:2)],'linewidth',rectlw,'edgecolor',rectclr);
             end
         case 2
-            plotEllipsis(h_axes_TDP,mu(:,1:2),tol(:,1:2),'straight');
+            plotEllipsis(h_axes_TDP, val(:,1:2), rad(:,1:2), 0, rectclr, ...
+                rectlw);
         case 3
-            plotEllipsis(h_axes_TDP,mu(:,1:2),tol(:,1:2),'diagonal');
+            if mat
+                id_inf = val(:,1)<=val(:,2);
+                id_sup = val(:,1)>val(:,2);
+                plotEllipsis(h_axes_TDP, val(id_inf',1:2), rad(id_inf',[1,2]),...
+                    -pi/4, rectclr, rectlw);
+                plotEllipsis(h_axes_TDP, val(id_sup',1:2), rad(id_sup',[2,1]),...
+                    -pi/4, rectclr, rectlw);
+            else
+                plotEllipsis(h_axes_TDP,val(:,1:2),rad(:,1:2),'diagonal',...
+                    rectclr,rectlw);
+            end
     end
     if ~isempty(a) && ~isempty(sig)
         iv = lim(1):bin:lim(2);
         iv = mean([iv(1:end-1);iv(2:end)],1);
-        plotEllipsisFromGM(h_axes_TDP,states,sig,a,iv,iv,[],gmstyle);
+        plotEllipsisFromGM(h_axes_TDP,val,sig,a,iv,iv,[],gmstyle);
     end
 end
 

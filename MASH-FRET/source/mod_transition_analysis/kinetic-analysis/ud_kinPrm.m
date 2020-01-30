@@ -3,7 +3,12 @@ function prm = ud_kinPrm(prm,def,J)
 % time histograms from clustering results according to input configuration
 % J
 
-nTrs = J*(J-1);
+% collect processing parameters
+mat = prm.clst_start{1}(4);
+clstDiag = prm.clst_start{1}(9);
+
+nTrs = getClusterNb(J,mat,clstDiag);
+[j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
 
 % correct current transition
 if prm.kin_start{2}(2) > nTrs
@@ -25,29 +30,22 @@ prm.kin_start{1} = prm.kin_start{1}(1:nTrs,:);
 prm.kin_res = repmat(def.kin_res,nTrs,1);
 
 % build dwell-time histograms
-j_trs = 0;
-for j1 = 1:J
-    for j2 = 1:J
-        if j1==j2
-            continue
-        end
-        j_trs = j_trs + 1;
-        wght = prm.kin_start{1}{j_trs,1}(4)*prm.kin_start{1}{j_trs,1}(1);
-        
-        clust_k = prm.clst_res{1}.clusters{J}((...
-            prm.clst_res{1}.clusters{J}(:,end-1)==j1 & ...
-            prm.clst_res{1}.clusters{J}(:,end)==j2),1:end-2);
+for k = 1:nTrs
+    wght = prm.kin_start{1}{k,1}(4)*prm.kin_start{1}{k,1}(1);
 
-        if size(clust_k,1)>2
-            % save histogram including first dwell time of trajectory
-            % for plot
-            mols = unique(prm.clst_res{1}.clusters{J}(:,4));
-            excl = prm.kin_start{1}{j_trs,1}(8);
-            prm.clst_res{4}{j_trs} = getDtHist(prm.clst_res{1}.clusters{J},...
-                [j1,j2], mols, excl, wght);
+    clust_k = prm.clst_res{1}.clusters{J}((...
+        prm.clst_res{1}.clusters{J}(:,end-1)==j1(k) & ...
+        prm.clst_res{1}.clusters{J}(:,end)==j2(k)),1:end-2);
 
-        else
-            prm.clst_res{4}{j_trs} = [];
-        end
+    if size(clust_k,1)>2
+        % save histogram including first dwell time of trajectory
+        % for plot
+        mols = unique(prm.clst_res{1}.clusters{J}(:,4));
+        excl = prm.kin_start{1}{k,1}(8);
+        prm.clst_res{4}{k} = getDtHist(prm.clst_res{1}.clusters{J},...
+            [j1(k),j2(k)], mols, excl, wght);
+
+    else
+        prm.clst_res{4}{k} = [];
     end
 end

@@ -8,6 +8,7 @@ function ud_kinFit(h_fig)
 
 % collect interface parameters
 h = guidata(h_fig);
+def_clrlst = h.color_list;
 p = h.param.TDP;
 proj = p.curr_proj;
 tpe = p.curr_type(proj);
@@ -43,6 +44,7 @@ else
     isRes = false;
 end
 J = curr.kin_start{2}(1);
+nTrs = size(curr.clst_res{1}.mu{J},1);
 kin_start = curr.kin_start{1}(curr_k,:);
 stchExp = kin_start{1}(1);
 if stchExp
@@ -63,17 +65,10 @@ clr = prm.clst_start{3}(curr_k,:);
 
 % update transition list
 str_list = {};
-k = 0;
-for j1 = 1:J
-    for j2 = 1:J
-        if j1==j2
-            continue
-        end
-        k = k+1;
-        vals = round(100*curr.clst_res{1}.mu{J}([j1 j2],1))/100;
-        str_list = [str_list strcat(num2str(vals(1)), ' to ', ...
-            num2str(vals(2)))];
-    end
+for k = 1:nTrs
+    vals = round(100*curr.clst_res{1}.mu{J}(k,[1,2]))/100;
+    str_list = cat(2,str_list,...
+        strcat(num2str(vals(1)),' to ',num2str(vals(2))));
 end
 if isempty(str_list)
     str_list = {''};
@@ -81,12 +76,19 @@ end
 set(h.listbox_TDPtrans, 'String', str_list, 'Value', curr_k);
 
 % update color list
-[id_clr,o,o] = find(p.colList(:,1)==clr(1) & p.colList(:,2)==clr(2) & ...
-    p.colList(:,3)==clr(3));
-if ~isempty(id_clr)
-    set(h.popupmenu_TDPcolour, 'Value', id_clr(1));
+nClr = size(def_clrlst,2);
+clrlst = def_clrlst;
+i = 0;
+for c = 1:size(p.colList,1)
+    if c>nClr
+        i = i+1;
+        clrlst = cat(2,clrlst,sprintf('random color n°%i',i));
+    end
 end
-set(h.edit_TDPcolour, 'Enable', 'inactive', 'BackgroundColor', clr);
+[id,o,o] = find(p.colList(:,1)==clr(1) & p.colList(:,2)==clr(2) & ...
+    p.colList(:,3)==clr(3));
+set(h.popupmenu_TDPcolour, 'String', clrlst, 'Value', id(1));
+set(h.edit_TDPcolour,'Enable','inactive','BackgroundColor',clr);
 
 % update exponential list
 str_e = cell(1,nExp);

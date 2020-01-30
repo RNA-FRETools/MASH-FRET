@@ -41,7 +41,7 @@ if meth==1
 end
 
 clust_prm{1} = prm.clst_start{1}([1:5,9:10]);
-clust_prm{2} = prm.clst_start{2}(:,[1,2]);
+clust_prm{2} = prm.clst_start{2}(:,1:4);
 clust_prm{3} = [2 3]; % columns in dt_bin containing transitions
 clust_prm{4} = prm.clst_start{1}(6:8); % bootstrap parameters
 plot_prm{1} = prm.plot{1}(1,1);
@@ -64,7 +64,7 @@ switch meth
     case 1
         for J = 1:Jmax
             if ~isempty(res.mu{J})
-                Jopt = size(res.mu{J},1); 
+                Jopt = J; 
                 break
             end
         end
