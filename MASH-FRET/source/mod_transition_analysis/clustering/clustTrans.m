@@ -30,8 +30,9 @@ n_spl = clust_prm{4}(2); % number of BS samples
 n_rep = clust_prm{4}(3); % number of BS replicates in one sample
 bin = plot_prm{1};
 lim = plot_prm{2}; % TDP x & y limits
-onecount = plot_prm{3}(2); % one/total transition count per molecule
-gconv = plot_prm{3}(3); % one/total transition count per molecule
+onecount = plot_prm{3}(1); % one/total transition count per molecule
+gconv = plot_prm{3}(2); % one/total transition count per molecule
+incldiag = plot_prm{3}(3); % include last states in sequences
 
 [mols,o,o] = unique(dt_bin(:,4));
 
@@ -90,12 +91,15 @@ for k = 1:n_spl
         % build sample TDP
         [TDP_spl,o,o,o] = hist2(data_spl_m(:,[2 3]),[iv;iv]);
         
+        % remove diagonal densities
+        if ~incldiag
+            TDP_spl(~~eye(size(TDP_spl))) = 0;
+        end
     else
         % get original TDP
         TDP_spl = TDP;
     end
-    
-    
+
     % apply Gaussian filter to TDP
     if gconv
         TDP_spl = gconvTDP(TDP_spl,lim,bin);

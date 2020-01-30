@@ -46,7 +46,7 @@ clust_prm{3} = [2 3]; % columns in dt_bin containing transitions
 clust_prm{4} = prm.clst_start{1}(6:8); % bootstrap parameters
 plot_prm{1} = prm.plot{1}(1,1);
 plot_prm{2} = prm.plot{1}(1,2:3); 
-plot_prm{3} = [expT prm.plot{1}(4,1) prm.plot{1}(3,2:3)];
+plot_prm{3} = [prm.plot{1}(4,1) prm.plot{1}(3,2:3) prm.plot{1}(4,3)];
 
 res = clustTrans(dt_bin, TDP, plot_prm, clust_prm, h_fig);
 

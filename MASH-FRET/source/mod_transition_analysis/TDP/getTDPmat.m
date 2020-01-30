@@ -128,6 +128,7 @@ end
 
 if ~incldiag
     TDP(~~eye(size(TDP))) = 0;
+    dt_bin(dt_bin(:,5)==dt_bin(:,6),[5,6]) = 0;
 end
 
 ok = 1;
