@@ -139,7 +139,10 @@ if isRes
     kin_k = prm.kin_res(curr_k,:);
     boba = prm.kin_start{1}{curr_k,1}(4);
     stchExp = prm.kin_start{1}{curr_k,1}(1);
-    if curr_exp>size(kin_k{1},1)
+    if boba && curr_exp>size(kin_k{1},1)
+        amp_res = NaN;
+        dec_res = NaN;
+    elseif ~boba && curr_exp>size(kin_k{2},1)
         amp_res = NaN;
         dec_res = NaN;
     elseif boba && size(kin_k{1},2)>=4 
@@ -150,7 +153,9 @@ if isRes
         dec_res = kin_k{2}(curr_exp,2);
     end
     if stchExp
-        if curr_exp>size(kin_k{1},1)
+        if boba && curr_exp>size(kin_k{2},1)
+            beta_res = NaN;
+        elseif ~boba && curr_exp>size(kin_k{2},1)
             beta_res = NaN;
         elseif boba && size(kin_k{1},2)>=6
             beta_res = kin_k{1}(1,5:6);
