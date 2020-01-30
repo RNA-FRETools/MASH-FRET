@@ -51,14 +51,17 @@ end
 
 % 27.1.2020: move model used in kinetic analysis and current transition,
 % add state-dependency option
-if isfield(prm,'kin_start') && size(prm.kin_start,2)>=2 && ...
-        size(prm.kin_start,1)>0 && ~iscell(prm.kin_start{1})
-    J = prm.clst_res{3};
-    curr_k = prm.clst_start{1}(4);
-    kin_start = prm.kin_start;
-    prm.kin_start = cell(1,2);
-    prm.kin_start{1} = kin_start;
-    prm.kin_start{2} = [J,curr_k];
+if isfield(prm,'kin_start') && size(prm.kin_start,2)>=2
+    if size(prm.kin_start,1)>0 && ~iscell(prm.kin_start{1})
+        J = prm.clst_res{3};
+        curr_k = prm.clst_start{1}(4);
+        kin_start = prm.kin_start;
+        prm.kin_start = cell(1,2);
+        prm.kin_start{1} = kin_start;
+        prm.kin_start{2} = [J,curr_k];
+    elseif size(prm.kin_start,1)==0
+        prm.kin_start = def.kin_start;
+    end
     prm.clst_start{1}(4) = true; % state dependency
 end
 

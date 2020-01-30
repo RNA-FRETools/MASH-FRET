@@ -72,6 +72,8 @@ if size(kin_def{2},1)<nExp
         repmat(kin_def{2}(end,:),nExp-size(kin_def{2},1),1));
 end
 
+kin_start{2} = adjustVal(kin_start{2},def.kin_start{2});
+
 if ~isempty(clst_res{2})
     mat = clst_start{1}(4);
     J = kin_start{2}(1);
