@@ -191,6 +191,32 @@ for k = 1:n_spl
             else
                 Jopt = NaN;
             end
+            
+        case 3 % manual
+            
+            % cluster data
+            clust_spl = manualClustering(TDP_spl,x,x,mu_0,tol,shape);
+            
+            % determine model configuration
+            Jopt = size(mu_0,1);
+            
+            % save sample's best inferred model
+            param{k} = {mu_0};
+            
+            if ~boba || (boba && k==1)
+                % save inferred models for original TDP
+                origin = cell(1,Jmax);
+                origin{Jopt}.mu = mu_0;
+                origin{Jopt}.clusters = clust_spl;
+                origin{Jopt}.o = [];
+                origin{Jopt}.w = [];
+                origin{Jopt}.BIC = Inf;
+            end
+            
+            % update action
+            if n_spl==1
+                setContPan('Manual clustering completed.','success',h_fig);
+            end
     end
     
     % number of states in sample's model

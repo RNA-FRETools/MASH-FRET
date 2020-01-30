@@ -2,13 +2,18 @@ function axes_TDPplot1_traverseFcn(h_fig,pos)
 
 h = guidata(h_fig);
 
-set(h_fig,'pointer','crosshair');
-
 pos = posFigToAxes(pos,h_fig,h.axes_TDPplot1,'normalized');
 x = pos(1);
 y = pos(2);
 
 set(h.text_TA_tdpCoord,'string',cat(2,'x=',num2str(x),' y=',num2str(y)));
+
+tool = get(h.tooglebutton_TDPmanStart,'userdata');
+if tool~=2
+    return
+end
+
+set(h_fig,'pointer','crosshair');
 
 ud = get(h.axes_TDPplot1,'userdata');
 if size(ud,2)==1
@@ -29,13 +34,11 @@ if isDown && ~isempty(pos0)
     clstDiag = p.proj{proj}.curr{tag,tpe}.clst_start{1}(9);
     
     % get cluster shape
-    tool = get(h.tooglebutton_TDPmanStart,'userdata');
-    tool(tool==0) = 1;
-    p.proj{proj}.curr{tag,tpe}.clst_start{1}(2) = tool;
+    shape = p.proj{proj}.curr{tag,tpe}.clst_start{1}(2);
     
     wslct = abs(pos0(1)-x);
     hslct = abs(pos0(2)-y);
-    if tool==3
+    if shape==3 % diagonal ellipse
         largeside = sqrt((wslct^2)+(hslct^2))/2;
         smallside = cos(pi/4)*largeside;
         if (x>pos0(1) && y>pos0(2)) || (x<pos0(1) && y<pos0(2))

@@ -70,8 +70,6 @@ wpan1 = pospan(3)-warea-wpan0-2*p.mg;
 waxes0 = warea+wpan0+wpan1-2*p.mg;
 haxes0 = pospan(4)-p.mgpan-hpan0-p.mg-htxt0-2*p.mg;
 wbut2 = getUItextWidth(str10,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-hpan1 = p.mg/2+hedit0+p.mg/2;
-wpan2 = p.mg/2+5*hedit0+4*p.mg/fact+p.mg/2+wbut2+p.mg/2;
 
 % GUI
 x = p.mg;
@@ -202,11 +200,15 @@ h.uipanel_TA_results = uipanel('parent',h_pan,'units',p.posun,'fontunits',...
     p.fntun,'fontsize',p.fntsz1,'position',[x,y,wpan1,hpan0],'title',ttl1);
 h = buildPanelTAresults(h,p);
 
+h.uipanel_TA_selectTool = uipanel('parent',h_pan,'units',p.posun,'title',...
+    '','visible','off');
+h = buildPanelTAselectTool(h,p);
+
+% adjust panel position
 posbut = get(h.tooglebutton_TDPmanStart,'position');
 pospan1 = get(h.uipanel_TA_clusters,'position');
-x = pospan1(1)+posbut(1)+posbut(3);
-y = pospan1(2)+posbut(2)-(hpan1-posbut(4))/2;
-h.uipanel_TA_selectTool = uipanel('parent',h_pan,'units',p.posun,...
-    'position',[x,y,wpan2,hpan1],'title','','visible','off');
-h = buildPanelTAselectTool(h,p);
+pospan2 = get(h.uipanel_TA_selectTool,'position');
+pospan2(1) = pospan1(1)+posbut(1)+posbut(3);
+pospan2(2) = pospan1(2)+posbut(2)-(pospan2(4)-posbut(4))/2;
+set(h.uipanel_TA_selectTool,'position',pospan2);
 

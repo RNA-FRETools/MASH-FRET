@@ -47,9 +47,9 @@ nTrs = getClusterNb(J,mat,clstDiag);
 
 if size(clst_start{2},1)<nTrs
     clst_start{2} = cat(1,clst_start{2},...
-        repmat([state,state,tol,tol],J-size(clst_start{2},1),1));
+        repmat([state,state,tol,tol],nTrs-size(clst_start{2},1),1));
 else
-    clst_start{2} = clst_start{2}(1:J,:);
+    clst_start{2} = clst_start{2}(1:nTrs,:);
 end
 
 % adjust cluster colors

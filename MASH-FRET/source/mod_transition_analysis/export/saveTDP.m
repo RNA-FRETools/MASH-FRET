@@ -595,6 +595,50 @@ if isRes && tdp_clust
                         '\n\t\t',...
                         '\t',num2str(sig(2,1)),'\t',num2str(sig(2,2)),'\n');
                 end
+                
+            case 3 % manual
+                switch shape
+                    case 1
+                        clstshape = 'square';
+                    case 2
+                        clstshape = 'straight ellipsis';
+                    case 3
+                        clstshape = 'diagonal ellipsis';
+                end
+                
+                str_prm = cat(2,'starting parameters:\n', ...
+                    '\tmethod: manual clustering\n',...
+                    '\tcluster shape: ',clstshape,'\n');
+                
+                str_prm = cat(2,str_prm,'\tmax. number of clusters: ',...
+                    num2str(Jmax),'\n');
+
+                for k = 1:Kmax
+                    str_prm = cat(2,str_prm,'\tcluster ',num2str(k),': ', ...
+                        'state ',num2str(j1_start(k)),' (',...
+                        num2str(guess(k,1)),', radius=',...
+                        num2str(guess(k,3)),') to ',...
+                        num2str(j2_start(k)),' (',...
+                        num2str(guess(k,2)),', radius=',...
+                        num2str(guess(k,4)),')\n');
+                end
+                
+                str_prm = cat(2,str_prm,'\nclustering results:\n');
+
+                states = res{1}.mu{J}(:,[1,2])';
+                states = states(:)';
+                fract = res{1}.fract{J};
+                for j = 1:size(states,2)
+                    str_prm = cat(2,str_prm,'\tstate ',num2str(j),': ', ...
+                        num2str(states(j)),', time fraction: ',...
+                        num2str(fract(j)),'\n');
+                end
+                for k = 1:K
+                    str_prm = cat(2,str_prm,'\tcluster ',num2str(k),' (', ...
+                        'state ',num2str(j1(k)),' to ',...
+                        num2str(j2(k)),'), relative population: ',...
+                        num2str(res{1}.pop{J}(k)),'\n');
+                end
         end
         
         % write data to file

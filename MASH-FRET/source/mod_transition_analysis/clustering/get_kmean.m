@@ -90,15 +90,8 @@ while ~ok && (n<N || (N==0 && n==N))
                 c = findInEllipse(xy(1,:),xy(2,:),mu(k,1),mu(k,2),2*tol(k,1),...
                     2*tol(k,2),0);
             case 3 % diagonal ellipse
-                if mu(k,1)>mu(k,2)
-                    tol_x = tol(k,2);
-                    tol_y = tol(k,1);
-                else
-                    tol_x = tol(k,1);
-                    tol_y = tol(k,2);
-                end
-                c = findInEllipse(xy(1,:),xy(2,:),mu(k,1),mu(k,2),2*tol_x,...
-                    2*tol_y,pi/4);
+                c = findInEllipse(xy(1,:),xy(2,:),mu(k,1),mu(k,2),2*tol(k,1),...
+                    2*tol(k,2),pi/4);
         end
 
         % Calculation of mean squared distances from 
@@ -174,22 +167,4 @@ for k = 1:numel(k_excl)
 end
 clust = clust_new;
 mu(j_excl',:) = [];
-
-
-function id = findInSquare(x,y,x0,y0,w0,h0)
-
-xmin = x0-w0/2;
-xmax = x0+w0/2;
-ymin = y0-h0/2;
-ymax = y0+h0/2;
-
-[o,id,o] = find(y>=ymin & y<=ymax & x>=xmin & x<=xmax);
-
-
-function id = findInEllipse(x,y,x0,y0,w0,h0,theta)
-
-y_elps = ellipsis(x,[],[x0,y0],[w0/2,h0/2],theta);
-
-[o,id,o] = find(~isnan(y_elps(:,1)') & ~isnan(y_elps(:,2)') & ...
-    y>=(y_elps(:,1)') & y<=(y_elps(:,2)'));
 

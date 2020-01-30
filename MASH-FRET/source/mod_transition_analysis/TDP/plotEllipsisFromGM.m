@@ -18,7 +18,18 @@ x = X(:); y = Y(:);
 
 for k = 1:nTrs
     obj = gmdistribution(mu(k,:), oxy(:,:,k), a(k));
-    Z = reshape(pdf(obj,[x y]),numel(y_iv),numel(x_iv));
+    try
+        Z = reshape(pdf(obj,[x y]),numel(y_iv),numel(x_iv));
+    catch err
+        if strcmp(err.identifier,...
+                'stats:gmdistribution:wdensity:IllCondCov')
+            disp(cat(2,'Gaussian of cluster ',num2str(k),' is too narrow ',...
+                'to be shown on plot'))
+            continue
+        else
+            throw(err)
+        end
+    end
     Z = clim(2)*Z/max(max(Z));
     contour(h_axes,X,Y,Z,0.25*[clim(2) clim(2)],stl);
 end

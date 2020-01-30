@@ -60,22 +60,21 @@ prm.clst_start{1}(8) = res.n_rep; % updated number of replicates
 Jmax = size(res.mu,2);
 
 % optimum number of states
-switch meth
-    case 1
-        for J = 1:Jmax
-            if ~isempty(res.mu{J})
-                Jopt = J; 
-                break
-            end
+if sum(meth==[1,3])
+    for J = 1:Jmax
+        if ~isempty(res.mu{J})
+            Jopt = J; 
+            break
         end
-    case 2
-        BICs = NaN(1,Jmax);
-        for J = 1:Jmax
-            if ~isempty(res.BIC(J))
-                BICs(J) = res.BIC(J);
-            end
+    end
+else
+    BICs = NaN(1,Jmax);
+    for J = 1:Jmax
+        if ~isempty(res.BIC(J))
+            BICs(J) = res.BIC(J);
         end
-        [BICmin,Jopt] = min(BICs);
+    end
+    [BICmin,Jopt] = min(BICs);
 end
 
 if ~isnan(Jopt) && Jopt>1

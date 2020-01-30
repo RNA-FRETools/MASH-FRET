@@ -6,6 +6,7 @@ switch action
     case 'close'
         set(h.uipanel_TA_selectTool,'visible','off');
         set(h.tooglebutton_TDPmanStart,'value',0);
+        
     case 'open'
         isOn = get(obj,'value');
         switch isOn

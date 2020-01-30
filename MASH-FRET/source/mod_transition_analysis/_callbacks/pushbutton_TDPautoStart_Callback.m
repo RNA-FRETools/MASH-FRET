@@ -12,7 +12,7 @@ tag = p.curr_tag(proj);
 curr = p.proj{proj}.curr{tag,tpe};
 meth = curr.clst_start{1}(1);
 
-if meth~=1 % not kmean
+if ~sum(meth==[1,3]) % not kmean or manual
     return
 end
 

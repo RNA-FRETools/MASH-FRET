@@ -179,11 +179,11 @@ if size(val,1)>0
                 id_inf = val(:,1)<=val(:,2);
                 id_sup = val(:,1)>val(:,2);
                 plotEllipsis(h_axes_TDP, val(id_inf',1:2), rad(id_inf',[1,2]),...
-                    -pi/4, rectclr, rectlw);
+                    pi/4, rectclr, rectlw);
                 plotEllipsis(h_axes_TDP, val(id_sup',1:2), rad(id_sup',[2,1]),...
-                    -pi/4, rectclr, rectlw);
+                    pi/4, rectclr, rectlw);
             else
-                plotEllipsis(h_axes_TDP,val(:,1:2),rad(:,1:2),-pi/4,...
+                plotEllipsis(h_axes_TDP,val(:,1:2),rad(:,1:2),pi/4,...
                     rectclr,rectlw);
             end
     end

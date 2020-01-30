@@ -4,34 +4,30 @@ h = guidata(h_fig);
 
 tool = get(h.tooglebutton_TDPmanStart,'userdata');
 
-if sum((1:3)==ind) % selection tool
-    if tool==ind
-        tool = 0;
+switch ind
+    case 1 % reset tool
         ud_zoom([],[],'zoom',h_fig);
-    else
-        tool = ind;
+        tool = 1;
+    
+    case 2 % selection tool
         set(h.TTzoom,'enable','off');
         set(h.TTpan,'enable','off');
         set([h.zMenu_zoom,h.zMenu_pan],'checked','off');
-    end
-    
-    p = h.param.TDP;
-    if tool>0 && ~isempty(p.proj)
+        tool = 2;
+        
+    case 3 % reset selection
+        p = h.param.TDP;
         proj = p.curr_proj;
         tpe = p.curr_type(proj);
         tag = p.curr_tag(proj);
-        p.proj{proj}.curr{tag,tpe}.clst_start{1}(2) = tool;
+
+        p.proj{proj}.curr{tag,tpe}.clst_start{2}(:,[1,2]) = 0;
+        p.proj{proj}.curr{tag,tpe}.clst_start{2}(:,[3,4]) = Inf;
+        
         h.param.TDP = p;
         guidata(h_fig,h);
-        
-        updateFields(h_fig,'TDP');
-    end
-    
-elseif ind==5 % reset tool
-    tool = 0;
-    ud_zoom([],[],'zoom',h_fig);
 end
 
 set(h.tooglebutton_TDPmanStart,'userdata',tool);
 
-ud_TDPmdlSlct(h_fig);
+updateFields(h_fig,'TDP');
