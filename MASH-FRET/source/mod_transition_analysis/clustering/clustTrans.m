@@ -7,6 +7,8 @@ res.o = {};
 res.clusters = {};
 res.BIC = [];
 res.boba_K = [];
+res.fract = {};
+res.pop = {};
 
 % default
 M_def = 500; % default max. number of maximization iteration
@@ -197,6 +199,10 @@ for k = 1:n_spl
             break
         end
     end
+    
+    if n_spl>1
+        setContPan('Bootstrap clustering competed !','process',h_fig);
+    end
 end
 
 if boba
@@ -261,6 +267,7 @@ res.a = cell(1,Jmax);
 res.clusters = cell(1,Jmax);
 res.BIC = Inf(1,Jmax);
 res.fract = cell(1,Jmax);
+res.pop = cell(1,Jmax);
 
 if meth==1
     Jmin = Jopt;
@@ -300,21 +307,31 @@ for J = Jmin:Jmax
         return
     end
     
-    if mat
-        res.mu{J} = [origin{J}.mu(j1,1),origin{J}.mu(j2,1)];
-    else
-        res.mu{J} = origin{J}.mu;
-    end
     res.o{J} = origin{J}.o;
     res.a{J} = origin{J}.w;
     res.clusters{J} = dt_bin_new;
     res.BIC(J) = origin{J}.BIC;
-    res.fract{J} = zeros(J,1);
-
-    for j = 1:J
+    if mat
+        res.mu{J} = [origin{J}.mu(j1,1),origin{J}.mu(j2,1)];
+        js = 1:J;
+    else
+        res.mu{J} = origin{J}.mu;
+        js = reshape([j1,j2]',1,2*nTrs);
+    end
+    res.fract{J} = zeros(size(js,2),1);
+    for j = js
         clust_k = dt_bin_new(dt_bin_new(:,end-1)==j,:);
         res.fract{J}(j,1) = sum(clust_k(:,1),1)/sum(dt_bin_new(:,1),1);
     end
+    res.pop{J} = zeros(nTrs,1);
+    N = 0;
+    for k = 1:nTrs
+        Nk = size(dt_bin_new(dt_bin_new(:,7)==j1(k) & ...
+            dt_bin_new(:,8)==j2(k),:),1);
+        res.pop{J}(k,1) = Nk;
+        N = N + Nk;
+    end
+    res.pop{J} = res.pop{J}/N;
 end
 
 res.boba_K = [Jopt_mean Jopt_sig];

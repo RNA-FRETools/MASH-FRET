@@ -123,22 +123,20 @@ if sum(bol_kin)
         end
         
         nTrs = getClusterNb(J,mat,clstDiag);
-        [j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
-
         for k = 1:nTrs
             if ~(size(prm.clst_res{4},2)>=k && ...
                     ~isempty(prm.clst_res{4}{k}))
                 continue
             end
-            val = round(100*prm.clst_res{1}.mu{J}([j1(k),j2(k)],1))/100;
+            val = round(100*prm.clst_res{1}.mu{J}(k,:))/100;
 
             name_kin = cat(2,name_kin0,'_',num2str(val(1)),'to',...
                 num2str(val(2)));
 
-            [ok,str_kin] = save_kinDat(bol_kin,prm,k, ...
-                pname_kin,name_kin,h_fig);
+            [ok,str_kin] = save_kinDat(bol_kin, prm,k, pname_kin, name_kin, ...
+                h_fig);
             if ~ok
-                return;
+                return
             end
             str_act = cat(2,str_act,str_kin);
         end
@@ -174,6 +172,8 @@ TDP = prm.plot{2};
 
 str_tdp = cat(2,'parameters:\n', ...
     '\tone transition count per molecule: %s\n', ...
+    '\tstate sequences re-arranged: %s\n', ...
+    '\tinclude static state sequences: %s\n', ...
     '\tx-axis: value before transition (m)\n', ...
     '\ty-axis: value after transition (m*)\n', ...
     '\tz-axis: occurence of transition amp(m,m*)\n', ...
@@ -185,9 +185,19 @@ if prm.plot{1}(4,1)
 else
     onecount = 'no';
 end
+if prm.plot{1}(4,2)
+    rearrng = 'yes';
+else
+    rearrng = 'no';
+end
+if prm.plot{1}(4,3)
+    incldiag = 'yes';
+else
+    incldiag = 'no';
+end
         
-str_tdp = sprintf(str_tdp, onecount, prm.plot{1}(1,2:3)', ...
-    prm.plot{1}(1,1), prm.plot{1}(1,2:3)', prm.plot{1}(1,1));
+str_tdp = sprintf(str_tdp,onecount,rearrng,incldiag,prm.plot{1}(1,2:3)', ...
+    prm.plot{1}(1,1),prm.plot{1}(1,2:3)',prm.plot{1}(1,1));
 
 if tdp_mat% save TDP matrix
     
@@ -365,8 +375,8 @@ if tdp_png_conv
     end
 end
 
-isClst = ~isempty(prm.clst_res{1});
-if isClst && tdp_clust
+isRes = ~isempty(prm.clst_res{1});
+if isRes && tdp_clust
     
     % build file name
     fname_clust = strcat(name, '.clst');
@@ -380,115 +390,210 @@ if isClst && tdp_clust
         
         % format data
         meth = prm.clst_start{1}(1);
+        shape = prm.clst_start{1}(2);
+        Jmax = prm.clst_start{1}(3);
+        mat = prm.clst_start{1}(4);
+        T = prm.clst_start{1}(5);
+        boba = prm.clst_start{1}(6);
+        nspl = prm.clst_start{1}(7);
+        nrpl = prm.clst_start{1}(8);
+        clstDiag = prm.clst_start{1}(9);
+        logl = prm.clst_start{1}(10);
+        guess = prm.clst_start{2};
+        J = prm.kin_start{2}(1);
+        res = prm.clst_res;
+        Kmax = getClusterNb(Jmax,mat,clstDiag);
+        [j1_start,j2_start] = getStatesFromTransIndexes(1:Kmax,Jmax,mat,...
+            clstDiag);
+        K = getClusterNb(J,mat,clstDiag);
+        [j1,j2] = getStatesFromTransIndexes(1:K,J,mat,clstDiag);
+        if mat
+            clstmat = 'yes';
+        else
+            clstmat = 'no';
+        end
+        if clstDiag
+            diagclst = 'yes';
+        else
+            diagclst = 'no';
+        end
         switch meth
             case 1 % kmean
+                switch shape
+                    case 1
+                        clstshape = 'square';
+                    case 2
+                        clstshape = 'straight ellipsis';
+                    case 3
+                        clstshape = 'diagonal ellipsis';
+                end
+                
                 str_prm = cat(2,'starting parameters:\n', ...
                     '\tmethod: k-mean clustering\n', ...
-                    '\tnumber of max. states: %i\n');
-                Jmax = prm.clst_start{1}(3);
-                for j = 1:Jmax
-                    str_prm = strcat(str_prm, sprintf('\tstate %i:', j), ...
-                        '%d, tolerance radius: %d\n');
-                end
-                str_prm = strcat(str_prm, ...
-                    '\tmax. number of k-mean iterations: %i\n');
-                if prm.clst_start{1}(6)
-                    str_prm = strcat(str_prm, '\tbootstrapping: yes\n', ...
-                        '\t\tnumber of samples: ', ...
-                        num2str(prm.clst_start{1}(7)), ...
-                        '\n\t\tnumber of replicates: ', ...
-                        num2str(prm.clst_start{1}(8)));
+                    '\tcluster matrix: ',clstmat,'\n',...
+                    '\tdiagonal clusters: ',diagclst,'\n',...
+                    '\tcluster shape: ',clstshape,'\n',...
+                    '\tmax. number of iterations: ',num2str(T),'\n');
+                
+                if mat
+                    str_prm = cat(2,str_prm,...
+                        '\tmax. number of states: ',num2str(Jmax),'\n');
                 else
-                    str_prm = strcat(str_prm, '\tbootstrapping: no\n');
+                    str_prm = cat(2,str_prm,...
+                        '\tmax. number of clusters: ',num2str(Jmax),'\n');
                 end
-                str_prm = strcat(str_prm, '\nclustering results:\n', ...
-                    '\tnumber of states in model: %i\n');
-                if prm.clst_start{1}(6)
-                    str_prm = strcat(str_prm, ['\tbootstrapped number ' ...
-                        'of states: ' ...
-                        sprintf('%2.2f',prm.clst_res{2}(1)) ' +/- ', ...
-                        sprintf('%2.2f',prm.clst_res{2}(2)) '\n']);
+
+                if mat
+                    [states,id] = unique(guess(:,1),'stable');
+                    tol = guess(id,3);
+                    for j = 1:Jmax
+                        str_prm = cat(2,str_prm,'\tstate ',num2str(j),': ', ...
+                            num2str(states(j)),', tolerance radius: ',...
+                            num2str(tol(j)),'\n');
+                    end
+                else
+                    for k = 1:Kmax
+                        str_prm = cat(2,str_prm,'\tcluster ',num2str(k),': ', ...
+                            'state ',num2str(j1_start(k)),' (',...
+                            num2str(guess(k,1)),', radius=',...
+                            num2str(guess(k,3)),') to ',...
+                            num2str(j2_start(k)),' (',...
+                            num2str(guess(k,2)),', radius=',...
+                            num2str(guess(k,4)),')\n');
+                    end
                 end
-                J = prm.clst_res{3};
-                for j = 1:J
-                    str_prm = strcat(str_prm, sprintf('\tstate %i:', j), ...
-                        '%d, time fraction: %d\n');
+                
+                if boba
+                    str_prm = cat(2,str_prm,'\tbootstrapping: yes\n', ...
+                        '\t\tnumber of samples: ',num2str(nspl), ...
+                        '\n\t\tnumber of replicates: ',num2str(nrpl));
+                else
+                    str_prm = cat(2,str_prm,'\tbootstrapping: no\n');
                 end
-                str_prm = sprintf(str_prm, Jmax, prm.clst_start{2}', ...
-                    prm.clst_start{1}(5), J, [prm.clst_res{1}.mu{J} ...
-                    prm.clst_res{1}.fract{J}]');
+                
+                str_prm = cat(2,str_prm,'\nclustering results:\n');
+                if mat
+                    str_prm = cat(2,str_prm,...
+                        '\tnumber of states in model: ',num2str(J),'\n');
+                else
+                    str_prm = cat(2,str_prm,...
+                        '\tnumber of clusters in model: ',num2str(K),'\n');
+                end
+                
+                if boba
+                    if mat
+                        str_prm = cat(2,str_prm,...
+                            '\tbootstrapped number of states: ');
+                    else
+                        str_prm = cat(2,str_prm,...
+                            '\tbootstrapped number of clusters: ');
+                    end
+                    str_prm = cat(2,str_prm,...
+                        sprintf('%2.2f',res{2}(1)),' +/- ',...
+                        sprintf('%2.2f',res{2}(2)),'\n');
+                end
+                
+                if mat
+                    states = unique(res{1}.mu{J}(:,1),'stable')';
+                else
+                    states = res{1}.mu{J}(:,[1,2])';
+                    states = states(:)';
+                end
+                fract = res{1}.fract{J};
+                for j = 1:size(states,2)
+                    str_prm = cat(2,str_prm,'\tstate ',num2str(j),': ', ...
+                        num2str(states(j)),', time fraction: ',...
+                        num2str(fract(j)),'\n');
+                end
+                for k = 1:K
+                    str_prm = cat(2,str_prm,'\tcluster ',num2str(k),' (', ...
+                        'state ',num2str(j1(k)),' to ',...
+                        num2str(j2(k)),'), relative population: ',...
+                        num2str(res{1}.pop{J}(k)),'\n');
+                end
 
             case 2 % GM
                 
                 h = guidata(h_fig);
-                str_pop = get(h.popupmenu_TDPstate,'String');
-                shape = str_pop{prm.clst_start{1}(2)};
-                
-                Jmax = prm.clst_start{1}(3);
+                str_shape = get(h.popupmenu_TDPshape,'String');
+                str_like = get(h.popupmenu_TDPlike,'String');
+                clstshape = str_shape{shape};
+                clstlike = str_like{logl};
                 
                 str_prm = cat(2,'starting parameters:\n', ...
-                    ['\tmethod: 2D Gaussian mixture model-based ' ...
-                    'clustering\n'], ...
-                    ['\tcluster shape: ' shape '\n'], ...
-                    ['\tmax. number of states: ' sprintf('%i',Jmax) '\n']);
+                    '\tmethod: Gaussian mixture clustering\n', ...
+                    '\tcluster matrix: ',clstmat,'\n',...
+                    '\tdiagonal clusters: ',diagclst,'\n',...
+                    '\tcluster shape: ',clstshape,'\n',...
+                    '\tmax. number of initializations: ',num2str(T),'\n',...
+                    '\tlikelihood: ',clstlike,'\n');
                 
-                if prm.clst_start{1}(6)
-                    str_prm = strcat(str_prm, '\tbootstrapping: yes\n', ...
-                        ['\t\tnumber of samples: ' ...
-                        sprintf('%i',prm.clst_start{1}(7)) '\n'], ...
-                        ['\t\tnumber of replicates: ' ...
-                        sprintf('%i',prm.clst_start{1}(8)) '\n']);
+                if mat
+                    str_prm = cat(2,str_prm,...
+                        '\tmax. number of states: ',num2str(Jmax),'\n');
                 else
-                    str_prm = strcat(str_prm, '\tbootstrapping: no\n');
+                    str_prm = cat(2,str_prm,...
+                        '\tmax. number of clusters: ',num2str(Jmax),'\n');
                 end
-                
-                str_prm = strcat(str_prm, ...
-                    ['\tnumber of model initialisations: ' ...
-                    sprintf('%i',prm.clst_start{1}(5)) '\n']);
-                
-                J = prm.clst_res{3};
-                str_prm = strcat(str_prm, ['\nclustering results:\n' ...
-                    '\tnumber of states in model: ' sprintf('%i',J) ...
-                    ' (BIC=' sprintf('%d',prm.clst_res{1}.BIC(J)) ')\n']);
-                
-                if prm.clst_start{1}(6)
-                    str_prm = strcat(str_prm, ['\tbootstrapped number ' ...
-                        'of states: ' ...
-                        sprintf('%2.2f',prm.clst_res{2}(1)) ' +/- ', ...
-                        sprintf('%2.2f',prm.clst_res{2}(2)) '\n']);
+
+                str_prm = cat(2,str_prm,'\nclustering results:\n');
+                if mat
+                    str_prm = cat(2,str_prm,...
+                        '\tnumber of states in model: ',num2str(J),' ');
+                else
+                    str_prm = cat(2,str_prm,...
+                        '\tnumber of clusters in model: ',num2str(K),' ');
                 end
+                str_prm = cat(2,str_prm,' (BIC=',num2str(res{1}.BIC(J)),...
+                    ')\n');
                 
-                for j = 1:J
-                    str_prm = strcat(str_prm, ...
-                        [sprintf('\tstate %i:\t%d',j, ...
-                        prm.clst_res{1}.mu{J}(j,1)) '\ttime fraction:\t' ...
-                        sprintf('%d',prm.clst_res{1}.fract{J}(j,1)) '\n']);
-                end
-                
-                str_prm = strcat(str_prm, ...
-                    '\toptimum model parameters:\n');
-                
-                j = 0;
-                for j1 = 1:J
-                    for j2 = 1:J
-                        j = j+1;
-                        str_prm = strcat(str_prm,'\t\t', ...
-                           sprintf('alpha_%i%i',j1,j2),'\t',...
-                            sprintf('%d',prm.clst_res{1}.a{J}(j)),'\n');
+                if boba
+                    if mat
+                        str_prm = cat(2,str_prm,...
+                            '\tbootstrapped number of states: ');
+                    else
+                        str_prm = cat(2,str_prm,...
+                            '\tbootstrapped number of clusters: ');
                     end
+                    str_prm = cat(2,str_prm,...
+                        sprintf('%2.2f',res{2}(1)),' +/- ',...
+                        sprintf('%2.2f',res{2}(2)),'\n');
                 end
                 
-                j = 0;
-                for j1 = 1:J
-                    for j2 = 1:J
-                        j = j+1;
-                        str_prm = strcat(str_prm, ['\t\t' ...
-                            sprintf('sigma_%i%i',j1,j2) '\t' ...
-                            sprintf('%d\t%d', ...
-                            prm.clst_res{1}.o{J}(1,:,j)) ...
-                            '\n\t\t\t' sprintf('%d\t%d', ...
-                            prm.clst_res{1}.o{J}(2,:,j)) '\n']);
-                    end
+                if mat
+                    states = unique(res{1}.mu{J}(:,1),'stable')';
+                else
+                    states = res{1}.mu{J}(:,[1,2])';
+                    states = states(:)';
+                end
+                fract = res{1}.fract{J};
+                for j = 1:size(states,2)
+                    str_prm = cat(2,str_prm,'\tstate ',num2str(j),': ', ...
+                        num2str(states(j)),', time fraction: ',...
+                        num2str(fract(j)),'\n');
+                end
+                for k = 1:K
+                    str_prm = cat(2,str_prm,'\tcluster ',num2str(k),' (', ...
+                        'state ',num2str(j1(k)),' to ',...
+                        num2str(j2(k)),'), relative population: ',...
+                        num2str(res{1}.pop{J}(k)),'\n');
+                end
+                
+                str_prm = strcat(str_prm, '\toptimum model parameters:\n');
+                
+                for k = 1:K
+                    str_prm = cat(2,str_prm,'\t\t',...
+                        sprintf('alpha_%i%i',j1(k),j2(k)),'\t',...
+                        num2str(res{1}.a{J}(k)),'\n');
+                end
+
+                for k = 1:K
+                    sig = res{1}.o{J}(:,:,k);
+                    str_prm = strcat(str_prm,'\t\t',...
+                        sprintf('sigma_%i%i',j1(k),j2(k)),...
+                        '\t',num2str(sig(1,1)),'\t',num2str(sig(1,2)),...
+                        '\n\t\t',...
+                        '\t',num2str(sig(2,1)),'\t',num2str(sig(2,2)),'\n');
                 end
         end
         
@@ -539,7 +644,7 @@ if kinDtHist
         fname_hdt = overwriteIt(fname_hdt,pname,h_fig);
         if isempty(fname_hdt)
             ok = 0;
-            return;
+            return
         end
         
         % collect data

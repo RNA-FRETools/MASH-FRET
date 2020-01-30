@@ -132,7 +132,7 @@ for tpe = 1:nTpe
 
         %% Clustering results
         % struct.mu, struct.a, struct.o, struct.BIC, struct.clusters, 
-        % struct.fract
+        % struct.fract, struct.pop
         clst_res{1} = [];
 
         % Jopt mean, Jopt deviation

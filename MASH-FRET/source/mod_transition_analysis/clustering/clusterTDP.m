@@ -86,6 +86,7 @@ if ~isnan(Jopt) && Jopt>1
     models.o = res.o; % Gaussian sigmas
     models.mu = res.mu; % converged states
     models.fract = res.fract; % state populations (time fraction)
+    models.pop = res.pop; % cluster populations (density fraction)
     models.clusters = res.clusters; % binned transitions + cluster assignment
 
     prm.clst_res = {models res.boba_K Jopt};

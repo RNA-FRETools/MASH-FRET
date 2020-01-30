@@ -31,21 +31,9 @@ prm.kin_res = repmat(def.kin_res,nTrs,1);
 
 % build dwell-time histograms
 for k = 1:nTrs
-    wght = prm.kin_start{1}{k,1}(4)*prm.kin_start{1}{k,1}(1);
-
-    clust_k = prm.clst_res{1}.clusters{J}((...
-        prm.clst_res{1}.clusters{J}(:,end-1)==j1(k) & ...
-        prm.clst_res{1}.clusters{J}(:,end)==j2(k)),1:end-2);
-
-    if size(clust_k,1)>2
-        % save histogram including first dwell time of trajectory
-        % for plot
-        mols = unique(prm.clst_res{1}.clusters{J}(:,4));
-        excl = prm.kin_start{1}{k,1}(8);
-        prm.clst_res{4}{k} = getDtHist(prm.clst_res{1}.clusters{J},...
-            [j1(k),j2(k)], mols, excl, wght);
-
-    else
-        prm.clst_res{4}{k} = [];
-    end
+    wght = prm.kin_start{1}{k,1}(4)*prm.kin_start{1}{k,1}(1);    
+    excl = prm.kin_start{1}{k,1}(8);
+    mols = unique(prm.clst_res{1}.clusters{J}(:,4));
+    prm.clst_res{4}{k} = getDtHist(prm.clst_res{1}.clusters{J},...
+        [j1(k),j2(k)], mols, excl, wght);
 end
