@@ -27,6 +27,28 @@ if isDown && ~isempty(pos0)
     J = p.proj{proj}.curr{tag,tpe}.clst_start{1}(3);
     mat = p.proj{proj}.curr{tag,tpe}.clst_start{1}(4);
     clstDiag = p.proj{proj}.curr{tag,tpe}.clst_start{1}(9);
+    
+    % get cluster shape
+    tool = get(h.tooglebutton_TDPmanStart,'userdata');
+    tool(tool==0) = 1;
+    p.proj{proj}.curr{tag,tpe}.clst_start{1}(2) = tool;
+    
+    wslct = abs(pos0(1)-x);
+    hslct = abs(pos0(2)-y);
+    if tool==3
+        largeside = sqrt((wslct^2)+(hslct^2))/2;
+        smallside = cos(pi/4)*largeside;
+        if (x>pos0(1) && y>pos0(2)) || (x<pos0(1) && y<pos0(2))
+            halfw = largeside;
+            halfh = smallside;
+        else
+            halfw = smallside;
+            halfh = largeside;
+        end
+    else
+        halfw = wslct/2;
+        halfh = hslct/2;
+    end
 
     % get cluster index(es)
     if mat
@@ -37,21 +59,16 @@ if isDown && ~isempty(pos0)
         ky = j2==state;
         p.proj{proj}.curr{tag,tpe}.clst_start{2}(kx,1) = pos0(1)+(x-pos0(1))/2;
         p.proj{proj}.curr{tag,tpe}.clst_start{2}(ky,2) = pos0(1)+(x-pos0(1))/2;
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(kx,3) = abs(pos0(1)-x)/2;
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(ky,4) = abs(pos0(1)-x)/2;
+        p.proj{proj}.curr{tag,tpe}.clst_start{2}(kx,3) = halfw;
+        p.proj{proj}.curr{tag,tpe}.clst_start{2}(ky,4) = halfw;
     else
         k = get(h.popupmenu_TDPstate, 'Value');
         p.proj{proj}.curr{tag,tpe}.clst_start{2}(k,1) = pos0(1)+(x-pos0(1))/2;
         p.proj{proj}.curr{tag,tpe}.clst_start{2}(k,2) = pos0(2)+(y-pos0(2))/2;
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k,3) = abs(pos0(1)-x)/2;
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k,4) = abs(pos0(2)-y)/2;
+        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k,3) = halfw;
+        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k,4) = halfh;
     end
-    
-    % get cluster shape
-    tool = get(h.tooglebutton_TDPmanStart,'userdata');
-    tool(tool==0) = 1;
-    p.proj{proj}.curr{tag,tpe}.clst_start{1}(2) = tool;
-    
+
     h.param.TDP = p;
     guidata(h_fig, h);
     updateFields(h_fig, 'TDP');
