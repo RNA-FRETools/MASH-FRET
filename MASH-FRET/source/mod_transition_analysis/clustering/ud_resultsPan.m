@@ -11,7 +11,6 @@ tag = p.curr_tag(proj);
 % collect processing parameters
 curr = p.proj{proj}.curr{tag,tpe};
 prm = p.proj{proj}.prm{tag,tpe};
-Jmax = curr.clst_start{1}(3);
 
 set([h.text_TDPbobaRes h.text_TDPbobaSig h.edit_TDPbobaRes ...
     h.edit_TDPbobaSig h.text_tdp_showModel h.text_tdp_Jequal ...
@@ -40,6 +39,8 @@ end
 res = prm.clst_res;
 meth = prm.clst_start{1}(1); % last applied
 boba = prm.clst_start{1}(6); % last applied
+Jmax = prm.clst_start{1}(3);
+mat = prm.clst_start{1}(4);
 J = res{3};
 
 % set optimum state configuration and bootstrap results
@@ -68,13 +69,19 @@ if meth==2
     set([h.text_tdp_showModel,h.text_tdp_Jequal,h.popupmenu_tdp_model,...
         h.pushbutton_tdp_impModel],'Enable','on');
     set(h.axes_tdp_BIC,'Visible','on');
-
-    str_pop = cell(1,Jmax-1);
-    for j = 2:Jmax
-        str_pop{j-1} = num2str(j);
-    end
+    
     J = curr.clst_res{3};
-    set(h.popupmenu_tdp_model,'String',str_pop,'Value',J-1);
+    if mat==1
+        str_pop = cell(1,Jmax-1);
+        for j = 2:Jmax
+            str_pop{j-1} = num2str(j);
+        end
+        val = J-1;
+    else
+        str_pop = cellstr(num2str((1:Jmax)'));
+        val = J;
+    end
+    set(h.popupmenu_tdp_model,'String',str_pop,'Value',val);
 
 else
     set([h.text_tdp_showModel,h.text_tdp_Jequal,h.popupmenu_tdp_model,...

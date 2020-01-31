@@ -11,7 +11,7 @@ clstDiag = prm.clst_start{1}(9);
 
 % look for doubled
 nTrs = getClusterNb(J,mat,clstDiag);
-isdouble = size(mu,1)~=nTrs;
+isdouble = size(unique(mu,'rows'),1)~=nTrs;
 
 % ask user for modification fo doubled
 if isdouble

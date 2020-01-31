@@ -1,15 +1,7 @@
 function [w, mu, sigma] = init_guess(J, v, t, mat, shape, lim, clstDiag)
 
 % coefficient of each cluster w = 1/nTrs
-if mat
-    if clstDiag
-        nTrs = J^2;
-    else
-        nTrs = J*(J-1);
-    end
-else
-    nTrs = J;
-end
+nTrs = getClusterNb(J,mat,clstDiag);
 w = ones(nTrs,1);
 w = w/sum(w);
 
@@ -22,7 +14,7 @@ min_y = min(v(2,:));
 if t==1
     d_x = (max_x-min_x)/(J+1);  d_y = (max_y-min_y)/(J+1);
     x_0 = d_x*(1:J)' + min_x;   y_0 = d_y*(1:J)' + min_y;
-    if mat
+    if mat==1
         mu = x_0;
     else
         mu = [x_0 y_0];
@@ -30,7 +22,7 @@ if t==1
     
     % adjust initial cluster centers and populations with k-mean algorithm
     % tolR = repmat([(max_x-min_x)/(2*K) (max_y-min_y)/(2*K)],K,1);
-    if mat
+    if mat==1
         tolR = Inf*ones(J,1);
     else
         tolR = Inf*ones(J,2);
@@ -41,7 +33,7 @@ if t==1
     
 
 else
-    if mat
+    if mat==1
         mu = zeros(J,1);
     else
         mu = zeros(J,2);
@@ -55,7 +47,7 @@ else
             [o,id_k] = max(rand(1,size(dat,1)));
         end
         id = cat(2,id,id_k);
-        if mat
+        if mat==1
             mu(j,:) = dat(id_k,1);
         else
             mu(j,:) = dat(id_k,:);
@@ -65,12 +57,21 @@ end
 
 if size(mu,1)>1
     incl = true(size(mu,1),1);
-    for k1 = 1:size(mu,1)
-        for k2 = 1:size(mu,1)
-            if (mat && k1~=k2) || ~mat
-                if sum(abs(mu(k1,:)-mu(k2,:))<lim)
-                    incl([k1 k2]) = false;
+    if mat==1
+        for j1 = 1:J
+            for j2 = 1:J
+                if j1==j2
+                    continue
                 end
+                if sum(abs(mu(j1,:)-mu(j2,:))<lim)
+                    incl([j1 j2]) = false;
+                end
+            end
+        end
+    else
+        for k = 1:size(mu,1)
+            if abs(mu(k,1)-mu(k,2))<lim
+                incl(k) = false;
             end
         end
     end

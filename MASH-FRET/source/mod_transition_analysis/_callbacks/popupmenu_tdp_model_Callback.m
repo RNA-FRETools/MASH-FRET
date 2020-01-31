@@ -6,10 +6,15 @@ if isempty(p.proj)
     return
 end
 
-J = get(obj,'Value')+1;
 proj = p.curr_proj;
 tpe = p.curr_type(proj);
 tag = p.curr_tag(proj);
+mat = p.proj{proj}.prm{tag,tpe}.clst_start{1}(4);
+if mat==1
+    J = get(obj,'Value')+1;
+else
+    J = get(obj,'Value');
+end
 
 p.proj{proj}.curr{tag,tpe}.clst_res{3} = J;
 

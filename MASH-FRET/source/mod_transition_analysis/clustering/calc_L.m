@@ -1,4 +1,4 @@
-function [BIC,L,I] = calc_L(w, mu, sig, v, corr, shape, lklhd, clstDiag)
+function [BIC,L,I] = calc_L(w, mu, sig, v, mat, shape, lklhd, clstDiag)
 % w = [K-by-1]
 % s = [K-by-2]
 % sig = [2-by-2-by-K]
@@ -8,18 +8,10 @@ L = -Inf;
 BIC = Inf;
 J = size(mu,1);
 N = size(v,2);
-if corr
-    if clstDiag
-        nTrs = J^2;
-    else
-        nTrs = J*(J-1);
-    end
-else
-    nTrs = J;
-end
+nTrs = getClusterNb(J,mat,clstDiag);
 I = false(nTrs,N);
 
-p = gmm_density(mu, sig, v, corr, clstDiag);
+p = gmm_density(mu, sig, v, mat, clstDiag);
 if isempty(p) || sum(sum(isnan(p)))
     return
 end
@@ -56,8 +48,10 @@ switch shape
     case 'free' % rho, sig_x, sig_y
         f_sig = 3*nTrs;
 end
-if corr
+if mat==1
     f_mu = J;
+elseif mat==2
+    f_mu = nTrs;
 else
     f_mu = 2*nTrs;
 end

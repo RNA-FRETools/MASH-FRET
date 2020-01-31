@@ -78,13 +78,7 @@ if isRes
         sig = prm.clst_res{1}.o{J};
 
         % plot BIC results
-        Jmax = size(prm.clst_res{1}.BIC,2);
-        BICs = prm.clst_res{1}.BIC;
-        set(h_axes_BIC,'visible','on');
-        barh(h_axes_BIC,1:Jmax,BICs);
-        xlim(h_axes_BIC,[min(BICs) mean(BICs)]);
-        ylim(h_axes_BIC,[0,Jmax+1]);
-        title(h_axes_BIC,'BIC');
+        plotBIC_TA(h_axes_BIC,prm);
         
     else
         J = curr.clst_res{3};
@@ -175,14 +169,14 @@ if size(val,1)>0
             plotEllipsis(h_axes_TDP, val(:,1:2), rad(:,1:2), 0, rectclr, ...
                 rectlw);
         case 3
-            if mat
+            if sum(mat==[1,2]) % matrix or symmetrical
                 id_inf = val(:,1)<=val(:,2);
                 id_sup = val(:,1)>val(:,2);
                 plotEllipsis(h_axes_TDP, val(id_inf',1:2), rad(id_inf',[1,2]),...
                     pi/4, rectclr, rectlw);
                 plotEllipsis(h_axes_TDP, val(id_sup',1:2), rad(id_sup',[2,1]),...
                     pi/4, rectclr, rectlw);
-            else
+            else % free
                 plotEllipsis(h_axes_TDP,val(:,1:2),rad(:,1:2),pi/4,...
                     rectclr,rectlw);
             end

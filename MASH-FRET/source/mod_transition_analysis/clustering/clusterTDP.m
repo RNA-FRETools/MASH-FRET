@@ -11,9 +11,6 @@ prm.clst_start = curr.clst_start;
 prm.clst_res = curr.clst_res;
 prm.kin_def = curr.kin_def;
 
-% collect project parameters
-expT = p.proj{proj}.frame_rate;
-
 % collect processing parameters
 dt_bin = prm.plot{3}; % binned transitions + TDP coord. assignment
 TDP = prm.plot{2}; % TDP matrix
@@ -33,7 +30,7 @@ end
 meth = prm.clst_start{1}(1);
 
 % manage ill-defined k-mean starting guess
-if meth==1
+if sum(meth==[1,3])
     [ok,prm] = checkKmeanStart(prm);
     if ~ok
         return
@@ -75,9 +72,12 @@ else
         end
     end
     [BICmin,Jopt] = min(BICs);
+    if isinf(BICs(Jopt))
+        Jopt = 0;
+    end
 end
 
-if ~isnan(Jopt) && Jopt>1
+if ~isnan(Jopt) && Jopt>0
 
     % converged results
     models.BIC = res.BIC; % minimum Bayesian information criterion

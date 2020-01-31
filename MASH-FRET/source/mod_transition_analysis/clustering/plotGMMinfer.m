@@ -1,11 +1,12 @@
 function plotGMMinfer(mat,clstDiag,J,mu,sig,w,h_axes)
 
 nTrs = getClusterNb(J,mat,clstDiag);
-[j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
-
-if mat
+if mat==1 % matrix
+    [j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
     trs = [mu(j1,1),mu(j2,1)];
-else
+elseif mat==2 % symmetrical
+    trs = [mu;flip(mu,2)];
+else % free
     trs = mu;
 end
 

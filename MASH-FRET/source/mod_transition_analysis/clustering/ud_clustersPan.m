@@ -2,6 +2,8 @@ function ud_clustersPan(h_fig)
 % Set cluster panel to proper values
 
 % defaults
+clrslct = [0.93,0.93,0.93];
+gray = [0.94,0.94,0.94];
 ttstr0{1} = {'<html><b>Square</b>-shaped clusters</html>', ...
     '<html><b>Isotropic Gaussian</b>-shaped clusters</html>', ...
     '<html><b>Square</b>-shaped clusters</html>'};
@@ -28,22 +30,31 @@ meth = curr.clst_start{1}(1);
 shape = curr.clst_start{1}(2);
 Jmax = curr.clst_start{1}(3);
 mat = curr.clst_start{1}(4);
+clstDiag = curr.clst_start{1}(9);
 logl = curr.clst_start{1}(10);
 trs_k = curr.clst_start{2};
 
 % set all controls visible and enabled
-set([h.text_TDPlike h.popupmenu_TDPlike h.text_TDPstate ...
-    h.popupmenu_TDPstate h.text_TDPshape h.text_TDPiniVal h.text_TDPradius ...
-    h.edit_TDPiniValX h.edit_TDPiniValY h.pushbutton_TDPautoStart ...
-    h.edit_TDPradiusX h.edit_TDPradiusY h.togglebutton_TDPshape1 ...
-    h.togglebutton_TDPshape2 h.togglebutton_TDPshape3 ...
-    h.togglebutton_TDPshape4 h.tooglebutton_TDPmanStart ...
-    h.pushbutton_TDPupdateClust],'Enable','on', 'Visible','on');
+set([h.popupmenu_TA_clstMat h.checkbox_TA_clstDiag h.text_TDPlike ...
+    h.popupmenu_TDPlike h.text_TDPstate h.popupmenu_TDPstate ...
+    h.text_TDPshape h.text_TDPiniVal h.text_TDPradius h.edit_TDPiniValX ...
+    h.edit_TDPiniValY h.pushbutton_TDPautoStart h.edit_TDPradiusX ...
+    h.edit_TDPradiusY h.togglebutton_TDPshape1 h.togglebutton_TDPshape2 ...
+    h.togglebutton_TDPshape3 h.togglebutton_TDPshape4 ...
+    h.tooglebutton_TDPmanStart h.pushbutton_TDPupdateClust],'Enable','on', ...
+    'Visible','on');
 setProp(h.uipanel_TA_selectTool,'enable','on');
 
 % reset edit field background color
 set([h.edit_TDPiniValX h.edit_TDPradiusX h.edit_TDPiniValY ...
     h.edit_TDPradiusY], 'BackgroundColor', [1 1 1]);
+
+% set cluster contraint
+if mat~=1
+    set(h.checkbox_TA_clstDiag, 'enable', 'off');
+end
+set(h.popupmenu_TA_clstMat, 'value', mat);
+set(h.checkbox_TA_clstDiag, 'value', clstDiag);
 
 % set button for switching pointer
 tool = get(h.tooglebutton_TDPmanStart,'userdata');
@@ -64,69 +75,49 @@ h_tb = [h.togglebutton_TDPshape1,h.togglebutton_TDPshape2,...
     h.togglebutton_TDPshape3,h.togglebutton_TDPshape4];
 img = get(h_tb(1),'userdata');
 set(h_tb(1), 'Cdata', img{meth});
-set(h_tb(shape),'value',1);
-set(h_tb((1:size(h_tb,2))~=shape),'value',0);
+set(h_tb(shape),'value',1,'backgroundcolor',clrslct);
+set(h_tb((1:size(h_tb,2))~=shape),'value',0,'backgroundcolor',gray);
 for tb = 1:size(h_tb,2)
     set(h_tb(tb),'tooltipstring',ttstr0{tb}{meth});
 end
 
 % set starting parameters
-switch meth 
-    case 1 % kmean clustering
-        set([h.text_TDPlike,h.popupmenu_TDPlike,h_tb(4)],'Visible','off',...
-            'Enable','off');
-        
-        if mat
-            set(h.text_TDPstate, 'String', 'state');
-            set([h.edit_TDPiniValY h.edit_TDPradiusY], 'Enable', 'off');
-        else
-            set(h.text_TDPstate, 'String', 'cluster');
-        end
+if meth==2 % GM
+    set([h.text_TDPstate,h.popupmenu_TDPstate,h.text_TDPiniVal,...
+        h.text_TDPradius,h.edit_TDPiniValX,h.edit_TDPradiusX,...
+        h.edit_TDPiniValY,h.edit_TDPradiusY,h.pushbutton_TDPautoStart,...
+        h.tooglebutton_TDPmanStart],'Visible','off','Enable','off');
 
-        k = get(h.popupmenu_TDPstate, 'Value');
-        if k>Jmax
-            k = Jmax;
-        end
-        set(h.popupmenu_TDPstate, 'Value', k, 'String', ...
-            cellstr(num2str((1:Jmax)')));
-
-        set(h.edit_TDPiniValX, 'String', num2str(trs_k(k,1)));
-        set(h.edit_TDPradiusX, 'String', num2str(trs_k(k,3)));
-        if mat
-            set(h.edit_TDPiniValY, 'String', '');
-            set(h.edit_TDPradiusY, 'String', '');
-        else
-            set(h.edit_TDPiniValY, 'String', num2str(trs_k(k,2)));
-            set(h.edit_TDPradiusY, 'String', num2str(trs_k(k,4)));
-        end
-        
-        ud_selectToolPan(h_fig);
+    set(h.popupmenu_TDPlike,'value',logl);
     
-    case 2 % GMM-based clustering
-        set([h.text_TDPstate,h.popupmenu_TDPstate,h.text_TDPiniVal,...
-            h.text_TDPradius,h.edit_TDPiniValX,h.edit_TDPradiusX,...
-            h.edit_TDPiniValY,h.edit_TDPradiusY,h.pushbutton_TDPautoStart,...
-            h.tooglebutton_TDPmanStart],'Visible','off','Enable','off');
+else % k-mean or manual
 
-        set(h.popupmenu_TDPlike,'value',logl);
+    set([h.text_TDPlike,h.popupmenu_TDPlike,h_tb(4)],'Visible','off',...
+        'Enable','off');
 
-    case 3 % manual
-        set([h.text_TDPlike,h.popupmenu_TDPlike],'Visible','off','Enable',...
-            'off');
-        
+    if mat==1
+        set(h.text_TDPstate, 'String', 'state');
+        set([h.edit_TDPiniValY h.edit_TDPradiusY], 'Enable', 'off');
+    else
         set(h.text_TDPstate, 'String', 'cluster');
-        
-        k = get(h.popupmenu_TDPstate, 'Value');
-        if k>Jmax
-            k = Jmax;
-        end
-        set(h.popupmenu_TDPstate, 'Value', k, 'String', ...
-            cellstr(num2str((1:Jmax)')));
+    end
 
-        set(h.edit_TDPiniValX, 'String', num2str(trs_k(k,1)));
-        set(h.edit_TDPradiusX, 'String', num2str(trs_k(k,3)));
+    k = get(h.popupmenu_TDPstate, 'Value');
+    if k>Jmax
+        k = Jmax;
+    end
+    set(h.popupmenu_TDPstate, 'Value', k, 'String', ...
+        cellstr(num2str((1:Jmax)')));
+
+    set(h.edit_TDPiniValX, 'String', num2str(trs_k(k,1)));
+    set(h.edit_TDPradiusX, 'String', num2str(trs_k(k,3)));
+    if mat==1
+        set(h.edit_TDPiniValY, 'String', '');
+        set(h.edit_TDPradiusY, 'String', '');
+    else
         set(h.edit_TDPiniValY, 'String', num2str(trs_k(k,2)));
         set(h.edit_TDPradiusY, 'String', num2str(trs_k(k,4)));
+    end
 
-        ud_selectToolPan(h_fig);
+    ud_selectToolPan(h_fig);
 end

@@ -7,20 +7,34 @@ mat = prm.clst_start{1}(4);
 clstDiag = prm.clst_start{1}(9);
 
 nTrs = getClusterNb(J,mat,clstDiag);
-if ~mat
-    J = ceil(sqrt(J));
+if mat==2 % symmetrical
+    Jcalc = ceil(0.5+sqrt(0.25+2*J));
+elseif mat==3 % free
+    Jcalc = ceil(0.5+sqrt(1+4*J)/2);
+else % matrix
+    Jcalc = J;
 end
 
-delta = (maxval-minval)/(J+1);
-mu = minval + delta*(1:J)';
-tol = Inf*ones(J,1);
+delta = (maxval-minval)/Jcalc;
+mu = minval + delta*(0.5:(Jcalc-0.5))';
+tol = delta*ones(Jcalc,1)/2;
+prm.clst_start{1}(2) = 1; % square shape
 
-if mat
-    [j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
+if mat==1 % matrix
+    [j1,j2] = getStatesFromTransIndexes(1:nTrs,Jcalc,mat,clstDiag);
     prm.clst_start{2}(:,[1,2]) = [mu(j1),mu(j2)];
     prm.clst_start{2}(:,[3,4]) = [tol(j1),tol(j2)];
-else
-    [j1,j2] = getStatesFromTransIndexes(1:nTrs,J,true,true);
+    
+elseif mat==2 % symmetrical
+    [j1,j2] = getStatesFromTransIndexes(1:nTrs,Jcalc,true,false);
+    mu = [mu(j1),mu(j2)];
+    mu = mu(mu(:,1)<mu(:,2),:);
+    tol = [tol(j1),tol(j2)];
+    prm.clst_start{2}(:,[1,2]) = [mu(1:J,[1,2]);mu(1:J,[2,1])];
+    prm.clst_start{2}(:,[3,4]) = [tol(1:J,[1,2]);tol(1:J,[2,1])];
+    
+else % free
+    [j1,j2] = getStatesFromTransIndexes(1:nTrs,Jcalc,true,false);
     mu = [mu(j1),mu(j2)];
     tol = [tol(j1),tol(j2)];
     prm.clst_start{2}(:,[1,2]) = mu(1:nTrs,[1,2]);

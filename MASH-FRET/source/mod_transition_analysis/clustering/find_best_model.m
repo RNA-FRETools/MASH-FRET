@@ -9,7 +9,7 @@ function [model,L_t,BIC_t] = find_best_model(z,x,y,J_min,J_max,T_max,M, ...
 % J_max: maximum number of components in the Gaussian mixture to fit.
 % T_max: maximum number of model initialisations.
 % M: maximum number of E-M iterations.
-% mat: true to infer a square matrix of clusters, false to remove constraint of cluster centers
+% mat: (1) infer a square matrix of clusters, (2) infer symmetrical clusters separated by the TDP diagonal (3) no constraint on cluster centers
 % shape: cluster shape ('spherical','ellipsoid straight','ellipsoid diagonal','free')
 % plotIt: true to plot in real time the E-M results, false otherwise
 % lklhd: 1 for complete data likelihood, 2 for incomplete data likelihood
@@ -38,12 +38,12 @@ L_t = -Inf*ones(1,J_max); % likelihood = -Inf
 BIC_t = Inf*ones(1,J_max); % Bayesian information criterion = Inf
 
 % control J input
-if mat
-    if J_max<2
+if mat==1 % matrix
+    if J_min<2
         disp('Cluster matrix requires J>=2.');
-        return
+        J_min = 2;
     end
-elseif clstDiag
+elseif mat~=1 && clstDiag
     disp('Diagonal clusters are only for the cluster matrix option.');
     clstDiag = false;
 end

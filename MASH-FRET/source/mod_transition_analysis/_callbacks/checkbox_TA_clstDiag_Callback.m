@@ -21,4 +21,4 @@ p.proj{proj}.curr{tag,tpe} = curr;
 h.param.TDP = p;
 guidata(h_fig, h);
 
-ud_TDPmdlSlct(h_fig);
+updateFields(h_fig,'TDP');

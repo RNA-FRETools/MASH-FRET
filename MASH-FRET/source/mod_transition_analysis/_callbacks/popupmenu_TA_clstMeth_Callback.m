@@ -13,20 +13,9 @@ tag = p.curr_tag(proj);
 val = get(obj,'value');
 p.proj{proj}.curr{tag,tpe}.clst_start{1}(1) = val;
 
-if val~=2 % k-mean or manual
-    shape = p.proj{proj}.curr{tag,tpe}.clst_start{1}(2);
-    if shape>3
-        p.proj{proj}.curr{tag,tpe}.clst_start{1}(2) = 3;
-    end
-    if val==3 % manual
-        p.proj{proj}.curr{tag,tpe}.clst_start{1}(4) = false;
-        p.proj{proj}.curr{tag,tpe}.clst_start{1}(9) = false;
-        
-        % update cluster starting guess and colors
-        [p.proj{proj}.curr{tag,tpe},p.colList] = ...
-            ud_clstPrm(p.proj{proj}.curr{tag,tpe},p.colList);
-    end
-end
+% update cluster starting guess and colors
+[p.proj{proj}.curr{tag,tpe},p.colList] = ...
+    ud_clstPrm(p.proj{proj}.curr{tag,tpe},p.colList);
 
 h.param.TDP = p;
 guidata(h_fig, h);

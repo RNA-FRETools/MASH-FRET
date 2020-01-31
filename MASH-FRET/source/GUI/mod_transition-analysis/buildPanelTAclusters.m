@@ -30,6 +30,8 @@ file_icon1b = 'icon_square.png';
 file_icon2 = 'icon_ellips_straight.png';
 file_icon3 = 'icon_ellips_diagonal.png';
 file_icon4 = 'icon_ellips_free.png';
+str9 = {'matrix','symmetrical','free'};
+str10 = 'diagonal';
 str0 = '\default';
 str1 = 'cluster';
 str2 = 'shape:';
@@ -40,6 +42,8 @@ str6 = 'value';
 str7 = 'radius';
 str8 = {'complete data','incomplete data'};
 
+ttstr9 = wrapStrToWidth('<b>Cluster constraints:</b> <u>matrix:</u> cluster centers are combinations of states (state transition matrix); <u>symmetrical:</u> cluster centers have their projection on the opposite TDP half delimited by the diagonal; <u>free:</u> cluster centers are free of constraint.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr10 = wrapStrToWidth('<b>Diagonal clusters:</b> activate this option to cluster transitions located on the TDP diagonal; this is used to group together low-amplitude state transitions that are usually artefacts rising from noise discretization.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr0 = wrapStrToWidth('Make cluster centers <u>evenly spaced</u> (<b>starting guess</b>).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr1 = wrapStrToWidth('<b>Clear cluster selection</b> or switch to <b>zoom</b> pointer.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr2 = wrapStrToWidth('<b>Start clustering</b> with current method settings.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
@@ -48,7 +52,7 @@ ttstr4 = wrapStrToWidth('<b>Cluster x-radius</b>: used for <b>k-mean</b> or <b>m
 ttstr5 = wrapStrToWidth('<b>Cluster x-center</b>: used for <b>k-mean</b> or <b>manual</b> clustering',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr6 = wrapStrToWidth('<b>Cluster y-center</b>: used for <b>k-mean</b> or <b>manual</b> clustering',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr7 = wrapStrToWidth('<b>Cluster y-radius</b>: used for <b>k-mean</b> or <b>manual</b> clustering',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr8 = wrapStrToWidth('<b>Likelihood calculation:</b> with complete data, each transition is associated to one and only cluster (subject to underestimation of model complexity), whereas with incomplete data, transitions have a non-null probability to belong to each cluster (subject to overestimation of model complexity).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr8 = wrapStrToWidth('<b>Likelihood calculation:</b> <u>complete data:</u> each transition is associated to one and only cluster; <u>incomplete data:</u> transitions have a non-null probability to belong to each cluster (subject to overestimation of model complexity).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 
 % parents
 h_fig = h.figure_MASH;
@@ -56,6 +60,8 @@ h_pan = h.uipanel_TA_clusters;
 
 % dimensions
 pospan = get(h_pan,'position');
+wcb0 = getUItextWidth(str10,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
+wpop0 = pospan(3)-2*p.mg-wcb0-p.mg/fact;
 wtxt0 = pospan(3)-2*p.mg;
 wtxt1 = getUItextWidth(str2,p.fntun,p.fntsz1,'normal',p.tbl);
 wedit0 = (pospan(3)-2*p.mg-2*p.mg/fact)/3;
@@ -69,8 +75,25 @@ img3 = imread(file_icon3);
 img4 = imread(file_icon4);
 
 % GUI
+
 x = p.mg;
-y = pospan(4)-p.mgpan-htxt0;
+y = pospan(4)-p.mgpan-hpop0;
+
+h.popupmenu_TA_clstMat = uicontrol('style','popupmenu','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wpop0,hpop0],'string',str9,'tooltipstring',ttstr9,'callback',...
+    {@popupmenu_TA_clstMat_Callback,h_fig});
+
+x = x+wpop0+p.mg/fact;
+y = y+(hpop0-hedit0)/2;
+
+h.checkbox_TA_clstDiag = uicontrol('style','checkbox','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wcb0,hedit0],'string',str10,'tooltipstring',ttstr10,'callback',...
+    {@checkbox_TA_clstDiag_Callback,h_fig});
+
+x = p.mg;
+y = y-(hpop0-hedit0)/2-p.mg/2-htxt0;
 
 h.text_TDPlike = uicontrol('style','text','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wtxt0,htxt0],...

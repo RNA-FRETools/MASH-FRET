@@ -2,18 +2,20 @@ function tooglebutton_TDPselect_Callback(obj,evd,h_fig,ind)
 
 h = guidata(h_fig);
 
-tool = get(h.tooglebutton_TDPmanStart,'userdata');
-
 switch ind
     case 1 % reset tool
         ud_zoom([],[],'zoom',h_fig);
-        tool = 1;
+        set(h.tooglebutton_TDPmanStart,'userdata',1);
+        
+        ud_TDPmdlSlct(h_fig);
     
     case 2 % selection tool
         set(h.TTzoom,'enable','off');
         set(h.TTpan,'enable','off');
         set([h.zMenu_zoom,h.zMenu_pan],'checked','off');
-        tool = 2;
+        set(h.tooglebutton_TDPmanStart,'userdata',2);
+        
+        ud_TDPmdlSlct(h_fig);
         
     case 3 % reset selection
         p = h.param.TDP;
@@ -26,8 +28,8 @@ switch ind
         
         h.param.TDP = p;
         guidata(h_fig,h);
+        
+        updateFields(h_fig,'TDP');
 end
 
-set(h.tooglebutton_TDPmanStart,'userdata',tool);
 
-updateFields(h_fig,'TDP');

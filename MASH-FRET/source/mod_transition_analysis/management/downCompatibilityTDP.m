@@ -62,13 +62,13 @@ if isfield(prm,'kin_start') && size(prm.kin_start,2)>=2
     elseif size(prm.kin_start,1)==0
         prm.kin_start = def.kin_start;
     end
-    prm.clst_start{1}(4) = true; % state dependency
+    prm.clst_start{1}(4) = 1; % cluster constraint
 end
 
 % 28.1.2020: add cluster diagonal and log likelihood options
 if isfield(prm,'clst_start') && size(prm.clst_start,2)>=1 && ...
         size(prm.clst_start{1},2)<10
-    prm.clst_start{1} = cat(2,prm.clst_start{1},[true 1]); % state dependency
+    prm.clst_start{1} = cat(2,prm.clst_start{1},[true 1]);
 end
 
 % 29.1.2020: correct ill-initialized kinetic analysis results
@@ -173,6 +173,20 @@ if isfield(prm,'clst_res') && size(prm.clst_res,2)>=1 && ...
             end
             prm.clst_res{1}.pop{J} = prm.clst_res{1}.pop{J}/N;
         end
+    end
+end
+
+% 31.1.2020: adjust cluster constraint with "symmetrical" option
+if isfield(prm,'clst_start') && size(prm.clst_start,2)>=1 && ...
+        size(prm.clst_start{1},2)>=4
+    if islogical(prm.clst_start{1}(4))
+        if prm.clst_start{1}(4)
+            prm.clst_start{1}(4) = 1;
+        else
+            prm.clst_start{1}(4) = 0;
+        end
+    elseif prm.clst_start{1}(4)==0
+        prm.clst_start{1}(4) = 3;
     end
 end
 

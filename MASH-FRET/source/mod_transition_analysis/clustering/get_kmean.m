@@ -8,7 +8,7 @@ function [mu,clust] = get_kmean(mu_0, tol_0, N, z, x, y, mat, clstDiag, ...
 % z: vector or matrix to cluster
 % x: vector of x coordinates associated to z
 % y: vector of y coordinates associated to z
-% mat: infer a matrix of clusters
+% mat: (1) infer a matrix of clusters, (2) infer symmetrical clusters, (3) infer free-of-constrint clusters
 % clustDiag: include diagonal clusters in cluster matrix
 %
 % mu: [J-by-1 or 2] states or cluster (x,y) centers
@@ -18,12 +18,12 @@ clust = zeros(size(z));
 mu = [];
 
 J = size(mu_0,1);
-if mat
+if mat==1 % matrix or symmetrical
     if J<2
-        disp('Cluster matrix requires J>=2.');
+        disp('Cluster matrix or symmetrical clusters requires J>=2.');
         return
     end
-elseif clstDiag
+elseif mat~=1 && clstDiag
     disp('Diagonal clusters are only for the cluster matrix option.');
     clstDiag = false;
 end
@@ -60,18 +60,22 @@ n = 0; % Nb of k-mean iteration
 ok = 0;
 
 nTrs = getClusterNb(J,mat,clstDiag);
-[j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
-if ~mat
-    tol = tol_0;
-else
+if mat==1 % matrix
+    [j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
     tol = [tol_0(j1,1),tol_0(j2,1)];
+elseif mat==2 % symmetrical
+    tol = [tol_0(1:J,[1,2]);tol_0(1:J,[2,1])];
+else % free
+    tol = tol_0;
 end
 mu = mu_0;
 
 while ~ok && (n<N || (N==0 && n==N))
     
-    if mat
+    if mat==1 % matrix
         mu = [mu(j1,1),mu(j2,1)];
+    elseif mat==2 % symmetrical
+        mu = [mu(:,[1,2]);mu(:,[2,1])];
     end
    
     % re-initialize cluster matrix
@@ -108,7 +112,7 @@ while ~ok && (n<N || (N==0 && n==N))
     % Exclude all data pnts that belong to no cluster
     cvg = true;
     
-    if mat
+    if mat==1 % matrix
         sum_k = zeros(1,J);
         mu_new = zeros(J,1);
         for k = 1:nTrs
@@ -121,7 +125,26 @@ while ~ok && (n<N || (N==0 && n==N))
         end
         mu = mu_new./sum_k';
         
-    else
+    elseif mat==2 % symmetrical
+        sum_k = zeros(1,J);
+        mu_new = zeros(J,2);
+        for k = 1:nTrs
+            if k<=J
+                j = k;
+                cols = [1,2];
+            else
+                j = k-J;
+                cols = [2,1];
+            end
+            xy_k = xy(:,id_k==k); z_k = z(:,id_k==k);
+            mu_new(j,cols) = mu_new(j,cols) + ...
+                sum(repmat(z_k,[2,1]).*xy_k,2)';
+            sum_k(j) = sum_k(j) + sum(z_k);
+            clust(id_k==k) = k;
+        end
+        mu = mu_new./repmat(sum_k',[1,2]);
+        
+    else % free
         for k = 1:nTrs
             if ~isempty(find(isnan(tol(k,:)),1))
                 continue
@@ -151,12 +174,20 @@ clust = reshape(clust, numel(unique(y)), numel(unique(x)));
 
 [j_excl,o,o] = find(isnan(mu));
 k_excl = [];
-if mat
+if mat==1 % matrix
     for k = 1:nTrs
         if sum(j_excl==j1(k)) || sum(j_excl==j2(k))
             k_excl = cat(2,k_excl,k);
         end
-    end
+    end   
+    
+elseif mat==2 % symmetrical
+    for k = 1:nTrs
+        if sum(j_excl==k) || sum(j_excl==(k-J))
+            k_excl = cat(2,k_excl,k);
+        end
+    end   
+    
 else
     k_excl = j_excl;
 end

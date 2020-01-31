@@ -13,7 +13,6 @@ res.pop = {};
 % default
 M_def = 500; % default max. number of maximization iteration
 plotIter_def = 0; % plot/not EM results while iterating
-Jmin_def = 2; % minimum configuration
 
 % collect processing parameters
 meth = clust_prm{1}(1); % clustering method
@@ -34,11 +33,23 @@ onecount = plot_prm{3}(1); % one/total transition count per molecule
 gconv = plot_prm{3}(2); % one/total transition count per molecule
 incldiag = plot_prm{3}(3); % include last states in sequences
 
+% minimum configuration
+if mat==1
+    Jmin_def = 2; 
+else
+    Jmin_def = 1;
+end
+
 [mols,o,o] = unique(dt_bin(:,4));
 
-if meth==1 && mat
-    [mu_0,id] = unique(mu_0(:,1),'stable'); % states only
-    tol = tol(id,1);
+if meth==1
+    if mat==1
+        [mu_0,id] = unique(mu_0(:,1),'stable'); % states only
+        tol = tol(id,1);
+    elseif mat==2
+        mu_0 = mu_0(1:Jmax,:); % one symmetrical projection only
+        tol = tol(1:Jmax,:);
+    end
 end
 tol(isinf(tol)) = 2*(lim(2)-lim(1));
 
@@ -142,7 +153,7 @@ for k = 1:n_spl
             end
             
             % update action
-            if n_spl==1
+            if ~boba
                 setContPan(cat(2,'Inferred model: J=',num2str(Jopt),...
                     ', states=',sprintf(repmat('%d ',[1,size(mu_spl,1)]),...
                     mu_spl')),'success',h_fig);
@@ -159,13 +170,13 @@ for k = 1:n_spl
             [model,L_t,BIC_t] = find_best_model(TDP_spl,x,x,Jmin_def,Jmax,...
                 T, M_def,mat,shape_str,0,plotIter_def,clstDiag,logl);
             
+            % find sample's best inferred model
+            [BIC_min,Jopt] = min(BIC_t);
+            
             % save inferred models for original TDP
             if k==1
                 origin = model;
             end
-            
-            % find sample's best inferred model
-            [BIC_min,Jopt] = min(BIC_t);
             
             if ~isempty(model{Jopt})
                 % save sample's best inferred model
@@ -177,7 +188,7 @@ for k = 1:n_spl
                 param{k} = {mu_spl clust_spl BIC_spl a_spl sig_spl};
                 
                 % update action
-                if n_spl==1
+                if ~boba
                     setContPan(cat(2,'Most sufficient model: J=',num2str(Jopt),...
                         ', LogL=',num2str(L_t(Jopt)),', BIC=',...
                         num2str(BIC_t(Jopt))),'success',h_fig);
@@ -195,10 +206,16 @@ for k = 1:n_spl
         case 3 % manual
             
             % cluster data
-            clust_spl = manualClustering(TDP_spl,x,x,mu_0,tol,shape);
+            clust_spl = simpleClustering(TDP_spl,x,x,mu_0,tol,shape);
             
             % determine model configuration
-            Jopt = size(mu_0,1);
+            if mat==1
+                Jopt = size(unique(mu_0(:,1),'stable'),1); % states only
+            elseif mat==2
+                Jopt = size(mu_0,1)/2; % one symmetrical projection only
+            else
+                Jopt = size(mu_0,1);
+            end
             
             % save sample's best inferred model
             param{k} = {mu_0};
@@ -214,7 +231,7 @@ for k = 1:n_spl
             end
             
             % update action
-            if n_spl==1
+            if ~boba
                 setContPan('Manual clustering completed.','success',h_fig);
             end
     end
@@ -228,10 +245,6 @@ for k = 1:n_spl
         if err
             break
         end
-    end
-    
-    if n_spl>1
-        setContPan('Bootstrap clustering competed !','process',h_fig);
     end
 end
 
@@ -299,11 +312,11 @@ res.BIC = Inf(1,Jmax);
 res.fract = cell(1,Jmax);
 res.pop = cell(1,Jmax);
 
-if meth==1
+if meth==2
+    Jmin = Jmin_def;
+else
     Jmin = Jopt;
     Jmax = Jopt;
-else
-    Jmin = Jmin_def;
 end
 
 for J = Jmin:Jmax
@@ -341,11 +354,18 @@ for J = Jmin:Jmax
     res.a{J} = origin{J}.w;
     res.clusters{J} = dt_bin_new;
     res.BIC(J) = origin{J}.BIC;
-    if mat
-        res.mu{J} = [origin{J}.mu(j1,1),origin{J}.mu(j2,1)];
+    res.mu{J} = origin{J}.mu;
+    if mat==1
+        if meth~=3
+            res.mu{J} = [origin{J}.mu(j1,1),origin{J}.mu(j2,1)];
+        end
         js = 1:J;
+    elseif mat==2
+        if meth~=3
+            res.mu{J} = [origin{J}.mu;flip(origin{J}.mu,2)];
+        end
+        js = reshape([j1(1:J),j2(1:J)]',1,nTrs);
     else
-        res.mu{J} = origin{J}.mu;
         js = reshape([j1,j2]',1,2*nTrs);
     end
     res.fract{J} = zeros(size(js,2),1);
@@ -368,5 +388,8 @@ res.boba_K = [Jopt_mean Jopt_sig];
 
 if Jopt<=0
     setContPan('Clustering failed','error', h_fig);
+end
+if boba
+    setContPan('Bootstrap clustering competed !','process',h_fig);
 end
 

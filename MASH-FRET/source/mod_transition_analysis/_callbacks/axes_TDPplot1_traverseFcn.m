@@ -36,6 +36,7 @@ if isDown && ~isempty(pos0)
     % get cluster shape
     shape = p.proj{proj}.curr{tag,tpe}.clst_start{1}(2);
     
+    % get shape radius
     wslct = abs(pos0(1)-x);
     hslct = abs(pos0(2)-y);
     if shape==3 % diagonal ellipse
@@ -54,7 +55,7 @@ if isDown && ~isempty(pos0)
     end
 
     % get cluster index(es)
-    if mat
+    if mat==1 % matrix
         state = get(h.popupmenu_TDPstate, 'Value');
         nTrs = getClusterNb(J,mat,clstDiag);
         [j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
@@ -64,12 +65,20 @@ if isDown && ~isempty(pos0)
         p.proj{proj}.curr{tag,tpe}.clst_start{2}(ky,2) = pos0(1)+(x-pos0(1))/2;
         p.proj{proj}.curr{tag,tpe}.clst_start{2}(kx,3) = halfw;
         p.proj{proj}.curr{tag,tpe}.clst_start{2}(ky,4) = halfw;
-    else
+        
+    elseif mat==2 % symmetrical
         k = get(h.popupmenu_TDPstate, 'Value');
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k,1) = pos0(1)+(x-pos0(1))/2;
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k,2) = pos0(2)+(y-pos0(2))/2;
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k,3) = halfw;
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k,4) = halfh;
+        k1 = k;
+        k2 = k+J;
+        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k1,[1,2]) = pos0+([x,y]-pos0)/2;
+        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k2,[2,1]) = pos0+([x,y]-pos0)/2;
+        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k1,[3,4]) = [halfw,halfh];
+        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k2,[4,3]) = [halfw,halfh];
+        
+    else % free
+        k = get(h.popupmenu_TDPstate, 'Value');
+        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k,[1,2]) = pos0+([x,y]-pos0)/2;
+        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k,[3,4]) = [halfw,halfh];
     end
 
     h.param.TDP = p;

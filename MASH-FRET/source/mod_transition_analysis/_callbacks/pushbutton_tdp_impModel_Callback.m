@@ -11,8 +11,14 @@ tpe = p.curr_type(proj);
 tag = p.curr_tag(proj);
 curr = p.proj{proj}.curr{tag,tpe};
 def = p.proj{proj}.curr{tag,tpe};
+mat = p.proj{proj}.prm{tag,tpe}.clst_start{1}(4);
 
-curr.kin_start{2}(1) = get(h.popupmenu_tdp_model,'Value') + 1;
+if mat==1
+    J = get(h.popupmenu_tdp_model,'Value') + 1;
+else
+    J = get(h.popupmenu_tdp_model,'Value');
+end
+curr.kin_start{2}(1) = J;
 curr = ud_kinPrm(curr,def,curr.kin_start{2}(1));
 
 h.param.TDP.proj{proj}.curr{tag,tpe} = curr;

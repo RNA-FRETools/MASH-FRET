@@ -1,4 +1,4 @@
-function clust = manualClustering(z,x,y,mu,tol,shape)
+function clust = simpleClustering(z,x,y,mu,tol,shape)
 
 if size(z,1)~=1 && size(z,2)~=1
     % vectorize martix data (x,y,z)

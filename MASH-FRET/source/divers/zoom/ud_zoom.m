@@ -46,6 +46,13 @@ switch action
         elseif curr_axes == h.axes_TDPplot1
             updateTAplots(h_fig);
             
+        elseif curr_axes == h.axes_tdp_BIC
+            p = h.param.TDP;
+            proj = p.curr_proj;
+            tag = p.curr_tag(proj);
+            tpe = p.curr_type(proj);
+            plotBIC_TA(h.axes_tdp_BIC,p.proj{proj}.prm{tag,tpe});
+            
         else
             xlim(curr_axes, 'auto');
             ylim(curr_axes, 'auto');
