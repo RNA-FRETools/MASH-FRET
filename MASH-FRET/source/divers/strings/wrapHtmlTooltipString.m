@@ -33,7 +33,11 @@ while char_prev<N
         str_br = cat(2,str_br,str((char_prev+1):end));
         break
     else
-        char_next = poschar(pos_prev+nmax)+1;
+        if poschar(pos_prev+nmax)==N
+            char_next = N;
+        else
+            char_next = poschar(pos_prev+nmax)+1;
+        end
         while ~strcmp(str(char_next),' ') && char_next>0
             char_next = char_next-1;
         end
@@ -50,10 +54,11 @@ while char_prev<N
     end
 end
 
-if ~strcmp(str_br(1:length('<html>')),'<html>')
+if N<length('<html>') || ~strcmp(str_br(1:length('<html>')),'<html>')
     str_br = cat(2,'<html>',str_br);
 end
-if ~strcmp(str_br((end-length('</html>')+1):end),'</html>')
+if N<length('</html>') || ...
+        ~strcmp(str_br((end-length('</html>')+1):end),'</html>')
     str_br = cat(2,str_br,'</html>');
 end
 

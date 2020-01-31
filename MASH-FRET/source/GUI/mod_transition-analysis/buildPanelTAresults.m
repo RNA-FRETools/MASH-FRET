@@ -37,7 +37,6 @@ str5 = '>>';
 str6 = 'reset';
 ttstr0 = wrapStrToWidth('<b>Model complexity:</b> optimum number of states; when BOBA FRET activated, the bootstrap mean is shown here.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr1 = wrapStrToWidth('<b>Sample variability:</b> when BOBA FRET activated, the bootstrap standard deviation of optimum number of states is shown here.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('Select an inferred <b>state configuration</b> to show on the TDP plot: configurations are labelled with the corresponding number of states.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr3 = wrapStrToWidth('<b>Export transition clusters</b> from the selected state configuration to panel "State trasition rates" for dwell time analysis.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr4 = wrapStrToWidth('<b>Delete clustering</b> results.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 
@@ -114,7 +113,7 @@ y = y-(hpop0-htxt0)/2;
 
 h.popupmenu_tdp_model = uicontrol('style','popupmenu','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wpop0,hpop0],'string',str4,'tooltipstring',ttstr2,'callback',...
+    [x,y,wpop0,hpop0],'string',str4,'callback',...
     {@popupmenu_tdp_model_Callback,h_fig});
 
 x = x+wpop0+p.mg/fact;

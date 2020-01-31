@@ -18,7 +18,6 @@ end
 delta = (maxval-minval)/Jcalc;
 mu = minval + delta*(0.5:(Jcalc-0.5))';
 tol = delta*ones(Jcalc,1)/2;
-prm.clst_start{1}(2) = 1; % square shape
 
 if mat==1 % matrix
     [j1,j2] = getStatesFromTransIndexes(1:nTrs,Jcalc,mat,clstDiag);

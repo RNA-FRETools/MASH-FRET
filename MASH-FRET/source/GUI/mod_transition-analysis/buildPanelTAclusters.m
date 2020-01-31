@@ -44,10 +44,9 @@ str8 = {'complete data','incomplete data'};
 
 ttstr9 = wrapStrToWidth('<b>Cluster constraints:</b> <u>matrix:</u> cluster centers are combinations of states (state transition matrix); <u>symmetrical:</u> cluster centers have their projection on the opposite TDP half delimited by the diagonal; <u>free:</u> cluster centers are free of constraint.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr10 = wrapStrToWidth('<b>Diagonal clusters:</b> activate this option to cluster transitions located on the TDP diagonal; this is used to group together low-amplitude state transitions that are usually artefacts rising from noise discretization.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr0 = wrapStrToWidth('Make cluster centers <u>evenly spaced</u> (<b>starting guess</b>).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapStrToWidth('Make cluster centers <u>evenly spaced</u>.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr1 = wrapStrToWidth('<b>Clear cluster selection</b> or switch to <b>zoom</b> pointer.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr2 = wrapStrToWidth('<b>Start clustering</b> with current method settings.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('Select a state to configure',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr4 = wrapStrToWidth('<b>Cluster x-radius</b>: used for <b>k-mean</b> or <b>manual</b> clustering',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr5 = wrapStrToWidth('<b>Cluster x-center</b>: used for <b>k-mean</b> or <b>manual</b> clustering',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr6 = wrapStrToWidth('<b>Cluster y-center</b>: used for <b>k-mean</b> or <b>manual</b> clustering',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
@@ -126,7 +125,7 @@ h.popupmenu_TDPlike = uicontrol('style','popupmenu','parent',h_pan,...
 h.popupmenu_TDPstate = uicontrol('style','popupmenu','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wedit0,hpop0],'callback',{@popupmenu_TDPstate_Callback,h_fig},...
-    'string',str4,'tooltipstring',ttstr3,'visible','off');
+    'string',str4,'visible','off');
 
 y = y+(hpop0-hedit0)/2;
 x = x+wedit0+p.mg/fact;

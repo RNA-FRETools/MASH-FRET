@@ -1,6 +1,11 @@
 function ud_resultsPan(h_fig)
 % Set results panel to proper values
 
+% defaults
+ttstr0{1} = wrapHtmlTooltipString('Select the <b>inferred model</b> to show on the TDP plot: labels correspond to the <u>number of states</u>.');
+ttstr0{2} = wrapHtmlTooltipString('Select the <b>inferred model</b> to show on the TDP plot: labels correspond to the  <u>number of clusters on one side of the TDP diagonal</u>.');
+ttstr0{3} = wrapHtmlTooltipString('Select the <b>inferred model</b> to show on the TDP plot: labels correspond to the  <u>number of clusters</u>.');
+
 % collect interface parameters
 h = guidata(h_fig);
 p = h.param.TDP;
@@ -81,7 +86,8 @@ if meth==2
         str_pop = cellstr(num2str((1:Jmax)'));
         val = J;
     end
-    set(h.popupmenu_tdp_model,'String',str_pop,'Value',val);
+    set(h.popupmenu_tdp_model,'String',str_pop,'Value',val,'TooltipString',...
+        ttstr0{mat});
 
 else
     set([h.text_tdp_showModel,h.text_tdp_Jequal,h.popupmenu_tdp_model,...
