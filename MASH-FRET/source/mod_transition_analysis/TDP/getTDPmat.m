@@ -45,6 +45,11 @@ oneval = prm(4);
 adj = prm(5);
 incldiag = prm(6);
 
+if lim(1)==lim(2) || bin==0
+    str = 'TDP limits or bin size are ill-defined.';
+    return
+end
+
 % get molecule indexes
 N = size(m_incl,2);
 mols = 1:N;
