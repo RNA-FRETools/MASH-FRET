@@ -2,6 +2,7 @@ function [gamma,beta,ok] = ESlinreg(ES,prm)
 
 % default
 mincount = 0;
+fact = 5; % weighing factor
 
 ok = true;
 
@@ -21,7 +22,7 @@ S(w<=mincount) = [];
 w(w<=mincount) = [];
 
 try
-    mdl = fitlm(E,S,'weights',w);
+    mdl = fitlm(E,S,'weights',(w/sum(w)).^fact);
 catch err
     ok = false;
     return
