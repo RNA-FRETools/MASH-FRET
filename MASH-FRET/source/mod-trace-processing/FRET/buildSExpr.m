@@ -21,16 +21,13 @@ if A<=D
     return
 end
 
-str = sprintf('1 / (1 + beta_%i%i*(I_%i%i',D,A,A,A);
+str = sprintf('1 / (1 + (I_%i%i',A,A);
 
-for i = 1:(A-1)
-    str = cat(2,str,sprintf(' + gamma_%i%i*I_%i%i',i,A,i,A));
-end
 for i = (A+1):K
     str = cat(2,str,sprintf(' + I_%i%i/gamma_%i%i',i,A,A,i));
 end
 
-str = cat(2,str,sprintf(') / (I_%i%i + ',A,D));
+str = cat(2,str,sprintf(') / (beta_%i%i*(I_%i%i',D,A,A,D));
 
 for i = 1:(A-1)
     str = cat(2,str,sprintf(' + gamma_%i%i*I_%i%i',i,A,i,D));
@@ -39,5 +36,5 @@ for i = (A+1):K
     str = cat(2,str,sprintf(' + I_%i%i/gamma_%i%i',i,D,A,i));
 end
 
-str = cat(2,str,'))');
+str = cat(2,str,')))');
 
