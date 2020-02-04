@@ -91,7 +91,7 @@ if K>1 && isTrans
             kx = kx_all(1:K,1:K,n);
             
             % identify zero sums in rate matrix
-            if ~sum(kx,1) || ~sum(kx,2)
+            if sum(sum(kx,1)>0)~=K || sum(sum(kx,2)>0)~=K
                 setContPan(cat(2,'Simulation aborted: at least one ',...
                     'transition from and to each state must be defined ',...
                     '(rate non-null).'),'error',h_fig);
