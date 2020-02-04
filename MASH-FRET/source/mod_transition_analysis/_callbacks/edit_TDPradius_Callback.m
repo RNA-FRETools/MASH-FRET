@@ -29,7 +29,7 @@ mat = curr.clst_start{1}(4);
 clstDiag = curr.clst_start{1}(9);
 
 % get cluster index(es)
-if mat
+if mat==1 % matrix
     state = get(h.popupmenu_TDPstate, 'Value');
     nTrs = getClusterNb(J,mat,clstDiag);
     [j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
@@ -37,6 +37,14 @@ if mat
     ky = j2==state;
     p.proj{proj}.curr{tag,tpe}.clst_start{2}(kx,3) = val;
     p.proj{proj}.curr{tag,tpe}.clst_start{2}(ky,4) = val;
+    
+elseif mat==2 % symmetrical
+    k = get(h.popupmenu_TDPstate, 'Value');
+    kinv = k+J;
+    indinv = find([3,4]~=(ind+2))+2;
+    p.proj{proj}.curr{tag,tpe}.clst_start{2}(k,ind+2) = val;
+    p.proj{proj}.curr{tag,tpe}.clst_start{2}(kinv,indinv) = val;
+    
 else
     k = get(h.popupmenu_TDPstate, 'Value');
     p.proj{proj}.curr{tag,tpe}.clst_start{2}(k,2+ind) = val;
