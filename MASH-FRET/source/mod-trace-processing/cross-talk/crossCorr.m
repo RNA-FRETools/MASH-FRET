@@ -15,7 +15,7 @@ labels = p.proj{proj}.labels;
 
 isCrossCorr = ~isempty(p.proj{proj}.intensities_crossCorr) && ...
     ~all(sum(sum(isnan(p.proj{proj}.intensities_crossCorr(:, ...
-    ((mol-1)*nC+1):mol*nC,:)),2),3));
+    ((mol-1)*nChan+1):mol*nChan,:)),2),3));
 
 if ~isCrossCorr
     
