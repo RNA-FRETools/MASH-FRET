@@ -76,6 +76,27 @@ For more information about the influence of limits and bin size on the analysis,
 
 ---
 
+## Include last states
+
+Activate this option to make last states on sequences, and thus static state sequences, visible in the TDP.
+
+In the TDP, only state transitions are represented as a 2D-point with coordinates (state1,state2) with state1 being the state prior transition and state2, after transition. 
+State sequences made of only one state (or static) can not be represented in the TDP with the regular coordinate system and are therefore excluded from the TDP and dwell time histograms.
+
+Including statics allows to represent one-state sequences in the TDP by positioning them on the diagonal (stae1=state2).
+This positioning is performed for every state which following state is unknown (last states of sequences).
+
+To work with state transitions only, and thus, exclude static state sequences, deactivate this option.
+
+For more information about including static state sequences, please refer to 
+[Build transition density plot](../workflow.html#build-transition-density-plot) in Transition analysis workflow.
+
+**Note:** *Including statics has an effect on transition densities used in clustering and on the dwell time histogram of clusters including these "transitions"* in
+[State transition rates](panel-state-transition-rates.html).
+
+
+---
+
 ## Re-arrange state sequences
 
 Activate this option to re-build state sequences only with states visible the TDP.

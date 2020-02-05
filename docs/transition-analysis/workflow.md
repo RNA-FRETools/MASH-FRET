@@ -100,6 +100,12 @@ This has for effect to smooth the cluster's edges and to enhance the Gaussian sh
 
 <a href="../assets/images/figures/TA-workflow-scheme-tdp-processing.png" title="TDP processing"><img src="../assets/images/figures/TA-workflow-scheme-tdp-processing.png" alt="TDP processing"></a>
 
+As the TDP is built out of *state1*-to-*state2* transitions, static state sequences are naturally not represented and the corresponding state might therefore be omitted in the final cluster configuration.
+
+Static state sequences, and more generally last states of each sequence, can be represented as a *state1*-to-*state1* "transition", *i.e*, on the *state1*=*state2* diagonal of the TDP, and thus participate to TDP clustering.
+
+<a href="../assets/images/figures/TA-workflow-scheme-incl-last-states.png" title="TDP processing"><img src="../assets/images/figures/TA-workflow-scheme-incl-last-states.png" alt="Include last state in sequences"></a>
+
 To build the TDP:
 
 {: .procedure }
@@ -115,6 +121,7 @@ To build the TDP:
    [Transition count](panels/panel-transition-density-plot.html#transition-count)  
    [Re-arrange sequences](panels/panel-transition-density-plot.html#re-arrange-sequences)  
    [Gaussian filter](panels/panel-transition-density-plot.html#gaussian-filter)  
+   [Include last states](panels/panel-transition-density-plot.html#include-last-states)  
      
 1. Update the TDP and display by pressing 
    ![Update](../../assets/images/gui/TA-but-update.png "Update").
