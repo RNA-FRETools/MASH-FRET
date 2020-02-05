@@ -226,7 +226,10 @@ if tdp_png_conv
     end
 end
 
-isRes = ~isempty(prm.clst_res{1});
+isRes = false;
+if isfield(prm,'clst_res')
+    isRes = ~isempty(prm.clst_res{1});
+end
 if isRes && tdp_clust
     
     % build file name
