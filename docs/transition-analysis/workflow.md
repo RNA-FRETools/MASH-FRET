@@ -230,8 +230,8 @@ with the stretching exponent
 The outcome of such analysis are single estimates of the transition rate coefficients.
 One way to estimate the variability of fitting parameters across the sample is to use the bootstrap-based analysis called BOBA-FRET.
 BOBA-FRET applies to all fit functions, and infers the bootstrap means and bootstrap standard deviations of all fitting parameters for the given sample, including 
-[*&#956;*<sub>*k*,*j*,*j'*</sub>](){: .math_var } and 
-[*&#963;*<sub>*k*,*j*,*j'*</sub>](){: .math_var }, the mean and standard deviation for transition rate coefficients.
+[*&#956;*<sub>*j*,*j'*</sub>](){: .math_var } and 
+[*&#963;*<sub>*j*,*j'*</sub>](){: .math_var }, the mean and standard deviation for transition rate coefficients.
 
 To determine the transition rate coefficients:
 

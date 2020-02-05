@@ -160,7 +160,9 @@ Generaized apparent FRET efficiency (equation 15):
 	and (equation 02):
 	p\left ( J\right ) = p_{\textup{means}} + p_{\textup{widths}} + p_{\textup{weights}} = 3J - 1
 	and (equation 03):
-	p\left ( J\right ) = p_{\textup{means}} + p_{\textup{widths}} + p_{\textup{weights}} = J + p_{\textbf{widths}} + J^{2} - 1
+	p\left ( K\right ) = p_{\textup{means}}\left ( K\right ) + p_{\textup{widths}}\left ( K\right ) + p_{\textup{weights}}\left ( K\right )
+	and (equation 04):
+	BIC\left (K \right ) = p\left (K \right ) \times \textup{log}( N_{\textup{total}} ) - \textup{log}\left [ likelihood\left (K \right ) \right ]
 
 >> Histogram populations:
 	X_{j} = \frac{S_{j}}{\sum_{j'=1}^{J}( S_{j'})}
@@ -169,7 +171,7 @@ Generaized apparent FRET efficiency (equation 15):
 	P_{j} = A_{j}\textup{exp}\left [-\frac{(x-\mu_{j})^{2}}{2\sigma_{j}^{2}} \right ]
 
 >> TDP Gaussian mixture model:
-	TDP( val_{i};val_{i'} ) = \sum_{j=1}^{J} \sum_{j'=1}^{J} a_{j,j'}G_{j,j'}( val_{i};val_{i'} )
+	TDP( val_{i};val_{i'} ) = \sum_{k=1}^{K} a_{k}G_{k}( val_{i};val_{i'} )
 
 >> Kinetic analysis:
 Mono-exponential fit (equation 01):
