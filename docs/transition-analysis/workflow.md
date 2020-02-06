@@ -152,6 +152,8 @@ For this particular cluster configuration, the TDP is modelled with
 The number 
 [*J*](){: .math_var } is here called the model complexity and depends on the type of constraint applied to the cluster configuration.
 
+<img src="../../assets/images/figures/TA-panel-state-configuration-clusters-config.png">
+
 In the case of well-separated transition clusters, 
 [*K*](){: .math_var } is easily determined by eye, where a simple partition algorithm, like k-mean or manual clustering, can be used to cluster data.
 However, overlapping clusters can't be accurately distinguished and need a more elaborated method.
