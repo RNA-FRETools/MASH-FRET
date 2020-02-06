@@ -14,7 +14,6 @@ if ind==5 % Hirsch or PGN-model, EM register gain
         set(obj, 'BackgroundColor', [1 1 1]);
         h.param.sim.camNoise(ind,5) = val;
         guidata(h_fig, h);
-        updateFields(h_fig, 'sim');
     end
     
 else % overall gain
@@ -26,6 +25,8 @@ else % overall gain
         set(obj, 'BackgroundColor', [1 1 1]);
         h.param.sim.camNoise(ind,5) = val;
         guidata(h_fig, h);
-        updateFields(h_fig, 'sim');
     end
 end
+
+ud_S_vidParamPan(h_fig);
+

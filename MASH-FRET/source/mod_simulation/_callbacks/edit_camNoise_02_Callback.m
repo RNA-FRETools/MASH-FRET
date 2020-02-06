@@ -17,7 +17,6 @@ switch ind
             set(obj, 'BackgroundColor', [1 1 1]);
             h.param.sim.camNoise(ind,2) = val;
             guidata(h_fig, h);
-            updateFields(h_fig, 'sim');
         end
 
     case 3 % User defined, A_CIC
@@ -30,7 +29,6 @@ switch ind
             set(obj, 'BackgroundColor', [1 1 1]);
             h.param.sim.camNoise(ind,2) = val;
             guidata(h_fig, h);
-            updateFields(h_fig, 'sim');
         end
 
     case 4 % None, none
@@ -44,6 +42,7 @@ switch ind
             set(obj, 'BackgroundColor', [1 1 1]);
             h.param.sim.camNoise(ind,2) = val;
             guidata(h_fig, h);
-            updateFields(h_fig, 'sim');
         end
 end
+
+ud_S_vidParamPan(h_fig);

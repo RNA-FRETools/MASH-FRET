@@ -10,5 +10,5 @@ else
     h = guidata(h_fig);
     h.param.sim.z0Dec = val;
     guidata(h_fig, h);
-    updateFields(h_fig, 'sim');
+    ud_S_expSetupPan(h_fig);
 end

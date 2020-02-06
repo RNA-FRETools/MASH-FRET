@@ -30,4 +30,4 @@ h = guidata(h_fig);
 set(h.popupmenu_states, 'Value', 1);
 set(h.edit_stateVal, 'String', num2str(h.param.sim.stateVal(1)));
 
-updateFields(h_fig, 'sim');
+ud_S_moleculesPan(h_fig);

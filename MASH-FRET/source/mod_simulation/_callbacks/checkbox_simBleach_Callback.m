@@ -13,5 +13,5 @@ if isfield(h,'results') && isfield(h.results,'sim')
 end
 
 guidata(h_fig, h);
-guidata(h_fig, h);
-updateFields(h_fig, 'sim');
+
+ud_S_moleculesPan(h_fig);

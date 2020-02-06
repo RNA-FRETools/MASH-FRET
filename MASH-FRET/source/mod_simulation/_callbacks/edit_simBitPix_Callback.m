@@ -10,5 +10,5 @@ else
     h = guidata(h_fig);
     h.param.sim.bitnr = val;
     guidata(h_fig, h);
-    updateFields(h_fig, 'sim');
+    ud_S_vidParamPan(h_fig);
 end

@@ -25,4 +25,4 @@ guidata(h_fig, h);
 
 % set GUI to proper values
 set(obj, 'BackgroundColor', [1 1 1]);
-updateFields(h_fig, 'sim');
+ud_S_moleculesPan(h_fig);

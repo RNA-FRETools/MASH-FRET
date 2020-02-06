@@ -10,5 +10,5 @@ else
     h.param.sim.pixDim = val;
     h.param.sim.matGauss = cell(1,4);
     guidata(h_fig, h);
-    updateFields(h_fig, 'sim');
+    ud_S_vidParamPan(h_fig);
 end

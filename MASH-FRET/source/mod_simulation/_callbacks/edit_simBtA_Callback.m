@@ -11,5 +11,5 @@ else
     h = guidata(h_fig);
     h.param.sim.btA = val;
     guidata(h_fig, h);
-    updateFields(h_fig, 'sim');
+    ud_S_moleculesPan(h_fig);
 end
