@@ -119,10 +119,6 @@ xlim(h.axes_example_mov,[0,p.movDim(1)]);
 ylim(h.axes_example_mov,[0,p.movDim(2)]);
 caxis(h.axes_example_mov,[min(min(img)),max(max(img))]);
 ylabel(h.cb_example_mov, [units,' counts/time bin']);
-posaxes = get(h.axes_example_mov,'position');
-poscb = get(h.cb_example_mov,'position');
-poscb([2,4]) = posaxes([2,4]);
-% set(h.cb_example_mov,'position',poscb);
 
 % make all axes visible
 set([h.axes_example,h.axes_example_hist,h.axes_example_mov,...
