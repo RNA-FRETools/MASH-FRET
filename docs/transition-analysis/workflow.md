@@ -133,25 +133,26 @@ To build the TDP:
 
 Identifying the most probable configuration of clusters is equivalent to identifying the most probable state configuration.
 
-Ideally, the TDP can be partitioned into a <u>cluster matrix</u> with 
+Ideally, the TDP can be partitioned into a <u>cluster matrix</u> made of 
 [*K* = *J*<sup>2</sup>](){: .math_var } clusters, with 
 [*J*](){: .math_var } the number of states. 
-The transitions close to the diagonal, *i. e.*, the small-amplitude state jumps rising from noise discretization, are grouped together with on-diagonal one-state sequences in diagonal clusters to prevent the participation of noise-induced transitions to dwell-time histograms and leave the resulting transition rate coefficients unbiased.
+The transitions close to the diagonal, *i. e.*, the small-amplitude state jumps rising from noise discretization, are grouped with on-diagonal one-state sequences into diagonal clusters in order to prevent the participation of noise-induced transitions to dwell-time histograms and to leave state transition rate coefficients unbiased.
 
 However, modelling the TDP with a matrix of clusters presumes that all possible transitions between all states occur, which is usually not the case. 
-Although the majority of TDPs do not resemble a cluster matrix, they do share a common feature which is the <u>symmetry of clusters</u> relative to their diagonal. 
+Although the majority of TDPs do not resemble a cluster matrix, they do share a common feature which is the <u>symmetry of clusters</u> relative to the TDP diagonal. 
 In this case, one TDP can be modelled with 
-[*K* = 2*J*](){: .math_var } clusters, with 
-[*J*](){: .math_var } the number of clusters on one side of the TDP diagonal.
+[*K* = 2*J*](){: .math_var } clusters, 
+[*J*](){: .math_var } being the number of clusters on one side of the TDP diagonal.
 
-Cluster symmetry becomes broken only when irreversible state transitions are present, which is a rare case in structural dynamic studies. 
+Cluster symmetry becomes broken when irreversible state transitions are present - which is a rare case in structural dynamic studies. 
 For this particular cluster configuration, the TDP is modelled with 
-[*K* = *J*](){: .math_var } <u>clusters free of constraint</u>, with 
-[*J*](){: .math_var } the total number of clusters.
+[*K* = *J*](){: .math_var } <u>clusters free of constraint</u>, 
+[*J*](){: .math_var } being the total number of clusters.
 
 The number 
-[*J*](){: .math_var } is here called the model complexity and depends on the type of constraint applied to the cluster configuration. 
-An example for [*J*](){: .math_var } = 4 and for each cluster configuration is given below:
+[*J*](){: .math_var } is called the model complexity and depends on the type of cluster configuration. 
+An example for 
+[*J*](){: .math_var } = 4 and for each cluster configuration is given below:
 
 <img src="../../assets/images/figures/TA-panel-state-configuration-clusters-config.png">
 
