@@ -150,7 +150,8 @@ For this particular cluster configuration, the TDP is modelled with
 [*J*](){: .math_var } the total number of clusters.
 
 The number 
-[*J*](){: .math_var } is here called the model complexity and depends on the type of constraint applied to the cluster configuration.
+[*J*](){: .math_var } is here called the model complexity and depends on the type of constraint applied to the cluster configuration. 
+An example for [*J*](){: .math_var } = 4 and for each cluster configuration is given below:
 
 <img src="../../assets/images/figures/TA-panel-state-configuration-clusters-config.png">
 
