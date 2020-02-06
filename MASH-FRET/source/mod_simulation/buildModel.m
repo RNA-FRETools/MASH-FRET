@@ -31,7 +31,7 @@ bleachT = h.param.sim.bleach_t;
 K = h.param.sim.nbStates;
 impPrm = h.param.sim.impPrm;
 molPrm = h.param.sim.molPrm;
-imp_kx = impPrm && isfield(molPrm, 'kx');
+imp_kx = impPrm & isfield(molPrm, 'kx');
 
 if imp_kx
 %     kx_all = molPrm.kx*expT; % kinetic cst. in frame-1
