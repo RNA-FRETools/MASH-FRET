@@ -1,2 +1,3 @@
 function popupmenu_states_Callback(obj, evd, h_fig)
-updateFields(h_fig, 'sim');
+
+ud_S_moleculesPan(h_fig);

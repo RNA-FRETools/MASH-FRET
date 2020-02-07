@@ -19,7 +19,7 @@ fDat = param.extra; % file data for accelerate reading
 resX = fDat{2}(1);
 resY = fDat{2}(2);
 frameLength = fDat{3};
-ok = 0;
+ok = 1;
 isMov = 0;
 if useMov && isfield(h,'movie') && isfield(h.movie,'movie') && ...
     ~isempty(h.movie.movie)
@@ -39,8 +39,7 @@ if (stopFrame<=frameLength && startFrame>=1)
     if isMov && ~isBgcorr
         img_ave = sum(h.movie.movie(:,:,startFrame:iv:stopFrame),3)/...
             frameLength;
-        ok = 1;
-        return;
+        return
     end
     
     if ~isempty(h_fig)
@@ -63,7 +62,7 @@ if (stopFrame<=frameLength && startFrame>=1)
         else
             [data,ok] = getFrames(fullname, i, param.extra, h_fig, false);
             if ~ok
-                return;
+                return
             end
             imgNext = data.frameCur;
         end
@@ -86,7 +85,7 @@ if (stopFrame<=frameLength && startFrame>=1)
             intrupt = loading_bar('update', h_fig);
             if intrupt
                 ok = 0;
-                return;
+                return
             end
             % -------------------------------------------------------------
         end

@@ -9,5 +9,5 @@ else
     h = guidata(h_fig);
     h.param.sim.TIRFdim(1) = val;
     guidata(h_fig, h);
-    updateFields(h_fig, 'sim');
+    ud_S_expSetupPan(h_fig);
 end

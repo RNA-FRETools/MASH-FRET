@@ -16,24 +16,18 @@ if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val > 0 && val ...
     setContPan(cat(2,'The number of states must be >0 and <= 5\n',...
         'To simulate a larger system, please load a presets file.'), ...
         'error', h_fig);
-else
-    set(obj, 'BackgroundColor', [1 1 1]);
-    h = guidata(h_fig);
-    h.param.sim.nbStates = val;
-    for i = 1:h.param.sim.nbStates
-        if i > size(h.param.sim.stateVal,2)
-            h.param.sim.stateVal(i) = h.param.sim.stateVal(i-1);
-            h.param.sim.FRETw(i) = h.param.sim.FRETw(i-1);
-        end
-    end
-    h.param.sim.stateVal = h.param.sim.stateVal(1:h.param.sim.nbStates);
-    h.param.sim.FRETw = h.param.sim.FRETw(1:h.param.sim.nbStates);
-    if isfield(h,'results') && isfield(h.results,'sim')
-        h.results = rmfield(h.results,'sim');
-    end
-    guidata(h_fig, h);
-
-    set(h.popupmenu_states, 'Value', 1);
-    set(h.edit_stateVal, 'String', num2str(h.param.sim.stateVal(1)));
-    updateFields(h_fig, 'sim');
+    return
 end
+
+h = guidata(h_fig);
+
+h.param.sim.nbStates = val;
+guidata(h_fig, h);
+
+updateSimStates(h_fig);
+h = guidata(h_fig);
+
+set(h.popupmenu_states, 'Value', 1);
+set(h.edit_stateVal, 'String', num2str(h.param.sim.stateVal(1)));
+
+ud_S_moleculesPan(h_fig);

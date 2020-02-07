@@ -7,4 +7,6 @@ switch(get(obj, 'Value'))
         h.param.sim.intUnits = 'electron';
 end
 guidata(h_fig, h);
-updateFields(h_fig, 'sim');
+
+ud_S_moleculesPan(h_fig);
+ud_S_expSetupPan(h_fig);

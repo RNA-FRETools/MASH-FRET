@@ -60,7 +60,7 @@ else
     if isfield(info, 'Description')
         % time delay between each frame
         descr = info(1,1).Description; 
-        if ~isnan(str2num(descr))
+        if ~isempty(descr)
             descr = str2num(descr);
             if size(descr,2) == 3
                 max_img = descr(2);
@@ -76,8 +76,8 @@ else
     fCurs = [];
 end
 
-frameCur = round(min_img+(double(imread(fullFname))/max_bit)* ...
-    (max_img-min_img));
+frameCur = min_img+(double(imread(fullFname))/max_bit)* ...
+    (max_img-min_img);
 movie = [];
  
 data = struct('cycleTime', cycleTime, ...

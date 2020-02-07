@@ -37,13 +37,19 @@ h = guidata(h_fig);
 p = h.param.sim;
 
 [prm,errmsg] = setSimPrm(s, p.movDim);
-if isempty(prm)
-    setContPan('Pre-set parameter file is empty.', 'warning', h_fig);
-    return;
-end
 if ~isempty(errmsg)
     setContPan(errmsg, 'error', h_fig);
 end
+if isempty(prm)
+    setContPan('Pre-set parameter file is empty.', 'warning', h_fig);
+    return
+end
+
+
+% reset previous presets
+resetSimPrm(h_fig);
+h = guidata(h_fig);
+p = h.param.sim;
 
 p.molPrm = prm;
 p.impPrm = 1;
@@ -52,17 +58,14 @@ p.molNb = prm.molNb;
 
 if isfield(prm,'nbStates')
     p.nbStates = prm.nbStates;
-    for i = 1:p.nbStates
-        if i > size(p.stateVal,2)
-            p.stateVal(i) = p.stateVal(i-1);
-            p.FRETw(i) = p.FRETw(i-1);
-        end
-    end
     
-    % reset state sequences
-    if isfield(h.results,'sim')
-        h.results = rmfield(h.results,'sim');
-    end
+    h.param.sim = p;
+    guidata(h_fig, h);
+    
+    updateSimStates(h_fig)
+    
+    h = guidata(h_fig);
+    p = h.param.sim;
 end
 
 if isfield(prm, 'coord')
