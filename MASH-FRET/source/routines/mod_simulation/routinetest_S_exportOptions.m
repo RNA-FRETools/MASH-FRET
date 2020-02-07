@@ -40,4 +40,4 @@ pushbutton_startSim_Callback(h.pushbutton_startSim,[],h_fig);
 % test intensity units
 disp(cat(2,prefix,'test exported intensity units...'));
 set_S_fileExport(expopt,h_fig);
-pushbutton_exportSim_Callback({p.dumpdir,'units_out'}, [], h_fig);
+pushbutton_exportSim_Callback({p.dumpdir,'expopt_units'}, [], h_fig);
