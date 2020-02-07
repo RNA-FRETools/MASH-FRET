@@ -15,6 +15,7 @@ lbl1 = 'Video processing test';
 lbl2 = 'Trace processing test';
 lbl3 = 'Histogram analysis test';
 lbl4 = 'Transition analysis test';
+lbl5 = 'Menu test';
 
 % parents
 h_men = h.menu_routine;
@@ -34,3 +35,6 @@ h = buildMenuHistogramAnalysisTest(h);
 
 h.menu_TaTest = uimenu(h_men,'label',lbl4);
 h = buildMenuTransitionAnalysisTest(h);
+
+h.menu_menuTest = uimenu(h_men,'label',lbl5);
+h = buildMenuMenuTest(h);

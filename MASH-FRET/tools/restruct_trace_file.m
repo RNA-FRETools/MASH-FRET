@@ -1,18 +1,14 @@
 function restruct_trace_file(varargin)
-% | Format trajectories files (*.txt) to MASH-importable structure.
-% |
-% | command: restruct_trace_file(pname);
-% | 1st argument (optional) >> source directory
-% | 2nd argument (optional) >> 1-by-(nFRET+nS) laser wavelengths for 
-% |             donor- and emitter-specific illuminations used in FRET and 
-% |             stoichiometry calculations.
-% |             example: if files contain columns for FRET_Cy3>Cy5, 
-% |             discrFRET_Cy3>Cy5, FRET_Cy5>Cy7, discrFRET_Cy5>Cy7,
-% |             S_Cy3, discrS_Cy3, S_Cy5, and discrS_Cy5
-% |             in order of appearence, RATIO_EXC = [532 532 638 638 532 
-% |             532 638 638]
-% |
-% | example: restruct_trace_file('C:\MyDataFolder\experiment_01\traces_processing\traces_ASCII\');
+% restruct_trace_file
+% restruct_trace_file(pname)
+% restruct_trace_file(pname,wavelengths)
+% restruct_trace_file(pname,wavelengths,pname_out)
+%
+% Format trajectories files (*.txt) to MASH-importable structure.
+% 
+% pname: source directory
+% wavelengths: 1-by-(nFRET+nS) laser wavelengths for donor- and emitter-specific illuminations used in FRET and stoichiometry calculations (example: if files contain columns for FRET_Cy3>Cy5, discrFRET_Cy3>Cy5, FRET_Cy5>Cy7, discrFRET_Cy5>Cy7, S_Cy3>Cy5, discrS_Cy3>Cy5, S_Cy5>Cy7, and discrS_Cy5>Cy7 in order of appearence, wavelengths = [532 532 638 638 532 532 638 638])
+% pname_out: destination directory
 
 % Last update: 10th of April 2019 by Mélodie Hadzic
 % --> implement GUI-based user input to select source directory, choose 
@@ -31,14 +27,27 @@ function restruct_trace_file(varargin)
 % get source directory
 if ~isempty(varargin) && numel(varargin)>=1
     pname = varargin{1};
+    if numel(varargin)>=2
+        RATIO_EXC = varargin{2};
+        if numel(varargin)>=3
+            pname_out = varargin{3};
+            if ~strcmp(pname(end),filesep)
+                pname_out = cat(2,pname_out,filesep);
+            end
+        else
+            pname_out = pname;
+        end
+    else
+        RATIO_EXC = [];
+    end
 else
     pname = uigetdir('','Select the source directory');
     if isempty(pname) || ~sum(pname)
-        return;
+        return
     end
 end
 
-if ~strcmp(pname(end),'\')
+if ~strcmp(pname(end),filesep)
     pname = cat(2,pname,filesep);
 end
 
@@ -52,11 +61,6 @@ cd(pname);
 % else
 %     DONOR_EXC = 532;
 % end
-if ~isempty(varargin) && numel(varargin)>=2
-    RATIO_EXC = varargin{2};
-else
-    RATIO_EXC = [];
-end
 
 % added by MH, 10.4.2019
 % activate/deactivate reorganization of ratio data
@@ -153,7 +157,7 @@ if isempty(headPos)
     fprintf('\nNo Common column found. Process aborted.\n');
 end
 
-out_pname = cat(2,pname,'restructured ',date,filesep);
+out_pname = cat(2,pname_out,'restructured ',date,filesep);
 if ~exist(out_pname,'dir')
     mkdir(out_pname);
 end
@@ -194,10 +198,10 @@ if reorgRatio && isempty(RATIO_EXC)
         RATIO_EXC = get(fig,'userdata');
         close(fig);
         if numel(RATIO_EXC)==1 && RATIO_EXC==0
-            return;
+            return
         end
     else
-        return;
+        return
     end
 end
 

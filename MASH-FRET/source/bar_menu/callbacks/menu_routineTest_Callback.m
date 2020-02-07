@@ -18,6 +18,8 @@ switch module
     case 'tp'
     case 'ha'
     case 'ta'
+    case 'menu'
+        routinetest_menu(h_fig,panel)
 end
 
 % set file overwriting to previous settings

@@ -5,7 +5,7 @@ function h_fig = routinetest_general(varargin)
 %
 % This routine execute main GUI-based actions performed when setting up the working area.
 % The script can be executed from MATLAB's command window or from the routine menu of MASH.
-% It deletes default_param.ini, runs MASH (if executed from comand window), tests menus, figure resize, module access and root folder settings.
+% It deletes default_param.ini, runs MASH (if executed from comand window), tests figure resize, module access and root folder settings.
 % 
 % rootFolder: path to dump directory
 % h_fig: main figure
@@ -45,12 +45,6 @@ figure_MASH_SizeChangedFcn(h_fig,[]);
 h = guidata(h_fig);
 figureActPan_ResizeFcn(h.figure_actPan,[]);
 figureActPan_CloseRequestFcn(h.figure_actPan,[]);
-menu_showActPan_Callback(h.menu_showActPan,[],h_fig);
-
-% test overwrite files menus
-menu_overwrite_Callback(h.menu_rename, [], h_fig);
-menu_overwrite_Callback(h.menu_ask, [], h_fig);
-menu_overwrite_Callback(h.menu_overWrite, [], h_fig);
 
 % test access to modules
 switchPan(h.togglebutton_S,[],h_fig);
