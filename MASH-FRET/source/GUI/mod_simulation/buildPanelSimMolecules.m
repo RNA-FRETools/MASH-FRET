@@ -81,7 +81,8 @@ y = y-hedit0;
 
 h.edit_simCoordFile = uicontrol('style','edit','units',p.posun,'parent',...
     h_pan,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit1,hedit0],'enable','inactive','foregroundcolor',p.fntclr1);
+    [x,y,wedit1,hedit0],'foregroundcolor',p.fntclr1,'callback',...
+    {@edit_simCoordFile_Callback,h_fig});
 
 y = y-p.mg/fact-hedit0;
 
@@ -114,7 +115,8 @@ y = y-hedit0;
 
 h.edit_simPrmFile = uicontrol('style','edit','units',p.posun,'parent',...
     h_pan,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit1,hedit0],'enable','inactive','foregroundcolor',p.fntclr1);
+    [x,y,wedit1,hedit0],'foregroundcolor',p.fntclr1,'callback',...
+    {@edit_simPrmFile_Callback,h_fig});
 
 y = y-p.mg/fact-hedit0;
 
