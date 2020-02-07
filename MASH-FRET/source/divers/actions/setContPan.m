@@ -12,6 +12,11 @@ colOrange = [1 0.95 0.9];
 colWhite = [1 1 1];
 
 h = guidata(h_fig);
+
+if h.mute_actions
+    return
+end
+
 switch state
     case 'error'
         colBg = colRed;

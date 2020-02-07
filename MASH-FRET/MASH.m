@@ -44,6 +44,9 @@ end
 % build MASH-FRET graphical interface
 h_fig = buildMASHfig;
 
+% add action muting option
+h.mute_actions = false;
+
 % initialize main figure
 initMASH(h_fig, figName);
 

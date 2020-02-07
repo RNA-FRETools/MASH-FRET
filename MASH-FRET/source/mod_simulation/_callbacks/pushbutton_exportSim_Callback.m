@@ -9,7 +9,7 @@ if h.param.sim.bgType == 3 % pattern
     p = h.param.sim;
     [ok,p] = checkBgPattern(p, h_fig);
     if ~ok
-        return;
+        return
     end
     h.param.sim = p;
     guidata(h_fig, h);
@@ -21,7 +21,16 @@ if ~ok
     return
 end
 
-[ok,actstr2] = exportResults(h_fig);
+if iscell(obj)
+    pname = obj{1};
+    fname = obj{2};
+    if pname(end)~=filesep
+        pname = [pname,filesep];
+    end
+    [ok,actstr2] = exportResults(h_fig,pname,fname);
+else
+    [ok,actstr2] = exportResults(h_fig);
+end
 if ~ok
     return
 end

@@ -27,7 +27,7 @@ catch err
             '*.mat file.\nUse the template located at MASH-FRET/',...
             'createSimPrm.m to create a pre-set parameter file.'),'error',...
             h_fig);
-        return;
+        return
     else
         throw(err);
     end
@@ -89,6 +89,34 @@ if isfield(prm, 'psf_width')
     p.PSF = 1;
     p.PSFw = prm.psf_width;
     p.matGauss = cell(1,4);
+end
+
+if isfield(p,'molNb')
+    if p.genCoord
+        coord = p.coord;
+    elseif p.impPrm && isfield(p.molPrm,'coord')
+        coord = p.molPrm.coord;
+    else
+        coord = p.coord;
+    end
+    [ferr,coord,errmsg] = sortSimCoord(coord, p.movDim, p.molNb);
+    if ferr || isempty(coord)
+        if iscell(errmsg)
+            for i = 1:numel(errmsg)
+                disp(errmsg{i});
+            end
+        else
+            disp(errmsg);
+        end
+        if ~ferr
+            % if error is not due to file data, keep empty field 'coord' in 
+            % structure to indicates that coordinates are present in file but 
+            % are out of current video dimensions
+            p.coord = [];
+            p.genCoord = 1;
+            p.matGauss = cell(1,4);
+        end
+    end
 end
 
 % save results

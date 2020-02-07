@@ -17,6 +17,9 @@ else
     % call from script routine: file is stored in the first input argument
     pname = obj{1};
     fname = obj{2};
+    if pname(end)~=filesep
+        pname = [pname,filesep];
+    end
 end
 if ~(~isempty(fname) && sum(fname))
     return
