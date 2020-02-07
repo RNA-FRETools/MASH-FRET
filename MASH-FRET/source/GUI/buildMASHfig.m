@@ -1,9 +1,11 @@
-function h_fig = buildMASHfig()
-% h = buildMASHfig;
+function h_fig = buildMASHfig(varargin)
+% h_fig = buildMASHfig
+% h_fig = buildMASHfig(figureName)
 %
 % Creates GUI of MASH including modules "Simulation", "Video processing", "Trace processing", "Histogram analysis" and "Transition analysis"
 %
-% h: structure containing handles to all UI components
+% figureName: figure's title
+% h_fig: handle to main figure
 
 % default
 fname_ref = 'charDimTable.mat'; % reference file containing character pixel dimensions
@@ -81,6 +83,9 @@ h_fig = figure('units','pixels','numbertitle','off','menubar','none',...
 set(h_fig,'closerequestfcn',@figure_MASH_CloseRequestFcn,...
     'sizechangedfcn',@figure_MASH_SizeChangedFcn,'windowbuttonupfcn',...
     @figure_MASH_WindowButtonUpFcn);
+if ~isempty(varargin)
+    set(h_fig, 'Name', varargin{1});
+end
 h.figure_MASH = h_fig;
 
 

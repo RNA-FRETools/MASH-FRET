@@ -1,4 +1,4 @@
-function initMASH(h_fig, figName)
+function initMASH(h_fig)
 % Set default parameters with file 'default_param.ini'
 % Create help buttons
 % Normalize all dimensions
@@ -57,7 +57,7 @@ opos = get(h_fig,'outerposition');
 owfig = opos(3)*ohfig/opos(4);
 oxfig = (1-owfig)/2;
 oyfig = 1-ohfig;
-set(h_fig, 'Name', figName,'OuterPosition',[oxfig,oyfig,owfig,ohfig]);
+set(h_fig,'OuterPosition',[oxfig,oyfig,owfig,ohfig]);
 
 % build and add control panel figure (the main figure must be positionned)
 h.figure_actPan = actionPanel(h_fig);
