@@ -11,13 +11,9 @@ function routinetest_S(varargin)
 % It deletes default_param.ini and runs MASH if executed from command window, test all uicontrol callbacks, state sequence generation, simulation update and specific functionalities of each panel.
 
 % defaults
-fileprm = '..\..\default_param.ini'; % default parameters file
-
-% get defaults parameters
-p = getDefault_S;
-
-% get handle to main figure and routine action prefix if any
 opt = 'all';
+
+% get input arguments
 h_fig = [];
 if ~isempty(varargin)
     h_fig = varargin{1};
@@ -26,28 +22,12 @@ if ~isempty(varargin)
     end
 end
 
-% build figure if necessary
-if isempty(h_fig)
-    % delete default_param.ini
-    [pth,o,o] = fileparts(mfilename('fullpath'));
-    if exist([pth,filesep,fileprm],'file')
-        delete([pth,filesep,fileprm]);
-    end
+% get defaults parameters
+p = getDefault_S;
 
-    % run MASH
-    h_fig = MASH;
-end
-
-% set overwirting file option to "always overwrite"
+% test main working area
+h_fig = routinetest_general(p.annexpth,h_fig);
 h = guidata(h_fig);
-prev_owask = h.param.OpFiles.overwrite_ask;
-prev_owa = h.param.OpFiles.overwrite;
-h.param.OpFiles.overwrite_ask = false;
-h.param.OpFiles.overwrite = true;
-
-% set action display on mute
-h.mute_actions = true;
-guidata(h_fig,h);
 
 % switch to simulation module
 switchPan(h.togglebutton_S,[],h_fig);
@@ -93,15 +73,6 @@ if strcmp(opt,'all') || strcmp(opt,'export options')
     disp('test panel Export options...');
     routinetest_S_exportOptions(h_fig,p,subprefix);
 end
-
-% set file overwriting to previous settings
-h = guidata(h_fig);
-h.param.OpFiles.overwrite_ask = prev_owask;
-h.param.OpFiles.overwrite = prev_owa;
-
-% restore action display
-h.mute_actions = false;
-guidata(h_fig,h);
 
 % close figure if executed from command window
 if isempty(varargin)
