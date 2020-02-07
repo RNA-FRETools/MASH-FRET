@@ -1,4 +1,4 @@
-function pushbutton_exportSim_Callback(obj, evd, h_fig)
+function ok = pushbutton_exportSim_Callback(obj, evd, h_fig)
 
 % set fields to proper values
 updateFields(h_fig, 'sim');

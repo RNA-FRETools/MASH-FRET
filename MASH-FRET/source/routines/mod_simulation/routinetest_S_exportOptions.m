@@ -26,7 +26,11 @@ for opt = 1:nOpt
         opts = false(1,nOpt);
         opts(opt) = true;
         set_S_fileExport(opts,h_fig);
-        pushbutton_exportSim_Callback({p.dumpdir,'file_opt'}, [], h_fig);
+        ok = pushbutton_updateSim_Callback(h.pushbutton_updateSim,[],h_fig);
+        if ~ok
+            pushbutton_startSim_Callback(h.pushbutton_startSim,[],h_fig);
+        end
+        pushbutton_exportSim_Callback({p.dumpdir,'expopt_file'},[],h_fig);
     end
 end
 
@@ -39,5 +43,16 @@ pushbutton_startSim_Callback(h.pushbutton_startSim,[],h_fig);
 
 % test intensity units
 disp(cat(2,prefix,'test exported intensity units...'));
+if p.un_out==1
+    un = 2;
+else
+    un = 1;
+end
+set(h.popupmenu_opUnits,'value',un);
+popupmenu_opUnits_Callback(h.popupmenu_opUnits,[],h_fig);
+ok = pushbutton_updateSim_Callback(h.pushbutton_updateSim,[],h_fig);
+if ~ok
+    pushbutton_startSim_Callback(h.pushbutton_startSim,[],h_fig);
+end
 set_S_fileExport(expopt,h_fig);
 pushbutton_exportSim_Callback({p.dumpdir,'expopt_units'}, [], h_fig);
