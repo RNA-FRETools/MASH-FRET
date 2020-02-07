@@ -104,7 +104,8 @@ else
     bar(h.axes_example_hist,don_edges(1:size(don_edges,2)-1),I_acc_ic_hist,...
         'EdgeColor','none','FaceColor','red','Barwidth',1);
 end
-set(h.axes_example_hist,'yscale','log','nextplot','replacechildren');
+set(h.axes_example_hist,'yscale','log','nextplot','replacechildren',...
+    'xtickmode','auto');
 xlim(h.axes_example_hist, 'auto');
 ylim(h.axes_example_hist, 'auto');
 xlabel(h.axes_example_hist, [units ' counts']);
