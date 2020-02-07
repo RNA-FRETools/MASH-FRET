@@ -67,6 +67,8 @@ if defocus
     set(h.edit_simzdec, 'String', num2str(p.zDec));
     set(h.edit_simz0_A, 'String', num2str(p.z0Dec));
 else
-    set([h.edit_simzdec h.edit_simz0_A], 'Enable', 'off', 'String', '');
+    set([h.text_simz0 h.text_simzdec h.edit_simzdec h.edit_simz0_A], ...
+        'Enable', 'off');
+    set([h.edit_simzdec h.edit_simz0_A], 'String', '');
 end
 
