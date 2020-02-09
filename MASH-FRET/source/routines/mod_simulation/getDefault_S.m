@@ -8,7 +8,7 @@ function p = getDefault_S
 % general parameters
 [pname,o,o] = fileparts(mfilename('fullpath'));
 p.annexpth = cat(2,pname,filesep,'assets'); % path to annexed files
-p.dumpdir = cat(2,pname,filesep,'test_data'); % path to exported data
+p.dumpdir = cat(2,pname,filesep,'dump'); % path to exported data
 if ~exist(p.dumpdir,'dir')
     mkdir(p.dumpdir);
 end
