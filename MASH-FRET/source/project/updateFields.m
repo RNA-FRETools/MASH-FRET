@@ -1,7 +1,11 @@
 function updateFields(h_fig, varargin)
-% Update all uicontrol properties of MASH
-% input argument 1: MASH figure handle
-% input argument 2: what to update ('all', 'sim', 'imgAxes', 'movPr', 'ttPr', 'thm', TDP')
+% updateFields(h_fig)
+% updateFields(h_fig, opt)
+%
+% Update calculations and set GUI to proper values
+%
+% h_fig: handle to main figure
+% opt: what is to update ('all','sim','movPr','imgAxes','ttPr','subImg','cross','thm','TDP')
 
 % Last update by MH, 19.12.2019: allows coordinates import from ASCII file when a preset file containing only out-of-range coordinates is loaded
 % update by MH, 12.12.2019: (1) cancel clearing of image axes to keep properties/boba fret image defined when building GUI (2) make TDP colorbar invisible when no project is loaded
@@ -26,127 +30,32 @@ set(h_pan.text_actions, 'BackgroundColor', [1 1 1]);
 
 if strcmp(opt, 'sim') || strcmp(opt, 'all')
     
+    % update panels
     ud_S_vidParamPan(h_fig);
     ud_S_moleculesPan(h_fig);
     ud_S_expSetupPan(h_fig);
     ud_S_expOptPan(h_fig);
-
+    
+    h = guidata(h_fig);
 end
 
 %% Movie processing fields
 
 if strcmp(opt,'imgAxes') || strcmp(opt, 'movPr') || strcmp(opt, 'all')
-
-    p = h.param.movPr;
-    nC = p.nChan;
-    labels = p.labels;
-    nLaser = p.itg_nLasers;
     
-    if isfield(h, 'movie') && isfield(h.movie, 'rate')
-        set(h.edit_rate, 'String', num2str(p.rate));
-    end
-    
-    set(h.edit_nChannel, 'String', num2str(p.nChan));
-    set(h.popupmenu_colorMap, 'Value', p.cmap);
-    set(h.checkbox_int_ps, 'Value', p.perSec);
-
-    for i = 1:nC
-        if i > size(p.movBg_p,2)
-            for j = 1:size(p.movBg_p,1)
-                p.movBg_p{j,i} = p.movBg_p{j,i-1};
-            end
-        end
-        if i > size(h.param.movPr.SF_minI,2)
-            p.SF_minI(i) = p.SF_minI(i-1);
-            p.SF_intThresh(i) = p.SF_intThresh(i-1);
-            p.SF_intRatio(i) = p.SF_intRatio(i-1);
-            p.SF_w(i) = p.SF_w(i-1);
-            p.SF_h(i) = p.SF_h(i-1);
-            p.SF_darkW(i) = p.SF_darkW(i-1);
-            p.SF_darkH(i) = p.SF_darkH(i-1);
-            p.SF_maxN(i) = p.SF_maxN(i-1);
-            p.SF_minHWHM(i) = p.SF_minHWHM(i-1);
-            p.SF_maxHWHM(i) = p.SF_maxHWHM(i-1);
-            p.SF_maxAssy(i) = p.SF_maxAssy(i-1);
-            p.SF_minDspot(i) = p.SF_minDspot(i-1);
-            p.SF_minDedge(i) = p.SF_minDedge(i-1);
-        end
-        if i > size(p.trsf_refImp_rw{1},1)
-            p.trsf_refImp_rw{1}(i,1) = ...
-                p.trsf_refImp_rw{1}(i-1,1) + ...
-                p.trsf_refImp_rw{1}(i-1,2) - 1;
-            p.trsf_refImp_rw{1}(i,3) = ...
-                p.trsf_refImp_rw{1}(i-1,3);
-            p.trsf_refImp_cw{1}(i,1:2) = ...
-                p.trsf_refImp_cw{1}(i-1,1:2) + 2;
-        end
-        if i > size(p.itg_impMolPrm{1},1)
-            p.itg_impMolPrm{1}(i,1:2) = ...
-                p.itg_impMolPrm{1}(i-1,1:2) + 2;
-        end
-    end
-    h.param.movPr = p;
-    guidata(h_fig, h);
-    
-    set(h.popupmenu_bgChanel, 'String', getStrPop('chan', {labels []}));
-    set(h.popupmenu_bgCorr, 'Value', p.movBg_method);
-    set(h.checkbox_bgCorrAll, 'Value', ~p.movBg_one);
-    
-    ud_movBgCorr(h.popupmenu_bgCorr, [], h_fig);
-    h = guidata(h_fig);
-    p = h.param.movPr;
-    
-    set(h.edit_startMov, 'String', num2str(p.mov_start)...
-        , 'BackgroundColor', [1 1 1]);
-    set(h.edit_endMov, 'String', num2str(p.mov_end)...
-        , 'BackgroundColor', [1 1 1]);
-    
-    set(h.edit_aveImg_iv, 'String', num2str(p.ave_iv)...
-        , 'BackgroundColor', [1 1 1]);
-    set(h.edit_aveImg_start, 'String', num2str(p.ave_start)...
-        , 'BackgroundColor', [1 1 1]);
-    set(h.edit_aveImg_end, 'String', num2str(p.ave_stop)...
-        , 'BackgroundColor', [1 1 1]);
-    
-    ud_lstBg(h.figure_MASH);
-
-    set(h.edit_refCoord_file, 'String', ...
-        p.trsf_coordRef_file, 'BackgroundColor', [1 1 1]);
-    set(h.edit_tr_file, 'String', p.trsf_tr_file, ...
-        'BackgroundColor', [1 1 1]);
-    set(h.edit_coordFile, 'String', p.coordMol_file, ...
-        'BackgroundColor', [1 1 1]);
-    set(h.edit_itg_coordFile, 'String', p.coordItg_file, ...
-        'BackgroundColor', [1 1 1]);
-    if isfield(h, 'movie') && isfield(h.movie, 'file')
-        set(h.edit_movItg, 'String', h.movie.file);
-    end
-    set(h.edit_movItg, 'BackgroundColor', [1 1 1]);
-    set(h.edit_TTgen_dim, 'String', num2str(p.itg_dim)...
-        , 'BackgroundColor', [1 1 1]);
-    set(h.edit_intNpix, 'String', num2str(p.itg_n)...
-        , 'BackgroundColor', [1 1 1]);
-    set(h.checkbox_meanVal, 'Value', p.itg_ave);
-    set(h.edit_nLasers, 'String', num2str(nLaser), 'BackgroundColor', ...
-        [1 1 1]);
-
-    laser = get(h.popupmenu_TTgen_lasers, 'Value');
-    if laser > nLaser
-        laser = nLaser;
-    end
-    set(h.popupmenu_TTgen_lasers, 'Value', laser, 'String', ...
-        cellstr(num2str((1:nLaser)')));
-    
-    set(h.edit_wavelength, 'String', num2str(p.itg_wl(laser)), ...
-        'BackgroundColor', [1 1 1]);
-    
+    % refresh calculations and plot
     if strcmp(opt, 'imgAxes') && isfield(h, 'movie')
         updateImgAxes(h_fig);
-        h = guidata(h_fig);
     end
     
-    ud_SFpanel(h_fig);
-
+    % update panels
+    ud_VP_plotPan(h_fig);
+    ud_VP_expSetPan(h_fig);
+    ud_VP_edExpVidPan(h_fig);
+    ud_VP_molCoordPan(h_fig);
+    ud_VP_intIntegrPan(h_fig);
+    
+    h = guidata(h_fig);
 end
 
 %% Traces processing fields

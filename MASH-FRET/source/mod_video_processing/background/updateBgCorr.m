@@ -1,127 +1,150 @@
-function corrImg = updateBgCorr(img, h_fig)
-% Apply background correction to input image and return the corrected
-% image.
-% "img" >> input raw image
-% "h_fig" >> MASH figure handle
-% "corrImg" >> corrected image
+function [img,avImg] = updateBgCorr(img, p, h_mov, h_fig)
+% [img,avImg] = updateBgCorr(img, p, h_mov)
+%
+% Apply image filters to input video frame.
+% When using "Ha-all" filter, the actual average image is returned
+%
+% img: video frame
+% p: structure containg processing parameters
+% h_mov: structure containing video parameters
+% avImg: average image
 
-% Requires external functions: applyBg
 % Last update: 5th of February 2014 by Mélodie C.A.S Hadzic
 
-h = guidata(h_fig);
-corrImg = img;
-
-if ~isempty(h.param.movPr.bgCorr)
-    nCorr = size(h.param.movPr.bgCorr, 1);
+if ~isempty(p.bgCorr)
+    nCorr = size(p.bgCorr, 1);
     for i = 1:nCorr
-        bgType = h.param.movPr.bgCorr{i,1};
-        corrImg = applyBg(bgType, i, corrImg, h);
+        [img,avImg] = applyBg(p.bgCorr(i,:), img, p, h_mov, h_fig);
     end
 end
 
 
-function img = applyBg(bgType, n, img, h)
-% Determine and subtract background to input image.
-
-% Requires external functions: FilterArray, determine_bg, createAveIm,
-%                              BgCorr_ha32, bpass, getFrames.
+function [img,avImg] = applyBg(prm, img, p, h_mov, h_fig)
+% [img,avImg] = applyBg(meth, n, img, h_mov)
+%
+% Apply input image filter to input image.
+% When using "Ha-all" filter, the actual average image is returned
+%
+% prm: {1-by-nChan} channel-specific filter configuration
+% img: video frame
+% p: structure conatining processing parameters
+% h_mov: structure containing video parameters
+% h_fig: handle to main figure
+% avImg: averaged image
+%
 % Last update: 5th of February 2014 by Mélodie C.A.S Hadzic
 
-nChan = h.param.movPr.nChan;
-sub_w = floor(h.movie.pixelX/nChan);
-lim = [0 (1:nChan-1)*sub_w h.movie.pixelX];
-bgCorr = h.param.movPr.bgCorr;
-movBg_p = h.param.movPr.movBg_p;
+% get video parameters
+resX = h_mov.pixelX;
+resY = h_mov.pixelY;
+L = h_mov.framesTot;
+l = h_mov.frameCurNb;
+videoFile = [h_mov.path h_mov.file];
+fcurs = h_mov.speCursor;
+if ~isfield(h_mov, 'avImg')
+    avImg = h_mov.avImg;
+else
+    avImg = [];
+end
+
+% get processing parameters
+meth = prm(1);
+nChan = p.nChan;
+movBg_p = p.movBg_p;
+myfilter = p.movBg_myfilter{meth};
+
+% get channel limits
+sub_w = floor(resX/nChan);
+lim = [0 (1:nChan-1)*sub_w resX];
 
 for i = 1:nChan
     frames = (lim(i)+1):lim(i+1);
     int = img(:,frames);
     
-    % image filters: gaussian, outlier, ggf, lwf, gwf, 
-    % histotresh, simpletresh
-    if sum(double(bgType == [2 5:10])) 
-        myfilter(1).filter = h.param.movPr.movBg_myfilter{bgType};
-        myfilter(1).P1 = bgCorr{n,i+1}(1);
-        myfilter(1).P2 = bgCorr{n,i+1}(2);
+    if sum(meth==[2 5:10]) % gaussian, outlier, ggf, lwf, gwf, histotresh, simpletresh
+        myfilter(1).filter = myfilter;
+        myfilter(1).P1 = prm{i+1}(1);
+        myfilter(1).P2 = prm{i+1}(2);
         int = FilterArray(int, myfilter);
         img(:,frames) = int;
         
-    elseif bgType == 3 % mean filter
-        img(:,frames) = filter2(ones(bgCorr{n,i+1}(1))/ ...
-            (bgCorr{n,i+1}(1)^2),int);
+    elseif meth==3 % mean filter
+        img(:,frames) = filter2(ones(prm{i+1}(1))/ ...
+            (prm{i+1}(1)^2),int);
         
-    elseif bgType == 4 % median filter
-        img(:,frames) = medfilt2(int, [bgCorr{n,i+1}(1) ...
-            bgCorr{n,i+1}(1)]);
-    
-    % mean, most frequent or histotresh
-    elseif sum(double(bgType == [11 12 13])) 
+    elseif meth==4 % median filter
+        img(:,frames) = medfilt2(int, [prm{i+1}(1) ...
+            prm{i+1}(1)]);
 
-        [Max,Bg_HWHM] = determine_bg(bgType, int, bgCorr{n,i+1});
-        tol = bgCorr{n,i+1}(1);
+    elseif sum(meth==[11 12 13]) % mean, most frequent or histotresh
+
+        [Max,Bg_HWHM] = determine_bg(meth, int, prm{i+1});
+        tol = prm{i+1}(1);
         bg = Max + tol * Bg_HWHM;
         
-        if sum(double(bgType == [11 12]))
+        if sum(double(meth == [11 12]))
             int(int<bg) = bg;
         end
         img(:,frames) = int - bg;
 
 
-    elseif bgType == 14 % Ha-all
-        if ~isfield(h.movie, 'avImg')
+    elseif meth==14 % Ha-all
+        if isempty(avImg)
             param.start = 1; % start data
-            param.stop = h.movie.framesTot; % stop data
+            param.stop = L; % stop data
             param.iv = 1; % interval averaged
-            param.file = [h.movie.path h.movie.file]; % path + file
+            param.file = videoFile; % path + file
             % {file cursor, dimension WxH, movie length}
-            param.extra{1} = h.movie.speCursor; 
-            param.extra{2} = [h.movie.pixelX h.movie.pixelY]; 
-            param.extra{3} = h.movie.framesTot;
-            [h.movie.avImg ok] = createAveIm(param, 0, h.figure_MASH);
+            param.extra{1} = fcurs; 
+            param.extra{2} = [resX resY]; 
+            param.extra{3} = L;
+            [avImg,ok] = createAveIm(param, 0, h_fig);
             if ~ok
-                return;
+                return
             end
-            guidata(h.figure_MASH, h);
         end
-        bg = BgCorr_ha32([h.movie.pixelX h.movie.pixelY],h.movie.avImg)-10;
-        img(:,frames) = img(:,frames)- ...
-            bg(:,frames);
+        bg = BgCorr_ha32([resX resY],avImg)-10;
+        img(:,frames) = img(:,frames)-bg(:,frames);
         
-    elseif bgType == 15 % Ha-each
-        bg = BgCorr_ha32([h.movie.pixelX h.movie.pixelY],img)-10;
-        img(:,frames) = img(:,frames)- ...
-            bg(:,frames);
+    elseif meth==15 % Ha-each
+        bg = BgCorr_ha32([resX resY],img)-10;
+        img(:,frames) = img(:,frames)-bg(:,frames);
     
-    elseif bgType == 16 % empty function 1: Twotone
-        tol = bgCorr{n,i+1}(1);
-        noise = bgCorr{n,i+1}(2);
+    elseif meth == 16 % empty function 1: Twotone
+        tol = prm{i+1}(1);
+        noise = prm{i+1}(2);
         int = bpass(int, noise, tol);
         int([1:tol size(int,1)-tol+1:size(int,1)],:) = 0;
         int(:,[1:tol size(int,2)-tol+1:size(int,2)]) = 0;
         img(:,frames) = int;
         
-    elseif bgType == 17 % empty function 2: subtract image
-        dat2sub = movBg_p{bgType,1};
-        if h.movie.frameCurNb < dat2sub.frameLen
-            [data ok] = getFrames(dat2sub.file, h.movie.frameCurNb, ...
+    elseif meth == 17 % empty function 2: subtract image
+        dat2sub = movBg_p{meth,1};
+        if l<dat2sub.frameLen
+            [data,ok] = getFrames(dat2sub.file, l, ...
                 {dat2sub.fCurs, [dat2sub.pixelX dat2sub.pixelY], ...
-                dat2sub.frameLen}, h.figure_MASH);
+                dat2sub.frameLen}, h_fig);
+            if ~ok
+                return
+            end
             int = data.frameCur(:,frames);
             img(:,frames) = img(:,frames) - int;
         elseif dat2sub.frameLen == 1
-            [data ok] = getFrames(dat2sub.file, 1, {dat2sub.fCurs, ...
-                [dat2sub.pixelX dat2sub.pixelY], dat2sub.frameLen}, ...
-                h.figure_MASH);
+            [data,ok] = getFrames(dat2sub.file, 1, {dat2sub.fCurs, ...
+                [dat2sub.pixelX dat2sub.pixelY], dat2sub.frameLen}, h_fig);
+            if ~ok
+                return
+            end
             int = data.frameCur(:,frames);
             img(:,frames) = img(:,frames) - int;
         end
         
-    elseif bgType == 18 % multiplication
-        fact = bgCorr{n,i+1}(1);
+    elseif meth == 18 % multiplication
+        fact = prm{i+1}(1);
         img(:,frames) = int*fact;
         
-    elseif bgType == 19 % addition
-        os = bgCorr{n,i+1}(1);
+    elseif meth == 19 % addition
+        os = prm{i+1}(1);
         img(:,frames) = int + os;
         
     end

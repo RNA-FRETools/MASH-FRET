@@ -1,82 +1,75 @@
-function slctSpots = selectSpots(spots, h_fig)
-% Select coordinates corresponding to the selection criteria (minimum
-% intensity, spot size, spot assymetry, inter-spot distance, distance from
-% image edge, maximum number of spots)
-% "spots" >> {1-by-n} cell array, contains the raw spots parameters (x and
-% y coordinates, intensity, spot width and height, assymetry) for each of 
-% the n channels
-% "h_fig" >> figure_MASH handle
-% "slctSpots" >> {1-by-n} cell array, contains selected spots parameters
-% for each of the n channel.
+function spots = selectSpots(spots, w, h, p)
+% spots = selectSpots(spots, w, h, p)
+%
+% Select coordinates corresponding to the selection criteria (minimum intensity, spot size, spot assymetry, inter-spot distance, distance from image edge, maximum number of spots)
+%
+% spots: {1-by-nChan} cell array containing spots parameters (x and y coordinates, intensity, spot width and height, assymetry) for each channel
+% w: image dimension in the x-direction (in pixels)
+% h: image dimension in the y-direction (in pixels)
+% h_fig: handle to main figure
 
-% Requires external functions: select_spots_distfromedge, 
-%                              select_spots_distance 
 % Last update: 5th of February 2014 by Mélodie C.A.S Hadzic
 
-h = guidata(h_fig);
-p = h.param.movPr;
-
+% collect processing parameters
 gaussFit = p.SF_gaussFit;
 nChan = p.nChan;
-sub_w = floor(h.movie.pixelX/p.nChan);
-lim = [0 (1:nChan)*sub_w h.movie.pixelX];
-limY = [1 h.movie.pixelY];
-slctSpots = cell(1,nChan);
+
+% get channel limits
+sub_w = floor(w/p.nChan);
+limX = [0 (1:nChan)*sub_w w];
+limY = [1 h];
 
 for i = 1:nChan
     minDspot = p.SF_minDspot(i);
     minDedge = p.SF_minDedge(i);
 
     % check the intensity
-    if ~isempty(spots{1,i})
+    if ~isempty(spots{i})
         minI = p.SF_minI(i);
-        slctSpots{1,i} = spots{1,i}((spots{1,i}(:,3) >= minI), :);
+        spots{i} = spots{i}((spots{i}(:,3)>=minI),:);
     end
 
-    if ~isempty(slctSpots{1,i}) && size(slctSpots{1,i},2) > 3 && gaussFit
+    if ~isempty(spots{i}) && size(spots{i},2)>3 && gaussFit
         % check the spot WHM
-        minHW = p.SF_minHWHM(i);
-        maxHW = p.SF_maxHWHM(i);
-        slctSpots{1,i} = slctSpots{1,i}((slctSpots{1,i}(:,5) > minHW & ...
-            slctSpots{1,i}(:,5) < maxHW), :);
-        if ~isempty(slctSpots{1,i})
-            slctSpots{1,i} = slctSpots{1,i}((slctSpots{1,i}(:,6) > ...
-                minHW & slctSpots{1,i}(:,6) < maxHW), :);
+        minw = p.SF_minHWHM(i);
+        maxw = p.SF_maxHWHM(i);
+        spots{i} = spots{i}((spots{i}(:,5)>minw & spots{i}(:,5)<maxw),:);
+        if ~isempty(spots{i})
+            spots{i} = spots{i}((spots{i}(:,6)>minw & spots{i}(:,6)<maxw),:);
         end
         
-        if ~isempty(slctSpots{1,i})
+        if ~isempty(spots{i})
             % check the spot assymetry
             assym = p.SF_maxAssy(i);
-            slctSpots{1,i} = slctSpots{1,i}((slctSpots{1,i}(:,4) <= ...
-                assym/100), :);
+            spots{i} = spots{i}((spots{i}(:,4)<=(assym/100)),:);
         end
         
-        if ~isempty(slctSpots{1,i})
+        if ~isempty(spots{i})
             % check the z-offset
             zmin = 0;
-            slctSpots{1,i} = slctSpots{1,i}((slctSpots{1,i}(:,8)>=zmin),:);
+            spots{i} = spots{i}((spots{i}(:,8)>=zmin),:);
         end
     end
 
     % check the distance spot-edges
-    if ~isempty(slctSpots{1,i})
-        ok = select_spots_distfromedge(slctSpots{1,i}(:,1:2), minDedge, ...
-            [lim(i)+1 lim(i+1); limY]);
-        slctSpots{1,i} = slctSpots{1,i}(ok,:);
+    if ~isempty(spots{i})
+        ok = select_spots_distfromedge(spots{i}(:,1:2), minDedge, ...
+            [limX(i)+1 limX(i+1); limY]);
+        spots{i} = spots{i}(ok,:);
     end
     
     % check the distance spot-spot
-    if ~isempty(slctSpots{1,i})
-        ok = select_spots_distance(slctSpots{1,i}(:,1:2), minDspot);
-        slctSpots{1,i} = slctSpots{1,i}(ok,:);
+    if ~isempty(spots{i})
+        ok = select_spots_distance(spots{i}(:,1:2), minDspot);
+        spots{i} = spots{i}(ok,:);
     end
     
     % check the number of spots
-    if ~isempty(slctSpots{1,i})
-        slctSpots{1,i} = sortrows(slctSpots{1,i},3);
+    if ~isempty(spots{i})
+        spots{i} = sortrows(spots{i},3);
         maxN = p.SF_maxN(i);
-        if size(slctSpots{1,i},1) > maxN
-            slctSpots{1,i} = slctSpots{1,i}(end-maxN+1:end,:);
+        if size(spots{i},1) > maxN
+            spots{i} = spots{i}(end-maxN+1:end,:);
         end
     end
 end
