@@ -1,11 +1,21 @@
 function popupmenu_colorMap_Callback(obj, evd, h_fig)
-contents = get(obj,'String');
-selectedText = contents{get(obj, 'Value')};
 
+% collect interface parameters
+str_pop = get(obj,'String');
+val = get(obj, 'Value');
 h = guidata(h_fig);
-h.param.movPr.cmap = get(obj, 'Value');
+p = h.param.movPr;
+
+p.cmap = val;
+
+% set colormap
+cm_str = str_pop{val};
+colormap(cm_str);
+updateActPan([cm_str ' colormap applied.'], h_fig);
+
+% save modifications
+h.param.movPr = p;
 guidata(h_fig, h);
 
-colormap(selectedText);
-updateActPan([selectedText ' colormap applied.'], h_fig);
-updateFields(h_fig, 'imgAxes');
+% set GUI to proper values
+ud_VP_plot(h_fig);

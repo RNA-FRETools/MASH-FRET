@@ -1,20 +1,21 @@
 function edit_nChannel_Callback(obj, evd, h_fig)
 
+% collect interface parameters
 nC = round(str2num(get(obj, 'String')));
+h = guidata(h_fig);
+p = h.param.movPr;
+
 if ~(numel(nC)==1 && ~isnan(nC) && nC>0)
     updateActPan('Number of channel must be > 0.', h_fig, 'error');
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
     return
 end
 
-% collect interface parameters
-h = guidata(h_fig);
-p = h.param.movPr;
-
-% adjust processing parameters
 if nC==p.nChan
     return
 end
+
+% adjust processing parameters
 p.nChan = nC;
 p = ud_VP_nChan(p);
 

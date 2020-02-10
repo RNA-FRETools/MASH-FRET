@@ -17,9 +17,6 @@ p = h.param.movPr;
 % set video file for intensity integration
 p.itg_movFullPth = [h.movie.path h.movie.file];
 
-% set frame acquisition time
-p.rate = h.movie.cyctime;
-
 % save modifications
 h.param.movPr = p;
 guidata(h_fig, h);
