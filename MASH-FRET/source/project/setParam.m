@@ -283,9 +283,9 @@ p.trsf_coordImp = adjustParam('trsf_coordImp', [1 2], p_input);
 p.trsf_coordLim = adjustParam('trsf_coordLim', [256 256], p_input);
 p.coordTrsf = [];
 p.coordTrsf_file = [];
-
 p.coordItg = [];
 p.coordItg_file = [];
+p.coord2plot = 0; %1:SF, 2:ref, 3:to transform, 4:transformed, 5:for trace
 p.itg_movFullPth = [];
 p.itg_coordFullPth = [];
 p.itg_dim = adjustParam('itg_dim', 3, p_input);

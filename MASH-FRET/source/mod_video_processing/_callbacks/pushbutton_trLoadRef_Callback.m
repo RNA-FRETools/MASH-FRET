@@ -43,13 +43,14 @@ end
 % save reference coordinates and file
 p.trsf_coordRef = coord_ref;
 p.trsf_coordRef_file = fname;
+p.coord2plot = 2;
 
 % save modifications
 h.param.movPr = p;
 guidata(h_fig,h);
 
-% set GUI to proper values
-ud_VP_coordTrsfPan(h_fig);
+% set GUI to proper values and refresh plot
+updateFields(h_fig,'imgAxes');
 
 % show action
 updateActPan(['Reference coordinates were successfully imported from file:' ...

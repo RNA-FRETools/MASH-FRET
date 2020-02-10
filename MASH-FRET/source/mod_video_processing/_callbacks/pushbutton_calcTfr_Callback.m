@@ -22,10 +22,12 @@ if tform_type<=1
 end
 
 % calculate transformation
-p.trsf_tr = createTrafo(tform_type, p.trsf_coordRef, h_fig);
-if isempty(p.trsf_tr)
+tr = createTrafo(tform_type, p.trsf_coordRef, h_fig);
+if isempty(tr)
     return
 end
+
+p.trsf_tr= tr;
 
 str_type = get(h.popupmenu_trType, 'String');
 str_type = str_type{tform_type};

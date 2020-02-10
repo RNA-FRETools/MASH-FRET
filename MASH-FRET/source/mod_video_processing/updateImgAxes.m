@@ -31,20 +31,19 @@ chsplit = h.movie.split;
 isMov = isfield(h.movie,'movie') && ~isempty(h.movie.movie);
 
 % collect processing parameters
-nChan = p.nChan;
 isBgCorr = isfield(p,'bgCorr') && ~isempty(p.bgCorr);
 
 % get current video frame
 if isMov
-    img = h.movie.movie(:,:,n);
+    img = double(h.movie.movie(:,:,n));
 else
     [dat,ok] = getFrames(videoFile, n, {fcurs,[resX,resY],L}, h_fig, true);
     if ~ok
-        return;
+        return
     end
-    img = dat.frameCur;
+    img =  double(dat.frameCur);
 end
-h.movie.frameCur = img;
+h.movie.frameCur =img;
 
 % filter image
 if isBgCorr
@@ -59,17 +58,16 @@ end
 
 % find spots
 SFall = p.SF_all;
-frameSF = p.SFres{1,1}(3);
-spots = [];
+frameSF = p.SFprm{1}(3);
 if (~SFall && n==frameSF) || SFall
-    p = updateSF(img, false, p);
-    for i = 1:nChan
-        if ~isempty(p.SFres{2,i})
-            spots = cat(1, spots, p.SFres{2,i}(:,1:2));
-        end
-    end
+    p.SFprm{1}(3) = n;
+    p.SFres = {};
+    p = updateSF(img, false, p, h_fig);
+else
+    p.SFres = {};
 end
 
+% convert to proper intensity units
 if p.perSec
     img = img/expT;
 end
@@ -83,7 +81,7 @@ if get(h.togglebutton_target, 'Value')
     zoom off
     set(h.imageMov, 'ButtonDownFcn', {@pointITT, h_fig});
 else
-    set(h_axes, 'ButtonDownFcn', {});
+    set(h.axes_movie, 'ButtonDownFcn', {});
     set(0, 'CurrentFigure', h_fig);
     zoom on
 end

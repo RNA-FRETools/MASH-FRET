@@ -10,17 +10,18 @@ isMov = 0;
 isBgCorr = 0;
 
 h = guidata(h_fig);
+p = h.param.movPr;
 
 if isfield(h,'movie') && isfield(h.movie,'movie') && ...
     ~isempty(h.movie.movie)
     isMov = 1;
 end
-if isfield(h.param.movPr, 'bgCorr') && ~isempty(h.param.movPr.bgCorr)
+if isfield(p, 'bgCorr') && ~isempty(p.bgCorr)
     isBgCorr = 1;
 end
 
-startFrame = h.param.movPr.mov_start;
-lastFrame = h.param.movPr.mov_end;
+startFrame = p.mov_start;
+lastFrame = p.mov_end;
 L = numel(startFrame:iv:lastFrame);
 
 % loading bar parameters---------------------------------------------------
@@ -51,13 +52,17 @@ for i = startFrame:iv:lastFrame
     
     % Apply background corrections if exist
     if isBgCorr
-        avBg = h.param.movPr.movBg_one;
+        avBg = p.movBg_one;
         if ~avBg
-            img(:,:,i) = updateBgCorr(img(:,:,i), h_fig);
+            [img,avImg] = updateBgCorr(img, p, h.movie, h_fig);
         else % Apply only if the bg-corrected frame is displayed
-            if avBg == i
-                img(:,:,i) = updateBgCorr(img(:,:,i), h_fig);
+            if avBg==i
+                [img,avImg] = updateBgCorr(img, p, h.movie, h_fig);
             end
+        end
+        if ~isfield(h.movie,'avImg')
+            h.movie.avImg = avImg;
+            guidata(h_fig,h);
         end
     end
 

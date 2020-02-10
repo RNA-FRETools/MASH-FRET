@@ -32,11 +32,6 @@ end
 h.movie.frameCurNb = l;
 h.movie.frameCur = data.frameCur;
 
-% reset SF results
-if size(p.SFres,1) >= 1
-    p.SFres = p.SFres(1,1:(1+p.nChan));
-end
-
 % save modifications
 h.param.movPr = p;
 guidata(h_fig, h);

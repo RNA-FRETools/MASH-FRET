@@ -8,19 +8,21 @@ function ud_VP_sfPan(h_fig)
 % default
 resClr = [0.75 1 0.75];
 ttstr0 = wrapHtmlTooltipString('<b>Minimum peak amplitude</b> for selection (%s)');
-ttstr1 = {...
+ttstr1 = {'',... % none
     wrapHtmlTooltipString('<b>Minimum peak amplitude</b> for peak detection (%s)'),... % "in-line" screening
     wrapHtmlTooltipString('<b>Threshold</b> (%s)'),... % houghpeaks
     wrapHtmlTooltipString('<b>Threshold</b>'),... % Schmied2012
     wrapHtmlTooltipString('<b>Minimum peak volume</b> (%s)')}; % twotone
-ttstr2 = {...
+ttstr2 = {'',... % none
     wrapHtmlTooltipString('<b>Dimension</b> in the <b>x</b>-direction of the dark area (in pixels)'),... % "in-line" screening
     wrapHtmlTooltipString('<b>NHoodSize</b> in the <b>x</b>-direction (in pixels)'),... % houghpeaks
-    wrapHtmlTooltipString('<b>Number of pixels</b> around image edges to ignore during analysis'),... % Schmied2012
+    wrapHtmlTooltipString(''),... % Schmied2012
     wrapHtmlTooltipString('<b>Diameter</b> of band-pass kernel (in pixels)')}; % twotone
-ttstr3 = {...
+ttstr3 = {'',... % none
     wrapHtmlTooltipString('<b>Dimension</b> in the <b>y</b>-direction of the dark area (in pixels)'),... % "in-line" screening
-    wrapHtmlTooltipString('<b>NHoodSize</b> in the <b>y</b>-direction (in pixels)'),'',''}; % houghpeaks
+    wrapHtmlTooltipString('<b>NHoodSize</b> in the <b>y</b>-direction (in pixels)'),... % houghpeaks
+    wrapHtmlTooltipString('<b>Number of pixels</b> around image edges to ignore during analysis'),... % Schmied2012
+    ''}; % twotone
 
 % collect interface parameters
 h = guidata(h_fig);

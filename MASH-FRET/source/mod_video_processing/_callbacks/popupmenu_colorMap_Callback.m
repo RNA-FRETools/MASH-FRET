@@ -18,4 +18,4 @@ h.param.movPr = p;
 guidata(h_fig, h);
 
 % set GUI to proper values
-ud_VP_plot(h_fig);
+ud_VP_plotPan(h_fig);

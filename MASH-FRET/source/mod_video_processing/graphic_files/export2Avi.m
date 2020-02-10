@@ -60,11 +60,15 @@ for i = frameRange
     if isBgCorr
         avBg = p.movBg_one;
         if ~avBg
-            img = updateBgCorr(img, h_fig);
+            [img,avImg] = updateBgCorr(img, p, h.movie, h_fig);
         else % Apply only if the bg-corrected frame is displayed
-            if avBg == i
-                img = updateBgCorr(img, h_fig);
+            if avBg==i
+                [img,avImg] = updateBgCorr(img, p, h.movie, h_fig);
             end
+        end
+        if ~isfield(h.movie,'avImg')
+            h.movie.avImg = avImg;
+            guidata(h_fig,h);
         end
     end
     

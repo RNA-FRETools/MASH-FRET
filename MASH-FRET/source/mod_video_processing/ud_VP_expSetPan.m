@@ -13,8 +13,8 @@ p = h.param.movPr;
 setProp(h.uipanel_VP_experimentSettings,'enable','on');
 
 % reset edit fields background color
-set([h.edit_nChannel,h.edit_nLasers,h.edit_wavelength],'backgroundcolor',...
-    [1,1,1]);
+set([h.edit_nChannel,h.edit_nLasers,h.edit_wavelength,h.edit_rate],...
+    'backgroundcolor',[1,1,1]);
 
 % collect processing parameters
 nC = p.nChan;
@@ -25,7 +25,7 @@ isMov = isfield(h,'movie');
 
 % set frame rate
 if isMov
-    if isfield(h.movie,'rate')
+    if isfield(h.movie,'cyctime')
         set(h.edit_rate, 'String', num2str(p.rate));
     end
 end

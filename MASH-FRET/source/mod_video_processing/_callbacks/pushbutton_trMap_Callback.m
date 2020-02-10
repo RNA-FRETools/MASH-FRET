@@ -59,33 +59,39 @@ elseif isempty(p.coordItg)
     p.coordItg = coord_org;
     isItg = 1;
 end
+p.coord2plot = 2;
 
 % get destination coordinates file
+saved = 1;
 [o,defName,o] = fileparts(fname);
 defName = [setCorrectPath('mapping', h_fig) defName '.map'];
 [fname,pname,o] = uiputfile({'*.map', 'Mapped coordinates files(*.map)'; ...
     '*.*', 'All files(*.*)'},'Export coordinates', defName);
 if ~sum(fname)
-    if nC > 1
-        p.trsf_coordRef_file = [];
-    elseif isItg
-        p.coordItg_file = [];
-        p.itg_coordFullPth = [];
+    saved = 0;
+else
+    cd(pname);
+    [o,fname,o] = fileparts(fname);
+    fname = getCorrName([fname '.map'], pname, h_fig);
+    if ~sum(fname)
+        saved = 0;
     end
-    updateActPan('Reference coordinates loaded but not saved', h_fig, ...
-        'process');
-    return
 end
-cd(pname);
-[o,fname,o] = fileparts(fname);
-fname = getCorrName([fname '.map'], pname, h_fig);
-if ~sum(fname)
+if saved
     if nC > 1
         p.trsf_coordRef_file = [];
     elseif isItg
         p.coordItg_file = [];
         p.itg_coordFullPth = [];
     end
+    
+    % save modifications
+    h.param.movPr = p;
+    guidata(h_fig, h);
+    
+    % set GUI to proper values and refresh plot
+    updateFields(h_fig,'imgAxes');
+    
     updateActPan('Reference coordinates loaded but not saved', h_fig, ...
         'process');
     return
@@ -113,5 +119,5 @@ end
 h.param.movPr = p;
 guidata(h_fig, h);
 
-% update GUI to proper values
-updateFields(h_fig, 'movPr');
+% set GUI to proper values and refresh plot
+updateFields(h_fig,'imgAxes');

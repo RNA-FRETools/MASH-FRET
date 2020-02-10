@@ -72,23 +72,26 @@ guidata(h_fig, h);
 spots = [];
 for l = frames
     % reset previous results if all frames are being processed
-    if numel(frames)>1 && size(p.SFres,1)>=1
-        p.SFres = p.SFres(1,1:(1+p.nChan));
+    if numel(frames)>1
+        p.SFres = {};
+        p.SFprm{1}(3) = l;
     end
     
     % get video frame
-    [dat,ok] = getFrames(videoFile, l, {fcurs, [resX resY],L}, h_fig);
+    [dat,ok] = getFrames(videoFile, l, {fcurs, [resX resY],L}, h_fig, true);
     if ~ok
         return
     end
     
     % filter image
     img = dat.frameCur;
-    [img,avImg] = updateBgCorr(img, h_fig);
+    [img,avImg] = updateBgCorr(img, p, h.movie, h_fig);
     
     % save average image
-    h.movie.avImg = avImg;
-    guidata(h_fig, h);
+    if ~isfield(h.movie,'avImg')
+        h.movie.avImg = avImg;
+        guidata(h_fig, h);
+    end
     
     % run spot finder
     p = updateSF(img, true, p, h_fig);
@@ -112,6 +115,7 @@ end
 % recover results for current frame only
 if numel(frames)>1
     p.SFres = currRes;
+    p.SFprm{1}(3) = l0;
 end
 
 % close loading bar
@@ -119,7 +123,10 @@ loading_bar('close', h_fig);
 
 % convert intensities to proper units
 if p.perSec
-    spots(:,[3,8]) = spots(:,[3,8])/expT;
+    spots(:,3) = spots(:,3)/expT;
+    if size(spots,2)>4
+        spots(:,8) = spots(:,8)/expT;
+    end
     un = '(a.u./s)';
 else
     un = '(a.u.)';
@@ -148,6 +155,7 @@ str_mthd = cat(2,' ',menuStr{p.SF_method});
 if gaussFit
     str_mthd = [str_mthd,' + Gaussian fit'];
 end
+str_intThresh = '';
 str_minI = '';
 str_maxN = '';
 str_minDs = '';
@@ -157,7 +165,7 @@ str_spotDim = '';
 str_wLim = '';
 str_ass = '';
 for c = 1:p.nChan
-    if p.SF_method == 4
+    if p.SF_method==4
         str_intThresh = cat(2,str_intThresh,num2str(p.SF_intRatio(c)));
     else
         str_intThresh = cat(2,str_intThresh,num2str(p.SF_intThresh(c)));

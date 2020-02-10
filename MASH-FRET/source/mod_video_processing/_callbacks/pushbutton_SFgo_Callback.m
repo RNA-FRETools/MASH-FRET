@@ -18,7 +18,7 @@ end
 % ask to load average image
 if h.movie.framesTot>1
     loadAveIm = questdlg('Load the average image first?');
-    if ~strcmp(loadAveIm, 'Yes') || ~strcmp(loadAveIm, 'No')
+    if ~(strcmp(loadAveIm, 'Yes') || strcmp(loadAveIm, 'No'))
         return
     end
     
@@ -41,13 +41,18 @@ if h.movie.framesTot>1
     end
 end
 
+% collect video parameters
+l0 = h.movie.frameCurNb;
+
 % reset results
 p.SFres = {};
+p.coord2plot = 1;
 
 % set spotfinder parameters
-p.SFres{1,1} = [meth p.SF_gaussFit h.movie.frameCurNb];
+p.SFprm = cell(1,1+p.nChan);
+p.SFprm{1} = [meth p.SF_gaussFit l0];
 for i = 1:p.nChan
-    p.SFres{1,i+1} = [p.SF_w(i),p.SF_h(i); p.SF_darkW(i),p.SF_darkH(i); ...
+    p.SFprm{i+1} = [p.SF_w(i),p.SF_h(i); p.SF_darkW(i),p.SF_darkH(i); ...
         p.SF_intThresh(i),p.SF_intRatio(i)];
 end
 

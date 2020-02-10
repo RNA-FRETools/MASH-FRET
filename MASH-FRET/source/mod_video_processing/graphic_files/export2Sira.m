@@ -1,7 +1,12 @@
 function ok = export2Sira(h_fig, fname, pname)
+% ok = export2Sira(h_fig, fname, pname)
+%
 % Export the video/image loaded in module Video processing  to a .sira file, after applying image filters/background corrections
 %
-% Requires functions: loading_bar, updateActPan, updateBgCorr, getFrame, writeSiraFile.
+% h_fig: handle to main figure
+% fname: destination file name
+% pname: destination folder
+% ok: execution success (1 if export was a success, 0 otherwise)
 
 % Last update: 5.12.2019 by MH
 % >> use external function writeSiraFile.m to create and write pixel data 
@@ -79,11 +84,15 @@ for i = frameRange
     if isBgCorr
         avBg = p.movBg_one;
         if ~avBg
-            img = updateBgCorr(img, h_fig);
+            [img,avImg] = updateBgCorr(img, p, h.movie, h_fig);
         else % Apply only if the bg-corrected frame is displayed
-            if avBg == i
-                img = updateBgCorr(img, h_fig);
+            if avBg==i
+                [img,avImg] = updateBgCorr(img, p, h.movie, h_fig);
             end
+        end
+        if ~isfield(h.movie,'avImg')
+            h.movie.avImg = avImg;
+            guidata(h_fig,h);
         end
     end
     

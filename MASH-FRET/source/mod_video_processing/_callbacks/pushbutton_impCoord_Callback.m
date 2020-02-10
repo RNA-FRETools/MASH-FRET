@@ -21,14 +21,14 @@ cd(pname);
 
 % import coordinates
 fData = importdata([pname fname], '\n');
-p = h.param.movPr.trsf_coordImp;
-col_x = p(1);
-col_y = p(2);
+prm = h.param.movPr.trsf_coordImp;
+col_x = prm(1);
+col_y = prm(2);
 nCoord = size(fData,1);
 coord = [];
 for i = 1:nCoord
-    fline = str2double(fData{i,1});
-    if ~isempty(fline)
+    fline = str2num(fData{i,1});
+    if ~isempty(fline) && ~(numel(fline)==1 && isnan(fline))
         coord = cat(1,coord,fline(1,[col_x col_y]));
     end
 end
@@ -41,13 +41,14 @@ end
 % save coordiantes and file
 p.coordMol = coord;
 p.coordMol_file = fname;
+p.coord2plot = 3;
 
 % save modifications
 h.param.movPr = p;
 guidata(h_fig, h);
 
-% set GUI to proper values
-ud_VP_coordTransfPan(h_fig);
+% set GUI to proper values and refresh plot
+updateFields(h_fig,'imgAxes');
 
 % show action
 updateActPan(['Molecule coordinates imported from file: ',pname,fname], ...

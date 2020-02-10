@@ -36,7 +36,7 @@ set(h.pushbutton_VP_freeMem,'backgroundcolor',...
 
 if isMov
     % collect video parameters
-    l = h.movie.frameCurrNb;
+    l = h.movie.frameCurNb;
     L = h.movie.framesTot;
     resX = h.movie.pixelX;
     resY = h.movie.pixelY;

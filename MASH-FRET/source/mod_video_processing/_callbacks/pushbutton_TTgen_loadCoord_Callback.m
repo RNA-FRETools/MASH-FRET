@@ -40,13 +40,14 @@ end
 p.coordItg = coord_itg;
 p.coordItg_file = fname;
 p.itg_coordFullPth = [pname fname];
+p.coord2plot = 5;
 
 % save modifications
 h.param.movPr = p;
 guidata(h_fig, h);
 
-% set GUI to proper values
-ud_VP_intIntegrPan(h_fig);
+% set GUI to proper values and refresh plot
+updateFields(h_fig,'imgAxes');
 
 % show action
 setContPan(cat(2,'Coordinates were successfully imported from file: ',...

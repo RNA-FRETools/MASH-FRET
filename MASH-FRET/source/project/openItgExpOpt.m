@@ -83,9 +83,9 @@ isS = isFRET & (nExc > 1);
 
 str_laser = {};
 exc = [];
-for i = 5:4+nExc
-    exc = [exc getValueFromStr('Power(', p{1}{i,1})];
-    str_laser = [str_laser [num2str(exc(end)) 'nm']];
+for i = 5:(4+nExc)
+    exc = cat(2,exc,getValueFromStr('Power(', p{1}{i,1}));
+    str_laser = cat(2,str_laser,[num2str(exc(end)),'nm']);
 end
 str_chan = cellstr(num2str((1:nChan)'));
 

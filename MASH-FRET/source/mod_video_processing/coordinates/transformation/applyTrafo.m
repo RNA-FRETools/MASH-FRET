@@ -27,12 +27,12 @@ end
 if isempty(coord_i)
     updateActPan(['Unconsistent coordinates.'...
         '\nPlease check the import options.'], h_fig, 'error');
-    return;
+    return
 end
 
 [coord_tr_i,ok] = transformPoints(tr,coord_i,nChan,h_fig);
 if ~ok
-    return;
+    return
 end
 
 coordTrsf_i = cell(1,nChan);
@@ -106,7 +106,7 @@ if isempty(coordTrsf)
         '-  coordinates are less than or exactly ',str_edgeDmin,...
         ' pixel away from image edges: see Spotfinder >> Exclusion rules'),...
         h_fig,'error');
-    return;
+    return
 end
 
 

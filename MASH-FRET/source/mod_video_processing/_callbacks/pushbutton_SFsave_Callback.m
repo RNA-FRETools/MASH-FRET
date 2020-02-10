@@ -48,5 +48,5 @@ end
 h.param.movPr = p;
 guidata(h_fig, h);
 
-% set GUI to proper values
-updateFields(h_fig, 'movPr');
+% set GUI to proper values and refresh plot
+updateFields(h_fig,'imgAxes');

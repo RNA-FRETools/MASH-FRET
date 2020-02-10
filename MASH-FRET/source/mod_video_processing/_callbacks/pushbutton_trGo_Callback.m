@@ -4,16 +4,17 @@ function pushbutton_trGo_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 p = h.param.movPr;
 
-if p.Chan<=1 || p.nChan>3
+if p.nChan<=1 || p.nChan>3
     updateActPan(cat(2,'This functionality is available for 2 or 3 ',...
         'channels only.'), h_fig, 'error');
     return
 end
 
-if isfield(p, 'trsf_tr') && isfield(p, 'coordMol') && ...
-        ~isempty(p.trsf_tr) && ~isempty(p.coordMol)
-    updateActPan('No input coordinates or transformation loaded.', h_fig, ...
+if ~(isfield(p, 'trsf_tr') && isfield(p, 'coordMol') && ...
+        ~isempty(p.trsf_tr) && ~isempty(p.coordMol))
+    updateActPan('No coordinates or transformation is improted.', h_fig, ...
         'error');
+    return
 end
 
 % transform coordinates
@@ -30,11 +31,10 @@ end
 
 % save transformed coordinates
 p.coordTrsf = coordTrsf;
-
-% erase spot finder results for plot
-p.SFres = {};
+p.coord2plot = 4;
 
 % get destination file name
+saved = 1;
 if ~isempty(p.coordMol_file)
     [o,fname,o] = fileparts(p.coordMol_file);
 else
@@ -44,22 +44,17 @@ defName = [setCorrectPath('transformed', h_fig),fname,'.coord'];
 [fname,pname,o] = uiputfile({...
     '*.coord', 'Transformed coordinates files(*.coord)'; ...
     '*.*', 'All files(*.*)'}, 'Export transformation', defName);
-if ~sum(fname)
-    p.coordTrsf_file = [];
-    
-    % save modifications
-    h.param.movPr = p;
-    guidata(h_fig, h);
-    
-    updateActPan(['Coordinates were successfully transformed but were not ' ...
-        'saved'], h_fig, 'process');
-    return
+if sum(fname)
+    cd(pname);
+    [o,fname,o] = fileparts(fname);
+    fname = getCorrName([fname '.coord'], pname, h_fig);
+    if ~sum(fname)
+        saved = 0;
+    end
+else
+    saved = 0;
 end
-
-cd(pname);
-[o,fname,o] = fileparts(fname);
-fname = getCorrName([fname '.coord'], pname, h_fig);
-if ~sum(fname)
+if ~saved
     p.coordTrsf_file = [];
     
     % save modifications
@@ -68,6 +63,9 @@ if ~sum(fname)
     
     updateActPan(['Coordinates were successfully transformed but were not ' ...
         'saved'], h_fig, 'process');
+    
+    % set GUI to proper values and refresh plot
+    updateFields(h_fig,'imgAxes');
     return
 end
 
@@ -100,7 +98,7 @@ h.param.movPr = p;
 guidata(h_fig, h);
 
 % set GUI to proper values and refresh plot
-updateFields(h_fig, 'imgAxes');
+updateFields(h_fig,'imgAxes');
 
 % show action
 updateActPan(['Coordinates were successfully transformedt and saved to ',...

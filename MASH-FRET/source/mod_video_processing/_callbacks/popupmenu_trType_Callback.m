@@ -12,4 +12,4 @@ h.param.movPr = p;
 guidata(h_fig, h);
 
 % set GUI to proper values
-ud_VP_coordTrsfPan(h_fig);
+ud_VP_coordTransfPan(h_fig);

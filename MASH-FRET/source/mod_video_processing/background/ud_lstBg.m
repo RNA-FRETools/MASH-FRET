@@ -17,6 +17,9 @@ end
 
 % adjust list selection
 corr = get(h.listbox_bgCorr,'value');
+if ~isempty(str) && corr==0
+    corr = 1;
+end
 if corr>size(p.bgCorr,1)
     corr = size(p.bgCorr,1);
 end

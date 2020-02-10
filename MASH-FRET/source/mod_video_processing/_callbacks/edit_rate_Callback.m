@@ -1,7 +1,7 @@
 function edit_rate_Callback(obj, evd, h_fig)
 
 % collect interface parameters
-val = round(str2double(get(obj, 'String')));
+val = str2double(get(obj, 'String'));
 h = guidata(h_fig);
 p = h.param.movPr;
 
@@ -12,8 +12,10 @@ if ~(numel(val)==1 && ~isnan(val) && val>0)
     return
 end
 
-% set video parameters
-h.movie.cyctime = val;
+if isfield(h,'movie') && isfield(h.movie,'cyctime')
+    % set video parameters
+    h.movie.cyctime = val;
+end
 
 % set processing parameters
 p.rate = val;

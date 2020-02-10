@@ -41,17 +41,16 @@ L = h_mov.framesTot;
 l = h_mov.frameCurNb;
 videoFile = [h_mov.path h_mov.file];
 fcurs = h_mov.speCursor;
-if ~isfield(h_mov, 'avImg')
+if isfield(h_mov, 'avImg')
     avImg = h_mov.avImg;
 else
     avImg = [];
 end
 
 % get processing parameters
-meth = prm(1);
+meth = prm{1};
 nChan = p.nChan;
 movBg_p = p.movBg_p;
-myfilter = p.movBg_myfilter{meth};
 
 % get channel limits
 sub_w = floor(resX/nChan);
@@ -62,19 +61,17 @@ for i = 1:nChan
     int = img(:,frames);
     
     if sum(meth==[2 5:10]) % gaussian, outlier, ggf, lwf, gwf, histotresh, simpletresh
-        myfilter(1).filter = myfilter;
+        myfilter(1).filter = p.movBg_myfilter{meth};
         myfilter(1).P1 = prm{i+1}(1);
         myfilter(1).P2 = prm{i+1}(2);
         int = FilterArray(int, myfilter);
         img(:,frames) = int;
         
     elseif meth==3 % mean filter
-        img(:,frames) = filter2(ones(prm{i+1}(1))/ ...
-            (prm{i+1}(1)^2),int);
+        img(:,frames) = filter2(ones(prm{i+1}(1))/(prm{i+1}(1)^2),int);
         
     elseif meth==4 % median filter
-        img(:,frames) = medfilt2(int, [prm{i+1}(1) ...
-            prm{i+1}(1)]);
+        img(:,frames) = medfilt2(int, [prm{i+1}(1) prm{i+1}(1)]);
 
     elseif sum(meth==[11 12 13]) % mean, most frequent or histotresh
 

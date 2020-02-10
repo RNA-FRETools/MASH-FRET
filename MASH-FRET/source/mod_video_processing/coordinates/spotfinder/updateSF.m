@@ -15,21 +15,20 @@ if meth<=1
     return
 end
 
-nChan = p.nChan;
-
 % no result: run spotfinder
-if size(p.SFres,2)<=(nChan+1)
-    spots = determineSpots(p.SFres, img, lb, h_fig);
-    p.SFres(1,:) = cat(2,p.SFres(1,:),spots);
+if isempty(p.SFres)
+    spots = determineSpots(p.SFprm, img, lb, p, h_fig);
+    p.SFres = spots;
 
 % recover results from previous spotfinder run
 else
-    spots = p.SFres(1,(nChan+2):(2*nChan+1));
+    spots = p.SFres(1,:);
+    p.SFres = spots;
 end
 
 % apply selection rules
 [imgY,imgX] = size(img);
-p.SFres(2,:) = selectSpots(spots, imgX, imgY, p);
+p.SFres = cat(1,p.SFres,selectSpots(spots, imgX, imgY, p));
 
 
 function [spots,ok] = determineSpots(param, img, lb, p, h_fig)

@@ -17,7 +17,7 @@ end
 p.itg_wl = p.itg_wl(1:nL);
 
 % adjust project's experimental conditions
-[r,o,o] = find(strncmp(p.itg_expMolPrm(:,1)','Power(',length('Power(')));
+[r,o,o] = find(strncmp(p.itg_expMolPrm(:,1),'Power(',length('Power(')));
 lasPrm = cell(nL,3);
 for l = 1:nL
     prmVal = [];
