@@ -23,6 +23,10 @@ ferr = 0;
 coord = [];
 errmsg = {};
 
+if isempty(coord_0)
+    return
+end
+
 % get video dimensions and channel limits
 res_x = movDim(1);
 res_y = movDim(2);

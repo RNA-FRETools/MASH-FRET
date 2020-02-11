@@ -4,20 +4,9 @@ function impSimPrm(fname, pname, h_fig)
 % fname: name of presets file (with extension)
 % pname: path of folder containing the presets file (ended by a slash character)
 % h_fig: handle to main MASH figure
-%
-% Requires external functions: setContPan, setSimPrm
 
-% Last update by MH, 18.12.2019
-% >> remove input & output arguments "p" and "pres" and save here the 
-%  changes that were done in the structure h
-% >> modify input and output arguments of setSimPrm according to new 
-%  definition
-%
-% update: 19.4.2019 by MH
-% >> correct recovering of number of states from presets
-% >> Manage communication with user by including a tip in error message 
-%    when loading corrupted file, and by changing error message to warning 
-%    when loading emtpy file
+% Last update by MH, 18.12.2019: (1)remove input & output arguments "p" and "pres" and save here the changes that were done in the structure h, (2) modify input and output arguments of setSimPrm according to new definition
+% update: 19.4.2019 by MH: (1) correct recovering of number of states from presets, (2) manage communication with user by including a tip in error message when loading corrupted file, and by changing error message to warning when loading emtpy file
 
 try
     s = load([pname fname], '-mat');
@@ -93,13 +82,14 @@ end
 
 if isfield(p,'molNb')
     if p.genCoord
-        coord = p.coord;
+        coord = [];
     elseif p.impPrm && isfield(p.molPrm,'coord')
         coord = p.molPrm.coord;
     else
         coord = p.coord;
     end
     [ferr,coord,errmsg] = sortSimCoord(coord, p.movDim, p.molNb);
+
     if ferr || isempty(coord)
         if iscell(errmsg)
             for i = 1:numel(errmsg)
@@ -109,9 +99,9 @@ if isfield(p,'molNb')
             disp(errmsg);
         end
         if ~ferr
-            % if error is not due to file data, keep empty field 'coord' in 
-            % structure to indicates that coordinates are present in file but 
-            % are out of current video dimensions
+            % if error is not due to file data, keep empty field 
+            % 'coord' in structure to indicates that coordinates are 
+            % present in file but are out of current video dimensions
             p.coord = [];
             p.genCoord = 1;
             p.matGauss = cell(1,4);

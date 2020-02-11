@@ -53,6 +53,12 @@ if isfield(s,'FRET') && ~isempty(s.FRET)
 
             p.molNb = size(s.FRET,3);
             p.nbStates = size(s.FRET,1);
+            if p.nbStates<=Jmax
+                disp(cat(2,'Import presets for ',num2str(p.molNb),...
+                    ' molecules and ',num2str(p.nbStates),' FRET states ',...
+                    '...'));
+                disp('FRET values and deviations successfully imported');
+            end
         end
     else
         errmsg = cat(2,errmsg,'No FRET matrix imported:',cat(2,'>> the ',...
@@ -67,11 +73,14 @@ if isfield(s, 'trans_rates') && ~isempty(s.trans_rates)
         if size(s.trans_rates,3)==p.molNb && ...
                 size(s.trans_rates,2)==p.nbStates
             p.kx = s.trans_rates;
-            disp(cat(2,'Import presets for ',num2str(p.molNb),' molecules and',...
-                ' ',num2str(p.nbStates),' FRET states ...'));
-            disp('FRET values and deviations successfully imported');
-            
-            disp('Transition rates successfully imported');
+            if p.nbStates>Jmax
+                disp(cat(2,'Import presets for ',num2str(p.molNb),...
+                    ' molecules and ',num2str(p.nbStates),' FRET states ',...
+                    '...'));
+                disp('FRET values and deviations successfully imported');
+            else
+                disp('Transition rates successfully imported');
+            end
             
         elseif size(s.trans_rates,3)~=p.molNb
             errmsg = cat(2,errmsg,cat(2,'No FRET or transition rate ',...

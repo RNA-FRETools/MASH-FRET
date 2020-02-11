@@ -43,6 +43,13 @@ if isfield(p.molPrm, 'psf_width')
     p.matGauss = cell(1,4);
 end
 
+if isfield(p.molPrm, 'molNb')
+    if ~isempty(p.coordFile)
+        % resort coordinates imported from ASCII file (sample size can increases)
+        p = resetSimCoord(p,h_fig);
+    end
+end
+
 % reset parameters of presets file
 p.molPrm = [];
 p.impPrm = 0;
