@@ -77,7 +77,7 @@ else
         saved = 0;
     end
 end
-if saved
+if ~saved
     if nC > 1
         p.trsf_coordRef_file = [];
     elseif isItg

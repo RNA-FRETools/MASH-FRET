@@ -11,6 +11,13 @@ function [img,avImg] = updateBgCorr(img, p, h_mov, h_fig)
 
 % Last update: 5th of February 2014 by Mélodie C.A.S Hadzic
 
+% initialize output
+if isfield(h_mov, 'avImg')
+    avImg = h_mov.avImg;
+else
+    avImg = [];
+end
+
 if ~isempty(p.bgCorr)
     nCorr = size(p.bgCorr, 1);
     for i = 1:nCorr

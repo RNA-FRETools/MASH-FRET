@@ -16,12 +16,17 @@ function [spots,pname,fname,avImg,p] = saveSpots(p,h_fig)
 spots = [];
 pname = [];
 fname = [];
+avImg = [];
 
 % collect interface parameters
 h = guidata(h_fig);
 
 if ~(isfield(p,'SFres') && isfield(h,'movie'))
     return
+end
+
+if isfield(h.movie,'avImg')
+    avImg = h.movie.avImg;
 end
 
 % get destination file name
