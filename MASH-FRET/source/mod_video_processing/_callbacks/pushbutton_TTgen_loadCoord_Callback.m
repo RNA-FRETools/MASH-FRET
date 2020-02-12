@@ -1,9 +1,11 @@
 function pushbutton_TTgen_loadCoord_Callback(obj, evd, h_fig)
+% pushbutton_TTgen_loadCoord_Callback([], [], h_fig)
+% pushbutton_TTgen_loadCoord_Callback(coordfile, [], h_fig)
+%
+% h_fig: handle to main figure
+% coordfile: {1-by-2} source folder and source file containing coordinates used in intensity integration
 
-% Last update: 28th of March 2019 by Melodie Hadzic
-% --> Fix error when calling orgCoordCol.m with too few input arguments
-% --> Remove action "Unable to import coordinates" to avoid double action
-%     with orgCoordCol
+% Last update by MH, 28.3.2019: (1) Fix error when calling orgCoordCol.m with too few input arguments (2) Remove action "Unable to import coordinates" to avoid double action with orgCoordCol
 
 % get interface parameters
 h = guidata(h_fig);
@@ -16,10 +18,18 @@ if ~isfield(h,'movie')
 end
 
 % get coordinates file
-[fname,pname,o] = uigetfile({...
-    '*.coord;*.spots;*.map','Coordinates File(*.coord;*.spots;*.map)'; ...
-    '*.*', 'All Files (*.*)'},'Select a coordinates file', ...
-    setCorrectPath('coordinates', h_fig));
+if iscell(obj)
+    pname = obj{1};
+    fname = obj{2};
+    if ~strcmp(pname(end),filesep)
+        pname = [pname,filesep];
+    end
+else
+    [fname,pname,o] = uigetfile({...
+        '*.coord;*.spots;*.map','Coordinates File(*.coord;*.spots;*.map)'; ...
+        '*.*', 'All Files (*.*)'},'Select a coordinates file', ...
+        setCorrectPath('coordinates', h_fig));
+end
 if ~sum(fname)
     return
 end

@@ -1,4 +1,9 @@
 function pushbutton_trLoad_Callback(obj, evd, h_fig)
+% pushbutton_trLoad_Callback([], [], h_fig)
+% pushbutton_trLoad_Callback(coordfile, [], h_fig)
+%
+% h_fig: handle to main figure
+% coordfile: {1-by-2} source folder and source file containing transformation
 
 % collect interface parameters
 h = guidata(h_fig);
@@ -9,15 +14,22 @@ if p.nChan<=1 || p.nChan>3
         'only.'], h_fig, 'error');
     return
 end
-[fname, pname, o] = uigetfile({'*.mat','Matlab files(*.mat)'; ...
-    '*.*',  'All Files (*.*)'}, 'Select a transformation file:', ...
-    setCorrectPath('transformed', h_fig));
 
+% get transformation file
+if iscell(obj)
+    pname = obj{1};
+    fname = obj{2};
+    if ~strcmp(pname(end),filesep)
+        pname = [pname,filesep];
+    end
+else
+    [fname, pname, o] = uigetfile({'*.mat','Matlab files(*.mat)'; ...
+        '*.*',  'All Files (*.*)'}, 'Select a transformation file:', ...
+        setCorrectPath('transformed', h_fig));
+end
 if ~sum(fname)
     return
 end
-
-% get transformation file
 cd(pname);
 [o, o, fExt] = fileparts(fname);
 if ~strcmp(fExt, '.mat')

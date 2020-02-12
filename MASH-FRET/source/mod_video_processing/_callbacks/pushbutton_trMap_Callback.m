@@ -1,9 +1,24 @@
 function pushbutton_trMap_Callback(obj, evd, h_fig)
+% pushbutton_trMap_Callback([],[],h_fig)
+% pushbutton_trMap_Callback(refImgFile,[],h_fig)
+%
+% h_fig: handle to main figure
+% refImageFile: {1-by-2} source folder and file containing reference image
 
 % get image file to map
-[fname, pname, o] = uigetfile({'*.png;*.tif', 'Image file(*.png;*.tif)';
-    '*.*',  'All Files (*.*)'},'Select an image file for mapping', ...
-    setCorrectPath('average_images', h_fig));
+if iscell(obj)
+    pname = obj{1,1};
+    fname = obj{1,2};
+    if ~strcmp(pname,'filesep')
+        pname = cat(2,pname,filesep);
+    end
+    fromRoutine = true;
+else
+    [fname,pname,o] = uigetfile({'*.png;*.tif','Image file(*.png;*.tif)';
+        '*.*', 'All Files (*.*)'},'Select an image file for mapping', ...
+        setCorrectPath('average_images', h_fig));
+    fromRoutine = false;
+end
 if ~sum(fname)
     return
 end
@@ -27,7 +42,7 @@ nC = p.nChan;
 res_x = size(img,2);
 lim_x = [0 (1:nC-1)*round(res_x/nC) res_x];
 
-pnt = openMapping(img, lim_x);
+pnt = openMapping(img, lim_x, h.mute_actions, h_fig);
 
 % recover mapped coordinates
 coord = zeros([numel(pnt)/2 2]);
@@ -63,10 +78,18 @@ p.coord2plot = 2;
 
 % get destination coordinates file
 saved = 1;
-[o,defName,o] = fileparts(fname);
-defName = [setCorrectPath('mapping', h_fig) defName '.map'];
-[fname,pname,o] = uiputfile({'*.map', 'Mapped coordinates files(*.map)'; ...
-    '*.*', 'All files(*.*)'},'Export coordinates', defName);
+if fromRoutine
+    pname = obj{2,1};
+    fname = obj{2,2};
+    if ~strcmp(pname,'filesep')
+        pname = cat(2,pname,filesep);
+    end
+else
+    [o,defName,o] = fileparts(fname);
+    defName = [setCorrectPath('mapping', h_fig) defName '.map'];
+    [fname,pname,o] = uiputfile({'*.map','Mapped coordinates files(*.map)'; ...
+        '*.*','All files(*.*)'},'Export coordinates', defName);
+end
 if ~sum(fname)
     saved = 0;
 else

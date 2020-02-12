@@ -1,4 +1,9 @@
 function pushbutton_impCoord_Callback(obj, evd, h_fig)
+% pushbutton_impCoord_Callback([], [], h_fig)
+% pushbutton_impCoord_Callback(coordfile, [], h_fig)
+%
+% h_fig: handle to main figure
+% coordfile: {1-by-2} source folder and source file containing coordinates to transform
 
 % collect interface parameters
 h = guidata(h_fig);
@@ -11,9 +16,17 @@ if p.nChan<=1 || p.nChan>3
 end
 
 % get coordinates file to transform
-defPname = setCorrectPath('spotfinder', h_fig);
-[fname,pname,o] = uigetfile({'*.spots','Coordinates File(*.spots)'; ...
-    '*.*',  'All Files (*.*)'}, 'Select a coordinates file', defPname);
+if iscell(obj)
+    pname = obj{1};
+    fname = obj{2};
+    if ~strcmp(pname(end),filesep)
+        pname = [pname,filesep];
+    end
+else
+    defPname = setCorrectPath('spotfinder', h_fig);
+    [fname,pname,o] = uigetfile({'*.spots','Coordinates File(*.spots)'; ...
+        '*.*',  'All Files (*.*)'}, 'Select a coordinates file', defPname);
+end
 if ~sum(fname)
     return
 end

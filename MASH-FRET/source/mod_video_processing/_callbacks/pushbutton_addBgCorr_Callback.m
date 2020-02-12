@@ -1,4 +1,9 @@
 function pushbutton_addBgCorr_Callback(obj, evd, h_fig)
+% pushbutton_addBgCorr_Callback([], [], h_fig)
+% pushbutton_addBgCorr_Callback(bgfile, [], h_fig)
+%
+% h_fig: handle to main figure
+% bgfile: source image file used in image subtration
 
 % collect interface parameters
 h = guidata(h_fig);
@@ -19,7 +24,11 @@ if meth<=1
 end
 
 if meth==17 % image subtraction
-    dat = getFile2sub('Pick an image to subtract', h_fig);
+    if iscell(obj)
+        dat = getFile2sub('Pick an image to subtract', h_fig, obj{1});
+    else
+        dat = getFile2sub('Pick an image to subtract', h_fig);
+    end
     if isempty(dat)
         return
     end

@@ -1,4 +1,9 @@
 function pushbutton_trGo_Callback(obj, evd, h_fig)
+% pushbutton_trGo_Callback([],[],h_fig)
+% pushbutton_trGo_Callback(fileout,[],h_fig)
+%
+% h_fig: handle to main figure
+% fileout: {1-by-2} destination folder and file
 
 % collect interface parameters
 h = guidata(h_fig);
@@ -12,7 +17,7 @@ end
 
 if ~(isfield(p, 'trsf_tr') && isfield(p, 'coordMol') && ...
         ~isempty(p.trsf_tr) && ~isempty(p.coordMol))
-    updateActPan('No coordinates or transformation is improted.', h_fig, ...
+    updateActPan('No coordinates or transformation is imported.', h_fig, ...
         'error');
     return
 end
@@ -35,15 +40,23 @@ p.coord2plot = 4;
 
 % get destination file name
 saved = 1;
-if ~isempty(p.coordMol_file)
-    [o,fname,o] = fileparts(p.coordMol_file);
+if iscell(obj)
+    pname = obj{1};
+    fname = obj{2};
+    if ~strcmp(pname(end),filesep)
+        pname = [pname,filesep];
+    end
 else
-    fname = 'transformed_coordinates';
+    if ~isempty(p.coordMol_file)
+        [o,fname,o] = fileparts(p.coordMol_file);
+    else
+        fname = 'transformed_coordinates';
+    end
+    defName = [setCorrectPath('transformed', h_fig),fname,'.coord'];
+    [fname,pname,o] = uiputfile({...
+        '*.coord', 'Transformed coordinates files(*.coord)'; ...
+        '*.*', 'All files(*.*)'}, 'Export transformation', defName);
 end
-defName = [setCorrectPath('transformed', h_fig),fname,'.coord'];
-[fname,pname,o] = uiputfile({...
-    '*.coord', 'Transformed coordinates files(*.coord)'; ...
-    '*.*', 'All files(*.*)'}, 'Export transformation', defName);
 if sum(fname)
     cd(pname);
     [o,fname,o] = fileparts(fname);

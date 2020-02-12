@@ -21,6 +21,9 @@ if ~iscell(txt)
 else
     pname = txt{1}; % ex: C:\Users\MASH\Documents\MATLAB\
     fname = txt{2}; % ex: movie.sif
+    if ~strcmp(pname(end),filesep)
+        pname = [pname,filesep];
+    end
 end
 if ~sum(fname)
     return

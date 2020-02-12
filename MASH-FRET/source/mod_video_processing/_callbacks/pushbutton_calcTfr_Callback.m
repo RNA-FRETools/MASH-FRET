@@ -1,4 +1,9 @@
 function pushbutton_calcTfr_Callback(obj, evd, h_fig)
+% pushbutton_calcTfr_Callback([],[],h_fig)
+% pushbutton_calcTfr_Callback(outfile,[],h_fig)
+%
+% h_fig: handle to main figure
+% outfile: {1-by-2} destination folder and file
 
 % collect interface parameters
 h = guidata(h_fig);
@@ -34,14 +39,22 @@ str_type = str_type{tform_type};
 
 % get file name
 saved = 1;
-if isfield(p, 'trsf_coordRef_file') && ~isempty(p.trsf_coordRef_file)
-    [o,fname,o] = fileparts(p.trsf_coordRef_file);
+if iscell(obj)
+    pname = obj{1};
+    fname = obj{2};
+    if ~strcmp(pname(end),filesep)
+        pname =[pname,filesep];
+    end
 else
-    fname = 'transformation';
+    if isfield(p, 'trsf_coordRef_file') && ~isempty(p.trsf_coordRef_file)
+        [o,fname,o] = fileparts(p.trsf_coordRef_file);
+    else
+        fname = 'transformation';
+    end
+    defName = [setCorrectPath('transformed', h_fig) fname '.mat'];
+    [fname,pname,o] = uiputfile({'*.mat', 'Matlab files(*.mat)'; ...
+        '*.*', 'All files(*.*)'}, 'Export transformation', defName);
 end
-defName = [setCorrectPath('transformed', h_fig) fname '.mat'];
-[fname,pname,o] = uiputfile({'*.mat', 'Matlab files(*.mat)'; ...
-    '*.*', 'All files(*.*)'}, 'Export transformation', defName);
 if ~sum(fname)
     saved = 0;
 else

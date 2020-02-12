@@ -1,17 +1,16 @@
-function TTgenGo(h_fig)
-% Save traces to MASH project and other files after pressing "create & 
-% export" button in Video processing.
-% "obj" >> button handle
-% "evd" >> button eventdata structure (empty)
-% "fname" >> generated folder path
-% "h" >> MASH handle structure
-
-% Last update: 28th of March 2019 by Mélodie C.A.S Hadzic
-% --> change MASH folder from /video-processing back to root folder
+function TTgenGo(h_fig,varargin)
+% TTgenGo(h_fig)
+% TTgenGo(h_fig,pname,fname)
 %
-% update: 18th of February 2019 by Mélodie C.A.S Hadzic
-% --> change default folder to video_processing
-% --> comment code
+% Save traces to MASH project and other files.
+% TTgenGo can be called either after pressing "create & export" button in Video processing, or from a test routine.
+% 
+% h_fig: handle to main figure
+% pname: destination folder (from routine test)
+% fname: destination .mash file (from routine test)
+
+% Last update by MH, 28.3.2019: change MASH folder from /video-processing back to root folder
+% update by MH, 18.2.2019: change default folder to video_processing comment code
 
 h = guidata(h_fig);
 p = h.param.movPr;

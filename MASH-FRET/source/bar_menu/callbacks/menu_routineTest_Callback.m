@@ -15,6 +15,7 @@ switch module
     case 'sim'
         routinetest_S(h_fig,panel);
     case 'vp'
+        routinetest_VP(h_fig,panel);
     case 'tp'
     case 'ha'
     case 'ta'

@@ -93,4 +93,13 @@ end
 
 % reset spot finder results
 p.SFres = {};
+
+% set spotfinder parameters
+for i = 1:p.nChan
+    if size(p.SFprm,2)<(i+1)
+        p.SFprm = cat(2,p.SFprm,[p.SF_w(i),p.SF_h(i); p.SF_darkW(i),...
+            p.SF_darkH(i); p.SF_intThresh(i),p.SF_intRatio(i)]);
+    end
+end
+p.SFprm = p.SFprm(1,1:(p.nChan+1));
     
