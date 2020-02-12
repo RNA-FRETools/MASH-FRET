@@ -36,7 +36,7 @@ if meth==17 % image subtraction
     p.movBg_p{meth,1} = dat;
 
 else
-    if sum(meth==[2 5:10]) && exist('FilterArray','file')==3
+    if sum(meth==[2 5:10]) && exist('FilterArray','file')~=3
         setContPan(cat(2,'This filter can not be used: problem with mex ',...
             'compilation.'),'error',h_fig);
         return

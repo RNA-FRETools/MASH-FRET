@@ -16,7 +16,7 @@ end
 p.SF_maxN(chan) = val;
 
 % reset spot selection
-if ~isempty(p.SFres)
+if size(p.SFres,1)>=2
     p.SFres(2,:) = [];
 end
 

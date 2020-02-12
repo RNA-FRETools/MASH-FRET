@@ -1,4 +1,9 @@
 function pushbutton_SFsave_Callback(obj, evd, h_fig)
+% pushbutton_SFsave_Callback([],[],h_fig)
+% pushbutton_SFsave_Callback(file_out,[],h_fig)
+%
+% h_fig: handle to main figure
+% file_out: {1-by-2} destination folder and file for spots coordinates
 
 % collect interface parameters
 h = guidata(h_fig);
@@ -13,7 +18,16 @@ if p.SF_method<=1
 end
 
 % save spots coordinates to file
-[coord,pname,fname,avImg,p] = saveSpots(p,h_fig);
+if iscell(obj)
+    pname = obj{1};
+    fname = obj{2};
+    if~strcmp(pname(end),filesep)
+        pname = [pname,filesep];
+    end
+    [coord,pname,fname,avImg,p] = saveSpots(p,h_fig,pname,fname);
+else
+    [coord,pname,fname,avImg,p] = saveSpots(p,h_fig);
+end
 if isempty(coord)
     return
 end

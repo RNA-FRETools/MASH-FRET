@@ -7,6 +7,10 @@ function pleaseWait(action, h_fig)
 
 h = guidata(h_fig);
 
+if h.mute_actions
+    return
+end
+
 switch action
     case 'start'
         h.wait.prevFig = h_fig;

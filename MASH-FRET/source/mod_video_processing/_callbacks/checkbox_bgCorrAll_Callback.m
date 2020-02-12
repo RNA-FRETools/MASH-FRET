@@ -5,7 +5,7 @@ h = guidata(h_fig);
 p = h.param.movPr;
 
 p.movBg_one = ~get(obj, 'Value');
-if p.movBg_one
+if p.movBg_one && isfield(h,'movie')
     p.movBg_one = h.movie.frameCurNb;
 end
 

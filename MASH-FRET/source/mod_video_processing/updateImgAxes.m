@@ -53,7 +53,9 @@ if isBgCorr
     elseif avBg==n
         [img,avImg] = updateBgCorr(img, p, h.movie, h_fig);
     end
-    h.movie.avImg = avImg;
+    if exist('avImg','var') && ~(isfield(h,'avImg') && ~isempty(h.avImg))
+        h.movie.avImg = avImg;
+    end
 end
 
 % find spots

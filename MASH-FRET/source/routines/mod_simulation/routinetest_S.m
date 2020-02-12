@@ -13,6 +13,8 @@ function routinetest_S(varargin)
 % defaults
 opt = 'all';
 
+disp(' ');
+
 % get input arguments
 h_fig = [];
 if ~isempty(varargin)
@@ -85,4 +87,8 @@ switch opt
     otherwise
         module = cat(2,'panel ',upper(opt(1)),opt(2:end));
 end
+disp(' ');
 disp(cat(2,module,' was successfully tested !'));
+disp(' ');
+disp('Generated test data are available at:\n');
+disp(p.dumpdir);

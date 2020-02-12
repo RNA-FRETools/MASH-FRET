@@ -54,7 +54,7 @@ if saveTraces
     if isempty(pname)
         pname = setCorrectPath('intensities',h_fig);
     else
-        pname = [pname,'intensities'];
+        pname = [pname,'intensities',filesep];
         if ~exist(pname,'dir')
             mkdir(pname);
         end

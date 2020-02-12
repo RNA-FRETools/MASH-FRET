@@ -56,8 +56,9 @@ disp(cat(2,prefix,'test export options...'));
 % set defaults
 setDefault_VP(h_fig,p)
     
-disp(cat(2,prefix,'>> import coordinates from ',p.coord_file{2}));
-pushbutton_TTgen_loadCoord_Callback({p.annexpth,p.coord_file{2}},[],h_fig);
+disp(cat(2,prefix,'>> import coordinates from ',p.coord_file{p.nChan}));
+pushbutton_TTgen_loadCoord_Callback({p.annexpth,p.coord_file{p.nChan}},[],...
+    h_fig);
 for n = 1:size(expopt,2)
     disp(cat(2,prefix,'>> export ',p.expFmt{n},'file...'));
     % set export otpions
@@ -67,7 +68,7 @@ for n = 1:size(expopt,2)
     set_VP_expOpt(opt,h_fig);
     
     % save file
-    pushbutton_itgFileOpt_ok_Callback({p.dumpdir,p.exp_traceFile{2}},[],...
-        h_fig);
+    pushbutton_itgFileOpt_ok_Callback(...
+        {p.dumpdir,p.exp_traceFile{p.nL,p.nChan}},[],h_fig);
 end
 

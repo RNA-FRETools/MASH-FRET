@@ -5,7 +5,9 @@ h = guidata(h_fig);
 p = h.param.movPr;
 n = get(h.listbox_bgCorr, 'Value');
 
-p.bgCorr(n,:) = [];
+if n>0 && size(p.bgCorr,1)>=n
+    p.bgCorr(n,:) = [];
+end
 
 % save modifications
 h.param.movPr = p;

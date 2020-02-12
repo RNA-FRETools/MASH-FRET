@@ -13,6 +13,8 @@ function routinetest_menu(varargin)
 % defaults
 opt = 'all';
 
+disp(' ');
+
 % get input arguments
 h_fig = [];
 if ~isempty(varargin)
@@ -27,7 +29,6 @@ p = getDefault_menu;
 
 % test main working area
 h_fig = routinetest_general(p.annexpth,h_fig);
-h = guidata(h_fig);
 
 % test history view
 if strcmp(opt,'all') || strcmp(opt,'view')
@@ -58,4 +59,8 @@ switch opt
     otherwise
         module = cat(2,'menu ',upper(opt(1)),opt(2:end),' was');
 end
+disp(' ');
 disp(cat(2,module,' successfully tested !'));
+disp(' ');
+disp('Generated test data are available at:');
+disp(p.dumpdir);

@@ -21,6 +21,7 @@ switch module
     case 'vp'
         routinetest_VP(h_fig,panel);
     case 'tp'
+        routinetest_TP(h_fig,panel);
     case 'ha'
     case 'ta'
     case 'menu'

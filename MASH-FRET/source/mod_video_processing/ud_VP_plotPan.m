@@ -26,6 +26,9 @@ isMov = isfield(h,'movie');
 
 % set color map menu
 set(h.popupmenu_colorMap, 'Value', p.cmap);
+str_map = get(h.popupmenu_colorMap,'string');
+cm = colormap(eval(lower(str_map{p.cmap})));
+colormap(h.axes_movie,cm);
 
 % set image count units
 set(h.checkbox_int_ps, 'Value', p.perSec);

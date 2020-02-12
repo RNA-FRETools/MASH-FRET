@@ -16,7 +16,7 @@ if meth==1
 end
 
 % ask to load average image
-if h.movie.framesTot>1
+if ~h.mute_actions && h.movie.framesTot>1
     loadAveIm = questdlg('Load the average image first?');
     if ~(strcmp(loadAveIm, 'Yes') || strcmp(loadAveIm, 'No'))
         return

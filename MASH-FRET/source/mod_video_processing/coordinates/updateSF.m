@@ -97,7 +97,7 @@ for i = 1:p.nChan
         case 4 % Schmied2012
 
             % check for correct compilation of mex file for method Schmied2012
-            if exist('forloop','file')==3
+            if exist('forloop','file')~=3
                 setContPan(cat(2,'This spotfinder method can not be used:',...
                     ' problem with mex compilation.'),'error',h_fig);
                 return

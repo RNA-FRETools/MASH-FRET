@@ -102,7 +102,7 @@ for i = 1:nChan
             param.extra{1} = fcurs; 
             param.extra{2} = [resX resY]; 
             param.extra{3} = L;
-            [avImg,ok] = createAveIm(param, 0, h_fig);
+            [avImg,ok] = createAveIm(param,false,true,h_fig);
             if ~ok
                 return
             end

@@ -10,7 +10,6 @@ p.cmap = val;
 
 % set colormap
 cm_str = str_pop{val};
-colormap(cm_str);
 updateActPan([cm_str ' colormap applied.'], h_fig);
 
 % save modifications

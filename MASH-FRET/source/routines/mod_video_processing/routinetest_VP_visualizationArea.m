@@ -18,6 +18,11 @@ for f = [2:nvid,1]
     pushbutton_loadMov_Callback({p.annexpth,p.vid_files{f}},[],h_fig);
 end
 
+% test sliding bar
+n = get(h.slider_img,'value');
+set(h.slider_img,'value',n+1);
+slider_img_Callback(h.slider_img,[],h_fig);
+
 % test "Create trace" cursor
 disp(cat(2,prefix,'test "Create trace" cursor...'));
 switchMovTool(h.togglebutton_target, [], h_fig);

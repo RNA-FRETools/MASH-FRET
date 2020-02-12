@@ -1,4 +1,4 @@
-function exportMovie(h_fig,varargin)
+function ok = exportMovie(h_fig,varargin)
 % exportMovie(h_fig,varargin)
 % exportMovie(h_fig,pname,fname)
 %
@@ -23,7 +23,7 @@ lastFrame = p.mov_end;
 if ~isempty(varargin)
     pName = varargin{1};
     fName = varargin{2};
-    [o,o,fext] = filepart(fName);
+    [o,o,fext] = fileparts(fName);
     fIndex = strfind({'.sira','.tif','.gif','.mat','.avi','.png'},fext);
     fIndex = find(~cellfun('isempty',fIndex));
     if isempty(fIndex)
@@ -87,4 +87,6 @@ end
 % show action
 updateActPan([grType str_bg 'has been successfully exported to file: ' ...
     pName fName], h_fig, 'success');
+
+ok = 1;
 

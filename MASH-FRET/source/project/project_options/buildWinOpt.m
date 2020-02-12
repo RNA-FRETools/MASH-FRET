@@ -634,7 +634,6 @@ try
         uistack(h.itgExpOpt.edit_prmVal(i), 'bottom');
     end
 catch err
-    disp('Minor warning: Tabulation order dismissed.');
 end
 uistack(h.itgExpOpt.edit_molName, 'bottom');
 uistack(h.itgExpOpt.edit_movName, 'bottom');

@@ -1,5 +1,6 @@
-function [spots,pname,fname,avImg,p] = saveSpots(p,h_fig)
-% [spots,pname,fname] = saveSpots(h_fig)
+function [spots,pname,fname,avImg,p] = saveSpots(p,h_fig,varargin)
+% [spots,pname,fname,avImg,p] = saveSpots(p,h_fig)
+% [spots,pname,fname,avImg,p] = saveSpots(p,h_fig,pname,fname)
 %
 % Save spots coordinates to *.spots file and image of spots to *.png file.
 %
@@ -30,11 +31,16 @@ if isfield(h.movie,'avImg')
 end
 
 % get destination file name
-[o, nameMov, o] = fileparts(h.movie.file);
-defName = [setCorrectPath('spotfinder', h_fig) nameMov '.spots'];
-[fname,pname,o] = uiputfile({ ...
-    '*.spots', 'Coordinates file(*.spots)'; ...
-    '*.*', 'All files(*.*)'}, 'Export coordinates', defName);
+if ~isempty(varargin)
+    pname = varargin{1};
+    fname = varargin{2};
+else
+    [o, nameMov, o] = fileparts(h.movie.file);
+    defName = [setCorrectPath('spotfinder', h_fig) nameMov '.spots'];
+    [fname,pname,o] = uiputfile({ ...
+        '*.spots', 'Coordinates file(*.spots)'; ...
+        '*.*', 'All files(*.*)'}, 'Export coordinates', defName);
+end
 if ~sum(fname)
     return
 end
@@ -104,7 +110,9 @@ for l = frames
     % build tracks
     for c = 1:p.nChan
         nspots = size(p.SFres{2,c},1);
-        spots = cat(1,spots,[p.SFres{2,c},ones(nspots,1)*l]);
+        if nspots>0
+            spots = cat(1,spots,[p.SFres{2,c},ones(nspots,1)*l]);
+        end
     end
     
     if numel(frames)>1 && l==l0
