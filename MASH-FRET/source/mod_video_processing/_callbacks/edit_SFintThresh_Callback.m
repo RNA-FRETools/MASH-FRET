@@ -25,7 +25,7 @@ else
 end
 
 % reset spot selection
-if ~isempty(p.SFres)
+if size(p.SFres,1)>=2
     p.SFres(2,:) = [];
 end
 
@@ -33,5 +33,5 @@ end
 h.param.movPr = p;
 guidata(h_fig, h);
 
-% refresh calculations, plot and set GUI to proper values
-updateFields(h_fig,'imgAxes');
+% set GUI to proper values
+updateFields(h_fig,'movPr');

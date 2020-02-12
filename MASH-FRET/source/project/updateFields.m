@@ -7,12 +7,12 @@ function updateFields(h_fig, varargin)
 % h_fig: handle to main figure
 % opt: what is to update ('all','sim','movPr','imgAxes','ttPr','subImg','cross','thm','TDP')
 
-% Last update by MH, 19.12.2019: allows coordinates import from ASCII file when a preset file containing only out-of-range coordinates is loaded
-% update by MH, 12.12.2019: (1) cancel clearing of image axes to keep properties/boba fret image defined when building GUI (2) make TDP colorbar invisible when no project is loaded
-% update by MH, 9.11.2019: review update of transition rate edit fields in order to keep field in selection after tabbing
-% update by MH, 24.4.2019: remove double update of molecule list
-% update: 19.4.2019 by MH: set empty fields in transtion matrix when rates are loaded from presets to avoid confusion
-% update: 7.3.2018 by Richard Börner: Comments adapted for Boerner et al, PONE, 2017.
+% Last update, 19.12.2019 by MH: allows coordinates import from ASCII file when a preset file containing only out-of-range coordinates is loaded
+% update, 12.12.2019 by MH: (1) cancel clearing of image axes to keep properties/boba fret image defined when building GUI (2) make TDP colorbar invisible when no project is loaded
+% update, 9.11.2019 by MH: review update of transition rate edit fields in order to keep field in selection after tabbing
+% update, 24.4.2019 by MH: remove double update of molecule list
+% update, 19.4.2019 by MH: set empty fields in transtion matrix when rates are loaded from presets to avoid confusion
+% update, 7.3.2018 by Richard Börner: Comments adapted for Boerner et al, PONE, 2017.
 
 % set default option
 if ~isempty(varargin)
@@ -23,14 +23,18 @@ end
 
 h = guidata(h_fig);
 
+% reset action window color
 h_pan = guidata(h.figure_actPan);
 set(h_pan.text_actions, 'BackgroundColor', [1 1 1]);
+
+% set folder root
+set(h.edit_rootFolder,'string',h.folderRoot);
 
 %% Simulation fields
 
 if strcmp(opt, 'sim') || strcmp(opt, 'all')
     
-    % update panels
+    % update Simulation panels
     ud_S_vidParamPan(h_fig);
     ud_S_moleculesPan(h_fig);
     ud_S_expSetupPan(h_fig);
@@ -43,12 +47,13 @@ end
 
 if strcmp(opt,'imgAxes') || strcmp(opt, 'movPr') || strcmp(opt, 'all')
     
-    % refresh calculations and plot
-    if strcmp(opt, 'imgAxes') && isfield(h, 'movie')
+    % refresh video processing and plot
+    if (strcmp(opt, 'all') || strcmp(opt, 'imgAxes')) && ...
+            isfield(h, 'movie')
         updateImgAxes(h_fig);
     end
     
-    % update panels
+    % update Video processing panels
     ud_VP_plotPan(h_fig);
     ud_VP_expSetPan(h_fig);
     ud_VP_edExpVidPan(h_fig);

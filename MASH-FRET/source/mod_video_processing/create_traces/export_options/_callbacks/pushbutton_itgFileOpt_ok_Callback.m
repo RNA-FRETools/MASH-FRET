@@ -21,7 +21,7 @@ if ~iscell(obj)
 else
     pname = obj{1};
     fname = obj{2};
-    if ~strcmp(pname,filsep)
+    if ~strcmp(pname,filesep)
         pname = [pname,filesep];
     end
     TTgenGo(h_fig,pname,fname);

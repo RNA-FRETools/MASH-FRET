@@ -15,7 +15,7 @@ h = guidata(h_fig);
 
 % tests mapping tool
 disp(cat(2,prefix,'test mapping for different number of channels...'));
-for nChan = [2,3]
+for nChan = 2:p.nChan_max
     % set number of channels
     set(h.edit_nChannel,'string',num2str(nChan));
     edit_nChannel_Callback(h.edit_nChannel,[],h_fig);
@@ -32,25 +32,23 @@ for nChan = [2,3]
     
     % tests mapping tool
     disp(cat(2,prefix,'>> map reference coordinates...'));
-    pushbutton_trMap_Callback(...
-        {p.annexpth,p.ave_file{nChan};p.dumpdir,p.exp_ref{nChan}},[],...
-        h_fig);
+    pushbutton_trMap_Callback({p.annexpth,p.ave_file{nChan}},[],h_fig);
     h = guidata(h_fig);
     for pnt = 1:nCoord
         for c = 1:nChan
-            axes_map_ButtonDownFcn({coord(pnt,:)},[],h.figure_map,c);
+            axes_map_ButtonDownFcn({coord(pnt,:)},[],h_fig,c);
         end
     end
     
     % close mapping tool and export coordinates
     disp(cat(2,prefix,'>> export reference coordinates...'));
-    close(gcf);
+    figure_map_CloseRequestFcn({p.dumpdir,p.exp_ref{nChan}},[],h_fig);
 end
 
 % test transformation calculation for different channels
 disp(cat(2,prefix,'test transformation calculation for different number ',...
     'of channels...'));
-for nChan = [2,3]
+for nChan = 2:p.nChan_max
     % set number of channels
     set(h.edit_nChannel,'string',num2str(nChan));
     edit_nChannel_Callback(h.edit_nChannel,[],h_fig);
@@ -71,7 +69,7 @@ end
 % test transformation for different channels
 disp(cat(2,prefix,'test transformation for different number of channels',...
     '...'));
-for nChan = [2,3]
+for nChan = 2:p.nChan_max
     % set number of channels
     set(h.edit_nChannel,'string',num2str(nChan));
     edit_nChannel_Callback(h.edit_nChannel,[],h_fig);
@@ -83,7 +81,7 @@ for nChan = [2,3]
         h_fig);
     
     % import transformation and transorm coordinates
-    for tr = 1:2
+    for tr = 1:size(p.vers,2)
         % import transformation
         disp(cat(2,prefix,'>> >> import transformation ',...
             p.trsf_file{nChan,tr},'...'));

@@ -12,7 +12,7 @@ q = h.itgFileOpt;
 
 % set export otpions
 set(q.checkbox_ASCII, 'Value', opt(1)|opt(2));
-checkbox_FileASCII_Callback(h.checkbox_FileASCII,[],h_fig);
+checkbox_FileASCII_Callback(q.checkbox_ASCII,[],h_fig);
 
 if opt(1) || opt(2)
     set(q.checkbox_allMol, 'Value',opt(1));

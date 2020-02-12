@@ -32,11 +32,11 @@ h = guidata(h_fig);
 % switch to video processing module
 switchPan(h.togglebutton_VP,[],h_fig);
 
-subprefix = '>> ';
-
 % set interface defaults
 disp('test main callbacks...');
 setDefault_VP(h_fig,p);
+
+subprefix = '>> ';
 
 % test visualization area
 if strcmp(opt,'all') || strcmp(opt,'visualization area')

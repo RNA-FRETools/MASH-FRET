@@ -53,19 +53,22 @@ if ~ok || isempty(imgtrsf)
 end
 
 % show transformed image
-h_fig2 = figure('NumberTitle','off','Name','Transformed image');
+h_fig2 = figure('NumberTitle','off','Name','Transformed image','visible',...
+    'off');
 h_axes = axes('Parent', h_fig2);
 imagesc(imgtrsf, 'Parent', h_axes);
 axis(h_axes, 'image');
 
 % save image and close figure
 if fromRoutine
-    pname_out = obj{1,1};
-    fname_out = obj{1,2};
+    pname_out = obj{2,1};
+    fname_out = obj{2,2};
     if ~strcmp(pname_out(end),filesep)
         pname_out = [pname_out,filesep];
     end
     print(h_fig2,[pname_out,fname_out],'-dpng');
     close(h_fig2);
+else
+    set(h_fig2,'visible','on');
 end
 

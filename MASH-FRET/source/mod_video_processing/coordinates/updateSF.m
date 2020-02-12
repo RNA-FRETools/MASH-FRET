@@ -16,7 +16,7 @@ if meth<=1
 end
 
 % no result: run spotfinder
-if isempty(p.SFres)
+if size(p.SFres,1)<1
     spots = determineSpots(p.SFprm, img, lb, p, h_fig);
     p.SFres = spots;
 

@@ -60,10 +60,10 @@ end
 SFall = p.SF_all;
 frameSF = p.SFprm{1}(3);
 if (~SFall && n==frameSF) || SFall
-    if SFall
+    if SFall && p.SFprm{1}(3)~=n
         p.SFprm{1}(3) = n;
+        p.SFres = {};
     end
-    p.SFres = {};
     p = updateSF(img, false, p, h_fig);
 else
     p.SFres = {};

@@ -20,8 +20,10 @@ p.nChan = nC;
 p = ud_VP_nChan(p);
 
 % adjust video parameters
-sub_w = round(h.movie.pixelX/nC);
-h.movie.split = (1:nC-1)*sub_w;
+if isfield(h,'movie')
+    sub_w = round(h.movie.pixelX/nC);
+    h.movie.split = (1:nC-1)*sub_w;
+end
 
 % save modifications
 h.param.movPr = p;

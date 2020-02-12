@@ -5,6 +5,14 @@ function p = getDefault_VP
 %
 % p: structure that contain default parameters
 
+% defaults
+nChan_max = 3;
+nL_max = 3;
+nChan_def = 2;
+nL_def = 2;
+vers = [2015,2020];
+nVers = size(vers,2);
+
 % general parameters
 [pname,o,o] = fileparts(mfilename('fullpath'));
 p.annexpth = cat(2,pname,filesep,'assets'); % path to annexed files
@@ -12,10 +20,19 @@ p.dumpdir = cat(2,pname,filesep,'dump'); % path to exported data
 if ~exist(p.dumpdir,'dir')
     mkdir(p.dumpdir);
 end
+p.vers = vers;
+p.nChan_max = nChan_max;
+p.nL_max = nL_max;
 
 % parameters for visualization area (video length = [20,100])
-p.vid_files = {'2020.sira','2015.sif','2020.png','2020.avi','2020.gif',...
-    '2020.tif','2020_2chan.coord','2020_2chan.spots'}; % .spe and .pma missing
+p.vid_files = {sprintf('%i.sira',vers(end)),... % .spe and .pma missing
+    sprintf('%i.sif',vers(1))...
+    sprintf('%i.png',vers(end))...
+    sprintf('%i.avi',vers(end))...
+    sprintf('%i.gif',vers(end)),...
+    sprintf('%i.tif',vers(end)),...
+    sprintf('%i_%ichan.coord',vers(end),nChan_def),...
+    sprintf('%i_%ichan.spots',vers(end),nChan_def)}; 
 p.tracecurs_file = 'createTraceCursor.png'; % exported image file from "Create trace" cursor
 
 % parameters for "Plot"
@@ -23,20 +40,45 @@ p.perSec = true; % units per second
 p.cmap = 1; % color map
 
 % parameters for "Experiment settings"
-p.nChan = 2; % number of channels
-p.nL = 2; % number of laser
-p.wl = [530,640,760]; % laser wavelength
+p.nChan = nChan_def; % number of channels
+p.nL = nL_def; % number of laser
+p.wl = [];
+while isempty(p.wl) || numel(unique(p.wl))~=nL_max
+    p.wl = round(1000*sort(rand(1,nL_max))); % laser wavelength
+end
 p.expT = 0.1; % exposure time
-p.proj_title = 'test_project'; % project title
-p.mol_name = 'none'; % molecule name
-p.conc_mg = []; % Mg concentration
-p.conc_k = []; % K concentration
-p.laser_pow = []; % laser powers
-p.prm_extra = {'buffer',1,''};
-p.labels = {'don','acc1','acc2'}; % channel labels
-p.chanExc = [530,640]; % channel-specific excitation
-p.FRET = [1,2]; % FRET pairs
-p.S = [1,2]; % stoichiometries
+p.projOpt = cell(nL_max,nChan_max);
+deflbl = {'don','acc1','acc2'};
+for nL = 1:nL_max
+    for nChan = 1:nChan_max
+        p.projOpt{nL,nChan}.proj_title = ...
+            sprintf('test_%ichan%iexc',nChan,nL); % project title
+        p.projOpt{nL,nChan}.mol_name = 'none'; % molecule name
+        p.projOpt{nL,nChan}.conc_mg = round(100*rand(1)); % Mg concentration
+        p.projOpt{nL,nChan}.conc_k = round(500*rand(1)); % K concentration
+        p.projOpt{nL,nChan}.laser_pow = round(100*rand(1,nL)); % laser powers
+        p.projOpt{nL,nChan}.prm_extra = {'buffer',1,''};
+        p.projOpt{nL,nChan}.labels = deflbl(1:nChan); % channel labels
+        chanExc = zeros(1,nChan);
+        chanExc(1:min([nChan,nL])) = p.wl(1:min([nChan,nL]));
+        p.projOpt{nL,nChan}.chanExc = chanExc; % channel-specific excitation
+        FRET = [];
+        for don = 1:(nChan-1)
+            if chanExc(don)>0
+                for acc = (don+1):nChan
+                    FRET = cat(1,FRET,[don,acc]);
+                end
+            end
+        end
+        p.projOpt{nL,nChan}.FRET = FRET; % FRET pairs
+        if ~isempty(FRET)
+            p.projOpt{nL,nChan}.S = ...
+                FRET(chanExc(FRET(:,1))>0 & chanExc(FRET(:,2))>0,:); % stoichiometries
+        else
+            p.projOpt{nL,nChan}.S = [];
+        end
+    end
+end
 
 % parameters for "Edit and export video"
 p.bg_corr = []; % no image filter
@@ -80,33 +122,74 @@ p.sf_prm = [0,0,0,0,0,0,0,0,0,0,0,0 % spot finder parameters
     100,7,7,5,0,20,100,1,3,0,1,150];
 p.exp_spots = 'spots.spots'; % exported spots file
 p.exp_tracks = 'tracks.spots'; % exported tracks file
-p.ave_file = {'','2020_2chan_ref.png','2020_3chan_ref.png'}; % reference image files
-p.ref_impOpt = {[],[],[];...
-    [256,256],[1,2],[2,2,0;3,2,0];...
-    [256,256],[1,2],[2,3,0;3,3,0;4,3,0]};
-p.ref_file = {'','2020_2chan_ref.map','2020_3chan_ref.map'}; % reference coordinates files
-p.exp_ref = {'','2chan.map','3chan.map'};
-p.trsf_file = {'','';... % old and new transformation files
-    '2015_2chan_ref_trs.mat','2020_2chan_ref_trs.mat';...
-    '2015_3chan_ref_trs.mat','2020_3chan_ref_trs.mat'};
-p.exp_trsf = {'','2chan_trsf.mat','3chan_trsf.mat'};
-p.exp_trsfImg = {'','';...
-    '2chan_trsf2015.png','2chan_trsf2020.png';...
-    '3chan_trsf2015.png','3chan_trsf2020.png'};
-p.spots_impOpt = [1,2];
-p.spots_file = {'2020_1chan.spots','2020_2chan.spots','2020_3chan.spots'}; % spots coordinates files
-p.exp_coord = {'','';...
-    '2chan_2015.coord','2chan_2020.coord';...
-    '3chan_2015.coord','2chan_2020.coord'};
+
+p.ave_file = cell(1,nChan); % imported reference image files
+p.ref_file = cell(1,nChan); % imported reference coordinates files
+p.spots_file = cell(1,nChan); % imported spots coordinates files
+p.exp_ref = cell(1,nChan); % exported reference coordinates
+p.exp_trsf = cell(1,nChan); % exported transformation files
+p.exp_trsfImg = cell(nChan_max,nVers); % exported transformed image files
+p.exp_coord = cell(nChan_max,nVers); % exported transformed coordinates files
+for nChan = 1:nChan_max
+    if nChan==1
+        p.ave_file{nChan} = '';
+        p.ref_file{nChan} = '';
+        p.exp_ref{nChan} = '';
+        p.exp_trsf{nChan} = '';
+    else
+        p.ave_file{nChan} = sprintf('%i_%ichan_ref.png',vers(end),nChan);
+        p.ref_file{nChan} = sprintf('%i_%ichan_ref.map',vers(end),nChan);
+        p.exp_ref{nChan} = sprintf('%ichan.map',nChan);
+        p.exp_trsf{nChan} = sprintf('%ichan_trsf.mat',nChan);
+    end
+    p.spots_file{nChan} = sprintf('%i_%ichan.spots',vers(end),nChan);
+    for v = 1:nVers
+        if nChan==1
+            p.trsf_file{nChan,v} = '';
+            p.exp_coord{nChan,v} = '';
+            p.exp_trsfImg{nChan,v} = '';
+        else
+            p.trsf_file{nChan,v} = ...
+                sprintf('%i_%ichan_ref_trs.mat',vers(v),nChan);
+            p.exp_coord{nChan,v} = ...
+                sprintf('%ichan_%i.coord',nChan,vers(v));
+            p.exp_trsfImg{nChan,v} = ...
+                sprintf('%ichan_trsf%i.png',nChan,vers(v));
+        end
+    end
+end
+p.ref_impOpt = cell(nChan_max,3); % reference coordinates import options
+for nChan = 1:nChan_max
+    if nChan==1
+        continue
+    end
+    p.ref_impOpt{nChan,1} = [256,256];
+    p.ref_impOpt{nChan,2} = [1,2];
+    p.ref_impOpt{nChan,3} = ...
+        [(2:(nChan+1))',nChan*ones(nChan,1),zeros(nChan,1)];
+end
+p.spots_impOpt = [1,2]; % spots coordinates import options
 
 % parameters for "Intensity integration"
 p.coord_impOpt = {[1,2;3,4],1};
-p.coord_file = {'2020_1chan.spots','2020_2chan.coord','2020_3chan.coord'}; % coordinates files
+p.coord_file = cell(1,nChan_max); % coordinates files
+for nChan = 1:nChan_max
+    if nChan==1
+        p.coord_file{nChan} = sprintf('2020_%ichan.spots',nChan);
+    else
+        p.coord_file{nChan} = sprintf('2020_%ichan.coord',nChan);
+    end
+end
 p.pixDim = 5;
 p.nPix = 8;
 p.pixAve = true;
 p.expFmt = {'all-in-one ASCII','one-by-one ASCII','HaMMy','vbFRET','QUB',...
     'SMART','ebFRET'}; % exported files 
 p.expOpt = false(1,7); % export options
-p.exp_traceFile = {'1chan.mash','2chan.mash','3chan.mash'};
+p.exp_traceFile = cell(nL_max,nChan_max);
+for nL = 1:nL_max
+    for nChan = 1:nChan_max
+        p.exp_traceFile{nL,nChan}= sprintf('%ichan%iexc.mash',nChan,nL);
+    end
+end
 

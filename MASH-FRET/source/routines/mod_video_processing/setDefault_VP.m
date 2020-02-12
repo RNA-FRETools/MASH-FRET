@@ -12,6 +12,9 @@ h = guidata(h_fig);
 % free memory
 pushbutton_VP_freeMem_Callback(h.pushbutton_VP_freeMem,[],h_fig);
 
+% deactivate spot finding
+set_VP_spotFinder(1,false,false,p.sf_prm,h_fig);
+
 % import video
 disp(cat(2,'import default video file ',p.vid_files{1}));
 pushbutton_loadMov_Callback({p.annexpth,p.vid_files{1}},[],h_fig);
@@ -44,7 +47,7 @@ edit_rate_Callback(h.edit_rate,[],h_fig);
 
 set_VP_lasers(p.nL,p.wl(1:p.nL),h_fig);
 
-set_VP_projOpt(p,h_fig);
+set_VP_projOpt(p.projOpt{p.nL,p.nChan},p.wl,h_fig);
 
 % set defaults in panel Molecule coordinates
 set(h.edit_aveImg_iv,'string',num2str(p.ave_iv));
@@ -59,11 +62,11 @@ edit_aveImg_end_Callback(h.edit_aveImg_end,[],h_fig);
 set_VP_spotFinder(p.sf_meth,p.sf_fit,p.sf_all,p.sf_prm,h_fig);
 
 % set defaults in panel Intensity integration
-set(h.edit_intNpix,'string',num2str(p.nPix));
-edit_intNpix_Callback(h.edit_intNpix,[],h_fig);
-
 set(h.edit_TTgen_dim,'string',num2str(p.pixDim));
 edit_TTgen_dim_Callback(h.edit_TTgen_dim,[],h_fig);
+
+set(h.edit_intNpix,'string',num2str(p.nPix));
+edit_intNpix_Callback(h.edit_intNpix,[],h_fig);
 
 set(h.checkbox_meanVal,'value',p.pixAve);
 checkbox_meanVal_Callback(h.checkbox_meanVal,[],h_fig);

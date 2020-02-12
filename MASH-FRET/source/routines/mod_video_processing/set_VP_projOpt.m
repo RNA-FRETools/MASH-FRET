@@ -1,5 +1,5 @@
-function set_VP_projOpt(p,h_fig)
-% set_VP_projOpt(p,h_fig)
+function set_VP_projOpt(p,wl,h_fig)
+% set_VP_projOpt(p,nL,nChan,h_fig)
 %
 % Set project options to proper values and update interface parameters
 %
@@ -13,10 +13,14 @@ function set_VP_projOpt(p,h_fig)
 %  p.chanExc: channel-specific excitation
 %  p.FRET: donor-accpetor FRET pairs
 %  p.S: FRET pairs to calculate stoichiometry for
+% wl: laser wavelength in chronological order
 % h_fig: handle to main figure
 
 % collect interface parameters
 h = guidata(h_fig);
+
+nL = size(p.laser_pow,2);
+nChan = size(p.labels,2);
 
 % open project option window
 openItgExpOpt(h.pushbutton_chanOpt, [], h_fig);
@@ -38,7 +42,7 @@ edit_param_Callback(q.edit_prmVal(3),[],3,h_fig);
 set(q.edit_prmVal(4),'string',num2str(p.conc_k));
 edit_param_Callback(q.edit_prmVal(4),[],4,h_fig);
 
-for l = 1:size(p.laser_pow,2)
+for l = 1:nL
     set(q.edit_prmVal(4+l),'string',num2str(p.laser_pow(l)));
     edit_param_Callback(q.edit_prmVal(4+l),[],4+l,h_fig);
 end
@@ -73,8 +77,8 @@ for prm = 1:nPrm
     h = guidata(h_fig);
     q = h.itgExpOpt;
     
-    set(q.edit_prmVal(4+p.nL+prm),'string',num2str(p.prm_extra{prm,2}));
-    edit_param_Callback(q.edit_prmVal(4+p.nL+prm),[],4+p.nL+prm,h_fig);
+    set(q.edit_prmVal(4+nL+prm),'string',num2str(p.prm_extra{prm,2}));
+    edit_param_Callback(q.edit_prmVal(4+nL+prm),[],4+nL+prm,h_fig);
 end
 
 % set default labels
@@ -90,14 +94,14 @@ end
 
 % set channel-specific parameters
 str_lbl = get(q.popupmenu_dyeLabel,'string');
-for c = 1:p.nChan
+for c = 1:nChan
     set(q.popupmenu_dyeChan,'value',c);
     popupmenu_dyeChan_Callback(q.popupmenu_dyeChan,[],h_fig);
     
     % set channel-specific excitation
-    l0 = find(p.wl==p.chanExc(c));
+    l0 = find(wl==p.chanExc(c));
     if isempty(l0)
-        set(q.popupmenu_dyeExc,'value',(p.nL+1));
+        set(q.popupmenu_dyeExc,'value',(nL+1));
     else
         set(q.popupmenu_dyeExc,'value',l0);
     end
@@ -110,7 +114,11 @@ for c = 1:p.nChan
 end
 
 % set FRET pairs
-nFRET = numel(get(q.listbox_FRETcalc,'string'));
+if isfield(q,'listbox_FRETcalc');
+    nFRET = numel(get(q.listbox_FRETcalc,'string'));
+else
+    nFRET = 0;
+end
 n = nFRET;
 while n>0
     set(q.listbox_FRETcalc,'value',n);
@@ -124,7 +132,11 @@ for n = 1:size(p.FRET,1)
 end
 
 % set Stoichiometry pairs
-nS = numel(get(q.listbox_Scalc,'string'));
+if isfield(q,'listbox_Scalc')
+    nS = numel(get(q.listbox_Scalc,'string'));
+else
+    nS = 0;
+end
 n = nS;
 while n>0
     set(q.listbox_Scalc,'value',n);
