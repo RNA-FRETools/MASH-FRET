@@ -27,25 +27,45 @@ end
 % get defaults parameters
 p = getDefault_menu;
 
-% test main working area
-h_fig = routinetest_general(p.annexpth,h_fig);
-
-% test history view
-if strcmp(opt,'all') || strcmp(opt,'view')
-    disp('test menu View...');
-    routinetest_menu_view(h_fig)
+% start logs
+logfile = [p.dumpdir,filesep,'_logs.txt'];
+if exist(logfile,'file')
+    try
+        delete(logfile);
+    catch err
+        disp(datestr(now)); % append diary but show date
+    end
 end
+diary(logfile);
 
-% test file overwriting options
-if strcmp(opt,'all') || strcmp(opt,'options')
-    disp('test menu Options...');
-    routinetest_menu_options(h_fig)
-end
+try
+    % test main working area
+    h_fig = routinetest_general(p.annexpth,h_fig);
 
-% test tools
-if strcmp(opt,'all') || strcmp(opt,'tools')
-    disp('test menu Tools...');
-    routinetest_menu_tools(h_fig,p,'>> ')
+    % test history view
+    if strcmp(opt,'all') || strcmp(opt,'view')
+        disp('test menu View...');
+        routinetest_menu_view(h_fig)
+    end
+
+    % test file overwriting options
+    if strcmp(opt,'all') || strcmp(opt,'options')
+        disp('test menu Options...');
+        routinetest_menu_options(h_fig)
+    end
+
+    % test tools
+    if strcmp(opt,'all') || strcmp(opt,'tools')
+        disp('test menu Tools...');
+        routinetest_menu_tools(h_fig,p,'>> ')
+    end
+    
+catch err
+    % display error and stop logs
+    disp(' ');
+    dispMatlabErr(err)
+    diary off;
+    return
 end
 
 % close figure if executed from command window
@@ -64,3 +84,7 @@ disp(cat(2,module,' successfully tested !'));
 disp(' ');
 disp('Generated test data are available at:');
 disp(p.dumpdir);
+
+% stop logs
+diary off;
+

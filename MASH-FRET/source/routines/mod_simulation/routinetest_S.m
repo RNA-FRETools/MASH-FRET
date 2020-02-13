@@ -27,53 +27,79 @@ end
 % get defaults parameters
 p = getDefault_S;
 
-% test main working area
-h_fig = routinetest_general(p.annexpth,h_fig);
-h = guidata(h_fig);
-
-% switch to simulation module
-switchPan(h.togglebutton_S,[],h_fig);
-
-% set interface defaults
-disp('test main callbacks...');
-setDefault_S(h_fig,p);
-
-% generate state sequences with defaults
-disp('test generation of state sequences...');
-pushbutton_startSim_Callback(h.pushbutton_startSim,[],h_fig);
-
-% update simulation with defaults
-disp('test simulation update...');
-pushbutton_updateSim_Callback(h.pushbutton_updateSim,[],h_fig);
-
-% export data with defaults
-disp('test simulation export...');
-pushbutton_exportSim_Callback({p.dumpdir,'default'}, [], h_fig);
-
-subprefix = '>> ';
-
-% test panel Video parameters
-if strcmp(opt,'all') || strcmp(opt,'video parameters')
-    disp('test panel Video parameters...');
-    routinetest_S_videoParameters(h_fig,p,subprefix);
+% start logs
+logfile = [p.dumpdir,filesep,'_logs.txt'];
+if exist(logfile,'file')
+    try
+        delete(logfile);
+    catch err
+        disp(datestr(now)); % append diary but show date
+    end
 end
+diary(logfile);
 
-% test panel Molecules
-if strcmp(opt,'all') || strcmp(opt,'molecules')
-    disp('test panel Molecules...');
-    routinetest_S_molecules(h_fig,p,subprefix);
-end
+try
+    % test main working area
+    h_fig = routinetest_general(p.annexpth,h_fig);
+    h = guidata(h_fig);
 
-% test panel Experimental setup
-if strcmp(opt,'all') || strcmp(opt,'experimental setup')
-    disp('test panel Experimental setup...');
-    routinetest_S_experimentalSetup(h_fig,p,subprefix);
-end
+    % switch to simulation module
+    switchPan(h.togglebutton_S,[],h_fig);
 
-% test panel Export options
-if strcmp(opt,'all') || strcmp(opt,'export options')
-    disp('test panel Export options...');
-    routinetest_S_exportOptions(h_fig,p,subprefix);
+    % set interface defaults
+    disp('test main callbacks...');
+    setDefault_S(h_fig,p);
+
+    % generate state sequences with defaults
+    disp('test generation of state sequences...');
+    pushbutton_startSim_Callback(h.pushbutton_startSim,[],h_fig);
+
+    % update simulation with defaults
+    disp('test simulation update...');
+    pushbutton_updateSim_Callback(h.pushbutton_updateSim,[],h_fig);
+
+    % export data with defaults
+    disp('test simulation export...');
+    pushbutton_exportSim_Callback({p.dumpdir,'default'}, [], h_fig);
+
+    subprefix = '>> ';
+
+    % test panel Video parameters
+    if strcmp(opt,'all') || strcmp(opt,'video parameters')
+        disp('test panel Video parameters...');
+        routinetest_S_videoParameters(h_fig,p,subprefix);
+    end
+
+    % test panel Molecules
+    if strcmp(opt,'all') || strcmp(opt,'molecules')
+        disp('test panel Molecules...');
+        routinetest_S_molecules(h_fig,p,subprefix);
+    end
+
+    % test panel Experimental setup
+    if strcmp(opt,'all') || strcmp(opt,'experimental setup')
+        disp('test panel Experimental setup...');
+        routinetest_S_experimentalSetup(h_fig,p,subprefix);
+    end
+
+    % test panel Export options
+    if strcmp(opt,'all') || strcmp(opt,'export options')
+        disp('test panel Export options...');
+        routinetest_S_exportOptions(h_fig,p,subprefix);
+    end
+
+    % test visualization area
+    if strcmp(opt,'all') || strcmp(opt,'visualization area')
+        disp('test visualization area...');
+        routinetest_S_visualizationArea(h_fig,p,subprefix);
+    end
+    
+catch err
+    % display error and stop logs
+    disp(' ');
+    dispMatlabErr(err)
+    diary off;
+    return
 end
 
 % close figure if executed from command window
@@ -84,11 +110,17 @@ end
 switch opt
     case 'all'
         module = 'module Simulation';
+    case 'visualization area'
+        module = cat(2,upper(opt(1)),opt(2:end));
     otherwise
         module = cat(2,'panel ',upper(opt(1)),opt(2:end));
 end
 disp(' ');
 disp(cat(2,module,' was successfully tested !'));
 disp(' ');
-disp('Generated test data are available at:\n');
+disp('Generated test data are available at:');
 disp(p.dumpdir);
+
+% stop logs
+diary off;
+

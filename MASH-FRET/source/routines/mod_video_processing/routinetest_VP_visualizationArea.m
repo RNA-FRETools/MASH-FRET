@@ -23,6 +23,12 @@ n = get(h.slider_img,'value');
 set(h.slider_img,'value',n+1);
 slider_img_Callback(h.slider_img,[],h_fig);
 
+% test graph export and woom reset
+disp(cat(2,prefix,'test graph export and zoom reset...'));
+set(h_fig,'CurrentAxes',h.axes_movie);
+exportAxes({[p.dumpdir,filesep,p.exp_axes]},[],h_fig);
+ud_zoom([],[],'reset',h_fig);
+
 % test "Create trace" cursor
 disp(cat(2,prefix,'test "Create trace" cursor...'));
 switchMovTool(h.togglebutton_target, [], h_fig);

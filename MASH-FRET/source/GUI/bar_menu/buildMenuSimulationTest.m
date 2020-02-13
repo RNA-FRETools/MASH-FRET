@@ -14,6 +14,7 @@ lbl1 = 'panel "Video parameters"';
 lbl2 = 'panel "Molecules"';
 lbl3 = 'panel "Experimental setup"';
 lbl4 = 'panel "Export options"';
+lbl5 = 'visualization area';
 
 % parents
 h_fig = h.figure_MASH;
@@ -34,3 +35,6 @@ h.menu_S_experimentalSetupTest = uimenu(h_men,'label',lbl3,'callback',...
 
 h.menu_S_exportOptionsTest = uimenu(h_men,'label',lbl4,'callback',...
     {@menu_routineTest_Callback,'sim','export options',h_fig});
+
+h.menu_S_visualizationArea = uimenu(h_men,'label',lbl5,'callback',...
+    {@menu_routineTest_Callback,'sim','visualization area',h_fig});

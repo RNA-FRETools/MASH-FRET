@@ -16,6 +16,7 @@ if exist(p.dumpdir,'dir')
     catch err
         disp(cat(2,'WARNING: the previous dump directory could not be ',...
             'deleted (needs administrator privileges).'));
+        disp(' ');
     end
 end
 if ~exist(p.dumpdir,'dir')

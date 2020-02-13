@@ -17,8 +17,18 @@ nVers = size(vers,2);
 [pname,o,o] = fileparts(mfilename('fullpath'));
 p.annexpth = cat(2,pname,filesep,'assets'); % path to annexed files
 p.dumpdir = cat(2,pname,filesep,'dump'); % path to exported data
+if exist(p.dumpdir,'dir')
+    cd(p.annexpth); % change directory
+    try
+        rmdir(p.dumpdir); % delete dump directory
+    catch err
+        disp(cat(2,'WARNING: the previous dump directory could not be ',...
+            'deleted (needs administrator privileges).'));
+        disp(' ');
+    end
+end
 if ~exist(p.dumpdir,'dir')
-    mkdir(p.dumpdir);
+    mkdir(p.dumpdir); % create new dump directory
 end
 p.vers = vers;
 p.nChan_max = nChan_max;
@@ -34,6 +44,7 @@ p.vid_files = {sprintf('%i.sira',vers(end)),... % .spe and .pma missing
     sprintf('%i_%ichan.coord',vers(end),nChan_def),...
     sprintf('%i_%ichan.spots',vers(end),nChan_def)}; 
 p.tracecurs_file = 'createTraceCursor.png'; % exported image file from "Create trace" cursor
+p.exp_axes = 'graph.png';
 
 % parameters for "Plot"
 p.perSec = true; % units per second
@@ -81,47 +92,48 @@ for nL = 1:nL_max
 end
 
 % parameters for "Edit and export video"
-p.bg_corr = []; % no image filter
+p.bg_corr = 18; % image filters
 p.bg_all = false; % apply to current frame only
-p.bg_prm = [0,0 % filter parameters
-    3,0
-    3,0
-    3,0
-    3,1
-    3,200
-    200,0
-    3,0.99
-    0.5,1500
-    0,0
-    0,50
-    0,0.5
-    0,0
-    0,0
-    3,1
-    0,0
-    10,0
-    -90,0];
+p.bg_prm = [0 0
+     3 0
+     3 0
+     3 0
+     3 1
+     3 200
+     200 0
+     3 0.99
+     0.5 0
+     1500 0
+     0 2
+     0 50
+     0 0.5
+     0 0
+     0 0
+     3 1
+     0 0
+     2 0
+     10 0];
 p.bg_file = 'bgimg.png';
-p.vid_start = 1;
-p.vid_end = 15;
+p.vid_start = 2;
+p.vid_end = 7;
 p.exp_vid = 'export';
-p.exp_fmt = '.sira'; 
+p.exp_fmt = {'.sira','.tif','.gif','.mat','.avi'};
 
 % parameters for "Molecule coordinates"
 p.ave_iv = 2; % frame interval for average image
 p.ave_start = 2; % first frame index for average image
 p.ave_end = 15; % laste frame index for average image
-p.ave_file = 'ave.png'; % exported average image
-p.sf_meth = 1; % spot finder method
+p.exp_ave = 'ave.png'; % exported average image
+p.sf_meth = 2; % spot finder method
 p.sf_fit = false; % fit spots with Gaussians
 p.sf_all = false; % apply spotfinder to all video frames
 p.sf_prm = [0,0,0,0,0,0,0,0,0,0,0,0 % spot finder parameters
-    1000,7,7,5,5,20,1100,1,3,0,1,150
-    1000,7,7,5,5,20,1100,1,3,0,1,150
-    1.4,7,7,0,5,20,1100,1,3,0,1,150
-    100,7,7,5,0,20,100,1,3,0,1,150];
-p.exp_spots = 'spots.spots'; % exported spots file
-p.exp_tracks = 'tracks.spots'; % exported tracks file
+    10000,5,5,7,7,20,0,1,3,0,1,150
+    10000,5,5,7,7,20,0,1,3,0,1,150
+    1.4,5,5,0,7,20,0,1,3,0,1,150
+    1000,5,5,7,0,20,0,1,3,0,1,150];
+p.exp_spots = {'spots_sf%i.spots','spots_sf%i_fit.spots'}; % exported spots file
+p.exp_tracks = {'tracks_sf%i.spots','tracks_sf%i_fit.spots'}; % exported tracks file
 
 p.ave_file = cell(1,nChan); % imported reference image files
 p.ref_file = cell(1,nChan); % imported reference coordinates files

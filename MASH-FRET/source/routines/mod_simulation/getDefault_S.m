@@ -16,6 +16,7 @@ if exist(p.dumpdir,'dir')
     catch err
         disp(cat(2,'WARNING: the previous dump directory could not be ',...
             'deleted (needs administrator privileges).'));
+        disp(' ');
     end
 end
 if ~exist(p.dumpdir,'dir')
@@ -79,5 +80,8 @@ p.dt = false; % export .dt dwell time file
 p.log = true; % export .log simulation parameters file
 p.coord = false; % export .coord coordinates file
 p.un_out = 1; % exported intensities units
+
+% default for visulaization area
+p.exp_axes = 'graph_%i.png';
 
 
