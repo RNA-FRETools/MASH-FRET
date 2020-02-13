@@ -1,19 +1,30 @@
 function buildWinTrOpt(p, h_fig)
 % buildWinTrOpt(p,h_fig)
 %
-% Build figure for ASCII trace import settings
+% buildWinTrOpt builds a figure that presents import settings for ASCII traces
 %
 % p: {1-by-6} import settings with:
 %  p{1}: {1-by-2} intensity import options with:
 %   p{1}{1}: [1-by-10] parameters of file structure
 %    [1 0 0 1 1 0 nChan nExc 0 5]
 %   p{1}{2}: [1-by-nL] laser wavelength in a chronological order
-%
-%     {0 ''} ...
-%     {0 '' {[1 2] 1} 256} ...
-%     [0 1] ...
-%     defprm ...
-%     {0 '' {} 0 '' {}}}
+%  p{2}: {1-by-2} video import options with:
+%   p{2}{1}: (1) if video file is imported, (0) otherwise
+%   p{2}{2}: source video file
+%  p{3}: {1-by-4} coordinates import options with:
+%   p{3}{1}: (1) if coordinates are imported from separate file, (0) otherwise
+%   p{3}{2}: coordinates file
+%   p{3}{3}: [1-by-2] column index in coordinates file where x- and y- coordinates are written 
+%   p{3}{4}: video dimension in the x-direction
+%  p{4}: [1-by-2] coordinates are(1)/aren't(0) in intensity file and corresponding line index in intensity file
+%  p{5}: {nPrm-by-3} user-defined experimental conditions
+%  p{6}: {1-by-6} correction factor import options with:
+%   p{6}{1}: (1) if gamma factors are imported form files, (0) otherwise
+%   p{6}{2}: source directory for gamma factor files
+%   p{6}{3}: {1-by-nFiles} source gamma factor files
+%   p{6}{4}: (1) if beta factors are imported form files, (0) otherwise
+%   p{6}{5}: source directory for beta factor files
+%   p{6}{6}: {1-by-nFiles} source beta factor files
 % h_fig: handle to main figure
 
 % Last update, 28.3.2019 by MH: (1) Add "Gamma factor" panel (2) Add "State trajectories" panel (3) Change "Movie" to "Video" 
