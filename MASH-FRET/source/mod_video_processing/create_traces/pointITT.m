@@ -70,7 +70,7 @@ end
 
 h_figBG_mov = figure('Color', [1 1 1], 'NumberTitle', 'off', ...
     'Name', cat(2,'Intensity-time trace at coordinates (',...
-    num2str(newPnt(1)),',',num2str(newPnt(2)),')'));
+    num2str(newPnt(1)),',',num2str(newPnt(2)),')'), 'Visible', 'off');
 
 posFig = get(h_figBG_mov, 'Position');
 set(h_figBG_mov, 'Position', [posFig(1) posFig(2) 500 200]);
@@ -109,6 +109,7 @@ grid on;
 guidata(h_fig, h);
 
 if ~fromRoutine
+    set(h_figBG_mov,'visible','on');
     export = questdlg('Do you want to export these data to the workspace?', ...
         'Export time trace', 'Yes', 'No', 'Yes');
     if strcmp(export, 'Yes')
