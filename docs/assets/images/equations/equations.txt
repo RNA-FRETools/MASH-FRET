@@ -85,7 +85,7 @@ Beta factor (equation 08):
 Gamma correction (equation 09):
 	E_{D,A}(n,t) = \left \{ 1+\frac{\gamma_{D,A}(n) I_{D,em}^{D,ex}(n,t)^{***}}{ I_{A,em}^{D,ex}(n,t)^{***} + \sum_{i>A}\left [\frac{E_{A,i}}{1-E_{A,i}}I_{A,em}^{D,ex}(n,t)^{***} \right ] -\sum_{D<i<A}\left[ \frac{E_{i,A}}{1-E_{i,A}}\gamma_{i,A}(n)I_{i,em}^{D,ex}(n,t)^{***}\right ]}  \right \}^{-1}
 Gamma-beta correction (equation 10):
-	S_{D,A}(n,t) = \left |1+\frac{ I_{A,em}^{A,ex}(n,t)^{***} + \sum_{i>A}\left [ I_{i,em}^{A,ex}(n,t)^{***} \Big/ \gamma_{A,i}(n) \right] }{\beta_{D,A} \left \{ I_{A,em}^{D,ex}(n,t)^{***} + \sum_{i<A}\left [\gamma_{i,A}(n) I_{i,em}^{D,ex}(n,t)^{***} \right ] + \sum_{i>A}\left [I_{i,em}^{D,ex}(n,t)^{***} \Big/ \gamma_{A,i}(n) \right ] \right \} }  \right |^{-1}
+	S_{D,A}(n,t) = \left |1+\frac{ I_{A,em}^{A,ex}(n,t)^{***} + \sum_{i>A}\left [ I_{i,em}^{A,ex}(n,t)^{***} \Big/ \gamma_{A,i}(n) \right] }{\beta_{D,A} \left \{ I_{A,em}^{D,ex}(n,t)^{***} + \sum_{D<i<A}\left [\gamma_{i,A}(n) I_{i,em}^{D,ex}(n,t)^{***} \right ] + \sum_{i>A}\left [I_{i,em}^{D,ex}(n,t)^{***} \Big/ \gamma_{A,i}(n) \right ] \right \} }  \right |^{-1}
 	
 
 >> FRET calculations:
