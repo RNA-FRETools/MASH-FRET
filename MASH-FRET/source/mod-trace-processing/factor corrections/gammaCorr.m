@@ -32,8 +32,8 @@ I_den = p.proj{proj}.intensities_denoise(incl,((m-1)*nC+1):m*nC,:);
 I_dta = p.proj{proj}.intensities_DTA(incl,((m-1)*nC+1):m*nC,:);
 prm_dta = p.proj{proj}.curr{m}{4};
 
+% calculate factors for reddest-to-greenest donors
 [o,id] = sort(chanExc(FRET(:,1)),'descend');
-
 for i = id
 
     if method(i)==1 % photobleaching-based
