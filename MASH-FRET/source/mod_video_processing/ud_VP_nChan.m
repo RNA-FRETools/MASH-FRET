@@ -9,13 +9,18 @@ function p = ud_VP_nChan(p)
 nC = p.nChan;
 
 % update background corrections
-if size(p.bgCorr,2)<(nC+1)
+if size(p.movBg_p,2)<nC
     p.movBg_p = cat(2,p.movBg_p,...
-        repmat(p.movBg_p(:,end),[1,(nC+1)-size(p.movBg_p,2)]));
-    p.bgCorr = cat(2,p.bgCorr,...
-        repmat(p.bgCorr(:,end),[1,(nC+1)-size(p.bgCorr,2)]));
+        repmat(p.movBg_p(:,end),[1,nC-size(p.movBg_p,2)]));
 end
-p.bgCorr = p.bgCorr(:,1:(nC+1));
+p.movBg_p = p.movBg_p(:,1:nC);
+if ~isempty(p.bgCorr)
+    if size(p.bgCorr,2)<(nC+1)
+        p.bgCorr = cat(2,p.bgCorr,...
+            repmat(p.bgCorr(:,end),[1,(nC+1)-size(p.bgCorr,2)]));
+    end
+    p.bgCorr = p.bgCorr(:,1:(nC+1));
+end
 
 % update plot colors
 clr = getDefTrClr(p.itg_nLasers,p.itg_wl,nC,size(p.itg_expFRET,1),...
