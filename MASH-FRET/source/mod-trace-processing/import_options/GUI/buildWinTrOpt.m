@@ -5,8 +5,17 @@ function buildWinTrOpt(opt,h_fig)
 %
 % opt: {1-by-6} import settings with:
 %  opt{1}: {1-by-2} intensity import options with:
-%   opt{1}{1}: [1-by-10] parameters of file structure
-%    [1 0 0 1 1 0 nChan nExc 0 5]
+%   opt{1}{1}: [1-by-10] parameters of file structure with:
+%    opt{1}{1}(1): first line index in file where intensity data are written
+%    opt{1}{1}(2): last line index in file where intensity data are written
+%    opt{1}{1}(3): (1) to import time data from files, (0) otherwise
+%    opt{1}{1}(4): column index in files where time data is written (0 for eof)
+%    opt{1}{1}(5): first column index in files where intensity data are written
+%    opt{1}{1}(6): last column index in files where intensity data are written (0 for eof)
+%    opt{1}{1}(7): number of channels
+%    opt{1}{1}(8): number of alternating lasers
+%    opt{1}{1}(9): (1) to import FRET state sequences data from files, (0) otherwise
+%    opt{1}{1}(10): column index in files where FRET states data is written
 %   opt{1}{2}: [1-by-nL] laser wavelength in a chronological order
 %  opt{2}: {1-by-2} video import options with:
 %   opt{2}{1}: (1) if video file is imported,(0) otherwise
