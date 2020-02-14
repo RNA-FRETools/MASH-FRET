@@ -1,28 +1,16 @@
 function ok = setParam(h_fig)
+% ok = setParam(h_fig)
+%
 % Initialize MASH parameters from the file default_param.ini
-% "h_fig" >> MASH figure handle
+%
+% h_fig: handle to main figure
 
-% Requires external function: adjustParam
-
-%% Last update by MH, 16.1.2020
-% >> add TP import parameter for beta factor file import
-%
-% update by MH, 25.4.2019
-% >> set default tag names and colors in Video processing interface's 
-%    defaults
-%
-% update: 28th of March 2019 by Melodie Hadzic
-% --> add gamma file import in Trace processing
-%
-% update: 20th of February by Mélodie Hadzic
-% --> add ebFRET-compatible export in Video processing
-%
-% update: 7th of March 2018 by Richard Börner
-% --> Comments adapted for Boerner et al 2017
-% --> Simulation default parameters adapted for Boerner et al 2017.
-%
-% Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
-%%
+% Last update, 16.1.2020 by MH: add TP import parameter for beta factor file import
+% update, 25.4.2019 by MH: set default tag names and colors in Video processing interface's defaults
+% update,28.3.2019 by MH: add gamma file import in Trace processing
+% update, 20.2.2019 by MH: add ebFRET-compatible export in Video processing
+% update: 7.3.2018 by Richard Börner: (1) Comments adapted for Boerner et al 2017 (2) Simulation default parameters adapted for Boerner et al 2017.
+% created 23.4.2014 by MH
 
 h = guidata(h_fig);
 h.param = [];
