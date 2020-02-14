@@ -20,11 +20,8 @@ function h = buildPanelTP(h,p)
 %   p.tbl: reference table listing character's pixel dimensions
 %   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
-% Last update: by MH, 10.1.2020
-% >> add panel "Cross-talks" and remove cross-talks parameters from panel
-% "Factor corrections"
-%
-% created by MH, 19.10.2019
+% Last update, 10.1.2020 by MH: add panel "Cross-talks" and remove cross-talks parameters from panel "Factor corrections"
+% created, 19.10.2019 by MH
 
 % default
 hedit0 = 20;
