@@ -8,3 +8,21 @@ function setDefault_TP(h_fig,p)
 
 % get interface parameters
 h = guidata(h_fig);
+
+% set default sample management parameters
+
+% set default plot parameters
+
+% set default sub-images parameters
+
+% set default background parameters
+
+% set default cross-talks parameters
+
+% set default denoising parameters
+
+% set default photobleaching parameters
+
+% set default factor corrections parameters
+
+% set default find states parameters

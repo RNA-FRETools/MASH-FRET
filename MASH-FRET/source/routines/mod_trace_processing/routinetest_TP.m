@@ -46,6 +46,15 @@ try
 
     % switch to video processing module
     switchPan(h.togglebutton_TP,[],h_fig);
+    
+    % import default project
+    disp('improt default project...');
+    pushbutton_addTraces_Callback({p.annexpth,p.mash_file{p.nL,p.nChan}},...
+        [],h_fig);
+
+    % save project (and default processing parameters)
+    pushbutton_expProj_Callback({p.annexpth,p.mash_file{p.nL,p.nChan}},[],...
+        h_fig);
 
     % set interface defaults
     disp('test main callbacks...');
