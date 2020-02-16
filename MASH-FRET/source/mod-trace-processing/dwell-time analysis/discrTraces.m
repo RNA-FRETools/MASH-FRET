@@ -31,8 +31,12 @@ prm_DTA = p.proj{proj}.prm{m}{4};
 method = prm_DTA{1}(1);
 toBottom = prm_DTA{1}(2); % discretize bottom(1)/top->bottom(0)/top+bottom(2)
 calc = prm_DTA{1}(3);
-gamma = p.proj{proj}.prm{m}{6}{1}(1,:);
-beta = p.proj{proj}.prm{m}{6}{1}(2,:);
+if nF>0
+    gamma = p.proj{proj}.prm{m}{6}{1}(1,:);
+    if nS>0
+        beta = p.proj{proj}.prm{m}{6}{1}(2,:);
+    end
+end
     
 if (toBottom && ~isDiscrBot) || ((~toBottom || toBottom == 2) && ...
         ~isDiscrTop)

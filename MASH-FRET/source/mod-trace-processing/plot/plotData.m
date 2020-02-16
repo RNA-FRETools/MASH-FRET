@@ -233,8 +233,8 @@ if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
             i_s = c-nFRET;
             S_tr = s_tr(:,i_s);
             s = p.proj{proj}.S(i_s,1);
-            [o,l,o] = find(exc==chanExc(s,1));
-            [histS,x_S] = hist(s_tr, linspace(-0.3,1.3,160));
+            [o,l,o] = find(exc==chanExc(s),1);
+            [histS,x_S] = hist(S_tr, linspace(-0.3,1.3,160));
             histS = histS(x_S>=FRETlim(1) & x_S<=FRETlim(2))/sum(histS);
             x_S = x_S(x_S>=FRETlim(1) & x_S<=FRETlim(2));
             colr = clr{3}(i_s,:);

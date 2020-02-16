@@ -25,8 +25,12 @@ FRET = p.proj{proj}.FRET;
 nFRET = size(p.proj{proj}.FRET,1);
 S = p.proj{proj}.S;
 nS = size(S,1);
-gamma = p.proj{proj}.curr{mol}{6}{1}(1,:);
-beta = p.proj{proj}.curr{mol}{6}{1}(2,:);
+if nFRET>0
+    gamma = p.proj{proj}.curr{mol}{6}{1}(1,:);
+    if nS>0
+        beta = p.proj{proj}.curr{mol}{6}{1}(2,:);
+    end
+end
 prm = p.proj{proj}.curr{mol}{2};
 
 apply = prm{1}(1);
