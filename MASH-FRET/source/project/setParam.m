@@ -328,9 +328,8 @@ p.defTagNames = adjustParam('defTagNames', ...
     {'static', 'dynamic','D-only','A-only'}, p_input);
 p.defTagClr = adjustParam('defTagClr', {'#4298B5','#FFFFCC','#33CC33',...
     '#FF6666','#E19D29'}, p_input);
-[src,o,o] = fileparts(which('MASH'));
-p.infos_icon_file = cat(2,src,filesep,'source',filesep,'divers',filesep,...
-    'infos_icon.png');
+[src,o,o] = fileparts(which('setInfoIcons'));
+p.infos_icon_file = cat(2,src,filesep,'infos_icon.png');
 
 % Trace processing pannel
 
