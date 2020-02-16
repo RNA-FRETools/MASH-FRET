@@ -1,5 +1,5 @@
-function set_VP_projOpt(p,wl,h_fig)
-% set_VP_projOpt(p,nL,nChan,h_fig)
+function set_VP_projOpt(p,wl,h_but,h_fig)
+% set_VP_projOpt(p,nL,nChan,h_but,h_fig)
 %
 % Set project options to proper values and update interface parameters
 %
@@ -14,16 +14,25 @@ function set_VP_projOpt(p,wl,h_fig)
 %  p.FRET: donor-accpetor FRET pairs
 %  p.S: FRET pairs to calculate stoichiometry for
 % wl: laser wavelength in chronological order
+% h_but: handle to button that was pressed to open option window
 % h_fig: handle to main figure
 
-% collect interface parameters
-h = guidata(h_fig);
-
+% collect project options
 nL = size(p.laser_pow,2);
 nChan = size(p.labels,2);
 
+% collect modified interface parameters
+h = guidata(h_fig);
+
 % open project option window
-openItgExpOpt(h.pushbutton_chanOpt, [], h_fig);
+if h_but==h.pushbutton_chanOpt
+    openItgExpOpt(h_but,[],h_fig);
+elseif h_but==h.pushbutton_editParam
+    pushbutton_editParam_Callback(h_but,[],h_fig);
+else
+     disp('set_VP_projOpt: unknown button');
+     return
+end
 
 % collect modified interface parameters
 h = guidata(h_fig);
@@ -52,8 +61,8 @@ nPrm = numel(get(q.listbox_prm,'string'));
 prm = nPrm;
 while prm>0
     set(q.listbox_prm,'value',prm);
-    pushbutton_itgExpOpt_rem_Callback(q.pushbutton_itgExpOpt_rem,[],...
-        h.pushbutton_chanOpt,h_fig);
+    pushbutton_itgExpOpt_rem_Callback(q.pushbutton_itgExpOpt_rem,[],h_but,...
+        h_fig);
     prm = prm-1;
     
     % collect modified interface parameters
@@ -70,8 +79,8 @@ for prm = 1:nPrm
     set(q.edit_newUnits,'string',p.prm_extra{prm,3});
     edit_newUnits(q.edit_newUnits,[],h_fig);
 
-    pushbutton_itgExpOpt_add_Callback(q.pushbutton_itgExpOpt_add,[],...
-        h.pushbutton_chanOpt,h_fig);
+    pushbutton_itgExpOpt_add_Callback(q.pushbutton_itgExpOpt_add,[],h_but,...
+        h_fig);
     
     % collect modified interface parameters
     h = guidata(h_fig);
@@ -108,7 +117,7 @@ for c = 1:nChan
     popupmenu_dyeExc_Callback(q.popupmenu_dyeExc,[],h_fig);
     
     % set channel-specific label
-    lbl0 = find(~cellfun('isempty',strfind(str_lbl,p.labels{lbl})));
+    lbl0 = find(~cellfun('isempty',strfind(str_lbl,p.labels{c})));
     set(q.popupmenu_dyeLabel,'value',lbl0);
     popupmenu_dyeLabel_Callback(q.popupmenu_dyeLabel,[],h_fig);
 end
@@ -150,6 +159,5 @@ for n = 1:size(p.S,1)
 end
 
 % save options and close window
-pushbutton_itgExpOpt_ok_Callback(q.pushbutton_itgExpOpt_ok,[],...
-    h.pushbutton_chanOpt,h_fig);
+pushbutton_itgExpOpt_ok_Callback(q.pushbutton_itgExpOpt_ok,[],h_but,h_fig);
 

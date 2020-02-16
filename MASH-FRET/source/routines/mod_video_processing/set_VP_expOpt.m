@@ -8,6 +8,11 @@ function set_VP_expOpt(opt,h_fig)
 
 % collect interface parameters
 h = guidata(h_fig);
+
+openItgFileOpt(h.pushbutton_TTgen_fileOpt,[],h_fig);
+
+% collect interface parameters
+h = guidata(h_fig);
 q = h.itgFileOpt;
 
 % set export otpions

@@ -40,7 +40,7 @@ edit_rate_Callback(h.edit_rate,[],h_fig);
 
 set_VP_lasers(p.nL,p.wl(1:p.nL),h_fig);
 
-set_VP_projOpt(p.projOpt{p.nL,p.nChan},p.wl,h_fig);
+set_VP_projOpt(p.projOpt{p.nL,p.nChan},p.wl,h.pushbutton_chanOpt,h_fig);
 
 % set defaults in panel Edit and export video
 set_VP_imFilters(p.bg_corr,p.bg_prm,p.bg_all,[p.annexpth,filesep,p.bg_file],...

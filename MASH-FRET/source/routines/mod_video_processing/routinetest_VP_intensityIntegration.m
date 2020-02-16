@@ -25,7 +25,7 @@ for nChan = 1:p.nChan_max
     
     % set import options
     impOpt = {reshape(1:(2*nChan),[2,nChan])',1};
-    set_VP_impIntgrOpt(impOpt,h_fig);
+    set_VP_impIntgrOpt(impOpt,h.pushbutton_TTgen_loadOpt,h_fig);
     
     % import coordinates
     disp(cat(2,prefix,'>> import coordinates from ',p.coord_file{nChan},...
@@ -38,10 +38,9 @@ for nChan = 1:p.nChan_max
         set_VP_lasers(nL,p.wl(1:nL),h_fig);
     
         % set project options
-        set_VP_projOpt(p.projOpt{nL,nChan},p.wl,h_fig);
+        set_VP_projOpt(p.projOpt{nL,nChan},p.wl,h.pushbutton_chanOpt,h_fig);
 
         % set file options
-        openItgFileOpt(h.pushbutton_TTgen_fileOpt,[],h_fig);
         set_VP_expOpt(expopt,h_fig);
 
         % save to .mash file
@@ -62,7 +61,6 @@ pushbutton_TTgen_loadCoord_Callback({p.annexpth,p.coord_file{p.nChan}},[],...
 for n = 1:size(expopt,2)
     disp(cat(2,prefix,'>> export ',p.expFmt{n},'file...'));
     % set export otpions
-    openItgFileOpt(h.pushbutton_TTgen_fileOpt,[],h_fig);
     opt = expopt;
     opt(n) = true;
     set_VP_expOpt(opt,h_fig);

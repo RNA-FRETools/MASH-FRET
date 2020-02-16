@@ -27,7 +27,8 @@ for nChan = 1:p.nChan_max
         set_VP_lasers(nL,p.wl(1:nL),h_fig);
     
         % set project options
-        set_VP_projOpt(p.projOpt{nL,nChan},p.wl,h_fig);
+        set_VP_projOpt(p.projOpt{nL,nChan},p.wl,h.pushbutton_chanOpt,...
+            h_fig);
     end
 end
 
