@@ -12,6 +12,21 @@ for i = 1:nChan_imp
     end
 end
 
+% adjust user-defined experimental conditions
+nExc_imp = m{1}{1}(8);
+exc_imp = m{1}{2};
+expcond_imp = m{5}(1:4,:);
+for i = 1:nExc_imp
+    expcond_imp = cat(1,expcond_imp,...
+        {['Power(',num2str(round(exc_imp(i))),'nm)'],'','mW'});
+end
+ind = max(find(~cellfun('isempty',strfind(m{5}(:,1),'Power')),1));
+if isempty(ind)
+    ind = 4;
+end
+exc_imp = cat(1,expcond_imp,m{5}((ind+1):end,:));
+m{5} = exc_imp;
+
 % save podifications
 h.param.ttPr.impPrm = m;
 guidata(h_fig, h);

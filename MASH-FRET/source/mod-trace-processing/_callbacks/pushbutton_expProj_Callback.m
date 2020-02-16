@@ -1,17 +1,13 @@
 function pushbutton_expProj_Callback(obj, evd, h_fig)
+% pushbutton_expProj_Callback([],[],h_fig)
+% pushbutton_expProj_Callback(mash_file,[],h_fig)
+%
+% h_fig: handle to main figure
+% mash_file: {1-by-2} destination folder and file for project
 
-%% Last update: 25.4.2019 by MH
-% >> save current project tage names and colors in interface's default 
-%    parameters (default_param.ini)
-%
-% update: 2.4.2019 by MH
-% >> update current project parameters with saved project parameters: this
-%    mimic the subsequent load of saved project and closing of previous one
-%
-% update: 29.3.2019 by MH
-% >> adapt reorganization of cross-talk coefficients to new parameter 
-%    structure (see project/setDefPrm_traces.m)
-%%
+% Last update, 25.4.2019 by MH: save current project tage names and colors in interface's default parameters (default_param.ini)
+% update, 2.4.2019 by MH: update current project parameters with saved project parameters: this mimic the subsequent load of saved project and closing of previous one
+% update, 29.3.2019 by MH: adapt reorganization of cross-talk coefficients to new parameter structure (see project/setDefPrm_traces.m)
 
 h = guidata(h_fig);
 p = h.param.ttPr;
@@ -27,23 +23,31 @@ end
 proj = p.curr_proj;
 
 % get file name
-if ~isempty(p.proj{proj}.proj_file)
-    projName = p.proj{proj}.proj_file;
-    [pName,projName,o] = fileparts(projName);
-
-elseif ~isempty(p.proj{proj}.exp_parameters{1,2})
-    pName = pwd;
-    projName = getCorrName(p.proj{proj}.exp_parameters{1,2}, [], ...
-        h_fig);
+if iscell(obj)
+    pname = obj{1};
+    fname = obj{2};
+    if ~strcmp(pname(end),filesep)
+        pname = [pname,filesep];
+    end
 else
-    pName = pwd;
-    projName = 'project';
-end
+    if ~isempty(p.proj{proj}.proj_file)
+        projName = p.proj{proj}.proj_file;
+        [pName,projName,o] = fileparts(projName);
 
-defName = [pName filesep projName '.mash'];
-[fname,pname,o] = uiputfile(...
-    {'*.mash;', 'MASH project(*.mash)'; ...
-     '*.*', 'All Files (*.*)'}, 'Export MASH project', defName);
+    elseif ~isempty(p.proj{proj}.exp_parameters{1,2})
+        pName = pwd;
+        projName = getCorrName(p.proj{proj}.exp_parameters{1,2}, [], ...
+            h_fig);
+    else
+        pName = pwd;
+        projName = 'project';
+    end
+
+    defName = [pName filesep projName '.mash'];
+    [fname,pname,o] = uiputfile(...
+        {'*.mash;', 'MASH project(*.mash)'; ...
+         '*.*', 'All Files (*.*)'}, 'Export MASH project', defName);
+end
 if ~sum(fname)
     return
 end
