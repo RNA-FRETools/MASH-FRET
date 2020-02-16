@@ -12,6 +12,22 @@ if (iscell(p_def) && ~iscell(p_input)) || ...
     return;
 end
 
+% remove dimensions > 0 is array is empty
+if size(p_def,1)==0 || size(p_def,2)==0
+    if iscell(p_def)
+        p_def = {};
+    else
+        p_def = [];
+    end
+end
+if size(p_input,1)==0 || size(p_input,2)==0
+    if iscell(p_input)
+        p_input = {};
+    else
+        p_input = [];
+    end
+end
+
 if isempty(p_input)
     p_input = p_def;
 end
