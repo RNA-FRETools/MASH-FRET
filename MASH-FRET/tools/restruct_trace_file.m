@@ -104,6 +104,14 @@ units = repmat({'None'}, 1,F);  % added by FS, 15.11.18
 for ff = 1:F
     f = fopen(cat(2,pname,filesep,fList(ff,1).name),'r');
     headline = fgetl(f);
+    extrahead = {};
+    while isempty(str2num(headline))
+        extrahead = cat(2,extrahead,headline);
+        prevline = headline;
+        headline = fgetl(f);
+    end
+    extrahead(end) = [];
+    headline = prevline;
     fclose(f);
     
     % detect tabulation characters
@@ -327,6 +335,9 @@ for ff = 1:F
         end
 
         f = fopen(cat(2,out_pname,filesep,fList(ff,1).name),'Wt');
+        for i = 1:size(extrahead,2)
+        	fprintf(f,cat(2,extrahead{i},'\n'));
+        end
         fprintf(f,headStr);
         fprintf(f,cat(2,repmat('%d\t',1,nCol2-1),'%d\n'),alexData');
         fclose(f);
