@@ -1,22 +1,39 @@
-function [I,prm] = SiM_FRET(K0,nL0,N,dir_out)
+function [I,prm] = SiM_FRET(K0,nL0,N,dir_out,varargin)
 % SiM_FRET(K,nL,N,dir_out)
+% SiM_FRET(K,nL,N,dir_out,expMov)
+% SiM_FRET(K,nL,N,dir_out,expMov,expCoord)
 %
-% SiM_FRET (Simulation of Multiple FRET pair network) simulates and export N sets of intensity-time traces of multiple FRET pairs.
+% SiM_FRET (Simulation of Multiple FRET pair network) simulates and export N sets of intensity-time traces of multiple donor-acceptor FRET pairs.
+% Associated single molecule video and molecule coordinates can be exported too.
 %
 % K: number of channels
 % nL: number of alternating lasers
 % N: sample size
 % dir_out: destination directory
+% expMov: (1) to export associated video file in sira format, (0) othertwise
+% expCoord: (1) to export associated molecule coordinates file, (0) otherwise
 
 % defaults
 f = 10; % frame rate
-L = 500; % observation time
+L = 100; % observation time
 tau_0 = 10*L/f; % bleaching time constant
 J = 3; % number of states
 kin = rand(J)/10;% transition rate matrix
 kin(~~eye(J)) = 0;
 I_0 = 56; % fluorescence intensity in absence of acceptor
-camoffset = 113;
+camoffset = 113; % camera offset
+resx = 100; % video x-dimension
+resy = 100; % video y-dimension
+
+% collect arguments
+expMov = false;
+expCoord = false;
+if ~isempty(varargin)
+    expMov = varargin{1};
+    if size(varargin,2)>=2
+        expCoord = varargin{2};
+    end
+end
 
 if K0==1
     K = 2;
@@ -28,9 +45,17 @@ if nL0==1
 else
     nL = nL0;
 end
-
-bgI = zeros(nL,K);
+bgI = rand(nL,K)*2;
 L0 = nL*L;
+
+% generates random coordinates
+chanw = round(resx/K0);
+coord = rand(N,2);
+coord(:,1) = 1+coord(:,1)*(chanw-1);
+coord(:,2) = 1+coord(:,2)*resy;
+for k = 2:K0
+    coord = cat(2,coord,[coord(:,1)+(k-1)*chanw,coord(:,2)]);
+end
 
 dummy = getSiMFRET_prm(N,f,L,tau_0,J,kin);
 
@@ -80,14 +105,14 @@ for pair = pairs_red2green
     end
 end
 
+close(dummy);
+
 % generate random coefficients
-% Bt = rand(K)/10;
-Bt = zeros(K);
+Bt = rand(K)/10;
 for k = 1:K
     Bt(k,(1:K)<=k) = 0;
 end
-% De = rand(K,nL)/20;
-De = zeros(K,nL);
+De = rand(K,nL)/20;
 for k = 1:K
     if chanExc(k)>0
         De(k,wl>=chanExc(k)) = 0;
@@ -194,8 +219,61 @@ for n = 1:N
     end
     fullfile = cat(2,dir_out,filesep,fname,sprintf('_mol%ion%i.txt',n,N));
     fid = fopen(fullfile,'Wt');
+    fprintf(fid,cat(2,'coordinates:',repmat('\t%0.1f,%0.1f',[1,K0]),'\n'),...
+        coord(n,:));
     fprintf(fid,header);
     fprintf(fid,fmt,I2save');
+    fclose(fid);
+end
+
+% export video
+if expMov
+    figname = get(gcf,'Name');
+    vers = figname(length('MASH-FRET '):end);
+    fid = writeSiraFile('init',[dir_out,filesep,fname,'.sira'],vers,[1/f,...
+        [resx,resy],L0]);
+    if fid==-1
+        disp('Enable to open video file');
+        return
+    end
+    nPix = resx*resy;
+    limchan = [1,round(resx/K0)];
+    for k = 2:K0
+        if k<K0
+            limchan = cat(1,limchan,...
+                [limchan(k-1,2)+1,limchan(k-1,2)+round(resx/K0)]);
+        else
+            limchan = cat(1,limchan,[limchan(k-1,2)+1,resx]);
+        end
+    end
+    pos = ceil(coord);
+    for l = 1:L0
+        exc = mod(l,nL0);
+        if exc==0
+            exc = nL0;
+        end
+        l_exc = ceil(l/nL0);
+        img = zeros(resy,resx);
+        for k = 1:K0
+            img(:,limchan(k,:)) = ...
+                random('poiss',img(:,limchan(k,:))+bgI(k));
+        end
+        img = img + camoffset;
+        for n = 1:N
+            for k = 1:K0
+                img(pos(n,2*k),pos(n,2*k-1)) = I(l_exc,((n-1)*K)+k,exc);
+            end
+        end
+        writeSiraFile('append',fid,img,nPix);
+    end
+    fclose(fid);
+end
+if expCoord
+    fullfile = cat(2,dir_out,filesep,fname,'.coord');
+    fid = fopen(fullfile,'Wt');
+    fprintf(fid,cat(2,repmat('x%i\ty%i\t',[1,K0]),'\n'),...
+        reshape([1:K0;1:K0],1,2*K0));
+    fprintf(fid,cat(2,repmat('%0.1f\t%0.1f\t',[1,K0]),'\n'),coord');
     fclose(fid);
 end
 
@@ -217,8 +295,6 @@ prm.gamma = gamma(1:nFRET);
 prm.beta = beta(1:nFRET);
 
 save(cat(2,dir_out,filesep,fname,'.mat'),'prm');
-
-close(dummy);
 
 disp('process completed!');
 
