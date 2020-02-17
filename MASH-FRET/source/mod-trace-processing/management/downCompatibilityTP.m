@@ -82,6 +82,7 @@ if size(proj.prm{n},2)==5 && size(proj.prm{n}{5},2)==5
         proj.fix{4} = proj.prm{n}{5}(1:2);
     end
     proj.prm{n}{5} = [];
+    proj.prm{n}{6} = ones(2,nFRET);
 end
 
 if size(proj.prm{n},2)>=6 

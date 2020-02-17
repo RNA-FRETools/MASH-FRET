@@ -44,7 +44,7 @@ if ~isfield(p.defProjPrm, 'general')
     p.defProjPrm.general = cell(1,3);
 end
 if ~isfield(p.defProjPrm, 'mol')
-    p.defProjPrm.mol = cell(1,5);
+    p.defProjPrm.mol = cell(1,6);
 end
 
 def = p.defProjPrm;
@@ -119,6 +119,13 @@ gen{3}(8) = 1; % FRET pair for factor corrections
 % Cross-talks coefficients
 gen{4}{1} = zeros(nChan,nChan-1); % bleedthrough coefficients
 gen{4}{2} = zeros(nExc-1,nChan); % direct excitation coefficients
+if nChan==0
+    gen{4}{1} = [];
+    gen{4}{2} = [];
+end
+if nExc==0
+    gen{4}{2} = [];
+end
 
 def.general = adjustVal(def.general, gen);
 
