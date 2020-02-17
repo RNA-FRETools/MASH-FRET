@@ -107,7 +107,7 @@ for nL = 1:nL_max
     end
 end
 p.coord_file = '2chan.coord';
-p.coord_fline = 2;
+p.coord_fline = 1;
 p.vid_width = 256;
 p.vid_file = '2chan2exc.sira';
 p.gamma_files = {'2chan2exc_1.gam','2chan2exc_2.gam','2chan2exc_3.gam'};
