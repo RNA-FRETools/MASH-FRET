@@ -254,6 +254,12 @@ p.SF_minDspot = adjustParam('SF_minDspot', 0*ones(1,p.nChan), p_input);
 p.SF_minDedge = adjustParam('SF_minDedge', 3*ones(1,p.nChan), p_input);
 p.SF_intRatio = adjustParam('SF_intRatio', 1.4*ones(1,p.nChan), p_input);
 p.SFres = {};
+p.SFprm = cell(1,1+p.nChan);
+p.SFprm{1} = [p.SF_method p.SF_gaussFit 1];
+for i = 1:p.nChan
+    p.SFprm{i+1} = [p.SF_w(i),p.SF_h(i); p.SF_darkW(i),p.SF_darkH(i); ...
+        p.SF_intThresh(i),p.SF_intRatio(i)];
+end
 p.coordMol = [];
 p.coordMol_file = [];
 
