@@ -256,7 +256,7 @@ for ff = 1:F
         for ii = 1:nCol
             % identify excitation for each column
             for l = 1:nExc
-                isExc =  strfind(allHead{ii},num2str(exc(l)));
+                isExc =  strfind(allHead{ii},cat(2,num2str(exc(l)),'nm'));
                 if ~isempty(isExc)
                     break;
                 end
@@ -291,7 +291,7 @@ for ff = 1:F
                 
             else
                 if ii>1+isFrame+nChan % second excitation
-                    id = ii-1-isFrame-nChan;
+                    id = ii-(ceil(ii/(1+isFrame+nChan))-1)*(1+isFrame+nChan);
                     rmHead(ii) = true;
                 else
                     id = ii;
