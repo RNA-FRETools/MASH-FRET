@@ -29,7 +29,7 @@ end
 
 str = cat(2,str,sprintf(') / (beta_%i%i*(I_%i%i',D,A,A,D));
 
-for i = (D+1):(A-1)
+for i = D:(A-1)
     str = cat(2,str,sprintf(' + gamma_%i%i*I_%i%i',i,A,i,D));
 end
 for i = (A+1):K
