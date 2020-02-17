@@ -1,4 +1,4 @@
-function [I,prm] = SiM_FRET(K,nL,N,dir_out)
+function [I,prm] = SiM_FRET(K0,nL0,N,dir_out)
 % SiM_FRET(K,nL,N,dir_out)
 %
 % SiM_FRET (Simulation of Multiple FRET pair network) simulates and export N sets of intensity-time traces of multiple FRET pairs.
@@ -11,14 +11,26 @@ function [I,prm] = SiM_FRET(K,nL,N,dir_out)
 % defaults
 f = 10; % frame rate
 L = 500; % observation time
-L0 = nL*L;
 tau_0 = 10*L/f; % bleaching time constant
 J = 3; % number of states
 kin = rand(J)/10;% transition rate matrix
 kin(~~eye(J)) = 0;
 I_0 = 56; % fluorescence intensity in absence of acceptor
-bgI = zeros(nL,K);
 camoffset = 113;
+
+if K0==1
+    K = 2;
+else
+    K = K0;
+end
+if nL0==1
+    nL = 2;
+else
+    nL = nL0;
+end
+
+bgI = zeros(nL,K);
+L0 = nL*L;
 
 dummy = getSiMFRET_prm(N,f,L,tau_0,J,kin);
 
@@ -38,6 +50,7 @@ for don = 1:(K-1)
     end
 end
 nFRET = size(FRET,1);
+
 [o,pairs_red2green] = sort(chanExc(FRET(:,1)),'descend');
 
 % get state sequences for each pair
@@ -58,7 +71,7 @@ for pair = pairs_red2green
     mix{pair} = h.results.sim.mix;
     discr_seq{pair} = h.results.sim.discr_seq;
     dt_final{pair} = h.results.sim.dt_final;
-    
+
     % get FRET state sequences
     for n = 1:N
         E{n}(FRET(pair,1),FRET(pair,2),:) = permute(...
@@ -100,11 +113,15 @@ end
 header = '';
 fmt = '';
 for l = 1:nL
-    header = cat(2,header,sprintf('timeat%inm',wl(l)),'\t');
-    fmt = cat(2,fmt,'%d\t');
-    for k = 1:K
-        header = cat(2,header,sprintf('I_%iat%inm',k,wl(l)),'\t');
+    if l<=nL0
+        header = cat(2,header,sprintf('timeat%inm',wl(l)),'\t');
         fmt = cat(2,fmt,'%d\t');
+        for k = 1:K
+            if k<=K0
+                header = cat(2,header,sprintf('I_%iat%inm',k,wl(l)),'\t');
+                fmt = cat(2,fmt,'%d\t');
+            end
+        end
     end
 end
 header(end) = 'n';
@@ -113,7 +130,7 @@ fmt(end) = 'n';
 % get intensities
 In = cell(1,N);
 I = zeros(L,K*N,nL);
-fname = sprintf('%ichan%iexc',K,nL);
+fname = sprintf('%ichan%iexc',K0,nL0);
 for n = 1:N
     In{n} = zeros(nL,K,L);
 
@@ -170,8 +187,10 @@ for n = 1:N
     % save data
     I2save = [];
     for l = 1:nL
-        I2save = cat(2,I2save,(l:nL:L0)'/f);
-        I2save = cat(2,I2save,I_bt(:,:,l));
+        if l<=nL0
+            I2save = cat(2,I2save,(l:nL:L0)'/f);
+            I2save = cat(2,I2save,I_bt(:,1:K0,l));
+        end
     end
     fullfile = cat(2,dir_out,filesep,fname,sprintf('_mol%ion%i.txt',n,N));
     fid = fopen(fullfile,'Wt');
@@ -186,16 +205,16 @@ prm.tau_0 = tau_0;
 prm.J = J;
 prm.k = kin;
 prm.I_0 = I_0;
-prm.bgI = bgI;
+prm.bgI = bgI(1:K0);
 prm.camoffset = camoffset;
-prm.FRET = FRET;
-prm.wl = wl;
-prm.chanExc = chanExc;
+prm.FRET = FRET(1:nFRET,:);
+prm.wl = wl(1:nL0);
+prm.chanExc = chanExc(1:K0);
 prm.E0 = E0;
-prm.Bt = Bt;
-prm.De = De;
-prm.gamma = gamma;
-prm.beta = beta;
+prm.Bt = Bt(1:K0,1:K0);
+prm.De = De(1:K0,1:nL0);
+prm.gamma = gamma(1:nFRET);
+prm.beta = beta(1:nFRET);
 
 save(cat(2,dir_out,filesep,fname,'.mat'),'prm');
 
