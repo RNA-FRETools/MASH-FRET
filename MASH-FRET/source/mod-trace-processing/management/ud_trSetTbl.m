@@ -59,7 +59,7 @@ if ~isempty(p.proj)
         num2str(sum(incl)),' included)'),'value',incl(currMol));
     
     % update default tag list
-    addOn = get(h.pushbutton_TP_addTag,'value');
+    addOn = get(h.togglebutton_TP_addTag,'value');
     if addOn
         str_lst = getStrPopTags(tagNames,colorlist);
         set(h.lisbox_TP_defaultTags,'visible','on','string',str_lst);

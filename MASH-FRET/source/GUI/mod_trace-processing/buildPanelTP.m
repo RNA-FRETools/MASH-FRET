@@ -255,7 +255,7 @@ x = pospan(3)-p.mg-wpan1-p.mg-pos(3);
 set(h.uipanel_TP_findStates,'position',[x,pos(2:4)]);
 
 % place invivisible label list
-posbut = get(h.pushbutton_TP_addTag,'position');
+posbut = get(h.togglebutton_TP_addTag,'position');
 pospan = get(h.uipanel_TP_sampleManagement,'position');
 x = pospan(1)+posbut(1)+posbut(3);
 y = pospan(2)+posbut(2)+posbut(4)-hlst1;

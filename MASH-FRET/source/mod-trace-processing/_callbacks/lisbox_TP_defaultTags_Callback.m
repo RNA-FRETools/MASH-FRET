@@ -20,7 +20,7 @@ if ~isempty(p.proj)
         guidata(h_fig,h);
         
         grey = [240/255 240/255 240/255];
-        set(h.pushbutton_TP_addTag,'value',0,'backgroundColor',grey);
+        set(h.togglebutton_TP_addTag,'value',0,'backgroundColor',grey);
         set(obj,'visible','off');
         
         ud_trSetTbl(h_fig);
