@@ -25,6 +25,7 @@ function restruct_trace_file(varargin)
 
 % added by MH, 10.4.2019
 % get source directory
+RATIO_EXC = [];
 if ~isempty(varargin) && numel(varargin)>=1
     pname = varargin{1};
     if numel(varargin)>=2
@@ -45,10 +46,14 @@ else
     if isempty(pname) || ~sum(pname)
         return
     end
+    pname_out = pname;
 end
 
 if ~strcmp(pname(end),filesep)
     pname = cat(2,pname,filesep);
+end
+if ~strcmp(pname_out(end),filesep)
+    pname_out = cat(2,pname_out,filesep);
 end
 
 % added by MH, 10.4.2019
