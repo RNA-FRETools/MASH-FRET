@@ -84,5 +84,4 @@ if ~isempty(h_edit)
     drawnow;
 end
 
-guidata(h_fig, h);
 
