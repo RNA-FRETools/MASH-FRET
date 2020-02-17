@@ -31,7 +31,7 @@ Gaussian noise (equation 04):
 	and (equation 05):
 	\mu_{\textup{ic}} = \mu_{\textup{ec}} \times K
 	and (equation 06):
-	\sigma_{\textup{ic}} = \sqrt{\mu_{\textup{ic}} + ( K × \sigma_{\textup{d}} )^{2} + \sigma_{\textup{q}}^{2}}
+	\sigma_{\textup{ic}} = \sqrt{\mu_{\textup{ic}} + ( K Ã— \sigma_{\textup{d}} )^{2} + \sigma_{\textup{q}}^{2}}
 User-defined noise (equation 07):
 	\mu_{\textup{ec}} = \mu_{\textup{pc}} \times \eta
 	and (equation 08):
@@ -73,9 +73,9 @@ bt coefficient (equation 02):
 DE coefficient (equation 03):
 	dE_{em0}^{ex\neq ex0} = {}\frac{I_{em0}^{ex}^{*}}{I_{em0}^{ex0}^{*}}
 Bleedthrough correction (equation 04):
-	I_{em0}^{ex}(n,t)^{**} = I_{em0}^{ex}(n,t)^{*} - \sum_{em\not\equiv em0}\left [ bt_{em,em0} × I_{em}^{ex}(n,t)^{*} \right ]
+	I_{em0}^{ex}(n,t)^{**} = I_{em0}^{ex}(n,t)^{*} - \sum_{em\not\equiv em0}\left [ bt_{em,em0} Ã— I_{em}^{ex}(n,t)^{*} \right ]
 Direct excitation correction (equation 05):
-	I_{em0}^{ex\neq ex0}(n,t)^{***} = I_{em0}^{ex\neq ex0}(n,t)^{**} - dE_{em0}^{ex\neq ex0} × I_{em0}^{ex0}(n,t)^{**}
+	I_{em0}^{ex\neq ex0}(n,t)^{***} = I_{em0}^{ex\neq ex0}(n,t)^{**} - dE_{em0}^{ex\neq ex0} Ã— I_{em0}^{ex0}(n,t)^{**}
 Signal-to-noise ratio (equation 06):
 	SNR_{em}^{ex}(n) = \frac{\mu \left [ I_{em}^{ex}(n)^{***} \right ]}{\sigma \left [ I_{em}^{ex}(n)^{***} \right ] }
 Gamma factor (equation 07):
@@ -85,7 +85,7 @@ Beta factor (equation 08):
 Gamma correction (equation 09):
 	E_{D,A}(n,t) = \left \{ 1+\frac{\gamma_{D,A}(n) I_{D,em}^{D,ex}(n,t)^{***}}{ I_{A,em}^{D,ex}(n,t)^{***} + \sum_{i>A}\left [\frac{E_{A,i}}{1-E_{A,i}}I_{A,em}^{D,ex}(n,t)^{***} \right ] -\sum_{D<i<A}\left[ \frac{E_{i,A}}{1-E_{i,A}}\gamma_{i,A}(n)I_{i,em}^{D,ex}(n,t)^{***}\right ]}  \right \}^{-1}
 Gamma-beta correction (equation 10):
-	S_{D,A}(n,t) = \left |1+\frac{ I_{A,em}^{A,ex}(n,t)^{***} + \sum_{i>A}\left [ I_{i,em}^{A,ex}(n,t)^{***} \Big/ \gamma_{A,i}(n) \right] }{\beta_{D,A} \left \{ I_{A,em}^{D,ex}(n,t)^{***} + \sum_{D<i<A}\left [\gamma_{i,A}(n) I_{i,em}^{D,ex}(n,t)^{***} \right ] + \sum_{i>A}\left [I_{i,em}^{D,ex}(n,t)^{***} \Big/ \gamma_{A,i}(n) \right ] \right \} }  \right |^{-1}
+	S_{D,A}(n,t) = \left |1+\frac{ I_{A,em}^{A,ex}(n,t)^{***} + \sum_{i>A}\left [ I_{i,em}^{A,ex}(n,t)^{***} \Big/ \gamma_{A,i}(n) \right] }{\beta_{D,A} \left \{ I_{A,em}^{D,ex}(n,t)^{***} + \sum_{D\leq i<A}\left [\gamma_{i,A}(n) I_{i,em}^{D,ex}(n,t)^{***} \right ] + \sum_{i>A}\left [I_{i,em}^{D,ex}(n,t)^{***} \Big/ \gamma_{A,i}(n) \right ] \right \} }  \right |^{-1}
 	
 
 >> FRET calculations:
