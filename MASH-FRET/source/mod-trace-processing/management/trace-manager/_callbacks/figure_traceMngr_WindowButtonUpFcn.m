@@ -7,5 +7,10 @@ if isfield(h,'tm') && isfield(h.tm,'figure_traceMngr') && ...
     q.isDown = false;
     guidata(h.tm.figure_traceMngr,q);
     pos = get(h.tm.axes_histSort,'currentpoint');
-    adjustMaskPos_AS(q,pos(1,[1,2]));
+    axlim = get(h.tm.axes_histSort,'xlim');
+    aylim = get(h.tm.axes_histSort,'ylim');
+    if pos(1,1)>=axlim(1) && pos(1,1)<=axlim(2) && pos(1,2)>=aylim(1) && ...
+            pos(1,2)<=aylim(2)
+        adjustMaskPos_AS(q,pos(1,[1,2]));
+    end
 end
