@@ -44,16 +44,27 @@ try
     h_fig = routinetest_general(p.annexpth,h_fig);
     h = guidata(h_fig);
 
-    % switch to video processing module
+    % switch to trace processing module
     switchPan(h.togglebutton_TP,[],h_fig);
     
+    % empty project list
+    disp('empty project list...');
+    nProj = numel(get(h.listbox_traceSet,'string'));
+    proj = nProj;
+    while proj>0
+        set(h.listbox_traceSet,'value',proj);
+        listbox_traceSet_Callback(h.listbox_traceSet,[],h_fig);
+        pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
+        proj = proj-1;
+    end
+    
     % import default project
-    disp('improt default project...');
-    pushbutton_addTraces_Callback({p.annexpth,p.mash_file{p.nL,p.nChan}},...
+    disp('import default project...');
+    pushbutton_addTraces_Callback({p.annexpth,p.mash_files{p.nL,p.nChan}},...
         [],h_fig);
 
     % save project (and default processing parameters)
-    pushbutton_expProj_Callback({p.annexpth,p.mash_file{p.nL,p.nChan}},[],...
+    pushbutton_expProj_Callback({p.annexpth,p.mash_files{p.nL,p.nChan}},[],...
         h_fig);
 
     % set interface defaults

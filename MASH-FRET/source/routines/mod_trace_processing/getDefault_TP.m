@@ -14,6 +14,7 @@ defprm = {'Movie name' '' ''
        'Molecule name' '' ''
        '[Mg2+]' [] 'mM'
        '[K+]' [] 'mM'};
+deflbl = {'don','acc1','acc2'};
 
 % general parameters
 [pname,o,o] = fileparts(mfilename('fullpath'));
@@ -72,7 +73,7 @@ for nL = 1:nL_max
             nChan,nL);
         
         p.asciiOpt{nL,nChan}.intImp = {...
-            [2 0 true 1 3 (3+nChan-1) nChan nL false 5],p.wl(1:nL)};
+            [3 0 true 1 2 (2+nChan-1) nChan nL false 5],p.wl(1:nL)};
         p.asciiOpt{nL,nChan}.vidImp = {false ''};
         p.asciiOpt{nL,nChan}.coordImp = {{false,'',{[1 2],1},256},[false 1]};
         p.asciiOpt{nL,nChan}.expCond = defprm_nL;
@@ -108,7 +109,7 @@ for nL = 1:nL_max
 end
 p.coord_file = '2chan.coord';
 p.coord_fline = 1;
-p.vid_width = 256;
+p.vid_width = 100;
 p.vid_file = '2chan2exc.sira';
 p.gamma_files = {'2chan2exc_1.gam','2chan2exc_2.gam','2chan2exc_3.gam'};
 p.beta_files = {'2chan2exc_1.bet','2chan2exc_2.bet','2chan2exc_3.bet'};

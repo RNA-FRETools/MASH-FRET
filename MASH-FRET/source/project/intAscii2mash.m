@@ -57,7 +57,7 @@ if isMov
     mov_file = p{2}{2};
     [data ok] = getFrames(mov_file, 1, {}, h_fig, false);
     if ~ok
-        return;
+        return
     end
     mov_dim = [data.pixelX data.pixelY];
     fCurs = data.fCurs;
@@ -72,8 +72,8 @@ if isCoord && isCoordFile
     coord_imp = p{3}{3};
     coord_file = p{3}{2};
     res_x = p{3}{4};
-    coord_tot = orgCoordCol(importdata(coord_file, '\n'), 'cw', ...
-        coord_imp, nChan, res_x, h_fig);
+    coord_tot = orgCoordCol(importdata(coord_file,'\n'),...
+        'cw',coord_imp,nChan,res_x,h_fig);
 else
     coord_imp = [];
     coord_file = [];
@@ -173,7 +173,7 @@ try
             updateActPan(['Unable to load intensity data from file: ' ...
                 fname{i} '\nPlease check import options.'], h_fig, ...
                 'error');
-            return;
+            return
         end
         
         % added by MH, 3.4.2019
@@ -318,7 +318,7 @@ try
             updateActPan(['Unable to load intensity data from file: ' ...
                 fname{i} '\nPlease check import options.'], h_fig, ...
                 'error');
-            return;
+            return
         end
         
         % added by MH, 3.4.2019
@@ -329,7 +329,7 @@ try
             updateActPan(['Unable to load discretized FRET data from file:' ...
                 ' ' fname{i} '\nPlease check import options.'], h_fig, ...
                 'error');
-            return;
+            return
         end
         
         % get exposure time
@@ -357,13 +357,13 @@ try
                 loading_bar('close', h_fig);
                 updateActPan(['Molecule coordinates not found in file: ' ...
                     fname{i}], h_fig, 'error');
-                return;
+                return
             end
             
             if size(I,2)/nChan ~= size(coord,1)
                 updateActPan(['Number of intensity-time traces inconsistent ' ...
                     'with number of coordinates'], h_fig, 'error');
-                return;
+                return
             end
         end
         
@@ -372,24 +372,21 @@ try
         
         intrupt = loading_bar('update', h_fig);
         if intrupt
-            return;
+            return
         end
     end
         
 catch err
     updateActPan(['An error occurred during processing of file: ' ...
         fname{i} ':\n' err.message], h_fig, 'error');
-    for i = 1:size(err.stack,1)
-        disp(['function: ' err.stack(i,1).name ', line: ' ...
-            num2str(err.stack(i,1).line)]);
-    end
-    return;
+    dispMatlabErr(err);
+    return
 end
 
 if isCoord && size(intensities,2)/nChan ~= size(coord_tot,1)
     updateActPan(['Number of intensity-time traces inconsistent with ',...
         'number of coordinates'], h_fig, 'error');
-    return;
+    return
 end
 
 nS = 0;

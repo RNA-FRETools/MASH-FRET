@@ -12,6 +12,8 @@ nChan_def = 2;
 nL_def = 2;
 vers = [2015,2020];
 nVers = size(vers,2);
+deflbl = {'don','acc1','acc2'};
+expT = 0.1;
 
 % general parameters
 [pname,o,o] = fileparts(mfilename('fullpath'));
@@ -57,9 +59,8 @@ p.wl = [];
 while isempty(p.wl) || numel(unique(p.wl))~=nL_max
     p.wl = round(1000*sort(rand(1,nL_max))); % laser wavelength
 end
-p.expT = 0.1; % exposure time
+p.expT = expT; % exposure time
 p.projOpt = cell(nL_max,nChan_max);
-deflbl = {'don','acc1','acc2'};
 for nL = 1:nL_max
     for nChan = 1:nChan_max
         p.projOpt{nL,nChan}.proj_title = ...

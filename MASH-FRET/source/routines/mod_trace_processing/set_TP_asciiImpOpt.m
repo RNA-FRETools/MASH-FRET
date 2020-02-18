@@ -9,30 +9,33 @@ function set_TP_asciiImpOpt(opt,h_fig)
 % collect interface parameters
 h = guidata(h_fig);
 
+nChan = opt.intImp{1}(7);
+nL = opt.intImp{1}(8);
+
 % open option window
-pushbutton_traceImpOpt_Callback(h.pushbutton_traceImpOpt,[],h_fig);
+openTrImpOpt(h.pushbutton_traceImpOpt,[],h_fig);
 
 % collect interface parameters
 h = guidata(h_fig);
-q = h.itgFileOpt;
+q = h.trImpOpt;
 
 % set coordinates import options
-set(q.checkbox_inTTfile,'value',opt.coordImp{2}{1});
+set(q.checkbox_inTTfile,'value',opt.coordImp{2}(1));
 checkbox_inTTfile_Callback(q.checkbox_inTTfile,[],h_fig);
 
-set(q.checkbox_extFile,'value',pt.coordImp{1}(1));
+set(q.checkbox_extFile,'value',opt.coordImp{1}{1});
 checkbox_extFile_Callback(q.checkbox_extFile,[],h_fig);
     
-if opt.coordImp{2}{1}
+if opt.coordImp{2}(1)
     set(q.edit_rowCoord,'string',num2str(opt.coordImp{2}(2)));
     edit_rowCoord_Callback(q.edit_rowCoord,[],h_fig);
     
-    set(q.edit_movWidth,'string',num2str(opt.coordImp{1}{4}));
-    edit_movWidth_Callback(q.edit_movWidth,[],h_fig);
-    
-elseif opt.coordImp{1}(1)
+elseif opt.coordImp{1}{1}
     pushbutton_impCoordOpt_Callback(q.pushbutton_impCoordOpt,[],h_fig);
     set_VP_impIntgrOpt(opt.coordImp{1}{3},q.pushbutton_impCoordOpt,h_fig);
+    
+    set(q.edit_movWidth,'string',num2str(opt.coordImp{1}{4}));
+    edit_movWidth_Callback(q.edit_movWidth,[],h_fig);
     
     pushbutton_impCoordFile_Callback(opt.coordImp{1}{2},[],h_fig)
 end
@@ -64,13 +67,13 @@ if opt.intImp{1}(3)
     edit_timeCol_Callback(q.edit_timeCol,[],h_fig);
 end
 
-set(q.edit_nbChan,'string',num2str(opt.intImp{1}(7)));
+set(q.edit_nbChan,'string',num2str(nChan));
 edit_nbChan_Callback(q.edit_nbChan,[],h_fig);
 
-set(q.edit_nbExc,'string',num2str(opt.intImp{1}(8)));
+set(q.edit_nbExc,'string',num2str(nL));
 edit_nbExc_Callback(q.edit_nbExc,[],h_fig);
 
-for l = 1:opt.intImp{1}(8)
+for l = 1:nL
     set(q.popupmenu_exc,'value',l);
     popupmenu_exc_Callback(q.popupmenu_exc,[],h_fig);
 

@@ -34,6 +34,16 @@ set(h.lisbox_TP_defaultTags,'visible','off');
 set(h.togglebutton_TP_addTag,'value',0,'backgroundcolor',...
     [240/255 240/255 240/255]);
 
+% delete existing sub-image axes
+if isfield(h, 'axes_subImg')
+    for i = 1:numel(h.axes_subImg)
+        if ishandle(h.axes_subImg(i))
+            delete(h.axes_subImg(i));
+        end
+    end
+    h = rmfield(h, 'axes_subImg');
+end
+
 if ~isempty(p.proj)
     proj = p.curr_proj;
     isMov = p.proj{proj}.is_movie;
@@ -205,18 +215,7 @@ if ~isempty(p.proj)
     % x-axis settings
     set(h.checkbox_ttPerSec, 'Value', perSec);
     set(h.checkbox_ttAveInt, 'Value', perPix);
-    
-    % reset sub-image axes
-    if isfield(h, 'axes_subImg')
-        for i = 1:numel(h.axes_subImg)
-            if ishandle(h.axes_subImg(i))
-                delete(h.axes_subImg(i));
-            end
-        end
-        h = rmfield(h, 'axes_subImg');
-        refresh;
-    end
-    
+
     % create sub-image axes and calculate laser-specific avergae images
     if isCoord && isMov
         
@@ -281,17 +280,6 @@ if ~isempty(p.proj)
         end
     end
 else
-    % delete existing sub-image axes
-    if isfield(h, 'axes_subImg')
-        for i = 1:numel(h.axes_subImg)
-            if ishandle(h.axes_subImg(i))
-                delete(h.axes_subImg(i));
-            end
-        end
-        h = rmfield(h, 'axes_subImg');
-        refresh;
-    end
-    
     % set Trace processing module off-enabled
     setProp(get(h.uipanel_TP, 'Children'), 'Enable', 'off');
     setProp([h.pushbutton_traceImpOpt h.pushbutton_addTraces], ...

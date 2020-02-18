@@ -14,7 +14,7 @@ if iscell(obj)
     pname = obj{1};
     fname = obj{2};
     if ~strcmp(pname,filesep)
-        pname = [pname,filsep];
+        pname = [pname,filesep];
     end
 else
     defPth = h.folderRoot;
@@ -56,7 +56,7 @@ end
 % load project data
 [dat,ok] = loadProj(pname, fname, 'intensities', h_fig);
 if ~ok
-    return;
+    return
 end
 p.proj = [p.proj dat];
 

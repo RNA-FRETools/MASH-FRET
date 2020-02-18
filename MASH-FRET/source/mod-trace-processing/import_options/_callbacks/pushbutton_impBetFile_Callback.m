@@ -11,8 +11,8 @@ function pushbutton_impBetFile_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 
 if iscell(obj)
-    fname = obj{1};
-    pname = obj{2};
+    pname = obj{1};
+    fname = obj{2};
     if ~strcmp(pname(end),filesep)
         pname = [pname,filesep];
     end
