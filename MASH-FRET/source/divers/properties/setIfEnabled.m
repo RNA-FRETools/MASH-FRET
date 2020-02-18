@@ -17,7 +17,10 @@ end
 set(obj,prop,val);
 
 if ~isempty(varargin) && varargin{1}
-    funandargs = getProp(obj,'callback');
+    if ~isprop(obj,'Callback')
+        return
+    end
+    funandargs = get(obj,'callback');
     cbfun = funandargs{1,1};
     args = funandargs(2:end,1);
     str_arg = '';
