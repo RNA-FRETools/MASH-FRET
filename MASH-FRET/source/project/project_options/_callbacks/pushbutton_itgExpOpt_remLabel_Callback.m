@@ -1,4 +1,4 @@
-function pushbutton_remLabel_Callback(obj, evd, h_fig)
+function pushbutton_itgExpOpt_remLabel_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 slct = get(h.itgExpOpt.listbox_dyeLabel,'Value');
 p = guidata(h.figure_itgExpOpt);
