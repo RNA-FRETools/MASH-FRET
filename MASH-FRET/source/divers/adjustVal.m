@@ -31,6 +31,16 @@ end
 if isempty(p_input)
     p_input = p_def;
 end
+[sz1,sz2,sz3] = size(p_def);
+if size(p_input,3)>size(p_def,3)
+    p_input = p_input(:,:,1:sz3);
+end
+if size(p_input,2)>size(p_def,2)
+    p_input = p_input(:,1:sz2,:);
+end
+if size(p_input,1)>size(p_def,1)
+    p_input = p_input(1:sz1,:,:);
+end
 
 for cz = 1:size(p_def,3)
     if cz > size(p_input,3)
@@ -39,8 +49,12 @@ for cz = 1:size(p_def,3)
     else
         for cc = 1:size(p_def(:,:,cz),2)
             if cc > size(p_input,2)
-                p_input(:,cc:size(p_def(:,:,cz),2),cz) = ...
-                    p_def(:,cc:size(p_def(:,:,cz),2),cz);
+                try
+                    p_input(:,cc:size(p_def(:,:,cz),2),cz) = ...
+                        p_def(:,cc:size(p_def(:,:,cz),2),cz);
+                catch err
+                    pouet = 0;
+                end
                 break;
             else
                 for cr = 1:size(p_def(:,cc,cz),1)
