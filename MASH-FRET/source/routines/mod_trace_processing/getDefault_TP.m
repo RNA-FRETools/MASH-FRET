@@ -122,14 +122,14 @@ p.exp_bet = 'betFromFile.mash';
 p.exp_states = 'statesFromFile.mash';
 
 % parameters for panel Sample management
-p.def_labels = {'D','A1','A2','static','dynamic'};
-p.mol_incl = true;
-p.mol_label = {};
-p.expOpt.traces = [false,7,true,true,true,true,true,1];
-p.expOpt.hist = [false,true,-1500,600,25000,true,-0.2,0.01,1.2,-0.2,0.01,1.2,true];
+p.exp_figpreview = 'figure_preview';
+p.expOpt.traces = [false,7,true,true,true,true,true,2];
+p.expOpt.hist = [false,true,-1000,100,4000,true,-0.2,0.01,1.2,true,-0.2,...
+    0.01,1.2,true];
 p.expOpt.dt = [false,true,true,true,true];
 p.expOpt.fig = {[false,1,6,true,true,0,0,true,0,true,true,false],''};
 p.expOpt.gen = [true,0];
+p.tmOpt.def_labels = {'D','A1','A2','static','dynamic'};
 
 % parameters for panel Sub-images
 

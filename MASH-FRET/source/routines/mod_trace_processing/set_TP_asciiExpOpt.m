@@ -8,12 +8,6 @@ function set_TP_asciiExpOpt(opt,h_fig)
 
 % collect interface parameters
 h = guidata(h_fig);
-
-% open option window
-pushbutton_expTraces_Callback(h.pushbutton_expTraces_Callback,[],h_fig);
-
-% collect interface parameters
-h = guidata(h_fig);
 q = h.optExpTr;
 
 
@@ -33,15 +27,17 @@ radiobutton_saveTr_Callback(q.radiobutton_saveTr,[],h_fig);
 if opt.traces(1)
     set(q.popupmenu_trFmt,'value',opt.traces(2));
     popupmenu_trFmt_Callback(q.popupmenu_trFmt,[],h_fig);
+    
+    if sum(opt.traces(2)==[1,7])
+        set(q.checkbox_trI,'value',opt.traces(3));
+        checkbox_trI_Callback(q.checkbox_trI,[],h_fig);
 
-    set(q.checkbox_trI,'value',opt.traces(3));
-    checkbox_trI_Callback(q.checkbox_trI_Callback,[],h_fig);
+        setIfEnabled(q.checkbox_trFRET,'value',opt.traces(4),true);
 
-    setIfEnabled(q.checkbox_trFRET,'value',opt.traces(4),true);
+        setIfEnabled(q.checkbox_trS,'value',opt.traces(5),true);
 
-    setIfEnabled(q.checkbox_trS,'value',opt.traces(5),true);
-
-    setIfEnabled(q.checkbox_trAll,'value',opt.traces(6),true);
+        setIfEnabled(q.checkbox_trAll,'value',opt.traces(6),true);
+    end
 
     setIfEnabled(q.checkbox_gam,'value',opt.traces(7),true);
 
@@ -72,15 +68,17 @@ if opt.hist(1)
 
     setIfEnabled(q.edit_binFRET,'string',num2str(opt.hist(8)),true);
 
-    setIfEnabledIfEnabled(q.edit_maxFRET,'string',num2str(opt.hist(9)),true);
+    setIfEnabled(q.edit_maxFRET,'string',num2str(opt.hist(9)),true);
 
     setIfEnabled(q.checkbox_histS,'value',opt.hist(10),true);
+    
+    setIfEnabled(q.edit_minS,'string',num2str(opt.hist(11)),true);
 
-    setIfEnabled(q.edit_binS,'string',num2str(opt.hist(11)),true);
+    setIfEnabled(q.edit_binS,'string',num2str(opt.hist(12)),true);
 
-    setIfEnabled(q.edit_maxS,'string',num2str(opt.hist(12)),true);
+    setIfEnabled(q.edit_maxS,'string',num2str(opt.hist(13)),true);
 
-    set(q.checkbox_histDiscr,'value',opt.hist(13));
+    set(q.checkbox_histDiscr,'value',opt.hist(14));
     checkbox_histDiscr_Callback(q.checkbox_histDiscr,[],h_fig);
 end
 
@@ -89,8 +87,8 @@ end
 set(q.radiobutton_saveDt,'value',opt.dt(1));
 radiobutton_saveDt_Callback(q.radiobutton_saveDt,[],h_fig);
 if opt.dt(1)
-    set(q.checkbox_dtI_,'value',opt.dt(2));
-    checkbox_dtI_Callback(q.checkbox_dtI_,[],h_fig);
+    set(q.checkbox_dtI,'value',opt.dt(2));
+    checkbox_dtI_Callback(q.checkbox_dtI,[],h_fig);
 
     setIfEnabled(q.checkbox_dtFRET,'value',opt.dt(3),true);
 
@@ -103,9 +101,8 @@ end
 
 % set Figures export options
 set(q.radiobutton_saveFig,'value',opt.fig{1}(1));
+radiobutton_saveFig_Callback(q.radiobutton_saveFig,[],h_fig);
 if opt.fig{1}(1)
-    radiobutton_saveFig_Callback(q.radiobutton_saveFig,[],h_fig);
-
     set(q.popupmenu_figFmt,'value',opt.fig{1}(2));
     popupmenu_figFmt_Callback(q.popupmenu_figFmt,[],h_fig);
 
@@ -139,12 +136,8 @@ if opt.fig{1}(1)
     set(q.checkbox_figDiscr,'value',opt.fig{1}(11));
     checkbox_figDiscr_Callback(q.checkbox_figDiscr,[],h_fig);
 
-    if opt.fig{1}{1}(12)
-        pushbutton_preview_Callback(opt.fig{2},[],h_fig);
+    if opt.fig{1}(12)
+        pushbutton_preview_Callback({opt.fig{2}},[],h_fig);
     end
 end
-
-% save an close
-pushbutton_next_Callback(q.pushbutton_next,[],h_fig);
-
 

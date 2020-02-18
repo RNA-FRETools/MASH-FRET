@@ -30,7 +30,7 @@ setProp(get(h.uipanel_TP, 'Children'), 'Visible', 'on');
 
 % set default tag name list invisible and update corresponding button 
 % appearance
-set(h.lisbox_TP_defaultTags,'visible','off');
+set(h.listbox_TP_defaultTags,'visible','off');
 set(h.togglebutton_TP_addTag,'value',0,'backgroundcolor',...
     [240/255 240/255 240/255]);
 
