@@ -8,7 +8,7 @@ function clr_hex = rgb2hex(rgb)
 clr_hex = '';
 for c = 1:3
     clr = dec2hex(rgb(c));
-    if rgb(c)<10
+    if rgb(c)<16
         clr = cat(2,'0',clr);
     end
     clr_hex = cat(2,clr_hex,clr);
