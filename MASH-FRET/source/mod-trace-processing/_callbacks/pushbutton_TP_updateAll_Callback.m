@@ -100,6 +100,8 @@ if ~isempty(p.proj)
     
     loading_bar('close',h_fig);
     
+    updateFields(h_fig,'ttPr');
+    
     setContPan('Update completed !','success',h_fig);
     
 end
