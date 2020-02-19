@@ -60,11 +60,14 @@ else
     end
 end
 
-if sum(jx==[0,1]) && sum(jy==[0,1]) % frame-wise data
+if (is2D && sum(jx==[0,1]) && sum(jy==[0,1])) || ...
+        (~is2D && sum(jx==[0,1])) % frame-wise data
     molIncl = molsWithConf(trace,'trace',prm,incl);
-elseif sum(jx==(2:8)) % molecule-wise
+elseif (is2D && sum(jx==(2:8)) && sum(jy==(2:8))) || ...
+        (~is2D && sum(jx==(2:8))) % molecule-wise
     molIncl = molsWithConf(trace,'value',prm);
-else % state-wise
+elseif (is2D && sum(jx==[9,10]) && sum(jy==[9,10])) || ...
+        (~is2D && sum(jx==[9,10])) % state-wise
     molIncl = molsWithConf(trace,'state',prm);
 end
     

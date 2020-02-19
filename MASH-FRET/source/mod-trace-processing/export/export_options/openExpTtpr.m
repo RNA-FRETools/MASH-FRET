@@ -613,8 +613,6 @@ h.optExpTr.pushbutton_next = uicontrol('Style', 'pushbutton', ...
     'Position', [xNext yNext w_but h_but], 'String', 'Next >>', ...
     'Callback', {@pushbutton_next_Callback, h_fig});
 
-set(h.optExpTr.figure_optExpTr, 'Visible', 'on');
-
 guidata(h_fig, h);
 ud_optExpTr('all', h_fig);
 

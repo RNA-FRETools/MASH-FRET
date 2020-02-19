@@ -120,6 +120,7 @@ p.exp_vid = 'vidFromFile.mash';
 p.exp_gam = 'gamFromFile.mash';
 p.exp_bet = 'betFromFile.mash';
 p.exp_states = 'statesFromFile.mash';
+p.exp_sortProj = '2chan2exc_sort.mash';
 
 % parameters for panel Sample management
 p.exp_figpreview = 'figure_preview';
@@ -129,7 +130,22 @@ p.expOpt.hist = [false,true,-1000,100,4000,true,-0.2,0.01,1.2,true,-0.2,...
 p.expOpt.dt = [false,true,true,true,true];
 p.expOpt.fig = {[false,1,6,true,true,0,0,true,0,true,true,false],''};
 p.expOpt.gen = [true,0];
-p.tmOpt.def_labels = {'D','A1','A2','static','dynamic'};
+p.tmOpt{1} = [0,50,1120 % histogram limits
+    0,50,255
+    0,50,175
+    0,50,300
+    0,50,1270
+    0,50,470
+    -0.2,0.025,1.2
+    -0.2,0.025,1.2];
+p.tmOpt{2}{1} = {'D','A1','A2','static','dynamic'}; % default tag names
+p.tmOpt{2}{2} = rand(size(p.tmOpt{2}{1},2),3); % default tag colors
+p.tmOpt{2}{3} = 3; % number of molecules in display
+p.tmOpt{3}(1) = 50; % number of histogram intervals
+p.tmOpt{3}(2) = 1; % condition of range
+p.tmOpt{3}(3) = 10; % confidence level 1
+p.tmOpt{3}(4) = 90; % confidence level 2
+p.tmOpt{3}(5) = 1; % units
 
 % parameters for panel Sub-images
 

@@ -38,7 +38,7 @@ for nL = 1:p.nL_max
         
         % save project
         pushbutton_expProj_Callback({p.dumpdir,p.mash_files{nL,nChan}},[],...
-            h_fig)
+            h_fig);
         
         % test ASCII files import 
         disp(cat(2,prefix,'>> import data set ',p.ascii_dir{nL,nChan}));
