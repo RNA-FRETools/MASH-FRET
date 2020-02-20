@@ -147,9 +147,30 @@ p.tmOpt{3}(3) = 10; % confidence level 1
 p.tmOpt{3}(4) = 90; % confidence level 2
 p.tmOpt{3}(5) = 1; % units
 
+% parameters for panel Plot
+p.perSec = true;
+p.perPix = true;
+p.inSec = false;
+p.fixX0 = false;
+p.x0 = 10;
+
 % parameters for panel Sub-images
+p.contrast = 90;
+p.brightness = 60;
 
 % parameters for panel Background
+p.bgMeth = 2;
+p.bgPrm = [... & param1, param2, bg intensity, x-dark, y-dark, auto dark
+    0   20 100 0 0 0 % Manual
+    0   20 0   0 0 0 % 20 darkest
+	0   20 0   0 0 0 % Mean value
+	100 20 0   0 0 0 % Most frequent value
+	0.5 20 0   0 0 0 % Histotresh
+	10  20 0   1 1 1 % Dark trace
+	2   20 0   0 0 0];% Median
+p.bgApply = true;
+p.exp_bgTrace1 = 'darkTrace_auto';
+p.exp_bgTrace2 = 'darkTrace_man';
 
 % parameters for panel Cross-talks
 

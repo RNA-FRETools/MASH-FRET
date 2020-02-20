@@ -5,37 +5,13 @@ function def = setDefPrm_traces(p, proj)
 % "def" >> 1-by-n cell array containing molecule parameters for each of ...
 %          the n panels
 
-% Last update by MH, 15.1.2020
-% >> add parameter tolerance in photobleaching-based gamma calculation
-%  parameters
-%
-% update: by MH, 14.1.2020
-% >> make parameters for gamma/beta factor calculations dependent on the
-%  FRET pair (necessary for ES histograms)
-%
-% update: by MH, 13.1.2020
-% >> add beta factors
-% >> move bleethrough and direct excitation coefficients from molecule
-%  to general parameters
-%
-% update: by MH, 10.1.2020
-% >> separate parameters for factor corrections from cross-talks: store 
-%  parameters for factor corrections in 6th cell
-%
-% update: by MH 3.4.2019
-% >> correct default value for bottom axes plot
-% >> change default state finding algorithm to STaSI
-%
-% update: by MH 29.3.2019
-% >> change bleedthrough coefficient (mol{5}{1}) structure: coefficients 
-%    are independant of laser
-% >> change direct excitation coefficient (mol{5}{2}) structure: direct 
-%    excitation possible by every laser but emitter-specific illumination 
-%    (nExc-1) and is calculated only based on emitter intensities at 
-%    emitter-specific laser (possibility to choose another laser was 
-%    removed)
-%
-% update: the 28th of April 2014 by Mélodie C.A.S. Hadzic
+% Last update by MH, 15.1.2020: add parameter tolerance in photobleaching-based gamma calculation parameters
+% update by MH, 14.1.2020: (1) make parameters for gamma/beta factor calculations dependent on the FRET pair (necessary for ES histograms)
+% update 13.1.2020 by MH: (1) add beta factors (2) move bleethrough and direct excitation coefficients from molecule to general parameters
+% update 10.1.2020 by MH: (1) separate parameters for factor corrections from cross-talks: store parameters for factor corrections in 6th cell
+% update 3.4.2019 by MH: (1) correct default value for bottom axes plot (2) change default state finding algorithm to STaSI
+% update 29.3.2019 by MH: (1) change bleedthrough coefficient (mol{5}{1}) structure: coefficients are independant of laser (2) change direct excitation coefficient (mol{5}{2}) structure: direct excitation possible by every laser but emitter-specific illumination (nExc-1) and is calculated only based on emitter intensities at emitter-specific laser (possibility to choose another laser was removed)
+% update 28.4.2014 by MH
 
 if ~isfield(p, 'defProjPrm')
     p.defProjPrm = [];

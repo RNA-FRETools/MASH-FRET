@@ -46,26 +46,6 @@ try
 
     % switch to trace processing module
     switchPan(h.togglebutton_TP,[],h_fig);
-    
-    % empty project list
-    disp('empty project list...');
-    nProj = numel(get(h.listbox_traceSet,'string'));
-    proj = nProj;
-    while proj>0
-        set(h.listbox_traceSet,'value',proj);
-        listbox_traceSet_Callback(h.listbox_traceSet,[],h_fig);
-        pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
-        proj = proj-1;
-    end
-    
-    % import default project
-    disp('import default project...');
-    pushbutton_addTraces_Callback({p.annexpth,p.mash_files{p.nL,p.nChan}},...
-        [],h_fig);
-
-    % save project (and default processing parameters)
-    pushbutton_expProj_Callback({p.annexpth,p.mash_files{p.nL,p.nChan}},[],...
-        h_fig);
 
     % set interface defaults
     disp('test main callbacks...');
@@ -83,6 +63,18 @@ try
     if strcmp(opt,'all') || strcmp(opt,'sample management')
         disp('test panel sample management...');
         routinetest_TP_sampleManagement(h_fig,p,subprefix);
+    end
+    
+    % test file export (panel sample management)
+    if strcmp(opt,'file export')
+        disp('test file export...');
+        routinetest_TP_fileExport(h_fig,p,subprefix);
+    end
+    
+    % test file export (panel sample management)
+    if strcmp(opt,'trace manager')
+        disp('test trace manager...');
+        routinetest_TP_traceManager(h_fig,p,subprefix);
     end
 
     % test panel plot
@@ -144,6 +136,19 @@ catch err
     disp(' ');
     dispMatlabErr(err)
     diary off;
+    
+    % close figures
+    if isfield(h,'tm') && isfield(h.tm,'figure_traceMngr') && ...
+            ishandle(h.tm.figure_traceMngr)
+        close(h.tm.figure_traceMngr);
+    end
+    if isfield(h,'optExpTr') && isfield(h.optExpTr,'figure_optExpTr') && ...
+            ishande(h.optExpTr.figure_optExpTr);
+        close(h.optExpTr.figure_optExpTr);
+    end
+    if isfield(h,'figure_itgExpOpt') && ishandle(h.figure_itgExpOpt)
+        close(h.figure_itgExpOpt);
+    end
     return
 end
 

@@ -118,7 +118,7 @@ for c = 1:nChan
     
     % set channel-specific label
     lbl0 = find(~cellfun('isempty',strfind(str_lbl,p.labels{c})));
-    set(q.popupmenu_dyeLabel,'value',lbl0);
+    set(q.popupmenu_dyeLabel,'value',lbl0(1));
     popupmenu_dyeLabel_Callback(q.popupmenu_dyeLabel,[],h_fig);
 end
 

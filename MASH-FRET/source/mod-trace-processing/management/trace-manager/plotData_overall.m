@@ -37,8 +37,6 @@ if ~sum(dat3.slct)
     return
 end
 
-disp('plot data ...');
-
 plotData_conctrace(h.tm.axes_ovrAll_1,plot1,h_fig);
 plotData_conctrace(h.tm.axes_traceSort,plot1,h_fig);
 drawMask_slct(h_fig);

@@ -9,13 +9,48 @@ function setDefault_TP(h_fig,p)
 % get interface parameters
 h = guidata(h_fig);
 
+% empty project list
+nProj = numel(get(h.listbox_traceSet,'string'));
+proj = nProj;
+while proj>0
+    set(h.listbox_traceSet,'value',proj);
+    listbox_traceSet_Callback(h.listbox_traceSet,[],h_fig);
+    pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
+    proj = proj-1;
+end
+
+% import default project
+pushbutton_addTraces_Callback({p.annexpth,p.mash_files{p.nL,p.nChan}},[],...
+    h_fig);
+
 % set default sample management parameters
 
+
 % set default plot parameters
+nExc_top = numel(get(h.popupmenu_ttPlotExc,'string'));
+set(h.popupmenu_ttPlotExc,'value',nExc_top);
+popupmenu_ttPlotExc_Callback(h.popupmenu_ttPlotExc,[],h_fig);
+
+nDat_top = numel(get(h.popupmenu_plotTop,'string'));
+set(h.popupmenu_plotTop,'value',nDat_top);
+popupmenu_plotTop_Callback(h.popupmenu_plotTop,[],h_fig);
+
+nDat_bot = numel(get(h.popupmenu_plotBottom,'string'));
+set(h.popupmenu_plotBottom,'value',nDat_bot);
+popupmenu_plotBottom_Callback(h.popupmenu_plotBottom,[],h_fig);
+
+set_TP_xyAxis(p.perSec,p.perPix,p.inSec,p.fixX0,p.x0,h_fig);
 
 % set default sub-images parameters
+set_TP_subImg(p.contrast,p.brightness,h_fig);
 
 % set default background parameters
+nDat = numel(get(h.popupmenu_trBgCorr_data,'string'));
+for dat = 1:nDat
+    set(h.popupmenu_trBgCorr_data,'value',dat);
+    popupmenu_trBgCorr_data_Callback(h.popupmenu_trBgCorr_data,[],h_fig);
+    set_TP_background(dat,meth,p.bgPrm(meth,:),p.bgApply,h_fig);
+end
 
 % set default cross-talks parameters
 
