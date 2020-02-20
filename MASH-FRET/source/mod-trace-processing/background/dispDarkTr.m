@@ -1,4 +1,10 @@
-function dispDarkTr(h_fig)
+function dispDarkTr(h_fig,varargin)
+% dispDarkTr(h_fig)
+% dispDarkTr(h_fig,file_out)
+% 
+% h_fig: handle to main figure
+% file_out: destination image file to export dark trace figure to
+
 h = guidata(h_fig);
 p = h.param.ttPr;
 proj = p.curr_proj;
