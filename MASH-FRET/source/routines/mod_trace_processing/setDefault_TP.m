@@ -53,8 +53,11 @@ for dat = 1:nDat
 end
 
 % set default cross-talks parameters
+set_TP_crossTalks(p.bt,p.de,p.projOpt{p.nL,p.nChan}.chanExc,p.wl(1:p.nL),...
+    h_fig);
 
 % set default denoising parameters
+set_TP_denoising(p.denMeth,p.denPrm,p.denApply,h_fig);
 
 % set default photobleaching parameters
 

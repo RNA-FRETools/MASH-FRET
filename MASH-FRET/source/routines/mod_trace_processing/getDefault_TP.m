@@ -209,6 +209,11 @@ p.de = [0,0
     0.02,0];
 
 % parameters for panel Denoising
+p.denMeth = 1;
+p.denApply = false;
+p.denPrm = [3,0,0
+    5 1 2
+    3 2 1];
 
 % parameters for panel Photobleaching
 

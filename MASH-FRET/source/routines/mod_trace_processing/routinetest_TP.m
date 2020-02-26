@@ -110,7 +110,7 @@ try
     % test panel cross-talks
     if strcmp(opt,'all') || strcmp(opt,'cross-talks')
         disp('test panel cross-talks...');
-        routinetest_TP_crossTalks(h_fig,p,subprefix);
+        routinetest_TP_crossTalks(h_fig,p);
     end
 
     % test panel denoising
