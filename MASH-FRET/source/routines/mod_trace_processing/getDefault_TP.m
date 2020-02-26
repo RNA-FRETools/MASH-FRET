@@ -203,6 +203,10 @@ p.exp_bga{2} = 'bgares_1D_%i.bga';
 p.exp_bga{3} = 'bgares_2D_%i.bga';
 
 % parameters for panel Cross-talks
+p.bt = [0,0.07
+    0,0];
+p.de = [0,0
+    0.02,0];
 
 % parameters for panel Denoising
 
