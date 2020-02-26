@@ -7,7 +7,7 @@ if ~isempty(p.proj)
     
     if ~(p.proj{p.curr_proj}.is_coord && ...
         p.proj{p.curr_proj}.is_movie)
-        return;
+        return
     end
     
     proj = p.curr_proj;
@@ -42,7 +42,7 @@ if ~isempty(p.proj)
             p.proj{proj}.coord(mol,(2*c-1):2*c) = new_coord;
             
             [o,trace] = create_trace(new_coord,itgArea,nPix, ...
-                {mov_file,{fCurs []},[res_y,res_x],L});
+                {mov_file,{fCurs []},[res_y,res_x],L},h.mute_actions);
 
             I = nan(L_ex,1,nExc);
             for i = 1:nExc

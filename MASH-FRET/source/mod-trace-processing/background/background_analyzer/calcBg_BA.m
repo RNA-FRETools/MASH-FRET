@@ -66,9 +66,11 @@ for l = 1:nExc
             case 6 % Dark trace
                 aDim = p.proj{proj}.pix_intgr(1);
                 autoDark = g.param{1}{m}(l,c,6);
-                fDat = [p.proj{proj}.movie_file ...
-                    p.proj{proj}.movie_dat(1) [res_y res_x] ...
-                    p.proj{proj}.movie_dat(3:end)];
+                fDat{1} = p.proj{proj}.movie_file;
+                fDat{2}{1} = p.proj{proj}.movie_dat{1};
+                fDat{2}{2} = [];
+                fDat{3} = [res_y res_x];
+                fDat{4} = p.proj{proj}.movie_dat{end};
                 if autoDark
                     coord_dark = getDarkCoord(l, m, c, p, sub_w);
                 else
@@ -85,12 +87,12 @@ for l = 1:nExc
                 end
                 g.param{1}{m}(l,c,4) = coord_dark(1);
                 g.param{1}{m}(l,c,5) = coord_dark(2);
-                [o I_bg] = create_trace(coord_dark, aDim, nPix, ...
-                    fDat);
+                [o,I_bg] = create_trace(coord_dark, aDim, nPix, fDat, ...
+                    h.mute_actions);
                 bg = slideAve(I_bg(l:nExc:end,:), p1(l,c));
                 
             case 7 % Median value
-                [bg o] = determine_bg(15, img, p1(l,c));
+                [bg,o] = determine_bg(15, img, p1(l,c));
                 bg = nPix*bg;
         end
 

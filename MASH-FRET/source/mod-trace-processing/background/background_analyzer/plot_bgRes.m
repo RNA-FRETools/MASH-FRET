@@ -6,12 +6,13 @@ proj = p.curr_proj;
 m = g.curr_m;
 l = g.curr_l;
 c = g.curr_c;
+
 if isempty(g.res)
-    return;
+    return
 end
 res_m = g.res{m,l,c};
 if isempty(res_m)
-    return;
+    return
 end
 perSec = p.proj{proj}.fix{2}(4);
 rate = p.proj{proj}.frame_rate;
@@ -26,7 +27,7 @@ res_m(:,1) = res_m(:,1)/nPix;
 if isempty(res_m)
     rotate3d(g.axes_plot_bgint, 'off');
     cla(g.axes_plot_bgint);
-    return;
+    return
 end
 
 meth = g.param{1}{m}(l,c,1);
@@ -73,6 +74,8 @@ if g.param{3}(1) || ~isprm1
         xlabel(g.axes_plot_bgint, 'Sub-image dim. (pixel)');
         ylabel(g.axes_plot_bgint, ['BG intensity ' str_un]);
         zlabel(g.axes_plot_bgint, '');
+        xlim(g.axes_plot_bgint,'auto');
+        ylim(g.axes_plot_bgint,'auto');
     end
 else
     if size(res_m,1)>=10 && (g.param{3}(2) || ~issubdim) 
@@ -85,6 +88,8 @@ else
         xlabel(g.axes_plot_bgint, 'Parameter 1');
         ylabel(g.axes_plot_bgint, ['BG intensity ' str_un]);
         zlabel(g.axes_plot_bgint, '');
+        xlim(g.axes_plot_bgint,'auto');
+        ylim(g.axes_plot_bgint,'auto');
 
     elseif size(res_m,1)>=10 % varies param 1 and sub-image dim.
         X = reshape(res_m(1:100,2), [10 10]);
@@ -96,8 +101,13 @@ else
         xlabel(g.axes_plot_bgint, 'Parameter 1');
         ylabel(g.axes_plot_bgint, 'Sub-image dim. (pixel)');
         zlabel(g.axes_plot_bgint, ['BG intensity ' str_un]);
+        xlim(g.axes_plot_bgint,'auto');
+        ylim(g.axes_plot_bgint,'auto');
+        zlim(g.axes_plot_bgint,'auto');
 
     end
 end
+
+set(g.axes_plot_bgint,'visible','on');
 
 

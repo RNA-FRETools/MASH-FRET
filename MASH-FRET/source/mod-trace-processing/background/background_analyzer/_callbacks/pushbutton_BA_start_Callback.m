@@ -4,7 +4,7 @@ h = guidata(h_fig);
 g = guidata(h.bga.figure_bgopt);
 
 if ~checkfield_BA(g.figure_bgopt)
-    return;
+    return
 end
 h = guidata(g.figure_MASH);
 p = h.param.ttPr;

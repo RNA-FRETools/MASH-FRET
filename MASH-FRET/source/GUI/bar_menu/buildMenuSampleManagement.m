@@ -4,6 +4,7 @@ function h = buildMenuSampleManagement(h)
 % h = buildMenuSampleManagement(h);
 %
 % h: structure to update with handles to new UI components and that must contain fields:
+%  h.figure_MASH: handle to main figure
 %  h.menu_TP_sampleManagementTest: handle to menu "panel Sample management"
 
 % created by MH, 07.02.2020

@@ -23,7 +23,7 @@ if ~isempty(p.proj)
     auto = g.param{1}{m}(l,c,6);
     bgVal = g.param{1}{m}(l,c,7);
     mlt_param1 = squeeze(g.param{2}{1}(l,c,:))';
-    mlt_subdim = squeeze(g.param{2}{2}(l,c,:))';
+    mlt_subdim = squeeze(g.param{2}{3}(l,c,:))';
     fix_param1 = g.param{3}(1);
     fix_subdim = g.param{3}(2);
     allmol = g.param{3}(3);

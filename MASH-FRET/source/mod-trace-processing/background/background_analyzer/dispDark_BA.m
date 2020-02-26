@@ -1,4 +1,10 @@
-function coord_dark = dispDark_BA(h_fig)
+function coord_dark = dispDark_BA(h_fig,varargin)
+% coord_dark = dispDark_BA(h_fig)
+% coord_dark = dispDark_BA(h_fig,file_out)
+%
+% h_fig = handle to Background analyzer figure
+% file_out: destination PNG file for dark trace figure
+
 g = guidata(h_fig);
 h = guidata(g.figure_MASH);
 p = h.param.ttPr;
@@ -39,7 +45,7 @@ if meth == 6
     
     p1 = g.param{1}{m}(l,c,2);
 
-    [o,I_bg] = create_trace(coord_dark, aDim, nPix, fDat);
+    [o,I_bg] = create_trace(coord_dark, aDim, nPix, fDat, h.mute_actions);
     I_bg = slideAve(I_bg(l:nExc:end,:), p1);
 
     y_lab = 'a.u.';
@@ -62,24 +68,31 @@ if meth == 6
     end
 
 
-    h_fig = figure('Name', ['Dark trace: (' num2str(coord_dark(1)) ...
+    h_fig2 = figure('Name', ['Dark trace: (' num2str(coord_dark(1)) ...
         ',' num2str(coord_dark(2)) ')'], 'Visible', 'off', 'Color', ...
         [1 1 1], 'Units', 'pixels');
     units = get(h.axes_top, 'Units');
     set(h.axes_top, 'Units', 'pixels');
     pos_top = get(h.axes_top, 'OuterPosition');
     set(h.axes_top, 'Units', units);
-    pos_fig = get(h_fig, 'Position');
-    set(h_fig, 'Position', [pos_fig(1:2) pos_top(3:4)]);
-    h_axes = axes('Parent', h_fig, 'Units', 'pixels', ...
-        'OuterPosition', [0,0,pos_top(3:4)]);
+    pos_fig = get(h_fig2, 'Position');
+    set(h_fig2, 'Position', [pos_fig(1:2) pos_top(3:4)]);
+    h_axes = axes('Parent', h_fig2, 'Units', 'pixels', 'OuterPosition', ...
+        [0,0,pos_top(3:4)]);
     set(h_axes, 'Units', 'normalized');
     plot(h_axes, x_axis, I_bg, '-k');
     xlim(h_axes, get(h.axes_top, 'XLim'));
     ylim(h_axes, 'auto');
     ylabel(h_axes, y_lab);
     xlabel(h_axes, x_lab);
-    set(h_fig, 'Visible', 'on');
+    
+    if ~isempty(varargin)
+        file_out = varargin{1};
+        print(h_fig2,file_out,'-dpng');
+        close(h_fig2);
+    else
+        set(h_fig2, 'Visible', 'on');
+    end
 end
 
 

@@ -24,6 +24,10 @@ warr = 20; % width of downwards arrow in popupmenu
 fntclr2 = 'blue'; % text color in special pushbuttons
 ttl0 = 'Method settings';
 ttl1 = 'Parameter screening';
+xlbl = 'Parameter 1';
+ylbl = 'BG intensity (counts/sec/pix)';
+axttl = 'Sub-image dim. = 50 pixels';
+axlim = [-10000 10000];
 str0 = 'XXXXX at 999nm';
 str1 = 'Most frequent value';
 str2 = 'auto';
@@ -85,14 +89,19 @@ q = build_BA_panelParameterScreening(q,p,h_fig);
 x = x+wpan1+mg;
 
 q.axes_plot_bgint = axes('parent',h_fig2,'units',posun,'fontunits',fntun,...
-    'fontsize',fntsz,'nextplot','replacechildren');
+    'fontsize',fntsz,'nextplot','replacechildren','xlim',axlim,'ylim',...
+    axlim);
 h_axes = q.axes_plot_bgint;
+title(h_axes,axttl);
+xlabel(h_axes,xlbl);
+ylabel(h_axes,ylbl);
 pos = getRealPosAxes([x,y,waxes,haxes],get(h_axes,'tightinset'),'traces');
 set(h_axes,'position',pos);
+set(h_axes,'visible','off');
 
 q.figure_MASH = h_fig;
 
 guidata(h_fig2,q);
 
-
+setProp(h_fig2,'units','normalized');
 

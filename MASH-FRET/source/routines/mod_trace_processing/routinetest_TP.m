@@ -94,6 +94,18 @@ try
         disp('test panel background...');
         routinetest_TP_background(h_fig,p,subprefix);
     end
+    
+    % test panel background corrections
+    if strcmp(opt,'background corrections')
+        disp('test background corrections...');
+        routinetest_TP_backgroundCorrections(h_fig,p,subprefix);
+    end
+    
+    % test panel background analyzer
+    if strcmp(opt,'background analyzer')
+        disp('test background analyzer...');
+        routinetest_TP_backgroundAnalyzer(h_fig,p,subprefix);
+    end
 
     % test panel cross-talks
     if strcmp(opt,'all') || strcmp(opt,'cross-talks')
@@ -138,6 +150,10 @@ catch err
     diary off;
     
     % close figures
+    h = guidata(h_fig);
+    if isfield(h,'figure_bgopt') && ishandle(h.figure_bgopt)
+        close(h.figure_bgopt);
+    end
     if isfield(h,'tm') && isfield(h.tm,'figure_traceMngr') && ...
             ishandle(h.tm.figure_traceMngr)
         close(h.tm.figure_traceMngr);

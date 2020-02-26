@@ -49,7 +49,7 @@ nDat = numel(get(h.popupmenu_trBgCorr_data,'string'));
 for dat = 1:nDat
     set(h.popupmenu_trBgCorr_data,'value',dat);
     popupmenu_trBgCorr_data_Callback(h.popupmenu_trBgCorr_data,[],h_fig);
-    set_TP_background(dat,meth,p.bgPrm(meth,:),p.bgApply,h_fig);
+    set_TP_background(p.bgMeth,p.bgPrm(p.bgMeth,:),p.bgApply,h_fig);
 end
 
 % set default cross-talks parameters

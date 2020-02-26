@@ -1,9 +1,20 @@
-function [coord,trace] = create_trace(coord, aDim, nPix, fDat)
-% Create intensity-time trace of input single molecule by summing up
-% the pixel intensity values as indicated in the GUI. The intensity
-% extraction takes in account applied background corrections.
+function [coord,trace] = create_trace(coord, aDim, nPix, fDat,varargin)
+% [coord,trace] = create_trace(coord, aDim, nPix, fDat)
+% [coord,trace] = create_trace(coord, aDim, nPix, fDat, mute)
 %
-% Requires external functions: getIntTrace, updateBgCorr.
+% Sort out single molecule coordinates and create corresponding intensity-time trace.
+% Intensities are calculated as the sum of the brightest pixels in a square zone around the molecule coordinates.
+%
+% coord: [N-by-2*nChan] x- and y-coordinates of single moelcules to be sorted (in pixels)
+% aDim: zone's pixel dimensions
+% nPix: number of brightest pixels to sum up
+% fDat: {1-by-4} video file data and meta data with:
+%  fDat{1}: source video file
+%  fDat{2}: {1-by-2} position in file where pixel data starts and full-length video data if loaded in memory (empty otherwise)
+%  fDat{3}: [1-by-2] video dimensions in the x- and y- directions
+%  fDat{4}: video length (in frames)
+% mute: (1) to mute actions, (0) otherwise
+% trace: [L-by-N*nChan] intensity-time traces
 
 res_y = fDat{3}(1);
 res_x = fDat{3}(2);
@@ -43,5 +54,11 @@ for c = 1:nCoord
         lim.Yinf(numel(lim.Yinf)+1) = lim_inf(c,i*2);
     end
 end
-trace = getIntTrace(lim, aDim, nPix, fDat);
+if ~isempty(varargin)
+    mute = varargin{1};
+    trace = getIntTrace(lim, aDim, nPix, fDat, mute);
+else
+    trace = getIntTrace(lim, aDim, nPix, fDat);
+end
+
              

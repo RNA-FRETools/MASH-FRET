@@ -15,6 +15,7 @@ defprm = {'Movie name' '' ''
        '[Mg2+]' [] 'mM'
        '[K+]' [] 'mM'};
 deflbl = {'don','acc1','acc2'};
+nScreenPrm = 10;
 
 % general parameters
 [pname,o,o] = fileparts(mfilename('fullpath'));
@@ -160,17 +161,46 @@ p.brightness = 60;
 
 % parameters for panel Background
 p.bgMeth = 2;
-p.bgPrm = [... & param1, param2, bg intensity, x-dark, y-dark, auto dark
-    0   20 100 0 0 0 % Manual
-    0   20 0   0 0 0 % 20 darkest
-	0   20 0   0 0 0 % Mean value
-	100 20 0   0 0 0 % Most frequent value
-	0.5 20 0   0 0 0 % Histotresh
-	10  20 0   1 1 1 % Dark trace
-	2   20 0   0 0 0];% Median
+p.bgPrm = [... % param1, param2, bg intensity, x-dark, y-dark, auto dark
+    0   20 100 0  0  0 % Manual
+    0   20 0   0  0  0 % 20 darkest
+	0   20 0   0  0  0 % Mean value
+	100 20 0   0  0  0 % Most frequent value
+	0.5 20 0   0  0  0 % Histotresh
+	10  20 0   10 10 1 % Dark trace
+	2   20 0   0  0  0];% Median
 p.bgApply = true;
-p.exp_bgTrace1 = 'darkTrace_auto';
-p.exp_bgTrace2 = 'darkTrace_man';
+p.exp_bgTrace1 = 'darkTrace_auto.png';
+p.exp_bgTrace2 = 'darkTrace_man.png';
+simgw = (5*(1:nScreenPrm))';
+p.bgPrm_screen = [];
+for meth = 1:size(p.bgPrm,1)
+    switch meth
+        case 3
+            prm1screen = (0:(nScreenPrm-1))';
+        case 4
+            prm1screen = round(linspace(10,100,nScreenPrm)');
+        case 5
+            prm1screen = linspace(0,1,nScreenPrm)';
+        case 6
+            prm1screen = round(linspace(0,10,nScreenPrm)');
+        case 7
+            prm1screen = ones(nScreenPrm,1);
+            prm1screen(round(nScreenPrm/2):end) = 2;
+        otherwise
+            prm1screen = zeros(nScreenPrm,1);
+    end
+    p.bgPrm_screen = cat(3,p.bgPrm_screen,[simgw,prm1screen]);
+end
+p.exp_bgTrace_0D1 = 'darkTrace_0D_auto.png';
+p.exp_bgTrace_0D2 = 'darkTrace_0D_man.png';
+p.exp_bgTrace_1D1 = 'darkTrace_1D_auto.png';
+p.exp_bgTrace_1D2 = 'darkTrace_1D_man.png';
+p.exp_bgTrace_2D1 = 'darkTrace_2D_auto.png';
+p.exp_bgTrace_2D2 = 'darkTrace_2D_man.png';
+p.exp_bga{1} = 'bgares_0D_%i.bga';
+p.exp_bga{2} = 'bgares_1D_%i.bga';
+p.exp_bga{3} = 'bgares_2D_%i.bga';
 
 % parameters for panel Cross-talks
 
