@@ -21,5 +21,6 @@ str_proj = cat(2,'Project selected: "',proj_name{val},'" (',...
 
 setContPan(str_proj,'none',h_fig);
 
-updateFields(h_fig, 'TDP');
+% update TDP and plot
+pushbutton_TDPupdatePlot_Callback(obj, evd, h_fig);
 
