@@ -115,6 +115,13 @@ else % k-mean or manual
     end
     set(h.popupmenu_TDPstate, 'Value', k, 'String', ...
         cellstr(num2str((1:Jmax)')), 'tooltipstring', ttstr1{mat});
+    
+    nTrs = getClusterNb(Jmax,mat,clstDiag);
+    [j1,j2] = getStatesFromTransIndexes(1:nTrs,Jmax,mat,clstDiag);
+    if mat==1 % matrix
+        idk = find(j1==k);
+        k = idk(1);
+    end
 
     set(h.edit_TDPiniValX, 'String', num2str(trs_k(k,1)));
     set(h.edit_TDPradiusX, 'String', num2str(trs_k(k,3)));
