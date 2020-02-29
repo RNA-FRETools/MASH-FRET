@@ -73,14 +73,14 @@ boba = prm.kin_start{1}{curr_k,1}(4);
 strch = prm.kin_start{1}{curr_k,1}(1);
 
 % plot histogram
-x_data = hist_ref(:,1);
-y_data = hist_ref(:,end);
+x_data = hist_ref(hist_ref(:,end)>0,1);
+y_data = hist_ref(hist_ref(:,end)>0,end);
 plot(h_axes, x_data, y_data, markhist, 'linewidth', lwhist);
 grid(h_axes, 'on');
 
 if isequal(kin_res,def.kin_res)
-    xlim(h_axes,'auto');
-    ylim(h_axes,'auto');
+    xlim(h_axes,[x_data(1),x_data(end)]);
+    ylim(h_axes,[min(y_data),max(y_data)]);
     lim = get(h_axes, 'YLim');
     set(h_axes,'YLim',[min(y_data) lim(2)],'Visible','on','YScale',scl);
     title(h_axes, ttl);
@@ -171,8 +171,8 @@ end
 title(h_axes, ttl);
 xlabel(h_axes, xlbl);
 ylabel(h_axes, ylbl);
-xlim(h_axes,'auto');
-ylim(h_axes,'auto');
+xlim(h_axes,[x_data(1),x_data(end)]);
+ylim(h_axes,[min(y_data),max(y_data)]);
 lim = get(h_axes, 'YLim');
 
 set(h_axes, 'NextPlot', 'replacechildren', 'YLim', [min(y_data) lim(2)], ...
