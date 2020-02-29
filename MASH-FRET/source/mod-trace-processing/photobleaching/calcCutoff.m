@@ -1,17 +1,7 @@
 function p = calcCutoff(mol, p)
 
-% Last update: by MH, 17.5.2019
-% >> For now on, "summed intensities" and "all intensities" concern only
-%    intensities collected at emitter-specific excitations because zero-
-%    signals collected at unspecific illuminations are constantly 
-%    "photobleached" and make the method unsuable
-% >> "all intensities" uses intensities summed over all channels; this
-%    allows to detect true photobleaching and not 0 FRET
-%
-% update: by MH, 3.4.2019
-% >> manage missing intensities when loading ASCII traces with different 
-%    lengths: cut-off frame is automatically set to last number in trace
-%    and saved no matter if photobleaching correction is applied or not
+% Last update 17.5.2019 by MH: (1) For now on, "summed intensities" and "all intensities" concern only intensities collected at emitter-specific excitations because zero-signals collected at unspecific illuminations are constantly "photobleached" and make the method unsuable (2) "all intensities" uses intensities summed over all channels; this allows to detect true photobleaching and not 0 FRET
+% update 3.4.2019 by MH: manage missing intensities when loading ASCII traces with different lengths: cut-off frame is automatically set to last number in trace and saved no matter if photobleaching correction is applied or not
 
 proj = p.curr_proj;
 
