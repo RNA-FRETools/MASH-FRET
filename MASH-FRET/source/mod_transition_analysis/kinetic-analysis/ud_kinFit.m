@@ -58,6 +58,7 @@ boba = kin_start{1}(4);
 n_rep = kin_start{1}(5);
 n_spl = kin_start{1}(6);
 w = kin_start{1}(7);
+rearr = kin_start{1}(9);
 amp_prm = kin_start{2}(curr_exp,1:3);
 dec_prm = kin_start{2}(curr_exp,4:6);
 beta_prm = kin_start{2}(curr_exp,7:9);
@@ -98,6 +99,7 @@ end
 set(h.popupmenu_TDP_expNum, 'Value', curr_exp, 'String', str_e);
 
 % update fit method
+set(h.checkbox_tdp_rearrSeq, 'Value', rearr);
 set(h.radiobutton_TDPstretch, 'Value', stchExp);
 set(h.radiobutton_TDPmultExp, 'Value', ~stchExp);
 set(h.edit_TDP_nExp, 'String', num2str(nExp));

@@ -38,6 +38,24 @@ clstDiag = prm.clst_start{1}(9);
 clst = prm.clst_res{1}.clusters{J};
 wght = prm.kin_start{1}{curr_k,1}(7);
 excl = prm.kin_start{1}{curr_k,1}(8);
+rearr = prm.kin_start{1}{curr_k,1}(9);
+% re-arrange state sequences by cancelling transitions belonging to diagonal clusters
+if rearr
+    [mols,o,o] = unique(clst(:,4));
+    dat_new = [];
+    for m = mols'
+        dat_m = clst(clst(:,4)==m,:);
+        if isempty(dat_m)
+            continue
+        end
+        dat_m = adjustDt(dat_m);
+        if size(dat_m,1)==1
+            continue
+        end
+        dat_new = cat(1,dat_new,dat_m);
+    end
+    clst = dat_new;
+end
 [j1,j2] = getStatesFromTransIndexes(curr_k,J,mat,clstDiag);
 hist_ref = getDtHist(clst, [j1,j2], [], excl, wght);
 

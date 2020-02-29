@@ -14,7 +14,6 @@ prm.kin_res = curr.kin_res;
 J = prm.kin_start{2}(1);
 mat = prm.clst_start{1}(4);
 clstDiag = prm.clst_start{1}(9);
-ref_k = prm.clst_res{4}{curr_k};
 dat = prm.clst_res{1}.clusters{J};
 kin_k = prm.kin_start{1}(curr_k,:);
 stchExp = kin_k{1}(1);
@@ -63,6 +62,30 @@ prm.kin_start{1}{curr_k,1}(8) = excl;
 
 % collect state indexes for curent transitions
 [j1,j2] = getStatesFromTransIndexes(curr_k,J,mat,clstDiag);
+
+% re-arrange state sequences by cancelling transitions belonging to diagonal clusters
+rearr = prm.kin_start{1}{curr_k,1}(9);
+if rearr
+    [mols,o,o] = unique(dat(:,4));
+    dat_new = [];
+    for m = mols'
+        dat_m = dat(dat(:,4)==m,:);
+        if isempty(dat_m)
+            continue
+        end
+        dat_m = adjustDt(dat_m);
+        if size(dat_m,1)==1
+            continue
+        end
+        dat_new = cat(1,dat_new,dat_m);
+    end
+    dat = dat_new;
+end
+
+% get reference histogram
+wght = prm.kin_start{1}{curr_k,1}(7);
+ref_k = getDtHist(dat, [j1,j2], [], excl, wght);
+prm.clst_res{4}{curr_k} = ref_k;
 
 % histogram fitting
 setContPan('Fitting in progress ...', 'process', h_fig);

@@ -24,7 +24,9 @@ fact = 5;
 str0 = {'red','green','blue','yellow','cyan','magenta','olive','orange',...
     'wine','marine','kaki','turpuoise','purple','brown','pink','violet',...
     'grey','canary','pastel blue'};
+str1 = 'Rearrange sequences';
 ttstr0 = wrapStrToWidth('<b>Set plot color</b> of selected transition cluster',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr1 = wrapStrToWidth('<b>Re-build state sequences</b> by ignoring "false" state transitions (<i>i.e.</i>, that belong to diagonal clusters); the dwell time before transition is extended up to the next "true" state transition in the sequence.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 
 % parents
 h_fig = h.figure_MASH;
@@ -34,7 +36,7 @@ h_pan = h.uipanel_TA_transitions;
 pospan = get(h_pan,'position');
 wedit0 = hedit0;
 wlst0 = pospan(3)-2*p.mg;
-hlst0 = pospan(4)-p.mgpan-p.mg-p.mg/2-hpop0;
+hlst0 = pospan(4)-p.mgpan-p.mg/2-hpop0-p.mg/2-hedit0-p.mg;
 wpop0 = pospan(3)-2*p.mg-p.mg/fact-wedit0;
 
 % GUI
@@ -46,7 +48,7 @@ h.listbox_TDPtrans = uicontrol('style','listbox','parent',h_pan,'units',...
     [x,y,wlst0,hlst0],'string',{''},'callback',...
     {@listbox_TDPtrans_Callback,h_fig});
 
-y = p.mg;
+y = y-p.mg/2-hpop0;
 
 h.popupmenu_TDPcolour = uicontrol('style','popupmenu','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
@@ -59,6 +61,14 @@ y = y+(hpop0-hedit0)/2;
 h.edit_TDPcolour = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,hedit0],...
     'enable','inactive');
+
+y = y-p.mg/2-hedit0;
+x = p.mg;
+
+h.checkbox_tdp_rearrSeq = uicontrol('style','checkbox','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wlst0,hedit0],'string',str1,'tooltipstring',ttstr1,'callback',...
+    {@checkbox_tdp_rearrSeq_Callback,h_fig});
 
 % store default color list
 h.color_list = str0;

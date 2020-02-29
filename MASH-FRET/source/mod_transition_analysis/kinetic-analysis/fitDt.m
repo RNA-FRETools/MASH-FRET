@@ -34,13 +34,13 @@ for n = 1:N
     % exclude molecules without dwell times concerning j1->j2 transition
     if isempty(dt_m)
         disp(cat(2,'molecule ',num2str(mols(n)),' excluded: no dwell time'));
-        continue;
+        continue
     end
     
     if excl && isempty(dt_m(2:end-1,:))
         disp(cat(2,'molecule ',num2str(mols(n)),' excluded: no dwell time',...
             ' left after exclusion.'));
-        continue;
+        continue
         
     elseif excl
         dt_m = dt_m(2:end-1,:);

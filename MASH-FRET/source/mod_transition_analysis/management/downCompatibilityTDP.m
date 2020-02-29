@@ -190,6 +190,19 @@ if isfield(prm,'clst_start') && size(prm.clst_start,2)>=1 && ...
     end
 end
 
+% 27.02.2020: add "re-arrange" option
+if isfield(prm,'kin_def') && size(prm.kin_def,2)>=1 && ...
+        size(prm.kin_def{1},2)<9
+    prm.kin_def{1} = [prm.kin_def{1},false];
+    if isfield(prm,'kin_start') && size(prm.kin_start,2)>=1
+        for k = 1:size(prm.kin_start{1},1)
+            if size(prm.kin_start{1}{k,1},2)<9
+                prm.kin_start{1}{k,1} = [prm.kin_start{1}{k,1},false];
+            end
+        end
+    end
+end
+
 p_proj.prm{tag,tpe} = prm;
 
 

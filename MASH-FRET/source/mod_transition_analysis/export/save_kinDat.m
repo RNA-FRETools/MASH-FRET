@@ -27,7 +27,32 @@ if kinDtHist
         end
         
         % collect data
-        dt_hist = prm.clst_res{4}{j};
+        mat = prm.clst_start{1}(4);
+        clstDiag = prm.clst_start{1}(9);
+        J = prm.kin_start{2}(1);
+        clst = prm.clst_res{1}.clusters{J};
+        wght = prm.kin_start{1}{j,1}(7);
+        excl = prm.kin_start{1}{j,1}(8);
+        rearr = prm.kin_start{1}{j,1}(9);
+        % re-arrange state sequences by cancelling transitions belonging to diagonal clusters
+        if rearr
+            [mols,o,o] = unique(clst(:,4));
+            dat_new = [];
+            for m = mols'
+                dat_m = clst(clst(:,4)==m,:);
+                if isempty(dat_m)
+                    continue
+                end
+                dat_m = adjustDt(dat_m);
+                if size(dat_m,1)==1
+                    continue
+                end
+                dat_new = cat(1,dat_new,dat_m);
+            end
+            clst = dat_new;
+        end
+        [j1,j2] = getStatesFromTransIndexes(j,J,mat,clstDiag);
+        dt_hist = getDtHist(clst, [j1,j2], [], excl, wght);
         
         % write data to file
         f = fopen([pname fname_hdt], 'Wt');

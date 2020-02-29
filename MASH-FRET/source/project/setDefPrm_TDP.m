@@ -148,8 +148,8 @@ for tpe = 1:nTpe
 
         %% Default fitting parameters
         % stretch, exp nb, curr exp, apply BOBA, repl nb, smple nb, 
-        % weigthing, excl
-        kin_def{1} = [0 nExp 1 1 20 100 0 0];
+        % weigthing, excl, re-arrange
+        kin_def{1} = [0 nExp 1 1 20 100 0 0 0];
         
         % low A, start A, up A, low tau, start tau, up tau, low beta, 
         % start beta, up beta]
