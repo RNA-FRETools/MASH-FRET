@@ -24,7 +24,7 @@ for m = 1:nMol
     clst_m = clust_dat(clust_dat(:,4)==mols(m),:);
     if excl 
         % exclude first dwell time of trajectory
-        clst_m = clst_m(2:end,:);
+        clst_m = clst_m(2:end-1,:);
     end
     
     dt_j1j2{m} = clst_m((clst_m(:,7)==j1 & clst_m(:,8)==j2),1:end-2);
