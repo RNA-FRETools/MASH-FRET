@@ -36,7 +36,7 @@ incl =  p.proj{proj}.bool_intensities(:,slct);
 
 if isTDP
     trace_x = dat3.val{datax,jx};
-    trace_y = [dat3.val{datay,jy}(2:end,:);dat3.val{datay,jy}(end,:)];
+    trace_y = [dat3.val{datax,jx}(2:end,:);dat3.val{datax,jx}(end,:)];
     trace = [trace_x,trace_y];
 else
     if jx==0 % original time traces
