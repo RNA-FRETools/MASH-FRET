@@ -1,11 +1,14 @@
-function saveTDP(h_fig)
+function saveTDP(h_fig,varargin)
+% saveTDP(h_fig)
+% saveTDP(h_fig,file_out)
+%
 % Export files from Transition analysis
+%
+% h_fig: handle to main figure
+% file_out: {1-by-2} destination folder and file name
 
-% Last update: the 25th of February 2019 by Mélodie Hadzic
-% --> adapt to the new clustering result structure
-% update: The 23rd of February 2019 by Mélodie Hadzic
-% --> remove option to export readjusted data (no use)
-% --> update action display
+% Last update 25.2.2019 by MH: adapt to the new clustering result structure
+% update 23.2.2019 by MH: (1) remove option to export readjusted data (no use) (2) update action display
 
 setContPan('Export transition analysis data ...', 'process', h_fig);
 
@@ -40,19 +43,24 @@ if ~(TDPascii || TDPimg || TDPclust || kinDtHist || kinFit || kinBoba)
 end
 
 % build file name
-[o,fname_proj,o] = fileparts(p.proj{proj}.proj_file);
-
-defName = [setCorrectPath('tdp_analysis', h_fig) fname_proj];
-[fname, pname] = uiputfile({ ...
-    '*.tdp;*.txt;*.hdt;*.fit','TDP analysis files'; ...
-    '*.txt;*.dt;*.hd','Trace processing files'; ...
-    '*.pdf;*.png;*.jpeg','Figure files'; ...
-    '*.*','All Files (*.*)'}, 'Export data', defName);
-
+if ~isempty(varargin)
+    pname = varargin{1}{1};
+    fname = varargin{1}{2};
+    if ~strcmp(pname(end),filesep)
+        pname = [pname,filesep];
+    end
+else
+    [o,fname_proj,o] = fileparts(p.proj{proj}.proj_file);
+    defName = [setCorrectPath('tdp_analysis', h_fig) fname_proj];
+    [fname, pname] = uiputfile({ ...
+        '*.tdp;*.txt;*.hdt;*.fit','TDP analysis files'; ...
+        '*.txt;*.dt;*.hd','Trace processing files'; ...
+        '*.pdf;*.png;*.jpeg','Figure files'; ...
+        '*.*','All Files (*.*)'}, 'Export data', defName);
+end
 if ~sum(fname)
     return;
 end
-
 fname = getCorrName(fname, [], h_fig);
 [o,name,o] = fileparts(fname);
 

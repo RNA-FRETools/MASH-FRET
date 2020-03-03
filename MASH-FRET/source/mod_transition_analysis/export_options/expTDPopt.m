@@ -48,7 +48,7 @@ yFig = (pos_0(4)-hFig)/2;
 bgClr = get(h_fig, 'Color');
 
 q.figure_expTDPopt = figure('Name','Export options', 'MenuBar','none', ...
-    'NumberTitle','off', 'Visible','off','WindowStyle','modal', ...
+    'NumberTitle','off', 'Visible','off', ...
     'CloseRequestFcn',{@figure_expTDPopt_CloseRequestFcn, h_fig}, ...
     'Units','pixels', 'Position',[xFig yFig wFig hFig], 'Color', bgClr);
 
@@ -72,9 +72,9 @@ q.pushbutton_cancel = uicontrol('Style','pushbutton', 'Units','pixels', ...
 
 
 h = guidata(h_fig);
-h.optExpTdp = q;
+h.expTDPopt = q;
 guidata(h_fig,h);
-q.pushbutton_help = setInfoIcons(h.optExpTdp.pushbutton_cancel,...
+q.pushbutton_help = setInfoIcons(h.expTDPopt.pushbutton_cancel,...
     h_fig,h.param.movPr.infos_icon_file);
 
 
@@ -165,157 +165,4 @@ guidata(h_fig, h);
 ud_expTDPopt(h_fig);
 
 set(q.figure_expTDPopt, 'Visible', 'on');
-
-
-function figure_expTDPopt_CloseRequestFcn(obj, evd, h_fig)
-h = guidata(h_fig);
-if isfield(h, 'expTDPopt')
-    q = guidata(h.expTDPopt.figure_expTDPopt);
-    proj = h.param.TDP.curr_proj;
-    h.param.TDP.proj{proj}.exp = q;
-    h = rmfield(h, 'expTDPopt');
-    guidata(h_fig, h);
-end
-delete(obj);
-
-
-function pushbutton_cancel_Callback(obj, evd, h_fig)
-h = guidata(h_fig);
-close(h.expTDPopt.figure_expTDPopt);
-
-
-function pushbutton_next_Callback(obj, evd, h_fig)
-h = guidata(h_fig);
-h_fig_opt = h.expTDPopt.figure_expTDPopt;
-proj = h.param.TDP.curr_proj;
-q = guidata(h_fig_opt);
-h.param.TDP.proj{proj}.exp = q;
-guidata(h_fig, h);
-
-close(h_fig_opt);
-
-saveTDP(h_fig);
-
-
-function checkbox_kinBOBA_Callback(obj, evd, h_fig)
-h = guidata(h_fig);
-prm = guidata(h.expTDPopt.figure_expTDPopt);
-prm{3}(3) = get(obj, 'Value');
-guidata(h.expTDPopt.figure_expTDPopt,prm);
-ud_expTDPopt(h_fig);
-
-
-function checkbox_kinCurves_Callback(obj, evd, h_fig)
-h = guidata(h_fig);
-prm = guidata(h.expTDPopt.figure_expTDPopt);
-prm{3}(2) = get(obj, 'Value');
-guidata(h.expTDPopt.figure_expTDPopt,prm);
-ud_expTDPopt(h_fig);
-
-function checkbox_kinDthist_Callback(obj, evd, h_fig)
-h = guidata(h_fig);
-prm = guidata(h.expTDPopt.figure_expTDPopt);
-prm{3}(1) = get(obj, 'Value');
-guidata(h.expTDPopt.figure_expTDPopt,prm);
-ud_expTDPopt(h_fig);
-
-
-function checkbox_TDPclust_Callback(obj, evd, h_fig)
-h = guidata(h_fig);
-prm = guidata(h.expTDPopt.figure_expTDPopt);
-prm{2}(5) = get(obj, 'Value');
-guidata(h.expTDPopt.figure_expTDPopt,prm);
-ud_expTDPopt(h_fig);
-
-
-function popupmenu_TDPimg_Callback(obj, evd, h_fig)
-h = guidata(h_fig);
-prm = guidata(h.expTDPopt.figure_expTDPopt);
-prm{2}(4) = get(obj, 'Value');
-guidata(h.expTDPopt.figure_expTDPopt,prm);
-ud_expTDPopt(h_fig);
-
-
-function checkbox_TDPimg_Callback(obj, evd, h_fig)
-h = guidata(h_fig);
-prm = guidata(h.expTDPopt.figure_expTDPopt);
-prm{2}(2) = get(obj, 'Value');
-guidata(h.expTDPopt.figure_expTDPopt,prm);
-ud_expTDPopt(h_fig);
-
-
-function popupmenu_TDPascii_Callback(obj, evd, h_fig)
-h = guidata(h_fig);
-prm = guidata(h.expTDPopt.figure_expTDPopt);
-prm{2}(3) = get(obj, 'Value');
-guidata(h.expTDPopt.figure_expTDPopt,prm);
-ud_expTDPopt(h_fig);
-
-
-function checkbox_TDPascii_Callback(obj, evd, h_fig)
-h = guidata(h_fig);
-prm = guidata(h.expTDPopt.figure_expTDPopt);
-prm{2}(1) = get(obj, 'Value');
-guidata(h.expTDPopt.figure_expTDPopt,prm);
-ud_expTDPopt(h_fig);
-
-
-function def = getExpTDPprm(varargin)
-
-def = cell(1,3);
-
-%% TDP
-
-% export TDP ASCII, export TDP image, ASCII type, image type, clusters
-def{2} = [1 1 4 3 1];
-
-
-%% Kinetic analysis
-
-% data type, dwell-time histograms, fitting curves + parameters, BOBA FRET
-% results.
-def{3} = [1 1 1];
-
-
-function ud_expTDPopt(h_fig)
-h = guidata(h_fig);
-q = h.expTDPopt;
-p_exp = guidata(q.figure_expTDPopt);
-
-TDPascii = p_exp{2}(1);
-TDPimg = p_exp{2}(2);
-TDPascii_fmt = p_exp{2}(3);
-TDPimg_fmt = p_exp{2}(4);
-TDPclust = p_exp{2}(5);
-
-kinDtHist = p_exp{3}(1);
-kinFit = p_exp{3}(2);
-kinBoba = p_exp{3}(3);
-
-set([q.checkbox_TDPascii q.checkbox_TDPimg ...
-    q.checkbox_kinDthist q.checkbox_kinCurves q.checkbox_kinBOBA ...
-    q.pushbutton_cancel q.pushbutton_next], 'Enable', 'on');
-
-set(q.checkbox_TDPascii, 'Value', TDPascii);
-set(q.checkbox_TDPimg, 'Value', TDPimg);
-set(q.checkbox_TDPclust, 'Value', TDPclust);
-set(q.checkbox_kinDthist, 'Value', kinDtHist);
-set(q.checkbox_kinCurves, 'Value', kinFit);
-set(q.checkbox_kinBOBA, 'Value', kinBoba);
-
-if TDPascii
-    set(q.popupmenu_TDPascii, 'Enable','on', 'Value',TDPascii_fmt);
-else
-    set(q.popupmenu_TDPascii, 'Enable','off');
-end
-
-if TDPimg
-    set(q.popupmenu_TDPimg, 'Enable','on', 'Value',TDPimg_fmt);
-else
-    set(q.popupmenu_TDPimg, 'Enable','off');
-end
-
-
-
-
 
