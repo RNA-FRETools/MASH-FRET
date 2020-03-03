@@ -30,5 +30,17 @@ else
     % get fitting results, reformat
     res.cf = coeffvalues(cf);
     res.gof = gof;
+    
+    % re-establish order of decays in starting guess
+    if ~strch
+        pos_dec = 2:2:size(res.cf,2);
+        pos_amp = 1:2:(size(res.cf,2)-1);
+        [res.cf(pos_dec),id] = sort(res.cf(pos_dec),'ascend');
+        res.cf(pos_amp) = res.cf(2*id-1);
+        
+        [~,order] = sort(p.start(pos_dec),'ascend');
+        res.cf(2*order) = res.cf(pos_dec);
+        res.cf(2*order-1) = res.cf(pos_amp);
+    end
 end
 
