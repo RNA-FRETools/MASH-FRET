@@ -118,7 +118,7 @@ for n = 1:N
     discr_seq{n} = discr_seq{n}(1:L,:);
 
     if impPrm && isfield(molPrm, 'stateVal')
-        fretVal = molPrm.stateVal(n,:);
+        fretVal = random('norm',molPrm.stateVal(n,:),molPrm.FRETw(n,:));
     else
         fretVal = random('norm',stateVal,FRETw);
     end

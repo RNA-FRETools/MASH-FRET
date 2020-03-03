@@ -5,6 +5,9 @@ function ud_S_moleculesPan(h_fig)
 %
 % h_fig: handle to main figure
 
+% defaults
+Jmax = 5; % maximum number of states allowed by interface
+
 % collect interface parameters
 h = guidata(h_fig);
 p = h.param.sim;
@@ -36,25 +39,9 @@ else
     
     [o,fname,fext] = fileparts(p.prmFile);
     set(h.edit_simPrmFile, 'String', [fname,fext]);
-    
-    if isfield(p.molPrm, 'stateVal')
-        set([h.edit_nbStates h.popupmenu_states h.edit_stateVal ...
-            h.edit_simFRETw], 'Enable', 'off');
-        set([h.edit_stateVal h.edit_simFRETw], 'String', '');
-    end
-    if isfield(p.molPrm, 'kx')
-        set([h_ed(:)' h.edit_nbStates], 'Enable', 'off');
-        set(h_ed,'string','');
-    end
-    if isfield(p.molPrm, 'gamma')
-        set([h.edit_gamma h.edit_gammaW], 'Enable', 'off', 'String', '');
-    end
-    if isfield(p.molPrm, 'totInt')
-        set([h.edit_totInt h.edit_dstrbNoise],'Enable','off','String','');
-    end
-    if isfield(p.molPrm, 'coord') && ~isempty(p.molPrm.coord)
-        set(h.pushbutton_simImpCoord, 'Enable', 'off');
-    end
+end
+if p.impPrm && isfield(p.molPrm, 'coord') && ~isempty(p.molPrm.coord)
+    set(h.pushbutton_simImpCoord, 'Enable', 'off');
 end
 
 % set coordinates import
@@ -71,16 +58,32 @@ end
 % set state configuration
 set(h.edit_nbStates, 'String', num2str(p.nbStates));
 state = get(h.popupmenu_states, 'Value');
+set(h.popupmenu_states, 'Value', state, 'String', ...
+    cellstr(num2str((1:p.nbStates)'))');
 if state > p.nbStates
     state = p.nbStates;
 end
-set(h.popupmenu_states, 'Value', state, 'String', ...
-    cellstr(num2str((1:p.nbStates)'))');
-set(h.edit_stateVal, 'String', num2str(p.stateVal(state)));
-set(h.edit_simFRETw, 'String', num2str(p.FRETw(state)));
+if p.impPrm && isfield(p.molPrm, 'stateVal')
+    set([h.edit_nbStates h.popupmenu_states h.edit_stateVal ...
+        h.edit_simFRETw], 'Enable', 'off');
+    set(h.edit_stateVal, 'String', num2str(p.molPrm.stateVal(1,state)));
+    set(h.edit_simFRETw, 'String', num2str(p.molPrm.FRETw(1,state)));
+else
+    set(h.edit_stateVal, 'String', num2str(p.stateVal(state)));
+    set(h.edit_simFRETw, 'String', num2str(p.FRETw(state)));
+end
 
 % set transition rates
-if ~(p.impPrm && isfield(p.molPrm,'kx'))
+if p.impPrm && isfield(p.molPrm, 'kx')
+    set([h_ed(:)' h.edit_nbStates], 'Enable', 'off');
+    J = size(p.molPrm.kx,2);
+    kx = p.molPrm.kx(:,:,1);
+    if J<Jmax
+        kx = zeros(Jmax);
+        kx(1:J,1:J) = p.molPrm.kx(:,:,1);
+    end
+    setTransMat(kx(1:Jmax,1:Jmax,1), h_fig);
+else
     setTransMat(p.kx, h_fig);
     for s = 1:size(h_ed,2)
         if s>p.nbStates
@@ -95,20 +98,34 @@ end
 
 % set total intensity
 if strcmp(p.intUnits, 'electron')
-    [offset,K,eta] = getCamParam(p.noiseType,p.camNoise);
     set(h.checkbox_photon, 'Value', 0);
-    p.totInt = phtn2ele(p.totInt,K,eta);
-    p.totInt_width = phtn2ele(p.totInt_width,K,eta);
+    [offset,K,eta] = getCamParam(p.noiseType,p.camNoise);
 else
     set(h.checkbox_photon, 'Value', 1);
 end
-if ~(p.impPrm && isfield(p.molPrm,'totInt'))
+if p.impPrm && isfield(p.molPrm, 'totInt')
+    if strcmp(p.intUnits, 'electron')
+        p.molPrm.totInt = phtn2ele(p.molPrm.totInt(1,1),K,eta);
+        p.molPrm.totInt_width = phtn2ele(p.molPrm.totInt_width(1,1),K,eta);
+    end
+    set([h.edit_totInt h.edit_dstrbNoise],'Enable','off');
+    set(h.edit_totInt, 'String', num2str(p.molPrm.totInt(1,1)));
+    set(h.edit_dstrbNoise, 'String', num2str(p.molPrm.totInt_width(1,1)));
+else
+    if strcmp(p.intUnits, 'electron')
+        p.totInt = phtn2ele(p.totInt,K,eta);
+        p.totInt_width = phtn2ele(p.totInt_width,K,eta);
+    end
     set(h.edit_totInt, 'String', num2str(p.totInt));
     set(h.edit_dstrbNoise, 'String', num2str(p.totInt_width));
 end
 
 % set gamma factor
-if ~(p.impPrm && isfield(p.molPrm,'gamma'))
+if p.impPrm && isfield(p.molPrm, 'gamma')
+    set([h.edit_gamma h.edit_gammaW], 'Enable', 'off');
+    set(h.edit_gamma, 'String', num2str(p.molPrm.gamma(1,1)));
+    set(h.edit_gammaW, 'String', num2str(p.molPrm.gammaW(1,1)));
+else
     set(h.edit_gamma, 'String', num2str(p.gamma));
     set(h.edit_gammaW, 'String', num2str(p.gammaW));
 end
