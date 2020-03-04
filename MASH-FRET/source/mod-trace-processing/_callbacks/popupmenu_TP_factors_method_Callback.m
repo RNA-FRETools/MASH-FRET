@@ -15,7 +15,10 @@ fret = p.proj{proj}.fix{3}(8);
 mol = p.curr_mol(proj);
 
 method = get(obj, 'Value');
-isS = sum(S(:,1)==FRET(fret,1) & S(:,2)==FRET(fret,2));
+isS = size(S,1)>0;
+if isS && sum(S(:,1)==FRET(fret,1) & S(:,2)==FRET(fret,2))
+    isS = true;
+end
 
 if method==3 && ~isS % linear regression
     setContPan(cat(2,'ES linear regression can not be used: no ',...
