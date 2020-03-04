@@ -51,6 +51,7 @@ for dat = 1:nDat
     popupmenu_trBgCorr_data_Callback(h.popupmenu_trBgCorr_data,[],h_fig);
     set_TP_background(p.bgMeth,p.bgPrm(p.bgMeth,:),p.bgApply,h_fig);
 end
+pushbutton_applyAll_ttBg_Callback(h.pushbutton_applyAll_ttBg,[],h_fig);
 
 % set default cross-talks parameters
 set_TP_crossTalks(p.bt,p.de,p.projOpt{p.nL,p.nChan}.chanExc,p.wl(1:p.nL),...
@@ -58,9 +59,13 @@ set_TP_crossTalks(p.bt,p.de,p.projOpt{p.nL,p.nChan}.chanExc,p.wl(1:p.nL),...
 
 % set default denoising parameters
 set_TP_denoising(p.denMeth,p.denPrm,p.denApply,h_fig);
+pushbutton_applyAll_den_Callback(h.pushbutton_applyAll_den,[],h_fig);
 
 % set default photobleaching parameters
+pushbutton_applyAll_debl_Callback(h.pushbutton_applyAll_debl,[],h_fig);
 
 % set default factor corrections parameters
+pushbutton_applyAll_corr_Callback(h.pushbutton_applyAll_corr,[],h_fig);
 
 % set default find states parameters
+pushbutton_applyAll_DTA_Callback(h.pushbutton_applyAll_DTA,[],h_fig);

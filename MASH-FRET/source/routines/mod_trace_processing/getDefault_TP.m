@@ -216,9 +216,35 @@ p.denPrm = [3,0,0
     3 2 1];
 
 % parameters for panel Photobleaching
+p.pbMeth = 1;
+p.pbApply = false;
+p.pbDat = 1;
+p.pbprm{1} = 7;
+p.pbPrm{2} = [0 1 6 % FRET
+    0 1 6 % S
+    0 1 6 % I
+    0 1 6 % I
+    0 1 6 % I
+    0 1 6 % I
+    0 1 6 % all I
+    0 1 6]; % summed I
 
 % parameters for panel Factor corrections
+p.factMeth = 1;
+p.fact = ones(size(p.projOpt{nL_def,nChan_def}.FRET,1),2);
+p.factPrm{1} = repmat([0,2,1,10],nL_def,1);
+p.factPrm{2} = [-0.2,50,1.2
+    1,50,5];
 
-% parameters for panel Find states
+% set default find states parameters
+p.fsMeth = 5; % threshold, vbFRET, one state, CPA, STaSI
+p.fsDat = 1; % bottom, top , all
+p.fsPrm = [2  0  0 1 0 0 0 0
+    1  2  1 1 0 0 0 0
+    0  0  0 0 0 0 0 0
+    50 90 2 1 0 0 0 0
+    2  0  0 1 0 0 0 0]; % method settings
+p.fsThresh = [-Inf,0,0.6
+    0.7,1,Inf];
 
 % parameters for visualization area

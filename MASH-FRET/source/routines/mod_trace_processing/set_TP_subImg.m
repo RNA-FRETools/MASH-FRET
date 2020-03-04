@@ -9,6 +9,13 @@ function set_TP_subImg(contrast,brightness,h_fig)
 % collect interface parameters
 h = guidata(h_fig);
 
+if ~isfield(h,'axes_subImg')
+    return
+end
+if ~ishandle(h.axes_subImg(1))
+    return
+end
+
 exc_str = get(h.popupmenu_subImg_exc,'string');
 nExc = numel(exc_str);
 exc = [];

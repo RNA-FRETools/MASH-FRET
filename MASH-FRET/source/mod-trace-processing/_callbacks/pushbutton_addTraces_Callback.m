@@ -1,4 +1,9 @@
 function pushbutton_addTraces_Callback(obj, evd, h_fig)
+% pushbutton_addTraces_Callback([],[],h_fig)
+% pushbutton_addTraces_Callback(files,[],h_fig)
+%
+% h_fig: handle to main figure
+% files: {1-by-2} source directory and files to import
 
 % Last update, 13.1.2020 by MH: move down-compatibility management to separate function downCompatibilityTP.m
 % update, 3.4.2019 by MH: (1) adapt gamma factor import for more than one FRET calculation (2) correct MH's past modifications: gamma factors must be saved in prm and in curr parameters to be taken into account

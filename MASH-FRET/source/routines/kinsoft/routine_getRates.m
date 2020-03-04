@@ -1,0 +1,1 @@
+function routine_getRates(h_fig)

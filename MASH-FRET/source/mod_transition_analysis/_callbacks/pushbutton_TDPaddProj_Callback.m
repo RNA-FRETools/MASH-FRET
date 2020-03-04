@@ -1,15 +1,27 @@
 function pushbutton_TDPaddProj_Callback(obj, evd, h_fig)
+% pushbutton_TDPaddProj_Callback([],[],h_fig)
+% pushbutton_TDPaddProj_Callback(files,[],h_fig)
+%
+% h_fig: handle to main figure
+% files: {1-by-2} source directory and files to import
 
 h = guidata(h_fig);
-defPth = h.folderRoot;
-[fname,pname,o] = uigetfile({'*.mash', 'MASH project(*.mash)'; ...
-    '*path.dat', 'HaMMy path files (*path.dat)'; '*.*','All files(*.*)'}, ...
-    'Select data files', defPth, 'MultiSelect', 'on');
 
-if ~(~isempty(fname) && ~isempty(pname) && sum(pname))
+if iscell(obj)
+    pname = obj{1};
+    fname = obj{2};
+    if ~strcmp(pname,filesep)
+        pname = [pname,filesep];
+    end
+else
+    defPth = h.folderRoot;
+    [fname,pname,o] = uigetfile({'*.mash', 'MASH project(*.mash)'; ...
+        '*path.dat', 'HaMMy path files (*path.dat)'; '*.*',...
+        'All files(*.*)'},'Select data files',defPth,'MultiSelect','on');
+end
+if ~(~isempty(fname) && sum(pname))
     return
 end
-
 if ~iscell(fname)
     fname = {fname};
 end
