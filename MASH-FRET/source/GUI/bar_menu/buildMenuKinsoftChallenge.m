@@ -11,9 +11,9 @@ function h = buildMenuKinsoftChallenge(h)
 
 % default
 lbl0 = 'All steps';
-lbl1 = 'Step 1: Find states';
-lbl2 = 'Step 2: Determine FRET states';
-lbl3 = 'Step 3: Get transition rates';
+lbl1 = 'Step 1: Determine number of states';
+lbl2 = 'Step 2: Determine FRET states & deviations';
+lbl3 = 'Step 3: Determine transition rates';
 lbl4 = 'Step 4: Back-simulation';
 
 % parents

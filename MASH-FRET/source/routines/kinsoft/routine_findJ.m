@@ -112,15 +112,19 @@ res = prm.clst_res{1};
 Js = Jopt;
 BICs = res.BIC(Jopt);
 for J = (Jopt+1):Jmax
-    if abs((res.BIC(J)-res.BIC(Jopt))/res.BIC(Jopt))<=BIC_tol
+    if abs((res.BIC(J)-res.BIC(J-1))/res.BIC(J-1))<=BIC_tol
         Js = cat(2,Js,J);
         BICs = cat(2,BICs,res.BIC(J));
+    else
+        break;
     end
 end
 for J = (Jopt-1):-1:1
-    if abs((res.BIC(Jopt)-res.BIC(J))/res.BIC(J))<=BIC_tol
+    if abs((res.BIC(J+1)-res.BIC(J))/res.BIC(J))<=BIC_tol
         Js = cat(2,Js,J);
         BICs = cat(2,BICs,res.BIC(J));
+    else
+        break;
     end
 end
 [BICs,id] = sort(BICs);
@@ -152,7 +156,7 @@ pushbutton_TDPremProj_Callback(h.pushbutton_TDPremProj,[],h_fig);
 
 str_J = repmat('%i, ',[1,numel(Js)]);
 str_J = str_J(1:end-2);
-fprintf(cat(2,'>> results: J = ',str_J),Js);
+fprintf(cat(2,'>> results: J = ',str_J,'\n'),Js);
 
 Js = [Js',BICs'];
 

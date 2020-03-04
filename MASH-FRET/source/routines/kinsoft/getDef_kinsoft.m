@@ -8,6 +8,7 @@ defprm = {'Movie name' '' ''
        '[Mg2+]' [] 'mM'
        '[K+]' [] 'mM'};
 deflbl = {'don','acc1'};
+nMax = 3; % maximum number of exponential to fit
 
 % general
 p.dumpdir = cat(2,pname,'MASH-FRET-analysis');
@@ -69,7 +70,7 @@ p.inSec = false;
 p.fixX0 = false;
 p.x0 = 1;
 
-% set default background parameters
+% default background parameters
 p.bgMeth = 1;
 p.bgPrm = [... % param1, param2, bg intensity, x-dark, y-dark, auto dark
     0   20 0 0  0  0 % Manual
@@ -81,19 +82,19 @@ p.bgPrm = [... % param1, param2, bg intensity, x-dark, y-dark, auto dark
 	2   20 0   0  0  0];% Median
 p.bgApply = true;
 
-% set default cross-talks parameters
+% default cross-talks parameters
 p.bt = [0,0
     0,0];
 p.de = [0;0];
 
-% set default denoising parameters
+% default denoising parameters
 p.denMeth = 1;
 p.denApply = false;
 p.denPrm = [3,0,0
     5 1 2
     3 2 1];
 
-% set default photobleaching parameters
+% default photobleaching parameters
 p.pbMeth = 1;
 p.pbApply = false;
 p.pbDat = 1;
@@ -107,14 +108,14 @@ p.pbPrm{2} = [0 1 6 % FRET
     0 1 6 % all I
     0 1 6]; % summed I
 
-% set default factor corrections parameters
+% default factor corrections parameters
 p.factMeth = 1;
 p.fact = 1; % gamma factor
 p.factPrm{1} = repmat([0,2,1,10],p.nL,1);
 p.factPrm{2} = [-0.2,50,1.2
     1,50,5];
 
-% set default find states parameters
+% default find states parameters
 nDat = p.nChan*p.nL+size(p.projOpt.FRET,1)+size(p.projOpt.S,1);
 p.fsMeth = 5; % threshold, vbFRET, one state, CPA, STaSI
 p.fsDat = 1; % bottom, top , all
@@ -128,16 +129,25 @@ p.fsThresh = [-Inf,0,0.6
     0.7,1,Inf];
 p.fsThresh = repmat(p.fsThresh,[1,1,nDat]);
 
-% set default TDP settings
+% default TDP settings
 p.tdpPrm = [0.05,0.025,1.05,1,0,0,1,1];
 
-% set default state configuration
+% default state configuration
 Jmax = 10;
 p.clstMeth = 2; % clustering method
-p.clstMethPrm = [Jmax,2,false,100];
+p.clstMethPrm = [Jmax,50,false,100];
 p.clstConfig = [1,1,1,1]; % constraint, diagonal clusters, likelihood, shape
 p.clstStart = [linspace(0,1,Jmax)',repmat(0.1,[Jmax,1])];
 
-% set default export options
+% default export options
 p.tdp_expOpt = [false,4,false,3,false,false,false,false];
+
+% default exponential fit settings
+p.expPrm = [0,1,0,0,100]; % stretched, decay nb., boba, weight, sample nb.
+p.fitPrm = [0,0.8,Inf
+    0 0.5 Inf
+    0 0.5 2]; % low, start, up
+p.fitPrm = repmat(p.fitPrm,[1,1,nMax]);
+p.fitPrm(2,2,2) = 5;
+p.fitPrm(2,2,3) = 10;
 

@@ -1,4 +1,11 @@
-function res = mmexpfit_mod(x_dat, y_dat, p, nExp, strch)
+function res = mmexpfit_mod(x_dat, y_dat, p, nExp, strch, varargin)
+% res = mmexpfit_mod(x_dat, y_dat, p, nExp, strch)
+% res = mmexpfit_mod(x_dat, y_dat, p, nExp, strch, mute)
+
+mute = false;
+if ~isempty(varargin)
+    mute = varargin{1};
+end
 
 %% Define fit type
 res = [];
@@ -16,8 +23,13 @@ ex_([[]]) = 1;
 ex_ = ex_ | ~(excl_x(1)<x_dat & x_dat<excl_x(2));
 ok_ = ~(isnan(x_dat) | isnan(y_dat));
 
-fo_ = fitoptions('method','nonlinearleastsquares','lower',p.lower,...
-    'upper',p.upper,'startpoint',p.start,'robust','on');
+if mute
+    fo_ = fitoptions('method','nonlinearleastsquares','lower',p.lower,...
+        'upper',p.upper,'startpoint',p.start,'robust','on','display','off');
+else
+    fo_ = fitoptions('method','nonlinearleastsquares','lower',p.lower,...
+        'upper',p.upper,'startpoint',p.start,'robust','on');
+end
 
 
 %% Fit model to data

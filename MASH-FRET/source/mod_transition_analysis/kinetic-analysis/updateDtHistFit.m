@@ -1,4 +1,4 @@
-function p = updateDtHistFit(p,tag,tpe,curr_k,h_fig)
+function p = updateDtHistFit(p,tag,tpe,curr_k,excl,h_fig)
 
 % collect interface parameters
 proj = p.curr_proj;
@@ -44,20 +44,6 @@ if boba
     p_boba = kin_k{1}([5 6 7]);
 end
 
-% ask user about dwell time exclusion
-excl = questdlg({sprintf(cat(2,'The first and last dwell times of state ',...
-    'trajectories are truncated due to the limited observation time ',...
-    'window and often lead to biased results.\n\nDo you want to exclude ',...
-    'the trucated dwell-times from the fit?'))},...
-    'Exclude flanking dwell-times?','Exclude','Include','Cancel',...
-    'Exclude');
-if strcmp(excl, 'Exclude')
-    excl = 1;
-elseif strcmp(excl, 'Include')
-    excl = 0;
-else
-    return
-end
 prm.kin_start{1}{curr_k,1}(8) = excl;
 
 % collect state indexes for curent transitions

@@ -22,6 +22,9 @@ tdp_dat = 3; % data to plot in TDP (FRET data)
 tdp_tag = 1; % molecule tag to plot in TDP (all molecules)
 shape = 2; % gaussian cluster shape (straight multivariate)
 
+if ~strcmp(pname(end),filesep)
+    pname = [pname,filesep];
+end
 fname_mashIn = cat(2,fname,'_STaSI.mash');
 fname_mashOut = cat(2,fname,'_vbFRET_%sstates.mash');
 fname_clst = cat(2,fname,'_vbFRET_%sstates.clst');
@@ -61,22 +64,25 @@ for Jmax = Js
 
     fprintf(...
         cat(2,'>>>>>> save modificiations in file ',fname_mashOut,'...\n'),...
-        Jmax);
-
-    % save project
-    pushbutton_expProj_Callback({p.dumpdir,sprintf(fname_mashOut,Jmax)},[],...
-        h_fig);
+        num2str(Jmax));
+    
+    % save modifications to mash file
+    p.projOpt.proj_title = [fname,'_vbFRET_',num2str(Jmax),'states'];
+    set_VP_projOpt(p.projOpt,p.wl(1:p.nL),h.pushbutton_editParam,h_fig);
+    pushbutton_expProj_Callback(...
+        {p.dumpdir,sprintf(fname_mashOut,num2str(Jmax))},[],h_fig);
 end
 pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
 
 switchPan(h.togglebutton_TA,[],h_fig);
+p.tdp_expOpt(5) = true;
 for Jmax = Js
-    fprtinf(cat(2,'>>>> import file ',fname_mashOut,...
-        ' in Transition analysis...\n'),Jmax);
+    fprintf(cat(2,'>>>> import file ',fname_mashOut,...
+        ' in Transition analysis...\n'),num2str(Jmax));
 
     % import project in TA
-    pushbutton_TDPaddProj_Callback({p.dumpdir,sprintf(fname_mashOut,Jmax)},...
-        [],h_fig);
+    pushbutton_TDPaddProj_Callback(...
+        {p.dumpdir,sprintf(fname_mashOut,num2str(Jmax))},[],h_fig);
 
     disp('>>>> build TDP...');
 
@@ -95,24 +101,28 @@ for Jmax = Js
     
     % recover results
     h = guidata(h_fig);
-    p = h.param.TDP;
-    proj = p.curr_proj;
-    tpe = p.curr_type(proj);
-    tag = p.curr_tag(proj);
-    prm = p.proj{proj}.prm{tag,tpe};
-    res = prm.clst_res;
+    q = h.param.TDP;
+    proj = q.curr_proj;
+    tpe = q.curr_type(proj);
+    tag = q.curr_tag(proj);
+    prm = q.proj{proj}.prm{tag,tpe};
+    res = prm.clst_res{1};
     K = getClusterNb(Jmax,p.clstConfig(1),p.clstConfig(2));
     [j1,j2] = getStatesFromTransIndexes(1:K,Jmax,p.clstConfig(1),...
         p.clstConfig(2));
-    states_J = [res{Jmax}.mu',zeros(Jmax,1)];
+    states_J = [unique(res.mu{Jmax}(:,1)),zeros(Jmax,1)];
     for j = 1:Jmax
-        states_J(j,2) = (mean(sqrt(res{Jmax}.sig(1,1,j1==j & j2~=j))) + ...
-            mean(sqrt(res{Jmax}.sig(2,2,j2==j & j1~=j))))/2;
+        states_J(j,2) = (mean(sqrt(res.o{Jmax}(1,1,j1==j & j2~=j))) + ...
+            mean(sqrt(res.o{Jmax}(2,2,j2==j & j1~=j))))/2;
     end
     states = cat(2,states,states_J);
     
+    fprintf(...
+        cat(2,'>>>> export gaussian parameters to file ',fname_clst,'\n'),...
+        num2str(Jmax));
+    
     % export gaussian mixture to .clst files
-    set(h.popupmenu_tdp_model,'value',Jmax);
+    set(h.popupmenu_tdp_model,'value',Jmax-1);
     popupmenu_tdp_model_Callback(h.popupmenu_tdp_model,[],h_fig);
 
     pushbutton_tdp_impModel_Callback(h.pushbutton_tdp_impModel,[],h_fig);
@@ -122,11 +132,15 @@ for Jmax = Js
     pushbutton_expTDPopt_next_Callback(...
         {p.dumpdir,sprintf(fname_clst,num2str(Jmax))},[],h_fig);
     
-    % save modifications to mash file
-    p.projOpt.proj_title = [fname,'_vbFRET_',num2str(Jmax),'states'];
-    set_VP_projOpt(p.projOpt,p.wl(1:p.nL),h.pushbutton_editParam,h_fig);
+    fprintf(...
+        cat(2,'>>>> save modificiations to file ',fname_mashOut,'...\n'),...
+        num2str(Jmax));
     pushbutton_TDPsaveProj_Callback(...
-        {p.dumpdir,sprintf(fname_mashOut,Jmax)},[],h_fig);
+        {p.dumpdir,sprintf(fname_mashOut,num2str(Jmax))},[],h_fig);
+    
+    
+    set(h.listbox_TDPprojList,1);
+    listbox_TDPprojList_Callback(h.listbox_TDPprojList,[],h_fig);
     pushbutton_TDPremProj_Callback(h.pushbutton_TDPremProj,[],h_fig);
 end
 

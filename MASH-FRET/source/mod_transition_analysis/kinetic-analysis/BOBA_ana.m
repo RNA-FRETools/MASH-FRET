@@ -2,15 +2,21 @@ function res = BOBA_ana(hist_dt, p, strch, nExp, rspl, n_rep, n_spl, w, ...
     h_fig)
 % Adapted from "bobafret.m", function "pushbutton_resfit_Callback"
 
+h = guidata(h_fig);
+
 % randomly select histograms, exponential/Gaussian fitting
 % adjust number of replicates for bootstrapping y/n
 n_hist = size(hist_dt,2);
 if n_hist ~= n_rep
-    question = ['Number of molecules with relevant dwell times: ' ...
-        num2str(n_hist) '. Should the number of replicates be ' ...
-        'adjusted in the resampling process (suggested)?'];
-    choice = questdlg(question, 'Adjust number of replicates', ...
-        'Yes', 'No', 'Yes');
+    if h.mute_actions
+        choice = 'Yes';
+    else
+        question = ['Number of molecules with relevant dwell times: ' ...
+            num2str(n_hist) '. Should the number of replicates be ' ...
+            'adjusted in the resampling process (suggested)?'];
+        choice = questdlg(question, 'Adjust number of replicates', ...
+            'Yes', 'No', 'Yes');
+    end
 
     if strcmp(choice, 'Yes')
         n_rep = n_hist;
@@ -59,7 +65,7 @@ for k = 1:n_spl
     % lauch exponential fitting
     x_data = histall(:,1);
     y_data = histall(:,2);
-    fitres = mmexpfit_mod(x_data, y_data, p, nExp, strch);
+    fitres = mmexpfit_mod(x_data, y_data, p, nExp, strch, h.mute_actions);
     if isempty(fitres)
 %         res = [];
 %         % close loading bar
