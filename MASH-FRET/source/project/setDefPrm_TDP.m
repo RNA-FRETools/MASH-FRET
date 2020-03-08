@@ -177,6 +177,9 @@ for tpe = 1:nTpe
         % highest boba fit: amp, dec, beta
         kin_res{4} = [];
         
+        % dwell time histogram sample
+        kin_res{5} = [];
+        
         def{tag,tpe}.kin_res = adjustVal(def{tag,tpe}.kin_res,kin_res);
     end
 end

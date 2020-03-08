@@ -39,32 +39,34 @@ h = guidata(h_fig);
 h.barData.prev_var = h.barData.curr_var;
 guidata(h_fig, h);
 
+res.histall = cell(1,n_spl);
 for k = 1:n_spl
 
     x = randsample(n_hist, n_rep, rspl, w);
-    histall = []; occ = [];
+    res.histall{k} = [];
     for i = 1:size(x,1)
-        histall = [histall; hist_dt{x(i,1)}];
+        res.histall{k} = cat(1,res.histall{k},hist_dt{x(i,1)});
     end
-    histall = histall(:,1);
+    res.histall{k} = res.histall{k}(:,1);
     
     % sort dwell times
-    histall = sortrows(histall,1);
+    res.histall{k} = sortrows(res.histall{k},1);
 
-    [o,ia,ja] = unique(histall(:,1));
-    histall = histall(ia,:);
+    [o,ia,ja] = unique(res.histall{k}(:,1));
+    res.histall{k} = res.histall{k}(ia,:);
+    occ = zeros(max(ja),1);
     for j = ja'
         occ(j,1) = numel(find(ja==j));
     end
-    histall = [0;histall];
-    occ = [0;occ];
+    res.histall{k} = [0;res.histall{k}];
+    occ = cat(1,0,occ);
     occ = occ/sum(occ);
-    histall(:,2) = 1-cumsum(occ);
-    histall(end,2) = 0;
+    res.histall{k}(:,2) = 1-cumsum(occ);
+    res.histall{k}(end,2) = 0;
     
     % lauch exponential fitting
-    x_data = histall(:,1);
-    y_data = histall(:,2);
+    x_data = res.histall{k}(:,1);
+    y_data = res.histall{k}(:,2);
     fitres = mmexpfit_mod(x_data, y_data, p, nExp, strch, h.mute_actions);
     if isempty(fitres)
 %         res = [];
@@ -73,11 +75,7 @@ for k = 1:n_spl
 %         return;
         disp(cat(2,'sample ',num2str(k),': insufficient number of data ',...
             'points to fit.'));
-        res.adj_s(k,1).sse = NaN;
-        res.adj_s(k,1).rsquare = NaN;
-        res.adj_s(k,1).dfe = NaN;
-        res.adj_s(k,1).adjrsquare = NaN;
-        res.adj_s(k,1).rmse = NaN;
+        res.adj_s(k,1) = NaN;
 
         res.cf(k,:) = NaN(1,2*nExp*double(~strch)+3*strch);  % amplitude, decay constant, beta
     else
@@ -95,8 +93,10 @@ for k = 1:n_spl
 end
 
 % remove failures because of an insufficient number of data points
-res.adj_s(~~sum(isnan(res.cf),2),:) = [];
-res.cf(~~sum(isnan(res.cf),2),:) = [];
+excl = ~~sum(isnan(res.cf),2);
+res.adj_s(excl,:) = [];
+res.cf(excl,:) = [];
+res.histall(excl) = [];
 
 if size(res.cf,1)<n_spl
     setContPan(cat(2,'The number of samples that resulted in a successful',...

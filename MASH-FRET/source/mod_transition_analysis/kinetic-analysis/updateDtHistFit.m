@@ -86,6 +86,7 @@ if boba
     prm.kin_res{curr_k,1} = res.boba_mean;
     prm.kin_res{curr_k,3} = res.boba_inf;
     prm.kin_res{curr_k,4} = res.boba_sup;
+    prm.kin_res{curr_k,5} = {res.histspl,res.boba_fitres};
 end
 
 prm.kin_res{curr_k,2} = res.fit_ref;

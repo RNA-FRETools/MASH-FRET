@@ -71,10 +71,6 @@ if isfield(prm,'clst_start') && size(prm.clst_start,2)>=1 && ...
     prm.clst_start{1} = cat(2,prm.clst_start{1},[true 1]);
 end
 
-% 29.1.2020: correct ill-initialized kinetic analysis results
-if isfield(prm,'kin_res') && size(prm.kin_res,2)~=size(def.kin_res,2) 
-    prm.kin_res = prm.kin_res(:,1:size(def.kin_res,2));
-end
 % 29.1.2020: reformat (state,radius) to (state x,state y,radius x,radius y)
 if isfield(prm,'clst_start') && size(prm.clst_start,2)>=2 && ...
         size(prm.clst_start{2},2)==2
@@ -201,6 +197,11 @@ if isfield(prm,'kin_def') && size(prm.kin_def,2)>=1 && ...
             end
         end
     end
+end
+
+% 7.3.2020: add bootstrap histograms
+if isfield(prm,'kin_res') && size(prm.kin_res,2)==4
+    prm.kin_res = cat(2,prm.kin_res,cell(size(prm.kin_res,1),1));
 end
 
 p_proj.prm{tag,tpe} = prm;

@@ -97,7 +97,7 @@ y_data = hist_ref(:,end);
 ref_res = mmexpfit_mod(x_data, y_data, p_fit, nExp, strch);
 if isempty(ref_res)
     res = [];
-    setContPan('Fitting process interrupted', 'error', h.figure_MASH);
+    setContPan('Fitting process interrupted', 'error', h_fig);
     return
 end
 
@@ -122,11 +122,15 @@ if boba
     end
 
     res.n_rep = boba_res.n_rep;
+    res.histspl = boba_res.histall;
+    res.boba_fitres = boba_res.cf;
     res.boba_mean = cf_boba;
     res.boba_inf = reshape(cf(1,:)',[(2+strch) nExp])';
     res.boba_sup = reshape(cf(end,:)',[(2+strch) nExp])';
 else
     res.n_rep = [];
+    res.histspl = [];
+    res.boba_fitres = [];
     res.boba_mean = [];
     res.boba_inf = [];
     res.boba_sup = [];

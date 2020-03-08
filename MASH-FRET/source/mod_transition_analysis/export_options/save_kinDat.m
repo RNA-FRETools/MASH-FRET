@@ -12,6 +12,7 @@ ok = 1;
 kinDtHist = bol(1);
 kinFit = bol(2);
 kinBoba = bol(3);
+bobaFig = bol(4);
 
 % dwell-time histograms
 if kinDtHist
@@ -200,4 +201,19 @@ if kinFit
             'to ASCII file because of invalid file name ',fname_fit,'\n');
         disp(cat(2,'Invalid file name: ',fname_fit));
     end
+end
+
+if bobaFig && ~isempty(prm.kin_res{j,5})
+    fname_pdf = strcat(name,'.pdf');
+    fname_pdf = getCorrName(fname_pdf, [], h_fig);
+    if ~sum(fname_pdf)
+        return
+    end
+    fname_pdf = overwriteIt(fname_pdf,pname,h_fig);
+    if isempty(fname_pdf)
+        ok = 0;
+        return
+    end
+    [~,name,~] = fileparts(fname_pdf);
+    exportBOBAfit_exp(j,pname,name,h_fig);
 end

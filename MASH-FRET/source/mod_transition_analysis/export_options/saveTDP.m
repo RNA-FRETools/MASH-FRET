@@ -36,6 +36,7 @@ TDPclust = q{2}(5);
 kinDtHist = q{3}(1);
 kinFit = q{3}(2);
 kinBoba = q{3}(3);
+bobaFig = true;
 
 if ~(TDPascii || TDPimg || TDPclust || kinDtHist || kinFit || kinBoba)
     setContPan('There is no data to export.', 'warning', h_fig);
@@ -110,7 +111,7 @@ end
 
 %% Export kinetic files
 
-bol_kin = [kinDtHist kinFit kinBoba];
+bol_kin = [kinDtHist kinFit kinBoba bobaFig];
 
 if sum(bol_kin)
     setContPan('Export kinetic results ...', 'process', h_fig);
