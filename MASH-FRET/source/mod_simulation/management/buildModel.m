@@ -34,16 +34,16 @@ molPrm = h.param.sim.molPrm;
 imp_kx = impPrm & isfield(molPrm, 'kx');
 
 if imp_kx
-%     kx_all = molPrm.kx*expT; % kinetic cst. in frame-1
     kx_all = molPrm.kx;
-    ref = ~~(kx_all);
-    isTrans = prod(double(sum(sum(ref(1:K,1:K,1:n_max),1),2)),3);
+    wx_all = molPrm.wx;
 else
-%     kx = h.param.sim.kx*expT; % kinetic cst. in frame-1
     kx = h.param.sim.kx;
-    ref = ~~(kx);
-    isTrans = sum(sum(ref(1:K,1:K,1)));
+    wx = h.param.sim.wx;
+    kx_all  = repmat(kx,[1,1,n_max]);
+    wx_all = repmat(wx,[1,1,n_max]);
 end
+ref = ~~(kx_all);
+isTrans = prod(double(sum(sum(ref(1:K,1:K,1:n_max),1),2)),3);
 
 N = h.param.sim.nbFrames;
 mix = cell(1,n_max);
@@ -53,43 +53,11 @@ dt_final = cell(1,n_max);
 if K>1 && isTrans
     n = 1;
     while n <= n_max
-        if n==1 && ~imp_kx
-            kx = kx(1:K,1:K);
-            
-            % identify zero sums in rate matrix
-            if sum(sum(kx,1)>0)~=K || sum(sum(kx,2)>0)~=K
-                setContPan(cat(2,'Simulation aborted: at least one ',...
-                    'transition from and to each state must be defined ',...
-                    '(rate non-null).'),'error',h_fig);
-
-                % clear any results to avoid conflict
-                if isfield(h,'results') && isfield(h.results,'sim')
-                    h.results = rmfield(h.results,'sim');
-                end
-                guidata(h_fig,h);
-                return
-            end
-            
-%             P = kx*N; // M.CAS Hadzic 2012
-%             P = double(~~(kx)); %  M.CAS Hadzic 2014, to be updated
-            P = kx.*expT; % simple rate-to-prob-model for Markov chains, 2018-03-12 RB
-            for i=1:K 
-                %P(:,i) = (kx(:,i)./sum(kx,2)(i))*(1-exp(-sum(kx,2)(i)*expT));
-                P(i,i) = 1 - sum(kx(i,:))*expT; % simple rate-to-prob-model for Markov chains
-            end
-            
-            % State probabilities from rates.
-            [V,D,W]=eig(P);
-            D = diag(D);
-            for i=1:K
-                if round(1e5*real(D(i)))/1e5==1 && round(imag(D(i)))==0 
-                    break   
-                end
-            end
-            Prob = W(:,i)./sum(W(:,i));
-        elseif imp_kx
+        if n==1
             kx = kx_all(1:K,1:K,n);
-            
+            wx = wx_all(1:K,1:K,n);
+            wx = wx./repmat(sum(wx,2),[1,K]);
+
             % identify zero sums in rate matrix
             if sum(sum(kx,1)>0)~=K || sum(sum(kx,2)>0)~=K
                 setContPan(cat(2,'Simulation aborted: at least one ',...
@@ -103,13 +71,15 @@ if K>1 && isTrans
                 guidata(h_fig,h);
                 return
             end
-            
-%             P = kx*N; // M.CAS Hadzic 2012
-%             P = double(~~(kx)); %  M.CAS Hadzic 2014, to be updated
-            P = kx.*expT; % simple rate-to-prob-model for Markov chains, 2018-03-12 RB
+
+            %             P = kx*N; // M.CAS Hadzic 2012
+            %             P = double(~~(kx)); %  M.CAS Hadzic 2014, to be updated
+%             P = kx.*expT; % simple rate-to-prob-model for Markov chains, 2018-03-12 RB
+            P = kx.*wx; % use probability-weighted rates
             for i=1:K 
                  %P(:,i) = (kx(:,i)./sum(kx,2)(i))*(1-exp(-sum(kx,2)(i)*expT));
-                 P(i,i) = 1 - sum(kx(i,:))*expT; % simple rate-to-prob-model for Markov chains, 2018-03-12 RB
+%                  P(i,i) = 1 - sum(kx(i,:))*expT; % simple rate-to-prob-model for Markov chains, 2018-03-12 RB
+                P(i,i) = 1 - sum(P(i,:));
             end
             % State probabilities from rates, 2018-03-12 RB PlosOne
             [V,D,W]=eig(P);
@@ -121,7 +91,7 @@ if K>1 && isTrans
                 end
             end
             Prob = W(:,i)./sum(W(:,i));
-         end
+        end
         
         if bleach
             end_t = ceil(random('exp',bleachT));
@@ -156,18 +126,12 @@ if K>1 && isTrans
                 end
                 
                 s_prev = s_curr; % previous state
-                
-                % pick a "next state" randomly with uniform probabilities
-                %s_curr = randsample(1:K, 1, true, double(~~P(s_prev,:)));
-                
-                % pick a "next state" randomly with P-based probabilities
-                %s_curr = randsample(1:K, 1, true, P(s_prev,:));
-                
+
                 % pick a "next state" randomly with k-based probabilities
-                s_curr = randsample(1:K, 1, true, kx(s_prev,:)/sum(kx(s_prev,:)));
+%                 s_curr = randsample(1:K, 1, true, kx(s_prev,:)/sum(kx(s_prev,:)));
                 
-                % pick a "first state" randomly with defined probabilities
-%                 s_curr = randsample(1:K, 1, true, pdef(s_prev,:));
+                % pick a "next state" randomly with defined probabilities
+                s_curr = randsample(1:K, 1, true, wx(s_prev,:));
                 
                 % dwell in s
                 dt = random('exp',1/kx(s_prev,s_curr)); 
