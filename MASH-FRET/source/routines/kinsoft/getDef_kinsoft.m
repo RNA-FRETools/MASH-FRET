@@ -9,6 +9,7 @@ defprm = {'Movie name' '' ''
        '[K+]' [] 'mM'};
 deflbl = {'don','acc1'};
 nMax = 3; % maximum number of exponential to fit
+expT = 0.1; % exposure time
 
 % general
 p.dumpdir = cat(2,pname,'MASH-FRET-analysis');
@@ -130,7 +131,7 @@ p.fsThresh = [-Inf,0,0.6
 p.fsThresh = repmat(p.fsThresh,[1,1,nDat]);
 
 % default TDP settings
-p.tdpPrm = [0.05,0.025,1.05,1,0,0,1,1];
+p.tdpPrm = [-0.2,0.025,1.2,1,0,0,1,1];
 
 % default state configuration
 Jmax = 10;
@@ -143,11 +144,70 @@ p.clstStart = [linspace(0,1,Jmax)',repmat(0.1,[Jmax,1])];
 p.tdp_expOpt = [false,4,false,3,false,false,false,false];
 
 % default exponential fit settings
+p.nMax = nMax;
 p.expPrm = [0,1,0,0,100]; % stretched, decay nb., boba, weight, sample nb.
-p.fitPrm = [0,0.8,Inf
-    0 0.5 Inf
-    0 0.5 2]; % low, start, up
-p.fitPrm = repmat(p.fitPrm,[1,1,nMax]);
+amp = permute(...
+    [zeros(nMax,1),flip(logspace(-2,0,nMax),2)',Inf(nMax,1)],...
+    [3,2,1]);
+dec = permute(...
+    [zeros(nMax,1),flip(logspace(2,log10(expT),nMax),2)',Inf(nMax,1)],...
+    [3,2,1]);
+beta = permute([zeros(nMax,1),0.5*ones(nMax,1),2*ones(nMax,1)],[3,2,1]);
+p.fitPrm = cat(1,amp,dec,beta);
 p.fitPrm(2,2,2) = 5;
 p.fitPrm(2,2,3) = 10;
+
+% defaults for simulation
+p.L = 100; % video length (frames)
+p.rate = 10; % frame acquisition rate (frame/s)
+p.pixdim = 0.53; % pixel dimensions (um)
+p.bitrate = 14; % bit rate (bit/s)
+p.viddim = [256,256]; % video dimensions (pixels)
+p.camnoise = 2; % Gaussian-type camera noise
+p.camprm = [113,0,0.95,0,1,0; ...
+    113,0.067,0.95,0,57.8,0; ...
+    106.9,0.02,0.95,2,57.7,20.5; ...
+    113,0,1,0,1,0; ...
+    113,0.067,0.95,0.02,300,5.199]; % parameters of camera noise distributions
+
+% defaults for Molecules
+p.N = 12; % sample size
+p.J = 2; % number of states
+p.FRET = [0,0.25]; % FRET values
+p.wFRET = [0,0]; % FRET deviations
+p.k = [0,1,0;
+    0.1,0,0.01;
+    0.01,0.05,0]; % transition rates (s-1)
+p.pc_in = true; % input intensity units in photon counts
+p.Itot = 40; % total intensity
+p.wItot = 0; % total intensity deviation
+p.gamma = 1; % gamma factor
+p.wGamma = 0; % gamma factor deviation
+p.dE = [0,0]; % direct excitation coefficients
+p.Bt = [0,0]; % bleedthrough coefficients
+p.bleach = true; % apply photobleaching
+p.t_bleach = p.L; % bleaching time constant
+
+% defaults for Experimental setup
+p.psf = false; % apply PSF convolution
+p.psfW = [0.3526,0.38306];
+p.defocus = false; % apply defocusing
+p.defocus_prm = [0,0]; % defocusing exponential time constant and defocusing initial amplitude
+p.bg = 1; % background spatial distribution
+p.bgI = [0,0]; % background intensities
+p.bgW = [127,256]; % backgoround Gaussian widths
+p.bgImg = 'bgimg.png';
+p.bgDec = true; % apply dynamic background
+p.bgDec_prm = [p.L/(2*p.rate),1]; % background decay constant and multiplication factor for initial backgroudn amplitude
+p.annexpth = '';
+
+% default for Export options
+p.mat = false; % export .mat trace file
+p.sira = false; % export .sira video file
+p.avi = false; % export .avi video file
+p.txt = true; % export .txt trace file
+p.dt = false; % export .dt dwell time file
+p.log = true; % export .log simulation parameters file
+p.coord = false; % export .coord coordinates file
+p.un_out = 1; % exported intensities units
 

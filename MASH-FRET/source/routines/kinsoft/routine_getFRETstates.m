@@ -28,6 +28,8 @@ end
 fname_mashIn = cat(2,fname,'_STaSI.mash');
 fname_mashOut = cat(2,fname,'_vbFRET_%sstates.mash');
 fname_clst = cat(2,fname,'_vbFRET_%sstates.clst');
+fname_tdpImg = cat(2,fname,'_vbFRET_%sstates_TDP.png');
+fname_clstImg = cat(2,fname,'_vbFRET_%sstates_clust.png');
 
 % get default interface
 h = guidata(h_fig);
@@ -48,7 +50,7 @@ disp('>>>> process single FRET traces with vbFRET...');
 % set interface to default values
 setDef_kinsoft_TP(p,h_fig);
 
-% configure state finding algorithm to STaSI
+% configure state finding algorithm to vbFRET
 for Jmax = Js
     fprintf('>>>>>> process with Jmax=%i...\n',Jmax);
     
@@ -89,6 +91,15 @@ for Jmax = Js
     % set TDP settings and update plot
     set_TA_TDP(tdp_dat,tdp_tag,p.tdpPrm,h_fig);
     pushbutton_TDPupdatePlot_Callback(h.pushbutton_TDPupdatePlot,[],h_fig);
+    pushbutton_TDPresetClust_Callback(h.pushbutton_TDPresetClust,[],h_fig)
+    
+    fprintf(cat(2,'>>>> export screenshot of TDP to file ',fname_tdpImg,...
+        '\n'),num2str(Jmax));
+    
+    % export a screenshot of TDP
+    set(h_fig, 'CurrentAxes',h.axes_TDPplot1);
+    exportAxes({[p.dumpdir,filesep,sprintf(fname_tdpImg,num2str(Jmax))]},...
+        [],h_fig);
 
     disp('>>>> cluster transitions with Gaussian mixtures...');
 
@@ -110,7 +121,7 @@ for Jmax = Js
     K = getClusterNb(Jmax,p.clstConfig(1),p.clstConfig(2));
     [j1,j2] = getStatesFromTransIndexes(1:K,Jmax,p.clstConfig(1),...
         p.clstConfig(2));
-    states_J = [unique(res.mu{Jmax}(:,1)),zeros(Jmax,1)];
+    states_J = [res.mu{Jmax}(1:Jmax,2),zeros(Jmax,1)];
     for j = 1:Jmax
         states_J(j,2) = (mean(sqrt(res.o{Jmax}(1,1,j1==j & j2~=j))) + ...
             mean(sqrt(res.o{Jmax}(2,2,j2==j & j1~=j))))/2;
@@ -118,8 +129,8 @@ for Jmax = Js
     states = cat(2,states,states_J);
     
     fprintf(...
-        cat(2,'>>>> export gaussian parameters to file ',fname_clst,'\n'),...
-        num2str(Jmax));
+        cat(2,'>>>> export gaussian parameters to file ',fname_clst,' and',...
+        'clusters screenshot to file ',fname_clstImg,'\n'),num2str(Jmax));
     
     % export gaussian mixture to .clst files
     set(h.popupmenu_tdp_model,'value',Jmax-1);
@@ -132,6 +143,11 @@ for Jmax = Js
     pushbutton_expTDPopt_next_Callback(...
         {p.dumpdir,sprintf(fname_clst,num2str(Jmax))},[],h_fig);
     
+    % export a screenshot of clustering
+    set(h_fig, 'CurrentAxes',h.axes_TDPplot1);
+    exportAxes({[p.dumpdir,filesep,sprintf(fname_clstImg,num2str(Jmax))]},...
+        [],h_fig);
+    
     fprintf(...
         cat(2,'>>>> save modificiations to file ',fname_mashOut,'...\n'),...
         num2str(Jmax));
@@ -139,7 +155,7 @@ for Jmax = Js
         {p.dumpdir,sprintf(fname_mashOut,num2str(Jmax))},[],h_fig);
     
     
-    set(h.listbox_TDPprojList,1);
+    set(h.listbox_TDPprojList,'value',1);
     listbox_TDPprojList_Callback(h.listbox_TDPprojList,[],h_fig);
     pushbutton_TDPremProj_Callback(h.pushbutton_TDPremProj,[],h_fig);
 end

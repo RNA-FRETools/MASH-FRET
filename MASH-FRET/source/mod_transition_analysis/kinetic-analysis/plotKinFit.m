@@ -78,12 +78,24 @@ y_data = hist_ref(hist_ref(:,end)>0,end);
 plot(h_axes, x_data, y_data, markhist, 'linewidth', lwhist);
 grid(h_axes, 'on');
 
+if x_data(1)==x_data(end)
+    x_lim = x_data(1)+[-1,1];
+else
+    x_lim = x_data([1,end])';
+end
+y_min = min(y_data);
+y_max = max(y_data);
+if y_min==y_max
+    y_lim = y_min+[-1,1];
+else
+    y_lim = [y_min,y_max];
+end
+
 if isequal(kin_res,def.kin_res)
-    xlim(h_axes,[x_data(1),x_data(end)]);
-    ylim(h_axes,[min(y_data),max(y_data)]);
-    lim = get(h_axes, 'YLim');
-    set(h_axes,'YLim',[min(y_data) lim(2)],'Visible','on','YScale',scl);
+    set(h_axes,'Visible','on','YScale',scl);
     title(h_axes, ttl);
+    xlim(h_axes,x_lim);
+    ylim(h_axes,y_lim);
     xlabel(h_axes, xlbl);
     ylabel(h_axes, ylbl);
     return
@@ -171,8 +183,8 @@ end
 title(h_axes, ttl);
 xlabel(h_axes, xlbl);
 ylabel(h_axes, ylbl);
-xlim(h_axes,[x_data(1),x_data(end)]);
-ylim(h_axes,[min(y_data),max(y_data)]);
+xlim(h_axes,x_lim);
+ylim(h_axes,y_lim);
 lim = get(h_axes, 'YLim');
 
 set(h_axes, 'NextPlot', 'replacechildren', 'YLim', [min(y_data) lim(2)], ...

@@ -10,6 +10,7 @@ function set_S_photobleaching(pb,t,h_fig)
 h = guidata(h_fig);
 
 set(h.checkbox_simBleach,'value',pb);
+checkbox_simBleach_Callback(h.checkbox_simBleach,[],h_fig);
 
 if pb
     set(h.edit_simBleach,'string',num2str(t));

@@ -1,7 +1,7 @@
 function [TDP,dt_bin,ok,str] = getTDPmat(tpe, tag, prm, p_proj)
 % Build TDP matrix from dwell-times
 %
-% TDP = getTDPmat(dt, tag, prm, h_fig)
+% [TDP,dt_bin,ok,str] = getTDPmat(tpe, tag, prm, p_proj)
 %
 % dt: {N-by-(nChan*nExc+nFRET+nS)} cell array containing:
 %  columns 1 to nChan*nExc: intensity dwell-times

@@ -5,12 +5,6 @@ proj = p.curr_proj;
 prm = p.proj{proj}.prm{tag,tpe};
 curr = p.proj{proj}.curr{tag,tpe};
 
-if isfield(prm,'plot') && isequal(prm.plot,curr.plot)
-    ok = 1;
-    str = '';
-    return
-end
-
 % make current settings the processing parameters at last update
 prm.plot = curr.plot;
 

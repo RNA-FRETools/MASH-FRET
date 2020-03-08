@@ -1,5 +1,5 @@
 function [pname,fname,res,Js] = routine_findJ(h_fig)
-% [fname,res,Js] = routine_findJ(h_fig)
+% [pname,fname,res,Js] = routine_findJ(h_fig)
 %
 % Analyze data of Kinsoft challenge to find the optimum number of states
 % In case different configurations lead to similar goodness of fit, the corresponding number of states are given all together as a result
@@ -46,6 +46,8 @@ disp('>> start determination of the number of states J...');
 p = getDef_kinsoft(pname,fnames);
 fname_mash = cat(2,fname,'_STaSI.mash');
 fname_clst = cat(2,fname,'_STaSI_%sstates.clst');
+fname_tdpImg = cat(2,fname,'_STaSI_TDP.png');
+fname_clstImg = cat(2,fname,'_STaSI_clust_%sstates.png');
 
 disp('>>>> import .dat files in Trace processing...');
 
@@ -93,6 +95,12 @@ disp('>>>> build TDP...');
 set_TA_TDP(tdp_dat,tdp_tag,p.tdpPrm,h_fig);
 pushbutton_TDPupdatePlot_Callback(h.pushbutton_TDPupdatePlot,[],h_fig);
 
+fprintf(cat(2,'>>>> export TDP screenshot to file ',fname_tdpImg,'\n'));
+
+% export a screenshot of TDP
+set(h_fig, 'CurrentAxes',h.axes_TDPplot1);
+exportAxes({[p.dumpdir,filesep,fname_tdpImg]},[],h_fig);
+
 disp('>>>> cluster transitions with Gaussian mixtures...');
 
 % set clustering settings and cluster transitions
@@ -130,9 +138,8 @@ end
 [BICs,id] = sort(BICs);
 Js = Js(id);
 
-fprintf(...
-    cat(2,'>>>> export gaussian parameters to ',fname_clst,' files...\n'),...
-    '[J]');
+fprintf(cat(2,'>>>> export gaussian parameters to ',fname_clst,' files ',...
+    'and TDP screenshots to ',fname_clstImg,' files...\n'),'[J]','[J]');
 
 % export optimum gaussian mixtures to .clst files
 p.tdp_expOpt(5) = true;
@@ -144,8 +151,13 @@ for J = Js
     
     pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig);
     set_TA_expOpt(p.tdp_expOpt,h_fig);
-    pushbutton_expTDPopt_next_Callback(...
-        {p.dumpdir,sprintf(fname_clst,num2str(J))},[],h_fig);
+    pushbutton_expTDPopt_next_Callback({p.dumpdir,...
+        sprintf(fname_clst,num2str(J))},[],h_fig);
+    
+    % export a screenshot of clustering
+    set(h_fig, 'CurrentAxes',h.axes_TDPplot1);
+    exportAxes({[p.dumpdir,filesep,sprintf(fname_clstImg,num2str(J))]},[],...
+        h_fig);
 end
 
 disp(cat(2,'>>>> save modificiations to file ',fname_mash,'...'));

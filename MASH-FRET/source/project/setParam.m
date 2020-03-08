@@ -95,12 +95,18 @@ p.bleach_t = adjustParam('bleach_t', p.nbFrames/p.rate, p_input); % bleaching de
 p.bitnr = adjustParam('bitnr', 14, p_input); % bit rate
 
 % molecule parameters
-kx = [  0   0.1   0.1   0.1   0.1 % transition state rates (s-1), for up to 5 states
+kx = [  0   0.1   0.1   0.1   0.1 % transition rates (s-1), for up to 5 states
       0.1     0   0.1   0.1   0.1
       0.1   0.1     0   0.1   0.1
       0.1   0.1   0.1     0   0.1
       0.1   0.1   0.1   0.1     0];
 p.kx = adjustParam('kx', kx, p_input);
+wx = [  0   0.25   0.25   0.25   0.25 % transition probabilities, for up to 5 states
+      0.25     0   0.25   0.25   0.25
+      0.25   0.25     0   0.25   0.25
+      0.25   0.25   0.25     0   0.25
+      0.25   0.25   0.25   0.25     0];
+p.wx = adjustParam('kx', wx, p_input);
 val = round(10*linspace(0,1,p.nbStates))/10;
 p.stateVal = adjustParam('stateVal', val, p_input);
 p.FRETw = adjustParam('FRETw', zeros(1,p.nbStates), p_input); % FRET width for heterogenous broadening
