@@ -112,6 +112,35 @@ if isfield(s, 'trans_rates') && ~isempty(s.trans_rates)
     end
 end
 
+if isfield(s, 'trans_prob') && ~isempty(s.trans_prob)
+    if isfield(p,'molNb') && isfield(p, 'nbStates') % FRET matrix or transition rates not loaded
+        if size(s.trans_prob,3)==p.molNb && ...
+                size(s.trans_prob,2)==p.nbStates
+            p.wx = s.trans_prob;
+            disp('Transition probabilities successfully imported');
+            
+        elseif size(s.trans_prob,3)~=p.molNb
+            errmsg = cat(2,errmsg,cat(2,'No transition probability ',...
+                'matrices imported:'),cat(2,'>> the numbers of molecules ',...
+                'defined by transition probabilities and by the FRET ',...
+                'or transition rate matrices are not consistent.'),' ');
+        else
+            errmsg = cat(2,errmsg,cat(2,'No transition probability ',...
+                'matrices imported:'),cat(2,'>> the numbers of states ',...
+                'defined by transition probabilities and by the FRET ',...
+                'or transition rate matrices are not consistent.'),' ');
+        end
+        
+    else % FRET matrix/transition rates not loaded
+        p.wx = s.trans_prob;
+        p.molNb = size(s.trans_prob,3);
+        p.nbStates = size(s.trans_prob,2);
+        disp(cat(2,'Import presets for ',num2str(p.molNb),' molecules and',...
+            ' ',num2str(p.nbStates),' FRET states ...'));
+        disp('Transition probabilities successfully imported');
+    end
+end
+
 if isfield(s, 'gamma') && ~isempty(s.gamma)
     if isfield(p,'molNb') % FRET and/or transition rate matrix loaded
         if size(s.gamma,1)==p.molNb && size(s.gamma,2)==2
