@@ -96,8 +96,8 @@ for n = 1:N
             n_bss = prm(n,1);
             lvl = prm(n,2);
             ana_type = prm(n,3);
-            d_traces(n,incl(n,:)) = discr_cpa(traces(n,incl(n,:)),n_bss,...
-                lvl,ana_type, maxN, mute_action);
+            d_traces(n,incl(n,:)) = discr_cpa(traces(n,incl(n,:)),...
+                mute_action,n_bss,lvl,ana_type, maxN);
 %             ct = toc(t);
 %             if exist('C:\Users\SigelPC18\Desktop', 'dir')
 %                 f = fopen(['C:\Users\SigelPC18\Desktop\' ...

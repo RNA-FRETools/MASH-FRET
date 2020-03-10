@@ -1,5 +1,4 @@
-function discr = discr_cpa(trace,varargin)
-% discr = discr_cpa(trace)
+function discr = discr_cpa(trace,mute_action,varargin)
 % discr = discr_cpa(trace,mute)
 % discr = discr_cpa(trace,mute,nbSamples)
 % discr = discr_cpa(trace,mute,nbSamples,lvl)
@@ -22,12 +21,6 @@ function discr = discr_cpa(trace,varargin)
 % Last update the 10th of March 2014 by Mélodie C.A.S. Hadzic
 
 %% Initialisation
-
-mute_action = false;
-if ~isempty(varargin)
-    mute_action = varargin{1};
-    varargin{1} = [];
-end
 
 % parameters
 [n_smpl,sgn_lvl,ana_type,correl,tol,Kmax] = getParam(varargin);
@@ -173,6 +166,7 @@ diff_ref = cs_max-cs_min;
 
 
 % bootstrap samples
+diff_smpl = zeros(1,n_smpl);
 for s = 1:n_smpl
 
     % sampling without replacement
