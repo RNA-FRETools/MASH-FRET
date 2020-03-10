@@ -34,11 +34,11 @@ h = guidata(h_fig);
 p = getDef_kinsoft(pname,[]);
 
 dir_ascii = cat(2,p.dumpdir,filesep,'traces_ASCII',filesep);
-files_ascii = cat(2,fname,'_sim_%sstates');
-fname_presets = cat(2,fname,'_%states_presets.mat');
-fname_mashIn = cat(2,fname,'_STaSI.mash');
-fname_tdpImg = cat(2,fname,'_sim_TDP_%sstates.png');
-fname_mashOut = cat(2,fname,'_sim_%sstates.mash');
+files_ascii = getCorrName([fname,'_sim_%sstates'],pname,h_fig);
+fname_presets = getCorrName([fname,'_%states_presets.mat'],pname,h_fig);
+fname_mashIn = getCorrName([fname,'_STaSI.mash'],pname,h_fig);
+fname_tdpImg = getCorrName([fname,'_sim_TDP_%sstates.png'],pname,h_fig);
+fname_mashOut = getCorrName([fname,'_sim_%sstates.mash'],pname,h_fig);
 
 disp('>> start model selection using simulation...');
 

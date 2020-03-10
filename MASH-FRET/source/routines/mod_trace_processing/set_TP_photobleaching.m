@@ -1,9 +1,10 @@
 function set_TP_photobleaching(meth,dat,prm,clipit,h_fig)
-% set_TP_photobleaching(meth,prm,apply,h_fig)
+% set_TP_photobleaching(meth,dat,prm,apply,h_fig)
 %
 % Set Photobleaching detection to proper settings
 %
 % meth: index of detection method in list
+% dat: time trace to detect photobleaching in
 % prm: {1-by-2} method parameters for:
 %  prm{1}: manual cutoff (cut off frame)
 %  prm{2}: threshold-based detection ([nData-by-3] settings for each data as set in getDefault_TP)
@@ -23,13 +24,13 @@ else
     set(h.popupmenu_bleachChan,'value',dat);
     popupmenu_bleachChan_Callback(h.popupmenu_bleachChan,[],h_fig);
     
-    set(h.edit_photoblParam_01,'string',num2str(prm(dat,1)));
+    set(h.edit_photoblParam_01,'string',num2str(prm{2}(dat,1)));
     edit_photoblParam_01_Callback(h.edit_photoblParam_01,[],h_fig);
     
-    set(h.edit_photoblParam_02,'string',num2str(prm(dat,2)));
+    set(h.edit_photoblParam_02,'string',num2str(prm{2}(dat,2)));
     edit_photoblParam_02_Callback(h.edit_photoblParam_02,[],h_fig);
     
-    set(h.edit_photoblParam_03,'string',num2str(prm(dat,3)));
+    set(h.edit_photoblParam_03,'string',num2str(prm{2}(dat,3)));
     edit_photoblParam_03_Callback(h.edit_photoblParam_03,[],h_fig);
 end
 

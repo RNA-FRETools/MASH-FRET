@@ -112,8 +112,9 @@ p.pbPrm{2} = [0 1 6 % FRET
 % default factor corrections parameters
 p.factMeth = 1;
 p.fact = 1; % gamma factor
-p.factPrm{1} = repmat([0,2,1,10],p.nL,1);
-p.factPrm{2} = [-0.2,50,1.2
+p.factPrm{1} = {}; % .gam and/or .bet files
+p.factPrm{2} = repmat([0,2,1,10],p.nL,1);
+p.factPrm{3} = [-0.2,50,1.2
     1,50,5];
 
 % default find states parameters

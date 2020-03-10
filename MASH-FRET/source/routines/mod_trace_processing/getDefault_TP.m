@@ -108,6 +108,7 @@ for nL = 1:nL_max
         end
     end
 end
+nFRET = size(p.projOpt{nL_def,nChan_def}.FRET,1);
 p.coord_file = '2chan.coord';
 p.coord_fline = 1;
 p.vid_width = 100;
@@ -203,48 +204,57 @@ p.exp_bga{2} = 'bgares_1D_%i.bga';
 p.exp_bga{3} = 'bgares_2D_%i.bga';
 
 % parameters for panel Cross-talks
-p.bt = [0,0.07
+p.bt = [0,0.07 % bleedthrought coefficients
     0,0];
-p.de = [0,0
+p.de = [0,0 % direct excitation coefficients
     0.02,0];
 
 % parameters for panel Denoising
-p.denMeth = 1;
-p.denApply = false;
-p.denPrm = [3,0,0
+p.denMeth = 1; % index in list of denoising method
+p.denApply = false; % (1) to denoise traces, (0) otherwise
+p.denPrm = [3,0,0 % denosiing method settings
     5 1 2
     3 2 1];
 
 % parameters for panel Photobleaching
-p.pbMeth = 1;
-p.pbApply = false;
-p.pbDat = 1;
-p.pbprm{1} = 7;
-p.pbPrm{2} = [0 1 6 % FRET
-    0 1 6 % S
-    0 1 6 % I
-    0 1 6 % I
-    0 1 6 % I
-    0 1 6 % I
-    0 1 6 % all I
-    0 1 6]; % summed I
+p.pbMeth = 1; % index in list of photobleaching detection method
+p.pbApply = false; % (1) clip traces (0) otherwise
+p.pbDat = 1; % index in list of data to use in threshold method
+p.pbPrm{1} = 7; % manual cutoff frame
+p.pbPrm{2} = [0 1 6 % threshold settings for FRET
+    0 1 6 % ... for S
+    0 1 6 % ... for I1_1
+    0 1 6 % ... for I2_1
+    0 1 6 % ... for I1_2
+    0 1 6 % ... for I2_2
+    0 1 6 % ... for all I
+    0 1 6]; % ... for summed I
 
 % parameters for panel Factor corrections
-p.factMeth = 1;
-p.fact = ones(size(p.projOpt{nL_def,nChan_def}.FRET,1),2);
-p.factPrm{1} = repmat([0,2,1,10],nL_def,1);
-p.factPrm{2} = [-0.2,50,1.2
-    1,50,5];
+p.factMeth = 1; % index in list of factor calculation method
+p.fact = [1,1]; % manual gamma and beta factors
+p.factPrm{1} = {'',''}; % source directory and factor files
+p.factFiles = {'2chan2exc_1.gam','2chan2exc_1.bet',...
+    '2chan2exc_2.gam','2chan2exc_2.bet',...
+    '2chan2exc_3.gam','2chan2exc_3.bet'}; % .gam and/or .bet files
+p.factPrm{2} = [p.nL,0,2,1,10]; % settings of photobleaching-based calculation method
+p.factPrm{3} = [1,-0.2,50,1.2,1,50,5,1]; % settings of ES linear regression calculation method
 
 % set default find states parameters
-p.fsMeth = 5; % threshold, vbFRET, one state, CPA, STaSI
-p.fsDat = 1; % bottom, top , all
-p.fsPrm = [2  0  0 1 0 0 0 0
+p.fsMeth = 5; % index in list of state finding method
+p.fsDat = 1; % find states in (1) bottom traces, (2) top traces, (3) all traces
+p.fsPrm = [2  0  0 1 0 0 0 0 % state finding method settings
     1  2  1 1 0 0 0 0
     0  0  0 0 0 0 0 0
     50 90 2 1 0 0 0 0
-    2  0  0 1 0 0 0 0]; % method settings
-p.fsThresh = [-Inf,0,0.6
+    2  0  0 1 0 0 0 0]; 
+p.fsThresh = [-Inf,0,0.6 % state values and thresholds
     0.7,1,Inf];
 
 % parameters for visualization area
+p.exp_axesBot = 'axes_top.png';
+p.exp_axesBotRight = 'axes_topRight.png';
+p.exp_axesTop = 'axes_bottom.png';
+p.exp_axesTopRight = 'axes_bottomRight.png';
+p.exp_axesImg = 'axes_subImg_%i.png';
+

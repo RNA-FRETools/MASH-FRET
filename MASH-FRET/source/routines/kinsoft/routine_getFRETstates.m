@@ -25,11 +25,12 @@ shape = 2; % gaussian cluster shape (straight multivariate)
 if ~strcmp(pname(end),filesep)
     pname = [pname,filesep];
 end
-fname_mashIn = cat(2,fname,'_STaSI.mash');
-fname_mashOut = cat(2,fname,'_vbFRET_%sstates.mash');
-fname_clst = cat(2,fname,'_vbFRET_%sstates.clst');
-fname_tdpImg = cat(2,fname,'_vbFRET_%sstates_TDP.png');
-fname_clstImg = cat(2,fname,'_vbFRET_%sstates_clust.png');
+fname_mashIn = getCorrName([fname,'_STaSI.mash'],pname,h_fig);
+fname_mashOut = getCorrName([fname,'_vbFRET_%sstates.mash'],pname,h_fig);
+fname_clst = getCorrName([fname,'_vbFRET_%sstates.clst'],pname,h_fig);
+fname_tdpImg = getCorrName([fname,'_vbFRET_%sstates_TDP.png'],pname,h_fig);
+fname_clstImg = getCorrName([fname,'_vbFRET_%sstates_clust.png'],pname,...
+    h_fig);
 
 % get default interface
 h = guidata(h_fig);

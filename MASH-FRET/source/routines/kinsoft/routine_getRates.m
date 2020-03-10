@@ -31,10 +31,11 @@ tol = 3; % deviation multiplication factor used to dertermine the number of deca
 if ~strcmp(pname(end),filesep)
     pname = [pname,filesep];
 end
-fname_mashIn = cat(2,fname,'_vbFRET_%sstates.mash');
-fname_kin = cat(2,fname,'_vbFRET_%sstates_%sexp.fit');
-fname_histImg = cat(2,fname,'_%sstates_%s_%sexp.png');
-fname_mashOut = cat(2,fname,'_vbFRET_%sstates_%sexp.mash');
+fname_mashIn = getCorrName([fname,'_vbFRET_%sstates.mash'],pname,h_fig);
+fname_kin = getCorrName([fname,'_vbFRET_%sstates_%sexp.fit'],pname,h_fig);
+fname_histImg = getCorrName([fname,'_%sstates_%s_%sexp.png'],pname,h_fig);
+fname_mashOut = getCorrName([fname,'_vbFRET_%sstates_%sexp.mash'],pname,...
+    h_fig);
 
 % get interface parameters
 h = guidata(h_fig);

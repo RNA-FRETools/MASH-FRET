@@ -44,10 +44,11 @@ disp('>> start determination of the number of states J...');
 
 % get default interface settings
 p = getDef_kinsoft(pname,fnames);
-fname_mash = cat(2,fname,'_STaSI.mash');
-fname_clst = cat(2,fname,'_STaSI_%sstates.clst');
-fname_tdpImg = cat(2,fname,'_STaSI_TDP.png');
-fname_clstImg = cat(2,fname,'_STaSI_clust_%sstates.png');
+fname_mash = getCorrName([fname '_STaSI.mash'],pname,h_fig);
+fname_clst = getCorrName([fname,'_STaSI_%sstates.clst'],pname,h_fig);
+fname_tdpImg = getCorrName([fname,'_STaSI_TDP.png'],pname,h_fig);
+fname_clstImg = getCorrName([fname,'_STaSI_clust_%sstates.png'],pname,...
+    h_fig);
 
 disp('>>>> import .dat files in Trace processing...');
 

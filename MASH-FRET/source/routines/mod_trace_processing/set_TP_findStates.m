@@ -66,6 +66,7 @@ for dat = datlist
         edit_TP_states_deblurr_Callback(h.edit_TP_states_deblurr,[],h_fig);
 
         if meth==1
+            J = numel(get(h.popupmenu_TP_states_indexThresh,'string'));
             for state = 1:J
                 set(h.popupmenu_TP_states_indexThresh,'value',state);
                 popupmenu_TP_states_indexThresh_Callback(...

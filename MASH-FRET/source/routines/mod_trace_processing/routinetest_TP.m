@@ -165,6 +165,12 @@ catch err
     if isfield(h,'figure_itgExpOpt') && ishandle(h.figure_itgExpOpt)
         close(h.figure_itgExpOpt);
     end
+    if isfield(h,'figure_gammaOpt') && ishandle(h.figure_gammaOpt)
+        close(h.figure_gammaOpt);
+    end
+    if isfield(h,'figure_ESlinRegOpt') && ishandle(h.figure_ESlinRegOpt)
+        close(h.figure_ESlinRegOpt);
+    end
     return
 end
 
