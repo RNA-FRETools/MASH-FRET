@@ -6,6 +6,9 @@ expr = strrep(expr,'/','./');
 for i = 1:K
     for j = 1:K
         l = find(exc==chanExc(j));
+        if ~isempty(strfind(expr,sprintf('I_%i%i',i,j))) && isempty(l)
+            expr = '';
+        end
         expr = strrep(expr,sprintf('I_%i%i',i,j),...
             sprintf('I(:,%i,%i)',i,l));
         expr = strrep(expr,sprintf('E_%i%i',i,j),...
