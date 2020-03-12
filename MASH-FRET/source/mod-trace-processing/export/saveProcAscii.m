@@ -304,6 +304,8 @@ try
         if fromTT && saveTr && (savePrm<3) % save parameters
             str_xp = getStrPrm(p.proj{proj}, m, mol_incl&mol_incl_tag,...
                 h_fig);
+        else
+            str_xp = '';
         end
         
         if fromTT
