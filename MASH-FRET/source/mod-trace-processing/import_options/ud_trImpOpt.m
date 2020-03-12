@@ -21,7 +21,8 @@ setProp(h.figure_trImpOpt,'visible','on');
 set([q.edit_rowCoord,q.edit_movWidth,q.edit_fnameCoord,q.edit_fnameMov,...
     q.edit_timeCol,q.edit_wl,q.edit_nbExc,q.edit_nbChan,q.edit_startColI,...
     q.edit_stopColI,q.edit_startRow,q.edit_stopRow,q.edit_fnameGam,...
-    q.edit_fnameBet,q.edit_thcol],'backgroundcolor',[1,1,1]);
+    q.edit_fnameBet,q.edit_startColSeq,q.edit_stopColSeq,q.edit_skip],...
+    'backgroundcolor',[1,1,1]);
 
 
 % set panel Molecule coordinates
@@ -132,9 +133,13 @@ end
 % set panel State trajectories
 set(q.checkbox_dFRET ,'Value',opt{1}{1}(9));
 if ~opt{1}{1}(9)
-    set([q.text_every,q.edit_thcol,q.text_thcol],'enable','off');
-    set(q.edit_thcol,'string','');
+    set([q.text_startColSeq,q.edit_startColSeq,q.text_stopColSeq,...
+        q.edit_stopColSeq,q.text_skip,q.edit_skip],'enable',...
+        'off');
+    set([q.edit_startColSeq,q.edit_stopColSeq,q.edit_skip],'string','');
 else
-    set(q.edit_thcol,'String',num2str(opt{1}{1}(10)));
+    set(q.edit_startColSeq,'String',num2str(opt{1}{1}(10)));
+    set(q.edit_stopColSeq,'String',num2str(opt{1}{1}(11)));
+    set(q.edit_skip,'String',num2str(opt{1}{1}(12)));
 end
 

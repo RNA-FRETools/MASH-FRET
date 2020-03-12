@@ -7,8 +7,8 @@ function openTrImpOpt(obj, evd, h_fig)
 
 h = guidata(h_fig);
 p = h.param.ttPr.impPrm;
-if size(p{1}{1},2) < 10
-    p{1}{1} = [1 0 0 1 1 0 2 1 0 5];
+if size(p{1}{1},2) < 12
+    p{1}{1} = [1 0 0 1 1 0 2 1 0 5 5 0];
     h.param.ttPr.impPrm = p;
     guidata(h_fig, h);
 end

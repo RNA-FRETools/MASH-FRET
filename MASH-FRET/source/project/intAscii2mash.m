@@ -1,20 +1,8 @@
 function s = intAscii2mash(pname, fname, p, h_fig)
 
-% Last update: 8th of April 2019 by Melodie Hadzic
-% --> fix errors occurring when improting discretized FRET traces
-%
-% update: 3rd of April 2019 by Melodie Hadzic
-% --> correct boolean data according to each molecule's NaN
-% --> correct discretized FRET import for more than one laser excitation: 
-%     import FRET data at donor excitation, fill missing discretized FRET 
-%     data with NaNs instead of falses and manage import failure.
-% --> change "frame_rate" name to "exptime"
-%
-% update: 28th of March 2019 by Melodie Hadzic
-% --> Display all function and code line when an error occurs
-% --> Fix error when importing coordinates from file
-% --> Manage error when importing a number of coordinates from file
-%     different from number of intensity-time traces
+% Last update, 8.4.2019 by MH: fix errors occurring when improting discretized FRET traces
+% update, 3.4.2019 by MH: (1) correct boolean data according to each molecule's NaN (2) correct discretized FRET import for more than one laser excitation: import FRET data at donor excitation, fill missing discretized FRET data with NaNs instead of falses and manage import failure. (2) change "frame_rate" name to "exptime"
+% update 28.3.2019 by MH: (1) Display all function and code line when an error occurs (2) Fix error when importing coordinates from file (3) Manage error when importing a number of coordinates from file different from number of intensity-time traces
 
 s = [];
 
@@ -34,7 +22,9 @@ row_start = p{1}{1}(1); row_end = p{1}{1}(2);
 col_start = p{1}{1}(5); col_end = p{1}{1}(6);
 nChan = p{1}{1}(7);
 nExc = p{1}{1}(8); wl = p{1}{2}(1:nExc);
-isdFRET = p{1}{1}(9); col_dFRET = p{1}{1}(10);
+isdFRET = p{1}{1}(9);
+col_seq_start = p{1}{1}(10); col_seq_end = p{1}{1}(11);
+col_seq_skip = p{1}{1}(12);
 isGam = p{6}{1} & sum(p{6}{2}) & ~isempty(p{6}{3});
 isBet = p{6}{4} & sum(p{6}{5}) & ~isempty(p{6}{6}) ;
 
@@ -161,7 +151,7 @@ try
 %                     dFRET(size(dFRET,1)+1,:) = ...
 %                         dat(1,col_dFRET:col_dFRET:end);
                     dfretNum(size(dfretNum,1)+1,:) = ...
-                        dat(1,col_dFRET:col_dFRET:end);
+                        dat(1,col_seq_start:(col_seq_skip+1):col_seq_end);
                     
                 end
                 intNum(size(intNum,1)+1,:) = dat(1,col_start:c_end);
@@ -200,8 +190,18 @@ try
                     'consistent with the correction factor files.'], h_fig, ...
                     'error');
                 return
-            elseif isempty(FRET)
-                FRET = [1 2];
+            elseif isempty(FRET) && row_start>0
+                FREThead = eval(cat(2,'{''',...
+                    strrep(fDat{row_start-1,1},char(9),''','''),'''}'));
+                FRET = getFRETfromFactorFiles(...
+                    FREThead(col_seq_start:(col_seq_skip+1):col_seq_end));
+            else
+                for don = 1:nChan
+                    for acc = (don+1):nChan
+                        FRET = cat(1,FRET,[don,acc]);
+                    end
+                end
+                FRET = FRET(1:nFRET,:);
             end
         end
         

@@ -15,7 +15,9 @@ function buildWinTrOpt(opt,h_fig)
 %    opt{1}{1}(7): number of channels
 %    opt{1}{1}(8): number of alternating lasers
 %    opt{1}{1}(9): (1) to import FRET state sequences data from files, (0) otherwise
-%    opt{1}{1}(10): column index in files where FRET states data is written
+%    opt{1}{1}(10): first column index in files where FRET states data is written
+%    opt{1}{1}(11): last column index in files where FRET states data is written
+%    opt{1}{1}(12): number of columns in files between two FRET state sequences
 %   opt{1}{2}: [1-by-nL] laser wavelength in a chronological order
 %  opt{2}: {1-by-2} video import options with:
 %   opt{2}{1}: (1) if video file is imported,(0) otherwise
@@ -45,6 +47,7 @@ fntsz = 8;
 fntclr2 = 'blue';
 mg = 10;
 mgpan = 20;
+mged = 2;
 htxt = 14;
 hedit = 20; 
 wedit = 40;
@@ -65,6 +68,9 @@ str0 = 'Save';
 str1 = 'Cancel';
 str2 = 'nb. of excitations:';
 str3 = '(column-wise)';
+str4 = 'column:';
+str5 = 'to';
+str6 = 'skip:';
 
 h = guidata(h_fig);
 
@@ -75,14 +81,19 @@ end
 % store defaults
 prm = struct('posun',posun,'fntun',fntun,'fntsz',fntsz,'fntclr2',fntclr2,...
     'mg',mg,'mgpan',mgpan,'htxt',htxt,'hedit',hedit,'hbut',hbut,'hcb',hcb,...
-    'hpop',hpop,'wedit',wedit,'wbox',wbox,'wbrd',wbrd,'warr',warr);
+    'hpop',hpop,'wedit',wedit,'wbox',wbox,'wbrd',wbrd,'warr',warr,'mged',...
+    mged);
 prm.tbl = h.charDimTable;
 
 % get dimensions
 pos0 = get(0,'ScreenSize');
-wmax = getUItextWidth(str2,fntun,fntsz,'normal',prm.tbl) + wedit + ...
+wmax1 = getUItextWidth(str2,fntun,fntsz,'normal',prm.tbl) + wedit + mged + ...
     getUItextWidth(str3,fntun,fntsz,'normal',prm.tbl);
-wpan = wmax + 2*mg;
+wpan1 = wmax1 + 2*mg;
+wmax2 = getUItextWidth(str4,fntun,fntsz,'normal',prm.tbl) + wedit + mged +...
+    getUItextWidth(str5,fntun,fntsz,'normal',prm.tbl) + wedit + mged + ...
+    getUItextWidth(str6,fntun,fntsz,'normal',prm.tbl) + wedit + mged;
+wpan2 = wmax2 + 2*mg;
 wbut0 = getUItextWidth(str0,fntun,fntsz,'normal',prm.tbl) + wbrd;
 wbut1 = getUItextWidth(str1,fntun,fntsz,'normal',prm.tbl) + wbrd;
 hpan_discr = mgpan + hcb + mg/2 + hedit + mg;
@@ -92,7 +103,7 @@ hpan_int = mgpan + htxt + mg/2 + hedit + mg/2 + hedit + mg + hcb + mg + ...
 hpan_mov = mgpan + hcb + mg/2 + hbut + mg;
 hpan_coord = mgpan + hbut + mg/2 + hbut + mg/2 + hedit + mg + hedit + mg;
 hFig = hpan_int + hpan_mov + hpan_coord + hbut + 5*mg;
-wFig = 2*wpan + 3*mg;
+wFig = mg + wpan1 + mg + wpan2 + mg;
 
 x = pos0(1) + (pos0(3) - wFig)/2;
 y = pos0(2) + (pos0(4) - hFig)/2;
@@ -128,36 +139,36 @@ y = y + hbut + mg;
 x = mg;
 
 q.uipanel_ITT = uipanel('Parent',h_fig2,'Title',ttl1,'Units',posun,...
-    'Fontunits',fntun,'Fontsize',fntsz,'Position',[x y wpan hpan_int],...
+    'Fontunits',fntun,'Fontsize',fntsz,'Position',[x y wpan1 hpan_int],...
     'FontWeight','bold');
 q = build_trImpOpt_panelITT(q,prm,h_fig);
 
 y = y + hpan_int + mg;
 
 q.uipanel_mov = uipanel('Parent',h_fig2,'Title',ttl2,'Units',posun,...
-    'Fontunits',fntun,'Fontsize',fntsz,'Position',[x y wpan hpan_mov],...
+    'Fontunits',fntun,'Fontsize',fntsz,'Position',[x y wpan1 hpan_mov],...
     'FontWeight','bold');
 q = build_trImpOpt_panelMov(q,prm,h_fig);
 
 y = y + hpan_mov + mg;
 
 q.uipanel_coord = uipanel('Parent',h_fig2,'Title',ttl3,'Units',posun,...
-    'Fontunits',fntun,'Fontsize',fntsz,'Position',[x y wpan hpan_coord],...
+    'Fontunits',fntun,'Fontsize',fntsz,'Position',[x y wpan1 hpan_coord],...
     'FontWeight','bold');
 q = build_trImpOpt_panelCoord(q,prm,h_fig);
 
-x = x + wpan + mg;
+x = x + wpan1 + mg;
 y = hFig - mg - hpan_fact - mg - hpan_discr;
 
 q.uipanel_discr = uipanel('Parent',h_fig2,'Title',ttl4,'Units',posun,...
-    'Fontunits',fntun,'Fontsize',fntsz,'Position',[x y wpan hpan_discr],...
+    'Fontunits',fntun,'Fontsize',fntsz,'Position',[x y wpan2 hpan_discr],...
     'FontWeight','bold');
 q = build_trImpOpt_panelDiscr(q,prm,h_fig);
 
 y = y + hpan_discr + mg;
 
 q.uipanel_factors = uipanel('Parent',h_fig2,'Title',ttl5,'Units',posun,...
-    'Fontunits',fntun,'Fontsize',fntsz,'Position',[x y wpan hpan_fact],...
+    'Fontunits',fntun,'Fontsize',fntsz,'Position',[x y wpan2 hpan_fact],...
     'FontWeight','bold');
 q = build_trImpOpt_panelFactors(q,prm,h_fig);
 
