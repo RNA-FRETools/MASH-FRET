@@ -74,7 +74,7 @@ for nL = 1:nL_max
             nChan,nL);
         
         p.asciiOpt{nL,nChan}.intImp = {...
-            [3 0 true 1 2 (2+nChan-1) nChan nL false 5],p.wl(1:nL)};
+            [3 0 true 1 2 (2+nChan-1) nChan nL false 5 5 0],p.wl(1:nL)};
         p.asciiOpt{nL,nChan}.vidImp = {false ''};
         p.asciiOpt{nL,nChan}.coordImp = {{false,'',{[1 2],1},256},[false 1]};
         p.asciiOpt{nL,nChan}.expCond = defprm_nL;
@@ -108,14 +108,13 @@ for nL = 1:nL_max
         end
     end
 end
-nFRET = size(p.projOpt{nL_def,nChan_def}.FRET,1);
 p.coord_file = '2chan.coord';
 p.coord_fline = 1;
 p.vid_width = 100;
 p.vid_file = '2chan2exc.sira';
 p.gamma_files = {'2chan2exc_1.gam','2chan2exc_2.gam','2chan2exc_3.gam'};
 p.beta_files = {'2chan2exc_1.bet','2chan2exc_2.bet','2chan2exc_3.bet'};
-p.states_fcol = 5;
+p.states_fcol = [5,5,0];
 p.exp_coord1 = 'coordFromFile.mash';
 p.exp_coord2 = 'coordFromHeader.mash';
 p.exp_vid = 'vidFromFile.mash';

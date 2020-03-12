@@ -98,8 +98,14 @@ end
 set(q.checkbox_dFRET,'value',opt.intImp{1}(9));
 checkbox_dFRET_Callback(q.checkbox_dFRET,[],h_fig);
 if opt.intImp{1}(9)
-    set(q.edit_thcol,'string',num2str(opt.intImp{1}(10)));
-    edit_thcol_Callback(q.edit_thcol,[],h_fig);
+    set(q.edit_startColSeq,'string',num2str(opt.intImp{1}(10)));
+    edit_startColSeq_Callback(q.edit_startColSeq,[],h_fig);
+    
+    set(q.edit_stopColSeq,'string',num2str(opt.intImp{1}(11)));
+    edit_stopColSeq_Callback(q.edit_stopColSeq,[],h_fig);
+    
+    set(q.edit_skip,'string',num2str(opt.intImp{1}(12)));
+    edit_skip_Callback(q.edit_skip,[],h_fig);
 end
 
 % save and close option window

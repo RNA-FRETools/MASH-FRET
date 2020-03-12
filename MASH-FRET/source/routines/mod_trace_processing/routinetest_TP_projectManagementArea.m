@@ -70,7 +70,7 @@ end
 
 % test coordinates import from external file
 disp(cat(2,prefix,'test import of coordinates from external file...'));
-opt = p.asciiOpt{p.nChan,p.nL};
+opt = p.asciiOpt{p.nL,p.nChan};
 opt.coordImp{1}{1} = true;
 opt.coordImp{1}{2} = {p.annexpth,p.coord_file};
 opt.coordImp{1}{4} = p.vid_width;
@@ -89,7 +89,7 @@ pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
 % test coordinates import from trace file header
 disp(cat(2,prefix,'test import of coordinates from trace file headers',...
     '...'));
-opt = p.asciiOpt{p.nChan,p.nL};
+opt = p.asciiOpt{p.nL,p.nChan};
 opt.coordImp{2}(1) = true;
 opt.coordImp{2}(2) = p.coord_fline;
 set_TP_asciiImpOpt(opt,h_fig);
@@ -106,7 +106,7 @@ pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
 
 % test video import from file
 disp(cat(2,prefix,'test import of video from external file...'));
-opt = p.asciiOpt{p.nChan,p.nL};
+opt = p.asciiOpt{p.nL,p.nChan};
 opt.vidImp{1} = true;
 opt.vidImp{2} = {p.annexpth,p.vid_file};
 set_TP_asciiImpOpt(opt,h_fig);
@@ -123,7 +123,7 @@ pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
 
 % test gamma factor import from files
 disp(cat(2,prefix,'test import of gamma factors from external files...'));
-opt = p.asciiOpt{p.nChan,p.nL};
+opt = p.asciiOpt{p.nL,p.nChan};
 opt.factImp{1} = true;
 opt.factImp{2} = p.annexpth;
 opt.factImp{3} = p.gamma_files;
@@ -141,7 +141,7 @@ pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
 
 % test beta factor import from files
 disp(cat(2,prefix,'test import of beta factors from external files...'));
-opt = p.asciiOpt{p.nChan,p.nL};
+opt = p.asciiOpt{p.nL,p.nChan};
 opt.factImp{4} = true;
 opt.factImp{5} = p.annexpth;
 opt.factImp{6} = p.beta_files;
@@ -159,9 +159,9 @@ pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
 
 % test import of FRET state sequences from files
 disp(cat(2,prefix,'test import of FRET state sequences from files...'));
-opt = p.asciiOpt{p.nChan,p.nL};
-opt.intImp{9} = true;
-opt.intImp{10} = p.states_fcol;
+opt = p.asciiOpt{p.nL,p.nChan};
+opt.intImp{1}(9) = true;
+opt.intImp{1}(10:12) = p.states_fcol;
 set_TP_asciiImpOpt(opt,h_fig);
 
 pushbutton_addTraces_Callback({...
