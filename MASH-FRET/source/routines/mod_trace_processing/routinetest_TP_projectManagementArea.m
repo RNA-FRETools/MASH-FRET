@@ -157,8 +157,8 @@ set_VP_projOpt(p.projOpt{p.nL,p.nChan},p.wl(1:p.nL),h.pushbutton_editParam,...
 pushbutton_expProj_Callback({p.dumpdir,p.exp_bet},[],h_fig);
 pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
 
-% test beta factor import from files
-disp(cat(2,prefix,'test import of beta factors from external files...'));
+% test import of FRET state sequences from files
+disp(cat(2,prefix,'test import of FRET state sequences from files...'));
 opt = p.asciiOpt{p.nChan,p.nL};
 opt.intImp{9} = true;
 opt.intImp{10} = p.states_fcol;

@@ -6,7 +6,7 @@ function routinetest_TP(varargin)
 % h_fig: handle to main figure if it exists
 % opt: panels to test ('all','project management area','sample management','plot','sub-images','background','cross-talks','denoising','photobleaching','factor corrections','find'states',visualization area');
 %
-% This routine execute main GUI-based actions performed when processing videos.
+% This routine execute main GUI-based actions performed in trace processing.
 % The script can be executed from MATLAB's command window or from the routine menu of MASH.
 % It deletes default_param.ini and runs MASH if executed from command window, test all uicontrol callbacks and specific functionalities of each panel.
 
@@ -71,7 +71,7 @@ try
         routinetest_TP_fileExport(h_fig,p,subprefix);
     end
     
-    % test file export (panel sample management)
+    % test trace manager (panel sample management)
     if strcmp(opt,'trace manager')
         disp('test trace manager...');
         routinetest_TP_traceManager(h_fig,p,subprefix);
