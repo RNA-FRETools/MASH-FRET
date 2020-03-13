@@ -106,8 +106,11 @@ Jmax = 4;
 p.clstMeth = 2; % clustering method
 p.clstMethPrm = [Jmax,5,false,5];
 p.clstConfig = [1,1,1,1]; % constraint, diagonal clusters, likelihood, shape
-p.clstStart = [linspace(0,1,Jmax)',repmat(0.1,[Jmax,1])];
+p.clstStart = [linspace(0,1,Jmax)',repmat(0.1,[Jmax,1]),...
+    linspace(0.2,0.8,Jmax)',repmat(0.15,[Jmax,1])];
 p.exp_clst = 'clst_%i_%i';
+p.exp_mouseSlct = 'clstStartMouse_%i_%i';
+p.exp_defSlct = 'clstStartDef_%i_%i';
 
 % default exponential fit settings
 p.nMax = nMax;

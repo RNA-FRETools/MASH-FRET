@@ -18,20 +18,26 @@ popupmenu_TA_clstMeth_Callback(h.popupmenu_TA_clstMeth,[],h_fig);
 set(h.edit_TDPnStates,'string',num2str(prm(1)));
 edit_TDPnStates_Callback(h.edit_TDPnStates,[],h_fig);
 
-set(h.edit_TDPmaxiter,'string',num2str(prm(2)));
-edit_TDPmaxiter_Callback(h.edit_TDPmaxiter,[],h_fig);
+if sum(meth==[1,2])
+    set(h.edit_TDPmaxiter,'string',num2str(prm(2)));
+    edit_TDPmaxiter_Callback(h.edit_TDPmaxiter,[],h_fig);
+end
 
 set(h.checkbox_TDPboba,'value',prm(3));
 checkbox_TDPboba_Callback(h.checkbox_TDPboba,[],h_fig);
 
-set(h.edit_TDPnSpl,'string',num2str(prm(4)));
-edit_TDPnSpl_Callback(h.edit_TDPnSpl,[],h_fig);
+if prm(3)
+    set(h.edit_TDPnSpl,'string',num2str(prm(4)));
+    edit_TDPnSpl_Callback(h.edit_TDPnSpl,[],h_fig);
+end
 
 set(h.popupmenu_TA_clstMat,'value',clstConfig(1));
 popupmenu_TA_clstMat_Callback(h.popupmenu_TA_clstMat,[],h_fig);
 
-set(h.checkbox_TA_clstDiag,'value',clstConfig(2));
-checkbox_TA_clstDiag_Callback(h.checkbox_TA_clstDiag,[],h_fig);
+if clstConfig(1)==1
+    set(h.checkbox_TA_clstDiag,'value',clstConfig(2));
+    checkbox_TA_clstDiag_Callback(h.checkbox_TA_clstDiag,[],h_fig);
+end
 
 if meth==2
     set(h.popupmenu_TDPlike,'value',clstConfig(3));
