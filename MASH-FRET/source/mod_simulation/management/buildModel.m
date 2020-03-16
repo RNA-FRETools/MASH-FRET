@@ -75,7 +75,7 @@ if K>1 && isTrans
             %             P = kx*N; // M.CAS Hadzic 2012
             %             P = double(~~(kx)); %  M.CAS Hadzic 2014, to be updated
 %             P = kx.*expT; % simple rate-to-prob-model for Markov chains, 2018-03-12 RB
-            P = kx.*wx; % use probability-weighted rates
+            P = (kx*expT).*wx; % use probability-weighted rates
             for i=1:K 
                  %P(:,i) = (kx(:,i)./sum(kx,2)(i))*(1-exp(-sum(kx,2)(i)*expT));
 %                  P(i,i) = 1 - sum(kx(i,:))*expT; % simple rate-to-prob-model for Markov chains, 2018-03-12 RB
