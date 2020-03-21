@@ -195,7 +195,9 @@ try
                     strrep(fDat{row_start-1,1},char(9),''','''),'''}'));
                 FRET = getFRETfromFactorFiles(...
                     FREThead(col_seq_start:(col_seq_skip+1):col_seq_end));
-            else
+            end
+            if isempty(FRET) || sum(isnan(FRET))
+                FRET = [];
                 for don = 1:nChan
                     for acc = (don+1):nChan
                         FRET = cat(1,FRET,[don,acc]);
