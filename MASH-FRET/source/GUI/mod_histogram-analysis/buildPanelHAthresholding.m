@@ -13,11 +13,10 @@ function h = buildPanelHAthresholding(h,p)
 %   p.mg: margin
 %   p.mgpan: top-margin in a titled panel
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
-% Created by MH, 6.11.2019
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
+% created by MH, 6.11.2019
 
 % default
 hedit0 = 20;
@@ -32,11 +31,11 @@ str4 = 'relative pop.:';
 str5 = 'sigma';
 str6 = {'Select a state'};
 str7 = 'color:';
-ttstr0 = wrapStrToWidth('<b>Number of thresholds</b> used to separate and integrate histogram peaks.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Start peak integration</b> with thresholding.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Threshold value:</b> thresholds appear as vertical black bars on top and bottom plots; threshold values can be automatically calculated and imported from an inferred state configuration in panel "State configurations".',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Select a threshold</b> to set its value.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Select a state</b> to show the corresponding relative population, bootstrapping results and associated plot color.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('<b>Number of thresholds</b> used to separate and integrate histogram peaks.');
+ttstr1 = wrapHtmlTooltipString('<b>Start peak integration</b> with thresholding.');
+ttstr2 = wrapHtmlTooltipString('<b>Threshold value:</b> thresholds appear as vertical black bars on top and bottom plots; threshold values can be automatically calculated and imported from an inferred state configuration in panel "State configurations".');
+ttstr3 = wrapHtmlTooltipString('<b>Select a threshold</b> to set its value.');
+ttstr4 = wrapHtmlTooltipString('<b>Select a state</b> to show the corresponding relative population, bootstrapping results and associated plot color.');
 
 % parents
 h_fig = h.figure_MASH;

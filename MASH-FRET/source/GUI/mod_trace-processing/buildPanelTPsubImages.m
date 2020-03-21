@@ -13,10 +13,9 @@ function h = buildPanelTPsubImages(h,p)
 %   p.mg: margin
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -36,13 +35,13 @@ str7 = 'x';
 str8 = 'y';
 str9 = 'Select a channel';
 str10 = 'recenter all';
-ttstr0 = wrapStrToWidth('Select a <b>laser wavelength</b> to show sub-images from.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('Adjust the <b>brightness</b> in molecule sub-images.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('Adjust the <b>contrast</b> in molecule sub-images.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('Select the <b>emission channel</b> where molecule coordinates need to be adjusted.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Molecule position:</b> x-coordinate of the current single molecule in the selected emission channel.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('<b>Molecule position:</b> y-coordinate of the current single molecule in the selected emission channel.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr6 = wrapStrToWidth('<b>Recenter positions</b> in all emission channels: recenters on the brightest pixel of the 3-by-3 pixel area around the current position; the process is iterative with three iterations max.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Select a <b>laser wavelength</b> to show sub-images from.');
+ttstr1 = wrapHtmlTooltipString('Adjust the <b>brightness</b> in molecule sub-images.');
+ttstr2 = wrapHtmlTooltipString('Adjust the <b>contrast</b> in molecule sub-images.');
+ttstr3 = wrapHtmlTooltipString('Select the <b>emission channel</b> where molecule coordinates need to be adjusted.');
+ttstr4 = wrapHtmlTooltipString('<b>Molecule position:</b> x-coordinate of the current single molecule in the selected emission channel.');
+ttstr5 = wrapHtmlTooltipString('<b>Molecule position:</b> y-coordinate of the current single molecule in the selected emission channel.');
+ttstr6 = wrapHtmlTooltipString('<b>Recenter positions</b> in all emission channels: recenters on the brightest pixel of the 3-by-3 pixel area around the current position; the process is iterative with three iterations max.');
 
 % parents
 h_fig = h.figure_MASH;

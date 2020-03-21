@@ -14,12 +14,11 @@ function h = buildPanelVP(h,p)
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.fntclr1: text color in file/folder fields
 %   p.wbuth: pixel width of help buttons
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -50,11 +49,11 @@ ttl1 = 'Experiment settings';
 ttl2 = 'Edit and export video';
 ttl3 = 'Molecule coordinates';
 ttl4 = 'Intensity integration';
-ttstr0 = wrapStrToWidth('Open browser and <b>select a video/image file</b> to load.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Free memory from video data</b>: to be done when you are done with video processing; this will increase the general processing time.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('Activate <b>"create trace" cursor:</b> clicking on one pixel of the video will create intensity-time traces from this position.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('Activate <b>zoom cursor:</b> regular MATLAB zoom tool.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('Video/image file:</b> source file where video frames are taken from.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Open browser and <b>select a video/image file</b> to load.');
+ttstr1 = wrapHtmlTooltipString('<b>Free memory from video data</b>: to be done when you are done with video processing; this will increase the general processing time.');
+ttstr2 = wrapHtmlTooltipString('Activate <b>"create trace" cursor:</b> clicking on one pixel of the video will create intensity-time traces from this position.');
+ttstr3 = wrapHtmlTooltipString('Activate <b>zoom cursor:</b> regular MATLAB zoom tool.');
+ttstr4 = wrapHtmlTooltipString('Video/image file:</b> source file where video frames are taken from.');
 
 % parents
 h_fig = h.figure_MASH;

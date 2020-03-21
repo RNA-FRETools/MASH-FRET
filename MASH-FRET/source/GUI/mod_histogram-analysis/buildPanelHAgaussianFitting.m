@@ -14,10 +14,9 @@ function h = buildPanelHAgaussianFitting(h,p)
 %   p.mgpan: top-margin in a titled panel
 %   p.wbox: box's pixel width in checkboxes
 %   p.warr: width of downwards arrow in popupmenu
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % Created by MH, 6.11.2019
 
 % default
@@ -27,8 +26,8 @@ wedit0 = 40;
 str0 = 'nb. of Gaussians:';
 str1 = 'Fit';
 ttl0 = 'Fitting parameters';
-ttstr0 = wrapStrToWidth('<b>Number of Gaussians</b> used to fit to and integrate all histogram peaks.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Start peak integration</b> with Gaussian fitting.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('<b>Number of Gaussians</b> used to fit to and integrate all histogram peaks.');
+ttstr1 = wrapHtmlTooltipString('<b>Start peak integration</b> with Gaussian fitting.');
 
 % parents
 h_fig = h.figure_MASH;

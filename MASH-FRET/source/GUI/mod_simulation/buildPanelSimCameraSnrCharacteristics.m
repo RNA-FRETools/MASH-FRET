@@ -12,9 +12,8 @@ function h = buildPanelSimCameraSnrCharacteristics(h,p)
 %   p.fntsz1: regular font size
 %   p.mg: margin
 %   p.mgpan: top-margin in a titled panel
-%   p.wttsr: pixel width of tooltip box
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -31,7 +30,7 @@ str3 = 'K:';
 str4 = 'A_CIC:';
 str5 = cat(2,char(963),'_ic:');
 str6 = cat(2,char(964),'_CIC:');
-ttstr0 = wrapStrToWidth('Select a distribution to describe the <b>camera noise</b>.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Select a distribution to describe the <b>camera noise</b>.');
 ttstr1 = '';
 ttstr2 = '';
 ttstr3 = '';

@@ -14,11 +14,10 @@ function h = buildPanelTPphotobleaching(h,p)
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.fntclr2: text color in special pushbuttons
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -34,11 +33,11 @@ str3 = 'Clip';
 str4 = 'data';
 str5 = 'Select the data to process';
 str6 = 'all';
-ttstr0 = wrapStrToWidth('Select a photobleaching <b>detection method</b>.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Cutoff time/frame:</b> position on the x-axis where photobleaching was detected; the cutoff is shown by a cyan vertical bar in top and bottom plots.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Clip traces</b> to cutoff time/frame: when activated, data points beyond the cutoff position are ignored.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Select data</b> to analyze for photobleaching detection.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('Apply current photobleaching settings to all molecules.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Select a photobleaching <b>detection method</b>.');
+ttstr1 = wrapHtmlTooltipString('<b>Cutoff time/frame:</b> position on the x-axis where photobleaching was detected; the cutoff is shown by a cyan vertical bar in top and bottom plots.');
+ttstr2 = wrapHtmlTooltipString('<b>Clip traces</b> to cutoff time/frame: when activated, data points beyond the cutoff position are ignored.');
+ttstr3 = wrapHtmlTooltipString('<b>Select data</b> to analyze for photobleaching detection.');
+ttstr4 = wrapHtmlTooltipString('Apply current photobleaching settings to all molecules.');
 
 % parents
 h_fig = h.figure_MASH;

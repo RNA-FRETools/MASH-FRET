@@ -14,10 +14,9 @@ function h = buildPanelHAfittingParameters(h,p)
 %   p.mgpan: top-margin in a titled panel
 %   p.wbox: box's pixel width in checkboxes
 %   p.warr: width of downwards arrow in popupmenu
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % Created by MH, 7.11.2019
 
 % default
@@ -38,16 +37,16 @@ str8 = 'amp.:';
 str9 = 'center:';
 str10 = 'FWHM:';
 str11 = 'relative population:';
-ttstr0 = wrapStrToWidth('<b>Select a Gaussian</b> to adjust fitting parameters or show best fit parameters, calculated relative populations, bootstrapping results and associated plot color.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('Gaussian''s <b>lowest amplitude</b> used in fit.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Starting guess</b> for Gaussian''s <b>amplitude</b>: Gaussian parameters can be automatically imported from an inferred state configuration in panel "State configurations".',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('Gaussian''s <b>highest amplitude</b> used in fit.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('Gaussian''s <b>lowest mean</b> used in fit.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('<b>Starting guess</b> for Gaussian''s <b>mean</b>: Gaussian parameters can be automatically imported from an inferred state configuration in panel "State configurations".',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr6 = wrapStrToWidth('Gaussian''s <b>highest mean</b> used in fit.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr7 = wrapStrToWidth('Gaussian''s <b>narrowest width</b> used in fit.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr8 = wrapStrToWidth('<b>Starting guess</b> for Gaussian''s <b>width</b>: Gaussian parameters can be automatically imported from an inferred state configuration in panel "State configurations".',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr9 = wrapStrToWidth('Gaussian''s <b>largest width</b> used in fit.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('<b>Select a Gaussian</b> to adjust fitting parameters or show best fit parameters, calculated relative populations, bootstrapping results and associated plot color.');
+ttstr1 = wrapHtmlTooltipString('Gaussian''s <b>lowest amplitude</b> used in fit.');
+ttstr2 = wrapHtmlTooltipString('<b>Starting guess</b> for Gaussian''s <b>amplitude</b>: Gaussian parameters can be automatically imported from an inferred state configuration in panel "State configurations".');
+ttstr3 = wrapHtmlTooltipString('Gaussian''s <b>highest amplitude</b> used in fit.');
+ttstr4 = wrapHtmlTooltipString('Gaussian''s <b>lowest mean</b> used in fit.');
+ttstr5 = wrapHtmlTooltipString('<b>Starting guess</b> for Gaussian''s <b>mean</b>: Gaussian parameters can be automatically imported from an inferred state configuration in panel "State configurations".');
+ttstr6 = wrapHtmlTooltipString('Gaussian''s <b>highest mean</b> used in fit.');
+ttstr7 = wrapHtmlTooltipString('Gaussian''s <b>narrowest width</b> used in fit.');
+ttstr8 = wrapHtmlTooltipString('<b>Starting guess</b> for Gaussian''s <b>width</b>: Gaussian parameters can be automatically imported from an inferred state configuration in panel "State configurations".');
+ttstr9 = wrapHtmlTooltipString('Gaussian''s <b>largest width</b> used in fit.');
 
 % parents
 h_fig = h.figure_MASH;

@@ -7,6 +7,8 @@ function h_fig = buildMASHfig(varargin)
 % figureName: figure's title
 % h_fig: handle to main figure
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
+
 % default
 fname_ref = 'charDimTable.mat'; % reference file containing character pixel dimensions
 fname_boba = 'boba.png'; % image file containing BOBA FRET icon
@@ -19,7 +21,6 @@ mgpan = 20; % top margin inside a panel (includes title)
 wbox = 15; % box width in checkboxes
 wbrd = 4; % width of pushbutton borders
 warr = 20; % width of downwards arrow in popupmenu
-wttstr = 250; % width of tooltip box
 fntclr1 = 'blue'; % text color in file/folder fields
 fntclr2 = 'blue'; % text color in special pushbuttons
 wbuth = 22;
@@ -44,9 +45,8 @@ str3 = 'Histogram analysis';
 str4 = 'Transition analysis';
 str5 = 'Destination:';
 str6 = '...';
-hndls = []; % handles to dummy figure and text: re-using the same figure/text control saves a considerable time
-[ttstr0,hndls] = wrapStrToWidth('<b>Destination folder:</b> files will be automatically exported at this location.',fntun,fntsz1,'normal',wttstr,'html',hndls);
-ttstr1 = wrapStrToWidth('<b>Open browser</b> to set the new location of the destination folder.',fntun,fntsz1,'normal',wttstr,'html',hndls);
+ttstr0 = wrapHtmlTooltipString('<b>Destination folder:</b> files will be automatically exported at this location.');
+ttstr1 = wrapHtmlTooltipString('<b>Open browser</b> to set the new location of the destination folder.');
 
 % load reference table listing character widths
 h.charDimTable = getfield(load(fname_ref),field_name);
@@ -61,9 +61,8 @@ end
 
 % build often-used parameter structure
 p = struct('posun',posun,'fntun',fntun,'fntsz1',fntsz1,'mg',mg,'mgpan',...
-    mgpan,'wbrd',wbrd,'wbox',wbox,'warr',warr,'wttstr',wttstr,'fntclr1',...
-    fntclr1,'fntclr2',fntclr2,'wbuth',wbuth,'hndls',hndls,'fname_boba',...
-    fname_boba);
+    mgpan,'wbrd',wbrd,'wbox',wbox,'warr',warr,'fntclr1',fntclr1,'fntclr2',...
+    fntclr2,'wbuth',wbuth,'fname_boba',fname_boba);
 p.tbl = h.charDimTable; % table listing character pixel dimensions
 
 % dimensions
@@ -187,8 +186,8 @@ h.uipanel_TA = uipanel('parent',h_fig,'title','','units',posun,'position',...
 h = buildPanelTA(h,p);
 
 % save dummy figure and text
-h.figure_dummy = hndls(1);
-h.text_dummy = hndls(2);
+h.figure_dummy = [];
+h.text_dummy = [];
 
 guidata(h_fig,h);
 

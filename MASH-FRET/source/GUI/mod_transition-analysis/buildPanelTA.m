@@ -21,10 +21,9 @@ function h = buildPanelTA(h,p)
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
 %   p.warr: width of downwards arrow in popupmenu
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % Created by MH, 19.10.2019
 
 % default
@@ -36,11 +35,11 @@ str4 = 'Save';
 ttl0 = 'Transition density plot';
 ttl1 = 'State configuration';
 ttl2 = 'State transition rates';
-ttstr0 = wrapStrToWidth('Open <b>import options</b> to configure how state sequences are imported from ASCII files.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Import state sequences</b> from a .mash file or from a set of ASCII files.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Close selected project</b> and remove it from the list.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Export results</b> to ASCII files: including transition density plots, state configurations and state transition rates.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Export selected project</b> to a .mash file.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Open <b>import options</b> to configure how state sequences are imported from ASCII files.');
+ttstr1 = wrapHtmlTooltipString('<b>Import state sequences</b> from a .mash file or from a set of ASCII files.');
+ttstr2 = wrapHtmlTooltipString('<b>Close selected project</b> and remove it from the list.');
+ttstr3 = wrapHtmlTooltipString('<b>Export results</b> to ASCII files: including transition density plots, state configurations and state transition rates.');
+ttstr4 = wrapHtmlTooltipString('<b>Export selected project</b> to a .mash file.');
 
 % parents
 h_fig = h.figure_MASH;

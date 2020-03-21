@@ -13,14 +13,11 @@ function h = buildPanelTPfactorCorrections(h,p)
 %   p.mg: margin
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
-%   p.wttsr: pixel width of tooltip box
 %   p.fntclr2: text color in special pushbuttons
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
-% Last update: by MH, 10.1.2020
-% >> remove cross-talks parameters
-%
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
+% update: by MH, 10.1.2020: remove cross-talks parameters
 % created by MH, 19.10.2019
 
 % default
@@ -38,11 +35,11 @@ str5 = {'Select a FRET pair'};
 str6 = 'gamma';
 str7 = 'beta';
 str8 = 'all';
-ttstr0 = wrapStrToWidth('Select an <b>estimation method:</b> photobleaching-based estimation of gamma factors requires acceptor to photobleach.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('Select a <b>FRET pair</b> to configure the gamma correction for.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Gamma factor</b> for the selected FRET pair.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Beta factor</b> for the selected FRET pair.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('Apply current factor corrections settings to all molecules.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Select an <b>estimation method:</b> photobleaching-based estimation of gamma factors requires acceptor to photobleach.');
+ttstr1 = wrapHtmlTooltipString('Select a <b>FRET pair</b> to configure the gamma correction for.');
+ttstr2 = wrapHtmlTooltipString('<b>Gamma factor</b> for the selected FRET pair.');
+ttstr3 = wrapHtmlTooltipString('<b>Beta factor</b> for the selected FRET pair.');
+ttstr4 = wrapHtmlTooltipString('Apply current factor corrections settings to all molecules.');
 
 % parents
 h_fig = h.figure_MASH;

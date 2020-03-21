@@ -14,10 +14,9 @@ function h = buildPanelTAresults(h,p)
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % Created by MH, 8.11.2019
 
 % defaults
@@ -36,11 +35,11 @@ str4 = {'Select a number of states'};
 str5 = '>>';
 str6 = 'BIC:';
 str7 = 'reset';
-ttstr0 = wrapStrToWidth('<b>Model complexity:</b> optimum number of states; when BOBA FRET activated, the bootstrap mean is shown here.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Sample variability:</b> when BOBA FRET activated, the bootstrap standard deviation of optimum number of states is shown here.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Export transition clusters</b> from the selected state configuration to panel "State trasition rates" for dwell time analysis.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Bayesian information criterion</b> corresponding to selected model complexity.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('<b>Delete clustering</b> results.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('<b>Model complexity:</b> optimum number of states; when BOBA FRET activated, the bootstrap mean is shown here.');
+ttstr1 = wrapHtmlTooltipString('<b>Sample variability:</b> when BOBA FRET activated, the bootstrap standard deviation of optimum number of states is shown here.');
+ttstr3 = wrapHtmlTooltipString('<b>Export transition clusters</b> from the selected state configuration to panel "State trasition rates" for dwell time analysis.');
+ttstr4 = wrapHtmlTooltipString('<b>Bayesian information criterion</b> corresponding to selected model complexity.');
+ttstr5 = wrapHtmlTooltipString('<b>Delete clustering</b> results.');
 
 % parents
 h_fig = h.figure_MASH;

@@ -14,10 +14,9 @@ function h = buildPanelVPspotfinder(h,p)
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -36,21 +35,21 @@ str6 = 'Exclusion rules:';
 str7 = 'Results';
 str8 = 'spots';
 str9 = 'Save...';
-ttstr0 = wrapStrToWidth('Select a <b>spot finding algorithm</b> to configure and use on the current image/video.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Fit spot profiles</b> with 2D Gaussian functions: Gaussian widths and amplitude are then used to sort and select spots (see Exclusion rules).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Select a video channel</b> to configure the algorithm for (chanels are numbered from left to right).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Width of fitting area</b> used for Gaussian fitting.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Height of fitting area</b> used for Gaussian fitting.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('<b>Find spots in all video frames:</b> when activated, each video frame is processed individually using the same settings.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr6 = wrapStrToWidth('Start spot finding algorithm.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr7 = wrapStrToWidth('<b>Maximum number</b> of spots to find.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr8 = wrapStrToWidth('<b>Minimum distance</b> allowed between spots.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr9 = wrapStrToWidth('<b>Minimum distance</b> allowed between spots and image edges.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr10 = wrapStrToWidth('<b>Minimum spot width</b> allowed (in pixels): spots widths are the Gaussian standard deviations obtained after fitting.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr11 = wrapStrToWidth('<b>Maximum spot width</b> allowed (in pixels): spots widths are the Gaussian standard deviations obtained after fitting.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr12 = wrapStrToWidth('<b>Maximum spot assymetry</b> allowed (in percent): spot assymetry is calculated as the ratio of the spot''s widths in th x- and y- directions obtained after fitting (spot assymetry is always higher than 100%).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr13 = wrapStrToWidth('<b>Number of spots found</b> after applying exclusion rules.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr14 = wrapStrToWidth('<b>Export</b> spot coordinates to file.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Select a <b>spot finding algorithm</b> to configure and use on the current image/video.');
+ttstr1 = wrapHtmlTooltipString('<b>Fit spot profiles</b> with 2D Gaussian functions: Gaussian widths and amplitude are then used to sort and select spots (see Exclusion rules).');
+ttstr2 = wrapHtmlTooltipString('<b>Select a video channel</b> to configure the algorithm for (chanels are numbered from left to right).');
+ttstr3 = wrapHtmlTooltipString('<b>Width of fitting area</b> used for Gaussian fitting.');
+ttstr4 = wrapHtmlTooltipString('<b>Height of fitting area</b> used for Gaussian fitting.');
+ttstr5 = wrapHtmlTooltipString('<b>Find spots in all video frames:</b> when activated, each video frame is processed individually using the same settings.');
+ttstr6 = wrapHtmlTooltipString('Start spot finding algorithm.');
+ttstr7 = wrapHtmlTooltipString('<b>Maximum number</b> of spots to find.');
+ttstr8 = wrapHtmlTooltipString('<b>Minimum distance</b> allowed between spots.');
+ttstr9 = wrapHtmlTooltipString('<b>Minimum distance</b> allowed between spots and image edges.');
+ttstr10 = wrapHtmlTooltipString('<b>Minimum spot width</b> allowed (in pixels): spots widths are the Gaussian standard deviations obtained after fitting.');
+ttstr11 = wrapHtmlTooltipString('<b>Maximum spot width</b> allowed (in pixels): spots widths are the Gaussian standard deviations obtained after fitting.');
+ttstr12 = wrapHtmlTooltipString('<b>Maximum spot assymetry</b> allowed (in percent): spot assymetry is calculated as the ratio of the spot''s widths in th x- and y- directions obtained after fitting (spot assymetry is always higher than 100%).');
+ttstr13 = wrapHtmlTooltipString('<b>Number of spots found</b> after applying exclusion rules.');
+ttstr14 = wrapHtmlTooltipString('<b>Export</b> spot coordinates to file.');
 
 % parents
 h_fig = h.figure_MASH;

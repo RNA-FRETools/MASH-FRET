@@ -14,10 +14,9 @@ function h = buildPanelTAstateConfiguration(h,p)
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % Created by MH, 8.11.2019
 
 % defaults
@@ -41,10 +40,10 @@ str6 = 'samp.';
 str7 = 'x=0 y=0';
 ttl0 = 'Clusters';
 ttl1 = 'Results';
-ttstr0 = wrapStrToWidth('<b>Clustering method:</b> <u>k-mean:</u> iterative process where state transitions are assigned to the nearest cluster center; <u>GM:</u> iterative process where transitions are assigned to the most probable Gaussian cluster (<i>model selection:</i> 2D-Gaussian mixtures with increasing complexities are successively fit to the TDP and overfitting is penalized using the BIC); <u>simple:</u> state transitions are assigned to the cluser in which they are contained.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>TDP bootstrapping:</b> when activated, sample TDPs are created prior clustering and from molecules randomly selected in the project (replicates); the resulting bootstrap mean and standard deviation are used to estimate the cross-sample variability of model complexity.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Number of bootstrap replicates:</b> number of molecules randomly selected in the project, used to create one sample TDP.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Number of bootstrap samples:</b> number of sample TDPs to create in order to estimate cross-sample variability.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('<b>Clustering method:</b> <u>k-mean:</u> iterative process where state transitions are assigned to the nearest cluster center; <u>GM:</u> iterative process where transitions are assigned to the most probable Gaussian cluster (<i>model selection:</i> 2D-Gaussian mixtures with increasing complexities are successively fit to the TDP and overfitting is penalized using the BIC); <u>simple:</u> state transitions are assigned to the cluser in which they are contained.');
+ttstr2 = wrapHtmlTooltipString('<b>TDP bootstrapping:</b> when activated, sample TDPs are created prior clustering and from molecules randomly selected in the project (replicates); the resulting bootstrap mean and standard deviation are used to estimate the cross-sample variability of model complexity.');
+ttstr3 = wrapHtmlTooltipString('<b>Number of bootstrap replicates:</b> number of molecules randomly selected in the project, used to create one sample TDP.');
+ttstr4 = wrapHtmlTooltipString('<b>Number of bootstrap samples:</b> number of sample TDPs to create in order to estimate cross-sample variability.');
 
 % parents
 h_fig = h.figure_MASH;

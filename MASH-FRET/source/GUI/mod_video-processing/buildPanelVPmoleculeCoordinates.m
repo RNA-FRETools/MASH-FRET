@@ -14,11 +14,10 @@ function h = buildPanelVPmoleculeCoordinates(h,p)
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.fntclr1: text color in file/folder fields
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -30,11 +29,11 @@ str1 = 'Go';
 str2 = '...';
 ttl0 = 'Spotfinder';
 ttl1 = 'Coordinates transformation';
-ttstr0 = wrapStrToWidth('<b>Frame interval</b> in the range of video frames to average (ex: 3 = average every third frames).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>First video frame</b> in the range of video frames to average.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Last video frame</b> in the range of video frames to average.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Calculate and export</b> avergae image to file.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('Open browser and <b>select an average image file</b> to import for single moelcule localization.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('<b>Frame interval</b> in the range of video frames to average (ex: 3 = average every third frames).');
+ttstr1 = wrapHtmlTooltipString('<b>First video frame</b> in the range of video frames to average.');
+ttstr2 = wrapHtmlTooltipString('<b>Last video frame</b> in the range of video frames to average.');
+ttstr3 = wrapHtmlTooltipString('<b>Calculate and export</b> avergae image to file.');
+ttstr4 = wrapHtmlTooltipString('Open browser and <b>select an average image file</b> to import for single moelcule localization.');
 
 % parents
 h_fig = h.figure_MASH;

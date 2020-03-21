@@ -12,9 +12,8 @@ function h = buildPanelTAtransitions(h,p)
 %   p.fntsz1: regular font size
 %   p.mg: margin
 %   p.mgpan: top-margin in a titled panel
-%   p.wttsr: pixel width of tooltip box
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % Created by MH, 9.11.2019
 
 % defaults
@@ -25,8 +24,8 @@ str0 = {'red','green','blue','yellow','cyan','magenta','olive','orange',...
     'wine','marine','kaki','turpuoise','purple','brown','pink','violet',...
     'grey','canary','pastel blue'};
 str1 = 'Rearrange sequences';
-ttstr0 = wrapStrToWidth('<b>Set plot color</b> of selected transition cluster',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Re-build state sequences</b> by ignoring "false" state transitions (<i>i.e.</i>, that belong to diagonal clusters); the dwell time before transition is extended up to the next "true" state transition in the sequence.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('<b>Set plot color</b> of selected transition cluster');
+ttstr1 = wrapHtmlTooltipString('<b>Re-build state sequences</b> by ignoring "false" state transitions (<i>i.e.</i>, that belong to diagonal clusters); the dwell time before transition is extended up to the next "true" state transition in the sequence.');
 
 % parents
 h_fig = h.figure_MASH;

@@ -14,10 +14,9 @@ function h = buildPanelVPeditAndExportVideo(h,p)
 %   p.mgpan: top-margin in a titled panel
 %   p.wbox: box's pixel width in checkboxes
 %   p.wbrd: cumulated pixel width of pushbutton's border
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -41,14 +40,14 @@ str5 = 'Remove filter';
 str6 = 'Export...';
 str7 = 'start';
 str8 = 'end';
-ttstr0 = wrapStrToWidth('<b>Select an image filter/correction</b> to configure.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Add filter</b> to list: filters/corrections are applied one after the other according to the list order.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Filter/correct all frames:</b> each frame is processed individually (otherwise, only the current frame will be processed).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Select the channel</b> to configure the filter/correction for: channels are numebred from left to right.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Remove</b> selected filter/correction from the list.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('<b>Export</b> edited image/video to file.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr6 = wrapStrToWidth('<b>First video frame</b> in the frame range to export.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr7 = wrapStrToWidth('<b>Last video frame</b> in the frame range to export.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('<b>Select an image filter/correction</b> to configure.');
+ttstr1 = wrapHtmlTooltipString('<b>Add filter</b> to list: filters/corrections are applied one after the other according to the list order.');
+ttstr2 = wrapHtmlTooltipString('<b>Filter/correct all frames:</b> each frame is processed individually (otherwise, only the current frame will be processed).');
+ttstr3 = wrapHtmlTooltipString('<b>Select the channel</b> to configure the filter/correction for: channels are numebred from left to right.');
+ttstr4 = wrapHtmlTooltipString('<b>Remove</b> selected filter/correction from the list.');
+ttstr5 = wrapHtmlTooltipString('<b>Export</b> edited image/video to file.');
+ttstr6 = wrapHtmlTooltipString('<b>First video frame</b> in the frame range to export.');
+ttstr7 = wrapHtmlTooltipString('<b>Last video frame</b> in the frame range to export.');
 
 % parents
 h_fig = h.figure_MASH;

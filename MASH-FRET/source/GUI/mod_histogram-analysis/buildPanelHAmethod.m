@@ -13,10 +13,9 @@ function h = buildPanelHAmethod(h,p)
 %   p.mg: margin
 %   p.mgpan: top-margin in a titled panel
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % Created by MH, 6.11.2019
 
 % default
@@ -29,12 +28,12 @@ str2 = 'BOBA FRET';
 str3 = 'replicates:';
 str4 = 'samples:';
 str5 = 'weighting';
-ttstr0 = wrapStrToWidth('Peak integration by <b>Gaussian fitting:</b> the histogram is fitted with a mixture of Gaussian functions; individual Gaussian integrals are normalized by the sum of all Gaussian integrals to obtain the state relative poopulations.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('Peak integration by <b>thresholding:</b> histogram peaks are separated by fixed thresholds and histogram counts are summed up between thresholds; resulting integrals are normalized by the sum of all integrals to obtain relative state populations.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Molecule bootstrapping:</b> when activated, sample histograms are created from molecules randomly selected in the project (replicates) and peaks are integrated; the resulting bootstrap mean and standard deviation are used to estimate the cross-sample variability of state populations.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Number of bootstrap replicates:</b> number of molecules randomly selected in the project, used to create one sample histogram.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Number of bootstrap samples:</b> number of sample histograms to create in order to estimate cross-sample variability.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('<b>Replicate weighing:</b> when activated, replicates are being given a weight proportional to the length of their time traces; this prevents the over-representation of short trajectories in bootstrap samples.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Peak integration by <b>Gaussian fitting:</b> the histogram is fitted with a mixture of Gaussian functions; individual Gaussian integrals are normalized by the sum of all Gaussian integrals to obtain the state relative poopulations.');
+ttstr1 = wrapHtmlTooltipString('Peak integration by <b>thresholding:</b> histogram peaks are separated by fixed thresholds and histogram counts are summed up between thresholds; resulting integrals are normalized by the sum of all integrals to obtain relative state populations.');
+ttstr2 = wrapHtmlTooltipString('<b>Molecule bootstrapping:</b> when activated, sample histograms are created from molecules randomly selected in the project (replicates) and peaks are integrated; the resulting bootstrap mean and standard deviation are used to estimate the cross-sample variability of state populations.');
+ttstr3 = wrapHtmlTooltipString('<b>Number of bootstrap replicates:</b> number of molecules randomly selected in the project, used to create one sample histogram.');
+ttstr4 = wrapHtmlTooltipString('<b>Number of bootstrap samples:</b> number of sample histograms to create in order to estimate cross-sample variability.');
+ttstr5 = wrapHtmlTooltipString('<b>Replicate weighing:</b> when activated, replicates are being given a weight proportional to the length of their time traces; this prevents the over-representation of short trajectories in bootstrap samples.');
 
 % parents
 h_fig = h.figure_MASH;

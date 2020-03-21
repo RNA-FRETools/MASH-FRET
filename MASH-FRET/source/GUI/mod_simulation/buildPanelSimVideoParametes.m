@@ -13,10 +13,9 @@ function h = buildPanelSimVideoParametes(h,p)
 %   p.fntsz1: regular font size
 %   p.mg: margin
 %   p.mgpan: top-margin in a titled panel
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -30,12 +29,12 @@ str3 = 'BR';
 str4 = 'dimensions';
 str5 = 'x';
 ttl0 = 'Camera SNR characteristics';
-ttstr0 = wrapStrToWidth('<b>Video length:</b> total number of video frames.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Frame rate</b> (in frame per second)',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Pixel dimensions</b> (um)',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Bitrate</b> (max ic /frame /px)',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Movie width</b> (pixels)',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('<b>Movie height</b> (pixels)',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('<b>Video length:</b> total number of video frames.');
+ttstr1 = wrapHtmlTooltipString('<b>Frame rate</b> (in frame per second)');
+ttstr2 = wrapHtmlTooltipString('<b>Pixel dimensions</b> (um)');
+ttstr3 = wrapHtmlTooltipString('<b>Bitrate</b> (max ic /frame /px)');
+ttstr4 = wrapHtmlTooltipString('<b>Movie width</b> (pixels)');
+ttstr5 = wrapHtmlTooltipString('<b>Movie height</b> (pixels)');
 
 % parents
 h_fig = h.figure_MASH;

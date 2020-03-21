@@ -13,12 +13,11 @@ function h = buildPanelSimBackground(h,p)
 %   p.mg: margin
 %   p.mgpan: top-margin in a titled panel
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttstr: pixel width of tooltip box
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 %   p.fntclr1: text color in file/folder fields
 %   p.wbrd: cumulated pixel width of pushbutton's border
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -38,16 +37,16 @@ str7 = 'y:';
 str8 = 'decay';
 str9 = 'dec.';
 str10 = 'amp.';
-ttstr0 = wrapStrToWidth('Select a type of <b>spatial distribution</b> for the fluorescent background in single molecule images.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Fluorescent background intensity</b> in donor channel (counts/time bin).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Fluorescent background intensity</b> in acceptor channel (counts/time bin).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Standard deviation (in pixels)</b> in the x-direction used in the 2D-Gaussian profile.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Standard deviation (in pixels)</b> in the y-direction used in the 2D-Gaussian profile.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('<b>Simulate photobleaching of fluorescent background:</b> the fluorescent background decay exponentially in both video channels.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr6 = wrapStrToWidth('Background <b>decay time constant (in seconds)</b>',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr7 = wrapStrToWidth('<b>Enhancement/reduction factor</b> of background intensity prior decay.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr8 = wrapStrToWidth('<b>Open browser</b> and select a background image.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr9 = wrapStrToWidth('<b>Backgroud image file</b>',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Select a type of <b>spatial distribution</b> for the fluorescent background in single molecule images.');
+ttstr1 = wrapHtmlTooltipString('<b>Fluorescent background intensity</b> in donor channel (counts/time bin).');
+ttstr2 = wrapHtmlTooltipString('<b>Fluorescent background intensity</b> in acceptor channel (counts/time bin).');
+ttstr3 = wrapHtmlTooltipString('<b>Standard deviation (in pixels)</b> in the x-direction used in the 2D-Gaussian profile.');
+ttstr4 = wrapHtmlTooltipString('<b>Standard deviation (in pixels)</b> in the y-direction used in the 2D-Gaussian profile.');
+ttstr5 = wrapHtmlTooltipString('<b>Simulate photobleaching of fluorescent background:</b> the fluorescent background decay exponentially in both video channels.');
+ttstr6 = wrapHtmlTooltipString('Background <b>decay time constant (in seconds)</b>');
+ttstr7 = wrapHtmlTooltipString('<b>Enhancement/reduction factor</b> of background intensity prior decay.');
+ttstr8 = wrapHtmlTooltipString('<b>Open browser</b> and select a background image.');
+ttstr9 = wrapHtmlTooltipString('<b>Backgroud image file</b>');
 
 % parents
 h_fig = h.figure_MASH;

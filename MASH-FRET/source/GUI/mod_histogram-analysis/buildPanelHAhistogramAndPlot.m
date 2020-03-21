@@ -15,10 +15,9 @@ function h = buildPanelHAhistogramAndPlot(h,p)
 %   p.mg: margin
 %   p.mgpan: top-margin in a titled panel
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % Created by MH, 3.11.2019
 
 % default
@@ -33,12 +32,12 @@ str3 = {'Select subgroup'};
 str4 = 'x-limits:';
 str5 = 'x-binning:';
 str6 = 'overflow bins';
-ttstr0 = wrapStrToWidth('<b>Select data</b> to histogram and analyze.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Select subgroup</b> to histogram and analyze.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Histogram boundaries:</b> lower limit of x-axis.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Histogram boundaries:</b> upper limit of x-axis.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Histogram binning:</b> bin size.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('<b>Histogram extremities:</b> when activated, the first and the last histogram bins are included, otherwise they are ignored (including overflow bins can substantially reduce the goodness of Gaussian fits).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('<b>Select data</b> to histogram and analyze.');
+ttstr1 = wrapHtmlTooltipString('<b>Select subgroup</b> to histogram and analyze.');
+ttstr2 = wrapHtmlTooltipString('<b>Histogram boundaries:</b> lower limit of x-axis.');
+ttstr3 = wrapHtmlTooltipString('<b>Histogram boundaries:</b> upper limit of x-axis.');
+ttstr4 = wrapHtmlTooltipString('<b>Histogram binning:</b> bin size.');
+ttstr5 = wrapHtmlTooltipString('<b>Histogram extremities:</b> when activated, the first and the last histogram bins are included, otherwise they are ignored (including overflow bins can substantially reduce the goodness of Gaussian fits).');
 
 % parents
 h_fig = h.figure_MASH;

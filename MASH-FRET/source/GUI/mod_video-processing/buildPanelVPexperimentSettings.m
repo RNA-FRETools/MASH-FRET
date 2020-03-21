@@ -13,9 +13,7 @@ function h = buildPanelVPexperimentSettings(h,p)
 %   p.mg: margin
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
 % created by MH, 19.10.2019
 
@@ -32,12 +30,12 @@ str4 = 'Nb. of channels:';
 str5 = 'Exposure time:';
 str6 = 's';
 str7 = 'Options...';
-ttstr0 = wrapStrToWidth('<b>Number of alternated lasers</b> used in the video recording.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Select a laser</b> to configure: lasers are numbered according to the order of appearance in the video.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Characetristic wavelength</b> of selected laser.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Number of spectroscopic channels</b> imaged in the video.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Acquisition time (in seconds):</b> time spent to acquire one video frame.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('Open <b>project options:</b> includes informations about emitters, FRET pairs and user-defined experimental conditions.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('<b>Number of alternated lasers</b> used in the video recording.');
+ttstr1 = wrapHtmlTooltipString('<b>Select a laser</b> to configure: lasers are numbered according to the order of appearance in the video.');
+ttstr2 = wrapHtmlTooltipString('<b>Characetristic wavelength</b> of selected laser.');
+ttstr3 = wrapHtmlTooltipString('<b>Number of spectroscopic channels</b> imaged in the video.');
+ttstr4 = wrapHtmlTooltipString('<b>Acquisition time (in seconds):</b> time spent to acquire one video frame.');
+ttstr5 = wrapHtmlTooltipString('Open <b>project options:</b> includes informations about emitters, FRET pairs and user-defined experimental conditions.');
 
 % parents
 h_fig = h.figure_MASH;
