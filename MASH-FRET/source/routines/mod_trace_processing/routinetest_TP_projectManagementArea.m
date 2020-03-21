@@ -157,20 +157,3 @@ set_VP_projOpt(p.projOpt{p.nL,p.nChan},p.wl(1:p.nL),h.pushbutton_editParam,...
 pushbutton_expProj_Callback({p.dumpdir,p.exp_bet},[],h_fig);
 pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
 
-% test import of FRET state sequences from files
-disp(cat(2,prefix,'test import of FRET state sequences from files...'));
-opt = p.asciiOpt{p.nL,p.nChan};
-opt.intImp{1}(9) = true;
-opt.intImp{1}(10:12) = p.states_fcol;
-set_TP_asciiImpOpt(opt,h_fig);
-
-pushbutton_addTraces_Callback({...
-    [p.annexpth,filesep,p.ascii_dir{p.nL,p.nChan}],...
-    p.ascii_files{p.nL,p.nChan}},[],h_fig);
-
-set_VP_projOpt(p.projOpt{p.nL,p.nChan},p.wl(1:p.nL),h.pushbutton_editParam,...
-    h_fig);
-
-pushbutton_expProj_Callback({p.dumpdir,p.exp_states},[],h_fig);
-pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
-

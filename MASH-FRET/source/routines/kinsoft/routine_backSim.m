@@ -159,6 +159,8 @@ for j = 1:numel(Js)
     p.asciiOpt.intImp{1}(6) = 4;
     p.asciiOpt.intImp{1}(9) = true;
     p.asciiOpt.intImp{1}(10) = 8;
+    p.asciiOpt.intImp{1}(11) = 8;
+    p.asciiOpt.intImp{1}(12) = 0;
     
     flist = dir([dir_ascii,sprintf(files_ascii,num2str(Js(j))),'*']);
     fnames = {};

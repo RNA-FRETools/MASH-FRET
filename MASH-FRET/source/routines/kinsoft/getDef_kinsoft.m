@@ -31,7 +31,7 @@ for l = 1:p.nL
     defprm{size(defprm,1),2} = '';
     defprm{size(defprm,1),3} = 'mW';
 end
-p.asciiOpt.intImp = {[2 0 true 1 2 (2+p.nChan-1) p.nChan p.nL false 5],...
+p.asciiOpt.intImp = {[2 0 true 1 2 (2+p.nChan-1) p.nChan p.nL false 5 5 0],...
     p.wl(1:p.nL)};
 p.asciiOpt.vidImp = {false ''};
 p.asciiOpt.coordImp = {{false,'',{[1 2],1},256},[false 1]};
