@@ -48,7 +48,6 @@ meth = prm.clst_start{1}(1); % last applied
 boba = prm.clst_start{1}(6); % last applied
 Jmax = prm.clst_start{1}(3);
 mat = prm.clst_start{1}(4);
-J = res{3};
 
 % set optimum state configuration and bootstrap results
 if boba
@@ -75,7 +74,7 @@ end
 if meth==2
     set(h.axes_tdp_BIC,'Visible','on');
 
-    J = curr.clst_res{3};
+    J = res{3};
     if mat==1
         str_pop = cell(1,Jmax-1);
         for j = 2:Jmax

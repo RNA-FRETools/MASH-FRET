@@ -11,7 +11,8 @@ if isfield(prm,'plot') && size(prm.plot{1},1)<4
     prm.plot = def.plot;
 end
 % add boba parameters if none
-if isfield(prm,'clst_start') && size(prm.clst_start,2)<8
+if isfield(prm,'clst_start') && size(prm.clst_start,2)>=1 && ...
+        size(prm.clst_start{1},2)<8
     prm.clst_start{1}(6:8) = def.clst_start{1}(6:8);
 end
 
