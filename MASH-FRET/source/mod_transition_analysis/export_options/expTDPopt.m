@@ -3,7 +3,7 @@ function expTDPopt(h_fig)
 h = guidata(h_fig);
 p = h.param.TDP;
 if isempty(p.proj)
-    return;
+    return
 end
 
 proj = p.curr_proj;
@@ -37,7 +37,7 @@ mg_sml = mg/2;
 mg_ttl = mg_sml + mg;
 
 h_TDP = mg_ttl + 4*mg + h_txt + 2*h_ed;
-h_kin = mg_ttl + 4*mg + 3*h_ed;
+h_kin = mg_ttl + 5*mg + 4*h_ed;
 
 wFig = w_pan + 2*mg;
 hFig = 4*mg + h_TDP + h_kin + h_ed;
@@ -89,6 +89,13 @@ q.uipanel_kin = uipanel('Parent',q.figure_expTDPopt, 'Units','pixels', ...
 
 x = mg;
 y = mg;
+
+q.checkbox_figBOBA = uicontrol('Style','checkbox', 'Units','pixels', ...
+    'Parent',q.uipanel_kin, 'String','BOBA figures(*.pdf)', ...
+    'Position',[x y w_full h_ed], ...
+    'Callback',{@checkbox_expTDPopt_figBOBA_Callback, h_fig}, 'Value',prm{3}(4));
+
+y = y+h_ed+mg;
 
 q.checkbox_kinBOBA = uicontrol('Style','checkbox', 'Units','pixels', ...
     'Parent',q.uipanel_kin, 'String','BOBA FRET results(*.fit)', ...

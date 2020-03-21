@@ -36,9 +36,10 @@ TDPclust = q{2}(5);
 kinDtHist = q{3}(1);
 kinFit = q{3}(2);
 kinBoba = q{3}(3);
-bobaFig = true;
+bobaFig = q{3}(4);
 
-if ~(TDPascii || TDPimg || TDPclust || kinDtHist || kinFit || kinBoba)
+if ~(TDPascii || TDPimg || TDPclust || kinDtHist || kinFit || kinBoba || ...
+        bobaFig)
     setContPan('There is no data to export.', 'warning', h_fig);
     return
 end

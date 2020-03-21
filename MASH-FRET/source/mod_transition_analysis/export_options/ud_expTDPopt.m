@@ -12,6 +12,7 @@ TDPclust = p_exp{2}(5);
 kinDtHist = p_exp{3}(1);
 kinFit = p_exp{3}(2);
 kinBoba = p_exp{3}(3);
+figBoba = p_exp{3}(4);
 
 set([q.checkbox_TDPascii q.checkbox_TDPimg ...
     q.checkbox_kinDthist q.checkbox_kinCurves q.checkbox_kinBOBA ...
@@ -23,6 +24,7 @@ set(q.checkbox_TDPclust, 'Value', TDPclust);
 set(q.checkbox_kinDthist, 'Value', kinDtHist);
 set(q.checkbox_kinCurves, 'Value', kinFit);
 set(q.checkbox_kinBOBA, 'Value', kinBoba);
+set(q.checkbox_figBOBA, 'Value', figBoba);
 
 if TDPascii
     set(q.popupmenu_TDPascii, 'Enable','on', 'Value',TDPascii_fmt);

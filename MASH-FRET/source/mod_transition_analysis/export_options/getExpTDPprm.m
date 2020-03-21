@@ -12,6 +12,6 @@ def{2} = [1 1 4 3 1];
 
 % data type, dwell-time histograms, fitting curves + parameters, BOBA FRET
 % results.
-def{3} = [1 1 1];
+def{3} = [1 1 1 1];
 
 
