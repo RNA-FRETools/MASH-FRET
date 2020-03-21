@@ -65,7 +65,7 @@ for nL = 1:nL_max
         dir_content = dir(...
             [p.annexpth,filesep,p.ascii_dir{nL,nChan},filesep,'*.txt']);
         p.ascii_files{nL,nChan} = {};
-        for n = 1:size(dir_content,1);
+        for n = 1:size(dir_content,1)
             p.ascii_files{nL,nChan} = cat(2,p.ascii_files{nL,nChan},...
                 dir_content(n,1).name);
         end

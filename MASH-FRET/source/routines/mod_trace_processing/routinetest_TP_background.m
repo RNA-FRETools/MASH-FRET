@@ -9,8 +9,8 @@ function routinetest_TP_background(h_fig,p,prefix)
 
 % test different background corrections
 disp(cat(2,prefix,'test different background corrections...'));
-routinetest_TP_backgroundCorrections(h_fig,p,(2,prefix,'>> '))
+routinetest_TP_backgroundCorrections(h_fig,p,cat(2,prefix,'>> '));
 
 % test Background analyzer
 disp(cat(2,prefix,'test Background analyzer...'));
-routinetest_TP_backgroundAnalyzer(h_fig,p,cat(2,prefix,'>> '))
+routinetest_TP_backgroundAnalyzer(h_fig,p,cat(2,prefix,'>> '));
