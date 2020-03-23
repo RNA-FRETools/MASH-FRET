@@ -114,7 +114,7 @@ end
 
 bol_kin = [kinDtHist kinFit kinBoba bobaFig];
 
-if sum(bol_kin)
+if sum(bol_kin) && isfield(prm,'clst_start');
     setContPan('Export kinetic results ...', 'process', h_fig);
     
     pname_kin = setCorrectPath([pname 'kinetics'], h_fig);

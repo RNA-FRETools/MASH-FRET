@@ -7,6 +7,9 @@ function routinetest_TA_transitionDensityPlot(h_fig,p,prefix)
 % p: structure containing default as set by getDefault_TA
 % prefix: string to add at the beginning of each action string (usually a apecific indent)
 
+% defaults
+opt0 = [true,4,false,3,false,false,false,false];
+
 setDefault_TA(h_fig,p);
 
 h = guidata(h_fig);
@@ -34,12 +37,22 @@ tdpPrm(4) = ~tdpPrm(4);
 set_TA_TDP(p.tdpDat,1,tdpPrm,h_fig);
 pushbutton_TDPupdatePlot_Callback(h.pushbutton_TDPupdatePlot,[],h_fig);
 
+pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig)
+set_TA_expOpt(opt0,h_fig);
+pushbutton_expTDPopt_next_Callback({p.dumpdir,[p.exp_tdp,'_stat.tdp']},[],...
+    h_fig);
+
 % test option "single count per molecules"
 disp(cat(2,prefix,'test option "single count per mol."...'));
 tdpPrm = p.tdpPrm;
 tdpPrm(5) = ~tdpPrm(5);
 set_TA_TDP(p.tdpDat,1,tdpPrm,h_fig);
 pushbutton_TDPupdatePlot_Callback(h.pushbutton_TDPupdatePlot,[],h_fig);
+
+pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig)
+set_TA_expOpt(opt0,h_fig);
+pushbutton_expTDPopt_next_Callback({p.dumpdir,[p.exp_tdp,'_single.tdp']},...
+    [],h_fig);
 
 % test option "re-arrange sequences"
 disp(cat(2,prefix,'test option "re-arrange sequences"...'));
@@ -48,12 +61,26 @@ tdpPrm(6) = ~tdpPrm(6);
 set_TA_TDP(p.tdpDat,1,tdpPrm,h_fig);
 pushbutton_TDPupdatePlot_Callback(h.pushbutton_TDPupdatePlot,[],h_fig);
 
+pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig)
+set_TA_expOpt(opt0,h_fig);
+pushbutton_expTDPopt_next_Callback({p.dumpdir,[p.exp_tdp,'_rearr.tdp']},[],...
+    h_fig);
+
 % test option "Gaussian filter"
 disp(cat(2,prefix,'test option "Gaussian filter"...'));
 tdpPrm = p.tdpPrm;
 tdpPrm(7) = ~tdpPrm(7);
 set_TA_TDP(p.tdpDat,1,tdpPrm,h_fig);
 pushbutton_TDPupdatePlot_Callback(h.pushbutton_TDPupdatePlot,[],h_fig);
+
+pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig);
+opt = opt0;
+opt(1) = false;
+opt(3) = true;
+opt(4) = 2;
+set_TA_expOpt(opt,h_fig);
+pushbutton_expTDPopt_next_Callback({p.dumpdir,[p.exp_tdp,'_gauss.tdp']},[],...
+    h_fig);
 
 % test option "Norm."
 disp(cat(2,prefix,'test option "Norm."...'));

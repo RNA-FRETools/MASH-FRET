@@ -10,6 +10,7 @@ function routinetest_TA_stateConfiguration(h_fig,p,prefix)
 % defaults
 lklhd = [1,2];
 nShapes = [3,4,3];
+opt0 = [false,4,false,3,true,false,false,false];
 
 setDefault_TA(h_fig,p);
 
@@ -18,7 +19,7 @@ h = guidata(h_fig);
 % test regular clustering
 disp(cat(2,prefix,'test regular clustering...'));
 clstPrm = p.clstMethPrm;
-clstPrm(4) = false;
+clstPrm(3) = false;
 str_meth = get(h.popupmenu_TA_clstMeth,'string');
 str_cnfg = get(h.popupmenu_TA_clstMat,'string');
 nMeth = numel(str_meth);
@@ -128,6 +129,14 @@ for meth = 1:nMeth
                     [sprintf(p.exp_clst,meth,cnfg),'_nodiag.mash']},[],...
                     h_fig);
                 
+                % export ASCII
+                pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],...
+                    h_fig)
+                set_TA_expOpt(opt0,h_fig);
+                pushbutton_expTDPopt_next_Callback({p.dumpdir,...
+                    [sprintf(p.exp_clst,meth,cnfg),'_nodiag.clst']},[],...
+                    h_fig);
+                
                 % save default project
                 if meth==p.clstMeth && isequal(clstConfig,p.clstConfig)
                     pushbutton_TDPsaveProj_Callback(...
@@ -208,6 +217,12 @@ for meth = 1:nMeth
             pushbutton_TDPsaveProj_Callback(...
                 {p.dumpdir,[sprintf(p.exp_clst,meth,cnfg),'.mash']},[],...
                 h_fig);
+            
+            % export ASCII
+            pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig)
+            set_TA_expOpt(opt0,h_fig);
+            pushbutton_expTDPopt_next_Callback({p.dumpdir,...
+                [sprintf(p.exp_clst,meth,cnfg),'.clst']},[],h_fig);
 
             % save default project
             if meth==p.clstMeth && isequal(clstConfig,p.clstConfig)
@@ -220,10 +235,91 @@ end
 
 % test bootstrap clustering
 disp(cat(2,prefix,'test bootstrap clustering...'));
+clstPrm = p.clstMethPrm;
+clstPrm(3) = true;
 str_meth = get(h.popupmenu_TA_clstMeth,'string');
 nMeth = numel(str_meth);
 for meth = 1:nMeth
-    disp(cat(2,prefix,'>> test method ',str_meth{meth},'...'));
+    for cnfg = 1:nCnfg
+        clstConfig = p.clstConfig;
+        clstConfig(1) = cnfg;
+        
+        % test different shapes
+        for shape = 1:nShapes(meth)
+            disp(cat(2,prefix,'>> test method "',str_meth{meth},'" with ',...
+                'cluster constraint "',str_cnfg{cnfg},'" and cluster ',...
+                'shape ',num2str(shape),'...'));
+            clstConfig(4) = shape;
+            
+            % test with and without diagonal clusters
+            if cnfg==1 % matrix
+                disp(cat(2,prefix,'>> >> without diagonal clusters...'));
+                clstConfig(2) = 0;
+                set_TA_stateConfig(meth,clstPrm,clstConfig,p.clstStart,...
+                    h_fig);
+
+                % start clustering
+                pushbutton_TDPupdateClust_Callback(...
+                    h.pushbutton_TDPupdateClust,[],h_fig);
+
+                % save project
+                pushbutton_TDPsaveProj_Callback({p.dumpdir,...
+                    [sprintf(p.exp_clst,meth,cnfg),'_nodiag_boba.mash']},...
+                    [],h_fig);
+                
+                % export ASCII
+                pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],...
+                    h_fig)
+                set_TA_expOpt(opt0,h_fig);
+                pushbutton_expTDPopt_next_Callback({p.dumpdir,...
+                    [sprintf(p.exp_clst,meth,cnfg),'_nodiag_boba.clst']},...
+                    [],h_fig);
+
+                disp(cat(2,prefix,'>> >> with diagonal clusters...'));
+                clstConfig(2) = 1;
+            end
+            
+            set_TA_stateConfig(meth,clstPrm,clstConfig,p.clstStart,h_fig)
+
+            pushbutton_TDPupdateClust_Callback(h.pushbutton_TDPupdateClust,...
+                [],h_fig);
+
+            % save project
+            pushbutton_TDPsaveProj_Callback(...
+                {p.dumpdir,[sprintf(p.exp_clst,meth,cnfg),'_boba.mash']},...
+                [],h_fig);
+            
+            % export ASCII
+            pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig)
+            set_TA_expOpt(opt0,h_fig);
+            pushbutton_expTDPopt_next_Callback({p.dumpdir,...
+                [sprintf(p.exp_clst,meth,cnfg),'_boba.clst']},[],h_fig);
+        end
+    end
+    
+    if meth==2
+        % test result panel
+        set(h.edit_TDPbobaRes,'string','0');
+        edit_TDPbobaRes_Callback(h.edit_TDPbobaRes,[],h_fig);
+
+        set(h.edit_TDPbobaSig,'string','0');
+        edit_TDPbobaSig_Callback(h.edit_TDPbobaSig,[],h_fig);
+
+        J = numel(get(h.popupmenu_tdp_model,'string'));
+        for j = 1:J
+            set(h.popupmenu_tdp_model,'value',j);
+            popupmenu_tdp_model_Callback(h.popupmenu_tdp_model,[],h_fig);
+
+            set(h.edit_tdp_BIC,'string','0');
+            edit_tdp_bic_Callback(h.edit_tdp_BIC,[],h_fig);
+
+            pushbutton_tdp_impModel_Callback(h.pushbutton_tdp_impModel,[],...
+                h_fig);
+        end
+
+        pushbutton_TDPresetClust_Callback(h.pushbutton_TDPresetClust,[],...
+            h_fig);
+    end
 end
 
 pushbutton_TDPremProj_Callback(h.pushbutton_TDPremProj,[],h_fig);

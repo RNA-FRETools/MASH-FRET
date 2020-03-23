@@ -285,10 +285,15 @@ if isRes && tdp_clust
                  end
             case 3
                 if meth==2
-                    clstshape = 'free-rotating multivariate Gaussian';
-                 else
+                    clstshape = 'diagonal multivariate Gaussian';
+                else
                     clstshape = 'diagonal ellipsis';
-                 end
+                end
+                 
+            case 4
+                if meth==2
+                    clstshape = 'free-rotating multivariate Gaussian';
+                end
         end
         if clstDiag
             diagclst = 'yes';
@@ -315,7 +320,7 @@ if isRes && tdp_clust
         if boba
             str_prm = cat(2,str_prm,'\tbootstrapping: yes\n', ...
                 '\t\tnumber of samples: ',num2str(nspl), ...
-                '\n\t\tnumber of replicates: ',num2str(nrpl));
+                '\n\t\tnumber of replicates: ',num2str(nrpl),'\n');
         else
             str_prm = cat(2,str_prm,'\tbootstrapping: no\n');
         end
@@ -342,14 +347,18 @@ if isRes && tdp_clust
                         num2str(tol(j)),'\n');
                 end
             else
-                for k = 1:Jmax
+                for j = 1:Jmax
+                    str_prm = cat(2,str_prm,'\tstate ',num2str(2*j-1),': ', ...
+                        num2str(guess(j,1)),', tolerance radius: ',...
+                        num2str(guess(j,3)),'\n',...
+                        '\tstate ',num2str(2*j),': ', ...
+                        num2str(guess(j,2)),', tolerance radius: ',...
+                        num2str(guess(j,4)),'\n');
+                end
+                for k = 1:Kmax
                     str_prm = cat(2,str_prm,'\tcluster ',num2str(k),': ', ...
-                        'state ',num2str(j1_start(k)),' (',...
-                        num2str(guess(k,1)),', radius=',...
-                        num2str(guess(k,3)),') to ',...
-                        num2str(j2_start(k)),' (',...
-                        num2str(guess(k,2)),', radius=',...
-                        num2str(guess(k,4)),')\n');
+                        'state ',num2str(j1_start(k)),' to ',...
+                        num2str(j2_start(k)),'\n');
                 end
             end
         end
@@ -393,7 +402,7 @@ if isRes && tdp_clust
             val = unique(res{1}.mu{J}(:,1),'stable')';
         elseif mat==2
             val = res{1}.mu{J}(1:J,[1,2])';
-            val = val(:);
+            val = val(:)';
         else
             val = res{1}.mu{J}(:,[1,2])';
             val = val(:)';

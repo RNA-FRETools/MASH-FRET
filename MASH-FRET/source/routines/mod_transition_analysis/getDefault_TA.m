@@ -100,11 +100,12 @@ p.tdp_expOpt = [false,4,false,3,false,false,false,false];
 % default TDP settings
 p.tdpDat = (p.nChan*p.nL)+1;
 p.tdpPrm = [-0.2,0.025,1.2,1,0,0,1,1];
+p.exp_tdp = 'tdp';
 
 % default state configuration
 Jmax = 4;
 p.clstMeth = 2; % clustering method
-p.clstMethPrm = [Jmax,5,false,5];
+p.clstMethPrm = [Jmax,5,false,3];
 p.clstConfig = [1,1,1,1]; % constraint, diagonal clusters, likelihood, shape
 p.clstStart = [linspace(0,1,Jmax)',repmat(0.1,[Jmax,1]),...
     linspace(0.2,0.8,Jmax)',repmat(0.15,[Jmax,1])];
