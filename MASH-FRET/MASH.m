@@ -4,6 +4,9 @@ function h_fig = MASH(varargin)
 codePath = fileparts(mfilename('fullpath'));
 addpath(genpath(codePath));
 
+% set MATLAB's character encoding
+feature('DefaultCharacterSet','windows-1252');
+
 % get MATLAB version
 version_str = getMASHversion(codePath);
 
