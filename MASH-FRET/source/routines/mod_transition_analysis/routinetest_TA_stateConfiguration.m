@@ -8,7 +8,6 @@ function routinetest_TA_stateConfiguration(h_fig,p,prefix)
 % prefix: string to add at the beginning of each action string (usually a apecific indent)
 
 % defaults
-lklhd = [1,2];
 nShapes = [3,4,3];
 opt0 = [false,4,false,3,true,false,false,false];
 
@@ -26,17 +25,10 @@ nMeth = numel(str_meth);
 nCnfg = numel(str_cnfg);
 mouseTested = false(nCnfg,nShapes(1));
 defTested = false(nCnfg,nShapes(1));
-loglTested = false;
 for meth = 1:nMeth
     for cnfg = 1:nCnfg
         clstConfig = p.clstConfig;
         clstConfig(1) = cnfg;
-        
-        % test different likelihood for first clustering test
-        if meth==2 && ~loglTested
-            clstConfig(3) = lklhd(lklhd~=p.clstConfig(3));
-            loglTested = true;
-        end
         
         % test different shapes
         for shape = 1:nShapes(meth)

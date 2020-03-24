@@ -8,14 +8,14 @@ end
 
 proj = p.curr_proj;
 p_proj = p.proj{proj};
+opt = p_proj.exp;
 
-prm = p_proj.exp;
 prm_default = getExpTDPprm();
-prm = adjustVal(prm, prm_default);
+opt = adjustVal(opt, prm_default);
 
 if isfield(h, 'expTDPopt') && isfield(h.expTDPopt,'figure_expTDPopt') ...
         && ishandle(h.expTDPopt.figure_expTDPopt)
-    return;
+    return
 end
 
 %% build data type list
@@ -93,28 +93,28 @@ y = mg;
 q.checkbox_figBOBA = uicontrol('Style','checkbox', 'Units','pixels', ...
     'Parent',q.uipanel_kin, 'String','BOBA figures(*.pdf)', ...
     'Position',[x y w_full h_ed], ...
-    'Callback',{@checkbox_expTDPopt_figBOBA_Callback, h_fig}, 'Value',prm{3}(4));
+    'Callback',{@checkbox_expTDPopt_figBOBA_Callback, h_fig}, 'Value',opt{3}(4));
 
 y = y+h_ed+mg;
 
 q.checkbox_kinBOBA = uicontrol('Style','checkbox', 'Units','pixels', ...
     'Parent',q.uipanel_kin, 'String','BOBA FRET results(*.fit)', ...
     'Position',[x y w_full h_ed], ...
-    'Callback',{@checkbox_expTDPopt_kinBOBA_Callback, h_fig}, 'Value',prm{3}(3));
+    'Callback',{@checkbox_expTDPopt_kinBOBA_Callback, h_fig}, 'Value',opt{3}(3));
 
 y = y+h_ed+mg;
 
 q.checkbox_kinCurves = uicontrol('Style','checkbox', 'Units','pixels', ...
     'Parent',q.uipanel_kin, 'Position',[x y w_full h_ed], ...
     'String','fitting curves & parameters(*.fit)', ...
-    'Callback',{@checkbox_expTDPopt_kinCurves_Callback, h_fig}, 'Value',prm{3}(2));
+    'Callback',{@checkbox_expTDPopt_kinCurves_Callback, h_fig}, 'Value',opt{3}(2));
 
 y = y+h_ed+mg;
 
 q.checkbox_kinDthist = uicontrol('Style','checkbox', 'Units','pixels', ...
     'Parent',q.uipanel_kin, 'Position',[x y w_full h_ed], ...
     'String','dwell-time histograms(*.hdt)', ...
-    'Callback',{@checkbox_expTDPopt_kinDthist_Callback, h_fig}, 'Value',prm{3}(1));
+    'Callback',{@checkbox_expTDPopt_kinDthist_Callback, h_fig}, 'Value',opt{3}(1));
 
 
 %% TDP
@@ -131,7 +131,7 @@ y = mg;
 q.checkbox_TDPclust = uicontrol('Style','checkbox', 'Units','pixels', ...
     'Parent',q.uipanel_TDP, 'String','clusters', ...
     'Position',[x y w_full h_ed], ...
-    'Callback',{@checkbox_expTDPopt_TDPclust_Callback, h_fig}, 'Value',prm{2}(5));
+    'Callback',{@checkbox_expTDPopt_TDPclust_Callback, h_fig}, 'Value',opt{2}(5));
 
 x = mg+w_txt2;
 y = y+h_ed+mg;
@@ -139,14 +139,14 @@ y = y+h_ed+mg;
 q.popupmenu_TDPimg = uicontrol('Style','popupmenu', 'Units','pixels', ...
     'Parent',q.uipanel_TDP, 'Position',[x y w_pop h_ed], ...
     'String',str_img, 'Callback',{@popupmenu_expTDPopt_TDPimg_Callback, h_fig}, ...
-    'BackgroundColor', [1 1 1], 'Value',prm{2}(4));
+    'BackgroundColor', [1 1 1], 'Value',opt{2}(4));
 
 x = mg;
 
 q.checkbox_TDPimg = uicontrol('Style','checkbox', 'Units','pixels', ...
     'Parent',q.uipanel_TDP, 'String','image(*.png)', ...
     'Position',[x y w_txt2 h_ed], ...
-    'Callback',{@checkbox_expTDPopt_TDPimg_Callback, h_fig}, 'Value',prm{2}(2));
+    'Callback',{@checkbox_expTDPopt_TDPimg_Callback, h_fig}, 'Value',opt{2}(2));
 
 x = mg+w_txt2;
 y = y+h_ed+mg;
@@ -154,19 +154,19 @@ y = y+h_ed+mg;
 q.popupmenu_TDPascii = uicontrol('Style','popupmenu', 'Units','pixels', ...
     'Parent',q.uipanel_TDP, 'Position',[x y w_pop h_ed], ...
     'String',str_tdp, 'Callback',{@popupmenu_expTDPopt_TDPascii_Callback, h_fig}, ...
-    'BackgroundColor', [1 1 1], 'Value',prm{2}(3));
+    'BackgroundColor', [1 1 1], 'Value',opt{2}(3));
 
 x = mg;
 
 q.checkbox_TDPascii = uicontrol('Style','checkbox', 'Units','pixels', ...
     'Parent',q.uipanel_TDP, 'String','ASCII', ...
     'Position',[x y w_txt2 h_ed], ...
-    'Callback',{@checkbox_expTDPopt_TDPascii_Callback, h_fig}, 'Value',prm{2}(1));
+    'Callback',{@checkbox_expTDPopt_TDPascii_Callback, h_fig}, 'Value',opt{2}(1));
 
 
 %% Store uicontrol
 h.expTDPopt = q;
-guidata(q.figure_expTDPopt,prm);
+guidata(q.figure_expTDPopt,opt);
 guidata(h_fig, h);
 
 ud_expTDPopt(h_fig);

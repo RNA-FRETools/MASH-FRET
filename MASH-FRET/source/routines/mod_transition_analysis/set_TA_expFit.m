@@ -13,12 +13,14 @@ h = guidata(h_fig);
 if expPrm(1)
     set(h.radiobutton_TDPstretch,'value',expPrm(1));
     radiobutton_TDPstretch_Callback(h.radiobutton_TDPstretch,[],h_fig);
+    nExp = 1;
 else
     set(h.radiobutton_TDPmultExp,'value',true);
     radiobutton_TDPmultExp_Callback(h.radiobutton_TDPmultExp,[],h_fig);
 
     set(h.edit_TDP_nExp,'string',num2str(expPrm(2)));
     edit_TDP_nExp_Callback(h.edit_TDP_nExp,[],h_fig);
+    nExp = expPrm(2);
 end
 
 set(h.checkbox_BOBA,'value',expPrm(3));
@@ -31,10 +33,11 @@ if expPrm(3)
     edit_TDPbsprm_02_Callback(h.edit_TDPbsprm_02,[],h_fig);
 end
 
-nExp = size(fitPrm,3);
 for n = 1:nExp
-    set(h.popupmenu_TDP_expNum,'value',n);
-    popupmenu_TDP_expNum_Callback(h.popupmenu_TDP_expNum,[],h_fig);
+    if ~expPrm(1)
+        set(h.popupmenu_TDP_expNum,'value',n);
+        popupmenu_TDP_expNum_Callback(h.popupmenu_TDP_expNum,[],h_fig);
+    end
 
     set(h.edit_TDPfit_aLow,'string',num2str(fitPrm(1,1,n)));
     edit_TDPfit_aLow_Callback(h.edit_TDPfit_aLow,[],h_fig);

@@ -107,14 +107,16 @@ Jmax = 4;
 p.clstMeth = 2; % clustering method
 p.clstMethPrm = [Jmax,5,false,3];
 p.clstConfig = [1,1,1,1]; % constraint, diagonal clusters, likelihood, shape
-p.clstStart = [linspace(0,1,Jmax)',repmat(0.1,[Jmax,1]),...
-    linspace(0.2,0.8,Jmax)',repmat(0.15,[Jmax,1])];
+p.clstStart = [linspace(0,1,Jmax)',repmat(0.25,[Jmax,1]),...
+    linspace(0.2,0.8,Jmax)',repmat(0.4,[Jmax,1])];
 p.exp_clst = 'clst_%i_%i';
 p.exp_mouseSlct = 'clstStartMouse_%i_%i';
 p.exp_defSlct = 'clstStartDef_%i_%i';
 
 % default exponential fit settings
 p.nMax = nMax;
+p.dtExcl = true; % exclude first and last dwell times in sequences
+p.dtRearr = true; % re-arrange state sequences
 p.expPrm = [0,1,0,0,100]; % stretched, decay nb., boba, weight, sample nb.
 amp = permute(...
     [zeros(nMax,1),flip(logspace(-2,0,nMax),2)',Inf(nMax,1)],...
@@ -126,6 +128,7 @@ beta = permute([zeros(nMax,1),0.5*ones(nMax,1),2*ones(nMax,1)],[3,2,1]);
 p.fitPrm = cat(1,amp,dec,beta);
 p.fitPrm(2,2,2) = 5;
 p.fitPrm(2,2,3) = 10;
+p.exp_dt = 'dthist';
 
 
 

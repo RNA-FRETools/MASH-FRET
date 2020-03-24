@@ -15,7 +15,7 @@ p.proj{proj}.curr{tag,tpe}.clst_start{1}(1) = val;
 
 % update cluster starting guess and colors
 [p.proj{proj}.curr{tag,tpe},p.colList] = ...
-    ud_clstPrm(p.proj{proj}.curr{tag,tpe},p.colList);
+    ud_clstPrm(p.proj{proj}.curr{tag,tpe},p.colList,numel(h.color_list));
 
 h.param.TDP = p;
 guidata(h_fig, h);

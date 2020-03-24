@@ -196,7 +196,7 @@ try
                 FRET = getFRETfromFactorFiles(...
                     FREThead(col_seq_start:(col_seq_skip+1):col_seq_end));
             end
-            if isempty(FRET) || sum(isnan(FRET))
+            if isempty(FRET) || sum(sum(isnan(FRET)))
                 FRET = [];
                 for don = 1:nChan
                     for acc = (don+1):nChan

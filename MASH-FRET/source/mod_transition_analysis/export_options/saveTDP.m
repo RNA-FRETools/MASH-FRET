@@ -38,6 +38,34 @@ kinFit = q{3}(2);
 kinBoba = q{3}(3);
 bobaFig = q{3}(4);
 
+% check presence of TDP
+if ~sum(sum(prm.plot{2}))
+    TDPascii = false;
+    TDPimg = false;
+end
+
+% check presence of clusters
+if ~(isfield(prm,'clst_res') && size(prm.clst_res,2)>=1 && ...
+        ~isempty(prm.clst_res{1}))
+    TDPclust = false;
+end
+
+% check presence of dwell time histograms
+if ~isfield(prm,'clst_start')
+    kinDtHist = false;
+end
+
+% check presence of fit
+if ~(size(prm.kin_res,2)>=2 && sum(~cellfun('isempty',prm.kin_res(:,2))))
+    kinFit = false;
+end
+
+% check presence of boba fit
+if ~(size(prm.kin_res,2)>=5 && sum(~cellfun('isempty',prm.kin_res(:,5))))
+    kinBoba = false;
+    bobaFig = false;
+end
+
 if ~(TDPascii || TDPimg || TDPclust || kinDtHist || kinFit || kinBoba || ...
         bobaFig)
     setContPan('There is no data to export.', 'warning', h_fig);

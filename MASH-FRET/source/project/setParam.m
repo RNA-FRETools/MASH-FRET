@@ -404,7 +404,7 @@ colList = [1 0 0 % red
            0.5 0.5 0.5 % grey
            1 1 0.5 % canary
            0.5 1 1]; % pastel blue
-p.colList = adjustParam('colList', colList, p_input);
+p.colList = colList;
 
 % Kinetics processing pannel
 

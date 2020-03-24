@@ -87,7 +87,7 @@ catch err
     h = guidata(h_fig);
     if isfield(h,'expTDPopt') && isfield(h.expTDPopt,'figure_expTDPopt') && ...
             ishandle(h.expTDPopt.figure_expTDPopt)
-        close(h.figure_bgopt);
+        close(h.expTDPopt.figure_expTDPopt);
     end
     return
 end

@@ -70,7 +70,7 @@ else
         {0,0});
     % get fitting results, reformat
     res.cf = coeffvalues(cf);
-    res.gof = gof;
+    res.gof = gof.rsquare;
 end
 
 
