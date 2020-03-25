@@ -129,6 +129,6 @@ p.fitPrm = cat(1,amp,dec,beta);
 p.fitPrm(2,2,2) = 5;
 p.fitPrm(2,2,3) = 10;
 p.exp_dt = 'dthist';
-
-
+p.exp_logScale = 'dthist_log.png';
+p.exp_linScale = 'dthist_lin.png';
 

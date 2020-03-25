@@ -20,14 +20,13 @@ while proj>0
 end
 
 % import default project
-pushbutton_thm_addProj_Callback({p.annexpth,p.mash_files{p.nL,p.nChan}},[],...
-    h_fig);
+pushbutton_thm_addProj_Callback({p.annexpth,p.mash_file},[],h_fig);
 
 % set default histogram and plot parameters
-
+set_HA_histplot(p.histDat,p.histTag,p.histPrm,h_fig);
 
 % set default state configuration parameters
-
+set_HA_stateConfig(p.cnfgPrm,h_fig);
 
 % set default state populations parameters
 

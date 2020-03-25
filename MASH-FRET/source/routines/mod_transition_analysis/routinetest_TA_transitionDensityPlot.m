@@ -7,18 +7,15 @@ function routinetest_TA_transitionDensityPlot(h_fig,p,prefix)
 % p: structure containing default as set by getDefault_TA
 % prefix: string to add at the beginning of each action string (usually a apecific indent)
 
-% defaults
-opt0 = [true,4,false,3,false,false,false,false];
-
 setDefault_TA(h_fig,p);
 
 h = guidata(h_fig);
 
 % test different data
-disp(cat(2,prefix,'test molecule subgroups...'));
-nTag = numel(get(h.popupmenu_TDPdataType,'string'));
-for tag = 1:nTag
-    set(h.popupmenu_TDPdataType,'value',tag);
+disp(cat(2,prefix,'test data list...'));
+nDat = numel(get(h.popupmenu_TDPdataType,'string'));
+for dat = 1:nDat
+    set(h.popupmenu_TDPdataType,'value',dat);
     popupmenu_TDPdataType_Callback(h.popupmenu_TDPdataType,[],h_fig);
 end
 

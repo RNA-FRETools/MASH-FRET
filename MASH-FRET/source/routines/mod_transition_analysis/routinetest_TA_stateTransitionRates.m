@@ -193,3 +193,18 @@ for excl = [1,0]
     pushbutton_expTDPopt_next_Callback({p.dumpdir,...
         [p.exp_dt,sprintf('_beta_boba%s.fit',str_excl)]},[],h_fig);
 end
+
+disp(cat(2,prefix,'test visualization area...'));
+
+% test y-scale and axes export
+set(h_fig,'currentaxes',h.axes_TDPplot2);
+exportAxes({[p.dumpdir,filesep,p.exp_logScale]},[],h_fig);
+
+pushbutton_TDPfit_log_Callback(h.pushbutton_TDPfit_log,[],h_fig)
+set(h_fig,'currentaxes',h.axes_TDPplot2);
+exportAxes({[p.dumpdir,filesep,p.exp_linScale]},[],h_fig);
+
+% test zoom reset
+ud_zoom([],[],'reset',h_fig);
+
+pushbutton_TDPremProj_Callback(h.pushbutton_TDPremProj,[],h_fig);

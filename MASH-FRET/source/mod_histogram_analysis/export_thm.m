@@ -1,7 +1,11 @@
-function export_thm(h_fig)
+function export_thm(h_fig,varargin)
+% export_thm(h_fig)
+% export_thm(h_fig,file_out)
+% 
+% h_fig: handle to main figure
+% file_out: {1-by-2} destination folder and file
 
-% Last update: 23.4.2019 by MH
-% >> correct export for Gaussian fit without BOBA-FRET
+% Last update 23.4.2019 by MH: correct export for Gaussian fit without BOBA-FRET
 
 h = guidata(h_fig);
 p = h.param.thm;
@@ -66,14 +70,22 @@ else
     str_w = 'no';
 end
 
-defname = p.proj{proj}.exp_parameters{1,2};
-if isempty(defname)
-    [o,defname,o] = fileparts(p.proj{proj}.proj_file);
+if ~isempty(varargin)
+    pname = varargin{1}{1};
+    fname = varargin{1}{2};
+    if ~strcmp(pname(end),filesep)
+        pname = [pname,filesep];
+    end
+else
+    defname = p.proj{proj}.exp_parameters{1,2};
+    if isempty(defname)
+        [o,defname,o] = fileparts(p.proj{proj}.proj_file);
+    end
+    defname = cat(2,setCorrectPath('histogram_analysis',h_fig),defname,'_',...
+        str_tpe,str_tag);
+    [fname,pname,o] = uiputfile({'*.txt', 'Text files(*.txt)'; '*.*', ...
+        'All files(*.*)'},'Export analysis',defname);
 end
-defname = cat(2,setCorrectPath('histogram_analysis',h_fig),defname,'_',...
-    str_tpe,str_tag);
-[fname,pname,o] = uiputfile({'*.txt', 'Text files(*.txt)'; '*.*', ...
-    'All files(*.*)'},'Export analysis',defname);
 
 if ~sum(fname)
     return;

@@ -6,15 +6,12 @@ function p = getDefault_HA
 % p: structure that contain default parameters
 
 % defaults
+nChan_min = 2;
 nChan_max = 3;
 nL_max = 3;
 nChan_def = 2;
 nL_def = 2;
-defprm = {'Movie name' '' ''
-       'Molecule name' '' ''
-       '[Mg2+]' [] 'mM'
-       '[K+]' [] 'mM'};
-deflbl = {'don','acc1','acc2'};
+nPop = 4;
 
 % general parameters
 [pname,o,o] = fileparts(mfilename('fullpath'));
@@ -33,6 +30,7 @@ end
 if ~exist(p.dumpdir,'dir')
     mkdir(p.dumpdir); % create new dump directory
 end
+p.nChan_min = nChan_min;
 p.nChan_max = nChan_max;
 p.nL_max = nL_max;
 
@@ -43,54 +41,12 @@ p.wl = [];
 while isempty(p.wl) || numel(unique(p.wl))~=nL_max
     p.wl = round(1000*sort(rand(1,nL_max))); % laser wavelengths
 end
-p.mash_files = cell(nL_max,nChan_max);
-p.ascii_dir = cell(nL_max,nChan_max);
-p.ascii_files = cell(nL_max,nChan_max);
-p.exp_ascii2mash = cell(nL_max,nChan_max);
-p.asciiOptopt = cell(nChan_max,nL_max);
-p.projOpt = cell(nChan_max,nL_max);
+p.mash_file = sprintf('%ichan%iexc.mash',nChan_def,nL_def);
 for nL = 1:nL_max
-    defprm_nL = defprm;
-    for l = 1:nL
-        defprm{size(defprm,1)+l,1} = ['Power(',num2str(p.wl(l)),'nm)'];
-        defprm{size(defprm,1),2} = '';
-        defprm{size(defprm,1),3} = 'mW';
-    end
-    for nChan = 1:nChan_max
-        
-        p.mash_files{nL,nChan} = sprintf('%ichan%iexc.mash',nChan,nL);
-        
-        p.ascii_dir{nL,nChan} = sprintf('%ichan%iexc',nChan,nL);
-        dir_content = dir(...
-            [p.annexpth,filesep,p.ascii_dir{nL,nChan},filesep,'*.txt']);
-        p.ascii_files{nL,nChan} = {};
-        for n = 1:size(dir_content,1);
-            p.ascii_files{nL,nChan} = cat(2,p.ascii_files{nL,nChan},...
-                dir_content(n,1).name);
-        end
-        
-        p.exp_ascii2mash{nL,nChan} = sprintf('%ichan%iexc_ascii.mash',...
-            nChan,nL);
-        
-        p.asciiOpt{nL,nChan}.intImp = {...
-            [3 0 true 1 2 (2+nChan-1) nChan nL false 5],p.wl(1:nL)};
-        p.asciiOpt{nL,nChan}.vidImp = {false ''};
-        p.asciiOpt{nL,nChan}.coordImp = {{false,'',{[1 2],1},256},[false 1]};
-        p.asciiOpt{nL,nChan}.expCond = defprm_nL;
-        p.asciiOpt{nL,nChan}.factImp = {false '' {} false '' {}};
-        
-        p.projOpt{nL,nChan}.proj_title = ...
-            sprintf('test_%ichan%iexc',nChan,nL); % project title
-        p.projOpt{nL,nChan}.mol_name = 'none'; % molecule name
-        p.projOpt{nL,nChan}.conc_mg = round(100*rand(1)); % Mg concentration
-        p.projOpt{nL,nChan}.conc_k = round(500*rand(1)); % K concentration
-        p.projOpt{nL,nChan}.laser_pow = round(100*rand(1,nL)); % laser powers
-        p.projOpt{nL,nChan}.prm_extra = {'buffer',1,''};
-        p.projOpt{nL,nChan}.labels = deflbl(1:nChan); % channel labels
+    for nChan = nChan_min:nChan_max 
         chanExc = zeros(1,nChan);
-        chanExc(1:min([nChan,nL])) = p.wl(1:min([nChan,nL]));
-        p.projOpt{nL,nChan}.chanExc = chanExc; % channel-specific excitation
         FRET = [];
+        chanExc(1:min([nChan,nL])) = p.wl(1:min([nChan,nL]));
         for don = 1:(nChan-1)
             if chanExc(don)>0
                 for acc = (don+1):nChan
@@ -98,35 +54,33 @@ for nL = 1:nL_max
                 end
             end
         end
-        p.projOpt{nL,nChan}.FRET = FRET; % FRET pairs
-        if ~isempty(FRET)
-            p.projOpt{nL,nChan}.S = ...
-                FRET(chanExc(FRET(:,1))>0 & chanExc(FRET(:,2))>0,:); % stoichiometries
-        else
-            p.projOpt{nL,nChan}.S = [];
-        end
+        nFRET = size(FRET,1);
     end
 end
-nFRET = size(p.projOpt{nL_def,nChan_def}.FRET,1);
-p.coord_file = '2chan.coord';
-p.coord_fline = 1;
-p.vid_width = 100;
-p.vid_file = '2chan2exc.sira';
-p.gamma_files = {'2chan2exc_1.gam','2chan2exc_2.gam','2chan2exc_3.gam'};
-p.beta_files = {'2chan2exc_1.bet','2chan2exc_2.bet','2chan2exc_3.bet'};
-p.states_fcol = 5;
-p.exp_coord1 = 'coordFromFile.mash';
-p.exp_coord2 = 'coordFromHeader.mash';
-p.exp_vid = 'vidFromFile.mash';
-p.exp_gam = 'gamFromFile.mash';
-p.exp_bet = 'betFromFile.mash';
-p.exp_states = 'statesFromFile.mash';
-p.exp_sortProj = '2chan2exc_sort.mash';
 
-% parameters for panel Histoghram and plot
+
+% parameters for panel Histogram and plot
+p.histDat = 2*p.nChan*p.nL+1;
+p.histTag = 1;
+p.histPrm = [0,0.01,1,0]; % low, bin, up, overflow
+p.exp_overflow = 'histOverflow';
 
 % parameters for panel State configuration
+p.cnfgPrm = [5,2,1.2]; % Jmax, (1 or 2) penalty or BIC, penalty
+p.exp_BICplot = 'GOFplot';
+p.exp_BIC = 'config_BIC.txt';
+p.exp_penalty = 'config_penalty.txt';
+p.exp_config = 'config.mash';
 
 % parameters for panel State populations
+p.popMeth = [1,0,5,1]; % (1 or 2) gaussian fit or threshold, boba, samples, weighing
+thresh = linspace(p.histPrm(1),p.histPrm(3),nPop+1);
+p.threshPrm = {nPop-1,thresh(2:end-1)};
+amps = repmat(1/nPop,[nPop,1]);
+means = linspace(p.histPrm(1),p.histPrm(3),nPop+2)';
+fwhms = repmat((p.histPrm(3)-p.histPrm(1))/(4*nPop),[nPop,1]);
+p.gaussPrm = {nPop, [permute([zeros(nPop,1) amps Inf(nPop,1)],[3,2,1]);...
+    permute([-Inf(nPop,1) means(2:end-1,1) Inf(nPop,1)],[3,2,1]);...
+    permute([zeros(nPop,1) fwhms Inf(nPop,1)],[3,2,1])]};
 
 % parameters for Visualization area
