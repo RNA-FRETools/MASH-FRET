@@ -73,7 +73,7 @@ p.exp_penalty = 'config_penalty.txt';
 p.exp_config = 'config.mash';
 
 % parameters for panel State populations
-p.popMeth = [1,0,5,1]; % (1 or 2) gaussian fit or threshold, boba, samples, weighing
+p.popMethPrm = [1,0,5,1]; % (1 or 2) gaussian fit or threshold, boba, samples, weighing
 thresh = linspace(p.histPrm(1),p.histPrm(3),nPop+1);
 p.threshPrm = {nPop-1,thresh(2:end-1)};
 amps = repmat(1/nPop,[nPop,1]);
@@ -82,5 +82,8 @@ fwhms = repmat((p.histPrm(3)-p.histPrm(1))/(4*nPop),[nPop,1]);
 p.gaussPrm = {nPop, [permute([zeros(nPop,1) amps Inf(nPop,1)],[3,2,1]);...
     permute([-Inf(nPop,1) means(2:end-1,1) Inf(nPop,1)],[3,2,1]);...
     permute([zeros(nPop,1) fwhms Inf(nPop,1)],[3,2,1])]};
+p.exp_pop = 'pop';
 
 % parameters for Visualization area
+p.exp_axes = 'axes';
+

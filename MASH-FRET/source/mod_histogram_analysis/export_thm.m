@@ -331,11 +331,9 @@ switch meth
 end
 
 if expfig
-    
-    err = loading_bar('init', h_fig, ceil(nSpl/3), ['Build *.pdf figures of ' ...
-        'bootstrapped histograms ...']);
-    if err
-        return;
+    if loading_bar('init', h_fig, ceil(nSpl/3), ['Build *.pdf figures of ' ...
+        'bootstrapped histograms ...'])
+        return
     end
     h = guidata(h_fig);
     h.barData.prev_var = h.barData.curr_var;
@@ -407,7 +405,7 @@ if expfig
         xNext = mg;
         for curr_s = s:s+2
             if curr_s>nSpl
-                break;
+                break
             end
             xNext = xNext + double(s~=curr_s)*w_full;
 
@@ -430,7 +428,7 @@ if expfig
         
         yNext = yNext - hMol;
         
-        if curr_s==s_end || curr_s==nSpl
+        if curr_s==s_end || curr_s>=nSpl
             if isdriver
                 try
                     if meth==1
@@ -478,9 +476,8 @@ if expfig
                 yNext = hFig - hMol - mg;
             end
         end
-        err = loading_bar('update', h_fig);
-        if err
-            return;
+        if loading_bar('update', h_fig)
+            return
         end
     end
     

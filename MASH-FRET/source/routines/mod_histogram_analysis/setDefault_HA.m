@@ -28,8 +28,3 @@ set_HA_histplot(p.histDat,p.histTag,p.histPrm,h_fig);
 % set default state configuration parameters
 set_HA_stateConfig(p.cnfgPrm,h_fig);
 
-% set default state populations parameters
-
-
-% set default parameters for visualization area
-
