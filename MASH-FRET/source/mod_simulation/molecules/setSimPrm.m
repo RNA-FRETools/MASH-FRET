@@ -5,8 +5,12 @@ function [p,errmsg] = setSimPrm(s, movDim)
 %
 % s.FRET >> [J-by-2-by-N] matrix containing values (odd column nb.) and 
 %           distribution width (even column nb.) of the J FRET states
-% s.trans_rates >> [J-by-J-by-N] matrix containing transition rates from
-%                  the state j (row nb.) to the state i (column nb.)
+% s.trans_rates >> [J-by-J-by-N] matrix containing restricted transition 
+%           rates from the state j (row nb.) to the state i (column nb.)
+% s.trans_prob >> [J-by-J-by-N] matrix containing transition probabilties 
+%           from the state j (row nb.) to the state i (column nb.) with
+%           trans_prob(i,i,:) = 0 and probabilities normalized by the sum
+%           in a row
 % s.gamma >> [N-by-2] matrix containing values (1st column) and 
 %            distribution width (2nd column) of the gamma factors
 % s.tot_intensity >> [N-by-2] matrix containing values (1st column) and 
