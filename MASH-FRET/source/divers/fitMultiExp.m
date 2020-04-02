@@ -20,7 +20,9 @@ ampmin = 0;
 taumin = 0;
 ampmax = 2;
 taumax = Inf;
+minAsum = 1; % minimum sum of amplitudes
 
+fitbounds = [];
 if ~isempty(varargin)
     fitbounds = varargin{1};
     n = size(fitbounds.upper,2)/2;
@@ -30,54 +32,66 @@ Y = log(y);
 excl = isinf(Y);
 Y(excl) = [];
 x(excl) = [];
+datrange = 1:numel(x);
 
 if plotIt
-    h_fig = figure();
+    h_fig = figure('windowstyle','docked');
     h_axes = axes('parent',h_fig);
 else
     h_axes = [];
 end
 
-% find inflexion points
-cp = findChangePoint(Y,x,h_axes,fmt_hist,fmt_fit);
+if isempty(fitbounds)
+    % find inflexion points
+    cp = findChangePoint(Y,x,h_axes,fmt_hist,fmt_fit);
+    if n==0
+        cp = cp(1,:);
+        n = size(cp,2)+1;
+        minVal = repmat([ampmin;taumin],[1,n]);
+        maxVal = repmat([ampmax;taumax],[1,n]);
 
-datrange = 1:numel(x);
-if n==0
-    cp = cp(1,:);
-    n = size(cp,2)+1;
-    minVal = repmat([ampmin;taumin],[1,n]);
-    maxVal = repmat([ampmax;taumax],[1,n]);
-    
-else
-    if ~isempty(cp)
-        if size(cp,2)<(n-1)
-            cp = cat(2,cp,repmat(cp(:,end),[1,(n-1)-size(cp,2)]));
-        elseif size(cp,2)>(n-1)
-            [~,id] = sort(cp(2,:),'descend');
-            if n==1
-                datrange = 1:cp(1,1);
-                cp = [];
-            else
-                 cp = cp(:,id(1:n-1));
-                [~,id] = sort(cp(1,:));
-                cp = cp(:,id);
-            end
-        end
-        if ~isempty(cp)
-            cp = cp(1,:);
-        end
     else
-        cp = (1:(n-1))*numel(x)/n;
+        if ~isempty(cp)
+            if size(cp,2)<(n-1)
+                n_add = (n-1)-size(cp,2);
+                cp = cat(2,cp,(1:n_add)+repmat(cp(:,end),[1,n_add]));
+            elseif size(cp,2)>(n-1)
+                [~,id] = sort(cp(2,:),'descend');
+                if n==1
+                    datrange = 1:cp(1,1);
+                    cp = [];
+                else
+                     cp = cp(:,id(1:n-1));
+                    [~,id] = sort(cp(1,:));
+                    cp = cp(:,id);
+                end
+            end
+            if ~isempty(cp)
+                cp = cp(1,:);
+            end
+        else
+            cp = (1:(n-1))*numel(x)/n;
+        end
+        minVal = reshape(fitbounds.lower,[2,n]);
+        maxVal = reshape(fitbounds.upper,[2,n]);
     end
+
+    [tau0,amp0] = estimateStartGuess(x(datrange),Y(datrange),cp,n);
+    prm0 = [amp0;tau0];
+else
+    prm0 =  reshape(fitbounds.start,[2,n]);
     minVal = reshape(fitbounds.lower,[2,n]);
     maxVal = reshape(fitbounds.upper,[2,n]);
 end
 
-[tau0,amp0] = estimateStartGuess(x(datrange),Y(datrange),cp,n);
+if sum(prm0(1,:))<minAsum
+    prm0(1,:) = minAsum*prm0(1,:)/sum(prm0(1,:));
+end
 
-[prm,gof] = optimizeMultiExpModel(x(datrange),Y(datrange),[amp0;tau0],...
-    minVal,maxVal,h_axes,fmt_hist,fmt_fit);
-amp = prm(1,:)/sum(prm(1,:));
+[prm,gof] = optimizeMultiExpModel(x(datrange),Y(datrange),prm0,...
+    minVal,maxVal,minAsum,h_axes,fmt_hist,fmt_fit);
+% amp = prm(1,:)/sum(prm(1,:));
+amp = prm(1,:);
 tau = prm(2,:);
 
 if plotIt
@@ -88,7 +102,8 @@ if plotIt
     % plot fit
     yfit = zeros(size(Y));
     for ni = 1:n
-        yfit = yfit + amp(ni)*exp(-x/tau(ni))/sum(amp);
+%         yfit = yfit + amp(ni)*exp(-x/tau(ni))/sum(amp);
+        yfit = yfit + amp(ni)*exp(-x/tau(ni));
     end
     plot(h_axes,x,log(yfit),fmt_fit);
     close(h_fig);
@@ -183,22 +198,31 @@ for ni = 1:n
 end
 
 
-function [prm,gof] = optimizeMultiExpModel(x,Y,prm0,minVal,maxVal,h_axes,...
-    fmt_hist,fmt_fit)
+function [prm,gof] = optimizeMultiExpModel(x,Y,prm0,minVal,maxVal,minAsum,...
+    h_axes,fmt_hist,fmt_fit)
 
 % default
-plotIt = false;
-minVar = 1E-6;
-gof_prev = -Inf;
-gof = 0;
-prm = prm0;
+plotIt = true;
+minVar = 1E-4;
+n = size(prm0,2);
+varsteps = [0.2 10
+    0.1 1
+    0.01,0.1
+    0.001 0.01
+    0.0001 0.001];
+ncycle = size(varsteps,1);
+gof = zeros(1,ncycle);
+prm = cell(1,ncycle);
+prm_iter = prm0;
 prm_prev = prm0;
-n = size(prm,2);
-varsteps = [0.01,0.1];
-ncycle = 3;
 
 for cycle = 1:ncycle
-    while gof>(gof_prev+minVar)
+    
+    gof_prev = -Inf;
+    gof_alliter = 0;
+    prm_alliter = {};
+
+    while gof_alliter(end)>(gof_prev+minVar)
 
         % plot interation
         if plotIt && ~isempty(h_axes)
@@ -206,30 +230,40 @@ for cycle = 1:ncycle
             hold(h_axes,'on');
             yfit = zeros(size(Y));
             for ni = 1:n
-                yfit = yfit + prm(1,ni)*exp(-x/prm(2,ni))/sum(prm(1,:));
+                yfit = yfit + prm_iter(1,ni)*exp(-x/prm_iter(2,ni))/...
+                    sum(prm_iter(1,:));
             end
             plot(h_axes,x,log(yfit),fmt_fit);
             hold(h_axes,'off');
             drawnow;
         end
 
-        gof_prev = gof;
-        prm_prev = prm;
+        gof_prev = gof_alliter(end);
+        prm_prev = prm_iter;
 
         % move each function after the other
         for ni = 1:n
-            prm = varyParam(x,Y,prm,ni,varsteps(cycle,:),maxVal,minVal,...
-                minVar);
+            prm_iter = varyParam(x,Y,prm_iter,ni,varsteps(cycle,:),maxVal,...
+                minVal,minAsum,minVar);
         end
-
-        gof = calcGOF(prm,x,Y);
+        
+        gof_alliter = cat(2,gof_alliter,calcGOF(prm_iter,x,Y));
+        prm_alliter = cat(2,prm_alliter,prm_iter);
     end
-    prm = prm_prev;
-    gof = gof_prev;
+    
+    prm_alliter{end} = prm_prev;
+    gof_alliter(end) = gof_prev;
+    
+    [gof(cycle),bestiter] = max(gof_alliter);
+    prm{cycle} = prm_alliter{bestiter};
 end
 
+[~,bestcycle] = max(gof);
+gof = gof(bestcycle);
+prm = prm{bestcycle};
 
-function prm = varyParam(x,Y,prm,n,step,prm_max,prm_min,minVar)
+
+function prm = varyParam(x,Y,prm,n,step,prm_max,prm_min,minAsum,minVar)
 
 gof = calcGOF(prm,x,Y);
 
@@ -242,7 +276,8 @@ for id = 1:nPrm
     gof_up_prev = -Inf;
     gof_up = gof;
     while gof_up>(gof_up_prev+minVar) && ...
-            (prm_up(id,n)+step(id))<prm_max(id,n)
+            (prm_up(id,n)+step(id))<=prm_max(id,n) && ...
+            sum(prm_up(1,:))>=minAsum
         gof_up_prev = gof_up;
         prm_up_prev = prm_up;
 
@@ -257,7 +292,8 @@ for id = 1:nPrm
     gof_down_prev = -Inf;
     gof_down = gof;
     while gof_down>(gof_down_prev+minVar) && ...
-            (prm_down(id,n)-step(id))>prm_min(id,n)
+            (prm_down(id,n)-step(id))>=prm_min(id,n) && ...
+            sum(prm_down(1,:))>=minAsum
         gof_down_prev = gof_down;
         prm_down_prev = prm_down;
 
@@ -280,10 +316,12 @@ N = numel(Y);
 yfit = zeros(size(Y));
 n = numel(a);
 for ni = 1:n
-    yfit = yfit + a(ni)*exp(-x/b(ni))/sum(a);
+%     yfit = yfit + a(ni)*exp(-x/b(ni))/sum(a);
+    yfit = yfit + a(ni)*exp(-x/b(ni));
 end
-w = Y/sum(Y);
 
-gof = N/sqrt(sum(((log(yfit)-Y).^2).*w));
+gof_log = N/sqrt(sum(((log(yfit)-Y).^2).*exp(Y)));
+gof_lin = N/sqrt(sum(((yfit-exp(Y)).^2)));
+gof = log(gof_log*gof_lin);
 
 
