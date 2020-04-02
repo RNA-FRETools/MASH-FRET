@@ -134,7 +134,9 @@ for Jmax = Js
         'clusters screenshot to file ',fname_clstImg,'\n'),num2str(Jmax));
     
     % export gaussian mixture to .clst files
-    set(h.popupmenu_tdp_model,'value',Jmax-1);
+    str_states = get(h.popupmenu_tdp_model,'string');
+    popval = find(~cellfun('isempty',strfind(str_states,num2str(Jmax))));
+    set(h.popupmenu_tdp_model,'value',popval);
     popupmenu_tdp_model_Callback(h.popupmenu_tdp_model,[],h_fig);
 
     pushbutton_tdp_impModel_Callback(h.pushbutton_tdp_impModel,[],h_fig);
