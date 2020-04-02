@@ -158,7 +158,7 @@ for curr_s = 1:nCol:nSpl
                 '-dpng');
         end
 
-        delete(h_fig_mol);
+        close(h_fig_mol);
         s_end = s_end + nCol*nRow;
         if s<nSpl
             h_fig_mol = figure('Visible', 'off', 'Units', 'pixels', ...
@@ -173,6 +173,10 @@ for curr_s = 1:nCol:nSpl
     if err
         return;
     end
+end
+
+if ishandle(h_fig_mol)
+    close(h_fig_mol);
 end
 
 if isdriver
