@@ -1,5 +1,5 @@
-function [TDPs,logL] = routine_backSim(pname,fname,Js,states,mat,h_fig)
-% [TDPs,logL] = routine_backSim(pname,fname,Js,states,mat,h_fig)
+function [TDPs,logL,expIniProb] = routine_backSim(pname,fname,Js,states,mat,prob0,h_fig)
+% [TDPs,logL,expIniProb] = routine_backSim(pname,fname,Js,states,mat,prob0,h_fig)
 %
 % Commpare the selected models to simulation and determine the best fit
 %
@@ -14,13 +14,16 @@ function [TDPs,logL] = routine_backSim(pname,fname,Js,states,mat,h_fig)
 %  mat{j}(:,:,4): transition porbability deviaitions
 %  mat{j}(:,:,5): unrestricted rates (weighed by transition prob.)
 %  mat{j}(:,:,6): unrestricted rate deviations
+% prob0: {1-by-nJ} [1-by-J] initial state probabilities
 % h_fig: handle to main figure
 % TDPs: Transition density plots such as:
 %  TDPs(:,:,1): experimental TDP
 %  TDPs(:,:,2:(nJ+1)): simulated TDPs ordered as Js
 % logL: [1-by-nJ] log likelihoods
+% expIniProb: (1) use experimental initial probabilties, (0) otherwise
 
 % defaults
+expIniProb = false; % use experimental inital probabilities
 expopt = [0,0,0,1,0,1,0];
 noiseType = {'poiss','norm','user','none','hirsch'};
 tdp_dat = 3; % data to plot in TDP (FRET data)
@@ -54,11 +57,11 @@ pushbutton_TDPupdatePlot_Callback(h.pushbutton_TDPupdatePlot,[],h_fig);
 
 % recover TDP
 h = guidata(h_fig);
-q = h.param.TDP;
-proj = q.curr_proj;
-tag = q.curr_tag(proj);
-tpe = q.curr_type(proj);
-prm = q.proj{proj}.prm{tag,tpe};
+q_tp = h.param.TDP;
+proj = q_tp.curr_proj;
+tag = q_tp.curr_tag(proj);
+tpe = q_tp.curr_type(proj);
+prm = q_tp.proj{proj}.prm{tag,tpe};
 TDPs = prm.plot{2};
 
 if gconv
@@ -75,21 +78,20 @@ for j = 1:numel(Js)
     fprintf(cat(2,'>>>> determine simulation parameters from experimental',...
         ' data for J=%i...\n'),Js(j));
     
-    % import project in TP
+    % collect TP experimental data
     switchPan(h.togglebutton_TP,[],h_fig);
     pushbutton_addTraces_Callback({p.dumpdir,fname_mashIn},[],h_fig);
     
-    % collect experimental data
     h = guidata(h_fig);
-    q = h.param.ttPr;
-    proj = q.curr_proj;
-    Idon = q.proj{proj}.intensities_denoise(:,1:2:end,1);
-    Iacc = q.proj{proj}.intensities_denoise(:,2:2:end,1);
-    expT = q.proj{proj}.frame_rate;
-    
+    q_tp = h.param.ttPr;
+    proj = q_tp.curr_proj;
+    Idon = q_tp.proj{proj}.intensities_denoise(:,1:2:end,1);
+    Iacc = q_tp.proj{proj}.intensities_denoise(:,2:2:end,1);
+    expT = q_tp.proj{proj}.frame_rate;
+
     pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
     
-    % calculate experimental parameters
+    % calculate simulation parameters
     Itot = Iacc+Idon;
     [o,K,eta] = getCamParam(noiseType{p.camnoise},p.camprm);
     Itot = arb2phtn(Itot,0,K,eta);
@@ -101,18 +103,27 @@ for j = 1:numel(Js)
     k0 = mat{j}(:,:,1);
     prob = mat{j}(:,:,3);
     states_id = k0(1,2:end,1);
+    
+    fprintf(cat(2,'>>>> export simulation presets to file ',fname_presets,...
+        '\n'),num2str(Js(j)));
+    
     tot_intensity = repmat([mean(Imean),std(Imean)],N,1);
     FRET = repmat(states{j}(states_id,:),[1,1,N]);
     trans_rates = repmat(k0(2:end,2:end,1),[1,1,N]);
     trans_prob = repmat(prob(2:end,2:end,1),[1,1,N]);
+    if expIniProb
+        ini_prob = repmat(prob0{j}(2,:),[N,1]);
+        % create preset file
+        save([p.dumpdir,filesep,sprintf(fname_presets,num2str(Js(j)))],...
+            'FRET','trans_rates','tot_intensity','trans_prob','ini_prob',...
+            '-mat');
+    else
+        % create preset file
+        save([p.dumpdir,filesep,sprintf(fname_presets,num2str(Js(j)))],...
+            'FRET','trans_rates','tot_intensity','trans_prob','-mat');
+    end
 
-    fprintf(cat(2,'>>>> export simulation presets to file ',fname_presets,...
-        '\n'),num2str(Js(j)));
-    
-    % create preset file
     switchPan(h.togglebutton_S,[],h_fig);
-    save([p.dumpdir,filesep,sprintf(fname_presets,num2str(Js(j)))],'FRET',...
-        'trans_rates','tot_intensity','trans_prob','-mat');
     
     fprintf('>>>> simulate model with J=%i...\n',Js(j));
     
@@ -135,12 +146,12 @@ for j = 1:numel(Js)
     
     % recover simulation results and remove blurr states
     h = guidata(h_fig);
-    q = h.results.sim;
-    for n = 1:numel(q.dat_id{3})
-        incl = q.dat_id{3}{n}>0;
-        q.dat_id{3}{n}(incl) = deblurrSeq(q.dat_id{3}{n}(incl));
+    q_tp = h.results.sim;
+    for n = 1:numel(q_tp.dat_id{3})
+        incl = q_tp.dat_id{3}{n}>0;
+        q_tp.dat_id{3}{n}(incl) = deblurrSeq(q_tp.dat_id{3}{n}(incl));
     end
-    h.results.sim = q;
+    h.results.sim = q_tp;
     guidata(h_fig,h);
     
     % export ASCII traces and log file
@@ -185,11 +196,11 @@ for j = 1:numel(Js)
     
     % recover TDP
     h = guidata(h_fig);
-    q = h.param.TDP;
-    proj = q.curr_proj;
-    tag = q.curr_tag(proj);
-    tpe = q.curr_type(proj);
-    prm = q.proj{proj}.prm{tag,tpe};
+    q_tp = h.param.TDP;
+    proj = q_tp.curr_proj;
+    tag = q_tp.curr_tag(proj);
+    tpe = q_tp.curr_type(proj);
+    prm = q_tp.proj{proj}.prm{tag,tpe};
     TDP = prm.plot{2};
 
     if gconv

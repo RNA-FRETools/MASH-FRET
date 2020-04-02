@@ -1,4 +1,4 @@
-function [rates,mat] = routine_getRates(pname,fname,Js,h_fig)
+function [rates,mat,prob0] = routine_getRates(pname,fname,Js,h_fig)
 % rates = routine_getRates(pname,fname,Js,h_fig)
 %
 % Analyze dwell time histograms to determine state transition rates and associated deviations
@@ -15,18 +15,23 @@ function [rates,mat] = routine_getRates(pname,fname,Js,h_fig)
 %  mat{j}(:,:,4): unrestricted rate deviations
 %  mat{j}(:,:,5): transition porbabilities (weighing factors * exponential contribution)
 %  mat{j}(:,:,6): transition porbability deviaitions
+% prob0: {1-by-nJ} [2-by-J] initial state probabilities
 
 % initialize output
-rates = cell(1,numel(Js));
-mat = cell(1,numel(Js));
+nJ = numel(Js);
+rates = cell(1,nJ);
+mat = cell(1,nJ);
+prob0 = cell(1,nJ);
 
 % defauts
+modelSlct = 'mean'; % method to select the most sufficient number of exponential functions ('conf' or 'mean')
 tdp_dat = 3; % data to plot in TDP (FRET data)
 tdp_tag = 1; % molecule tag to plot in TDP (all molecules)
 n_spl = 100; % number of bootstrap samples
 excl = true; % exclude first and last dwell times in sequences
 rearr = true; % re-arrange state sequences
 tol = 3; % deviation multiplication factor used to dertermine the number of decays (ex:3 for 3*sigma)
+conf = 0; % confidence (maximum overlap percentage of decay error ranges)
 
 if ~strcmp(pname(end),filesep)
     pname = [pname,filesep];
@@ -49,7 +54,7 @@ n_max = p.nMax; % maximum number of exponential functiosn to fit
 
 switchPan(h.togglebutton_TA,[],h_fig);
 p.tdp_expOpt([7,8]) = true;
-for j = 1:numel(Js)
+for j = 1:nJ
     fprintf(cat(2,'>>>> import file ',fname_mashIn,...
     ' in Transition analysis...\n'),num2str(Js(j)));
 
@@ -71,6 +76,7 @@ for j = 1:numel(Js)
     [j1,j2] = getStatesFromTransIndexes(1:K,Js(j),p.clstConfig(1),...
         p.clstConfig(2));
     rates{j} = [repmat([j1',j2'],n_max,1),zeros(n_max*K,8*n_max+2)];
+    prob0{j} = zeros(1,Js(j));
     
     % collect cluster's relative populations
     h = guidata(h_fig);
@@ -86,6 +92,14 @@ for j = 1:numel(Js)
     end
     w(~~eye(Js(j))) = 0;
     w = w/sum(sum(w));
+    
+    % collect initial state populations (non-degenerated states)
+    mols = unique(res.clusters{Js(j)}(res.clusters{Js(j)}(:,end-1)>0,4));
+    for m = mols'
+        states1 = res.clusters{Js(j)}(res.clusters{Js(j)}(:,4)==m,end-1);
+        prob0{j}(states1(1)) = prob0{j}(states1(1))+1;
+    end
+    prob0{j} = prob0{j}/sum(prob0{j});
     
     for n = n_max:-1:1
         fprintf(cat(2,'>>>> fit cumulated dwell time histograms with %i',...
@@ -167,25 +181,7 @@ for j = 1:numel(Js)
             da = a.*(o_amp./amp + o_tau./tau + flip(o_amp./amp,2) + ...
                 flip(o_tau./tau,2));
 
-            isValid = 1;
-            for ni = 1:n
-                njs = 1:n;
-                njs(ni) = [];
-                for nj = njs
-                    if (tau(ni)<=tau(nj) && ...
-                            ((tau(ni)+tol*o_tau(ni))>=tau(nj) || ...
-                            (tau(nj)-tol*o_tau(nj))<=tau(ni))) || ...
-                            (tau(ni)>=tau(nj) && ...
-                            ((tau(ni)-tol*o_tau(ni))<=tau(nj) || ...
-                            (tau(nj)+tol*o_tau(nj))>=tau(ni)))
-                        isValid = 0;
-                        break
-                    end
-                end
-                if ~isValid
-                    break
-                end
-            end
+            isValid = isExpFitValid(n,tau,o_tau,tol,conf,modelSlct);
             
             rates0_k = 1./tau; % restricted rate coefficients
             d_rate0 = rates0_k.*o_tau./tau;
@@ -272,13 +268,14 @@ for j = 1:numel(Js)
         end
     end
     
-    % determine transition index correspondign to each cell
+    % determine transition index corresponding to each cell
     states_id = [];
     n_opt = ones(1,Js(j));
     for state = 1:Js(j)
         n_opt(state) = prod(n_dec(state,(1:Js(j))~=state));
         states_id = cat(2,states_id,repmat(state,[1,n_opt(state)]));
     end
+    prob0{j} = prob0{j}(states_id);
     
     [degen2,state1] = meshgrid(states_id);
     trans = zeros(size(state1));
@@ -293,20 +290,24 @@ for j = 1:numel(Js)
     pop_n = ones(1,size(trans,1));
     d_pop_n = zeros(1,size(trans,1));
     for state1 = 1:Js(j)
-        states2 = 1:Js(j);
-        vect = cell(1,numel(states2));
-        for state = states2
-            vect{state} = 1:n_dec(state1,states2(state));
-            if isempty(vect{state})
-                vect{state} = 0;
+        vect = cell(1,Js(j));
+        for state2 = 1:Js(j)
+            if state1==state2 % transitions to same state value are forbidden
+                vect{state2} = 0;
+            else
+                % vector containing sub-indexes of states degenerated with state2
+                vect{state2} = 1:n_dec(state1,state2);
             end
         end
+        
+        % get all possible state transitions between degenerated states
         id_12 = meshcoord(vect);
         id_12extend = [];
-        for state = states2
+        for state2 = 1:Js(j)
             id_12extend = cat(2,id_12extend,...
-                repmat(id_12(:,state),[1,n_opt(state)]));
+                repmat(id_12(:,state2),[1,n_opt(state2)]));
         end
+        
         id_1 = sum(n_opt(1:(state1-1)))+(1:n_opt(state1));
         exp_id(id_1,:) = id_12extend;
         for s1 = 1:size(id_12,1)
@@ -323,6 +324,7 @@ for j = 1:numel(Js)
     end
     
     % calculate transition probabilities
+    prob0{j} = prob0{j}.*pop_n;
     p0 = w_opt.*repmat(pop_n,[numel(pop_n),1]);
     dp0 = p0.*repmat(d_pop_n',[1,numel(d_pop_n)]);
     
@@ -357,9 +359,75 @@ for j = 1:numel(Js)
     mat{j} = cat(1,repmat(states_id,[1,1,size(mat{j},3)]),mat{j});
     mat{j} = cat(2,repmat([0,states_id]',[1,1,size(mat{j},3)]),mat{j});
     
+    % add state indexes in first row
+    prob0{j} = cat(1,states_id,prob0{j});
+    
     set(h.listbox_TDPprojList,'value',1);
     listbox_TDPprojList_Callback(h.listbox_TDPprojList,[],h_fig);
     pushbutton_TDPremProj_Callback(h.pushbutton_TDPremProj,[],h_fig);
 end
 
 
+function isValid = isExpFitValid(n,tau,o_tau,tol,conf,meth)
+% isValid = isExpFitValid(n,tau,o_tau,tol,conf)
+%
+% Determine if a multi-exponential fit function is the most sufficient model to describe the data
+%
+% n: number of expoenential function in the model
+% tau: [n-by1-] bootstrap mean of decay constants
+% o_tau: [n-by-1] bootstrap deviation of decay constants
+% tol: size of the +/- error range (in number of o_tau) [default=3]
+% conf: maximum tolerated overlap between error ranges (relative to each full range) [default=0]
+% meth: method to determine if the modle is valid or not ('conf' or 'mean')
+
+switch meth
+    case 'mean'
+        % valid if the range tau +/- tol*o_tau includes no other tau
+        isValid = true;
+        for ni = 1:n
+            njs = 1:n;
+            njs(ni) = [];
+            for nj = njs
+                if (tau(ni)<=tau(nj) && ...
+                        ((tau(ni)+tol*o_tau(ni))>=tau(nj) || ...
+                        (tau(nj)-tol*o_tau(nj))<=tau(ni))) || ...
+                        (tau(ni)>=tau(nj) && ...
+                        ((tau(ni)-tol*o_tau(ni))<=tau(nj) || ...
+                        (tau(nj)+tol*o_tau(nj))>=tau(ni)))
+                    isValid = 0;
+                    break
+                end
+            end
+            if ~isValid
+                break
+            end
+        end
+        
+    case 'conf'
+        % valid if the relative overlap of range tau +/- tol*o_tau is less than conf
+        for n1 = 1:n
+            n2s = 1:n;
+            n2s(n1) = [];
+            overlap = 0;
+            for n2 = n2s
+                if tau(n1)<=tau(n2)
+                    incr_overlap = ...
+                        (tau(n1)+tol*o_tau(n1))-(tau(n2)-tol*o_tau(n2));
+                else
+                    incr_overlap = ...
+                        (tau(n2)+tol*o_tau(n2))-(tau(n1)-tol*o_tau(n1));
+                end
+                if incr_overlap<0
+                    incr_overlap = 0;
+                end
+                overlap = overlap+incr_overlap;
+            end
+
+            overlap = overlap/(2*tol*o_tau(n1));
+            isValid = overlap<conf;
+
+            if ~isValid
+                break
+            end
+        end
+end

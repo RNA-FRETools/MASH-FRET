@@ -1,38 +1,23 @@
 function [p,errmsg] = setSimPrm(s, movDim)
 % function p = setSimPrm(s, movDim)
 %
-% Import parameters of N molecule specified in the structure s
+% Import simulation parameters
 %
-% s.FRET >> [J-by-2-by-N] matrix containing values (odd column nb.) and 
-%           distribution width (even column nb.) of the J FRET states
-% s.trans_rates >> [J-by-J-by-N] matrix containing restricted transition 
-%           rates from the state j (row nb.) to the state i (column nb.)
-% s.trans_prob >> [J-by-J-by-N] matrix containing transition probabilties 
-%           from the state j (row nb.) to the state i (column nb.) with
-%           trans_prob(i,i,:) = 0 and probabilities normalized by the sum
-%           in a row
-% s.gamma >> [N-by-2] matrix containing values (1st column) and 
-%            distribution width (2nd column) of the gamma factors
-% s.tot_intensity >> [N-by-2] matrix containing values (1st column) and 
-%                    distribution width (2nd column) of the total 
-%                    intensities (donor + acceptor)
-% s.coordinates >> [N-by-2] or [N-by-4] matrix containing moelcule 
-%                  coordinates
+% s: structure containing simualtion parameters for J states and N molecules with fields:
+%  s.FRET: [J-by-2-by-N] state (1) values and (2) deviations
+%  s.trans_rates: [J-by-J-by-N] restricted transition rates from state j (row nb.) to state j' (column nb.)
+%  s.trans_prob: [J-by-J-by-N] transition probabilties from state j (row nb.) to state j' (column nb.) with probabilities normalized by the sum in a row and null diagonal terms
+%  s.ini_prob: [N-by-J] initial state probabilties
+%  s.gamma: [N-by-2] gamma factor (1) values and (2) deviations
+%  s.tot_intensity: [N-by-2] total intensity (donor + acceptor) (1) values and (2) deviations
+%  s.coordinates: [N-by-2] or [N-by-4] molecule coordinates
+% movDim: [1-by-2] pixel dimensions of the simulated video in the x- and y-direction
 
-% Last update by MH, 18.12.2019
-% >> change second input argument J (number of states, unused) to movDim 
-%  (video dimensions)
-% >> fix error when importing FRET states by adjusting size of FRET matrix
-% >> cancel import of FRET values when transition rates are ill-defined
-% >> maintain empty field "coord" even if all coordinates in presets 
-%  file were discarded (allows re-sorting when video dimensions change)
-% >> return error messages in errmsg to inform the user via the control 
-%  panel (more visible)
-%
-% update: 19.4.2019 by MH
-% >> Manage communication with user by handling ill-defined presets
-%
-% update: the 16th of September 2018 by Richard Börner
+% Last update, 29.3.2020 by MH: add ini_prob preset
+% update, 17.3.2020 by MH: add trans_prob preset
+% update, 18.12.2019 by MH: (1) change second input argument J (number of states, unused) to movDim (video dimensions) (2) fix error when importing FRET states by adjusting size of FRET matrix (3) cancel import of FRET values when transition rates are ill-defined (4) maintain empty field "coord" even if all coordinates in presets file were discarded (allows re-sorting when video dimensions change) (5) return error messages in errmsg to inform the user via the control panel (more visible)
+% update, 19.4.2019 by MH: Manage communication with user by handling ill-defined presets
+% update, 16.09.2018 by Richard Börner
 
 % initialize returned variables
 p = [];
@@ -142,6 +127,36 @@ if isfield(s, 'trans_prob') && ~isempty(s.trans_prob)
         disp(cat(2,'Import presets for ',num2str(p.molNb),' molecules and',...
             ' ',num2str(p.nbStates),' FRET states ...'));
         disp('Transition probabilities successfully imported');
+    end
+end
+
+if isfield(s, 'ini_prob') && ~isempty(s.ini_prob)
+    if isfield(p,'molNb') && isfield(p, 'nbStates') % FRET matrix or transition rates not loaded
+        if size(s.ini_prob,1)==p.molNb && size(s.ini_prob,2)==p.nbStates
+            p.p0 = s.ini_prob;
+            disp('Initial state probabilities successfully imported');
+            
+        elseif size(s.ini_prob,1)~=p.molNb
+            errmsg = cat(2,errmsg,cat(2,'No initial state probability ',...
+                'imported:'),cat(2,'>> the numbers of molecules ',...
+                'defined by initial state probabilities and by the FRET, ',...
+                'transition rate or transition probabilties matrices are ',...
+                'not consistent.'),' ');
+        else
+            errmsg = cat(2,errmsg,cat(2,'No initial state probability ',...
+                'imported:'),cat(2,'>> the numbers of states defined by ',...
+                'transition probabilities and by the FRET, transition ',...
+                'rate or transition probabilties matrices are not ',...
+                'consistent.'),' ');
+        end
+        
+    else % FRET matrix/transition rates not loaded
+        p.p0 = s.ini_prob;
+        p.molNb = size(s.ini_prob,1);
+        p.nbStates = size(s.ini_prob,2);
+        disp(cat(2,'Import presets for ',num2str(p.molNb),' molecules and',...
+            ' ',num2str(p.nbStates),' FRET states ...'));
+        disp('Initial state probabilities successfully imported');
     end
 end
 

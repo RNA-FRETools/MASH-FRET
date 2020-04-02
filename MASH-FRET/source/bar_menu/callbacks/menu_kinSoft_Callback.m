@@ -75,11 +75,11 @@ try
         
         t3 = tic;
         
-        [ks,mat] = routine_getRates(pname,fname,Js,h_fig);
+        [ks,mat,prob0] = routine_getRates(pname,fname,Js,h_fig);
         
         t_3 = toc(t3);
 
-        h.kinsoft_res{3} = {t_3,ks,mat};
+        h.kinsoft_res{3} = {t_3,ks,mat,prob0};
         h.kinsoft_res(end) = cell(1,1);
         guidata(h_fig,h);
     end
@@ -97,10 +97,12 @@ try
         Js = h.kinsoft_res{1}{5}(:,1)';
         states = h.kinsoft_res{2}{2};
         mat = h.kinsoft_res{3}{3};
+        prob0 = h.kinsoft_res{3}{4};
         
         t4 = tic;
         
-        [TDPs,logL] = routine_backSim(pname,fname,Js,states,mat,h_fig);
+        [TDPs,logL,useProb0] = routine_backSim(pname,fname,Js,states,mat,...
+            prob0,h_fig);
         
         t_4 = toc(t4);
         
@@ -147,6 +149,7 @@ try
                 if ~isempty(h.kinsoft_res{3})
                     ks = h.kinsoft_res{3}{2}{j};
                     mat = h.kinsoft_res{3}{3}{j};
+                    prob0 = h.kinsoft_res{3}{4}{j};
                     nExp = (size(ks,2)-4)/8;
                     fprintf(f,...
                         '\nFitting results and rate coefficients (second-1):\n');
@@ -158,6 +161,12 @@ try
                         reshape(repmat(1:nExp,[2,1]),[1,2*nExp]),....
                         reshape(repmat(1:nExp,[2,1]),[1,2*nExp])]);
                     fprintf(f,[repmat('%d\t',[1,size(ks,2)]),'\n'],ks');
+                    
+                    if useProb0
+                        fprintf(f,...
+                            '\nInitial state probabilties:\n');
+                        fprintf(f,'%i\t%d\n',prob0);
+                    end
                     
                     fprintf(f,...
                         '\nRestricted rates (second-1):\n');
