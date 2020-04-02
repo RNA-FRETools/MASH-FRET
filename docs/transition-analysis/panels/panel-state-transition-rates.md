@@ -15,7 +15,7 @@ State transition rates is the third panel of module Transition analysis.
 
 Use this panel to estimate state transition rates and associated cross-sample variability.
 
-<a class="plain" href="../../assets/images/gui/TA-panel-state-transition-rates.png"><img src="../../assets/images/gui/TA-panel-state-transition-rates.png" style="max-width:512px;"></a>
+<a class="plain" href="../../assets/images/gui/TA-panel-state-transition-rates.png"><img src="../../assets/images/gui/TA-panel-state-transition-rates.png" style="max-width:552px;"></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -28,16 +28,21 @@ Use this panel to estimate state transition rates and associated cross-sample va
 
 ## Transitions
 
-Use this panel to select a transition clusters for dwell time analysis and edit the associated color.
+Use this panel to select a transition clusters and pre-process the associated dwell-time set.
 
 <img src="../../assets/images/gui/TA-panel-state-transition-rates-transitions.png" style="max-width:148px;">
 
-Transition clusters are listed in **(a)** and entitled as `[1] to [2]` with `[1]` and `[2]` the states before and after transition respectively, determined from the cluster center.
+Transition clusters are listed in **(a)** and entitled as `[j] to [j']` with `[j]` and `[j']` the states before and after transition respectively, determined from the cluster center.
 
 The color representing the selected cluster in the 
 [TDP plot](panel-state-configuration.html#clusters) is shown in **(c)** and can be modified by choosing a new color in list **(b)**.
 
-Selection of a new cluster in list **(a)** will update the 
+In order to obtain dwell time histograms in line with clustered data, state sequences can be re-processed according to clustering results.
+In this case, state transitions that are not included in any cluster, or that are included in diagonal clusters, are ignored and the dwell time prior transition is elongated.
+
+To re-arrange state sequences according to clustering results, activate the option **(d)**.
+
+Selection of a new cluster in list **(a)** or changes in option **(d)** will update the 
 [Visualization area](#visualization-area) with the corresponding dwell time histogram and fitting results if any.
 
 
