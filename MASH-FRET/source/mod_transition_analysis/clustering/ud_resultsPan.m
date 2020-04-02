@@ -74,7 +74,7 @@ end
 if meth==2
     set(h.axes_tdp_BIC,'Visible','on');
 
-    J = res{3};
+    J = curr.clst_res{3};
     if mat==1
         str_pop = cell(1,Jmax-1);
         for j = 2:Jmax
