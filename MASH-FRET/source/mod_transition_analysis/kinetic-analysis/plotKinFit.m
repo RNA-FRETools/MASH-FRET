@@ -78,14 +78,18 @@ y_data = hist_ref(hist_ref(:,end)>0,end);
 plot(h_axes, x_data, y_data, markhist, 'linewidth', lwhist);
 grid(h_axes, 'on');
 
-if x_data(1)==x_data(end)
+if isempty(x_data)
+    x_lim = [0,1];
+elseif x_data(1)==x_data(end)
     x_lim = x_data(1)+[-1,1];
 else
     x_lim = x_data([1,end])';
 end
 y_min = min(y_data);
 y_max = max(y_data);
-if y_min==y_max
+if isempty(y_data)
+    y_lim = [0,1];
+elseif y_min==y_max
     y_lim = y_min+[-1,1];
 else
     y_lim = [y_min,y_max];
