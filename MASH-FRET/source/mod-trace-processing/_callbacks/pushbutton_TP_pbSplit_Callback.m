@@ -15,14 +15,20 @@ nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
 meth = p.proj{proj}.curr{n}{2}{1}(2);
 cutOff = p.proj{proj}.curr{n}{2}{1}(4+meth)/nL;
-L = size(p.proj{proj}.intensities,1);
+L = sum(p.proj{proj}.bool_intensities(:,n));
 if cutOff>=L
     return
 end
 
-choice = questdlg({cat(2,'A duplicate of the current molecule will be ',...
-    'added to the molecule list'),'','Do you want to continue?'},...
-    'Confirm duplication','Yes, split it','Cancel','Cancel');
+choice = questdlg({cat(2,'The right-side of the trace will be saved to ',...
+    'molecule ',num2str(n+1),'. This operation in irreversible'),...
+    cat(2,'After splitting, the following functionalites must not be used',...
+    ' on molecule ',num2str(n+1),':'),...
+    '-  "recenter" option in panel Sub-images',...
+    '-  "Dark trace" background correction',...
+    '',...
+    'Do you want to continue?'},'Confirm trace split','Yes, split it',...
+    'Cancel','Cancel');
 if ~strcmp(choice,'Yes, split it')
     return
 end
@@ -68,7 +74,7 @@ fret_id_n = ((n-1)*nFRET+1):n*nFRET;
 fret_id_dup = (n*nFRET+1):(n+1)*nFRET;
 s_id_n = ((n-1)*nS+1):n*nS;
 s_id_dup = (n*nS+1):(n+1)*nS;
-frames_right = (cutOff+1):L;
+frames_right = (cutOff+1):size(p.proj{proj}.bool_intensities,1);
 L_right = numel(frames_right);
 
 p.proj{proj}.intensities(:,chan_id_dup,:) = NaN;
