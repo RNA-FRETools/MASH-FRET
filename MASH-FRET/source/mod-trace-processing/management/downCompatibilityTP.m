@@ -6,18 +6,9 @@ function p_proj = downCompatibilityTP(p_proj,n)
 % proj: h.param.ttPr.proj{i), with h the structure saved in main figure's handle and i the project index in the project list
 % n: molecule index in the project
 
-% Last update: 13.1.2020 by MH
-% >> manage down compatibility by moving cross-talks coefficients to
-%  general parameters
-%
-% update: 10.1.2020 by MH
-% >> manage down compatibility by moving factor correction in 6th cell and 
-%  adding default parameters for ES regression
-%
-% update: 29.3.2019 by MH
-% >> manage down-compatibility and adapt reorganization of cross-talk 
-%    coefficients to new parameter structure (see 
-%    project/setDefPrm_traces.m)
+% Last update 13.1.2020 by MH: manage down compatibility by moving cross-talks coefficients to general parameters
+% update 10.1.2020 by MH: manage down compatibility by moving factor correction in 6th cell and adding default parameters for ES regression
+% update 29.3.2019 by MH: manage down-compatibility and adapt reorganization of cross-talk coefficients to new parameter structure (see project/setDefPrm_traces.m)
 
 nChan = p_proj.nb_channel;
 exc = p_proj.excitations;
@@ -72,6 +63,14 @@ if size(p_proj.prm{n},2)>=5 && size(p_proj.prm{n}{5},2)>=2 && ...
     p_proj.prm{n}{5}{2} = newDePrm;
 end
 
+% added by MH, 4.4.2020
+% move gamma factors to 6th cell
+if size(p_proj.prm{n},2)>=5 && size(p_proj.prm{n}{5},2)>=3
+    p_proj.prm{n}{6}{1} = p_proj.prm{n}{5}{3};
+    p_proj.prm{n}{6}{2} = 0;
+    p_proj.prm{n}{6}{3} = p_proj.def.mol{6}{3};
+end
+
 % added by MH, 10.1.2020: move cross-talks to general parameters, move 
 % factor corrections in 6th cell and add default parameters for ES 
 % regression
@@ -104,8 +103,8 @@ if size(p_proj.prm{n},2)>=6
         for i = 1:nFRET
             ldon(i,1) = find(exc==chanExc(p_proj.FRET(i,1)));
         end
-        p_proj.prm{n}{6}{3} = [ldon,p_proj.prm{n}{6}{3}(:,2:5),3*ones(nFRET,1),...
-            p_proj.prm{n}{6}{3}(:,6:end)];
+        p_proj.prm{n}{6}{3} = [ldon,p_proj.prm{n}{6}{3}(:,2:5),...
+            3*ones(nFRET,1),p_proj.prm{n}{6}{3}(:,6:end)];
     end
 end
 
