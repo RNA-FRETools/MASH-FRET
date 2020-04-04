@@ -247,15 +247,23 @@ To sort molecules and save a particular subgroup:
 
 ---
 
-## Correct for photobleaching
+## Correct for photobleaching and blinking
 
 It can happen that emitters get photochemically destroyed after absorbing a certain amount of photons.
 This phenomenon is called photobleaching and results in the permanent loss of signal in the dye-specific emission channel that translates into a drop of the corresponding intensity-time trace to zero.
 
 ![Effect of photobleaching of intensity ratio](../assets/images/figures/TP-workflow-scheme-photobleaching.png "Effect of photobleaching of intensity ratio")
 
-These zero-intensity portions of the intensity-time traces may bias the following histogram and transition analysis by creating irrelevantly fluctuating FRET data.
-To prevent such bias, it is necessary to detect photobleaching and delete photobleached data by truncating intensity-time traces.
+On the other hand, reversible changes in the structure or environment of the emitters can induce temporary interruption of dye emission, which results in short-lived drops of intensity-time traces to zero.
+
+These zero-intensity portions of the time trace may bias the following histogram and transition analysis by creating irrelevantly fluctuating FRET data.
+To prevent such bias, it is necessary to detect intensity interruptions and delete zero-intensity data by truncating intensity-time traces.
+
+To correct photobleaching, the end of the trajectory is simply truncated.
+
+To correct temporary intensity interruptions, zero-intensity time portions can not be simply excised from the trace, because the continuity of the time sequence is disrupted and what happens in terms of state transition during this time portion in unknown. 
+Therefore, to correct temporary intensity interruptions, the trajectory is divided in two separate traces at the position where intensity interruption just ended, saving the righ-side of the cutoff to a new molecule.
+Only then, the end of the first trajectory is truncated.
 
 To detect and truncate photobleached data:
 
@@ -274,6 +282,19 @@ To detect and truncate photobleached data:
      
 1. If desired, apply the same parameter settings to all molecules by pressing 
    ![all](../../assets/images/gui/TP-but-all.png "all")   
+   
+To truncate temporary intensity interruptions:
+
+{: .procedure }
+1. Set parameters  
+     
+   [Photobleaching detection method](panels/panel-photobleaching.html#photobleaching-detection-method) (to `Manual`)  
+   [Photobleaching cutoff](panels/panel-photobleaching.html#photobleaching-cutoff) (to the ending of intensity interruption)  
+     
+1. Split traces in two by pressing 
+   ![Split](../../assets/images/gui/TP-but-split.png "Split").
+     
+1. Correct the original molecule for photobleaching (as described above)
 
 
 ---
