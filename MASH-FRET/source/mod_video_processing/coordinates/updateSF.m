@@ -98,8 +98,15 @@ for i = 1:p.nChan
 
             % check for correct compilation of mex file for method Schmied2012
             if exist('forloop','file')~=3
-                setContPan(cat(2,'This spotfinder method can not be used:',...
-                    ' problem with mex compilation.'),'error',h_fig);
+                h = guidata(h_fig);
+                if ~h.mute_actions
+                    disp(cat(2,'This spotfinder method can not be used:',...
+                    ' problem with mex compilation.'));
+                else
+                    setContPan(cat(2,'This spotfinder method can not be ',...
+                        'used: problem with mex compilation.'),'error',...
+                        h_fig);
+                end
                 return
             end
 
