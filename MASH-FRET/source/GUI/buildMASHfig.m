@@ -186,8 +186,8 @@ h.uipanel_TA = uipanel('parent',h_fig,'title','','units',posun,'position',...
 h = buildPanelTA(h,p);
 
 % save dummy figure and text
-h.figure_dummy = [];
-h.text_dummy = [];
+h.figure_dummy = figure('name','dummy','visible','off');
+h.text_dummy = uicontrol('style','text','parent',h.figure_dummy);
 
 guidata(h_fig,h);
 
