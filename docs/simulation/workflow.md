@@ -39,23 +39,29 @@ Sequences are started by randomly drawing a FRET value from the pre-defined stat
 
 with 
 [*&#960;*<sub>*j*</sub>](){: .math_var } the probability to start a chain in state 
-[*j*](){: .math_var }, and with
-
-{: .equation }
-![\Pi_{n}=\begin{pmatrix}\pi_{1}\\ \pi_{2}\\ ...\\ \pi_{n}\end{pmatrix}](../assets/images/equations/sim-eq-transition-probability-06.gif "Initial state probabilities")
+[*j*](){: .math_var }.
 
 Considering a population of unsynchronized molecules, the probability 
 [*&#960;*<sub>*j*</sub>](){: .math_var } is the probability to be in state 
 [*j*](){: .math_var } at a random time of the process, obtained by solving the equation system:
 
 {: .equation }
-![\textup{P}\Pi=\Pi](../assets/images/equations/sim-eq-transition-probability-03.gif "Overall state probability")
+![\textup{P}{\Pi}' = \lambda{\Pi}'](../assets/images/equations/sim-eq-transition-probability-03.gif "Overall state probability")
 
-with 
-[P](){: .math_var } the transition probability matrix described such as:
+where 
+[&#928;'](){: .math_var } is the non-normalized initial state probability vector, 
+[*&#955;*](){: math_var } is the eigenvalue associated to 
+[&#928;'](){: .math_var }, and 
+[P](){: .math_var } is the transition probability matrix described such as:
 
 {: .equation }
 ![\textup{P}=\begin{pmatrix}p_{1,1} & p_{1,2} & ... & p_{1,n}\\ p_{2,1} & p_{2,2} & ... & p_{2,n}\\ \vdots & \vdots & \ddots  & \vdots  \\p_{n,1} & p_{n,2} & ... & p_{n,n}\end{pmatrix}](../assets/images/equations/sim-eq-transition-probability-04.gif "Transition probability matrix")
+
+Initial state probabilities are then normalized by the sum, such as:
+
+{: .equation }
+![\pi_{j}=\frac{\pi_{j}'}{\sum_{j'}\left(\pi_{j'}' \right )}](../assets/images/equations/sim-eq-transition-probability-06.gif "Initial state probabilities")
+
 
 This approach comes down to segmenting an infinitely long chain at a random position. 
 Therefore, it is only valid for chains that complete there cycles within an observation time, meaning with no discontinuity in folding kinetics like kinetic traps or other sudden changes in folding dynamics.
