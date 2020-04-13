@@ -1,15 +1,29 @@
-function edit_aveImg_end_Callback(obj, evd, h)
-val = round(str2num(get(obj, 'String')));
-start = h.param.movPr.ave_start;
-tot = h.movie.framesTot;
+function edit_aveImg_end_Callback(obj, evd, h_fig)
+
+% collect interface parameters
+val = round(str2double(get(obj, 'String')));
+h = guidata(h_fig);
+p =  h.param.movPr;
+
+% collect video parameters
+L = h.movie.framesTot;
+
+% collect processing parameters
+start = p.ave_start;
+
 set(obj, 'String', num2str(val));
-if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= start && ...
-        val <= tot)
+if ~(numel(val)==1 && ~isnan(val) && val>=start && val<=L)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
     updateActPan(['Ending frame must be >= starting frame and <= ' ...
-        'frame length.'], h.figure_MASH, 'error');
-else
-    set(obj, 'BackgroundColor', [1 1 1]);
-    h.param.movPr.ave_stop = val;
-    guidata(h.figure_MASH, h);
+        'frame length.'], h_fig, 'error');
+    return
 end
+
+p.ave_stop = val;
+
+% save modifications
+h.param.movPr = p;
+guidata(h_fig, h);
+
+% set GUI to proper values
+ud_VP_molCoordPan(h_fig);

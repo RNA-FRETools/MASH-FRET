@@ -1,4 +1,5 @@
-function edit_thm_centreStart_Callback(obj, evd, h)
+function edit_thm_centreStart_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.thm;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -34,7 +35,7 @@ if ~isempty(p.proj)
         setContPan(sprintf(['The starting guess for Gaussian center ' ...
             'must be higher than the lower limit (%d) and lower than ' ...
             'the upper limit (%d)'],minVal,maxVal), 'error', ...
-            h.figure_MASH);
+            h_fig);
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
     else
         set(obj, 'BackgroundColor', [1 1 1]);
@@ -51,7 +52,7 @@ if ~isempty(p.proj)
         prm.thm_start{3}(gauss,5) = val;
         p.proj{proj}.prm{tpe} = prm;
         h.param.thm = p;
-        guidata(h.figure_MASH, h);
-        updateFields(h.figure_MASH, 'thm');
+        guidata(h_fig, h);
+        updateFields(h_fig, 'thm');
     end
 end

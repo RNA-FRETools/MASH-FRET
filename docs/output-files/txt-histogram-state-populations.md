@@ -46,8 +46,9 @@ By default, the file is named after the <u>project file</u> loaded in
 Data types supported in state population files are:
 * `I[i]-[L]`: intensities in detection channel indexed `[i]` upon illumination with laser wavelength `[L]` nm
 * `FRET[D]to[A]`: FRET from donor emitter detected in channel indexed `[D]` to acceptor emitter detected in channel indexed `[A]`
-* `S[Eee]`: stoichiometry of emitter detected in channel labelled `[Eee]`
+* `S[D]to[A]`: stoichiometry associated to donor emitter detected in channel indexed `[D]` and acceptor emitter detected in channel indexed `[A]`
 
+The data type is appended with a first extension `_[Ttt]` if a particular subgroup of molecules was analyzed, with `[Ttt]` the corresponding molecule tag.
 A second extension `_discr` is added when state populations determined from state trajectories are written in the file.
 
 

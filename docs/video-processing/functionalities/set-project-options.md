@@ -17,7 +17,7 @@ They are initially set in module Video processing by pressing
 ![Options...](../../assets/images/gui/VP-but-options3p.png "Options...") in panel 
 [Experiment settings](../panels/panel-experiment-settings.html) and can be edited in module Trace processing by pressing 
 ![Edit ...](../../assets/images/gui/TP-but-edit-3p.png "Edit ...") in the 
-[Project management area](.././trace-processing/panels/area-project-management.html) .
+[Project management area](../../trace-processing/panels/area-project-management.html) .
 
 Press 
 ![Save](../../assets/images/gui/VP-but-save.png "Save") to save and apply immediately the modifications to the project.
@@ -101,15 +101,15 @@ In a FRET-pair network composed of several emitters, quantities of energy absorb
 These energy movements can be represented on a scheme where:
 - emitters are numbered according to the red shift of the absorption spectrum
 - the energy quantity absorbed by emitter 
-[*k*](){: .math_var } exclusively is noted 
-[*q*<sub>0,*k*</sub>](){: .math_var }, 
+[*i*](){: .math_var } exclusively is noted 
+[*q*<sub>0,*i*</sub>](){: .math_var }, 
 - the quantity of energy emitted by emitter 
-[k](){: .math_var } is noted 
-[*q*<sub>*k*</sub>](){: .math_var },
+[*i*](){: .math_var } is noted 
+[*q*<sub>*i*</sub>](){: .math_var },
 - the energy quantity transferred by FRET from emitter 
-[*k*](){: .math_var } to emitter 
-[*m*](){: .math_var } is noted 
-[*q*<sub>*k*,*m*</sub>](){: .math_var }.
+[*i*](){: .math_var } to emitter 
+[*j*](){: .math_var } is noted 
+[*q*<sub>*i*,*j*</sub>](){: .math_var }.
 
 For example, the energy movements in a FRET-pair network composed of four emitters with different absorption and emission properties are summarized in the following scheme.
 
@@ -118,34 +118,34 @@ For example, the energy movements in a FRET-pair network composed of four emitte
 In an ideal system that includes radiative processes and energy transfers only, the law of conservation of energy supposed that:
 
 {: .equation }
-<img src="../../assets/images/equations/VP-eq-fret-calc-01.gif" alt="q_{k}=q_{0,k}+\sum_{m<k}q_{m,k}-\sum_{m>k}q_{k,m}"/>
+<img src="../../assets/images/equations/VP-eq-fret-calc-01.gif" alt="q_{i}=q_{0,i}+\sum_{j<i}q_{j,i}-\sum_{j>i}q_{i,j}"/>
 
 The energy quantity 
-[*q*<sub>*k*</sub>](){: .math_var} is comparable to the intensity detected in emission channel of emitter 
-[*k*](){: .math_var} and corrected from background and cross-talks. 
+[*q*<sub>*i*</sub>](){: .math_var} is comparable to the intensity detected in emission channel of emitter 
+[*i*](){: .math_var} and corrected from background and cross-talks. 
 Thus, 
-[*q*<sub>*k*</sub>](){: .math_var} values are measured during the experiment.
+[*q*<sub>*i*</sub>](){: .math_var} values are measured during the experiment.
 
 The apparent efficiency 
-[*E*\*<sub>*k*,*m*</sub>](){: .math_var} of an energy transfer from a donor 
-[*k*](){: .math_var} to an acceptor 
-[*m*](){: .math_var} is calculated as:
+[*E*\*<sub>*D*,*A*</sub>](){: .math_var} of an energy transfer from a donor 
+[*D*](){: .math_var} to an acceptor 
+[*A*](){: .math_var} is calculated as:
 
 {: .equation }
-<img src="../../assets/images/equations/VP-eq-fret-calc-02.gif" alt="E_{k,m}^{*}=\frac{q_{k,m}}{q_{k}+q_{k,m}}"/>
+<img src="../../assets/images/equations/VP-eq-fret-calc-02.gif" alt="E_{D,A}^{*}=\frac{q_{D,A}}{q_{D}+q_{D,A}}"/>
 
 To obtain the probability of energy transfer 
-[*E*<sub>*k*,*m*</sub>](){: .math_var}, which is inversely proportional to the distance 
+[*E*<sub>*D*,*A*</sub>](){: .math_var}, which is inversely proportional to the distance 
 [*r*](){: .math_var} between the two dyes, 
-[*E*\*<sub>*k*,*m*</sub>](){: .math_var} must later be corrected by considering (1) the different quantities of non-radiative energy lost during the process by both emitters 
-[*k*](){: .math_var} and 
-[*m*](){: .math_var} as well as (2) the different detection efficiencies of photons emitted by emitters
-[*k*](){: .math_var} and 
-[*m*](){: .math_var}; see 
-[Correct FRET values](../../trace-processing/workflow.html#correct-fret-values) for more information.
+[*E*\*<sub>*D*,*A*</sub>](){: .math_var} must later be corrected by considering (1) the different quantities of non-radiative energy lost during the process by both emitters 
+[*D*](){: .math_var} and 
+[*A*](){: .math_var} as well as (2) the different detection efficiencies of photons emitted by emitters
+[*D*](){: .math_var} and 
+[*A*](){: .math_var}; see 
+[Correct ratio values](../../trace-processing/workflow.html#correct-ratio-values) for more information.
 
 The energy quantity 
-[*q*<sub>*k*,*m*</sub>](){: .math_var} is calculated from intensities measured upon different laser illuminations, <u>starting with specific excitation of the most red-shifted donor</u>. 
+[*q*<sub>*i*,*j*</sub>](){: .math_var} is calculated from intensities measured upon different laser illuminations, <u>starting with specific excitation of the most red-shifted donor</u>. 
 For the limiting case where the most red-shifted donor transfers energy to multiple acceptors, FRET efficiencies can not be analytically calculated.
 
 Translated in a four-emitter network, the most red-shifted donor is the emitter 3, which can transfer energy to emitter 4 only. 
@@ -201,17 +201,22 @@ FRET efficiencies for the FRET pairs 1-2, 1-3 and 1-4 are determined using the s
 
 This demonstration can be generalized to a 
 [*K*](){: .math_var }-emitter network with the apparent FRET efficiency 
-[*E*\*<sub>k,m</sub>](){: .math_var} – of a donor-acceptor pair 
-[*k*](){: .math_var }-[*m*](){: .math_var } with 
-[*m*](){: .math_var }>[*k*](){: .math_var } – being calculated from intensities detected upon excitation of emitter 
-[*k*](){: .math_var } and apparent FRET efficiencies obtained from more red-shifted FRET-pairs, such as:
+[*E*\*<sub>*D*,*A*</sub>](){: .math_var} – of a donor-acceptor pair 
+[*D*](){: .math_var }-[*A*](){: .math_var } with 
+[*A*](){: .math_var }>[*D*](){: .math_var } – being calculated from intensities detected upon excitation of emitter 
+[*D*](){: .math_var } and apparent FRET efficiencies obtained from more red-shifted FRET-pairs, such as:
 
-<img src="../../assets/images/equations/VP-eq-fret-calc-15.gif" alt="E_{k,m}^*= \left [ 1+\frac{I_k^k}{I_m^k+\sum_{n>m}\left (\frac{E_{n,m}^*}{1-E_{n,m}^*}I_n^k\right )-\sum_{k<n<m}\left(\frac{E_{m,n}^*}{1-E_{m,n}^*}I_{m}^k\right )}\right ]^{-1}"/>
+<img src="../../assets/images/equations/VP-eq-fret-calc-15.gif" alt="E_{D,A}^*= \left \{ 1+\frac{I_{D,em}^{D,ex}}{I_{A,em}^{D,ex} \left [1+\sum_{i>A}\left (\frac{E_{A,i}^*}{1-E_{A,i}^*}\right )\right ] -\sum_{D<i<A}\left( \frac{E_{i,A}^*}{1-E_{i,A}^*}I_{i,em}^{D,ex}\right )}  \right \}^{-1}"/>
+
+with 
+[*I*<sub>*k*,em</sub><sup>*k'*,ex,\*\*\*</sup>](){: .math_var } the intensity collected in channel specific to emitter 
+[*k*](){: .math_var }, upon laser illumination that specifically excites emitter 
+[*k'*](){: .math_var }, and after background and cross-talk corrections.
 
 To know more about how multi-color apparent FRET data are calculated, please refer to the respective functions in the source code:
 
 ```
-MASH-FRET/tools/buildFretexpr.m
+MASH-FRET/source/mod-trace-processing/FRET/buildFretexpr.m
 MASH-FRET/source/mod-trace-processing/FRET/calcFRET.m
 ```
 
@@ -223,33 +228,48 @@ Use this panel to define the emitter stoichiometries to be calculated and plotte
 
 <a class="plain" href="../../assets/images/gui/VP-panel-expset-opt-s.png"><img src="../../assets/images/gui/VP-panel-expset-opt-s.png" style="max-width: 250px;"/></a>
 
-The stoichiometry of an emitter is usually used to estimate the ratio of different emitters on the single molecule under observation.
+The stoichiometry of an emitter is usually used to estimate the ratio of different emitters attached to the single molecule under observation.
 
-The stoichiometry 
-[*S*<sub>*D*</sub>](){: .math_var } of an emitter 
-[*D*](){: .math_var } specifically detected in channel 
-[*D*<sub>em</sub>](){: .math_var } and specifically excited by illumination 
-[*D*<sub>ex</sub>](){: .math_var } in a labelling scheme consisting of 
+The apparent stoichiometry 
+[*S*\*<sub>*D*,*A*</sub>](){: .math_var } for a FRET pair composed of donor emitter 
+[*D*](){: .math_var } and an acceptor emitter 
+[*A*](){: .math_var }, specifically excited by the respective illuminations 
+[*D*<sub>ex</sub>](){: .math_var } and 
+[*A*<sub>ex</sub>](){: .math_var } in a labelling scheme consisting of 
 [*K*](){: .math_var } emitters, is calculated as:
 
 {: .equation }
-<img src="../../assets/images/equations/VP-eq-s-calc.gif" alt="S_{D} = \frac{\sum_{k}\left (I_{k,em}^{D,ex} \right )}{\sum_{k}\left[ \sum_{k'}\left( I_{k',em}^{k,ex} \right ) \right ]}">
+<img src="../../assets/images/equations/VP-eq-s-calc.gif" alt="S_{D,A}^{*} = \frac{\sum_{k}\left (I_{k,em}^{D,ex} \right )}{\sum_{k}\left( I_{k,em}^{D,ex} + I_{k,em}^{A,ex} \right ) }">
 
 with 
-[*I*<sub>*k*,em</sub><sup>*k'*,ex</sup>](){: .math_var } the intensity collected from emitter 
-[*k*](){: .math_var } specifically detected in channel 
-[*k*<sub>em</sub>](){: .math_var } and upon illumination 
-[*k'*<sub>ex</sub>](){: .math_var }, that specifically excites emitter 
-[*k'*](){: .math_var }.
+[*I*<sub>*k*,em</sub><sup>*k'*,ex,\*\*\*</sup>](){: .math_var } the intensity collected in channel specific to emitter 
+[*k*](){: .math_var }, upon laser illumination that specifically excites emitter 
+[*k'*](){: .math_var }, and after background and cross-talk corrections.
+
+To obtain the stoichiometry
+[*S*<sub>*D*,*A*</sub>](){: .math_var}, which correspond to the ratio of different emitters attached to the single molecule under observation, 
+[*S*\*<sub>*D*,*A*</sub>](){: .math_var} must later be corrected by considering the differences for emitters 
+[*D*](){: .math_var} and 
+[*A*](){: .math_var} in: (1) quantities of non-radiative energy lost during the process by the emitters, (2) camera detection efficiencies of emitter photons, (3) quantities of energy released by the emitter-specific illuminations, (4) quantities of energy absorbed by the emitters; see 
+[Correct ratio values](../../trace-processing/workflow.html#correct-ratio-values) for more information.
 
 A stoichiometry 
-[*S*<sub>*D*</sub>](){: .math_var } = 0.5 means that 50% of the total number of collected photons belongs to the emitter 
-[*D*](){: .math_var }.
+[*S*<sub>*D*,*A*</sub>](){: .math_var } = 0.5 means that half of the total number of 
+[*D*](){: .math_var }  and 
+[*A*](){: .math_var }  emitters attached to the molecule are  
+[*D*](){: .math_var } emitters.
 
-To activate the stoichiometry calculation for an emitter in particular, the emitter's label must be selected in **(a)** prior pressing 
+To activate the stoichiometry calculation for a FRET pair in particular, the FRET pair must be selected in **(a)** prior pressing 
 ![Add](../../assets/images/gui/VP-but-add.png "Add").
 All desired stoichiometry calculations are listed in **(b)** and can be removed any time by pressing 
 ![Remove](../../assets/images/gui/VP-but-remove.png "Remove").
+
+To know more about how multi-color Stoichiometry is calculated, please refer to the respective functions in the source code:
+
+```
+MASH-FRET/source/mod-trace-processing/FRET/buildSexpr.m
+MASH-FRET/source/mod-trace-processing/FRET/calcS.m
+```
 
 ---
 

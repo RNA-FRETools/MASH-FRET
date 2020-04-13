@@ -1,16 +1,36 @@
-function export_thm(h_fig)
+function export_thm(h_fig,varargin)
+% export_thm(h_fig)
+% export_thm(h_fig,file_out)
+% 
+% h_fig: handle to main figure
+% file_out: {1-by-2} destination folder and file
 
-% Last update: 23.4.2019 by MH
-% >> correct export for Gaussian fit without BOBA-FRET
+% Last update 23.4.2019 by MH: correct export for Gaussian fit without BOBA-FRET
 
 h = guidata(h_fig);
 p = h.param.thm;
 proj = p.curr_proj;
 tpe = p.curr_tpe(proj);
+tag = p.curr_tag(proj);
+
 str_tpe = get(h.popupmenu_thm_tpe, 'String');
 str_tpe = strrep(strrep(strrep(str_tpe{tpe}, ' ', ''),'>',''),'.','');
+if tag>0
+    str_tag = get(h.popupmenu_thm_tag, 'String');
+    str_tag = cat(2,'_',strrep(strrep(strrep(removeHtml(str_tag{tag+1}),...
+        ' ',''),'>',''),'.',''));
+else
+    str_tag = '';
+end
 prm = p.proj{proj}.prm{tpe};
 pplot = prm.plot;
+P = pplot{2};
+
+if isempty(P)
+    disp('There is no histogram or results to export.')
+    return
+end
+
 pstart = prm.thm_start;
 pres = prm.thm_res;
 
@@ -50,14 +70,22 @@ else
     str_w = 'no';
 end
 
-defname = p.proj{proj}.exp_parameters{1,2};
-if isempty(defname)
-    [o,defname,o] = fileparts(p.proj{proj}.proj_file);
+if ~isempty(varargin)
+    pname = varargin{1}{1};
+    fname = varargin{1}{2};
+    if ~strcmp(pname(end),filesep)
+        pname = [pname,filesep];
+    end
+else
+    defname = p.proj{proj}.exp_parameters{1,2};
+    if isempty(defname)
+        [o,defname,o] = fileparts(p.proj{proj}.proj_file);
+    end
+    defname = cat(2,setCorrectPath('histogram_analysis',h_fig),defname,'_',...
+        str_tpe,str_tag);
+    [fname,pname,o] = uiputfile({'*.txt', 'Text files(*.txt)'; '*.*', ...
+        'All files(*.*)'},'Export analysis',defname);
 end
-defname = cat(2,setCorrectPath('histogram_analysis',h_fig),defname,'_',...
-    str_tpe);
-[fname,pname,o] = uiputfile({'*.txt', 'Text files(*.txt)'; '*.*', ...
-    'All files(*.*)'},'Export analysis',defname);
 
 if ~sum(fname)
     return;
@@ -69,8 +97,6 @@ setContPan('Exporting results from histogram analysis...','process',h_fig);
 expfig = 0;
 
 [o,name,o] = fileparts(fname);
-
-P = pplot{2};
 
 str_action = '';
 
@@ -156,18 +182,19 @@ if ~isempty(pres{3,1})
     fprintf(f,str_head);
     for K = 1:Kmax
         if ~isempty(pres{3,2}{K})
+            outres = pres;
             if isInt
                 if perSec
-                    pres{3,2}{K}(:,[2 3]) = pres{3,2}{K}(:,[2 3])/expT;
+                    outres{3,2}{K}(:,[2 3]) = outres{3,2}{K}(:,[2 3])/expT;
                 end
                 if perPix
-                    pres{3,2}{K}(:,[2 3]) = pres{3,2}{K}(:,[2 3])/nPix;
+                    outres{3,2}{K}(:,[2 3]) = outres{3,2}{K}(:,[2 3])/nPix;
                 end
             end
 
             fprintf(f, cat(2,'%i\t%d\t%d',repmat('\t%d',[1,3*K]), ...
-                '\n'),[K pres{3,1}(K,:),reshape(pres{3,2}{K}', ...
-                [1,numel(pres{3,2}{K})])]);
+                '\n'),[K outres{3,1}(K,:),reshape(outres{3,2}{K}', ...
+                [1,numel(outres{3,2}{K})])]);
         else
             fprintf(f,'%i\tn.a.\n',K);
         end
@@ -185,13 +212,13 @@ switch meth
         
         % Export Gaussian fitting results
         if ~isempty(pres{2,1})
-            
+            outres = pres;
             if isInt
                 if perSec
-                    pres{2,1}(:,3:6) = pres{2,1}(:,3:6)/expT;
+                    outres{2,1}(:,3:6) = outres{2,1}(:,3:6)/expT;
                 end
                 if perPix
-                    pres{2,1}(:,3:6) = pres{2,1}(:,3:6)/nPix;
+                    outres{2,1}(:,3:6) = outres{2,1}(:,3:6)/nPix;
                 end
             end
             
@@ -210,10 +237,10 @@ switch meth
             if boba
                 if isInt
                     if perSec
-                        pres{2,2}(:,[2 3]) = pres{2,2}(:,[2 3])/expT;
+                        outres{2,2}(:,[2 3]) = outres{2,2}(:,[2 3])/expT;
                     end
                     if perPix
-                        pres{2,2}(:,[2 3]) = pres{2,2}(:,[2 3])/nPix;
+                        outres{2,2}(:,[2 3]) = outres{2,2}(:,[2 3])/nPix;
                     end
                 end
             
@@ -227,52 +254,34 @@ switch meth
                 
                 for k = 1:K
                     fprintf(f, '%i\t%d\t%d\t%d\t%d\n', k, ...
-                        pres{2,1}(k,1:2:end));
+                        outres{2,1}(k,1:2:end));
                 end
                 fprintf(f, '\n\nBootstrap standard deviation:\n');
                 fprintf(f, ['Gaussian\tA\tmu\tFWHM\trelative ' ...
                     'occurence\n']);
                 for k = 1:K
                     fprintf(f, '%i\t%d\t%d\t%d\t%d\n', k, ...
-                        pres{2,1}(k,2:2:end));
+                        outres{2,1}(k,2:2:end));
                 end
                 fprintf(f, '\n\nBootstrap samples:\n');
                 fprintf(f, ['sample' repmat(['\tA_%i\tmu_%i\tFWHM_%i\t' ...
                     'relocc_%i'],[1 K]) '\n'], ...
                     reshape(repmat(1:K,[4,1]),[1,4*K]));
                 fprintf(f, ['%i' repmat('\t%d', [1 K*4]) '\n'], ...
-                    [(1:size(pres{2,2},1))' pres{2,2}]');
+                    [(1:size(outres{2,2},1))' outres{2,2}]');
                 
                 expfig = 1;
-                
-                if isInt
-                    if perSec
-                        pres{2,2}(:,[2 3]) = pres{2,2}(:,[2 3])*expT;
-                    end
-                    if perPix
-                        pres{2,2}(:,[2 3]) = pres{2,2}(:,[2 3])*expT;
-                    end
-                end
                 
             else
                 fprintf(f, '\n\nFit parameters:\n');
                 fprintf(f, ['Gaussian\tA\tmu\tFWHM\trelative ' ...
                     'occurence\n']);
                 for k = 1:K
-                    fprintf(f, '%i\t%d\t%d\t%d\t%d\n', ...
-                        k,pres{2,1}(k,1:2:end));
+                    fprintf(f, '%i\t%d\t%d\t%d\t%d\n',k,...
+                        outres{2,1}(k,1:2:end));
                 end
             end
             fclose(f);
-            
-            if isInt
-                if perSec
-                    pres{2,1}(:,3:6) = pres{2,1}(:,3:6)*expT;
-                end
-                if perPix
-                    pres{2,1}(:,3:6) = pres{2,1}(:,3:6)*nPix;
-                end
-            end
             
             % update action
             str_action = cat(2,str_action,'Gaussian fitting results ',...
@@ -322,11 +331,9 @@ switch meth
 end
 
 if expfig
-    
-    err = loading_bar('init', h_fig, ceil(nSpl/3), ['Build *.pdf figures of ' ...
-        'bootstrapped histograms ...']);
-    if err
-        return;
+    if loading_bar('init', h_fig, ceil(nSpl/3), ['Build *.pdf figures of ' ...
+        'bootstrapped histograms ...'])
+        return
     end
     h = guidata(h_fig);
     h.barData.prev_var = h.barData.curr_var;
@@ -398,7 +405,7 @@ if expfig
         xNext = mg;
         for curr_s = s:s+2
             if curr_s>nSpl
-                break;
+                break
             end
             xNext = xNext + double(s~=curr_s)*w_full;
 
@@ -421,7 +428,7 @@ if expfig
         
         yNext = yNext - hMol;
         
-        if curr_s==s_end || curr_s==nSpl
+        if curr_s==s_end || curr_s>=nSpl
             if isdriver
                 try
                     if meth==1
@@ -469,9 +476,8 @@ if expfig
                 yNext = hFig - hMol - mg;
             end
         end
-        err = loading_bar('update', h_fig);
-        if err
-            return;
+        if loading_bar('update', h_fig)
+            return
         end
     end
     

@@ -90,7 +90,7 @@ To correct intensities from background light:
 
 {: .procedure }
 1. Define 
-   [Cross-talks settings](../../trace-processing/panels/panel-background-correction.html#background-correction-settings) for each trace selected in menu **(a)**:  
+   [Background correction settings](../../trace-processing/panels/panel-background-correction.html#background-correction-settings) for each trace selected in menu **(a)**:  
      
    <u>default</u>: method `<N median values>`  
    <u>default</u>: parameter **(d)** to 20 pixels  
@@ -105,15 +105,11 @@ To correct intensities from background light:
 To correct intensities from cross-talks (if you are working with single detection channel and single laser illumination, ignore this step):
 
 {: .procedure }
-1. Define 
-   [Cross-talks settings](../../trace-processing/panels/panel-factor-corrections.html#cross-talks-settings) for each emitter selected in menu **(a)**:  
-     
-   <u>default</u>: parameter **(c)** to 0 for each channel in menu **(b)**  
-   <u>default</u>: parameter **(e)** to 0 for each laser in menu **(d)**  
-     
-1. Press 
-   ![all](../../assets/images/gui/TP-but-all.png "all") to apply the same settings to all molecules
-
+1. Set for each emitter selected in the 
+    [Emitter list](../../trace-processing/panels/panel-crosstalk-corrections.html#emitter-list):  
+	  
+   <u>default</u>: [Bleedthrough coefficients](../../trace-processing/panels/panel-crosstalk-corrections.html#bleedthrough-coefficients) set to 0  
+   <u>default</u>: [Direct excitation coefficients](../../trace-processing/panels/panel-crosstalk-corrections.html#direct-excitation-coefficients) set to 0
    
 ---
 
@@ -140,41 +136,38 @@ To tag species missing emitter label `[E]`:
 1. Select tool 
    [Automatic sorting](../../trace-processing/functionalities/tm-automatic-sorting.html)  
      
-1. Select in **(a)** intensities of emitter `[E]` at specific excitation wavelength `[L]` nm `[E] at [L]nm` in 
-   [Data and histogram](../../trace-processing/functionalities/tm-automatic-sorting.html#data-and-histogram)  
-     
-1. In 
-   [Data and histogram](../../trace-processing/functionalities/tm-automatic-sorting.html#data-and-histogram), set parameters:  
+1. In panel 
+   [Data](../../trace-processing/functionalities/tm-automatic-sorting.html#data), set menu **(a)** to `total [E] (at [W]nm)`, the total intensity of emitter `[E]` with `[W]` the emitter's specific excitation wavelength, menu **(f)** to `none`, and set parameters:  
      
    <u>default</u>: option `original time traces` in menu **(b)**  
    <u>default</u>: parameters **(c)** and **(d)** to minimum and maximum intensities respectively  
-   <u>default</u>: parameter **(e)** to 100  
+   <u>default</u>: parameter **(e)** to 50  
      
 1. Define a range including the histogram peak centered on zero by clicking on the 
    [Histogram plot](../../trace-processing/functionalities/tm-automatic-sorting.html#histogram-plot) 
      
-1. In 
-   [Data range](../../trace-processing/functionalities/tm-automatic-sorting.html#data-range), set parameters:  
+1. In panel 
+   [Range](../../trace-processing/functionalities/tm-automatic-sorting.html#range), set parameters:  
      
    <u>defaut</u>: option `at least` in menu **(e)**  
    <u>defaut</u>: parameter **(f)** to 90%  
    <u>defaut</u>: option `percentage of the trace` in menu **(h)**  
      
-1. Select the option `[E] at [L]nm` in menu **(a)** of 
+1. Select the option `total [E] (at [W]nm)` in menu **(a)** of 
    [Concatenated trace plot](../../trace-processing/functionalities/tm-automatic-sorting.html#concatenated-trace-plot) and verify that selected traces are fluctuating around 0  
      
 1. Press 
-   ![Save subgroup](../../assets/images/gui/TP-but-save-subgroup.png "Save subgroup") in 
-   [Data range](../../trace-processing/functionalities/tm-automatic-sorting.html#data-range) to save range settings  
+   ![Save range](../../assets/images/gui/TP-but-save-range.png "Save range") in panel 
+   [Range](../../trace-processing/functionalities/tm-automatic-sorting.html#range) to save range settings  
      
-1. Select the `no-[E]` tag in menu **(b)** of 
-   [Molecule subgroups](../../trace-processing/functionalities/tm-automatic-sorting.html#molecule-subgroups) and press 
+1. Select menu **(b)** to `no-[E]` in 
+   [Tags](../../trace-processing/functionalities/tm-automatic-sorting.html#tags) and press 
    ![Tag](../../assets/images/gui/TP-but-tag.png "Tag") to assign this label to the selected range  
      
 1. Press 
-   ![APPLY TAG TO MOLECULES](../../assets/images/gui/TP-but-apply-tag-to-molecules.png "APPLY TAG TO MOLECULES") to tag all molecules missing emitter label `[E]` with `no-[E]`
+   ![TAG MOLECULES](../../assets/images/gui/TP-but-tag-molecules.png "TAG MOLECULES") to tag with `no-[E]` all molecules missing emitter `[E]` 
 
-To clear species missing emitter label `[E]` from the project:
+To clear species missing emitter `[E]` from the project:
 
 {: .procedure }
 1. Select tool 
@@ -201,8 +194,8 @@ To clear species missing emitter label `[E]` from the project:
 
 ## Discretize time-traces
 
-To obtain reliable state trajectories, photobleached data must be ignored when applying the state finding algorithm.
-This is done by automatically detecting and truncating the trace at dye photobleaching.
+To obtain reliable state trajectories, photobleached data must be ignored and ratio-time traces must be corrected prior applying the state finding algorithm.
+This is done by automatically detecting and truncating the trace at dye photobleaching and setting/calculating global gamma and beta factors.
 
 To truncate trajectories at photobleaching:
 
@@ -222,7 +215,29 @@ To truncate trajectories at photobleaching:
 1. Press 
    ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL") in 
    [Sample management](../../trace-processing/panels/panel-sample-management.html) to process all molecules in the project and visualize truncated trajectories
-
+   
+To automatically calculate gamma and beta factors (if you are working without FRET calculations, ignore this step):
+{: .procedure }
+1. For each FRET pair listed in the 
+   [FRET pair list](../../trace-processing/panels/panel-factor-corrections.html#fret-pair-list) in 
+   [Factor corrections](../../trace-processing/panels/panel-factor-corrections.html), define:  
+     
+   <u>default</u>: method `ES linear regression`  
+   <u>default</u>: molecule subgroup `All molecules`  
+   <u>default</u>: in 
+   [ES linear regression](../../trace-processing/panels/panel-factor-corrections.html#es-linear-regression), **(b)** to `All molecules`, **(c)** to -0.2, **(d)** to 50, **(e)** to 1.2, **(f)** to 1, **(g)** to 50, **(h)** to 3
+     
+    and press  
+   ![refresh calculations](../../assets/images/gui/TP-but-refresh-calculations.png "refresh calculations") to calculate the ES histogram and perform linear regression, and 
+   ![Save and close](../../assets/images/gui/TP-but-save-and-close.png "Save and close") to save settings  
+     
+1. Press 
+   ![all](../../assets/images/gui/TP-but-all.png "all") to apply the same settings to all molecules  
+     
+1. Press 
+   ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL") in 
+   [Sample management](../../trace-processing/panels/panel-sample-management.html) to process all molecules in the project
+   
 To obtain state trajectories:
 
 {: .procedure }

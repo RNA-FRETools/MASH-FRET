@@ -1,4 +1,4 @@
-function prm = setDefPrm_TDP(prm_in, trace, isRatio, clr, N)
+function def = setDefPrm_TDP(p, proj)
 % prm = setDefparam_TDP(prm_in, trace)
 %
 % Set project parameters for TDP analysis if not existing
@@ -18,142 +18,170 @@ function prm = setDefPrm_TDP(prm_in, trace, isRatio, clr, N)
 % --> Activate Gaussian convolution and normalized units on intial TDP
 % --> Increase initial max. number of states from 4 to 8
 
-nStates = 8;
-nTrs = nStates*(nStates-1);
+% defaults
+J = 5;
 nExp = 1;
 method = 2;
+ratioAxis = [0.01 -0.2 1.2];
+nbins = 150;
+gconv = true;
+norm = true;
+sglcnt = false;
+rearr = false;
+inclDiag = true;
+shape = 1;
+mat = 1; % constraint on clusters
+clstDiag = true; % add diagonal clusters
+logl = 1; % 0: incomplete data, 1: complete data
+nspl_clst = 20;
+niter = 10;
+boba_clst = false;
 
-prm = prm_in;
+% collect project parameters
+nChan = p.proj{proj}.nb_channel;
+nExc = p.proj{proj}.nb_excitations;
+I_DTA = p.proj{proj}.intensities_DTA;
+FRET_DTA = p.proj{proj}.FRET_DTA;
+S_DTA = p.proj{proj}.S_DTA;
+expT = p.proj{proj}.frame_rate;
+perSec = p.proj{proj}.cnt_p_sec;
+perPix = p.proj{proj}.cnt_p_pix;
+nPix = p.proj{proj}.pix_intgr(2);
+nFRET = size(p.proj{proj}.FRET,1);
+nS = size(p.proj{proj}.S,1);
+nTag = size(p.proj{proj}.molTagNames,2);
+N = size(p.proj{proj}.coord_incl,2);
+nTpe = nChan*nExc + nFRET + nS;
 
-%% TDP plot
-if ~isRatio
-    tr_min = trace; tr_min(isnan(tr_min)) = Inf;
-    tr_max = trace; tr_max(isnan(tr_max)) = -Inf;
-    minVal = min(min(tr_min)); maxVal = max(max(tr_max));
-    bin = (maxVal-minVal)/150;
-    xy_axis = [bin (minVal-2*bin) (maxVal+2*bin)];
-    xy_axis(~isfinite(xy_axis)) = 0;
-else
-    xy_axis = [0.01 -0.2 1.2];
-end
+% collect interface parameters
+def = cell(nTag+1,nTpe);
 
-% plotPrm{1} = [bin_x  x_inf  x_sup
-%               bin_y  y_inf  y_sup
-%               excl   gconv  norm 
-%               count  empty  empty]
-plotPrm{1} = [xy_axis; xy_axis; [1 1 1]; [0 0 0]];
-% plotPrm{2} = TDP matrix
-plotPrm{2} = [];
-% plotPrm{3} = [dwells, ini. val., fin. val., molecule] >> bin & updated
-plotPrm{3} = [];
-
-prm.plot = adjustParam('plot', plotPrm, prm_in);
-
-if size(prm.plot{1},1)<4
-    prm.plot = plotPrm;
-end
-
-
-%% strating parameters for clustering (ntrs clusters)
-% trs{1} = [method, mode, start nb. of states, curr. trans, restart nb., 
-%	  apply bootstrapping, sample nb., replicate nb.]
-trs{1} = [method 1 nStates 1 5 0 20 N];
-% trs{2} = [state value, tol. radius]
-trs{2} = repmat([0 Inf],[nStates,1]);
-% trs{3} = rgb colours
-if size(clr,1)<nTrs
-    clr = cat(1,clr,rand(nTrs-size(clr,1),3)); % add random RGB colors
-end
-trs{3} = clr(1:nTrs,:);
-
-prm.clst_start = adjustParam('clst_start', trs, prm_in);
-nStates = size(prm.clst_start,1);
-nTrs = nStates*(nStates-1);
-
-% add boba parameters if none
-if size(prm.clst_start,2)<8
-    prm.clst_start{1}(6:8) = [0 20 N];
-end
-
-
-%% clustering results (Kopt clusters)
-% NEW: all inferred models and clustered data
-% res{1} = struct.mu, struct.a, struct.o, struct.BIC, struct.clusters, struct.fract
-% OLD: converged state centers and state fractions
-% res{1} = [mu, fract]
-
-% NEW: bootstraping results
-% res{2} = [Jopt mean, Jopt deviation]
-% OLD: transitions adjusted after clustering
-% res{2} = [dwells, ini. val., fin. val., mol, TDP_x coord, TDP_y coord,
-%     mu_x index, mu_y index] 
-
-% NEW: model selected for kinetic analysis
-% res{3} = J
-% OLD: inferred model parameters
-% res{3} = struct.BIC, struct.a, struct.o, struct.boba_K
-
-% dwell time histograms corresponding to selected model
-% res{4}{n} = [dwells, occ., norm. occ(1)., cum. occ, 1-cum(P)] dwell-time
-
-prm.clst_res = adjustParam('clst_res', cell(1,4), prm_in);
-
-% restructure old fit results
-if ~isempty(prm.clst_res{1}) && ~isstruct(prm.clst_res{1})
-
-    % initialize new result structure
-    Jmax = prm.clst_start{1}(3);
-    Jopt = size(prm.clst_res{1}(:,1),1);
-    model.mu = cell(1,Jmax);
-    model.fract = cell(1,Jmax);
-    model.clusters = cell(1,Jmax);
-    
-    % place old results in new structure
-    model.mu{Jopt} = prm.clst_res{1}(:,1);
-    model.fract{Jopt} = prm.clst_res{1}(:,2);
-    model.clusters{Jopt} = prm.clst_res{2};
-    
-    method = prm.clst_start{1}(1);
-    
-    if method==1
-        model.a = [];
-        model.o = [];
-        model.BIC = [];
+% set default processing parameters
+for tpe = 1:nTpe
+    for tag = 1:nTag+1
         
-    else
-        model.a{Jopt} = prm.clst_res{3}.a;
-        model.o{Jopt} = prm.clst_res{3}.o;
-        model.BIC(Jopt) = prm.clst_res{3}.BIC;
+        def{tag,tpe}.plot = adjustParam('plot', cell(1,3), def{tag,tpe});
+        def{tag,tpe}.clst_start = adjustParam('clst_start', cell(1,3), def{tag,tpe});
+        def{tag,tpe}.clst_res = adjustParam('clst_res', cell(1,4), def{tag,tpe});
+        def{tag,tpe}.kin_def = adjustParam('kin_def', cell(1,2), def{tag,tpe});
+        def{tag,tpe}.kin_start = adjustParam('kin_start', cell(1,2), def{tag,tpe});
+        def{tag,tpe}.kin_res = adjustParam('kin_res', cell(1,4), def{tag,tpe});
+        
+        % get default TDP axis
+        isRatio = 0;
+        if tpe <= nChan*nExc % intensity
+            i_c = mod(tpe,nChan); i_c(i_c==0) = nChan;
+            i_l = ceil(tpe/nChan);
+            trace = I_DTA(:,i_c:nChan:end,i_l);
+            if perSec
+                trace = trace/expT;
+            end
+            if perPix
+                trace = trace/nPix;
+            end
+
+        elseif tpe <= nChan*nExc+nFRET % FRET
+            i_f = tpe - nChan*nExc;
+            trace = FRET_DTA(:,i_f:nFRET:end);
+            isRatio = 1;
+
+        elseif tpe <= nChan*nExc + nFRET + nS % Stoichiometry
+            i_s = tpe - nChan*nExc - nFRET;
+            trace = S_DTA(:,i_s:nS:end);
+            isRatio = 1;
+        end
+        if ~isRatio
+            tr_min = trace; tr_min(isnan(tr_min)) = Inf;
+            tr_max = trace; tr_max(isnan(tr_max)) = -Inf;
+            minVal = min(min(tr_min)); maxVal = max(max(tr_max));
+            bin = (maxVal-minVal)/nbins;
+            xy_axis = [bin (minVal-2*bin) (maxVal+2*bin)];
+            xy_axis(~isfinite(xy_axis)) = 0;
+        else
+            xy_axis = ratioAxis;
+        end
+        
+        %% TDP parameters
+        % bin    min        max
+        % empty  empty      empty
+        % empt   gconv      norm 
+        % count  re-arrange diag
+        pplot{1} = [xy_axis; [0,0,0]; [0,gconv,norm]; ...
+            [sglcnt,rearr,inclDiag]];
+        
+        % TDP matrix
+        pplot{2} = [];
+        
+        % dwells, ini. val., fin. val., molecule
+        pplot{3} = [];
+
+        def{tag,tpe}.plot = adjustVal(def{tag,tpe}.plot,pplot);
+
+        %% Clustering parameters
+        % method, shape, max. nb. of states, state-dependant, restart nb., 
+        % BOBA FRET, sample nb., replicate nb., cluster diagonal
+        % transitions
+        clst_start{1} = [method shape J mat niter boba_clst nspl_clst N ...
+            clstDiag logl];
+        % state x, state y, tol. radius x, tol. radius y
+        clst_start{2} = [];
+        % cluster colors
+        clst_start{3} = [];
+
+        def{tag,tpe}.clst_start = adjustVal(def{tag,tpe}.clst_start,clst_start);
+
+        %% Clustering results
+        % struct.mu, struct.a, struct.o, struct.BIC, struct.clusters, 
+        % struct.fract, struct.pop
+        clst_res{1} = [];
+
+        % Jopt mean, Jopt deviation
+        clst_res{2} = [];
+
+        % nb of states in plot
+        clst_res{3} = 1;
+
+        % dwells, occ., norm. occ(1)., cum. occ, 1-cum(P)
+        clst_res{4} = [];
+
+        def{tag,tpe}.clst_res = adjustVal(def{tag,tpe}.clst_res,clst_res);
+
+        %% Default fitting parameters
+        % stretch, exp nb, curr exp, apply BOBA, repl nb, smple nb, 
+        % weigthing, excl, re-arrange
+        kin_def{1} = [0 nExp 1 1 20 100 0 0 0];
+        
+        % low A, start A, up A, low tau, start tau, up tau, low beta, 
+        % start beta, up beta]
+        kin_def{2} = repmat([0 0.8 Inf 0 10 Inf 0 0.5 2],nExp,1);
+        
+        def{tag,tpe}.kin_def = adjustVal(def{tag,tpe}.kin_def,kin_def);
+        
+        %% Actual fitting parameters (depends on J and nb. of exponentials)
+        kin_start{1} = cell(1,2);
+        % model used in kinetic analysis, current transition
+        kin_start{2} = [1,1]; 
+        
+        def{tag,tpe}.kin_start = adjustVal(def{tag,tpe}.kin_start,kin_start);
+
+        %% Fitting results
+        % boba fit: amp, sig_amp, dec, sig_dec, beta, sig_beta
+        kin_res{1} = [];
+        
+        % reference fit: amp, dec, beta
+        kin_res{2} = [];
+        
+        % lowest boba fit: amp, dec, beta
+        kin_res{3} = [];
+        
+        % highest boba fit: amp, dec, beta
+        kin_res{4} = [];
+        
+        % dwell time histogram sample
+        kin_res{5} = [];
+        
+        def{tag,tpe}.kin_res = adjustVal(def{tag,tpe}.kin_res,kin_res);
     end
-    
-    prm.clst_res{1} = model;
-    prm.clst_res{2} = prm.clst_res{3}.boba_k;
-    prm.clst_res{3} = Jopt;
 end
-
-
-%% starting parameters for fitting
-% prm.kin_start{n,1} = [stretch, exp nb, curr exp, apply BOBA, repl nb, 
-%                       smple nb, weigthing, excl]
-% prm.kin_start{n,2} = [low A, start A, up A, low tau, start tau, up tau, 
-%                       low beta, start beta, up beta]
-kin_def{1} = [0 nExp 1 1 20 100 0 0];
-kin_def{2} = repmat([0 0.8 Inf 0 10 Inf 0 0.5 2],[nExp,1]);
-prm.kin_def = adjustParam('kin_def', kin_def, prm_in);
-
-kin_start = repmat(prm.kin_def, [nTrs,1]);
-prm.kin_start = adjustParam('kin_start', kin_start, prm_in);
-
-
-%% results of fitting
-% kin_res{n,1} = [amp, sig_amp, dec, sig_dec, beta, sig_beta] boba fit
-% kin_res{n,2} = [amp, dec, beta] reference fit
-% kin_res{n,3} = [amp, dec, beta] inf boba fit
-% kin_res{n,4} = [amp, dec, beta] sup boba fit
-prm.kin_res = adjustParam('kin_res', cell(nTrs,5), prm_in);
-
-
-
-
 
 

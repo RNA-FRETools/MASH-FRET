@@ -30,9 +30,19 @@ setProp(get(h.uipanel_TP, 'Children'), 'Visible', 'on');
 
 % set default tag name list invisible and update corresponding button 
 % appearance
-set(h.lisbox_TP_defaultTags,'visible','off');
-set(h.pushbutton_TP_addTag,'value',0,'backgroundcolor',...
+set(h.listbox_TP_defaultTags,'visible','off');
+set(h.togglebutton_TP_addTag,'value',0,'backgroundcolor',...
     [240/255 240/255 240/255]);
+
+% delete existing sub-image axes
+if isfield(h, 'axes_subImg')
+    for i = 1:numel(h.axes_subImg)
+        if ishandle(h.axes_subImg(i))
+            delete(h.axes_subImg(i));
+        end
+    end
+    h = rmfield(h, 'axes_subImg');
+end
 
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -113,22 +123,20 @@ if ~isempty(p.proj)
     % manage control visibility for gamma correction
     if nFRET>0
         
-        % modified MH, 3.4.2019
+        % modified MH, 3.4.2019, 13.1.2020
         set([h.text_TP_factors_data h.popupmenu_gammaFRET ...
             h.text_TP_factors_method h.popupmenu_TP_factors_method ...
-            h.text_TP_factors_gamma h.edit_gammaCorr ...
-            h.pushbutton_optGamma h.text_TP_cross_gammafactor],'enable',...
-            'off');
-        
+            h.text_TP_factors_fact h.text_TP_factors_gamma ...
+            h.text_TP_factors_beta h.edit_gammaCorr h.edit_betaCorr ...
+            h.pushbutton_optGamma],'enable','off');
     else
         
-        % modified MH, 3.4.2019
+        % modified MH, 3.4.2019, 13.1.2020
         set([h.text_TP_factors_data h.popupmenu_gammaFRET ...
             h.text_TP_factors_method h.popupmenu_TP_factors_method ...
-            h.text_TP_factors_gamma h.edit_gammaCorr ...
-            h.pushbutton_optGamma h.text_TP_cross_gammafactor],'enable',...
-            'off');
-        
+            h.text_TP_factors_fact h.text_TP_factors_gamma ...
+            h.text_TP_factors_beta h.edit_gammaCorr h.edit_betaCorr ...
+            h.pushbutton_optGamma],'enable','off');
     end
     
     % manage control visibility for selection of ratio data
@@ -207,18 +215,7 @@ if ~isempty(p.proj)
     % x-axis settings
     set(h.checkbox_ttPerSec, 'Value', perSec);
     set(h.checkbox_ttAveInt, 'Value', perPix);
-    
-    % reset sub-image axes
-    if isfield(h, 'axes_subImg')
-        for i = 1:numel(h.axes_subImg)
-            if ishandle(h.axes_subImg(i))
-                delete(h.axes_subImg(i));
-            end
-        end
-        h = rmfield(h, 'axes_subImg');
-        refresh;
-    end
-    
+
     % create sub-image axes and calculate laser-specific avergae images
     if isCoord && isMov
         
@@ -283,17 +280,6 @@ if ~isempty(p.proj)
         end
     end
 else
-    % delete existing sub-image axes
-    if isfield(h, 'axes_subImg')
-        for i = 1:numel(h.axes_subImg)
-            if ishandle(h.axes_subImg(i))
-                delete(h.axes_subImg(i));
-            end
-        end
-        h = rmfield(h, 'axes_subImg');
-        refresh;
-    end
-    
     % set Trace processing module off-enabled
     setProp(get(h.uipanel_TP, 'Children'), 'Enable', 'off');
     setProp([h.pushbutton_traceImpOpt h.pushbutton_addTraces], ...

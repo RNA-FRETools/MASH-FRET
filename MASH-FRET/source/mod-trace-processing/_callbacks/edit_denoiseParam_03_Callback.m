@@ -1,4 +1,5 @@
-function edit_denoiseParam_03_Callback(obj, evd, h)
+function edit_denoiseParam_03_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     val = round(str2num(get(obj, 'String')));
@@ -10,7 +11,7 @@ if ~isempty(p.proj)
     if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
         updateActPan('Denoising parameters must be >= 0', ...
-            h.figure_MASH, 'error');
+            h_fig, 'error');
 
     else
         switch method
@@ -19,7 +20,7 @@ if ~isempty(p.proj)
                 if ~(val > 0)
                     set(obj, 'BackgroundColor', [1 0.75 0.75]);
                     updateActPan(['Factor for predictor average window' ...
-                        ' sizes must be > 0'], h.figure_MASH, 'error');
+                        ' sizes must be > 0'], h_fig, 'error');
                     return;
                 end
 
@@ -27,7 +28,7 @@ if ~isempty(p.proj)
                 if ~(sum(double(val == [1 2])))
                     set(obj, 'BackgroundColor', [1 0.75 0.75]);
                     updateActPan(['Cycle spin must be 1 or 2 (on or ' ...
-                        'off)'], h.figure_MASH, 'error');
+                        'off)'], h_fig, 'error');
                     return;
                 end
 
@@ -37,7 +38,7 @@ if ~isempty(p.proj)
         set(obj, 'BackgroundColor', [1 1 1]);
         p.proj{proj}.curr{mol}{1}{2}(method,3) = val;
         h.param.ttPr = p;
-        guidata(h.figure_MASH, h);
-        ud_denoising(h.figure_MASH);
+        guidata(h_fig, h);
+        ud_denoising(h_fig);
     end
 end

@@ -82,6 +82,9 @@ The bin size has a substantial influence on the cluster shapes: large bins will 
 TDP boundaries are important as they define the range of data considered for analysis.
 Large data ranges can include outliers that would bias the state analysis and narrow ranges can exclude relevant contribution for state transition rate analysis.
 
+When setting bounds to the TDP, the states laying out-of-TDP-ranges are ignored from the building process. 
+To later work with state trajectories and dwell times consistent with what is seen in the TDP, state trajectories can be re-arranged by suppressing these outliers and linking the neighbouring states together.
+
 TDP limits and bin size have to be carefully chosen in order to make transition clusters visible and sufficiently separated.
 
 <a href="../assets/images/figures/TA-workflow-scheme-bin-size.png" title="Effect of bin size on TDP"><img src="../assets/images/figures/TA-workflow-scheme-bin-size.png" alt="Effect of bin size on TDP"></a>
@@ -97,17 +100,28 @@ This has for effect to smooth the cluster's edges and to enhance the Gaussian sh
 
 <a href="../assets/images/figures/TA-workflow-scheme-tdp-processing.png" title="TDP processing"><img src="../assets/images/figures/TA-workflow-scheme-tdp-processing.png" alt="TDP processing"></a>
 
+As the TDP is built out of *state1*-to-*state2* transitions, static state sequences are naturally not represented and the corresponding state might therefore be omitted in the final cluster configuration.
+
+Static state sequences, and more generally last states of each sequence, can be represented as a *state1*-to-*state1* "transition", *i.e*, on the *state1*=*state2* diagonal of the TDP, and thus participate to TDP clustering.
+
+<a href="../assets/images/figures/TA-workflow-scheme-incl-last-states.png" title="TDP processing"><img src="../assets/images/figures/TA-workflow-scheme-incl-last-states.png" alt="Include last state in sequences"></a>
+
 To build the TDP:
 
 {: .procedure }
 1. Select a data type in the 
    [Data list](panels/panel-transition-density-plot.html#data-list)
      
+1. Select a data type in the 
+   [Molecule subgroup list](panels/panel-transition-density-plot.html#molecule-subgroup-list)
+     
 1. Set parameters:
      
    [Bounds and bin size](panels/panel-transition-density-plot.html#bounds-and-bin-size)  
    [Transition count](panels/panel-transition-density-plot.html#transition-count)  
+   [Re-arrange sequences](panels/panel-transition-density-plot.html#re-arrange-sequences)  
    [Gaussian filter](panels/panel-transition-density-plot.html#gaussian-filter)  
+   [Include last states](panels/panel-transition-density-plot.html#include-last-states)  
      
 1. Update the TDP and display by pressing 
    ![Update](../../assets/images/gui/TA-but-update.png "Update").
@@ -118,41 +132,59 @@ To build the TDP:
 ## Determine the most sufficient state configuration
 
 Identifying the most probable configuration of clusters is equivalent to identifying the most probable state configuration.
-The TDP can be partitioned into a maximum of 
-[*J*( *J*-1 )](){: .math_var } clusters, with 
-[*J*](){: .math_var } the number of states.
 
-In MASH, the TDP is partitioned into 
-[*J*<sup>2</sup>](){: .math_var } clusters to group the transitions close to the diagonal together, *i. e.*, very small state jumps.
-This allows to exclude noise-induced transitions from the dwell-time histogram to not bias the resulting transition rate coefficients.
+Ideally, the TDP can be partitioned into a <u>cluster matrix</u> made of 
+[*K* = *J*<sup>2</sup>](){: .math_var } clusters, with 
+[*J*](){: .math_var } the number of states. 
+The transitions close to the diagonal, *i. e.*, the small-amplitude state jumps rising from noise discretization, are grouped with on-diagonal one-state sequences into diagonal clusters in order to prevent the participation of noise-induced transitions to dwell-time histograms and to leave state transition rate coefficients unbiased.
+
+However, modelling the TDP with a matrix of clusters presumes that all possible transitions between all states occur, which is usually not the case. 
+Although the majority of TDPs do not resemble a cluster matrix, they do share a common feature which is the <u>symmetry of clusters</u> relative to the TDP diagonal. 
+In this case, one TDP can be modelled with 
+[*K* = 2*J*](){: .math_var } clusters, 
+[*J*](){: .math_var } being the number of clusters on one side of the TDP diagonal.
+
+Cluster symmetry becomes broken when irreversible state transitions are present - which is a rare case in structural dynamic studies. 
+For this particular cluster configuration, the TDP is modelled with 
+[*K* = *J*](){: .math_var } <u>clusters free of constraint</u>, 
+[*J*](){: .math_var } being the total number of clusters.
+
+The number 
+[*J*](){: .math_var } is called the model complexity and depends on the type of cluster configuration. 
+An example for 
+[*J*](){: .math_var } = 4 and for each cluster configuration is given below:
+
+<img src="../../assets/images/figures/TA-panel-state-configuration-clusters-config.png">
 
 In the case of well-separated transition clusters, 
-[*J*](){: .math_var } is easily determined by eye, where a simple partition algorithm, like k-mean, can be used to cluster data.
+[*K*](){: .math_var } is easily determined by eye, where a simple partition algorithm, like k-mean or manual clustering, can be used to cluster data.
 However, overlapping clusters can't be accurately distinguished and need a more elaborated method.
 
 One way of objectively identifying the number of overlapping clusters is to model the TDP by a sum of 
-[*J*<sup>2</sup>](){: .math_var } 2D-Gaussians, with each Gaussian modelling a cluster, such as:
+[*K*](){: .math_var } 2D-Gaussians, with each Gaussian modelling a cluster, such as:
 
 {: .equation }
 <img src="../assets/images/equations/TA-eq-gmm.gif" alt="TDP( val_{i};val_{i'} ) = \sum_{j=1}^{J} \sum_{j'=1}^{J} a_{j,j'}G_{j,j'}( val_{i};val_{i'} )">
 
 with 
-[*a*<sub>*j*,*j'*</sub>](){: .math_var } the weight in the sum of the Gaussian 
-[G<sub>*j*,*j'*</sub>](){: .math_var } with bi-dimensional mean 
-[&#956;<sub>*j*,*j'*</sub>](){: .math_var } that contains information about inferred states 
+[*a*<sub>*k*</sub>](){: .math_var } the weight in the sum of the Gaussian 
+[G<sub>*k*</sub>](){: .math_var } with bi-dimensional mean 
+[&#956;<sub>*k*</sub>](){: .math_var } that contains information about inferred states 
 ( [*val*<sub>*j*</sub>](){: .math_var };[*val*<sub>*j'*</sub>](){: .math_var } ), and covariance 
-[*&#931;*<sub>*j*,*j'*</sub>](){: .math_var } that contains information about cluster's shape.
+[*&#931;*<sub>*k*</sub>](){: .math_var } that contains information about cluster's shape.
 
 <a href="../assets/images/figures/TA-workflow-scheme-clustering.png" title="Gaussian mixture clustering"><img src="../assets/images/figures/TA-workflow-scheme-clustering.png" alt="Gaussian mixture clustering"></a>
 
-The Gaussian mixtures that describe the data the best for different 
-[*J*](){: .math_var } are inferred and compared to each other.
+Gaussian mixtures with increasing 
+[*J*](){: .math_var } are fit to the TDP.
+For each 
+[*J*](){: .math_var }, the models that gives the best description of the data, *i. e.*, that gives the highest likelihood, are compared to each other.
 
 As the model likelihood fundamentally increases with the number of components, inferred models are compared via the Bayesian information criterion (BIC), with the most sufficient cluster model having the lowest BIC.
 
 The outcome of such analysis is a single estimate of the most sufficient model, meaning that it carries no information about variability of the model across the sample.
 
-To estimate the cross-sample variability of the most sufficient number of states 
+To estimate the cross-sample variability of the most sufficient model complexity 
 [*J*](){: .math_var }, the clustering procedure can be combined with TDP bootstrapping, giving the bootstrap mean 
 [*&#956;*<sub>*J*</sub>](){: .math_var } and bootstrap standard deviation
 [*&#963;*<sub>*J*</sub>](){: .math_var } for the given sample.
@@ -216,8 +248,8 @@ with the stretching exponent
 The outcome of such analysis are single estimates of the transition rate coefficients.
 One way to estimate the variability of fitting parameters across the sample is to use the bootstrap-based analysis called BOBA-FRET.
 BOBA-FRET applies to all fit functions, and infers the bootstrap means and bootstrap standard deviations of all fitting parameters for the given sample, including 
-[*&#956;*<sub>*k*,*j*,*j'*</sub>](){: .math_var } and 
-[*&#963;*<sub>*k*,*j*,*j'*</sub>](){: .math_var }, the mean and standard deviation for transition rate coefficients.
+[*&#956;*<sub>*j*,*j'*</sub>](){: .math_var } and 
+[*&#963;*<sub>*j*,*j'*</sub>](){: .math_var }, the mean and standard deviation for transition rate coefficients.
 
 To determine the transition rate coefficients:
 
@@ -244,9 +276,6 @@ Additionally, TDP, dwell time histograms, analysis results and analysis paramete
 To save project modifications:
 
 {: .procedure }
-1. Select the data to export in the 
-   [Data list](panels/panel-transition-density-plot.html#data-list)  
-     
 1. Save modifications to the 
    [.mash file](../output-files/mash-mash-project.html) by pressing 
    ![Save](../assets/images/gui/TA-but-save.png "Save") and overwriting existing file.  
@@ -254,6 +283,12 @@ To save project modifications:
 To export data to files:
 
 {: .procedure }
+1. Select the data to export in the 
+   [Data list](panels/panel-transition-density-plot.html#data-list)  
+     
+1. Select the molecule subgroup to export in the 
+   [Molecule subgroup list](panels/panel-transition-density-plot.html#molecule-subgroup-list)  
+     
 1. Open export options by pressing 
    ![Export](../../assets/images/gui/TA-but-export.png "Export") and set the options as desired; please refer to 
    [Set export options](functionalities/set-export-options.html) for help.

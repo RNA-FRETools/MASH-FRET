@@ -1,17 +1,7 @@
 function p = calcCutoff(mol, p)
 
-% Last update: by MH, 17.5.2019
-% >> For now on, "summed intensities" and "all intensities" concern only
-%    intensities collected at emitter-specific excitations because zero-
-%    signals collected at unspecific illuminations are constantly 
-%    "photobleached" and make the method unsuable
-% >> "all intensities" uses intensities summed over all channels; this
-%    allows to detect true photobleaching and not 0 FRET
-%
-% update: by MH, 3.4.2019
-% >> manage missing intensities when loading ASCII traces with different 
-%    lengths: cut-off frame is automatically set to last number in trace
-%    and saved no matter if photobleaching correction is applied or not
+% Last update 17.5.2019 by MH: (1) For now on, "summed intensities" and "all intensities" concern only intensities collected at emitter-specific excitations because zero-signals collected at unspecific illuminations are constantly "photobleached" and make the method unsuable (2) "all intensities" uses intensities summed over all channels; this allows to detect true photobleaching and not 0 FRET
+% update 3.4.2019 by MH: manage missing intensities when loading ASCII traces with different lengths: cut-off frame is automatically set to last number in trace and saved no matter if photobleaching correction is applied or not
 
 proj = p.curr_proj;
 
@@ -25,8 +15,13 @@ FRET = p.proj{proj}.FRET;
 nFRET = size(p.proj{proj}.FRET,1);
 S = p.proj{proj}.S;
 nS = size(S,1);
-gamma = p.proj{proj}.prm{mol}{5}{3};
-prm = p.proj{proj}.prm{mol}{2};
+if nFRET>0
+    gamma = p.proj{proj}.curr{mol}{6}{1}(1,:);
+    if nS>0
+        beta = p.proj{proj}.curr{mol}{6}{1}(2,:);
+    end
+end
+prm = p.proj{proj}.curr{mol}{2};
 
 apply = prm{1}(1);
 start = ceil(prm{1}(4)/nExc);
@@ -47,10 +42,15 @@ else
         trace = fret(:,i_f);
 
     elseif chan <= (nFRET+nS) % single stoichiometry channel
-        i_s = chan - nFRET;
-        S_chan = S(i_s,:);
-        [o,l_s,o] = find(exc==chanExc(S_chan));
-        trace = sum(I_den(:,:,S_chan(1)),2)./sum(sum(I_den(:,:,:),2),3);
+        
+        i_s = chan-nFRET;
+        
+        % modified by MH, 14.1.2020
+%         S_chan = S(i_s,:);
+%         [o,l_s,o] = find(exc==chanExc(S_chan));
+%         trace = sum(I_den(:,:,S_chan(1)),2)./sum(sum(I_den(:,:,:),2),3);
+        s = calcS(exc, chanExc, S, FRET, I_den, gamma, beta);
+        trace = s(:,S(i_s));
 
     elseif chan <= (nFRET+nS+nExc*nChan) % single intensity channel
         i_exc = ceil((chan - nFRET - nS)/nChan);

@@ -1,4 +1,5 @@
-function pushbutton_TP_deleteTag_Callback(obj, evd, h)
+function pushbutton_TP_deleteTag_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -7,19 +8,28 @@ if ~isempty(p.proj)
     if ~strcmp(str_tag{tag},'no tag')
         mol = p.curr_mol(proj);
         
-        choice = questdlg(cat(2,'Remove tag "',removeHtml(str_tag{tag}),...
-            '" for molecule ',num2str(mol),' ?'),'Remove tag',...
-            'Yes, remove','Cancel','Cancel');
-        
-        if ~strcmp(choice,'Yes, remove')
-            return;
+        if ~h.mute_actions
+            choice = questdlg(cat(2,'Remove tag "',removeHtml(str_tag{tag}),...
+                '" for molecule ',num2str(mol),' ?'),'Remove tag',...
+                'Yes, remove','Cancel','Cancel');
+            if ~strcmp(choice,'Yes, remove')
+                return
+            end
         end
         
         tagId = find(p.proj{proj}.molTag(mol,:));
         p.proj{proj}.molTag(mol,tagId(tag)) = false;
-        h.param.ttPr = p;
-        guidata(h.figure_MASH,h);
         
-        ud_trSetTbl(h.figure_MASH);
+        % added by MH, 13.1.2020: reset ES histograms
+        for i = 1:size(p.proj{proj}.ES,2)
+            if ~(numel(p.proj{proj}.ES{i})==1 && isnan(p.proj{proj}.ES{i}))
+                p.proj{proj}.ES{i} = [];
+            end
+        end
+        
+        h.param.ttPr = p;
+        guidata(h_fig,h);
+        
+        ud_trSetTbl(h_fig);
     end
 end

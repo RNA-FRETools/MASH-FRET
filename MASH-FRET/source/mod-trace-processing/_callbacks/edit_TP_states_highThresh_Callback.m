@@ -1,9 +1,10 @@
-function edit_TP_states_highThresh_Callback(obj, evd, h)
+function edit_TP_states_highThresh_Callback(obj, evd, h_fig)
 
 % Last update: by MH, 3.4.2019
 % >> adjust selected data index in popupmenu, chan_in, to shorter 
 %    popupmenu size when discretization is only applied to bottom traces
 
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -15,7 +16,7 @@ if ~isempty(p.proj)
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val))
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
             updateActPan('Upper threshold value must be a number.', ...
-                h.figure_MASH, 'error');
+                h_fig, 'error');
         else
             set(obj, 'BackgroundColor', [1 1 1]);
             chan_in = p.proj{proj}.fix{3}(4);
@@ -45,8 +46,8 @@ if ~isempty(p.proj)
             state = get(h.popupmenu_TP_states_indexThresh,'value');
             p.proj{proj}.curr{mol}{4}{4}(3,state,chan_in) = val;
             h.param.ttPr = p;
-            guidata(h.figure_MASH, h);
-            ud_DTA(h.figure_MASH);
+            guidata(h_fig, h);
+            ud_DTA(h_fig);
         end
     end
 end

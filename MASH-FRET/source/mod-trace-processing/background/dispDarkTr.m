@@ -1,4 +1,10 @@
-function dispDarkTr(h_fig)
+function dispDarkTr(h_fig,varargin)
+% dispDarkTr(h_fig)
+% dispDarkTr(h_fig,file_out)
+% 
+% h_fig: handle to main figure
+% file_out: destination image file to export dark trace figure to
+
 h = guidata(h_fig);
 p = h.param.ttPr;
 proj = p.curr_proj;
@@ -46,7 +52,7 @@ if method == 6
     fact = p.proj{proj}.curr{mol}{3}{3}{l,c}(method,1);
     nFrames = size(p.proj{proj}.intensities,1)* ...
         p.proj{proj}.nb_excitations;
-    [o,I_bg] = create_trace(coord_dark, aDim, nPix, fDat);
+    [o,I_bg] = create_trace(coord_dark, aDim, nPix, fDat, h.mute_actions);
     I_bg = slideAve(I_bg(l:nExc:nFrames,:), fact);
 
     perSec = p.proj{proj}.fix{2}(4);
@@ -74,16 +80,16 @@ if method == 6
     end
 
 
-    h_fig = figure('Name', ['Dark trace: (' num2str(coord_dark(1)) ...
+    h_fig2 = figure('Name', ['Dark trace: (' num2str(coord_dark(1)) ...
         ',' num2str(coord_dark(2)) ')'], 'Visible', 'off', 'Color', ...
         [1 1 1], 'Units', 'pixels');
     units = get(h.axes_top, 'Units');
     set(h.axes_top, 'Units', 'pixels');
     pos_top = get(h.axes_top, 'OuterPosition');
     set(h.axes_top, 'Units', units);
-    pos_fig = get(h_fig, 'Position');
-    set(h_fig, 'Position', [pos_fig(1:2) pos_top(3:4)]);
-    h_axes = axes('Parent', h_fig, 'Units', 'pixels', ...
+    pos_fig = get(h_fig2, 'Position');
+    set(h_fig2, 'Position', [pos_fig(1:2) pos_top(3:4)]);
+    h_axes = axes('Parent', h_fig2, 'Units', 'pixels', ...
         'OuterPosition', [0,0,pos_top(3:4)]);
     set(h_axes, 'Units', 'normalized');
     plot(h_axes, x_axis, I_bg, '-k');
@@ -91,5 +97,12 @@ if method == 6
     ylim(h_axes, 'auto');
     ylabel(h_axes, y_lab);
     xlabel(h_axes, x_lab);
-    set(h_fig, 'Visible', 'on');
+    
+    if ~isempty(varargin)
+        file_out = varargin{1};
+        print(h_fig2,file_out,'-dpng');
+        close(h_fig2);
+    else
+        set(h_fig2, 'Visible', 'on');
+    end
 end

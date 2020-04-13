@@ -1,57 +1,95 @@
-function dat = adjustDt(dat)
+function dat = adjustDt(dat0)
+% dat = adjustDt_mod(dat0)
+%
+% Remove exlcuded states and link neighbouring states together by prolongating the duration of the previous state in the sequence. If there is no previous state, the duration of th enext state is prolongated.
+%
+% dat0: [N-by-6 or 8] dwell time table (duration,value before transition,value after transition,molecule index,state index before transition, state index after transition) with state index=0 if state is out-of-TDP range
+% dat: [N-by-6 or 8] re-arranged dwell time table 
 
-% first transition excluded
-if isequal(dat(1,(end-1):end),[0 0])
-    for i = 2:size(dat,1)
-        if ~isequal(dat(i,(end-1):end),[0 0])
-            dat(1,[2 3 end-1 end]) = ...
-                dat(i,[2 2 (end-1) (end-1)]);
-            break;
-        end
-    end
+dat = [];
+
+if size(dat0,2)==8
+    cols = [7,8];
+else
+    cols = [5,6];
 end
-if ~isequal(dat(1,(end-1):end),[0 0])
-    for i = 2:size(dat,1)
 
-        % transition excluded = constant state
-        if isequal(dat(i,(end-1):end),[0 0])
-            dat(i,[2 end-1 ]) = dat(i-1,[3 end]);
-            if i<size(dat,1) && ...
-                    isequal(dat(i+1,(end-1):end),[0 0])
-                incl = [];
-                for j = i+1:size(dat,1)
-                    if ~isequal(dat(j,(end-1):end),[0 0])
-                        if abs(dat(i,3)-dat(j,2)) < ...
-                                abs(dat(i,3)-dat(i-1,3))
-                            dat(i,[3 end]) = ...
-                                dat(j,[2 (end-1)]);
-                        else
-                            dat(i,[3 end]) = dat(i-1,[3 end]);
-                        end
-                        break;
-                    else
-                        incl = [incl j];
-                    end
-                    % excluded transitions until the last
-                    if j == size(dat,1)
-                        dat(i:end,[2 3 end-1 end]) = repmat( ...
-                            dat(i-1,[3 3 end end]), ...
-                            [numel(i:size(dat,1)) 1]);
-                    else
-                        dat(incl,[2 3 (end-1) end]) = ...
-                            repmat(dat(i,[3 3 end end]), ...
-                            [numel(incl) 1]);
-                    end
+% identify states in TDP's range
+id = find(dat0(:,cols(1))>0);
+I = numel(id);
+
+% all states are out-of-TDP-range
+if I==0
+    if size(dat0,2)==8
+        dat = [sum(dat0(:,1)),NaN,NaN,dat0(1,4),0,0,0,0];
+    else
+        dat = [sum(dat0(:,1)),NaN,NaN,dat0(1,4),0,0];
+    end
+    
+else
+    i = 1;
+    while i<=I
+        
+        % first state is out-of-range
+        if i==1 && id(i)>1
+            dt = sum(dat0(1:id(i),1));
+            dat0(id(i),1) = dt;
+        end
+        
+        if i<I
+            j = i+1;
+            match = false;
+            while j<=I
+                if dat0(id(j),cols(1))~=dat0(id(i),cols(1))
+                    match = true;
+                    break
+                end
+                j = j+1;
+            end
+            
+            if match
+                dt = sum(dat0(id(i):id(j)-1,1));
+                val2 = dat0(id(j),2);
+                y = dat0(id(j),5);
+                if size(dat0,2)==8
+                    j2 = dat0(id(j),7);
                 end
             else
-                dat(i,[3 end]) = dat(i-1,[3 end]);
+                dt = sum(dat0(id(i):end,1));
+                val2 = dat0(id(i),2);
+                y = dat0(id(i),5);
+                if size(dat0,2)==8
+                    j2 = dat0(id(i),7);
+                end
             end
+            
+            if size(dat0,2)==8
+                dat = cat(1,dat,[dt,dat0(id(i),2),val2,dat0(id(i),4:5),y,...
+                    dat0(id(i),7),j2]);
+            else
+                dat = cat(1,dat,[dt,dat0(id(i),2),val2,dat0(id(i),4:5),y]);
+            end
+            
+            i = j-1;
+            
+        else
+            dt = sum(dat0(id(i):end,1));
+            val2 = dat0(id(i),2);
+            y = dat0(id(i),5);
+            if size(dat0,2)==8
+                j2 = dat0(id(i),7);
+            end
+            
+            if size(dat0,2)==8
+                dat = cat(1,dat,[dt,dat0(id(i),2),val2,dat0(id(i),4:5),y,...
+                    dat0(id(i),7),j2]);
+            else
+                dat = cat(1,dat,[dt,dat0(id(i),2),val2,dat0(id(i),4:5),y]);
+            end
+            
+            i = I;
         end
-        if dat(i,(end-1)) ~= dat(i-1,end)
-            dat(i,[2 (end-1)]) = dat(i-1,[3 end]);
-        end
+        
+        i = i+1;
     end
-    dat = delFalseTrs(dat(:,[1 (end-1):end 2:(end-2)]));
-    dat = dat(:,[1 4:end 2:3]);
 end
-

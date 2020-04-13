@@ -121,10 +121,11 @@ MASH-FRET project files consist in data structures with the following fields:
 ### FRET- and stoichiometry- fields
 {: .no_toc }
 
-| `FRET`     | a number `nF` of different FRET pair channel indexes for FRET calculations | `nF`-by-2 double     | FRET from channel 1 to 2: `[1,2]` |
-| `FRET_DTA` | discretized FRET trajectories                                              | `L`-by-`nF*M` double |                                   |
-| `S`        | a number `nS` of different channel indexes for stoichiometry calculations  | 1-by-`nS` double     | S of channel 1: `[1]`             |
-| `S_DTA`    | discretized stoichiometry trajectories                                     | `L`-by-`nS*M` double |                                   |
+| `FRET`     | a number `nF` of different FRET pair channel indexes for FRET calculations                              | `nF`-by-2 double     | FRET from channel 1 to 2: `[1,2]` |
+| `FRET_DTA` | discretized FRET trajectories                                                                           | `L`-by-`nF*M` double |                                   |
+| `S`        | a number `nS` of different channel indexes for stoichiometry calculations                               | 1-by-`nS` double     | S of channel 1: `[1]`             |
+| `S_DTA`    | discretized stoichiometry trajectories                                                                  | `L`-by-`nS*M` double |                                   |
+| `ES`       | 2D histograms of FRET-inverse of associated stoichiometry used for estimation of gamma and beta factors | 1-by-`nF` cell       |                                   |
 
 
 ### Analysis settings

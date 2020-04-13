@@ -1,10 +1,21 @@
-function trace = getIntTrace(lim, aDim, nPix, fDat)
-% Build the intensity trace for one molecule for slow computers: works only
-% for *.sif and *.sira movie file.
-% Reads directly into the file, for each frame, intensity values belonging
-% to the "binning*binning" area arround the SM coordinates and calculate
-% the mean value over the "biningArea" pixels.
-% Returns the intensity trace along all movie frames.
+function trace = getIntTrace(lim, aDim, nPix, fDat, varargin)
+% trace = getIntTrace(lim, aDim, nPix, fDat)
+% trace = getIntTrace(lim, aDim, nPix, fDat, mute)
+%
+% Inegrate intensities for specific positions in the video and build up corresponding intensity-time traces.
+% Intensities are calculated as the sum of the brightest pixels in a square zone around the molecule coordinates.
+%
+% lim: structure containing fields:
+%  lim.Xinf: [1-by-N] pixel position of the zone's lower bound in the x-direction 
+%  lim.Yinf: [1-by-N] pixel position of the zone's lower bound in the y-direction 
+% aDim: zone's pixel dimensions
+% nPix: number of brightest pixels to sum up
+% fDat: {1-by-4} video file data and meta data with:
+%  fDat{1}: source video file
+%  fDat{2}: {1-by-2} position in file where pixel data starts and full-length video data if loaded in memory (empty otherwise)
+%  fDat{3}: [1-by-2] video dimensions in the x- and y- directions
+%  fDat{4}: video length (in frames)
+% mute: (1) to mute actions, (0) otherwise
 
 trace = [];
 movFile = fDat{1};
@@ -12,6 +23,10 @@ fCurs = fDat{2}{1};
 vid = fDat{2}{2};
 s = fDat{3};
 zTot = fDat{4};
+mute = false;
+if ~isempty(varargin)
+    mute = varargin{1};
+end
 
 nCoord = numel(lim.Xinf);
 isMov = ~isempty(vid);
@@ -23,8 +38,8 @@ switch fFormat
     case '.sif'
         if isMov
             if memAlloc(zTot*nCoord*aDim^2*4);
-                trace = tracesFromMatrix(vid,zTot,lim,aDim,nPix);
-                return;
+                trace = tracesFromMatrix(vid,zTot,lim,aDim,nPix,mute);
+                return
             end
         end
         f = fopen(movFile, 'r');
@@ -67,7 +82,7 @@ switch fFormat
                 trace_vect(zz,c,1:numel(vect)) = vect;
             end
 
-            if round(100*zz/zTot) > prev
+            if ~mute && round(100*zz/zTot) > prev
                 prev = round(100*zz/zTot);
                 disp(['Generating intensity-time traces: ' ...
                     num2str(prev) '%']);
@@ -76,62 +91,25 @@ switch fFormat
         fclose(f);
         
         trace = getNpixFromVect(trace_vect, nPix);
-        return;
+        return
         
     case '.sira'
 
         if isMov
             if memAlloc(zTot*nCoord*aDim^2*4);
-                trace = tracesFromMatrix(vid,zTot,lim,aDim,nPix);
-                return;
+                trace = tracesFromMatrix(vid,zTot,lim,aDim,nPix,mute);
+                return
             end
         end
         
-        f = fopen(movFile, 'r');
-        if f < 0 
-            errordlg('Could not open the file.');
-            return;
-        end
-        tline = fgetl(f);
-        if isempty(strfind(tline, 'SIRA exported binary graphic'))
-            if isempty(strfind(tline, ...
-                    'MASH smFRET exported binary graphic'))
-            if isempty(strfind(tline, ...
-                    'MASH-FRET exported binary graphic'))
-                fclose(f);
-                errordlg('Not a SIRA graphic file.');
-                return;
-            end
-            end
-        end
-        is_os = false; % intensity offset for each frame
-        is_sgl = false; % data written in single precision
-        if ~isempty(tline)
-            vers = tline(length(['MASH-FRET exported binary graphic ' ...
-                'Version: ']):end);
-            if isempty(vers)
-            vers = tline(length(['MASH smFRET exported binary graphic ' ...
-                'Version: ']):end);
-            end
-            if str2num(vers(1:end-3)) == 1.003
-                subvers = getValueFromStr('1.003.', vers);
-                if subvers>=39
-                    is_os = true;
-                end
-                if subvers>=41
-                    is_sgl = true;
-                end
-            else
-            %elseif str2num(vers) > 1.003
-                is_os = true;
-                is_sgl = true;
-            end
-        end
+        [vers,is_sgl,is_os] = getSiraDat(movFile,[]);
         if is_sgl
             prec = 'single';
         else
             prec = 'uint16';
         end
+        
+        f = fopen(movFile, 'r');
 
         prev = 0;
         trace_vect = zeros(zTot,nCoord,aDim^2);
@@ -160,7 +138,7 @@ switch fFormat
                 end
                 trace_vect(zz,c,1:numel(vect)) = vect;
 
-                if round(100*zz/zTot) > prev
+                if ~mute && round(100*zz/zTot) > prev
                     prev = round(100*zz/zTot);
                     disp(['Generating intensity-time traces: ' ...
                         num2str(prev) '%']);
@@ -177,7 +155,7 @@ switch fFormat
         fclose(f);
 
         trace = getNpixFromVect(trace_vect, nPix);
-        return;
+        return
         
     case '.tif'
         imgInfo = imfinfo(movFile);
@@ -193,7 +171,7 @@ switch fFormat
                 trace_vect(zz,c,1:numel(vect)) = permute(vect,[1 3 2]);
             end
 
-            if round(100*zz/zTot) > prev
+            if ~mute && round(100*zz/zTot) > prev
                 prev = round(100*zz/zTot);
                 disp(['Generating intensity-time traces: ' ...
                     num2str(prev) '%']);
@@ -201,7 +179,7 @@ switch fFormat
         end
         
         trace = getNpixFromVect(trace_vect, nPix);
-        return;
+        return
         
     case '.gif'
         imgInfo = imfinfo(movFile);
@@ -217,7 +195,7 @@ switch fFormat
                 trace_vect(zz,c,1:numel(vect)) = permute(vect,[1 3 2]);
             end
 
-            if round(100*zz/zTot) > prev
+            if ~mute && round(100*zz/zTot) > prev
                 prev = round(100*zz/zTot);
                 disp(['Generating intensity-time traces: ' ...
                     num2str(prev) '%']);
@@ -225,7 +203,7 @@ switch fFormat
         end
         
         trace = getNpixFromVect(trace_vect, nPix);
-        return;
+        return
         
     case '.png'
         
@@ -254,7 +232,7 @@ switch fFormat
         end
         
         trace = getNpixFromVect(trace_vect, nPix);
-        return;
+        return
         
     case '.pma'
         f = fopen(movFile, 'r');
@@ -287,7 +265,7 @@ switch fFormat
                     
                     trace_vect(zz,c,1:numel(vect)) = vect;
                     
-                    if round(100*zz/zTot) > prev
+                    if ~mute && round(100*zz/zTot) > prev
                         prev = round(100*zz/zTot);
                         disp(['Generating intensity-time traces: ' ...
                             num2str(prev) '%']);
@@ -298,18 +276,18 @@ switch fFormat
         end
         
         trace = getNpixFromVect(trace_vect, nPix);
-        return;
+        return
 end
 
 
-function trace = tracesFromMatrix(matrix,zTot,lim,aDim,nPix)
+function trace = tracesFromMatrix(matrix,zTot,lim,aDim,nPix,mute)
 nCoord = numel(lim.Xinf);
 aDim2 = aDim^2;
 trace = zeros(zTot,nCoord);
 prev = 0;
 for c = 1:nCoord
     
-    if round(100*c/nCoord)>prev
+    if ~mute && round(100*c/nCoord)>prev
         prev = round(100*c/nCoord);
         disp(cat(2,'Generating intensity-time traces: ',num2str(prev),...
             '%'));

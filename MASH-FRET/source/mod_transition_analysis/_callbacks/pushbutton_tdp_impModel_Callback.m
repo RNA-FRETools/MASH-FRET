@@ -1,14 +1,29 @@
-function pushbutton_tdp_impModel_Callback(obj, evd, h)
+function pushbutton_tdp_impModel_Callback(obj, evd, h_fig)
+
+h = guidata(h_fig);
 p = h.param.TDP;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    tpe = p.curr_type(proj);
-    prm = p.proj{proj}.prm{tpe};
-
-    prm.clst_res{3} = get(h.popupmenu_tdp_model,'Value') + 1;
-    prm = ud_kinPrm(prm,prm.clst_res{3});
-
-    h.param.TDP.proj{proj}.prm{tpe} = prm;
-    guidata(h.figure_MASH,h);
-    updateFields(h.figure_MASH, 'TDP');
+if isempty(p.proj)
+    return
 end
+
+proj = p.curr_proj;
+tpe = p.curr_type(proj);
+tag = p.curr_tag(proj);
+def = p.proj{proj}.def{tag,tpe};
+curr = p.proj{proj}.curr{tag,tpe};
+mat = p.proj{proj}.prm{tag,tpe}.clst_start{1}(4);
+
+if mat==1
+    J = get(h.popupmenu_tdp_model,'Value') + 1;
+else
+    J = get(h.popupmenu_tdp_model,'Value');
+end
+curr.kin_start{2}(1) = J;
+curr = ud_kinPrm(curr,def,curr.kin_start{2}(1));
+
+h.param.TDP.proj{proj}.prm{tag,tpe} = curr;
+h.param.TDP.proj{proj}.curr{tag,tpe} = curr;
+guidata(h_fig,h);
+
+% update plots and GUI
+updateFields(h_fig, 'TDP');

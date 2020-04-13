@@ -1,15 +1,17 @@
-function pushbutton_remBgCorr_Callback(obj, evd, h)
-oldCorr = h.param.movPr.bgCorr;
-k = 1;
-h.param.movPr.bgCorr = {};
-line2rm = get(h.listbox_bgCorr, 'Value');
-for i=1:size(oldCorr,1)
-    if i ~= line2rm
-        for j = 1:size(oldCorr,2)
-            h.param.movPr.bgCorr{k,j} = oldCorr{i,j};
-        end
-        k = k + 1;
-    end
+function pushbutton_remBgCorr_Callback(obj, evd, h_fig)
+
+% collect interface parameters
+h = guidata(h_fig);
+p = h.param.movPr;
+n = get(h.listbox_bgCorr, 'Value');
+
+if n>0 && size(p.bgCorr,1)>=n
+    p.bgCorr(n,:) = [];
 end
-guidata(h.figure_MASH, h);
-updateFields(h.figure_MASH, 'imgAxes');
+
+% save modifications
+h.param.movPr = p;
+guidata(h_fig, h);
+
+% set GUI to proper values and refresh plot
+updateFields(h_fig, 'imgAxes');

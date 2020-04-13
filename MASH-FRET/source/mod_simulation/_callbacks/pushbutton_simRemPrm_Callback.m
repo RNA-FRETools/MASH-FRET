@@ -1,25 +1,19 @@
-function pushbutton_simRemPrm_Callback(obj, evd, h)
-p = h.param.sim;
+function pushbutton_simRemPrm_Callback(obj, evd, h_fig)
 
-if isfield(p.molPrm, 'coord')
-    p.genCoord = 1;
-elseif ~isempty(p.coord) && isempty(p.coordFile)
-    p.genCoord = 0;
-    p.molNb = size(p.coord,1);
-end
+% Last update by MH, 19.12.2019
+% >> review reset of coordinates in case import is done from ASCII file
+%  (only possible if coordinates from preset file could not be imported/
+%  were all out-of-video range)
+% >> reset PSF factor matrix only if PSF widths were imported from presets
+%
+% update by MH, 12.12.2019:
+% >> update coordinates after removing pre-sets
 
-p.PSFw = p.PSFw(1,:);
-p.molPrm = [];
-p.impPrm = 0;
-p.prmFile = [];
-p.matGauss = cell(1,4);
-h.param.sim = p;
+resetSimPrm(h_fig)
 
-guidata(h.figure_MASH, h);
+% display potentially new coordinates
+h = guidata(h_fig);
+setSimCoordTable(h.param.sim,h.uitable_simCoord);
 
-if h.param.sim.nbStates>5
-    set(h.edit_nbStates,'string','5');
-    edit_nbStates_Callback(h.edit_nbStates,[],h);
-end
-
-updateFields(h.figure_MASH, 'sim');
+% set GUI to proper values
+updateFields(h_fig, 'sim');

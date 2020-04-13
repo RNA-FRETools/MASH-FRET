@@ -1,4 +1,5 @@
-function menu_showActPan_Callback(obj, evd, h)
+function menu_showActPan_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 checked = strcmp(get(obj, 'Checked'), 'on');
 if ~checked
     if isfield(h, 'figure_actPan') && ishandle(h.figure_actPan)

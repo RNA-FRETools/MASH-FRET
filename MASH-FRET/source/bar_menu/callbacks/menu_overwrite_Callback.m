@@ -1,4 +1,6 @@
-function menu_overwrite_Callback(obj, evd, h)
+function menu_overwrite_Callback(obj, evd, h_fig)
+
+h = guidata(h_fig);
 
 switch obj
 
@@ -14,5 +16,5 @@ switch obj
         h.param.OpFiles.overwrite_ask = 1;
 end
 
-guidata(h.figure_MASH,h);
-ud_menuOverwrite(h.figure_MASH);
+guidata(h_fig,h);
+ud_menuOverwrite(h_fig);

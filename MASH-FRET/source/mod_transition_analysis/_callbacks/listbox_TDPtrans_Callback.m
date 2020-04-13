@@ -1,10 +1,18 @@
-function listbox_TDPtrans_Callback(obj, evd, h)
+function listbox_TDPtrans_Callback(obj, evd, h_fig)
+
+h = guidata(h_fig);
 p = h.param.TDP;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    tpe = p.curr_type(proj);
-    p.proj{proj}.prm{tpe}.clst_start{1}(4) = get(obj, 'Value');
-    h.param.TDP = p;
-    guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'TDP');
+if isempty(p.proj)
+    return
 end
+
+proj = p.curr_proj;
+tpe = p.curr_type(proj);
+tag = p.curr_tag(proj);
+
+p.proj{proj}.curr{tag,tpe}.kin_start{2}(2) = get(obj, 'Value');
+
+h.param.TDP = p;
+guidata(h_fig, h);
+
+updateFields(h_fig, 'TDP');

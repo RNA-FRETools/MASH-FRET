@@ -22,6 +22,11 @@ if ~isempty(varargin)
     end
 end
 
+h = guidata(h_fig);
+if h.mute_actions
+    return
+end
+
 newAct = act;
 
 if ~iscell(newAct)

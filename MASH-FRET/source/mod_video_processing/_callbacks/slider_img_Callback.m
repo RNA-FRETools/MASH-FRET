@@ -1,26 +1,40 @@
-function slider_img_Callback(obj, evd, h)
-cursorPos = round(get(obj, 'Value'));
+function slider_img_Callback(obj, evd, h_fig)
+
+% get interface parameters
+h = guidata(h_fig);
+p = h.param.movPr;
+
+% get video parameters
+videoFile = [h.movie.path h.movie.file];
+fcurs = h.movie.speCursor;
+resX = h.movie.pixelX;
+resY = h.movie.pixelY;
+L = h.movie.framesTot;
+
+% adjust slider position
+l = round(get(obj, 'Value'));
 minSlider = get(obj, 'Min');
 maxSlider = get(obj, 'Max');
-if cursorPos <= minSlider
-    cursorPos = minSlider;
-elseif cursorPos >= maxSlider
-    cursorPos = maxSlider;
+if l <= minSlider
+    l = minSlider;
+elseif l >= maxSlider
+    l = maxSlider;
 end
-set(obj, 'Value', cursorPos);
-set(h.text_frameCurr, 'String', cursorPos);
+set(obj, 'Value', l);
 
-[data,ok] = getFrames([h.movie.path h.movie.file], cursorPos, ...
-    {h.movie.speCursor [h.movie.pixelX h.movie.pixelY] ...
-    h.movie.framesTot}, h.figure_MASH);
-if ok
-    p = h.param.movPr;
-    if size(p.SFres,1) >= 1
-        p.SFres = p.SFres(1,1:(1+p.nChan));
-    end
-    h.param.movPr = p;
-    h.movie.frameCurNb = cursorPos;
-    h.movie.frameCur = data.frameCur;
-    guidata(h.figure_MASH, h);
+% read corresponding video frame
+[data,ok] = getFrames(videoFile, l, {fcurs [resX resY] L}, h_fig, true);
+if ~ok
+    return
 end
-updateFields(h.figure_MASH, 'imgAxes');
+
+% update current video frame
+h.movie.frameCurNb = l;
+h.movie.frameCur = data.frameCur;
+
+% save modifications
+h.param.movPr = p;
+guidata(h_fig, h);
+
+% set GUI to proper values and refresh plot
+updateFields(h_fig,'imgAxes');

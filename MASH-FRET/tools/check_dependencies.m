@@ -19,7 +19,7 @@ switch mode
     case 'discovery'
     
         if verLessThan('matlab', '9.1')
-            fprintf('Discovery mode requires MATLAB version > 2016b. You may still run check_dependencies.m in analysis mode')
+            fprintf('Discovery mode requires MATLAB version > 2016b. You may still run check_dependencies.m in analysis mode\n')
             return
         end
        

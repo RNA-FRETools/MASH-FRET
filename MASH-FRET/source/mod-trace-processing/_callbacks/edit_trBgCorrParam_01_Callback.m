@@ -1,4 +1,5 @@
-function edit_trBgCorrParam_01_Callback(obj, evd, h)
+function edit_trBgCorrParam_01_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -30,14 +31,14 @@ if ~isempty(p.proj)
                     val >= 1)
                 set(obj, 'BackgroundColor', [1 0.75 0.75]);
                 updateActPan(['Number of binning interval must be ' ...
-                    '>= 1.'], h.figure_MASH, 'error');
+                    '>= 1.'], h_fig, 'error');
                 return;
             end
         elseif method==4 % CumP threshold
             if ~(numel(val)==1 && ~isnan(val) && val>=0 && val<=1)
                 set(obj, 'BackgroundColor', [1 0.75 0.75]);
                 updateActPan(['Cumulative probability threshold must ' ...
-                    'be comprised between 0 and 1.'], h.figure_MASH, ...
+                    'be comprised between 0 and 1.'], h_fig, ...
                     'error');
                 return;
             end
@@ -46,7 +47,7 @@ if ~isempty(p.proj)
                     val >= 0)
                 set(obj, 'BackgroundColor', [1 0.75 0.75]);
                 updateActPan(['Running average window size must be ' ...
-                    '>= 0.'], h.figure_MASH, 'error');
+                    '>= 0.'], h_fig, 'error');
                 return;
             end
         elseif method==3 % tolerance cutoff
@@ -54,7 +55,7 @@ if ~isempty(p.proj)
                     val >= 0)
                 set(obj, 'BackgroundColor', [1 0.75 0.75]);
                 updateActPan('Tolerance cutoff must be >= 0.', ...
-                    h.figure_MASH, 'error');
+                    h_fig, 'error');
                 return;
             end
         elseif method==7 % calculation method
@@ -63,14 +64,14 @@ if ~isempty(p.proj)
                     sum(val==[1 2]))
                 set(obj, 'BackgroundColor', [1 0.75 0.75]);
                 updateActPan('Median calculation method must be 1 or 2',...
-                    h.figure_MASH, 'error');
+                    h_fig, 'error');
                 return;
             end
         end
         set(obj, 'BackgroundColor', [1 1 1]);
         p.proj{proj}.curr{mol}{3}{3}{l,c}(method,1) = val;
         h.param.ttPr = p;
-        guidata(h.figure_MASH, h);
-        ud_ttBg(h.figure_MASH);
+        guidata(h_fig, h);
+        ud_ttBg(h_fig);
     end
 end

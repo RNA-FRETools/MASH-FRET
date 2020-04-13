@@ -1,15 +1,27 @@
-function edit_SFparam_minDspot_Callback(obj, evd, h)
-val = round(str2num(get(obj, 'String')));
-set(obj,'String',num2str(val));
-if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
+function edit_SFparam_minDspot_Callback(obj, evd, h_fig)
+
+% collect interface parameters
+val = round(str2double(get(obj, 'String')));
+h = guidata(h_fig);
+chan = get(h.popupmenu_SFchannel, 'Value');
+p = h.param.movPr;
+
+set(obj, 'String', num2str(val));
+if ~(numel(val)==1 && ~isnan(val) && val>=0)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    updateActPan('Min. peak-peak distance must be >= 0.', ...
-        h.figure_MASH, 'error');
-else
-    set(obj, 'BackgroundColor', [1 1 1]);
-    channel = get(h.popupmenu_SFchannel, 'Value');
-    h.param.movPr.SF_minDspot(channel) = val;
-    guidata(h.figure_MASH, h);
-    ud_SFspots(h.figure_MASH);
-    ud_SFpanel(h.figure_MASH);
+    updateActPan('Min. peak-peak distance must be >= 0.', h_fig, 'error');
 end
+
+p.SF_minDspot(chan) = val;
+
+% reset spot selection
+if size(p.SFres,1)>=2
+    p.SFres(2,:) = [];
+end
+
+% save modifications
+h.param.movPr = p;
+guidata(h_fig, h);
+
+% refresh calculations, plot and set GUI to proper values
+updateFields(h_fig,'imgAxes');

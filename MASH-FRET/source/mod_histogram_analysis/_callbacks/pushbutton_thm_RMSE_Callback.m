@@ -1,4 +1,5 @@
-function pushbutton_thm_RMSE_Callback(obj, evd, h)
+function pushbutton_thm_RMSE_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.thm;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -14,12 +15,12 @@ if ~isempty(p.proj)
     val = prm.plot{2}(:,[1 2 3])'; % histogram: data, count, cumulative count
 %     N = size(val,2); % number of molecules
 
-    res = rmse_ana(h.figure_MASH, isBIC, penalty, Kmax, val);
+    res = rmse_ana(h_fig, isBIC, penalty, Kmax, val);
     prm.thm_res(3,1:2) = res;
     
     if isequal(prm.thm_res,prev_res)
         setContPan('Not enought data for RMSE analysis.', 'error' , ...
-            h.figure_MASH);
+            h_fig);
         return;
     end
     
@@ -65,9 +66,9 @@ if ~isempty(p.proj)
     % Save modifications
     p.proj{proj}.prm{tpe} = prm;
     h.param.thm = p;
-    guidata(h.figure_MASH, h);
+    guidata(h_fig, h);
 
     % Update interface
-    updateFields(h.figure_MASH, 'thm');
+    updateFields(h_fig, 'thm');
 end
 

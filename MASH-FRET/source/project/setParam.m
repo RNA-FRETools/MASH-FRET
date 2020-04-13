@@ -1,25 +1,16 @@
 function ok = setParam(h_fig)
+% ok = setParam(h_fig)
+%
 % Initialize MASH parameters from the file default_param.ini
-% "h_fig" >> MASH figure handle
+%
+% h_fig: handle to main figure
 
-% Requires external function: adjustParam
-
-%% Last update by MH, 25.4.2019
-% >> set default tag names and colors in Video processing interface's 
-%    defaults
-%
-% update: 28th of March 2019 by Melodie Hadzic
-% --> add gamma file import in Trace processing
-%
-% update: 20th of February by Mélodie Hadzic
-% --> add ebFRET-compatible export in Video processing
-%
-% update: 7th of March 2018 by Richard Börner
-% --> Comments adapted for Boerner et al 2017
-% --> Simulation default parameters adapted for Boerner et al 2017.
-%
-% Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
-%%
+% Last update, 16.1.2020 by MH: add TP import parameter for beta factor file import
+% update, 25.4.2019 by MH: set default tag names and colors in Video processing interface's defaults
+% update,28.3.2019 by MH: add gamma file import in Trace processing
+% update, 20.2.2019 by MH: add ebFRET-compatible export in Video processing
+% update: 7.3.2018 by Richard Börner: (1) Comments adapted for Boerner et al 2017 (2) Simulation default parameters adapted for Boerner et al 2017.
+% created 23.4.2014 by MH
 
 h = guidata(h_fig);
 h.param = [];
@@ -104,12 +95,18 @@ p.bleach_t = adjustParam('bleach_t', p.nbFrames/p.rate, p_input); % bleaching de
 p.bitnr = adjustParam('bitnr', 14, p_input); % bit rate
 
 % molecule parameters
-kx = [  0   0.1   0.1   0.1   0.1 % transition state rates (s-1), for up to 5 states
+kx = [  0   0.1   0.1   0.1   0.1 % transition rates (s-1), for up to 5 states
       0.1     0   0.1   0.1   0.1
       0.1   0.1     0   0.1   0.1
       0.1   0.1   0.1     0   0.1
       0.1   0.1   0.1   0.1     0];
 p.kx = adjustParam('kx', kx, p_input);
+wx = [  0   0.25   0.25   0.25   0.25 % transition probabilities, for up to 5 states
+      0.25     0   0.25   0.25   0.25
+      0.25   0.25     0   0.25   0.25
+      0.25   0.25   0.25     0   0.25
+      0.25   0.25   0.25   0.25     0];
+p.wx = adjustParam('kx', wx, p_input);
 val = round(10*linspace(0,1,p.nbStates))/10;
 p.stateVal = adjustParam('stateVal', val, p_input);
 p.FRETw = adjustParam('FRETw', zeros(1,p.nbStates), p_input); % FRET width for heterogenous broadening
@@ -263,6 +260,12 @@ p.SF_minDspot = adjustParam('SF_minDspot', 0*ones(1,p.nChan), p_input);
 p.SF_minDedge = adjustParam('SF_minDedge', 3*ones(1,p.nChan), p_input);
 p.SF_intRatio = adjustParam('SF_intRatio', 1.4*ones(1,p.nChan), p_input);
 p.SFres = {};
+p.SFprm = cell(1,1+p.nChan);
+p.SFprm{1} = [p.SF_method p.SF_gaussFit 1];
+for i = 1:p.nChan
+    p.SFprm{i+1} = [p.SF_w(i),p.SF_h(i); p.SF_darkW(i),p.SF_darkH(i); ...
+        p.SF_intThresh(i),p.SF_intRatio(i)];
+end
 p.coordMol = [];
 p.coordMol_file = [];
 
@@ -280,9 +283,9 @@ p.trsf_coordImp = adjustParam('trsf_coordImp', [1 2], p_input);
 p.trsf_coordLim = adjustParam('trsf_coordLim', [256 256], p_input);
 p.coordTrsf = [];
 p.coordTrsf_file = [];
-
 p.coordItg = [];
 p.coordItg_file = [];
+p.coord2plot = 0; %1:SF, 2:ref, 3:to transform, 4:transformed, 5:for trace
 p.itg_movFullPth = [];
 p.itg_coordFullPth = [];
 p.itg_dim = adjustParam('itg_dim', 3, p_input);
@@ -308,7 +311,7 @@ end
 p.itg_expMolPrm = adjustParam('itg_expMolPrm', p_exp, p_input);
 p.itg_expFRET = adjustParam('itg_expFRET', [], p_input);
 p.itg_expS = adjustParam('itg_expS', [], p_input);
-if size(p.itg_expS,2)>1
+if ~isempty(p.itg_expS) && size(p.itg_expS,2)~=2
     p.itg_expS = [];
 end
 
@@ -337,9 +340,8 @@ p.defTagNames = adjustParam('defTagNames', ...
     {'static', 'dynamic','D-only','A-only'}, p_input);
 p.defTagClr = adjustParam('defTagClr', {'#4298B5','#FFFFCC','#33CC33',...
     '#FF6666','#E19D29'}, p_input);
-[src,o,o] = fileparts(which('MASH'));
-p.infos_icon_file = cat(2,src,filesep,'source',filesep,'divers',filesep,...
-    'infos_icon.png');
+[src,o,o] = fileparts(which('setInfoIcons'));
+p.infos_icon_file = cat(2,src,filesep,'infos_icon.png');
 
 % Trace processing pannel
 
@@ -360,12 +362,12 @@ for i = 1:nExc
     defprm{size(defprm,1),3} = 'mW';
 end
 
-p_imp = {{[1 0 0 1 1 0 nChan nExc 0 5] wl} ...
+p_imp = {{[1 0 0 1 1 0 nChan nExc 0 5 5 0] wl} ...
     {0 ''} ...
     {0 '' {[1 2] 1} 256} ...
     [0 1] ...
     defprm ...
-    {0 '' {}}}; % add gamma import
+    {0 '' {} 0 '' {}}}; % add gamma import
 p.impPrm = adjustParam('impPrm', p_imp, p_input);
 p.impFRET = adjustParam('impFRET', [], p_input);
 p.impS = adjustParam('impS', [], p_input);
@@ -381,6 +383,7 @@ p = p_input;
 p.proj = {};
 p.curr_proj = 0;
 p.curr_tpe = [];
+p.curr_tag = [];
          % R G B
 colList = [1 0 0 % red
            0 1 0 % green
@@ -401,7 +404,7 @@ colList = [1 0 0 % red
            0.5 0.5 0.5 % grey
            1 1 0.5 % canary
            0.5 1 1]; % pastel blue
-p.colList = adjustParam('colList', colList, p_input);
+p.colList = colList;
 
 % Kinetics processing pannel
 
@@ -410,6 +413,7 @@ p = p_input;
 p.proj = {};
 p.curr_proj = 0;
 p.curr_type = [];
+p.curr_tag = [];
          % R G B
 colList = [1 0 0 % red
            0 1 0 % green

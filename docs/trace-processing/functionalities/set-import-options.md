@@ -19,7 +19,7 @@ The window is accessed by pressing
 After modification, press 
 ![Save](../../assets/images/gui/TP-but-save-bga.png "Save") to save import settings.
 
-<a href="../../assets/images/gui/TP-area-proj-impopt.png"><img src="../../assets/images/gui/TP-area-proj-impopt.png" style="max-width: 286px;"/></a>
+<a href="../../assets/images/gui/TP-area-proj-impopt.png"><img src="../../assets/images/gui/TP-area-proj-impopt.png" style="max-width: 546px;"/></a>
 
 ## Window components
 {: .no_toc .text-delta }
@@ -101,8 +101,9 @@ Intensity data are read in one or several ASCII files according to the following
 - channel-specific intensities are distributed every **(g)**<sup>th</sup> file columns
 - laser-specific intensities are distributed every **(h)**<sup>th</sup> file lines
 
-Laser-specific wavelengths are used in FRET calculations to identify the red-shift order of donors and acceptors; see 
-[FRET calculations](../../video-processing/functionalities/set-project-options.html#fret-calculations) for more information.
+Laser-specific wavelengths are used in FRET and stoichiometry calculations to identify the red-shift order of donors and acceptors; see 
+[FRET calculations](../../video-processing/functionalities/set-project-options.html#fret-calculations) and 
+[Stoichiometry calculations](../../video-processing/functionalities/set-project-options.html#stoichiometry-calculations) for more information.
 
 Alternated lasers are named `exc [l]` in list **(i)**, with `[l]` the laser index respecting the order of appearance in the trajectory.
 Set laser wavelength in **(j)** after changing selection in list **(i)**. 
@@ -112,26 +113,28 @@ If the files contain time data, activate the option in **(e)** and set in **(f)*
 
 ---
 
-## Gamma factors
+## Correction factors
 
-Use this panel to import gamma factors.
+Use this panel to import molecule-specific gamma and beta correction factors.
 
-<a href="../../assets/images/gui/TP-area-proj-impopt-gamma.png"><img src="../../assets/images/gui/TP-area-proj-impopt-gamma.png" style="max-width: 250px;"/></a>
+<a href="../../assets/images/gui/TP-area-proj-impopt-gamma.png"><img src="../../assets/images/gui/TP-area-proj-impopt-gamma.png" style="max-width: 258px;"/></a>
 
-Gamma factors account for differences in emission detection efficiencies and quantum yields of donor and acceptor emitters and are used in FRET calculations; see 
-[Correct FRET values](../workflow.html#correct-fret-values) for more information.
+Gamma factors account for differences in emission detection efficiencies and quantum yields between donor and acceptor emitters, whereas beta factors account for differences in extinction coefficients and excitation intensities.
+Gamma factors are used in FRET and stoichiometry calculations, whereas beta factors are used in stoichiometry calculations only; see 
+[Correct ratio values](../workflow.html#correct-ratio-values) for more information.
 
-Gamma factors are usually calculated or set in panel 
-[Factor corrections](panel-factor-corrections), but can also be imported from one or several ASCII files along with the ASCII traces.
+Correction factors are usually calculated or set in panel 
+[Factor corrections](panel-factor-corrections), but can also be imported from one or several ASCII files side-by-side with ASCII trace files.
 
-Gamma factor files are ASCII files structured as described in
-[.gam files](../..//output-files/gam-gamma-factors.html).
+Gamma and beta factor files are ASCII files structured as described in
+[.gam files](../..//output-files/gam-gamma-factors.html) and 
+[.bet files](../..//output-files/bet-beta-factors.html) respectively.
 
-To import gamma factors, activate the option in **(a)**, press 
-![...](../../assets/images/gui/TP-but-3p.png "...") and select the proper file(s).
-The imported file name is then displayed in **(b)**.
+To import gamma and/or beta factors, activate the option in **(a)** and/or **(c)** respectively, press the corresponding 
+![...](../../assets/images/gui/TP-but-3p.png "...") button and select the proper file(s).
+The imported file name is then displayed in **(b)** and/or **(d)** respectively.
 
-If several files are selected, gamma factors will be concatenated line-wise.
+If several files are selected, gamma and/or beta factors will be concatenated row-wise.
 
 
 ---

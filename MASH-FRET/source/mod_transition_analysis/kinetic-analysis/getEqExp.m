@@ -1,4 +1,4 @@
-function [str_fit cell_cf] = getEqExp(strch, nExp)
+function [str_fit,cell_cf] = getEqExp(strch, nExp)
 
 str_fit = [];
 cell_cf = {};

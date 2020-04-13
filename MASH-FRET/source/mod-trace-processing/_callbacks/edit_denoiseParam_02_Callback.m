@@ -1,4 +1,5 @@
-function edit_denoiseParam_02_Callback(obj, evd, h)
+function edit_denoiseParam_02_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     val = round(str2num(get(obj, 'String')));
@@ -10,7 +11,7 @@ if ~isempty(p.proj)
     if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
         updateActPan('Denoising parameters must be >= 0', ...
-            h.figure_MASH, 'error');
+            h_fig, 'error');
 
     else
         switch method
@@ -22,7 +23,7 @@ if ~isempty(p.proj)
                     set(obj, 'BackgroundColor', [1 0.75 0.75]);
                     updateActPan(['Running average window size must ' ...
                         'be an odd integer > 0 and < ' num2str(nmax)], ...
-                        h.figure_MASH, 'error');
+                        h_fig, 'error');
                     return;
                 end
 
@@ -30,7 +31,7 @@ if ~isempty(p.proj)
                 if ~(sum(double(val == [1 2])))
                     set(obj, 'BackgroundColor', [1 0.75 0.75]);
                     updateActPan(['Time must be 1 or 2 (local or ' ...
-                        'universal)'], h.figure_MASH, 'error');
+                        'universal)'], h_fig, 'error');
                     return;
                 end
 
@@ -40,7 +41,7 @@ if ~isempty(p.proj)
         set(obj, 'BackgroundColor', [1 1 1]);
         p.proj{proj}.curr{mol}{1}{2}(method,2) = val;
         h.param.ttPr = p;
-        guidata(h.figure_MASH, h);
-        ud_denoising(h.figure_MASH);
+        guidata(h_fig, h);
+        ud_denoising(h_fig);
     end
 end

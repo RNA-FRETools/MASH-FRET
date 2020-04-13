@@ -1,23 +1,24 @@
-function discr = discr_cpa(trace, varargin)
-% Change-point analysis and discretisation script adapted from:
-% Taylor, Wayne A. (2000), "Change-Point Analysis: A Powerful New Tool For
-% Detecting Changes"
-% WEB: http://www.variation.com/cpa/tech/changepoint.html
+function discr = discr_cpa(trace,mute_action,varargin)
+% discr = discr_cpa(trace,mute)
+% discr = discr_cpa(trace,mute,nbSamples)
+% discr = discr_cpa(trace,mute,nbSamples,lvl)
+% discr = discr_cpa(trace,mute,nbSamples,lvl,analysisType)
+% discr = discr_cpa(trace,mute,nbSamples,lvl,analysisType,Jmax)
+% discr = discr_cpa(trace,mute,nbSamples,lvl,analysisType,Jmax,tol)
 %
-% "trace" >> [m-by-n] matrix containing the n traces
-% "cp" >> {1-by-n} cell array containing changing points
-% "discr" >> [m-by-n] matrix containing the n discretised traces
+% Change-point analysis and discretisation script adapted from: Taylor, Wayne A. (2000), "Change-Point Analysis: A Powerful New Tool For Detecting Changes" (WEB: http://www.variation.com/cpa/tech/changepoint.html)
 %
-% optional input arguments:
-% 1) number of bootstrap samples to estimate change amplitude
-% 2) confidence level for detection of a significant change.
-% 3) changing point determination method: 1 (max) or 2 (mse)
-% 4) correlation analysis: changing zone width
+% trace: [m-by-n] matrix containing the n traces
+% mute: (1) to mute action display, (0) otherwise (default: 0)
+% nbSamples: number of bootstrap samples to estimate change amplitude (default: 50)
+% lvl: confidence level for detection of a significant change (in %) (default: 90)
+% analysisType: changing point determination method: 1 (max) or 2 (mse) (default: 2)
+% Jmax: (obsolete) maximum number of states (default: 10)
+% tol: frame window around changing points to identify common changes in both traces (default: deactivated)
+% discr: [m-by-n] matrix containing the n discretised traces
 
 % Created the 7th of March 2014 by Mélodie C.A.S. Hadzic
 % Last update the 10th of March 2014 by Mélodie C.A.S. Hadzic
-
-
 
 %% Initialisation
 
@@ -43,7 +44,9 @@ discr = zeros(size(trace));
 
 %% Analysis
 
-disp('Determination of significant change points ...');
+if ~mute_action
+    disp('CPA: Determination of significant change points ...');
+end
 
 % determination of significant CP
 for n = 1:size(trace,2)
@@ -163,6 +166,7 @@ diff_ref = cs_max-cs_min;
 
 
 % bootstrap samples
+diff_smpl = zeros(1,n_smpl);
 for s = 1:n_smpl
 
     % sampling without replacement

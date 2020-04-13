@@ -14,6 +14,10 @@ function d_traces = getDiscr(method, traces, incl, prm, thresh, calc, ...
 if sum(incl)<2
     incl = true(size(traces));
 end
+mute_action = false;
+if numel(str_discr)==1 && str_discr==0
+    mute_action = true;
+end
 
 d_traces = nan(size(traces));
 N = size(d_traces,1);
@@ -72,8 +76,8 @@ for n = 1:N
             n_iter = prm(n,3);
             data = cell(1,1);
             data{1} = traces(n,incl(n,:));
-            [d_traces(n,incl(n,:)),o] = discr_vbFRET(minN, maxN, n_iter, data, ...
-                h_fig, lb);
+            [d_traces(n,incl(n,:)),o] = discr_vbFRET(minN,maxN,n_iter,data, ...
+                h_fig,lb,mute_action);
 %             ct = toc(t);
 %             if exist('C:\Users\SigelPC18\Desktop', 'dir')
 %                 f = fopen(['C:\Users\SigelPC18\Desktop\' ...
@@ -92,8 +96,8 @@ for n = 1:N
             n_bss = prm(n,1);
             lvl = prm(n,2);
             ana_type = prm(n,3);
-            d_traces(n,incl(n,:)) = discr_cpa(traces(n,incl(n,:)), n_bss, lvl, ...
-                ana_type, maxN);
+            d_traces(n,incl(n,:)) = discr_cpa(traces(n,incl(n,:)),...
+                mute_action,n_bss,lvl,ana_type, maxN);
 %             ct = toc(t);
 %             if exist('C:\Users\SigelPC18\Desktop', 'dir')
 %                 f = fopen(['C:\Users\SigelPC18\Desktop\' ...
@@ -105,7 +109,7 @@ for n = 1:N
         case 5 % STaSI
 %             t = tic;
             maxN = prm(n,1);
-            [MDL,dat] = discr_stasi(traces(n,incl(n,:)), maxN);
+            [MDL,dat] = discr_stasi(traces(n,incl(n,:)),maxN,mute_action);
             [o,idx] = min(MDL);
             d_traces(n,incl(n,:)) = dat(idx,:)';
 %             ct = toc(t);
@@ -125,7 +129,10 @@ for n = 1:N
         end
     end
     d_traces(n,isnan(d_traces(n,:))) = 0;
-
+    
+    if prm(n,7)
+        d_traces(n,:) = deblurrSeq(d_traces(n,:));
+    end
     d_traces(n,:) = binDiscrVal(prm(n,6), d_traces(n,:));
     d_traces(n,:) = refineDiscr(prm(n,5), d_traces(n,:), traces(n,:));
     if calc

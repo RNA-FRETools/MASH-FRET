@@ -1,2 +1,2 @@
-function pushbutton_TM_Callback(obj, evd, h)
-traceManager(h.figure_MASH);
+function pushbutton_TM_Callback(obj, evd, h_fig)
+traceManager(h_fig);

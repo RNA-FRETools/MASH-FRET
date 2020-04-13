@@ -44,7 +44,7 @@ FRET = [];
 
 
 
-%% %% STATE TRANSITION RATES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% %% RESTRICTED STATE TRANSITION RATES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % trans_rates = [J-by-J-by-N] matrix containing transition rates from state
 % j to j' in trans_rates(j,j')
 % A rate of 0 means a forbidden transition.
@@ -99,6 +99,42 @@ trans_rates = [];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+%% %% TRANSITION REPARTITION PROBABILITY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% trans_prob = [J-by-J-by-N] matrix containing transition repartition 
+% probbailities  from state j to j' in trans_rates(j,j')
+% Diagonal terms must be null.
+
+% example: 4-state matrix
+%
+% trans_prob = [0 1 0
+%     0.1 0 0.9
+%     0.5 0.5 0];
+%
+% trans_prob = repmat(trans_prob,[1,1,N]);
+
+%%%%% EDIT HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+trans_prob = [];
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% %% INITIAL STATE PROBABILITY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ini_prob = [N-by-J] matrix containing initial state probbailities for the
+% J states.
+
+% example: 4 states
+%
+% ini_prob = [0.1 0.5 0.3 0.1];
+%
+% ini_prob = repmat(ini_prob,[N,1]);
+
+%%%%% EDIT HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ini_prob = [];
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %% %%% GAMMA FACTORS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -189,8 +225,8 @@ else
     file = cat(2,pname,fname);
 end
 
-save(file,'FRET','trans_rates','gamma','tot_intensity','coordinates',...
-    'psf_width','-mat');
+save(file,'FRET','trans_rates','trans_prob','gamma','tot_intensity',...
+    'coordinates','psf_width','-mat');
 
 disp(cat(2,'Preset parameters were successfully written in file: ',file));
 

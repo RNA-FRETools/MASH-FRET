@@ -1,4 +1,5 @@
-function edit_photobl_start_Callback(obj, evd, h)
+function edit_photobl_start_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     val = str2num(get(obj, 'String'));
@@ -28,7 +29,7 @@ if ~isempty(p.proj)
             val >= minVal && val <= maxVal)
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
         updateActPan(['Data start must be >= ' num2str(minVal) ...
-            ' and <= ' num2str(maxVal)], h.figure_MASH, 'error');
+            ' and <= ' num2str(maxVal)], h_fig, 'error');
 
     else
         set(obj, 'BackgroundColor', [1 1 1]);
@@ -37,8 +38,8 @@ if ~isempty(p.proj)
         end
         p.proj{proj}.curr{mol}{2}{1}(4) = val;
         h.param.ttPr = p;
-        guidata(h.figure_MASH, h);
-        ud_bleach(h.figure_MASH);
-        updateFields(h.figure_MASH, 'ttPr');
+        guidata(h_fig, h);
+        ud_bleach(h_fig);
+        updateFields(h_fig, 'ttPr');
     end
 end

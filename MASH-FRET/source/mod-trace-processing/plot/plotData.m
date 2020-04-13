@@ -1,5 +1,8 @@
 function plotData(mol, p, axes, prm, plotDscr)
 
+% Last update by MH, 29.11.2019
+% >> remove double axis labels when both axes (intensity & ratio) are used
+%
 % Last update: MH, 3.4.2019
 % >> correct data selection for plotting in bottom axes (curr_chan_bottom)
 
@@ -7,7 +10,7 @@ proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
 nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
-allExc = p.proj{proj}.excitations;
+exc = p.proj{proj}.excitations;
 nExc = p.proj{proj}.nb_excitations;
 chanExc = p.proj{proj}.chanExc;
 
@@ -86,11 +89,6 @@ if ~isempty(prm)
     cutIt = prm{2}{1}(1);
     method = prm{2}{1}(2);
     cutOff = prm{2}{1}(4+method);
-    if nFRET > 0
-        acc = prm{5}{4}(2);                % added by FS, 12.1.18
-        pbGammaIt = prm{5}{5}(acc,1);      % added by FS, 12.1.18
-        pbGammaOff = prm{5}{5}(acc,6);     % added by FS, 12.1.18
-    end
 else
     cutIt = 0;
     cutOff = x_lim(2);
@@ -99,9 +97,6 @@ end
 x_axis = x_lim(1):x_lim(2);
 if x_inSec
     cutOff = cutOff*rate;
-    if nFRET > 0
-        pbGammaOff = pbGammaOff*rate;      % added by FS, 12.1.18
-    end
     x_axis = x_axis*rate;
 end
 
@@ -123,33 +118,31 @@ if curr_chan_top > 0
         set(axes.axes_histTop, 'NextPlot', 'add');
     end
 
-    for exc = curr_exc
-        x = x_axis(exc:nExc:end)';
+    for l = curr_exc
+        x = x_axis(l:nExc:end)';
         for c = curr_chan_top
-            colr = clr{1}{exc,c};
+            colr = clr{1}{l,c};
             if isfield(axes, 'axes_traceTop')
-                plot(axes.axes_traceTop, x, I(:,c,exc), 'Color', colr);
+                plot(axes.axes_traceTop, x, I(:,c,l), 'Color', colr);
                 if plotDscr
-                    plot(axes.axes_traceTop, ...
-                        x(~isnan(discrI(:,c,exc))), ...
-                        discrI(~isnan(discrI(:,c,exc)),c,exc), '-k');
+                    plot(axes.axes_traceTop, x(~isnan(discrI(:,c,l))), ...
+                        discrI(~isnan(discrI(:,c,l)),c,l), '-k');
                 end
             end
             if isfield(axes, 'axes_histTop')
-                [histI x_I] = hist(I(:,c,exc),100);
+                [histI x_I] = hist(I(:,c,l),100);
                 histI = histI/sum(histI);
-                barh(axes.axes_histTop, ...
-                    x_I, histI, 'FaceColor', colr, 'EdgeColor', colr);
+                barh(axes.axes_histTop,x_I,histI,'FaceColor',colr,...
+                    'EdgeColor',colr);
             end
         end
     end
     if isfield(axes, 'axes_traceTop')
-        set(axes.axes_traceTop, 'NextPlot', 'replace', ...
-            'Visible', 'on');
+        set(axes.axes_traceTop, 'NextPlot', 'replace', 'Visible', 'on');
     end
     if isfield(axes, 'axes_histTop')
-        set(axes.axes_histTop, 'NextPlot', 'replace', ...
-            'Visible', 'on', 'YAxisLocation', 'right');
+        set(axes.axes_histTop, 'NextPlot', 'replace', 'Visible', 'on', ...
+            'YAxisLocation', 'right');
     end
     
     if isfield(axes, 'axes_traceTop')
@@ -203,19 +196,24 @@ if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
     end
     
     if nFRET > 0
-        trs = p.proj{proj}.FRET;
-        gamma = p.proj{proj}.prm{mol}{5}{3};
-        f_tr = calcFRET(nChan, nExc, allExc, chanExc, trs, I, gamma);
+        FRET = p.proj{proj}.FRET;
+        gamma = p.proj{proj}.prm{mol}{6}{1}(1,:);
+        f_tr = calcFRET(nChan, nExc, exc, chanExc, FRET, I, gamma);
+    end
+    if nS > 0
+        S = p.proj{proj}.S;
+        gamma = p.proj{proj}.prm{mol}{6}{1}(1,:);
+        beta = p.proj{proj}.prm{mol}{6}{1}(2,:);
+        s_tr = calcS(exc, chanExc, S, FRET, I, gamma, beta);
     end
 
     for c = curr_chan_bottom
         if c <= nFRET
             FRET_tr = f_tr(:,c);
-            [o,l,o] = find(allExc==chanExc(trs(c,1)));
+            [o,l,o] = find(exc==chanExc(FRET(c,1)));
             [histF,x_F] = hist(FRET_tr, linspace(-0.3,1.3,160));
-            histF = ...
-                histF(x_F >= FRETlim(1) & x_F <= FRETlim(2))/sum(histF);
-            x_F = x_F(x_F >= FRETlim(1) & x_F <= FRETlim(2));
+            histF = histF(x_F>=FRETlim(1) & x_F<=FRETlim(2))/sum(histF);
+            x_F = x_F(x_F>=FRETlim(1) & x_F<=FRETlim(2));
             x = (x_axis(l:nExc:end))';
             colr = clr{2}(c,:);
             if isfield(axes, 'axes_traceBottom')
@@ -233,15 +231,14 @@ if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
             
         else
             i_s = c-nFRET;
-            s = p.proj{proj}.S(i_s,:);
-            [o,l_s,o] = find(chanExc(s)==allExc);
-            S_tr = sum(I(:,:,l_s),2)./sum(sum(I(:,:,:),2),3);
+            S_tr = s_tr(:,i_s);
+            s = p.proj{proj}.S(i_s,1);
+            [o,l,o] = find(exc==chanExc(s),1);
             [histS,x_S] = hist(S_tr, linspace(-0.3,1.3,160));
             histS = histS(x_S>=FRETlim(1) & x_S<=FRETlim(2))/sum(histS);
             x_S = x_S(x_S>=FRETlim(1) & x_S<=FRETlim(2));
             colr = clr{3}(i_s,:);
-            x = mean([(x_axis(s(1):nExc:end))', ...
-                (x_axis(s(1):nExc:end))'],2);
+            x = (x_axis(l:nExc:end))';
             if isfield(axes, 'axes_traceBottom')
                 plot(axes.axes_traceBottom, x, S_tr, 'Color', colr);
                 if plotDscr
@@ -251,19 +248,18 @@ if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
                 end
             end
             if isfield(axes, 'axes_histBottom')
-                barh(axes.axes_histBottom, x_S, histS, 'FaceColor', ...
-                    colr, 'EdgeColor', colr);
+                barh(axes.axes_histBottom, x_S, histS, 'FaceColor', colr, ...
+                    'EdgeColor', colr);
             end
         end
     end
     
     if isfield(axes, 'axes_traceBottom')
-        set(axes.axes_traceBottom, 'NextPlot', 'replace', ...
-            'Visible', 'on');
+        set(axes.axes_traceBottom, 'NextPlot', 'replace', 'Visible', 'on');
     end
     if isfield(axes, 'axes_histBottom')
-        set(axes.axes_histBottom, 'NextPlot', 'replace', ...
-            'Visible', 'on', 'YAxisLocation', 'right');
+        set(axes.axes_histBottom, 'NextPlot', 'replace', 'Visible', 'on', ...
+            'YAxisLocation', 'right');
     end
     
     if isfield(axes, 'axes_traceBottom')
@@ -284,6 +280,11 @@ if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
         xlim(axes.axes_histBottom, 'auto');
         xlabel(axes.axes_histBottom, 'norm. freq.');
         grid(axes.axes_histBottom, 'on');
+        
+        % added by MH, 3.4.2019
+        if isfield(axes,'axes_histTop')
+            xlabel(axes.axes_histTop, '');
+        end
     end
     if isfield(axes,'axes_traceBottom')
         if x_inSec
@@ -293,6 +294,11 @@ if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
         end
         ylabel(axes.axes_traceBottom, 'FRET / S');
         grid(axes.axes_traceBottom, 'on');
+        
+        % added by MH, 3.4.2019
+        if isfield(axes, 'axes_traceTop')
+            xlabel(axes.axes_traceTop, '');
+        end
     end
 
     if isfield(axes,'axes_histTop') && isfield(axes,'axes_histBottom')
@@ -318,26 +324,6 @@ if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
             set(axes.axes_traceBottom, 'NextPlot', 'replace');
         end
     end
-    
-    % added by FS, 12.1.18
-    % draws the cutoff for the pb based gamma correction
-    if nFRET > 0
-        if pbGammaIt
-            if isfield(axes,'axes_traceTop')
-                set(axes.axes_traceTop, 'NextPlot', 'add');
-                plot(axes.axes_traceTop, [pbGammaOff pbGammaOff], ...
-                    get(axes.axes_traceTop, 'YLim'), '-r');
-                set(axes.axes_traceTop, 'NextPlot', 'replace');
-            end
-            if isfield(axes,'axes_traceBottom')
-                set(axes.axes_traceBottom, 'NextPlot', 'add');
-                plot(axes.axes_traceBottom, [pbGammaOff pbGammaOff], ...
-                    get(axes.axes_traceBottom, 'YLim'), '-r');
-                set(axes.axes_traceBottom, 'NextPlot', 'replace');
-            end
-        end
-    end
-    
 end
 
 valid = p.proj{proj}.coord_incl;

@@ -1,92 +1,87 @@
-function ok = export2Avi(h_fig, nameMain, pathName)
-% Export the movie / image with background corrections to a .avi file
+function ok = export2Avi(h_fig, fname, pname)
+% Export the video/image loaded in module Video processing  to a .avi file, after applying image filters/background corrections
 % Pixel values are normalized frame-wise before being written to file
+%
+% Requires functions: loading_bar, updateActPan, updateBgCorr, getFrame, writeAviFile.
+
+% Last update: 5.12.2019 by MH
+% >> use external function writeAviFile.m to create and write pixel data in
+%  avi file (this allows the use of the same script from both modules Video
+%  processing and Simulation)
 
 % defaults
-ok = 1;
 iv = 1;
-isMov = 0;
-isBgCorr = 0;
 
+% initialize execution failure/success
+ok = 0;
+
+% collect video processing parameters
 h = guidata(h_fig);
+p = h.param.movPr;
 
-if isfield(h,'movie') && isfield(h.movie,'movie') && ...
-    ~isempty(h.movie.movie)
-    isMov = 1;
-end
-if isfield(h.param.movPr, 'bgCorr') && ~isempty(h.param.movPr.bgCorr)
-    isBgCorr = 1;
-end
+% identify if a full-length video was loaded
+isMov = isfield(h,'movie') && isfield(h.movie,'movie') && ...
+    ~isempty(h.movie.movie);
 
-startFrame = h.param.movPr.mov_start;
-lastFrame = h.param.movPr.mov_end;
-L = numel(startFrame:iv:lastFrame);
+% identify if background corrections must be applied
+isBgCorr = isfield(p,'bgCorr') && ~isempty(p.bgCorr);
 
-v = VideoWriter(cat(2,pathName,nameMain), 'Uncompressed AVI');
-v.FrameRate = 1/h.movie.cyctime;
+% get video frame indexes
+frameRange = p.mov_start:iv:p.mov_end;
+L = numel(frameRange);
 
-open(v);
+% open blank avi file
+v = writeAviFile('init',cat(2,pname,fname),h.movie.cyctime);
 
-% loading bar parameters---------------------------------------------------
+% initialize loading bar
 if loading_bar('init',h_fig,L,'Export to an *.avi file...');
-    ok = 0;
     return;
 end
 h = guidata(h_fig);
 h.barData.prev_var = h.barData.curr_var;
 guidata(h_fig, h);
-% -------------------------------------------------------------------------
 
-for i = startFrame:iv:lastFrame
+for i = frameRange
+    
+    % get video frame
     if isMov
         img = h.movie.movie(:,:,i);
     else
-        [data,ok] = getFrames([h.movie.path h.movie.file], i, ...
+        [data,succ] = getFrames([h.movie.path h.movie.file], i, ...
             {h.movie.speCursor [h.movie.pixelX h.movie.pixelY] ...
-            h.movie.framesTot}, h_fig);
-        if ~ok
+            h.movie.framesTot}, h_fig, true);
+        if ~succ
             return
         end
         img = data.frameCur;
     end
 
-    % Apply background corrections if exist
+    % apply background corrections if any
     if isBgCorr
-        avBg = h.param.movPr.movBg_one;
+        avBg = p.movBg_one;
         if ~avBg
-            img = updateBgCorr(img, h_fig);
+            [img,avImg] = updateBgCorr(img, p, h.movie, h_fig);
         else % Apply only if the bg-corrected frame is displayed
-            if avBg == i
-                img = updateBgCorr(img, h_fig);
+            if avBg==i
+                [img,avImg] = updateBgCorr(img, p, h.movie, h_fig);
             end
         end
+        if ~isfield(h.movie,'avImg')
+            h.movie.avImg = avImg;
+            guidata(h_fig,h);
+        end
     end
+    
+    % write pixel data to avi file
+    v = writeAviFile('append',v,img);
 
-    img_avi = zeros([size(img) 3]);
-    img_avi(:,:,1) = img;
-    img_avi(:,:,2) = img;
-    img_avi(:,:,3) = img;
-    img_avi = uint8(255*(img_avi-min(min(img)))/...
-        (max(max(img))-min(min(img))));
-    writeVideo(v, img_avi);
-
-%         imgAvi = typecast(uint16(img(:)),'uint8');
-%         imgAvi = reshape(imgAvi,2,res_y*res_x);
-%         imgFin = uint8(zeros(res_y,res_x,3));
-%         for r = 1:2
-%             imgFin(:,:,r) = uint8(reshape(imgAvi(r,:),res_y,res_x));
-%         end
-%         writeVideo(v,imgFin);
-
-    % loading bar updating-------------------------------------------------
+    % increment loading bar
     if loading_bar('update', h_fig)
         close(v);
-        ok = 0;
         return;
     end
-    % ---------------------------------------------------------------------
 end
 
+% close file and loading bar
 close(v);
-
 loading_bar('close', h_fig);

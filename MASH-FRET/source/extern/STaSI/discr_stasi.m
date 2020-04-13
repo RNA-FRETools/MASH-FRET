@@ -1,4 +1,4 @@
-function [MDL eff_fit] = discr_stasi(eff, maxN)
+function [MDL,eff_fit] = discr_stasi(eff, maxN, mute_action)
 %% The main function of the generalized change point algorithm
 % Input: 
 %       single 1D trace (eff) or multiple traces selected in dialog
@@ -16,24 +16,31 @@ function [MDL eff_fit] = discr_stasi(eff, maxN)
 %       records: structure, recording the analysis of each loaded trace,
 %   and also recording the location of each trace in the output eff
 %       excluded: structure, recording all the traces not being used
+%       mute_action: (1) to mute action display, (0) otherwise
 
 %% step 1: change-points detection
 % load each trace and detect change points
-disp('Student t test...');
+if ~mute_action
+    disp('STaSI: Student t test...');
+end
 N = numel(eff);
 sd = w1_noise(diff(eff))/1.4;% estimate the noise level
 points = change_point_detection(eff);% change points detection
 groups = [1, points+1; points, N];
 
 %% step 2 and 3: clustering the segments and calculate MDL
-disp('Grouping...');
+if ~mute_action
+    disp('STaSI: Grouping...');
+end
 [G, Ij, Tj] = clustering_GCP(eff, groups);
 G = G(end:-1:1);% flip the G
 n_mdl = min(maxN, numel(G));% calculate up to 30 states
 MDL = zeros(1,n_mdl);
 eff_fit = zeros(n_mdl, N);
 
-disp('Determining the optimum number of states...');
+if ~mute_action
+    disp('STaSI: Determining the optimum number of states...');
+end
 for i = 1:n_mdl;
     [MDL(i), eff_fit(i,:)] = MDL_piecewise(Ij, Tj, G(i), eff, groups, ...
         sd, N);

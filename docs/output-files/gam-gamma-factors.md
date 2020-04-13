@@ -22,7 +22,7 @@ Gamma factor files are ASCII files with the extension `.gam`. They are usually f
 
 ---
 
-The gamma factor files are written in an ASCII format and contains gamma factors of to correct all FRET-time traces in the project.
+The gamma factor files are written in an ASCII format and contains gamma factors to correct all FRET-time traces in the project.
 
 They are created in the `/trace_processing/parameters` analysis sub-folder after exporting .gam files from panel 
 [Sample management](../trace-processing/panels/panel-sample-management.html#export-processed-data)of module Trace processing.
@@ -45,6 +45,7 @@ By default, the file is named after the <u>project file</u> selected in
 FRET pair-specific gamma factors are organized column-wise with each column corresponding to a FRET pair, and row-wise by appending the same columns for each molecule.
 
 ```
+FRET1-2	FRET1-3	FRET2-3
 1.000	1.000	1.000
 0.825	1.000	0.900
 0.900	1.000	1.000
@@ -62,5 +63,5 @@ Gamma factor file can be imported:
 * along with ASCII traces in MASH's module
 [Trace processing](../trace-processing/workflow.html#import-single-molecule-data) by adjusting the 
 [Import options](../trace-processing/functionalities/set-import-options.html)
-* directly in panel 
-[Factor corrections](../trace-processing/panels/panel-factor-corrections.html#gamma-factor-settings)
+* after import from panel 
+[Factor corrections](../trace-processing/panels/panel-factor-corrections.html)

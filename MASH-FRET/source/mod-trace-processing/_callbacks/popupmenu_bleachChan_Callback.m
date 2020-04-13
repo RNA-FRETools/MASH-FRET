@@ -1,4 +1,5 @@
-function popupmenu_bleachChan_Callback(obj, evd, h)
+function popupmenu_bleachChan_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -8,7 +9,7 @@ if ~isempty(p.proj)
         val = get(obj, 'Value');
         p.proj{proj}.curr{mol}{2}{1}(3) = val;
         h.param.ttPr = p;
-        guidata(h.figure_MASH, h);
-        ud_bleach(h.figure_MASH);
+        guidata(h_fig, h);
+        ud_bleach(h_fig);
     end
 end

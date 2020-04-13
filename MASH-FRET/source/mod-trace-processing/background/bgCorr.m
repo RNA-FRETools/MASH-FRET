@@ -3,8 +3,8 @@ proj = p.curr_proj;
 nC = p.proj{proj}.nb_channel;
 
 isBgCorr = ~isempty(p.proj{proj}.intensities_bgCorr) && ...
-    prod(prod(prod(double(~isnan(p.proj{proj}.intensities_bgCorr(:, ...
-    ((mol-1)*nC+1):mol*nC,:))),1),2),3);
+    ~all(sum(sum(isnan(p.proj{proj}.intensities_bgCorr(:, ...
+    ((mol-1)*nC+1):mol*nC,:)),2),3));
 
 if ~isBgCorr
     isCoord = p.proj{proj}.is_coord;
@@ -110,7 +110,8 @@ if ~isBgCorr
                         coord_dark(coord_dark(:,2)>=max_y)=max_y-1;
                     end
                     p.proj{proj}.prm{mol}{3}{3}{l,c}(6,4:5) = coord_dark;
-                    [o,I_bg] = create_trace(coord_dark,aDim,nPix,fDat);
+                    [o,I_bg] = create_trace(coord_dark,aDim,nPix,fDat,...
+                        true);
                     I_bg = slideAve(I_bg(l:size(I,3):end,:), prm(1));
                     bg = I_bg(1:size(I,1));
                     

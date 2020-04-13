@@ -1,6 +1,6 @@
 % Choose from five different noise models for the camera SNR
 % characteristics
-function popupmenu_noiseType_Callback(obj, evd, h)
+function popupmenu_noiseType_Callback(obj, evd, h_fig)
 switch get(obj, 'Value')
     case 1 % Poisson or P-model from B�rner et al. 2017
         noiseType = 'poiss';
@@ -14,7 +14,8 @@ switch get(obj, 'Value')
         noiseType = 'hirsch';
 end
 
+h = guidata(h_fig);
 h.param.sim.noiseType = noiseType;
-guidata(h.figure_MASH, h);
+guidata(h_fig, h);
 
-updateFields(h.figure_MASH, 'sim');
+ud_S_vidParamPan(h_fig);
