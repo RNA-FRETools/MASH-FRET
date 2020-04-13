@@ -1,8 +1,6 @@
 function [data,ok] = readPma(fullFname, n, fDat, h_fig, useMov)
-% Read data from bits in a *.sira file. Returns useful movie parameters and
-% image data of all movie frames.
-%
-% Requires external functions: loading_bar, updateActPan.
+% Read data from a .pma file (adapted from LoadPMA.m function in Traces
+% software (https://github.com/stephlj/Traces/blob/master/tools/LoadPMA.m)
 
 % defaults
 data = [];
