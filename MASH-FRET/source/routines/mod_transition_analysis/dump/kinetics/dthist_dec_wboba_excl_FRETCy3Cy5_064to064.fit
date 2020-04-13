@@ -1,0 +1,24 @@
+equation: P0+a_1*exp(-(x-x0)/b_1)+a_2*exp(-(x-x0)/b_2)
+starting parameters:
+	parameter	lower	start	upper
+	a_1:	0	1	Inf
+	b_1(s):	0	1.000000e-01	Inf
+	a_2:	0	1.000000e-01	Inf
+	b_2(s):	0	5	Inf
+bootstrap parameters:
+	weighting: yes
+	number of samples: 5
+	number of replicates: 2
+fitting results (reference):
+	a_1:	8.900000e-02
+	b_1(s):	1.951000e+01
+	a_2:	9.450000e-01
+	b_2(s):	2.131000e+01
+fitting results (bootstrap):
+	parameter	mean	sigma
+	a_1:	8.900000e-02	0
+	b_1(s):	1.951000e+01	0
+	a_2:	9.450000e-01	0
+	b_2(s):	2.131000e+01	0
+
+

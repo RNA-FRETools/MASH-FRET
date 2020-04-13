@@ -1,0 +1,85 @@
+starting parameters:
+	method: k-mean clustering
+	constraint on clusters: matrix
+	diagonal clusters: yes
+	cluster shape: diagonal ellipsis
+	max. number of iterations: 5
+	bootstrapping: yes
+		number of samples: 3
+		number of replicates: 5
+	max. number of states: 4
+	state 1: 0, tolerance radius: 0.25
+	state 2: 0.33333, tolerance radius: 0.25
+	state 3: 0.66667, tolerance radius: 0.25
+	state 4: 1, tolerance radius: 0.25
+
+clustering results:
+	number of states in model: 4
+	bootstrapped number of states: 4.00 +/- 0.00
+	state 1: 0.14839, time fraction: 0.4328
+	state 2: 0.361, time fraction: 0.3888
+	state 3: 0.62249, time fraction: 0.0936
+	state 4: 0.73563, time fraction: 0.0848
+	cluster 1 (state 1 to 1), relative population: 0.022727
+	cluster 2 (state 1 to 2), relative population: 0.068182
+	cluster 3 (state 1 to 3), relative population: 0.068182
+	cluster 4 (state 1 to 4), relative population: 0.18182
+	cluster 5 (state 2 to 1), relative population: 0.045455
+	cluster 6 (state 2 to 2), relative population: 0.090909
+	cluster 7 (state 2 to 3), relative population: 0.11364
+	cluster 8 (state 2 to 4), relative population: 0
+	cluster 9 (state 3 to 1), relative population: 0.068182
+	cluster 10 (state 3 to 2), relative population: 0.13636
+	cluster 11 (state 3 to 3), relative population: 0
+	cluster 12 (state 3 to 4), relative population: 0
+	cluster 13 (state 4 to 1), relative population: 0.15909
+	cluster 14 (state 4 to 2), relative population: 0
+	cluster 15 (state 4 to 3), relative population: 0.022727
+	cluster 16 (state 4 to 4), relative population: 0.022727
+
+
+dwell-times(s)	m	m*	molecule	x(m)	y(m*)	s_i	s_j
+22	1.597148e-01	6.126795e-01	1	15	33	1	3
+6	6.126795e-01	1.597148e-01	1	33	15	3	1
+20	1.597148e-01	6.126795e-01	1	15	33	1	3
+2	6.126795e-01	1.597148e-01	1	33	15	3	1
+28	1.597148e-01	6.126795e-01	1	15	33	1	3
+32	6.126795e-01	1.597148e-01	1	33	15	3	1
+390	1.597148e-01	1.597148e-01	1	15	15	1	1
+14	3.384597e-01	4.512613e-01	2	22	27	2	2
+20	4.512613e-01	6.362839e-01	2	27	34	2	3
+22	6.362839e-01	3.384597e-01	2	34	22	3	2
+34	3.384597e-01	1.630159e-01	2	22	15	2	1
+58	1.630159e-01	3.384597e-01	2	15	22	1	2
+26	3.384597e-01	6.362839e-01	2	22	34	2	3
+20	6.362839e-01	4.512613e-01	2	34	27	3	2
+30	4.512613e-01	6.362839e-01	2	27	34	2	3
+34	6.362839e-01	4.512613e-01	2	34	27	3	2
+242	4.512613e-01	4.512613e-01	2	27	27	2	2
+46	1.223851e-01	2.979421e-01	3	13	20	1	2
+28	2.979421e-01	5.995512e-01	3	20	32	2	3
+22	5.995512e-01	2.979421e-01	3	32	20	3	2
+268	2.979421e-01	1.223851e-01	3	20	13	2	1
+68	1.223851e-01	2.979421e-01	3	13	20	1	2
+68	2.979421e-01	2.979421e-01	3	20	20	2	2
+2	2.109027e-01	7.316814e-01	4	17	38	1	4
+4	7.316814e-01	3.686941e-02	4	38	10	4	1
+294	3.686941e-02	7.316814e-01	4	10	38	1	4
+4	7.316814e-01	3.686941e-02	4	38	10	4	1
+80	3.686941e-02	7.316814e-01	4	10	38	1	4
+4	7.316814e-01	2.109027e-01	4	38	17	4	1
+4	2.109027e-01	7.316814e-01	4	17	38	1	4
+20	7.316814e-01	3.686941e-02	4	38	10	4	1
+10	3.686941e-02	7.316814e-01	4	10	38	1	4
+4	7.316814e-01	2.109027e-01	4	38	17	4	1
+2	2.109027e-01	7.316814e-01	4	17	38	1	4
+8	7.316814e-01	2.109027e-01	4	38	17	4	1
+38	2.109027e-01	7.316814e-01	4	17	38	1	4
+2	7.316814e-01	2.109027e-01	4	38	17	4	1
+20	2.109027e-01	7.316814e-01	4	17	38	1	4
+4	7.316814e-01	7.316814e-01	4	38	38	4	4
+162	7.691559e-01	6.514562e-01	5	39	35	4	3
+4	6.514562e-01	4.432918e-01	5	35	26	3	2
+16	4.432918e-01	6.514562e-01	5	26	35	2	3
+92	6.514562e-01	2.661224e-01	5	35	19	3	2
+226	2.661224e-01	2.661224e-01	5	19	19	2	2

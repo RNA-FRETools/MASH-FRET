@@ -1,0 +1,24 @@
+Thresholds (FRETCy3Cy5):	2.500000e-01	5.000000e-01	7.500000e-01:
+
+- population 1: from	-Inf	to	2.500000e-01
+- population 2: from	2.500000e-01	to	5.000000e-01
+- population 3: from	5.000000e-01	to	7.500000e-01
+- population 4: from	7.500000e-01	to	Inf
+
+Bootstraping parameters:
+- 5 samples
+- 5 replicates
+- weighting: yes
+
+Bootstrap mean (relative occurences):	4.551973e-01	3.482437e-01	1.571721e-01	3.938683e-02
+
+Bootstrap standard deviation (relative occurences):	1.145157e-01	8.314841e-02	3.854852e-02	3.474076e-02
+
+Bootstrap samples (relative occurences):
+
+sample	population 1	population 2	population 3	population 4	
+1	4.000000e-01	4.370968e-01	1.516129e-01	1.129032e-02	
+2	5.994741e-01	2.804557e-01	1.042945e-01	1.577564e-02	
+3	4.643755e-01	3.671417e-01	1.533948e-01	1.508801e-02	
+4	5.148833e-01	2.445696e-01	1.641191e-01	7.642800e-02	
+5	2.972536e-01	4.119548e-01	2.124394e-01	7.835218e-02	

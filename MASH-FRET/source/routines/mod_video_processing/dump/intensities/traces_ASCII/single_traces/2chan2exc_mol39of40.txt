@@ -1,0 +1,39 @@
+creation date: 02-Apr-2020 21:53:29
+MASH-FRET version: 1.1.2 (prev. commit: d751a5f)
+movie file: C:\MASH-FRET\MASH-FRET\source\routines\mod_video_processing\assets\2020.sira
+coordinates file: C:\MASH-FRET\MASH-FRET\source\routines\mod_video_processing\assets\2020_2chan.coord
+number of channels: 2
+excitation wavelengths: 357.00 nm	434.00 nm	
+frame rate: 10 fps 
+integration area: 5 x 5
+number of brightest pixels: 8
+experimental parameters: 
+	Project title: test_2chan2exc
+	Molecule: none
+	[Mg2+]: 42 mM
+	[K+]: 150 mM
+	Power(357nm): 95 mW
+	Power(434nm): 66 mW
+	buffer: 1
+coordinates:		21.50,236.50	149.50,236.50
+time(s)	frames	I_1(a.u.)	I_2(a.u.)
+1.000000e-01	1	2127	2099
+2.000000e-01	2	1044	7151
+3.000000e-01	3	2539	1949
+4.000000e-01	4	1242	4860
+5.000000e-01	5	2668	1981
+6.000000e-01	6	1242	5473
+7.000000e-01	7	2723	2178
+8.000000e-01	8	1185	5685
+9.000000e-01	9	2577	1788
+1	10	1049	4901
+1.100000e+00	11	2504	2207
+1.200000e+00	12	1170	5188
+1.300000e+00	13	2582	2017
+1.400000e+00	14	1071	6284
+1.500000e+00	15	2625	1730
+1.600000e+00	16	1093	7066
+1.700000e+00	17	2614	1782
+1.800000e+00	18	1125	6251
+1.900000e+00	19	2667	2137
+2	20	1038	5522

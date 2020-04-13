@@ -1,0 +1,21 @@
+equation: P0+a*exp(-((x-x0)/b)^c)
+starting parameters:
+	parameter	lower	start	upper
+	a:	0	1	Inf
+	b(s):	0	1.000000e-01	Inf
+	c:	0	5.000000e-01	2
+bootstrap parameters:
+	weighting: yes
+	number of samples: 5
+	number of replicates: 2
+fitting results (reference):
+	a:	9.511505e-01
+	b(s):	2.150005e+01
+	c:	2.000000e+00
+fitting results (bootstrap):
+	parameter	mean	sigma
+	a:	9.511505e-01	0
+	b(s):	2.150005e+01	0
+	c:	2.000000e+00	0
+
+

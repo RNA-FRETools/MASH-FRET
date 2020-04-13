@@ -1,0 +1,69 @@
+PROJECT
+> project file: C:\MASH-FRET\MASH-FRET\source\routines\mod_trace_processing\assets\2chan2exc.mash
+> project created with MASH-FRET version: 1.1.2 (prev. commit: 4dc0a5d)
+> project creation: 13-Feb-2020 01:34:28
+> last project modification: 12-Mar-2020 09:27:58
+> file exported with MASH-FRET version: 1.1.2 (prev. commit: 7e4aa18)
+
+VIDEO PROCESSING
+> movie file: C:\MASH-FRET\MASH-FRET\source\routines\mod_video_processing\assets\2020.sira
+> frame rate: 10 s-1 
+> pixel integration area: 5 x 5
+> number of brightest pixels integrated: 8
+> coordinates file: C:\MASH-FRET\MASH-FRET\source\routines\mod_video_processing\assets\2020_2chan.coord
+
+EXPERIMENT SETTINGS
+> alternated lasers used in experiment (chronological order):
+	274nm
+	335nm
+> emitter-specific detection channels and illuminations:
+	don(channel 1) at 274nm
+	acc1(channel 2) at 335nm
+> experimental parameters:
+	Project title:test_2chan2exc
+	Molecule:none
+	[Mg2+]:53mM
+	[K+]:159mM
+	Power(274nm):5mW
+	Power(335nm):0mW
+	buffer:1
+> FRET calculations:
+	from don to acc1
+> stoichiometry calculations:
+	for pair don-acc1
+
+MOLECULE
+> molecule index: 4 on 10 (4 on 10 exported)
+> molecule tags:none
+> molecule coordinates: 
+	in don channel: 16.5,40.5
+	in acc1 channel: 144.5,40.5
+> intensity units: counts per second per pixel
+> background correction: 
+	don at 274nm: , BG intensity: 3649.9048 (method: "<N median values>", sub-image dimensions: 20 px)
+	acc1 at 274nm: , BG intensity: 1665.9524 (method: "<N median values>", sub-image dimensions: 20 px)
+	don at 335nm: , BG intensity: 1482.4762 (method: "<N median values>", sub-image dimensions: 20 px)
+	acc1 at 335nm: , BG intensity: 1945.7619 (method: "<N median values>", sub-image dimensions: 20 px)
+> factor corrections: 
+	bleedthrough coefficients of emitter don: Bt=0.07 in acc1
+	bleedthrough coefficients of emitter acc1: Bt=0 in don
+	direct excitation coefficients of emitter don: DE=0 at 335nm
+	direct excitation coefficients of emitter acc1: DE=0.02 at 274nm
+	correction factors for FRET_don>acc1: gamma=1, beta=1
+> denoising: none
+> photobleaching correction: none
+> discretisation: method "CPA" applied to bottom traces with parameters:
+	for FRET don>acc1: number of bootstrap samples: 50, significance level: 0, identify changes by: "MSE", number of refinment cycles: 0, state binning: 0, remove blurr states: 0
+	for S don>acc1: number of bootstrap samples: 50, significance level: 0, identify changes by: "MSE", number of refinment cycles: 0, state binning: 0, remove blurr states: 0
+
+time at 274nm	frame at 274nm	I_1 at 274nm(counts)	I_2 at 274nm(counts)	time at 335nm	frame at 335nm	I_1 at 335nm(counts)	I_2 at 335nm(counts)	time at 274nm	frame at 274nm	FRET_1>2	discr.FRET_1>2	time at 274nm	frame at 274nm	S_1>2	discr.S_1>2	
+1.000000e-01	1	2.916076e+03	9.115364e+00	2.000000e-01	2	-6.398096e+01	4.986917e+01	1.000000e-01	1	3.116160e-03	3.116160e-03	1.000000e-01	1	9.832376e-01	9.832376e-01	
+3.000000e-01	3	4.427076e+03	1.207934e+02	4.000000e-01	4	-4.398096e+01	1.274692e+02	3.000000e-01	3	2.656043e-02	2.656043e-02	3.000000e-01	3	9.727358e-01	9.727358e-01	
+5.000000e-01	5	3.384076e+03	6.872496e+01	6.000000e-01	6	1.000190e+02	-6.861083e+01	5.000000e-01	5	1.990412e-02	1.990412e-02	5.000000e-01	5	1.020274e+00	1.020274e+00	
+7.000000e-01	7	3.256076e+03	4.935622e+02	8.000000e-01	8	9.801904e+01	-1.247083e+01	7.000000e-01	7	1.316293e-01	1.316293e-01	7.000000e-01	7	1.003337e+00	1.003337e+00	
+9.000000e-01	9	3.387076e+03	3.047176e+02	1	10	-4.098096e+01	2.125917e+01	9.000000e-01	9	8.253916e-02	8.253916e-02	9.000000e-01	9	9.942745e-01	9.942745e-01	
+1.100000e+00	11	5.210076e+03	-5.563644e+01	1.200000e+00	12	-9.809628e-01	8.459170e+00	1.100000e+00	11	-1.079389e-02	-1.079389e-02	1.100000e+00	11	9.983615e-01	9.983615e-01	
+1.300000e+00	13	3.431076e+03	-7.282624e+01	1.400000e+00	14	1.420190e+02	1.444492e+02	1.300000e+00	13	-2.168577e-02	-2.168577e-02	1.300000e+00	13	9.587606e-01	9.587606e-01	
+1.500000e+00	15	3.429076e+03	4.427314e+02	1.600000e+00	16	2.601904e+01	-7.643083e+01	1.500000e+00	15	1.143475e-01	1.143475e-01	1.500000e+00	15	1.020138e+00	1.020138e+00	
+1.700000e+00	17	4.088076e+03	3.312474e+02	1.800000e+00	18	2.160190e+02	4.126917e+01	1.700000e+00	17	7.495431e-02	7.495431e-02	1.700000e+00	17	9.907481e-01	9.907481e-01	
+1.900000e+00	19	4.123076e+03	1.553450e+02	2	20	5.001904e+01	3.138892e+02	1.900000e+00	19	3.630895e-02	3.630895e-02	1.900000e+00	19	9.316490e-01	9.316490e-01	

@@ -1,0 +1,69 @@
+PROJECT
+> project file: C:\MASH-FRET\MASH-FRET\source\routines\mod_trace_processing\assets\2chan2exc.mash
+> project created with MASH-FRET version: 1.1.2 (prev. commit: 4dc0a5d)
+> project creation: 13-Feb-2020 01:34:28
+> last project modification: 12-Mar-2020 09:27:58
+> file exported with MASH-FRET version: 1.1.2 (prev. commit: 7e4aa18)
+
+VIDEO PROCESSING
+> movie file: C:\MASH-FRET\MASH-FRET\source\routines\mod_video_processing\assets\2020.sira
+> frame rate: 10 s-1 
+> pixel integration area: 5 x 5
+> number of brightest pixels integrated: 8
+> coordinates file: C:\MASH-FRET\MASH-FRET\source\routines\mod_video_processing\assets\2020_2chan.coord
+
+EXPERIMENT SETTINGS
+> alternated lasers used in experiment (chronological order):
+	274nm
+	335nm
+> emitter-specific detection channels and illuminations:
+	don(channel 1) at 274nm
+	acc1(channel 2) at 335nm
+> experimental parameters:
+	Project title:test_2chan2exc
+	Molecule:none
+	[Mg2+]:53mM
+	[K+]:159mM
+	Power(274nm):5mW
+	Power(335nm):0mW
+	buffer:1
+> FRET calculations:
+	from don to acc1
+> stoichiometry calculations:
+	for pair don-acc1
+
+MOLECULE
+> molecule index: 7 on 10 (7 on 10 exported)
+> molecule tags:none
+> molecule coordinates: 
+	in don channel: 37.5,202.5
+	in acc1 channel: 165.5,202.5
+> intensity units: counts per second per pixel
+> background correction: 
+	don at 274nm: , BG intensity: 3108.8095 (method: "<N median values>", sub-image dimensions: 20 px)
+	acc1 at 274nm: , BG intensity: 1454.6667 (method: "<N median values>", sub-image dimensions: 20 px)
+	don at 335nm: , BG intensity: 1446.5238 (method: "<N median values>", sub-image dimensions: 20 px)
+	acc1 at 335nm: , BG intensity: 1686.2857 (method: "<N median values>", sub-image dimensions: 20 px)
+> factor corrections: 
+	bleedthrough coefficients of emitter don: Bt=0.07 in acc1
+	bleedthrough coefficients of emitter acc1: Bt=0 in don
+	direct excitation coefficients of emitter don: DE=0 at 335nm
+	direct excitation coefficients of emitter acc1: DE=0.02 at 274nm
+	correction factors for FRET_don>acc1: gamma=1, beta=1
+> denoising: none
+> photobleaching correction: none
+> discretisation: method "CPA" applied to bottom traces with parameters:
+	for FRET don>acc1: number of bootstrap samples: 50, significance level: 0, identify changes by: "MSE", number of refinment cycles: 0, state binning: 0, remove blurr states: 0
+	for S don>acc1: number of bootstrap samples: 50, significance level: 0, identify changes by: "MSE", number of refinment cycles: 0, state binning: 0, remove blurr states: 0
+
+time at 274nm	frame at 274nm	I_1 at 274nm(counts)	I_2 at 274nm(counts)	time at 335nm	frame at 335nm	I_1 at 335nm(counts)	I_2 at 335nm(counts)	
+1.000000e-01	1	5.942952e+03	-4.405544e+02	2.000000e-01	2	-3.921904e+01	-9.283235e+00	
+3.000000e-01	3	4.895952e+03	-2.851518e+02	4.000000e-01	4	-3.021904e+01	4.350868e+02	
+5.000000e-01	5	5.352952e+03	-2.792652e+02	6.000000e-01	6	3.878096e+01	2.912568e+02	
+7.000000e-01	7	5.781952e+03	-3.929286e+02	8.000000e-01	8	1.577810e+02	4.229268e+02	
+9.000000e-01	9	4.609952e+03	-1.137278e+02	1	10	-7.021904e+01	2.148868e+02	
+1.100000e+00	11	5.523952e+03	-2.066428e+02	1.200000e+00	12	4.780959e+00	3.616368e+02	
+1.300000e+00	13	5.570952e+03	-4.411746e+02	1.400000e+00	14	1.778096e+01	2.237268e+02	
+1.500000e+00	15	5.190952e+03	-3.401278e+02	1.600000e+00	16	-2.021904e+01	3.013868e+02	
+1.700000e+00	17	4.965952e+03	-3.425316e+02	1.800000e+00	18	-1.872190e+02	2.090768e+02	
+1.900000e+00	19	6.029952e+03	-2.491812e+02	2	20	-5.121904e+01	5.175568e+02	
