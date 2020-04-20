@@ -67,7 +67,9 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
     chanExc = p.proj{i}.chanExc;
     nFRET = size(p.proj{i}.FRET,1);
     nS = size(p.proj{i}.S,1);
-    nTpe = 2*nChan*nExc + 2*nFRET + 2*nS;
+    em0 = find(chanExc~=0);
+    nDE = numel(em0);
+    nTpe = 2*nChan*nExc + nDE + 2*nFRET + 2*nS;
     I = p.proj{i}.intensities_denoise;
     I_discr = p.proj{i}.intensities_DTA;
     incl = p.proj{i}.coord_incl;
@@ -75,7 +77,7 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
     FRET_discr = p.proj{i}.FRET_DTA;
     S = p.proj{i}.S;
     S_discr = p.proj{i}.S_DTA;
-    N = size(I,1); nMol = size(I,2)/nChan;
+    L = size(I,1); N = size(I,2)/nChan;
 
     if ~isfield(p.proj{i}, 'prmThm')
         p.proj{i}.prm = cell(1,nTpe);
@@ -93,12 +95,19 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
 
     % project was not processed in Trace processing
     if ~isfield(p.proj{i},'prmTT')
-        p.proj{i}.prmTT = cell(1,nMol);
+        p.proj{i}.prmTT = cell(1,N);
         I = p.proj{i}.intensities;
     end
 
     if nTpe>size(prm,2)
-        prm = cell(1,nTpe);
+        if size(prm,2)==(nTpe-nDE)
+            prm_new = cell(1,nTpe);
+            prm_new([1:(2*nChan*nExc),(2*nChan*nExc+2*nDE+1):end]) = prm;
+            prm = prm_new;
+            clear prm_new;
+        else
+            prm = cell(1,nTpe);
+        end
     end
 
     for tpe = 1:nTpe
@@ -115,17 +124,35 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
             i_c = mod(tpe-nChan*nExc,nChan); i_c(i_c==0) = nChan;
             i_l = ceil((tpe-nChan*nExc)/nChan);
             trace = I_discr(:,i_c:nChan:end,i_l);
+            
+        elseif tpe <= (2*nChan*nExc + nDE) % total intensity
+            id = tpe - 2*nChan*nExc;
+            trace = [];
+            l0 = allExc==chanExc(em0(id));
+            for n = 1:N
+                trace = cat(2,trace,...
+                    sum(I(:,((n-1)*nChan+1):(n*nChan),l0),2));
+            end
+            
+        elseif tpe <= (2*nChan*nExc + 2*nDE) % total discr. intensity
+            id = tpe - 2*nChan*nExc - nDE;
+            trace = [];
+            l0 = allExc==chanExc(em0(id));
+            for n = 1:N
+                trace = cat(2,trace,...
+                    sum(I_discr(:,((n-1)*nChan+1):(n*nChan),l0),2));
+            end
 
-        elseif tpe <= 2*nChan*nExc+nFRET % FRET
-            I_re = nan(N*nMol,nChan,nExc);
+        elseif tpe <= (2*nChan*nExc + 2*nDE + nFRET) % FRET
+            I_re = nan(L*N,nChan,nExc);
             for c = 1:nChan
                 I_re(:,c,:) = reshape(I(:,c:nChan:end,:), ...
-                    [nMol*N 1 nExc]);
+                    [N*L 1 nExc]);
             end
-            i_f = tpe - 2*nChan*nExc;
+            i_f = tpe - 2*nChan*nExc - 2*nDE;
 
             gammas = [];
-            for i_m = 1:nMol
+            for i_m = 1:N
                 if size(p.proj{i}.prmTT{i_m},2)==5 && ...
                         size(p.proj{i}.prmTT{i_m}{5},2)==5
                     gamma_m = p.proj{i}.prmTT{i_m}{5}{3};
@@ -136,34 +163,34 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
                 else
                     gamma_m = ones(1,nFRET);
                 end
-                gammas = [gammas; repmat(gamma_m,N,1)];
+                gammas = [gammas; repmat(gamma_m,L,1)];
             end
             allFRET = calcFRET(nChan, nExc, allExc, chanExc, FRET, ...
                 I_re, gammas);
             trace = allFRET(:,i_f);
-            trace = reshape(trace, [N nMol]);
+            trace = reshape(trace, [L N]);
 
             % current data is an intensity ratio
             isratio = 1;
 
-        elseif tpe <= 2*nChan*nExc+2*nFRET % FRET
-            i_f = tpe - 2*nChan*nExc - nFRET;
+        elseif tpe <= (2*nChan*nExc + 2*nDE + 2*nFRET) % FRET
+            i_f = tpe - 2*nChan*nExc - 2*nDE - nFRET;
             trace = FRET_discr(:,i_f:nFRET:end);
 
             % current data is an intensity ratio
             isratio = 1;
 
-        elseif tpe <= 2*nChan*nExc + 2*nFRET + nS % Stoichiometry
-            I_re = nan(N*nMol,nChan,nExc);
+        elseif tpe <= (2*nChan*nExc + 2*nDE + 2*nFRET+nS) % Stoichiometry
+            I_re = nan(L*N,nChan,nExc);
             for c = 1:nChan
                 I_re(:,c,:) = reshape(I(:,c:nChan:end,:), ...
-                    [nMol*N 1 nExc]);
+                    [N*L 1 nExc]);
             end
-            i_s = tpe - 2*nChan*nExc - 2*nFRET;
+            i_s = tpe - 2*nChan*nExc - 2*nDE - 2*nFRET;
 
             gammas = [];
             betas = [];
-            for i_m = 1:nMol
+            for i_m = 1:N
                 if size(p.proj{i}.prmTT{i_m},2)==5 && ...
                         size(p.proj{i}.prmTT{i_m}{5},2)==5
                     gamma_m = p.proj{i}.prmTT{i_m}{5}{3};
@@ -177,18 +204,18 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
                     gamma_m = ones(1,nFRET);
                     beta_m = ones(1,nFRET);
                 end
-                gammas = [gammas; repmat(gamma_m,N,1)];
-                betas = [betas; repmat(beta_m,N,1)];
+                gammas = [gammas; repmat(gamma_m,L,1)];
+                betas = [betas; repmat(beta_m,L,1)];
             end
             allS = calcS(allExc, chanExc, S, FRET, I_re, gammas, betas);
             trace = allS(:,i_s);
-            trace = reshape(trace, [N nMol]);
+            trace = reshape(trace, [L N]);
 
             % current data is an intensity ratio
             isratio = 1;
 
-        elseif tpe <= 2*nChan*nExc + 2*nFRET + 2*nS % Stoichiometry
-            i_s = tpe - 2*nChan*nExc - 2*nFRET - nS;
+        elseif tpe <= (2*nChan*nExc + 2*nDE + 2*nFRET + 2*nS) % Stoichiometry
+            i_s = tpe - 2*nChan*nExc - 2*nDE - 2*nFRET - nS;
             trace = S_discr(:,i_s:nS:end);
 
             % current data is an intensity ratio
