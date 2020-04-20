@@ -1,6 +1,6 @@
 ---
 layout: default
-title: (*.pdf) Histogram analysis figures
+title: (*.pdf) Histogram analysis bootstrap plots
 parent: /output-files.html
 nav_order: 22
 nav_exclude: 1
@@ -8,10 +8,10 @@ nav_exclude: 1
 
 <img src="../assets/images/logos/logo-output-files_400px.png" width="170" style="float:right; margin-left: 15px;"/>
 
-# Histogram analysis figure files
+# Histogram analysis bootstrap plots
 {: .no_toc }
 
-Histogram analysis figure files are PDF files with the extension `.pdf`. They are usually found in the main`/histogram_analysis` folder.
+Histogram analysis bootstrap plots files are PDF files with the extension `.pdf`. They are usually found in the main`/histogram_analysis` folder.
 
 ## Table of contents
 {: .no_toc .text-delta }
@@ -24,7 +24,7 @@ Histogram analysis figure files are PDF files with the extension `.pdf`. They ar
 
 ## Description
 
-Histogram analysis figure files are data-specific and contain bootstrap histogram and corresponding state populations.
+Histogram analysis bootstrap plots files are data-specific and contain bootstrap histogram and corresponding state populations.
 
 They are created in the `/histogram_analysis` analysis sub-folder after state population analysis combined with BOBA-FRET and when exporting results from the 
 [Project management](../histogram-analysis/panels/area-management.html#export-analysis-results) area of module Histogram analysis.
@@ -44,6 +44,7 @@ By default, the file is named after the <u>project file</u> loaded in
 
 Data types supported in state population files are:
 * `I[i]-[L]`: intensities in detection channel indexed `[i]` upon illumination with laser wavelength `[L]` nm
+* `total[i]-[L]`: summed intensities upon illumination with laser wavelength `[L]` nm (donor in detection channel indexed `[i]` in absence of acceptor)
 * `FRET[D]to[A]`: FRET from donor emitter detected in channel indexed `[D]` to acceptor emitter detected in channel indexed `[A]`
 * `S[D]to[A]`: stoichiometry associated to donor emitter detected in channel indexed `[D]` and acceptor emitter detected in channel indexed `[A]`
 
@@ -55,7 +56,7 @@ A second extension `_discr` is added when state populations determined from stat
 
 ## Structure
 
-Histogram analysis figure files contain plots of the bootstrap histogram samples and corresponding state populations.
+Histogram analysis bootstrap plots files contain plots of the bootstrap histogram samples and corresponding state populations.
 State populations are presented according to the chosen calculation method.
 
 For population calculated with thresholding, threshold positions are indicated by black vertical lines and each state population is colored in a different color such as:

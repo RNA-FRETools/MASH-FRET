@@ -39,38 +39,64 @@ Sequences are started by randomly drawing a FRET value from the pre-defined stat
 
 with 
 [*&#960;*<sub>*j*</sub>](){: .math_var } the probability to start a chain in state 
-[*j*](){: .math_var }, and with
-
-{: .equation }
-![\Pi_{n}=\begin{pmatrix}\pi_{1}\\ \pi_{2}\\ ...\\ \pi_{n}\end{pmatrix}](../assets/images/equations/sim-eq-transition-probability-06.gif "Initial state probabilities")
+[*j*](){: .math_var }.
 
 Considering a population of unsynchronized molecules, the probability 
 [*&#960;*<sub>*j*</sub>](){: .math_var } is the probability to be in state 
 [*j*](){: .math_var } at a random time of the process, obtained by solving the equation system:
 
 {: .equation }
-![\textup{P}\Pi=\Pi](../assets/images/equations/sim-eq-transition-probability-03.gif "Overall state probability")
+![\textup{P}{\Pi}' = \lambda{\Pi}'](../assets/images/equations/sim-eq-transition-probability-03.gif "Overall state probability")
 
-with 
-[P](){: .math_var } the transition probability matrix described such as:
-
-{: .equation }
-![\textup{P}=\begin{pmatrix}p_{1,1} & p_{1,2} & ... & p_{1,n}\\ p_{2,1} & p_{2,2} & ... & p_{2,n}\\ ... & ...& ...& ... \\p_{n,1} & p_{n,2} & ... & p_{n,n}\end{pmatrix}](../assets/images/equations/sim-eq-transition-probability-04.gif "Transition probability matrix")
-
-This approach comes down to browsing an infinitely long chain and stop at random positions to choose the state to start with. 
-Therefore, it is only valid for circular networks of states, meaning with no discontinuity in folding kinetics like kinetic traps or other irreversible sudden changes in folding dynamics.
-
-In MASH-FRET, transition probabilities are expressed in function of transition rate coefficients 
-[*k*<sub>*jj'*</sub>](){: .math_var } given in second<sup>-1</sup> and the exposure time per frame
-[*t*<sub>exp</sub>](){: .math_var } given in second, with off-diagonal terms calculated as:
+where 
+[&#928;'](){: .math_var } is the non-normalized initial state probability vector, 
+[*&#955;*](){: math_var } is the eigenvalue associated to 
+[&#928;'](){: .math_var }, and 
+[P](){: .math_var } is the transition probability matrix described such as:
 
 {: .equation }
-![p_{jj'}=k_{jj'}\times t_{\textup{exp}}](../assets/images/equations/sim-eq-transition-probability-01.gif "Off-diagonal transition probabilities")
+![\textup{P}=\begin{pmatrix}p_{1,1} & p_{1,2} & ... & p_{1,n}\\ p_{2,1} & p_{2,2} & ... & p_{2,n}\\ \vdots & \vdots & \ddots  & \vdots  \\p_{n,1} & p_{n,2} & ... & p_{n,n}\end{pmatrix}](../assets/images/equations/sim-eq-transition-probability-04.gif "Transition probability matrix")
 
-and diagonal terms, such as:
+Initial state probabilities are then normalized by the sum, such as:
 
 {: .equation }
-![p_{jj}=1-\sum_{j'\neq j}\left( k_{jj'}\times t_{\textup{exp}}\right )](../assets/images/equations/sim-eq-transition-probability-02.gif "Diagonal transition probabilities")
+![\pi_{j}=\frac{\pi_{j}'}{\sum_{j'}\left(\pi_{j'}' \right )}](../assets/images/equations/sim-eq-transition-probability-06.gif "Initial state probabilities")
+
+
+This approach comes down to segmenting an infinitely long chain at a random position. 
+Therefore, it is only valid for chains that complete there cycles within an observation time, meaning with no discontinuity in folding kinetics like kinetic traps or other sudden changes in folding dynamics.
+For such limiting cases, transition probabilities must be pre-defined; see 
+[Remarks](#remarks) for details.
+
+In MASH-FRET, off-diagonal transition probabilities are calculated from dwell times 
+[&#916;*t*<sub>*jj'*</sub>](){: .math_var } given in second, 
+the repartition factors
+[*w*<sub>*jj'*</sub>](){: .math_var } of transitions from state 
+[*j*](){: .math_var }, and the exposure time per frame
+[*t*<sub>exp</sub>](){: .math_var } given in second, such as:
+
+{: .equation }
+![p_{jj'}=\frac{t_{\textup{exp}}}{\Delta t_{jj'}} \times w_{jj'}](../assets/images/equations/sim-eq-transition-probability-01.gif "Off-diagonal transition probabilities")
+
+The repartition factor 
+[*w*<sub>*jj'*</sub>](){: .math_var }
+is simply the proportion of transitions from state 
+[*j*](){: .math_var } to state 
+[*j'*](){: .math_var } among all transitions occurring from state 
+[*j*](){: .math_var }. 
+It can be expressed in number of state transitions 
+[*N*<sub>*jj'*</sub>](){: .math_var} such as:
+
+{: .equation }
+![w_{jj{'}} = \frac{N_{jj{'}}}{\sum_{k \neq j} N_{jk}}](../assets/images/equations/sim-eq-transition-probability-08.gif "Transition repartition factor")
+
+Repartition factors can be set via preset parameter files (by default, factors are set to uniform values); see 
+[Remarks](#remarks) for more details.
+
+Diagonal terms are calculated from off-diagonal probabilities such as:
+
+{: .equation }
+![p_{jj}=1-\sum_{j'\neq j} p_{jj'}](../assets/images/equations/sim-eq-transition-probability-02.gif "Diagonal transition probabilities")
 
 FRET state sequences are elongated by randomly drawing a next FRET value using the normalized off-diagonal transition probabilities 
 [*p*<sub>*jj'*</sub>](){: .math_var } such as:
@@ -191,7 +217,7 @@ To export data to files:
 ## Remarks
 {: .no_toc }
 
-To bypass the limitations of the user interface and work with more than five states or set parameters for individual molecules, some parameters can be set by loading external files; see 
+To bypass the limitations of the user interface and (1), work with more than five states, (2), set pre-defined initial state probabilities and/or transition repartition factors, or (3), set parameters for individual molecules, simulation parameters can be loaded from external files; see 
 [Pre-set parameters](panels/panel-molecules.html#pre-set-parameters) for more information.
 
 Updating intensity data and writing SMVs to files can be relatively time consuming depending on which camera characteristics are chosen; see 

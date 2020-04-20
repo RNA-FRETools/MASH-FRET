@@ -14,9 +14,4 @@ MASH-FRET additionally requires the following MATLAB toolboxes:
 - Statistics and Machine Learning Toolbox
 - Curve Fitting Toolbox
 
-Add MASH-FRET to your path by going to `Home → Set Path → Add with Subfolders`
-
-To check whether these toolboxes are installed on your system, run the following line from the MATLAB command prompt
-```
-check_dependencies('analysis')
-```
+To check whether these toolboxes are installed on your system, go to MASH-FRET's menu `Tools → Check toolbox dependencies` and run the `Analysis mode`.

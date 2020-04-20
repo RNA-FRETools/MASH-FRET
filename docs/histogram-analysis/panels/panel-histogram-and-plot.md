@@ -34,6 +34,8 @@ Supported data are:
 
 * intensities from time traces
 * intensities from states trajectories (`discr.`)
+* donor intensities in absence of acceptor from time traces (`total`)
+* donor intensities in absence of acceptor from states trajectories (`discr.`total)
 * FRET from time traces (`FRET`)
 * FRET from states trajectories (`discr. FRET`)
 * stoichiometries from time traces (`S`)

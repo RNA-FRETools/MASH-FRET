@@ -217,6 +217,7 @@ To truncate trajectories at photobleaching:
    [Sample management](../../trace-processing/panels/panel-sample-management.html) to process all molecules in the project and visualize truncated trajectories
    
 To automatically calculate gamma and beta factors (if you are working without FRET calculations, ignore this step):
+
 {: .procedure }
 1. For each FRET pair listed in the 
    [FRET pair list](../../trace-processing/panels/panel-factor-corrections.html#fret-pair-list) in 
@@ -227,7 +228,7 @@ To automatically calculate gamma and beta factors (if you are working without FR
    <u>default</u>: in 
    [ES linear regression](../../trace-processing/panels/panel-factor-corrections.html#es-linear-regression), **(b)** to `All molecules`, **(c)** to -0.2, **(d)** to 50, **(e)** to 1.2, **(f)** to 1, **(g)** to 50, **(h)** to 3
      
-    and press  
+    and press 
    ![refresh calculations](../../assets/images/gui/TP-but-refresh-calculations.png "refresh calculations") to calculate the ES histogram and perform linear regression, and 
    ![Save and close](../../assets/images/gui/TP-but-save-and-close.png "Save and close") to save settings  
      
