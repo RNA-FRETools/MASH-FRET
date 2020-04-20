@@ -56,12 +56,14 @@ if ~isfield(prm,'clst_start')
 end
 
 % check presence of fit
-if ~(size(prm.kin_res,2)>=2 && sum(~cellfun('isempty',prm.kin_res(:,2))))
+if ~(isfield(prm,'kin_res') && size(prm.kin_res,2)>=2 && ...
+        sum(~cellfun('isempty',prm.kin_res(:,2))))
     kinFit = false;
 end
 
 % check presence of boba fit
-if ~(size(prm.kin_res,2)>=5 && sum(~cellfun('isempty',prm.kin_res(:,5))))
+if ~(isfield(prm,'kin_res') && size(prm.kin_res,2)>=5 && ...
+        sum(~cellfun('isempty',prm.kin_res(:,5))))
     kinBoba = false;
     bobaFig = false;
 end

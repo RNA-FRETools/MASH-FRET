@@ -12,6 +12,9 @@ S = p.proj{proj}.S;
 exc = p.proj{proj}.excitations;
 nExc = numel(exc);
 nChan = p.proj{proj}.nb_channel;
+chanExc = p.proj{proj}.chanExc;
+em0 = find(chanExc~=0);
+nDE = numel(em0);
 nFRET = size(FRET,1);
 nS = size(S,1);
 perSec = p.proj{proj}.cnt_p_sec;
@@ -43,7 +46,7 @@ end
 
 x_bin = prm.plot{1}(1,1);
 x_lim = prm.plot{1}(1,2:3);
-isInt = tpe <= 2*nChan*nExc;
+isInt = tpe <= (2*nChan*nExc + 2*nDE);
 if isInt % intensities
     if perSec
         x_bin = x_bin/expT;
@@ -70,6 +73,15 @@ for l = 1:nExc
     for c = 1:nChan
         str_pop = [str_pop ['discr. ' labels{c} ' at ' num2str(exc(l)) 'nm']];
     end
+end
+for em = em0
+    exc0 = chanExc(em);
+    str_pop = [str_pop ['total ' labels{em} ' at ' num2str(exc0) 'nm']];
+end
+for em = em0
+    exc0 = chanExc(em);
+    str_pop = [str_pop ['discr. total ' labels{em} ' at ' num2str(exc0) ...
+        'nm']];
 end
 for n = 1:nFRET
     str_pop = [str_pop ['FRET ' labels{FRET(n,1)} '>' labels{FRET(n,2)}]];
