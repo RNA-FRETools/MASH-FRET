@@ -69,7 +69,7 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
     nS = size(p.proj{i}.S,1);
     em0 = find(chanExc~=0);
     nDE = numel(em0);
-    nTpe = 2*nChan*nExc + nDE + 2*nFRET + 2*nS;
+    nTpe = 2*nChan*nExc + 2*nDE + 2*nFRET + 2*nS;
     I = p.proj{i}.intensities_denoise;
     I_discr = p.proj{i}.intensities_DTA;
     incl = p.proj{i}.coord_incl;
@@ -100,7 +100,7 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
     end
 
     if nTpe>size(prm,2)
-        if size(prm,2)==(nTpe-nDE)
+        if size(prm,2)==(nTpe-2*nDE)
             prm_new = cell(1,nTpe);
             prm_new([1:(2*nChan*nExc),(2*nChan*nExc+2*nDE+1):end]) = prm;
             prm = prm_new;
