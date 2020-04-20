@@ -64,9 +64,12 @@ switch action
         set(h.TTzoom, 'Enable', 'off')
         set(h.zMenu_zoom, 'Checked', 'off');
         
+        ud = get(h.axes_TDPplot1,'userdata');
+        delete(ud{1});
+        
         % reset cluster selection tool
-        set(h.tooglebutton_TDPmanStart,'userdata',0);
-        ud_selectToolPan(h_fig)
+        set(h.tooglebutton_TDPmanStart,'userdata',1);
+        ud_clustersPan(h_fig)
         
     case 'zoom'
         set(h.TTpan, 'Enable', 'off')
@@ -74,7 +77,10 @@ switch action
         set(h.TTzoom, 'Enable', 'on')
         set(h.zMenu_zoom, 'Checked', 'on');
         
+        ud = get(h.axes_TDPplot1,'userdata');
+        delete(ud{1});
+        
         % reset cluster selection tool
-        set(h.tooglebutton_TDPmanStart,'userdata',0);
-        ud_selectToolPan(h_fig)
+        set(h.tooglebutton_TDPmanStart,'userdata',1);
+        ud_clustersPan(h_fig)
 end
