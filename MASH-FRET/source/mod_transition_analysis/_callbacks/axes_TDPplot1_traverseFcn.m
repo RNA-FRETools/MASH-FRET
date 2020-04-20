@@ -16,13 +16,14 @@ end
 set(h_fig,'pointer','crosshair');
 
 ud = get(h.axes_TDPplot1,'userdata');
-if size(ud,2)==1
-    isDown = ud;
+if size(ud{2},2)==1
+    isDown = ud{2};
     pos0 = [];
 else
-    isDown = ud(1,1);
-    pos0 = ud(1,2:3);
+    isDown = ud{2}(1,1);
+    pos0 = ud{2}(1,2:3);
 end
+
 if isDown && ~isempty(pos0)
     p = h.param.TDP;
     proj = p.curr_proj;
@@ -80,11 +81,42 @@ if isDown && ~isempty(pos0)
         p.proj{proj}.curr{tag,tpe}.clst_start{2}(k,[1,2]) = pos0+([x,y]-pos0)/2;
         p.proj{proj}.curr{tag,tpe}.clst_start{2}(k,[3,4]) = [halfw,halfh];
     end
+    
+    lim_x = get(h.axes_TDPplot1,'xlim');
+    lim_y = get(h.axes_TDPplot1,'ylim');
 
     h.param.TDP = p;
     guidata(h_fig, h);
     updateFields(h_fig, 'TDP');
     
+    set(h.axes_TDPplot1,'xlim',lim_x);
+    set(h.axes_TDPplot1,'ylim',lim_y);
+    
 elseif isDown
-    set(h.axes_TDPplot1,'userdata',[isDown,x,y]);
+    ud{2} = [isDown,x,y];
+    set(h.axes_TDPplot1,'userdata',ud);
 end
+
+% update crosshair plot
+if ~(~isempty(ud{1}) && numel(ud{1})==2 && ishandle(ud{1}(1)) && ...
+        ishandle(ud{1}(2)))
+    nextplot = get(h.axes_TDPplot1,'nextplot');
+    set(h.axes_TDPplot1,'nextplot','add');
+    ud{1}(1) = plot(h.axes_TDPplot1,get(h.axes_TDPplot1,'xlim'),[y,y],...
+        '-w');
+    ud{1}(2) = plot(h.axes_TDPplot1,[x,x],get(h.axes_TDPplot1,'ylim'),...
+        '-w');
+    set(ud{1},'HitTest','off','PickableParts','none');
+    set(h.axes_TDPplot1,'nextplot',nextplot);
+else
+    set(ud{1}(1),'xdata',get(h.axes_TDPplot1,'xlim'),'ydata',[y,y]);
+    set(ud{1}(2),'xdata',[x,x],'ydata',get(h.axes_TDPplot1,'ylim'));
+    allPlots = get(h.axes_TDPplot1,'children');
+    idCross1 = find(allPlots==ud{1}(1));
+    allPlots = allPlots([idCross1,1:(idCross1-1),(idCross1+1):end]);
+    idCross2 = find(allPlots==ud{1}(2));
+    allPlots = allPlots([idCross2,1:(idCross2-1),(idCross2+1):end]);
+    set(h.axes_TDPplot1,'children',allPlots)
+end
+
+set(h.axes_TDPplot1,'userdata',ud);
