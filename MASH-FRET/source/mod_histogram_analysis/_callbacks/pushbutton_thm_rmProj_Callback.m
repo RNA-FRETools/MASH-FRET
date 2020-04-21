@@ -37,16 +37,9 @@ str_act = str_act(1:end-2);
 
 % delete projects and reorganize project and current data 
 % structures
-proj = {};
-curr_tpe = [];
-for i = 1:size(p.proj,2)
-    if prod(double(i ~= slct))
-        proj{size(proj,2)+1} = p.proj{i};
-        curr_tpe(size(curr_tpe,2)+1) = p.curr_tpe(i);
-    end
-end
-p.proj = proj;
-p.curr_tpe = curr_tpe;
+p.proj(slct) = [];
+p.curr_tpe(slct) = [];
+p.curr_tag(slct) = [];
 
 % set new current project
 if size(p.proj,2) <= 1

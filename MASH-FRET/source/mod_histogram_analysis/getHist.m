@@ -14,7 +14,6 @@ nExc = p.proj{proj}.nb_excitations;
 em0 = find(chanExc~=0);
 nDE = numel(em0);
 I = p.proj{proj}.intensities_denoise;
-% I(isnan(I)) = p.proj{proj}.intensities(isnan(I));
 I_discr = p.proj{proj}.intensities_DTA;
 FRET = p.proj{proj}.FRET;
 FRET_discr = p.proj{proj}.FRET_DTA;
@@ -29,11 +28,10 @@ L = size(I,1);
 
 if numel(m)>1 && strcmp(m, 'all')
     m = 1:N;
-    if ~tag
+    if tag==1
         m = m(m_incl);
     else
-        molTag = p.proj{proj}.molTag;
-        m = m(m_incl & molTag(:,tag)');
+        m = m(m_incl & p.proj{proj}.molTag(:,tag-1)');
     end
 end
 
@@ -43,7 +41,7 @@ if isempty(m)
     return
 end
 
-prm = p.proj{proj}.prm{tpe};
+prm = p.proj{proj}.prm{tag,tpe};
 
 if tpe <= nChan*nExc % intensity
     i_c = mod(tpe,nChan); i_c(i_c==0) = nChan;

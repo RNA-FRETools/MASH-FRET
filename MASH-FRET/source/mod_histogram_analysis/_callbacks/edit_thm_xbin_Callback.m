@@ -11,7 +11,8 @@ if ~isempty(p.proj)
         set(obj, 'BackgroundColor', [1 1 1]);
         proj = p.curr_proj;
         tpe = p.curr_tpe(proj);
-        prm = p.proj{proj}.prm{tpe};
+        tag = p.curr_tag(proj);
+        prm = p.proj{proj}.prm{tag,tpe};
 
         nChan = p.proj{proj}.nb_channel;
         nExc = p.proj{proj}.nb_excitations;
@@ -32,7 +33,7 @@ if ~isempty(p.proj)
 
         prm.plot{1}(1,1) = val;
         prm.plot{2} = [];
-        p.proj{proj}.prm{tpe} = prm;
+        p.proj{proj}.prm{tag,tpe} = prm;
         h.param.thm = p;
         guidata(h_fig, h);
         updateFields(h_fig, 'thm');

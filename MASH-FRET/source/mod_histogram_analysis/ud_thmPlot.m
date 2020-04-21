@@ -5,7 +5,7 @@ p = h.param.thm;
 proj = p.curr_proj;
 tpe = p.curr_tpe(proj);
 tag = p.curr_tag(proj);
-prm = p.proj{proj}.prm{tpe};
+prm = p.proj{proj}.prm{tag,tpe};
 labels = p.proj{proj}.labels;
 FRET = p.proj{proj}.FRET;
 S = p.proj{proj}.S;
@@ -30,7 +30,7 @@ ovrfl = prm.plot{1}(1,4);
 [P,N] = getHist('all',false, ovrfl, h_fig);
 prm.plot{2} = P;
 prm.plot{3} = N;
-p.proj{proj}.prm{tpe} = prm;
+p.proj{proj}.prm{tag,tpe} = prm;
 h.param.thm = p;
 guidata(h_fig, h);
 
@@ -102,7 +102,7 @@ str_pop = getStrPopTags(tagNames,colorlist);
 if ~strcmp(str_pop{1},'no default tag')
     str_pop = cat(2,'all molecules',str_pop);
 end
-set(h.popupmenu_thm_tag, 'String', str_pop, 'Value', tag+1);
+set(h.popupmenu_thm_tag, 'String', str_pop, 'Value', tag);
 
 set([h.edit_thm_xbin h.edit_thm_xlim1 h.edit_thm_xlim2], ...
     'BackgroundColor', [1 1 1]);

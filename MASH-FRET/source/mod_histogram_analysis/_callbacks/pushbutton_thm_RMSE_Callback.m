@@ -4,7 +4,8 @@ p = h.param.thm;
 if ~isempty(p.proj)
     proj = p.curr_proj;
     tpe = p.curr_tpe(proj);
-    prm = p.proj{proj}.prm{tpe};
+    tag = p.curr_tag(proj);
+    prm = p.proj{proj}.prm{tag,tpe};
     prm.thm_res(2,1:3) = {[] [] []};
     prm.thm_res(3,1:3) = {[] [] []};
     prev_res = prm.thm_res;
@@ -64,7 +65,7 @@ if ~isempty(p.proj)
     end
 
     % Save modifications
-    p.proj{proj}.prm{tpe} = prm;
+    p.proj{proj}.prm{tag,tpe} = prm;
     h.param.thm = p;
     guidata(h_fig, h);
 
