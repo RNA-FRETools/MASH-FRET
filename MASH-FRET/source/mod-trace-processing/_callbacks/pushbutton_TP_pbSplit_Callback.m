@@ -142,6 +142,8 @@ end
 p.proj{proj}.molTag([n,n+1],...
     ~cellfun('isempty',strfind(p.proj{proj}.molTagNames,'split'))) = true;
 
+set(h.text_molTot, 'String', ['total: ' num2str(N+1) ' molecules']);
+
 h.param.ttPr = p;
 guidata(h_fig,h);
 
