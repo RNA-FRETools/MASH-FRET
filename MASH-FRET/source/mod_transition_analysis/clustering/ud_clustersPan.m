@@ -27,6 +27,9 @@ ttstr1{3} = wrapHtmlTooltipString('Select a cluster to configure');
 % collect interface parameters
 h = guidata(h_fig);
 p = h.param.TDP;
+if isempty(p.proj)
+    return
+end
 proj = p.curr_proj;
 tpe = p.curr_type(proj);
 tag = p.curr_tag(proj);
