@@ -1,9 +1,11 @@
 function pushbutton_addTraces_Callback(obj, evd, h_fig)
 % pushbutton_addTraces_Callback([],[],h_fig)
 % pushbutton_addTraces_Callback(files,[],h_fig)
+% pushbutton_addTraces_Callback([],merged,h_fig)
 %
 % h_fig: handle to main figure
 % files: {1-by-2} source directory and files to import
+% merged: project structure from merged projects
 
 % Last update, 13.1.2020 by MH: move down-compatibility management to separate function downCompatibilityTP.m
 % update, 3.4.2019 by MH: (1) adapt gamma factor import for more than one FRET calculation (2) correct MH's past modifications: gamma factors must be saved in prm and in curr parameters to be taken into account
@@ -12,70 +14,87 @@ function pushbutton_addTraces_Callback(obj, evd, h_fig)
 % update, 28.3.2019 by MH: For ASCII traces import: gamma factors files are recovered from import options
 % update, 28.3.2018 by FS: if ASCII file and not MASH project is loaded: load gamma factor file if it exists; assign gamma value only if number of values in .gam file equals the number of loaded restructured ASCII files
 
-% collect files to import
 h = guidata(h_fig);
-
-if iscell(obj)
-    pname = obj{1};
-    fname = obj{2};
-    if ~strcmp(pname,filesep)
-        pname = [pname,filesep];
-    end
-else
-    defPth = h.folderRoot;
-    [fname,pname,o] = uigetfile({'*.mash', 'MASH project(*.mash)'; '*.*', ...
-        'All files(*.*)'},'Select trace files',defPth,'MultiSelect','on');
-end
-if isempty(pname) || ~sum(pname)
-    return
-end
-    
-% covert to cell if only one file is imported
-if ~iscell(fname)
-    fname = {fname};
-end
-
 p = h.param.ttPr;
 
-% check if the project file is not already loaded
-excl_f = false(size(fname));
-str_proj = get(h.listbox_traceSet,'string');
-if isfield(p,'proj')
-    for i = 1:numel(fname)
-        for j = 1:numel(p.proj)
-            if strcmp(cat(2,pname,fname{i}),p.proj{j}.proj_file)
-                excl_f(i) = true;
-                disp(cat(2,'project "',str_proj{j},'" is already ',...
-                    'opened (',p.proj{j}.proj_file,').'));
+resetCrossTalks = false;
+isBeta = false;
+isGamma = false;
+
+% collect project data to import
+if iscell(evd)
+    % project from merging
+    dat = evd{1};
+    fext = '.mash';
+    resetCrossTalks = true;
+    if size(evd,2)>=2 && ~isempty(evd{2})
+        gammas = evd{2}(:,:,1);
+        betas = evd{2}(:,:,2);
+        isBeta = true;
+        isGamma = true;
+    end
+else
+    % project from file(s)
+    if iscell(obj)
+        pname = obj{1};
+        fname = obj{2};
+        if ~strcmp(pname,filesep)
+            pname = [pname,filesep];
+        end
+    else
+        defPth = h.folderRoot;
+        [fname,pname,o] = uigetfile({'*.mash', 'MASH project(*.mash)'; '*.*', ...
+            'All files(*.*)'},'Select trace files',defPth,'MultiSelect','on');
+    end
+    if isempty(pname) || ~sum(pname)
+        return
+    end
+
+    % covert to cell if only one file is imported
+    if ~iscell(fname)
+        fname = {fname};
+    end
+
+    % check if the project file is not already loaded
+    excl_f = false(size(fname));
+    str_proj = get(h.listbox_traceSet,'string');
+    if isfield(p,'proj')
+        for i = 1:numel(fname)
+            for j = 1:numel(p.proj)
+                if strcmp(cat(2,pname,fname{i}),p.proj{j}.proj_file)
+                    excl_f(i) = true;
+                    disp(cat(2,'project "',str_proj{j},'" is already ',...
+                        'opened (',p.proj{j}.proj_file,').'));
+                end
             end
         end
     end
-end
-fname(excl_f) = [];
+    
+    fname(excl_f) = [];
+    if isempty(fname)
+        return
+    end
+    
+    % get file extension
+    [o,o,fext] = fileparts(fname{1});
 
-% stop if no file is left
-if isempty(fname)
-    return
-end
-
-% load project data
-[dat,ok] = loadProj(pname, fname, 'intensities', h_fig);
-if ~ok
-    return
+    % load project data
+    [dat,ok] = loadProj(pname, fname, 'intensities', h_fig);
+    if ~ok
+        return
+    end
 end
 p.proj = [p.proj dat];
 
 % load gamma factor file if it exists; added by FS, 28.3.2018
-isBeta = false;
-isGamma = false;
-[o,o,fext] = fileparts(fname{1});
 if ~strcmp(fext, '.mash') % if ASCII file and not MASH project is loaded
     nMolFiles = numel(fname);
+    
+    resetCrossTalks = true;
 
     % added by MH, 28.3.2019
     pnameGamma = p.impPrm{6}{2};
     fnameGamma = p.impPrm{6}{3};
-
     isGamma = p.impPrm{6}{1} & ~isempty(fnameGamma) & sum(pnameGamma);
     if isGamma
         gammasCell = cell(1,length(fnameGamma));
@@ -180,7 +199,7 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
         p.proj{i} = rmfield(p.proj{i}, 'prmTT');
     end
 
-    if ~strcmp(fext, '.mash')
+    if resetCrossTalks
         % added by MH, 13.1.2020
         % reset cross-talks if ASCII import
         p.proj{i}.fix{4}{1} = zeros(nChan,nChan-1);
@@ -247,17 +266,19 @@ h.param.ttPr = p;
 guidata(h_fig, h);
 
 % display action
-if size(fname,2) > 1
-    str_files = 'files:\n';
-else
-    str_files = 'file: ';
+if ~iscell(evd)
+    if size(fname,2) > 1
+        str_files = 'files:\n';
+    else
+        str_files = 'file: ';
+    end
+    for i = 1:size(fname,2)
+        str_files = cat(2,str_files,pname,fname{i},'\n');
+    end
+    str_files = str_files(1:end-2);
+    setContPan(['Project successfully imported from ' str_files],'success',...
+        h_fig);
 end
-for i = 1:size(fname,2)
-    str_files = cat(2,str_files,pname,fname{i},'\n');
-end
-str_files = str_files(1:end-2);
-setContPan(['Project successfully imported from ' str_files],'success',...
-    h_fig);
 
 % update GUI according to new project parameters
 ud_TTprojPrm(h_fig);
