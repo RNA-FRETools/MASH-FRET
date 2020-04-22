@@ -11,6 +11,11 @@ h = guidata(h_fig);
 
 setDefault_TP(h_fig,p);
 
+% test trace splitting
+disp(cat(2,prefix,'test trace splitting...'));
+set_TP_photobleaching(1,p.pbDat,p.pbPrm,false,h_fig);
+pushbutton_TP_pbSplit_Callback([],[],h_fig);
+
 % test manual settings
 disp(cat(2,prefix,'test "Manual" photobleaching settings...'));
 set_TP_photobleaching(1,p.pbDat,p.pbPrm,true,h_fig);
