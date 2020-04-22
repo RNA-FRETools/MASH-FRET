@@ -70,7 +70,7 @@ Project settings such as relations between channels and lasers, FRET calculation
 Press 
 ![Remove](../../assets/images/gui/TP-but-remove.png "Remove") or right-click and select `Close` to close a project and remove it from the project list.
 
-Right-click and select `Merge projects` to merge multiple projects with identical experimental conditions into one; see 
+Right-click and select `Merge projects` to merge multiple projects with <u>identical experimental conditions</u> into one; see 
 [Save project and export data](../workflow.html#save-project-and-export-data) for more information.
 
 

@@ -497,14 +497,11 @@ To merge projects:
    
 1. Press 
    ![Yes](../assets/images/gui/TP-but-yes.png "Yes") to start the merging process  
-      
-   **Note:** *Merging projects will close the source projects without saving previously unsaved modifications. 
-   Make sure to save changes to individual projects before merging.*
+     
+   **Note:** *The merging process induces a loss of single molecule videos that were used in individual projects. 
+   Therefore, it is recommended to perform all adjustments of molecule positions and background corrections prior merging; see 
+   [Remarks](@remarks) for more information.
 
-**Note:** *The merging process induces a loss of single molecule videos and coordinates that were used in individual projects.
-Therefore, it is recommended to (1) perform all adjustments of molecule positions and background corrections prior merging, and (2) to merge experimental data with same recording rate.
-To bin trajectories to lower recording rates, please refer to 
-[Bin trajectories](functionalities/bin-trajectories.html)*
 
 ---
  
@@ -522,3 +519,4 @@ Molecules can be given several tags and/or deselected from the set while browsin
 [Molecule list](panels/panel-sample-management.html#molecule-list) in the Trace processing interface; see 
 [Molecule status](panels/panel-sample-management.html#molecule-status) for more information.
 
+To merge multiple projects into one, experiment setups must be the same, *i.e.*, the frame rate, the number of channels and laser excitations, the laser wavelengths, the emitter labels, the FRET pairs and the stoichiometry calculations must be identical. 
