@@ -25,16 +25,15 @@ end
 if h.mute_actions
     del = 'Yes';
 else
-    str_proj = ['"' p.proj{slct(1)}.exp_parameters{1,2} '"'];
-    for pj = 2:nProj
-        str_proj = cat(2,str_proj,', "',...
-            p.proj{slct(pj)}.exp_parameters{1,2},'"');
-    end
-    del = questdlg({cat(2,'Projects ',str_proj,' will be merged into one ',...
-        'and removed from the list.'),cat(2,'Changes made to individual ',...
-        'source project won''t be saved to the respective files.'),' ',...
-        'Do you wish to continue?'},'Merge projects',...
-        'No, let me save first','Yes','No, let me save first');
+    str_proj = p.proj{slct(1)}.exp_parameters{1,2};
+    del = questdlg({cat(2,'WARNING 1: The merging process induces a loss ',...
+        'of single molecule videos that were used in individual projects.',...
+        ' It is therefore recommended to perform all adjustments of ',...
+        'molecule positions and background corrections prior merging.'),...
+        ' ',cat(2,'WARNING 2: Cross-talk coefficients used in the merged ',...
+        'project will be taken from the project "',str_proj,'" only.'),...
+        ' ','Do you wish to continue?'},'Merge projects','Yes','Cancel',...
+        'Yes');
 end
 
 if ~strcmp(del, 'Yes')
@@ -61,6 +60,7 @@ s.chanExc = p.proj{1}.chanExc;
 s.FRET = p.proj{1}.FRET;
 s.S = p.proj{1}.S;
 nFRET = size(s.FRET,1);
+nS = size(s.S,1);
 s.exp_parameters = p.proj{1}.exp_parameters;
 s.exp_parameters{1,2} = 'merged';
 s.labels = p.proj{1}.labels;
@@ -106,6 +106,9 @@ for proj = 1:nProj
     end
 end
 
+% general parameters
+s.fixTT = p.proj{1}.fix;
+
 % concatenate data
 s.coord = [];
 s.coord_incl = [];
@@ -118,61 +121,88 @@ s.intensities_DTA = [];
 s.FRET_DTA = [];
 s.S_DTA = [];
 s.molTag = [];
-fact = [];
+s.prmTT = {};
 for proj = 1:nProj
     % coordinates
     s.coord = cat(1,s.coord,p.proj{proj}.coord);
+    N = size(p.proj{proj}.coord_incl,2);
+    mols = repmat(1:N,[1,nFRET]);
     
     % molecule selection
     s.coord_incl = cat(2,s.coord_incl,p.proj{proj}.coord_incl);
+    
+    % laser order
+    laserOrder = [];
+    for l = 1:s.nb_excitations
+        id = find(p.proj{proj}.excitations==s.excitations(l));
+        laserOrder = cat(2,laserOrder,id);
+    end
+    
+    % FRET pair order
+    fretOrder = [];
+    for pair = 1:nFRET
+        id = find(p.proj{proj}.FRET(:,1)==s.FRET(pair,1) & ...
+            p.proj{proj}.FRET(:,2)==s.FRET(pair,2));
+        fretOrder = cat(2,fretOrder,id);
+    end
+    
+    % S pair order
+    sOrder = [];
+    for pair = 1:nS
+        id = find(p.proj{proj}.S(:,1)==s.S(pair,1) & ...
+            p.proj{proj}.S(:,2)==s.S(pair,2));
+        sOrder = cat(2,sOrder,id);
+    end
 
     % intensities
-    s.intensities = cat(2,s.intensities,...
-        extendTrace(p.proj{proj}.intensities,L,NaN));
-    s.intensities_bgCorr = cat(2,s.intensities_bgCorr,...
-        extendTrace(p.proj{proj}.intensities_bgCorr,L,NaN));
-    s.intensities_crossCorr = cat(2,s.intensities_crossCorr,...
-        extendTrace(p.proj{proj}.intensities_crossCorr,L,NaN));
-    s.intensities_denoise = cat(2,s.intensities_denoise,...
-        extendTrace(p.proj{proj}.intensities_denoise,L,NaN));
+    I = extendTrace(p.proj{proj}.intensities,L,NaN);
+    s.intensities = cat(2,s.intensities,I(:,:,laserOrder));
+    
+    I_bgCorr = extendTrace(p.proj{proj}.intensities_bgCorr,L,NaN);
+    s.intensities_bgCorr = ...
+        cat(2,s.intensities_bgCorr,I_bgCorr(:,:,laserOrder));
+    
+    I_crossCorr = extendTrace(p.proj{proj}.intensities_crossCorr,L,NaN);
+    s.intensities_crossCorr = ...
+        cat(2,s.intensities_crossCorr,I_crossCorr(:,:,laserOrder));
+    
+    I_denoise = extendTrace(p.proj{proj}.intensities_denoise,L,NaN);
+    s.intensities_denoise = ...
+        cat(2,s.intensities_denoise,I_denoise(:,:,laserOrder));
+    
     s.bool_intensities = cat(2,s.bool_intensities,...
         extendTrace(p.proj{proj}.bool_intensities,L,false));
-    
+
     % state sequences
-    s.intensities_DTA = cat(2,s.intensities_DTA,...
-        extendTrace(p.proj{proj}.intensities_DTA,L,NaN));
-    s.FRET_DTA = ...
-        cat(2,s.FRET_DTA,extendTrace(p.proj{proj}.FRET_DTA,L,NaN));
-    s.S_DTA = cat(2,s.S_DTA,extendTrace(p.proj{proj}.S_DTA,L,NaN));
+    I_DTA = extendTrace(p.proj{proj}.intensities_DTA,L,NaN);
+    s.intensities_DTA = cat(2,s.intensities_DTA,I_DTA(:,:,laserOrder));
+
+    FRET_DTA = extendTrace(p.proj{proj}.FRET_DTA,L,NaN);
+    fret_id = repmat(fretOrder',[1,N]);
+    fret_id = reshape((mols-1)*nFRET+fret_id,[1,nFRET*N]);
+    s.FRET_DTA = cat(2,s.FRET_DTA,FRET_DTA(:,fret_id));
+    
+    S_DTA = extendTrace(p.proj{proj}.S_DTA,L,NaN);
+    s_id = repmat(sOrder',[1,N]);
+    s_id = reshape((mols-1)*nS+s_id,[1,nS*N]);
+    s.S_DTA = cat(2,s.S_DTA,S_DTA(:,s_id));
 
     % molecule tags
     s.molTag = cat(1,s.molTag,extendTags(p.proj{proj}.molTag,...
         p.proj{proj}.molTagNames,s.molTagNames));
-
-    % correction factors
+    
+    % processing parameters
     N = size(p.proj{proj}.coord_incl,2);
-    fact_proj = [];
     for n = 1:N
-        if size(p.proj{proj}.prm{n},2)>=6 && ...
-                size(p.proj{proj}.prm{n}{6},2)>=1 && ...
-                ~isempty(p.proj{proj}.prm{n}{6}{1})
-            fact_n = permute(p.proj{proj}.prm{n}{6}{1},[3,2,1]);
-        else
-            fact_n = ones(N,nFRET,2);
-        end
-        fact_proj = cat(1,fact_proj,fact_n);
+        s.prmTT = cat(2,s.prmTT,rearrangeProcPrm(p.proj{proj}.prm{n},...
+            laserOrder,fretOrder,sOrder));
     end
-    fact = cat(1,fact,fact_proj);
 end
 s.bool_intensities = ~~s.bool_intensities;
 s.coord_incl = ~~s.coord_incl;
 
 % add merged project to the list
-pushbutton_addTraces_Callback([],{s,fact},h_fig);
-
-% close source projects
-set(h.listbox_traceSet,'Value',slct);
-pushbutton_remTraces_Callback([],[],h_fig,true);
+pushbutton_addTraces_Callback([],{s},h_fig);
 
 
 function [ok,errmsg] = projectCompatibility(p_proj)
@@ -196,40 +226,40 @@ S = p_proj{1}.S;
 lbls = p_proj{1}.labels;
 pixPrm = p_proj{1}.pix_intgr;
 for proj = 2:nProj
-    if p_proj{1}.frame_rate~=expT
+    if p_proj{proj}.frame_rate~=expT
         errmsg = 'Projects have different frame rate.';
         return
     end
-    if p_proj{1}.nb_channel~=nChan
+    if p_proj{proj}.nb_channel~=nChan
         errmsg = 'Projects have different number of channels.';
         return
     end
-    if p_proj{1}.nb_excitations~=nL
+    if p_proj{proj}.nb_excitations~=nL
         errmsg = 'Projects have different number of lasers.';
         return
     end
-    if ~isequal(p_proj{1}.excitations,exc)
+    if ~isequal(sort(p_proj{proj}.excitations),sort(exc))
         errmsg = 'Projects have different laser wavelength.';
         return
     end
-    if ~isequal(p_proj{1}.chanExc,chanExc)
+    if ~isequal(p_proj{proj}.chanExc,chanExc)
         errmsg = cat(2,'Projects have different emitter-specific ',...
             'excitation wavelength.');
         return
     end
-    if ~isequal(p_proj{1}.FRET,FRET)
+    if ~isequal(sortrows(p_proj{proj}.FRET),sortrows(FRET))
         errmsg = 'Projects have different FRET pairs.';
         return
     end
-    if ~isequal(p_proj{1}.S,S)
+    if ~isequal(sortrows(p_proj{proj}.S),sortrows(S))
         errmsg = 'Projects have different stochiometry calculations.';
         return
     end
-    if ~isequal(p_proj{1}.labels,lbls)
+    if ~isequal(p_proj{proj}.labels,lbls)
         errmsg = 'Projects have different emitter labels.';
         return
     end
-    if ~isequal(p_proj{1}.pix_intgr,pixPrm)
+    if ~isequal(p_proj{proj}.pix_intgr,pixPrm)
         errmsg = cat(2,'Projects have different inetnsity integration ',...
             'parameters.');
         return
@@ -264,5 +294,60 @@ for tag = 1:nTag
     molTag_ext(:,~cellfun('isempty',strfind(namesRef,names{tag}))) = ...
         molTag(:,tag);
 end
+
+
+function prm = rearrangeProcPrm(prm,laserOrder,fretOrder,sOrder)
+
+nL = numel(laserOrder);
+nFRET = numel(fretOrder);
+nS = numel(sOrder);
+nChan = (size(prm{2}{2},1)-nFRET-nS-2)/nL;
+
+lc = 1:nChan*nL;
+lcOrder = [];
+for l = 1:nL
+    lcOrder = ...
+        cat(2,lcOrder,lc(((laserOrder(l)-1)*nChan+1):laserOrder(l)*nChan));
+end
+datOrder = [fretOrder,nFRET+sOrder,nFRET+nS+lcOrder];
+
+% Photobleaching
+chan = prm{2}{1}(3);
+if chan<=(nFRET+nS+nL*nChan)
+    chan = datOrder(chan);
+end
+prm{2}{1}(3) = chan;
+prm{2}{2}(1:(nFRET+nS+nL*nChan),:) = prm{2}{2}(datOrder,:);
+
+% Background correction
+prm{3}{1} = prm{3}{1}(laserOrder,:);
+prm{3}{2} = prm{3}{2}(laserOrder,:);
+prm{3}{3} = prm{3}{3}(laserOrder,:);
+for l = 1:nL % set background to manual
+    for c = 1:nChan
+        if  prm{3}{1}(l,c)
+            prm{3}{3}{l,c}(1,3) = prm{3}{3}{l,c}(prm{3}{2}(l,c),3);
+        else
+            prm{3}{3}{l,c}(1,3) = 0;
+        end
+        prm{3}{2}(l,c) = 1;
+    end
+end
+
+% Find states
+prm{4}{2} = prm{4}{2}(:,:,datOrder); % parameters
+prm{4}{3} = prm{4}{3}(datOrder,:);  % states values
+prm{4}{4} = prm{4}{4}(:,:,datOrder); % thresholds
+
+% Correction factors
+prm{6}{1} = prm{6}{1}(:,fretOrder); % factors
+prm{6}{2} = prm{6}{2}(fretOrder);  % method 
+prm{6}{3} = prm{6}{3}(fretOrder,:); % acc-pb parameters
+prm{6}{4} = prm{6}{4}(fretOrder,:); % ES-regression parameters
+for pair = 1:nFRET % set method to manual
+    prm{6}{2}(pair) = 0;
+end
+
+prm = {prm};
 
 

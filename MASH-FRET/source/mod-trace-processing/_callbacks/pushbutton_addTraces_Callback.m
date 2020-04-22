@@ -26,13 +26,6 @@ if iscell(evd)
     % project from merging
     dat = evd{1};
     fext = '.mash';
-    resetCrossTalks = true;
-    if size(evd,2)>=2 && ~isempty(evd{2})
-        gammas = evd{2}(:,:,1);
-        betas = evd{2}(:,:,2);
-        isBeta = true;
-        isGamma = true;
-    end
 else
     % project from file(s)
     if iscell(obj)
@@ -158,8 +151,14 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
 
     p.curr_mol(i) = 1;
     p.defProjPrm = setDefPrm_traces(p,i);
-
-    p.proj{i}.fix = p.defProjPrm.general;
+    
+    if ~isfield(p.proj{i}, 'fixTT')
+        p.proj{i}.fix = p.defProjPrm.general;
+    else
+        p.proj{i}.fix = p.proj{i}.fixTT;
+        p.proj{i} = rmfield(p.proj{i}, 'fixTT');
+    end
+    
     p.proj{i}.def = p.defProjPrm;
 
     % modified by MH, 13.1.2020
