@@ -13,7 +13,11 @@ nProj = numel(slct);
 % check project compatibility
 [comp,errmsg] = projectCompatibility(p.proj(slct));
 if ~comp
-    setContPan(cat(2,'Merging is impossible: ',errmsg),'error',h_fig);
+    if h.mute_actions
+        disp(cat(2,'Merging is impossible: ',errmsg));
+    else
+        setContPan(cat(2,'Merging is impossible: ',errmsg),'error',h_fig);
+    end
     return
 end
 
@@ -146,9 +150,16 @@ for proj = 1:nProj
         p.proj{proj}.molTagNames,s.molTagNames));
 
     % correction factors
+    N = size(p.proj{proj}.coord_incl,2);
     fact_proj = [];
-    for n = 1:size(p.proj{proj}.coord_incl,2)
-        fact_n = permute(p.proj{proj}.prm{n}{6}{1},[3,2,1]);
+    for n = 1:N
+        if size(p.proj{proj}.prm{n},2)>=6 && ...
+                size(p.proj{proj}.prm{n}{6},2)>=1 && ...
+                ~isempty(p.proj{proj}.prm{n}{6}{1})
+            fact_n = permute(p.proj{proj}.prm{n}{6}{1},[3,2,1]);
+        else
+            fact_n = ones(N,nFRET,2);
+        end
         fact_proj = cat(1,fact_proj,fact_n);
     end
     fact = cat(1,fact,fact_proj);
@@ -160,16 +171,8 @@ s.coord_incl = ~~s.coord_incl;
 pushbutton_addTraces_Callback([],{s,fact},h_fig);
 
 % close source projects
-h = guidata(h_fig);
-h.mute_actions = true;
-guidata(h_fig,h);
-
 set(h.listbox_traceSet,'Value',slct);
-pushbutton_remTraces_Callback([],[],h_fig);
-
-h = guidata(h_fig);
-h.mute_actions = false;
-guidata(h_fig,h);
+pushbutton_remTraces_Callback([],[],h_fig,true);
 
 
 function [ok,errmsg] = projectCompatibility(p_proj)

@@ -122,6 +122,7 @@ p.exp_gam = 'gamFromFile.mash';
 p.exp_bet = 'betFromFile.mash';
 p.exp_states = 'statesFromFile.mash';
 p.exp_sortProj = '2chan2exc_sort.mash';
+p.exp_merged = 'merged.mash';
 
 % parameters for panel Sample management
 p.exp_figpreview = 'figure_preview';

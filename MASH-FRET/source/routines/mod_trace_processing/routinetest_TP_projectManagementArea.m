@@ -155,5 +155,26 @@ set_VP_projOpt(p.projOpt{p.nL,p.nChan},p.wl(1:p.nL),h.pushbutton_editParam,...
     h_fig);
 
 pushbutton_expProj_Callback({p.dumpdir,p.exp_bet},[],h_fig);
-pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
 
+% test project merging
+disp(cat(2,prefix,'test project merging...'));
+
+pushbutton_addTraces_Callback({p.annexpth,p.mash_files{p.nL,p.nChan}},[],...
+    h_fig);
+
+set_VP_projOpt(p.projOpt{p.nL,p.nChan},p.wl(1:p.nL),h.pushbutton_editParam,...
+    h_fig);
+
+set(h.listbox_traceSet,'value',[1,2]);
+menu_projMenu_merge_Callback([],[],h_fig);
+
+pushbutton_expProj_Callback({p.dumpdir,p.exp_merged},[],h_fig);
+
+nProj = numel(get(h.listbox_traceSet,'string'));
+proj = nProj;
+while proj>0
+    set(h.listbox_traceSet,'value',proj);
+    listbox_traceSet_Callback(h.listbox_traceSet,[],h_fig);
+    pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
+    proj = proj-1;
+end
