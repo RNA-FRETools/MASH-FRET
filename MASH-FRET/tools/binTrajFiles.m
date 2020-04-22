@@ -11,14 +11,8 @@ function binTrajFiles(expT, varargin)
 % fileheaders: cellstring file headers that specify data to export
 % pname_out: destination directory
 
-% Last update: 10th of April 2019 by Mélodie Hadzic
-% --> adapt code to allow use without giving specific headers in input and
-%     to allow use with on sinlge input argument (the new time bin)
-% --> correct code for alex data (numbe of different laser was calculated
-%     from the number of time columns divided by 2)
-%
-% update: 18th of February 2019 by Mélodie Hadzic
-% --> update help section
+% Last update, 10.4.2019 by MH: (1) adapt code to allow use without giving specific headers in input and to allow use with on sinlge input argument (the new time bin) (2) correct code for alex data (numbe of different laser was calculated from the number of time columns divided by 2)
+% update: 18.2.2019 by MH: update help section
 
 % cancelled by MH, 10.4.2019
 % defaultHeaders = {'timeat638nm','I_1at638nm','I_2at638nm','I_3at638nm',...
@@ -138,7 +132,12 @@ try
         data = importdata(cat(2,pname,fList(ff,1).name));
         data = data.data;
         if exist('binTime','var')
-            data = binData(data, binTime, timeIdref, exc);
+            bin_1 = binTime*numel(exc); % multiple time bin for ALEX data
+            bin_0 = data(2,timeIdref(1))-data(1,timeIdref(1)); % original bin time
+            data = binData(data, bin_1*numel(exc), bin_0);
+            if isempty(data)
+                continue
+            end
         end
         
         % order and remove columns
@@ -183,70 +182,6 @@ catch err
 end
 
 fprintf('\nprocess completed !\n');
-
-
-function binned = binData(data, bin_1, colTime, exc)
-
-binned = data;
-
-bin_1 = bin_1*numel(exc); % multiple time bin for ALEX data
-bin_0 = data(2,colTime(1))-data(1,colTime(1)); % original bin time
-if bin_0>bin_1
-    fprintf(['\nTime binning failed: exposure time in data is larger ' ...
-        'than the input time binning.\n']);
-    return;
-end
-bin_l = bin_1/bin_0;
-L_0 = size(data,1);
-L_1 = fix(L_0/bin_l);
-
-binned = zeros(L_1,size(data,2));
-l_1 = 1;
-curs = 0;
-while l_1<=L_1
-    % determine l_0 from cursor position
-    l_0 = ceil(curs);
-    
-    % remaining fraction of l_0 to consider for calculation
-    if mod(curs,1)>0
-        rest_0 = 1-mod(curs,1);
-    else
-        rest_0 = 0;
-    end
-    
-    % add remaining fraction of l_0 in current l_1
-    if l_0>0
-        binned(l_1,:) = rest_0*data(l_0,:);
-    end
-    
-    % remaining frames to add to l_1 to complete a bin
-    bin_rest = bin_l-rest_0;
-    
-    % add full l_0 bins to l_1
-    if l_0+fix(bin_rest)<= L_0
-        binned(l_1,:) = binned(l_1,:) + ...
-            sum(data(l_0+1:l_0+fix(bin_rest),:),1);
-    else
-        binned = binned(1:l_1-1,:);
-        return
-    end
-    
-    % add rest l_0 bins to l_1
-    if l_0+fix(bin_rest)+1<= L_0
-        binned(l_1,:) = binned(l_1,:) + ...
-            (bin_rest-fix(bin_rest))*data(l_0+fix(bin_rest)+1,:);
-    else
-        binned = binned(1:l_1-1,:);
-        return
-    end
-    
-    % averaging
-    binned(l_1,:) = binned(l_1,:)/bin_l;
-    
-    % advance cursor in orginial trajectory of one bin and l_1 of one frame
-    curs = curs + bin_l;
-    l_1 = l_1 + 1;
-end
 
 
 function dataFinal = arrangeColumns(finalHead,originHead,data)
