@@ -317,8 +317,8 @@ To merge projects:
    [Project list](), choose the option `Merge projects` and press 
    ![Yes](../../assets/images/gui/TP-but-yes.png "Yes") to start the merging process  
       
-   **Note:** *Merging projects will close the source projects without saving previously unsaved modifications. 
-   Make sure to save changes to individual projects before merging.*
+   **Note:** *The merging process induces a loss of single molecule videos that were used in individual projects. 
+   Make sure to perform all adjustments of molecule positions and background corrections prior merging.
 
 
 ---
