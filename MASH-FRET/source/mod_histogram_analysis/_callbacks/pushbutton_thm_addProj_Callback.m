@@ -112,13 +112,13 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
     end
 
     % if the number of data changed, reset results and resize
-    if size(p.proj{i}.prm,2)~=(nTpe)
-        p.proj{i}.prm = cell(nTag+1,nTpe);
+    if size(prm,2)~=(nTpe)
+        prm = cell(nTag+1,nTpe);
     end
     
     % if the number of tags changed, reset results and resize
-    if size(p.proj{i}.prm,1)~=(nTag+1)
-        p.proj{i}.prm = cat(1,p.proj{i}.prm(1,:),cell(nTag,nTpe));
+    if size(prm,1)~=(nTag+1)
+        prm = cat(1,prm(1,:),cell(nTag,nTpe));
     end
 
     for tpe = 1:nTpe
