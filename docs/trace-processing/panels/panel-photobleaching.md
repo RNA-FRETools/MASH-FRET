@@ -82,6 +82,7 @@ Press
 [Photobleaching cutoff](#photobleaching-cutoff).
 In this case, the right-side of the cutoff is saved as a separate molecule, which is added to the 
 [Molecule list](panel-sample-management.html#molecule-list).
+Both molecules will be given a "Split" tag in order to easily identify them in the list.
 
 For more information about how blinking correction is used in smFRET data analysis, see 
 [Correct for photobleaching](../workflow.html#correct-for-photobleaching) in Trace processing workflow.
