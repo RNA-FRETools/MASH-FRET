@@ -82,14 +82,14 @@ end
 
 if strcmp(n, 'all')
 
-    if isMov==0 && ~memAlloc(frameLen*pixelX*pixelY)
+    if (isMov==0 || isMov==1) && ~memAlloc(frameLen*pixelX*pixelY)
         str = cat(2,'Out of memory: MASH is obligated to load the video ',...
             'one frame at a time to function\nThis will slow down all ',...
             'operations requiring video data, including the creation of ',...
             'time traces.');
         setContPan(str,'warning',h_fig);
 
-        [data,ok] = readPma(fullFname,1,fDat,h_fig);
+        [data,ok] = readPma(fullFname,1,fDat,h_fig,0);
         frameCur = data.frameCur;
 
     else
@@ -150,8 +150,9 @@ else
             f = fopen(fullFname,'r');
         end
         fseek(f,fCurs,-1);
-        frameCur = flip(reshape(fread(f, pixelX*pixelY, 'uint8=>single'), ...
-            [pixelY pixelX])',1);
+        fseek(f,2*n+pixelX*pixelY*(n-1),0);
+        frameCur = reshape(fread(f,pixelX*pixelY,'uint8=>single'),...
+            [pixelX pixelY])';
     end
 end
 

@@ -62,14 +62,14 @@ else
 end
     
 if strcmp(n, 'all')
-    if isMov==0 && ~memAlloc(frameLen*pixelX*pixelY*4)
+    if (isMov==0 || isMov==1) && ~memAlloc(frameLen*pixelX*pixelY*4)
         str = cat(2,'Out of memory: MASH is obligated to load the video ',...
             'one frame at a time to function\nThis will slow down all ',...
             'operations requiring video data, including the creation of ',...
             'time traces.');
         setContPan(str,'warning',h_fig);
 
-        [data,ok] = readGif(fullFname,1,fDat,h_fig);
+        [data,ok] = readGif(fullFname,1,fDat,h_fig,0);
         frameCur = data.frameCur;
         
     else
