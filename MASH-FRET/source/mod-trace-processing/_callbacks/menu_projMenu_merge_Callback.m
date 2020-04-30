@@ -122,6 +122,12 @@ s.FRET_DTA = [];
 s.S_DTA = [];
 s.molTag = [];
 s.prmTT = {};
+if nFRET==0
+    s.FRET_DTA = [];
+end
+if nS==0
+    s.S_DTA = [];
+end
 for proj = 1:nProj
     % coordinates
     s.coord = cat(1,s.coord,p.proj{proj}.coord);
@@ -176,16 +182,20 @@ for proj = 1:nProj
     % state sequences
     I_DTA = extendTrace(p.proj{proj}.intensities_DTA,L,NaN);
     s.intensities_DTA = cat(2,s.intensities_DTA,I_DTA(:,:,laserOrder));
-
-    FRET_DTA = extendTrace(p.proj{proj}.FRET_DTA,L,NaN);
-    fret_id = repmat(fretOrder',[1,N]);
-    fret_id = reshape((mols-1)*nFRET+fret_id,[1,nFRET*N]);
-    s.FRET_DTA = cat(2,s.FRET_DTA,FRET_DTA(:,fret_id));
     
-    S_DTA = extendTrace(p.proj{proj}.S_DTA,L,NaN);
-    s_id = repmat(sOrder',[1,N]);
-    s_id = reshape((mols-1)*nS+s_id,[1,nS*N]);
-    s.S_DTA = cat(2,s.S_DTA,S_DTA(:,s_id));
+    if nFRET>0
+        FRET_DTA = extendTrace(p.proj{proj}.FRET_DTA,L,NaN);
+        fret_id = repmat(fretOrder',[1,N]);
+        fret_id = reshape((mols-1)*nFRET+fret_id,[1,nFRET*N]);
+        s.FRET_DTA = cat(2,s.FRET_DTA,FRET_DTA(:,fret_id));
+    end
+    
+    if nS>0
+        S_DTA = extendTrace(p.proj{proj}.S_DTA,L,NaN);
+        s_id = repmat(sOrder',[1,N]);
+        s_id = reshape((mols-1)*nS+s_id,[1,nS*N]);
+        s.S_DTA = cat(2,s.S_DTA,S_DTA(:,s_id));
+    end
 
     % molecule tags
     s.molTag = cat(1,s.molTag,extendTags(p.proj{proj}.molTag,...
@@ -194,8 +204,13 @@ for proj = 1:nProj
     % processing parameters
     N = size(p.proj{proj}.coord_incl,2);
     for n = 1:N
-        s.prmTT = cat(2,s.prmTT,rearrangeProcPrm(p.proj{proj}.prm{n},...
-            laserOrder,fretOrder,sOrder));
+        if ~isempty(p.proj{proj}.prm{n})
+            prm_n = rearrangeProcPrm(p.proj{proj}.prm{n},...
+                laserOrder,fretOrder,sOrder);
+        else
+            prm_n = {};
+        end
+        s.prmTT = cat(2,s.prmTT,prm_n);
     end
 end
 s.bool_intensities = ~~s.bool_intensities;
