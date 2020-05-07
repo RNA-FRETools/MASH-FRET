@@ -337,7 +337,7 @@ try
         
         % get exposure time
         if isTime && i == 1
-            exptime = times(2) - times(1);
+            exptime = abs(times(2) - times(1));
         end
         
         % import molecule coordinates from file's header
