@@ -63,7 +63,9 @@ if isfield(prm,'kin_start') && size(prm.kin_start,2)>=2
     elseif size(prm.kin_start,1)==0
         prm.kin_start = def.kin_start;
     end
-    prm.clst_start{1}(4) = 1; % cluster constraint
+    if ~iscell(prm.kin_start{1})
+        prm.clst_start{1}(4) = 1; % cluster constraint
+    end
 end
 
 % 28.1.2020: add cluster diagonal and log likelihood options
