@@ -117,7 +117,9 @@ for s = 1:nSpl
         if strcmp(err.identifier,'curvefit:fit:notEnoughDataPoints')
             loading_bar('close', h_fig);
             setContPan(err.message, 'error', h_fig);
-            return;
+            return
+        else
+            throw(err)
         end
     end
     
