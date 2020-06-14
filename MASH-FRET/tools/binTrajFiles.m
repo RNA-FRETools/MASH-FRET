@@ -23,6 +23,7 @@ function binTrajFiles(expT, varargin)
 % collect source directory
 if ~isempty(varargin) && numel(varargin)>=1
     pname = varargin{1};
+    pname_out = pname;
     if isempty(pname) || ~sum(pname)
         disp('second input argument must contain the source directory');
         disp('for help type: help binTrajFiles');
@@ -40,14 +41,12 @@ if ~isempty(varargin) && numel(varargin)>=1
         end
         if numel(varargin)>=3
             pname_out = varargin{3};
-            if ~strcmp(pname(end),filesep)
-                pname_out = cat(2,pname_out,filesep);
-            end
-        else
-            pname_out = pname;
         end
     else
         headers = {};
+    end
+    if ~strcmp(pname(end),filesep)
+        pname_out = cat(2,pname_out,filesep);
     end
 else
     pname = uigetdir();
