@@ -51,6 +51,8 @@ if ~isempty(varargin) && numel(varargin)>=1
     end
 else
     pname = uigetdir();
+    pname_out = cat(2,pname,filesep);
+    headers = {};
 end
 if isempty(pname) || ~sum(pname)
     return
@@ -79,10 +81,11 @@ try
     F = size(fList,1);
 
     % print file names in command window
-    fprintf(cat(2,'\nprocess ',num2str(F),' files:\n'));
+    fprintf(cat(2,'\n',num2str(F),' files selected:\n'));
     for ff = 1:F
          fprintf(cat(2,'\t',fList(ff,1).name,'\n'));
     end
+    fprintf('\nprocessing files...\n');
 
     % create output folder
     out_pname = cat(2,pname_out,'binned ',date,filesep);
@@ -134,7 +137,7 @@ try
         if exist('binTime','var')
             bin_1 = binTime*numel(exc); % multiple time bin for ALEX data
             bin_0 = data(2,timeIdref(1))-data(1,timeIdref(1)); % original bin time
-            data = binData(data, bin_1*numel(exc), bin_0);
+            data = binData(data, bin_1, bin_0);
             if isempty(data)
                 continue
             end
