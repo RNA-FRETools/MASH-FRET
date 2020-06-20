@@ -59,6 +59,8 @@ end
 cd(pname)
 
 try
+    t_tic = tic;
+    
     % correct source directory
     if ~strcmp(pname(end),filesep)
         pname = [pname,filesep];
@@ -127,16 +129,19 @@ try
         exc = unique(exc);
 
         % localizes time data column from header
-        isTime = cellfun('isempty',strfind(head,'timeat'));
-        [o,timeIdref,o] = find(~isTime);
+        isTime = ~cellfun('isempty',strfind(head,'timeat'));
+        isFrame = ~cellfun('isempty',strfind(head,'frameat'));
+        [o,timeCols,o] = find(isTime);
+        [o,frameCols,o] = find(isFrame);
         
         % import data and bin according to time
         data = importdata(cat(2,pname,fList(ff,1).name));
         data = data.data;
         if exist('binTime','var')
             bin_1 = binTime*numel(exc); % multiple time bin for ALEX data
-            bin_0 = data(2,timeIdref(1))-data(1,timeIdref(1)); % original bin time
-            data = binData(data, bin_1, bin_0);
+            bin_0 = data(2,timeCols(1))-data(1,timeCols(1)); % original bin time
+%             data = binData(data, bin_1, bin_0, timeCols, frameCols);
+            data = binData2(data, bin_1, bin_0, timeCols, frameCols);
             if isempty(data)
                 continue
             end
@@ -182,8 +187,8 @@ catch err
         err.stack(1).line);
     return
 end
-
-fprintf('\nprocess completed !\n');
+t_exe = toc(t_tic);
+fprintf('\nprocess completed in %0.1f seconds\n',t_exe);
 
 
 function dataFinal = arrangeColumns(finalHead,originHead,data)
