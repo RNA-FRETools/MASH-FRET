@@ -141,7 +141,7 @@ try
             bin_1 = binTime*numel(exc); % multiple time bin for ALEX data
             bin_0 = data(2,timeCols(1))-data(1,timeCols(1)); % original bin time
 %             data = binData(data, bin_1, bin_0, timeCols, frameCols);
-            data = binData2(data, bin_1, bin_0, timeCols, frameCols);
+            data = binData(data, bin_1, bin_0, timeCols, frameCols);
             if isempty(data)
                 continue
             end
