@@ -118,14 +118,18 @@ if strcmp(n,'all')
 
             for i = 1:frameLen
                 os = 0;
-                if isfield(info(i,1),'ImageDescription')
+                if isfield(info(i,1),'ImageDescription') && ...
+                        ischar(info(i,1).ImageDescription)
                     strdat = str2num(info(i,1).ImageDescription);
                     if size(strdat,2) > 1
                         os = strdat(2); % negative intensity offset
                     end
                 end
-                h.movie.movie(:,:,i) = double(imread(fullFname,'Index',i,...
-                    'Info',info)) - os;
+                img = double(imread(fullFname,'Index',i,'Info',info)) - os;
+                if size(img,3)>1
+                    img = sum(img,3);
+                end
+                h.movie.movie(:,:,i) = img;
                 
                 if loading_bar('update', h_fig);
                     ok = 0;
@@ -155,6 +159,9 @@ else
         end
 
         frameCur = double(imread(fullFname,'Index',n,'Info',info)) + os;
+        if size(frameCur,3)>1
+            frameCur = sum(frameCur,3);
+        end
         movie = [];
     end
 end
