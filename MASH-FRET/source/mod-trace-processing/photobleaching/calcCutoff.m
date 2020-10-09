@@ -25,9 +25,8 @@ FRET = p.proj{proj}.FRET;
 nFRET = size(p.proj{proj}.FRET,1);
 S = p.proj{proj}.S;
 nS = size(S,1);
-gamma = p.proj{proj}.curr{mol}{6}{1}(1,:);
-beta = p.proj{proj}.curr{mol}{6}{1}(2,:);
-prm = p.proj{proj}.curr{mol}{2};
+gamma = p.proj{proj}.prm{mol}{5}{3};
+prm = p.proj{proj}.prm{mol}{2};
 
 apply = prm{1}(1);
 start = ceil(prm{1}(4)/nExc);
@@ -48,15 +47,10 @@ else
         trace = fret(:,i_f);
 
     elseif chan <= (nFRET+nS) % single stoichiometry channel
-        
-        i_s = chan-nFRET;
-        
-        % modified by MH, 14.1.2020
-%         S_chan = S(i_s,:);
-%         [o,l_s,o] = find(exc==chanExc(S_chan));
-%         trace = sum(I_den(:,:,S_chan(1)),2)./sum(sum(I_den(:,:,:),2),3);
-        s = calcS(exc, chanExc, S, FRET, I_den, gamma, beta);
-        trace = s(:,S(i_s));
+        i_s = chan - nFRET;
+        S_chan = S(i_s,:);
+        [o,l_s,o] = find(exc==chanExc(S_chan));
+        trace = sum(I_den(:,:,S_chan(1)),2)./sum(sum(I_den(:,:,:),2),3);
 
     elseif chan <= (nFRET+nS+nExc*nChan) % single intensity channel
         i_exc = ceil((chan - nFRET - nS)/nChan);

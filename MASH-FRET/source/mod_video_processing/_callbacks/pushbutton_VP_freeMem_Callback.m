@@ -4,5 +4,5 @@ if isfield(h,'movie') && isfield(h.movie,'movie') && ...
         ~isempty(h.movie.movie)
     h.movie.movie = [];
     guidata(h_fig,h);
-    set(obj,'backgroundcolor',get(obj,'userdata'));
+    set(obj,'backgroundcolor',repmat(.94,1,3));
 end

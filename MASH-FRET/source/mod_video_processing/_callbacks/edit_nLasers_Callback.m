@@ -35,19 +35,16 @@ else
     p.itg_wl = p.itg_wl(1:val);
 
     for ii = 1:size(p.chanExc,2)
-        if isempty(find(p.itg_wl==p.chanExc(ii),1))
+        if isempty(find(p.itg_wl==p.chanExc(ii)))
             % remove FRET calculations for which donors are not directly
             % excited anymore
-            if size(p.itg_expFRET,1)>0
+            if size(p.itg_expFRET,2)>0
                 p.itg_expFRET(p.itg_expFRET(:,1)==ii,:) = [];
             end
 
             % remove S calculations for dyes that are not directly
             % excited anymore
-            if size(p.itg_expS,1)>0
-                p.itg_expS(p.itg_expS(:,1)==ii | p.itg_expS(:,2)==ii,:) = ...
-                    [];
-            end
+            p.itg_expS(p.itg_expS==ii) = [];
 
             % remove channel excitations if reducing the number of lasers
             p.chanExc(ii) = 0;

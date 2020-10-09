@@ -7,5 +7,5 @@ if ~isempty(p.proj)
     p.proj{proj}.fix{3}(8) = val-1;
     h.param.ttPr = p;
     guidata(h_fig, h);
-    ud_factors(h_fig)
+    ud_cross(h_fig);
 end

@@ -549,8 +549,7 @@ end
 
 %% Traces processing fields
 
-if strcmp(opt, 'ttPr') || strcmp(opt, 'subImg') || strcmp(opt, 'cross') || ...
-        strcmp(opt, 'all')
+if strcmp(opt, 'ttPr') || strcmp(opt, 'subImg') || strcmp(opt, 'all')
     p = h.param.ttPr;
     
     if ~isempty(p.proj)
@@ -588,7 +587,6 @@ if strcmp(opt, 'ttPr') || strcmp(opt, 'subImg') || strcmp(opt, 'cross') || ...
         ud_ttBg(h_fig);
         ud_DTA(h_fig);
         ud_cross(h_fig);
-        ud_factors(h_fig)
         ud_plot(h_fig);
         
         h = guidata(h_fig);

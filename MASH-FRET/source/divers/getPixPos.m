@@ -3,9 +3,5 @@ function pos = getPixPos(obj)
 
 un = get(obj,'units');
 set(obj,'units','pixels');
-if obj==0
-    pos = get(obj,'screensize');
-else
-    pos = get(obj,'position');
-end
+pos = get(obj,'position');
 set(obj,'units',un);

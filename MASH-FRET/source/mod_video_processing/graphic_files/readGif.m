@@ -1,4 +1,4 @@
-function [data,ok] = readGif(fullFname, n, h_fig, useMov)
+function [data,ok] = readGif(fullFname, n, h_fig)
 
 % defaults
 data = [];
@@ -17,10 +17,6 @@ if ~isempty(h_fig)
             isMov = 2; % the movie variable exist and contain the video data
         end
     end
-end
-
-if ~useMov
-    isMov = 0;
 end
 
 info = imfinfo(fullFname); % information array of .tif file

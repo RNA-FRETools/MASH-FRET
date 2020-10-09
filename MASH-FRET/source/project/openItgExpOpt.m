@@ -79,7 +79,7 @@ h = guidata(h_fig);
 nPrm = size(p{1},1);
 nFixPrm = 4 + nExc;
 isFRET = nChan > 1;
-isS = isFRET & (nExc > 1);
+isS = nExc > 1;
 
 str_laser = {};
 exc = [];
@@ -115,26 +115,23 @@ if isS
     str_Slst = {};
     str_Spop = getStrPop('chan', {p{7}{2} []});
     if ~isempty(p{4})
-        excl = p{4}(:,1)>nChan | p{4}(:,2) > nChan;
-        for l = 1:size(p{4},1)
-            if size(p{6},2)>=max(p{4}(l,[1,2])) && p{6}(p{4}(l,1))>0 && ...
-                    p{6}(p{4}(l,2))>0
-                str_Slst = [str_Slst ['S ' p{7}{2}{p{4}(l,1)} ...
-                    p{7}{2}{p{4}(l,2)}]];
+        if size(p{4},2)>1
+            p{4} = p{4}(:,1);
+        end
+        p{4}((p{4}>nChan)) = [];
+        for l = 1:numel(p{4})
+            if p{6}(p{4}(l))>0
+                str_Slst = [str_Slst ['S ' p{7}{2}{p{4}(l)}]];
             else
-                excl(l) = true;
-            end
-            if ~sum(p{3}(:,1)==p{4}(l,1) & p{3}(:,2)==p{4}(l,2))
-                excl(l) = true;
+                p{4}(l) = [];
             end
         end
-        p{4}(excl,:) = [];
     end
 else
     p{4} = [];
 end
 
-clr_ref = getDefTrClr(nExc, exc, nChan, size(p{3},1), size(p{4},1));
+clr_ref = getDefTrClr(nExc, exc, nChan, size(p{3},1), numel(p{4}));
 for l = 1:nExc
     if l > size(p{5}{1},1)
         p{5}{1}(l:size(clr_ref{1},1),:) = clr_ref{1}(l:end,:);
@@ -197,7 +194,7 @@ if ~(isfield(h, 'figure_itgExpOpt') && ishandle(h.figure_itgExpOpt))
         {@figure_itgExpOpt_CloseRequestFcn, h_fig}, 'WindowStyle', ...
         'Modal');
     guidata(h.figure_itgExpOpt, p);
-    val_FRETprm = [1 1 1];
+    val_FRETprm = [1 1 1 1];
     val_Sprm = [1 1];
     val_chanPrm = [1 1];
     val_clrPrm = 1;
@@ -209,7 +206,7 @@ else
             get(h.itgExpOpt.listbox_FRETcalc, 'Value')];
     end
     if isS
-        val_Sprm = [get(h.itgExpOpt.popupmenu_Spairs, 'Value') ...
+        val_Sprm = [get(h.itgExpOpt.popupmenu_Snum, 'Value') ...
             get(h.itgExpOpt.listbox_Scalc, 'Value')];
     end
     val_chanPrm = [get(h.itgExpOpt.popupmenu_dyeChan, 'Value') ...
@@ -594,17 +591,16 @@ if isS
     xNext = mg;
 
     h.itgExpOpt.text_Snum = uicontrol('Style', 'text', 'Parent', ...
-        h.itgExpOpt.uipanel_sPrm, 'String', 'Of FRET pair: ', ...
-        'HorizontalAlignment', 'left', 'Position', ...
-        [xNext yNext w_med h_txt]);
+        h.itgExpOpt.uipanel_sPrm, 'String', ...
+        'Fluorescence stoichiometry of: ', 'HorizontalAlignment', ...
+        'left', 'Position', [xNext yNext w_lb h_txt]);
 
-    xNext = xNext + w_med;
+    xNext = xNext + w_lb;
 
-    h.itgExpOpt.popupmenu_Spairs = uicontrol('Style', 'popupmenu', ...
+    h.itgExpOpt.popupmenu_Snum = uicontrol('Style', 'popupmenu', ...
         'Parent', h.itgExpOpt.uipanel_sPrm, 'BackgroundColor', [1 1 1], ...
-        'Position', [xNext yNext 2*w_pop h_edit], 'String', str_Spop, ...
+        'Position', [xNext yNext w_but+mg h_edit], 'String', str_Spop, ...
         'Value', val_Sprm(1));
-
 end
 
 %% Panel color code
@@ -613,11 +609,11 @@ str_clrChan = getStrPop('DTA_chan', {p{7}{2} p{3} p{4} exc p{5}});
 if val_clrPrm <= size(p{3},1)
     curr_clr = p{5}{2}(val_clrPrm,:);
     
-elseif val_clrPrm <= size(p{3},1)+size(p{4},1)
+elseif val_clrPrm <= size(p{3},1)+numel(p{4})
     curr_clr = p{5}{3}((val_clrPrm-size(p{3},1)),:);
     
 else
-    ind = val_clrPrm-size(p{3},1)-size(p{4},1);
+    ind = val_clrPrm-size(p{3},1)-numel(p{4});
     c = ceil(ind/nExc);
     l = ind - (c-1)*nExc;
     curr_clr = p{5}{1}{l,c};
@@ -658,7 +654,7 @@ if isS
     uistack(h.itgExpOpt.pushbutton_remS, 'bottom');
     uistack(h.itgExpOpt.pushbutton_addS, 'bottom');
     uistack(h.itgExpOpt.listbox_Scalc, 'bottom');
-    uistack(h.itgExpOpt.popupmenu_Spairs, 'bottom');
+    uistack(h.itgExpOpt.popupmenu_Snum, 'bottom');
 end
 
 if isFRET
@@ -774,7 +770,7 @@ if exc==0
             break;
         end
     end
-    if isfield(h.itgExpOpt,'popupmenu_Spairs') && sum(sum(p{4}==chan)) && ...
+    if isfield(h.itgExpOpt,'popupmenu_Snum') && sum(p{4}==chan) && ...
         isfield(h.itgExpOpt,'popupmenu_FRETto') && sum(p{3}(:,1)==chan)
         choice = questdlg({cat(2,'Selected emitter is invoved in ',...
             'FRET and stoichiometry calculations. Changing its specific ',...
@@ -790,7 +786,7 @@ if exc==0
             set(obj,'Value',id);
             return;
         end
-    elseif isfield(h.itgExpOpt,'popupmenu_Spairs') && sum(sum(p{4}==chan))
+    elseif isfield(h.itgExpOpt,'popupmenu_Snum') && sum(p{4}==chan)
         choice = questdlg({cat(2,'Selected emitter is invoved in ',...
             'stoichiometry calculations. Changing its specific ',...
             'illumination to "none" will automatically remove the ',...
@@ -820,7 +816,7 @@ if exc==0
         end
     end
     if ud_s
-        p{4}(p{4}(:,1)==chan || p{4}(:,2)==chan) = [];
+        p{4}(p{4}==chan) = [];
     end
     if ud_fret
         p{3}(p{3}(:,1)==chan,:) = [];
@@ -888,11 +884,11 @@ chan = get(h.itgExpOpt.popupmenu_clrChan, 'Value');
 if chan <= size(p{3},1)
     p{5}{2}(chan,:) = rgb;
 
-elseif chan <= size(p{3},1)+size(p{4},1)
+elseif chan <= size(p{3},1)+numel(p{4})
     p{5}{3}((chan-size(p{3},1)),:) = rgb;
 
 else
-    ind = chan-size(p{3},1)-size(p{4},1);
+    ind = chan-size(p{3},1)-numel(p{4});
     i = 0;
     for l = 1:nExc
         for c = 1:nChan
@@ -945,11 +941,11 @@ chan = get(obj, 'Value');
 if chan <= size(p{3},1)
     clr = p{5}{2}(chan,:);
 
-elseif chan <= size(p{3},1)+size(p{4},1)
+elseif chan <= size(p{3},1)+numel(p{4})
     clr = p{5}{3}((chan-size(p{3},1)),:);
 
 else
-    ind = chan-size(p{3},1)-size(p{4},1);
+    ind = chan-size(p{3},1)-numel(p{4});
     i = 0;
     for l = 1:nExc
         for c = 1:nChan
@@ -978,32 +974,23 @@ function pushbutton_remFRET_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 slct = get(h.itgExpOpt.listbox_FRETcalc, 'Value');
 p = guidata(h.figure_itgExpOpt);
-
-if isempty(p{3})
-    return
+if ~isempty(p{3})
+    p_prev = p{3};
+    p{3} = [];
+    for i = 1:size(p_prev,1)
+        if i ~= slct
+            p{3} = [p{3};p_prev(i,:)];
+        end
+    end
+    guidata(h.figure_itgExpOpt,p);
+    ud_fretPanel(h_fig);
+    if isempty(p{3})
+        l = 0;
+    else
+        l = size(p{3},1);
+    end
+    set(h.itgExpOpt.listbox_FRETcalc, 'Value', l);
 end
-
-don = p{3}(slct,1);
-acc = p{3}(slct,2);
-
-% remove FRET
-p{3}(slct,:) = [];
-
-% remove S
-if size(p{4},1)>0
-    p{4}(p{4}(:,1)==don & p{4}(:,2)==acc,:) = [];
-end
-
-% save
-guidata(h.figure_itgExpOpt,p);
-
-% update GUI
-ud_fretPanel(h_fig);
-ud_sPanel(h_fig);
-
-% set selection to last pair in list
-l = size(p{3},1);
-set(h.itgExpOpt.listbox_FRETcalc, 'Value', l);
 
 
 function pushbutton_addFRET_Callback(obj, evd, h_fig)
@@ -1011,41 +998,36 @@ h = guidata(h_fig);
 chanFrom = get(h.itgExpOpt.popupmenu_FRETfrom, 'Value');
 chanTo = get(h.itgExpOpt.popupmenu_FRETto, 'Value');
 p = guidata(h.figure_itgExpOpt);
-ldon = p{6}(chanFrom);
-
-% control donor and acceptor channels
+exc = p{6}(chanFrom);
 if chanFrom == chanTo
-    return
-elseif ldon==0
-    updateActPan(['FRET calculation impossible: no excitation wavelength ',...
-        'specific to donor emitter is defined.'], h_fig, 'error');
-    return
-end
-for i = 1:size(p{3},1)
-    if isequal(p{3}(i,:),flip([chanFrom chanTo],2))
-        updateActPan(['Channel ' p{7}{2}{chanTo} ...
-            ' is already defined as the donor in the pair ' ...
-            p{7}{2}{chanTo} '/' p{7}{2}{chanFrom}], h_fig, 'error');
-        return
+    updateActPan('DONOR and ACCEPTOR channels must be different.', ...
+        h_fig, 'error');
+elseif exc==0
+    updateActPan(['FRET calculation impossible: no donor-specific '...
+        'illumination is defined.'], h_fig, 'error');
+else
+    p = guidata(h.figure_itgExpOpt);
+    for i = 1:size(p{3},1)
+        if isequal(p{3}(i,:),flipdim([chanFrom chanTo],2))
+            updateActPan(['Channel ' p{7}{2}{chanTo} ...
+                ' is already defined as the donor in the pair ' ...
+                p{7}{2}{chanTo} '/' p{7}{2}{chanFrom}], h_fig, 'error');
+            return;
+        end
+        if isequal(p{3}(i,:),[chanFrom chanTo])
+            return;
+        end
     end
-    if isequal(p{3}(i,:),[chanFrom chanTo])
-        return
+    p{3}(size(p{3},1)+1,1:2) = [chanFrom chanTo];
+    guidata(h.figure_itgExpOpt, p);
+    ud_fretPanel(h_fig);
+    if isempty(p{3})
+        l = 0;
+    else
+        l = size(p{3},1);
     end
+    set(h.itgExpOpt.listbox_FRETcalc, 'Value', l);
 end
-
-% add FRET pair
-p{3}(size(p{3},1)+1,1:2) = [chanFrom chanTo];
-
-% save
-guidata(h.figure_itgExpOpt, p);
-
-% update panels
-ud_fretPanel(h_fig);
-ud_sPanel(h_fig);
-
-% set selection to last pair in list
-l = size(p{3},1);
-set(h.itgExpOpt.listbox_FRETcalc, 'Value', l);
 
 
 function ud_fretPanel(h_fig)
@@ -1053,9 +1035,8 @@ h = guidata(h_fig);
 p = guidata(h.figure_itgExpOpt);
 
 % added by MH, 3.4.2019
-isFRET = isfield(h.itgExpOpt,'popupmenu_FRETfrom');
-if ~isFRET
-    return
+if ~isfield(h.itgExpOpt,'popupmenu_FRETfrom')
+    return;
 end
 
 % get excitation wavelengths
@@ -1117,9 +1098,8 @@ h = guidata(h_fig);
 p = guidata(h.figure_itgExpOpt);
 
 % added by MH, 3.4.2019
-isS = isfield(h.itgExpOpt,'popupmenu_Spairs');
-if ~isS
-    return
+if ~isfield(h.itgExpOpt,'popupmenu_Snum')
+    return;
 end
 
 % get excitation wavelengths
@@ -1129,34 +1109,22 @@ for i = 1:size(str_exc,1)-1
 end
 
 % set channel popupmenu string
-nFRET = size(p{3},1);
-if nFRET>0
-    str_pairs = {};
-    for fret = 1:nFRET
-        str_pairs = cat(2,str_pairs,cat(2,p{7}{2}{p{3}(fret,1)},'/',...
-            p{7}{2}{p{3}(fret,2)}));
-    end
-    val = get(h.itgExpOpt.popupmenu_Spairs,'value');
-    if val>nFRET
-        val = nFRET;
-    end
-else
-    str_pairs = 'no FRET pair';
-    val = 1;
+if isfield(h.itgExpOpt, 'popupmenu_Snum')
+    set(h.itgExpOpt.popupmenu_Snum, 'String', p{7}{2});
 end
-set(h.itgExpOpt.popupmenu_Spairs, 'String', str_pairs, 'Value', val);
 
 % build S list string and S default colors
 rgb_Smin = [0,0,1];
 rgb_Smax = [1,1,1];
+str_S = get(h.itgExpOpt.popupmenu_Snum, 'String');
 str_lst = {};
-for s = 1:size(p{4},1)
-    str_lst = [str_lst ['S ' p{7}{2}{p{4}(s,1)} p{7}{2}{p{4}(s,2)}]];
-    if s > size(p{5}{3},1)
-        if s>1
-            p{5}{3}(s,:) = mean([p{5}{3}(s-1,:);rgb_Smax],1);
+for l = 1:numel(p{4})
+    str_lst = [str_lst ['S ' str_S{p{4}(l)}]];
+    if l > size(p{5}{3},1)
+        if l>1
+            p{5}{3}(l,:) = mean([p{5}{3}(l-1,:);rgb_Smax],1);
         else
-            p{5}{3}(s,:) = rgb_Smin;
+            p{5}{3}(l,:) = rgb_Smin;
         end
     end
 end
@@ -1190,47 +1158,56 @@ h = guidata(h_fig);
 slct = get(h.itgExpOpt.listbox_Scalc, 'Value');
 p = guidata(h.figure_itgExpOpt);
 
+str_exc = get(h.itgExpOpt.popupmenu_dyeExc,'String');
+for i = 1:size(str_exc,1)-1
+    exc(i) = getValueFromStr('', str_exc{i,1});
+end
 if ~isempty(p{4})
-    p{4}(slct,:) = [];
+    p_prev = p{4};
+    p{4} = [];
+    for i = 1:size(p_prev,1)
+        if i ~= slct
+            p{4} = [p{4};p_prev(i)];
+        end
+    end
     guidata(h.figure_itgExpOpt,p);
     ud_sPanel(h_fig);
-    l = size(p{4},1);
+    if isempty(p{4})
+        l = 0;
+    else
+        l = numel(p{4});
+    end
     set(h.itgExpOpt.listbox_Scalc, 'Value', l);
 end
 
 
 function pushbutton_addS_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
-fret = get(h.itgExpOpt.popupmenu_Spairs, 'Value');
+chanS = get(h.itgExpOpt.popupmenu_Snum, 'Value');
 p = guidata(h.figure_itgExpOpt);
-
-if size(p{3},1)==0
-    return
+str_exc = get(h.itgExpOpt.popupmenu_dyeExc,'String');
+for i = 1:size(str_exc,1)-1
+    exc(i) = getValueFromStr('', str_exc{i,1});
 end
 
-don = p{3}(fret,1);
-acc = p{3}(fret,2);
+if ~isempty(find(p{4}==chanS,1))
+    return;
     
-if don==acc || (size(p{4},1)>0 && ~isempty(find(p{4}(:,1)==don & ...
-        p{4}(:,2)==acc,1)))
-    return
-    
-elseif p{6}(don)==0
-    updateActPan(['The stoichiometry can not be calculated: excitation ',...
-        'wavelength specific to ' p{7}{2}{don} ' is not defined.'], h_fig,...
-        'error');
-    return
-elseif p{6}(acc)==0
-    updateActPan(['The stoichiometry can not be calculated: excitation ',...
-        'wavelength specific to ' p{7}{2}{acc} ' is not defined.'], h_fig,...
-        'error');
-    return
+elseif p{6}(chanS)==0
+    updateActPan(['The direct excitation wavelength of ' p{7}{2}{chanS} ...
+        ' is not defined. The stoichiometry can not be calculated'],...
+        h_fig, 'error');
+    return;
 end
 
-p{4} = cat(1,p{4},[don,acc]);
+p{4}(numel(p{4})+1,1) = chanS;
 guidata(h.figure_itgExpOpt,p);
 ud_sPanel(h_fig);
-l = size(p{4},1);
+if isempty(p{4})
+    l = 0;
+else
+    l = numel(p{4});
+end
 set(h.itgExpOpt.listbox_Scalc, 'Value', l);
 
 

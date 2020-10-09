@@ -14,7 +14,7 @@ set(h.text_frameCurr, 'String', cursorPos);
 
 [data,ok] = getFrames([h.movie.path h.movie.file], cursorPos, ...
     {h.movie.speCursor [h.movie.pixelX h.movie.pixelY] ...
-    h.movie.framesTot}, h_fig, true);
+    h.movie.framesTot}, h_fig);
 if ok
     p = h.param.movPr;
     if size(p.SFres,1) >= 1

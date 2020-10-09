@@ -42,7 +42,7 @@ if ~isempty(p.proj)
             p.proj{proj}.curr{mol}{3}{3}{l,c}(method,2) = val;
             h.param.ttPr = p;
             guidata(h_fig, h);
-            updateFields(h_fig, 'subImg');
+            updateFields(h_fig, 'ttPr');
         end
     end
 end

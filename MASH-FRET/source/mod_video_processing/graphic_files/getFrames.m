@@ -1,4 +1,4 @@
-function [data,ok] = getFrames(fullFname, n, param, h_fig, useMov)
+function [data,ok] = getFrames(fullFname, n, param, h_fig)
 
     % read video data and parameters from file
     [o,o,fext] = fileparts(fullFname);
@@ -10,22 +10,22 @@ function [data,ok] = getFrames(fullFname, n, param, h_fig, useMov)
     switch lower(fext)
         case '.sira'
             % Create a structure containing data
-            [data,ok] = readSira(fullFname, n, param, h_fig, useMov);
+            [data,ok] = readSira(fullFname, n, param, h_fig);
             return;
             
         case '.sif'
             % Create a structure containing data
-            [data,ok] = readSif(fullFname, n, param, h_fig, useMov);
+            [data,ok] = readSif(fullFname, n, param, h_fig);
             return;
             
         case '.tif'
             % Create a structure containing data
-            [data,ok] = readTif(fullFname, n, param, h_fig, useMov);
+            [data,ok] = readTif(fullFname, n, param, h_fig);
             return;
             
         case '.gif'
             % Create a structure containing data
-            [data,ok] = readGif(fullFname, n, h_fig, useMov);
+            [data,ok] = readGif(fullFname, n, h_fig);
             return;
           
         case '.png'
@@ -35,12 +35,12 @@ function [data,ok] = getFrames(fullFname, n, param, h_fig, useMov)
             
         case '.pma'
             % Create a structure containing data
-            [data,ok] = readPma(fullFname, n, param, h_fig, useMov);
+            [data,ok] = readPma(fullFname, n, param, h_fig);
             return;
             
         case '.spe'
             % Create a structure containing data
-            [data,ok] = readSpe(fullFname, n, h_fig, useMov);
+            [data,ok] = readSpe(fullFname, n, h_fig);
             return;
             
         case '.crd'

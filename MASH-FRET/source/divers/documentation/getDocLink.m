@@ -56,14 +56,12 @@ switch sect
         link_str = cat(2,base_tp,'panels/panel-subimage.html');
     case 'background correction'
         link_str = cat(2,base_tp,'panels/panel-background-correction.html');
-    case 'cross-talks'
-        link_str = cat(2,base_tp,'panels/panel-cross-talks.html');
+    case 'factor corrections'
+        link_str = cat(2,base_tp,'panels/panel-factor-corrections.html');
     case 'denoising'
         link_str = cat(2,base_tp,'panels/panel-denoising.html');
     case 'photobleaching'
         link_str = cat(2,base_tp,'panels/panel-photobleaching.html');
-    case 'factor corrections'
-        link_str = cat(2,base_tp,'panels/panel-factor-corrections.html');
     case 'find states'
         link_str = cat(2,base_tp,'panels/panel-find-states.html');
     case 'tp visualization'

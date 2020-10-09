@@ -6,10 +6,7 @@ function saveProcAscii(h_fig, p, xp, pname, name)
 % "pname" >> destination folder
 % "name" >> destination file name
 
-%% Last update by MH, 16.1.2019
-% --> export beta factors
-%
-% update by MH, 24.4.2019
+%% Last update by MH, 24.4.2019
 % --> adapt code to new molecule tag structure
 %
 % update: by MH 22.4.2019 by MH
@@ -49,8 +46,8 @@ fromTT = isequalwithequalnans(p, h.param.ttPr);
 %% collect project parameters
 
 proj = p.curr_proj;
-nC = p.proj{proj}.nb_channel;
-nMol = size(p.proj{proj}.intensities,2)/nC;
+nChan = p.proj{proj}.nb_channel;
+nMol = size(p.proj{proj}.intensities,2)/nChan;
 coord = p.proj{proj}.coord;
 if fromTT && xp.mol_valid
     mol_incl = p.proj{proj}.coord_incl;
@@ -76,6 +73,7 @@ end
 
 exc = p.proj{proj}.excitations;
 chanExc = p.proj{proj}.chanExc;
+labels = p.proj{proj}.labels;
 expT = p.proj{proj}.frame_rate; % MH: this is the EXPOSURE TIME
 
 FRET = p.proj{proj}.FRET;
@@ -115,7 +113,7 @@ if saveTr
     saveSmart = false;
     saveQub = false;
     saveEbfret = false;
-    saveFact = false;
+    saveGam = false;
     
     if sum(double(xp.traces{1}(2) == [1 7]))
         saveAscii = true; % one file/mol
@@ -143,7 +141,7 @@ if saveTr
         pname_ebfret = setCorrectPath(cat(2,pname,'traces_ebFRET'),h_fig);
     end
     if xp.traces{2}(6) && nFRET > 0
-        saveFact = true;  % added by FS, 19.3.2018
+        saveGam = true;  % added by FS, 19.3.2018
     end
     saveTr_I = xp.traces{2}(1);
     saveTr_fret = ~~xp.traces{2}(2) & nFRET > 0;
@@ -273,617 +271,624 @@ guidata(h_fig, h);
 % -------------------------------------------------------------------------
 
 gammaAll = NaN(nMol,nFRET);  % added by FS, 19.3.2018
-betaAll = NaN(nMol,nS); % added by MH, 16.1.2020
 
 n = 0;
 try
     for m = 1:nMol
-        if ~(mol_incl(m) && mol_incl_tag(m))  % added by FS, 24.4.2018
-            continue
-        end
+        if mol_incl(m) && mol_incl_tag(m)  % added by FS, 24.4.2018
             
-        % increment number of exported molecules
-        n = n + 1;
-
-        % display action
-        disp(cat(2,'export data of molecule n:°',num2str(m),'(',num2str(n),...
-            ' on ',num2str(N),')...'));
-
-        % if requested, process molecule data before exporting
-        if fromTT && xp.process
-
-            % process data
-            p = updateTraces(h_fig, 'ttPr', m, p, []);
-
-            % collect processed data
-            intensities = p.proj{proj}.intensities_denoise;
-            intensities_DTA = p.proj{proj}.intensities_DTA;
-            FRET_DTA = p.proj{proj}.FRET_DTA;
-            S_DTA = p.proj{proj}.S_DTA;
-        end
-
-        % build frame and time column
-        incl = p.proj{proj}.bool_intensities(:,m);
-        [frames,o,o] = find(incl);
-        frames = ((nExc*(frames(1)-1)+1):nExc*frames(end))';
-        times = frames*expT;
-
-        % build molecule file name
-        name_mol = [name '_mol' num2str(m) 'of' num2str(nMol)];
-
-        % intensity traces are/aren't discretized
-        if fromTT
-            discrInt = ~p.proj{proj}.prm{m}{4}{1}(2) || ...
-                p.proj{proj}.prm{m}{4}{1}(2)==2;
-        else
-            discrInt = 1;
-        end
-
-        % select molecule intensity data
-        int_m = intensities(incl,((m-1)*nC+1):m*nC,:);
-        intDTA_m = intensities_DTA(incl,((m-1)*nC+1):m*nC,:);
-
-        % format molecule processing parameters
-        if fromTT && saveTr && (savePrm<3) % save parameters
-            str_xp = getStrPrm(p.proj{proj}, m, mol_incl&mol_incl_tag,...
-                h_fig);
-        end
-        
-        if fromTT
-            gamma = p.proj{proj}.prm{m}{6}{1}(1,:);
-            beta = p.proj{proj}.prm{m}{6}{1}(2,:);
-        else
-            gamma = ones(1,nFRET);
-            beta = ones(1,nFRET);
-        end
-
-        %% export traces
-
-        if saveTr && saveAscii
-            % initialize data to write in file
-            head_I = [];    fmt_I = [];    dat_I = [];
-            head_fret = []; fmt_fret = []; dat_fret = [];
-            head_s = [];    fmt_s = [];    dat_s = [];
-
-            if saveTr_I
-                % format intensity data
-                [head_I,fmt_I,dat_I] = formatInt2File(exc, ...
-                    [times,frames],cat(2,int_m,intDTA_m),iunits,...
-                    discrInt);
+            % increment number of exported molecules
+            n = n + 1;
+            
+            % display action
+            disp(cat(2,'export data of molecule n:°',num2str(m),'(',...
+                num2str(n),' on ',num2str(N),')...'));
+            
+            % if requested, process molecule data before exporting
+            if fromTT && xp.process
                 
-                % write data to intensity file
-                if ~allInOne && ~writeDat2file(cat(2,pname_ascii,name_mol),...
-                        '_I.txt',{head_I,fmt_I,dat_I},[fromTT,savePrm],...
-                        str_xp,h_fig)
-                    return
-                end
-            end
-
-            if saveTr_fret
-                % calculate FRET
-                FRET_all = calcFRET(nC,nExc,exc,chanExc,FRET,...
-                    int_m,gamma);
-                FRET_DTA_all = FRET_DTA(incl,(m-1)*nFRET+1:m*nFRET);
-
-                % format FRET data
-                [head_fret,fmt_fret,dat_fret] = formatFret2File(...
-                    exc,chanExc,[times,frames],cat(2,FRET_all,...
-                    FRET_DTA_all),FRET);
+                % process data
+                p = updateTraces(h_fig, 'ttPr', m, p, []);
                 
-                % write data to FRET file
-                if ~allInOne && ~writeDat2file(cat(2,pname_ascii,name_mol),...
-                        '_FRET.txt',{head_fret,fmt_fret,dat_fret},...
-                        [fromTT,savePrm],str_xp,h_fig)
-                    return
-                end
+                % collect processed data
+                intensities = p.proj{proj}.intensities_denoise;
+                intensities_DTA = p.proj{proj}.intensities_DTA;
+                FRET_DTA = p.proj{proj}.FRET_DTA;
+                S_DTA = p.proj{proj}.S_DTA;
+            end
+            
+            % build frame and time column
+            incl = p.proj{proj}.bool_intensities(:,m);
+            [frames,o,o] = find(incl);
+            frames = ((nExc*(frames(1)-1)+1):nExc*frames(end))';
+            times = frames*expT;
+            
+            % build molecule file name
+            name_mol = [name '_mol' num2str(m) 'of' num2str(nMol)];
+            
+            % intensity traces are/aren't discretized
+            if fromTT
+                discrInt = ~p.proj{proj}.prm{m}{4}{1}(2) || ...
+                    p.proj{proj}.prm{m}{4}{1}(2)==2;
+            else
+                discrInt = 1;
+            end
+            
+            % select molecule intensity data
+            int_m = intensities(incl,((m-1)*nChan+1):m*nChan,:);
+            intDTA_m = intensities_DTA(incl,((m-1)*nChan+1):m*nChan,:);
+            
+            % format molecule processing parameters
+            if fromTT && saveTr && (savePrm<3) % save parameters
+                str_xp = getStrPrm(p.proj{proj}, m, mol_incl&mol_incl_tag, ...
+                    h_fig);
             end
 
-            if saveTr_S
-                % calculate Stoichiometry
-                S_all = calcS(exc,chanExc,S,FRET,int_m,gamma,beta);
-                S_DTA_all = S_DTA(incl,(m-1)*nS+1:m*nS);
+            %% export traces
 
-                % format Stoichiometry data
-                [head_s,fmt_s,dat_s] = formatS2File(exc,chanExc,...
-                    [times,frames],cat(2,S_all,S_DTA_all),S);
-                
-                % write data to stoichiometry file
-                if ~allInOne && ~writeDat2file(cat(2,pname_ascii,name_mol),...
-                        '_S.txt',{head_s,fmt_s,dat_s},[fromTT,savePrm],...
-                        str_xp,h_fig)
-                    return
-                end
-            end
-
-            if allInOne
-                % write data in molecule file
-                if ~writeDat2file(cat(2,pname_ascii,name_mol),'.txt',...
-                        {head_I,fmt_I,dat_I;head_fret,fmt_fret,dat_fret;...
-                        head_s,fmt_s,dat_s},[fromTT,savePrm],str_xp,h_fig)
-                    return
-                end
-            end
-        end
-
-        % save traces compatible with external software
-        if saveTr&&(saveHa||saveVbfret||saveSmart||saveEbfret||saveQub)
-
-            for j = 1:nFRET
-                % format intensity data for FRET calculation
-                ext_f = cat(2,'FRET',num2str(FRET(j,1)),'to',...
-                    num2str(FRET(j,2)));
-                [o,l,o] = find(exc==chanExc(FRET(j,1)));
-                I_fret{j}{n} = intensities(incl,[(m-1)*nC+FRET(j,1), ...
-                    (m-1)*nC+FRET(j,2)],l);
-
-                if saveHa
-                    % format HaMMy data
-                    [head,fmt,dat] = formatHa2File(times(l:nExc:end,1),...
-                        I_fret{j}{n});
-
-                    % write data to HaMMy file
-                    if ~writeDat2file(cat(2,pname_ha,name_mol),...
-                            cat(2,ext_f,'_HaMMy.dat'),{head,fmt,dat},...
-                            [fromTT,0],'',h_fig)
-                        return;
-                    end
-                end
-
-                if saveSmart
-                    % format SMART data
-                    if ~p.proj{proj}.is_coord
-                        dat_smart{j} = formatSmart2File(I_fret{j}{n},[n,N],...
-                            1/(expT*nExc),zeros(numel(mol_incl),...
-                            numel(2*FRET(j,1)-1:2*FRET(j,1))));
-                    else
-                        dat_smart{j} = formatSmart2File(I_fret{j}{n},[n,N],...
-                            1/(expT*nExc),coord(mol_incl,...
-                            (2*FRET(j,1)-1):2*FRET(j,1)));
-                    end
-
-                end
-
-                if saveEbfret
-                    % format ebFRET data
-                    data_ebfret{j} = cat(1,data_ebfret{j},...
-                        cat(2,ones(size(I_fret{j}{n},1),1)*n,...
-                        I_fret{j}{n}));
-                end
-
-                if saveQub
-                    % format QuB data
-                    [head,fmt,dat] = formatQub2File(I_fret{j}{n});
-
-                    % write data to QuB file
-                    if ~writeDat2file(cat(2,pname_qub,name_mol),...
-                            cat(2,ext_f,'_QUB.txt'),{head,fmt,dat},...
-                            [fromTT,0],'',h_fig)
-                        return;
-                    end
-                end
-            end
-        end
-        
-        % save parameters
-        if saveTr && fromTT && savePrm==1 
-            % write parameters to file
-            if ~writeDat2file(cat(2,pname_xp,name_mol),'.log',...
-                    {'',str_xp,[]},[fromTT,0],'',h_fig)
-                return
-            end
-        end
-        
-        % format gamma factor data
-        % added by FS, 19.3.2018
-        if saveTr && saveFact
-            for i = 1:nFRET
-                if fromTT
-                    gammaAll(m,i) = p.proj{proj}.prm{m}{6}{1}(1,i);
-                    betaAll(m,i) = p.proj{proj}.prm{m}{6}{1}(2,i);
-                else
-                    gammaAll(m,i) = 1;
-                    betaAll(m,i) = 1;
-                end
-            end
-        end
-
-
-        %% histograms
-
-        if saveHist
-            if saveHst_I
-
-                x_I = minI:binI:maxI;
-
-                for l = 1:nExc
-                    for c = 1:nC
-
-                        % format intensity histogram data
-                        I = intensities(incl,(m-1)*nC+c,l);
-                        histI = [];
-                        histI(:,1) = x_I';
-                        histI(:,2) = (hist(I,x_I))';
-                        histI(:,3) = histI(:,2)/sum(histI(:,2));
-                        histI(:,4) = cumsum(histI(:,2));
-                        histI(:,5) = histI(:,4)/histI(end,4);
-
-                        % build file name
-                        fname_histI = cat(2,name_mol,'_I',num2str(c),...
-                            '-',num2str(exc(l)),'.hist');
-                        fname_histI = overwriteIt(fname_histI,...
-                            pname_hist,h_fig);
-                        if isempty(fname_histI)
-                            return;
-                        end
-
-                        % write data to file
-                        f = fopen(cat(2,pname_hist,fname_histI),'Wt');
-                        fprintf(f,cat(2,'I',num2str(c),'-', ...
-                            num2str(exc(l)),'\tfrequency count\t',...
-                            'probability\tcumulative frequency ',...
-                            'count\tcumulative probability\n'));
-                        fprintf(f,cat(2,repmat('%d\t',...
-                            [1,size(histI,2)]),'\n'),histI');
-                        fclose(f);
-
-                        if inclDiscr && discrInt
-                            % format discrete intensity histogram
-                            discrI = ...
-                                intensities_DTA(incl,(m-1)*nC+c,l);
-                            histdI = [];
-                            histdI(:,1) = x_I';
-                            histdI(:,2) = (hist(discrI,x_I))';
-                            histdI(:,3) = ...
-                                histdI(:,2)/sum(histdI(:,2));
-                            histdI(:,4) = cumsum(histdI(:,2));
-                            histdI(:,5) = histdI(:,4)/histdI(end,4);
-
-                            % build file name
-                            fname_histdI = cat(2,name_mol,'_I',num2str(c),...
-                            '-',num2str(exc(l)),'_discr.hist');
-                            fname_histdI = overwriteIt(fname_histdI,...
-                                pname_hist,h_fig);
-                            if isempty(fname_histdI)
+            if saveTr
+                if saveAscii
+                    % initialize data to write in file
+                    head_I = [];    fmt_I = [];    dat_I = [];
+                    head_fret = []; fmt_fret = []; dat_fret = [];
+                    head_s = [];    fmt_s = [];    dat_s = [];
+                    
+                    if saveTr_I
+                        % format intensity data
+                        [head_I,fmt_I,dat_I] = formatInt2File(exc, ...
+                            [times,frames],cat(2,int_m,intDTA_m),iunits,...
+                            discrInt);
+                        
+                        if ~allInOne
+                            % write data to intensity file
+                            if ~writeDat2file(cat(2,pname_ascii,name_mol),...
+                                    '_I.txt',{head_I,fmt_I,dat_I},...
+                                    [fromTT,savePrm],str_xp,h_fig)
                                 return;
                             end
+                        end
+                    end
+                    
+                    if saveTr_fret
+                        % calculate FRET
+                        if fromTT
+                            gamma = p.proj{proj}.prm{m}{5}{3};
+                        else
+                            gamma = 1;
+                        end
+                        FRET_all = calcFRET(nChan,nExc,exc,chanExc,FRET,...
+                            int_m,gamma);
+                        FRET_DTA_all = FRET_DTA(incl,(m-1)*nFRET+1:m*nFRET);
+                        
+                        % format FRET data
+                        [head_fret,fmt_fret,dat_fret] = formatFret2File(...
+                            exc,chanExc,[times,frames],cat(2,FRET_all,...
+                            FRET_DTA_all),FRET);
 
+                        if ~allInOne
+                            % write data to FRET file
+                            if ~writeDat2file(cat(2,pname_ascii,name_mol),...
+                                    '_FRET.txt',{head_fret,fmt_fret,...
+                                    dat_fret},[fromTT,savePrm],str_xp,...
+                                    h_fig)
+                                return;
+                            end
+                        end
+                    end
+                    
+                    if saveTr_S
+                        % format stoichiometry data
+                        [head_s,fmt_s,dat_s] = formatS2File(exc,chanExc,...
+                            [times,frames],int_m,...
+                            S_DTA(incl,(m-1)*nS+1:m*nS),labels,S);
+                        
+                        if ~allInOne
+                            % write data to stoichiometry file
+                            if ~writeDat2file(cat(2,pname_ascii,name_mol),...
+                                    '_S.txt',{head_s,fmt_s,dat_s},...
+                                    [fromTT,savePrm],str_xp,h_fig)
+                                return;
+                            end
+                        end
+                    end
+                    
+                    if allInOne
+                        % write data in molecule file
+                        if ~writeDat2file(cat(2,pname_ascii,name_mol),...
+                                '.txt',{head_I,fmt_I,dat_I;head_fret,...
+                                fmt_fret,dat_fret;head_s,fmt_s,dat_s},...
+                                [fromTT,savePrm],str_xp,h_fig)
+                            return;
+                        end
+                    end
+                end
+                
+                % save traces compatible with external software
+                if saveHa||saveVbfret||saveSmart||saveEbfret||saveQub
+                    
+                    for j = 1:nFRET
+                        % format intensity data for FRET calculation
+                        ext_f = cat(2,'FRET',num2str(FRET(j,1)),'to', ...
+                            num2str(FRET(j,2)));
+                        [o,l,o] = find(exc==chanExc(FRET(j,1)));
+                        I_fret{j}{n} = intensities(incl,[(m-1)*nChan+FRET(j,1), ...
+                            (m-1)*nChan+FRET(j,2)],l);
+
+                        if saveHa
+                            % format HaMMy data
+                            [head,fmt,dat] = formatHa2File(...
+                                times(l:nExc:end,1),I_fret{j}{n});
+
+                            % write data to HaMMy file
+                            if ~writeDat2file(cat(2,pname_ha,name_mol),...
+                                    cat(2,ext_f,'_HaMMy.dat'),...
+                                    {head,fmt,dat},[fromTT,0],'',h_fig)
+                                return;
+                            end
+                        end
+
+                        if saveSmart
+                            % format SMART data
+                            if ~p.proj{proj}.is_coord
+                                dat_smart{j} = formatSmart2File(...
+                                    I_fret{j}{n},[n,N],1/(expT*nExc),...
+                                    zeros(numel(mol_incl),...
+                                    numel(2*FRET(j,1)-1:2*FRET(j,1))));
+                            else
+                                dat_smart{j} = formatSmart2File(...
+                                    I_fret{j}{n},[n,N],1/(expT*nExc),...
+                                    coord(mol_incl,...
+                                    (2*FRET(j,1)-1):2*FRET(j,1)));
+                            end
+                            
+                        end
+
+                        if saveEbfret
+                            % format ebFRET data
+                            data_ebfret{j} = cat(1,data_ebfret{j},...
+                                cat(2,ones(size(I_fret{j}{n},1),1)*n,...
+                                I_fret{j}{n}));
+                        end
+
+                        if saveQub
+                            % format QuB data
+                            [head,fmt,dat] = formatQub2File(I_fret{j}{n});
+
+                            % write data to QuB file
+                            if ~writeDat2file(cat(2,pname_qub,name_mol),...
+                                    cat(2,ext_f,'_QUB.txt'),{head,fmt,dat},...
+                                    [fromTT,0],'',h_fig)
+                                return;
+                            end
+                        end
+                    end
+                end
+                
+                % save parameters
+                if fromTT && savePrm == 1 
+                    
+                    % write parameters to file
+                    if ~writeDat2file(cat(2,pname_xp,name_mol),'.log',...
+                            {'',str_xp,[]},[fromTT,0],'',h_fig)
+                        return;
+                    end
+                end
+                
+                % format gamma factor data
+                % added by FS, 19.3.2018
+                if saveGam
+                    for i = 1:nFRET
+                        if fromTT
+                            gammaAll(m,i) = p.proj{proj}.prm{m}{5}{3}(i);
+                        else
+                            gammaAll(m,i) = 1;
+                        end
+                    end
+                end
+            end
+
+
+            %% histograms
+
+            if saveHist
+                if saveHst_I
+                    
+                    x_I = minI:binI:maxI;
+                    
+                    for l = 1:nExc
+                        for c = 1:nChan
+                            
+                            % format intensity histogram data
+                            I = intensities(incl,(m-1)*nChan+c,l);
+                            histI = [];
+                            histI(:,1) = x_I';
+                            histI(:,2) = (hist(I,x_I))';
+                            histI(:,3) = histI(:,2)/sum(histI(:,2));
+                            histI(:,4) = cumsum(histI(:,2));
+                            histI(:,5) = histI(:,4)/histI(end,4);
+                            
+                            % build file name
+                            fname_histI = cat(2,name_mol,'_I',num2str(c),...
+                                '-',num2str(exc(l)),'.hist');
+                            fname_histI = overwriteIt(fname_histI,...
+                                pname_hist,h_fig);
+                            if isempty(fname_histI)
+                                return;
+                            end
+                            
                             % write data to file
-                            f = fopen(cat(2,pname_hist,fname_histdI),...
-                                'Wt');
-                            fprintf(f,cat(2,'discr.I',num2str(c),'-', ...
+                            f = fopen(cat(2,pname_hist,fname_histI),'Wt');
+                            fprintf(f,cat(2,'I',num2str(c),'-', ...
                                 num2str(exc(l)),'\tfrequency count\t',...
                                 'probability\tcumulative frequency ',...
                                 'count\tcumulative probability\n'));
                             fprintf(f,cat(2,repmat('%d\t',...
-                                [1,size(histdI,2)]),'\n'),histdI');
+                                [1,size(histI,2)]),'\n'),histI');
                             fclose(f);
+
+                            if inclDiscr && discrInt
+                                % format discrete intensity histogram
+                                discrI = ...
+                                    intensities_DTA(incl,(m-1)*nChan+c,l);
+                                histdI = [];
+                                histdI(:,1) = x_I';
+                                histdI(:,2) = (hist(discrI,x_I))';
+                                histdI(:,3) = ...
+                                    histdI(:,2)/sum(histdI(:,2));
+                                histdI(:,4) = cumsum(histdI(:,2));
+                                histdI(:,5) = histdI(:,4)/histdI(end,4);
+                                
+                                % build file name
+                                fname_histdI = cat(2,name_mol,'_I',num2str(c),...
+                                '-',num2str(exc(l)),'_discr.hist');
+                                fname_histdI = overwriteIt(fname_histdI,...
+                                    pname_hist,h_fig);
+                                if isempty(fname_histdI)
+                                    return;
+                                end
+                                
+                                % write data to file
+                                f = fopen(cat(2,pname_hist,fname_histdI),...
+                                    'Wt');
+                                fprintf(f,cat(2,'discr.I',num2str(c),'-', ...
+                                    num2str(exc(l)),'\tfrequency count\t',...
+                                    'probability\tcumulative frequency ',...
+                                    'count\tcumulative probability\n'));
+                                fprintf(f,cat(2,repmat('%d\t',...
+                                    [1,size(histdI,2)]),'\n'),histdI');
+                                fclose(f);
+                            end
                         end
                     end
                 end
-            end
-
-            if saveHst_fret
-
-                x_fret = minFret:binFret:maxFret;
-
-                % calculate FRET data
-                FRET_all = calcFRET(nC, nExc, exc, chanExc,FRET, ...
-                    intensities(incl,(((m-1)*nC+1):m*nC),:),gamma);
-
-                for i = 1:nFRET
-                    % format FRET histogram
-                    FRET_tr = FRET_all(:,i);
-                    histF = [];
-                    histF(:,1) = x_fret';
-                    histF(:,2) = (hist(FRET_tr,x_fret))';
-                    histF(:,3) = histF(:,2)/sum(histF(:,2));
-                    histF(:,4) = cumsum(histF(:,2));
-                    histF(:,5) = histF(:,4)/histF(end,4);
-
-                    % build file name
-                    fname_histF = cat(2,name_mol,'_FRET',...
-                        num2str(FRET(i,1)),'to',num2str(FRET(i,2)),...
-                        '.hist');
-                    fname_histF = overwriteIt(fname_histF,pname_hist,...
-                        h_fig);
-                    if isempty(fname_histF)
-                        return;
+                
+                if saveHst_fret
+                    
+                    x_fret = minFret:binFret:maxFret;
+                    
+                    % calculate FRET data
+                    if fromTT
+                        gamma = p.proj{proj}.prm{m}{5}{3};
+                    else
+                        gamma = 1;
                     end
-
-                    % write data to file
-                    f = fopen(cat(2,pname_hist,fname_histF),'Wt');
-                    fprintf(f,cat(2,'FRET\tfrequency count\t',...
-                        'probability\tcumulative frequency count\t',...
-                        'cumulative probability\n'));
-                    fprintf(f,cat(2,repmat('%d\t',[1,size(histF,2)]),...
-                        '\n'),histF');
-                    fclose(f);
-
-                    if inclDiscr
-                        % format discrete FRET histogram
-                        discrFRET = FRET_DTA(incl,(m-1)*nFRET+i);
-                        histdF = [];
-                        histdF(:,1) = x_fret';
-                        histdF(:,2) = (hist(discrFRET,x_fret))';
-                        histdF(:,3) = histdF(:,2)/sum(histdF(:,2));
-                        histdF(:,4) = cumsum(histdF(:,2));
-                        histdF(:,5) = histdF(:,4)/histdF(end,4);
-
+                    FRET_all = calcFRET(nChan, nExc, exc, chanExc,FRET, ...
+                        intensities(incl,(((m-1)*nChan+1):m*nChan),:), gamma);
+                    
+                    for i = 1:nFRET
+                        % format FRET histogram
+                        FRET_tr = FRET_all(:,i);
+                        histF = [];
+                        histF(:,1) = x_fret';
+                        histF(:,2) = (hist(FRET_tr,x_fret))';
+                        histF(:,3) = histF(:,2)/sum(histF(:,2));
+                        histF(:,4) = cumsum(histF(:,2));
+                        histF(:,5) = histF(:,4)/histF(end,4);
+                        
                         % build file name
-                        fname_histdF = cat(2,name_mol,'_FRET',...
+                        fname_histF = cat(2,name_mol,'_FRET',...
                             num2str(FRET(i,1)),'to',num2str(FRET(i,2)),...
-                            '_discr.hist');
-                        fname_histdF = overwriteIt(fname_histdF,...
-                            pname_hist,h_fig);
-                        if isempty(fname_histdF)
-                            return;
-                        end
-
-                        % write data to file
-                        f = fopen(cat(2,pname_hist,fname_histdF),'Wt');
-                        fprintf(f,cat(2,'discr.FRET\tfrequency count',...
-                            '\tprobability\tcumulative frequency ',...
-                            'count\tcumulative probability\n'));
-                        fprintf(f,cat(2,repmat('%d\t',...
-                            [1,size(histdF,2)]),'\n'),histdF');
-                        fclose(f);
-                    end
-                end
-            end
-
-            if saveHst_S
-
-                x_s = minS:binS:maxS;
-
-                % calculate stoichiometry data
-                S_all = calcS(exc,chanExc,S,FRET,intensities(incl,...
-                    (((m-1)*nC+1):m*nC),:),gamma,beta);
-
-                for i = 1:nS
-                    % calculate stoichiometry data
-                    S_tr = S_all(:,i);
-
-                    % format stoichiometry histogram
-                    histS = [];
-                    histS(:,1) = x_s';
-                    histS(:,2) = (hist(S_tr,x_s))';
-                    histS(:,3) = histS(:,2)/sum(histS(:,2));
-                    histS(:,4) = cumsum(histS(:,2));
-                    histS(:,5) = histS(:,4)/histS(end,4);
-
-                    % build file name
-                    fname_histS = cat(2,name_mol,'_S',num2str(S(i,1)),...
-                        'to',num2str(S(i,2)),'.hist');
-                    fname_histS = overwriteIt(fname_histS,pname_hist,...
-                        h_fig);
-                    if isempty(fname_histS)
-                        return;
-                    end
-
-                    % write data to file
-                    f = fopen(cat(2,pname_hist,fname_histS),'Wt');
-                    fprintf(f,cat(2,'S\tfrequency count\tprobability',...
-                        '\tcumulative frequency count\tcumulative ',...
-                        'probability\n'));
-                    fprintf(f,cat(2,repmat('%d\t',[1,size(histS,2)]),...
-                        '\n'),histS');
-                    fclose(f);
-
-                    if inclDiscr
-                        % format discrete stoichiometry histogram
-                        discrS = S_DTA(incl,(m-1)*nS+i);
-                        histdS = [];
-                        histdS(:,1) = x_s';
-                        histdS(:,2) = (hist(discrS,x_s))';
-                        histdS(:,3) = histdS(:,2)/sum(histdS(:,2));
-                        histdS(:,4) = cumsum(histdS(:,2));
-                        histdS(:,5) = histdS(:,4)/histdS(end,4);
-
-                        % build file name
-                        fname_histdS = cat(2,name_mol,'_S',...
-                            num2str(S(i,1)),'to',num2str(S(i,2)),...
-                            '_discr.hist');
-                        fname_histdS = overwriteIt(fname_histdS,...
-                            pname_hist,h_fig);
-                        if isempty(fname_histdS)
-                            return;
-                        end
-
-                        % write data to file
-                        f = fopen(cat(2,pname_hist,fname_histdS),'Wt');
-                        fprintf(f,cat(2,'discr.S\tfrequency count\t',...
-                            'probability\tcumulative frequency count',...
-                            '\tcumulative probability\n'));
-                        fprintf(f,cat(2,repmat('%d\t',...
-                            [1,size(histdS,2)]),'\n'),histdS');
-                        fclose(f);
-                    end
-                end
-            end
-        end
-
-        %% Dwell-times
-
-        if saveDt
-            if (saveDt_I  || saveKin) && discrInt
-                for l = 1:nExc
-                    for c = 1:nC
-
-                        % format intensity dwell times
-                        discr_I = ...
-                            intensities_DTA(incl,(m-1)*nC+c,l);
-                        dtI = getDtFromDiscr(discr_I, expT);
-
-                        % build file name
-                        fname_dtI = cat(2,name_mol,'_I',num2str(c),...
-                            '-',num2str(exc(l)),'.dt');
-                        fname_dtI = overwriteIt(fname_dtI,pname_dt,...
+                            '.hist');
+                        fname_histF = overwriteIt(fname_histF,pname_hist,...
                             h_fig);
-                        if isempty(fname_dtI)
+                        if isempty(fname_histF)
                             return;
                         end
-
+                        
                         % write data to file
-                        if saveDt_I
-                            f = fopen(cat(2,pname_dt,fname_dtI),'Wt');
-                            fprintf(f,cat(2,'dwell time (second)\t',...
-                                'state\tstate after transition\n'));
+                        f = fopen(cat(2,pname_hist,fname_histF),'Wt');
+                        fprintf(f,cat(2,'FRET\tfrequency count\t',...
+                            'probability\tcumulative frequency count\t',...
+                            'cumulative probability\n'));
+                        fprintf(f,cat(2,repmat('%d\t',[1,size(histF,2)]),...
+                            '\n'),histF');
+                        fclose(f);
+
+                        if inclDiscr
+                            % format discrete FRET histogram
+                            discrFRET = FRET_DTA(incl,(m-1)*nFRET+i);
+                            histdF = [];
+                            histdF(:,1) = x_fret';
+                            histdF(:,2) = (hist(discrFRET,x_fret))';
+                            histdF(:,3) = histdF(:,2)/sum(histdF(:,2));
+                            histdF(:,4) = cumsum(histdF(:,2));
+                            histdF(:,5) = histdF(:,4)/histdF(end,4);
+                            
+                            % build file name
+                            fname_histdF = cat(2,name_mol,'_FRET',...
+                                num2str(FRET(i,1)),'to',num2str(FRET(i,2)),...
+                                '_discr.hist');
+                            fname_histdF = overwriteIt(fname_histdF,...
+                                pname_hist,h_fig);
+                            if isempty(fname_histdF)
+                                return;
+                            end
+                            
+                            % write data to file
+                            f = fopen(cat(2,pname_hist,fname_histdF),'Wt');
+                            fprintf(f,cat(2,'discr.FRET\tfrequency count',...
+                                '\tprobability\tcumulative frequency ',...
+                                'count\tcumulative probability\n'));
                             fprintf(f,cat(2,repmat('%d\t',...
-                                [1,size(dtI,2)]),'\n'),dtI');
+                                [1,size(histdF,2)]),'\n'),histdF');
+                            fclose(f);
+                        end
+                    end
+                end
+                
+                if saveHst_S
+                    
+                    x_s = minS:binS:maxS;
+                    
+                    for i = 1:nS
+                        % calculate stoichiometry data
+                        [o,l_s,o] = find(exc==chanExc(S(i)));
+                        Inum = sum(intensities(incl,((m-1)*nChan+1): ...
+                            m*nChan,l_s),2);
+                        Iden = sum(sum(intensities(incl,((m-1)*nChan+1): ...
+                            m*nChan,:),2),3);
+                        S_tr = Inum./Iden;
+                        
+                        % format stoichiometry histogram
+                        histS = [];
+                        histS(:,1) = x_s';
+                        histS(:,2) = (hist(S_tr,x_s))';
+                        histS(:,3) = histS(:,2)/sum(histS(:,2));
+                        histS(:,4) = cumsum(histS(:,2));
+                        histS(:,5) = histS(:,4)/histS(end,4);
+                        
+                        % build file name
+                        fname_histS = cat(2,name_mol,'_S',labels{S(i)},...
+                            '.hist');
+                        fname_histS = overwriteIt(fname_histS,pname_hist,...
+                            h_fig);
+                        if isempty(fname_histS)
+                            return;
+                        end
+                       
+                        % write data to file
+                        f = fopen(cat(2,pname_hist,fname_histS),'Wt');
+                        fprintf(f,cat(2,'S\tfrequency count\tprobability',...
+                            '\tcumulative frequency count\tcumulative ',...
+                            'probability\n'));
+                        fprintf(f,cat(2,repmat('%d\t',[1,size(histS,2)]),...
+                            '\n'),histS');
+                        fclose(f);
+
+                        if inclDiscr
+                            % format discrete stoichiometry histogram
+                            discrS = S_DTA(incl,(m-1)*nS+i);
+                            histdS = [];
+                            histdS(:,1) = x_s';
+                            histdS(:,2) = (hist(discrS,x_s))';
+                            histdS(:,3) = histdS(:,2)/sum(histdS(:,2));
+                            histdS(:,4) = cumsum(histdS(:,2));
+                            histdS(:,5) = histdS(:,4)/histdS(end,4);
+                            
+                            % build file name
+                            fname_histdS = cat(2,name_mol,'_S',...
+                                labels{S(i)},'_discr.hist');
+                            fname_histdS = overwriteIt(fname_histdS,...
+                                pname_hist,h_fig);
+                            if isempty(fname_histdS)
+                                return;
+                            end
+                            
+                            % write data to file
+                            f = fopen(cat(2,pname_hist,fname_histdS),'Wt');
+                            fprintf(f,cat(2,'discr.S\tfrequency count\t',...
+                                'probability\tcumulative frequency count',...
+                                '\tcumulative probability\n'));
+                            fprintf(f,cat(2,repmat('%d\t',...
+                                [1,size(histdS,2)]),'\n'),histdS');
+                            fclose(f);
+                        end
+                    end
+                end
+            end
+
+            %% Dwell-times
+
+            if saveDt
+                if (saveDt_I  || saveKin) && discrInt
+                    for l = 1:nExc
+                        for c = 1:nChan
+                            
+                            % format intensity dwell times
+                            discr_I = ...
+                                intensities_DTA(incl,(m-1)*nChan+c,l);
+                            dtI = getDtFromDiscr(discr_I, expT);
+                            
+                            % build file name
+                            fname_dtI = cat(2,name_mol,'_I',num2str(c),...
+                                '-',num2str(exc(l)),'.dt');
+                            fname_dtI = overwriteIt(fname_dtI,pname_dt,...
+                                h_fig);
+                            if isempty(fname_dtI)
+                                return;
+                            end
+                            
+                            % write data to file
+                            if saveDt_I
+                                f = fopen(cat(2,pname_dt,fname_dtI),'Wt');
+                                fprintf(f,cat(2,'dwell time (second)\t',...
+                                    'state\tstate after transition\n'));
+                                fprintf(f,cat(2,repmat('%d\t',...
+                                    [1,size(dtI,2)]),'\n'),dtI');
+                                fclose(f);
+                            end
+                            
+                            if saveKin && size(dtI,1)>1 && ...
+                                    numel(unique(dtI(:,2:3)))<=6
+                                kinDat = getKinDat(dtI);
+                                upgradeKinFile(cat(2,pname_dt,fname_kinI), ...
+                                    fname_dtI,kinDat);
+                            end
+                        end
+                    end
+                end
+                
+                if saveDt_fret || saveKin
+                    for i = 1:nFRET
+                        
+                        % format FRET dwell times
+                        discr_F = FRET_DTA(incl,(m-1)*nFRET+i);
+                        dtF = getDtFromDiscr(discr_F, expT);
+                        
+                        % build file name
+                        fname_dtF = cat(2,name_mol,'_FRET',num2str(...
+                            FRET(i,1)),'to',num2str(FRET(i,2)),'.dt');
+                        fname_dtF = overwriteIt(fname_dtF,pname_dt,h_fig);
+                        if isempty(fname_dtF)
+                            return;
+                        end
+                               
+                        % write data to file
+                        if saveDt_fret
+                            f = fopen(cat(2,pname_dt,fname_dtF),'Wt');
+                            fprintf(f,cat(2,'dwell time (second)\tstate\t',...
+                                'state after transition\n'));
+                            fprintf(f,cat(2,repmat('%d\t',...
+                                [1,size(dtF,2)]),'\n'),dtF');
                             fclose(f);
                         end
 
-                        if saveKin && size(dtI,1)>1 && ...
-                                numel(unique(dtI(:,2:3)))<=6
-                            kinDat = getKinDat(dtI);
-                            upgradeKinFile(cat(2,pname_dt,fname_kinI), ...
-                                fname_dtI,kinDat);
+                        if saveKin && size(dtF,1)>1 && ...
+                                numel(unique(dtF(:,2:3)))<=6
+                            kinDat = getKinDat(dtF);
+                            upgradeKinFile(cat(2,pname_dt,fname_kinF), ...
+                                fname_dtF,kinDat)
+                        end
+                    end
+                end
+                if saveDt_S || saveKin
+                    for i = 1:nS
+                        
+                        % format stoichiometry dwell times
+                        discr_S = S_DTA(incl,(m-1)*nS+i);
+                        dtS = getDtFromDiscr(discr_S, expT);
+                        
+                        % build file name
+                        fname_dtS = cat(2,name_mol,'_S',labels{S(i)},...
+                            '.dt');
+                        fname_dtS = overwriteIt(fname_dtS,pname_dt,h_fig);
+                        if isempty(fname_dtS)
+                            return;
+                        end
+                        
+                        % write data to file
+                        if saveDt_S
+                            f = fopen(cat(2,pname_dt,fname_dtS),'Wt');
+                            fprintf(f,cat(2,'dwell time (second)\tstate\t',...
+                                'state after transition\n'));
+                            fprintf(f,cat(2,repmat('%d\t',...
+                                [1,size(dtS,2)]),'\n'),dtS');
+                            fclose(f);
+                        end
+
+                        if saveKin && size(dtS,1)>1 && ...
+                                numel(unique(dtS(:,2:3)))<=6
+                            kinDat = getKinDat(dtS);
+                            upgradeKinFile(cat(2,pname_dt,fname_kinS), ...
+                                fname_dtS,kinDat)
                         end
                     end
                 end
             end
 
-            if saveDt_fret || saveKin
-                for i = 1:nFRET
-
-                    % format FRET dwell times
-                    discr_F = FRET_DTA(incl,(m-1)*nFRET+i);
-                    dtF = getDtFromDiscr(discr_F, expT);
-
-                    % build file name
-                    fname_dtF = cat(2,name_mol,'_FRET',num2str(...
-                        FRET(i,1)),'to',num2str(FRET(i,2)),'.dt');
-                    fname_dtF = overwriteIt(fname_dtF,pname_dt,h_fig);
-                    if isempty(fname_dtF)
-                        return;
-                    end
-
-                    % write data to file
-                    if saveDt_fret
-                        f = fopen(cat(2,pname_dt,fname_dtF),'Wt');
-                        fprintf(f,cat(2,'dwell time (second)\tstate\t',...
-                            'state after transition\n'));
-                        fprintf(f,cat(2,repmat('%d\t',...
-                            [1,size(dtF,2)]),'\n'),dtF');
-                        fclose(f);
-                    end
-
-                    if saveKin && size(dtF,1)>1 && ...
-                            numel(unique(dtF(:,2:3)))<=6
-                        kinDat = getKinDat(dtF);
-                        upgradeKinFile(cat(2,pname_dt,fname_kinF), ...
-                            fname_dtF,kinDat)
-                    end
+            %% Figures
+            if saveFig
+                if m == m_start
+                    h_fig_mol = [];
+                    n_prev = n;
+                    m_i = 0;
                 end
-            end
-            if saveDt_S || saveKin
-                for i = 1:nS
 
-                    % format stoichiometry dwell times
-                    discr_S = S_DTA(incl,(m-1)*nS+i);
-                    dtS = getDtFromDiscr(discr_S, expT);
+                m_i = m_i+1;
+                
+                p2 = p;
+                if ~fromTT
+                    if isfield(p.proj{proj},'prmTT')
+                        p2.proj{proj}.prm = p.proj{proj}.prmTT;
+                    end
+                    p2.proj{proj}.intensities_DTA = ...
+                        p2.proj{proj}.adj.intensities_DTA;
+                    p2.proj{proj}.FRET_DTA = ...
+                        p2.proj{proj}.adj.FRET_DTA;
+                    p2.proj{proj}.S_DTA = p2.proj{proj}.adj.S_DTA;
+                end
 
-                    % build file name
-                    fname_dtS = cat(2,name_mol,'_S',num2str(S(i,1)),...
-                        'to',num2str(S(i,2)),'.dt');
-                    fname_dtS = overwriteIt(fname_dtS,pname_dt,h_fig);
-                    if isempty(fname_dtS)
-                        return;
+                h_fig_mol = buildFig(p2,m,m_i,molPerFig,p_fig,h_fig_mol);
+
+                if m_i == molPerFig || m == m_end
+                    setProp(get(h_fig_mol, 'Children'), 'Units', ...
+                        'normalized');
+                    set(h_fig_mol, 'Units', 'centimeters');
+                    mg = 1;
+                    pos = [0 0 (21-2*mg) (29.7-2*mg*29.7/21)];
+                    set(h_fig_mol,'Position',pos, ...
+                        'PaperPositionMode','manual','PaperUnits', ...
+                        'centimeters','PaperSize',[pos(3)+2 pos(4)+2], ...
+                        'PaperPosition',[mg mg pos(3) pos(4)]);
+
+                    switch figFmt
+                        case 1 % pdf
+                            fname_fig{nfig} = cat(2,pname_fig_temp, ...
+                                filesep,name,'_mol',num2str(m_ind(n_prev)),...
+                                '-',num2str(m),'of',num2str(nMol),'.pdf');
+                            print(h_fig_mol,fname_fig{nfig},'-dpdf');
+                            nfig = nfig + 1;
+
+                        case 2 % png
+                            fname_fig = [name '_mol' num2str(m_ind(n_prev)) ...
+                                '-' num2str(m) 'of' num2str(nMol) '.png'];
+                            fname_fig = overwriteIt(fname_fig,pname_fig,...
+                                h_fig);
+                            if isempty(fname_fig)
+                                return;
+                            end
+                            print(h_fig_mol, cat(2,pname_fig,fname_fig), ...
+                                '-dpng');
+
+                        case 3 % jpg
+                            fname_fig = [name '_mol' num2str(m_ind(n_prev)) '-'...
+                                num2str(m) 'of' num2str(nMol) '.jpeg'];
+                            fname_fig = overwriteIt(fname_fig,pname_fig,...
+                                h_fig);
+                            if isempty(fname_fig)
+                                return;
+                            end
+                            print(h_fig_mol, cat(2,pname_fig,fname_fig), ...
+                                '-djpeg');
                     end
 
-                    % write data to file
-                    if saveDt_S
-                        f = fopen(cat(2,pname_dt,fname_dtS),'Wt');
-                        fprintf(f,cat(2,'dwell time (second)\tstate\t',...
-                            'state after transition\n'));
-                        fprintf(f,cat(2,repmat('%d\t',[1,size(dtS,2)]),...
-                            '\n'),dtS');
-                        fclose(f);
-                    end
-
-                    if saveKin && size(dtS,1)>1 && ...
-                            numel(unique(dtS(:,2:3)))<=6
-                        kinDat = getKinDat(dtS);
-                        upgradeKinFile(cat(2,pname_dt,fname_kinS), ...
-                            fname_dtS,kinDat)
-                    end
+                    delete(h_fig_mol);
+                    h_fig_mol = [];
+                    n_prev = n + 1;
+                    m_i = 0;
                 end
             end
         end
-
-        %% Figures
-        if saveFig
-            if m == m_start
-                h_fig_mol = [];
-                n_prev = n;
-                m_i = 0;
-            end
-
-            m_i = m_i+1;
-
-            p2 = p;
-            if ~fromTT
-                if isfield(p.proj{proj},'prmTT')
-                    p2.proj{proj}.prm = p.proj{proj}.prmTT;
-                end
-                p2.proj{proj}.intensities_DTA = ...
-                    p2.proj{proj}.adj.intensities_DTA;
-                p2.proj{proj}.FRET_DTA = ...
-                    p2.proj{proj}.adj.FRET_DTA;
-                p2.proj{proj}.S_DTA = p2.proj{proj}.adj.S_DTA;
-            end
-
-            h_fig_mol = buildFig(p2,m,m_i,molPerFig,p_fig,h_fig_mol);
-
-            if m_i == molPerFig || m == m_end
-                setProp(get(h_fig_mol, 'Children'), 'Units', ...
-                    'normalized');
-                set(h_fig_mol, 'Units', 'centimeters');
-                mg = 1;
-                pos = [0 0 (21-2*mg) (29.7-2*mg*29.7/21)];
-                set(h_fig_mol,'Position',pos, ...
-                    'PaperPositionMode','manual','PaperUnits', ...
-                    'centimeters','PaperSize',[pos(3)+2 pos(4)+2], ...
-                    'PaperPosition',[mg mg pos(3) pos(4)]);
-
-                switch figFmt
-                    case 1 % pdf
-                        fname_fig{nfig} = cat(2,pname_fig_temp, ...
-                            filesep,name,'_mol',num2str(m_ind(n_prev)),...
-                            '-',num2str(m),'of',num2str(nMol),'.pdf');
-                        print(h_fig_mol,fname_fig{nfig},'-dpdf');
-                        nfig = nfig + 1;
-
-                    case 2 % png
-                        fname_fig = [name '_mol' num2str(m_ind(n_prev)) ...
-                            '-' num2str(m) 'of' num2str(nMol) '.png'];
-                        fname_fig = overwriteIt(fname_fig,pname_fig,...
-                            h_fig);
-                        if isempty(fname_fig)
-                            return;
-                        end
-                        print(h_fig_mol, cat(2,pname_fig,fname_fig), ...
-                            '-dpng');
-
-                    case 3 % jpg
-                        fname_fig = [name '_mol' num2str(m_ind(n_prev)) '-'...
-                            num2str(m) 'of' num2str(nMol) '.jpeg'];
-                        fname_fig = overwriteIt(fname_fig,pname_fig,...
-                            h_fig);
-                        if isempty(fname_fig)
-                            return;
-                        end
-                        print(h_fig_mol, cat(2,pname_fig,fname_fig), ...
-                            '-djpeg');
-                end
-
-                delete(h_fig_mol);
-                h_fig_mol = [];
-                n_prev = n + 1;
-                m_i = 0;
-            end
-        end
-            
         % loading bar update-----------------------------------
         err = loading_bar('update', h_fig);
         % -----------------------------------------------------
@@ -910,7 +915,7 @@ end
 
 % added by FS, 19.3.2018
 if saveTr
-    if nFRET>0 && saveFact
+    if nFRET>0 && saveGam
         
         % build file name
         curs = strfind(name_mol, '_mol');
@@ -922,38 +927,25 @@ if saveTr
         fname_gam = cat(2,name,'.gam');
         fname_gam = overwriteIt(fname_gam,pname_xp,h_fig);
         if isempty(fname_gam)
-            return
-        end
-        fname_bet = cat(2,name,'.bet');
-        fname_bet = overwriteIt(fname_bet,pname_xp,h_fig);
-        if isempty(fname_bet)
-            return
+            return;
         end
         
         % write data to file
-        f1 = fopen(cat(2,pname_xp,fname_gam), 'Wt');
-        f2 = fopen(cat(2,pname_xp,fname_bet), 'Wt');
+        f = fopen(cat(2,pname_xp,fname_gam), 'Wt');
         
+        % modified by MH, 3.4.2019
+%         fmt = repmat('%0.3f\t',nFRET);
         fmt = repmat('%0.3f\t',1,nFRET);
         
         fmt(end) = 'n';
         
+        % modified by MH, 3.4.2019
+%         gammaAll(isnan(gammaAll)) = [];
+%         fprintf(f, fmt, gammaAll);
         gammaAll(~~sum(isnan(gammaAll),2),:) = [];
-        betaAll(~~sum(isnan(betaAll),2),:) = [];
+        fprintf(f, fmt, gammaAll');
         
-        head = '';
-        for i = 1:nFRET
-            head = cat(2,head,'FRET',num2str(FRET(i,1)),'-',...
-                num2str(FRET(i,2)),'\t');
-        end
-        head(end) = 'n';
-        fprintf(f1, head);
-        fprintf(f2, head);
-        fprintf(f1, fmt, gammaAll');
-        fprintf(f2, fmt, betaAll');
-        
-        fclose(f1);
-        fclose(f2);
+        fclose(f);
     end
 end
 
@@ -992,10 +984,10 @@ if saveTr
         str = cat(2,str,'Parameters saved to files in folder: ',pname_xp,...
             '\n');
     end
-    if saveFact
+    if saveGam
         % update action
-        str = cat(2,str,'Gamma and beta factors saved to files: ',...
-            fname_gam,' and ',fname_bet,' in folder: ',pname_xp,'\n');
+        str = cat(2,str,'Gamma factors saved to  file: ',name,'.gam in ',...
+            'folder: ',pname_xp,'\n');
     end
 
     for j = 1:nFRET
@@ -1154,12 +1146,7 @@ if saveFig && figFmt == 1 % *.pdf
     fname_pdf = cat(2,name,'_all',num2str(N),'.pdf');
     fname_pdf = overwriteIt(fname_pdf,pname_fig,h_fig);
     if isempty(fname_pdf)
-        return
-    end
-    
-    % delete existing file to not append figures
-    if exist(cat(2,pname_fig,fname_pdf),'file');
-        delete(cat(2,pname_fig,fname_pdf));
+        return;
     end
     
     % write data to file

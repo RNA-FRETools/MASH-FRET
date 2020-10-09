@@ -38,7 +38,7 @@ if isMov
 else
     [dat,ok] = getFrames([h.movie.path h.movie.file], frameCurNb, ...
         {h.movie.speCursor, [h.movie.pixelX h.movie.pixelY], ...
-        h.movie.framesTot}, h_fig, true);
+        h.movie.framesTot}, h_fig);
     if ~ok
         return;
     end
@@ -108,8 +108,7 @@ end
 % modified by MH, 29.11.2019
 % set(h.axes_movie, 'NextPlot', 'replace');
 set(h.axes_movie,'nextPlot','replacechildren','xlim',[0,h.movie.pixelX],...
-    'ylim',[0,h.movie.pixelY],'clim',...
-    [min(min(frameCur)),max(max(frameCur))]);
+    'ylim',[0,h.movie.pixelY]);
 
 if get(h.togglebutton_target, 'Value')
     set(0, 'CurrentFigure', h_fig);

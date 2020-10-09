@@ -143,18 +143,15 @@ for o = 1:O
         case h_pushbutton_bga_save
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('background analyzer'),obj(o),[2,1]));
-        case h.uipanel_TP_crossTalks
+        case h.uipanel_TP_factorCorrections
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('cross-talks'),obj(o),tbl));
+                getDocLink('factor corrections'),obj(o),tbl));
         case h.uipanel_TP_denoising
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('denoising'),obj(o),tbl));
         case h.uipanel_TP_photobleaching
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('photobleaching'),obj(o),tbl));
-        case h.uipanel_TP_factorCorrections
-            hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('factor corrections'),obj(o),tbl));
         case h.uipanel_TP_findStates
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('find states'),obj(o),tbl));
@@ -227,7 +224,6 @@ function hBut = mkbutton(cdat,link,obj,varargin)
 % defaults
 w_but = 22;
 h_but = 20;
-h_txt = 14;
 mg = 5;
 mgShift = 5;
 
@@ -243,12 +239,12 @@ if strcmp(get(obj,'type'),'uipanel')
     [wtitle,o] = getUItextWidth(txt,fntUn,fntSz,fntWght,tbl);
 
     extra_x = wtitle + mgShift;
-    extra_y = -h_txt-(h_but-h_txt)/2;
+    extra_y = - 2*mg - h_but/2;
     
     data{3} = [0,1];
     
     x = posObj(1) + extra_x;
-    y = posObj(2) + posObj(4) + extra_y;
+    y = posObj(2) + posObj(4);
     
 else
     posShift = varargin{1};

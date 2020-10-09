@@ -1,7 +1,7 @@
 function h = buildPanelTP(h,p)
 % h = buildPanelTP(h,p);
 %
-% Builds "Trace processing" module including panels "Sample management", "Plot", "Sub-images", "Background corrections", "Cross-talks", "Factor corrections", "Denoising", "Photobleaching" and "Find states".
+% Builds "Trace processing" module including panels "Sample management", "Plot", "Sub-images", "Background corrections", "Factor corrections", "Denoising", "Photobleaching" and "Find states".
 %
 % h: structure to update with handles to new UI components and that must contain fields:
 %   h.figure_MASH: handle to main figure
@@ -20,10 +20,6 @@ function h = buildPanelTP(h,p)
 %   p.tbl: reference table listing character's pixel dimensions
 %   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
-% Last update: by MH, 10.1.2020
-% >> add panel "Cross-talks" and remove cross-talks parameters from panel
-% "Factor corrections"
-%
 % created by MH, 19.10.2019
 
 % default
@@ -58,11 +54,10 @@ ttl0 = 'Sample management';
 ttl1 = 'Plot';
 ttl2 = 'Sub-images';
 ttl3 = 'Background correction';
-ttl4 = 'Cross-talks';
-ttl5 = 'Factor corrections';
-ttl6 = 'Denoising';
-ttl7 = 'Photobleaching';
-ttl8 = 'Find states';
+ttl4 = 'Factor corrections';
+ttl5 = 'Denoising';
+ttl6 = 'Photobleaching';
+ttl7 = 'Find states';
 ttstr0 = wrapStrToWidth('Open <b>import options</b> to configure how intensity-time traces are imported from ASCII files.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr1 = wrapStrToWidth('<b>Import traces</b> from a .mash file or from a set of ASCII files.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr2 = wrapStrToWidth('<b>Close selected project</b> and remove it from the list.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
@@ -92,22 +87,20 @@ hpan0 = p.mgpan+6*p.mg/fact+2*p.mg+hpop0+6*hedit0+2*htxt0;
 hpan1 = p.mgpan+3*p.mg/fact+2*p.mg+2*hpop0+3*hedit0+2*htxt0;
 hpan2 = p.mgpan+p.mg/2+2*p.mg/fact+4*htxt0+hsld0+hedit0;
 hpan3 = p.mgpan+p.mg+2*p.mg/fact+2*htxt0+hpop0+2*hedit0;
-hpan4 = p.mgpan+htxt0+hpop0+p.mg/2;
+hpan4 = p.mgpan+p.mg+2*p.mg/fact+4*htxt0+2*hpop0;
 hpan5 = p.mgpan+p.mg/2+p.mg/fact+hpop0+hedit0;
 hpan6 = p.mgpan+p.mg/2+p.mg/fact+2*hpop0+2*htxt0;
-hpan7 = p.mgpan+htxt0+hpop0+p.mg/fact+htxt0+hedit0+p.mg;
-hpan8 = p.mgpan+p.mg+p.mg/fact+2*hpop0+2*htxt0;
-mgpan = (pospan(4)-p.mg-p.mg/2-hpan2-hpan3-hpan4-hpan5-hpan6-hpan7)/5;
+hpan7 = p.mgpan+p.mg+p.mg/fact+2*hpop0+2*htxt0;
 waxes0 = wrelaxes*(pospan(3)-4*p.mg-p.mg/2-wpan0-wpan1);
 waxes1 = (1-wrelaxes)*(pospan(3)-4*p.mg-p.mg/2-wpan0-wpan1);
-haxes0 = pospan(4)-3*p.mg-hpan8;
+haxes0 = pospan(4)-3*p.mg-hpan7;
 mgproj0 = (wpan0-p.wbuth-wbut0-wbut1)/2;
 mgproj1 = (wpan0-wbut2-wbut3-wbut4)/2;
 hlst0 = pospan(4)-3*p.mg-p.mg/2-2*p.mg/fact-hpan0-hpan1-2*hedit0;
 
 % GUI
 x = p.mg+wpan0+p.mg;
-y = p.mg+hpan8+p.mg;
+y = p.mg+hpan7+p.mg;
 
 h.axes_bottom = axes('parent',h_pan,'units',p.posun,'fontunits',p.fntun,...
     'fontsize',p.fntsz1,'activepositionproperty','outerposition','xlim',...
@@ -204,54 +197,47 @@ h.uipanel_TP_plot = uipanel('parent',h_pan,'units',p.posun,...
 h = buildPanelTPplot(h,p);
 
 x = pospan(3)-p.mg-wpan1;
-y = pospan(4)-p.mg/2-hpan2;
+y = pospan(4)-p.mg-hpan2;
 
 h.uipanel_TP_subImages = uipanel('parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
     [x,y,wpan1,hpan2],'title',ttl2);
 h = buildPanelTPsubImages(h,p);
 
-y = y-mgpan-hpan3;
+y = y-p.mg/2-hpan3;
 
 h.uipanel_TP_backgroundCorrection = uipanel('parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold',...
     'position',[x,y,wpan1,hpan3],'title',ttl3);
 h = buildPanelTPbackgroundCorrection(h,p);
 
-y = y-mgpan-hpan4;
-
-h.uipanel_TP_crossTalks = uipanel('parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan1,hpan4],'title',ttl4);
-h = buildPanelTPcrossTalks(h,p);
-
-y = y-mgpan-hpan5;
-
-h.uipanel_TP_denoising = uipanel('parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan1,hpan5],'title',ttl6);
-h = buildPanelTPdenoising(h,p);
-
-y = y-mgpan-hpan6;
-
-h.uipanel_TP_photobleaching = uipanel('parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan1,hpan6],'title',ttl7);
-h = buildPanelTPphotobleaching(h,p);
-
-y = y-mgpan-hpan7;
+y = y-p.mg/2-hpan4;
 
 h.uipanel_TP_factorCorrections = uipanel('parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan1,hpan7],'title',ttl5);
+    [x,y,wpan1,hpan4],'title',ttl4);
 h = buildPanelTPfactorCorrections(h,p);
+
+y = y-p.mg/2-hpan5;
+
+h.uipanel_TP_denoising = uipanel('parent',h_pan,'units',p.posun,...
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
+    [x,y,wpan1,hpan5],'title',ttl5);
+h = buildPanelTPdenoising(h,p);
+
+y = p.mg;
+
+h.uipanel_TP_photobleaching = uipanel('parent',h_pan,'units',p.posun,...
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
+    [x,y,wpan1,hpan6],'title',ttl6);
+h = buildPanelTPphotobleaching(h,p);
 
 x = posaxes(1);
 w = pospan(3)-p.mg-wpan1-x-p.mg;
 
 h.uipanel_TP_findStates = uipanel('parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,w,hpan8],'title',ttl8);
+    [x,y,w,hpan7],'title',ttl7);
 h = buildPanelTPfindStates(h,p);
 pos = get(h.uipanel_TP_findStates,'position');
 x = pospan(3)-p.mg-wpan1-p.mg-pos(3);

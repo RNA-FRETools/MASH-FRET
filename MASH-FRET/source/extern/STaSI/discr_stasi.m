@@ -19,21 +19,21 @@ function [MDL eff_fit] = discr_stasi(eff, maxN)
 
 %% step 1: change-points detection
 % load each trace and detect change points
-disp('STaSI: Student t test...');
+disp('Student t test...');
 N = numel(eff);
 sd = w1_noise(diff(eff))/1.4;% estimate the noise level
 points = change_point_detection(eff);% change points detection
 groups = [1, points+1; points, N];
 
 %% step 2 and 3: clustering the segments and calculate MDL
-disp('STaSI: Grouping...');
+disp('Grouping...');
 [G, Ij, Tj] = clustering_GCP(eff, groups);
 G = G(end:-1:1);% flip the G
 n_mdl = min(maxN, numel(G));% calculate up to 30 states
 MDL = zeros(1,n_mdl);
 eff_fit = zeros(n_mdl, N);
 
-disp('STaSI: Determining the optimum number of states...');
+disp('Determining the optimum number of states...');
 for i = 1:n_mdl;
     [MDL(i), eff_fit(i,:)] = MDL_piecewise(Ij, Tj, G(i), eff, groups, ...
         sd, N);

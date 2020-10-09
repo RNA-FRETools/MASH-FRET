@@ -5,24 +5,7 @@ function def = setDefPrm_traces(p, proj)
 % "def" >> 1-by-n cell array containing molecule parameters for each of ...
 %          the n panels
 
-% Last update by MH, 15.1.2020
-% >> add parameter tolerance in photobleaching-based gamma calculation
-%  parameters
-%
-% update: by MH, 14.1.2020
-% >> make parameters for gamma/beta factor calculations dependent on the
-%  FRET pair (necessary for ES histograms)
-%
-% update: by MH, 13.1.2020
-% >> add beta factors
-% >> move bleethrough and direct excitation coefficients from molecule
-%  to general parameters
-%
-% update: by MH, 10.1.2020
-% >> separate parameters for factor corrections from cross-talks: store 
-%  parameters for factor corrections in 6th cell
-%
-% update: by MH 3.4.2019
+% Last update: by MH 3.4.2019
 % >> correct default value for bottom axes plot
 % >> change default state finding algorithm to STaSI
 %
@@ -50,11 +33,8 @@ end
 def = p.defProjPrm;
 
 nChan = p.proj{proj}.nb_channel;
-exc = p.proj{proj}.excitations;
 nExc = p.proj{proj}.nb_excitations;
-chanExc = p.proj{proj}.chanExc;
-FRET = p.proj{proj}.FRET;
-nFRET = size(FRET,1);
+nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
 nFrames = size(p.proj{proj}.intensities,1)*nExc;
 isCoord = p.proj{proj}.is_coord;
@@ -67,7 +47,7 @@ gen{1}(1) = 1; % excitation
 gen{1}(2) = 0; % nothing (ex-subimage window size)
 gen{1}(3) = 0; % brightness
 gen{1}(4) = 0; % contrast
-gen{1}(5) = 0; % nothing (ex-refocus)
+gen{1}(5) = 0; % mothing (ex-refocus)
 
 % Trace calculation and plot
 if nExc > 1 % excitation to plot
@@ -82,16 +62,13 @@ else
     gen{2}(2) = nChan + 1; % + none
 end
 
-if nFRET>1 && nS>1
+if nFRET > 1 && nS >1
     gen{2}(3) = nFRET + nS + 4; % + none + all FRET + all S + all
     
-elseif (nS>1 && nFRET==1) || (nFRET>1 && nS==1)
+elseif nS > 1 || nFRET > 1
     gen{2}(3) = nFRET + nS + 3; % + none + all FRET/all S + all
     
-elseif (nS>1 && nFRET==0) || (nFRET>1 && nS==0)
-    gen{2}(3) = nFRET + nS + 2; % + none + all FRET/all S
-    
-elseif nFRET==1 && nS==1
+elseif nFRET == 1 && nS == 1
     gen{2}(3) = nFRET + nS + 2; % + none + all 
     
 elseif nFRET>0 || nS>0
@@ -107,18 +84,14 @@ gen{2}(6) = 0; % fix first frame for all molecules
 gen{2}(7) = 1; % x-axis in second
 
 % Main popupmenu values
-gen{3}(1) = 1; % laser for direct excitation
-gen{3}(2) = 1; % emitter for cross-talk correction
-gen{3}(3) = 1; % channel for bleedthrough
-gen{3}(4) = 1; % data for DTA
-gen{3}(5) = 0; % nothing (prev: laser for background)
+gen{3}(1) = 1; % correction excitation
+gen{3}(2) = 1; % correction channel
+gen{3}(3) = 1; % Bleedthrough channel
+gen{3}(4) = 1; % DTA channel
+gen{3}(5) = 0; % nothing (old background excitation)
 gen{3}(6) = 1; % data for background correction
-gen{3}(7) = 1; % nothing (prev: laser for DE)
-gen{3}(8) = 1; % FRET pair for factor corrections
-
-% Cross-talks coefficients
-gen{4}{1} = zeros(nChan,nChan-1); % bleedthrough coefficients
-gen{4}{2} = zeros(nExc-1,nChan); % direct excitation coefficients
+gen{3}(7) = 1; % Direct excitation coefficient excitation
+gen{3}(8) = 1; % FRET correction channel
 
 def.general = adjustVal(def.general, gen);
 
@@ -232,81 +205,45 @@ for j = 1:nExc
     end
 end
 mol{4}{3} = nan(nFRET+nS+nExc*nChan,6);  % States values
-
-% modified by MH, 13.1.2019
-% % Cross talks
-% % modified by MH 29.3.2019
-% % bleedthrough
-% mol{5}{1} = zeros(nChan,nChan-1);
-% % direct excitation
-% mol{5}{2} = zeros(nExc-1,nChan);
-% % for l = 1:nExc
-% %     for c = 1:nChan
-% %         % bleedthrough
-% %         mol{5}{1}{l,c} = zeros(1,nChan-1);
-% %         % direct excitation
-% %         mol{5}{2}{l,c} = zeros(1,nExc-1);
-% %     end
-% % end
-mol{5} = []; % nothing (prev: cross-talks coefficients)
+             
+% Cross talk and filter corrections
+% modified by MH 29.3.2019
+% bleedthrough
+mol{5}{1} = zeros(nChan,nChan-1);
+% direct excitation
+mol{5}{2} = zeros(nExc-1,nChan);
+% for l = 1:nExc
+%     for c = 1:nChan
+%         % bleedthrough
+%         mol{5}{1}{l,c} = zeros(1,nChan-1);
+%         % direct excitation
+%         mol{5}{2}{l,c} = zeros(1,nExc-1);
+%     end
+% end
 
 % gamma
-% modified by MH, 13.1.2020
-% % modified by MH, 10.1.2020
-% % mol{5}{3} = [];
-% % for i = 1:nFRET
-% %     mol{5}{3} = [mol{5}{3} 1];
-% % end
-% mol{6}{1} = [];
-% for i = 1:nFRET
-%     mol{6}{1} = [mol{6}{1} 1];
-% end
-mol{6}{1} = ones(2,nFRET);
-
-% modified by MH, 14.1.2020
-% % modified by MH, 10.1.2020: store parameters in 6th cell
-% % gamma correction via photobleaching, added by FS, 9.1.2018; 
-% % last updated on 10.1.2018
-% % mol{5}{4}(1) = 0;  % photobleaching based gamma correction checkbox
-% % mol{5}{4}(2) = 1;  % current acceptor
-% mol{6}{2}(1) = 0;  % method (0: manual, 1: photobleaching, 2: linear regression)
-% mol{6}{2}(2) = 1;  % FRET pair index in photobleaching opt. window
-mol{6}{2} = zeros(1,nFRET);  % method (0: manual, 1: photobleaching, 2: linear regression)
-
-% modified by MH, 15.1.2020: insert default tolerance and change 'pbGamma checkbox' to laser used for photobleaching detection
-% % modified by MH, 10.1.2020: store parameters in 6th cell
-% % % gamma correction via photobleaching, added by FS, 9.1.2018
-% % % nFRET x 7 matrix; columns are 'pbGamma checkbox', 'threshold', 
-% % % 'extra substract', 'min. cutoff frame', 'start frame', 'stop frame'
-% % % and 'prepostdiff' (i.e is there a difference in the intensity of the donor before and after the cutoff)
-% % mol{5}{5} = [zeros(nFRET,1), 1000*ones(nFRET,1) ...
-% %     zeros(nFRET,1), 100*ones(nFRET,1), ones(nFRET,1), nFrames*ones(nFRET,1), zeros(nFRET,1)];
-% mol{6}{3} = repmat([1000,0,100,1,nFrames,0],nFRET,1);
-ldon = ones(nFRET,1);
+mol{5}{3} = [];
 for i = 1:nFRET
-    ldon(i,1) = find(exc==chanExc(FRET(i,1)));
+    mol{5}{3} = [mol{5}{3} 1];
 end
-mol{6}{3} = [ldon,repmat([1000,0,100,1,3,nFrames,0],nFRET,1)];
 
-% added by MH, 10.1.2020: ES regression
-% [nFRET-by-7] subgroup,E limits, E intervals, 1/S limits, 1/S intervals
-mol{6}{4} = repmat([1,-0.2,1.2,50,1,3,50],nFRET,1);
+% gamma correction via photobleaching, added by FS, 9.1.2018; 
+% last updated on 10.1.3018
+mol{5}{4}(1) = 0;  % photobleaching based gamma correction checkbox
+mol{5}{4}(2) = 1;  % current acceptor
+
+% gamma correction via photobleaching, added by FS, 9.1.2018
+% nFRET x 4 matrix; columns are 'pbGamma checkbox', 'threshold', 
+% 'extra substract', 'min. cutoff frame', 'start frame', 'stop frame'
+% and 'prepostdiff' (i.e is there a difference in the intensity of the donor before and after the cutoff)
+mol{5}{5} = [zeros(nFRET,1), 1000*ones(nFRET,1) ...
+    zeros(nFRET,1), 100*ones(nFRET,1), ones(nFRET,1), nFrames*ones(nFRET,1), zeros(nFRET,1)];
 
 def.mol = adjustVal(def.mol, mol);
 
-% modified by MH, 10.1.2020: store parameters in 6th cell
-% if size(mol{5},2)>=3
-%     % set null gamma factors to 1
-%     def.mol{5}{3}(def.mol{5}{3}==0) = 1;
-%     % adjust channel for photobleaching cutoff calculation
-%     if def.mol{2}{1}(3) > nFRET+nS*(1 + 2*double(nFRET>1|nS>1)) + ...
-%             nExc*nChan*(1 + 2*double(nChan>1|nExc>1))
-%         def.mol{2}{1}(3) = 1;
-%     end
-% end
-if size(mol,2)>=6
+if size(mol{5},2)>=3
     % set null gamma factors to 1
-    def.mol{6}{1}(def.mol{6}{1}==0) = 1;
+    def.mol{5}{3}(def.mol{5}{3}==0) = 1;
     % adjust channel for photobleaching cutoff calculation
     if def.mol{2}{1}(3) > nFRET+nS*(1 + 2*double(nFRET>1|nS>1)) + ...
             nExc*nChan*(1 + 2*double(nChan>1|nExc>1))
@@ -374,9 +311,6 @@ end
 if size(def.mol{3},2)>=4
     def.mol{3}(4) = [];
 end
-
-% prevent ES linear regression by default (time consuming)
-def.mol{6}{2}(def.mol{6}{2}==2) = 0;
 
 
 

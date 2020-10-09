@@ -78,10 +78,10 @@ for n = 1:nFRET
     str_pop = [str_pop ['discr. FRET ' labels{FRET(n,1)} '>' labels{FRET(n,2)}]];
 end
 for n = 1:nS
-    str_pop = [str_pop ['S ' labels{S(n,1)} '>' labels{S(n,2)}]];
+    str_pop = [str_pop ['S ' labels{S(n)}]];
 end
 for n = 1:nS
-    str_pop = [str_pop ['discr. S ' labels{S(n,1)} '>' labels{S(n,2)}]];
+    str_pop = [str_pop ['discr. S ' labels{S(n)}]];
 end
 set(h.popupmenu_thm_tpe, 'String', str_pop, 'Value', tpe);
 

@@ -45,7 +45,7 @@ if ~isempty(fname) && sum(fname)
     guidata(h_fig,h);
     
     % get video data
-    [data,ok] = getFrames([pname fname], n, [], h_fig, true);
+    [data,ok] = getFrames([pname fname], n, [], h_fig);
     if ~ok
         return;
     end
@@ -103,9 +103,6 @@ if ~isempty(fname) && sum(fname)
     
     if isfield(h.movie,'movie') && ~isempty(h.movie.movie)
         set(h.pushbutton_VP_freeMem,'backgroundcolor',[1,0.6,0.6]);
-    else
-        set(h.pushbutton_VP_freeMem,'backgroundcolor',...
-            get(h.pushbutton_VP_freeMem,'userdata'));
     end
     
     h.movie.frameCur = data.frameCur; % image data of input (displayed) frame

@@ -107,7 +107,7 @@ function [x_res, bestOut] = discr_vbFRET(kmin, K, I, data, h_fig, lb)
                 % comment out the line below if you don't want to know what
                 % trace vbFRET is currently working on
                 disp(sprintf( ...
-                    ['vbFRET: Working on inference for restart %d, k%d of ' ...
+                    ['Working on inference for restart %d, k%d of ' ...
                     'trace %d...'], i, k, n));
                 % Initialize gaussians
                 % Note: x and mix can be saved at this point andused for 
@@ -119,7 +119,7 @@ function [x_res, bestOut] = discr_vbFRET(kmin, K, I, data, h_fig, lb)
                     [mix] = get_mix(trace',init_mu);
                     [out] = vbFRET_VBEM(trace, mix, PriorPar, vb_opts);
                 catch
-                    disp('vbFRET: There was an error during, repeating restart.');
+                    disp('There was an error during, repeating restart.');
                     runError=lasterror;
                     disp(runError.message)
                     i = i+1;
@@ -152,7 +152,7 @@ function [x_res, bestOut] = discr_vbFRET(kmin, K, I, data, h_fig, lb)
     %%%%%%%%%%%%%%%%%%%%%%%% VBHMM postprocessing %%%%%%%%%%%%%%%%%%%%%%%%%
 
     % analyze accuracy and save analysis
-    disp('vbFRET: Analyzing results...')
+    disp('Analyzing results...')
 
 %    save(save_name);          
 
@@ -181,5 +181,5 @@ function [x_res, bestOut] = discr_vbFRET(kmin, K, I, data, h_fig, lb)
         end
     end
 
-    disp('vbFRET: ...done w/ analysis');
+    disp('...done w/ analysis');
 

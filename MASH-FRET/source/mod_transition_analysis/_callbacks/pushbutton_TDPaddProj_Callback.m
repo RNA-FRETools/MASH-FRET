@@ -59,7 +59,8 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
         p.proj{i}.prm = cell(nTag+1,nTpe);
     else
         p.proj{i}.prm = p.proj{i}.prmTDP;
-
+        p.proj{i} = rmfield(p.proj{i}, 'prmTDP');
+        
         % down compatibility: add cells for molecule subgroups
         if size(p.proj{i}.prm,1)==1 && nTag>0
             p.proj{i}.prm = cat(1,p.proj{i}.prm,cell(nTag,nTpe));
@@ -67,7 +68,7 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
         
         % if the number of tags changed, reset results and resize
         if size(p.proj{i}.prm,1)~=(nTag+1)
-            p.proj{i}.prm = cat(1,p.proj{i}.prm(1,:),cell(nTag,nTpe));
+            p.proj{i}.prm = cat(1,p.proj{i}.prm{1,1},cell(nTag,nTpe));
         end
     end
     if ~isfield(p.proj{i}, 'expTDP')

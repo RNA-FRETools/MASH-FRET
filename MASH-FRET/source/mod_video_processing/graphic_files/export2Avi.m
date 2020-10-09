@@ -49,7 +49,7 @@ for i = frameRange
     else
         [data,succ] = getFrames([h.movie.path h.movie.file], i, ...
             {h.movie.speCursor [h.movie.pixelX h.movie.pixelY] ...
-            h.movie.framesTot}, h_fig, true);
+            h.movie.framesTot}, h_fig);
         if ~succ
             return
         end

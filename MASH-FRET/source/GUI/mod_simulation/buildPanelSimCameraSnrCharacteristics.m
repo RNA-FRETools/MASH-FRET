@@ -25,12 +25,12 @@ str0 = {'P- or Poisson Model',...
     'NExp-N or Gaussian + exp. tail Model',...
     'Offset only',...
     'PGN- or Hirsch Model'};
-str1 = cat(2,char(956),'_ic,dark:');
-str2 = cat(2,char(951),':');
+str1 = 'm_ic,dark:';
+str2 = 'H:';
 str3 = 'K:';
 str4 = 'A_CIC:';
-str5 = cat(2,char(963),'_ic:');
-str6 = cat(2,char(964),'_CIC:');
+str5 = 's_ic:';
+str6 = 't_CIC:';
 ttstr0 = wrapStrToWidth('Select a distribution to describe the <b>camera noise</b>.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr1 = '';
 ttstr2 = '';
