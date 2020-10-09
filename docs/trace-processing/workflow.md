@@ -373,7 +373,7 @@ Apparent stoichiometry
 [*S*<sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } such as:
 
 {: .equation }
-<img src="../assets/images/equations/TP-eq-trace-corr-10.gif" alt="S_{D,A}(n,t) = \frac{I_{A,em}^{D,ex}(n,t)^{***} + \sum_{i\neq A}\left [\gamma_{i,A}(n) I_{i,em}^{D,ex}(n,t)^{***} \right ]}{I_{A,em}^{D,ex}(n,t)^{***} + \sum_{i\neq A}\left [\gamma_{i,A}(n) I_{i,em}^{D,ex}(n,t)^{***} \right ]+ \beta_{D,A}\times\left\{ I_{A,em}^{A,ex}(n,t)^{***} + \sum_{i\neq A}\left [\gamma_{i,A}(n) I_{i,em}^{A,ex}(n,t)^{***} \right ] \right \} }">
+<img src="../assets/images/equations/TP-eq-trace-corr-10.gif" alt="S_{D,A}(n,t) = \left |1+\frac{ I_{A,em}^{A,ex}(n,t)^{***} + \sum_{i>A}\left [ I_{i,em}^{A,ex}(n,t)^{***} \Big/ \gamma_{A,i}(n) \right] }{\beta_{D,A} \left \{ I_{A,em}^{D,ex}(n,t)^{***} + \sum_{D\leq i<A}\left [\gamma_{i,A}(n) I_{i,em}^{D,ex}(n,t)^{***} \right ] + \sum_{i>A}\left [I_{i,em}^{D,ex}(n,t)^{***} \Big/ \gamma_{A,i}(n) \right ] \right \} }  \right |^{-1}">
 
 To correct apparent FRET- and stoichiometry-time traces with 
 [*&#947;*](){: .math_var } and 

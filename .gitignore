@@ -28,6 +28,7 @@ MASH-FRET/log/
 *.log
 *.ini
 /docs/_site/*
+/MASH-FRET/source/routines/*/dump/*
 *Gemfile.lock
 
 docs/vendor

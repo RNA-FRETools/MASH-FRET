@@ -216,7 +216,7 @@ with
 To know more about how multi-color apparent FRET data are calculated, please refer to the respective functions in the source code:
 
 ```
-MASH-FRET/tools/buildFretexpr.m
+MASH-FRET/source/mod-trace-processing/FRET/buildFretexpr.m
 MASH-FRET/source/mod-trace-processing/FRET/calcFRET.m
 ```
 
@@ -263,6 +263,13 @@ To activate the stoichiometry calculation for a FRET pair in particular, the FRE
 ![Add](../../assets/images/gui/VP-but-add.png "Add").
 All desired stoichiometry calculations are listed in **(b)** and can be removed any time by pressing 
 ![Remove](../../assets/images/gui/VP-but-remove.png "Remove").
+
+To know more about how multi-color Stoichiometry is calculated, please refer to the respective functions in the source code:
+
+```
+MASH-FRET/source/mod-trace-processing/FRET/buildSexpr.m
+MASH-FRET/source/mod-trace-processing/FRET/calcS.m
+```
 
 ---
 
