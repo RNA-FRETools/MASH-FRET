@@ -1,2 +1,2 @@
-function popupmenu_SFchannel_Callback(obj, evd, h)
-ud_SFpanel(h.figure_MASH);
+function popupmenu_SFchannel_Callback(obj, evd, h_fig)
+ud_SFpanel(h_fig);

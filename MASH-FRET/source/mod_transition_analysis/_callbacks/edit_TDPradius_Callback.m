@@ -1,4 +1,5 @@
-function edit_TDPradius_Callback(obj, evd, h)
+function edit_TDPradius_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.TDP;
 if ~isempty(p.proj)
     val = str2num(get(obj, 'String'));
@@ -15,7 +16,7 @@ if ~isempty(p.proj)
             case 2 % gaussian model based
                 str = 'Min. Gaussian standard deviation.';
         end
-        setContPan([str ' must be >= 0.'], 'error', h.figure_MASH);
+        setContPan([str ' must be >= 0.'], 'error', h_fig);
 
     else
         switch meth
@@ -27,7 +28,7 @@ if ~isempty(p.proj)
                 p.proj{proj}.prm{tpe}.clst_start{2}(1,2) = val;
         end
         h.param.TDP = p;
-        guidata(h.figure_MASH, h);
-        updateFields(h.figure_MASH, 'TDP');
+        guidata(h_fig, h);
+        updateFields(h_fig, 'TDP');
     end
 end

@@ -57,16 +57,19 @@ switch action
             plot_prm{5} = prm.clst_start{3}; % cluster colours
 
             if ~isempty(prm.clst_res{1})
-                clust{1} = prm.clst_res{1}(:,1); % converged cluster centres (states)
-                clust{2} = prm.clst_res{2}; % cluster assigment of TDP coordinates
-                clust{3} = prm.clst_res{3}; % converged BIC-GMM parameters
+                J = get(h.popupmenu_tdp_model,'Value')+1;
+                clust{1} = prm.clst_res{1}.mu{J}; % converged cluster centres (states)
+                clust{2} = prm.clst_res{1}.clusters{J}; % cluster assigment of TDP coordinates
+                clust{3}.a = prm.clst_res{1}.a{J}; % converged cluster mixture coefficients
+                clust{3}.o = prm.clst_res{1}.o{J}; % converged cluster covarance matrices
             else
                 clust{1} = prm.clst_start{2}(:,1); % initial cluster centres (states)
                 clust{2} = [];
-                clust{3} = [];
+                clust{3}.a = [];
+                clust{3}.o = [];
             end
             
-            plotTDP(curr_axes, TDP, plot_prm, clust, h_fig);
+            plotTDP(curr_axes, h.colorbar_TA, TDP, plot_prm, clust, h_fig);
             
         else
             xlim(curr_axes, 'auto');

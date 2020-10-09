@@ -1,4 +1,5 @@
-function edit_gammaCorr_Callback(obj, evd, h)
+function edit_gammaCorr_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     
@@ -6,8 +7,8 @@ if ~isempty(p.proj)
     if strcmp(clr, 'pink') || strcmp(clr, 'yellow') || ...
             strcmp(clr, 'blue') || strcmp(clr, 'green') || ...
             strcmp(clr, 'gray') || strcmp(clr, 'danny')
-        setBgClr(h.figure_MASH, clr);
-        ud_cross(h.figure_MASH);
+        setBgClr(h_fig, clr);
+        ud_cross(h_fig);
         return;
     end
     
@@ -19,13 +20,13 @@ if ~isempty(p.proj)
         if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
             updateActPan('Gamma correction factor must be >= 0', ...
-                h.figure_MASH, 'error');
+                h_fig, 'error');
         else
             set(obj, 'BackgroundColor', [1 1 1]);
             p.proj{proj}.curr{mol}{5}{3}(chan) = val;
             h.param.ttPr = p;
-            guidata(h.figure_MASH, h);
-            ud_cross(h.figure_MASH);
+            guidata(h_fig, h);
+            ud_cross(h_fig);
         end
     end
 end

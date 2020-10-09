@@ -1,7 +1,7 @@
-function pushbutton_thm_impPrm_Callback(obj, evd, h)
+function pushbutton_thm_impPrm_Callback(obj, evd, h_fig)
 % Import selected state configuration from panel "state configuration" to
 % panel "state population" (Gaussian fitting or Thresholding method)
-
+h = guidata(h_fig);
 p = h.param.thm;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -51,12 +51,12 @@ if ~isempty(p.proj)
         % Save modifications
         p.proj{proj}.prm{tpe} = prm;
         h.param.thm = p;
-        guidata(h.figure_MASH, h);
+        guidata(h_fig, h);
         
-        setContPan(str,'success',h.figure_MASH);
+        setContPan(str,'success',h_fig);
         
         % Update interface
-        updateFields(h.figure_MASH, 'thm');
+        updateFields(h_fig, 'thm');
     end
 end
 

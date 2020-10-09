@@ -1,4 +1,4 @@
-function openTrImpOpt(obj, evd, h)
+function openTrImpOpt(obj, evd, h_fig)
 
 % Last update: by MH, 5.4.2019
 % --> saved empty file and directory for gamma import if the option is
@@ -14,12 +14,12 @@ function openTrImpOpt(obj, evd, h)
 % --> Fix error when importing coordinates from file in 
 %     pushbutton_impCoordFile_Callback
 
-h_fig = h.figure_MASH;
+h = guidata(h_fig);
 p = h.param.ttPr.impPrm;
 if size(p{1}{1},2) < 10
     p{1}{1} = [1 0 0 1 1 0 2 1 0 5];
     h.param.ttPr.impPrm = p;
-    guidata(h.figure_MASH, h);
+    guidata(h_fig, h);
 end
 
 % adjust import parameters
@@ -649,7 +649,7 @@ guidata(h.figure_trImpOpt, m);
 
 
 function pushbutton_impCoordOpt_Callback(obj, evd, h_fig)
-openItgOpt(obj, evd, guidata(h_fig));
+openItgOpt(obj, evd, h_fig);
 
 
 function pushbutton_impMovFile_Callback(obj, evd, h_fig)

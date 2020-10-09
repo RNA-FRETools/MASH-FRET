@@ -26,11 +26,8 @@ if ~isempty(fname) && sum(fname)
     updateActPan(['Loading file ' fname ' from path :\n', pname], h_fig);
     cd(pname);
     
-    % prepare video axes for refresh
+    % collect data from figure
     h = guidata(h_fig);
-    if isfield(h, 'axes_movie')
-        set(h.axes_movie,'NextPlot','replace');
-    end
 
     % remove previous video data
     h.movie.movie = [];
@@ -150,11 +147,7 @@ if ~isempty(fname) && sum(fname)
             set(h.slider_img, 'SliderStep', [1/h.movie.framesTot 0.1], ...
                 'Min', 1, 'Max', h.movie.framesTot, 'Value', 1, ...
                 'Visible', 'on');
-        end
-        
-        % update VP axes
-        updateImgAxes(h_fig);
-        
+        end        
     end
     
     updateActPan('File loaded!', h_fig, 'success');

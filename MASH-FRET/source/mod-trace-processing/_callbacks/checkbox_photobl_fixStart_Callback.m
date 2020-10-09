@@ -1,4 +1,5 @@
-function checkbox_photobl_fixStart_Callback(obj, evd, h)
+function checkbox_photobl_fixStart_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     val = get(obj, 'Value');
@@ -23,6 +24,6 @@ if ~isempty(p.proj)
     end
     p.proj{proj}.fix{2}(6) = val;
     h.param.ttPr = p;
-    guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'ttPr');
+    guidata(h_fig, h);
+    updateFields(h_fig, 'ttPr');
 end

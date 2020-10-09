@@ -1,12 +1,13 @@
-function edit_nChannel_Callback(obj, evd, h)
+function edit_nChannel_Callback(obj, evd, h_fig)
 nChan = round(str2num(get(obj, 'String')));
 if ~(~isempty(nChan) && numel(nChan) == 1 && ~isnan(nChan) && ...
         nChan > 0)
     updateActPan('Number of channel must be > 0.', ...
-        h.figure_MASH, 'error');
+        h_fig, 'error');
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
 else
     set(obj, 'BackgroundColor', [1 1 1]);
+    h = guidata(h_fig);
     p = h.param.movPr;
     p.nChan = nChan;
 
@@ -48,6 +49,6 @@ else
     % Set fields to proper values
     p.SFres = {};
     h.param.movPr = p;
-    guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'imgAxes');
+    guidata(h_fig, h);
+    updateFields(h_fig, 'imgAxes');
 end

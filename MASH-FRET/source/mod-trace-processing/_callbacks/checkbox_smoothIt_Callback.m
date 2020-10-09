@@ -1,4 +1,5 @@
-function checkbox_smoothIt_Callback(obj, evd, h)
+function checkbox_smoothIt_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     val = get(obj, 'Value');
@@ -6,6 +7,6 @@ if ~isempty(p.proj)
     mol = p.curr_mol(proj);
     p.proj{proj}.curr{mol}{1}{1}(2) = val;
     h.param.ttPr = p;
-    guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'ttPr');
+    guidata(h_fig, h);
+    updateFields(h_fig, 'ttPr');
 end

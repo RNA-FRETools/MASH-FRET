@@ -1,4 +1,4 @@
-function slider_img_Callback(obj, evd, h)
+function slider_img_Callback(obj, evd, h_fig)
 cursorPos = round(get(obj, 'Value'));
 minSlider = get(obj, 'Min');
 maxSlider = get(obj, 'Max');
@@ -7,12 +7,14 @@ if cursorPos <= minSlider
 elseif cursorPos >= maxSlider
     cursorPos = maxSlider;
 end
+
+h = guidata(h_fig);
 set(obj, 'Value', cursorPos);
 set(h.text_frameCurr, 'String', cursorPos);
 
 [data,ok] = getFrames([h.movie.path h.movie.file], cursorPos, ...
     {h.movie.speCursor [h.movie.pixelX h.movie.pixelY] ...
-    h.movie.framesTot}, h.figure_MASH);
+    h.movie.framesTot}, h_fig);
 if ok
     p = h.param.movPr;
     if size(p.SFres,1) >= 1
@@ -21,6 +23,6 @@ if ok
     h.param.movPr = p;
     h.movie.frameCurNb = cursorPos;
     h.movie.frameCur = data.frameCur;
-    guidata(h.figure_MASH, h);
+    guidata(h_fig, h);
 end
-updateFields(h.figure_MASH, 'imgAxes');
+updateFields(h_fig, 'imgAxes');

@@ -1,8 +1,9 @@
-function edit_TP_states_param3_Callback(obj, evd, h)
+function edit_TP_states_param3_Callback(obj, evd, h_fig)
 
 % created by MH, 3.4.2019
 % >> function was missing (???)
 
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -31,19 +32,19 @@ if ~isempty(p.proj)
             switch method
                 case 2 % VbFRET
                     updateActPan('Number of iterations must be > 0',...
-                        h.figure_MASH,'error');
+                        h_fig,'error');
 
                 case 4 % CPA
                     updateActPan(cat(2,'Method for change localisation ',...
-                        'must be 1 or 2 ("max." or "MSE")'),h.figure_MASH,...
+                        'must be 1 or 2 ("max." or "MSE")'),h_fig,...
                         'error');
             end
         else
             set(obj, 'BackgroundColor', [1 1 1]);
             p.proj{proj}.curr{mol}{4}{2}(method,3,chan_in) = val;
             h.param.ttPr = p;
-            guidata(h.figure_MASH, h);
-            ud_DTA(h.figure_MASH);
+            guidata(h_fig, h);
+            ud_DTA(h_fig);
         end
     end
 end

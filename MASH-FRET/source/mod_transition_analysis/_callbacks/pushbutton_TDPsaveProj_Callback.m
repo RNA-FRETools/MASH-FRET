@@ -1,4 +1,5 @@
-function pushbutton_TDPsaveProj_Callback(obj, evd, h)
+function pushbutton_TDPsaveProj_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.TDP;
 if ~isempty(p.proj);
     proj = p.curr_proj;
@@ -6,7 +7,7 @@ if ~isempty(p.proj);
         projName = p.proj{proj}.proj_file;
     elseif ~isempty(p.proj{proj}.exp_parameters{1,2})
         projName = getCorrName([p.proj{proj}.exp_parameters{1,2} ...
-            '.mash'], [], h.figure_MASH);
+            '.mash'], [], h_fig);
     else
         projName = 'project.mash';
     end
@@ -18,18 +19,18 @@ if ~isempty(p.proj);
 
     if ~isempty(fname) && sum(fname)
         setContPan(['Save project ' fname ' ...'], 'process' , ...
-            h.figure_MASH);
+            h_fig);
         cd(pname);
         [o,fname,o] = fileparts(fname);
         fname_proj = getCorrName([fname '.mash'], pname, ...
-            h.figure_MASH);
+            h_fig);
         if ~isempty(fname_proj) && sum(fname_proj)
             dat = p.proj{proj};
             dat = rmfield(dat, {'prm', 'exp'});
             dat.prmTDP = p.proj{proj}.prm;
             dat.expTDP = p.proj{proj}.exp;
             
-            figname = get(h.figure_MASH, 'Name');
+            figname = get(h_fig, 'Name');
             a = strfind(figname, 'MASH-FRET ');
             b = a + numel('MASH-FRET ');
             vers = figname(b:end);
@@ -39,11 +40,11 @@ if ~isempty(p.proj);
             dat.date_last_modif = datestr(now);
             save([pname fname_proj], '-struct', 'dat');
             setContPan(['Project has been successfully saved to file: ' ...
-                pname fname_proj], 'success' , h.figure_MASH);
+                pname fname_proj], 'success' , h_fig);
             
             p.proj{proj}.proj_file = dat.proj_file;
             h.param.TDP = p;
-            guidata(h.figure_MASH,h);
+            guidata(h_fig,h);
         end
     end
 end

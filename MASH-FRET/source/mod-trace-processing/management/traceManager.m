@@ -2423,6 +2423,19 @@ yrange(yrange==-Inf) = y(1)-1;
 xrange(xrange==Inf) = x(2)+1;
 yrange(yrange==Inf) = y(2)+1;
 
+if xrange(1)>=xrange(2)
+    xrange(1) = x(1);
+    xrange(2) = x(2);
+    set(h.tm.edit_xrangeLow,'string',num2str(xrange(1)));
+    set(h.tm.edit_xrangeUp,'string',num2str(xrange(2)));
+end
+if yrange(1)>=yrange(2)
+    yrange(1) = y(1);
+    yrange(2) = y(2);
+    set(h.tm.edit_yrangeLow,'string',num2str(yrange(1)));
+    set(h.tm.edit_yrangeUp,'string',num2str(yrange(2)));
+end
+
 set(h.tm.axes_histSort,'nextplot','add');
 
 switch D

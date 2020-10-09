@@ -1,4 +1,5 @@
-function popupmenu_TDPcolour_Callback(obj, evd, h)
+function popupmenu_TDPcolour_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.TDP;
 if ~isempty(p.proj)
     val = get(obj, 'Value');
@@ -7,6 +8,6 @@ if ~isempty(p.proj)
     trans = p.proj{proj}.prm{tpe}.clst_start{1}(4);
     p.proj{proj}.prm{tpe}.clst_start{3}(trans,:) = p.colList(val,:);
     h.param.TDP = p;
-    guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'TDP');
+    guidata(h_fig, h);
+    updateFields(h_fig, 'TDP');
 end

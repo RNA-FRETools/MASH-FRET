@@ -1,4 +1,5 @@
-function pushbutton_TDPfit_fit_Callback(obj, evd, h)
+function pushbutton_TDPfit_fit_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.TDP;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -66,9 +67,9 @@ if ~isempty(p.proj)
     
     prm.kin_res(curr_k,:) = cell(1,5);
     
-    setContPan('Fitting in progress ...', 'process', h.figure_MASH);
+    setContPan('Fitting in progress ...', 'process', h_fig);
     
-    res = fitDt(dat, j1, j2, excl, ref_k, p_fit, p_boba, h.figure_MASH);
+    res = fitDt(dat, j1, j2, excl, ref_k, p_fit, p_boba, h_fig);
     if isempty(res)
         return;
     end
@@ -87,8 +88,8 @@ if ~isempty(p.proj)
 
     p.proj{proj}.prm{tpe} = prm;
     h.param.TDP = p;
-    guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'TDP');
+    guidata(h_fig, h);
+    updateFields(h_fig, 'TDP');
     
     if boba
         if stchExp
@@ -110,8 +111,8 @@ if ~isempty(p.proj)
             str = sprintf([str2,str1]);
         end
         
-        setContPan(str, 'success', h.figure_MASH);
+        setContPan(str, 'success', h_fig);
     else
-        setContPan('Fitting completed.', 'success', h.figure_MASH);
+        setContPan('Fitting completed.', 'success', h_fig);
     end
 end

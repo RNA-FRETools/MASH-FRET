@@ -70,6 +70,14 @@ switch meth
                 mus = res{2,2}(:,2:4:end);
                 pops = res{2,2}(:,4:4:end);
                 K = size(mus,2);
+                if isInt
+                    if perSec
+                        mus = mus/expT;
+                    end
+                    if perPix
+                        mus = mus/nPix;
+                    end
+                end
                 for k = 1:K
                     scatter(h_axes(2), mus(:,k), pops(:,k), 'Marker', ...
                         '+', 'MarkerEdgeColor', clr(k,:), ...

@@ -1,4 +1,5 @@
-function pushbutton_TDPautoStart_Callback(obj, evd, h)
+function pushbutton_TDPautoStart_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.TDP;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -25,7 +26,7 @@ if ~isempty(p.proj)
         
         p.proj{proj}.prm{tpe} = prm;
         h.param.TDP = p;
-        guidata(h.figure_MASH, h);
-        updateFields(h.figure_MASH, 'TDP');
+        guidata(h_fig, h);
+        updateFields(h_fig, 'TDP');
     end
 end

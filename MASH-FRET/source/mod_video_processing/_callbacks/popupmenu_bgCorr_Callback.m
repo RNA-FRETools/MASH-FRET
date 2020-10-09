@@ -1,2 +1,2 @@
-function popupmenu_bgCorr_Callback(obj, evd, h)
-ud_movBgCorr(h.figure_MASH);
+function popupmenu_bgCorr_Callback(obj, evd, h_fig)
+ud_movBgCorr(h_fig);

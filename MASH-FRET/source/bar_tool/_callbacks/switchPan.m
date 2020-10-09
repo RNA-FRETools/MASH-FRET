@@ -1,4 +1,6 @@
-function switchPan(obj, evd, h)
+function switchPan(obj,evd,h_fig)
+
+ h = guidata(h_fig);
 
 green = [0.76 0.87 0.78];
 grey = [240/255 240/255 240/255];

@@ -1,7 +1,7 @@
-function pushbutton_impCoord_Callback(obj, evd, h)
-
+function pushbutton_impCoord_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 if h.param.movPr.nChan > 1 && h.param.movPr.nChan <= 3
-    defPname = setCorrectPath('spotfinder', h.figure_MASH);
+    defPname = setCorrectPath('spotfinder', h_fig);
     [fname,pname,o] = uigetfile({'*.spots','Coordinates File(*.spots)'; ...
         '*.*',  'All Files (*.*)'}, 'Select a coordinates file', defPname);
 
@@ -24,19 +24,19 @@ if h.param.movPr.nChan > 1 && h.param.movPr.nChan <= 3
         if isempty(coord)
             updateActPan(['No coordinates imported.' ...
                 '\nPlease check the import options.'], ...
-                h.figure_MASH, 'error');
+                h_fig, 'error');
             return;
         end
 
         h.param.movPr.coordMol = coord;
         h.param.movPr.coordMol_file = fname;
-        guidata(h.figure_MASH, h);
+        guidata(h_fig, h);
         updateActPan(['Molecule coordinates imported from file: ' fname ...
-            '\nin folder: ' pname], h.figure_MASH, 'success');
-        updateFields(h.figure_MASH, 'movPr');
+            '\nin folder: ' pname], h_fig, 'success');
+        updateFields(h_fig, 'movPr');
     end
 
 else
     updateActPan(['This functionality is available for 2 or 3 ' ...
-        channels only.'], h.figure_MASH, 'error');
+        channels only.'], h_fig, 'error');
 end

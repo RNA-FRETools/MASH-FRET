@@ -1,4 +1,5 @@
-function popupmenu_TDP_expNum_Callback(obj, evd, h)
+function popupmenu_TDP_expNum_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.TDP;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -6,6 +7,6 @@ if ~isempty(p.proj)
     trs = p.proj{proj}.prm{tpe}.clst_start{1}(4);
     p.proj{proj}.prm{tpe}.kin_start{trs,1}(3) = get(obj, 'Value');
     h.param.TDP = p;
-    guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'TDP');
+    guidata(h_fig, h);
+    updateFields(h_fig, 'TDP');
 end

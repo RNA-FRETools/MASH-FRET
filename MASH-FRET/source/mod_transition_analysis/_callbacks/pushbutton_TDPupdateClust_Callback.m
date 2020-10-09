@@ -1,11 +1,12 @@
-function pushbutton_TDPupdateClust_Callback(obj, evd, h)
+function pushbutton_TDPupdateClust_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.TDP;
 if ~isempty(p.proj)
     
     % reset previous clustering results if exist
-    pushbutton_TDPresetClust_Callback(h.pushbutton_TDPresetClust, [], h);
+    pushbutton_TDPresetClust_Callback(h.pushbutton_TDPresetClust,[],h_fig);
     
-    h = guidata(h.figure_MASH);
+    h = guidata(h_fig);
     p = h.param.TDP;
     proj = p.curr_proj; % current project
     tpe = p.curr_type(proj); % current channel type
@@ -16,7 +17,7 @@ if ~isempty(p.proj)
     
     if ~sum(sum(TDP))
         setContPan('TDP is empty, clustering is not availabe.','warning',...
-            h.figure_MASH);
+            h_fig);
         return;
     end
     
@@ -44,8 +45,8 @@ if ~isempty(p.proj)
                 'Yes, use default', 'Cancel, I will correct manually', ...
                 'Yes, use default');
             if strcmp(choice, 'Yes, use default')
-                pushbutton_TDPautoStart_Callback([], [], h);
-                h = guidata(h.figure_MASH);
+                pushbutton_TDPautoStart_Callback([],[],h_fig);
+                h = guidata(h_fig);
                 p = h.param.TDP;
                 prm = p.proj{proj}.prm{tpe}; % current channel parameters
             else
@@ -72,7 +73,7 @@ if ~isempty(p.proj)
                    prm.plot{1}(3,2) ... % conv./not TDP with Gaussian, o^2=0.0005
                    prm.plot{1}(3,3)]; % normalize/not TDP z-axis
 
-    res = clustTrans(dt_bin, TDP,plot_prm, clust_prm,h.figure_MASH);
+    res = clustTrans(dt_bin, TDP,plot_prm, clust_prm,h_fig);
     
     if isempty(res)
         return;
@@ -82,7 +83,7 @@ if ~isempty(p.proj)
     prm.clst_start{1}(8) = res.n_rep; % updated number of replicates
     p.proj{proj}.prm{tpe} = prm;
     h.param.TDP = p;
-    guidata(h.figure_MASH, h);
+    guidata(h_fig, h);
 
     Jmax = size(res.mu,2);
     
@@ -122,7 +123,7 @@ if ~isempty(p.proj)
         % save data
         p.proj{proj}.prm{tpe} = prm;
         h.param.TDP = p;
-        guidata(h.figure_MASH, h);
+        guidata(h_fig, h);
         
         str_pop = cell(1,Jmax-1);
         for j = 2:Jmax
@@ -133,5 +134,5 @@ if ~isempty(p.proj)
         
     end
     
-    updateFields(h.figure_MASH, 'TDP');
+    updateFields(h_fig, 'TDP');
 end

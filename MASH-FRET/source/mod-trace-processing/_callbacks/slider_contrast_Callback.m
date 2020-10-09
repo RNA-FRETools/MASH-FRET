@@ -1,4 +1,5 @@
-function slider_contrast_Callback(obj, evd, h)
+function slider_contrast_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj) && p.proj{p.curr_proj}.is_coord && ...
         p.proj{p.curr_proj}.is_movie
@@ -6,6 +7,6 @@ if ~isempty(p.proj) && p.proj{p.curr_proj}.is_coord && ...
     set(obj, 'Value', val);
     p.proj{p.curr_proj}.fix{1}(4) = val*2 - 1;
     h.param.ttPr = p;
-    guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'subImg');
+    guidata(h_fig, h);
+    updateFields(h_fig, 'subImg');
 end
