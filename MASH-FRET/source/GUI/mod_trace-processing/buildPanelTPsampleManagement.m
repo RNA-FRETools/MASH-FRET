@@ -14,11 +14,10 @@ function h = buildPanelTPsampleManagement(h,p)
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttstr: pixel width of tooltip box
 %   p.fntclr2: text color in special pushbuttons
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -39,18 +38,18 @@ str6 = 'label';
 str7 = {'Selecte a label'};
 str8 = 'Del.';
 str9 = 'Add>';
-ttstr0 = wrapStrToWidth('Go to <b>previous molecule</b> in the list.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Current molecule</b> index in the list.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('Go to <b>next molecule</b> in the list.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Refresh calculations</b> for the current molecule only.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Refresh calculations</b> for all molecules in the list.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('Open <b>export options</b> to configure the export of time-traces, state sequences, histograms and dwell times to various ASCII files and figures.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr6 = wrapStrToWidth('Open the <b>Trace manager</b> to visualize the ensemble and sort single molecules.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr7 = wrapStrToWidth('<b>Clear excluded molecules</b> off the list: excluded molecules appear in black in the list.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr8 = wrapStrToWidth('<b>Molecule selection</b>: when activated, the current molecule is included in the refined sample, otherwise, molecule is considered excluded and appear in black in the list.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr9 = wrapStrToWidth('<b>Molecule labels</b>: lists the labels given to the current molecule.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr10 = wrapStrToWidth('<b>Unlabel molecule</b>: remove the selected label from the list.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr11 = wrapStrToWidth('<b>Add label</b> to the current molecule''s labels list.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Go to <b>previous molecule</b> in the list.');
+ttstr1 = wrapHtmlTooltipString('<b>Current molecule</b> index in the list.');
+ttstr2 = wrapHtmlTooltipString('Go to <b>next molecule</b> in the list.');
+ttstr3 = wrapHtmlTooltipString('<b>Refresh calculations</b> for the current molecule only.');
+ttstr4 = wrapHtmlTooltipString('<b>Refresh calculations</b> for all molecules in the list.');
+ttstr5 = wrapHtmlTooltipString('Open <b>export options</b> to configure the export of time-traces, state sequences, histograms and dwell times to various ASCII files and figures.');
+ttstr6 = wrapHtmlTooltipString('Open the <b>Trace manager</b> to visualize the ensemble and sort single molecules.');
+ttstr7 = wrapHtmlTooltipString('<b>Clear excluded molecules</b> off the list: excluded molecules appear in black in the list.');
+ttstr8 = wrapHtmlTooltipString('<b>Molecule selection</b>: when activated, the current molecule is included in the refined sample, otherwise, molecule is considered excluded and appear in black in the list.');
+ttstr9 = wrapHtmlTooltipString('<b>Molecule labels</b>: lists the labels given to the current molecule.');
+ttstr10 = wrapHtmlTooltipString('<b>Unlabel molecule</b>: remove the selected label from the list.');
+ttstr11 = wrapHtmlTooltipString('<b>Add label</b> to the current molecule''s labels list.');
 
 % parents
 h_fig = h.figure_MASH;
@@ -173,8 +172,8 @@ h.pushbutton_TP_deleteTag = uicontrol('style','pushbutton','parent',h_pan,...
 
 x = x+wbut4+p.mg/fact;
 
-h.pushbutton_TP_addTag = uicontrol('style','pushbutton','parent',h_pan,...
+h.togglebutton_TP_addTag = uicontrol('style','togglebutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wbut5,hedit0],'string',str9,'tooltipstring',ttstr11,'callback',...
-    {@pushbutton_TP_addTag_Callback,h_fig});
+    {@togglebutton_TP_addTag_Callback,h_fig});
 

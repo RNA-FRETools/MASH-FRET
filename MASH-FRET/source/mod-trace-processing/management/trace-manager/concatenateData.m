@@ -283,21 +283,36 @@ guidata(h_fig, h);
 for ind = 1:(nChan*nExc+nI0+nFRET+nS)
 
     if ind<=(nChan*nExc+nI0) % intensity
-        dat1.lim(ind,:) = [min([min(dat1.trace{ind}),0]) ...
-            max(dat1.trace{ind})];
+        minI = min([min(dat1.trace{ind}),0]);
+        maxI = max(dat1.trace{ind});
+        if minI==maxI
+            minI = minI-1;
+            maxI = maxI+1;
+        end
+        dat1.lim(ind,:) = [minI,maxI];
     else % ratio
         dat1.lim(ind,:) = [defMin defMax];
     end
     
     for j = 1:nCalc
         if j==9 || j==10 % state-wise data
-            dat3.lim(ind,:,j) = [min(min(dat3.val{ind,j}(:,1))) ...
-                max(max(dat3.val{ind,j}(:,1)))];
+            minval = min(min(dat3.val{ind,j}(:,1)));
+            maxval = max(max(dat3.val{ind,j}(:,1)));
+            if minval==maxval
+                minval = minval-1;
+                maxval = maxval+1;
+            end
+            dat3.lim(ind,:,j) = [minval,maxval];
         elseif ind>(nChan*nExc) && j<=5 % FRET/S values
             dat3.lim(ind,:,j) = [defMin defMax];
         else
-            dat3.lim(ind,:,j) = [min(dat3.val{ind,j}) ...
-                max(dat3.val{ind,j})];
+            minval = min(dat3.val{ind,j});
+            maxval = max(dat3.val{ind,j});
+            if minval==maxval
+                minval = minval-1;
+                maxval = maxval+1;
+            end
+            dat3.lim(ind,:,j) = [minval maxval];
         end
     end
         

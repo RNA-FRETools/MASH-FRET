@@ -21,12 +21,7 @@ E(w<=mincount) = [];
 S(w<=mincount) = [];
 w(w<=mincount) = [];
 
-try
-    mdl = fitlm(E,S,'weights',(w/sum(w)).^fact);
-catch err
-    ok = false;
-    return
-end
+mdl = fitlm(E,S,'weights',(w/sum(w)).^fact);
 
 OME = mdl.Coefficients.Estimate(1,1);
 SIG =  mdl.Coefficients.Estimate(2,1);

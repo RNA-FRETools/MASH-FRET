@@ -13,10 +13,9 @@ function h = buildPanelSimPhotophysics(h,p)
 %   p.mg: margin
 %   p.mgpan: top-margin in a titled panel
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -33,17 +32,17 @@ str6 = 'dEA';
 str7 = 'BtD';
 str8 = 'BtA';
 str9 = 'PB';
-ttstr0 = wrapStrToWidth('<b>Total intensity</b> (counts/time bin): pure donor fluorescence intensity collected in absence of acceptor.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Sample heterogeneity:</b> standard deviation of the Itot,em Gaussian distribution (counts/time bin).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Intensity units of simulation parameters:</b> photon counts or amplified electron counts (only total intensity and background intensities are concerned).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Gamma factor:</b> modulate the donor fluorescence intensity.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Sample heterogeneity:</b> standard deviation of the &#947; factor Gaussian distribution.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('<b>Direct excitation coefficient</b> of donor upon acceptor excitation (given as a fraction of the total intensity)',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr6 = wrapStrToWidth('<b>Direct excitation coefficient</b> of acceptor upon donor excitation (given as a fraction of the total intensity)',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr7 = wrapStrToWidth('<b>Bleedthrough coefficient</b> of donor emission in acceptor channel.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr8 = wrapStrToWidth('<b>Bleedthrough coefficient</b> of acceptor emission in acceptor channel.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr9 = wrapStrToWidth('<b>Simulate donor photobleaching</b>: photobleaching times are randomly drawn from an exponentially decaying ditribution.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr10 = wrapStrToWidth('<b>Decay constant (in seconds)</b>: characterizes the distribution of photobleaching times.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('<b>Total intensity</b> (counts/time bin): pure donor fluorescence intensity collected in absence of acceptor.');
+ttstr1 = wrapHtmlTooltipString('<b>Sample heterogeneity:</b> standard deviation of the Itot,em Gaussian distribution (counts/time bin).');
+ttstr2 = wrapHtmlTooltipString('<b>Intensity units of simulation parameters:</b> photon counts or amplified electron counts (only total intensity and background intensities are concerned).');
+ttstr3 = wrapHtmlTooltipString('<b>Gamma factor:</b> modulate the donor fluorescence intensity.');
+ttstr4 = wrapHtmlTooltipString('<b>Sample heterogeneity:</b> standard deviation of the &#947; factor Gaussian distribution.');
+ttstr5 = wrapHtmlTooltipString('<b>Direct excitation coefficient</b> of donor upon acceptor excitation (given as a fraction of the total intensity)');
+ttstr6 = wrapHtmlTooltipString('<b>Direct excitation coefficient</b> of acceptor upon donor excitation (given as a fraction of the total intensity)');
+ttstr7 = wrapHtmlTooltipString('<b>Bleedthrough coefficient</b> of donor emission in acceptor channel.');
+ttstr8 = wrapHtmlTooltipString('<b>Bleedthrough coefficient</b> of acceptor emission in acceptor channel.');
+ttstr9 = wrapHtmlTooltipString('<b>Simulate donor photobleaching</b>: photobleaching times are randomly drawn from an exponentially decaying ditribution.');
+ttstr10 = wrapHtmlTooltipString('<b>Decay constant (in seconds)</b>: characterizes the distribution of photobleaching times.');
 
 % parents
 h_fig = h.figure_MASH;

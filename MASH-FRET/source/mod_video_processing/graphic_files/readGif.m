@@ -75,7 +75,7 @@ if strcmp(n, 'all')
     else
         if ~isempty(h_fig)
             pleaseWait('start', h_fig);
-            h = guidata(h_fig,h);
+            h = guidata(h_fig);
         else
             disp('Please wait ...');
         end

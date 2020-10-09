@@ -48,7 +48,12 @@ while char_prev<N
             pos_prev = pos_prev+nmax;
         else
             str_br = cat(2,str_br,str((char_prev+1):char_next-1),'<br>');
-            pos_prev = find(poschar==(char_next-1));
+            pos_prev = [];
+            i = 0;
+            while isempty(pos_prev)
+                i = i+1;
+                pos_prev = find(poschar==(char_next-i));
+            end
             char_prev = char_next;
         end
     end

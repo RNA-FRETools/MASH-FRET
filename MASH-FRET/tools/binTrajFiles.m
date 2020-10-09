@@ -1,14 +1,15 @@
 function binTrajFiles(expT, varargin)
-% | Format MASH-processed trace files (*.txt) by binning data to a greater
-% | exposure time and writing data columns specified by headers.
-% |
-% | command: binTrajFiles(expT,arg2,arg3);
-% | expT >> desired time bin (in second)
-% | arg2 (optional) >> source directory
-% | arg3 (optional) >> cellstring file headers that specify data to export.
-% |
-% | example1: binTrajFiles(0.2);
-% | example2: binTrajFiles(0.1, 'C:\myDataFolder\experiment_01\trace_processing_traces_ASCII\', {'timeat532nm','FRET_1>2'});
+% binTrajFiles(expT)
+% binTrajFiles(expT,pname)
+% binTrajFiles(expT,pname,fileheaders)
+% binTrajFiles(expT,pname,fileheaders,pname_out)
+%
+% Format MASH-processed trace files (*.txt) by binning data to a greater exposure time and writing data columns specified by headers.
+%
+% expT: desired time bin (in second)
+% pname: source directory
+% fileheaders: cellstring file headers that specify data to export
+% pname_out: destination directory
 
 % Last update: 10th of April 2019 by Mélodie Hadzic
 % --> adapt code to allow use without giving specific headers in input and
@@ -31,33 +32,40 @@ if ~isempty(varargin) && numel(varargin)>=1
     if isempty(pname) || ~sum(pname)
         disp('second input argument must contain the source directory');
         disp('for help type: help binTrajFiles');
-        return;
+        return
+    end
+    % added by MH, 10.4.2019
+    % collect headers of column to export
+    if numel(varargin)>=2
+        headers = varargin{2};
+        if isempty(headers)
+            disp(cat(2,'third input argument must contain headers of file ',...
+                'columns to export'));
+            disp('for help type: help binTrajFiles');
+            return
+        end
+        if numel(varargin)>=3
+            pname_out = varargin{3};
+            if ~strcmp(pname(end),filesep)
+                pname_out = cat(2,pname_out,filesep);
+            end
+        else
+            pname_out = pname;
+        end
+    else
+        headers = {};
     end
 else
     pname = uigetdir();
 end
 if isempty(pname) || ~sum(pname)
-    return;
+    return
 end
 cd(pname)
 
-% added by MH, 10.4.2019
-% collect headers of column to export
-if ~isempty(varargin) && numel(varargin)>=2
-    headers = varargin{2};
-    if isempty(headers)
-        disp(cat(2,'third input argument must contain headers of file ',...
-            'columns to export'));
-        disp('for help type: help binTrajFiles');
-        return;
-    end
-else
-    headers = {};
-end
-
 try
     % correct source directory
-    if ~strcmp(pname(end),'\')
+    if ~strcmp(pname(end),filesep)
         pname = [pname,filesep];
     end
 
@@ -83,7 +91,7 @@ try
     end
 
     % create output folder
-    out_pname = cat(2,pname,'binned ',date,filesep);
+    out_pname = cat(2,pname_out,'binned ',date,filesep);
     if ~exist(out_pname,'dir')
         mkdir(out_pname);
     end
@@ -164,11 +172,14 @@ try
     end
 
 catch err
+    if ~exist('ff','var')
+        throw(err)
+    end
     fprintf('\nError with file n°:%i, %s\n',ff,fList(ff,1).name);
     fprintf('%s\n', err.message);
     fprintf('in function: %s, line: %i\n', err.stack(1).name, ...
         err.stack(1).line);
-    return;
+    return
 end
 
 fprintf('\nprocess completed !\n');
@@ -189,21 +200,24 @@ bin_l = bin_1/bin_0;
 L_0 = size(data,1);
 L_1 = fix(L_0/bin_l);
 
-binned = NaN(L_1,size(data,2));
+binned = zeros(L_1,size(data,2));
 l_1 = 1;
 curs = 0;
 while l_1<=L_1
     % determine l_0 from cursor position
     l_0 = ceil(curs);
-    if l_0 == 0
-        l_0 = 1;
-    end
     
     % remaining fraction of l_0 to consider for calculation
-    rest_0 = 1-mod(curs,1);
+    if mod(curs,1)>0
+        rest_0 = 1-mod(curs,1);
+    else
+        rest_0 = 0;
+    end
     
     % add remaining fraction of l_0 in current l_1
-    binned(l_1,:) = rest_0*data(l_0,:);
+    if l_0>0
+        binned(l_1,:) = rest_0*data(l_0,:);
+    end
     
     % remaining frames to add to l_1 to complete a bin
     bin_rest = bin_l-rest_0;
@@ -214,7 +228,7 @@ while l_1<=L_1
             sum(data(l_0+1:l_0+fix(bin_rest),:),1);
     else
         binned = binned(1:l_1-1,:);
-        return;
+        return
     end
     
     % add rest l_0 bins to l_1
@@ -223,7 +237,7 @@ while l_1<=L_1
             (bin_rest-fix(bin_rest))*data(l_0+fix(bin_rest)+1,:);
     else
         binned = binned(1:l_1-1,:);
-        return;
+        return
     end
     
     % averaging
@@ -233,6 +247,7 @@ while l_1<=L_1
     curs = curs + bin_l;
     l_1 = l_1 + 1;
 end
+
 
 function dataFinal = arrangeColumns(finalHead,originHead,data)
 

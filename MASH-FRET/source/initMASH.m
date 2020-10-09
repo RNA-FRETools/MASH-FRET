@@ -1,4 +1,4 @@
-function initMASH(h_fig, figName)
+function initMASH(h_fig)
 % Set default parameters with file 'default_param.ini'
 % Create help buttons
 % Normalize all dimensions
@@ -23,21 +23,6 @@ function initMASH(h_fig, figName)
 % default
 ohfig = 0.75; % figures' outer height (normalized units)
 def_ask = true; % ask user before overwriting files
-
-% cancelled by MH, 29.11.2019
-% setProp(get(h_fig, 'Children'), 'FontUnits', 'pixel');
-% setProp(get(h_fig, 'Children'), 'FontSize', 11);
-%
-% set([h_mainPan,h.uipanel_TA_clusters,h.uipanel_TA_results,...
-%     h.uipanel_TA_transitions,h.uipanel_TA_fittingParameters,...
-%     h.uipanel_HA_method,h.uipanel_HA_thresholding,...
-%     h.uipanel_HA_gaussianFitting,h.uipanel_HA_fittingParameters,...
-%     h.uipanel_VP_spotfinder,h.uipanel_VP_coordinatesTransformation,...
-%     h.uipanel_S_photophysics,h.uipanel_S_cameraSnrCharacteristics,...
-%     h.uipanel_S_thermodynamicModel],'FontUnits','pixels','FontSize',12);
-%
-% set([h.axes_TDPplot1,h.axes_TDPplot2,h.axes_top,h.axes_topRight, ...
-%     h.axes_bottom,h.axes_bottomRight],'FontUnits','pixels','FontSize',11);
 
 % initialization of parameters
 if ~setParam(h_fig)
@@ -72,7 +57,7 @@ opos = get(h_fig,'outerposition');
 owfig = opos(3)*ohfig/opos(4);
 oxfig = (1-owfig)/2;
 oyfig = 1-ohfig;
-set(h_fig, 'Name', figName,'OuterPosition',[oxfig,oyfig,owfig,ohfig]);
+set(h_fig,'OuterPosition',[oxfig,oyfig,owfig,ohfig]);
 
 % build and add control panel figure (the main figure must be positionned)
 h.figure_actPan = actionPanel(h_fig);
@@ -94,24 +79,25 @@ set(h.edit_rootFolder, 'String', h.folderRoot);
 h.param.OpFiles.overwrite_ask = def_ask;
 h.param.OpFiles.overwrite = ~def_ask;
 
+% add action muting option
+h.mute_actions = false;
+
 % add zoom and pan objects
 h = buildContextmenu_zoom(h);
 
-% configure pointer manager
-% build pointer manager
+% save handle structure
+guidata(h_fig, h);
+
+% build and configure pointer manager
 iptPointerManager(h_fig,'enable');
 pb.enterFcn = [];
 pb.traverseFcn = @axes_TDPplot1_traverseFcn;
 pb.exitFcn = @axes_TDPplot1_exitFcn;
 iptSetPointerBehavior(h.axes_TDPplot1,pb);
 
-% save handle structure
-guidata(h_fig, h);
-
 % actualize control properties
 updateFields(h_fig);
 
-% changed by MH, 29.11.2019
-% switchPan(h.togglebutton_VP, [], h);
+% show module Video processing
 switchPan(h.togglebutton_VP, [], h_fig);
 

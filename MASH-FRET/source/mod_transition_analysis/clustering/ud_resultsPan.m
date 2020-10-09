@@ -18,11 +18,12 @@ curr = p.proj{proj}.curr{tag,tpe};
 prm = p.proj{proj}.prm{tag,tpe};
 
 set([h.text_TDPbobaRes h.text_TDPbobaSig h.edit_TDPbobaRes ...
-    h.edit_TDPbobaSig h.text_tdp_showModel h.text_tdp_Jequal ...
-    h.popupmenu_tdp_model h.pushbutton_tdp_impModel ...
+    h.edit_TDPbobaSig h.text_tdp_showModel h.text_tdp_Jequal h.text_tdp_BIC...
+    h.edit_tdp_BIC h.popupmenu_tdp_model h.pushbutton_tdp_impModel ...
     h.pushbutton_TDPresetClust],'Enable','on');
 
-set([h.edit_TDPbobaRes h.edit_TDPbobaSig], 'BackgroundColor', [1 1 1]);
+set([h.edit_TDPbobaRes h.edit_TDPbobaSig h.edit_tdp_BIC],'BackgroundColor',...
+    [1 1 1]);
 
 if isfield(curr,'clst_res') && ~isempty(curr.clst_res{1})
     isRes = true;
@@ -33,10 +34,11 @@ end
 % set results
 if ~isRes
     set([h.text_TDPbobaRes h.text_TDPbobaSig h.edit_TDPbobaRes ...
-        h.edit_TDPbobaSig h.text_tdp_showModel h.text_tdp_Jequal ...
-        h.popupmenu_tdp_model h.pushbutton_tdp_impModel ...
-        h.pushbutton_TDPresetClust], 'Enable', 'off');
-    set([h.edit_TDPbobaRes h.edit_TDPbobaSig], 'String', '');
+        h.edit_TDPbobaSig h.text_tdp_showModel h.text_tdp_Jequal  ...
+        h.text_tdp_BIC h.edit_tdp_BIC h.popupmenu_tdp_model ...
+        h.pushbutton_tdp_impModel h.pushbutton_TDPresetClust],'Enable',...
+        'off');
+    set([h.edit_TDPbobaRes h.edit_TDPbobaSig h.edit_tdp_BIC],'String','');
     return
 end
 
@@ -46,7 +48,6 @@ meth = prm.clst_start{1}(1); % last applied
 boba = prm.clst_start{1}(6); % last applied
 Jmax = prm.clst_start{1}(3);
 mat = prm.clst_start{1}(4);
-J = res{3};
 
 % set optimum state configuration and bootstrap results
 if boba
@@ -71,10 +72,8 @@ else
 end
 
 if meth==2
-    set([h.text_tdp_showModel,h.text_tdp_Jequal,h.popupmenu_tdp_model,...
-        h.pushbutton_tdp_impModel],'Enable','on');
     set(h.axes_tdp_BIC,'Visible','on');
-    
+
     J = curr.clst_res{3};
     if mat==1
         str_pop = cell(1,Jmax-1);
@@ -88,9 +87,11 @@ if meth==2
     end
     set(h.popupmenu_tdp_model,'String',str_pop,'Value',val,'TooltipString',...
         ttstr0{mat});
+    set(h.edit_tdp_BIC,'string',num2str(res{1}.BIC(J)));
 
 else
-    set([h.text_tdp_showModel,h.text_tdp_Jequal,h.popupmenu_tdp_model,...
-        h.pushbutton_tdp_impModel],'Enable','off');
+    set([h.text_tdp_showModel,h.text_tdp_Jequal,h.text_tdp_BIC,...
+        h.edit_tdp_BIC,h.popupmenu_tdp_model,h.pushbutton_tdp_impModel],...
+        'Enable','off');
 end
 

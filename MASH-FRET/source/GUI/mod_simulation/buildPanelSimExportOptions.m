@@ -13,10 +13,9 @@ function h = buildPanelSimExportOptions(h,p)
 %   p.mg: margin
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -34,16 +33,16 @@ str7 = 'Exported intensity units';
 str8 = {'photon counts','image counts'};
 str9 = 'Update';
 str10 = 'Export files';
-ttstr0 = wrapStrToWidth('Export one MATLAB binary file (.mat) that contains <b>intensity-time traces</b> and <b>coordinates</b> of all molecules.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('Export simulated <b>single molecule video</b> written in one binary MASH-FRET file.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('Export simulated <b>single molecule video</b> written in one uncompressed AVI file with RGB24 video.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('Export ASCII files that contain <b>intensity-time traces</b>, <b>coordinates</b>, <b>ideal photon count-time traces</b>, <b>calculated FRET-time traces</b>, <b>ideal FRET-time traces</b> and <b>state sequences</b> of individual molecules.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('Export ASCII files that contain the list of <b>dwell times</b> in individual FRET-time traces.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('Export one ASCII file containing the list of <b>parameters used in the simulation</b>.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr6 = wrapStrToWidth('Export one ASCII file containing all <b>single molecule coordinates</b> used in the simulation.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr7 = wrapStrToWidth('Select <b>intensity units</b> to export.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr8 = wrapStrToWidth('<b>Refresh calculations</b> of intensities in traces and single molecule images.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr9 = wrapStrToWidth('<b>Export simulated data</b> to selected files.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Export one MATLAB binary file (.mat) that contains <b>intensity-time traces</b> and <b>coordinates</b> of all molecules.');
+ttstr1 = wrapHtmlTooltipString('Export simulated <b>single molecule video</b> written in one binary MASH-FRET file.');
+ttstr2 = wrapHtmlTooltipString('Export simulated <b>single molecule video</b> written in one uncompressed AVI file with RGB24 video.');
+ttstr3 = wrapHtmlTooltipString('Export ASCII files that contain <b>intensity-time traces</b>, <b>coordinates</b>, <b>ideal photon count-time traces</b>, <b>calculated FRET-time traces</b>, <b>ideal FRET-time traces</b> and <b>state sequences</b> of individual molecules.');
+ttstr4 = wrapHtmlTooltipString('Export ASCII files that contain the list of <b>dwell times</b> in individual FRET-time traces.');
+ttstr5 = wrapHtmlTooltipString('Export one ASCII file containing the list of <b>parameters used in the simulation</b>.');
+ttstr6 = wrapHtmlTooltipString('Export one ASCII file containing all <b>single molecule coordinates</b> used in the simulation.');
+ttstr7 = wrapHtmlTooltipString('Select <b>intensity units</b> to export.');
+ttstr8 = wrapHtmlTooltipString('<b>Refresh calculations</b> of intensities in traces and single molecule images.');
+ttstr9 = wrapHtmlTooltipString('<b>Export simulated data</b> to selected files.');
 
 % parents
 h_fig = h.figure_MASH;

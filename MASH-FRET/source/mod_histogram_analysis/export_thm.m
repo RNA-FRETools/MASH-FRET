@@ -1,7 +1,11 @@
-function export_thm(h_fig)
+function export_thm(h_fig,varargin)
+% export_thm(h_fig)
+% export_thm(h_fig,file_out)
+% 
+% h_fig: handle to main figure
+% file_out: {1-by-2} destination folder and file
 
-% Last update: 23.4.2019 by MH
-% >> correct export for Gaussian fit without BOBA-FRET
+% Last update 23.4.2019 by MH: correct export for Gaussian fit without BOBA-FRET
 
 h = guidata(h_fig);
 p = h.param.thm;
@@ -66,14 +70,22 @@ else
     str_w = 'no';
 end
 
-defname = p.proj{proj}.exp_parameters{1,2};
-if isempty(defname)
-    [o,defname,o] = fileparts(p.proj{proj}.proj_file);
+if ~isempty(varargin)
+    pname = varargin{1}{1};
+    fname = varargin{1}{2};
+    if ~strcmp(pname(end),filesep)
+        pname = [pname,filesep];
+    end
+else
+    defname = p.proj{proj}.exp_parameters{1,2};
+    if isempty(defname)
+        [o,defname,o] = fileparts(p.proj{proj}.proj_file);
+    end
+    defname = cat(2,setCorrectPath('histogram_analysis',h_fig),defname,'_',...
+        str_tpe,str_tag);
+    [fname,pname,o] = uiputfile({'*.txt', 'Text files(*.txt)'; '*.*', ...
+        'All files(*.*)'},'Export analysis',defname);
 end
-defname = cat(2,setCorrectPath('histogram_analysis',h_fig),defname,'_',...
-    str_tpe,str_tag);
-[fname,pname,o] = uiputfile({'*.txt', 'Text files(*.txt)'; '*.*', ...
-    'All files(*.*)'},'Export analysis',defname);
 
 if ~sum(fname)
     return;
@@ -319,11 +331,9 @@ switch meth
 end
 
 if expfig
-    
-    err = loading_bar('init', h_fig, ceil(nSpl/3), ['Build *.pdf figures of ' ...
-        'bootstrapped histograms ...']);
-    if err
-        return;
+    if loading_bar('init', h_fig, ceil(nSpl/3), ['Build *.pdf figures of ' ...
+        'bootstrapped histograms ...'])
+        return
     end
     h = guidata(h_fig);
     h.barData.prev_var = h.barData.curr_var;
@@ -395,7 +405,7 @@ if expfig
         xNext = mg;
         for curr_s = s:s+2
             if curr_s>nSpl
-                break;
+                break
             end
             xNext = xNext + double(s~=curr_s)*w_full;
 
@@ -418,7 +428,7 @@ if expfig
         
         yNext = yNext - hMol;
         
-        if curr_s==s_end || curr_s==nSpl
+        if curr_s==s_end || curr_s>=nSpl
             if isdriver
                 try
                     if meth==1
@@ -466,9 +476,8 @@ if expfig
                 yNext = hFig - hMol - mg;
             end
         end
-        err = loading_bar('update', h_fig);
-        if err
-            return;
+        if loading_bar('update', h_fig)
+            return
         end
     end
     

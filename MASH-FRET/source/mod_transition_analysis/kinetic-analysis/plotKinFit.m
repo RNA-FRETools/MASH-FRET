@@ -38,6 +38,24 @@ clstDiag = prm.clst_start{1}(9);
 clst = prm.clst_res{1}.clusters{J};
 wght = prm.kin_start{1}{curr_k,1}(7);
 excl = prm.kin_start{1}{curr_k,1}(8);
+rearr = prm.kin_start{1}{curr_k,1}(9);
+% re-arrange state sequences by cancelling transitions belonging to diagonal clusters
+if rearr
+    [mols,o,o] = unique(clst(:,4));
+    dat_new = [];
+    for m = mols'
+        dat_m = clst(clst(:,4)==m,:);
+        if isempty(dat_m)
+            continue
+        end
+        dat_m = adjustDt(dat_m);
+        if size(dat_m,1)==1
+            continue
+        end
+        dat_new = cat(1,dat_new,dat_m);
+    end
+    clst = dat_new;
+end
 [j1,j2] = getStatesFromTransIndexes(curr_k,J,mat,clstDiag);
 hist_ref = getDtHist(clst, [j1,j2], [], excl, wght);
 
@@ -55,17 +73,33 @@ boba = prm.kin_start{1}{curr_k,1}(4);
 strch = prm.kin_start{1}{curr_k,1}(1);
 
 % plot histogram
-x_data = hist_ref(:,1);
-y_data = hist_ref(:,end);
+x_data = hist_ref(hist_ref(:,end)>0,1);
+y_data = hist_ref(hist_ref(:,end)>0,end);
 plot(h_axes, x_data, y_data, markhist, 'linewidth', lwhist);
 grid(h_axes, 'on');
 
+if isempty(x_data)
+    x_lim = [0,1];
+elseif x_data(1)==x_data(end)
+    x_lim = x_data(1)+[-1,1];
+else
+    x_lim = x_data([1,end])';
+end
+y_min = min(y_data);
+y_max = max(y_data);
+if isempty(y_data)
+    y_lim = [0,1];
+elseif y_min==y_max
+    y_lim = y_min+[-1,1];
+else
+    y_lim = [y_min,y_max];
+end
+
 if isequal(kin_res,def.kin_res)
-    xlim(h_axes,'auto');
-    ylim(h_axes,'auto');
-    lim = get(h_axes, 'YLim');
-    set(h_axes,'YLim',[min(y_data) lim(2)],'Visible','on','YScale',scl);
+    set(h_axes,'Visible','on','YScale',scl);
     title(h_axes, ttl);
+    xlim(h_axes,x_lim);
+    ylim(h_axes,y_lim);
     xlabel(h_axes, xlbl);
     ylabel(h_axes, ylbl);
     return
@@ -153,8 +187,8 @@ end
 title(h_axes, ttl);
 xlabel(h_axes, xlbl);
 ylabel(h_axes, ylbl);
-xlim(h_axes,'auto');
-ylim(h_axes,'auto');
+xlim(h_axes,x_lim);
+ylim(h_axes,y_lim);
 lim = get(h_axes, 'YLim');
 
 set(h_axes, 'NextPlot', 'replacechildren', 'YLim', [min(y_data) lim(2)], ...

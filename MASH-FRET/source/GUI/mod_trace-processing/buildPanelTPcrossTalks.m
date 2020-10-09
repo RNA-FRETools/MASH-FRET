@@ -13,13 +13,11 @@ function h = buildPanelTPcrossTalks(h,p)
 %   p.mg: margin
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
-%   p.wttsr: pixel width of tooltip box
 %   p.fntclr2: text color in special pushbuttons
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 10.01.2020
-
 
 % default
 hedit0 = 20;
@@ -34,11 +32,11 @@ str3 = 'dE at';
 str4 = 'dE';
 str5 = {'Select a channel'};
 str6 = {'Select a laser'};
-ttstr0 = wrapStrToWidth('Select the <b>emitter</b> to configure the cross-talks for.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('Select a <b>non-specific channel</b> to set the selected emitter''s bleedthrough coefficient for.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Bleedthrough coefficient:</b> amount of emitter''s signal detected in the non-specific channel relative to the specific emission channel.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('Select a <b>non-specific laser</b> to set the selected emitter''s direct excitation coefficient for.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Direct excitation coefficient:</b> amount of emitter''s signal detected upon non-specific laser illumination relative to specific illumination.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Select the <b>emitter</b> to configure the cross-talks for.');
+ttstr1 = wrapHtmlTooltipString('Select a <b>non-specific channel</b> to set the selected emitter''s bleedthrough coefficient for.');
+ttstr2 = wrapHtmlTooltipString('<b>Bleedthrough coefficient:</b> amount of emitter''s signal detected in the non-specific channel relative to the specific emission channel.');
+ttstr3 = wrapHtmlTooltipString('Select a <b>non-specific laser</b> to set the selected emitter''s direct excitation coefficient for.');
+ttstr4 = wrapHtmlTooltipString('<b>Direct excitation coefficient:</b> amount of emitter''s signal detected upon non-specific laser illumination relative to specific illumination.');
 
 % parents
 h_fig = h.figure_MASH;

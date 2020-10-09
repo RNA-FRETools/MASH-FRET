@@ -12,10 +12,9 @@ function h = buildPanelTAselectTool(h,p)
 %   p.fntsz1: regular font size
 %   p.mg: margin
 %   p.wbrd: cumulated pixel width of pushbutton's border
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % Created by MH, 24.1.2020
 
 % defaults
@@ -25,10 +24,10 @@ file_icon1 = 'icon_zoom.png';
 file_icon2 = 'icon_crosshair.png';
 file_icon3 = 'icon_clear.png';
 str0 = char(9668);
-ttstr0 = wrapStrToWidth('Switch to <b>cluster selection</b> mode',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Clear</b> current selection',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('Switch to <b>zoom</b> mode',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('Close',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Switch to <b>cluster selection</b> mode');
+ttstr1 = wrapHtmlTooltipString('<b>Clear</b> current selection');
+ttstr2 = wrapHtmlTooltipString('Switch to <b>zoom</b> mode');
+ttstr3 = wrapHtmlTooltipString('Close');
 
 % parents
 h_fig = h.figure_MASH;

@@ -23,9 +23,9 @@ switch meth
         h.tm.molValid(h.tm.molTag(:,tag)') = true;
     case 6 % add not tagged
         h.tm.molValid(~h.tm.molTag(:,tag)') = true;
-    case 8 % remove tagged
+    case 7 % remove tagged
         h.tm.molValid(h.tm.molTag(:,tag)') = false;
-    case 7 % remove not tagged
+    case 8 % remove not tagged
         h.tm.molValid(~h.tm.molTag(:,tag)') = false;
 end
 

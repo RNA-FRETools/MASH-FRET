@@ -1,4 +1,9 @@
 function axes_ovrAll_1_ButtonDownFcn(obj,evd,h_fig)
+% axes_ovrAll_1_ButtonDownFcn([],[],h_fig)
+% axes_ovrAll_1_ButtonDownFcn(frame,[],h_fig
+%
+% h_fig: handle to main figure
+% frame: {1-by-1} "clicked" frame index in concatenated trace
 
 h = guidata(h_fig);
 
@@ -10,13 +15,17 @@ inSec = p.proj{proj}.fix{2}(7);
 expT = p.proj{proj}.frame_rate; % this is truely the exposure time
 incl = p.proj{proj}.bool_intensities;
 
-% get clicked position on axes
-pos = get(h.tm.axes_ovrAll_1,'currentpoint');
-
-% get frame at click
-l = pos(1);
-if inSec
-    l = l/expT;
+if iscell(obj)
+    l = obj{1};
+else
+    % get clicked position on axes
+    pos = get(h.tm.axes_ovrAll_1,'currentpoint');
+    
+    % get frame at click
+    l = pos(1);
+    if inSec
+        l = l/expT;
+    end
 end
 
 % get molecule selection at last update

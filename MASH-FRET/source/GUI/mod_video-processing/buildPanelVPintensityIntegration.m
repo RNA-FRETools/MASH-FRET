@@ -14,11 +14,10 @@ function h = buildPanelVPintensityIntegration(h,p)
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.fntclr1: text color in file/folder fields
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -33,13 +32,13 @@ str3 = 'Options...';
 str4 = 'Integrated pixels:';
 str5 = 'mean intensity';
 str6 = 'Create & export...';
-ttstr0 = wrapStrToWidth('Open browser and <b>select the video file</b> to create intensity-time traces from.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('Open browser and <b>select the coordinates file</b> that contains single moelcule coordinates in all channels.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('Open <b>import options</b> to configure coordinates import.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Integration area dimensions (in pixels)</b>: defines the size of the square area around the single molecule.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Number of brightest pixels</b> to sum up.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('<b>Average intensity</b> over the pixels: intensity-time traces written in files other than the .mash project file are not affected.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr6 = wrapStrToWidth('Create and <b>export intensity-time traces:</b> opens export options.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Open browser and <b>select the video file</b> to create intensity-time traces from.');
+ttstr1 = wrapHtmlTooltipString('Open browser and <b>select the coordinates file</b> that contains single moelcule coordinates in all channels.');
+ttstr2 = wrapHtmlTooltipString('Open <b>import options</b> to configure coordinates import.');
+ttstr3 = wrapHtmlTooltipString('<b>Integration area dimensions (in pixels)</b>: defines the size of the square area around the single molecule.');
+ttstr4 = wrapHtmlTooltipString('<b>Number of brightest pixels</b> to sum up.');
+ttstr5 = wrapHtmlTooltipString('<b>Average intensity</b> over the pixels: intensity-time traces written in files other than the .mash project file are not affected.');
+ttstr6 = wrapHtmlTooltipString('Create and <b>export intensity-time traces:</b> opens export options.');
 
 % parents
 h_fig = h.figure_MASH;

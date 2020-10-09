@@ -59,27 +59,27 @@ if ~isempty(p.proj)
         num2str(sum(incl)),' included)'),'value',incl(currMol));
     
     % update default tag list
-    addOn = get(h.pushbutton_TP_addTag,'value');
+    addOn = get(h.togglebutton_TP_addTag,'value');
     if addOn
         str_lst = getStrPopTags(tagNames,colorlist);
-        set(h.lisbox_TP_defaultTags,'visible','on','string',str_lst);
+        set(h.listbox_TP_defaultTags,'visible','on','string',str_lst);
         if numel(str_lst)==1 && strcmp(str_lst{1},'no default tag')
-            set(h.lisbox_TP_defaultTags,'value',1);
+            set(h.listbox_TP_defaultTags,'value',1);
         else
-            currTag = get(h.lisbox_TP_defaultTags,'value');
-            currTop = get(h.lisbox_TP_defaultTags,'listboxtop');
+            currTag = get(h.listbox_TP_defaultTags,'value');
+            currTop = get(h.listbox_TP_defaultTags,'listboxtop');
             if currTag>nTag
                 currTag = nTag;
             end
-            set(h.lisbox_TP_defaultTags,'value',currTag);
+            set(h.listbox_TP_defaultTags,'value',currTag);
             if currTop<=nTag
-                set(h.lisbox_TP_defaultTags,'listboxtop',currTop);
+                set(h.listbox_TP_defaultTags,'listboxtop',currTop);
             else
-                set(h.lisbox_TP_defaultTags,'listboxtop',1);
+                set(h.listbox_TP_defaultTags,'listboxtop',1);
             end
         end
     else
-        set(h.lisbox_TP_defaultTags,'visible','off');
+        set(h.listbox_TP_defaultTags,'visible','off');
     end
 
     % update molecule tag popupmenu

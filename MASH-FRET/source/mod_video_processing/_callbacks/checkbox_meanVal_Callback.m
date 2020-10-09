@@ -1,6 +1,12 @@
 function checkbox_meanVal_Callback(obj, evd, h_fig)
-val = get(obj, 'Value');
+
+% collect interface parameters
 h = guidata(h_fig);
-h.param.movPr.itg_ave = val;
+
+h.param.movPr.itg_ave = get(obj, 'Value');
+
+% save modifications
 guidata(h_fig, h);
-updateFields(h_fig, 'movPr');
+
+% set GUI to proper values
+ud_VP_intIntegrPan(h_fig);

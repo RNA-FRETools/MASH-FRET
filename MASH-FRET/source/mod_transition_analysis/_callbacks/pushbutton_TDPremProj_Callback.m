@@ -10,14 +10,17 @@ end
 slct = get(h.listbox_TDPprojList, 'Value');
 
 % build confirmation message box
-str_proj = ['"' p.proj{slct(1)}.exp_parameters{1,2} '"'];
-for pj = 2:numel(slct)
-    str_proj = [str_proj ', "' p.proj{slct(pj)}.exp_parameters{1,2} ...
-        '"'];
+if h.mute_actions
+    del = 'Yes';
+else
+    str_proj = ['"' p.proj{slct(1)}.exp_parameters{1,2} '"'];
+    for pj = 2:numel(slct)
+        str_proj = [str_proj ', "' p.proj{slct(pj)}.exp_parameters{1,2} ...
+            '"'];
+    end
+    del = questdlg(['Remove project ' str_proj ' from the list?'], ...
+        'Remove project', 'Yes', 'No', 'No');
 end
-del = questdlg(['Remove project ' str_proj ' from the list?'], ...
-    'Remove project', 'Yes', 'No', 'No');
-
 if ~strcmp(del, 'Yes')
     return
 end

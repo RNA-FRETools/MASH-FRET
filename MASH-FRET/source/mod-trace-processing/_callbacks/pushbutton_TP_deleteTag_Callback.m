@@ -8,12 +8,13 @@ if ~isempty(p.proj)
     if ~strcmp(str_tag{tag},'no tag')
         mol = p.curr_mol(proj);
         
-        choice = questdlg(cat(2,'Remove tag "',removeHtml(str_tag{tag}),...
-            '" for molecule ',num2str(mol),' ?'),'Remove tag',...
-            'Yes, remove','Cancel','Cancel');
-        
-        if ~strcmp(choice,'Yes, remove')
-            return;
+        if ~h.mute_actions
+            choice = questdlg(cat(2,'Remove tag "',removeHtml(str_tag{tag}),...
+                '" for molecule ',num2str(mol),' ?'),'Remove tag',...
+                'Yes, remove','Cancel','Cancel');
+            if ~strcmp(choice,'Yes, remove')
+                return
+            end
         end
         
         tagId = find(p.proj{proj}.molTag(mol,:));

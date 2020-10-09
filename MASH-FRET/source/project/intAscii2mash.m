@@ -1,20 +1,8 @@
 function s = intAscii2mash(pname, fname, p, h_fig)
 
-% Last update: 8th of April 2019 by Melodie Hadzic
-% --> fix errors occurring when improting discretized FRET traces
-%
-% update: 3rd of April 2019 by Melodie Hadzic
-% --> correct boolean data according to each molecule's NaN
-% --> correct discretized FRET import for more than one laser excitation: 
-%     import FRET data at donor excitation, fill missing discretized FRET 
-%     data with NaNs instead of falses and manage import failure.
-% --> change "frame_rate" name to "exptime"
-%
-% update: 28th of March 2019 by Melodie Hadzic
-% --> Display all function and code line when an error occurs
-% --> Fix error when importing coordinates from file
-% --> Manage error when importing a number of coordinates from file
-%     different from number of intensity-time traces
+% Last update, 8.4.2019 by MH: fix errors occurring when improting discretized FRET traces
+% update, 3.4.2019 by MH: (1) correct boolean data according to each molecule's NaN (2) correct discretized FRET import for more than one laser excitation: import FRET data at donor excitation, fill missing discretized FRET data with NaNs instead of falses and manage import failure. (2) change "frame_rate" name to "exptime"
+% update 28.3.2019 by MH: (1) Display all function and code line when an error occurs (2) Fix error when importing coordinates from file (3) Manage error when importing a number of coordinates from file different from number of intensity-time traces
 
 s = [];
 
@@ -34,7 +22,9 @@ row_start = p{1}{1}(1); row_end = p{1}{1}(2);
 col_start = p{1}{1}(5); col_end = p{1}{1}(6);
 nChan = p{1}{1}(7);
 nExc = p{1}{1}(8); wl = p{1}{2}(1:nExc);
-isdFRET = p{1}{1}(9); col_dFRET = p{1}{1}(10);
+isdFRET = p{1}{1}(9);
+col_seq_start = p{1}{1}(10); col_seq_end = p{1}{1}(11);
+col_seq_skip = p{1}{1}(12);
 isGam = p{6}{1} & sum(p{6}{2}) & ~isempty(p{6}{3});
 isBet = p{6}{4} & sum(p{6}{5}) & ~isempty(p{6}{6}) ;
 
@@ -57,7 +47,7 @@ if isMov
     mov_file = p{2}{2};
     [data ok] = getFrames(mov_file, 1, {}, h_fig, false);
     if ~ok
-        return;
+        return
     end
     mov_dim = [data.pixelX data.pixelY];
     fCurs = data.fCurs;
@@ -72,8 +62,8 @@ if isCoord && isCoordFile
     coord_imp = p{3}{3};
     coord_file = p{3}{2};
     res_x = p{3}{4};
-    coord_tot = orgCoordCol(importdata(coord_file, '\n'), 'cw', ...
-        coord_imp, nChan, res_x, h_fig);
+    coord_tot = orgCoordCol(importdata(coord_file,'\n'),...
+        'cw',coord_imp,nChan,res_x,h_fig);
 else
     coord_imp = [];
     coord_file = [];
@@ -161,7 +151,7 @@ try
 %                     dFRET(size(dFRET,1)+1,:) = ...
 %                         dat(1,col_dFRET:col_dFRET:end);
                     dfretNum(size(dfretNum,1)+1,:) = ...
-                        dat(1,col_dFRET:col_dFRET:end);
+                        dat(1,col_seq_start:(col_seq_skip+1):col_seq_end);
                     
                 end
                 intNum(size(intNum,1)+1,:) = dat(1,col_start:c_end);
@@ -173,7 +163,7 @@ try
             updateActPan(['Unable to load intensity data from file: ' ...
                 fname{i} '\nPlease check import options.'], h_fig, ...
                 'error');
-            return;
+            return
         end
         
         % added by MH, 3.4.2019
@@ -200,8 +190,20 @@ try
                     'consistent with the correction factor files.'], h_fig, ...
                     'error');
                 return
-            elseif isempty(FRET)
-                FRET = [1 2];
+            elseif isempty(FRET) && row_start>1
+                FREThead = eval(cat(2,'{''',...
+                    strrep(fDat{row_start-1,1},char(9),''','''),'''}'));
+                FRET = getFRETfromFactorFiles(...
+                    FREThead(col_seq_start:(col_seq_skip+1):col_seq_end));
+            end
+            if isempty(FRET) || sum(sum(isnan(FRET)))
+                FRET = [];
+                for don = 1:nChan
+                    for acc = (don+1):nChan
+                        FRET = cat(1,FRET,[don,acc]);
+                    end
+                end
+                FRET = FRET(1:nFRET,:);
             end
         end
         
@@ -304,9 +306,10 @@ try
             % already-extended discretized FRETs
             if isdFRET
                 old_dFRET = fret_DTA;
-                fret_DTA = NaN(frmPerExc_max,size(old_dFRET,2));
-                fret_DTA(1:size(old_dFRET,1),:) = old_dFRET;
-                fret_DTA = cat(2,fret_DTA,dFRET);
+                fret_DTA = NaN(frmPerExc_max,size(old_dFRET,2)+1);
+                fret_DTA(1:size(old_dFRET,1),1:size(old_dFRET,2)) = ...
+                    old_dFRET;
+                fret_DTA(1:size(dFRET,1),end) = dFRET;
             end
         end
         
@@ -318,7 +321,7 @@ try
             updateActPan(['Unable to load intensity data from file: ' ...
                 fname{i} '\nPlease check import options.'], h_fig, ...
                 'error');
-            return;
+            return
         end
         
         % added by MH, 3.4.2019
@@ -329,7 +332,7 @@ try
             updateActPan(['Unable to load discretized FRET data from file:' ...
                 ' ' fname{i} '\nPlease check import options.'], h_fig, ...
                 'error');
-            return;
+            return
         end
         
         % get exposure time
@@ -357,13 +360,13 @@ try
                 loading_bar('close', h_fig);
                 updateActPan(['Molecule coordinates not found in file: ' ...
                     fname{i}], h_fig, 'error');
-                return;
+                return
             end
             
             if size(I,2)/nChan ~= size(coord,1)
                 updateActPan(['Number of intensity-time traces inconsistent ' ...
                     'with number of coordinates'], h_fig, 'error');
-                return;
+                return
             end
         end
         
@@ -372,24 +375,21 @@ try
         
         intrupt = loading_bar('update', h_fig);
         if intrupt
-            return;
+            return
         end
     end
         
 catch err
     updateActPan(['An error occurred during processing of file: ' ...
         fname{i} ':\n' err.message], h_fig, 'error');
-    for i = 1:size(err.stack,1)
-        disp(['function: ' err.stack(i,1).name ', line: ' ...
-            num2str(err.stack(i,1).line)]);
-    end
-    return;
+    dispMatlabErr(err);
+    return
 end
 
 if isCoord && size(intensities,2)/nChan ~= size(coord_tot,1)
     updateActPan(['Number of intensity-time traces inconsistent with ',...
         'number of coordinates'], h_fig, 'error');
-    return;
+    return
 end
 
 nS = 0;

@@ -15,10 +15,9 @@ function h = buildPanelTAfittingParameters(h,p)
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
 %   p.warr: width of downwards arrow in popupmenu
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % Created by MH, 9.11.2019
 
 % defaults
@@ -37,17 +36,17 @@ str7 = 'sigma';
 str8 = 'amp.:';
 str9 = 'dec.(s):';
 str10 = 'beta:';
-ttstr0 = wrapStrToWidth('Select an <b>exponential component</b> to adjust fitting parameters or show best fit parameters and bootstrapping results.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Start exponential fit</b> with current settings.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('Exponential''s <b>lowest amplitude</b> allowed in fit.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Starting guess</b> for exponential''s <b>amplitude</b>',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('Exponential''s <b>highest amplitude</b> allowed in fit.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('Exponential''s <b>lowest decay constant</b> allowed in fit.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr6 = wrapStrToWidth('<b>Starting guess</b> for exponential''s <b>decay constant</b>',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr7 = wrapStrToWidth('Exponential''s <b>highest decay constant</b> allowed in fit.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr8 = wrapStrToWidth('Exponential''s <b>lowest stretching exponent</b> allowed in fit.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr9 = wrapStrToWidth('<b>Starting guess</b> for exponential''s <b>stretching exponent</b>',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr10 = wrapStrToWidth('Exponential''s <b>highest stretching exponent</b> allowed in fit.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Select an <b>exponential component</b> to adjust fitting parameters or show best fit parameters and bootstrapping results.');
+ttstr1 = wrapHtmlTooltipString('<b>Start exponential fit</b> with current settings.');
+ttstr2 = wrapHtmlTooltipString('Exponential''s <b>lowest amplitude</b> allowed in fit.');
+ttstr3 = wrapHtmlTooltipString('<b>Starting guess</b> for exponential''s <b>amplitude</b>');
+ttstr4 = wrapHtmlTooltipString('Exponential''s <b>highest amplitude</b> allowed in fit.');
+ttstr5 = wrapHtmlTooltipString('Exponential''s <b>lowest decay constant</b> allowed in fit.');
+ttstr6 = wrapHtmlTooltipString('<b>Starting guess</b> for exponential''s <b>decay constant</b>');
+ttstr7 = wrapHtmlTooltipString('Exponential''s <b>highest decay constant</b> allowed in fit.');
+ttstr8 = wrapHtmlTooltipString('Exponential''s <b>lowest stretching exponent</b> allowed in fit.');
+ttstr9 = wrapHtmlTooltipString('<b>Starting guess</b> for exponential''s <b>stretching exponent</b>');
+ttstr10 = wrapHtmlTooltipString('Exponential''s <b>highest stretching exponent</b> allowed in fit.');
 
 % parents
 h_fig = h.figure_MASH;

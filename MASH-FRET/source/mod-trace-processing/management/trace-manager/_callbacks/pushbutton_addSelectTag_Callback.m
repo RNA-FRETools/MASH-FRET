@@ -9,11 +9,13 @@ if tag==0 % no tag selected
 end
 
 % ask confirmation to user
-choice = questdlg({cat(2,'Applying tags to selected molecules can not be ',...
-    'reversed.'),'','Do you wish to continue?'},'Apply molecule tag',...
-    'Tag molecules','Cancel','Cancel');
-if ~strcmp(choice,'Tag molecules')
-    return
+if ~h.mute_actions
+    choice = questdlg({cat(2,'Applying tags to selected molecules can not be ',...
+        'reversed.'),'','Do you wish to continue?'},'Apply molecule tag',...
+        'Tag molecules','Cancel','Cancel');
+    if ~strcmp(choice,'Tag molecules')
+        return
+    end
 end
 
 h.tm.molTag(h.tm.molValid,tag) = true;

@@ -15,15 +15,11 @@ function h = buildPanelTAstateTransitionRates(h,p)
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
 %   p.warr: width of downwards arrow in popupmenu
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 %   p.fname_boba: image file containing BOBA FRET icon
 
-% Last update by MH, 12.12.2019
-% >> move script that plots boba fret icon from ud_kinFit.m to here (plot 
-% is now done only once when building GUI)
-%
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
+% update by MH, 12.12.2019: move script that plots boba fret icon from ud_kinFit.m to here (plot is now done only once when building GUI)
 % Created by MH, 9.11.2019
 
 % defaults
@@ -48,14 +44,14 @@ str6 = 'y-log scale';
 str7 = 'dec.(s):';
 ttl0 = 'Transitions';
 ttl1 = 'Fitting parameters';
-ttstr0 = wrapStrToWidth('<b>Fitting function:</b> when activated, a <b>stretched exponential decay</b> function, amp*exp[-(t/dec)^beta], is fitted to the dwell time histogram.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Molecule bootstrapping:</b> when activated, sample histograms are created from molecules randomly selected in the project (replicates) and are fitted with an exponential function; the resulting bootstrap mean and standard deviation of fit parameters are used to estimate the cross-sample variability of exponential decays and thus, of state transition rates.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Fitting function:</b> when activated, a <b>sum of exponential decay</b> functions, amp*exp(-t/dec), is fitted to the dwell time histogram.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Number of expoenntial functions</b> to sum up in the fitting model.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Replicate weighing:</b> when activated, replicates are being given a weight proportional to the length of their time traces; this prevents the over-representation of short trajectories in bootstrap samples.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('<b>Number of bootstrap replicates:</b> number of molecules randomly selected in the project, used to create one sample histogram.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr6 = wrapStrToWidth('<b>Number of bootstrap samples:</b> number of sample histograms to create in order to estimate cross-sample variability.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr7 = wrapStrToWidth('Show histogram''s y-axis in a <b>logarithmic scale</b>.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('<b>Fitting function:</b> when activated, a <b>stretched exponential decay</b> function, amp*exp[-(t/dec)^beta], is fitted to the dwell time histogram.');
+ttstr1 = wrapHtmlTooltipString('<b>Molecule bootstrapping:</b> when activated, sample histograms are created from molecules randomly selected in the project (replicates) and are fitted with an exponential function; the resulting bootstrap mean and standard deviation of fit parameters are used to estimate the cross-sample variability of exponential decays and thus, of state transition rates.');
+ttstr2 = wrapHtmlTooltipString('<b>Fitting function:</b> when activated, a <b>sum of exponential decay</b> functions, amp*exp(-t/dec), is fitted to the dwell time histogram.');
+ttstr3 = wrapHtmlTooltipString('<b>Number of expoenntial functions</b> to sum up in the fitting model.');
+ttstr4 = wrapHtmlTooltipString('<b>Replicate weighing:</b> when activated, replicates are being given a weight proportional to the length of their time traces; this prevents the over-representation of short trajectories in bootstrap samples.');
+ttstr5 = wrapHtmlTooltipString('<b>Number of bootstrap replicates:</b> number of molecules randomly selected in the project, used to create one sample histogram.');
+ttstr6 = wrapHtmlTooltipString('<b>Number of bootstrap samples:</b> number of sample histograms to create in order to estimate cross-sample variability.');
+ttstr7 = wrapHtmlTooltipString('Show histogram''s y-axis in a <b>logarithmic scale</b>.');
 
 % parents
 h_fig = h.figure_MASH;

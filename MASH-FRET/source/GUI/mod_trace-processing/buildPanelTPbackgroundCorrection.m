@@ -14,11 +14,10 @@ function h = buildPanelTPbackgroundCorrection(h,p)
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.fntclr2: text color in special pushbuttons
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -41,16 +40,16 @@ str10 = 'Opt.';
 str11 = 'Background:';
 str12 = 'Apply';
 str13 = 'all';
-ttstr0 = wrapStrToWidth('Select an <b>intensity-time trace</b> to configure the background correction for.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('Select a background <b>estimation method</b> for the selected time-trace.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Background position:</b> x-coordinate of the background in the corresponding sub-image.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Background position:</b> y-coordinate of the background in the corresponding sub-image.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Background position:</b> determine automatically the background coordinates in the corresponding sub-image.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('Show the <b>background intensity-time trace</b>.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr6 = wrapStrToWidth('Open the <b>Background analyzer</b>: this tool allows to screen method parameters (useful to test background correction algorithms).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr7 = wrapStrToWidth('Calculated <b>(mean) background intensity</b> for the selected intensity-time trace.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr8 = wrapStrToWidth('<b>Subtract background</b> intensity or trace to the selected intensity-time trace.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr9 = wrapStrToWidth('Apply current background correction settings to all molecules.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Select an <b>intensity-time trace</b> to configure the background correction for.');
+ttstr1 = wrapHtmlTooltipString('Select a background <b>estimation method</b> for the selected time-trace.');
+ttstr2 = wrapHtmlTooltipString('<b>Background position:</b> x-coordinate of the background in the corresponding sub-image.');
+ttstr3 = wrapHtmlTooltipString('<b>Background position:</b> y-coordinate of the background in the corresponding sub-image.');
+ttstr4 = wrapHtmlTooltipString('<b>Background position:</b> determine automatically the background coordinates in the corresponding sub-image.');
+ttstr5 = wrapHtmlTooltipString('Show the <b>background intensity-time trace</b>.');
+ttstr6 = wrapHtmlTooltipString('Open the <b>Background analyzer</b>: this tool allows to screen method parameters (useful to test background correction algorithms).');
+ttstr7 = wrapHtmlTooltipString('Calculated <b>(mean) background intensity</b> for the selected intensity-time trace.');
+ttstr8 = wrapHtmlTooltipString('<b>Subtract background</b> intensity or trace to the selected intensity-time trace.');
+ttstr9 = wrapHtmlTooltipString('Apply current background correction settings to all molecules.');
 
 % parents
 h_fig = h.figure_MASH;

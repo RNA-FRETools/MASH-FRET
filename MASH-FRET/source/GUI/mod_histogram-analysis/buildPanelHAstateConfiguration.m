@@ -13,11 +13,10 @@ function h = buildPanelHAstateConfiguration(h,p)
 %   p.mg: margin
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
-%   p.wttsr: pixel width of tooltip box
 %   p.fntclr2: text color in special pushbuttons
 %   p.tbl: reference table listing character pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % Created by MH, 3.11.2019
 
 % default
@@ -40,13 +39,13 @@ str10 = 'BIC:';
 str11 = '>>';
 ylim0 = [1,10];
 axttl0 = 'BIC';
-ttstr0 = wrapStrToWidth('<b>Maximum model complexity:</b> largest number of Gaussians to fit to the histogram.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Infer state configurations:</b> Gaussian mixtures with increasing complexities will be successfully fit to the histogram.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Model selection:</b> overfitting is penalized using a <b>minimum improvement</b> in likelihood (the model is selected if further increase in complexity does not sufficiently improve the likelihood).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Improvement factor:</b> multiplication factor that expresses the minimum improvement in likelihood (example: 1.2 set a minimum improvement of 20%).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Model selection:</b> overfitting is penalized using the <b>BIC</b> (the selected model minimizes the BIC).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('Select an inferred <b>state configuration</b> to show on the histogram plot: configurations are labelled with the corresponding number of Gaussians.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr6 = wrapStrToWidth('<b>Export Gaussian parameters</b> of the selected state configuration to panel "State populations" as starting guesses for state population analysis.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('<b>Maximum model complexity:</b> largest number of Gaussians to fit to the histogram.');
+ttstr1 = wrapHtmlTooltipString('<b>Infer state configurations:</b> Gaussian mixtures with increasing complexities will be successfully fit to the histogram.');
+ttstr2 = wrapHtmlTooltipString('<b>Model selection:</b> overfitting is penalized using a <b>minimum improvement</b> in likelihood (the model is selected if further increase in complexity does not sufficiently improve the likelihood).');
+ttstr3 = wrapHtmlTooltipString('<b>Improvement factor:</b> multiplication factor that expresses the minimum improvement in likelihood (example: 1.2 set a minimum improvement of 20%).');
+ttstr4 = wrapHtmlTooltipString('<b>Model selection:</b> overfitting is penalized using the <b>BIC</b> (the selected model minimizes the BIC).');
+ttstr5 = wrapHtmlTooltipString('Select an inferred <b>state configuration</b> to show on the histogram plot: configurations are labelled with the corresponding number of Gaussians.');
+ttstr6 = wrapHtmlTooltipString('<b>Export Gaussian parameters</b> of the selected state configuration to panel "State populations" as starting guesses for state population analysis.');
 
 % parent
 h_fig = h.figure_MASH;

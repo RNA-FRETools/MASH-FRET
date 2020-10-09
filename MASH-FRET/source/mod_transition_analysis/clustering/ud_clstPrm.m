@@ -1,4 +1,4 @@
-function [curr,colList] = ud_clstPrm(curr,colList)
+function [curr,colList] = ud_clstPrm(curr,colList,nClrRef)
 
 meth = curr.clst_start{1}(1);
 
@@ -38,6 +38,7 @@ nClr = size(colList,1);
 if nClr < nTrs
     colList(nClr+1:nTrs,:) = round(rand(nTrs-nClr,3)*100)/100;
 end
+colList = colList(1:max([nClrRef,nTrs]),:);
 
 % adjust starting guess size
 for k = 1:nTrs

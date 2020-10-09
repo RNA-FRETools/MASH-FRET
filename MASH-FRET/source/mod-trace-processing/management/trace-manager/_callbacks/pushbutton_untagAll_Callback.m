@@ -8,12 +8,14 @@ if ~sum(sum(h.tm.molTag))
 end
 
 % ask confirmation to user
-choice = questdlg({cat(2,'All molecule-specific tags will be lost after ',...
-    'completion.'),'',cat(2,'Do you want to continue and remove tags to ',...
-    'all molecules?')},'Remove molecule tags','Yes, remove all tags',...
-    'Cancel','Cancel');
-if ~strcmp(choice,'Yes, remove all tags')
-    return
+if ~h.mute_actions
+    choice = questdlg({cat(2,'All molecule-specific tags will be lost after ',...
+        'completion.'),'',cat(2,'Do you want to continue and remove tags to ',...
+        'all molecules?')},'Remove molecule tags','Yes, remove all tags',...
+        'Cancel','Cancel');
+    if ~strcmp(choice,'Yes, remove all tags')
+        return
+    end
 end
 
 % set all molecule tags to false

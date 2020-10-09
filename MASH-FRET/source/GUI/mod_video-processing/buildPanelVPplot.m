@@ -13,10 +13,9 @@ function h = buildPanelVPplot(h,p)
 %   p.mg: margin
 %   p.mgpan: top-margin in a titled panel
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -27,8 +26,8 @@ str0 = 'Units per s.';
 str1 = 'cmap:';
 str2 = {'Jet','Gray','Hot','Cool','Spring','Summer','Autumn','Winter',...
     'Pink','Bone','Copper'};
-ttstr0 = wrapStrToWidth('<b>Intensity units:</b> image counts per time bin or per second (affects displayed intensities in the visualization area, displayed intensities when using the "create trace" cursor and intensity parameters used in Spotfinder).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Select a colormap:</b> color scale for pixel intensities.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('<b>Intensity units:</b> image counts per time bin or per second (affects displayed intensities in the visualization area, displayed intensities when using the "create trace" cursor and intensity parameters used in Spotfinder).');
+ttstr1 = wrapHtmlTooltipString('<b>Select a colormap:</b> color scale for pixel intensities.');
 
 % parents
 h_fig = h.figure_MASH;

@@ -13,9 +13,7 @@ function h = buildPanelSimThermodynamicModel(h,p)
 %   p.mg: margin
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
 % created by MH, 19.10.2019
 
@@ -32,17 +30,17 @@ str3 = 'FRETj';
 str4 = 'wFRETj';
 str5 = 'Transition rates (kjj'' in s-1)';
 str6 = 'Generate';
-ttstr0 = wrapStrToWidth('<b>Number of FRET states:</b> including degenerated states.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('Select a <b>state</b> to configurate.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>FRET value</b> assigned to the selected state.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Sample heterogeneity:</b> standard deviation of the FRET Gaussian distribution associated to the selected state.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('<b>Number of FRET states:</b> including degenerated states.');
+ttstr1 = wrapHtmlTooltipString('Select a <b>state</b> to configurate.');
+ttstr2 = wrapHtmlTooltipString('<b>FRET value</b> assigned to the selected state.');
+ttstr3 = wrapHtmlTooltipString('<b>Sample heterogeneity:</b> standard deviation of the FRET Gaussian distribution associated to the selected state.');
 ttstr4 = cell(1,Jmax^2);
 for j1 = 1:Jmax
     for j2 = 1:Jmax
-        ttstr4{j1,j2} = wrapStrToWidth(sprintf('rate of transition <b>%i->%i</b>',j1,j2),p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+        ttstr4{j1,j2} = wrapHtmlTooltipString(sprintf('rate of transition <b>%i->%i</b>',j1,j2));
     end
 end
-ttstr5 = wrapStrToWidth('Generate <b>new FRET state sequences</b>.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr5 = wrapHtmlTooltipString('Generate <b>new FRET state sequences</b>.');
 
 % parents
 h_fig = h.figure_MASH;

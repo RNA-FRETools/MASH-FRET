@@ -4,6 +4,7 @@ function [w, mu, sigma] = init_guess(J, v, t, mat, shape, lim, clstDiag)
 nTrs = getClusterNb(J,mat,clstDiag);
 w = ones(nTrs,1);
 w = w/sum(w);
+sigma = [];
 
 % generate evenly spread centers over the TDP
 max_x = max(v(1,:));
@@ -30,8 +31,6 @@ if t==1
 
     [mu,o] = get_kmean(mu, tolR, 1000, v(3,:), v(1,:), v(2,:), mat, ...
         clstDiag, 1);
-    
-
 else
     if mat==1
         mu = zeros(J,1);
@@ -54,31 +53,30 @@ else
         end
     end
 end
+if size(mu,1)~=J
+    return
+end
 
-if size(mu,1)>1
-    incl = true(size(mu,1),1);
-    if mat==1
-        for j1 = 1:J
-            for j2 = 1:J
-                if j1==j2
-                    continue
-                end
-                if sum(abs(mu(j1,:)-mu(j2,:))<lim)
-                    incl([j1 j2]) = false;
-                end
+incl = true(size(mu,1),1);
+if mat==1
+    for j1 = 1:J
+        for j2 = 1:J
+            if j1==j2
+                continue
             end
-        end
-    else
-        for k = 1:size(mu,1)
-            if abs(mu(k,1)-mu(k,2))<lim
-                incl(k) = false;
+            if sum(abs(mu(j1,:)-mu(j2,:))<lim)
+                incl([j1 j2]) = false;
             end
         end
     end
-    mu = mu(incl,:);
+else
+    for k = 1:size(mu,1)
+        if abs(mu(k,1)-mu(k,2))<lim
+            incl(k) = false;
+        end
+    end
 end
-
-sigma = [];
+mu = mu(incl,:);
 if size(mu,1)~=J
     return
 end

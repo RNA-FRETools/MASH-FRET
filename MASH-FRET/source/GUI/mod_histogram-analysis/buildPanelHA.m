@@ -21,17 +21,14 @@ function h = buildPanelHA(h,p)
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
 %   p.warr: width of downwards arrow in popupmenu
-%   p.wttsr: pixel width of tooltip box
 %   p.fntclr2: text color in special pushbuttons
 %   p.wbuth: pixel width of help buttons
 %   p.tbl: reference table listing character pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 %   p.fname_boba: image file containing BOBA FRET icon
 
-% Last update by MH, 12.12.2019
-% >> plot boba icon in corresponding axes
-%
-% Created by MH, 19.10.2019
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
+% update by MH, 12.12.2019: plot boba icon in corresponding axes
+% created by MH, 19.10.2019
 
 % default
 hpop0 = 22;
@@ -56,11 +53,11 @@ ylim0 = [0,0.01];
 xlbl0 = 'data';
 ylbl0 = 'normalized occurence';
 ylbl1 = 'normalized cumulative occurence';
-ttstr0 = wrapStrToWidth('Open <b>import options</b> to configure how intensity-time traces are imported from ASCII files.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Import traces</b> from a .mash file or from a set of ASCII files.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Close selected project</b> and remove it from the list.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Export results</b> to ASCII files: including histograms, state configurations and state populations.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Export selected project</b> to a .mash file.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Open <b>import options</b> to configure how intensity-time traces are imported from ASCII files.');
+ttstr1 = wrapHtmlTooltipString('<b>Import traces</b> from a .mash file or from a set of ASCII files.');
+ttstr2 = wrapHtmlTooltipString('<b>Close selected project</b> and remove it from the list.');
+ttstr3 = wrapHtmlTooltipString('<b>Export results</b> to ASCII files: including histograms, state configurations and state populations.');
+ttstr4 = wrapHtmlTooltipString('<b>Export selected project</b> to a .mash file.');
 
 % parents
 h_fig = h.figure_MASH;

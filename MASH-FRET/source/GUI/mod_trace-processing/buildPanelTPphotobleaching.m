@@ -14,11 +14,10 @@ function h = buildPanelTPphotobleaching(h,p)
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.fntclr2: text color in special pushbuttons
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -31,14 +30,16 @@ str0 = 'method';
 str1 = 'stop';
 str2 = {'Manual','Threshold'};
 str3 = 'Clip';
-str4 = 'data';
-str5 = 'Select the data to process';
-str6 = 'all';
-ttstr0 = wrapStrToWidth('Select a photobleaching <b>detection method</b>.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Cutoff time/frame:</b> position on the x-axis where photobleaching was detected; the cutoff is shown by a cyan vertical bar in top and bottom plots.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Clip traces</b> to cutoff time/frame: when activated, data points beyond the cutoff position are ignored.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Select data</b> to analyze for photobleaching detection.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('Apply current photobleaching settings to all molecules.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+str4 = 'Split';
+str5 = 'data';
+str6 = 'Select the data to process';
+str7 = 'all';
+ttstr0 = wrapHtmlTooltipString('Select a photobleaching <b>detection method</b>.');
+ttstr1 = wrapHtmlTooltipString('<b>Cutoff time/frame:</b> position on the x-axis where photobleaching was detected; the cutoff is shown by a cyan vertical bar in top and bottom plots.');
+ttstr2 = wrapHtmlTooltipString('<b>Clip traces</b> to cutoff time/frame: when activated, data points beyond the cutoff position are ignored.');
+ttstr3 = wrapHtmlTooltipString('<b>Split trace in two</b> at cutoff position: the molecule will be duplicated in the molecule list and will be given a starting point set to the cutoff position, whereas the original trace will be clip at the cutoff position.');
+ttstr4 = wrapHtmlTooltipString('<b>Select data</b> to analyze for photobleaching detection.');
+ttstr5 = wrapHtmlTooltipString('Apply current photobleaching settings to all molecules.');
 
 % parents
 h_fig = h.figure_MASH;
@@ -46,10 +47,11 @@ h_pan = h.uipanel_TP_photobleaching;
 
 % dimensions
 pospan = get(h_pan,'position');
-wcb0 = getUItextWidth(str4,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
-wbut0 = getUItextWidth(str6,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wpop1 = pospan(3)-2*p.mg-4*p.mg/fact-3*wedit0-wbut0;
-wpop0 = wpop1+p.mg/fact+wedit0;
+wcb0 = getUItextWidth(str3,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
+wbut0 = getUItextWidth(str4,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
+wbut1 = getUItextWidth(str7,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
+wpop1 = pospan(3)-2*p.mg-4*p.mg/fact-3*wedit0-wbut1;
+wpop0 = pospan(3)-2*p.mg-3*p.mg/fact-wedit0-wcb0-wbut0;
 
 % GUI
 x = p.mg;
@@ -88,18 +90,25 @@ h.checkbox_cutOff = uicontrol('style','checkbox','parent',h_pan,'units',...
     [x,y,wcb0,hedit0],'string',str3,'tooltipstring',ttstr2,'callback',...
     {@checkbox_cutOff_Callback,h_fig});
 
+x = x+wcb0+p.mg/fact;
+
+h.pushbutton_TP_pbSplit = uicontrol('style','pushbutton','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wbut0,hedit0],'string',str4,'tooltipstring',ttstr3,'callback',...
+    {@pushbutton_TP_pbSplit_Callback,h_fig});
+
 x = p.mg;
 y = y-p.mg/fact-htxt0;
 
 h.text_bleachChan = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wpop1,htxt0],'string',str4);
+    [x,y,wpop1,htxt0],'string',str5);
 
 y = y-hpop0;
 
 h.popupmenu_bleachChan = uicontrol('style','popupmenu','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wpop1,hpop0],'string',str5,'tooltipstring',ttstr3,'callback',...
+    [x,y,wpop1,hpop0],'string',str6,'tooltipstring',ttstr4,'callback',...
     {@popupmenu_bleachChan_Callback,h_fig});
 
 x = x+wpop1+p.mg/fact;
@@ -121,11 +130,11 @@ h.edit_photoblParam_03 = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wedit0,hedit0],'callback',{@edit_photoblParam_03_Callback,h_fig});
 
-x = pospan(3)-p.mg-wbut0;
+x = pospan(3)-p.mg-wbut1;
 
 h.pushbutton_applyAll_debl = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight',...
-    'bold','position',[x,y,wbut0,hedit0],'string',str6,'callback',...
-    {@pushbutton_applyAll_debl_Callback,h_fig},'tooltipstring',ttstr4,...
+    'bold','position',[x,y,wbut1,hedit0],'string',str7,'callback',...
+    {@pushbutton_applyAll_debl_Callback,h_fig},'tooltipstring',ttstr5,...
     'foregroundcolor',p.fntclr2);
 

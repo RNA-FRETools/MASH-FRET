@@ -1,44 +1,71 @@
 function pushbutton_trLoadRef_Callback(obj, evd, h_fig)
+% pushbutton_trLoadRef_Callback([], [], h_fig)
+% pushbutton_trLoadRef_Callback(coordfile, [], h_fig)
+%
+% h_fig: handle to main figure
+% coordfile: {1-by-2} source folder and source file containing reference coordinates
+
+% collect interface parameters
 h = guidata(h_fig);
-if h.param.movPr.nChan > 1 && h.param.movPr.nChan <= 3
-    [fname, pname, o] = uigetfile(...
-        {'*.map;*.cpSelect','Coordinates File(*.map;*.cpSelect)'; ...
-         '*.*',  'All Files (*.*)'}, ...
-         'Pick a co-localised coordinates file', ...
-         setCorrectPath('mapping', h_fig));
+p = h.param.movPr;
 
-    if ~isempty(fname) && sum(fname)
-        cd(pname);
-        fDat = importdata([pname fname], '\n');
-        if isstruct(fDat)
-            fDat = fDat.Sheet1;
-        end
-        res_x = h.param.movPr.trsf_coordLim(1);
-        mode = h.param.movPr.trsf_refImp_mode;
-        switch mode
-            case 'rw'
-                p = h.param.movPr.trsf_refImp_rw;
-            case 'cw'
-                p = h.param.movPr.trsf_refImp_cw;
-        end
-        coord_ref = orgCoordCol(fDat, mode, p, h.param.movPr.nChan, res_x, ...
-            h_fig);
-        
-        if isempty(coord_ref) || ...
-                size(coord_ref, 2) ~= 2*h.param.movPr.nChan
-            return;
-        end
-
-        updateActPan(['Reference coordinates successfully loaded from ' ...
-            'file: ' fname '\nin folder: ' pname], h_fig);
-        h.param.movPr.trsf_coordRef = coord_ref;
-        h.param.movPr.trsf_coordRef_file = fname;
-        guidata(h_fig, h);
-        updateFields(h_fig, 'movPr');
-
-    end
-
-else
-    updateActPan(['This functionality is available for 2 or 3 ' ...
-        'channels only.'], h_fig, 'error');
+if p.nChan<=1 || p.nChan>3
+    updateActPan(['This functionality is available for 2 or 3 channels ',...
+        'only.'], h_fig, 'error');
+    return
 end
+
+% get reference coordinates file
+if iscell(obj)
+    pname = obj{1};
+    fname = obj{2};
+    if ~strcmp(pname(end),filesep)
+        pname = [pname,filesep];
+    end
+else
+    [fname,pname,o] = uigetfile(...
+        {'*.map;*.cpSelect','Coordinates File(*.map;*.cpSelect)'; ...
+         '*.*','All Files (*.*)'},'Pick a co-localized coordinates file', ...
+         setCorrectPath('mapping', h_fig));
+end
+if ~sum(fname)
+    return
+end
+cd(pname);
+
+% import coordinates
+fDat = importdata([pname fname], '\n');
+if isstruct(fDat)
+    fDat = fDat.Sheet1;
+end
+
+% organize coordinate sin a column-wise fashion
+res_x = p.trsf_coordLim(1);
+mode = p.trsf_refImp_mode;
+switch mode
+    case 'rw'
+        prm = p.trsf_refImp_rw;
+    case 'cw'
+        prm = p.trsf_refImp_cw;
+end
+coord_ref = orgCoordCol(fDat, mode, prm, p.nChan, res_x, h_fig);
+if isempty(coord_ref) || size(coord_ref,2)~=(2*p.nChan)
+    return
+end
+
+% save reference coordinates and file
+p.trsf_coordRef = coord_ref;
+p.trsf_coordRef_file = fname;
+p.coord2plot = 2;
+
+% save modifications
+h.param.movPr = p;
+guidata(h_fig,h);
+
+% set GUI to proper values and refresh plot
+updateFields(h_fig,'imgAxes');
+
+% show action
+updateActPan(['Reference coordinates were successfully imported from file:' ...
+    ' ' pname fname], h_fig);
+

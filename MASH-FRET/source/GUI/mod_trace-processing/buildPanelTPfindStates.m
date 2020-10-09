@@ -14,11 +14,10 @@ function h = buildPanelTPfindStates(h,p)
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.fntclr2: text color in special pushbuttons
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -46,21 +45,21 @@ str15 = 'low';
 str16 = 'high';
 str17 = 'Adjust to data';
 str18 = 'all';
-ttstr0 = wrapStrToWidth('Select a <b>state-finding algorithm</b> to discretize time-traces.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('Select the <b>axes</b> to apply the state-finding algorithm to: traces in bottom axes, traces in top axes (use shared state transitions in top axes for bottom axes), or traces in both top and bottom axes',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('Select the <b>data-time trace</b> to configure the state-finding algorithm for.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('Post-processing parameter <b>tolerance window size:</b> the parameter is used to identify a state transition as "shared" among top-axes time traces in order to deduce transitions in bottom-axes time traces (only when apply to top axes).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('Post-processing parameter <b>number of refinement cycles:</b> each step in the state sequence is iteratively reassigned to the state having the closest value to the averaged data behind the step.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('Post-processing parameter <b>state bin size</b>: states close in value within a bin size are binned together in one averaged state.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr6 = wrapStrToWidth('Post-processing method <b>remove blurr states</b>: states dwelling one time bin are ignored.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr7 = wrapStrToWidth('Select a <b>state</b> to show the corresponding final value: found states are numbered from the lowest to the greatest value.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr8 = wrapStrToWidth('<b>Final sate value</b> (after post-processing) corresponding to the selected state.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr9 = wrapStrToWidth('Select an <b>initial state</b> to set the corresponding thresholds: states are numbered from the lowest to the greatest value.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr10 = wrapStrToWidth('<b>Lower threshold:</b> when the trajectory goes below this threshold, the state sequence transits to the next lower state value.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr11 = wrapStrToWidth('<b>State value:</b> when the original trajectory remains between the low and high thresholds, the state sequence dwells at this value.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr12 = wrapStrToWidth('<b>Higher threshold:</b> when the trajectory goes above this threshold, the state sequence transits to the next higher state value.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr13 = wrapStrToWidth('Post processing action <b>adjust state value</b> to data: positions of state transitions are preserved but state values are recalculated by averaging the data points behind.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr14 = wrapStrToWidth('Apply current state-finding method settings to all molecules.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Select a <b>state-finding algorithm</b> to discretize time-traces.');
+ttstr1 = wrapHtmlTooltipString('Select the <b>axes</b> to apply the state-finding algorithm to: traces in bottom axes, traces in top axes (use shared state transitions in top axes for bottom axes), or traces in both top and bottom axes');
+ttstr2 = wrapHtmlTooltipString('Select the <b>data-time trace</b> to configure the state-finding algorithm for.');
+ttstr3 = wrapHtmlTooltipString('Post-processing parameter <b>tolerance window size:</b> the parameter is used to identify a state transition as "shared" among top-axes time traces in order to deduce transitions in bottom-axes time traces (only when apply to top axes).');
+ttstr4 = wrapHtmlTooltipString('Post-processing parameter <b>number of refinement cycles:</b> each step in the state sequence is iteratively reassigned to the state having the closest value to the averaged data behind the step.');
+ttstr5 = wrapHtmlTooltipString('Post-processing parameter <b>state bin size</b>: states close in value within a bin size are binned together in one averaged state.');
+ttstr6 = wrapHtmlTooltipString('Post-processing method <b>remove blurr states</b>: states dwelling one time bin are ignored.');
+ttstr7 = wrapHtmlTooltipString('Select a <b>state</b> to show the corresponding final value: found states are numbered from the lowest to the greatest value.');
+ttstr8 = wrapHtmlTooltipString('<b>Final sate value</b> (after post-processing) corresponding to the selected state.');
+ttstr9 = wrapHtmlTooltipString('Select an <b>initial state</b> to set the corresponding thresholds: states are numbered from the lowest to the greatest value.');
+ttstr10 = wrapHtmlTooltipString('<b>Lower threshold:</b> when the trajectory goes below this threshold, the state sequence transits to the next lower state value.');
+ttstr11 = wrapHtmlTooltipString('<b>State value:</b> when the original trajectory remains between the low and high thresholds, the state sequence dwells at this value.');
+ttstr12 = wrapHtmlTooltipString('<b>Higher threshold:</b> when the trajectory goes above this threshold, the state sequence transits to the next higher state value.');
+ttstr13 = wrapHtmlTooltipString('Post processing action <b>adjust state value</b> to data: positions of state transitions are preserved but state values are recalculated by averaging the data points behind.');
+ttstr14 = wrapHtmlTooltipString('Apply current state-finding method settings to all molecules.');
 
 % parents
 h_fig = h.figure_MASH;

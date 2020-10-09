@@ -36,7 +36,7 @@ incl =  p.proj{proj}.bool_intensities(:,slct);
 
 if isTDP
     trace_x = dat3.val{datax,jx};
-    trace_y = [dat3.val{datay,jy}(2:end,:);dat3.val{datay,jy}(end,:)];
+    trace_y = [dat3.val{datax,jx}(2:end,:);dat3.val{datax,jx}(end,:)];
     trace = [trace_x,trace_y];
 else
     if jx==0 % original time traces
@@ -60,11 +60,14 @@ else
     end
 end
 
-if sum(jx==[0,1]) && sum(jy==[0,1]) % frame-wise data
+if (is2D && sum(jx==[0,1]) && sum(jy==[0,1])) || ...
+        (~is2D && sum(jx==[0,1])) % frame-wise data
     molIncl = molsWithConf(trace,'trace',prm,incl);
-elseif sum(jx==(2:8)) % molecule-wise
+elseif (is2D && sum(jx==(2:8)) && sum(jy==(2:8))) || ...
+        (~is2D && sum(jx==(2:8))) % molecule-wise
     molIncl = molsWithConf(trace,'value',prm);
-else % state-wise
+elseif (is2D && sum(jx==[9,10]) && sum(jy==[9,10])) || ...
+        (~is2D && sum(jx==[9,10])) % state-wise
     molIncl = molsWithConf(trace,'state',prm);
 end
     

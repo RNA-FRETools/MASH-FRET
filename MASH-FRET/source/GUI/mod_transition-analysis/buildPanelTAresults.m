@@ -14,10 +14,9 @@ function h = buildPanelTAresults(h,p)
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % Created by MH, 8.11.2019
 
 % defaults
@@ -34,11 +33,13 @@ str2 = 'Show model:';
 str3 = 'J =';
 str4 = {'Select a number of states'};
 str5 = '>>';
-str6 = 'reset';
-ttstr0 = wrapStrToWidth('<b>Model complexity:</b> optimum number of states; when BOBA FRET activated, the bootstrap mean is shown here.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Sample variability:</b> when BOBA FRET activated, the bootstrap standard deviation of optimum number of states is shown here.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Export transition clusters</b> from the selected state configuration to panel "State trasition rates" for dwell time analysis.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Delete clustering</b> results.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+str6 = 'BIC:';
+str7 = 'reset';
+ttstr0 = wrapHtmlTooltipString('<b>Model complexity:</b> optimum number of states; when BOBA FRET activated, the bootstrap mean is shown here.');
+ttstr1 = wrapHtmlTooltipString('<b>Sample variability:</b> when BOBA FRET activated, the bootstrap standard deviation of optimum number of states is shown here.');
+ttstr3 = wrapHtmlTooltipString('<b>Export transition clusters</b> from the selected state configuration to panel "State trasition rates" for dwell time analysis.');
+ttstr4 = wrapHtmlTooltipString('<b>Bayesian information criterion</b> corresponding to selected model complexity.');
+ttstr5 = wrapHtmlTooltipString('<b>Delete clustering</b> results.');
 
 % parents
 h_fig = h.figure_MASH;
@@ -52,7 +53,7 @@ wtxt0 = pospan(3)-p.mg-p.mg/2-waxes0;
 wtxt1 = getUItextWidth(str3,p.fntun,p.fntsz1,'normal',p.tbl);
 wbut0 = getUItextWidth(str5,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 wpop0 = pospan(3)-p.mg-p.mg/2-p.mg/fact-waxes0-wtxt1-wbut0;
-mgres = (pospan(4)-p.mgpan-p.mg-p.mg/fact-2*hedit0-hpop0-2*htxt0)/2;
+mgres = (pospan(4)-p.mgpan-htxt0-hedit0-hedit0-htxt0-hpop0-hedit0-p.mg)/3;
 
 % GUI
 x = 0;
@@ -125,10 +126,24 @@ h.pushbutton_tdp_impModel = uicontrol('style','pushbutton','parent',h_pan,...
     {@pushbutton_tdp_impModel_Callback,h_fig});
 
 x = waxes0+p.mg/2;
+y = y-(hpop0-hedit0)/2-mgres-hedit0+(hedit0-htxt0)/2;
+
+h.text_tdp_BIC =  uicontrol('style','text','parent',h_pan,'units',...
+    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wtxt1,htxt0],'string',str6);
+
+x = x+wtxt1;
+y = y-(hedit0-htxt0)/2;
+
+h.edit_tdp_BIC = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,hedit0],...
+    'tooltipstring',ttstr4,'callback',{@edit_tdp_bic_Callback,h_fig});
+
+x = x-wtxt1;
 y = y-mgres-hedit0;
 
 h.pushbutton_TDPresetClust = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wtxt0,hedit0],'string',str6,'tooltipstring',ttstr4,'callback',...
+    [x,y,wtxt0,hedit0],'string',str7,'tooltipstring',ttstr5,'callback',...
     {@pushbutton_TDPresetClust_Callback,h_fig});
 

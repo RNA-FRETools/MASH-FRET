@@ -47,7 +47,7 @@ if ~is2D % 1D histograms
     if jx==0
         xlabel(h.tm.axes_histSort, dat1.ylabel{indx});
     else
-        xlabel(h.tm.axes_histSort, dat3.label{indx});
+        xlabel(h.tm.axes_histSort, dat3.label{indx,jx});
     end
     ylabel(h.tm.axes_histSort, 'Frequency count');
     

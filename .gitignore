@@ -25,6 +25,7 @@ octave-workspace
 *.autosave
 MASH-FRET/default_param.ini
 MASH-FRET/log/
+MASH-FRET/source/routines/*/dump
 *.log
 *.ini
 /docs/_site/*

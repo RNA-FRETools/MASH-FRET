@@ -1,4 +1,4 @@
-function p = updateDtHistFit(p,tag,tpe,curr_k,h_fig)
+function p = updateDtHistFit(p,tag,tpe,curr_k,excl,h_fig)
 
 % collect interface parameters
 proj = p.curr_proj;
@@ -14,7 +14,6 @@ prm.kin_res = curr.kin_res;
 J = prm.kin_start{2}(1);
 mat = prm.clst_start{1}(4);
 clstDiag = prm.clst_start{1}(9);
-ref_k = prm.clst_res{4}{curr_k};
 dat = prm.clst_res{1}.clusters{J};
 kin_k = prm.kin_start{1}(curr_k,:);
 stchExp = kin_k{1}(1);
@@ -45,24 +44,34 @@ if boba
     p_boba = kin_k{1}([5 6 7]);
 end
 
-% ask user about dwell time exclusion
-excl = questdlg({sprintf(cat(2,'The first and last dwell times of state ',...
-    'trajectories are truncated due to the limited observation time ',...
-    'window and often lead to biased results.\n\nDo you want to exclude ',...
-    'the trucated dwell-times from the fit?'))},...
-    'Exclude flanking dwell-times?','Exclude','Include','Cancel',...
-    'Exclude');
-if strcmp(excl, 'Exclude')
-    excl = 1;
-elseif strcmp(excl, 'Include')
-    excl = 0;
-else
-    return
-end
 prm.kin_start{1}{curr_k,1}(8) = excl;
 
 % collect state indexes for curent transitions
 [j1,j2] = getStatesFromTransIndexes(curr_k,J,mat,clstDiag);
+
+% re-arrange state sequences by cancelling transitions belonging to diagonal clusters
+rearr = prm.kin_start{1}{curr_k,1}(9);
+if rearr
+    [mols,o,o] = unique(dat(:,4));
+    dat_new = [];
+    for m = mols'
+        dat_m = dat(dat(:,4)==m,:);
+        if isempty(dat_m)
+            continue
+        end
+        dat_m = adjustDt(dat_m);
+        if size(dat_m,1)==1
+            continue
+        end
+        dat_new = cat(1,dat_new,dat_m);
+    end
+    dat = dat_new;
+end
+
+% get reference histogram
+wght = prm.kin_start{1}{curr_k,1}(7);
+ref_k = getDtHist(dat, [j1,j2], [], excl, wght);
+prm.clst_res{4}{curr_k} = ref_k;
 
 % histogram fitting
 setContPan('Fitting in progress ...', 'process', h_fig);
@@ -77,6 +86,7 @@ if boba
     prm.kin_res{curr_k,1} = res.boba_mean;
     prm.kin_res{curr_k,3} = res.boba_inf;
     prm.kin_res{curr_k,4} = res.boba_sup;
+    prm.kin_res{curr_k,5} = {res.histspl,res.boba_fitres};
 end
 
 prm.kin_res{curr_k,2} = res.fit_ref;

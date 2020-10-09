@@ -23,10 +23,9 @@ if ~isempty(p.proj)
     try
         % update all intensities
         opt = cell(1,nMol);
+        % display action
+        disp('correct intensities...');
         for m = 1:nMol
-            % display action
-            disp(cat(2,'process data of molecule n:°',num2str(m)));
-
             % cancelled by MH, 14.1.2020
 %             % process data
 %             p = updateTraces(h_fig, 'ttPr', m, p, []);
@@ -50,6 +49,7 @@ if ~isempty(p.proj)
         
         % added by MH, 14.1.2020
         % calculate correction factors and discretize traces
+        disp('calculate correction factors...');
         for m = 1:nMol
             if strcmp(opt{m}, 'gamma') || strcmp(opt{m}, 'debleach') || ...
                     strcmp(opt{m}, 'denoise') || strcmp(opt{m}, 'cross') || ...
@@ -67,6 +67,8 @@ if ~isempty(p.proj)
             % -------------------------------------------------------------
         end
         for m = 1:nMol
+            disp(cat(2,'infer state sequences for molecule n:°',...
+                num2str(m)));
             p = updateStateSequences(h_fig, m, p);
 
             % loading bar update-------------------------------------------
@@ -99,6 +101,8 @@ if ~isempty(p.proj)
     guidata(h_fig, h);
     
     loading_bar('close',h_fig);
+    
+    updateFields(h_fig,'ttPr');
     
     setContPan('Update completed !','success',h_fig);
     

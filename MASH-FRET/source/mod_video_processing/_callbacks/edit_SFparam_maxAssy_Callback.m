@@ -1,17 +1,29 @@
 function edit_SFparam_maxAssy_Callback(obj, evd, h_fig)
-val = str2num(get(obj, 'String'));
+
+% collect interface parameters
+val = str2double(get(obj, 'String'));
+h = guidata(h_fig);
+chan = get(h.popupmenu_SFchannel, 'Value');
+p = h.param.movPr;
+
 set(obj, 'String', num2str(val));
-if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 100)
+if ~(numel(val) == 1 && ~isnan(val) && val >= 100)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    updateActPan('Max. spot assymetry must be a number >= 100.', ...
-        h_fig, 'error');
-else
-    set(obj, 'BackgroundColor', [1 1 1]);
-    val = str2num(get(obj, 'String'));
-    h = guidata(h_fig);
-    channel = get(h.popupmenu_SFchannel, 'Value');
-    h.param.movPr.SF_maxAssy(channel) = val;
-    guidata(h_fig, h);
-    ud_SFspots(h_fig);
-    ud_SFpanel(h_fig);
+    updateActPan('Max. spot assymetry must be a number >= 100.', h_fig, ...
+        'error');
+    return
 end
+
+p.SF_maxAssy(chan) = val;
+
+% reset spot selection
+if size(p.SFres,1)>=2
+    p.SFres(2,:) = [];
+end
+
+% save modifications
+h.param.movPr = p;
+guidata(h_fig, h);
+
+% refresh calculations, plot and set GUI to proper values
+updateFields(h_fig,'imgAxes');

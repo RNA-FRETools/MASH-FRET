@@ -1,7 +1,14 @@
 function checkbox_bgCorrAll_Callback(obj, evd, h_fig)
+
+% collect interface parameters
 h = guidata(h_fig);
-h.param.movPr.movBg_one = ~get(obj, 'Value');
-if h.param.movPr.movBg_one
-    h.param.movPr.movBg_one = h.movie.frameCurNb;
+p = h.param.movPr;
+
+p.movBg_one = ~get(obj, 'Value');
+if p.movBg_one && isfield(h,'movie')
+    p.movBg_one = h.movie.frameCurNb;
 end
+
+% save modifications
+h.param.movPr = p;
 guidata(h_fig, h);

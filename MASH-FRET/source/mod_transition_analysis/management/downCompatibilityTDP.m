@@ -11,7 +11,8 @@ if isfield(prm,'plot') && size(prm.plot{1},1)<4
     prm.plot = def.plot;
 end
 % add boba parameters if none
-if isfield(prm,'clst_start') && size(prm.clst_start,2)<8
+if isfield(prm,'clst_start') && size(prm.clst_start,2)>=1 && ...
+        size(prm.clst_start{1},2)<8
     prm.clst_start{1}(6:8) = def.clst_start{1}(6:8);
 end
 
@@ -71,10 +72,6 @@ if isfield(prm,'clst_start') && size(prm.clst_start,2)>=1 && ...
     prm.clst_start{1} = cat(2,prm.clst_start{1},[true 1]);
 end
 
-% 29.1.2020: correct ill-initialized kinetic analysis results
-if isfield(prm,'kin_res') && size(prm.kin_res,2)~=size(def.kin_res,2) 
-    prm.kin_res = prm.kin_res(:,1:size(def.kin_res,2));
-end
 % 29.1.2020: reformat (state,radius) to (state x,state y,radius x,radius y)
 if isfield(prm,'clst_start') && size(prm.clst_start,2)>=2 && ...
         size(prm.clst_start{2},2)==2
@@ -188,6 +185,24 @@ if isfield(prm,'clst_start') && size(prm.clst_start,2)>=1 && ...
     elseif prm.clst_start{1}(4)==0
         prm.clst_start{1}(4) = 3;
     end
+end
+
+% 27.02.2020: add "re-arrange" option
+if isfield(prm,'kin_def') && size(prm.kin_def,2)>=1 && ...
+        size(prm.kin_def{1},2)<9
+    prm.kin_def{1} = [prm.kin_def{1},false];
+    if isfield(prm,'kin_start') && size(prm.kin_start,2)>=1
+        for k = 1:size(prm.kin_start{1},1)
+            if size(prm.kin_start{1}{k,1},2)<9
+                prm.kin_start{1}{k,1} = [prm.kin_start{1}{k,1},false];
+            end
+        end
+    end
+end
+
+% 7.3.2020: add bootstrap histograms
+if isfield(prm,'kin_res') && size(prm.kin_res,2)==4
+    prm.kin_res = cat(2,prm.kin_res,cell(size(prm.kin_res,1),1));
 end
 
 p_proj.prm{tag,tpe} = prm;

@@ -9,29 +9,30 @@ iv = 1;
 isMov = 0;
 isBgCorr = 0;
 
+% get interface defaults
 h = guidata(h_fig);
+p = h.param.movPr;
 
 if isfield(h,'movie') && isfield(h.movie,'movie') && ...
     ~isempty(h.movie.movie)
     isMov = 1;
 end
 
-if isfield(h.param.movPr, 'bgCorr') && ~isempty(h.param.movPr.bgCorr)
+% get processing parameters
+startFrame = p.mov_start;
+lastFrame = p.mov_end;
+L = numel(startFrame:iv:lastFrame);
+if isfield(p, 'bgCorr') && ~isempty(p.bgCorr)
     isBgCorr = 1;
 end
 
-startFrame = h.param.movPr.mov_start;
-lastFrame = h.param.movPr.mov_end;
-L = numel(startFrame:iv:lastFrame);
-
-% loading bar parameters---------------------------------------------------
+% loading bar parameters
 if loading_bar('init',h_fig,L,'Export to a *.tif file...');
     return;
 end
 h = guidata(h_fig);
 h.barData.prev_var = h.barData.curr_var;
 guidata(h_fig, h);
-% -------------------------------------------------------------------------
 
 for i = startFrame:iv:lastFrame
 
@@ -49,13 +50,17 @@ for i = startFrame:iv:lastFrame
 
     % Apply background corrections if exist
     if isBgCorr
-        avBg = h.param.movPr.movBg_one;
+        avBg = p.movBg_one;
         if ~avBg
-            img = updateBgCorr(img, h_fig);
+            [img,avImg] = updateBgCorr(img, p, h.movie, h_fig);
         else % Apply only if the bg-corrected frame is displayed
-            if avBg == i
-                img = updateBgCorr(img, h_fig);
+            if avBg==i
+                [img,avImg] = updateBgCorr(img, p, h.movie, h_fig);
             end
+        end
+        if ~isfield(h.movie,'avImg')
+            h.movie.avImg = avImg;
+            guidata(h_fig,h);
         end
     end
     
@@ -74,12 +79,12 @@ for i = startFrame:iv:lastFrame
     imwrite(img_16,[pathName nameMain],'tif','WriteMode',writeMode,...
         'Description',sprintf('%d\t%d',h.movie.cyctime,min_img));
 
-    % loading bar updating-------------------------------------------------
+    % loading bar updating
     if loading_bar('update', h_fig);
         ok = 0;
-        return;
+        return
     end
-    % ---------------------------------------------------------------------
+
 end
 
 loading_bar('close', h_fig);

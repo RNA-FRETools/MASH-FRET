@@ -6,39 +6,16 @@ function saveProcAscii(h_fig, p, xp, pname, name)
 % "pname" >> destination folder
 % "name" >> destination file name
 
-%% Last update by MH, 16.1.2019
-% --> export beta factors
-%
-% update by MH, 24.4.2019
-% --> adapt code to new molecule tag structure
-%
-% update: by MH 22.4.2019 by MH
-% --> correct rate in SMART-compatible files
-%
-% update: by MH, 3.4.2019
-% --> correct export of gamma factors for multiple FRET channels
-%
-% update: by MH, 20.2.2019
-% --> modify dwell time file header for coherence with simulation
-%
-% update: by MH, 17.2.2019
-% --> optimize code synthaxe
-% --> remove units "per second" and "per pixel" (always export in counts to
-%     avoid confusion when importing exported ASCII traces)
-% --> add headers to histogram and dwell-time files
-%
-% update: by FS, 26.4.2019
-% --> display error message if no molecules with specified tag are found
-%
-% update: by FS, 25.4.2019
-% --> correct molecule index when specific tags are exported
-%
-% update: by FS, 24.4.2018
-% --> adapt export to specific molecule tags
-%
-% update: by FS, 19.3.2018
-% --> export gamma factors to files
-%%
+% Last update by MH, 16.1.2019: export beta factors
+% update by MH, 24.4.2019: adapt code to new molecule tag structure
+% update: by MH 22.4.2019 by MH: correct rate in SMART-compatible files
+% update: by MH, 3.4.2019: correct export of gamma factors for multiple FRET channels
+% update: by MH, 20.2.2019: modify dwell time file header for coherence with simulation
+% update: by MH, 17.2.2019: (1) optimize code synthaxe (2) remove units "per second" and "per pixel" (always export in counts to avoid confusion when importing exported ASCII traces) (3) add headers to histogram and dwell-time files
+% update: by FS, 26.4.2019: display error message if no molecules with specified tag are found
+% update: by FS, 25.4.2019: correct molecule index when specific tags are exported
+% update: by FS, 24.4.2018: adapt export to specific molecule tags
+% update: by FS, 19.3.2018: export gamma factors to files
 
 h = guidata(h_fig);
 
@@ -327,6 +304,8 @@ try
         if fromTT && saveTr && (savePrm<3) % save parameters
             str_xp = getStrPrm(p.proj{proj}, m, mol_incl&mol_incl_tag,...
                 h_fig);
+        else
+            str_xp = '';
         end
         
         if fromTT

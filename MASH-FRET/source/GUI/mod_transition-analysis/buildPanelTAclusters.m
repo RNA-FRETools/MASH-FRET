@@ -14,10 +14,9 @@ function h = buildPanelTAclusters(h,p)
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % Created by MH, 8.11.2019
 
 % defaults
@@ -42,16 +41,16 @@ str6 = 'value';
 str7 = 'radius';
 str8 = {'complete data','incomplete data'};
 
-ttstr9 = wrapStrToWidth('<b>Cluster constraints:</b> <u>matrix:</u> cluster centers are combinations of states (state transition matrix); <u>symmetrical:</u> cluster centers have their projection on the opposite TDP half delimited by the diagonal; <u>free:</u> cluster centers are free of constraint.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr10 = wrapStrToWidth('<b>Diagonal clusters:</b> activate this option to cluster transitions located on the TDP diagonal; this is used to group together low-amplitude state transitions that are usually artefacts rising from noise discretization.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr0 = wrapStrToWidth('Make cluster centers <u>evenly spaced</u>.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Clear cluster selection</b> or switch to <b>zoom</b> pointer.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Start clustering</b> with current method settings.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Cluster x-radius</b>: used for <b>k-mean</b> or <b>manual</b> clustering',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('<b>Cluster x-center</b>: used for <b>k-mean</b> or <b>manual</b> clustering',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr6 = wrapStrToWidth('<b>Cluster y-center</b>: used for <b>k-mean</b> or <b>manual</b> clustering',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr7 = wrapStrToWidth('<b>Cluster y-radius</b>: used for <b>k-mean</b> or <b>manual</b> clustering',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr8 = wrapStrToWidth('<b>Likelihood calculation:</b> <u>complete data:</u> each transition is associated to one and only cluster; <u>incomplete data:</u> transitions have a non-null probability to belong to each cluster (subject to overestimation of model complexity).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr9 = wrapHtmlTooltipString('<b>Cluster constraints:</b> <u>matrix:</u> cluster centers are combinations of states (state transition matrix); <u>symmetrical:</u> cluster centers have their projection on the opposite TDP half delimited by the diagonal; <u>free:</u> cluster centers are free of constraint.');
+ttstr10 = wrapHtmlTooltipString('<b>Diagonal clusters:</b> activate this option to cluster transitions located on the TDP diagonal; this is used to group together low-amplitude state transitions that are usually artefacts rising from noise discretization.');
+ttstr0 = wrapHtmlTooltipString('Make cluster centers <u>evenly spaced</u>.');
+ttstr1 = wrapHtmlTooltipString('<b>Clear cluster selection</b> or switch to <b>zoom</b> pointer.');
+ttstr2 = wrapHtmlTooltipString('<b>Start clustering</b> with current method settings.');
+ttstr4 = wrapHtmlTooltipString('<b>Cluster x-radius</b>: used for <b>k-mean</b> or <b>manual</b> clustering');
+ttstr5 = wrapHtmlTooltipString('<b>Cluster x-center</b>: used for <b>k-mean</b> or <b>manual</b> clustering');
+ttstr6 = wrapHtmlTooltipString('<b>Cluster y-center</b>: used for <b>k-mean</b> or <b>manual</b> clustering');
+ttstr7 = wrapHtmlTooltipString('<b>Cluster y-radius</b>: used for <b>k-mean</b> or <b>manual</b> clustering');
+ttstr8 = wrapHtmlTooltipString('<b>Likelihood calculation:</b> <u>complete data:</u> each transition is associated to one and only cluster; <u>incomplete data:</u> transitions have a non-null probability to belong to each cluster (subject to overestimation of model complexity).');
 
 % parents
 h_fig = h.figure_MASH;

@@ -13,10 +13,9 @@ function h = buildPanelTPplot(h,p)
 %   p.mg: margin
 %   p.mgpan: top-margin in a titled panel
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -36,14 +35,14 @@ str8 = 'pixel';
 str9 = 'x-axis';
 str10 = 'start';
 str11 = 'in s.';
-ttstr0 = wrapStrToWidth('Select a <b>laser wavelength</b> to show intensity-time traces from, in the top plot.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('Select an <b>emission channel</b> to show ntensity-time traces from, in the top plot.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('Select the <b>ratio-time traces</b> to show in the bottom plot.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Intensity units</b>: when activated, intensities are given in counts <b>per second</b>, otherwise in counts <b>per time bin (frame)</b>; this affects the top plot, background intensities and threshold intensities used in panels "Photobleaching" and "Find states".',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Intensity units</b>: when activated, pixel intensities are averaged over the number of integrated pixels and given in counts <b>per pixel</b>, otherwise pixel intensities are summed and given in simple counts; this affects the top plot, background intensities and threshold intensities used in panels "Photobleaching" and "Find states".',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('<b>Clip</b> traces of <b>all molecules</b> to the defined starting point: data points below this frame will be ignored.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr6 = wrapStrToWidth('<b>Time units</b>: when activated, times are given in <b>seconds</b>, otherwise in <b>time bin (frames)</b>; this affects the starting point, the plots, and the cutoff values used in panels "Factor corrections" (gamma factor settings) and "Photobleaching".',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr7 = wrapStrToWidth('<b>Starting point</b> in time traces: data points below this frame will be ignored.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Select a <b>laser wavelength</b> to show intensity-time traces from, in the top plot.');
+ttstr1 = wrapHtmlTooltipString('Select an <b>emission channel</b> to show ntensity-time traces from, in the top plot.');
+ttstr2 = wrapHtmlTooltipString('Select the <b>ratio-time traces</b> to show in the bottom plot.');
+ttstr3 = wrapHtmlTooltipString('<b>Intensity units</b>: when activated, intensities are given in counts <b>per second</b>, otherwise in counts <b>per time bin (frame)</b>; this affects the top plot, background intensities and threshold intensities used in panels "Photobleaching" and "Find states".');
+ttstr4 = wrapHtmlTooltipString('<b>Intensity units</b>: when activated, pixel intensities are averaged over the number of integrated pixels and given in counts <b>per pixel</b>, otherwise pixel intensities are summed and given in simple counts; this affects the top plot, background intensities and threshold intensities used in panels "Photobleaching" and "Find states".');
+ttstr5 = wrapHtmlTooltipString('<b>Clip</b> traces of <b>all molecules</b> to the defined starting point: data points below this frame will be ignored.');
+ttstr6 = wrapHtmlTooltipString('<b>Time units</b>: when activated, times are given in <b>seconds</b>, otherwise in <b>time bin (frames)</b>; this affects the starting point, the plots, and the cutoff values used in panels "Factor corrections" (gamma factor settings) and "Photobleaching".');
+ttstr7 = wrapHtmlTooltipString('<b>Starting point</b> in time traces: data points below this frame will be ignored.');
 
 % parents
 h_fig = h.figure_MASH;

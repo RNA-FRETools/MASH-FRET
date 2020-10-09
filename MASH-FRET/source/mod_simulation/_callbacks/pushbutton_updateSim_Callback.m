@@ -1,4 +1,4 @@
-function pushbutton_updateSim_Callback(obj, evd, h_fig)
+function ok = pushbutton_updateSim_Callback(obj, evd, h_fig)
 
 % Last update by MH, 17.12.2019
 % >> adapt code to new output arguments of updateMov.m (call plotExample.m
@@ -13,7 +13,7 @@ if h.param.sim.bgType == 3 % pattern
     p = h.param.sim;
     [ok,p] = checkBgPattern(p, h_fig);
     if ~ok
-        return;
+        return
     end
     h.param.sim = p;
     guidata(h_fig, h);

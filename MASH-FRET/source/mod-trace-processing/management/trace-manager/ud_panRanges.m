@@ -42,9 +42,7 @@ else
         h.tm.edit_conf2],'enable','off');
 end
 
-% disp('sort molecules...');
 molIncl = ud_popCalc(h_fig);
-% disp('sorting complete!');
 
 drawMask_subpop(h_fig,molIncl);
 

@@ -14,10 +14,9 @@ function h = buildPanelSimExperimentalSetup(h,p)
 %   p.mg: margin
 %   p.mgpan: top-margin in a titled panel
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttstr: pixel width of tooltip box
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -31,12 +30,12 @@ str3 = 'defocus';
 str4 = 'm';
 str5 = 'z_0,A';
 ttl0 = 'Background';
-ttstr0 = wrapStrToWidth('Convolute single moelcule images with a <b>point spread function (PSF)</b> (2D Gaussian).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('PSF <b>standard deviation (in um)</b> in donor channel.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('PSF <b>standard deviation (in um)</b> in acceptor channel.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Simulate objective defocusing:</b> single molecule signal decreases exponentially.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('Defocusing decay <b>time constant (in seconds)</b>.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('<b>Initial defocusing factor</b> in acceptor channel (between 0 and 1).',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Convolute single moelcule images with a <b>point spread function (PSF)</b> (2D Gaussian).');
+ttstr1 = wrapHtmlTooltipString('PSF <b>standard deviation (in um)</b> in donor channel.');
+ttstr2 = wrapHtmlTooltipString('PSF <b>standard deviation (in um)</b> in acceptor channel.');
+ttstr3 = wrapHtmlTooltipString('<b>Simulate objective defocusing:</b> single molecule signal decreases exponentially.');
+ttstr4 = wrapHtmlTooltipString('Defocusing decay <b>time constant (in seconds)</b>.');
+ttstr5 = wrapHtmlTooltipString('<b>Initial defocusing factor</b> in acceptor channel (between 0 and 1).');
 
 % parents
 h_fig = h.figure_MASH;

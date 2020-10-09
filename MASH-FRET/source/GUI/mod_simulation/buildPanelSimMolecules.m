@@ -14,11 +14,10 @@ function h = buildPanelSimMolecules(h,p)
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.fntclr1: text color in file/folder fields
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -34,11 +33,11 @@ str3 = 'rem.';
 str4 = 'Load presets:';
 ttl0 = 'Thermodynamic model';
 ttl1 = 'Photophysics';
-ttstr0 = wrapStrToWidth('<b>Sample size:</b> number of simulated single molecules',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Import coordinates from file:</b> coordinates in the donor channel (x1,y1) are imported from columns (1,2) and in acceptor channel (x2,y2) from columns (3,4)',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Cancel coordinates import:</b> molecule coordinates will be randomly generated.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Import presets from file:</b> preset parameters include coordinates, FRET values and deviations, transition rates, total intensities and deviations, gamma factors and deviations, PSF widths. See MASH-FRET\tools\createSimPrm.m for help.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Cancel presets import:</b> simulation parameters are taken from the graphical interface.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('<b>Sample size:</b> number of simulated single molecules');
+ttstr1 = wrapHtmlTooltipString('<b>Import coordinates from file:</b> coordinates in the donor channel (x1,y1) are imported from columns (1,2) and in acceptor channel (x2,y2) from columns (3,4)');
+ttstr2 = wrapHtmlTooltipString('<b>Cancel coordinates import:</b> molecule coordinates will be randomly generated.');
+ttstr3 = wrapHtmlTooltipString('<b>Import presets from file:</b> preset parameters include coordinates, FRET values and deviations, transition rates, total intensities and deviations, gamma factors and deviations, PSF widths. See MASH-FRET\tools\createSimPrm.m for help.');
+ttstr4 = wrapHtmlTooltipString('<b>Cancel presets import:</b> simulation parameters are taken from the graphical interface.');
 
 % parents
 h_fig = h.figure_MASH;
@@ -81,7 +80,8 @@ y = y-hedit0;
 
 h.edit_simCoordFile = uicontrol('style','edit','units',p.posun,'parent',...
     h_pan,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit1,hedit0],'enable','inactive','foregroundcolor',p.fntclr1);
+    [x,y,wedit1,hedit0],'foregroundcolor',p.fntclr1,'callback',...
+    {@edit_simCoordFile_Callback,h_fig});
 
 y = y-p.mg/fact-hedit0;
 
@@ -114,7 +114,8 @@ y = y-hedit0;
 
 h.edit_simPrmFile = uicontrol('style','edit','units',p.posun,'parent',...
     h_pan,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit1,hedit0],'enable','inactive','foregroundcolor',p.fntclr1);
+    [x,y,wedit1,hedit0],'foregroundcolor',p.fntclr1,'callback',...
+    {@edit_simPrmFile_Callback,h_fig});
 
 y = y-p.mg/fact-hedit0;
 

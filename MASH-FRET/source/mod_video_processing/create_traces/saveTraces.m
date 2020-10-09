@@ -1,32 +1,21 @@
 function saveTraces(s, pname, fname, prm, h_fig)
-% Save single molecule intensities to ASCII files and/or HaMMy-/VbFRET-/
-% QUB-/SMART-compatible files.
-% "s" >> folder name
-% "pname" >> folder 
-% "fname" >> generated folder path
-% "h_fig" >> MASH figure handle
+% saveTraces(s, [], fname, prm, h_fig)
+% saveTraces(s, pname, fname, prm, h_fig)
+%
+% Save single molecule intensities to ASCII files and/or HaMMy-/VbFRET-/QUB-/SMART-compatible files.
+% If called from a routine test, files are exported to input folder.
+% If called from MASH-FRET's GUI,, files are exported to the video_processing data folder.
+%
+% s: project structure
+% pname: destination folder
+% fname: destination file
+% h_fig: handle to main figure
 
-% Last update: 23.4.2019 by MH
-% --> change file name extension "FRET[D][A]" to "FRET[D]to[A]" for
-%     consistency with files exported from Trace processing
-%
-% Last update: 22.4.2019 by MH
-% --> correct multiple FRET export of data for external software
-% --> correct coordinates and rate in SMART-compatible files
-% --> add file name extensions "_HaMMy" for consistency with Trace
-%     processing
-%
-% update: 28th of March 2019 by Mélodie C.A.S Hadzic
-% --> change destination directory from project folder (which is now root 
-%     folder) "/intensities" to root folder "/video_processing/intensities"
-%
-% update: 20th of February 2019 by Mélodie C.A.S Hadzic
-% --> add ebFRET-compatible export
-% --> create ASCII,statistics,ebFRET,vbFRET,HaMMy,QUB,SMART folders
-%
-% update: 18th of February 2019 by Mélodie C.A.S Hadzic
-% --> change folder to /intensities
-% --> comment code and optimize synthax
+% Last update, 23.4.2019 by MH: change file name extension "FRET[D][A]" to "FRET[D]to[A]" for consistency with files exported from Trace processing
+% update, 22.4.2019 by MH:(1) correct multiple FRET export of data for external software (2) correct coordinates and rate in SMART-compatible files (3) add file name extensions "_HaMMy" for consistency with Trace processing
+% update, 28.3.2019 by MH: change destination directory from project folder (which is now root folder) "/intensities" to root folder "/video_processing/intensities"
+% update, 20.2.2019 by MH: (1) add ebFRET-compatible export (2) create ASCII,statistics,ebFRET,vbFRET,HaMMy,QUB,SMART folders
+% update: 18.2.2019 by MH: (1) change folder to /intensities (2) comment code and optimize synthax
 
 % collect export settings
 pexp = prm{1};
@@ -62,7 +51,14 @@ end
 % build destination directories and file name
 [o,name,o] = fileparts(fname);
 if saveTraces
-    pname = setCorrectPath('intensities',h_fig);
+    if isempty(pname)
+        pname = setCorrectPath('intensities',h_fig);
+    else
+        pname = [pname,'intensities',filesep];
+        if ~exist(pname,'dir')
+            mkdir(pname);
+        end
+    end
     pname_stat = setCorrectPath(cat(2,pname,'statistics'),h_fig);
     if saveAsAscii
         pname_all = setCorrectPath(cat(2,pname,'traces_ASCII'),h_fig);

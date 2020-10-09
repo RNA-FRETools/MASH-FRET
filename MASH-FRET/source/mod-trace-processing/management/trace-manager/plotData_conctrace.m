@@ -71,7 +71,7 @@ elseif ind==(nChan*nExc+nI0+nFRET+nS+1) && (nChan>1 || nExc>1)% all intensities
     for l = 1:nExc
         for c = 1:nChan
             %ind = (l-1)+c; % RB 2018-01-03: indizes/colour bug solved
-            i = 2*(l-1)+c;
+            i = nChan*(l-1)+c;
             x_axis = l:nExc:nExc*size(dat1.trace{i},1);
             if inSec
                 x_axis = x_axis*expT;

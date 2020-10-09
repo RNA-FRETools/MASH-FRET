@@ -34,7 +34,7 @@ end
 curr.clst_start{1}(3) = val;
 
 % update cluster starting guess and colors
-[curr,p.colList] = ud_clstPrm(curr,p.colList);
+[curr,p.colList] = ud_clstPrm(curr,p.colList,numel(h.color_list));
 
 % save changes
 p.proj{proj}.curr{tag,tpe} = curr;

@@ -9,8 +9,8 @@ end
 proj = p.curr_proj;
 tpe = p.curr_type(proj);
 tag = p.curr_tag(proj);
+def = p.proj{proj}.def{tag,tpe};
 curr = p.proj{proj}.curr{tag,tpe};
-def = p.proj{proj}.curr{tag,tpe};
 mat = p.proj{proj}.prm{tag,tpe}.clst_start{1}(4);
 
 if mat==1
@@ -21,9 +21,8 @@ end
 curr.kin_start{2}(1) = J;
 curr = ud_kinPrm(curr,def,curr.kin_start{2}(1));
 
+h.param.TDP.proj{proj}.prm{tag,tpe} = curr;
 h.param.TDP.proj{proj}.curr{tag,tpe} = curr;
-h.param.TDP.proj{proj}.prm{tag,tpe}.kin_start = curr.kin_start;
-h.param.TDP.proj{proj}.prm{tag,tpe}.kin_res = curr.kin_res;
 guidata(h_fig,h);
 
 % update plots and GUI

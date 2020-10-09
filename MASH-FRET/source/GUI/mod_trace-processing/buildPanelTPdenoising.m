@@ -14,11 +14,10 @@ function h = buildPanelTPdenoising(h,p)
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.fntclr2: text color in special pushbuttons
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -29,9 +28,9 @@ fact = 5;
 str0 = {'Sliding average','NL filter (Haran)','Wavelet (Taylor)'};
 str1 = 'Apply';
 str2 = 'all';
-ttstr0 = wrapStrToWidth('Select a <b>denoising method</b>.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Denoise traces</b>: only intensity-time trace are processed; ratio-time traces are calculated from denoised intensities.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('Apply current denoising settings to all molecules.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Select a <b>denoising method</b>.');
+ttstr1 = wrapHtmlTooltipString('<b>Denoise traces</b>: only intensity-time trace are processed; ratio-time traces are calculated from denoised intensities.');
+ttstr2 = wrapHtmlTooltipString('Apply current denoising settings to all molecules.');
 
 % parents
 h_fig = h.figure_MASH;

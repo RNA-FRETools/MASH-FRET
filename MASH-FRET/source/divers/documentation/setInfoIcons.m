@@ -59,10 +59,10 @@ if isfield(h,'bga')
 else
     h_pushbutton_bga_save = [];
 end
-if isfield(h,'optExpTdp')
-    h_pushbutton_optExpTdp_cancel = h.optExpTdp.pushbutton_cancel;
+if isfield(h,'expTDPopt')
+    h_pushbutton_expTDPopt_cancel = h.expTDPopt.pushbutton_cancel;
 else
-    h_pushbutton_optExpTdp_cancel = [];
+    h_pushbutton_expTDPopt_cancel = [];
 end
 
 % get help button's icon
@@ -181,7 +181,7 @@ for o = 1:O
         case h.pushbutton_TDPimpOpt
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('ta project management'),obj(o),[-1,1]));
-        case h_pushbutton_optExpTdp_cancel
+        case h_pushbutton_expTDPopt_cancel
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('ta project management'),obj(o),[-1,1]));
         case h.uipanel_TA_transitionDensityPlot

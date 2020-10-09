@@ -1,4 +1,5 @@
-function [x_res, bestOut] = discr_vbFRET(kmin, K, I, data, h_fig, lb)
+function [x_res, bestOut] = discr_vbFRET(kmin, K, I, data, h_fig, lb, ...
+    mute_action)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % This is a command line version of vbFRET which will anlayze the raw
@@ -106,9 +107,11 @@ function [x_res, bestOut] = discr_vbFRET(kmin, K, I, data, h_fig, lb)
                 clear mix out;
                 % comment out the line below if you don't want to know what
                 % trace vbFRET is currently working on
-                disp(sprintf( ...
-                    ['vbFRET: Working on inference for restart %d, k%d of ' ...
-                    'trace %d...'], i, k, n));
+                if ~mute_action
+                    disp(sprintf( ...
+                        ['vbFRET: Working on inference for restart %d, k%d of ' ...
+                        'trace %d...'], i, k, n));
+                end
                 % Initialize gaussians
                 % Note: x and mix can be saved at this point andused for 
                 % future experiments or for troubleshooting. try-catch 
@@ -119,7 +122,9 @@ function [x_res, bestOut] = discr_vbFRET(kmin, K, I, data, h_fig, lb)
                     [mix] = get_mix(trace',init_mu);
                     [out] = vbFRET_VBEM(trace, mix, PriorPar, vb_opts);
                 catch
-                    disp('vbFRET: There was an error during, repeating restart.');
+                    if ~mute_action
+                        disp('vbFRET: There was an error during, repeating restart.');
+                    end
                     runError=lasterror;
                     disp(runError.message)
                     i = i+1;
@@ -152,7 +157,9 @@ function [x_res, bestOut] = discr_vbFRET(kmin, K, I, data, h_fig, lb)
     %%%%%%%%%%%%%%%%%%%%%%%% VBHMM postprocessing %%%%%%%%%%%%%%%%%%%%%%%%%
 
     % analyze accuracy and save analysis
-    disp('vbFRET: Analyzing results...')
+    if ~mute_action
+        disp('vbFRET: Analyzing results...')
+    end
 
 %    save(save_name);          
 
@@ -180,6 +187,7 @@ function [x_res, bestOut] = discr_vbFRET(kmin, K, I, data, h_fig, lb)
             x_res(n,:) = ones(size(data{n}))*mean(data{n});
         end
     end
-
-    disp('vbFRET: ...done w/ analysis');
+    if ~mute_action
+        disp('vbFRET: ...done w/ analysis');
+    end
 

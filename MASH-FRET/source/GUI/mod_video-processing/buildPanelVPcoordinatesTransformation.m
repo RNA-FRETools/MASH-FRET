@@ -13,11 +13,10 @@ function h = buildPanelVPcoordinatesTransformation(h,p)
 %   p.mg: margin
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
-%   p.wttsr: pixel width of tooltip box
 %   p.fntclr1: text color in file/folder fields
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -38,15 +37,15 @@ str6 = 'Check quality...';
 str7 = 'Input coordinates file:';
 str8 = 'Options...';
 str9 = 'Transform';
-ttstr0 = wrapStrToWidth('Open the <b>Mapping tool</b> to map reference coordinates used to calculate the transformation.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('Open browser and select the <b>reference coordinates file</b> used to calculate channel transformation.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('Select a <b>combination of symmetry operations</b> to calculate the transformation.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('<b>Calculate transformation</b> and export to file.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('Open browser and select the <b>transformation file</b>: source file where channel transformations are taken from.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr5 = wrapStrToWidth('Open browser and select the <b>reference image</b> to check the quality of imported transformation.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr6 = wrapStrToWidth('Open browser and select the <b>spots coordinates file</b> to transform.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr7 = wrapStrToWidth('Open <b>import options</b> to configure how coordinates are imported from the reference and spots coordinate files.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr8 = wrapStrToWidth('Transform and export coordinates',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Open the <b>Mapping tool</b> to map reference coordinates used to calculate the transformation.');
+ttstr1 = wrapHtmlTooltipString('Open browser and select the <b>reference coordinates file</b> used to calculate channel transformation.');
+ttstr2 = wrapHtmlTooltipString('Select a <b>combination of symmetry operations</b> to calculate the transformation.');
+ttstr3 = wrapHtmlTooltipString('<b>Calculate transformation</b> and export to file.');
+ttstr4 = wrapHtmlTooltipString('Open browser and select the <b>transformation file</b>: source file where channel transformations are taken from.');
+ttstr5 = wrapHtmlTooltipString('Open browser and select the <b>reference image</b> to check the quality of imported transformation.');
+ttstr6 = wrapHtmlTooltipString('Open browser and select the <b>spots coordinates file</b> to transform.');
+ttstr7 = wrapHtmlTooltipString('Open <b>import options</b> to configure how coordinates are imported from the reference and spots coordinate files.');
+ttstr8 = wrapHtmlTooltipString('Transform and export coordinates');
 
 % parents
 h_fig = h.figure_MASH;
@@ -163,7 +162,7 @@ y = p.mg/2;
 h.pushbutton_trOpt = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wbut4,hedit0],'string',str8,'tooltipstring',ttstr7,'callback',...
-    {@openTrsfOpt,h_fig});
+    {@pushbutton_trOpt_Callback,h_fig});
 
 x = pospan(3)-p.mg-wbut5;
 

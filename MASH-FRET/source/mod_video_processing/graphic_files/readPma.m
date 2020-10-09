@@ -1,14 +1,13 @@
 function [data,ok] = readPma(fullFname, n, fDat, h_fig, useMov)
-% Read data from bits in a *.sira file. Returns useful movie parameters and
-% image data of all movie frames.
-%
-% Requires external functions: loading_bar, updateActPan.
+% Read data from a .pma file (adapted from LoadPMA.m function in Traces
+% software (https://github.com/stephlj/Traces/blob/master/tools/LoadPMA.m)
 
 % defaults
 data = [];
 cycleTime = []; % time delay between each frame
 movie = [];
 ok = 1;
+expT = 0.1;
 
 h = guidata(h_fig);
 isMov = 0; % no movie variable was defined before (no memory is allocated)
@@ -36,31 +35,42 @@ end
 % first read
 if isempty(fDat) 
     % Get the movie dimensions
-    answer = inputdlg({'frame rate:','X resolution:','Y resolution:'}, ...
-        'Movie data:',1,{'1','512','512'});
+    cycleTime = expT;
     
-    cycleTime = str2num(answer{1});
-    pixelX = str2num(answer{2});
-    pixelY = str2num(answer{3});
- 
-    fseek(f, 0, 1);
-    frameLen = (ftell(f)- 4)/(pixelX*pixelY + 2);
-    
-    % Move the cursor through the file
-    fseek(f, 4, -1);
+    pixelX = fread(f,1,'uint16');
+    pixelY = fread(f,1,'uint16');
 
     % Get cursor position where graphic data begin
     fCurs = ftell(f);
+    
+    % Figure out how many frames are in this pma, based on the file size:
+    fileinfo = dir(fullFname);
+    if round(fileinfo.bytes/2)==fileinfo.bytes/2
+        totbytes = fileinfo.bytes-4;
+    else
+        totbytes = fileinfo.bytes-5;
+    end
+    frameLen = totbytes/(pixelX*pixelY);
+    clear totbytes fileinfo
+    
+    if round(frameLen)~=frameLen
+        setContPan(['LoadPMA: Cannot get a complete set of frames out of ',...
+            'this file. Something is wrong.'],'warning',h_fig);
+        ok = 0;
+        return
+    end
 
     if ~isempty(h_fig)
         updateActPan(['PMA binary File(*.pma)\n' ...
-            'Cycle time = ' answer{1} 's\n' ...
-            'Movie dimensions = ' answer{2} 'x' answer{3} ' pixels\n' ...
+            'Cycle time = ' num2str(cycleTime) 's\n' ...
+            'Movie dimensions = ' num2str(pixelX) 'x' num2str(pixelY) ...
+            ' pixels\n' ...
             'Movie length = ' num2str(frameLen) ' frames\n'], h_fig);
     else
         fprintf(['\nPMA binary File(*.pma)\n' ...
-            'Cycle time = ' answer{1} 's\n' ...
-            'Movie dimensions = ' answer{2} 'x' answer{3} ' pixels\n' ...
+            'Cycle time = ' num2str(cycleTime) 's\n' ...
+            'Movie dimensions = ' num2str(pixelX) 'x' num2str(pixelY) ...
+            ' pixels\n' ...
             'Movie length = ' num2str(frameLen) ' frames\n'])
     end
 else
@@ -72,7 +82,7 @@ end
 
 if strcmp(n, 'all')
 
-    if isMov==0 && ~memAlloc(4*frameLen*pixelX*pixelY)
+    if isMov==0 && ~memAlloc(frameLen*pixelX*pixelY)
         str = cat(2,'Out of memory: MASH is obligated to load the video ',...
             'one frame at a time to function\nThis will slow down all ',...
             'operations requiring video data, including the creation of ',...
@@ -84,7 +94,7 @@ if strcmp(n, 'all')
 
     else
 
-        intrupt = loading_bar('init',h_fig,100,'Import PMA video...');
+        intrupt = loading_bar('init',h_fig,frameLen,'Import PMA video...');
         if intrupt
             ok = 0;
             return;
@@ -92,7 +102,6 @@ if strcmp(n, 'all')
         h = guidata(h_fig);
         h.barData.prev_var = h.barData.curr_var;
         guidata(h_fig, h);
-        prevCount = 0;
         
         if ~exist('f','var')
             f = fopen(fullFname,'r');
@@ -105,35 +114,29 @@ if strcmp(n, 'all')
                 fseek(f, 2*i + pixelX*pixelY*(i-1), 0);
                 movie(:,:,i) = reshape(fread(f, pixelX*pixelY, ...
                     'uint8=>single'), [pixelX pixelY])';
-                
-                if i/frameLen>prevCount
-                    intrupt = loading_bar('update', h_fig);
-                    if intrupt
-                        ok = 0;
-                        return;
-                    end
-                    prevCount = prevCount+1/100;
+
+                intrupt = loading_bar('update', h_fig);
+                if intrupt
+                    ok = 0;
+                    return;
                 end
             end
             frameCur = movie(:,:,1); % Get image data of the input frame
         else
-            h.movie.movie = zeros([pixelY pixelX frameLen]);
-            for i = 1:frameLen
-                fseek(f, 2*i + pixelX*pixelY*(i-1), 0);
-                h.movie.movie(:,:,i) = reshape(fread(f, pixelX*pixelY, ...
-                    'uint8=>single'), [pixelX pixelY])';
-                
-                if i/frameLen>prevCount
-                    intrupt = loading_bar('update', h_fig);
-                    if intrupt
-                        ok = 0;
-                        return;
-                    end
-                    prevCount = prevCount+1/100;
+            h.movie.movie = zeros(pixelY,pixelX,frameLen,'single');
+            for i = 1:frameLen 
+                h.movie.movie(:,:,i) = flip(reshape(...
+                    fread(f,pixelX*pixelY,'uint8=>single'),...
+                    [pixelY,pixelX])',1); 
+
+                intrupt = loading_bar('update', h_fig);
+                if intrupt
+                    ok = 0;
+                    return
                 end
             end
             guidata(h_fig,h);
-            frameCur = h.movi.movie(:,:,1); % Get image data of the input frame
+            frameCur = h.movie.movie(:,:,1); % Get image data of the input frame
         end
         
         loading_bar('close', h_fig);
@@ -147,9 +150,8 @@ else
             f = fopen(fullFname,'r');
         end
         fseek(f,fCurs,-1);
-        fseek(f, 2*n + pixelX*pixelY*(n-1), 0);
-        frameCur = reshape(fread(f, pixelX*pixelY, 'uint8=>single'), ...
-            [pixelX pixelY])';
+        frameCur = flip(reshape(fread(f, pixelX*pixelY, 'uint8=>single'), ...
+            [pixelY pixelX])',1);
     end
 end
 

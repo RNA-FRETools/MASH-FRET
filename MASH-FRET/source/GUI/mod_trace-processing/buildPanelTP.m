@@ -14,17 +14,13 @@ function h = buildPanelTP(h,p)
 %   p.mgpan: top-margin in a titled panel
 %   p.wbrd: cumulated pixel width of pushbutton's border
 %   p.wbox: box's pixel width in checkboxes
-%   p.wttsr: pixel width of tooltip box
 %   p.fntclr2: text color in special pushbuttons
 %   p.wbuth: pixel width of help buttons
 %   p.tbl: reference table listing character's pixel dimensions
-%   p.hndls: 1-by-2 array containing handles to one dummy figure and one text
 
-% Last update: by MH, 10.1.2020
-% >> add panel "Cross-talks" and remove cross-talks parameters from panel
-% "Factor corrections"
-%
-% created by MH, 19.10.2019
+% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
+% Last update, 10.1.2020 by MH: add panel "Cross-talks" and remove cross-talks parameters from panel "Factor corrections"
+% created, 19.10.2019 by MH
 
 % default
 hedit0 = 20;
@@ -63,11 +59,11 @@ ttl5 = 'Factor corrections';
 ttl6 = 'Denoising';
 ttl7 = 'Photobleaching';
 ttl8 = 'Find states';
-ttstr0 = wrapStrToWidth('Open <b>import options</b> to configure how intensity-time traces are imported from ASCII files.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr1 = wrapStrToWidth('<b>Import traces</b> from a .mash file or from a set of ASCII files.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('<b>Close selected project</b> and remove it from the list.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr3 = wrapStrToWidth('Open <b>project options:</b> includes informations about emitters, FRET pairs and user-defined experimental conditions for the selected project.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr4 = wrapStrToWidth('<b>Export selected project</b> to a .mash file.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
+ttstr0 = wrapHtmlTooltipString('Open <b>import options</b> to configure how intensity-time traces are imported from ASCII files.');
+ttstr1 = wrapHtmlTooltipString('<b>Import traces</b> from a .mash file or from a set of ASCII files.');
+ttstr2 = wrapHtmlTooltipString('<b>Close selected project</b> and remove it from the list.');
+ttstr3 = wrapHtmlTooltipString('Open <b>project options:</b> includes informations about emitters, FRET pairs and user-defined experimental conditions for the selected project.');
+ttstr4 = wrapHtmlTooltipString('<b>Export selected project</b> to a .mash file.');
 
 % parents
 h_fig = h.figure_MASH;
@@ -258,14 +254,14 @@ x = pospan(3)-p.mg-wpan1-p.mg-pos(3);
 set(h.uipanel_TP_findStates,'position',[x,pos(2:4)]);
 
 % place invivisible label list
-posbut = get(h.pushbutton_TP_addTag,'position');
+posbut = get(h.togglebutton_TP_addTag,'position');
 pospan = get(h.uipanel_TP_sampleManagement,'position');
 x = pospan(1)+posbut(1)+posbut(3);
 y = pospan(2)+posbut(2)+posbut(4)-hlst1;
 
-h.lisbox_TP_defaultTags = uicontrol('style','listbox','parent',h_pan,...
+h.listbox_TP_defaultTags = uicontrol('style','listbox','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wlst1,hlst1],'string',str11,'visible','off','callback',...
-    {@lisbox_TP_defaultTags_Callback,h_fig});
+    {@listbox_TP_defaultTags_Callback,h_fig});
 
 
