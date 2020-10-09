@@ -189,13 +189,26 @@ To clear species missing emitter `[E]` from the project:
    [Project management](../../trace-processing/panels/area-project-management.html) to export the data set to a new 
    [mash project](../../output-files/mash-mash-project) file or to save modifications by overwriting the existing project file
 
-
 ---
 
 ## Discretize time-traces
 
-To obtain reliable state trajectories, photobleached data must be ignored and ratio-time traces must be corrected prior applying the state finding algorithm.
-This is done by automatically detecting and truncating the trace at dye photobleaching and setting/calculating global gamma and beta factors.
+To obtain reliable state trajectories, photobleached or interrupted data must be ignored and ratio-time traces must be corrected prior applying the state finding algorithm.
+This is done by splitting trajectories manually, automatically detecting and truncating the trace at dye photobleaching and setting/calculating global gamma and beta factors.
+
+To split trajectories at intensity interruptions:
+
+{: .procedure }
+1. Define in 
+   [Photobleaching](../../trace-processing/panels/panel-photobleaching.html):  
+     
+   <u>default</u>: method `Manual`  
+   <u>default</u>: parameter 
+   [Photobleaching cutoff](../../trace-processing/panels/panel-photobleaching.html#photobleaching-cutoff) to the ending position of the interruption    
+   <u>default</u>: option `Cut` deactivated  
+       
+1. Press 
+   ![Split](../../assets/images/gui/TP-but-split.png "Split") to separate the left- and right-side of the splitting position to separate trajectories
 
 To truncate trajectories at photobleaching:
 
@@ -206,7 +219,7 @@ To truncate trajectories at photobleaching:
    <u>default</u>: method `Threshold`  
    <u>default</u>: data `all intensities`  
    <u>default</u>: parameters in
-   [Automatic detection settings](../../trace-processing/panels/panel-photobleaching.html#automatic-detection-settings) **(b)** to 0, **(c)** to 10 frames and **(d)** to 10 frames  
+   [Automatic detection settings](../../trace-processing/panels/panel-photobleaching.html#automatic-detection-settings) **(b)** to 0, **(c)** to 2 frames and **(d)** to 10 frames  
    <u>default</u>: option `Cut` activated  
        
 1. Press 
@@ -217,17 +230,17 @@ To truncate trajectories at photobleaching:
    [Sample management](../../trace-processing/panels/panel-sample-management.html) to process all molecules in the project and visualize truncated trajectories
    
 To automatically calculate gamma and beta factors (if you are working without FRET calculations, ignore this step):
+
 {: .procedure }
 1. For each FRET pair listed in the 
    [FRET pair list](../../trace-processing/panels/panel-factor-corrections.html#fret-pair-list) in 
    [Factor corrections](../../trace-processing/panels/panel-factor-corrections.html), define:  
      
-   <u>default</u>: method `ES linear regression`  
-   <u>default</u>: molecule subgroup `All molecules`  
+   <u>default</u>: method `ES linear regression` (if you are working without stoichiometry calculations, use any other method)   
    <u>default</u>: in 
    [ES linear regression](../../trace-processing/panels/panel-factor-corrections.html#es-linear-regression), **(b)** to `All molecules`, **(c)** to -0.2, **(d)** to 50, **(e)** to 1.2, **(f)** to 1, **(g)** to 50, **(h)** to 3
      
-    and press  
+    and press 
    ![refresh calculations](../../assets/images/gui/TP-but-refresh-calculations.png "refresh calculations") to calculate the ES histogram and perform linear regression, and 
    ![Save and close](../../assets/images/gui/TP-but-save-and-close.png "Save and close") to save settings  
      
@@ -285,6 +298,27 @@ To export processed data to ASCII and image files:
      
 1. Press 
    ![Next >>](../../assets/images/gui/TP-but-next-supsup.png "Next >>") to start file export
+
+
+---
+
+## Merge projects
+
+After applying proper corrections to intensities and sorting out molecules, samples from different projects with identical experiment settings can be merged into one big data set. 
+This prevents to repeat the following data analysis procedure on multiple mash files and allows to constitute a more representative sample of molecules.
+
+To merge projects:
+
+{: .procedure }
+1. Select the multiple projects to merge in the 
+   [Project list](../../trace-processing/panels/area-project-management.html#project-list)  
+     
+1. Right-click in the 
+   [Project list](), choose the option `Merge projects` and press 
+   ![Yes](../../assets/images/gui/TP-but-yes.png "Yes") to start the merging process  
+      
+   **Note:** *The merging process induces a loss of single molecule videos that were used in individual projects. 
+   Make sure to perform all adjustments of molecule positions and background corrections prior merging.
 
 
 ---

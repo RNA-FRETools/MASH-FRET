@@ -1,27 +1,10 @@
 function ud_TTprojPrm(h_fig)
 
-%% Last update: 25.4.2019 by MH
-% --> manage background color of togglebutton associated with new tag list
-% 
-% update: 24.4.2019 by MH
-% --> manage visibility of new tag list
-%
-% update: 3.4.2019 by MH
-% --> manage visibility of control text_TP_cross_gammafactor
-%
-% Last update: 29.3.2019 by MH
-% --> adapt popupmenu settings and visibility control for bleedthrough 
-%     correction to changes in GUI (delete popupmenu_excDirExc and text_bt 
-%     and add text_TP_cross_into and text_TP_cross_bt in GUI)
-% --> change popupmenu_corr_exc's string from 'exc' to 'dir_exc' type and
-%     set string to 'none' and value to 1 if no emitter-specific laser is 
-%     defined and/or used in the ALEX scheme.
-% --> comment code
-%
-% update: 28.3.2019 by Melodie Hadzic
-% --> Visibility of UI controls for DE coefficients is not manage here
-%     anymore but in ud_cross.m
-%%
+% Last update, 25.4.2019 by MH: manage background color of togglebutton associated with new tag list
+% update, 24.4.2019 by MH: manage visibility of new tag list
+% update, 3.4.2019 by MH: manage visibility of control text_TP_cross_gammafactor
+% update, 29.3.2019 by MH: (1) adapt popupmenu settings and visibility control for bleedthrough correction to changes in GUI (delete popupmenu_excDirExc and text_bt and add text_TP_cross_into and text_TP_cross_bt in GUI)(2) change popupmenu_corr_exc's string from 'exc' to 'dir_exc' type and set string to 'none' and value to 1 if no emitter-specific laser is defined and/or used in the ALEX scheme (3) comment code
+% update, 28.3.2019 by MH: Visibility of UI controls for DE coefficients is not manage here anymore but in ud_cross.m
 
 h = guidata(h_fig);
 p = h.param.ttPr;
@@ -260,6 +243,7 @@ if ~isempty(p.proj)
             colormap(h.axes_subImg(i), cmap);
             xNext = xNext + wImg + mg;
         end
+        set(h.axes_subImg,'uicontextmenu',h.cm_zoom);
         
         % calculate laser-specific average images
         if ~(isfield(p.proj{proj}, 'aveImg') && ...

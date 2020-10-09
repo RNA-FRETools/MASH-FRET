@@ -15,7 +15,7 @@ State configuration is the second panel of module Transition analysis.
 
 Use this panel to determine the optimum number of transition clusters and associated cross-sample variability.
 
-<a class="plain" href="../../assets/images/gui/TA-panel-state-configuration.png"><img src="../../assets/images/gui/TA-panel-state-configuration.png" style="max-width:481px;"></a>
+<a class="plain" href="../../assets/images/gui/TA-panel-state-configuration.png"><img src="../../assets/images/gui/TA-panel-state-configuration.png" style="max-width:491px;"></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -251,7 +251,7 @@ Coordinates and radii in the y-direction are not adjustable when using `matrix` 
 
 Use this interface to visualize results of a state configuration analysis.
 
-<img src="../../assets/images/gui/TA-panel-state-configuration-results.png" style="max-width:246px;">
+<img src="../../assets/images/gui/TA-panel-state-configuration-results.png" style="max-width:172px;">
 
 After transition clustering, GM-clustering results are summarized in a bar plot where the BIC is presented in function of the number of components.
 
@@ -261,6 +261,7 @@ When using BOBA-FRET, the bootstrap mean and standard deviation of the most suff
 
 Other inferred models can be visualized in the 
 [Visualization area](#visualization-area) by selecting the corresponding number of components in the list **(d)**. 
+The associated BIC value is shown in **(e)**.
 
 Transition clusters of any model can be imported in 
 [State transition rates](panel-state-transition-rates.html) for dwell time analysis, by pressing 

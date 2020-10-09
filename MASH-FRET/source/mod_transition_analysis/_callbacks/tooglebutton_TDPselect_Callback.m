@@ -6,7 +6,6 @@ switch ind
     case 1 % reset tool
         ud_zoom([],[],'zoom',h_fig);
         set(h.tooglebutton_TDPmanStart,'userdata',1);
-        
         ud_TDPmdlSlct(h_fig);
     
     case 2 % selection tool

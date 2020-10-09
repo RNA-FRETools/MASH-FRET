@@ -6,8 +6,8 @@ proj = p.curr_proj;
 tpe = p.curr_tpe(proj);
 tag = p.curr_tag(proj);
 
-prm_start = p.proj{proj}.prm{tpe}.thm_start;
-prm_plot = p.proj{proj}.prm{tpe}.plot;
+prm_start = p.proj{proj}.prm{tag,tpe}.thm_start;
+prm_plot = p.proj{proj}.prm{tag,tpe}.plot;
 ovrfl = prm_plot{1}(1,4);
 boba = prm_start{1}(2);
 nRpl = prm_start{1}(3);
@@ -44,11 +44,11 @@ nMol = size(m_incl,2); % inital number of molecules
 
 if boba
     mols = 1:nMol;
-    if ~tag
+    if tag==1
         mols = mols(m_incl);
     else
         molTag = p.proj{proj}.molTag;
-        mols = mols(m_incl & molTag(:,tag)');
+        mols = mols(m_incl & molTag(:,tag-1)');
     end
     N = size(mols,2); % number of user-selected molecules
 end
@@ -88,9 +88,9 @@ if boba
     loading_bar('close', h_fig);
 end
 
-p.proj{proj}.prm{tpe}.thm_res{1,1} = res;
-p.proj{proj}.prm{tpe}.thm_res{1,2} = pop;
-p.proj{proj}.prm{tpe}.thm_res{1,3} = cat(2,P_s(:,1),P_bs);
+p.proj{proj}.prm{tag,tpe}.thm_res{1,1} = res;
+p.proj{proj}.prm{tag,tpe}.thm_res{1,2} = pop;
+p.proj{proj}.prm{tag,tpe}.thm_res{1,3} = cat(2,P_s(:,1),P_bs);
 h.param.thm = p;
 guidata(h_fig,h);
 

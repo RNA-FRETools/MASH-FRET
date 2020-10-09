@@ -132,6 +132,18 @@ p.proj{proj}.curr{n+1}{2}{1}(4) =  1;
 p.proj{proj}.curr{n+1}{2}{1}(4+meth) = L_right*nL;
 p.proj{proj}.curr{n}{2}{1}(1) = true;
 
+% add tag
+if ~sum(~cellfun('isempty',strfind(p.proj{proj}.molTagNames,'split')))
+    p.proj{proj}.molTagNames = cat(2,p.proj{proj}.molTagNames,'split');
+    p.proj{proj}.molTagClr = cat(2,p.proj{proj}.molTagClr,'#bdbdbd');
+    p.proj{proj}.molTag = cat(2,p.proj{proj}.molTag,...
+        false(size(p.proj{proj}.molTag,1),1));
+end
+p.proj{proj}.molTag([n,n+1],...
+    ~cellfun('isempty',strfind(p.proj{proj}.molTagNames,'split'))) = true;
+
+set(h.text_molTot, 'String', ['total: ' num2str(N+1) ' molecules']);
+
 h.param.ttPr = p;
 guidata(h_fig,h);
 

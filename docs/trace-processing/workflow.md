@@ -52,6 +52,9 @@ To import single molecule data from a
 To import single molecule data from ASCII files:
 
 {: .procedure }
+1. Restructure ALEX data files if necessary; see 
+   [Restructure ALEX files](functionalities/restructure-alex-files.html) for more information  
+     
 1. Set the import settings by pressing 
    ![ASCII options ...](../assets/images/gui/TP-but-ascii-options-3p.png "ASCII options ..."); see 
    [Set import options](functionalities/set-import-options.html) for help  
@@ -247,15 +250,35 @@ To sort molecules and save a particular subgroup:
 
 ---
 
-## Correct for photobleaching
+## Correct for photobleaching and blinking
 
 It can happen that emitters get photochemically destroyed after absorbing a certain amount of photons.
 This phenomenon is called photobleaching and results in the permanent loss of signal in the dye-specific emission channel that translates into a drop of the corresponding intensity-time trace to zero.
 
 ![Effect of photobleaching of intensity ratio](../assets/images/figures/TP-workflow-scheme-photobleaching.png "Effect of photobleaching of intensity ratio")
 
-These zero-intensity portions of the intensity-time traces may bias the following histogram and transition analysis by creating irrelevantly fluctuating FRET data.
-To prevent such bias, it is necessary to detect photobleaching and delete photobleached data by truncating intensity-time traces.
+On the other hand, reversible changes in the structure or environment of the emitters can induce temporary interruption of dye emission, which results in short-lived drops of intensity-time traces to zero.
+
+These zero-intensity portions of the time trace may bias the following histogram and transition analysis by creating irrelevantly fluctuating FRET data.
+To prevent such bias, it is necessary to detect intensity interruptions and delete zero-intensity data by truncating intensity-time traces.
+
+To correct photobleaching, the end of the trajectory is simply truncated.
+
+To correct temporary intensity interruptions, zero-intensity portions can not be simply excised from the trace, because the continuity of the time sequence is disrupted and what happens in terms of state transition during this time in unknown. 
+Therefore, intensity interruptions are corrected by dividing the trajectory in two separate traces at the time when the intensity interruption ends, and by truncating the end of the left-trajectory by applying photobleaching correction.
+
+To truncate temporary intensity interruptions:
+
+{: .procedure }
+1. Set parameters  
+     
+   [Photobleaching detection method](panels/panel-photobleaching.html#photobleaching-detection-method) (to `Manual`)  
+   [Photobleaching cutoff](panels/panel-photobleaching.html#photobleaching-cutoff) (to the ending of intensity interruption)  
+     
+1. Split traces in two by pressing 
+   ![Split](../../assets/images/gui/TP-but-split.png "Split").
+     
+1. Correct the original molecule for photobleaching (as described below)
 
 To detect and truncate photobleached data:
 
@@ -440,11 +463,14 @@ Data correction and discretization must be saved in the project for further hist
 
 Additionally, processed data and processing parameters can be exported to various file formats, including ASCII files compatible with other software.
 
+Finally, samples from different projects with identical experiment settings can be merged into one big data set. 
+This prevents to repeat further data analysis on multiple mash files and allows to constitute a more representative sample of molecules.
+
 To save project modifications:
 
 {: .procedure }
 1. Update all data corrections and calculations by pressing 
-   ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL")  
+   ![UPDATE ALL](../assets/images/gui/TP-but-update-all.png "UPDATE ALL")  
      
 1. Save modifications to the 
    [.mash file](../output-files/mash-mash-project.html) by pressing 
@@ -454,11 +480,27 @@ To export data to files:
 
 {: .procedure }
 1. Open export options by pressing 
-   ![Export ASCII...](../../assets/images/gui/TP-but-export-ascii-3p.png "Export ASCII...") and set the options as desired; please refer to 
+   ![Export ASCII...](../assets/images/gui/TP-but-export-ascii-3p.png "Export ASCII...") and set the options as desired; please refer to 
    [Set export options](functionalities/set-export-options.html) for help.
      
 1. Press 
-   ![Next >>](../assets/images/gui/TP-but-next-supsup.png "Next >>") to start writing processed molecule data in files. 
+   ![Next >>](../assets/images/gui/TP-but-next-supsup.png "Next >>") to start writing processed molecule data in files.
+
+To merge projects:
+
+{: .procedure }
+1. Select the multiple projects to merge in the 
+   [Project list](panels/area-project-management.html#project-list)  
+     
+1. Right-click in the 
+   [Project list](panels/area-project-management.html#project-list), choose the option `Merge projects`  
+   
+1. Press 
+   ![Yes](../assets/images/gui/TP-but-yes.png "Yes") to start the merging process  
+     
+   **Note:** *The merging process induces a loss of single molecule videos that were used in individual projects. 
+   Therefore, it is recommended to perform all adjustments of molecule positions and background corrections prior merging; see 
+   [Remarks](@remarks) for more information.
 
 
 ---
@@ -477,3 +519,4 @@ Molecules can be given several tags and/or deselected from the set while browsin
 [Molecule list](panels/panel-sample-management.html#molecule-list) in the Trace processing interface; see 
 [Molecule status](panels/panel-sample-management.html#molecule-status) for more information.
 
+To merge multiple projects into one, experiment setups must be the same, *i.e.*, the frame rate, the number of channels and laser excitations, the laser wavelengths, the emitter labels, the FRET pairs and the stoichiometry calculations must be identical. 

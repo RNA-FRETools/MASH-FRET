@@ -4,7 +4,8 @@ p = h.param.thm;
 if ~isempty(p.proj)
     proj = p.curr_proj;
     tpe = p.curr_tpe(proj);
-    prm = p.proj{proj}.prm{tpe};
+    tag = p.curr_tag(proj);
+    prm = p.proj{proj}.prm{tag,tpe};
     gauss = get(h.popupmenu_thm_gaussNb, 'Value');
     val = str2num(get(obj, 'String'));
     minVal = prm.thm_start{3}(gauss,1);
@@ -19,7 +20,7 @@ if ~isempty(p.proj)
     else
         set(obj, 'BackgroundColor', [1 1 1]);
         prm.thm_start{3}(gauss,2) = val;
-        p.proj{proj}.prm{tpe} = prm;
+        p.proj{proj}.prm{tag,tpe} = prm;
         h.param.thm = p;
         guidata(h_fig, h);
         updateFields(h_fig, 'thm');

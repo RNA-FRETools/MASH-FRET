@@ -23,6 +23,9 @@ xy_axis = [bin minVal maxVal];
 xy_axis(~isfinite(xy_axis)) = 0;
 
 % plotPrm{1} = [bin_x, x_inf, x_sup, overflow bins]
+if isempty(xy_axis)
+    xy_axis = [0.1,0,1];
+end
 plotPrm{1} = [xy_axis 0];
 % plotPrm{2} = [interval, probability, cumulative probability]
 plotPrm{2} = [];

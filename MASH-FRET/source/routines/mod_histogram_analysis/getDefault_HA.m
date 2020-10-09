@@ -55,12 +55,15 @@ for nL = 1:nL_max
             end
         end
         nFRET = size(FRET,1);
+        if nChan==nChan_def && nL==nL_def
+            nDE = sum(chanExc~=0);
+        end
     end
 end
 
 
 % parameters for panel Histogram and plot
-p.histDat = 2*p.nChan*p.nL+1;
+p.histDat = 2*p.nChan*p.nL+2*nDE+1;
 p.histTag = 1;
 p.histPrm = [0,0.01,1,0]; % low, bin, up, overflow
 p.exp_overflow = 'histOverflow';

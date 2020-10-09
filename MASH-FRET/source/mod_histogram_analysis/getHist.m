@@ -11,8 +11,9 @@ chanExc = p.proj{proj}.chanExc;
 
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
+em0 = find(chanExc~=0);
+nDE = numel(em0);
 I = p.proj{proj}.intensities_denoise;
-% I(isnan(I)) = p.proj{proj}.intensities(isnan(I));
 I_discr = p.proj{proj}.intensities_DTA;
 FRET = p.proj{proj}.FRET;
 FRET_discr = p.proj{proj}.FRET_DTA;
@@ -20,18 +21,17 @@ S = p.proj{proj}.S;
 S_discr = p.proj{proj}.S_DTA;
 nFRET = size(FRET,1);
 nS = size(p.proj{proj}.S,1);
-nMol = size(I,2)/nChan;
+N = size(I,2)/nChan;
 m_incl = p.proj{proj}.coord_incl;
 incl = p.proj{proj}.bool_intensities;
 L = size(I,1);
 
 if numel(m)>1 && strcmp(m, 'all')
-    m = 1:nMol;
-    if ~tag
+    m = 1:N;
+    if tag==1
         m = m(m_incl);
     else
-        molTag = p.proj{proj}.molTag;
-        m = m(m_incl & molTag(:,tag)');
+        m = m(m_incl & p.proj{proj}.molTag(:,tag-1)');
     end
 end
 
@@ -41,7 +41,7 @@ if isempty(m)
     return
 end
 
-prm = p.proj{proj}.prm{tpe};
+prm = p.proj{proj}.prm{tag,tpe};
 
 if tpe <= nChan*nExc % intensity
     i_c = mod(tpe,nChan); i_c(i_c==0) = nChan;
@@ -52,15 +52,32 @@ elseif tpe <= 2*nChan*nExc % intensity
     i_c = mod(tpe-nChan*nExc,nChan); i_c(i_c==0) = nChan;
     i_l = ceil((tpe-nChan*nExc)/nChan);
     trace = I_discr(:,i_c:nChan:end,i_l);
-
-elseif tpe <= 2*nChan*nExc + nFRET % FRET
-    I_re = nan(L*nMol,nChan,nExc);
-    for c = 1:nChan
-        I_re(:,c,:) = reshape(I(:,c:nChan:end,:), [nMol*L 1 nExc]);
+            
+elseif tpe <= (2*nChan*nExc + nDE) % total intensity
+    id = tpe-2*nChan*nExc;
+    trace = [];
+    l0 = allExc==chanExc(em0(id));
+    for n = 1:N
+        trace = cat(2,trace,sum(I(:,((n-1)*nChan+1):(n*nChan),l0),2));
     end
-    i_f = tpe - 2*nChan*nExc;
+
+elseif tpe <= (2*nChan*nExc + 2*nDE) % total discr. intensity
+    id = tpe-2*nChan*nExc - nDE;
+    trace = [];
+    l0 = allExc==chanExc(em0(id));
+    for n = 1:N
+        trace = cat(2,trace,...
+            sum(I_discr(:,((n-1)*nChan+1):(n*nChan),l0),2));
+    end
+
+elseif tpe <= (2*nChan*nExc + 2*nDE + nFRET) % FRET
+    I_re = nan(L*N,nChan,nExc);
+    for c = 1:nChan
+        I_re(:,c,:) = reshape(I(:,c:nChan:end,:), [N*L 1 nExc]);
+    end
+    i_f = tpe - 2*nChan*nExc - 2*nDE;
     gammas = [];
-    for i_m = 1:nMol
+    for i_m = 1:N
         if size(p.proj{proj}.prmTT{i_m},2)==5 && ...
                 size(p.proj{proj}.prmTT{i_m}{5},2)==5
             gamma_m = p.proj{proj}.prmTT{i_m}{5}{3};
@@ -75,21 +92,21 @@ elseif tpe <= 2*nChan*nExc + nFRET % FRET
     end
     allFRET = calcFRET(nChan, nExc, allExc, chanExc, FRET, I_re, gammas);
     trace = allFRET(:,i_f);
-    trace = reshape(trace, [L nMol]);
+    trace = reshape(trace, [L N]);
     
-elseif tpe <= 2*nChan*nExc+2*nFRET % FRET
-    i_f = tpe - 2*nChan*nExc - nFRET;
+elseif tpe <= (2*nChan*nExc + 2*nDE + 2*nFRET) % FRET
+    i_f = tpe - 2*nChan*nExc - 2*nDE - nFRET;
     trace = FRET_discr(:,i_f:nFRET:end);
 
-elseif tpe <= 2*nChan*nExc + 2*nFRET + nS % Stoichiometry
-    I_re = nan(L*nMol,nChan,nExc);
+elseif tpe <= (2*nChan*nExc + 2*nDE + 2*nFRET + nS) % Stoichiometry
+    I_re = nan(L*N,nChan,nExc);
     for c = 1:nChan
-        I_re(:,c,:) = reshape(I(:,c:nChan:end,:), [nMol*L 1 nExc]);
+        I_re(:,c,:) = reshape(I(:,c:nChan:end,:), [N*L 1 nExc]);
     end
-    i_s = tpe - 2*nChan*nExc - 2*nFRET;
+    i_s = tpe - 2*nChan*nExc - 2*nDE - 2*nFRET;
     gammas = [];
     betas = [];
-    for i_m = 1:nMol
+    for i_m = 1:N
         if size(p.proj{proj}.prmTT{i_m},2)==5 && ...
                 size(p.proj{proj}.prmTT{i_m}{5},2)==5
             gamma_m = p.proj{proj}.prmTT{i_m}{5}{3};
@@ -108,10 +125,10 @@ elseif tpe <= 2*nChan*nExc + 2*nFRET + nS % Stoichiometry
     end
     allS = calcS(allExc, chanExc, S, FRET, I_re, gammas, betas);
     trace = allS(:,i_s);
-    trace = reshape(trace, [L nMol]);
+    trace = reshape(trace, [L N]);
     
-elseif tpe <= 2*nChan*nExc + 2*nFRET + 2*nS % S
-    i_s = tpe - 2*nChan*nExc - 2*nFRET - nS;
+elseif tpe <= (2*nChan*nExc + 2*nDE + 2*nFRET + 2*nS) % S
+    i_s = tpe - 2*nChan*nExc - 2*nDE - 2*nFRET - nS;
     trace = S_discr(:,i_s:nS:end);
 end
 

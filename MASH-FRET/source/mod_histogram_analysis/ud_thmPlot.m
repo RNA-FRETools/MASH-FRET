@@ -5,13 +5,16 @@ p = h.param.thm;
 proj = p.curr_proj;
 tpe = p.curr_tpe(proj);
 tag = p.curr_tag(proj);
-prm = p.proj{proj}.prm{tpe};
+prm = p.proj{proj}.prm{tag,tpe};
 labels = p.proj{proj}.labels;
 FRET = p.proj{proj}.FRET;
 S = p.proj{proj}.S;
 exc = p.proj{proj}.excitations;
 nExc = numel(exc);
 nChan = p.proj{proj}.nb_channel;
+chanExc = p.proj{proj}.chanExc;
+em0 = find(chanExc~=0);
+nDE = numel(em0);
 nFRET = size(FRET,1);
 nS = size(S,1);
 perSec = p.proj{proj}.cnt_p_sec;
@@ -27,7 +30,7 @@ ovrfl = prm.plot{1}(1,4);
 [P,N] = getHist('all',false, ovrfl, h_fig);
 prm.plot{2} = P;
 prm.plot{3} = N;
-p.proj{proj}.prm{tpe} = prm;
+p.proj{proj}.prm{tag,tpe} = prm;
 h.param.thm = p;
 guidata(h_fig, h);
 
@@ -43,7 +46,7 @@ end
 
 x_bin = prm.plot{1}(1,1);
 x_lim = prm.plot{1}(1,2:3);
-isInt = tpe <= 2*nChan*nExc;
+isInt = tpe <= (2*nChan*nExc + 2*nDE);
 if isInt % intensities
     if perSec
         x_bin = x_bin/expT;
@@ -71,6 +74,15 @@ for l = 1:nExc
         str_pop = [str_pop ['discr. ' labels{c} ' at ' num2str(exc(l)) 'nm']];
     end
 end
+for em = em0
+    exc0 = chanExc(em);
+    str_pop = [str_pop ['total ' labels{em} ' at ' num2str(exc0) 'nm']];
+end
+for em = em0
+    exc0 = chanExc(em);
+    str_pop = [str_pop ['discr. total ' labels{em} ' at ' num2str(exc0) ...
+        'nm']];
+end
 for n = 1:nFRET
     str_pop = [str_pop ['FRET ' labels{FRET(n,1)} '>' labels{FRET(n,2)}]];
 end
@@ -90,7 +102,7 @@ str_pop = getStrPopTags(tagNames,colorlist);
 if ~strcmp(str_pop{1},'no default tag')
     str_pop = cat(2,'all molecules',str_pop);
 end
-set(h.popupmenu_thm_tag, 'String', str_pop, 'Value', tag+1);
+set(h.popupmenu_thm_tag, 'String', str_pop, 'Value', tag);
 
 set([h.edit_thm_xbin h.edit_thm_xlim1 h.edit_thm_xlim2], ...
     'BackgroundColor', [1 1 1]);

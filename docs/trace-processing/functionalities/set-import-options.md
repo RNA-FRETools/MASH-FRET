@@ -19,7 +19,7 @@ The window is accessed by pressing
 After modification, press 
 ![Save](../../assets/images/gui/TP-but-save-bga.png "Save") to save import settings.
 
-<a href="../../assets/images/gui/TP-area-proj-impopt.png"><img src="../../assets/images/gui/TP-area-proj-impopt.png" style="max-width: 546px;"/></a>
+<a href="../../assets/images/gui/TP-area-proj-impopt.png"><img src="../../assets/images/gui/TP-area-proj-impopt.png" style="max-width: 507px;"/></a>
 
 ## Window components
 {: .no_toc .text-delta }
@@ -144,7 +144,7 @@ If several files are selected, gamma and/or beta factors will be concatenated ro
 Use this panel to import FRET state trajectories in module Transition analysis exclusively.
 If state trajectories are imported in module Trace processing, they will be overwritten by newly calculated ones.
 
-<a href="../../assets/images/gui/TP-area-proj-impopt-discr.png"><img src="../../assets/images/gui/TP-area-proj-impopt-discr.png" style="max-width: 250px;"/></a>
+<a href="../../assets/images/gui/TP-area-proj-impopt-discr.png"><img src="../../assets/images/gui/TP-area-proj-impopt-discr.png" style="max-width: 243px;"/></a>
 
 State trajectories are used in module 
 [Transition analysis](../../transition-analysis.html) to infer state configurations and determine state transition rates.
@@ -152,8 +152,10 @@ State trajectories are used in module
 They are usually read from a processed 
 [.mash file](../../output-files/mash-mash-project.html) but can also be imported from the ASCII trace files.
 
-To import FRET state trajectories, activate the option in **(a)**.
-In that case, state data will be read in every **(b)**<sup>th</sup> file columns.
+To import FRET state trajectories from a single or multiple FRET pairs, activate the option in **(a)**.
+In that case, state data will be read from file column **(b)** to **(c)** and skipping **(d)** columns.
+
+In the case of multiple FRET pairs, channel indexes of donor (`[D]`) and acceptor (`[A]`) emitters are read from file column headers `discr.FRET_[D]>[A]` or `FRET[D]-[A]`.
 
 **Note:** *For the moment, only FRET state trajectories can be imported.
 In the future, this functionality will be extended to all kind of state data supported in MASH-FRET.*

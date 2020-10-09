@@ -4,7 +4,8 @@ p = h.param.thm;
 if ~isempty(p.proj)
     proj = p.curr_proj;
     tpe = p.curr_tpe(proj);
-    prm = p.proj{proj}.prm{tpe};
+    tag = p.curr_tag(proj);
+    prm = p.proj{proj}.prm{tag,tpe};
 
     nChan = p.proj{proj}.nb_channel;
     nExc = p.proj{proj}.nb_excitations;
@@ -62,7 +63,7 @@ if ~isempty(p.proj)
         end
 
         prm.thm_start{2}(thresh) = val;
-        p.proj{proj}.prm{tpe} = prm;
+        p.proj{proj}.prm{tag,tpe} = prm;
         h.param.thm = p;
         guidata(h_fig, h);
         updateFields(h_fig, 'thm');

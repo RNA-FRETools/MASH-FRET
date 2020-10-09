@@ -14,11 +14,8 @@ function initMASH(h_fig)
 %                              setParam, updateFields, ud_zoom, exportAxes,
 %                              ud_axesLim, setInfoIcons, switchPan
 
-% Last update: 29.11.2019 by MH
-% >> cancel font size setting (done when building figure programmatically)
-% >> reformat code and comments for mor clarity
-%
-% Update: 22nd of May 2014 by Mélodie C.A.S. Hadzic
+% Last update, 29.11.2019 by MH: (1) cancel font size setting (done when building figure programmatically) (2) reformat code and comments for mor clarity
+% update, 22.5.2014 by MH
 
 % default
 ohfig = 0.75; % figures' outer height (normalized units)
@@ -82,8 +79,11 @@ h.param.OpFiles.overwrite = ~def_ask;
 % add action muting option
 h.mute_actions = false;
 
-% add zoom and pan objects
+% build zoom context menu
 h = buildContextmenu_zoom(h);
+
+% build project context menu
+h = buildContextmenu_proj(h);
 
 % save handle structure
 guidata(h_fig, h);

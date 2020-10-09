@@ -15,14 +15,14 @@ tag = p.curr_tag(proj);
 
 str_tpe = get(h.popupmenu_thm_tpe, 'String');
 str_tpe = strrep(strrep(strrep(str_tpe{tpe}, ' ', ''),'>',''),'.','');
-if tag>0
+if tag>1
     str_tag = get(h.popupmenu_thm_tag, 'String');
-    str_tag = cat(2,'_',strrep(strrep(strrep(removeHtml(str_tag{tag+1}),...
+    str_tag = cat(2,'_',strrep(strrep(strrep(removeHtml(str_tag{tag}),...
         ' ',''),'>',''),'.',''));
 else
     str_tag = '';
 end
-prm = p.proj{proj}.prm{tpe};
+prm = p.proj{proj}.prm{tag,tpe};
 pplot = prm.plot;
 P = pplot{2};
 

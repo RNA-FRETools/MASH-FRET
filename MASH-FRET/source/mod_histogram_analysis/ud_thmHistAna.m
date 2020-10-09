@@ -7,7 +7,8 @@ h = guidata(h_fig);
 p = h.param.thm;
 proj = p.curr_proj;
 tpe = p.curr_tpe(proj);
-prm = p.proj{proj}.prm{tpe};
+tag = p.curr_tag(proj);
+prm = p.proj{proj}.prm{tag,tpe};
 
 if isempty(prm.plot{2})
     setProp([h.uipanel_HA_stateConfiguration,...

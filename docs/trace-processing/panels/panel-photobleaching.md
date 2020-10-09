@@ -15,7 +15,7 @@ Photobleaching is the seventh panel of module Trace processing.
 
 Use this panel to detect dye photobleaching and suppress photobleached data.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-pb.png"><img src="../../assets/images/gui/TP-panel-pb.png" style="max-width: 290px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-pb.png"><img src="../../assets/images/gui/TP-panel-pb.png" style="max-width: 301px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -66,6 +66,25 @@ Activate this option to truncate time traces at the
 <img src="../../assets/images/figures/TP-panel-photobleaching-truncate.png" style="max-width:538px;">
 
 For more information about how photobleaching correction is used in smFRET data analysis, see 
+[Correct for photobleaching](../workflow.html#correct-for-photobleaching) in Trace processing workflow.
+
+
+---
+
+## Split trajectories
+
+Intensity interruptions occurring in the middle of a trace (e. g., blinking) can be corrected by splitting intensity-time traces in two and truncating the end of the first trace (see 
+[Truncate trajectories](#truncate-trajectories)) and the beginning of the second (see 
+[Time axis](panel-plot.html#time-axis)).
+
+Press 
+![Split](../../assets/images/gui/TP-but-split.png "all") to split time traces in two at the 
+[Photobleaching cutoff](#photobleaching-cutoff).
+In this case, the right-side of the cutoff is saved as a separate molecule, which is added to the 
+[Molecule list](panel-sample-management.html#molecule-list).
+Both molecules will be given a "Split" tag in order to easily identify them in the list.
+
+For more information about how blinking correction is used in smFRET data analysis, see 
 [Correct for photobleaching](../workflow.html#correct-for-photobleaching) in Trace processing workflow.
 
 

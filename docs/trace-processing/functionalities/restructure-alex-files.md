@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Merge projects
+title: Restructure ALEX files
 parent: /trace-processing/functionalities.html
 grand_parent: /trace-processing.html
 nav_order: 8
@@ -8,16 +8,13 @@ nav_order: 8
 
 <img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
 
-# Merge projects
+# Restructure ALEX files
 {: .no_toc }
 
-In some cases, it is interesting to merge traces of different projects to build a common data set, *e. g.* with the same experimental conditions.
+Intensities recorded with alternating laser excitations (ALEX) can be imported to MASH-FRET from ASCII files. 
+When laser-specific intensities are written in a column-wise fashion, files must be restructured prior being imported.
 
-For the moment, the merging process is performed on ASCII traces.
-In the future, the functionality will be available for projects listed in the 
-[Project list](../panels/area-project-management.html).
-
-To merge several projects into one, follow the procedure described below.
+To import ALEX data from ASCII files, follow the procedure described below.
 
 ## Procedure
 {: .no_toc .text-delta }
@@ -25,44 +22,10 @@ To merge several projects into one, follow the procedure described below.
 1. TOC
 {:toc}
 
-**Note:** *The merging process induces a loss of single molecule videos and coordinates that were used in individual projects.
-Therefore, it is recommended to (1) perform all adjustments of molecule positions and background corrections prior merging, and (2) to merge experimental data with same recording rate.
-To bin trajectories to lower recording rates, please refer to 
-[Bin trajectories](bin-trajectories.html)*
-
-
----
-
-## Export traces to ASCII files
-
-The merging process is performed on ASCII traces.
-Therefore, intensity-time traces in the project must be exported to ASCII files.
-
-To export traces to ASCII files:
-
-{: .procedure }
-1. Select module Trace processing in MASH's 
-   [tool bar](../../Getting_started.html#interface)  
-     
-1. Import the project by pressing 
-   ![Add](../../assets/images/gui/TP-but-add.png "Add") and selecting the 
-   [mash file](../../output-files/mash-mash-project.html)  
-     
-1. Open export options by pressing 
-   ![Export ASCII...](../../assets/images/gui/TP-but-export-ascii-3p.png "Export ASCII...") and set the options as desired; please refer to 
-   [Set export options](set-export-options.html) for help.
-     
-1. Press 
-   ![Next >>](../../assets/images/gui/TP-but-next-supsup.png "Next >>") to start writing processed molecule data in files. 
-     
-1. Return to step 2 to export ASCII files from another project to merge with
-
 
 ---
 
 ## Restructure ALEX data
-
-If single molecule data are recorded upon alternated laser excitation (ALEX), exported files need to be restructured to a MASH-importable format.
 
 File reformatting is performed by using the tool `Restructure files` accessed from MASH-FRET's menu bar.
 After completion, the set of restructured ASCII files are available in a new sub-folder appended with the actual date: `\restructured DD-Mmm-YYYY`
@@ -76,7 +39,7 @@ To correctly format data for import in Transition analysis, the script must be i
 To restructure ALEX trace files:
 
 {: .procedure }
-1. Group all ASCII trace files to merge together into one directory
+1. Group all ASCII trace files to restructure together into one directory
      
 1. In MASH-FRET's menu bar, go to `Tools` > `Restructure files` and select the group directory; a window pops up:  
      
@@ -94,15 +57,15 @@ To restructure ALEX trace files:
 
 ---
 
-## Create a merged project
+## Create a mash project
 
-To merge all traces into one project, the ASCII files need to be imported together in module Trace processing and saved to a new common 
+To group all traces into one project, the ASCII files need to be imported together in module Trace processing and saved to a new common 
 [.mash file](../../output-files/mash-mash-project.html).
 To correctly import data, MASH must be informed about the particular structure of the files.
 
-Once the merged project is created, project parameters including FRET and stoichiometry calculations, must be re-defined.
+Once the project is created, project parameters including FRET and stoichiometry calculations, must be defined.
 
-To create the merged project:
+To create the project:
 
 {: .procedure }
 1. Select module Trace processing in MASH's 
@@ -119,7 +82,7 @@ To create the merged project:
    ![Edit...](../../assets/images/gui/TP-but-edit-3p.png "Edit..."); see 
    [Set project options](../../video-processing/functionalities/set-project-options.html) for more information.
      
-1. Save the merged project to a 
+1. Save the project to a 
    [.mash file](../output-files/mash-mash-project.html) by pressing 
    ![Save](../../assets/images/gui/TP-but-save.png "Save").
 

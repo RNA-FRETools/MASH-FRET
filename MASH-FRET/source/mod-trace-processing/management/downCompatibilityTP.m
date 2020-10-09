@@ -64,11 +64,16 @@ if size(p_proj.prm{n},2)>=5 && size(p_proj.prm{n}{5},2)>=2 && ...
 end
 
 % added by MH, 4.4.2020
-% move gamma factors to 6th cell
+% move gamma factors to 6th cell and cross-talks to general parameters
 if size(p_proj.prm{n},2)>=5 && size(p_proj.prm{n}{5},2)>=3
     p_proj.prm{n}{6}{1} = p_proj.prm{n}{5}{3};
     p_proj.prm{n}{6}{2} = 0;
     p_proj.prm{n}{6}{3} = p_proj.def.mol{6}{3};
+    p_proj.prm{n}{6}{4} = p_proj.def.mol{6}{4};
+    if n==1
+        p_proj.fix{4} = p_proj.prm{n}{5}(1:2);
+    end
+    p_proj.prm{n}{5} = [];
 end
 
 % added by MH, 10.1.2020: move cross-talks to general parameters, move 
@@ -127,11 +132,12 @@ if size(p_proj.prm{n},2)>=4 && size(p_proj.prm{n}{4},2)>=2
         end
         p_proj.prm{n}{4}{2} = ...
             p_proj.prm{n}{4}{2}(:,1:6,:);
+    end
 
     % add parameter for method "deblurr"
-    elseif size(p_proj.prm{n}{4}{2},2)==6
-        cat(2,p_proj.prm{n}{4}{2},zeros(size(p_proj.prm{n}{4}{2},1),1,...
-            size(p_proj.prm{n}{4}{2},3)));
+    if size(p_proj.prm{n}{4}{2},2)==6
+        p_proj.prm{n}{4}{2} = cat(2,p_proj.prm{n}{4}{2},zeros(...
+            size(p_proj.prm{n}{4}{2},1),1,size(p_proj.prm{n}{4}{2},3)));
     end
 end
 

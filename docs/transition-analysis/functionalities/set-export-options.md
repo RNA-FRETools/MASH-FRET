@@ -62,7 +62,7 @@ The TDP matrix can also be exported to a PNG image file by activating the option
 
 Use this panel to define the file formats to export dwell time histograms and fitting results.
 
-<img src="../../assets/images/gui/TA-area-project-management-export-kin.png" style="max-width: 218px;"/>
+<img src="../../assets/images/gui/TA-area-project-management-export-kin.png" style="max-width: 210px;"/>
 
 Dwell time histograms can be exported to ASCII 
 [.hdt files](../../output-files/hdt-dwelltime-histogram.html) by activating the options in **(a)**.
@@ -71,5 +71,7 @@ Fitting results can also be exported to separated ASCII
 [.fit files](../../output-files/fit-dwelltime-fit.html) by activating the option in **(b)**. 
 
 If the fitting 
-[Method settings](../panels/panel-state-transition-rates.html#method-settings) include BOBA-FRET, the same exported file can be appended with bootstrapping parameters and results by activating the option in **(c)**.
+[Method settings](../panels/panel-state-transition-rates.html#method-settings) include BOBA-FRET:
+* the .fit file can be appended with bootstrapping parameters and results by activating the option in **(c)**
+* plots of bootstrap histogram samples and associated fit can be exported to a multi-pages .pdf file by activating the option in **(d)**
 

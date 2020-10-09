@@ -56,7 +56,7 @@ h_pan = h.uipanel_S_background;
 pospan = get(h_pan,'position');
 wpop = pospan(3)-p.mg;
 wbut0 = getUItextWidth(str2,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wedit0 = pospan(3)-p.mg/2-wbut0-p.mg/fact-p.mg/2;
+wedit0 = pospan(3)-p.mg/2-wbut0-p.mg/fact-p.mg/2-p.wbrd;
 wtxt0 = getUItextWidth(str3,p.fntun,p.fntsz1,'normal',p.tbl);
 wedit1 = (pospan(3)-p.mg-p.mg/fact-2*wtxt0)/2;
 wtxt1 = getUItextWidth(str5,p.fntun,p.fntsz1,'normal',p.tbl);
@@ -81,7 +81,7 @@ h.text_S_bgImgFile = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wedit0,htxt],'string',str1);
 
-x = p.mg;
+x = p.mg/2;
 y = y-hbut;
 
 h.pushbutton_S_impBgImg = uicontrol('style','pushbutton','parent',h_pan,...

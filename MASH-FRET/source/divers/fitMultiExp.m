@@ -20,7 +20,6 @@ ampmin = 0;
 taumin = 0;
 ampmax = 2;
 taumax = Inf;
-minAsum = 1; % minimum sum of amplitudes
 
 fitbounds = [];
 if ~isempty(varargin)
@@ -84,6 +83,11 @@ else
     maxVal = reshape(fitbounds.upper,[2,n]);
 end
 
+if n==1
+    minAsum = 1; % minimum sum of amplitudes
+else
+    minAsum = 0; % minimum sum of amplitudes
+end
 if sum(prm0(1,:))<minAsum
     prm0(1,:) = minAsum*prm0(1,:)/sum(prm0(1,:));
 end

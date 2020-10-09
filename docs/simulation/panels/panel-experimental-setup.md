@@ -64,20 +64,40 @@ Use these settings to simulate defocusing while video recording.
 
 ## Background
 
-Use these settings to generate a channel-specific background signal.
+Use this panel to set channel-specific background signals.
 
-<a class="plain" href="../../assets/images/gui/sim-panel-experimental-setup-background.png"><img src="../../assets/images/gui/sim-panel-experimental-setup-background.png" style="max-width: 200px;" /></a>
+<a class="plain" href="../../assets/images/gui/sim-panel-experimental-setup-background.png"><img src="../../assets/images/gui/sim-panel-experimental-setup-background.png" style="max-width: 220px;" /></a>
 
 The background is a source of unwanted photons that adds up to each video channel. 
-It can be uniform in space or spatially distributed, but also constant or dynamic in time.
+It can be distributed in space and in time.
+Background decay in time can be used, for instance, to model the photobleaching of an autofluorescent medium.
+
+Select the type of spatial distribution in list **(a)**.
+
+The interface **(b)** depends on the chosen distribution, which includes:
+
+* [`Uniform`](#uniform-background): constant background in space 
+* [`2D Gaussian profile`](#gaussian-distributed-background): TIRF-like background profile
+* [`Pattern`](#background-from-image-file): background from image
+
+To simulate time-decaying background intensities, activate the option in **(c)**.
+
+In that case, the background intensity in each pixel decays exponentially with a time decay constant
+[*dec*](){: .math_var } given in seconds and set in **(d)**.
+The starting background intensities can be modulated by a factor 
+[*amp*](){: .math_var } set in **(e)**. 
+
+<u>default</u>: decay time constant is set to 10 times the default trajectory length:
+* [*dec*](){: .math_var } = 4000 seconds
+* [*amp*](){: .math_var } = 1
 
 
 ### Uniform background
 {: .no_toc}
 
-To apply a uniform background, select `Uniform` in list **(a)**. 
+<a class="plain" href="../../assets/images/gui/sim-panel-experimental-setup-background-uniform.png"><img src="../../assets/images/gui/sim-panel-experimental-setup-background-uniform.png" style="max-width: 200px;" /></a>
 
-Background intensities are set in **(b)** and **(c)** for donor and acceptor channel respectively and are given in units defined by 
+Background intensities are set in **(a)** and **(b)** for donor and acceptor channel respectively and are given in units defined by 
 [Intensity units](panel-molecules.html#intensity-units).
 
 Experimental 
@@ -93,18 +113,18 @@ Experimental
 ### Gaussian-distributed background
 {: .no_toc}
 
+<a class="plain" href="../../assets/images/gui/sim-panel-experimental-setup-background-tirf.png"><img src="../../assets/images/gui/sim-panel-experimental-setup-background-tirf.png" style="max-width: 199px;" /></a>
+
 The background is spatially distributed following a 2D-Gaussian model. 
 This can be used to model a realistic TIRF excitation profile.
 
-To apply a <u>2D-Gaussian background</u>, select `2D Gaussian profile` in list **(a)**.
-
 In that case, the background follows a 2D-Gaussian distribution centred on each channel, having common x- and y-standard deviations, 
 [*w*<sub>0,ex,x</sub>](){: .math_var } and 
-[*w*<sub>0,ex,y</sub>](){: .math_var }, given in pixels and set in **(d)** and **(e)** respectively.
+[*w*<sub>0,ex,y</sub>](){: .math_var }, given in pixels and set in **(c)** and **(d)** respectively.
 
 Gaussian amplitudes 
 [*bg*<sub>D</sub>](){: .math_var } in donor channel and 
-[*bg*<sub>A</sub>](){: .math_var } in acceptor channel are set in **(b)** and **(c)** respectively and are given in units defined in 
+[*bg*<sub>A</sub>](){: .math_var } in acceptor channel are set in **(a)** and **(b)** respectively and are given in units defined in 
 [Intensity units](panel-molecules.html#intensity-units).
 
 <u>default</u>: 2D-Gaussian widths are set to half-channel dimensions in a video of 256-by-256 pixels:
@@ -115,36 +135,22 @@ Gaussian amplitudes
 ### Background from image file
 {: .no_toc}
 
+<a class="plain" href="../../assets/images/gui/sim-panel-experimental-setup-background-pattern.png"><img src="../../assets/images/gui/sim-panel-experimental-setup-background-pattern.png" style="max-width: 199px;" /></a>
+
 The spatial distribution of the background is set by an external image file. 
 This can be used to reproduce image imperfections present in experimental recordings.
 
-To add a <u>background image</u>, select `Pattern` in list **(a)**.
+To import a background image, press  
+![...](../../assets/images/gui/sim-but-3p.png "...").
+The image file name will be shown in **(a)**.
 
-In that case, the background image or video must be imported just after pressing 
-![Update](../../assets/images/gui/sim-but-update.png "Update").
+The pixel size of the background image must be identical to the video.
 
 Supported graphic file formats are: *.<u>sif</u>, *.<u>sira</u>, *.<u>tif</u>, *.<u>gif</u>, *.<u>png</u>, *.<u>spe</u>, *.<u>pma</u>.
 If the loaded file is a video, the first frame will be used as the background image.
 
 <u>default</u>: no background image is loaded.
 
-
-### Background decaying in time
-{: .no_toc}
-
-The background intensities are decaying in time. 
-This can be used to model the photobleaching of an autofluorescent medium.
-
-To obtain uniform or spatially distributed background intensities decaying in time, activate the option in **(f)**.
-
-In that case, the background intensity in each pixel decays exponentially with a time decay constant
-[*dec*](){: .math_var } given in seconds and set in **(g)**.
-The starting background intensities can be modulated by a factor 
-[*amp*](){: .math_var } set in **(h)**. 
-
-<u>default</u>: decay time constant is set to 10 times the default trajectory length:
-* [*dec*](){: .math_var } = 4000 seconds
-* [*amp*](){: .math_var } = 1
 
 
 

@@ -121,8 +121,8 @@ if norm
 end
 
 % draw TDP image
-imagesc(lim,lim,TDP,'Parent',h_axes_TDP,'HitTest','off',...
-    'PickableParts','none');
+imagesc(lim,lim,TDP,'Parent',h_axes_TDP,'HitTest','off','PickableParts',...
+    'none');
 if sum(sum(TDP))
     set(h_axes_TDP,'CLim',[min(min(TDP)) max(max(TDP))]);
 else

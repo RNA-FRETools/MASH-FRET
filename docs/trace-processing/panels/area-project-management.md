@@ -64,11 +64,14 @@ After import, the new project is added to the project list and the
 [Sample management](panel-sample-management.html) panel is updated to the first molecule in the project.
 
 Project settings such as relations between channels and lasers, FRET calculations, stoichiometry calculations, plot colors and project tags can be modified any time by pressing 
-![Edit...](../../assets/images/gui/TP-but-edit-3p.png "Edit..."); see 
+![Edit...](../../assets/images/gui/TP-but-edit-3p.png "Edit...") or right-clicking and selecting `Edit...`; see 
 [Edit project options](#edit-project-options) for more details.
 
 Press 
-![Remove](../../assets/images/gui/TP-but-remove.png "Remove") to close a project and remove it from the project list.
+![Remove](../../assets/images/gui/TP-but-remove.png "Remove") or right-click and select `Close` to close a project and remove it from the project list.
+
+Right-click and select `Merge projects` to merge multiple projects with <u>identical experimental conditions</u> into one; see 
+[Save project and export data](../workflow.html#save-project-and-export-data) for more information.
 
 
 ---
@@ -76,7 +79,7 @@ Press
 ## Edit project options
 
 Press 
-![Edit...](../../assets/images/gui/TP-but-edit-3p.png "Edit...") to open the project settings.
+![Edit...](../../assets/images/gui/TP-but-edit-3p.png "Edit...") or right-click and select `Edit...` to open the project settings.
 
 To modify project settings, please refer to 
 [Set project options](../../video-processing/functionalities/set-project-options.html).
@@ -92,7 +95,7 @@ If the project was imported from ASCII files, project options are set to default
 
 ## Save project
 
-Press ![Save](../../assets/images/gui/TP-but-save.png "Save") to export the project to a 
+Press ![Save](../../assets/images/gui/TP-but-save.png "Save") or right-click and select `Save as...` to export the project to a 
 [.mash file](../../output-files/mash-mash-project.html).
 
 To save project modifications, simply overwrite the existing 
