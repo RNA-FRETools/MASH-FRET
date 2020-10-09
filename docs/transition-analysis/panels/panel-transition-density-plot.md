@@ -15,7 +15,7 @@ Transition density plot (TDP) is the first panel of module Transition analysis.
 
 Use this panel to select data and build the TDP.
 
-<a class="plain" href="../../assets/images/gui/TA-panel-transition-density-plot.png"><img src="../../assets/images/gui/TA-panel-transition-density-plot.png" style="max-width:200px;"></a>
+<a class="plain" href="../../assets/images/gui/TA-panel-transition-density-plot.png"><img src="../../assets/images/gui/TA-panel-transition-density-plot.png" style="max-width:176px;"></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -39,20 +39,59 @@ Supported data are:
 
 ---
 
+## Molecule subgroup list
+
+Use this list to select the molecule subgroup to be analyzed in Transition analysis.
+
+Molecule subgroups are defined by the molecule tags that are created and assigned to molecules in module 
+[Trace processing](../../trace-processing.html) exclusively.
+
+Molecule tags are created in 
+[Molecule selection](../../trace-processing/functionalities/tm-overview.html#molecule-selection) and can be assigned to individual molecules in 
+[Molecule selection](../../trace-processing/functionalities/tm-overview.html#molecule-selection) or in 
+[Molecule status](../../trace-processing/panels/panel-sample-management.html#molecule-status).
+
+Molecule tags can also be assigned to groups of molecules defined by specific data ranges with 
+[Automatic sorting](../../trace-processing/functionalities/tm-automatic-sorting.html#tm-menu).
+
+
+---
+
 ## Bounds and bin size
 
 Use this interface to define TDP limits and sorting intervals.
 
-<img src="../../assets/images/gui/TA-panel-transition-density-plot-axis.png" style="max-width:168px;">
+<img src="../../assets/images/gui/TA-panel-transition-density-plot-axis.png" style="max-width:153px;">
 
-TDP limits define the range of data used in the analysis and the bin size, the intervals used to sort data in the transition density plot (TDP).
+TDP limits define the range of data used in the analysis, and the bin size defines the intervals used to sort data in the transition density plot (TDP).
 
-The lower x- and y-limits are respectively set in **(a)** and **(d)**, the higher limits in **(c)** and **(f)** and the x- and y- bin sizes in **(b)** and **(e)**.
+Limits and bin sizes are identical for the x- and y-axis.
+The lower limit is set in **(a)**, the bin size in **(b)** and the higher limit in **(c)**.
 
 For more information about the influence of limits and bin size on the analysis, please refer to 
 [Build transition density plot](../workflow.html#build-transition-density-plot) in Transition analysis workflow.
 
-<u>default</u>: For ratio data, default x- and y-limits are set to [-0.2;1.2] and the bin size to 0.01
+<u>default</u>: For ratio data, default limits are set to [-0.2;1.2] and the bin size to 0.01
+
+
+---
+
+## Re-arrange state sequences
+
+Activate this option to re-build state sequences only with states visible the TDP.
+
+In the regular building process, states that lay out-of-TDP-range are ignored from the state sequences creating time gaps. 
+
+Sequence re-arrangement allows to fill these time gaps by prolonging the duration of states preceding the outliers in the sequence.
+If no state is preceding the outliers, the duration of the following states in the sequence is prolonged.
+
+To work with initial state durations, and thus, with time-gapped state sequences, deactivate this option.
+
+For more information about sequence re-arrangement, please refer to 
+[Build transition density plot](../workflow.html#build-transition-density-plot) in Transition analysis workflow.
+
+**Note:** *Sequence re-arrangement has an effect on transition densities used in clustering and dwell time histograms used in *
+[State transition rates](panel-state-transition-rates.html).
 
 
 ---
@@ -68,8 +107,8 @@ To build the TDP with absolute transition counts and obtain the genuine transiti
 For more information about the two types of transition counting, please refer to 
 [Build transition density plot](../workflow.html#build-transition-density-plot) in Transition analysis workflow.
 
-**Note:** *Transition counts in the TDP are used only for clustering and have no effect on the dwell time histograms used in 
-[State transition rates](panel-state-transition-rates.html).*
+**Note:** *Transition counts in the TDP are used only for clustering and have no effect on the dwell time histograms used in *
+[State transition rates](panel-state-transition-rates.html).
 
 
 ---
@@ -104,15 +143,9 @@ In this case, counts are normalized by the sum for display only, and are color-c
 Press 
 ![Update](../../assets/images/gui/TA-but-update.png "Update") to build the TDP new, using options set in 
 [Bounds and bin size](#bounds-and-bin-size), 
-[Transition count](#transition-count) and 
+[Transition count](#transition-count),
+[Re-arange sequences](#re-arrange-sequences) and 
 [Gaussian filter](#gaussian-filter).
-
-Setting bounds to the TDP induces the exclusion of out-of-ranges states from the building process. 
-To later work with state trajectories conformed to the TDP limits, state trajectories can be readjusted by suppressing these outliers and linking the neighbouring states together.
-This will have an effect on the dwell time distributions used in 
-[State transition rates](panel-state-transition-rates.html).
-
-<img src="../../assets/images/gui/TA-panel-transition-density-plot-rearrange.png" style="max-width:494px;">
 
 For more information about how TDPs are built, please refer to 
 [Build transition density plot](../workflow.html#build-transition-density-plot) in Transitions analysis workflow.
