@@ -89,10 +89,8 @@ function ok = loadDataFromMASH(h_fig)
 ok = true;
 
 h = guidata(h_fig);
-m = h.param.ttPr;
-proj = m.curr_proj;
+p = h.param.ttPr;
 nMol = numel(h.tm.molValid);
-nChan = m.proj{proj}.nb_channel;
 
 % loading bar parameters-----------------------------------------------
 err = loading_bar('init',h_fig ,nMol,'Collecting data from MASH ...');
@@ -106,45 +104,21 @@ guidata(h_fig, h); % update: set current guidata
 % ---------------------------------------------------------------------
 
 for i = 1:nMol
-    dtaCurr = m.proj{proj}.curr{i}{4};
-    if ~isempty(m.proj{proj}.prm{i})
-        dtaPrm = m.proj{proj}.prm{i}{4};
-    else
-        dtaPrm = [];
-    end
 
-    [m,opt] = resetMol(i, m);
+    [p,opt] = resetMol(i, '', p);
 
-    m = plotSubImg(i, m, []);
+    % get dark coordinates
+    p = plotSubImg(i, p, []);
 
-    isBgCorr = ~isempty(m.proj{proj}.intensities_bgCorr) && ...
-        sum(~prod(prod(double(~isnan(m.proj{proj}.intensities_bgCorr(:, ...
-        ((i-1)*nChan+1):i*nChan,:))),3),2),1)~= ...
-        size(m.proj{proj}.intensities_bgCorr,1);
-
-    if ~isBgCorr
-        opt = 'ttBg';
+    % correct intensities
+    [p,opt2] = updateIntensities(opt,i,p);
+    
+    % get gamma factors
+    if strcmp(opt2, 'gamma') || strcmp(opt2, 'debleach') || ...
+        strcmp(opt2, 'denoise') || strcmp(opt2, 'corr') || ...
+        strcmp(opt2, 'ttBg') || strcmp(opt2, 'ttPr')
+            p = updateGammaFactor(h_fig,i,p);
     end
-
-    if strcmp(opt, 'ttBg') || strcmp(opt, 'ttPr')
-        m = bgCorr(i, m);
-    end
-    if strcmp(opt, 'corr') || strcmp(opt, 'ttBg') || ...
-            strcmp(opt, 'ttPr')
-        m = crossCorr(i, m);
-    end
-    if strcmp(opt, 'denoise') || strcmp(opt, 'corr') || ...
-            strcmp(opt, 'ttBg') || strcmp(opt, 'ttPr')
-        m = denoiseTraces(i, m);
-    end
-    if strcmp(opt, 'debleach') || strcmp(opt, 'denoise') || ...
-            strcmp(opt, 'corr') || strcmp(opt, 'ttBg') || ...
-            strcmp(opt, 'ttPr')
-        m = calcCutoff(i, m);
-    end
-    m.proj{proj}.curr{i} = m.proj{proj}.prm{i};
-    m.proj{proj}.prm{i}{4} = dtaPrm;
-    m.proj{proj}.curr{i}{4} = dtaCurr;
 
     % loading bar update-----------------------------------
     err = loading_bar('update', h_fig);
@@ -157,7 +131,7 @@ for i = 1:nMol
 end
 loading_bar('close', h_fig);
 
-h.param.ttPr = m;
+h.param.ttPr = p;
 guidata(h_fig,h);
     
 end
@@ -176,7 +150,7 @@ proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
 nFRET = size(p.proj{proj}.FRET,1);
-nS = numel(p.proj{proj}.S);
+nS = size(p.proj{proj}.S,1);
 clr = p.proj{proj}.colours;
 perSec = p.proj{proj}.fix{2}(4);
 perPix = p.proj{proj}.fix{2}(5);
@@ -403,8 +377,10 @@ for i = 1:nMol
         end
 
         I = intensities(incl,(nChan*(i-1)+1):nChan*i,:);
-        gamma = p.proj{proj}.curr{i}{5}{3};
+        gamma = p.proj{proj}.curr{i}{6}{1}(1,:);
+        beta = p.proj{proj}.curr{i}{6}{1}(2,:);
         fret = calcFRET(nChan, nExc, exc, chanExc, FRET, I, gamma);
+        s = calcS(exc, chanExc, S, FRET, I, gamma, beta);
         for n = 1:nFRET
             ind = ind + 1;
             FRET_tr = fret(:,n);
@@ -424,12 +400,7 @@ for i = 1:nMol
         end
         for n = 1:nS
             ind = ind + 1;
-            [o,l_s,o] = find(exc==chanExc(S(n)));
-            Inum = sum(intensities(incl, ...
-                (nChan*(i-1)+1):nChan*i,l_s),2);
-            Iden = sum(sum(intensities(incl, ...
-                (nChan*(i-1)+1):nChan*i,:),2),3);
-            S_tr = Inum./Iden;
+            S_tr = s(:,n);
             S_tr(S_tr == Inf) = 1000000; % prevent for Inf
             S_tr(S_tr == -Inf) = -1000000; % prevent for Inf
 
@@ -2020,8 +1991,7 @@ drawMask_slct(h_fig);
 % RB 2017-12-15: implement FRET-S-histograms in plot2
 if plot2 <= nChan*nExc+nFRET+nS
     bar(h.tm.axes_ovrAll_2, dat2.iv{plot2}, dat2.hist{plot2},'facecolor',...
-        dat1.color{plot2},'edgecolor', ...
-    dat1.color{plot2});
+        dat1.color{plot2},'edgecolor', dat1.color{plot2});
 
     xlabel(h.tm.axes_ovrAll_2, dat2.xlabel{plot2});
     ylabel(h.tm.axes_ovrAll_2, dat2.ylabel{plot2}); % RB 2018-01-04:
@@ -3154,17 +3124,28 @@ saveNclose = questdlg(['Do you want to export the traces to ' ...
 
 if strcmp(saveNclose, 'Yes')
     h = guidata(h_fig);
-    h.param.ttPr.proj{h.param.ttPr.curr_proj}.coord_incl = ...
-        h.tm.molValid;
-    h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTag = ...
-        h.tm.molTag; % added by FS, 24.4.2018
-    h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTagNames = ...
-        h.tm.molTagNames; % added by FS, 24.4.2018
+    p = h.param.ttPr;
+    proj = p.curr_proj;
+    
+    % added by MH, 13.1.2020: reset ES histograms
+    if ~isequal(p.proj{proj}.coord_incl,h.tm.molValid) || ...
+            ~isequal(p.proj{proj}.molTag,h.tm.molTag) || ...
+            ~isequal(p.proj{proj}.molTagNames,h.tm.molTagNames)
+        for i = 1:size(p.proj{proj}.ES,2)
+            if ~(numel(p.proj{proj}.ES{i})==1 && isnan(p.proj{proj}.ES{i}))
+                p.proj{proj}.ES{i} = [];
+            end
+        end
+    end
+    
+    p.proj{proj}.coord_incl = h.tm.molValid;
+    p.proj{proj}.molTag = h.tm.molTag; % added by FS, 24.4.2018
+    p.proj{proj}.molTagNames = h.tm.molTagNames; % added by FS, 24.4.2018
 
     % added by MH, 24.4.2019
-    h.param.ttPr.proj{h.param.ttPr.curr_proj}.molTagClr = ...
-        h.tm.molTagClr;
-
+    p.proj{proj}.molTagClr = h.tm.molTagClr;
+    
+    h.param.ttPr = p;
     h.tm.ud = true;
     guidata(h_fig,h);
     
@@ -4513,7 +4494,7 @@ proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
 nFRET = size(p.proj{proj}.FRET,1);
-nS = numel(p.proj{proj}.S);
+nS = size(p.proj{proj}.S,1);
 
 dat3 = get(h.tm.axes_histSort,'userdata');
 data = get(h.tm.popupmenu_selectData,'value');
@@ -4601,7 +4582,7 @@ nExc = numel(exc);
 FRET = p.proj{proj}.FRET;
 nFRET = size(FRET,1);
 S = p.proj{proj}.S;
-nS = numel(S);
+nS = size(S,1);
 
 % get stored data
 dat1 = get(h.tm.axes_ovrAll_1,'userdata');

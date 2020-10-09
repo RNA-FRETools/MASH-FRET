@@ -31,6 +31,7 @@ fact = 5;
 limMov = [0,9999];
 lim = [0,10000];
 gray = [0.93,0.93,0.93];
+defclr = [0.94, 0.94, 0.94];
 maxframe = 99999;
 wpan0 = 106;
 ylbl0 = 'intensity(counts /pix)';
@@ -117,7 +118,8 @@ x = x+wbut0+p.mg/fact;
 h.pushbutton_VP_freeMem = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight',...
     'bold','position',[x,y,wbut1,hedit0],'string',str1,'callback',...
-    {@pushbutton_VP_freeMem_Callback,h_fig},'tooltipstring',ttstr1);
+    {@pushbutton_VP_freeMem_Callback,h_fig},'tooltipstring',ttstr1,...
+    'userdata',defclr);
 
 x = posaxes(1)+posaxes(3)-wbut2;
 

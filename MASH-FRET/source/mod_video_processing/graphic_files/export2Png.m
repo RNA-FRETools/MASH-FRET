@@ -25,7 +25,7 @@ if isMov
 else
     [dat,ok] = getFrames([h.movie.path h.movie.file], startFrame, ...
         {h.movie.speCursor, [h.movie.pixelX h.movie.pixelY], ...
-        h.movie.framesTot}, h_fig);
+        h.movie.framesTot}, h_fig, true);
     if ~ok
         return;
     end

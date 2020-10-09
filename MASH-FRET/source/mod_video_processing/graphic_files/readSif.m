@@ -1,4 +1,4 @@
-function [data,ok] = readSif(fullFname, n, fDat, h_fig)
+function [data,ok] = readSif(fullFname, n, fDat, h_fig, useMov)
 % Read data from bits in a *.sif file. Returns useful movie parameters and
 % the image data of the frame specified by the input frame number.
 %
@@ -17,6 +17,10 @@ if ~isempty(h_fig)
             isMov = 2; % the movie variable exist and contain the video data
         end
     end
+end
+
+if ~useMov
+    isMov = 0;
 end
 
 % initializes potentially undefined video data

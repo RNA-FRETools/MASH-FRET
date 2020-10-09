@@ -44,21 +44,20 @@ h_cb = 20;
 w_short = 30; w_med = 70; w_big = 90; w_full = 230;
 
 h_pan_discr = 10 + h_cb + h_edit + 3*mg;
-h_pan_gamma = 10 + h_cb + h_but + 3*mg;
+h_pan_fact = 10 + 2*h_cb + 2*h_but + 5*mg;
 h_pan_int = 10 + 5*h_edit + h_pop + h_txt + 8*mg;
 h_pan_mov = 10 + h_cb + h_but + 3*mg;
 h_pan_coord = 10 + 2*h_but + 2*h_edit + 5*mg;
 
 w_pan = w_full + 2*mg;
-hFig = h_pan_discr + h_pan_gamma + h_pan_int + h_pan_mov + h_pan_coord + ...
-    h_but + 7*mg;
-wFig = w_pan + 2*mg;
+hFig = h_pan_int + h_pan_mov + h_pan_coord + h_but + 5*mg;
+wFig = 2*w_pan + 3*mg;
 
 pos_0 = get(0, 'ScreenSize');
 xFig = pos_0(1) + (pos_0(3) - wFig)/2;
 yFig = pos_0(2) + (pos_0(4) - hFig)/2;
 if hFig > pos_0(4)
-    yFig = pos_0(4) - 30;
+    yFig = yFig - (hFig-pos_0(4));
 end
 
 h = guidata(h_fig);
@@ -100,38 +99,34 @@ if ~(isfield(h, 'figure_trImpOpt') && ishandle(h.figure_trImpOpt))
     yNext = yNext + h_but + mg;
     xNext = mg;
 
-    h.trImpOpt.uipanel_discr = uipanel('Title', 'State trajectories', ...
-        'Units', 'pixels', 'BackgroundColor', bgCol, 'FontWeight', 'bold', ...
-        'Position', [xNext yNext w_pan h_pan_discr]);
-    
-    yNext = yNext + h_pan_discr + mg;
-    xNext = mg;
-    
-    h.trImpOpt.uipanel_gamma = uipanel('Title', 'Gamma factors', ...
-        'Units', 'pixels', 'BackgroundColor', bgCol, 'FontWeight', 'bold', ...
-        'Position', [xNext yNext w_pan h_pan_gamma]);
-    
-    yNext = yNext + h_pan_gamma + mg;
-    xNext = mg;
-
     h.trImpOpt.uipanel_ITT = uipanel('Title', 'Intensity-time traces', ...
         'Units', 'pixels', 'BackgroundColor', bgCol, 'FontWeight', ...
         'bold', 'Position', [xNext yNext w_pan h_pan_int]);
     
     yNext = yNext + h_pan_int + mg;
-    xNext = mg;
     
     h.trImpOpt.uipanel_mov = uipanel('Title', 'Single moelcule video', ...
         'Units', 'pixels', 'BackgroundColor', bgCol, 'FontWeight', 'bold', ...
         'Position', [xNext yNext w_pan h_pan_mov]);
      
     yNext = yNext + h_pan_mov + mg;
-    xNext = mg;
     
     h.trImpOpt.uipanel_coord = uipanel('Title', 'Molecule coordinates', ...
         'Units', 'pixels', 'BackgroundColor', bgCol, 'FontWeight', ...
         'bold', 'Position', [xNext yNext w_pan h_pan_coord]);
-
+    
+    xNext = xNext + w_pan + mg;
+    yNext = hFig - mg - h_pan_fact - mg - h_pan_discr;
+    
+    h.trImpOpt.uipanel_discr = uipanel('Title', 'State trajectories', ...
+        'Units', 'pixels', 'BackgroundColor', bgCol, 'FontWeight', 'bold', ...
+        'Position', [xNext yNext w_pan h_pan_discr]);
+    
+    yNext = yNext + h_pan_discr + mg;
+    
+    h.trImpOpt.uipanel_factors = uipanel('Title', 'Correction factors', ...
+        'Units', 'pixels', 'BackgroundColor', bgCol, 'FontWeight', 'bold', ...
+        'Position', [xNext yNext w_pan h_pan_fact]);
    
     %% Coordinates panel
     
@@ -464,28 +459,66 @@ if ~(isfield(h, 'figure_trImpOpt') && ishandle(h.figure_trImpOpt))
         'Position', [xNext yNext w_full h_txt], 'FontAngle', 'italic');
     
     
-    %% Gamma factors panel
+    %% Factors panel
     
     if p{6}{1}
         enbl_gamfile = 'on';
     else
         enbl_gamfile = 'off';
     end
-    
-    str_file = '';
+    if p{6}{4}
+        enbl_betfile = 'on';
+    else
+        enbl_betfile = 'off';
+    end
+    str_gamfile = '';
     if ~isempty(p{6}{3})
         fname_gam = p{6}{3};
         for i = 1:numel(fname_gam)
-            str_file = cat(2,str_file,fname_gam{i},'; ');
+            str_gamfile = cat(2,str_gamfile,fname_gam{i},'; ');
         end
-        str_file = str_file(1:end-2);
+        str_gamfile = str_gamfile(1:end-2);
+    end
+    str_betfile = '';
+    if ~isempty(p{6}{6})
+        fname_bet = p{6}{6};
+        for i = 1:numel(fname_bet)
+            str_betfile = cat(2,str_betfile,fname_bet{i},'; ');
+        end
+        str_betfile = str_betfile(1:end-2);
     end
     
     yNext = mg;
     xNext = mg;
+    
+    h.trImpOpt.pushbutton_impBetFile = uicontrol('Style', ...
+        'pushbutton', 'Parent', h.trImpOpt.uipanel_factors, ...
+        'String', '...', 'Units', 'pixels', 'BackgroundColor', bgCol, ...
+        'Position', [xNext yNext w_but_short h_but], 'Enable', ...
+        enbl_betfile, 'Callback', {@pushbutton_impBetFile_Callback, ...
+        h_fig});
+
+    xNext = xNext + w_but_short + mg;
+
+    h.trImpOpt.text_fnameBet = uicontrol('Style', 'text', 'Parent', ...
+        h.trImpOpt.uipanel_factors, 'String', str_betfile, 'Units', ...
+        'pixels', 'BackgroundColor', [1 1 1], 'ForegroundColor', ...
+        [0 0 1], 'HorizontalAlignment', 'left', 'Enable', enbl_betfile, ...
+        'Position', [xNext yNext w_full-mg-w_but_short h_txt]);
+    
+    yNext = yNext + h_but + mg;
+    xNext = mg;
+    
+    h.trImpOpt.checkbox_impBet = uicontrol('Style', 'checkbox', ...
+        'Parent', h.trImpOpt.uipanel_factors, 'String', ...
+        'Beta factors file', 'Units', 'pixels', 'BackgroundColor', bgCol, ...
+        'Position', [xNext yNext w_full h_cb], 'Callback', ...
+        {@checkbox_impBet_Callback, h_fig}, 'Value', p{6}{1});
+    
+    yNext = yNext + h_cb + mg;
 
     h.trImpOpt.pushbutton_impGamFile = uicontrol('Style', ...
-        'pushbutton', 'Parent', h.trImpOpt.uipanel_gamma, ...
+        'pushbutton', 'Parent', h.trImpOpt.uipanel_factors, ...
         'String', '...', 'Units', 'pixels', 'BackgroundColor', bgCol, ...
         'Position', [xNext yNext w_but_short h_but], 'Enable', ...
         enbl_gamfile, 'Callback', {@pushbutton_impGamFile_Callback, ...
@@ -494,7 +527,7 @@ if ~(isfield(h, 'figure_trImpOpt') && ishandle(h.figure_trImpOpt))
     xNext = xNext + w_but_short + mg;
 
     h.trImpOpt.text_fnameGam = uicontrol('Style', 'text', 'Parent', ...
-        h.trImpOpt.uipanel_gamma, 'String', str_file, 'Units', ...
+        h.trImpOpt.uipanel_factors, 'String', str_gamfile, 'Units', ...
         'pixels', 'BackgroundColor', [1 1 1], 'ForegroundColor', ...
         [0 0 1], 'HorizontalAlignment', 'left', 'Enable', enbl_gamfile, ...
         'Position', [xNext yNext w_full-mg-w_but_short h_txt]);
@@ -503,7 +536,7 @@ if ~(isfield(h, 'figure_trImpOpt') && ishandle(h.figure_trImpOpt))
     xNext = mg;
     
     h.trImpOpt.checkbox_impGam = uicontrol('Style', 'checkbox', ...
-        'Parent', h.trImpOpt.uipanel_gamma, 'String', ...
+        'Parent', h.trImpOpt.uipanel_factors, 'String', ...
         'Gamma factors file', 'Units', 'pixels', 'BackgroundColor', bgCol, ...
         'Position', [xNext yNext w_full h_cb], 'Callback', ...
         {@checkbox_impGam_Callback, h_fig}, 'Value', p{6}{1});
@@ -696,6 +729,50 @@ switch checked
     case 0
         set([h.trImpOpt.text_fnameMov h.trImpOpt.pushbutton_impMovFile],...
             'Enable', 'off');
+end
+
+
+function pushbutton_impBetFile_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
+defPth = h.folderRoot;
+[fname,pname,o] = uigetfile({'*.bet', 'Beta factors (*.bet)'; '*.*', ...
+    'All files(*.*)'},'Select gamma factor file',defPth,'MultiSelect','on');
+if ~isempty(fname) && ~isempty(pname) && sum(pname)
+    if ~iscell(fname)
+        fname = {fname};
+    end
+    m = guidata(h.figure_trImpOpt);
+    m{6}{5} = pname;
+    m{6}{6} = fname;
+    str_file = '';
+    for i = 1:numel(fname)
+        str_file = cat(2,str_file,fname{i},'; ');
+    end
+    str_file = str_file(1:end-2);
+    set(h.trImpOpt.text_fnameBet, 'String', str_file);
+    guidata(h.figure_trImpOpt, m);
+end
+
+
+function checkbox_impBet_Callback(obj, evd, h_fig)
+checked = get(obj, 'Value');
+h = guidata(h_fig);
+m = guidata(h.figure_trImpOpt);
+m{6}{4} = checked;
+guidata(h.figure_trImpOpt, m);
+
+switch checked
+    case 1
+        set([h.trImpOpt.text_fnameBet h.trImpOpt.pushbutton_impBetFile],...
+            'Enable', 'on');
+    case 0
+        set([h.trImpOpt.text_fnameBet h.trImpOpt.pushbutton_impBetFile],...
+            'Enable', 'off');
+        
+        % added by MH, 5.4.2019
+        m{6}{5} = [];
+        m{6}{6} = [];
+        guidata(h.figure_trImpOpt, m);
 end
 
 
