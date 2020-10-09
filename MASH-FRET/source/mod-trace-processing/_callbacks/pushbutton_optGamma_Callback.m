@@ -10,15 +10,19 @@ p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
-    method = p.proj{proj}.curr{mol}{5}{4}(1);
+    fret = p.proj{proj}.fix{3}(8);
+    method = p.proj{proj}.curr{mol}{6}{2}(fret);
     
     % modified by MH, 3.4.2019
 %     gammaOpt(h_fig);
     switch method
         case 0 % manual: load gamma from files
-            pushbutton_loadGamma_Callback(0,[],h_fig);
+            pushbutton_loadFactors_Callback(0,[],h_fig);
             
         case 1 % photobleaching-based: photo-bleaching otpions
             gammaOpt(h_fig);
+        
+        case 2 % photobleaching-based: photo-bleaching otpions
+            ESlinRegOpt(h_fig);
     end
 end

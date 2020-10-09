@@ -8,7 +8,7 @@ addpath(genpath(codePath));
 mtlbDat = ver;
 for i = 1:size(mtlbDat,2)
     if strcmp(mtlbDat(1,i).Name, 'MATLAB')
-        break;
+        break
     end
 end
 

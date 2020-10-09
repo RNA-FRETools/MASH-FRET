@@ -61,7 +61,7 @@ if (stopFrame<=frameLength && startFrame>=1)
         if isMov
             imgNext = h.movie.movie(:,:,i);
         else
-            [data,ok] = getFrames(fullname, i, param.extra, h_fig);
+            [data,ok] = getFrames(fullname, i, param.extra, h_fig, false);
             if ~ok
                 return;
             end
