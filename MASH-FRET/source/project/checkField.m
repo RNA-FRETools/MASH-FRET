@@ -1,23 +1,11 @@
 function s = checkField(s_in, fname, h_fig)
 
-% Last update by MH, 7.1.2020
-% >> correct frame rate for dwell-time calculations when using ALEX data
-%
-% update by MH, 25.4.2019
-% >> correct random generation of tag colors
-% >> fetch default tag names and colors in interface's default parameters
-%    (default_param.ini)
-%
-% update by MH, 24.4.2019
-% >> modify molecule tag names by removing label 'unlabelled'
-% >> modify molecule tag structure to allow multiple tags per molecule, by 
-%    using the first dimension for molecule idexes and the second dimension 
-%    for label indexes 
-% >> add tag's default colors to project
-% >> adjust tags from older projects to new format
-%
-% update: by MH, 3.4.2019
-% >> if labels are empty (ASCII import), set default labels
+%%
+% update by MH, 11.1.2020: add "ES" field
+% update by MH, 7.1.2020: correct frame rate for dwell-time calculations when using ALEX data
+% update by MH, 25.4.2019: (1) correct random generation of tag colors, (2) fetch default tag names and colors in interface's default parameters (default_param.ini)
+% update by MH, 24.4.2019: (1) modify molecule tag names by removing label 'unlabelled', (2) modify molecule tag structure to allow multiple tags per molecule, by using the first dimension for molecule idexes and the second dimension for label indexes, (3) add tag's default colors to project, (4) adjust tags from older projects to new format
+% update by MH, 3.4.2019: if labels are empty (ASCII import), set default labels
 %%
 
 s = s_in;
@@ -82,13 +70,19 @@ nMol = size(s.intensities,2)/nChan;
 s.FRET = adjustParam('FRET', [], s_in);
 nFRET = size(s.FRET,1);
 s.S = adjustParam('S', [], s_in);
-nS = numel(s.S);
+nS = size(s.S,1);
 s.intensities_bgCorr = adjustParam('intensities_bgCorr',nan(L,nMol*nChan), ...
     s_in);
 s.intensities_crossCorr = adjustParam('intensities_crossCorr', ...
     nan(L,nMol*nChan), s_in);
 s.intensities_denoise = adjustParam('intensities_denoise', ...
     nan(L,nMol*nChan), s_in);
+if nFRET>0
+    defES = cell(1,nFRET);
+else
+    defES = {};
+end
+s.ES = adjustParam('ES',defES, s_in);
 s.intensities_DTA = adjustParam('intensities_DTA',nan(L,nMol*nChan), s_in);
 s.FRET_DTA = adjustParam('FRET_DTA', nan(L,nMol*nFRET), s_in);
 s.S_DTA = adjustParam('S_DTA', nan(L,nMol*nS), s_in);
@@ -119,8 +113,8 @@ s.molTag = adjustParam('molTag', false(nMol,nTag), s_in);
 %     {'#4298B5','#DD5F32','#92B06A','#ADC4CC','#E19D29'}, s_in);
 s.molTagClr = adjustParam('molTagClr',pMov.defTagClr,s_in);
 
-%% check movie entries
 
+%% check video entries
 % check movie file >> set movie dimensions and reading infos
 if ~isempty(s.movie_file) && exist(s.movie_file, 'file')
     s.is_movie = 1;
@@ -143,7 +137,7 @@ elseif ~isempty(s.movie_file)
             s = [];
             return;
         end
-        [data ok] = getFrames([pname fname], 1, {}, h_fig);
+        [data,ok] = getFrames([pname fname], 1, {}, h_fig, false);
         if ok
             s.movie_file = [pname fname];
             s.is_movie = 1;
@@ -167,7 +161,7 @@ end
 
 % set movie dimensions if movie exists >> set movie reading infos
 if (isempty(s.movie_dim) || size(s.movie_dim, 2) ~= 2) && s.is_movie
-    [data ok] = getFrames(s.movie_file, 1, {}, h_fig);
+    [data,ok] = getFrames(s.movie_file, 1, {}, h_fig, false);
     if ~ok
         return;
     end
@@ -177,13 +171,14 @@ end
 
 % set movie reading infos if movie exists
 if (isempty(s.movie_dat) || size(s.movie_dat, 2) ~= 3) && s.is_movie
-    [data ok] = getFrames(s.movie_file, 1, {}, h_fig);
+    [data,ok] = getFrames(s.movie_file, 1, {}, h_fig, false);
     if ~ok
         return;
     end
     s.movie_dat = {data.fCurs [data.pixelX data.pixelY] data.frameLen};
 end
 
+%% check emitter label entries
 if isempty(s.labels) || size(s.labels,2) < s.nb_channel
     h = guidata(h_fig);
     label_def = h.param.movPr.labels_def;
@@ -199,6 +194,7 @@ if isempty(s.labels) || size(s.labels,2) < s.nb_channel
     end
 end
 
+%% check emitter specificities
 if isempty(s.chanExc) || size(s.chanExc,2) < s.nb_channel
     s.chanExc = zeros(1,s.nb_channel);
     for c = 1:nChan
@@ -215,6 +211,7 @@ if isempty(s.chanExc) || size(s.chanExc,2) < s.nb_channel
     end
 end
 
+%% check experimental parameters
 if isempty(s.exp_parameters) || size(s.exp_parameters,2) ~= 3
     s.exp_parameters = {'Project title' '' ''
                         'Molecule name' '' ''
@@ -229,7 +226,7 @@ if isempty(s.exp_parameters) || size(s.exp_parameters,2) ~= 3
 end
 
 
-%% coordinates
+%% check coordinates
 if s.is_coord
     if size(s.coord_incl,2) < size(s.coord,1)
         s.coord_incl((size(s.coord_incl,2)+1):size(s.coord,1)) = ...
@@ -242,27 +239,29 @@ if isempty(s.coord_incl)
 end
 
 
-%% check intensity-time traces processing entries
-
+%% check FRET and stoichiometry entries
 if size(s.FRET,2) > 2
     s.FRET = s.FRET(:,1:2);
 end
-if size(s.S,2) > 1
-    don_exc = s.S(:,1)';
-    exc = s.excitations(don_exc);
-    [o,don_chan,o] = find(s.chanExc==exc);
-    s.S = don_chan';
+if nS>0 && size(s.S,2)~=2
+    [S,s_incl] = getCorrectSid(s.S,s.FRET,s.excitations,s.chanExc);
+    s.S = S;
+    nS = size(s.S,1);
+    if ~isempty(s.S_DTA)
+        s.S_DTA = s.S_DTA(:,repmat(s_incl,[1,nMol]));
+    end
 end
 
+%% check colour entries
 if isempty(s.colours) || size(s.colours,2) ~=3
     s.colours = getDefTrClr(nExc,s.excitations,nChan,nFRET,nS);
 end
 
+%% remove processing parameters
 if isfield(s, 'prm')
     s.prmTT = s.prm;
     s = rmfield(s, 'prm');
 end
-
 if isfield(s, 'exp')
     s.expTT = s.exp;
     s = rmfield(s, 'exp');
@@ -270,7 +269,6 @@ end
 
 
 %% check dwell-times entries
-
 if ~s.dt_ascii;
     s.dt_pname = [];
     s.dt_fname = [];
@@ -323,7 +321,7 @@ for m = 1:nMol
 end
 
 % added by MH, 24.4.2019
-%% check molecule label entries
+%% check molecule tag entries
 oldTag = cell2mat(strfind(s.molTagNames,'unlabeled'));
 if ~isempty(oldTag)
     newMolTag = false(nMol,numel(s.molTagNames));

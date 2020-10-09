@@ -4,7 +4,10 @@ function ok = setParam(h_fig)
 
 % Requires external function: adjustParam
 
-%% Last update by MH, 25.4.2019
+%% Last update by MH, 16.1.2020
+% >> add TP import parameter for beta factor file import
+%
+% update by MH, 25.4.2019
 % >> set default tag names and colors in Video processing interface's 
 %    defaults
 %
@@ -308,7 +311,7 @@ end
 p.itg_expMolPrm = adjustParam('itg_expMolPrm', p_exp, p_input);
 p.itg_expFRET = adjustParam('itg_expFRET', [], p_input);
 p.itg_expS = adjustParam('itg_expS', [], p_input);
-if size(p.itg_expS,2)>1
+if ~isempty(p.itg_expS) && size(p.itg_expS,2)~=2
     p.itg_expS = [];
 end
 
@@ -365,7 +368,7 @@ p_imp = {{[1 0 0 1 1 0 nChan nExc 0 5] wl} ...
     {0 '' {[1 2] 1} 256} ...
     [0 1] ...
     defprm ...
-    {0 '' {}}}; % add gamma import
+    {0 '' {} 0 '' {}}}; % add gamma import
 p.impPrm = adjustParam('impPrm', p_imp, p_input);
 p.impFRET = adjustParam('impFRET', [], p_input);
 p.impS = adjustParam('impS', [], p_input);

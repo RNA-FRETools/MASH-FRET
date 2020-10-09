@@ -220,7 +220,7 @@ if boba
         for k = 1:size(param_opt,1)
             mu = mu + param_opt{k}{1}/size(param_opt,1);
         end
-        [mu,clust] = get_kmean(mu,tol,T,TDP_spl,x,y,1);
+        [mu,clust] = get_kmean(mu,tol,T,TDP_spl,x,x,1);
         
         % save inferred model for original TDP
         origin = cell(1,Jmax);

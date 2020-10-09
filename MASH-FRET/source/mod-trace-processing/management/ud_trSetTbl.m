@@ -20,27 +20,24 @@ if ~isempty(p.proj)
     exc = projPrm.excitations;
 
     p.defProjPrm.mol = p.proj{proj}.curr{mol};
+    p.defProjPrm.general{4} = p.proj{proj}.fix{4};
 
-    % cancelled by MH, 29.3.2019
-%     % reorder the cross talk coefficients as the wavelength
-%     [o,id] = sort(p.proj{proj}.excitations,'ascend'); % chronological index sorted as wl
-
-    mol_prev = p.defProjPrm.mol{5};
+    % modified by MH, 13.1.2020
+%     mol_prev = p.defProjPrm.mol{5};
+    de_bywl = p.defProjPrm.general{4}{2};
     
-    % modified by MH, 29.3.2019
-%     for c = 1:nC
-%         p.defProjPrm.mol{5}{1}(:,c) = mol_prev{1}(id,c);
-%         p.defProjPrm.mol{5}{2}(:,c) = mol_prev{2}(id,c);
-%     end
-    for c = 1:nC
-        if sum(exc==chanExc(c)) % emitter-specific illumination defined and 
-                                % present in used ALEX scheme (DE 
-                                % calculation possible)           
-            % reorder the direct excitation coefficients according to laser
-            % wavelength
-            exc_but_c = exc(exc~=chanExc(c));
-            [o,id] = sort(exc_but_c,'ascend'); % chronological index sorted as wl
-            p.defProjPrm.mol{5}{2}(:,c) = mol_prev{2}(id,c);
+    if size(de_bywl,1)>0
+        % reorder direct excitation coefficients according to laser wavelength
+        % (in case project parameters were changed)
+        for c = 1:nC
+            if sum(exc==chanExc(c)) % emitter-specific illumination defined and 
+                exc_but_c = exc(exc~=chanExc(c));
+                [o,id] = sort(exc_but_c,'ascend'); % chronological index sorted as wl
+
+                % modified by MH, 13.1.2020
+    %             p.defProjPrm.mol{5}{2}(:,c) = mol_prev{2}(id,c);
+                p.defProjPrm.general{4}{2}(:,c) = de_bywl(id,c);
+            end
         end
     end
     
