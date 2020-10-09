@@ -34,7 +34,7 @@ Gaussian noise (equation 04):
 	and (equation 05):
 	\mu_{\textup{ic}} = \mu_{\textup{ec}} \times K
 	and (equation 06):
-	\sigma_{\textup{ic}} = \sqrt{\mu_{\textup{ic}} + ( K × \sigma_{\textup{d}} )^{2} + \sigma_{\textup{q}}^{2}}
+	\sigma_{\textup{ic}} = \sqrt{\mu_{\textup{ic}} + ( K Ã— \sigma_{\textup{d}} )^{2} + \sigma_{\textup{q}}^{2}}
 User-defined noise (equation 07):
 	\mu_{\textup{ec}} = \mu_{\textup{pc}} \times \eta
 	and (equation 08):
@@ -76,9 +76,9 @@ bt coefficient (equation 02):
 DE coefficient (equation 03):
 	dE_{em0}^{ex\neq ex0} = {}\frac{I_{em0}^{ex}^{*}}{I_{em0}^{ex0}^{*}}
 Bleedthrough correction (equation 04):
-	I_{em0}^{ex}(n,t)^{**} = I_{em0}^{ex}(n,t)^{*} - \sum_{em\not\equiv em0}\left [ bt_{em,em0} × I_{em}^{ex}(n,t)^{*} \right ]
+	I_{em0}^{ex}(n,t)^{**} = I_{em0}^{ex}(n,t)^{*} - \sum_{em\not\equiv em0}\left [ bt_{em,em0} Ã— I_{em}^{ex}(n,t)^{*} \right ]
 Direct excitation correction (equation 05):
-	I_{em0}^{ex\neq ex0}(n,t)^{***} = I_{em0}^{ex\neq ex0}(n,t)^{**} - dE_{em0}^{ex\neq ex0} × I_{em0}^{ex0}(n,t)^{**}
+	I_{em0}^{ex\neq ex0}(n,t)^{***} = I_{em0}^{ex\neq ex0}(n,t)^{**} - dE_{em0}^{ex\neq ex0} Ã— I_{em0}^{ex0}(n,t)^{**}
 Signal-to-noise ratio (equation 06):
 	SNR_{em}^{ex}(n) = \frac{\mu \left [ I_{em}^{ex}(n)^{***} \right ]}{\sigma \left [ I_{em}^{ex}(n)^{***} \right ] }
 Gamma factor (equation 07):
