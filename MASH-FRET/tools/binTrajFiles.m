@@ -11,14 +11,8 @@ function binTrajFiles(expT, varargin)
 % fileheaders: cellstring file headers that specify data to export
 % pname_out: destination directory
 
-% Last update: 10th of April 2019 by Mélodie Hadzic
-% --> adapt code to allow use without giving specific headers in input and
-%     to allow use with on sinlge input argument (the new time bin)
-% --> correct code for alex data (numbe of different laser was calculated
-%     from the number of time columns divided by 2)
-%
-% update: 18th of February 2019 by Mélodie Hadzic
-% --> update help section
+% Last update, 10.4.2019 by MH: (1) adapt code to allow use without giving specific headers in input and to allow use with on sinlge input argument (the new time bin) (2) correct code for alex data (numbe of different laser was calculated from the number of time columns divided by 2)
+% update: 18.2.2019 by MH: update help section
 
 % cancelled by MH, 10.4.2019
 % defaultHeaders = {'timeat638nm','I_1at638nm','I_2at638nm','I_3at638nm',...
@@ -29,6 +23,7 @@ function binTrajFiles(expT, varargin)
 % collect source directory
 if ~isempty(varargin) && numel(varargin)>=1
     pname = varargin{1};
+    pname_out = pname;
     if isempty(pname) || ~sum(pname)
         disp('second input argument must contain the source directory');
         disp('for help type: help binTrajFiles');
@@ -46,17 +41,17 @@ if ~isempty(varargin) && numel(varargin)>=1
         end
         if numel(varargin)>=3
             pname_out = varargin{3};
-            if ~strcmp(pname(end),filesep)
-                pname_out = cat(2,pname_out,filesep);
-            end
-        else
-            pname_out = pname;
         end
     else
         headers = {};
     end
+    if ~strcmp(pname(end),filesep)
+        pname_out = cat(2,pname_out,filesep);
+    end
 else
     pname = uigetdir();
+    pname_out = cat(2,pname,filesep);
+    headers = {};
 end
 if isempty(pname) || ~sum(pname)
     return
@@ -64,6 +59,8 @@ end
 cd(pname)
 
 try
+    t_tic = tic;
+    
     % correct source directory
     if ~strcmp(pname(end),filesep)
         pname = [pname,filesep];
@@ -85,10 +82,11 @@ try
     F = size(fList,1);
 
     % print file names in command window
-    fprintf(cat(2,'\nprocess ',num2str(F),' files:\n'));
+    fprintf(cat(2,'\n',num2str(F),' files selected:\n'));
     for ff = 1:F
          fprintf(cat(2,'\t',fList(ff,1).name,'\n'));
     end
+    fprintf('\nprocessing files...\n');
 
     % create output folder
     out_pname = cat(2,pname_out,'binned ',date,filesep);
@@ -131,14 +129,22 @@ try
         exc = unique(exc);
 
         % localizes time data column from header
-        isTime = cellfun('isempty',strfind(head,'timeat'));
-        [o,timeIdref,o] = find(~isTime);
+        isTime = ~cellfun('isempty',strfind(head,'timeat'));
+        isFrame = ~cellfun('isempty',strfind(head,'frameat'));
+        [o,timeCols,o] = find(isTime);
+        [o,frameCols,o] = find(isFrame);
         
         % import data and bin according to time
         data = importdata(cat(2,pname,fList(ff,1).name));
         data = data.data;
         if exist('binTime','var')
-            data = binData(data, binTime, timeIdref, exc);
+            bin_1 = binTime*numel(exc); % multiple time bin for ALEX data
+            bin_0 = data(2,timeCols(1))-data(1,timeCols(1)); % original bin time
+%             data = binData(data, bin_1, bin_0, timeCols, frameCols);
+            data = binData(data, bin_1, bin_0, timeCols, frameCols);
+            if isempty(data)
+                continue
+            end
         end
         
         % order and remove columns
@@ -181,72 +187,8 @@ catch err
         err.stack(1).line);
     return
 end
-
-fprintf('\nprocess completed !\n');
-
-
-function binned = binData(data, bin_1, colTime, exc)
-
-binned = data;
-
-bin_1 = bin_1*numel(exc); % multiple time bin for ALEX data
-bin_0 = data(2,colTime(1))-data(1,colTime(1)); % original bin time
-if bin_0>bin_1
-    fprintf(['\nTime binning failed: exposure time in data is larger ' ...
-        'than the input time binning.\n']);
-    return;
-end
-bin_l = bin_1/bin_0;
-L_0 = size(data,1);
-L_1 = fix(L_0/bin_l);
-
-binned = zeros(L_1,size(data,2));
-l_1 = 1;
-curs = 0;
-while l_1<=L_1
-    % determine l_0 from cursor position
-    l_0 = ceil(curs);
-    
-    % remaining fraction of l_0 to consider for calculation
-    if mod(curs,1)>0
-        rest_0 = 1-mod(curs,1);
-    else
-        rest_0 = 0;
-    end
-    
-    % add remaining fraction of l_0 in current l_1
-    if l_0>0
-        binned(l_1,:) = rest_0*data(l_0,:);
-    end
-    
-    % remaining frames to add to l_1 to complete a bin
-    bin_rest = bin_l-rest_0;
-    
-    % add full l_0 bins to l_1
-    if l_0+fix(bin_rest)<= L_0
-        binned(l_1,:) = binned(l_1,:) + ...
-            sum(data(l_0+1:l_0+fix(bin_rest),:),1);
-    else
-        binned = binned(1:l_1-1,:);
-        return
-    end
-    
-    % add rest l_0 bins to l_1
-    if l_0+fix(bin_rest)+1<= L_0
-        binned(l_1,:) = binned(l_1,:) + ...
-            (bin_rest-fix(bin_rest))*data(l_0+fix(bin_rest)+1,:);
-    else
-        binned = binned(1:l_1-1,:);
-        return
-    end
-    
-    % averaging
-    binned(l_1,:) = binned(l_1,:)/bin_l;
-    
-    % advance cursor in orginial trajectory of one bin and l_1 of one frame
-    curs = curs + bin_l;
-    l_1 = l_1 + 1;
-end
+t_exe = toc(t_tic);
+fprintf('\nprocess completed in %0.1f seconds\n',t_exe);
 
 
 function dataFinal = arrangeColumns(finalHead,originHead,data)

@@ -1,15 +1,26 @@
-function pushbutton_remTraces_Callback(obj, evd, h_fig)
+function pushbutton_remTraces_Callback(obj, evd, h_fig, varargin)
+% pushbutton_remTraces_Callback([],[],h_fig)
+% pushbutton_remTraces_Callback([],[],h_fig,mute)
+%
+% h_fig: handle to main figure
+% mute: (1) to mute user confirmations and action display, (0) otherwise
+
 h = guidata(h_fig);
 p = h.param.ttPr;
 if isempty(p.proj)
     return
+end
+
+mute = h.mute_actions;
+if ~isempty(varargin)
+    mute = mute | varargin{1};
 end
     
 % collect selected projects
 slct = get(h.listbox_traceSet, 'Value');
 
 % build confirmation message box
-if h.mute_actions
+if mute
     del = 'Yes';
 else
     str_proj = ['"' p.proj{slct(1)}.exp_parameters{1,2} '"'];

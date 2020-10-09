@@ -66,7 +66,7 @@ end
 
 if strcmp(n,'all')
     
-    if isMov==0 && ~memAlloc(pixelX*pixelY*(frameLen+1)*4)
+    if (isMov==0 || isMov==1) && ~memAlloc(pixelX*pixelY*(frameLen+1)*4)
         str = cat(2,'Out of memory: MASH is obligated to load the video ',...
             'one frame at a time to function\nThis will slow down all ',...
             'operations requiring video data, including the creation of ',...
@@ -77,7 +77,7 @@ if strcmp(n,'all')
             disp(sprintf(str));
         end
 
-        [data,ok] = readTif(fullFname,1,fDat,h_fig);
+        [data,ok] = readTif(fullFname,1,fDat,h_fig,0);
         frameCur = data.frameCur;
 
     else
@@ -118,14 +118,18 @@ if strcmp(n,'all')
 
             for i = 1:frameLen
                 os = 0;
-                if isfield(info(i,1),'ImageDescription')
+                if isfield(info(i,1),'ImageDescription') && ...
+                        ischar(info(i,1).ImageDescription)
                     strdat = str2num(info(i,1).ImageDescription);
                     if size(strdat,2) > 1
                         os = strdat(2); % negative intensity offset
                     end
                 end
-                h.movie.movie(:,:,i) = double(imread(fullFname,'Index',i,...
-                    'Info',info)) - os;
+                img = double(imread(fullFname,'Index',i,'Info',info)) - os;
+                if size(img,3)>1
+                    img = sum(img,3);
+                end
+                h.movie.movie(:,:,i) = img;
                 
                 if loading_bar('update', h_fig);
                     ok = 0;
@@ -155,6 +159,9 @@ else
         end
 
         frameCur = double(imread(fullFname,'Index',n,'Info',info)) + os;
+        if size(frameCur,3)>1
+            frameCur = sum(frameCur,3);
+        end
         movie = [];
     end
 end

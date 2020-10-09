@@ -65,7 +65,14 @@ switch action
         set(h.zMenu_zoom, 'Checked', 'off');
         
         ud = get(h.axes_TDPplot1,'userdata');
-        delete(ud{1});
+        if ~isempty(ud{1}) && numel(ud{1})==2
+            if ishandle(ud{1}(1))
+                delete(ud{1}(1));
+            end
+            if ishandle(ud{1}(2))
+                delete(ud{1}(2));
+            end
+        end
         
         % reset cluster selection tool
         set(h.tooglebutton_TDPmanStart,'userdata',1);
@@ -78,7 +85,14 @@ switch action
         set(h.zMenu_zoom, 'Checked', 'on');
         
         ud = get(h.axes_TDPplot1,'userdata');
-        delete(ud{1});
+        if ~isempty(ud{1}) && numel(ud{1})==2
+            if ishandle(ud{1}(1))
+                delete(ud{1}(1));
+            end
+            if ishandle(ud{1}(2))
+                delete(ud{1}(2));
+            end
+        end
         
         % reset cluster selection tool
         set(h.tooglebutton_TDPmanStart,'userdata',1);

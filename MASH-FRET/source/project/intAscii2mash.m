@@ -306,10 +306,11 @@ try
             % already-extended discretized FRETs
             if isdFRET
                 old_dFRET = fret_DTA;
-                fret_DTA = NaN(frmPerExc_max,size(old_dFRET,2)+1);
+                fret_DTA = ...
+                    NaN(frmPerExc_max,size(old_dFRET,2)+size(dFRET,2));
                 fret_DTA(1:size(old_dFRET,1),1:size(old_dFRET,2)) = ...
                     old_dFRET;
-                fret_DTA(1:size(dFRET,1),end) = dFRET;
+                fret_DTA(1:size(dFRET,1),end-size(dFRET,2)+1:end) = dFRET;
             end
         end
         
@@ -337,7 +338,7 @@ try
         
         % get exposure time
         if isTime && i == 1
-            exptime = times(2) - times(1);
+            exptime = abs(times(2) - times(1));
         end
         
         % import molecule coordinates from file's header

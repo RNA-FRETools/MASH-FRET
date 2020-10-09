@@ -75,8 +75,8 @@ if isMov
     if L<=1
         set(h.slider_img,'Visible','off');
     else
-        set(h.slider_img, 'SliderStep',[1/L 0.1],'Min',1,'Max',L,'Value',l,...
-            'Visible','on');
+        set(h.slider_img, 'SliderStep',[1/L max(1/L,0.1)],'Min',1,'Max',L,...
+            'Value',l,'Visible','on');
     end
 end
 
