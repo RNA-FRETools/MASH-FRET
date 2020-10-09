@@ -90,7 +90,7 @@ To work with initial state durations, and thus, with time-gapped state sequences
 For more information about sequence re-arrangement, please refer to 
 [Build transition density plot](../workflow.html#build-transition-density-plot) in Transition analysis workflow.
 
-**Note:** *Sequence re-arrangement has an effect on transition densities used in clustering and dwell time histograms used in *
+**Note:** *Sequence re-arrangement has an effect on transition densities used in clustering and dwell time histograms in *
 [State transition rates](panel-state-transition-rates.html).
 
 

@@ -56,8 +56,8 @@ Use this interface to define the data to be sorted and displayed.
 Data available for sorting are listed in menu **(a)** and include:
 * `[E] at [W]nm` for intensity data, with `[E]` the emitter and `[W]` the laser wavelength
 * `FRET [D]>[A]` for FRET data, with `[D]` and `[A]` the donor and acceptor emitters respectively
-* `S [E]` for stoichiometry data 
-* `FRET [D]>[A]-S [E]` for 2D FRET-Stoichiometry data 
+* `S [D]>[A]` for stoichiometry data  associated to the FRET pair where `[D]` and `[A]` are the donor and acceptor emitters respectively
+* `FRET [D]>[A]-S [D]>[A]` for 2D FRET-Stoichiometry data 
 
 Molecule sorting can be performed on full-length data-time traces or state trajectories, but also on different descriptive statistical values.
 The type of data sets can be selected in menu **(b)** and include:
@@ -172,4 +172,4 @@ Included time traces are highlighted with a white background and excluded time t
 Data available for concatenated trace plot are listed in menu **(a)** and include:
 * `[E] at [W]nm` for intensity-time traces, with `[E]` the emitter and `[W]` the laser wavelength
 * `FRET [D]>[A]` for FRET-time traces, with `[D]` and `[A]` the donor and acceptor emitters respectively
-* `S [E]` for stoichiometry-time traces
+* `S [D]>[A]` for stoichiometry data  associated to the FRET pair where `[D]` and `[A]` are the donor and acceptor emitters respectively

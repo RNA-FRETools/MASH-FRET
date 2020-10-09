@@ -41,7 +41,7 @@ By default, the file is named after the selected <u>project file</u> and is appe
 Data types supported in transition density plot files are:
 * `I[i]-[L]`: intensities in detection channel indexed `[i]` upon illumination with laser wavelength `[L]` nm
 * `FRET[D]to[A]`: FRET from donor emitter detected in channel indexed `[D]` to acceptor emitter detected in channel indexed `[A]`
-* `S[Eee]`: stoichiometry of emitter detected in channel labelled `[Eee]`
+* `S[D]to[A]`: stoichiometry associated to donor emitter detected in channel indexed `[D]` and acceptor emitter detected in channel indexed `[A]`
 
 A second extension `_[Ttt]` is added to the data type `[Ddd]` if a particular subgroup of molecules is analyzed, with `[Ttt]` the corresponding molecule tag.
 
