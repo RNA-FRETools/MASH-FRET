@@ -1,4 +1,5 @@
-function edit_thm_nGaussFit_Callback(obj, evd, h)
+function edit_thm_nGaussFit_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.thm;
 if ~isempty(p.proj)
     proj = p.curr_proj;

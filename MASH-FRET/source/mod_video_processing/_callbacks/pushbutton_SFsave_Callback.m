@@ -1,21 +1,21 @@
-function pushbutton_SFsave_Callback(obj, evd, h)
-h = guidata(h.figure_MASH);
+function pushbutton_SFsave_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.movPr;
 
 if ~isempty(h.param.movPr.SFres)
     if p.SF_method > 1
-        updateFields(h.figure_MASH, 'movPr');
-        [coord pname fname] = saveSpots(h.figure_MASH);
+        updateFields(h_fig, 'movPr');
+        [coord pname fname] = saveSpots(h_fig);
         if ~isempty(coord)
             p.coordMol = coord(:,1:2);
             if ~isempty(fname) && sum(fname)
                 p.coordMol_file = [fname '.spots'];
                 updateActPan(['Spots coordinates have been successfully'...
                     ' written to file: ' fname '.spots\nin folder: '...
-                    pname], h.figure_MASH, 'success');
+                    pname], h_fig, 'success');
             else
                 updateActPan('Spots coordinates loaded but not saved', ...
-                    h.figure_MASH, 'process');
+                    h_fig, 'process');
                 p.coordMol_file = [];
                 pname = [];
             end
@@ -30,11 +30,11 @@ if ~isempty(h.param.movPr.SFres)
                 p.coordTrsf_file = p.coordMol_file;
             end
             h.param.movPr = p;
-            guidata(h.figure_MASH, h);
-            updateFields(h.figure_MASH, 'movPr');
+            guidata(h_fig, h);
+            updateFields(h_fig, 'movPr');
         end
     end
 else
-    updateActPan('Start a "spotfinder" procedure first.', h.figure_MASH,...
+    updateActPan('Start a "spotfinder" procedure first.', h_fig,...
         'error');
 end

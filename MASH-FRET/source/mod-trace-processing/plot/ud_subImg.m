@@ -44,8 +44,10 @@ if ~isempty(p)
             set(h.popupmenu_TP_subImg_channel,'value',chan);
         end
         if ~isempty(coord)
-            set(h.edit_TP_subImg_x,'string',num2str(coord(mol,2*chan-1)));
-            set(h.edit_TP_subImg_y,'string',num2str(coord(mol,2*chan)));
+            set(h.edit_TP_subImg_x,'string',num2str(coord(mol,2*chan-1)), ...
+            'backgroundcolor',[1 1 1]);
+            set(h.edit_TP_subImg_y,'string',num2str(coord(mol,2*chan)), ...
+            'backgroundcolor',[1 1 1]);
         else
             set([h.edit_TP_subImg_x h.edit_TP_subImg_y],'string','');
         end

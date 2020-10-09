@@ -11,7 +11,6 @@ function success = saveActPan(actions, h_fig)
 % update: 19th of February 2019 by Mélodie C.A.S Hadzic
 % --> manage error invalid root folder
 
-h = guidata(h_fig);
 success = 1;
 
 try

@@ -7,12 +7,12 @@ if ~isempty(varargin)
 end
 
 for n = 1:nSet
-    p = [0 cp{n} numel(trace(:,n))];
+    p = [1 cp{n} numel(trace(:,n))];
     for i = 1:(numel(p)-1)
         if exist('stateVal', 'var')
-            discr((p(i)+1):p(i+1),n) = stateVal{n}(p(i)+1);
+            discr(p(i):p(i+1)-1,n) = stateVal{n}(p(i));
         else
-            discr((p(i)+1):p(i+1),n) = mean(trace((p(i)+1):p(i+1),n));
+            discr(p(i):p(i+1)-1,n) = mean(trace((p(i)):p(i+1)-1,n));
         end
     end
 end

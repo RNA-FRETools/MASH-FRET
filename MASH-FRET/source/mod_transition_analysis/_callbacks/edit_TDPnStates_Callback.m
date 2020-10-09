@@ -1,4 +1,5 @@
-function edit_TDPnStates_Callback(obj, evd, h)
+function edit_TDPnStates_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.TDP;
 if ~isempty(p.proj)
     val = round(str2num(get(obj, 'String')));
@@ -6,7 +7,7 @@ if ~isempty(p.proj)
     if ~(numel(val)==1 && ~isnan(val) && val > 1)
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
         setContPan('Max. number of states must be > 1', 'error', ...
-            h.figure_MASH);
+            h_fig);
     else
         proj = p.curr_proj;
         tpe = p.curr_type(proj);
@@ -51,7 +52,7 @@ if ~isempty(p.proj)
         prm.kin_res = cell(1,5);
         p.proj{proj}.prm{tpe} = prm;
         h.param.TDP = p;
-        guidata(h.figure_MASH, h);
-        updateFields(h.figure_MASH, 'TDP');
+        guidata(h_fig, h);
+        updateFields(h_fig, 'TDP');
     end
 end

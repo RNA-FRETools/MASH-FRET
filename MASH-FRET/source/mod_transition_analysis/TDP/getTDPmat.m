@@ -149,11 +149,11 @@ end
 % count and store transition occurences in TDP matrix
 try
     if oneval
-        [TDP,o,o,coord] = hist2(trans(:,[1 2]),[iv_x;iv_y]);
+        [TDP,o,o,coord] = hist2(trans(:,[1 2]),iv_x,iv_y);
         trans(:,[3 4]) = coord;
         dt_bin(:,[5 6]) = trans(id_m,[3 4]);
     else
-        [TDP,o,o,coord] = hist2(dt_bin(:,[2 3]),[iv_x;iv_y]);
+        [TDP,o,o,coord] = hist2(dt_bin(:,[2 3]),iv_x,iv_y);
         dt_bin(:,[5 6]) = coord;
     end
     TDP(~~eye(size(TDP))) = 0;

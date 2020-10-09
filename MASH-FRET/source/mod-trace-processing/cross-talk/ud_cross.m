@@ -135,14 +135,19 @@ if ~isempty(p)
                     
                     % modified by MH, 3.4.2019
 %                     set(h.pushbutton_optGamma,'enable','off');
-                    set(h.pushbutton_optGamma,'String','Load');
+                    set(h.pushbutton_optGamma,'String','Load',...
+                        'tooltipstring',cat(2,'<b>Import gamma ',...
+                        'factors</b> from ASCII files.'));
 
                 case 1 % photobleaching based
                     set(h.edit_gammaCorr,'Enable','inactive');
                     
                     % modified by MH, 3.4.2019
 %                     set(h.pushbutton_optGamma,'enable','on');
-                    set(h.pushbutton_optGamma,'String','Opt.');
+                    set(h.pushbutton_optGamma,'String','Opt.',...
+                        'tooltipstring',cat(2,'<b>Open method settings',...
+                        '</b> for factor estimation via acceptor ',...
+                        'photobleaching.'));
                     
             end
             set(h.popupmenu_TP_factors_method,'Enable','on','Value',...

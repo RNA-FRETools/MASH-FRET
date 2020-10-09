@@ -1,4 +1,5 @@
-function pushbutton_thm_rmProj_Callback(obj, evd, h)
+function pushbutton_thm_rmProj_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.thm;
 if ~isempty(p.proj)
     
@@ -50,14 +51,14 @@ if ~isempty(p.proj)
         % update project list
         p = ud_projLst(p, h.listbox_thm_projLst);
         h.param.thm = p;
-        guidata(h.figure_MASH, h);
+        guidata(h_fig, h);
         
         % clear axes
         cla(h.axes_hist1);
         cla(h.axes_hist2);
         
         % update calculations and GUI
-        updateFields(h.figure_MASH, 'thm');
+        updateFields(h_fig, 'thm');
         
         % display action
         if numel(slct)>1
@@ -67,6 +68,6 @@ if ~isempty(p.proj)
             str_act = cat(2,'Projects have been sucessfully removed form ',...
                 'the list:\n',str_act);
         end
-        setContPan(str_act,'none',h.figure_MASH);
+        setContPan(str_act,'none',h_fig);
     end
 end

@@ -1,10 +1,11 @@
-function pushbutton_addBgCorr_Callback(obj, evd, h)
+function pushbutton_addBgCorr_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 if isfield(h, 'movie')
     p = h.param.movPr;
     nextMethod = p.movBg_method;
     if nextMethod > 1
         if nextMethod == 17 % image subtraction
-            dat = getFile2sub('Pick an image to subtract', h.figure_MASH);
+            dat = getFile2sub('Pick an image to subtract', h_fig);
             if isempty(dat)
                 return;
             end
@@ -14,7 +15,7 @@ if isfield(h, 'movie')
         else
             if sum(double(nextMethod == [2 5:10])) && ~exist('FilterArray')
                 setContPan(cat(2,'This filter can not be used: problem ',...
-                    'with mex compilation.'),'error',h.figure_MASH);
+                    'with mex compilation.'),'error',h_fig);
                 return;
             end
             p.bgCorr{size(p.bgCorr,1)+1,1} = nextMethod;
@@ -30,8 +31,8 @@ if isfield(h, 'movie')
         end
     end
     h.param.movPr = p;
-    guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'imgAxes');
+    guidata(h_fig, h);
+    updateFields(h_fig, 'imgAxes');
 else
-    updateActPan('No graphic file loaded!', h.figure_MASH, 'error');
+    updateActPan('No graphic file loaded!', h_fig, 'error');
 end

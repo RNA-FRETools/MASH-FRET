@@ -1,4 +1,5 @@
-function pushbutton_TP_deleteTag_Callback(obj, evd, h)
+function pushbutton_TP_deleteTag_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -18,8 +19,8 @@ if ~isempty(p.proj)
         tagId = find(p.proj{proj}.molTag(mol,:));
         p.proj{proj}.molTag(mol,tagId(tag)) = false;
         h.param.ttPr = p;
-        guidata(h.figure_MASH,h);
+        guidata(h_fig,h);
         
-        ud_trSetTbl(h.figure_MASH);
+        ud_trSetTbl(h_fig);
     end
 end

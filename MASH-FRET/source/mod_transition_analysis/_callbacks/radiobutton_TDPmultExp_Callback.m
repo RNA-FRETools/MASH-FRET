@@ -1,4 +1,5 @@
-function radiobutton_TDPmultExp_Callback(obj, evd, h)
+function radiobutton_TDPmultExp_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.TDP;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -10,7 +11,7 @@ if ~isempty(p.proj)
         p.proj{proj}.prm{tpe}.kin_start = kin_k;
         p.proj{proj}.prm{tpe}.kin_res(trs,:) = cell(1,5);
         h.param.TDP = p;
-        guidata(h.figure_MASH, h);
+        guidata(h_fig, h);
     end
-    updateFields(h.figure_MASH, 'TDP');
+    updateFields(h_fig, 'TDP');
 end

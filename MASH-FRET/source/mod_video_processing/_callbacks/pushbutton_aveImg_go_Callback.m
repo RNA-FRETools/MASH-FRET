@@ -1,4 +1,5 @@
-function pushbutton_aveImg_go_Callback(obj, evd, h)
+function pushbutton_aveImg_go_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 set(h.edit_aveImg_iv, 'String', h.param.movPr.ave_iv, ...
     'BackgroundColor', [1 1 1]);
 set(h.edit_aveImg_start, 'String', h.param.movPr.ave_start, ...
@@ -8,7 +9,7 @@ set(h.edit_aveImg_end, 'String', h.param.movPr.ave_stop, ...
 if isfield(h, 'movie')
     
     [o, nameMov, o] = fileparts(h.movie.file);
-    defName = [setCorrectPath('average_images', h.figure_MASH) nameMov ...
+    defName = [setCorrectPath('average_images', h_fig) nameMov ...
         '_ave'];
     [fname,pname,o] = uiputfile({ ...
         '*.png', 'Portable Network Graphics(*.png)'; ...
@@ -23,8 +24,8 @@ if isfield(h, 'movie')
         if ~sum(double(strcmp(fext, {'.png' '.tif' '.sira'})))
             fname = [name '.png'];
         end
-        fname = getCorrName(fname, pname, h.figure_MASH);
-        h = guidata(h.figure_MASH);
+        fname = getCorrName(fname, pname, h_fig);
+        h = guidata(h_fig);
         
         param.start = h.param.movPr.ave_start;
         param.stop = h.param.movPr.ave_stop;
@@ -34,7 +35,7 @@ if isfield(h, 'movie')
         param.extra{2} = [h.movie.pixelX h.movie.pixelY]; 
         param.extra{3} = h.movie.framesTot;
 
-        [img_ave,ok] = createAveIm(param,true,true,h.figure_MASH);
+        [img_ave,ok] = createAveIm(param,true,true,h_fig);
 
         if ~ok
             return;
@@ -61,10 +62,10 @@ if isfield(h, 'movie')
             f = fopen([pname fname], 'w');
             if f == -1
                 updateActPan(['Enable to open file ' fname], ...
-                    h.figure_MASH);
+                    h_fig);
                 return;
             else
-                figname = get(h.figure_MASH, 'Name');
+                figname = get(h_fig, 'Name');
                 vers = figname(length('MASH-FRET '):end);
                 fprintf(f, ['MASH-FRET exported binary graphic ' ...
                     'Version: %s\r'], vers);
@@ -87,6 +88,6 @@ if isfield(h, 'movie')
         updateActPan(['The average image (' num2str(param.start) ':' ...
             num2str(param.iv) ':' num2str(param.stop) ...
             ') has been saved to file: ' fname '\nin folder: ' pname], ...
-            h.figure_MASH, 'success');
+            h_fig, 'success');
     end
 end

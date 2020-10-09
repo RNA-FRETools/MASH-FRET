@@ -1,6 +1,7 @@
-function pushbutton_refocus_Callback(obj,evd,h)
+function pushbutton_refocus_Callback(obj,evd,h_fig)
 % Last update by MH, 29.4.2019: is now a pushbutton
 
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj) 
     
@@ -61,6 +62,6 @@ if ~isempty(p.proj)
     end
 
     h.param.ttPr = p;
-    guidata(h.figure_MASH, h);
-    updateFields(h.figure_MASH, 'ttPr');
+    guidata(h_fig, h);
+    updateFields(h_fig, 'ttPr');
 end

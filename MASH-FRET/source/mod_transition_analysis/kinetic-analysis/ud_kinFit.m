@@ -1,4 +1,13 @@
 function ud_kinFit(h_fig)
+% Set properties of all controls in panel "Transition rates" to proper 
+% values and refresh associated plots.
+%
+% h_fig: handle to main figure
+
+% Last update by MH, 12.12.2019
+% >> move script that plots boba fret icon from here to 
+%  buildPanelTAstateTransitionRates.m (plot is now done only once when 
+%  building GUI)
 
 %% collect parameters
 h = guidata(h_fig);
@@ -29,7 +38,7 @@ if ~isempty(clust_res{1})
     %% build exponential list
     str_e = cell(1,nExp);
     for i = 1:nExp
-        str_e{i} = sprintf('exponential n:°%i', i);
+        str_e{i} = sprintf('exponential n°:%i', i);
     end
 
     %% set general parameters
@@ -205,25 +214,31 @@ else
     setProp(get(h.uipanel_TA_stateTransitionRates, 'Children'), 'Enable', ...
         'off');
     set(h.popupmenu_TDP_expNum, 'Value', 1, 'String', {''});
+    
     cla(h.axes_TDPplot2);
+
     set(h.axes_TDPplot2, 'Visible', 'off');
     
-    [ico_pth,o,o] = fileparts(mfilename('fullpath'));
-
-    if exist([ico_pth filesep 'boba.png'], 'file')
-        try
-            ico_boba = imread([ico_pth filesep 'boba.png']);
-            ico_boba = repmat(ico_boba, [1 1 3]);
-            image(ico_boba, 'Parent', h.axes_TDPplot3);
-            axis(h.axes_TDPplot3, 'image');
-            set(h.axes_TDPplot3, 'Visible', 'on', 'XTick', [], 'YTick', ...
-                []);
-            
-        catch err
-            cla(h.axes_TDPplot3);
-            set(h.axes_TDPplot3, 'Visible', 'off');
-            return;
-        end
-    end
+    % cancelled by MH, 12.12.2019
+%     [ico_pth,o,o] = fileparts(mfilename('fullpath'));
+% 
+%     if exist([ico_pth filesep 'boba.png'], 'file')
+%         try
+%             ico_boba = imread([ico_pth filesep 'boba.png']);
+%             ico_boba = repmat(ico_boba, [1 1 3]);
+%             image(ico_boba, 'Parent', h.axes_TDPplot3);
+%             axis(h.axes_TDPplot3, 'image');
+%             set(h.axes_TDPplot3, 'Visible', 'on', 'XTick', [], 'YTick', ...
+%                 []);
+%             
+%         catch err
+%             
+%             % cancelled by MH, 6.12.2019
+% %             cla(h.axes_TDPplot3);
+% 
+%             set(h.axes_TDPplot3, 'Visible', 'off');
+%             return;
+%         end
+%     end
 end
 

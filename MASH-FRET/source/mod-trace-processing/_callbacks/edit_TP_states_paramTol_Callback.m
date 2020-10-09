@@ -1,4 +1,4 @@
-function edit_TP_states_paramTol_Callback(obj, evd, h)
+function edit_TP_states_paramTol_Callback(obj, evd, h_fig)
 
 % Last update: by MH, 3.4.2019
 % >> adjust selected data index in popupmenu, chan_in, to shorter 
@@ -6,6 +6,7 @@ function edit_TP_states_paramTol_Callback(obj, evd, h)
 % >> correct destination for tolerance window size parameter: specific to
 %    each bottom trace data
 
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -20,7 +21,7 @@ if ~isempty(p.proj)
                 val >= 0 && val <= valMax)
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
             updateActPan(['Width of changing zone must be >= 0 and <= ' ...
-                num2str(valMax)], h.figure_MASH, 'error');
+                num2str(valMax)], h_fig, 'error');
         else
             set(obj, 'BackgroundColor', [1 1 1]);
             method = p.proj{proj}.curr{mol}{4}{1}(1);
@@ -43,8 +44,8 @@ if ~isempty(p.proj)
             p.proj{proj}.curr{mol}{4}{2}(method,4,chan_in) = val;
             
             h.param.ttPr = p;
-            guidata(h.figure_MASH, h);
-            ud_DTA(h.figure_MASH);
+            guidata(h_fig, h);
+            ud_DTA(h_fig);
         end
     end
 end

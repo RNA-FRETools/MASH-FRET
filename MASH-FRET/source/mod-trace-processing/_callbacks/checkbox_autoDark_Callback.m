@@ -1,4 +1,5 @@
-function checkbox_autoDark_Callback(obj, evd, h)
+function checkbox_autoDark_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.ttPr;
 if ~isempty(p.proj)
     proj = p.curr_proj;
@@ -26,8 +27,8 @@ if ~isempty(p.proj)
         val = get(obj, 'Value');
         p.proj{proj}.curr{mol}{3}{3}{l,c}(method,6) = val;
         h.param.ttPr = p;
-        guidata(h.figure_MASH, h);
-        ud_ttBg(h.figure_MASH);
-        updateFields(h.figure_MASH, 'subImg');
+        guidata(h_fig, h);
+        ud_ttBg(h_fig);
+        updateFields(h_fig, 'subImg');
     end
 end

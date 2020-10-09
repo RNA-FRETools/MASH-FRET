@@ -1,4 +1,5 @@
-function edit_TDPxUp_Callback(obj, evd, h)
+function edit_TDPxUp_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 p = h.param.TDP;
 if ~isempty(p.proj)
     val = str2num(get(obj, 'String'));
@@ -9,7 +10,7 @@ if ~isempty(p.proj)
     if ~(numel(val)==1 && ~isnan(val) && val > minVal)
         set(obj, 'BackgroundColor', [1 0.75 0.75]);
         setContPan(['Axis upper limits must be > ' num2str(minVal)], ...
-            'error', h.figure_MASH);
+            'error', h_fig);
     else
         set(obj, 'BackgroundColor', [1 1 1]);
         proj = p.curr_proj;
@@ -19,6 +20,6 @@ if ~isempty(p.proj)
         p.proj{proj}.prm{tpe}.plot{2} = [];
         p.proj{proj}.prm{tpe}.plot{3} = [];
         h.param.TDP = p;
-        guidata(h.figure_MASH, h);
+        guidata(h_fig, h);
     end
 end

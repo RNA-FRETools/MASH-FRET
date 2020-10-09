@@ -1,4 +1,4 @@
-function pushbutton_editParam_Callback(obj, evd, h)
+function pushbutton_editParam_Callback(obj, evd, h_fig)
 
 % Last update: by MH, 3.4.2019
 % >> manage error that occurs after changing FRET and stoichiometry 
@@ -6,9 +6,10 @@ function pushbutton_editParam_Callback(obj, evd, h)
 %    popupmenu to popupmenu's string size (last possible option: "all" or 
 %    "all FRET" etc.)
 
+h = guidata(h_fig);
 if ~isempty(h.param.ttPr.proj)
     
-    setContPan('Edit project parameters...','process',h.figure_MASH);
+    setContPan('Edit project parameters...','process',h_fig);
     
     p = h.param.ttPr;
     proj = p.curr_proj;
@@ -16,12 +17,12 @@ if ~isempty(h.param.ttPr.proj)
     q{2} = p.proj{proj}.FRET;
     q{3} = p.proj{proj}.S;
     
-    openItgExpOpt(obj, evd, h);
+    openItgExpOpt(obj, evd, h_fig);
     
-    h = guidata(h.figure_MASH);
+    h = guidata(h_fig);
     uiwait(h.figure_itgExpOpt);
     
-    h = guidata(h.figure_MASH);
+    h = guidata(h_fig);
     p = h.param.ttPr;
     r{1} = p.proj{proj}.exp_parameters;
     r{2} = p.proj{proj}.FRET;
@@ -77,17 +78,17 @@ if ~isempty(h.param.ttPr.proj)
 
         p = ud_projLst(p, h.listbox_traceSet);
         h.param.ttPr = p;
-        guidata(h.figure_MASH, h);
+        guidata(h_fig, h);
         
-        ud_TTprojPrm(h.figure_MASH);
+        ud_TTprojPrm(h_fig);
     end
     
-    updateFields(h.figure_MASH,'ttPr');
+    updateFields(h_fig,'ttPr');
     
     if ~isequal(r,q)
         setContPan('Project parameters have been successfully modified.',...
-            'success',h.figure_MASH);
+            'success',h_fig);
     else
-        updateActPan('No project parameters was modified.',h.figure_MASH);
+        updateActPan('No project parameters was modified.',h_fig);
     end
 end

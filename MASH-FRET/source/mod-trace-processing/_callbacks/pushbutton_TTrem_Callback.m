@@ -1,4 +1,4 @@
-function pushbutton_TTrem_Callback(obj, evd, h)
+function pushbutton_TTrem_Callback(obj, evd, h_fig)
 
 %% Last update by MH, 24.4.2019
 % >> adapt code to new molecule tag structure
@@ -8,6 +8,7 @@ function pushbutton_TTrem_Callback(obj, evd, h)
 %
 %%
 
+h = guidata(h_fig);
 if ~isempty(h.param.ttPr.proj)
     del = questdlg('Clear unselected molecules from the project?', ...
         'Clear molecules', 'Yes', 'No', 'No');
@@ -15,7 +16,7 @@ if ~isempty(h.param.ttPr.proj)
     if strcmp(del, 'Yes')
         
         setContPan('Clear selected molecules from project...','process',...
-            h.figure_MASH);
+            h_fig);
         
         p = h.param.ttPr;
         proj = p.curr_proj;
@@ -25,7 +26,7 @@ if ~isempty(h.param.ttPr.proj)
         
         incl = p.proj{proj}.coord_incl;
         if sum(incl)==numel(incl)
-            setContPan('Molecule selection empty.','error',h.figure_MASH);
+            setContPan('Molecule selection empty.','error',h_fig);
             return;
         else
             rem_mols = find(~incl);
@@ -76,11 +77,11 @@ if ~isempty(h.param.ttPr.proj)
         p.proj{proj}.molTag = p.proj{proj}.molTag(incl,:);
         
         h.param.ttPr = p;
-        guidata(h.figure_MASH, h);
+        guidata(h_fig, h);
         
-        ud_TTprojPrm(h.figure_MASH);
-        ud_trSetTbl(h.figure_MASH);
-        updateFields(h.figure_MASH, 'ttPr');
+        ud_TTprojPrm(h_fig);
+        ud_trSetTbl(h_fig);
+        updateFields(h_fig, 'ttPr');
         
         str = '';
         for i = 1:numel(rem_mols)
@@ -93,6 +94,6 @@ if ~isempty(h.param.ttPr.proj)
         end
         
         setContPan(cat(2,str,'been successfully cleared from the project'),...
-            'success',h.figure_MASH);
+            'success',h_fig);
     end
 end

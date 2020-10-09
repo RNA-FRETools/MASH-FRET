@@ -1,4 +1,5 @@
-function pushbutton_TDPaddProj_Callback(obj, evd, h)
+function pushbutton_TDPaddProj_Callback(obj, evd, h_fig)
+h = guidata(h_fig);
 defPth = h.folderRoot;
 [fname,pname,o] = uigetfile({'*.mash', 'MASH project(*.mash)'; ...
     '*path.dat', 'HaMMy path files (*path.dat)'; '*.*', ...
@@ -34,7 +35,7 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
     end
     
     % load project data
-    [dat,ok] = loadProj(pname, fname, 'intensities', h.figure_MASH);
+    [dat,ok] = loadProj(pname, fname, 'intensities', h_fig);
     if ~ok
         return;
     end
@@ -100,7 +101,7 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
     % update project list
     p = ud_projLst(p, h.listbox_TDPprojList);
     h.param.TDP = p;
-    guidata(h.figure_MASH, h);
+    guidata(h_fig, h);
     
     % display action
     if size(fname,2) > 1
@@ -113,11 +114,11 @@ if ~isempty(fname) && ~isempty(pname) && sum(pname)
     end
     str_files = str_files(1:end-2);
     setContPan(['Project successfully imported from ' str_files],'success',...
-        h.figure_MASH);
+        h_fig);
     
     % clear axes
     cla(h.axes_TDPplot1);
     
     % update calculations and GUI
-    updateFields(h.figure_MASH, 'TDP');
+    updateFields(h_fig, 'TDP');
 end

@@ -1,11 +1,22 @@
 function updateFields(h_fig, varargin)
-
 % Update all uicontrol properties of MASH
-% input argument 1: MASh figure handle
-% input argument 2: what to update ('all', 'sim', 'imgAxes', 'movPr',
-% 'ttPr', 'thm', TDP'
+% input argument 1: MASH figure handle
+% input argument 2: what to update ('all', 'sim', 'imgAxes', 'movPr', 'ttPr', 'thm', TDP')
 
-%% Last update by MH, 24.4.2019
+% Last update by MH, 19.12.2019
+% >> allows coordinates import from ASCII file when a preset file 
+%  containing only out-of-range coordinates is loaded
+%
+% update by MH, 12.12.2019
+% >> cancel clearing of image axes to keep properties/boba fret image 
+% defined when building GUI
+% >> make TDP colorbar invisible when no project is loaded
+%
+% update by MH, 9.11.2019
+% >> review update of transition rate edit fields in order to keep field in 
+%  selection after tabbing
+%
+% update by MH, 24.4.2019
 % >> remove double update of molecule list
 %
 % update: 19.4.2019 by MH
@@ -14,8 +25,8 @@ function updateFields(h_fig, varargin)
 %
 % update: 7th of March 2018 by Richard Börner
 % >> Comments adapted for Boerner et al, PONE, 2017.
-%%
 
+% set default option
 if ~isempty(varargin)
     opt = varargin{1};
 else
@@ -53,15 +64,20 @@ if strcmp(opt, 'sim') || strcmp(opt, 'all')
                   h.edit13 h.edit23 h.edit33 h.edit43 h.edit53
                   h.edit14 h.edit24 h.edit34 h.edit44 h.edit54
                   h.edit15 h.edit25 h.edit35 h.edit45 h.edit55];
-    set(transMat_h, 'Enable', 'off', 'BackgroundColor', [1 1 1]);
-    J = min([p.nbStates 5]);
-    set(transMat_h(1:J,1:J), 'Enable', 'on');
-    str = {};
-    for s = 1:p.nbStates
-        if s <= J
-            set(transMat_h(s,s), 'Enable', 'off', 'String', '0');
+    set(transMat_h, 'BackgroundColor', [1 1 1]);
+    
+    if ~(p.impPrm && isfield(p.molPrm,'kx'))
+        J = p.nbStates;
+        set(transMat_h, 'Enable', 'on');
+        for s = 1:size(transMat_h,2)
+            if s>J
+                set(transMat_h(s,:), 'Enable', 'off');
+                set(transMat_h(:,s), 'Enable', 'off');
+            else
+                set(transMat_h(s,s), 'Enable', 'off', 'String', '0');
+            end
+            
         end
-        str = [str, ['state ' num2str(s)]];
     end
     set(h.edit_length, 'String', num2str(p.nbFrames));
     set(h.edit_simRate, 'String', num2str(p.rate));
@@ -87,6 +103,10 @@ if strcmp(opt, 'sim') || strcmp(opt, 'all')
     state = get(h.popupmenu_states, 'Value');
     if state > p.nbStates
         state = p.nbStates;
+    end
+    str = {};
+    for s = 1:p.nbStates
+        str = [str, ['state ' num2str(s)]];
     end
     set(h.popupmenu_states, 'Value', state, 'String', str);
     set(h.edit_stateVal, 'String', num2str(p.stateVal(state)));
@@ -131,7 +151,7 @@ if strcmp(opt, 'sim') || strcmp(opt, 'all')
             set([h.edit_totInt h.edit_dstrbNoise], 'Enable', 'on');
         end
         
-        if isfield(p.molPrm, 'coord')
+        if isfield(p.molPrm, 'coord') && ~isempty(p.molPrm.coord)
             set(h.pushbutton_simImpCoord, 'Enable', 'off');
         else
             set(h.pushbutton_simImpCoord, 'Enable', 'on');
@@ -470,7 +490,7 @@ if strcmp(opt,'imgAxes') || strcmp(opt, 'movPr') || strcmp(opt, 'all')
     set(h.popupmenu_bgCorr, 'Value', p.movBg_method);
     set(h.checkbox_bgCorrAll, 'Value', ~p.movBg_one);
     
-    ud_movBgCorr(h.popupmenu_bgCorr, [], h)
+    ud_movBgCorr(h.popupmenu_bgCorr, [], h_fig);
     h = guidata(h_fig);
     p = h.param.movPr;
     
@@ -596,10 +616,13 @@ if strcmp(opt, 'thm') || strcmp(opt, 'all')
         set([h.radiobutton_thm_gaussFit h.radiobutton_thm_thresh], ...
             'Value', 0, 'FontWeight', 'normal');
         setProp(get(h.uipanel_HA, 'Children'), 'Enable', 'off');
-        cla(h.axes_hist1); cla(h.axes_hist2); cla(h.axes_hist_BOBA);
-        cla(h.axes_thm_BIC);
-        set([h.axes_hist1,h.axes_hist2,h.axes_hist_BOBA, ...
-            h.axes_thm_BIC], 'Visible','off');
+        
+        % cancelled by MH, 12.12.2019
+%         cla(h.axes_hist_BOBA);
+
+        cla(h.axes_hist1); cla(h.axes_hist2); cla(h.axes_thm_BIC);
+
+        set([h.axes_hist1,h.axes_hist2,h.axes_thm_BIC], 'Visible','off');
         set([h.pushbutton_help h.pushbutton_thm_impASCII ...
             h.pushbutton_thm_addProj],'Enable', 'on');
     end
@@ -629,10 +652,14 @@ if strcmp(opt, 'TDP') || strcmp(opt, 'all')
         set([h.pushbutton_help h.pushbutton_TDPimpOpt ...
             h.pushbutton_TDPaddProj], 'Enable', 'on');
         set(h.listbox_TDPtrans, 'String', {''}, 'Value', 1);
-        cla(h.axes_TDPplot1); cla(h.axes_TDPplot2); cla(h.axes_TDPplot3);
-        cla(h.axes_tdp_BIC);
-        set([h.axes_TDPplot1 h.axes_TDPplot2 h.axes_TDPplot3 ...
-            h.axes_TDPcmap h.axes_tdp_BIC], 'Visible', 'off');
+        
+        % cancelled by MH, 12.12.2019
+%         cla(h.axes_TDPplot1); cla(h.axes_TDPplot3);
+
+        cla(h.axes_TDPplot2); cla(h.axes_tdp_BIC);
+
+        set([h.axes_TDPplot1 h.colorbar_TA h.axes_TDPplot2 h.axes_TDPcmap ...
+            h.axes_tdp_BIC], 'Visible', 'off');
     end
 end
 

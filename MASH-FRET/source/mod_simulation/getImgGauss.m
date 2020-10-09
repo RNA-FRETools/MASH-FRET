@@ -38,7 +38,7 @@ function [imgGauss,matGauss] = getImgGauss(lim, p, volume, varargin)
     mltp_gauss_str = [];
     nGauss = size(p.amp,1);
     
-    if ~isMat 
+    if ~isMat && nGauss>1
         n = 0;
         fprintf('\n---\n\n');
     end
