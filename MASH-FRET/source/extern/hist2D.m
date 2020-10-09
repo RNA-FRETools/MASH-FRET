@@ -119,20 +119,24 @@ if BinningFastNotExact
     % consolidate the last two bins, i.e. last interval is [ ], not [ )
     nBins = numel(binE_x)-1;
     ixLastBin = tmp_BinIx == nBins+1;
+    ixFirstBin = tmp_BinIx == 0;
     tmp_BinIx(ixLastBin) = nBins;
+    tmp_BinIx(ixFirstBin) = 1;
     % now an N+1 long binEdges vector has generated an N long bin center vector
     BinIx_xy(:,1) = uint16(tmp_BinIx);
 
     % bin by Y
     binE_y = [mesh_minmaxN_xy(2,1) BinUpperEdge_y];
 
-    [hist_cum_x, tmp_BinIx] = histc(vy, binE_y);
+    [hist_cum_y, tmp_BinIy] = histc(vy, binE_y);
     % consolidate the last two bins, i.e. last interval is [ ], not [ )
     nBins = numel(binE_y)-1;
-    ixLastBin = tmp_BinIx == nBins+1;
-    tmp_BinIx(ixLastBin) = nBins;
+    iyLastBin = tmp_BinIy == nBins+1;
+    iyFirstBin = tmp_BinIy == 0;
+    tmp_BinIy(iyLastBin) = nBins;
+    tmp_BinIy(iyFirstBin) = 1;
     % N+1 long binEdges vector -> generates an N long bin center vector
-    BinIx_xy(:,2) = uint16(tmp_BinIx);
+    BinIx_xy(:,2) = uint16(tmp_BinIy);
     
     % convert bin info 2 histogram:
     tSignal_10p = round((0.05:0.05:1)*nP);

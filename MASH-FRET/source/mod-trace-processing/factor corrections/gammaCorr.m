@@ -83,9 +83,9 @@ for i = 1:nFRET
             % save factors for all molecules using this method
             N = size(p.proj{proj}.prm,2);
             for n = 1:N
-                if p.proj{proj}.curr{n}{6}{2}(i)==method(i)
-                    p.proj{proj}.curr{n}{6}{1}(:,i) = round([gamma;beta],2);
-                    p.proj{proj}.curr{n}{6}{4}(i,:) = prm{4}(i,:);
+                if p.proj{proj}.prm{n}{6}{2}(i)==method(i)
+                    p.proj{proj}.prm{n}{6}{1}(:,i) = round([gamma;beta],2);
+                    p.proj{proj}.prm{n}{6}{4}(i,:) = prm{4}(i,:);
 
                     % reset discretized FRET data
                     p.proj{proj}.FRET_DTA(:,((n-1)*nFRET+1):n*nFRET) = NaN;

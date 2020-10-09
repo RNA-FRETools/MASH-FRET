@@ -22,7 +22,7 @@ end
 % then convert points to desired font units
 switch fntun_out
     case 'points'
-        fntsz_out = fntsz_in;
+        fntsz_out = round(fntsz_in);
     case 'pixels'
         fntsz_out = 4*fntsz_in/3;
     case 'inches'
