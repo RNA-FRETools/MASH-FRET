@@ -5,6 +5,7 @@ h = guidata(h_fig);
 % get project parameters
 p = h.param.ttPr;
 proj = p.curr_proj;
+nExc = p.proj{proj}.nb_excitations;
 inSec = p.proj{proj}.fix{2}(7);
 expT = p.proj{proj}.frame_rate; % this is truely the exposure time
 incl = p.proj{proj}.bool_intensities;
@@ -27,7 +28,7 @@ L = 0;
 M = numel(mol_slct);
 for m = 1:M
     if mol_slct(m)
-        L = L + sum(incl(:,m));
+        L = L + sum(incl(:,m))*nExc;
         if L>l
             break;
         end

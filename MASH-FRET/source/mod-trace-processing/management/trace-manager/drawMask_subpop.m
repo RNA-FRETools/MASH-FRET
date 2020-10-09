@@ -7,6 +7,7 @@ a = 0.5;
 h = guidata(h_fig);
 p = h.param.ttPr;
 proj = p.curr_proj;
+nExc = p.proj{proj}.nb_excitations;
 incl = p.proj{proj}.bool_intensities;
 inSec = p.proj{proj}.fix{2}(7);
 expT = p.proj{proj}.frame_rate; % this is truely the exposure time
@@ -34,7 +35,7 @@ for m = 1:M
         ydata = [ydata,yaxis(1)-1];    
     end
     
-    L = L + sum(incl(:,m));
+    L = L + sum(incl(:,m))*nExc;
     if inSec
         T = L*expT;
     else
