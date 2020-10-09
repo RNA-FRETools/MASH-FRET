@@ -28,10 +28,6 @@ function h = buildPanelTA(h,p)
 % Created by MH, 19.10.2019
 
 % default
-hpop0 = 22;
-hedit0 = 20;
-htxt0 = 14;
-fact = 5;
 str0 = 'ASCII options...';
 str1 = 'Add';
 str2 = 'Remove';
@@ -58,11 +54,8 @@ poslst0 = get(h.listbox_traceSet,'position');
 posbut2 = get(h.pushbutton_remTraces,'position');
 posbut3 = get(h.pushbutton_thm_export,'position');
 posbut4 = get(h.pushbutton_expProj,'position');
-wpan0 = poslst0(3);
-hpan0 = p.mgpan+hpop0+p.mg+3*p.mg/2+3*p.mg/fact+2*htxt0+6*hedit0;
 wedit0 = poslst0(3);
-hedit1 = pospan(4)-4*p.mg-2*p.mg/fact-2*hedit0-poslst0(4)-hpan0;
-wpan1 = (pospan(3)-4*p.mg-wpan0)/2;
+wpan1 = (pospan(3)-4*p.mg-poslst0(3))/2;
 hpan1 = pospan(4)-2*p.mg;
 
 % GUI
@@ -96,6 +89,12 @@ h.pushbutton_TDPsaveProj = uicontrol('style','pushbutton','parent',h_pan,...
     'bold','position',posbut4,'string',str4,'tooltipstring',ttstr4,...
     'callback',{@pushbutton_TDPsaveProj_Callback,h_fig});
 
+h.uipanel_TA_transitionDensityPlot = uipanel('parent',h_pan,'units',...
+    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold',...
+    'title',ttl0);
+[h,pospan0] = buildPanelTAtransitionDensityPlot(h,p);
+
+hedit1 = posbut4(2)-3*p.mg-pospan0(4);
 x = p.mg;
 y = posbut4(2)-p.mg-hedit1;
 
@@ -103,14 +102,8 @@ h.edit_TDPcontPan = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'max',2,'position',...
     [x,y,wedit0,hedit1],'enable','inactive','horizontalalignment','left');
 
+x = x+poslst0(3)+p.mg;
 y = p.mg;
-
-h.uipanel_TA_transitionDensityPlot = uipanel('parent',h_pan,'units',...
-    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold',...
-    'position',[x,y,wpan0,hpan0],'title',ttl0);
-h = buildPanelTAtransitionDensityPlot(h,p);
-
-x = x+wpan0+p.mg;
 
 h.uipanel_TA_stateConfiguration = uipanel('parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...

@@ -4,7 +4,8 @@ p = h.param.TDP;
 if ~isempty(p.proj)
     proj = p.curr_proj;
     tpe = p.curr_type(proj);
-    prm = p.proj{proj}.prm{tpe};
+    tag = p.curr_tag(proj);
+    prm = p.proj{proj}.prm{tag,tpe};
     curr_k = prm.clst_start{1}(4);
     J = prm.clst_res{3};
     dat = prm.clst_res{1}.clusters{J};
@@ -86,7 +87,7 @@ if ~isempty(p.proj)
 
     prm.kin_res{curr_k,2} = res.fit_ref;
 
-    p.proj{proj}.prm{tpe} = prm;
+    p.proj{proj}.prm{tag,tpe} = prm;
     h.param.TDP = p;
     guidata(h_fig, h);
     updateFields(h_fig, 'TDP');

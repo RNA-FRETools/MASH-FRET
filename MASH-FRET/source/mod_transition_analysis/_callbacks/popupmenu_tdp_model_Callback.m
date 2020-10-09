@@ -5,7 +5,8 @@ if ~isempty(p.proj)
     J = get(obj,'Value')+1;
     proj = p.curr_proj;
     tpe = p.curr_type(proj);
-    prm = p.proj{proj}.prm{tpe};
+    tag = p.curr_tag(proj);
+    prm = p.proj{proj}.prm{tag,tpe};
     if isempty(prm.clst_res{1}.mu{J})
         setContPan(cat(2,'No model inferred for this configuration. Press',...
         ' "Cluster" to infer new models.'),'warning',h_fig);

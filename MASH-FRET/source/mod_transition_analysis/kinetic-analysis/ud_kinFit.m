@@ -14,7 +14,8 @@ h = guidata(h_fig);
 p = h.param.TDP;
 proj = p.curr_proj;
 tpe = p.curr_type(proj);
-prm = p.proj{proj}.prm{tpe};
+tag = p.curr_tag(proj);
+prm = p.proj{proj}.prm{tag,tpe};
 clust_res = prm.clst_res;
 
 if ~isempty(clust_res{1})
@@ -218,27 +219,5 @@ else
     cla(h.axes_TDPplot2);
 
     set(h.axes_TDPplot2, 'Visible', 'off');
-    
-    % cancelled by MH, 12.12.2019
-%     [ico_pth,o,o] = fileparts(mfilename('fullpath'));
-% 
-%     if exist([ico_pth filesep 'boba.png'], 'file')
-%         try
-%             ico_boba = imread([ico_pth filesep 'boba.png']);
-%             ico_boba = repmat(ico_boba, [1 1 3]);
-%             image(ico_boba, 'Parent', h.axes_TDPplot3);
-%             axis(h.axes_TDPplot3, 'image');
-%             set(h.axes_TDPplot3, 'Visible', 'on', 'XTick', [], 'YTick', ...
-%                 []);
-%             
-%         catch err
-%             
-%             % cancelled by MH, 6.12.2019
-% %             cla(h.axes_TDPplot3);
-% 
-%             set(h.axes_TDPplot3, 'Visible', 'off');
-%             return;
-%         end
-%     end
 end
 

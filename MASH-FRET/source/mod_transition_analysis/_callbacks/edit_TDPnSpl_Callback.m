@@ -11,7 +11,8 @@ if ~isempty(p.proj)
     else
         proj = p.curr_proj;
         tpe = p.curr_type(proj);
-        p.proj{proj}.prm{tpe}.clst_start{1}(7) = val;
+        tag = p.curr_tag(proj);
+        p.proj{proj}.prm{tag,tpe}.clst_start{1}(7) = val;
         h.param.TDP = p;
         guidata(h_fig, h);
         updateFields(h_fig, 'TDP');

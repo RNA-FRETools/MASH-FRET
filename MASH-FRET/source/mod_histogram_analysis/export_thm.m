@@ -7,10 +7,26 @@ h = guidata(h_fig);
 p = h.param.thm;
 proj = p.curr_proj;
 tpe = p.curr_tpe(proj);
+tag = p.curr_tag(proj);
+
 str_tpe = get(h.popupmenu_thm_tpe, 'String');
 str_tpe = strrep(strrep(strrep(str_tpe{tpe}, ' ', ''),'>',''),'.','');
+if tag>0
+    str_tag = get(h.popupmenu_thm_tag, 'String');
+    str_tag = cat(2,'_',strrep(strrep(strrep(removeHtml(str_tag{tag+1}),...
+        ' ',''),'>',''),'.',''));
+else
+    str_tag = '';
+end
 prm = p.proj{proj}.prm{tpe};
 pplot = prm.plot;
+P = pplot{2};
+
+if isempty(P)
+    disp('There is no histogram or results to export.')
+    return
+end
+
 pstart = prm.thm_start;
 pres = prm.thm_res;
 
@@ -55,7 +71,7 @@ if isempty(defname)
     [o,defname,o] = fileparts(p.proj{proj}.proj_file);
 end
 defname = cat(2,setCorrectPath('histogram_analysis',h_fig),defname,'_',...
-    str_tpe);
+    str_tpe,str_tag);
 [fname,pname,o] = uiputfile({'*.txt', 'Text files(*.txt)'; '*.*', ...
     'All files(*.*)'},'Export analysis',defname);
 
@@ -69,8 +85,6 @@ setContPan('Exporting results from histogram analysis...','process',h_fig);
 expfig = 0;
 
 [o,name,o] = fileparts(fname);
-
-P = pplot{2};
 
 str_action = '';
 

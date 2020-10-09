@@ -64,28 +64,17 @@ if ~isempty(p.proj)
     % update default tag list
     addOn = get(h.pushbutton_TP_addTag,'value');
     if addOn
-        str_lst = cell(1,length(tagNames));
-        for t = 1:nTag
-            if sum(double((hex2rgb(colorlist{t})/255)>0.5))==3
-                fntClr = 'black';
-            else
-                fntClr = 'white';
-            end
-            str_lst{t} = ['<html><body  bgcolor="' colorlist{t} '">' ...
-                '<font color=',fntClr,'>' tagNames{t} ...
-                '</font></body></html>'];
-        end
-        if isempty(str_lst)
-            set(h.lisbox_TP_defaultTags,'visible','on','value',1,...
-                'string',{'no default tag'});
+        str_lst = getStrPopTags(tagNames,colorlist);
+        set(h.lisbox_TP_defaultTags,'visible','on','string',str_lst);
+        if numel(str_lst)==1 && strcmp(str_lst{1},'no default tag')
+            set(h.lisbox_TP_defaultTags,'value',1);
         else
             currTag = get(h.lisbox_TP_defaultTags,'value');
             currTop = get(h.lisbox_TP_defaultTags,'listboxtop');
             if currTag>nTag
                 currTag = nTag;
             end
-            set(h.lisbox_TP_defaultTags,'visible','on','value',currTag,...
-                'string',str_lst);
+            set(h.lisbox_TP_defaultTags,'value',currTag);
             if currTop<=nTag
                 set(h.lisbox_TP_defaultTags,'listboxtop',currTop);
             else

@@ -1,4 +1,4 @@
-function plotTDP(h_axes, h_cb, TDP, plot_prm, clust_prm, varargin)
+function plotTDP(h_axes, h_cb, TDP, plot_prm, clust_prm, h_fig)
 % Plot transition density plot and clusters
 % "h_axes" >> axes handle
 % "h_cb" >> colorbar handle
@@ -30,7 +30,7 @@ function plotTDP(h_axes, h_cb, TDP, plot_prm, clust_prm, varargin)
 % >> update help section
 
 lim = plot_prm{1};
-bins = plot_prm{2};
+bin = plot_prm{2};
 gconv = plot_prm{3};
 norm = plot_prm{4};
 clr = plot_prm{5};
@@ -39,22 +39,14 @@ states = clust_prm{1};
 clust = clust_prm{2};
 gmm_prm = clust_prm{3};
 
-if ~isempty(varargin)
-    h_fig = varargin{1};
-end
 
 %% TDP convolution with Gaussian filter
 if gconv
-    bin_x = (lim(1,2)-lim(1,1))/size(TDP,2);
-    bin_y = (lim(2,2)-lim(2,1))/size(TDP,1);
-    o2 = [0.0005 0.0005];
+    o2 = 0.0005;
     if lim(1,2)>2
-        o2(1) = (4.4721*bin_x)^2;
+        o2 = (4.4721*bin)^2;
     end
-    if lim(2,2)>2
-        o2(2) = (4.4721*bin_y)^2;
-    end
-    TDP = convGauss(TDP, o2, lim);
+    TDP = convGauss(TDP, [o2,o2], [lim;lim]);
 end
 
 %% normalise transition densities
@@ -74,7 +66,7 @@ end
 % cancelled by MH, 29.11.2019
 % cla(h_axes);
 
-im = imagesc(lim(1,:), lim(2,:), TDP, 'Parent', h_axes);
+im = imagesc(lim(1,:), lim(1,:), TDP, 'Parent', h_axes);
 if sum(sum(TDP))
     set(h_axes,'CLim',[min(min(TDP)) max(max(TDP))]);
 else
@@ -83,9 +75,8 @@ end
 
 %% plot y = x diagonal
 set(h_axes, 'NextPlot', 'add');
-minVal = min(lim(1:2,1)); maxVal = max(lim(1:2,2));
-plot(h_axes, [minVal maxVal], [minVal maxVal], 'LineStyle', '--', ...
-    'Color', [0.5 0.5 0.5]);
+plot(h_axes, lim(1,1:2), lim(1,1:2), 'LineStyle', '--', 'Color', ...
+    [0.5 0.5 0.5]);
 
 
 %% plot clustered data with resp. colour code
@@ -127,11 +118,9 @@ if J>0
     if ~isempty(gmm_prm) && isstruct(gmm_prm)
         a = gmm_prm.a; sig = gmm_prm.o;
         if ~isempty(a) && ~isempty(sig)
-            x_iv = lim(1,1):bins(1):lim(1,2);
-            x_iv = mean([x_iv(1:end-1);x_iv(2:end)],1);
-            y_iv = lim(2,1):bins(2):lim(2,2);
-            y_iv = mean([y_iv(1:end-1);y_iv(2:end)],1);
-            plot_elps(h_axes, states, sig, a, x_iv, y_iv, [], '-b');
+            iv = lim(1,1):bin(1):lim(1,2);
+            iv = mean([iv(1:end-1);iv(2:end)],1);
+            plot_elps(h_axes, states, sig, a, iv, iv, [], '-b');
         end
     end
 end
@@ -142,21 +131,10 @@ axis(h_axes, 'image');
 xlabel(h_axes, 'Value before transition');
 ylabel(h_axes, 'Value after transition');
 set(h_axes, 'XAxisLocation', 'top', 'YAxisLocation', 'right', 'XLim', ...
-    lim(1,:), 'YLim', lim(2,:), 'YDir', 'normal', 'NextPlot', ...
+    lim(1,:), 'YLim', lim(1,:), 'YDir', 'normal', 'NextPlot', ...
     'replacechildren');
-if exist('h_fig', 'var')
-    set([h_axes im], 'ButtonDownFcn', {@target_centroids, h_fig});
-end
+set([h_axes im], 'ButtonDownFcn', {@target_centroids, h_fig});
 
-% modified by MH, 29.11.2019
-% colorbar(h_axes,'off');
-% h_c = colorbar('peer', h_axes);
-% if norm
-%     ylabel(h_c, 'normalized occurrence');
-% else
-%     ylabel(h_c, 'occurrence');
-% end
-% name colorbar
 if norm
     ylabel(h_cb, 'normalized occurrence');
 else

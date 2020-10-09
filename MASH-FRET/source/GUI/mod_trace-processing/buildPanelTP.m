@@ -239,6 +239,9 @@ h.uipanel_TP_findStates = uipanel('parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
     [x,y,w,hpan7],'title',ttl7);
 h = buildPanelTPfindStates(h,p);
+pos = get(h.uipanel_TP_findStates,'position');
+x = pospan(3)-p.mg-wpan1-p.mg-pos(3);
+set(h.uipanel_TP_findStates,'position',[x,pos(2:4)]);
 
 % place invivisible label list
 posbut = get(h.pushbutton_TP_addTag,'position');

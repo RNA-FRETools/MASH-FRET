@@ -1,4 +1,4 @@
-function edit_TDPyBin_Callback(obj, evd, h_fig)
+function edit_TDPbin_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 p = h.param.TDP;
 if ~isempty(p.proj)
@@ -11,11 +11,11 @@ if ~isempty(p.proj)
     else
         set(obj, 'BackgroundColor', [1 1 1]);
         proj = p.curr_proj;
-        proj = p.curr_proj;
         tpe = p.curr_type(proj);
-        p.proj{proj}.prm{tpe}.plot{1}(2,1) = val;
-        p.proj{proj}.prm{tpe}.plot{2} = [];
-        p.proj{proj}.prm{tpe}.plot{3} = [];
+        tag = p.curr_tag(proj);
+        p.proj{proj}.prm{tag,tpe}.plot{1}(1,1) = val;
+        p.proj{proj}.prm{tag,tpe}.plot{2} = [];
+        p.proj{proj}.prm{tag,tpe}.plot{3} = [];
         h.param.TDP = p;
         guidata(h_fig, h);
     end

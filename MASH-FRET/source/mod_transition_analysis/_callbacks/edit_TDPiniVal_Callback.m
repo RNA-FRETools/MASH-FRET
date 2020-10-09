@@ -13,8 +13,9 @@ if ~isempty(p.proj)
     else
         proj = p.curr_proj;
         tpe = p.curr_type(proj);
+        tag = p.curr_tag(proj);
         state = get(h.popupmenu_TDPstate, 'Value');
-        p.proj{proj}.prm{tpe}.clst_start{2}(state,1) = val;
+        p.proj{proj}.prm{tag,tpe}.clst_start{2}(state,1) = val;
         h.param.TDP = p;
         guidata(h_fig, h);
         updateFields(h_fig, 'TDP');

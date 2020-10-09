@@ -79,8 +79,6 @@ wtxt0 = getUItextWidth(str5,p.fntun,p.fntsz1,'normal',p.tbl);
 wcb0 = getUItextWidth(str6,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
 wtxt1 = getUItextWidth(str7,p.fntun,p.fntsz1,'normal',p.tbl);
 wedit1 = wedit0/2;
-wpan0 = poslst0(3);
-hpan0 = p.mgpan+p.mg+3*p.mg/fact+htxt0+hpop0+hedit0*3;
 wpan1 = wedit1+wtxt0+2*p.mg;
 hpan1_1 = p.mgpan+p.mg+p.mg/2+4*p.mg/fact+6*hedit0;
 hpan1_2 = 2*p.mgpan+2*p.mg+3*p.mg/2+2*p.mg/fact+5*hedit0+hpop0+htxt0;
@@ -90,7 +88,7 @@ wpan2_2 = 2*p.mg+2*p.mg/fact+2*wedit0+wtxt1;
 wpan2 = 3*p.mg+wpan2_1+wpan2_2;
 wedit2 = wpan1+p.mg+wpan2;
 hedit1 = pospan(4)-3*p.mg-hpan1;
-waxes0 = pospan(3)-5*p.mg-wpan0-wpan1-wpan2;
+waxes0 = pospan(3)-5*p.mg-poslst0(3)-wpan1-wpan2;
 haxes0 = (pospan(4)-3*p.mg)/2;
 
 % GUI
@@ -127,15 +125,12 @@ h.pushbutton_thm_saveProj = uicontrol('style','pushbutton','parent',h_pan,...
     'bold','position',posbut4,'string',str4,'tooltipstring',ttstr4,...
     'callback',{@pushbutton_thm_saveProj_Callback,h_fig});
 
-x = p.mg;
-y = posbut4(2)-p.mg-hpan0;
-
 h.uipanel_HA_histogramAndPlot = uipanel('parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan0,hpan0],'title',ttl0);
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','title',...
+    ttl0);
 h = buildPanelHAhistogramAndPlot(h,p);
 
-x = x+wpan0+p.mg;
+x = p.mg+poslst0(3)+p.mg;
 y = pospan(4)-p.mg-hpan1;
 
 h.uipanel_HA_stateConfiguration = uipanel('parent',h_pan,'units',p.posun,...

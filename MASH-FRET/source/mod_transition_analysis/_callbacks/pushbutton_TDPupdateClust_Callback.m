@@ -10,7 +10,8 @@ if ~isempty(p.proj)
     p = h.param.TDP;
     proj = p.curr_proj; % current project
     tpe = p.curr_type(proj); % current channel type
-    prm = p.proj{proj}.prm{tpe}; % current channel parameters
+    tag = p.curr_tag(proj);
+    prm = p.proj{proj}.prm{tag,tpe}; % current channel parameters
     
     dt_bin = prm.plot{3}; % binned transitions + TDP coord. assignment
     TDP = prm.plot{2}; % TDP matrix
@@ -48,7 +49,7 @@ if ~isempty(p.proj)
                 pushbutton_TDPautoStart_Callback([],[],h_fig);
                 h = guidata(h_fig);
                 p = h.param.TDP;
-                prm = p.proj{proj}.prm{tpe}; % current channel parameters
+                prm = p.proj{proj}.prm{tag,tpe}; % current channel parameters
             else
                 return;
             end
@@ -66,14 +67,14 @@ if ~isempty(p.proj)
                     prm.clst_start{1}(7) ... % number of BS samples
                     prm.clst_start{1}(8)]; % number of BS replicates in one sample
 
-    plot_prm{1} = prm.plot{1}([1 2],1); % TDP x & y binning
-    plot_prm{2} = prm.plot{1}([1 2],[2 3]); % TDP x & y limits
+    plot_prm{1} = prm.plot{1}(1,1); % TDP x & y binning
+    plot_prm{2} = prm.plot{1}(1,[2 3]); % TDP x & y limits
     plot_prm{3} = [p.proj{proj}.frame_rate ... % frame rate
                    prm.plot{1}(4,1) ... % one/total transition count per molecule
                    prm.plot{1}(3,2) ... % conv./not TDP with Gaussian, o^2=0.0005
                    prm.plot{1}(3,3)]; % normalize/not TDP z-axis
 
-    res = clustTrans(dt_bin, TDP,plot_prm, clust_prm,h_fig);
+    res = clustTrans(dt_bin, TDP, plot_prm, clust_prm, h_fig);
     
     if isempty(res)
         return;
@@ -81,7 +82,7 @@ if ~isempty(p.proj)
     
     % save updated number of replicates
     prm.clst_start{1}(8) = res.n_rep; % updated number of replicates
-    p.proj{proj}.prm{tpe} = prm;
+    p.proj{proj}.prm{tag,tpe} = prm;
     h.param.TDP = p;
     guidata(h_fig, h);
 
@@ -121,7 +122,7 @@ if ~isempty(p.proj)
         prm = ud_kinPrm(prm,Jopt);
         
         % save data
-        p.proj{proj}.prm{tpe} = prm;
+        p.proj{proj}.prm{tag,tpe} = prm;
         h.param.TDP = p;
         guidata(h_fig, h);
         
