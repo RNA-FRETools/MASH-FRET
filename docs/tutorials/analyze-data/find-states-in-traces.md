@@ -136,41 +136,38 @@ To tag species missing emitter label `[E]`:
 1. Select tool 
    [Automatic sorting](../../trace-processing/functionalities/tm-automatic-sorting.html)  
      
-1. Select in **(a)** intensities of emitter `[E]` at specific excitation wavelength `[L]` nm `[E] at [L]nm` in 
-   [Data and histogram](../../trace-processing/functionalities/tm-automatic-sorting.html#data-and-histogram)  
-     
-1. In 
-   [Data and histogram](../../trace-processing/functionalities/tm-automatic-sorting.html#data-and-histogram), set parameters:  
+1. In panel 
+   [Data](../../trace-processing/functionalities/tm-automatic-sorting.html#data), set menu **(a)** to `total [E] (at [W]nm)`, the total intensity of emitter `[E]` with `[W]` the emitter's specific excitation wavelength, menu **(f)** to `none`, and set parameters:  
      
    <u>default</u>: option `original time traces` in menu **(b)**  
    <u>default</u>: parameters **(c)** and **(d)** to minimum and maximum intensities respectively  
-   <u>default</u>: parameter **(e)** to 100  
+   <u>default</u>: parameter **(e)** to 50  
      
 1. Define a range including the histogram peak centered on zero by clicking on the 
    [Histogram plot](../../trace-processing/functionalities/tm-automatic-sorting.html#histogram-plot) 
      
-1. In 
-   [Data range](../../trace-processing/functionalities/tm-automatic-sorting.html#data-range), set parameters:  
+1. In panel 
+   [Range](../../trace-processing/functionalities/tm-automatic-sorting.html#range), set parameters:  
      
    <u>defaut</u>: option `at least` in menu **(e)**  
    <u>defaut</u>: parameter **(f)** to 90%  
    <u>defaut</u>: option `percentage of the trace` in menu **(h)**  
      
-1. Select the option `[E] at [L]nm` in menu **(a)** of 
+1. Select the option `total [E] (at [W]nm)` in menu **(a)** of 
    [Concatenated trace plot](../../trace-processing/functionalities/tm-automatic-sorting.html#concatenated-trace-plot) and verify that selected traces are fluctuating around 0  
      
 1. Press 
-   ![Save subgroup](../../assets/images/gui/TP-but-save-subgroup.png "Save subgroup") in 
-   [Data range](../../trace-processing/functionalities/tm-automatic-sorting.html#data-range) to save range settings  
+   ![Save range](../../assets/images/gui/TP-but-save-range.png "Save range") in panel 
+   [Range](../../trace-processing/functionalities/tm-automatic-sorting.html#range) to save range settings  
      
-1. Select the `no-[E]` tag in menu **(b)** of 
-   [Molecule subgroups](../../trace-processing/functionalities/tm-automatic-sorting.html#molecule-subgroups) and press 
+1. Select menu **(b)** to `no-[E]` in 
+   [Tags](../../trace-processing/functionalities/tm-automatic-sorting.html#tags) and press 
    ![Tag](../../assets/images/gui/TP-but-tag.png "Tag") to assign this label to the selected range  
      
 1. Press 
-   ![APPLY TAG TO MOLECULES](../../assets/images/gui/TP-but-apply-tag-to-molecules.png "APPLY TAG TO MOLECULES") to tag all molecules missing emitter label `[E]` with `no-[E]`
+   ![TAG MOLECULES](../../assets/images/gui/TP-but-tag-molecules.png "TAG MOLECULES") to tag with `no-[E]` all molecules missing emitter `[E]` 
 
-To clear species missing emitter label `[E]` from the project:
+To clear species missing emitter `[E]` from the project:
 
 {: .procedure }
 1. Select tool 
