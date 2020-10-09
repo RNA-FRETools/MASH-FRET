@@ -54,7 +54,10 @@ When you start MASH-FRET the **main user interface** and **action history** open
 The main user interface appears in its default layout and includes:
 * a **tool bar** that allows the access the different <u>modules</u> (default: Video Processing) and to set the default <u>root folder</u> where files will be exported,
 * a **main area** that contains the selected module,
-* a **menu bar** that allows to modify the action history <u>view</u>, set <u>file overwriting</u> options and execute program <u>routines</u> (*advanced use*).
+* a **menu bar** that allows to modify the action history <u>view</u>, execute program <u>routines</u> (*advanced use*), set <u>file overwriting</u> options and access external tools 
+[Restructure files](trace-processing/functionalities/merge-projects.html#restructure-alex-data), 
+[Bin time axis](trace-processing/functionalities/bin-trajectories.html#bin-traces-and-export-ascii-files) and 
+[Check toolbox dependencies](System_requirements.html).
 
 The action history lists the main events occurring in the program.
 To keep track, logs are automatically written in a 
