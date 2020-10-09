@@ -1,4 +1,4 @@
-function [ES,ok,str] = getES(p_proj,prm,fact,h_fig)
+function [ES,ok,str] = getES(i,p_proj,prm,fact,h_fig)
 
 % collect FRET dimensions
 FRET = p_proj.FRET;
@@ -6,7 +6,7 @@ S = p_proj.S;
 nF = size(FRET,1);
 
 % initialize results
-ES = cell(1,nF);
+ES = [];
 ok = false;
 str = [];
 
@@ -14,12 +14,11 @@ str = [];
 m_i = p_proj.coord_incl;
 N = size(m_i,2);
 insubgroup = true(nF,N);
-for i = 1:nF
-    s = find(S(:,1)==FRET(i,1) & S(:,2)==FRET(i,2),1);
-    if isempty(s)
-        insubgroup(i,:) = false;
-        continue
-    end
+
+s = find(S(:,1)==FRET(i,1) & S(:,2)==FRET(i,2),1);
+if isempty(s)
+    insubgroup(i,:) = false;
+else
     tag = prm(i,1)-1;
     if tag>0
         insubgroup(i,:) = m_i & p_proj.molTag(:,tag)';
@@ -61,7 +60,7 @@ end
 lb = 0;
 h = guidata(h_fig);
 if ~isfield(h, 'barData')
-    loading_bar('init',h_fig,numel(mls)+nF,'Build ES histograms ...');
+    loading_bar('init',h_fig,numel(mls)+1,'Build ES histograms ...');
     h = guidata(h_fig);
     h.barData.prev_var = h.barData.curr_var;
     guidata(h_fig, h);
@@ -84,18 +83,15 @@ for m = mls
     end
 end
 
-for i = 1:nF
-    s = find(S(:,1)==FRET(i,1) & S(:,2)==FRET(i,2));
-    if isempty(s)
-        ES{i} = NaN;
-        continue
-    end
-    
+s = find(S(:,1)==FRET(i,1) & S(:,2)==FRET(i,2));
+if isempty(s)
+    ES = NaN;
+else
     E = E_AD(~~id_m(i,:),i);
     St = S_AD(~~id_m(i,:),s);
-    
-    [ES{i},~,~,~] = hist2D([E(:),1./St(:)],[prm(i,2:4);prm(i,5:7)],'fast');
-    
+
+    [ES,~,~,~] = hist2D([E(:),1./St(:)],[prm(i,2:4);prm(i,5:7)],'fast');
+
     if lb
         err = loading_bar('update', h_fig);
         if err

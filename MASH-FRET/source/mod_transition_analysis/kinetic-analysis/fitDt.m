@@ -5,7 +5,7 @@ res = [];
 if isempty(hist_ref)
     setContPan(cat(2,'Dwell time histogram is empty: fitting is not ',...
         'available'),'warning',h_fig);
-    return;
+    return
 end
 
 strch = size(p_fit.start,2) == 3;
@@ -51,7 +51,7 @@ for n = 1:N
     if isempty(dt_m_j1j2)
         disp(cat(2,'molecule ',num2str(mols(n)),' excluded: no dwell time',...
             ' left after exclusion.'));
-        continue;
+        continue
     end
     
     dt{size(dt,2)+1} = dt_m_j1j2;
@@ -69,7 +69,7 @@ end
 if size(dt,2)==0
     setContPan(cat(2,'No dwell time is left after excluding first last ',...
         'occurrence in each trajectory.'),'error',h_fig);
-    return;
+    return
 end
 
 disp(sprintf(cat(2,'molecules ',repmat('%i ',[1,numel(mol_incl)]),...
@@ -83,7 +83,7 @@ if boba
     boba_res = BOBA_ana(dt, p_fit, strch, nExp, rspl, n_rpl, n_spl, ...
         w_vect, h_fig);
     if isempty(boba_res)
-        return;
+        return
     end
     
     boba_mean = mean(boba_res.cf,1);
@@ -98,7 +98,7 @@ ref_res = mmexpfit_mod(x_data, y_data, p_fit, nExp, strch);
 if isempty(ref_res)
     res = [];
     setContPan('Fitting process interrupted', 'error', h.figure_MASH);
-    return;
+    return
 end
 
 if ~strch
@@ -130,6 +130,32 @@ else
     res.boba_mean = [];
     res.boba_inf = [];
     res.boba_sup = [];
+end
+
+% display action
+if boba
+    if strch
+        str = ['The graph illustrates both the variation in the',...
+            'decay constant and the stretching factor beta.'];
+    else
+        str = ['The graph illustrates the variation in the',...
+            'decay constant.'];
+    end
+
+    if p_boba(3) % weighting
+        str1 = str;
+        str2 = ['(1) You have performed weighted bootstrapping, ' ...
+            'i.e. time traces with longer observation times are ' ...
+            'more likely to be selected. This will naturally favor' ...
+            'the selection of longer dwell times and may lead to ' ...
+            'deviations from the reference (blue dots, solid line)' ...
+            '.\n\n(2) '];
+        str = sprintf([str2,str1]);
+    end
+
+    setContPan(str, 'success', h_fig);
+else
+    setContPan('Fitting completed.', 'success', h_fig);
 end
 
 

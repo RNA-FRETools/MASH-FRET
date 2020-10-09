@@ -14,5 +14,5 @@ else
     set(obj, 'BackgroundColor', [1 1 1]);
     h.param.sim.camNoise(ind,1) = val;
     guidata(h_fig, h);
-    updateFields(h_fig, 'sim');
+    ud_S_vidParamPan(h_fig);
 end

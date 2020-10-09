@@ -1,33 +1,28 @@
 function pushbutton_TDPautoStart_Callback(obj, evd, h_fig)
+
 h = guidata(h_fig);
 p = h.param.TDP;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    tpe = p.curr_type(proj);
-    tag = p.curr_tag(proj);
-    prm = p.proj{proj}.prm{tag,tpe};
-    meth = prm.clst_start{1}(1);
-    
-    if meth == 1 % kmean
-        Kmax = prm.clst_start{1}(3);
-        min_x = prm.plot{1}(1,2);
-        max_x = prm.plot{1}(1,3);
-        min_y = prm.plot{1}(2,2);
-        max_y = prm.plot{1}(2,3);
-
-        delta = (max([max_x max_y])-min([min_x min_y]))/(Kmax+1);
-        
-        prm.clst_start{2}(:,1) = min([min_x min_y]) + delta*(1:Kmax)';
-        prm.clst_start{2}(:,2) = Inf*ones(Kmax,1);
-        for i = 1:Kmax*(Kmax-1)
-            if i > size(prm.clst_start{3},1)
-                prm.clst_start{3}(i,:) = p.colList(i,:);
-            end
-        end
-        
-        p.proj{proj}.prm{tag,tpe} = prm;
-        h.param.TDP = p;
-        guidata(h_fig, h);
-        updateFields(h_fig, 'TDP');
-    end
+if isempty(p.proj)
+    return
 end
+
+proj = p.curr_proj;
+tpe = p.curr_type(proj);
+tag = p.curr_tag(proj);
+curr = p.proj{proj}.curr{tag,tpe};
+meth = curr.clst_start{1}(1);
+
+if ~sum(meth==[1,3]) % not kmean or manual
+    return
+end
+
+curr = setDefKmean(curr);
+
+p.proj{proj}.curr{tag,tpe} = curr;
+
+h.param.TDP = p;
+guidata(h_fig, h);
+
+% update plots and GUI
+updateFields(h_fig, 'TDP');
+

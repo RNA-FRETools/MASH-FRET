@@ -60,4 +60,7 @@ h.edit_TDPcolour = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,hedit0],...
     'enable','inactive');
 
+% store default color list
+h.color_list = str0;
+
 

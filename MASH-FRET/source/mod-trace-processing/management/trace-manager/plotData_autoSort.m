@@ -52,12 +52,12 @@ if ~is2D % 1D histograms
     ylabel(h.tm.axes_histSort, 'Frequency count');
     
     % set axis limits
-    xlim(h.tm.axes_histSort, [iv(1),iv(end)]);
+    xlim(h.tm.axes_histSort, limx);
     ylim(h.tm.axes_histSort, 'auto');
 
     % add mask
     yaxis = get(h.tm.axes_histSort,'ylim');
-    drawMask(h_fig,[iv(1) iv(end)],yaxis,1);
+    drawMask(h_fig,limx,yaxis,1);
     
     str_d = '1D';
     
@@ -117,7 +117,7 @@ else % E-S histograms
         h.tm.axes_histSort,'hittest','off','pickableparts','none');
     
     % plot range
-    drawMask(h_fig,[ivx(1) ivx(end)],[ivy(1) ivy(end)],2);
+    drawMask(h_fig,limx,limy,2);
     
     if sum(sum(P2D))
         set(h.tm.axes_histSort,'CLim',[0,max(max(P2D))]);
@@ -136,8 +136,8 @@ else % E-S histograms
         ylabel(h.tm.axes_histSort,dat3.label{indy,jy});
     end
 
-    xlim(h.tm.axes_histSort,[ivx(1),ivx(end)]);
-    ylim(h.tm.axes_histSort,[ivy(1),ivy(end)]);
+    xlim(h.tm.axes_histSort,limx);
+    ylim(h.tm.axes_histSort,limy);
     
     str_d = '2D';
 end

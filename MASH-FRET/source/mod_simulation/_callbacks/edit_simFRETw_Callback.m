@@ -11,5 +11,5 @@ else
     state = get(h.popupmenu_states, 'Value');
     h.param.sim.FRETw(state) = val;
     guidata(h_fig, h);
-    updateFields(h_fig, 'sim');
+    ud_S_moleculesPan(h_fig);
 end

@@ -157,7 +157,7 @@ y = y-p.mg-haxes0;
 
 h.axes_TDPplot2 = axes('parent',h_pan,'units',p.posun,'fontunits',p.fntun,...
     'fontsize',p.fntsz1,'position',[x,y,waxes0,haxes0],'xlim',lim0,'ylim',...
-    lim0);
+    lim0, 'nextplot', 'replacechildren');
 h_axes = h.axes_TDPplot2;
 xlabel(h_axes,xlbl0);
 ylabel(h_axes,ylbl0);

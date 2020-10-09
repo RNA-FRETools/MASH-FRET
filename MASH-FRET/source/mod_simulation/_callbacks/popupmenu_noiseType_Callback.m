@@ -18,4 +18,4 @@ h = guidata(h_fig);
 h.param.sim.noiseType = noiseType;
 guidata(h_fig, h);
 
-updateFields(h_fig, 'sim');
+ud_S_vidParamPan(h_fig);

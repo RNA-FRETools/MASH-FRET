@@ -31,7 +31,7 @@ bleachT = h.param.sim.bleach_t;
 K = h.param.sim.nbStates;
 impPrm = h.param.sim.impPrm;
 molPrm = h.param.sim.molPrm;
-imp_kx = impPrm && isfield(molPrm, 'kx');
+imp_kx = impPrm & isfield(molPrm, 'kx');
 
 if imp_kx
 %     kx_all = molPrm.kx*expT; % kinetic cst. in frame-1
@@ -91,7 +91,7 @@ if K>1 && isTrans
             kx = kx_all(1:K,1:K,n);
             
             % identify zero sums in rate matrix
-            if ~sum(kx,1) || ~sum(kx,2)
+            if sum(sum(kx,1)>0)~=K || sum(sum(kx,2)>0)~=K
                 setContPan(cat(2,'Simulation aborted: at least one ',...
                     'transition from and to each state must be defined ',...
                     '(rate non-null).'),'error',h_fig);

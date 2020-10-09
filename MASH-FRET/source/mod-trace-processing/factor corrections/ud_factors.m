@@ -10,7 +10,9 @@ end
 proj = p.curr_proj;
 mol = p.curr_mol(proj);
 FRET = p.proj{proj}.FRET;
+S = p.proj{proj}.S;
 nFRET = size(FRET,1);
+nS = size(S,1);
 labels = p.proj{proj}.labels;
 clr = p.proj{proj}.colours;
 
@@ -20,6 +22,11 @@ p_pan = p.proj{proj}.curr{mol}{6};
 
 set(h.popupmenu_gammaFRET,'Value',1,'String',...
     getStrPop('corr_gamma',{FRET labels clr}));
+
+isS = false;
+if nS>0
+    isS = sum(S(:,1)==FRET(curr_fret,1) & S(:,2)==FRET(curr_fret,2));
+end
 
 if nFRET==0
     set([h.text_TP_factors_data h.popupmenu_gammaFRET ...
@@ -69,6 +76,12 @@ switch p_pan{2}(curr_fret)
             cat(2,'<html><b>Open method settings</b> for factor ',...
             'estimation via linear regression.</html>'));
 
+end
+
+if ~isS
+    set([h.text_TP_factors_beta,h.edit_betaCorr],'enable','off');
+else
+    set(h.text_TP_factors_beta,'enable','on');
 end
 set(h.popupmenu_TP_factors_method,'Enable','on','Value',...
     p_pan{2}(1,curr_fret)+1);

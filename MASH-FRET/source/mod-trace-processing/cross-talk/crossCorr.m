@@ -14,8 +14,8 @@ chanExc = p.proj{proj}.chanExc;
 labels = p.proj{proj}.labels;
 
 isCrossCorr = ~isempty(p.proj{proj}.intensities_crossCorr) && ...
-    prod(prod(prod(double(~isnan(p.proj{proj}.intensities_crossCorr(:, ...
-    ((mol-1)*nChan+1):mol*nChan,:))),1),2),3);
+    ~all(sum(sum(isnan(p.proj{proj}.intensities_crossCorr(:, ...
+    ((mol-1)*nChan+1):mol*nChan,:)),2),3));
 
 if ~isCrossCorr
     

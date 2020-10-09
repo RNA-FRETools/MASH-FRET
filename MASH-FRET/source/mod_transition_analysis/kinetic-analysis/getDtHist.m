@@ -1,8 +1,20 @@
 function hist_ref = getDtHist(clust_dat, trans_id, mols, excl, wght)
 
-nMol = numel(mols);
+hist_ref = [];
+
 j1 = trans_id(1);
 j2 = trans_id(2);
+
+% check for at least one/two transition in histogram
+clust_k = clust_dat(clust_dat(:,7)==j1 & clust_dat(:,8)==j2,:);
+if size(clust_k,1)<=excl
+    return
+end
+
+if isempty(mols)
+    mols = unique(clust_dat(:,4)); % all molecules
+end
+nMol = numel(mols);
 
 dt_j1j2 = cell(1,nMol);
 w_vect = ones(nMol,1);

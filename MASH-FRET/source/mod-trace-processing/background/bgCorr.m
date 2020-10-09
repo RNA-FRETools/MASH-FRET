@@ -3,8 +3,8 @@ proj = p.curr_proj;
 nC = p.proj{proj}.nb_channel;
 
 isBgCorr = ~isempty(p.proj{proj}.intensities_bgCorr) && ...
-    prod(prod(prod(double(~isnan(p.proj{proj}.intensities_bgCorr(:, ...
-    ((mol-1)*nC+1):mol*nC,:))),1),2),3);
+    ~all(sum(sum(isnan(p.proj{proj}.intensities_bgCorr(:, ...
+    ((mol-1)*nC+1):mol*nC,:)),2),3));
 
 if ~isBgCorr
     isCoord = p.proj{proj}.is_coord;

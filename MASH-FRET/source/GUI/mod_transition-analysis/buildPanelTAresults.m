@@ -37,7 +37,6 @@ str5 = '>>';
 str6 = 'reset';
 ttstr0 = wrapStrToWidth('<b>Model complexity:</b> optimum number of states; when BOBA FRET activated, the bootstrap mean is shown here.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr1 = wrapStrToWidth('<b>Sample variability:</b> when BOBA FRET activated, the bootstrap standard deviation of optimum number of states is shown here.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
-ttstr2 = wrapStrToWidth('Select an inferred <b>state configuration</b> to show on the TDP plot: configurations are labelled with the corresponding number of states.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr3 = wrapStrToWidth('<b>Export transition clusters</b> from the selected state configuration to panel "State trasition rates" for dwell time analysis.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 ttstr4 = wrapStrToWidth('<b>Delete clustering</b> results.',p.fntun,p.fntsz1,'normal',p.wttstr,'html',p.hndls);
 
@@ -48,7 +47,7 @@ h_pan = h.uipanel_TA_results;
 % dimensions
 pospan = get(h_pan,'position');
 waxes0 = pospan(3)-p.mg-p.mg/2-p.mg/fact-2*wedit0;
-haxes0 = pospan(4)-p.mgpan;
+haxes0 = pospan(4)-p.mgpan-p.mg;
 wtxt0 = pospan(3)-p.mg-p.mg/2-waxes0;
 wtxt1 = getUItextWidth(str3,p.fntun,p.fntsz1,'normal',p.tbl);
 wbut0 = getUItextWidth(str5,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
@@ -61,7 +60,7 @@ y = pospan(4)-p.mgpan-haxes0;
 
 h.axes_tdp_BIC = axes('parent',h_pan,'units',p.posun,'fontunits',p.fntun,...
     'fontsize',p.fntsz1,'position',[x,y,waxes0,haxes0],'ylim',lim0,'xtick',...
-    []);
+    [], 'nextplot', 'replacechildren');
 h_axes = h.axes_tdp_BIC;
 title(h_axes,axttl0);
 tiaxes = get(h_axes,'tightinset');
@@ -114,7 +113,7 @@ y = y-(hpop0-htxt0)/2;
 
 h.popupmenu_tdp_model = uicontrol('style','popupmenu','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wpop0,hpop0],'string',str4,'tooltipstring',ttstr2,'callback',...
+    [x,y,wpop0,hpop0],'string',str4,'callback',...
     {@popupmenu_tdp_model_Callback,h_fig});
 
 x = x+wpop0+p.mg/fact;

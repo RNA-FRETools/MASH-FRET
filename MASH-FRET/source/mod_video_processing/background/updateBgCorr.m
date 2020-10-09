@@ -29,12 +29,13 @@ function img = applyBg(bgType, n, img, h)
 
 nChan = h.param.movPr.nChan;
 sub_w = floor(h.movie.pixelX/nChan);
-lim = [1 (1:nChan-1)*sub_w h.movie.pixelX];
+lim = [0 (1:nChan-1)*sub_w h.movie.pixelX];
 bgCorr = h.param.movPr.bgCorr;
 movBg_p = h.param.movPr.movBg_p;
 
 for i = 1:nChan
-    int = img(:,lim(i):lim(i+1));
+    frames = (lim(i)+1):lim(i+1);
+    int = img(:,frames);
     
     % image filters: gaussian, outlier, ggf, lwf, gwf, 
     % histotresh, simpletresh
@@ -43,14 +44,14 @@ for i = 1:nChan
         myfilter(1).P1 = bgCorr{n,i+1}(1);
         myfilter(1).P2 = bgCorr{n,i+1}(2);
         int = FilterArray(int, myfilter);
-        img(:,lim(i):lim(i+1)) = int;
+        img(:,frames) = int;
         
     elseif bgType == 3 % mean filter
-        img(:,lim(i):lim(i+1)) = filter2(ones(bgCorr{n,i+1}(1))/ ...
+        img(:,frames) = filter2(ones(bgCorr{n,i+1}(1))/ ...
             (bgCorr{n,i+1}(1)^2),int);
         
     elseif bgType == 4 % median filter
-        img(:,lim(i):lim(i+1)) = medfilt2(int, [bgCorr{n,i+1}(1) ...
+        img(:,frames) = medfilt2(int, [bgCorr{n,i+1}(1) ...
             bgCorr{n,i+1}(1)]);
     
     % mean, most frequent or histotresh
@@ -63,7 +64,7 @@ for i = 1:nChan
         if sum(double(bgType == [11 12]))
             int(int<bg) = bg;
         end
-        img(:,lim(i):lim(i+1)) = int - bg;
+        img(:,frames) = int - bg;
 
 
     elseif bgType == 14 % Ha-all
@@ -83,13 +84,13 @@ for i = 1:nChan
             guidata(h.figure_MASH, h);
         end
         bg = BgCorr_ha32([h.movie.pixelX h.movie.pixelY],h.movie.avImg)-10;
-        img(:,lim(i):lim(i+1)) = img(:,lim(i):lim(i+1))- ...
-            bg(:,lim(i):lim(i+1));
+        img(:,frames) = img(:,frames)- ...
+            bg(:,frames);
         
     elseif bgType == 15 % Ha-each
         bg = BgCorr_ha32([h.movie.pixelX h.movie.pixelY],img)-10;
-        img(:,lim(i):lim(i+1)) = img(:,lim(i):lim(i+1))- ...
-            bg(:,lim(i):lim(i+1));
+        img(:,frames) = img(:,frames)- ...
+            bg(:,frames);
     
     elseif bgType == 16 % empty function 1: Twotone
         tol = bgCorr{n,i+1}(1);
@@ -97,7 +98,7 @@ for i = 1:nChan
         int = bpass(int, noise, tol);
         int([1:tol size(int,1)-tol+1:size(int,1)],:) = 0;
         int(:,[1:tol size(int,2)-tol+1:size(int,2)]) = 0;
-        img(:,lim(i):lim(i+1)) = int;
+        img(:,frames) = int;
         
     elseif bgType == 17 % empty function 2: subtract image
         dat2sub = movBg_p{bgType,1};
@@ -105,23 +106,23 @@ for i = 1:nChan
             [data ok] = getFrames(dat2sub.file, h.movie.frameCurNb, ...
                 {dat2sub.fCurs, [dat2sub.pixelX dat2sub.pixelY], ...
                 dat2sub.frameLen}, h.figure_MASH);
-            int = data.frameCur(:,lim(i):lim(i+1));
-            img(:,lim(i):lim(i+1)) = img(:,lim(i):lim(i+1)) - int;
+            int = data.frameCur(:,frames);
+            img(:,frames) = img(:,frames) - int;
         elseif dat2sub.frameLen == 1
             [data ok] = getFrames(dat2sub.file, 1, {dat2sub.fCurs, ...
                 [dat2sub.pixelX dat2sub.pixelY], dat2sub.frameLen}, ...
                 h.figure_MASH);
-            int = data.frameCur(:,lim(i):lim(i+1));
-            img(:,lim(i):lim(i+1)) = img(:,lim(i):lim(i+1)) - int;
+            int = data.frameCur(:,frames);
+            img(:,frames) = img(:,frames) - int;
         end
         
     elseif bgType == 18 % multiplication
         fact = bgCorr{n,i+1}(1);
-        img(:,lim(i):lim(i+1)) = int*fact;
+        img(:,frames) = int*fact;
         
     elseif bgType == 19 % addition
         os = bgCorr{n,i+1}(1);
-        img(:,lim(i):lim(i+1)) = int + os;
+        img(:,frames) = int + os;
         
     end
 end

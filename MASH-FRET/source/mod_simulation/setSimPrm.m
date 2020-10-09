@@ -34,17 +34,26 @@ function [p,errmsg] = setSimPrm(s, movDim)
 p = [];
 errmsg = {};
 
+% defaults
+Jmax = 5;
+
 if isfield(s,'FRET') && ~isempty(s.FRET)
     if size(s.FRET,2)==2
-        
-        % modified by MH, 18.12.2019
-%         p.stateVal = s.FRET(:,1,:);
-%         p.FRETw = s.FRET(:,2,:);
-        p.stateVal = permute(s.FRET(:,1,:),[3,1,2]);
-        p.FRETw = permute(s.FRET(:,2,:),[3,1,2]);
-        
-        p.molNb = size(s.FRET,3);
-        p.nbStates = size(s.FRET,1);
+        if size(s.FRET,1)>Jmax && (~isfield(s, 'trans_rates') || ...
+                (isfield(s, 'trans_rates') && isempty(s.trans_rates)))
+            errmsg = cat(2,errmsg,'No FRET matrix imported:',cat(2,'>> ',...
+                'the number of states (',num2str(size(s.FRET,1)),') is ',...
+                'greater than the maximum supported by MASH interface (',...
+                num2str(Jmax),'): larger FRET matrices, must be imported',...
+                ' along with the corresponding transition rate matrices.'),...
+                ' ');
+        else
+            p.stateVal = permute(s.FRET(:,1,:),[3,1,2]);
+            p.FRETw = permute(s.FRET(:,2,:),[3,1,2]);
+
+            p.molNb = size(s.FRET,3);
+            p.nbStates = size(s.FRET,1);
+        end
     else
         errmsg = cat(2,errmsg,'No FRET matrix imported:',cat(2,'>> the ',...
             'number of columns in the FRET matrix is not consistent: at ',...
@@ -182,8 +191,8 @@ if isfield(s, 'coordinates') && ~isempty(s.coordinates)
         end
     else
         if ~isfield(p,'molNb') % no FRET, transition rate, gamma factor and/or intensity matrices loaded
-            disp(cat(2,'Import presets for ',num2str(p.molNb),' molecules'));
             p.molNb = size(coord,1);
+            disp(cat(2,'Import presets for ',num2str(p.molNb),' molecules'));
         end
         p.coord = coord;
         disp('Coordinates successfully imported');

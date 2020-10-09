@@ -14,7 +14,8 @@ function p = gammaCorr(h_fig, m, p)
 % created: by MH, 27.3.2019
 
 proj = p.curr_proj;
-nFRET = size(p.proj{proj}.FRET,1);
+FRET = p.proj{proj}.FRET;
+nFRET = size(FRET,1);
 if nFRET<1
     return
 end
@@ -23,6 +24,7 @@ prm = p.proj{proj}.prm{m}{6};
 method = prm{2};
 
 % collect molecule traces
+chanExc = p.proj{proj}.chanExc;
 nC = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
 incl = p.proj{proj}.bool_intensities(:,m);
@@ -30,7 +32,9 @@ I_den = p.proj{proj}.intensities_denoise(incl,((m-1)*nC+1):m*nC,:);
 I_dta = p.proj{proj}.intensities_DTA(incl,((m-1)*nC+1):m*nC,:);
 prm_dta = p.proj{proj}.curr{m}{4};
 
-for i = 1:nFRET
+[o,id] = sort(chanExc(FRET(:,1)),'descend');
+
+for i = id
 
     if method(i)==1 % photobleaching-based
 
@@ -68,10 +72,11 @@ for i = 1:nFRET
 
     elseif method(i)==2 % ES linear regression
 
-        [p,ES,gamma,beta,ok,str] = gammaCorr_ES(i,p,prm{4},h_fig);
+        [p,ES,gamma,beta,ok,str] = gammaCorr_ES(i,p,prm{4},...
+            p.proj{proj}.prm{m}{6}{1},h_fig);
         
         % store all ES histogram (even failures)
-        p.proj{proj}.ES = ES;
+        p.proj{proj}.ES{i} = ES;
 
         if ~ok
             p.proj{proj}.prm{m}{6}{2}(i) = 0;

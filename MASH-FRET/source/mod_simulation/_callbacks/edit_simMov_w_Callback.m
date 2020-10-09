@@ -22,5 +22,5 @@ else
     h.param.sim = resetSimCoord(h.param.sim,h_fig);
     
     guidata(h_fig, h);
-    updateFields(h_fig, 'sim');
+    ud_S_vidParamPan(h_fig);
 end

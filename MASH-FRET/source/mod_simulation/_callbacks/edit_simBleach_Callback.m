@@ -21,5 +21,5 @@ else
     end
     
     guidata(h_fig, h);
-    updateFields(h_fig, 'sim');
+    ud_S_moleculesPan(h_fig);
 end

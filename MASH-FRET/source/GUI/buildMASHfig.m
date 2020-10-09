@@ -79,7 +79,8 @@ wedit = wfig-8*mg-wbut0-wbut1-2*wbut2-wbut3-wtxt-wbut4;
 h_fig = figure('units','pixels','numbertitle','off','menubar','none',...
     'position',[xfig,yfig,wfig,hfig],'visible','off');
 set(h_fig,'closerequestfcn',@figure_MASH_CloseRequestFcn,...
-    'sizechangedfcn',@figure_MASH_SizeChangedFcn);
+    'sizechangedfcn',@figure_MASH_SizeChangedFcn,'windowbuttonupfcn',...
+    @figure_MASH_WindowButtonUpFcn);
 h.figure_MASH = h_fig;
 
 

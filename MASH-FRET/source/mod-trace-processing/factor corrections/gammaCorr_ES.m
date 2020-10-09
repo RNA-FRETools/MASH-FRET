@@ -1,4 +1,4 @@
-function [p,ES,gamma,beta,ok,str] = gammaCorr_ES(i,p,prm,h_fig)
+function [p,ES,gamma,beta,ok,str] = gammaCorr_ES(i,p,prm,fact,h_fig)
 
 proj = p.curr_proj;
 p_proj = p.proj{proj};
@@ -7,7 +7,7 @@ beta = NaN;
 str = [];
 
 if size(p_proj.S,1)==0
-    ES = repmat({NaN},size(p_proj.ES));
+    ES = NaN;
     str = 'no stoichiometry available';
     ok = false;
     return
@@ -24,29 +24,31 @@ elseif isempty(p_proj.ES{i})
     end
     
     % build ES hist
-    [ES,ok,str] = getES(p_proj,prm,[],h_fig);
+    fact_i = fact;
+    fact_i(:,i) = ones(2,1);
+    [ES,ok,str] = getES(i,p_proj,prm,fact_i,h_fig);
     if ~ok
         return
     end
-    if numel(ES{i})==1 && isnan(ES{i})
+    if numel(ES)==1 && isnan(ES)
         ok = false;
         str = 'no stoichiometry available';
         return
     end
     
 elseif numel(p_proj.ES{i})==1 && isnan(p_proj.ES{i})
-    ES = p_proj.ES;
+    ES = p_proj.ES{i};
     str = 'no stoichiometry available';
     ok = false;
     return
     
 else
-    ES = p_proj.ES;
+    ES = p_proj.ES{i};
 end
 
 % calculate gamma
 disp('ES linear regression: perform linear regression...');
-[gamma,beta,ok] = ESlinreg(ES{i},prm(i,:));
+[gamma,beta,ok] = ESlinreg(ES,prm(i,:));
 if ~ok
     str = 'ES linear regression failed';
     return

@@ -313,7 +313,8 @@ q = guidata(h_fig2);
 
 p = h.param.ttPr;
 proj = p.curr_proj;
-nFRET = size(p.proj{proj}.FRET,1);
+mol = p.curr_mol(proj);
+fact = p.proj{proj}.curr{mol}{6}{1};
 prm = q.prm{2};
 gamma = q.prm{1}(1,1);
 beta = q.prm{1}(2,1);
@@ -352,12 +353,12 @@ if ~q.prm{3}
     plot_ESlinRegOpt(q.axes_ES,q.prm{4}{fret},prm(fret,:),q.prm{1});
 else
     if isempty(q.prm{5})
-        [ES,ok,str] = getES(p.proj{proj},prm,...
-            cat(2,[gamma;beta],ones(2,nFRET-1)),h_fig);
+        fact(:,fret) = q.prm{1};
+        [ES,ok,str] = getES(fret,p.proj{proj},prm,fact,h_fig);
         if ~ok
             setContPan(str,'warning',h_fig);
         end
-        q.prm{5} = ES{fret};
+        q.prm{5} = ES;
     end
     plot_ESlinRegOpt(q.axes_ES,q.prm{5},prm(fret,:),[1;1]);
 end
@@ -372,15 +373,17 @@ h = guidata(h_fig);
 q = guidata(h_fig2);
 p = h.param.ttPr;
 proj = p.curr_proj;
+mol = p.curr_mol(proj);
+prev_fact = p.proj{proj}.curr{mol}{6}{1};
 
 curr = q.prm{2};
 fret = p.proj{proj}.fix{3}(8);
 p.proj{proj}.ES = q.prm{4}; % modify temporary ES field in project
 
-[p,ES,gamma,beta,ok,str] = gammaCorr_ES(fret,p,curr,h_fig);
+[p,ES,gamma,beta,ok,str] = gammaCorr_ES(fret,p,curr,prev_fact,h_fig);
 
-q.prm{4} = ES;
-if numel(q.prm{4}{fret})==1 && isnan(q.prm{4}{fret})
+q.prm{4}{fret} = ES;
+if numel(ES)==1 && isnan(ES)
     q.prm{5} = NaN;
 end
 guidata(h_fig2,q);
@@ -445,7 +448,7 @@ if val==q.prm{2}(fret,1)
 end
 
 q.prm{2}(fret,1) = val;
-q.prm{4} = cell(1,size(q.prm{4},2)); % reset ES
+q.prm{4}{fret} = []; % reset ES
 q.prm{5} = []; % reset corrected ES
 guidata(h_fig2,q);
 
@@ -474,7 +477,7 @@ if val==q.prm{2}(fret,3)
 end
 
 q.prm{2}(fret,3) = val;
-q.prm{4} = cell(1,size(q.prm{4},2)); % reset ES
+q.prm{4}{fret} = []; % reset ES
 q.prm{5} = []; % reset corrected ES
 guidata(h_fig2,q);
 
@@ -501,7 +504,7 @@ if val==q.prm{2}(fret,4)
 end
 
 q.prm{2}(fret,4) = val;
-q.prm{4} = cell(1,size(q.prm{4},2)); % reset ES
+q.prm{4}{fret} = []; % reset ES
 q.prm{5} = []; % reset corrected ES
 guidata(h_fig2,q);
 
@@ -529,7 +532,7 @@ if val==q.prm{2}(fret,2)
 end
 
 q.prm{2}(fret,2) = val;
-q.prm{4} = cell(1,size(q.prm{4},2)); % reset ES
+q.prm{4}{fret} = []; % reset ES
 q.prm{5} = []; % reset corrected ES
 guidata(h_fig2,q);
 
@@ -557,7 +560,7 @@ if val==q.prm{2}(fret,6)
 end
 
 q.prm{2}(fret,6) = val;
-q.prm{4} = cell(1,size(q.prm{4},2)); % reset ES
+q.prm{4}{fret} = []; % reset ES
 q.prm{5} = []; % reset corrected ES
 guidata(h_fig2,q);
 
@@ -584,7 +587,7 @@ if val==q.prm{2}(fret,7)
 end
 
 q.prm{2}(fret,7) = val;
-q.prm{4} = cell(1,size(q.prm{4},2)); % reset ES
+q.prm{4}{fret} = []; % reset ES
 q.prm{5} = []; % reset corrected ES
 guidata(h_fig2,q);
 
@@ -613,7 +616,7 @@ if val==q.prm{2}(fret,5)
 end
 
 q.prm{2}(fret,5) = val;
-q.prm{4} = cell(1,size(q.prm{4},2)); % reset ES
+q.prm{4}{fret} = []; % reset ES
 q.prm{5} = []; % reset corrected ES
 guidata(h_fig2,q);
 

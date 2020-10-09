@@ -158,6 +158,7 @@ img = [img_don,img_acc];
 
 % convert to proper intensity units
 if strcmp(p.intOpUnits, 'photon')
+    [mu_y_dark,K,eta] = getCamParam(p.noiseType,p.camNoise);
     img = arb2phtn(img, mu_y_dark, K, eta);
 end
 
