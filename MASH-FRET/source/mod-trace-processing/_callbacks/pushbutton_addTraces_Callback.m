@@ -254,6 +254,8 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
             p.proj{i}.curr{n}{6}{1}(2,1:nB) = betas(n,:);
         end
     end
+    p.proj{i}.prm = p.proj{i}.prm(1:nMol);
+    p.proj{i}.curr = p.proj{i}.curr(1:nMol);
 end
 
 % set last-improted project as current project
