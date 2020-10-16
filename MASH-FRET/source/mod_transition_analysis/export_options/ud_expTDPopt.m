@@ -36,16 +36,16 @@ end
 
 % check presence of fit
 isFit = true;
-if ~(isfield(prm,'kin_res') && size(prm.kin_res,2)>=2 && ...
-        sum(~cellfun('isempty',prm.kin_res(:,2))))
+if ~(isfield(prm,'lft_res') && size(prm.lft_res,2)>=2 && ...
+        sum(~cellfun('isempty',prm.lft_res(:,2))))
     isFit = false;
     opt{3}(2) = false;
 end
 
 % check presence of boba fit
 isBobaFit = true;
-if ~(isfield(prm,'kin_res') && size(prm.kin_res,2)>=5 && ...
-        sum(~cellfun('isempty',prm.kin_res(:,5))))
+if ~(isfield(prm,'lft_res') && size(prm.lft_res,2)>=5 && ...
+        sum(~cellfun('isempty',prm.lft_res(:,5))))
     isBobaFit = false;
     opt{3}(4) = false;
     opt{3}(3) = false;

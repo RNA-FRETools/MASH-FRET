@@ -96,7 +96,9 @@ switch sect
         link_str = cat(2,base_ta,'panels/panel-transition-density-plot.html');
     case 'ta state configuration'
         link_str = cat(2,base_ta,'panels/panel-state-configuration.html');
-    case 'transition rates'
+    case 'state lifetimes'
+        link_str = cat(2,base_ta,'panels/panel-state-transition-rates.html');
+    case 'kinetic model'
         link_str = cat(2,base_ta,'panels/panel-state-transition-rates.html');
     case 'ta export options'
         link_str = cat(2,base_ta,'functionalities/set-export-options.html');

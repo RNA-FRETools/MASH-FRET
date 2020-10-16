@@ -18,12 +18,11 @@ proj = p.curr_proj;
 tpe = p.curr_type(proj);
 tag = p.curr_tag(proj);
 curr = p.proj{proj}.curr{tag,tpe};
-trs = curr.kin_start{2}(2);
+v = curr.lft_start{2}(2);
 
-p.proj{proj}.curr{tag,tpe}.kin_start{1}{trs,2}(1,9) = val;
+p.proj{proj}.curr{tag,tpe}.lft_start{1}{v,2}(1,9) = val;
 
 h.param.TDP = p;
 guidata(h_fig, h);
-
-ud_kinFit(h_fig);
+ud_fitSettings(h_fig);
 

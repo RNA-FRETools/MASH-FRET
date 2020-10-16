@@ -183,16 +183,19 @@ for o = 1:O
                 getDocLink('ta project management'),obj(o),[-1,1]));
         case h_pushbutton_expTDPopt_cancel
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('ta project management'),obj(o),[-1,1]));
+                getDocLink('ta export options'),obj(o),[-1,1]));
         case h.uipanel_TA_transitionDensityPlot
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('ta plot'),obj(o),tbl));
         case h.uipanel_TA_stateConfiguration
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('ta state configuration'),obj(o),tbl));
-        case h.uipanel_TA_stateTransitionRates
+        case h.uipanel_TA_stateLifetimes
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('transition rates'),obj(o),tbl));
+                getDocLink('state lifetimes'),obj(o),tbl));
+        case h.uipanel_TA_kineticModel
+            hBut = cat(2,hBut,mkbutton(cdata,...
+                getDocLink('kinetic model'),obj(o),tbl));
     end
 end
 

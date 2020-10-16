@@ -56,14 +56,14 @@ if ~isfield(prm,'clst_start')
 end
 
 % check presence of fit
-if ~(isfield(prm,'kin_res') && size(prm.kin_res,2)>=2 && ...
-        sum(~cellfun('isempty',prm.kin_res(:,2))))
+if ~(isfield(prm,'lft_res') && size(prm.lft_res,2)>=2 && ...
+        sum(~cellfun('isempty',prm.lft_res(:,2))))
     kinFit = false;
 end
 
 % check presence of boba fit
-if ~(isfield(prm,'kin_res') && size(prm.kin_res,2)>=5 && ...
-        sum(~cellfun('isempty',prm.kin_res(:,5))))
+if ~(isfield(prm,'lft_res') && size(prm.lft_res,2)>=5 && ...
+        sum(~cellfun('isempty',prm.lft_res(:,5))))
     kinBoba = false;
     bobaFig = false;
 end
@@ -150,7 +150,7 @@ if sum(bol_kin) && isfield(prm,'clst_start');
     pname_kin = setCorrectPath([pname 'kinetics'], h_fig);
     
     % export dwell-time histogram files & fitting results (if)
-    J = prm.kin_start{2}(1);
+    J = prm.lft_start{2}(1);
     mat = prm.clst_start{1}(4);
     clstDiag = prm.clst_start{1}(9);
     if ~isempty(prm.clst_res{4}) && J>0
@@ -163,17 +163,20 @@ if sum(bol_kin) && isfield(prm,'clst_start');
         end
         
         nTrs = getClusterNb(J,mat,clstDiag);
-        for k = 1:nTrs
-            if ~(size(prm.clst_res{4},2)>=k && ...
-                    ~isempty(prm.clst_res{4}{k}))
+        bin = prm.lft_start{2}(3);
+        [j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
+        [vals,js] = binStateValues(prm.clst_res{1}.mu{J},bin,[j1,j2]);
+        V = numel(vals);
+        for v = 1:V
+            if ~(size(prm.clst_res{4},2)>=v && ...
+                    ~isempty(prm.clst_res{4}{v}))
                 continue
             end
-            val = round(100*prm.clst_res{1}.mu{J}(k,:))/100;
+            val = round(100*vals(v))/100;
 
-            name_kin = cat(2,name_kin0,'_',num2str(val(1)),'to',...
-                num2str(val(2)));
+            name_kin = cat(2,name_kin0,'_',num2str(val(1)));
 
-            [ok,str_kin] = save_kinDat(bol_kin, prm,k, pname_kin, name_kin, ...
+            [ok,str_kin] = save_kinDat(bol_kin,prm,v,pname_kin,name_kin, ...
                 h_fig);
             if ~ok
                 return

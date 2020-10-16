@@ -9,7 +9,7 @@ def = p.proj{proj}.def{tag,tpe};
 % make current settings the processing parameters at last update
 prm.clst_start = curr.clst_start;
 prm.clst_res = curr.clst_res;
-prm.kin_def = curr.kin_def;
+prm.lft_def = curr.lft_def;
 
 % collect processing parameters
 dt_bin = prm.plot{3}; % binned transitions + TDP coord. assignment
@@ -17,8 +17,9 @@ TDP = prm.plot{2}; % TDP matrix
 
 % reset previous clustering results if exist
 prm.clst_res = def.clst_res;
-prm.kin_start = def.kin_start;
-prm.kin_res = def.kin_res;
+prm.lft_start = def.lft_start;
+prm.lft_res = def.lft_res;
+prm.mdl_res = def.mdl_res;
 
 % abort if TDP is empty
 if ~sum(sum(TDP))
@@ -89,20 +90,20 @@ if ~isnan(Jopt) && Jopt>0
     models.clusters = res.clusters; % binned transitions + cluster assignment
 
     prm.clst_res = {models res.boba_K Jopt};
+    
+    % set models for plot and kinetic analysis to optimum config
+    prm.lft_start{2}(1) = Jopt;
 
     prm = ud_kinPrm(prm,def,Jopt);
-
-    % set models for plot and kinetic analysis to optimum config
-    prm.clst_res{3} = Jopt;
-    prm.kin_start{2}(1) = Jopt;
 end
 
 % save modifications of processing parameters in current settings
 curr.clst_start = prm.clst_start;
 curr.clst_res = prm.clst_res;
-curr.kin_def = prm.kin_def;
-curr.kin_start = prm.kin_start;
-curr.kin_res = prm.kin_res;
+curr.lft_def = prm.lft_def;
+curr.lft_start = prm.lft_start;
+curr.lft_res = prm.lft_res;
+curr.mdl_res = prm.mdl_res;
 
 p.proj{proj}.prm{tag,tpe} = prm;
 p.proj{proj}.curr{tag,tpe} = curr;

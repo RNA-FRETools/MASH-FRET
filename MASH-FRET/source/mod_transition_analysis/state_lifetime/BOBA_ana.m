@@ -1,5 +1,5 @@
 function res = BOBA_ana(hist_dt, p, strch, nExp, rspl, n_rep, n_spl, w, ...
-    h_fig)
+    h_fig, lb)
 % Adapted from "bobafret.m", function "pushbutton_resfit_Callback"
 
 h = guidata(h_fig);
@@ -7,7 +7,7 @@ h = guidata(h_fig);
 % randomly select histograms, exponential/Gaussian fitting
 % adjust number of replicates for bootstrapping y/n
 n_hist = size(hist_dt,2);
-if n_hist ~= n_rep
+if n_rep>0 && n_hist~=n_rep
     if h.mute_actions
         choice = 'Yes';
     else
@@ -26,18 +26,22 @@ if n_hist ~= n_rep
         setContPan('Fitting process aborted.','warning',h_fig);
         return;
     end
+elseif n_rep==0
+    n_rep = n_hist;
 end
 
 % initialise loading bar
-err = loading_bar('init', h_fig, n_spl, ['Performing randomisation ' ...
-    'and exponential fitting...']);
-if err
-    res = [];
-    return;
+if lb==2
+    err = loading_bar('init', h_fig, n_spl, ['Performing randomisation ' ...
+        'and exponential fitting...']);
+    if err
+        res = [];
+        return;
+    end
+    h = guidata(h_fig);
+    h.barData.prev_var = h.barData.curr_var;
+    guidata(h_fig, h);
 end
-h = guidata(h_fig);
-h.barData.prev_var = h.barData.curr_var;
-guidata(h_fig, h);
 
 res.histall = cell(1,n_spl);
 for k = 1:n_spl
@@ -69,10 +73,6 @@ for k = 1:n_spl
     y_data = res.histall{k}(:,2);
     fitres = mmexpfit_mod(x_data, y_data, p, nExp, strch, h.mute_actions);
     if isempty(fitres)
-%         res = [];
-%         % close loading bar
-%         loading_bar('close', h_fig);
-%         return;
         disp(cat(2,'sample ',num2str(k),': insufficient number of data ',...
             'points to fit.'));
         res.adj_s(k,1) = NaN;
@@ -85,10 +85,9 @@ for k = 1:n_spl
     end
 
     % update loading bar
-    err = loading_bar('update', h_fig); 
-    if err
+    if lb>0 && loading_bar('update', h_fig)
         res = [];
-        return;
+        return
     end
 end
 
@@ -105,7 +104,9 @@ if size(res.cf,1)<n_spl
 end
 
 % close loading bar
-loading_bar('close', h_fig);
+if lb==2
+    loading_bar('close', h_fig);
+end
 
 % all fits failed because of an insufficient number of data points
 if isempty(res.cf)

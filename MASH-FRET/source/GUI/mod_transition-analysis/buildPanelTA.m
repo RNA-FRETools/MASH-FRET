@@ -1,7 +1,7 @@
 function h = buildPanelTA(h,p)
 % h = buildPanelTA(h,p);
 %
-% Builds "Transition analysis" module including panels "Transition density plot", "State configuration" and "State transition rates".
+% Builds "Transition analysis" module including panels "Transition density plot", "State configuration", "State lifetimes" and "Kinetic model".
 %
 % h: structure to update with handles to new UI components and that must contain fields:
 %   h.figure_MASH: handle to main figure
@@ -34,7 +34,8 @@ str3 = 'Export...';
 str4 = 'Save';
 ttl0 = 'Transition density plot';
 ttl1 = 'State configuration';
-ttl2 = 'State transition rates';
+ttl2 = 'State lifetimes';
+ttl3 = 'Kinetic model';
 ttstr0 = wrapHtmlTooltipString('Open <b>import options</b> to configure how state sequences are imported from ASCII files.');
 ttstr1 = wrapHtmlTooltipString('<b>Import state sequences</b> from a .mash file or from a set of ASCII files.');
 ttstr2 = wrapHtmlTooltipString('<b>Close selected project</b> and remove it from the list.');
@@ -56,6 +57,8 @@ posbut4 = get(h.pushbutton_expProj,'position');
 wedit0 = poslst0(3);
 wpan1 = (pospan(3)-4*p.mg-poslst0(3))/2;
 hpan1 = pospan(4)-2*p.mg;
+hpan2 = (pospan(4)-2*p.mg-p.mg/2)/2;
+hpan3 = pospan(4)-2*p.mg-p.mg/2-hpan2;
 
 % GUI
 h.pushbutton_TDPimpOpt = uicontrol('style','pushbutton','parent',h_pan,...
@@ -110,10 +113,18 @@ h.uipanel_TA_stateConfiguration = uipanel('parent',h_pan,'units',p.posun,...
 h = buildPanelTAstateConfiguration(h,p);
 
 x = x+wpan1+p.mg;
+y = pospan(4)-p.mg-hpan2;
 
-h.uipanel_TA_stateTransitionRates = uipanel('parent',h_pan,'units',p.posun,...
+h.uipanel_TA_stateLifetimes = uipanel('parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan1,hpan1],'title',ttl2);
-h = buildPanelTAstateTransitionRates(h,p);
+    [x,y,wpan1,hpan2],'title',ttl2);
+h = buildPanelTAstateLifetimes(h,p);
+
+y = y-p.mg/2-hpan3;
+
+h.uipanel_TA_kineticModel = uipanel('parent',h_pan,'units',p.posun,...
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
+    [x,y,wpan1,hpan3],'title',ttl3);
+h = buildPanelTAkineticModel(h,p);
 
 

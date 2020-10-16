@@ -1,16 +1,17 @@
-function hist_ref = getDtHist(clust_dat, trans_id, mols, excl, wght)
+function hist_ref = getDtHist(clust_dat, j1, j2, mols, excl, wght)
 
 hist_ref = [];
 
-j1 = trans_id(1);
-j2 = trans_id(2);
-
 % check for at least one/two transition in histogram
-clust_k = clust_dat(clust_dat(:,7)==j1 & clust_dat(:,8)==j2,:);
+if j2==0
+    clust_k = clust_dat(clust_dat(:,7)==j1,:);
+else
+    clust_k = clust_dat(clust_dat(:,7)==j1 & clust_dat(:,8)==j2,:);
+end
 if size(clust_k,1)<=excl
     return
 end
-
+ 
 if isempty(mols)
     mols = unique(clust_dat(:,4)); % all molecules
 end
@@ -27,8 +28,12 @@ for m = 1:nMol
         clst_m = clst_m(2:end-1,:);
     end
     
-    dt_j1j2{m} = clst_m((clst_m(:,7)==j1 & clst_m(:,8)==j2),1:end-2);
-    
+    if j2==0
+        dt_j1j2{m} = clst_m((clst_m(:,7)==j1),1:end-2);
+    else
+        dt_j1j2{m} = clst_m(clst_m(:,7)==j1 & clst_m(:,8)==j2,1:end-2);
+    end
+
     if wght
         % weight histograms according to the number of dwell times included
         w_vect(m,1) = sum(dt_j1j2{m}(:,1));
