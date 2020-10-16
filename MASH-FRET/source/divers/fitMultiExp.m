@@ -2,11 +2,14 @@ function [tau,amp,gof] = fitMultiExp(y,x,varargin)
 % [tau,amp,gof] = fitMultiExp(y,x)
 % [tau,amp,gof] = fitMultiExp(y,x,p)
 %
+% Fits a sum of exponential functions to input data.
+% Returns fit parameters (time constants, amplitudes) and goodness of fit
+%
 % x: x-data
 % y: y-data
 % p: structure containing fields:
 %  p.upper: [1-by-2*n] upper bounds for fitting parameters
-%  p.lower: [1-by-2*n] lower counds for fittinf parameters
+%  p.lower: [1-by-2*n] lower bounds for fittinf parameters
 % tau: [n-by-1] decay contants of the n expoenntial functions
 % amp: [n-by-1] relative amplitudes of the n exponential functions
 % gof: goodness of fit
@@ -94,8 +97,8 @@ end
 
 [prm,gof] = optimizeMultiExpModel(x(datrange),Y(datrange),prm0,...
     minVal,maxVal,minAsum,h_axes,fmt_hist,fmt_fit);
-% amp = prm(1,:)/sum(prm(1,:));
-amp = prm(1,:);
+amp = prm(1,:)/sum(prm(1,:));
+% amp = prm(1,:);
 tau = prm(2,:);
 
 if plotIt
@@ -106,8 +109,8 @@ if plotIt
     % plot fit
     yfit = zeros(size(Y));
     for ni = 1:n
-%         yfit = yfit + amp(ni)*exp(-x/tau(ni))/sum(amp);
-        yfit = yfit + amp(ni)*exp(-x/tau(ni));
+        yfit = yfit + amp(ni)*exp(-x/tau(ni))/sum(amp);
+%         yfit = yfit + amp(ni)*exp(-x/tau(ni));
     end
     plot(h_axes,x,log(yfit),fmt_fit);
     close(h_fig);
@@ -208,13 +211,10 @@ function [prm,gof] = optimizeMultiExpModel(x,Y,prm0,minVal,maxVal,minAsum,...
 % default
 plotIt = true;
 minVar = 1E-4;
+ncycle = 4;
 n = size(prm0,2);
-varsteps = [0.2 10
-    0.1 1
-    0.01,0.1
-    0.001 0.01
-    0.0001 0.001];
-ncycle = size(varsteps,1);
+varsteps = [logspace(-4,log(0.5),ncycle)',...
+    logspace(log10(min(x(x>0)/100)),log10(max(x)/10),ncycle)'];
 gof = zeros(1,ncycle);
 prm = cell(1,ncycle);
 prm_iter = prm0;
@@ -248,7 +248,7 @@ for cycle = 1:ncycle
         % move each function after the other
         for ni = 1:n
             prm_iter = varyParam(x,Y,prm_iter,ni,varsteps(cycle,:),maxVal,...
-                minVal,minAsum,minVar);
+                minVal,minAsum,minVar,h_axes,fmt_hist,fmt_fit);
         end
         
         gof_alliter = cat(2,gof_alliter,calcGOF(prm_iter,x,Y));
@@ -267,8 +267,10 @@ gof = gof(bestcycle);
 prm = prm{bestcycle};
 
 
-function prm = varyParam(x,Y,prm,n,step,prm_max,prm_min,minAsum,minVar)
+function prm = varyParam(x,Y,prm,n,step,prm_max,prm_min,minAsum,minVar,...
+    h_axes,fmt_hist,fmt_fit)
 
+plotIt = ~isempty(h_axes);
 gof = calcGOF(prm,x,Y);
 
 nPrm = size(prm,1);
@@ -279,15 +281,29 @@ for id = 1:nPrm
     prm_up_prev = prm;
     gof_up_prev = -Inf;
     gof_up = gof;
-    while gof_up>(gof_up_prev+minVar) && ...
-            (prm_up(id,n)+step(id))<=prm_max(id,n) && ...
-            sum(prm_up(1,:))>=minAsum
+    while (isinf(gof_up) || gof_up>(gof_up_prev+minVar)) && ...
+            ((prm_up(id,n)+step(id))<=prm_max(id,n) && ...
+            sum(prm_up(1,:))>=minAsum)
         gof_up_prev = gof_up;
         prm_up_prev = prm_up;
 
         prm_up(id,n) = prm_up(id,n)+step(id);
 
         gof_up = calcGOF(prm_up,x,Y);
+        
+        % plot interation
+        if plotIt && ~isempty(h_axes)
+            plot(h_axes,x,Y,fmt_hist);
+            hold(h_axes,'on');
+            yfit = zeros(size(Y));
+            for ni = 1:n
+                yfit = yfit + prm_up(1,ni)*exp(-x/prm_up(2,ni))/...
+                    sum(prm_up(1,:));
+            end
+            plot(h_axes,x,log(yfit),fmt_fit);
+            hold(h_axes,'off');
+            drawnow;
+        end
     end
 
     % down iteration
@@ -295,15 +311,28 @@ for id = 1:nPrm
     prm_down_prev = prm;
     gof_down_prev = -Inf;
     gof_down = gof;
-    while gof_down>(gof_down_prev+minVar) && ...
-            (prm_down(id,n)-step(id))>=prm_min(id,n) && ...
-            sum(prm_down(1,:))>=minAsum
+    while (isinf(gof_down) || gof_down>(gof_down_prev+minVar)) && ...
+            ((prm_down(id,n)-step(id))>=prm_min(id,n) && ...
+            sum(prm_down(1,:))>=minAsum)
         gof_down_prev = gof_down;
         prm_down_prev = prm_down;
 
         prm_down(id,n) = prm_down(id,n)-step(id);
 
         gof_down = calcGOF(prm_down,x,Y);
+        % plot interation
+        if plotIt && ~isempty(h_axes)
+            plot(h_axes,x,Y,fmt_hist);
+            hold(h_axes,'on');
+            yfit = zeros(size(Y));
+            for ni = 1:n
+                yfit = yfit + prm_down(1,ni)*exp(-x/prm_down(2,ni))/...
+                    sum(prm_down(1,:));
+            end
+            plot(h_axes,x,log(yfit),fmt_fit);
+            hold(h_axes,'off');
+            drawnow;
+        end
     end
     
     alliter = {prm,prm_up_prev,prm_down_prev};
@@ -320,12 +349,13 @@ N = numel(Y);
 yfit = zeros(size(Y));
 n = numel(a);
 for ni = 1:n
-%     yfit = yfit + a(ni)*exp(-x/b(ni))/sum(a);
-    yfit = yfit + a(ni)*exp(-x/b(ni));
+    yfit = yfit + a(ni)*exp(-x/b(ni))/sum(a);
+%     yfit = yfit + a(ni)*exp(-x/b(ni));
 end
+incl = yfit>0;
 
-gof_log = N/sqrt(sum(((log(yfit)-Y).^2).*exp(Y)));
-gof_lin = N/sqrt(sum(((yfit-exp(Y)).^2)));
+gof_log = -sum(Y)/sqrt(sum(((log(yfit(incl))-Y(incl)).^2)));
+gof_lin = sum(exp(Y))/sqrt(sum(((yfit-exp(Y)).^2)));
 gof = log(gof_log*gof_lin);
 
 
