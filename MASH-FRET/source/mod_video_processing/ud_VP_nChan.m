@@ -93,7 +93,8 @@ end
 if size(p.itg_impMolPrm{1},1)<nC
     for c = 1:nC
         if c>size(p.itg_impMolPrm{1},1)
-            p.itg_impMolPrm{1}(c,1:2) = p.itg_impMolPrm{1}(c-1,1:2) + 2;
+            p.itg_impMolPrm{1} = ...
+                cat(1,p.itg_impMolPrm{1},p.itg_impMolPrm{1}(end,1:2)+2);
         end
     end
 end

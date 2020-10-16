@@ -45,7 +45,7 @@ end
 % movie
 if isMov
     mov_file = p{2}{2};
-    [data ok] = getFrames(mov_file, 1, {}, h_fig, false);
+    [data,ok] = getFrames(mov_file, 1, {}, h_fig, false);
     if ~ok
         return
     end
