@@ -103,7 +103,8 @@ if size(p_proj.prm{n},2)>=6
     % added by MH, 15.1.2020: recover param for photobleaching-based gamma 
     % calculation, change "show cuttoff" to default laser for pb detection 
     % and insert default tolerance (= 3)
-    if size(p_proj.prm{n}{6},2)>=3 && size(p_proj.prm{n}{6}{3},2)<8
+    if size(p_proj.prm{n}{6},2)>=3 && size(p_proj.prm{n}{6}{3},2)>0 && ...
+            size(p_proj.prm{n}{6}{3},2)<8
         ldon = ones(nFRET,1);
         for i = 1:nFRET
             ldon(i,1) = find(exc==chanExc(p_proj.FRET(i,1)));

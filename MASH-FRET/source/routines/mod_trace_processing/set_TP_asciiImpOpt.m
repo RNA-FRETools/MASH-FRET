@@ -30,7 +30,10 @@ if opt.coordImp{2}(1)
     set(q.edit_rowCoord,'string',num2str(opt.coordImp{2}(2)));
     edit_rowCoord_Callback(q.edit_rowCoord,[],h_fig);
     
-elseif opt.coordImp{1}{1}
+elseif opt.coordImp{1}{1} %(depends on nb. of channels)
+    set(q.edit_nbChan,'string',num2str(nChan));
+    edit_nbChan_Callback(q.edit_nbChan,[],h_fig);
+
     pushbutton_impCoordOpt_Callback(q.pushbutton_impCoordOpt,[],h_fig);
     set_VP_impIntgrOpt(opt.coordImp{1}{3},q.pushbutton_impCoordOpt,h_fig);
     
@@ -42,7 +45,7 @@ end
 
 % set video import options
 set(q.checkbox_impMov,'value',opt.vidImp{1});
-checkbox_impMov_Callback(q.checkbox_inTTfile,[],h_fig);
+checkbox_impMov_Callback(q.checkbox_impMov,[],h_fig);
 if opt.vidImp{1}
     pushbutton_impMovFile_Callback(opt.vidImp{2},[],h_fig);
 end
