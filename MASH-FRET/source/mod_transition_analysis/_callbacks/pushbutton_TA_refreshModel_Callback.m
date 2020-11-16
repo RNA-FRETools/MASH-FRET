@@ -39,15 +39,20 @@ for val = 1:V
 end
 dat = dat_new;
 
-% re-arrange state sequences by cancelling transitions belonging to diagonal clusters
-if rearr
-    [mols,o,o] = unique(dat(:,4));
-    dat_new = [];
-    for m = mols'
-        dat_m = dat(dat(:,4)==m,:);
-        if isempty(dat_m)
-            continue
-        end
+% get state sequences
+[mols,o,o] = unique(dat(:,4));
+dat_new = [];
+nMol = numel(mols);
+seq = cell(1,nMol);
+for m = 1:nMol
+    dat_m = dat(dat(:,4)==mols(m),:);
+    if isempty(dat_m)
+        continue
+    end
+    seq{m} = getDiscrFromDt(dat_m(:,[1,7,8]),expT);
+    
+    % re-arrange state sequences by cancelling transitions belonging to diagonal clusters
+    if rearr
         dat_m = adjustDt(dat_m);
 %         if size(dat_m,1)==1
 %             continue
@@ -57,8 +62,11 @@ if rearr
         end
         dat_new = cat(1,dat_new,dat_m);
     end
+end
+if rearr
     dat = dat_new;
 end
+
 
 % get relative number of transitions
 clstPop = zeros(V);
@@ -141,6 +149,7 @@ expPrm.clstPop = clstPop;
 expPrm.dt = dat(:,[1,4,end-1,end]);
 expPrm.fitPrm = fitPrm;
 expPrm.excl = excl;
+expPrm.seq = seq;
 % expPrm.trace = getTimeTrace_TA(tpe,tag,p.proj{proj});
 
 % [w,err,simdat] = optimizeProbMat(r,states,expPrm,'tp',mat0); % transition prob
