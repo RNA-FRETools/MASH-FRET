@@ -3,9 +3,9 @@ function [mdl,mdl_opt] = script_inferPH(allSchemes,varargin)
 % [mdl,mdl_opt] = script_inferPH(allSchemes,fname,import_prm)
 % [mdl,mdl_opt] = script_inferPH(allSchemes,fname,import_prm,plotIt)
 %
-% Train PH distributions of specific complexities on experimental dwell time histograms (one histogram per state value).
-% Dwell times are imported from an external file
-% PH complexity = number of degenerated levels
+% Import dwell times from .clst file
+% Train PH distributions of specific complexities (in terms of number of degenerated levels) on experimental dwell time histograms (one histogram per state value).
+% Plot PH fits
 %
 % allSchemes: 1 to infer parameters for all possible transition schemes, 0 for only one scheme (where all transition are allorwed)
 % fname: path to file (clustered dwell times) or none to use default
