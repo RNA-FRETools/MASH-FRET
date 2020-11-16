@@ -100,5 +100,12 @@ iptSetPointerBehavior(h.axes_TDPplot1,pb);
 updateFields(h_fig);
 
 % show module Video processing
+h = guidata(h_fig);
+mute_prev = h.mute_actions;
+h.mute_actions = true;
+guidata(h_fig, h);
 switchPan(h.togglebutton_VP, [], h_fig);
+h = guidata(h_fig);
+h.mute_actions = mute_prev;
+guidata(h_fig, h);
 

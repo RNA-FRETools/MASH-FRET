@@ -1,4 +1,4 @@
-function h_fig = MASH(varargin)
+function varargout = MASH(varargin)
 
 % add source folders to MATLAB search path
 disp('set MATLAB search path...')
@@ -25,4 +25,10 @@ initMASH(h_fig);
 
 % make main figure visible
 set(h_fig,'visible','on');
+
+if nargout==1
+    varargout = h_fig;
+end
+
+disp('MASH-FRET is ready !')
 
