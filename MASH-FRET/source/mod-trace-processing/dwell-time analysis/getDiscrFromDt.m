@@ -1,4 +1,4 @@
-function discr = getDiscrFromDt(dt, rate)
+function discr = getDiscrFromDt(dt, expT)
 
 % dt(:,1) = round(dt(:,1)/rate);
 % discr(1:dt(1,1),1) = dt(1,2);
@@ -6,7 +6,7 @@ function discr = getDiscrFromDt(dt, rate)
 %     discr((size(discr,1)+1):(size(discr,1)+dt(l,1)),1) = dt(l,2);
 % end
 
-dt(:,1) = dt(:,1)/rate;
+dt(:,1) = dt(:,1)/expT;
 states = unique(dt(:,2));
 L = ceil(sum(dt(:,1)));
 J = numel(states);
