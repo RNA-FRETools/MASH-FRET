@@ -315,7 +315,7 @@ try
         
         % modified by MH, 3.4.2019
 %         if ~sum(sum(I(~isnan(I))))
-        if all(isnan(I))
+        if all(all(isnan(I)))
             
             loading_bar('close', h_fig);
             updateActPan(['Unable to load intensity data from file: ' ...
