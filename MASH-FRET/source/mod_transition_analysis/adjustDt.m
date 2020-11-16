@@ -9,7 +9,9 @@ function dat = adjustDt(dat0)
 dat = [];
 
 if size(dat0,2)==8
-    cols = [7,8];
+      cols = [7,8];
+elseif size(dat0,2)==4
+    cols = [3,4];
 else
     cols = [5,6];
 end
@@ -22,6 +24,8 @@ I = numel(id);
 if I==0
     if size(dat0,2)==8
         dat = [sum(dat0(:,1)),NaN,NaN,dat0(1,4),0,0,0,0];
+    elseif size(dat0,2)==4
+        dat = [sum(dat0(:,1)),dat0(:,2),0,0];
     else
         dat = [sum(dat0(:,1)),NaN,NaN,dat0(1,4),0,0];
     end
@@ -50,46 +54,64 @@ else
             if match
                 dt = sum(dat0(id(i):id(j)-1,1));
                 val2 = dat0(id(j),2);
-                y = dat0(id(j),5);
+                if size(dat0,2)>=5
+                    y = dat0(id(j),5);
+                end
                 if size(dat0,2)==8
                     j2 = dat0(id(j),7);
+                end
+                if size(dat0,2)==4
+                    j2 = dat0(id(j),3);
                 end
             else
                 dt = sum(dat0(id(i):end,1));
                 val2 = dat0(id(i),2);
-                y = dat0(id(i),5);
+                if size(dat0,2)>=5
+                    y = dat0(id(i),5);
+                end
                 if size(dat0,2)==8
                     j2 = dat0(id(i),7);
+                end
+                if size(dat0,2)==4
+                    j2 = dat0(id(i),3);
                 end
             end
             
             if size(dat0,2)==8
                 dat = cat(1,dat,[dt,dat0(id(i),2),val2,dat0(id(i),4:5),y,...
                     dat0(id(i),7),j2]);
+            elseif size(dat0,2)==4
+                dat = cat(1,dat,[dt,dat0(id(i),2:3),j2]);
             else
                 dat = cat(1,dat,[dt,dat0(id(i),2),val2,dat0(id(i),4:5),y]);
             end
-            
+           
             i = j-1;
             
         else
             dt = sum(dat0(id(i):end,1));
             val2 = dat0(id(i),2);
-            y = dat0(id(i),5);
+            if size(dat0,2)>=5
+                y = dat0(id(i),5);
+            end
             if size(dat0,2)==8
                 j2 = dat0(id(i),7);
+            end
+            if size(dat0,2)==4
+                j2 = dat0(id(i),3);
             end
             
             if size(dat0,2)==8
                 dat = cat(1,dat,[dt,dat0(id(i),2),val2,dat0(id(i),4:5),y,...
                     dat0(id(i),7),j2]);
+            elseif size(dat0,2)==4
+                dat = cat(1,dat,[dt,dat0(id(i),2:3),j2]);
             else
                 dat = cat(1,dat,[dt,dat0(id(i),2),val2,dat0(id(i),4:5),y]);
             end
             
             i = I;
         end
-        
         i = i+1;
     end
 end
