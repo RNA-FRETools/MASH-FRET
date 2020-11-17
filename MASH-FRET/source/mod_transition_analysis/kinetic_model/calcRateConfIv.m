@@ -2,6 +2,7 @@ function err = calcRateConfIv(T0,seq,B,vals,ip,logL1)
 
 % default
 step = 0.01;
+step_prob_min = 1E-4;
 LRmax = 1.96^2; % 95th percentile of chi2 (1.96~97.5% normal pdf)
 
 [~,J] = size(B);
@@ -15,8 +16,13 @@ for j1 = 1:J
             continue
         end
         
+        step_prob = step*T0(j1,j2);
+        if step_prob<step_prob_min
+            step_prob = step_prob_min;
+        end
+        
         % up variation
-        [LR1,LR2,k1,k2] = varyRate(T0,j1,j2,step*T0(j1,j2),LRmax,seq,B,vals,ip,logL1);
+        [LR1,LR2,k1,k2] = varyRate(T0,j1,j2,step_prob,LRmax,seq,B,vals,ip,logL1);
         if k2~=k1
             a = (LR2-LR1)/(k2-k1);
             b = LR2-a*k2;
@@ -26,7 +32,7 @@ for j1 = 1:J
         end
         
         % down variation
-        [LR1,LR2,k1,k2] = varyRate(T0,j1,j2,-step*T0(j1,j2),LRmax,seq,B,vals,ip,logL1);
+        [LR1,LR2,k1,k2] = varyRate(T0,j1,j2,-step_prob,LRmax,seq,B,vals,ip,logL1);
         if k2~=k1
             a = (LR1-LR2)/(k1-k2);
             b = LR2-a*k2;
