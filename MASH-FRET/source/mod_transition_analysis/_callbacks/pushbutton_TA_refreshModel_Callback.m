@@ -122,42 +122,31 @@ else
     return
 end
 states = states(degen);
-totalTime = totalTime(degen);
 
 % get starting transition probabilities based on number of transitions
 J_deg = numel(states);
-mat0 = zeros(J_deg);
+tp0 = zeros(J_deg);
 for j_deg1 = 1:J_deg
     for j_deg2 = 1:J_deg
         if j_deg1==j_deg2
             continue
         end
-        mat0(j_deg1,j_deg2) = ...
+        tp0(j_deg1,j_deg2) = ...
             A(j_deg1)*A(j_deg2)*clstPop(degen(j_deg1),degen(j_deg2));
     end
 end
-% mat0 = repmat(nL*expT*r',[1,J_deg]).*mat0./repmat(sum(mat0,2),[1,J_deg]); % transition prob
-% mat0(~~eye(size(mat0))) = 1-sum(mat0,2); % transition prob
-mat0 = mat0./repmat(sum(mat0,2),[1,J_deg]); % transition prob, diag = 0
-% mat0 = mat0*size(dat(dat(:,7)~=dat(:,8)),1); % number of transitions
-% mat0 = mat0*size(dat(dat(:,7)~=dat(:,8)),1)./repmat(totalTime,1,J_deg); % transition rate constants
+tp0 = repmat(nL*expT*r',[1,J_deg]).*tp0./repmat(sum(tp0,2),[1,J_deg]); % transition prob
+tp0(~~eye(size(tp0))) = 1-sum(tp0,2); % transition prob
 
 expPrm.expT = nL*expT;
 expPrm.Ls = sum(p.proj{proj}.bool_intensities,1);
-expPrm.A = A;
-expPrm.clstPop = clstPop;
 expPrm.dt = dat(:,[1,4,end-1,end]);
-expPrm.fitPrm = fitPrm;
 expPrm.excl = excl;
 expPrm.seq = seq;
-% expPrm.trace = getTimeTrace_TA(tpe,tag,p.proj{proj});
 
-% [w,err,simdat] = optimizeProbMat(r,states,expPrm,'tp',mat0); % transition prob
-[w,err,simdat] = optimizeProbMat(r,states,expPrm,'w',mat0); % transition prob, diag = 0
-% [w,err,simdat] = optimizeProbMat(r,states,expPrm,'n',mat0); % number of transitions
-% [w,err,simdat] = optimizeProbMat(r,states,expPrm,'k',mat0); % transition rate constants
+[tp,err,simdat] = optimizeProbMat(states,expPrm,tp0); % transition prob
 
-prm.mdl_res = {w,err,simdat,states};
+prm.mdl_res = {tp,err,simdat,states};
 
 p.proj{proj}.prm{tag,tpe} = prm;
 p.proj{proj}.curr{tag,tpe} = prm;

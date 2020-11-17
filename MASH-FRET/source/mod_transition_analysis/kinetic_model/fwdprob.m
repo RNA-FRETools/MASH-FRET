@@ -1,4 +1,4 @@
-function [f_lj,f_lj_norm,cl] = fwdprob(seq,T,B,vals,f_0j)
+function [alpha,alpha_norm,logP] = fwdprob(seq,T,B,vals,ip0)
 
 % build event observation matrices
 [V,J] = size(B);
@@ -9,28 +9,30 @@ for v = 1:V
 end
 
 % calculate forward probabilities
-[f_lj,f_lj_norm,cl] = calcFwdProb(seq,T,O,vals,f_0j);
+[alpha,alpha_norm,logP] = calcFwdProb(seq,T,O,vals,ip0);
 
 
-function [f_lj,f_lj_norm,cl] = calcFwdProb(seq,T,O,vals,f_0j)
+function [alpha,alpha_norm,logP] = calcFwdProb(seq,T,O,vals,ip0)
 
+logP = 0;
 N = numel(seq);
-J = numel(f_0j);
-f_lj = cell(1,N);
-f_lj_norm = f_lj;
-cl = f_lj;
+J = numel(ip0);
+alpha = cell(1,N);
+alpha_norm = alpha;
 for n = 1:N
     L = numel(seq{n});
-    f_lj{n} = zeros(L,J);
+    alpha{n} = zeros(L,J);
     for l = 1:L
         val = find(vals==seq{n}(l));
         if l==1
-            f_lj{n}(l,:) = f_0j*T*O{val};
+            alpha{n}(l,:) = ip0*T*O{val};
+            alpha_norm{n}(l,:) = alpha{n}(l,:);
         else
-            f_lj{n}(l,:) = f_lj{n}(l-1,:)*T*O{val};
+            alpha{n}(l,:) = alpha{n}(l-1,:)*T*O{val};
+            alpha_norm{n}(l,:) = alpha_norm{n}(l-1,:)*T*O{val};
         end
-        cl{n}(l) = sum(f_lj{n}(l,:));
-        f_lj_norm{n}(l,:) = f_lj{n}(l,:)/cl{n}(l);
+        alpha_norm{n}(l,:) = alpha_norm{n}(l,:)/sum(alpha_norm{n}(l,:));
     end
+    logP = logP + log(sum(alpha{n}(end,:)));
 end
 
