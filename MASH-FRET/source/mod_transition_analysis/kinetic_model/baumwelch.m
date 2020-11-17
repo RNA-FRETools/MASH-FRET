@@ -75,6 +75,9 @@ while m<M
     
     logL = calcBWlogL(alpha,beta);
     
+    fprintf('logL = %d\n',logL)
+    disp(T)
+    
     % check for convergence
     if (logL-logL_prev)<dLmin || (~sum(sum(abs(T-T_prev)>=dmin)) && ...
             ~sum(sum(abs(B-B_prev)>=dmin)) && ~sum(abs(ip-ip_prev)>=dmin))
@@ -82,6 +85,7 @@ while m<M
         T = T_prev;
         B = B_prev;
         ip = ip_prev;
+        fprintf('EM successfully converged after %i iterations!\n',m)
         break
     end
 end
