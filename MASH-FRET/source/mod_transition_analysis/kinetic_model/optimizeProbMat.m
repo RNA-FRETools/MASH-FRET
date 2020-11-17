@@ -21,7 +21,7 @@ function [tp_iter,tp_err,simdat] = optimizeProbMat(states,expPrm,tp0)
 %   simdat.tp_exp transition matrix
 
 % default
-T = 1; % number of matrix initialization
+T = 5; % number of matrix initialization
 plotIt = true;
 
 % create figure for plot
@@ -66,7 +66,7 @@ for restart = 1:T
     % generate new random matrix
     if restart>1
         tp0 = rand(J);
-        tp0(~~eye(J)) = 10*rand(1,J);
+        tp0(~~eye(J)) = 100*rand(1,J);
         tp0 = tp0./repmat(sum(tp0,2),[1,J]);
     end
     tp_iter = tp0;
@@ -101,7 +101,7 @@ simdat = plotKinMdlSim(degen,tp_iter,ip,expPrm,h_fig1);
 
 % calculate confidence interval for each coefficient (SMACKS)
 disp('calculate confidence intervals...');
-tp_err = calcRateConfIv(tp_iter,expPrm.seq,B,vals,ip,bestgof);
+tp_err = calcRateConfIv(tp_iter,expPrm.seq,B,1:V,ip,bestgof);
 
 % display best fit
 disp(['best fit: ',num2str(bestgof)]);
