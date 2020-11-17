@@ -24,11 +24,11 @@ for n = 1:N
         val = find(vals==seq{n}(l));
         if l==L
             beta{n}(:,l) = T*O{val}*ones(J,1);
-            beta_norm{n}(:,l) = T*O{val}*ones(J,1);
+%             beta_norm{n}(:,l) = T*O{val}*ones(J,1);
         else
             beta{n}(:,l) = T*O{val}*beta{n}(:,l+1);
-            beta_norm{n}(:,l) = T*O{val}*beta_norm{n}(:,l+1);
+%             beta_norm{n}(:,l) = T*O{val}*beta_norm{n}(:,l+1);
         end
-        beta_norm{n}(:,l) = beta_norm{n}(:,l)/sum(beta_norm{n}(:,l));
+%         beta_norm{n}(:,l) = beta_norm{n}(:,l)/sum(beta_norm{n}(:,l));
     end
 end
