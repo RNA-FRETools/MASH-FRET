@@ -1,5 +1,5 @@
-function [TDPs,logL,expIniProb] = routine_backSim(pname,fname,Js,states,mat,prob0,h_fig)
-% [TDPs,logL,expIniProb] = routine_backSim(pname,fname,Js,states,mat,prob0,h_fig)
+function [TDPs,logL] = routine_backSim(pname,fname,Js,states,mat,ip,h_fig)
+% [TDPs,logL] = routine_backSim(pname,fname,Js,states,mat,ip,h_fig)
 %
 % Commpare the selected models to simulation and determine the best fit
 %
@@ -14,16 +14,14 @@ function [TDPs,logL,expIniProb] = routine_backSim(pname,fname,Js,states,mat,prob
 %  mat{j}(:,:,4): transition porbability deviaitions
 %  mat{j}(:,:,5): unrestricted rates (weighed by transition prob.)
 %  mat{j}(:,:,6): unrestricted rate deviations
-% prob0: {1-by-nJ} [1-by-J] initial state probabilities
+% ip: {1-by-nJ} [1-by-J] initial state probabilities
 % h_fig: handle to main figure
 % TDPs: Transition density plots such as:
 %  TDPs(:,:,1): experimental TDP
 %  TDPs(:,:,2:(nJ+1)): simulated TDPs ordered as Js
 % logL: [1-by-nJ] log likelihoods
-% expIniProb: (1) use experimental initial probabilties, (0) otherwise
 
 % defaults
-expIniProb = false; % use experimental inital probabilities
 expopt = [0,0,0,1,0,1,0];
 noiseType = {'poiss','norm','user','none','hirsch'};
 tdp_dat = 3; % data to plot in TDP (FRET data)
@@ -100,28 +98,22 @@ for j = 1:numel(Js)
     N = size(Itot,2);
     Ls = sum(incl,1);
     Imean = nanmean(Itot,1);
-    k0 = mat{j}(:,:,1);
-    prob = mat{j}(:,:,3);
-    states_id = k0(1,2:end,1);
-    
+    k = mat{j}(:,:,3);
+    r = repmat(sum(k,2),[1,size(k,2)]);
+    w = k./repmat(sum(k,2),[1,size(k,2)]);
+    states_id = r(1,2:end,1);
+
+    % create preset file
     fprintf(cat(2,'>>>> export simulation presets to file ',fname_presets,...
         '\n'),num2str(Js(j)));
-    
     tot_intensity = repmat([mean(Imean),std(Imean)],N,1);
     FRET = repmat(states{j}(states_id,:),[1,1,N]);
-    trans_rates = repmat(k0(2:end,2:end,1),[1,1,N]);
-    trans_prob = repmat(prob(2:end,2:end,1),[1,1,N]);
-    if expIniProb
-        ini_prob = repmat(prob0{j}(2,:),[N,1]);
-        % create preset file
-        save([p.dumpdir,filesep,sprintf(fname_presets,num2str(Js(j)))],...
-            'FRET','trans_rates','tot_intensity','trans_prob','ini_prob',...
-            '-mat');
-    else
-        % create preset file
-        save([p.dumpdir,filesep,sprintf(fname_presets,num2str(Js(j)))],...
-            'FRET','trans_rates','tot_intensity','trans_prob','-mat');
-    end
+    trans_rates = repmat(r(2:end,2:end,1),[1,1,N]);
+    trans_prob = repmat(w(2:end,2:end,1),[1,1,N]);
+    ini_prob = repmat(ip{j}(2,:),[N,1]);
+    save([p.dumpdir,filesep,sprintf(fname_presets,num2str(Js(j)))],...
+        'FRET','trans_rates','tot_intensity','trans_prob','ini_prob',...
+        '-mat');
 
     switchPan(h.togglebutton_S,[],h_fig);
     

@@ -75,11 +75,11 @@ try
         
         t3 = tic;
         
-        [ks,mat,prob0] = routine_getRates(pname,fname,Js,h_fig);
+        [mat,tau,ip] = routine_getRates(pname,fname,Js,h_fig);
         
         t_3 = toc(t3);
 
-        h.kinsoft_res{3} = {t_3,ks,mat,prob0};
+        h.kinsoft_res{3} = {t_3,mat,tau,ip};
         h.kinsoft_res(end) = cell(1,1);
         guidata(h_fig,h);
     end
@@ -96,13 +96,12 @@ try
         fname = h.kinsoft_res{1}{3};
         Js = h.kinsoft_res{1}{5}(:,1)';
         states = h.kinsoft_res{2}{2};
-        mat = h.kinsoft_res{3}{3};
-        prob0 = h.kinsoft_res{3}{4};
+        mat = h.kinsoft_res{3}{2};
+        ip = h.kinsoft_res{3}{4};
         
         t4 = tic;
         
-        [TDPs,logL,useProb0] = routine_backSim(pname,fname,Js,states,mat,...
-            prob0,h_fig);
+        [TDPs,logL] = routine_backSim(pname,fname,Js,states,mat,ip,h_fig);
         
         t_4 = toc(t4);
         
@@ -147,68 +146,60 @@ try
                 fprintf(f,'%i\t%d\t%d\n',[(1:Js(j))',states]');
                 
                 if ~isempty(h.kinsoft_res{3})
-                    ks = h.kinsoft_res{3}{2}{j};
-                    mat = h.kinsoft_res{3}{3}{j};
-                    prob0 = h.kinsoft_res{3}{4}{j};
-                    nExp = (size(ks,2)-4)/8;
+                    mat = h.kinsoft_res{3}{2}{j};
+                    tau = h.kinsoft_res{3}{3}{j};
+                    ip = h.kinsoft_res{3}{4}{j};
+
                     fprintf(f,...
-                        '\nFitting results and rate coefficients (second-1):\n');
-                    fprintf(f,['state1\tstate2',...
-                        repmat('\tamp%i\td_amp%i\ttau%i\td_tau%i',[1,nExp]),...
-                        repmat('\tk0%i\td_k0%i',[1,nExp]),'\tw12',...
-                        repmat('\tA%i\td_A%i',[1,nExp]),'\tvalid\n'],...
-                        [reshape(repmat(1:nExp,[4,1]),[1,4*nExp]),....
-                        reshape(repmat(1:nExp,[2,1]),[1,2*nExp]),....
-                        reshape(repmat(1:nExp,[2,1]),[1,2*nExp])]);
-                    fprintf(f,[repmat('%d\t',[1,size(ks,2)]),'\n'],ks');
-                    
-                    if useProb0
-                        fprintf(f,...
-                            '\nInitial state probabilties:\n');
-                        fprintf(f,'%i\t%d\n',prob0);
-                    end
+                        '\nInitial state probabilties:\n');
+                    fprintf(f,'%i\t%d\n',ip);
                     
                     fprintf(f,...
-                        '\nRestricted rates (second-1):\n');
+                        '\nState lifetimes (second):\n');
+                    fprintf(f,'%i\t%d\n',tau);
+                    
+                    fprintf(f,...
+                        '\nTransition probabilities:\n');
                     fprintf(f,[repmat('%i\t',[1,size(mat,2)]),'\n'],...
                         mat(1,:,1));
                     fprintf(f,['%i\t',repmat('%d\t',[1,size(mat,2)-1]),'\n'],...
                         mat(2:end,:,1)');
                     
                     fprintf(f,...
-                        '\nRestricted rate deviations (second-1):\n');
+                        '\nTransition probability positive deviation:\n');
                     fprintf(f,[repmat('%i\t',[1,size(mat,2)]),'\n'],...
                         mat(1,:,2));
                     fprintf(f,['%i\t',repmat('%d\t',[1,size(mat,2)-1]),'\n'],...
                         mat(2:end,:,2)');
-                    
+
                     fprintf(f,...
-                        '\nTransition probabilities:\n');
+                        '\nTransition probability negative deviation:\n');
                     fprintf(f,[repmat('%i\t',[1,size(mat,2)]),'\n'],...
                         mat(1,:,3));
                     fprintf(f,['%i\t',repmat('%d\t',[1,size(mat,2)-1]),'\n'],...
                         mat(2:end,:,3)');
                     
                     fprintf(f,...
-                        '\nTransition probabilities deviations:\n');
+                        '\nTransition rate coefficients:\n');
                     fprintf(f,[repmat('%i\t',[1,size(mat,2)]),'\n'],...
                         mat(1,:,4));
                     fprintf(f,['%i\t',repmat('%d\t',[1,size(mat,2)-1]),'\n'],...
                         mat(2:end,:,4)');
-
+                    
                     fprintf(f,...
-                        '\nUnrestricted rates (second-1):\n');
+                        '\nTransition rate coefficient positive deviation:\n');
                     fprintf(f,[repmat('%i\t',[1,size(mat,2)]),'\n'],...
                         mat(1,:,5));
                     fprintf(f,['%i\t',repmat('%d\t',[1,size(mat,2)-1]),'\n'],...
                         mat(2:end,:,5)');
-                    
+
                     fprintf(f,...
-                        '\nUnrestricted rate deviations (second-1):\n');
+                        '\nTransition rate coefficient negative deviation:\n');
                     fprintf(f,[repmat('%i\t',[1,size(mat,2)]),'\n'],...
                         mat(1,:,6));
                     fprintf(f,['%i\t',repmat('%d\t',[1,size(mat,2)-1]),'\n'],...
                         mat(2:end,:,6)');
+                    
                     if ~isempty(h.kinsoft_res{4})
                         logL = h.kinsoft_res{4}{3};
                         
