@@ -30,6 +30,9 @@ mat = prm.clst_start{1}(4);
 clstDiag = prm.clst_start{1}(9);
 mu = prm.clst_res{1}.mu{J};
 bin = prm.lft_start{2}(3);
+meth_mdl = curr.mdl_start(1);
+T = curr.mdl_start(2);
+D = curr.mdl_start(3);
 
 % bin states
 nTrs = getClusterNb(J,mat,clstDiag);
@@ -38,24 +41,29 @@ nTrs = getClusterNb(J,mat,clstDiag);
 V = numel(states);
 
 % check for state lifetimes
-if isfield(prm,'lft_res') && ~isempty(prm.lft_res) && ...
-        size(prm.lft_res,1)>=V && size(prm.lft_res,2)>=2
-    for v = 1:V
-        boba = prm.lft_start{1}{v,1}(5);
-        if ~((boba && size(prm.lft_res{v,1},2)>=4) || ...
-                (~boba && size(prm.lft_res{v,2},2)>=2))
-            return
-        end
-    end
-else
-    return
+set([h.text_TA_mdlComplexity,h.popupmenu_TA_mdlMeth,...
+    h.pushbutton_TA_refreshModel,h.edit_TA_mdlRestartNb,...
+    h.text_TA_mdlRestartNb],'enable','on');
+set(h.edit_TA_mdlRestartNb,'string',num2str(T));
+if meth_mdl==1
+    set([h.text_TA_mdlJmax,h.edit_TA_mdlJmax],'enable','on');
+    set(h.edit_TA_mdlJmax,'string',num2str(D));
 end
 
-set(h.pushbutton_TA_refreshModel,'enable','on');
-
-if ~(isfield(prm,'mdl_res') && size(prm.mdl_res,2)>=4 && ...
-        ~isempty(prm.mdl_res{4}))
+if ~(isfield(prm,'mdl_res') && size(prm.mdl_res,2)>=5 && ...
+        ~isempty(prm.mdl_res{3})) % no probability infered yet
     return
+end
+if ~isempty(prm.mdl_res{3})
+    set(h.popupmenu_TA_mdlDtState,'Enable','on');
+    if get(h.popupmenu_TA_mdlDtState,'Value')>V
+        set(h.popupmenu_TA_mdlDtState,'Value',V);
+    end
+    str_pop = cell(1,V);
+    for v = 1:V
+        str_pop{v} = sprintf('%0.2f',states(v));
+    end
+    set(h.popupmenu_TA_mdlDtState,'String',str_pop);
 end
 
 
