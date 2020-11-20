@@ -59,7 +59,6 @@ w = w./repmat(sum(w,2),[1,J]);
 w(isnan(w)) = 0;
 w(:,ip==0) = 0;
 
-res.traces = {};
 L = sum(Ls);
 state1 = randsample(1:J,1,true,ip);
 
