@@ -1,9 +1,11 @@
 function err = calcRateConfIv(T0,seq,B,vals,ip,logL1)
 
 % default
-step = 0.01;
 step_prob_min = 1E-4;
-LRmax = 1.96^2; % 95th percentile of chi2 (1.96~97.5% normal pdf)
+step = 0.01;
+LRmax = 1.96^2; % 95th percentile of chi2 (1.960~97.5% normal pdf)
+% step = 0.1;
+% LRmax = 2.576^2; % 99th percentile of chi2 (2.576~99.5% normal pdf)
 
 [~,J] = size(B);
 err = zeros(J,J,2);
@@ -15,6 +17,8 @@ for j1 = 1:J
         if j1==j2
             continue
         end
+        
+        fprintf('>> interval for transition %i->%i...\n',j1,j2);
         
         step_prob = step*T0(j1,j2);
         if step_prob<step_prob_min
