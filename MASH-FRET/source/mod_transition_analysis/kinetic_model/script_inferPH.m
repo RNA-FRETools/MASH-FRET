@@ -1,70 +1,30 @@
-function [mdl,mdl_opt] = script_inferPH(allSchemes,varargin)
-% [mdl,mdl_opt] = script_inferPH(allSchemes)
-% [mdl,mdl_opt] = script_inferPH(allSchemes,fname,import_prm)
-% [mdl,mdl_opt] = script_inferPH(allSchemes,fname,import_prm,plotIt)
+function mdl = script_inferPH(dt,states,expT,dt_bin,J_deg,plotIt)
+% mdl = script_inferPH(allSchemes,dt,expT,dt_bin,J_deg,plotIt)
 %
-% Import dwell times from .clst file
-% Train PH distributions of specific complexities (in terms of number of degenerated levels) on experimental dwell time histograms (one histogram per state value).
-% Plot PH fits
+% Trains DPH distributions of specific complexities (in terms of number of degenerated levels) on experimental dwell time histograms (one histogram per state value).
+% Returns best fit parameters
 %
-% allSchemes: 1 to infer parameters for all possible transition schemes, 0 for only one scheme (where all transition are allorwed)
-% fname: path to file (clustered dwell times) or none to use default
-% import_prm: {1-by-4} import parameters or none to use default
-%  import_prm{1}: number of header lines in file
-%  import_prm{2}: [1-by-4] file columns to import (time, molecule index, state index before and after transition)
-%  import_prm{3}: [1-by-V] state value indexes in file
-%  import_prm{4}: [1-by-V] number of degenerated levels for each state value
-% plotIt: 1 to plot fit, 0 otherwise
-% mdl: structure containing fit PH parameters
-% mdl_opt: index in mdl of most sufficient PH complexity
-%
-% ex: [mdl,mdl_opt] = script_inferPH(0,'C:\data\proj1.clst',{35,[1,4,7,8],[1,2],[2,2]});
+% dt: [nDt-by-3] dwell times (s), molecule indexes, state values
+% states: [1-by-V] state values in dt
+% expT: bin time (s)
+% dt_bin: binning factor for dwell times prior building histogram
+% J_deg: [1-by-V] number of degenerated levels
+% plotIt: (1) to plot fit, (0) otherwise
+% mdl: structure containing fit DPH parameters
+%   mdl.pi_fit: {1-by-V} starting probabilities
+%   mdl.tp_fit: {1-by-V} transition probabilities among degenerated states of a same state value
+%   mdl.logL: {1-by-V} log likelihoods for best fits
+%   mdl.N: [1-by-V] number of data
 
 % initialize output
-% t_comp = tic;
 mdl = struct;
-mdl_opt = [];
 
 % defaults
-% fname0 = [fileparts(which(mfilename)),'\transition_analysis\clustering',...
-%     '\sim_level3_final_publish_STaSI_FRETdonacc1.clst'];
-fname0 = [fileparts(which(mfilename)),'\transition_analysis\clustering',...
-    '\sim_level3_final_publish_vbFRET_2states_FRETdonacc1.clst'];
-import_prm0 = {35,[1,4,7,8],[1,2],[2,2]};
 PH_type = 1;% 1 for discrete, 2 for continuous
-expT = 0.2; % 0.2 (seconds)
 n_rs = 10; % number of EM restarts
-dt_bin = 1;
+nb = 0; % initializes number of bytes written in command window
+
 expT_bin = dt_bin*expT;
-useGuess = false;
-k0 =	[	0.000	0.080	0.250	0.000       % 0.000	0.080	0.250	0.000
-            0.053	0.000	0.000	0.018       % 0.053	0.000	0.000	0.018
-            0.680	0.000	0.000	0.000       % 0.680	0.000	0.000	0.000
-            0.000	0.032	0.000	0.000   ];  % 0.000	0.032	0.000	0.000
-tp0 = k0/expT_bin;
-astart0 = [0.9,0.1];
-a_min = 0; % minimum contribution to dwell time histogram (5%, ebFRET)
-
-% import settings
-plotIt = true;
-if nargin==1
-    fname = fname0;
-    import_prm = import_prm0;
-elseif nargin==3 || nargin==4
-    fname = varargin{1};
-    import_prm = varargin{2};
-    if nargin==4
-        plotIt = varargin{3};
-    end
-else
-    disp('The number of input arguments is incorrect: type "help script_inferPH" for help');
-    return
-end
-nhead = import_prm{1};
-cols = import_prm{2};
-state_id = import_prm{3};
-J_deg = import_prm{4};
-
 n = 0;
 degen = cell(1,numel(J_deg));
 for j = 1:numel(J_deg)
@@ -74,238 +34,154 @@ for j = 1:numel(J_deg)
         degen{j} = [degen{j} n];
     end
 end
-
-disp('>> import data');
-
-% import data from file
-f_id = fopen(fname,'r');
-for fh = 1:nhead
-    fgetl(f_id);
-end
-dt0 = [];
-while ~feof(f_id)
-    dt0 = cat(1,dt0,str2num(fgetl(f_id)));
-end
-fclose(f_id);
-dt0 = dt0(:,cols);
-
-n_id = unique(dt0(:,2))';
-V = numel(state_id); % number of state values
-N = numel(n_id);
-Ls = zeros(1,N);
-dt = [];
-for n = n_id
-    dt_m = adjustDt(dt0(dt0(:,2)==n,:));
-    Ls(n) = round(sum(dt_m(:,1))/expT_bin);
-    dt = cat(1,dt,dt_m);
-end
 dt(:,1) = round(dt(:,1)/expT_bin);
 dt(dt(:,1)==0,1) = 1;
 
 % calculate experimental complementary CDF for each state value z
-disp('>> calculate experimental distributions');
+V = numel(states);
 P = cell(1,V);
+if plotIt
+    cmplP = P;
+end
 x = P;
-cmplP = P;
-edg = P;
 for v = 1:V
     dt_z = dt(dt(:,3)==v,1);
-    edg{v} = 0.5:1:(max(dt_z)+0.5);
-    x{v} = mean([edg{v}(2:end);edg{v}(1:end-1)],1);
-    P{v} = histcounts(dt_z,edg{v});
-    cumP = cumsum(P{v}/sum(P{v}));
-    cmplP{v} = 1-cumP;
+    edg = 0.5:1:(max(dt_z)+0.5);
+    x{v} = mean([edg(2:end);edg(1:end-1)],1);
+    P{v} = histcounts(dt_z,edg);
+    if plotIt
+        cmplP{v} = 1-cumsum(P{v}/sum(P{v}));
+    end
 end
 
-J = sum(J_deg); % number of states (incl. degenerated)
-
 % calculate phase-type complementary CDF for each state value z
-P_fit = cell(1,V);
-cmplP_fit = P_fit;
-pi_fit = P_fit;
-tau_fit = P_fit;
-w_fit = P_fit;
-logL = P_fit;
-BIC = P_fit;
-R2 = P_fit;
-mdl_opt = NaN(1,V);
-nDt = zeros(1,V);
+pi_fit = cell(1,V);
+tp_fit = pi_fit;
+logL = -Inf(1,V);
+nDat = zeros(1,V);
+if plotIt
+    P_fit = pi_fit;
+    cmplP_fit = pi_fit;
+    w_fit = pi_fit;
+    tau_fit = pi_fit;
+end
+totcnt = V*n_rs;
+cnt = 0;
+nb = dispProgress(sprintf('%i%%%%',round(100*cnt/totcnt)),nb);
 for v = 1:V
     v_e = ones(J_deg(v),1);
-    L = numel(x{v});
     incl = P{v}>0;
-    
-    % get transition schemes
-    if allSchemes
-        schemes = getTransSchemes(J_deg(v));
-    else
-        schemes = true(J_deg(v));
-        schemes(~~eye(J_deg(v))) = false;
+
+    pi_fit{v} = NaN(1,J_deg(v));
+    tp_fit{v} = NaN(J_deg(v),J_deg(v)+1);
+    if plotIt
+        L = numel(x{v});
+        P_fit{v} = zeros(1,L);
+        tau_fit{v} = NaN(J_deg(v),1);
+        w_fit{v} = NaN(J_deg(v)+1,J_deg(v)+1);
     end
-    nSch = size(schemes,3);
-    
-    logL{v} = -Inf(1,nSch);
-    BIC{v} = Inf(1,nSch);
-    P_fit{v} = zeros(nSch,L);
-    R2{v} = logL{v};
-    pi_fit{v} = NaN(nSch,J_deg(v));
-    tau_fit{v} = NaN(J_deg(v),nSch);
-    w_fit{v} = NaN(J_deg(v)+1,J_deg(v)+1,nSch);
-    for sch = 1:nSch
-        % generate random PH parameters
-        a_fit = [];
-        T_fit = [];
-        for rs = 1:n_rs
-            if nSch>1
-                fprintf('>> process state %i/%i, scheme %i/%i, opt. restart %i/%i\n',...
-                    v,V,sch,nSch,rs,n_rs);
-            else
-                fprintf('>> process state %i/%i, opt. restart %i/%i\n',v,V,...
-                    rs,n_rs);
-            end
 
-            % use random starting guess
-            a_start = ones(1,J_deg(v));
-            a_start = a_start/sum(a_start);
+    % generate random PH parameters
+    a_fit = [];
+    T_fit = [];
+    for rs = 1:n_rs
 
-            if PH_type==2 % continuous PH
-                if ~useGuess % calculate random starting guess
-                    w0 = rand(J_deg(v),J_deg(v)+1);
-                    w0([~~eye(J_deg(v)) false(J_deg(v),1)]) = 0;
-                    sub_w0 = w0(1:J_deg(v),1:J_deg(v));
-                    sub_w0(~schemes(:,:,sch)) = 0;
-                    w0(1:J_deg(v),1:J_deg(v)) = sub_w0;
-                    w0 = w0./repmat(sum(w0,2),[1,J_deg(v)+1]);
-                    r0 = rand(J_deg(v),1);
-                    T_start = w0.*repmat(r0,[1,J_deg(v)+1]);
-                else % pre-defined starting guess
-                    a_start = astart0;
-                    js = 1:J;
-                    js(degen{v}) = [];
-                    T_start = [tp0(degen{v},degen{v}),...
-                        sum(tp0(degen{v},js),2)];
-                end
-                t = T_start(:,end);
-                T_start = T_start(:,1:J_deg(v));
-                T_start(~~eye(J_deg(v))) = -(sum(T_start,2)+t);
-            end
+        % use random starting guess
+        a_start = ones(1,J_deg(v));
+        a_start = a_start/sum(a_start);
 
-            if PH_type==1 % discrete PH
-                if ~useGuess % calculate random startng guess
-                    tp0 = rand(J_deg(v),J_deg(v)+1);
-                    sub_tp0 = tp0(1:J_deg(v),1:J_deg(v));
-                    sub_tp0(~schemes(:,:,sch)) = 0;
-                    tp0(1:J_deg(v),1:J_deg(v)) = sub_tp0;
-                    tp0(~~eye(size(tp0))) = 10;
-                    tp0 = tp0./repmat(sum(tp0,2),[1,J_deg(v)+1]);
-                    T_start = tp0(:,1:J_deg(v));
-                else % pre-defined starting guess
-                    a_start = astart0;
-                    T_start = tp0(degen{v},degen{v});
-                    T_start(~~eye(size(T_start))) = ...
-                        1-sum(tp0(degen{v},:),2);
-                end
-            end
+        if PH_type==2 % continuous PH
+            w0 = rand(J_deg(v),J_deg(v)+1);
+            w0([~~eye(J_deg(v)) false(J_deg(v),1)]) = 0;
+            w0 = w0./repmat(sum(w0,2),[1,J_deg(v)+1]);
 
-            % train a PH model on experimental CDF
-            [a_res,T_res,logL_res,errstr] = ...
-                trainPH(PH_type,a_start,T_start,[x{v}(incl);P{v}(incl)]);
-            if isempty(a_res) || isempty(T_res)
-                disp(['Optimization failed: ' errstr]);
-                continue
-            end
-            if sum(a_res<a_min)
-                disp('Optimization failed: parameter out-of-range');
-                continue
-            end
-            if logL_res>logL{v}(sch)
-                logL{v}(sch) = logL_res;
-                a_fit = a_res;
-                T_fit = T_res;
-            end
-            if PH_type==2 % continuous PH
-                r_res = -diag(T_res);
-                tau_res = expT_bin./r_res;
-                w_res = T_res./repmat(r_res,1,J_deg(v));
-                w_res(~~eye(J_deg(v))) = 0;
-                w_res = [w_res,1-sum(w_res,2);zeros(1,J_deg(v)+1)];
+            r0 = rand(J_deg(v),1);
 
-            else % discrete PH
-                r_res = -log(diag(T_res));
-                tau_res = expT_bin./r_res;
-                w_res = T_res;
-                w_res(~~eye(J_deg(v))) = 0;
-                t = v_e-T_res*v_e;
-                w_res = [w_res,t;zeros(1,J_deg(v)+1)];
-                w_res = w_res./repmat(sum(w_res,2),[1,J_deg(v)+1]);
-            end
-            disp(a_res)
-            disp(tau_res)
-            disp(w_res)
+            T_start = w0.*repmat(r0,[1,J_deg(v)+1]);
+            t = T_start(:,end);
+            T_start = T_start(:,1:J_deg(v));
+            T_start(~~eye(J_deg(v))) = -(sum(T_start,2)+t);
         end
-        if isempty(a_fit) || isempty(T_fit)
-            P_fit{v}(sch,:) = 0;
-            cmplP_fit{v}(sch,:) = 0;
+
+        if PH_type==1 % discrete PH
+            tp0 = rand(J_deg(v),J_deg(v)+1);
+            tp0(~~eye(size(tp0))) = 10;
+            tp0 = tp0./repmat(sum(tp0,2),[1,J_deg(v)+1]);
+
+            T_start = tp0(:,1:J_deg(v));
+        end
+
+        % train a PH model on experimental CDF
+        [a_res,T_res,logL_res,errstr] = ...
+            trainPH(PH_type,a_start,T_start,[x{v}(incl);P{v}(incl)]);
+        if isempty(a_res) || isempty(T_res)
+%             disp(['Optimization failed: ' errstr]);
             continue
         end
-
+        if logL_res>logL(v)
+            logL(v) = logL_res;
+            a_fit = a_res;
+            T_fit = T_res;
+        end
+        
+        cnt = cnt+1;
+        nb = dispProgress(sprintf('%i%%%%',round(100*cnt/totcnt)),nb);
+    end
+    if isempty(a_fit) || isempty(T_fit)
+        if plotIt
+            P_fit{v}(1,:) = 0;
+            cmplP_fit{v}(1,:) = 0;
+        end
+        continue
+    end
+    
+    if plotIt
         if PH_type==1 % discrete PH
             t = v_e-T_fit*v_e;
         end
         for l = 1:L
             if PH_type==1 % discrete PH
-                P_fit{v}(sch,l) = a_fit*(T_fit^(x{v}(l)-1))*t;
+                P_fit{v}(1,l) = a_fit*(T_fit^(x{v}(l)-1))*t;
             else% continuous PH
-                P_fit{v}(sch,l) = a_fit*expm(T_fit*x{v}(l))*v_e;
+                P_fit{v}(1,l) = a_fit*expm(T_fit*x{v}(l))*v_e;
             end
         end
-        P_fit{v}(sch,:) = P_fit{v}(sch,:)/sum(P_fit{v}(sch,:));
-        cumP_fit = cumsum(P_fit{v}(sch,:));
+        P_fit{v}(1,:) = P_fit{v}(1,:)/sum(P_fit{v}(1,:));
+        cumP_fit = cumsum(P_fit{v}(1,:));
         cumP_fit(cumP_fit>1) = 1;
-        cmplP_fit{v}(sch,:) = 1-cumP_fit;
-        R2{v}(sch) = 1-sum((cmplP{v}-cmplP_fit{v}(sch,:)).^2)/...
-            sum((cmplP{v}-mean(cmplP{v})).^2);
-
-
-        % get parameters from trained PH model
-        pi_fit{v}(sch,:) = a_fit;
-        if PH_type==2 % continuous PH
-            r_z = -diag(T_fit);
-            tau_fit{v}(:,sch) = expT_bin./r_z;
-            w_fit_z = T_fit./repmat(r_z,1,J_deg(v));
-            w_fit_z(~~eye(J_deg(v))) = 0;
-            w_fit{v}(:,:,sch) = ...
-                [w_fit_z,1-sum(w_fit_z,2);zeros(1,J_deg(v)+1)];
-            
-        else % discrete PH
-            r_z = -log(diag(T_fit));
-            tau_fit{v}(:,sch) = expT_bin./r_z;
-            w_fit_z = T_fit;
-            w_fit_z(~~eye(J_deg(v))) = 0;
-            t = v_e-T_fit*v_e;
-            w_fit{v}(:,:,sch) = [w_fit_z,t;zeros(1,J_deg(v)+1)];
-            w_fit{v}(:,:,sch) = w_fit{v}(:,:,sch)./...
-                repmat(sum(w_fit{v}(:,:,sch),2),[1,J_deg(v)+1]);
-        end
-        
-        df_a = J_deg(v)-1;
-        df_T = sum(sum(w_fit{v}(:,:,sch)>0));
-        df = df_a + df_T; % degrees of freedom
-        BIC{v}(sch) = df*log(sum(P{v}))-2*logL{v}(sch);
+        cmplP_fit{v}(1,:) = 1-cumP_fit;
     end
-    [~,mdl_opt(v)] = max(logL{v});
-    nDt(v) = sum(x{v}.*P{v});
+
+    % get parameters from trained PH model
+    pi_fit{v} = a_fit;
+    if PH_type==2 % continuous PH
+        r_v = -diag(T_fit)/dt_bin;
+        w = T_fit./repmat(r_v,1,J_deg(v));
+        w(~~eye(J_deg(v))) = 0;
+        w = cat(2,w,1-sum(w,2));
+    else % discrete PH
+        t = v_e-T_fit*v_e;
+        r_v = -log(diag(T_fit))/dt_bin;
+        w = T_fit;
+        w(~~eye(J_deg(v))) = 0;
+        w = cat(2,w,t);
+        w = w./repmat(sum(w,2),[1,J_deg(v)+1]);
+    end
+    tp_fit{v} = w.*repmat(r_v,[1,J_deg(v)+1]);
+    tp_fit{v}(~~eye(J_deg(v))) = 1-sum(tp_fit{v},2);
+    if plotIt
+        tau_fit{v} = expT./r_v;
+        w_fit{v} = w;
+    end
+    nDat(v) = sum(x{v}.*P{v});
 end
 mdl.pi_fit = pi_fit;
-mdl.tau_fit = tau_fit;
-mdl.w_fit = w_fit;
+mdl.tp_fit = tp_fit;
 mdl.logL = logL;
-mdl.BIC = BIC;
-mdl.N = nDt;
+mdl.N = nDat;
 
 % plot experimental and calculated distributions
 if plotIt
-    disp('>> plot results');
     hfig = figure('color','white');
     hfig.Position = [hfig.Position([1,2]),2*hfig.Position(3),hfig.Position(4)];
     switch PH_type
@@ -322,13 +198,6 @@ if plotIt
         plot(ha1,expT_bin*x{v},sum(P{v})*P_fit{v},'color','blue',...
             'linewidth',1);
         ha1.YLim = [0,max(P{v})];
-%         plot(ha1,expT_bin*x{v},sum(P{v})*cmplP{v},'color','black','linewidth',2);
-%         plot(ha1,expT_bin*x{v},sum(P{v})*cmplP_fit{v}(mdl_opt(v),:),'color','blue',...
-%             'linewidth',1);
-%         ha1.YLim = [0,sum(P{v})];
-
-        text(ha1.XLim(2)/3,ha1.YLim(2)/4,sprintf('R^2=%0.3f',R2{v}(sch)),...
-            'color','blue');
 
         if v==1
             legend(ha1,'data','fit');
@@ -340,7 +209,7 @@ if plotIt
         ha2.YScale = 'log';
         xlabel(sprintf('dwell time is state %i (seconds)',v));
         plot(ha2,expT_bin*x{v},sum(P{v})*cmplP{v},'color','black','linewidth',2);
-        plot(ha2,expT_bin*x{v},sum(P{v})*cmplP_fit{v}(mdl_opt(v),:),'color','blue',...
+        plot(ha2,expT_bin*x{v},sum(P{v})*cmplP_fit{v},'color','blue',...
             'linewidth',1);
         ha2.YLim = [1,sum(P{v})];
 
@@ -348,34 +217,31 @@ if plotIt
         str_mat = [str_mat,...
             repmat([repmat('%0.2f  ',1,J_deg(v)),'%0.2f  \n'],[1,J_deg(v)+1])];
         ht3 = text(ha2.XLim(2)/8,ha2.YLim(2)*0.3,...
-            sprintf(str_mat,w_fit{v}(:,:,mdl_opt(v))'),'color','blue');
+            sprintf(str_mat,w_fit{v}'),'color','blue');
 
         str_tau = 'tau (s)\n';
-        str_tau = [str_tau,repmat('%0.2f\n',1,J_deg(v)+1)];
+        str_tau = [str_tau,repmat('%0.2f\n',1,J_deg(v))];
         ht4 = text(sum(ht3.Extent([1,3])),ht3.Position(2),...
-            sprintf(str_tau,[tau_fit{v}(:,mdl_opt(v));NaN]'),'color','blue',...
+            sprintf(str_tau,tau_fit{v}),'color','blue',...
             'fontweight','bold');
         
         str_pi = 'pi\n';
-        str_pi = [str_pi,repmat('%0.2f\n',1,J_deg(v)+1)];
+        str_pi = [str_pi,repmat('%0.2f\n',1,J_deg(v))];
         text(sum(ht4.Extent([1,3])),ht4.Position(2),...
-            sprintf(str_pi,[pi_fit{v}(mdl_opt(v),:),NaN]),'color','blue',...
+            sprintf(str_pi,pi_fit{v}),'color','blue',...
             'fontweight','bold');
 
-        str_logL = sprintf('logL=%0.6f\nBIC=%0.6f',logL{v}(mdl_opt(v)),...
-            BIC{v}(mdl_opt(v)));
+        str_logL = sprintf('logL=%0.6f',logL(v));
         text(ha2.XLim(2)/2,ha2.YLim(2)*0.07,str_logL,'color','blue',...
             'fontweight','bold');
 
         if v==V
-            hst = sgtitle([sprintf(...
-                'Dwell time histograms (data: %i traces, median trace length=%0.0f)',...
-                N,median(Ls)),' and respective ',PH_type_str,' PH distribution']);
+            hst = sgtitle(['Dwell time histograms and respective ',...
+                PH_type_str,' PH distribution']);
             hst.FontSize = 12;
         end
     end
 end
-% fprintf('Fit completed in %0.0f seconds\n',toc(t_comp));
 
 
 function [a,T,logL,actstr] = trainPH(PH_type,a0,T0,P)
@@ -409,14 +275,10 @@ for s = 1:S
         % likelihood
         logL = PH_likelihood(PH_type,a,T,P);
         
-%         if all(all(abs(T-T_prev)<d_min)) && all(abs(a-a_prev)<d_min) % EM successfully converged
-%             a = a_prev;
-%             T = T_prev;
-%             logL = logL_prev;
-%             actstr = 'EM successfully converged';
-%             break
-%         end
-        if (logL-logL_prev)<dL_min % EM successfully converged (faster)
+        % check for convergence
+%         if (logL-logL_prev)<dL_min || ...
+%                 all(all(abs(T-T_prev)<d_min)) && all(abs(a-a_prev)<d_min)
+        if (logL-logL_prev)<dL_min
             a = a_prev;
             T = T_prev;
             logL = logL_prev;
@@ -430,12 +292,12 @@ for s = 1:S
         end
     end
 
-    fprintf('Best fit: logL=%d, %i iterations\n',logL,m);
+%     fprintf('Best fit: logL=%d, %i iterations\n',logL,m);
 
     if m>=M
-        a_fin = [];
-        T_fin = [];
-        logL_fin = -Inf;
+        a = [];
+        T = [];
+        logL = -Inf;
         actstr = 'The maximum number of iteration has been reached';
     end
 end
@@ -557,24 +419,12 @@ J = numel(a);
 
 if PH_type==2 % continuous PH
     t = -T*ones(J,1);
-    
-    % complete-data likelihood (hard assignment of dwelltime to individual state)
-%     P = zeros(1,N);
-%     for n = 1:N
-%         [p,id] = max(expm(T*x(n))*t);
-%         P(:,n) = p*a(id);
-%     end
-%     logL = sum(count.*log(P(:,n)));
-
-    % incomplete-data likelihood (soft assignment)
     logL = 0;
     for n = 1:N
         logL = logL + count(n)*log(a*(expm(T*x(n))*t));
     end
     
 elseif PH_type==1 % discrete PH
-
-    % incomplete-data likelihood (soft assignment)
     t = ones(J,1)-T*ones(J,1);
     logL = 0;
     for n = 1:N
