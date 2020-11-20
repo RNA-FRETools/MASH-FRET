@@ -24,6 +24,7 @@ prm.clst_res = adjustParam('clst_res', def.clst_res, prm);
 prm.lft_def = adjustParam('lft_def', def.lft_def, prm);
 prm.lft_start = adjustParam('lft_start', def.lft_start, prm);
 prm.lft_res = adjustParam('lft_res', def.lft_res, prm);
+prm.mdl_start = adjustParam('mdl_start', def.mdl_start, prm);
 prm.mdl_res = adjustParam('mdl_res', def.mdl_res, prm);
 pplot = prm.plot;
 clst_start = prm.clst_start;

@@ -36,6 +36,8 @@ excl = false;
 rearr_lft = false;
 auto_lft = true;
 bin_lft = 0.01;
+niter_mdl = 5;
+Jdeg_max = 4;
 
 % collect project parameters
 nChan = p.proj{proj}.nb_channel;
@@ -175,7 +177,11 @@ for tpe = 1:nTpe
         % {1-by-2} {1-by-nSpl}[nDt-by-2] sample dwell time histograms and [nSpl-by-3 or -nDegen*2] sample fit results
         def{tag,tpe}.lft_res{5} = [];
         
-        %% Kinetic model
+        %% Kinetic model start parameters
+        % starting guess, number of restart
+        def{tag,tpe}.mdl_start = [1,niter_mdl,Jdeg_max];
+        
+        %% Kinetic model results
         % weighing factor matrix
         def{tag,tpe}.mdl_res{1} = []; 
         

@@ -1,5 +1,8 @@
 function pushbutton_TA_refreshModel_Callback(obj,evd,h_fig)
 
+% default
+dt_bin = 10; % dwell time binning for DPH fit (depends on discretization algorithm accuracy)
+
 % get interface parameters
 h = guidata(h_fig);
 p = h.param.TDP;
@@ -16,6 +19,7 @@ expT = p.proj{proj}.frame_rate;
 tag = p.curr_tag(proj);
 tpe = p.curr_type(proj);
 prm = p.proj{proj}.prm{tag,tpe};
+curr = p.proj{proj}.curr{tag,tpe};
 J = prm.lft_start{2}(1);
 mat = prm.clst_start{1}(4);
 clstDiag = prm.clst_start{1}(9);
@@ -24,6 +28,11 @@ bin = prm.lft_start{2}(3);
 dat = prm.clst_res{1}.clusters{J};
 excl = prm.lft_start{2}(4);
 rearr = prm.lft_start{2}(5);
+
+prm.mdl_start = curr.mdl_start;
+guessMeth = prm.mdl_start(1);
+T = prm.mdl_start(2);
+Dmax = prm.mdl_start(3);
 
 % bin states
 nTrs = getClusterNb(J,mat,clstDiag);
@@ -80,63 +89,92 @@ for v1 = 1:V
 end
 clstPop = clstPop/sum(sum(clstPop));
 
-% check for state lifetimes
-r = [];
-degen = [];
-fitPrm = cell(1,V);
-totalTime = zeros(V,1);
-A = [];
-if isfield(prm,'lft_res') && ~isempty(prm.lft_res) && ...
-        size(prm.lft_res,1)>=V && size(prm.lft_res,2)>=2
+if guessMeth==1 % determine guess from DPH fit & BIC model selection
+    [D,mdl,~,~,~] = ...
+        script_findBestModel(dat(:,[1,4,7,8]),Dmax,states,expT,dt_bin);
+    J = sum(D);
+    tp0 = zeros(J);
+    j1 = 0;
+    degen = [];
+    for v1 = 1:V
+        degen = cat(2,degen,repmat(v1,[1,D(v1)]));
+        tp0((j1+1):(j1+D(v1)),(j1+1):(j1+D(v1))) = ...
+            mdl.tp_fit{v1}(:,1:end-1);
+        p_exit = mdl.tp_fit{v1}(:,end);
+        j2 = 0;
+        for v2 = 1:V
+            if v1~=v2
+                tp0((j1+1):(j1+D(v1)),(j2+1):(j2+D(v2))) = ...
+                    repmat(p_exit,[1,D(v2)]).*...
+                    repmat(clstPop(v1,v2),[D(v1),D(v2)])/D(v2);
+            end
+            j2 = j2+D(v2);
+        end
+        j1 = j1+D(v1);
+    end
+    states = states(degen);
+    
+else % use guess from panel "Exponential fit"
+    % check for state lifetimes
+    r = [];
+    degen = [];
+    A = [];
+    if ~(isfield(prm,'lft_res') && ~isempty(prm.lft_res) && ...
+            size(prm.lft_res,1)>=V && size(prm.lft_res,2)>=2)
+        setContPan('State lifetime analysis must first be performed.',...
+            'error',h_fig);
+        return
+    end
     for v1 = 1:V
         boba = prm.lft_start{1}{v1,1}(5);
         if ~((boba && size(prm.lft_res{v1,1},2)>=4) || ...
                 (~boba && size(prm.lft_res{v1,2},2)>=2))
+            setContPan(['State lifetime analysis is missing for state ',...
+                'value n°:',num2str(v1),'.'],'error',h_fig);
             return
         else
             % get restricted rate coefficients
             if boba
-                amp = prm.lft_res{v1,1}(:,1,1)';
                 dec = prm.lft_res{v1,1}(:,3,1)';
                 pop = prm.lft_res{v1,1}(:,1,2:end)./repmat(dec',[1,1,V-1]);
                 pop = pop(:)';
             else
-                amp = prm.lft_res{v1,1}(:,1,1)';
                 dec = prm.lft_res{v1,1}(:,2,1)';
                 pop = prm.lft_res{v1,1}(:,2,2:end)./repmat(dec',[1,1,V-1]);
                 pop = pop(:)';
             end
-            r_v = 1./dec;
-            A_v = pop/sum(pop);
-            
-            fitPrm{v1} = reshape([amp;dec],1,numel([amp;dec]));
-            
-            r = cat(2,r,r_v);
-            A = cat(2,A,A_v);
-            degen = cat(2,degen,repmat(v1,[1,numel(r_v)]));
-            
-        end
-        totalTime(v1) = sum(dat(dat(:,7)==v1,1));
-    end
-else
-    return
-end
-states = states(degen);
+            r = cat(2,r,1./dec);
+            A = cat(2,A,pop/sum(pop));
+            degen = cat(2,degen,repmat(v1,[1,numel(dec)]));
 
-% get starting transition probabilities based on number of transitions
-J_deg = numel(states);
-tp0 = zeros(J_deg);
-for j_deg1 = 1:J_deg
-    for j_deg2 = 1:J_deg
-        if j_deg1==j_deg2
-            continue
         end
-        tp0(j_deg1,j_deg2) = ...
-            A(j_deg1)*A(j_deg2)*clstPop(degen(j_deg1),degen(j_deg2));
     end
+    states = states(degen);
+
+    % get starting transition probabilities based on number of transitions
+    J_deg = numel(states);
+    tp0 = zeros(J_deg);
+    for j_deg1 = 1:J_deg
+        for j_deg2 = 1:J_deg
+            if j_deg1==j_deg2
+                continue
+            end
+            tp0(j_deg1,j_deg2) = ...
+                A(j_deg1)*A(j_deg2)*clstPop(degen(j_deg1),degen(j_deg2));
+        end
+    end
+    tp0 = repmat(nL*expT*r',[1,J_deg]).*tp0./repmat(sum(tp0,2),[1,J_deg]); % transition prob
+    tp0(~~eye(size(tp0))) = 1-sum(tp0,2); % transition prob
 end
-tp0 = repmat(nL*expT*r',[1,J_deg]).*tp0./repmat(sum(tp0,2),[1,J_deg]); % transition prob
-tp0(~~eye(size(tp0))) = 1-sum(tp0,2); % transition prob
+
+% update plot with diagram
+prm.mdl_res = {[],[],[],[],states};
+p.proj{proj}.prm{tag,tpe} = prm;
+p.proj{proj}.curr{tag,tpe} = prm;
+h.param.TDP = p;
+guidata(h_fig,h);
+updateTAplots(h_fig,'mdl'); 
+drawnow;
 
 expPrm.expT = nL*expT;
 expPrm.Ls = sum(p.proj{proj}.bool_intensities,1);
@@ -144,9 +182,9 @@ expPrm.dt = dat(:,[1,4,end-1,end]);
 expPrm.excl = excl;
 expPrm.seq = seq;
 
-[tp,err,simdat] = optimizeProbMat(states,expPrm,tp0); % transition prob
+[tp,err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T); % transition prob
 
-prm.mdl_res = {tp,err,simdat,states};
+prm.mdl_res = {tp,err,ip,simdat,states};
 
 p.proj{proj}.prm{tag,tpe} = prm;
 p.proj{proj}.curr{tag,tpe} = prm;
