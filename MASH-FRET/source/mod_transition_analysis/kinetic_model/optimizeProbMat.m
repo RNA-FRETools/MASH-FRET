@@ -1,5 +1,5 @@
-function [tp_iter,tp_err,simdat] = optimizeProbMat(states,expPrm,tp0)
-% [tp,tp_err,simdat] = optimizeProbMat(states,expPrm,tp0)
+function [tp_iter,tp_err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T)
+% [tp,tp_err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T)
 %
 % Find the probability matrix that describes the input dwell time set
 %
@@ -10,8 +10,10 @@ function [tp_iter,tp_err,simdat] = optimizeProbMat(states,expPrm,tp0)
 %   expPrm.expT: binning time
 %   expPrm.excl: (1) to exclude first and last dwell times of each sequence, (0) otherwise
 % tp0: [J-by-J] matrix starting guess
+% T: number of restart
 % tp_iter: [J-by-J] best inferrence matrix
 % tp_err: [J-by-J-by-2] negative and positive absolute mean deviation
+% ip: [1-by-J] initial state probabilities
 % simdat: structure containing probabilities calculated from simulated data
 %	simdat.ip initial state probabilities
 %	simdat.dt dwell times
@@ -21,8 +23,8 @@ function [tp_iter,tp_err,simdat] = optimizeProbMat(states,expPrm,tp0)
 %   simdat.tp_exp transition matrix
 
 % default
-T = 5; % number of matrix initialization
-plotIt = true;
+tpmin = 1E-5; % minimum transition probability
+plotIt = false;
 
 % create figure for plot
 if plotIt
@@ -63,6 +65,8 @@ ip_all = NaN(T,J);
 gof_all = -Inf(1,T);
 for restart = 1:T
     
+    fprintf('restart %i/%i:\n',restart,T);
+    
     % generate new random matrix
     if restart>1
         tp0 = rand(J);
@@ -76,15 +80,20 @@ for restart = 1:T
         plotKinMdlSim(degen,tp_iter,ones(1,J)/J,expPrm,h_fig1);
     else
         plotKinMdlSim(degen,tp_iter,ones(1,J)/J,expPrm,[]);
-        disp(['>> restart: ',num2str(restart),' ...']);
     end
-    disp(tp_iter);
 
     [tp_iter,B,ip,bestgof] = ...
         baumwelch(tp_iter,B0,expPrm.seq,1:V,ones(1,J)/J);
+    if isnan(bestgof)
+        continue
+    end
+    
+    disp(tp_iter)
     
     if plotIt
-        plotKinMdlSim(degen,tp_iter,ip,expPrm,h_fig1);
+        tp_sim = tp_iter;
+        tp_sim(tp_sim<tpmin) = 0;
+        plotKinMdlSim(degen,tp_sim,ip,expPrm,h_fig1);
     end
     
     % store best restart
@@ -97,7 +106,10 @@ end
 [bestgof,bestrestart] = max(gof_all);
 tp_iter = tp_all(:,:,bestrestart);
 ip = ip_all(bestrestart,:);
-simdat = plotKinMdlSim(degen,tp_iter,ip,expPrm,h_fig1);
+tp_sim = tp_iter;
+tp_sim(tp_sim<tpmin) = 0;
+simdat = plotKinMdlSim(degen,tp_sim,ip,expPrm,h_fig1);
+simdat.tpmin = tpmin;
 
 % calculate confidence interval for each coefficient (SMACKS)
 disp('calculate confidence intervals...');
