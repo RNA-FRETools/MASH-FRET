@@ -4,7 +4,8 @@ function [T,B,ip,logL] = baumwelch(T0,B0,seq,vals,ip0)
 dLmin = 1E-6; % convergence criterion on logL
 dmin = 1E-8; % convergence criterion on parameters (SMACKS)
 M = 100000; % maximum number of EM iterations
-m = 0;
+m = 0; % initializes number of EM iterations
+nb = 0; % initializes number of bytes written in command window
 
 N = numel(seq);
 [V,J] = size(B0);
@@ -75,17 +76,24 @@ while m<M
     
     logL = calcBWlogL(alpha,beta);
     
-    fprintf('logL = %d\n',logL)
-    disp(T)
+    nb = dispProgress(sprintf('iteration %i: dL=%1.3e (dL_min=%1.0e)...',...
+        m,logL-logL_prev,dLmin),nb);
+    
+    if isnan(logL)
+        T = [];
+        B = [];
+        ip = [];
+        dispProgress('EM failed to converge.');
+    end
     
     % check for convergence
-    if (logL-logL_prev)<dLmin || (~sum(sum(abs(T-T_prev)>=dmin)) && ...
-            ~sum(sum(abs(B-B_prev)>=dmin)) && ~sum(abs(ip-ip_prev)>=dmin))
+    if (logL-logL_prev)<dLmin
         logL = logL_prev;
         T = T_prev;
         B = B_prev;
         ip = ip_prev;
-        fprintf('EM successfully converged after %i iterations!\n',m)
+        dispProgress(...
+            sprintf('EM successfully converged after %i iterations!',m),nb);
         break
     end
 end
