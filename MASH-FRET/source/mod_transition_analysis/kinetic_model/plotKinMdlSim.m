@@ -1,6 +1,6 @@
 function res = plotKinMdlSim(degen,tp,ip,expPrm,varargin)
-% res = plotKinMdlSim(degen,mat,r,expPrm,opt)
-% res = plotKinMdlSim(degen,mat,r,expPrm,opt,h_fig)
+% res = plotKinMdlSim(degen,tp,ip,expPrm)
+% res = plotKinMdlSim(degen,tp,ip,expPrm,h_fig)
 %
 % Simulates state sequences according to input model parameters
 % Evenzually plots the dwell time histograms, state population and transition counts in comparison to experimental data.
@@ -14,15 +14,17 @@ function res = plotKinMdlSim(degen,tp,ip,expPrm,varargin)
 % 	expPrm.Ls: [1-by-N] experimental trajectory lengths
 % 	expPrm.expT: binning time
 % 	expPrm.excl: (1) to exclude first and last dwell times of each sequence, (0) otherwise
-% 	expPrm.seq: {1-by-N} experimental state sequences (filled with state value indexes)
-% h_fig: handle to figure where data are plotted
+% h_fig: handles to figure where to plot data to
 % res: structure containing probabilities calculated from simulated data
-%	res.ip initial state probabilities
-%	res.dt dwell times
-%   res.k_exp transition rate coefficients
-%   res.n_exp number of transitions
-%   res.w_exp transition probabiltiies
-%   res.tp_exp transition matrix
+%	res.ip: initial state probabilities
+%	res.dt: dwell times
+%   res.k_exp: transition rate coefficients
+%   res.n_exp: number of transitions
+%   res.w_exp: transition probabiltiies
+%   res.tp_exp: transition matrix
+%   res.cumdstrb: {1-by-V}[3-by-nDt] x-axis values, experimental and simulated cumulative dwell time distributions
+%   res.pop: [2-by-V] experimental and simulated state value populations
+%   res.ntrs: [2-by-V] experimental and simulated numbers of transitions between state values
 
 % default
 plotIt = false; % true to plot
@@ -40,15 +42,15 @@ excl = expPrm.excl;
 V = numel(degen);
 
 % re-arrange experimental dwell times & get state sequences
-mols = unique(dt_exp0(:,2));
-dt_exp = [];
-for m = 1:numel(mols)
-    dt_exp_m = adjustDt(dt_exp0(dt_exp0(:,2)==mols(m),:));
-    if excl
-        dt_exp_m([1,end],:) = [];
-    end
-    dt_exp = cat(1,dt_exp,dt_exp_m);
-end
+% mols = unique(dt_exp0(:,2));
+dt_exp = dt_exp0;
+% for m = 1:numel(mols)
+%     dt_exp_m = adjustDt(dt_exp0(dt_exp0(:,2)==mols(m),:));
+%     if excl
+%         dt_exp_m([1,end],:) = [];
+%     end
+%     dt_exp = cat(1,dt_exp,dt_exp_m);
+% end
 
 % simulate state sequences with actual model parameters
 res = simStateSequences(tp,ip,Ls);
@@ -78,7 +80,6 @@ for m = mols_sim'
     dt_sim = cat(1,dt_sim,dt_sim_m);
 end
 dt_sim(:,1) = dt_sim(:,1)*expT; % convert frame count to time
-res.dt = dt_sim; % save dwell time set
 dt_sim = dt_sim(:,[1,3:end]); % remove molecule index
 
 % count nb. of transitions
@@ -108,37 +109,40 @@ maxDt = zeros(1,V);
 minDt = zeros(1,V);
 popSim = zeros(1,V);
 popExp = zeros(1,V);
-for j1 = 1:V
-    dt_sim_j1 = dt_sim(dt_sim(:,2)==j1,1);
-    dt_exp_j1 = dt_exp(dt_exp(:,3)==j1,1);
+for v = 1:V
+    dt_sim_j1 = dt_sim(dt_sim(:,2)==v,1);
+    dt_exp_j1 = dt_exp(dt_exp(:,3)==v,1);
     
-    popSim(j1) = sum(dt_sim_j1);
-    popExp(j1) = sum(dt_exp_j1);
+    popSim(v) = sum(dt_sim_j1);
+    popExp(v) = sum(dt_exp_j1);
 
-    maxDt(j1) = max([dt_sim_j1;dt_exp_j1]);
-    minDt(j1) = min([dt_sim_j1(dt_sim_j1>0);dt_exp_j1(dt_exp_j1>0)]);
-    bins{j1} = expT:expT:maxDt(j1);
+    maxDt(v) = max([dt_sim_j1;dt_exp_j1]);
+    minDt(v) = min([dt_sim_j1(dt_sim_j1>0);dt_exp_j1(dt_exp_j1>0)]);
+    bins{v} = expT:expT:maxDt(v);
 
-    cum_counts_exp{j1} = cumsum(histcounts(dt_exp_j1,[bins{j1},Inf])');
-    cum_counts_sim{j1} = cumsum(histcounts(dt_sim_j1,[bins{j1},Inf])');
+    cum_counts_exp{v} = cumsum(histcounts(dt_exp_j1,[bins{v},Inf])');
+    cum_counts_sim{v} = cumsum(histcounts(dt_sim_j1,[bins{v},Inf])');
     
-    ndtExp{j1} = max(cum_counts_exp{j1});
-    ndtSim{j1} = max(cum_counts_sim{j1});
+    ndtExp{v} = max(cum_counts_exp{v});
+    ndtSim{v} = max(cum_counts_sim{v});
     
-    sumExp = sumExp+ndtExp{j1};
-    sumSim = sumSim+ndtSim{j1};
+    sumExp = sumExp+ndtExp{v};
+    sumSim = sumSim+ndtSim{v};
 end
+res.ntrs = [Nexp;Nsim];
+res.pop = [popExp;popSim];
 
 % plot data
-for j1 = 1:V
-    cum_exp = cum_counts_exp{j1}/sumExp;
+cumdstrb = cell(1,V);
+for v = 1:V
+    cum_exp = cum_counts_exp{v};
     maxCumExp = max(cum_exp);
-    cum_sim = cum_counts_sim{j1}/sumSim;
+    cum_sim = cum_counts_sim{v};
     maxCumSim = max(cum_sim);
     cmpl_exp = 1-cum_exp/maxCumExp;
     cmpl_sim = 1-cum_sim/maxCumSim;
     
-    n = numel(degen{j1});
+    cumdstrb{v} = [bins{v};cum_exp';cum_sim'];
 
     % plot histograms and fit functions
     if plotIt
@@ -146,12 +150,12 @@ for j1 = 1:V
             cum_sim(cum_sim>0)']),...
             max([cum_exp(cum_exp>0)',...
             cum_sim(cum_sim>0)'])];
-        lim_x = [bins{j1}(1),bins{j1}(end)];
+        lim_x = [bins{v}(1),bins{v}(end)];
         
-        h_a = subplot(2,V+1,j1,'replace','parent',h_fig);
-        plot(h_a,bins{j1},cum_exp,'+b');
+        h_a = subplot(2,V+1,v,'replace','parent',h_fig);
+        plot(h_a,bins{v},cum_exp,'+b');
         hold(h_a,'on');
-        plot(h_a,bins{j1},cum_sim,'+r');
+        plot(h_a,bins{v},cum_sim,'+r');
         hold(h_a,'off');
         ylim(h_a,lim_y);
         xlim(h_a,lim_x);
@@ -161,15 +165,15 @@ for j1 = 1:V
             max([cmpl_exp(cmpl_exp>0)',...
             cmpl_sim(cmpl_sim>0)'])];
 
-        h_a = subplot(2,V+1,V+1+j1,'replace','parent',h_fig);
-        plot(h_a,bins{j1},cmpl_exp,'+b');
+        h_a = subplot(2,V+1,V+1+v,'replace','parent',h_fig);
+        plot(h_a,bins{v},cmpl_exp,'+b');
         hold(h_a,'on');
-        plot(h_a,bins{j1},cmpl_sim,'+r');
+        plot(h_a,bins{v},cmpl_sim,'+r');
         hold(h_a,'off');
         set(h_a,'yscale','log');
         ylim(h_a,lim_y);
         xlim(h_a,lim_x);
-        if j1==1
+        if v==1
             % plot relative FRET state populations
             h_a = subplot(2,V+1,V+1,'replace','parent',h_fig);
             b = bar(h_a,1:V,[popSim',popExp']);
@@ -188,3 +192,4 @@ for j1 = 1:V
         drawnow;
     end
 end
+res.cumdstrb = cumdstrb;
