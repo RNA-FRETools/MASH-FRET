@@ -161,11 +161,11 @@ for v = 1:V
         w = cat(2,w,1-sum(w,2));
     else % discrete PH
         t = v_e-T_fit*v_e;
-        r_v = -log(diag(T_fit))/dt_bin;
-        w = T_fit;
-        w(~~eye(J_deg(v))) = 0;
-        w = cat(2,w,t);
-        w = w./repmat(sum(w,2),[1,J_deg(v)+1]);
+%         r_v = -log(diag(T_fit))/dt_bin;
+        k = [T_fit,t];
+        k(~~eye(J_deg(v))) = 0;
+        r_v = sum(k,2)/dt_bin;
+        w = k./repmat(sum(k,2),[1,J_deg(v)+1]);
     end
     tp_fit{v} = w.*repmat(r_v,[1,J_deg(v)+1]);
     tp_fit{v}(~~eye(J_deg(v))) = 1-sum(tp_fit{v},2);
@@ -279,9 +279,6 @@ for s = 1:S
 %         if (logL-logL_prev)<dL_min || ...
 %                 all(all(abs(T-T_prev)<d_min)) && all(abs(a-a_prev)<d_min)
         if (logL-logL_prev)<dL_min
-            a = a_prev;
-            T = T_prev;
-            logL = logL_prev;
             actstr = 'EM successfully converged';
             break
         end
