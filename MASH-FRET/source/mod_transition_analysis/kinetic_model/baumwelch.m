@@ -23,8 +23,9 @@ for n = 1:N
 end
 
 % calculate forward and backward porbabilities
-[alpha,~,~] = fwdprob(seq,T,B,vals,ip);
-[beta,~] = bwdprob(seq,T,B,vals);
+norm = false; % alpha and beta are not normalized at each time step (faster)
+[alpha,~] = fwdprob(seq,T,B,vals,ip,norm);
+beta = bwdprob(seq,T,B,vals,[]);
 
 % E-M iterations
 xi = cell(1,N);
@@ -55,45 +56,54 @@ while m<M
     
     % M-step
     ip = zeros(1,J);
-    T = zeros(J,J);
+    Nij = zeros(J,J);
     B = zeros(V,J);
-    xi_denom = zeros();
-    b_denom = zeros();
+    Ni = ip;
+    b_denom = ip;
     for n = 1:N
         ip = ip + gamma{n}(1,:)/N;
-        T = T + sum(xi{n},3);
+        Nij = Nij + sum(xi{n},3);
         for v = 1:V
             B(v,:) = B(v,:) + sum(gamma{n}(seq_vals{n}==v,:),1);
         end
-        xi_denom = xi_denom + sum(gamma{n},1)-gamma{n}(end,:);
+        Ni = Ni + sum(gamma{n}(1:end-1,:),1);
         b_denom = b_denom + sum(gamma{n},1);
     end
     B = B./repmat(b_denom,[V,1]);
-    T = T./repmat(xi_denom',[1,J]);
+    T = Nij./repmat(Ni',[1,J]);
     
-    [alpha,~,~] = fwdprob(seq,T,B,vals,ip);
-    [beta,~] = bwdprob(seq,T,B,vals);
-    
-    logL = calcBWlogL(alpha,beta);
-    
-    nb = dispProgress(sprintf('iteration %i: dL=%1.3e (dL_min=%1.0e)...',...
-        m,logL-logL_prev,dLmin),nb);
-    
-    if isnan(logL)
-        T = [];
-        B = [];
-        ip = [];
-        dispProgress('EM failed to converge.');
+    if sum(isnan(B)) % state trajectories are too long, alpha and beta need to be normalized at each time step
+        T = T_prev;
+        B = B_prev;
+        ip = ip_prev;
+        norm = true; % computation time x 2
     end
+    
+    [alpha,cl] = fwdprob(seq,T,B,vals,ip,norm);
+    if norm
+        beta = bwdprob(seq,T,B,vals,cl);
+        logL = calcBWlogL(cl);
+    else
+        beta = bwdprob(seq,T,B,vals,[]);
+        logL = calcBWlogL(alpha,beta);
+    end
+    
+    dTmax = max(max(abs(T-T_prev)));
+    dBmax = max(max(abs(B-B_prev)));
+    dipmax = max(abs(ip-ip_prev));
+
+    nb = dispProgress(...
+        sprintf(['iteration %i: d=%1.3e dL=%1.3e (dL_min=%1.0e)...\n',...
+        repmat(['%0.5f',repmat('\t%0.5f',[1,J-1]),'\n'],[1,J])],...
+        m,max([dTmax,dBmax,dipmax]),(logL-logL_prev),dLmin,T'),nb);
     
     % check for convergence
     if (logL-logL_prev)<dLmin
         logL = logL_prev;
         T = T_prev;
-        B = B_prev;
         ip = ip_prev;
-        dispProgress(...
-            sprintf('EM successfully converged after %i iterations!',m),nb);
+        B = B_prev;
+        fprintf('EM successfully converged after %i iterations!\n',m);
         break
     end
 end

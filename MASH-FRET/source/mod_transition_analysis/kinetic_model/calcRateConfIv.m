@@ -1,4 +1,4 @@
-function err = calcRateConfIv(T0,seq,B,vals,ip,logL1)
+function err = calcRateConfIv(T0,seq,B,vals,ip)
 
 % default
 step_prob_min = 1E-4;
@@ -7,10 +7,11 @@ LRmax = 1.96^2; % 95th percentile of chi2 (1.960~97.5% normal pdf)
 % step = 0.1;
 % LRmax = 2.576^2; % 99th percentile of chi2 (2.576~99.5% normal pdf)
 
+[~,cl] = fwdprob(seq,T0,B,vals,ip,true);
+logL1 = calcBWlogL(cl);
+
 [~,J] = size(B);
 err = zeros(J,J,2);
-
-% [~,~,logL1] = fwdprob(seq,T0,B,vals,ip);
 
 for j1 = 1:J
     for j2 = 1:J
@@ -75,9 +76,7 @@ end
 
 function LR = likelihoodRatio(seq,T,B,vals,ip,logL1)
 
-[alpha,~,~] = fwdprob(seq,T,B,vals,ip);
-[beta,~] = bwdprob(seq,T,B,vals);
-
-logL2 = calcBWlogL(alpha,beta);
+[~,cl] = fwdprob(seq,T,B,vals,ip,true);
+logL2 = calcBWlogL(cl);
 LR = 2*(logL1-logL2);
 
