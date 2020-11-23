@@ -182,17 +182,23 @@ for tpe = 1:nTpe
         def{tag,tpe}.mdl_start = [1,niter_mdl,Jdeg_max];
         
         %% Kinetic model results
-        % weighing factor matrix
+        % transition probabilities
         def{tag,tpe}.mdl_res{1} = []; 
         
-        % cumulated relative error on simulated histogram
+        % transtion probability deviations
         def{tag,tpe}.mdl_res{2} = []; 
         
-        % simulated data
+        % initial probabilities
         def{tag,tpe}.mdl_res{3} = []; 
         
-        % final state values (incl. degenerated levels)
+        % simulated data
         def{tag,tpe}.mdl_res{4} = []; 
+        
+        % final state values (incl. degenerated levels)
+        def{tag,tpe}.mdl_res{5} = []; 
+        
+        % [Dmax^V-by-V+1] nb. of degenerated states, BIC
+        def{tag,tpe}.mdl_res{6} = []; 
         
     end
 end
