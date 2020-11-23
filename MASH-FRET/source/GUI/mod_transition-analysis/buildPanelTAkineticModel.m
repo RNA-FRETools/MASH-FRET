@@ -20,9 +20,10 @@ str2 = {'Find most sufficient complexity (recommended)',...
     'Use "State lifetimes" complexity'};
 str3 = 'max';
 str4 = 'restart';
-ttl0 = 'Pop.';
-ttl1 = 'Trans.';
-ttl2 = 'Dwell times';
+ttl0 = 'BIC';
+ttl1 = 'Dwell times';
+ttl2 = 'Pop.';
+ttl3 = 'Trans.';
 ttstr0 = wrapHtmlTooltipString('Method to determine the <b>number of degenerated levels</b> for each state value: (1) determined via E-M inferrences of DPH fit and BIC-based model selection, and (2) use the model complexity defined in panel "State lifetimes".');
 ttstr1 = wrapHtmlTooltipString('Maximum number of degenerated levels to fit');
 ttstr2 = wrapHtmlTooltipString('Number of <b>matrix initializations</b> used to infer transition rate constants: a large number prevents to converge to a local maxima but is time consuming; <b>restart = 5</b> is a good compromise between time and accuracy');
@@ -105,14 +106,18 @@ h.uitabgroup_TA_simModel = uitabgroup('parent',h_pan,'units',p.posun,...
     'position',[x,y,wtab,htab]);
 h_tabgrp = h.uitabgroup_TA_simModel;
 
-h.uitab_TA_pop = uitab('parent',h_tabgrp,'units',p.posun,'title',ttl0);
+h.uitab_TA_mdlBIC = uitab('parent',h_tabgrp,'units',p.posun,'title',...
+    ttl0);
+h = buildTAtabBIC(h,p);
+
+h.uitab_TA_dwelltimes = uitab('parent',h_tabgrp,'units',p.posun,'title',...
+    ttl1);
+h = buildTAtabDwelltimes(h,p);
+
+h.uitab_TA_pop = uitab('parent',h_tabgrp,'units',p.posun,'title',ttl2);
 h = buildTAtabPop(h,p);
 
 h.uitab_TA_trans = uitab('parent',h_tabgrp,'units',p.posun,'title',...
-    ttl1);
+    ttl3);
 h = buildTAtabTrans(h,p);
-
-h.uitab_TA_dwelltimes = uitab('parent',h_tabgrp,'units',p.posun,'title',...
-    ttl2);
-h = buildTAtabDwelltimes(h,p);
 
