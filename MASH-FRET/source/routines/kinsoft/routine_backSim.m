@@ -98,18 +98,18 @@ for j = 1:numel(Js)
     N = size(Itot,2);
     Ls = sum(incl,1);
     Imean = nanmean(Itot,1);
-    k = mat{j}(:,:,3);
+    k = mat{j}(2:end,2:end,4);
     r = repmat(sum(k,2),[1,size(k,2)]);
     w = k./repmat(sum(k,2),[1,size(k,2)]);
-    states_id = r(1,2:end,1);
+    states_id = mat{j}(1,2:end,1);
 
     % create preset file
     fprintf(cat(2,'>>>> export simulation presets to file ',fname_presets,...
         '\n'),num2str(Js(j)));
     tot_intensity = repmat([mean(Imean),std(Imean)],N,1);
     FRET = repmat(states{j}(states_id,:),[1,1,N]);
-    trans_rates = repmat(r(2:end,2:end,1),[1,1,N]);
-    trans_prob = repmat(w(2:end,2:end,1),[1,1,N]);
+    trans_rates = repmat(r,[1,1,N]);
+    trans_prob = repmat(w,[1,1,N]);
     ini_prob = repmat(ip{j}(2,:),[N,1]);
     save([p.dumpdir,filesep,sprintf(fname_presets,num2str(Js(j)))],...
         'FRET','trans_rates','tot_intensity','trans_prob','ini_prob',...

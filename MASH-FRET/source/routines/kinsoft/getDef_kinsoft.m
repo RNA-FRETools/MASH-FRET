@@ -146,7 +146,7 @@ p.tdp_expOpt = [false,4,false,3,false,false,false,false];
 
 % default parameters for model optimization
 p.nMax = nMax;
-p.nRestart = T;
+p.restartNb = T;
 
 % defaults for simulation
 p.L = 100; % video length (frames)

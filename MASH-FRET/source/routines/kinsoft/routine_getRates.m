@@ -44,7 +44,7 @@ disp('>> start determination of rates and associated deviations...');
 % get default interface settings
 p = getDef_kinsoft(pname,[]);
 nMax = p.nMax; % maximum number of degenerated levels
-T = p.T; % number of restart
+T = p.restartNb; % number of restart
 
 switchPan(h.togglebutton_TA,[],h_fig);
 p.tdp_expOpt([7,8]) = true;
@@ -67,15 +67,15 @@ for V = 1:nV
     % set dwell time histogram settings
     set(h.checkbox_TA_slExcl,'value',excl);
     checkbox_TA_slExcl_Callback(h.checkbox_TA_slExcl,[],h_fig);
-    set(h.checkbox_TA_rearrSeq,'value',rearr);
-    checkbox_TA_rearrSeq_Callback(h.checkbox_TA_rearrSeq,[],h_fig);
+    set(h.checkbox_tdp_rearrSeq,'value',rearr);
+    checkbox_tdp_rearrSeq_Callback(h.checkbox_tdp_rearrSeq,[],h_fig);
 
     % set kinetic model inferrence settings
     set(h.popupmenu_TA_mdlMeth,'value',1);
     popupmenu_TA_mdlMeth_Callback(h.popupmenu_TA_mdlMeth,[],h_fig);
     set(h.edit_TA_mdlJmax,'string',num2str(nMax));
     edit_TA_mdlJmax_Callback(h.edit_TA_mdlJmax,[],h_fig);
-    set(h.edit_TA_mdlRestartNb,num2str(T));
+    set(h.edit_TA_mdlRestartNb,'string',num2str(T));
     edit_TA_mdlRestartNb_Callback(h.edit_TA_mdlRestartNb,[],h_fig);
     
     % start model inference
@@ -86,29 +86,31 @@ for V = 1:nV
     fprintf(cat(2,'>>>> save modificiations to file ',fname_mashOut,...
         '...\n'),num2str(Vs(V)));
     pushbutton_TDPsaveProj_Callback(...
-        {p.dumpdir,sprintf(fname_mashOut,num2str(Vs(V)),num2str(n))},...
-        [],h_fig);
+        {p.dumpdir,sprintf(fname_mashOut,num2str(Vs(V)))},[],h_fig);
     
     % collect results
-    nTrs = getClusterNb(J,p.clstConfig(1),p.clstConfig(2));
-    [v1,v2] = getStatesFromTransIndexes(1:nTrs,V,p.clstConfig(1),...
-        p.clstConfig(2));
-    [stateVals,vs] = binStateValues(mu,bin,[v1,v2]);
-
     h = guidata(h_fig);
     pTA = h.param.TDP;
     proj = pTA.curr_proj;
-    expT = pTA.proj{proj}.frame_rate;
     tpe = pTA.curr_type(proj);
     tag = pTA.curr_tag(proj);
-    res = pTA.proj{proj}.prm{tag,tpe}.mdl_res;
+    expT = pTA.proj{proj}.frame_rate;
+    prm = pTA.proj{proj}.prm{tag,tpe};
+    mu = prm.clst_res{1}.mu{Vs(V)};
+    bin = prm.lft_start{2}(3);
+    nTrs = getClusterNb(Vs(V),p.clstConfig(1),p.clstConfig(2));
+    [v1,v2] = getStatesFromTransIndexes(1:nTrs,Vs(V),p.clstConfig(1),...
+        p.clstConfig(2));
+    [stateVals,~] = binStateValues(mu,bin,[v1,v2]);
+
+    res = prm.mdl_res;
     tp = res{1};
     dtp = res{2};
     ip{V} = res{3};
     states = res{5};
-    states_id = zeros(size(states));
+    states_id = zeros(1,numel(states));
     for i = 1:numel(states)
-        states_id(i) = vs(stateVals==states(i));
+        states_id(i) = find(stateVals==states(i));
     end
     k = tp;
     k(~~eye(size(k,1))) = 0;
