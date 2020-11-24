@@ -26,9 +26,6 @@ else
     mdl_res = prm.mdl_res;
 end
 if isempty(mdl_res)
-    tp = [];
-    tp_err = [];
-    simdat = [];
     states = [];
 else
     tp = mdl_res{1};

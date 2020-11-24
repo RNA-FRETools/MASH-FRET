@@ -2,8 +2,7 @@
 #define BAUMWELCH_H
 
 // DEFAULTS
-#define DLMIN 0.000001 // convergence criterion on logL
-#define DMIN 0.00000001 // convergence criterion on parameters (SMACKS)
+#define DMIN 0.00000001 // convergence criterion on parameters (from SMACKS)
 #define MAXITER 100000 // maximum number of EM iterations
 
 

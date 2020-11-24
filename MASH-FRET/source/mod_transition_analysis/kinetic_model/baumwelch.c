@@ -31,7 +31,6 @@
 #include <math.h>
 #include <string.h>
 #include "mex.h"
-#include "matrix.h"
 #include "baumwelch.h"
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
@@ -184,14 +183,6 @@ void optBW(double* T, double* ip, double* logL, const double* B, const double** 
 		dmax = getMaxDiff(T,T_prev,ip,ip_prev,J);
 		
 		// check for convergence
-		/*if (!((*logL-logL_prev)>0 && ((*logL-logL_prev)>DLMIN || dmax>DMIN))){
-			if ((*logL-logL_prev)<0){
-				*logL = logL_prev;
-				setVect(T,T_prev,J*J);
-				setVect(ip,ip_prev,J);
-			}
-			cvg = 1;
-		}*/
 		if (dmax<DMIN){
 			cvg = 1;
 		}
@@ -319,7 +310,7 @@ int dispProb(double m, double dL, double dmax, double* T, double* ip, int J, int
 	}
 	
 	// write iteration
-	nb = mexPrintf("iteration %.0f: dL=%.3e (dL_min=%.0e) d=%.3e\n",m,dL,DLMIN,dmax);
+	nb = mexPrintf("iteration %.0f: d=%.3e (dmin=%.0e) dL=%.3e\n",m,dmax,DMIN,dL);
 	
 	// write probabilities
 	nb = nb + mexPrintf("Initial probabilities:\n");
