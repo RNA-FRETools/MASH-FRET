@@ -1,4 +1,4 @@
-function [T,B,ip,logL] = baumwelch(T0,B0,seq,vals,ip0)
+function [T,B,ip,logL] = baumwelch_matlab(T0,B0,seq,vals,ip0)
 
 % default
 dLmin = 1E-6; % convergence criterion on logL

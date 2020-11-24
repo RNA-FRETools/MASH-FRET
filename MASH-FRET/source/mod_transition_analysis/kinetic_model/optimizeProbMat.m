@@ -82,8 +82,7 @@ for restart = 1:T
         plotKinMdlSim(degen,tp_iter,ones(1,J)/J,expPrm,[]);
     end
 
-    [tp_iter,B,ip,bestgof] = ...
-        baumwelch(tp_iter,B0,expPrm.seq,1:V,ones(1,J)/J);
+    [tp_iter,ip,bestgof] = baumwelch(tp_iter,B0,expPrm.seq,ones(1,J)/J);
     
     if plotIt
         tp_sim = tp_iter;
@@ -108,7 +107,8 @@ simdat.tpmin = tpmin;
 
 % calculate confidence interval for each coefficient (SMACKS)
 disp('calculate confidence intervals...');
-tp_err = calcRateConfIv(tp_iter,expPrm.seq,B,1:V,ip);
+% tp_err = calcRateConfIv(tp_iter,expPrm.seq,B0,1:V,ip);
+tp_err = ones(J,J,2);
 
 % display best fit
 disp(['best fit: ',num2str(bestgof)]);
