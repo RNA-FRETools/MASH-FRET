@@ -1,4 +1,30 @@
-/* [T,ip,logL] = baumwelch(T0,B0,seq,ip0) */
+/*
+ * =============================================================
+ * baumwelch.c 
+ * Perform Baum-Welch optimization of HMM parameters on input 
+ * state sequences. NOTE: MATLAB uses 1-based indexing, C uses 
+ * 0-based indexing.
+ *
+ * Takes (1) a J-by-J-dimensional array of doubles (T0) as starting 
+ * transition probabilities, (2) a V-by-J-dimensional array of 
+ * doubles (B0) as fixed event probabilities filled with 0 or 1, 
+ * (3) a 1-by-N cell array (seq) containing the N observation 
+ * sequences of various lengths, filled with state value indexes 
+ * (corresponding to row indexes in B0), and (4) a [1-by-J] row 
+ * vector of doubles as starting initial state probabilities.
+ * Returns (1) the optimized transition porbability matrix (T),
+ * (2) the optimized initial probabilities (ip), and (3) the 
+ * log-likelihood of the HMM given the observations.
+ * baumwelch.c works much (MUCH!) faster than its MATLAB version 
+ * baumwelch_matlab.m.
+ *  
+ * Corresponding MATLAB executing command:
+ * [T,ip,logL] = baumwelch(T0,B0,seq,ip0);
+ *
+ * This is a MEX-file for MATLAB.  
+ * Written by Mélodie C.A.S Hadzic, 24.11.2020
+ * =============================================================
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
