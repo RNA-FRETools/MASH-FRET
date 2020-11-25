@@ -139,7 +139,7 @@ void calcRateIv(double* posiv, double* negiv,
 			T[id_ii] = tp0_ii;
 	
 			// decreases rate coefficient
-			tp_low = getRateBound(T,i,j,id,id_ii,(-1)*STEP,logL0,fwd,coeff,ip,B,seq,J,N,V,L);
+			tp_low = getRateBound(T,i,j,id,id_ii,-STEP,logL0,fwd,coeff,ip,B,seq,J,N,V,L);
 			negiv[id] = tp0-tp_low;
 			T[id] = tp0; // reset prob. to original
 			T[id_ii] = tp0_ii;
@@ -175,9 +175,8 @@ double getRateBound(double* T, int j1, int j2, int id_ij, int id_ii, double step
 	
 	// determine absolute step
 	step = step*T[id_ij];
-	if (step<MINPROBSTEP){
-		step = MINPROBSTEP;
-	}
+	if (step>0 && step<MINPROBSTEP){ step = MINPROBSTEP; }
+	if (step<0 && step>-MINPROBSTEP){ step = -MINPROBSTEP; }
 	
 	// varies prob and evaluate likelihood ratio
 	while (T[id_ij]>0 && T[id_ij]<tpMax){
