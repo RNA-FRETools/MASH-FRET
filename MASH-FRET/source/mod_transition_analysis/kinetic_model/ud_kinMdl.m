@@ -55,7 +55,7 @@ if ~(isfield(prm,'mdl_res') && size(prm.mdl_res,2)>=5 && ...
     return
 end
 if ~isempty(prm.mdl_res{3})
-    set(h.popupmenu_TA_mdlDtState,'Enable','on');
+    set([h.popupmenu_TA_mdlDtState,h.text_TA_mdlDtState],'Enable','on');
     if get(h.popupmenu_TA_mdlDtState,'Value')>V
         set(h.popupmenu_TA_mdlDtState,'Value',V);
     end

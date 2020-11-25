@@ -182,24 +182,30 @@ h_axes(2).XLim = [0.5,V+0.5];
 h_axes(2).XTick = 1:V;
 xtklbl = cell(1,V);
 for v = 1:V
-    xtklbl = sprintf('%0.2f',vals(v));
+    xtklbl{v} = sprintf('%0.2f',vals(v));
 end
 h_axes(2).XTickLabel = xtklbl;
+ylim(h_axes(2),'auto');
+legend(h_axes(2),'exp','sim','location','northoutside');
 
 % plot number of transitions
 bar(h_axes(3),1:V*(V-1),[simdat.ntrs(1,:)',simdat.ntrs(2,:)']);
 h_axes(3).XLim = [0.5,V*(V-1)+0.5];
 h_axes(3).XTick = 1:V*(V-1);
-xtklbl = cell(1,V);
+xtklbl = cell(1,V*(V-1));
+v = 0;
 for v1 = 1:V
     for v2 = 1:V
         if v1==v2
             continue
         end
-        xtklbl = sprintf('%0.2f\n%0.2f',vals(v1),vals(v2));
+        v = v+1;
+        xtklbl{v} = sprintf('%0.2f\\newline%0.2f',vals(v1),vals(v2));
     end
 end
 h_axes(3).XTickLabel = xtklbl;
+ylim(h_axes(3),'auto');
+legend(h_axes(3),'exp','sim','location','northoutside');
 
 % plot dwell time histograms
 scatter(h_axes(4),simdat.cumdstrb{v_res}(1,:),simdat.cumdstrb{v_res}(2,:),...
@@ -209,6 +215,8 @@ scatter(h_axes(4),simdat.cumdstrb{v_res}(1,:),simdat.cumdstrb{v_res}(3,:),...
     '+r');
 h_axes(4).NextPlot = 'replacechildren';
 h_axes(4).XLim = simdat.cumdstrb{v_res}(1,[1,end]);
+ylim(h_axes(4),'auto');
+legend(h_axes(4),'exp','sim','location','east');
 
 
 
