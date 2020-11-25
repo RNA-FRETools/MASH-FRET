@@ -3,8 +3,9 @@
  * calcmdlconfiv.c 
  * Calculate lower and upper bound of 95% confidence intervals around 
  * each transition probabilities of the input HMM model given the input 
- * observation sequences. NOTE: MATLAB uses 1-based indexing, C uses 
- * 0-based indexing.
+ * observation sequences. The method is from Schmid and Hugel, 
+ * J Chem Phys. 2018 doi:10.1063/1.5006604. NOTE: MATLAB uses 1-
+ * based indexing, C uses 0-based indexing.
  *
  * Takes (1) a J-by-J-dimensional array of doubles (T0) as HMM 
  * transition probabilities, (2) a 1-by-N cell array (seq) containing 
@@ -21,7 +22,7 @@
  * calcRateConfIv.m.
  *  
  * Corresponding MATLAB executing command:
- * [posiv,negiv] = calcRateConfIv(T0,seq,B,ip);
+ * [posiv,negiv] = calcmdlconfiv(T0,seq,B,ip);
  *
  * MEX-compilation comand:
  * mex  -R2018a -O calcmdlconfiv.c vectop.c fwdbwd.c
@@ -91,8 +92,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 void calcRateIv(double* posiv, double* negiv, 
 		const double* T0, const double* ip, const double* B, const double** seq, int J, int N, int V, double* L){
 	
-	int i = 0, j = 0, id = 0;
-	double tp0 = 0, tp_up = 0, tp_low = 0, logL0 = 0;
+	int i = 0, j = 0, id = 0, id_ii = 0;
+	double tp0 = 0, tp0_ii = 0, tp_up = 0, tp_low = 0, logL0 = 0;
 	double T[J*J];
 	double*** fwd = (double ***) malloc(N * sizeof(double **));
 	double** coeff = (double **) malloc(N * sizeof(double *));
@@ -116,21 +117,32 @@ void calcRateIv(double* posiv, double* negiv,
 	
 	// calculate confidence intervals
 	for (i=0; i<J; i++){
+		
+		id_ii = linid(i,i,0,J,J);
+		tp0_ii = T0[id_ii];
+		
 		for (j=0; j<J; j++){
 			if (i==j){ continue; }
 			
+			mexPrintf(">> interval for transition %i->%i...\n",i,j);
+			mexEvalString("drawnow;");
+			
 			id = linid(i,j,0,J,J);
+			if (T0[id]==0){ continue; }
+			
 			tp0 = T0[id];
 			
 			// increases rate coefficient
-			tp_up = getRateBound(T,i,j,id,STEP,logL0,fwd,coeff,ip,B,seq,J,N,V,L);
+			tp_up = getRateBound(T,i,j,id,id_ii,STEP,logL0,fwd,coeff,ip,B,seq,J,N,V,L);
 			posiv[id] = tp_up-tp0;
 			T[id] = tp0; // reset prob. to original
+			T[id_ii] = tp0_ii;
 	
 			// decreases rate coefficient
-			tp_low = getRateBound(T,i,j,id,-STEP,logL0,fwd,coeff,ip,B,seq,J,N,V,L);
+			tp_low = getRateBound(T,i,j,id,id_ii,(-1)*STEP,logL0,fwd,coeff,ip,B,seq,J,N,V,L);
 			negiv[id] = tp0-tp_low;
 			T[id] = tp0; // reset prob. to original
+			T[id_ii] = tp0_ii;
 		}
 	}
 	
@@ -147,7 +159,7 @@ void calcRateIv(double* posiv, double* negiv,
 }
 
 
-double getRateBound(double* T, int j1, int j2, int id, double step, double logL0, double*** fwd, double** coeff, 
+double getRateBound(double* T, int j1, int j2, int id_ij, int id_ii, double step, double logL0, double*** fwd, double** coeff, 
 		const double* ip, const double* B, const double** seq, int J, int N, int V, double* L){
 	
 	int i = 0, n = 0, a = 0, b = 0;
@@ -157,26 +169,26 @@ double getRateBound(double* T, int j1, int j2, int id, double step, double logL0
 	for (i=0; i<J; i++){
 		if (i!=j1 && i!=j2){
 			tpMax = tpMax + T[linid(j1,i,0,J,J)];
-			n = n+1;
 		}
 	}
 	tpMax = 1-tpMax;
 	
 	// determine absolute step
-	step = step*T[id];
+	step = step*T[id_ij];
 	if (step<MINPROBSTEP){
 		step = MINPROBSTEP;
 	}
 	
 	// varies prob and evaluate likelihood ratio
-	while (T[id]>0 && T[id]<tpMax){
+	while (T[id_ij]>0 && T[id_ij]<tpMax){
 		
 		LR1 = LR2;
-		tp1 = T[id];
+		tp1 = T[id_ij];
 		
-		T[id] = T[id]+step;
-		if (T[id]<0){ T[id] = 0; }
-		if (T[id]>tpMax){ T[id] = tpMax; }
+		T[id_ij] = T[id_ij]+step;
+		if (T[id_ij]<0){ T[id_ij] = 0; }
+		if (T[id_ij]>tpMax){ T[id_ij] = tpMax; }
+		T[id_ii] = tpMax-T[id_ij];
 		
 		// calculate lieklihood ratio
 		for (n=0; n<N; n++){
@@ -184,23 +196,23 @@ double getRateBound(double* T, int j1, int j2, int id, double step, double logL0
 		}
 		logL = calcLogL(coeff,N,L);
 		LR2 = 2*(logL0-logL);
-		
+
 		if (LR2>LRMAX){
 			break;
 		}
 	}
 	
 	// find exact point where logL curve crosses theshold
-	if (tp1==T[id]){
-		return T[id];
+	if (tp1==T[id_ij]){
+		return T[id_ij];
 	}
 	if (step>0){
-		a = (LR2-LR1)/(T[id]-tp1);
+		a = (LR2-LR1)/(T[id_ij]-tp1);
 	}
 	else{
-		a = (LR1-LR2)/(tp1-T[id]);
+		a = (LR1-LR2)/(tp1-T[id_ij]);
 	}
-	b = LR2-a*T[id];
+	b = LR2-a*T[id_ij];
 	tp = (LRMAX-b)/a;
 
 	return tp;

@@ -8,7 +8,7 @@
 
 void calcRateIv(double* posiv, double* negiv, const double* T0, const double* ip, const double* B, 
 		const double** seq, int J, int N, int V, double* L);
-double getRateBound(double* T, int j1, int j2, int id, double step, double logL0, double*** fwd, double** coeff, 
+double getRateBound(double* T, int j1, int j2, int id, int id_ii, double step, double logL0, double*** fwd, double** coeff, 
 		const double* ip, const double* B, const double** seq, int J, int N, int V, double* L);
 bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]);
 
