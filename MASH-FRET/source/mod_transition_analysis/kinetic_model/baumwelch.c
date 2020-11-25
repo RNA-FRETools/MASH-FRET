@@ -12,14 +12,15 @@
  * sequences of various lengths, filled with state value indexes 
  * (corresponding to row indexes in B0), and (4) a [1-by-J] row 
  * vector of doubles as starting initial state probabilities.
- * Returns (1) the optimized transition porbability matrix (T),
- * (2) the optimized initial probabilities (ip), and (3) the 
- * log-likelihood of the HMM given the observations.
+ * Returns (1) convergence boolean (1: converged, 0: failed) (2) 
+ * the optimized transition porbability matrix (T), (3) the optimized 
+ * initial probabilities (ip), and (4) the log-likelihood of the HMM 
+ * given the observations.
  * baumwelch.c works much (MUCH!) faster than its MATLAB version 
  * baumwelch_matlab.m.
  *  
  * Corresponding MATLAB executing command:
- * [T,ip,logL] = baumwelch(T0,B0,seq,ip0);
+ * [ok,T,ip,logL] = baumwelch(T0,B0,seq,ip0);
  *
  * This is a MEX-file for MATLAB.  
  * Written by Mélodie C.A.S Hadzic, 24.11.2020
@@ -31,13 +32,14 @@
 #include <math.h>
 #include <string.h>
 #include "mex.h"
+#include "fwdbwd.h"
+#include "vectop.h"
 #include "baumwelch.h"
+
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-	char str[100]; // log string
 	int i = 0; // loop index
-	double nb = 0; // number of characters printed
 	
 	// check input and output arguments
 	if (!validArg(nlhs, plhs, nrhs, prhs)){
@@ -57,12 +59,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	double *ip0 = (double *) mxGetDoubles(prhs[3]);
 	
 	// prepare output
-	plhs[0] = mxCreateDoubleMatrix(J,J,mxREAL);
-	plhs[1] = mxCreateDoubleMatrix(1,J,mxREAL);
-	plhs[2] = mxCreateDoubleScalar(0);
-	double *T = mxGetDoubles(plhs[0]);
-	double *ip = mxGetDoubles(plhs[1]);
-	double *logL = mxGetDoubles(plhs[2]);
+	plhs[0] = mxCreateDoubleScalar(0);
+	plhs[1] = mxCreateDoubleMatrix(J,J,mxREAL);
+	plhs[2] = mxCreateDoubleMatrix(1,J,mxREAL);
+	plhs[3] = mxCreateDoubleScalar(0);
+	double *cvg = mxGetDoubles(plhs[0]);
+	double *T = mxGetDoubles(plhs[1]);
+	double *ip = mxGetDoubles(plhs[2]);
+	double *logL = mxGetDoubles(plhs[3]);
 	
 	// get trajectory lentghs
 	double L[N]; 
@@ -82,13 +86,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	// optimize prob.
 	setVect(T,T0,J*J);
 	setVect(ip,ip0,J);
-	optBW(T,ip,logL,(const double*) B,(const double**) seq,J,N,V,L);
+	*cvg = (double) optBW(T,ip,logL,(const double*) B,(const double**) seq,J,N,V,L);
 	
 	return;
 }
 
 
-void optBW(double* T, double* ip, double* logL, const double* B, const double** seq, int J, int N, int V, double* L){
+bool optBW(double* T, double* ip, double* logL, const double* B, const double** seq, int J, int N, int V, double* L){
 	
 	// intialization
 	int n = 0, i = 0, j = 0, l = 0, nb = 0;
@@ -190,6 +194,10 @@ void optBW(double* T, double* ip, double* logL, const double* B, const double** 
 		nb = dispProb(m,*logL-logL_prev,dmax,T,ip,J,nb);
 	}
 	
+	if (!cvg){
+		mexPrintf("The model failed to converged;: mximum number of iterations has been reached.\n");
+	}
+	
 	// free memory
 	for (n=0; n<N; n++){
 		for (i=0; i<J; i++){
@@ -199,7 +207,7 @@ void optBW(double* T, double* ip, double* logL, const double* B, const double** 
 		free(coeff[n]);
 	}
 	
-	return;
+	return cvg;
 }
 
 
@@ -218,81 +226,6 @@ double getMaxDiff(const double* T, const double* T_prev, const double* ip,const 
 		}
 	}
 	return dmax;
-}
-
-
-double calcLogL(double** coeff, int N, double* L){
-	
-	double logL = 1;
-	int n = 0, l = 0;
-	
-	for (n=0; n<N; n++){
-		for (l=0; l<L[n]; l++){
-			logL = logL + log(coeff[n][l]);
-		}
-	}
-	
-	return logL;
-}
-
-
-void fwdprob(double** fwd, double* coeff, int J, int L, int V, const double* seq, 
-				const double* T, const double* B, const double* ip){
-					
-	int l = 0, i = 0, j = 0;
-	double sum_j = 0;
-	
-	// initialize
-	coeff[0] = 0;
-	for (i=0; i<J; i++){
-		fwd[i][0] = ip[i] * B[linid((int) (seq[l]-1),i,0,V,J)];
-		coeff[0] = coeff[0] + fwd[i][0];
-	}
-	// normalize
-	for (i=0; i<J; i++){
-		fwd[i][0] = fwd[i][0] / coeff[0];
-	}
-	
-	// forward calculations
-	for (l=1; l<L; l++){
-		coeff[l] = 0;
-		for (i=0; i<J; i++){
-			sum_j = 0;
-			for (j=0; j<J; j++){
-				sum_j = sum_j + fwd[j][l-1] * T[linid(j,i,0,J,J)];
-			}
-			fwd[i][l] = B[linid((int) (seq[l]-1),i,0,V,J)] * sum_j;
-			coeff[l] = coeff[l] + fwd[i][l];
-		}
-		// normalize
-		for (i=0; i<J; i++){
-			fwd[i][l] = fwd[i][l] / coeff[l];
-		}
-		
-	}
-}
-
-
-void bwdprob(double** bwd, const double* coeff, int J, int L, int V, const double* seq, 
-				const double* T, const double* B){
-					
-	int l = 0, i = 0, j = 0;
-	
-	// initialize
-	for (i=0; i<J; i++){
-		bwd[i][L-1] = 1;
-	}
-	
-	// forward calculations
-	for (l=(L-2); l>=0; l--){
-		for (i=0; i<J; i++){
-			bwd[i][l] = 0;
-			for (j=0; j<J; j++){
-				bwd[i][l] = bwd[i][l] + 
-					(bwd[j][l+1] * T[linid(i,j,0,J,J)] * B[linid((int) (seq[l+1]-1),j,0,V,J)]) / coeff[l+1];
-			}
-		}
-	}
 }
 
 
@@ -332,34 +265,18 @@ int dispProb(double m, double dL, double dmax, double* T, double* ip, int J, int
 }
 
 
-void setVect(double* v, double* v0, int sz){
-	int i = 0;
-	for (i=0; i<sz; i++){
-		v[i] = v0[i];
-	}
-	return;
-}
-
-
-int linid(int r, int c, int l, int R, int C){
-	int id = 0;
-	id = l*R*C + c*R + r;
-	return id;
-}
-
-
 bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	
 	/* Declare variables */
 	int i = 0;
-	char str[100];
+	char str[1000];
 	
 	/* Check for proper number of input and output arguments. */    
 	if (nrhs!=4) {
 		mexErrMsgTxt("Four input arguments are required.");
 		return 0;
 	} 
-	if (nlhs>3) {
+	if (nlhs>4) {
 		mexErrMsgTxt("Too many output arguments.");
 		return 0;
 	}
@@ -368,17 +285,11 @@ bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	for (i==0; i<nrhs; i++){
 		if (i==2 && !(mxIsCell(prhs[2]))){
 			sprintf(str,"Input argument %i must be a {1-by-N} cell row vector.",i+1);
-			if (str==NULL){
-				mexErrMsgTxt("Error string is empty.");
-			}
 			mexErrMsgTxt(str);
 			return 0;
 		}
 		else if (i!=2 && !(mxIsDouble(prhs[i]))){
 			sprintf(str,"Input argument %i must be of type double.",i+1);
-			if (str==NULL){
-				mexErrMsgTxt("Error string is empty.");
-			}
 			mexErrMsgTxt(str);
 			return 0;
 		}

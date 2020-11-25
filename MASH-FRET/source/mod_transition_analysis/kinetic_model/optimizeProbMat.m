@@ -82,7 +82,10 @@ for restart = 1:T
         plotKinMdlSim(degen,tp_iter,ones(1,J)/J,expPrm,[]);
     end
 
-    [tp_iter,ip,bestgof] = baumwelch(tp_iter,B0,expPrm.seq,ones(1,J)/J);
+    [cvg,tp_iter,ip,bestgof] = baumwelch(tp_iter,B0,expPrm.seq,ones(1,J)/J);
+    if ~cvg
+        bestgof = -Inf;
+    end
     
     if plotIt
         tp_sim = tp_iter;
