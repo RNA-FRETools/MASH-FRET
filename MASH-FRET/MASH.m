@@ -9,7 +9,7 @@ addpath(genpath(codePath));
 feature('DefaultCharacterSet','windows-1252');
 
 disp('build GUI...')
-% get MATLAB version
+% get MASH version
 version_str = getMASHversion(codePath);
 
 % define figure name from MASH-FRET version
