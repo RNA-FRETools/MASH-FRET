@@ -20,6 +20,8 @@ tag = p.curr_tag(proj);
 tpe = p.curr_type(proj);
 prm = p.proj{proj}.prm{tag,tpe};
 curr = p.proj{proj}.curr{tag,tpe};
+def = p.proj{proj}.def{tag,tpe};
+
 J = prm.lft_start{2}(1);
 mat = prm.clst_start{1}(4);
 clstDiag = prm.clst_start{1}(9);
@@ -29,10 +31,12 @@ dat = prm.clst_res{1}.clusters{J};
 excl = prm.lft_start{2}(4);
 rearr = prm.lft_start{2}(5);
 
-prm.mdl_start = curr.mdl_start;
-guessMeth = prm.mdl_start(1);
-T = prm.mdl_start(2);
-Dmax = prm.mdl_start(3);
+guessMeth = curr.mdl_start(1);
+T = curr.mdl_start(2);
+Dmax = curr.mdl_start(3);
+
+% reset results
+prm.mdl_res = def.mdl_res;
 
 % bin states
 nTrs = getClusterNb(J,mat,clstDiag);
@@ -90,7 +94,7 @@ end
 clstPop = clstPop/sum(sum(clstPop));
 
 if guessMeth==1 % determine guess from DPH fit & BIC model selection
-    [D,mdl,~,~,~] = ...
+    [D,mdl,cmb,BIC,~] = ...
         script_findBestModel(dat(:,[1,4,7,8]),Dmax,states,expT,dt_bin);
     J = sum(D);
     tp0 = zeros(J);
@@ -113,6 +117,7 @@ if guessMeth==1 % determine guess from DPH fit & BIC model selection
         j1 = j1+D(v1);
     end
     states = states(degen);
+    prm.mdl_res{6} = [cmb,BIC'];
     
 else % use guess from panel "Exponential fit"
     % check for state lifetimes
@@ -165,10 +170,12 @@ else % use guess from panel "Exponential fit"
     end
     tp0 = repmat(nL*expT*r',[1,J_deg]).*tp0./repmat(sum(tp0,2),[1,J_deg]); % transition prob
     tp0(~~eye(size(tp0))) = 1-sum(tp0,2); % transition prob
+    
+    prm.mdl_res{6} = [];
 end
 
 % update plot with diagram
-prm.mdl_res = {[],[],[],[],states};
+prm.mdl_res{5} = states;
 p.proj{proj}.prm{tag,tpe} = prm;
 p.proj{proj}.curr{tag,tpe} = prm;
 h.param.TDP = p;
@@ -184,7 +191,8 @@ expPrm.seq = seq;
 
 [tp,err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T); % transition prob
 
-prm.mdl_res = {tp,err,ip,simdat,states};
+prm.mdl_res(1:4) = {tp,err,ip,simdat};
+prm.mdl_start = curr.mdl_start;
 
 p.proj{proj}.prm{tag,tpe} = prm;
 p.proj{proj}.curr{tag,tpe} = prm;

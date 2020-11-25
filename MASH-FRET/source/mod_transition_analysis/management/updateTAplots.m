@@ -29,8 +29,9 @@ if isempty(p.proj)
     if ~isempty(h_arr)
         delete(h_arr);
     end
-    cla(h.axes_TA_mdlPop);
     cla(h.axes_TA_mdlDt);
+    cla(h.axes_TA_mdlBIC);
+    cla(h.axes_TA_mdlPop);
     cla(h.axes_TA_mdlTrans);
     return
 end
@@ -54,5 +55,5 @@ if strcmp(opt,'all') || strcmp(opt,'kin')
 end
 if strcmp(opt,'all') || strcmp(opt,'mdl')
     plotKinMdl([h.axes_TDPplot3,h.axes_TA_mdlPop,h.axes_TA_mdlTrans,...
-        h.axes_TA_mdlDt],prm,v_mdl);
+        h.axes_TA_mdlDt,h.axes_TA_mdlBIC],prm,v_mdl);
 end

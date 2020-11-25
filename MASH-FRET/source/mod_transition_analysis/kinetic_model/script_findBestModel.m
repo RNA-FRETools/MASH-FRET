@@ -23,7 +23,7 @@ function [degen,mdl,cmb,BIC_cmb,BIC] = script_findBestModel(dt,J_deg_max,states,
 t_comp = tic;
 
 % default
-plotIt = true;
+plotIt = false;
 
 % Get optimum DPHs for each model complexity
 disp('Train DPH distributions on binned dwelltime histograms...')

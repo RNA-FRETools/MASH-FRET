@@ -33,6 +33,7 @@ else
     ip = mdl_res{3};
     simdat = mdl_res{4};
     states = mdl_res{5};
+    BICres = mdl_res{6};
 end
 
 % draw state diagram (circles)
@@ -71,6 +72,39 @@ for j = 1:J
     text(h_axes(1),posrect(j,1)+r0(j),posrect(j,2)+r0(j),...
         sprintf('%0.2f',states(j)),'horizontalalignment','center',...
         'fontweight','bold','color','red');
+end
+
+% plot BIC results
+if ~isempty(BICres)
+    nCmb = size(BICres,1);
+    BIC = BICres(:,end)';
+    incl = ~isinf(BIC);
+    BIC = BIC(incl);
+    cmbs = 1:nCmb;
+    cmbs = cmbs(incl);
+    scatter(h_axes(5),cmbs,BIC,'+');
+
+    cmb = BICres(:,1:end-1);
+    cmb = cmb(incl,:);
+    [BICmin,cmbopt] = min(BIC);
+    h_axes(5).NextPlot = 'add';
+    scatter(h_axes(5),cmbs(cmbopt),BIC(cmbopt),'+','linewidth',2);
+    h_axes(5).NextPlot = 'replacechildren';
+    cmblow = cmbopt-3;
+    if cmblow<1
+        cmblow = 1;
+    end
+    nCmb = numel(cmbs);
+    cmbup = cmbopt+6-(cmbopt-cmblow);
+    if cmbup>nCmb
+        cmbup = nCmb;
+    end
+    h_axes(5).XLim = [cmblow-0.5,cmbup+0.5];
+    BICmax = max(BIC(cmblow:cmbup));
+    ylim(h_axes(5),[BICmin,BICmax]);
+    h_axes(5).XTick = cmblow:cmbup;
+    xlbl = compose(repmat('%i',1,size(cmb,2)),cmb)';
+    h_axes(5).XTickLabel = xlbl(cmblow:cmbup);
 end
 
 % draw state transitions (arrows)
