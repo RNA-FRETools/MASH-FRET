@@ -119,7 +119,8 @@ lw = lw_max*k;
 hw = lw*3;
 hw(hw<hw_min) = hw_min;
 h_arr = [];
-r0(r0<r0_min) = r0_min;
+r0_corr = r0;
+r0_corr(r0_corr<r0_min) = r0_min;
 for j1 = 1:J
     for j2 = (j1+1):J
         xy_1 = posrect(j1,[1,2])+r0(j1);
@@ -132,7 +133,7 @@ for j1 = 1:J
             end
             x_arr = [xy_1(1),xy_2(1)];
             y_arr = [xy_1(2),xy_2(2)];
-            [x_arr,y_arr] = shortenArrow(x_arr,y_arr,r0([j1,j2])+0.02);
+            [x_arr,y_arr] = shortenArrow(x_arr,y_arr,r0_corr([j1,j2])+0.02);
             if k(j2,j1)>0
                 [x_arr,y_arr] = shiftArrow(x_arr,y_arr,step);
             end
@@ -151,7 +152,7 @@ for j1 = 1:J
             end
             x_arr = [xy_2(1),xy_1(1)];
             y_arr = [xy_2(2),xy_1(2)];
-            [x_arr,y_arr] = shortenArrow(x_arr,y_arr,r0([j2,j1])+0.02);
+            [x_arr,y_arr] = shortenArrow(x_arr,y_arr,r0_corr([j2,j1])+0.02);
             if k(j1,j2)>0
                 [x_arr,y_arr] = shiftArrow(x_arr,y_arr,-step);
             end
