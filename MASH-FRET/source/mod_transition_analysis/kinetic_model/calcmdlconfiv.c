@@ -1,12 +1,38 @@
-/* 
- * Dwell times must be in number of frames (or time bins)
+/*
+ * =============================================================
+ * calcmdlconfiv.c 
+ * Calculate lower and upper bound of 95% confidence intervals around 
+ * each transition probabilities of the input HMM model given the input 
+ * observation sequences. NOTE: MATLAB uses 1-based indexing, C uses 
+ * 0-based indexing.
  *
- * [posiv,negiv] = calcRateConfIv(T0,seq,B,ip)
-*/
+ * Takes (1) a J-by-J-dimensional array of doubles (T0) as HMM 
+ * transition probabilities, (2) a 1-by-N cell array (seq) containing 
+ * the N observation sequences of various lengths, filled with state 
+ * value indexes (corresponding to row indexes in B0), (3) a V-by-J-
+ * dimensional array of doubles (B0) as HMM event probabilities 
+ * filled with 0 or 1, and (4) a [1-by-J] row vector of doubles as 
+ * HMM initial state probabilities.
+ * Returns (1) convergence boolean (1: converged, 0: failed) (2) 
+ * the optimized transition porbability matrix (T), (3) the optimized 
+ * initial probabilities (ip), and (4) the log-likelihood of the HMM 
+ * given the observations.
+ * calcmdlconfiv.c works much (MUCH!) faster than its MATLAB equivalent 
+ * calcRateConfIv.m.
+ *  
+ * Corresponding MATLAB executing command:
+ * [posiv,negiv] = calcRateConfIv(T0,seq,B,ip);
+ *
+ * MEX-compilation comand:
+ * mex  -R2018a -O calcmdlconfiv.c vectop.c fwdbwd.c
+ *
+ * This is a MEX-file for MATLAB.  
+ * Written by Mélodie C.A.S Hadzic, 25.11.2020
+ * =============================================================
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <string.h>
 #include "mex.h"
 #include "fwdbwd.h"
@@ -38,7 +64,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	plhs[0] = mxCreateDoubleMatrix(J,J,mxREAL);
 	plhs[1] = mxCreateDoubleMatrix(J,J,mxREAL);
 	double *posiv = mxGetDoubles(plhs[0]);
-	double *nefiv = mxGetDoubles(plhs[1]);
+	double *negiv = mxGetDoubles(plhs[1]);
 	
 	// get trajectory lentghs
 	double L[N]; 
@@ -62,17 +88,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 }
 
 
-void calcRateIv(double* posiv, double negiv, 
+void calcRateIv(double* posiv, double* negiv, 
 		const double* T0, const double* ip, const double* B, const double** seq, int J, int N, int V, double* L){
 	
 	int i = 0, j = 0, id = 0;
-	double tp0 = 0, tp_up = 0, tp_low = 0;
+	double tp0 = 0, tp_up = 0, tp_low = 0, logL0 = 0;
 	double T[J*J];
-	double* coeff[N], fwd[N][J];
+	double*** fwd = (double ***) malloc(N * sizeof(double **));
+	double** coeff = (double **) malloc(N * sizeof(double *));
 	
 	// pre-allocate memory for large vectors
 	for (i=0; i<N; i++){
 		coeff[i] = (double *) malloc(L[i] * sizeof(double));
+		fwd[i] = (double **) malloc(J * sizeof(double *));
 		for (j=0; j<J; j++){
 			fwd[i][j] = (double *) malloc(L[i] * sizeof(double));
 		}
@@ -80,9 +108,13 @@ void calcRateIv(double* posiv, double negiv,
 	
 	setVect(T,T0,J*J);
 	
-	// calculate initial likelihood ratio
-	logL0 = calcLR();
+	// calculate initial likelihood
+	for (i=0; i<N; i++){
+		fwdprob(fwd[i],coeff[i],J,L[i],V,seq[i],T,B,ip);
+	}
+	logL0 = calcLogL(coeff,N,L);
 	
+	// calculate confidence intervals
 	for (i=0; i<J; i++){
 		for (j=0; j<J; j++){
 			if (i==j){ continue; }
@@ -105,17 +137,20 @@ void calcRateIv(double* posiv, double negiv,
 	// free memory
 	for (i=0; i<N; i++){
 		for (j=0; j<J; j++){
-			free(fwd[n][j]);
-		free(coeff[n]);
+			free(fwd[i][j]);
 		}
+		free(fwd[i]);
+		free(coeff[i]);
 	}
+	free(fwd);
+	free(coeff);
 }
 
 
 double getRateBound(double* T, int j1, int j2, int id, double step, double logL0, double*** fwd, double** coeff, 
 		const double* ip, const double* B, const double** seq, int J, int N, int V, double* L){
 	
-	int n = 0, a = 0, b = 0;
+	int i = 0, n = 0, a = 0, b = 0;
 	double tp= 0, tpMax = 0, logL = 0, LR1 = 0, LR2 = 0, tp1 = 0;
 	
 	// determine maximum transition probabilities (max. 1 transition per frame)
@@ -147,7 +182,6 @@ double getRateBound(double* T, int j1, int j2, int id, double step, double logL0
 		for (n=0; n<N; n++){
 			fwdprob(fwd[n],coeff[n],J,L[n],V,seq[n],T,B,ip);
 		}
-		
 		logL = calcLogL(coeff,N,L);
 		LR2 = 2*(logL0-logL);
 		
@@ -177,6 +211,7 @@ bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	
 	/* Declare variables */
 	int i = 0;
+	char str[1000];
 	
 	/* Check for proper number of input and output arguments. */    
 	if (nrhs!=4) {
@@ -191,11 +226,13 @@ bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	/* Check for proper data type in input arguments. */
 	for (i==0; i<nrhs; i++){
 		if (i==1 && !(mxIsCell(prhs[1]))){
-			mexErrMsgTxt("Input argument %i must be a {1-by-N} cell row vector.",i+1);
+			sprintf(str,"Input argument %i must be a {1-by-N} cell row vector.",i+1);
+			mexErrMsgTxt(str);
 			return 0;
 		}
 		else if (i!=1 && !(mxIsDouble(prhs[i]))){
-			mexErrMsgTxt("Input argument %i must be of type double.",i+1);
+			sprintf(str,"Input argument %i must be of type double.",i+1);
+			mexErrMsgTxt(str);
 			return 0;
 		}
 	}

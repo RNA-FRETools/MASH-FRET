@@ -22,6 +22,9 @@
  * Corresponding MATLAB executing command:
  * [ok,T,ip,logL] = baumwelch(T0,B0,seq,ip0);
  *
+ * MEX-compilation comand:
+ * mex  -R2018a -O baumwelch.c vectop.c fwdbwd.c
+ *
  * This is a MEX-file for MATLAB.  
  * Written by Mélodie C.A.S Hadzic, 24.11.2020
  * =============================================================
