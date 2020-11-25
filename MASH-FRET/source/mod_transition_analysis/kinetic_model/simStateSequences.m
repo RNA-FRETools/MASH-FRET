@@ -76,7 +76,12 @@ for l = 2:L
         draw2 = rand(1);
         states2 = Js(Js~=state1);
         id = find(cumsum(w(state1,states2))>draw2);
-        state2 = states2(id(1));
+        if ~isempty(id)
+            state2 = states2(id(1));
+        else
+            state2 = state1;
+        end
+        
 %         state2 = randsample(1:J,1,true,tp(state1,:));
     else
         state2 = state1;
