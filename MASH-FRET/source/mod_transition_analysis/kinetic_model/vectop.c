@@ -12,7 +12,7 @@
 #include "vectop.h"
 
  
-void setVect(double* v, double* v0, int sz){
+void setVect(double* v, const double* v0, int sz){
 	int i = 0;
 	for (i=0; i<sz; i++){
 		v[i] = v0[i];
