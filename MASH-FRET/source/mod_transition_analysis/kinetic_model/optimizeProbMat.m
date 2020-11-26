@@ -110,9 +110,10 @@ simdat.tpmin = tpmin;
 
 % calculate confidence interval for each coefficient (SMACKS)
 disp('calculate confidence intervals...');
-% tp_err = calcRateConfIv(tp_iter,expPrm.seq,B0,1:V,ip);
 [posiv,negiv] = calcmdlconfiv(tp_iter,expPrm.seq,B0,ip);
 tp_err = cat(3,posiv,negiv);
+% remove ill defined intervals due to too small number operations
+tp_err(isnan(tp_err) | isinf(tp_err) | tp_err<0) = 0; 
 
 % display best fit
 disp(['best fit: ',num2str(bestgof)]);

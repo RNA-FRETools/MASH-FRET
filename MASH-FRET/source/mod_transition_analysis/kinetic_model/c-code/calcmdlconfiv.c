@@ -119,7 +119,6 @@ void calcRateIv(double* posiv, double* negiv,
 	for (i=0; i<J; i++){
 		
 		id_ii = linid(i,i,0,J,J);
-		tp0_ii = T0[id_ii];
 		
 		for (j=0; j<J; j++){
 			if (i==j){ continue; }
@@ -135,14 +134,12 @@ void calcRateIv(double* posiv, double* negiv,
 			// increases rate coefficient
 			tp_up = getRateBound(T,i,j,id,id_ii,STEP,logL0,fwd,coeff,ip,B,seq,J,N,V,L);
 			posiv[id] = tp_up-tp0;
-			T[id] = tp0; // reset prob. to original
-			T[id_ii] = tp0_ii;
+			setVect(T,T0,J*J); // reset prob. to original
 	
 			// decreases rate coefficient
-			tp_low = getRateBound(T,i,j,id,id_ii,-STEP,logL0,fwd,coeff,ip,B,seq,J,N,V,L);
+			tp_low = getRateBound(T,i,j,id,id_ii,0-STEP,logL0,fwd,coeff,ip,B,seq,J,N,V,L);
 			negiv[id] = tp0-tp_low;
-			T[id] = tp0; // reset prob. to original
-			T[id_ii] = tp0_ii;
+			setVect(T,T0,J*J); // reset prob. to original
 		}
 	}
 	
@@ -162,8 +159,9 @@ void calcRateIv(double* posiv, double* negiv,
 double getRateBound(double* T, int j1, int j2, int id_ij, int id_ii, double step, double logL0, double*** fwd, double** coeff, 
 		const double* ip, const double* B, const double** seq, int J, int N, int V, double* L){
 	
-	int i = 0, n = 0, a = 0, b = 0;
-	double tp= 0, tpMax = 0, logL = 0, LR1 = 0, LR2 = 0, tp1 = 0;
+	int i = 0, n = 0;
+	double a = 0, b = 0;
+	double tp = 0, tpMax = 0, logL = 0, LR1 = 0, LR2 = 0, tp1 = 0;
 	
 	// determine maximum transition probabilities (max. 1 transition per frame)
 	for (i=0; i<J; i++){
@@ -176,7 +174,7 @@ double getRateBound(double* T, int j1, int j2, int id_ij, int id_ii, double step
 	// determine absolute step
 	step = step*T[id_ij];
 	if (step>0 && step<MINPROBSTEP){ step = MINPROBSTEP; }
-	if (step<0 && step>-MINPROBSTEP){ step = -MINPROBSTEP; }
+	if (step<0 && step>(0-MINPROBSTEP)){ step = 0-MINPROBSTEP; }
 	
 	// varies prob and evaluate likelihood ratio
 	while (T[id_ij]>0 && T[id_ij]<tpMax){
@@ -212,7 +210,7 @@ double getRateBound(double* T, int j1, int j2, int id_ij, int id_ii, double step
 		a = (LR1-LR2)/(tp1-T[id_ij]);
 	}
 	b = LR2-a*T[id_ij];
-	tp = (LRMAX-b)/a;
+	tp = (((double) LRMAX)-b)/a;
 
 	return tp;
 }
