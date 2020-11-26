@@ -13,7 +13,7 @@ if opt(1) % model selection results
         end
         
         % collect data
-        BIC = prm.mdl_res{1};
+        BIC = prm.mdl_res{6};
         J = prm.lft_start{2}(1);
         mat = prm.clst_start{1}(4);
         clstDiag = prm.clst_start{1}(9);
@@ -57,9 +57,9 @@ if opt(2) % optimized kinetic model parameters
         end
         
         % collect data
-        tp = prm.mdl_res{2};
-        tp_err = prm.mdl_res{3};
-        ip = prm.mdl_res{4};
+        tp = prm.mdl_res{1};
+        tp_err = prm.mdl_res{2};
+        ip = prm.mdl_res{3};
         states = prm.mdl_res{5};
         J = numel(states);
         h = guidata(h_fig);
@@ -76,7 +76,7 @@ if opt(2) % optimized kinetic model parameters
         end
         k_err_up = k_err(:,:,1);
         k_err_down = k_err(:,:,2);
-        tau = sum(k,2);
+        tau = 1./sum(k,2);
         
         % write data to file
         f = fopen([pname fname_mdl], 'Wt');
@@ -85,7 +85,7 @@ if opt(2) % optimized kinetic model parameters
             repmat('\t-dk(s-1)',[1,J]),'\n']);
         fprintf(f,['%i\t%d\t%d\t%d',repmat('\t%d',[1,J]),...
             repmat('\t%d',[1,J]),repmat('\t%d',[1,J]),'\n'],...
-            [(1:J)',states',tau,ip',k_err,k_err_up,k_err_down]');
+            [(1:J)',states,tau,ip',k,k_err_up,k_err_down]');
         fclose(f);
         
         % update action
@@ -103,6 +103,7 @@ end
 
 if opt(3) % experimental vs simulated data
     fname_sim = [pname,rname,'_simdata.txt'];
+    fname_sim = getCorrName(fname_sim, [], h_fig);
     if sum(fname_sim)
         fname_sim = overwriteIt(fname_sim,pname,h_fig);
         if isempty(fname_sim)
@@ -114,7 +115,7 @@ if opt(3) % experimental vs simulated data
         p = h.param.TDP;
         proj = p.curr_proj;
         expT = p.proj{proj}.frame_rate;
-        simdat = prm.mdl_res{5};
+        simdat = prm.mdl_res{4};
         dt = simdat.dt;
         dt(:,1) = dt(:,1)*expT;
         
