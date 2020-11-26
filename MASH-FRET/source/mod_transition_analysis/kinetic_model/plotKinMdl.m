@@ -29,8 +29,6 @@ if isempty(mdl_res)
     states = [];
 else
     tp = mdl_res{1};
-    tp_err = mdl_res{2};
-    ip = mdl_res{3};
     simdat = mdl_res{4};
     states = mdl_res{5};
     BICres = mdl_res{6};
