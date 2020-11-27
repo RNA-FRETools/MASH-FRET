@@ -125,6 +125,8 @@ if K>1 && isTrans
                 curr_f = ceil(t/expT);
                 if curr_f==0
                     curr_f = 1;
+                elseif curr_f>end_t/expT
+                    curr_f = ceil(end_t/expT);
                 elseif sum(stes(:,curr_f),1)==1
                     curr_f = curr_f+1;
                 end
