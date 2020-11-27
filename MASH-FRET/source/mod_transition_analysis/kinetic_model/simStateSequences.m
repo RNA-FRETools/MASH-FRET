@@ -1,6 +1,5 @@
-function res = simStateSequences(tp,r,Ls,varargin)
-% res = simStateSequences(tp,r,Ls)
-% res = simStateSequences(tp,r,Ls,ip)
+function res = simStateSequences(tp,ip,Ls)
+% res = simStateSequences(tp,ip,Ls)
 %
 % Generate state sequences from probability-based parameters
 %
@@ -21,36 +20,9 @@ res = [];
 J = size(tp,2);
 N = numel(Ls);
 
-% get pre-defined initial state probabilities
-ip = [];
-for arg = 1:numel(varargin)
-    if numel(varargin{arg})==J
-        ip = varargin{arg};
-    end
-end
-
 % calculate initial state probabilities
-if isempty(r)
-%     r = -log(diag(tp));
-    r = sum(tp,2)-diag(tp);
-end
+r = sum(tp,2)-diag(tp);
 r(r==0) = 1E-6;
-if isempty(ip)
-    % initial state probabilities from state lifetimes
-    ip = zeros(size(r));
-    ip(~isinf(r)) = (1./r(~isinf(r)))./sum(1./r(~isinf(r)));
-    ip(isnan(ip)) = Inf;
-
-    % initial state probabilities by diagonalisation of transition probability matrix
-%     [~,D,W] = eig(tp);
-%     D = diag(D);
-%     for j = 1:J
-%         if (round(1e5*real(D(j)))/1e5)==1 && (round(1e5*imag(D(j)))/1e5)==0 
-%             break   
-%         end
-%     end
-%     ip = W(:,j)./sum(W(:,j));
-end
 
 Js = 1:J;
 w = tp;
@@ -59,35 +31,38 @@ w = w./repmat(sum(w,2),[1,J]);
 w(isnan(w)) = 0;
 w(:,ip==0) = 0;
 
-L = sum(Ls);
-state1 = randsample(1:J,1,true,ip);
-
 % generate state sequence in a frame-wise fashion
+dt = [];
 for j = 1:J
     j2s = Js(Js~=j);
     tp(j,j) = 1-exp(-sum(tp(j,j2s),2));
 end
-seq = NaN(L,1);
-seq(1,1) = state1;
-for l = 2:L
-    draw1 = rand(1);
-    istrans = draw1<=tp(state1,state1);
-    if istrans
-        draw2 = rand(1);
-        states2 = Js(Js~=state1);
-        id = find(cumsum(w(state1,states2))>draw2);
-        if ~isempty(id)
-            state2 = states2(id(1));
+for n = 1:N
+    seq = zeros(Ls(n),1);
+    draw0 = rand(1);
+    id = find(cumsum(ip)>draw0);
+    state1 = id(1);
+    seq(1,1) = state1;
+    for l = 2:Ls(n)
+        draw1 = rand(1);
+        istrans = draw1<=tp(state1,state1);
+        if istrans
+            draw2 = rand(1);
+            states2 = Js(Js~=state1);
+            id = find(cumsum(w(state1,states2))>draw2);
+            if ~isempty(id)
+                state2 = states2(id(1));
+            else
+                state2 = state1;
+            end
         else
             state2 = state1;
         end
-        
-%         state2 = randsample(1:J,1,true,tp(state1,:));
-    else
-        state2 = state1;
+        seq(l,1) = state2;
+        state1 = state2;
     end
-    seq(l,1) = state2;
-    state1 = state2;
+    dt_n = getDtFromDiscr(seq,1);
+    dt = cat(1,dt,[dt_n(:,1),repmat(n,[size(dt_n,1),1]),dt_n(:,2:end)]);
 end
     
 % generate state sequence in a dwell time-wise fashion
@@ -119,17 +94,17 @@ end
 %     state1 = state2;
 % end
 % seq = getDiscrFromDt(dt,1);
-
-% get dwell times from state sequences
-dt = [];
-l2 = 0;
-for n = 1:N
-    L = Ls(n);
-    l1 = l2+1;
-    l2 = l2+L;
-    dt_n = getDtFromDiscr(seq(l1:l2),1);
-    dt = cat(1,dt,[dt_n(:,1),repmat(n,[size(dt_n,1),1]),dt_n(:,2:end)]);
-end
+% 
+% % get dwell times from state sequences
+% dt = [];
+% l2 = 0;
+% for n = 1:N
+%     L = Ls(n);
+%     l1 = l2+1;
+%     l2 = l2+L;
+%     dt_n = getDtFromDiscr(seq(l1:l2),1);
+%     dt = cat(1,dt,[dt_n(:,1),repmat(n,[size(dt_n,1),1]),dt_n(:,2:end)]);
+% end
 
 % recover experimental probabilities and transition numbers
 k_exp = zeros(J);

@@ -40,26 +40,11 @@ expT = expPrm.expT;
 dt_exp0 = expPrm.dt;
 excl = expPrm.excl;
 V = numel(degen);
-
-% re-arrange experimental dwell times & get state sequences
-% mols = unique(dt_exp0(:,2));
 dt_exp = dt_exp0;
-% for m = 1:numel(mols)
-%     dt_exp_m = adjustDt(dt_exp0(dt_exp0(:,2)==mols(m),:));
-%     if excl
-%         dt_exp_m([1,end],:) = [];
-%     end
-%     dt_exp = cat(1,dt_exp,dt_exp_m);
-% end
 
 % simulate state sequences with actual model parameters
 res = simStateSequences(tp,ip,Ls);
 dt_sim0 = res.dt;
-if sum(sum(res.w_exp,1)==0) || sum(sum(res.w_exp,2)==0) || ...
-        sum(sum(isnan(res.w_exp)))
-    res = [];
-    return
-end
 
 % fusion dwells from degenerated states
 js = [];
