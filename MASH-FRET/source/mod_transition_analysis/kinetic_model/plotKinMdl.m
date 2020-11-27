@@ -227,7 +227,10 @@ y0 = y0(ord);
 [~,ord0] = sort(ord,'ascend');
 
 a = diff(y0)/diff(x0);
-if a>0
+if isinf(a) % vertical
+    dx = step;
+    dy = 0;
+elseif a>0
     theta = atan(1/a);
     dx = step*cos(theta);
     dy = step*sin(theta);
@@ -238,12 +241,12 @@ elseif a<0
 elseif a==0 % horizontal
     dx = 0;
     dy = step;
-elseif isinf(a) % vertical
-    dx = step;
-    dy = 0;
 end
 
-if a>0
+if isinf(a)
+    x = x0+[dx,dx];
+    y = y0;
+elseif a>0
     x = x0+[-dx,-dx];
     y = y0+[dy,dy];
 elseif a<0
@@ -252,9 +255,6 @@ elseif a<0
 elseif a==0
     x = x0;
     y = y0+[dy,dy];
-elseif isinf(a)
-    x = x0+[dx,dx];
-    y = y0;
 end
 
 x = x(ord0);
@@ -275,8 +275,6 @@ elseif a<0
     theta = atan(-1/a);
 elseif a==0 % horizontal
     theta = pi/2;
-elseif isinf(a) % vertical
-    theta = 0;
 end
 
 dx = dr*sin(theta);
