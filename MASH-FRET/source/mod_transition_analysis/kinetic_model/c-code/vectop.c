@@ -9,11 +9,35 @@
  
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "vectop.h"
 #include "mex.h"
 #include "engine.h"
 
+
+void disp2DMatrix(const double** mat, int R, int C){
+	int r = 0, c = 0;
+	for (r=0; r<R; r++){
+		for (c=0; c<C; c++){
+			mexPrintf("%.2e ",mat[r][c]);
+		}
+		mexPrintf("\n");
+	}
+	mexEvalString("drawnow;");
+}
+
+void disp2DVectMatrix(const double* mat, int R, int C, const int** id){
+	int r = 0, c = 0;
+	for (r=0; r<R; r++){
+		for (c=0; c<C; c++){
+			mexPrintf("%.2e ",(int) mat[id[r][c]]);
+		}
+		mexPrintf("\n");
+	}
+	mexEvalString("drawnow;");
+}
  
+
 void setVect(double* v, const double* v0, int sz){
 	int i = 0;
 	for (i=0; i<sz; i++){

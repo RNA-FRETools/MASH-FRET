@@ -56,10 +56,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	int N = (int) seqDim[1];
 	
 	// get input values
-	double *T0 = (double *) mxGetDoubles(prhs[0]);
-	double *B = (double *) mxGetDoubles(prhs[1]);
+	const double *T0 = (const double *) mxGetDoubles(prhs[0]);
+	const double *B = (const double *) mxGetDoubles(prhs[1]);
 	double *seq[N];
-	double *ip0 = (double *) mxGetDoubles(prhs[3]);
+	const double *ip0 = (const double *) mxGetDoubles(prhs[3]);
 	
 	// prepare output
 	plhs[0] = mxCreateDoubleScalar(0);
@@ -89,7 +89,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	// optimize prob.
 	setVect(T,T0,J*J);
 	setVect(ip,ip0,J);
-	*cvg = (double) optBW(T,ip,logL,(const double*) B,(const double**) seq,J,N,V,L);
+
+	*cvg = (double) optBW(T,ip,logL,B,(const double**) seq,J,N,V,L); 
 	
 	return;
 }
@@ -104,7 +105,22 @@ bool optBW(double* T, double* ip, double* logL, const double* B, const double** 
 	double xi[J][J], gamma[J], *fwd[N][J], *bwd[N][J], *coeff[N], T_prev[J*J], ip_prev[J];
 	bool cvg = 0;
 	double logL_prev = -pow(10,9), dmax = 0, m = 0;
-
+	
+	// build index matrix
+	int** id_T = (int **) malloc(J * sizeof(int *));
+	int** id_B = (int **) malloc(V * sizeof(int *));
+	int** id_seq = (int **) malloc(1 * sizeof(int *));
+	for (i=0; i<J; i++){
+		id_T[i] = (int *) malloc(J * sizeof(int));
+	}
+	for (i=0; i<V; i++){
+		id_B[i] = (int *) malloc(J * sizeof(int));
+	}
+	
+	buildIdMat(id_T,J,J);
+	buildIdMat(id_B,V,J);
+		
+	
 	// calculate forward and backward prob.
 	for (n=0; n<N; n++){
 		coeff[n] = (double *)malloc(L[n] * sizeof(double));
@@ -113,13 +129,16 @@ bool optBW(double* T, double* ip, double* logL, const double* B, const double** 
 			bwd[n][i] = (double *)malloc(L[n] * sizeof(double));
 		}
 
-		fwdprob(fwd[n], coeff[n], J, L[n], V, seq[n], (const double*) T, B, (const double*) ip);
-		bwdprob(bwd[n], (const double*) coeff[n], J, L[n], V, seq[n], (const double*) T, B);
+		fwdprob(fwd[n],coeff[n],J,L[n],V,(const double*) seq[n],(const double*) T,B,(const double*) ip,
+				(const int**) id_T,(const int**) id_B);
+		bwdprob(bwd[n],(const double*) coeff[n],J,L[n],V,(const double*) seq[n],(const double*) T,B,
+				(const int**) id_T,(const int**) id_B);
 	}
 	
+	
 	// calculate initial likelihood
-	*logL = calcLogL(coeff,N,L);
-	nb = dispProb(m,*logL-logL_prev,0,T,ip,J,0);
+	*logL = calcLogL((const double**) coeff,N,L);
+	nb = dispProb(m,*logL-logL_prev,0,(const double*) T,(const double*) ip,J,0,(const int**) id_T);
 	
 	// E-M cycles
 	while (!cvg && m<MAXITER){
@@ -127,8 +146,8 @@ bool optBW(double* T, double* ip, double* logL, const double* B, const double** 
 		m = m+1;
 		
 		logL_prev = *logL;
-		setVect(T_prev,T,J*J);
-		setVect(ip_prev,ip,J);
+		setVect(T_prev,(const double*) T,J*J);
+		setVect(ip_prev,(const double*) ip,J);
 		
 		// reset counts
 		for (i=0; i<J; i++){
@@ -149,7 +168,7 @@ bool optBW(double* T, double* ip, double* logL, const double* B, const double** 
 					
 					if (l==(L[n]-1)){ continue; }
 					for (j=0; j<J; j++){
-						xi[i][j] = fwd[n][i][l] * T[linid(i,j,0,J,J)] * bwd[n][j][l+1] * B[linid((int) (seq[n][l+1]-1),j,0,V,J)];
+						xi[i][j] = fwd[n][i][l] * T[id_T[i][j]] * bwd[n][j][l+1] * B[id_B[(int) seq[n][l+1]-1][j]];
 						sum_xi = sum_xi + xi[i][j];
 					}
 				}
@@ -175,26 +194,28 @@ bool optBW(double* T, double* ip, double* logL, const double* B, const double** 
 		for (i=0; i<J; i++){
 			ip[i] = N0[i] / ((double) N);
 			for (j=0; j<J; j++){
-				T[linid(i,j,0,J,J)] = Nij[i][j] / Ni[i];
+				T[id_T[i][j]] = Nij[i][j] / Ni[i];
 			}
 		}
 
 		// update forward & backward probabilities
 		for (n=0; n<N; n++){
-			fwdprob(fwd[n], coeff[n], J, L[n], V, seq[n], (const double*) T, B, (const double*) ip);
-			bwdprob(bwd[n], (const double*) coeff[n], J, L[n], V, seq[n], (const double*) T, B);
+			fwdprob(fwd[n],coeff[n],J,L[n],V,(const double*) seq[n],(const double*) T,(const double*) B,(const double*) ip,
+					(const int**) id_T,(const int**) id_B);
+			bwdprob(bwd[n],(const double*) coeff[n],J,L[n],V,(const double*) seq[n],(const double*) T,(const double*) B,(const int**) 
+					id_T,(const int**) id_B);
 		}
 		
 		// update likelihood
-		*logL = calcLogL(coeff,N,L);
-		dmax = getMaxDiff(T,T_prev,ip,ip_prev,J);
+		*logL = calcLogL((const double**) coeff,N,L);
+		dmax = getMaxDiff((const double*) T,(const double*) T_prev,(const double*) ip,(const double*) ip_prev,J);
 		
 		// check for convergence
 		if (dmax<DMIN){
 			cvg = 1;
 		}
 		
-		nb = dispProb(m,*logL-logL_prev,dmax,T,ip,J,nb);
+		nb = dispProb(m,*logL-logL_prev,dmax,(const double*) T,(const double*) ip,J,nb,(const int**) id_T);
 	}
 	
 	if (!cvg){
@@ -209,6 +230,14 @@ bool optBW(double* T, double* ip, double* logL, const double* B, const double** 
 		}
 		free(coeff[n]);
 	}
+	for (i=0; i<J; i++){
+		free(id_T[i]);
+	}
+	for (i=0; i<V; i++){
+		free(id_B[i]);
+	}
+	free(id_T);
+	free(id_B);
 	
 	return cvg;
 }
@@ -232,7 +261,7 @@ double getMaxDiff(const double* T, const double* T_prev, const double* ip,const 
 }
 
 
-int dispProb(double m, double dL, double dmax, double* T, double* ip, int J, int nb){
+int dispProb(double m, double dL, double dmax, const double* T, const double* ip, int J, int nb, const int** id_T){
 	char str[nb+1];
 	int i = 0, j = 0;
 	
@@ -258,7 +287,7 @@ int dispProb(double m, double dL, double dmax, double* T, double* ip, int J, int
 	nb = nb + mexPrintf("Transition probabilities:\n");
 	for (i=0; i<J; i++){
 		for (j=0; j<J; j++){
-			nb = nb + mexPrintf("\t%.4f",T[linid(i,j,0,J,J)]);
+			nb = nb + mexPrintf("\t%.4f",T[id_T[i][j]]);
 		}
 		nb = nb + mexPrintf("\n");
 	}

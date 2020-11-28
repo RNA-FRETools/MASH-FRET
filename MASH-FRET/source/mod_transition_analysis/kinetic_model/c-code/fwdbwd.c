@@ -17,7 +17,7 @@
  
  
 void fwdprob(double** fwd, double* coeff, int J, int L, int V, const double* seq, 
-				const double* T, const double* B, const double* ip){
+				const double* T, const double* B, const double* ip, const int** id_T, const int** id_B){
 					
 	int l = 0, i = 0, j = 0;
 	double sum_j = 0;
@@ -25,7 +25,7 @@ void fwdprob(double** fwd, double* coeff, int J, int L, int V, const double* seq
 	// initialize
 	coeff[0] = 0;
 	for (i=0; i<J; i++){
-		fwd[i][0] = ip[i] * B[linid((int) (seq[l]-1),i,0,V,J)];
+		fwd[i][0] = ip[i] * B[id_B[(int) seq[l]-1][i]];
 		coeff[0] = coeff[0] + fwd[i][0];
 	}
 	// normalize
@@ -39,9 +39,9 @@ void fwdprob(double** fwd, double* coeff, int J, int L, int V, const double* seq
 		for (i=0; i<J; i++){
 			sum_j = 0;
 			for (j=0; j<J; j++){
-				sum_j = sum_j + fwd[j][l-1] * T[linid(j,i,0,J,J)];
+				sum_j = sum_j + fwd[j][l-1] * T[id_T[j][i]];
 			}
-			fwd[i][l] = B[linid((int) (seq[l]-1),i,0,V,J)] * sum_j;
+			fwd[i][l] = B[id_B[(int) seq[l]-1][i]] * sum_j;
 			coeff[l] = coeff[l] + fwd[i][l];
 		}
 		// normalize
@@ -54,7 +54,7 @@ void fwdprob(double** fwd, double* coeff, int J, int L, int V, const double* seq
 
 
 void bwdprob(double** bwd, const double* coeff, int J, int L, int V, const double* seq, 
-				const double* T, const double* B){
+				const double* T, const double* B, const int** id_T, const int** id_B){
 					
 	int l = 0, i = 0, j = 0;
 	
@@ -69,14 +69,14 @@ void bwdprob(double** bwd, const double* coeff, int J, int L, int V, const doubl
 			bwd[i][l] = 0;
 			for (j=0; j<J; j++){
 				bwd[i][l] = bwd[i][l] + 
-					(bwd[j][l+1] * T[linid(i,j,0,J,J)] * B[linid((int) (seq[l+1]-1),j,0,V,J)]) / coeff[l+1];
+					(bwd[j][l+1] * T[id_T[i][j]] * B[id_B[(int) seq[l+1]-1][j]]) / coeff[l+1];
 			}
 		}
 	}
 }
 
 
-double calcLogL(double** coeff, int N, double* L){
+double calcLogL(const double** coeff, int N, double* L){
 	
 	double logL = 1;
 	int n = 0, l = 0;

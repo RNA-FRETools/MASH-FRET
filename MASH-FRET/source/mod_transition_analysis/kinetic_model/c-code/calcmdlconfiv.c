@@ -56,10 +56,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	int V = (int) mxGetM(prhs[2]);
 	
 	// get input values
-	double *T0 = (double *) mxGetDoubles(prhs[0]);
+	const double *T0 = (const double *) mxGetDoubles(prhs[0]);
 	double *seq[N];
-	double *B = (double *) mxGetDoubles(prhs[2]);
-	double *ip = (double *) mxGetDoubles(prhs[3]);
+	const double *B = (const double *) mxGetDoubles(prhs[2]);
+	const double *ip = (const double *) mxGetDoubles(prhs[3]);
 	
 	// prepare output
 	plhs[0] = mxCreateDoubleMatrix(J,J,mxREAL);
@@ -83,7 +83,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	mexPrintf(")\n");
 		
 	// calculate intervals
-	calcRateIv(posiv,negiv,(const double*) T0,(const double*) ip,(const double*) B,(const double**) seq,J,N,V,L);
+	calcRateIv(posiv,negiv,T0,ip,B,(const double**) seq,J,N,V,L);
 	
 	return;
 }
@@ -92,7 +92,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 void calcRateIv(double* posiv, double* negiv, 
 		const double* T0, const double* ip, const double* B, const double** seq, int J, int N, int V, double* L){
 	
-	int i = 0, j = 0, id = 0, id_ii = 0;
+	int i = 0, j = 0, id_ij = 0;
 	double tp0 = 0, tp0_ii = 0, tp_up = 0, tp_low = 0, logL0 = 0;
 	double T[J*J];
 	double*** fwd = (double ***) malloc(N * sizeof(double **));
@@ -107,38 +107,48 @@ void calcRateIv(double* posiv, double* negiv,
 		}
 	}
 	
+	// build index matrix
+	int** id_T = (int **) malloc(J * sizeof(int *));
+	int** id_B = (int **) malloc(V * sizeof(int *));
+	for (i=0; i<J; i++){
+		id_T[i] = (int *) malloc(J * sizeof(int));
+	}
+	for (i=0; i<V; i++){
+		id_B[i] = (int *) malloc(J * sizeof(int));
+	}
+	buildIdMat(id_T,J,J);
+	buildIdMat(id_B,V,J);
+	
+	// set transition matrix
 	setVect(T,T0,J*J);
 	
 	// calculate initial likelihood
 	for (i=0; i<N; i++){
-		fwdprob(fwd[i],coeff[i],J,L[i],V,seq[i],T,B,ip);
+		fwdprob(fwd[i],coeff[i],J,L[i],V,seq[i],T0,B,ip,(const int**) id_T,(const int**) id_B);
 	}
-	logL0 = calcLogL(coeff,N,L);
+	logL0 = calcLogL((const double**) coeff,N,L);
 	
 	// calculate confidence intervals
 	for (i=0; i<J; i++){
-		
-		id_ii = linid(i,i,0,J,J);
-		
 		for (j=0; j<J; j++){
 			if (i==j){ continue; }
 			
 			mexPrintf(">> interval for transition %i->%i...\n",i,j);
 			mexEvalString("drawnow;");
 			
-			id = linid(i,j,0,J,J);
-			if (T0[id]==0){ continue; }
+			id_ij = id_T[i][j];
+			if (T0[id_ij]==0){ continue; }
 			
-			tp0 = T0[id];
+			tp0 = T0[id_ij];
 			
 			// increases rate coefficient
-			tp_up = getRateBound(T,i,j,id,id_ii,STEP,logL0,fwd,coeff,ip,B,seq,J,N,V,L);
-			posiv[id] = tp_up-tp0;
+			tp_up = getRateBound(T,i,j,STEP,logL0,fwd,coeff,ip,B,seq,J,N,V,L,(const int**) id_T,(const int**) id_B);
+			posiv[id_ij] = tp_up-tp0;
 			setVect(T,T0,J*J); // reset prob. to original
 	
 			// decreases rate coefficient
-			tp_low = getRateBound(T,i,j,id,id_ii,0-STEP,logL0,fwd,coeff,ip,B,seq,J,N,V,L);
-			negiv[id] = tp0-tp_low;
+			tp_low = getRateBound(T,i,j,0-STEP,logL0,fwd,coeff,ip,B,seq,J,N,V,L,(const int**) id_T,(const int**) id_B);
+			negiv[id_ij] = tp0-tp_low;
 			setVect(T,T0,J*J); // reset prob. to original
 		}
 	}
@@ -153,20 +163,28 @@ void calcRateIv(double* posiv, double* negiv,
 	}
 	free(fwd);
 	free(coeff);
+	for (i=0; i<J; i++){
+		free(id_T[i]);
+	}
+	for (i=0; i<V; i++){
+		free(id_B[i]);
+	}
+	free(id_T);
+	free(id_B);
 }
 
 
-double getRateBound(double* T, int j1, int j2, int id_ij, int id_ii, double step, double logL0, double*** fwd, double** coeff, 
-		const double* ip, const double* B, const double** seq, int J, int N, int V, double* L){
+double getRateBound(double* T, int j1, int j2, double step, double logL0, double*** fwd, double** coeff, 
+		const double* ip, const double* B, const double** seq, int J, int N, int V, double* L, const int** id_T, const int** id_B){
 	
-	int i = 0, n = 0;
+	int i = 0, n = 0, id_ij = id_T[j1][j2], id_ii = id_T[j1][j1];
 	double a = 0, b = 0;
 	double tp = 0, tpMax = 0, logL = 0, LR1 = 0, LR2 = 0, tp1 = 0;
 	
 	// determine maximum transition probabilities (max. 1 transition per frame)
 	for (i=0; i<J; i++){
 		if (i!=j1 && i!=j2){
-			tpMax = tpMax + T[linid(j1,i,0,J,J)];
+			tpMax = tpMax + T[id_T[j1][i]];
 		}
 	}
 	tpMax = 1-tpMax;
@@ -189,9 +207,9 @@ double getRateBound(double* T, int j1, int j2, int id_ij, int id_ii, double step
 		
 		// calculate lieklihood ratio
 		for (n=0; n<N; n++){
-			fwdprob(fwd[n],coeff[n],J,L[n],V,seq[n],T,B,ip);
+			fwdprob(fwd[n],coeff[n],J,L[n],V,seq[n],(const double*) T,B,ip,id_T,id_B);
 		}
-		logL = calcLogL(coeff,N,L);
+		logL = calcLogL((const double**) coeff,N,L);
 		LR2 = 2*(logL0-logL);
 
 		if (LR2>LRMAX){
