@@ -109,7 +109,7 @@ end
 if isempty(tp)
     return
 end
-tp(tp<1E-5) = 0;
+tp(tp<simdat.tpmin) = 0;
 k = tp;
 k(~~eye(J)) = 0;
 k = k/sum(sum(k));
