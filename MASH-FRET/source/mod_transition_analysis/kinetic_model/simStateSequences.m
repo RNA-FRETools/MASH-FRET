@@ -29,7 +29,6 @@ w = tp;
 w(~~eye(size(tp))) = 0;
 w = w./repmat(sum(w,2),[1,J]);
 w(isnan(w)) = 0;
-w(:,ip==0) = 0;
 
 % generate state sequence in a frame-wise fashion
 dt = [];
