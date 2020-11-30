@@ -22,15 +22,16 @@ trace = 1; % index in list of traces to apply state finding algorithm to (bottom
 deblurr = true; % activate "deblurr" option
 tdp_dat = 3; % data to plot in TDP (FRET data)
 tdp_tag = 1; % molecule tag to plot in TDP (all molecules)
-BIC_tol = 0.05; % minimum relative BIC variation to validate an optimum configuration
+BIC_tol = 0; % minimum relative BIC variation to validate an optimum configuration
 
 % get default interface
 h = guidata(h_fig);
 
 % ask files to user
-disp('>> select kinsoft challenge trace files (.dat)...');
-[fnames,pname,~] = uigetfile('.dat','Select trace files','multiselect',...
-    'on');
+disp('>> select kinsoft challenge trace files (*.txt,*.dat)...');
+[fnames,pname,~] = uigetfile(...
+    {'*.dat;*.txt','Select trace files (*.dat,*.txt)';...
+    '*.*','All files (*.*)'},'multiselect','on');
 if ~sum(pname) || numel(fnames)==0
     return
 end
