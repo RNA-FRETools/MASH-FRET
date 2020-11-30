@@ -191,8 +191,8 @@ double getRateBound(double* T, int j1, int j2, double step, double logL0, double
 	
 	// determine absolute step
 	step = step*T[id_ij];
-	if (step>0 && step<MINPROBSTEP){ step = MINPROBSTEP; }
-	if (step<0 && step>(0-MINPROBSTEP)){ step = 0-MINPROBSTEP; }
+	if (step>=0 && step<MINPROBSTEP){ step = MINPROBSTEP; }
+	else if (step<0 && step>(0-MINPROBSTEP)){ step = 0-MINPROBSTEP; }
 	
 	// varies prob and evaluate likelihood ratio
 	while (T[id_ij]>0 && T[id_ij]<tpMax){
@@ -228,7 +228,7 @@ double getRateBound(double* T, int j1, int j2, double step, double logL0, double
 		a = (LR1-LR2)/(tp1-T[id_ij]);
 	}
 	b = LR2-a*T[id_ij];
-	tp = (((double) LRMAX)-b)/a;
+	tp = (LRMAX-b)/a;
 
 	return tp;
 }

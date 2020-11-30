@@ -1,4 +1,5 @@
 /* 
+ * Train a discrete phase-type distribution on dwell time data
  * Dwell times must be in number of frames (or time bins)
  * Dwell time counts must be strictly positive
  *
@@ -32,9 +33,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	int nDt = (int) mxGetN(prhs[2]);
 	
 	// get input values
-	double *a0 = (double *) mxGetDoubles(prhs[0]); // starting initial state prob.
-	double *T0 = (double *) mxGetDoubles(prhs[1]); // starting transition matrix
-	double *cnts = (double *) mxGetDoubles(prhs[2]); // dwell times and counts
+	const double *a0 = (const double *) mxGetDoubles(prhs[0]); // starting initial state prob.
+	const double *T0 = (const double *) mxGetDoubles(prhs[1]); // starting transition matrix
+	const double *cnts = (const double *) mxGetDoubles(prhs[2]); // dwell times and counts
 	
 	// prepare output
 	plhs[0] = mxCreateDoubleMatrix(1,J,mxREAL); // PH initial state prob.
@@ -48,7 +49,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	// train PH
 	setVect(T,T0,J*J);
 	setVect(a,a0,J);
-	optDPH(T,a,logL,(const double*) cnts,J,nDt);
+	optDPH(T,a,logL,cnts,J,nDt);
 	
 	mexPrintf("done!\n");
 	
@@ -91,7 +92,7 @@ void optDPH(double* T, double* a, double* logL, const double* cnts, int J, int n
 	
 	
 	// calculate initial likelihood
-	*logL = calcDPHlogL( (const double*) T, (const double*) a, (const double*) cnts,J,nDt, (const int**) id_T, (const int**) id_P, (const int**) id_Jv);
+	*logL = calcDPHlogL( (const double*) T, (const double*) a, cnts,J,nDt, (const int**) id_T, (const int**) id_P, (const int**) id_Jv);
 	nb = dispDPHres(m,*logL-logL_prev,dmax, (const double*) T, (const double*) a,J, (const int**) id_T,0);
 	
 	
@@ -105,8 +106,8 @@ void optDPH(double* T, double* a, double* logL, const double* cnts, int J, int n
 		
 		m = m+1;
 		
-		setVect(T_prev,T,J*J);
-		setVect(a_prev,a,J);
+		setVect(T_prev,(const double*) T,J*J);
+		setVect(a_prev,(const double*) a,J);
 		logL_prev = *logL;
 		
 		// E-step
@@ -117,7 +118,7 @@ void optDPH(double* T, double* a, double* logL, const double* cnts, int J, int n
 		MstepDPH(a,T, (const double*) B, (const double*) Nij, (const double*) Ni,totCnt,J, (const int**) id_T);
 		
 		// likelihood
-		*logL = calcDPHlogL( (const double*) T, (const double*) a, (const double*) cnts,J,nDt, 
+		*logL = calcDPHlogL( (const double*) T, (const double*) a, cnts,J,nDt, 
 				(const int**) id_T, (const int**) id_P, (const int**) id_Jv);
 		
 		// check for convergence
