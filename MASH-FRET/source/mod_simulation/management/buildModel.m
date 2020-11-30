@@ -33,6 +33,7 @@ else % transition rate coefficients from interface
     kx = h.param.sim.kx;
     kx_all  = repmat(kx,[1,1,N]);
 end
+kx_all = kx_all(1:J,1:J,:);
 tau_all = 1./permute(sum(kx_all,2),[3,1,2]);
 if imp_ip % initial state prob. from presets
     ip_all = molPrm.p0;
@@ -49,25 +50,26 @@ dt_final = cell(1,N);
 if J>1 && isTrans
     n = 1;
     while n <= N
-        kx = kx_all(1:J,1:J,n);
+        kx = kx_all(:,:,n);
         kx(~~eye(J)) = 0;
         wx = kx./repmat(sum(kx,2),[1,J]);
+        wx(isnan(wx)) = 0;
         ip = ip_all(n,:);
         tau = tau_all(n,:)/expT;
 
-        % MH 19.12.2019: identify zero sums in rate matrix
-        if sum(sum(kx,1)>0)~=J || sum(sum(kx,2)>0)~=J
-            setContPan(cat(2,'Simulation aborted: at least one ',...
-                'transition from and to each state must be defined ',...
-                '(rate non-null).'),'error',h_fig);
-
-            % clear any results to avoid conflict
-            if isfield(h,'results') && isfield(h.results,'sim')
-                h.results = rmfield(h.results,'sim');
-            end
-            guidata(h_fig,h);
-            return
-        end
+%         % MH 19.12.2019: identify zero sums in rate matrix
+%         if sum(sum(kx,1)>0)~=J || sum(sum(kx,2)>0)~=J
+%             setContPan(cat(2,'Simulation aborted: at least one ',...
+%                 'transition from and to each state must be defined ',...
+%                 '(rate non-null).'),'error',h_fig);
+% 
+%             % clear any results to avoid conflict
+%             if isfield(h,'results') && isfield(h.results,'sim')
+%                 h.results = rmfield(h.results,'sim');
+%             end
+%             guidata(h_fig,h);
+%             return
+%         end
         
         if bleach
             Ln = round(ceil(random('exp',bleachL)));
@@ -97,10 +99,18 @@ if J>1 && isTrans
                 end
                 
                 % pick a first state
-                state2 = randsample(1:J, 1, true, wx(state1,:)); % pick a next state
+                if sum(wx(state1,:))==0
+                    state2 = state1;
+                else
+                    state2 = randsample(1:J, 1, true, wx(state1,:)); % pick a next state
+                end
                 
                 % dwell in numer of time bins
-                dl = random('exp',tau(state1)); 
+                if isinf(tau) % kinetic trap
+                    dl = Ln-l;
+                else
+                    dl = random('exp',tau(state1));
+                end
                 
                 % truncate dwell if larger than remaining time
                 if (l+dl)>Ln
