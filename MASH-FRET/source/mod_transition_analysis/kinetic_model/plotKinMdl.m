@@ -30,7 +30,14 @@ end
 if isempty(simdat)
     drawDiagram(h_axes(1),states,tp,[],[]);
 else
-    drawDiagram(h_axes(1),states,tp,simdat.tpmin,simdat);
+    % calculate exp. state rel. pop
+    J = numel(states);
+    pop = zeros(1,J);
+    dtSum = sum(simdat.dt(:,1));
+    for j = 1:J
+        pop(j) = sum(simdat.dt(simdat.dt(:,3)==j,1))/dtSum;
+    end
+    drawDiagram(h_axes(1),states,tp,simdat.tpmin,pop);
 end
 
 
