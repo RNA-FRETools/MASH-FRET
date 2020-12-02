@@ -14,6 +14,21 @@ for s = 1:S
     m = 0;
     a = a_start(s,:);
     T = T_start(:,:,s);
+    
+    % pre-allocate memory
+    J = numel(a);
+    nDt = numel(P(1,:));
+    Ty = zeros(J,J,nDt);
+    Mij = zeros(J,J,nDt);
+    denom = zeros(1,nDt);
+    mat = zeros(2*J,2*J);
+    Nij0 = zeros(J);
+    B0 = Nij0(1,:);
+    Z0 = Nij0(1,:);
+    Ni0 = Nij0(:,1);
+    E = eye(J);
+    v_e = ones(J,1);
+    
     logL = -Inf;
     while m<M
         a_prev = a;
@@ -21,7 +36,7 @@ for s = 1:S
         logL_prev = logL;
 
         % E-step
-        [B,Z,Nij,Ni] = PH_Estep(PH_type,a,T,P);
+        [B,Z,Nij,Ni] = PH_Estep(PH_type,a,T,P,Ty,Mij,mat,denom,B0,Z0,Ni0,Nij0,E,v_e);
 
         % M-step
         [a,T,t] = PH_Mstep(PH_type,B,Z,Nij,Ni,N);
@@ -54,82 +69,75 @@ for s = 1:S
 end
 
 
-function [B,Z,Nij,Ni] = PH_Estep(PH_type,a,T,data)
+function [B,Z,Nij,Ni] = PH_Estep(PH_type,a,T,data,Ty,Mij,mat,denom,B,Z,Ni,Nij,E,v_e)
 
-x = data(1,:);
-count = data(2,:);
 J = numel(a);
-N = numel(x);
-
-% initialization
-Nij = zeros(J);
-B = Nij(1,:);
-Z = Nij(1,:);
-Ni = Nij(:,1);
-E = eye(J);
-v_e = ones(J,1);
-denom = zeros(1,N);
+N = numel(data(1,:));
 
 if PH_type==1 % discrete PH
     % preliminary calculations
     t = v_e-T*v_e;
-    Ty_pow = zeros(J,J,N);
-    Kij = zeros(J,J,N);
     for n = 1:N
-        if x(n)>1
-            mat = [T,t*a;zeros(J),T]^(x(n)-1);
-            Ty_pow(:,:,n) = mat(1:J,1:J);
-            Kij(:,:,n) = mat(1:J,(J+1):end);
+        if data(1,n)>1
+            mat(1:J,1:J)= T;
+            mat(1:J,(J+1):2*J) = t*a;
+            mat((J+1):2*J,1:J) = zeros(J);
+            mat((J+1):2*J,(J+1):2*J) = T;
+            mat = mat^(data(1,n)-1);
+            Ty(:,:,n) = mat(1:J,1:J);
+            Mij(:,:,n) = mat(1:J,(J+1):end);
         else
-            Ty_pow(:,:,n) = T^0;
+            Ty(:,:,n) = T^0;
         end
 
-        denom(n) = a*(Ty_pow(:,:,n)*t);
+        denom(n) = a*(Ty(:,:,n)*t);
     end
 
     % expectation calculation
     for j = 1:J
         for n = 1:N
             B(j) = B(j)+...
-                count(n)*a(j)*(E(j,:)*(Ty_pow(:,:,n)*t))/denom(n);
+                data(2,n)*a(j)*(E(j,:)*(Ty(:,:,n)*t))/denom(n);
             for j2 = 1:J
-                if x(n)>1
+                if data(1,n)>1
                     Nij(j,j2) = Nij(j,j2)+ ...
-                        count(n)*(T(j,j2)*Kij(j2,j,n))/denom(n);
+                        data(2,n)*(T(j,j2)*Mij(j2,j,n))/denom(n);
                 end
             end
             Ni(j) = Ni(j)+...
-                count(n)*a*(Ty_pow(:,:,n)*(E(:,j)*t(j)))/denom(n);
+                data(2,n)*a*(Ty(:,:,n)*(E(:,j)*t(j)))/denom(n);
         end
     end
     
 elseif PH_type==2% continuous PH
     % preliminary calculations
     t = -T*v_e;
-    exp_Ty = zeros(J,J,N);
-    Jij = zeros(J,J,N);
     for n = 1:N
-        mat = expm([T,t*a;zeros(J),T]*x(n));
-        exp_Ty(:,:,n) = mat(1:J,1:J);
-        Jij(:,:,n) = mat(1:J,(J+1):end);
+         mat(1:J,1:J)= T;
+        mat(1:J,(J+1):2*J) = t*a;
+        mat((J+1):2*J,1:J) = zeros(J);
+        mat((J+1):2*J,(J+1):2*J) = T;
+        mat = expm(mat*data(1,n));
+        Ty(:,:,n) = mat(1:J,1:J);
+        Mij(:,:,n) = mat(1:J,(J+1):end);
 
-        denom(n) = a*(exp_Ty(:,:,n)*t);
+        denom(n) = a*(Ty(:,:,n)*t);
     end
 
     % expectation calculation
     for j = 1:J
         for n = 1:N
-            B(j) = B(j)+count(n)*a(j)*(E(j,:)*(exp_Ty(:,:,n)*t))/denom(n);
-            Z(j) = Z(j)+count(n)*Jij(j,j,n)/denom(n);
+            B(j) = B(j)+data(2,n)*a(j)*(E(j,:)*(Ty(:,:,n)*t))/denom(n);
+            Z(j) = Z(j)+data(2,n)*Mij(j,j,n)/denom(n);
             for j2 = 1:J
                 if j==j2
                     continue
                 end
                 Nij(j,j2) = Nij(j,j2)+...
-                    count(n)*T(j,j2)*Jij(j2,j,n)/denom(n);
+                    data(2,n)*T(j,j2)*Mij(j2,j,n)/denom(n);
             end
             Ni(j) = Ni(j)+...
-                count(n)*a*(exp_Ty(:,:,n)*(E(:,j)*t(j)))/denom(n);
+                data(2,n)*a*(Ty(:,:,n)*(E(:,j)*t(j)))/denom(n);
         end
     end
 end
@@ -163,22 +171,20 @@ end
 
 
 function logL = PH_likelihood(PH_type,a,T,data)
-x = data(1,:);
-count = data(2,:);
-N = numel(x);
+N = numel(data(1,:));
 J = numel(a);
 
 if PH_type==2 % continuous PH
     t = -T*ones(J,1);
     logL = 0;
     for n = 1:N
-        logL = logL + count(n)*log(a*(expm(T*x(n))*t));
+        logL = logL + data(2,n)*log(a*(expm(T*data(1,n))*t));
     end
     
 elseif PH_type==1 % discrete PH
     t = ones(J,1)-T*ones(J,1);
     logL = 0;
     for n = 1:N
-        logL = logL + count(n)*log(a*(T^(x(n)-1)*t));
+        logL = logL + data(2,n)*log(a*(T^(data(1,n)-1)*t));
     end
 end
