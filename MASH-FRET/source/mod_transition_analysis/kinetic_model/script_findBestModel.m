@@ -80,7 +80,7 @@ fprintf(['Most sufficient state configuration:\n[%0.2f',...
 
 % infer "true" DPH parameters
 disp('Optimize DPH distributions on authentic dwell time histograms...')
-mdl = script_inferPH(dt,states,expT,1,degen,1);
+mdl = script_inferPH(dt,states,expT,1,degen,plotIt);
 
 fprintf('Most sufficient model complexity found in %0.0f seconds\n',...
     toc(t_comp));
