@@ -14,7 +14,7 @@ exc = p.proj{proj}.excitations;
 nExc = p.proj{proj}.nb_excitations;
 chanExc = p.proj{proj}.chanExc;
 
-incl = p.proj{proj}.bool_intensities(:,mol);
+incl = ~~p.proj{proj}.bool_intensities(:,mol)';
 I = p.proj{proj}.intensities_denoise(incl,((mol-1)*nChan+1):mol*nChan,:);
 if plotDscr
     discrI = p.proj{proj}.intensities_DTA(incl, ...
