@@ -4,7 +4,7 @@
  * Dwell time counts must be strictly positive
  *
  * Corresponding MATLAB executing command:
- * [a,T,logL] = trainDPH(a0,T0,cnts);
+ * [a,T,logL] = trainPH(a0,T0,cnts);
  *
  * MEX-compilation command:
  * mex  -R2018a -O trainPH.c vectop.c
@@ -41,29 +41,34 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	plhs[0] = mxCreateDoubleMatrix(1,J,mxREAL); // PH initial state prob.
 	plhs[1] = mxCreateDoubleMatrix(J,J,mxREAL); // PH transition matrix
 	plhs[2] = mxCreateDoubleScalar(0); // Likelihood of PH given the dwell times
-	double *T = mxGetDoubles(plhs[0]);
-	double *a = mxGetDoubles(plhs[1]);
+	double *a = mxGetDoubles(plhs[0]);
+	double *T = mxGetDoubles(plhs[1]);
 	double *logL = mxGetDoubles(plhs[2]);
-	
-	
+
 	// train PH
 	setVect(T,T0,J*J);
 	setVect(a,a0,J);
-	optDPH(T,a,logL,cnts,J,nDt);
+	bool cvg = optDPH(T,a,logL,cnts,J,nDt);
 	
-	mexPrintf("done!\n");
+	// return empty arrays if EM did not converge
+	if (!cvg){
+		const mwSize dims[] = {0,0};
+		mxSetDimensions(plhs[0],dims,2);
+		mxSetDimensions(plhs[1],dims,2);
+		*logL = 0;
+	}
 	
 	return;
 }
 
 
-void optDPH(double* T, double* a, double* logL, const double* cnts, int J, int nDt){
+bool optDPH(double* T, double* a, double* logL, const double* cnts, int J, int nDt){
 	
 	int i = 0, j = 0, nb = 0;
 	bool cvg = 0;
 	double m = 0, dmax = 0, logL_prev = 0, totCnt = 0;
-	double T_prev[J*J], a_prev[J], B[J], Ni[J], Nij[J*J];
-	
+	double t[J], T_prev[J*J], a_prev[J], B[J], Ni[J], Nij[J*J];
+
 	// build vectorized matrix indexes outside the while loop for speed
 	int** id_T = (int **)malloc(J * sizeof(int *));
 	for (i=0; i<J; i++){
@@ -90,17 +95,28 @@ void optDPH(double* T, double* a, double* logL, const double* cnts, int J, int n
 	buildIdMat(id_Jv,J,1);
 	buildIdMat(id_Jh,1,J);
 	
+	/*
+	// TEST MATPOW
+	setVect(T_prev,(const double*) T,J*J);
+	matpow(T,(const double*) T_prev,J,53,(const int**) id_T);
+	*/
+	
+	// calculate starting exit prob.
+	for (i=0; i<J; i++){
+		t[i] = 1;
+		for (j=0; j<J; j++){
+			t[i] = t[i] - T[id_T[i][j]];
+		}
+	}
 	
 	// calculate initial likelihood
-	*logL = calcDPHlogL( (const double*) T, (const double*) a, cnts,J,nDt, (const int**) id_T, (const int**) id_P, (const int**) id_Jv);
+	*logL = calcDPHlogL_PH( (const double*) T, (const double*) a, (const double*) t, cnts,J,nDt, (const int**) id_T, (const int**) id_P, (const int**) id_Jv);
 	nb = dispDPHres(m,*logL-logL_prev,dmax, (const double*) T, (const double*) a,J, (const int**) id_T,0);
-	
 	
 	// calculate total number of dwell times
 	for (i=0; i<nDt; i++){
 		totCnt = totCnt + cnts[id_P[1][i]];
 	}
-	
 	
 	while(!cvg && m<MAXITER){
 		
@@ -111,31 +127,33 @@ void optDPH(double* T, double* a, double* logL, const double* cnts, int J, int n
 		logL_prev = *logL;
 		
 		// E-step
-		EstepDPH(B,Nij,Ni,cnts, (const double*) a, (const double*) T,nDt,J, 
-				(const int**) id_T, (const int**) id_P, (const int**) id_Jh, (const int**) id_Jv, (const int**) id_mat);
-		/*
+		EstepDPH(B,Nij,Ni,cnts,(const double*) a,(const double*) T,(const double*) t,nDt,J, 
+				(const int**) id_T,(const int**) id_P,(const int**) id_Jh,(const int**) id_Jv,(const int**) id_mat);
+		//mexPrintf("Nij = ");
+		//disp2DVectMatrix((const double*) Nij,J,J,(const int**) id_T);
+		//mexPrintf("Ni = ");
+		//dispVect_double(Ni,J);
+		
+		
 		// M-step
-		MstepDPH(a,T, (const double*) B, (const double*) Nij, (const double*) Ni,totCnt,J, (const int**) id_T);
+		MstepDPH(a,T,t,(const double*) B,(const double*) Nij,(const double*) Ni,totCnt,J,(const int**) id_T);
+		//mexPrintf("T = ");
+		//disp2DVectMatrix((const double*) T,J,J,(const int**) id_T);
+		//mexPrintf("a = ");
+		//dispVect_double(a,J);
 		
 		// likelihood
-		*logL = calcDPHlogL( (const double*) T, (const double*) a, cnts,J,nDt, 
-				(const int**) id_T, (const int**) id_P, (const int**) id_Jv);
+		*logL = calcDPHlogL_PH( (const double*) T, (const double*) a, (const double*) t, cnts,J,nDt, (const int**) id_T, (const int**) id_P, (const int**) id_Jv);
+		//*logL = calcDPHlogL_DPH((const double*) T, (const double*) a, (const double*) t, (const double*) B, (const double*) Nij, (const double*) Ni,J,(const int**) id_T);
+		//mexPrintf("logL=%.3f\n",*logL);
 		
 		// check for convergence
 		dmax = calcMaxDev( (const double*) T, (const double*) T_prev, (const double*) a, (const double*) a_prev,J);
-		if (dmax<DMIN){
-			cvg = 1;
-		}
-		*/
+		if (dmax<DMIN){ cvg = 1; }
+		//mexPrintf("dmax=%.3f\n",dmax);
 		
 		nb = dispDPHres(m,*logL-logL_prev,dmax, (const double*) T, (const double*) a,J, (const int**) id_T,nb);
-		
-		cvg = 1;
-		
-		mexPrintf("Converged!\n");
 	}
-
-	
 	
 	// free memory outside the while loop for speed
 	for (i=0; i<J; i++){ free(id_T[i]); }
@@ -149,24 +167,22 @@ void optDPH(double* T, double* a, double* logL, const double* cnts, int J, int n
 	free(id_Jh[0]);
 	free(id_Jh);
 	
-	return;
+	return cvg;
 }
 
 
-void EstepDPH(double* B, double* Nij, double* Ni, const double* P, const double* a, const double* T, int nDt, int J, 
+void EstepDPH(double* B, double* Nij, double* Ni, const double* P, const double* a, const double* T, const double* t, int nDt, int J, 
 		const int** id_T, const int** id_P, const int** id_Jh, const int** id_Jv, const int** id_mat){
 	
 	int i = 0, j = 0, n = 0;
-	double t[J], ta[J*J], tmp_J[J], Tpow_n[J*J], K_n[J*J], mat[4*J*J], matpow_n[4*J*J], dt, cnt, denom_n, sum_j;
+	double ta[J*J], tmp_J[J], Tpow_n[J*J], K_n[J*J], mat[4*J*J], matpow_n[4*J*J], dt, cnt, denom_n, sum_j;
 	
 	// initialize expectations and calculate exit probabilities
 	for (i=0; i<J; i++){
 		B[i] = 0;
 		Ni[i] = 0;
-		t[i] = 1;
 		for (j=0; j<J; j++){
 			Nij[id_T[i][j]] = 0;
-			t[i] = t[i] - T[id_T[i][j]]; // exit prob
 		}
 	}
 	
@@ -188,25 +204,37 @@ void EstepDPH(double* B, double* Nij, double* Ni, const double* P, const double*
 		cnt = P[id_P[1][n]];
 		denom_n = 0;
 		
-		/* 		
 		// {T^(x-1)} and {K(x)} matrices
-		matpow(matpow_n,mat,2*J,dt-1,id_mat);
+		matpow(matpow_n,(const double*) mat,2*J,dt-1,id_mat);
+		/*mexPrintf("MAT^(%.0f-1)\n",dt);
+		disp2DVectMatrix((const double*) matpow_n,2*J,2*J,id_mat);*/
+		
 		for (i=0; i<J; i++){
-			for (j=0; i<J; j++){
+			for (j=0; j<J; j++){
 				Tpow_n[id_T[i][j]] = matpow_n[id_mat[i][j]];
 				K_n[id_T[i][j]] = matpow_n[id_mat[i][j+J]];
 			}
 		}
+		/*
+		mexPrintf("T^(%.0f-1)\n",dt);
+		disp2DVectMatrix((const double*) Tpow_n,J,J,id_T);
+		mexPrintf("K(%.0f)\n",dt);
+		disp2DVectMatrix((const double*) K_n,J,J,id_T);*/
 		
+
 		// denominator {a}*{T^(x-1)}*{t}
 		matprod(tmp_J,Tpow_n,t,J,J,1,id_Jv,id_T,id_Jv);
 		for (i=0; i<J; i++){
 			denom_n = denom_n + a[i] * tmp_J[i];
 		}
+		//mexPrintf("denom=%.2e\n",denom_n);
+		if (denom_n<=0 || denom_n!=denom_n){
+			//mexPrintf("Insufficient precision for dt=%.2e\n", dt);
+			continue; 
+		}
 		
 		// expectations
 		for (i=0; i<J; i++){
-			
 			sum_j = 0;
 			for (j=0; j<J; j++){
 				sum_j = sum_j + t[j] * Tpow_n[id_T[i][j]];
@@ -217,23 +245,21 @@ void EstepDPH(double* B, double* Nij, double* Ni, const double* P, const double*
 			for (j=0; j<J; j++){
 				sum_j = sum_j + a[j] * Tpow_n[id_T[j][i]];
 			}
-			Ni[i] = Ni[i] + cnt * sum_j / denom_n;
+			Ni[i] = Ni[i] + cnt * t[i] * sum_j / denom_n;
 			
 			if (dt>1){
 				for (j=0; j<J; j++){
-					Nij[id_T[i][j]] = Ni[id_T[i][j]] + cnt * T[id_T[i][j]] * K_n[id_T[j][i]] / denom_n;
+					Nij[id_T[i][j]] = Nij[id_T[i][j]] + cnt * T[id_T[i][j]] * K_n[id_T[j][i]] / denom_n;
 				}
 			}
 		}
-		*/
 	}
-	
-	
+
 	return;
 }
 
 
-void MstepDPH(double* a, double* T, const double* B, const double* Nij, const double* Ni, double totCnt, int J, 
+void MstepDPH(double* a, double* T, double* t, const double* B, const double* Nij, const double* Ni, double totCnt, int J, 
 		const int** id_T){
 	
 	int i = 0, j = 0;
@@ -246,12 +272,12 @@ void MstepDPH(double* a, double* T, const double* B, const double* Nij, const do
 		// transition matrix
 		sum_i = 0;
 		for (j=0; j<J; j++){
-			T[id_T[i][j]] = Nij[id_T[i][j]];
 			sum_i = sum_i + Nij[id_T[i][j]];
 		}
 		for (j=0; j<J; j++){
-			T[id_T[i][j]] = T[id_T[i][j]] / (Ni[i] + sum_i);
+			T[id_T[i][j]] = Nij[id_T[i][j]] / (Ni[i] + sum_i);
 		}
+		t[i] = Ni[i] / (Ni[i] + sum_i);
 	}
 	
 	return;
@@ -276,27 +302,37 @@ double calcMaxDev(const double* T, const double* T_prev, const double* a,const d
 }
 
 
-double calcDPHlogL(const double* T, const double* a, const double* P, int J, int nDt, 
+ double calcDPHlogL_PH(const double* T, const double* a, const double* t, const double* P, int J, int nDt, 
 		const int** id_T, const int** id_P, const int** id_v){
 	
 	int i = 0, j = 0;
 	double logL = 0, Li = 0;
-	double t[J], Tpow[J*J], tmp[J];
+	double Tpow[J*J], tmp[J];
 
-	for (i=0; i<J; i++){
-		t[i] = 1;
-		for (j=0; j<J; j++){
-			t[i] = t[i] - T[id_T[i][j]];
-		}
-	}
-	
 	for (i=0; i<nDt; i++){
-		matpow(Tpow,T,J,(P[id_P[1][i]]-1),id_T);
+		matpow(Tpow,T,J,(P[id_P[0][i]]-1),id_T);
 		matprod(tmp,Tpow,t,J,J,1,id_v,id_T,id_v);
 		for (j=0; j<J; j++){
 			Li = Li + a[j]*tmp[j];
 		}
 		logL = logL + P[id_P[1][i]] * log(Li);
+	}
+	
+	return logL;
+}
+
+
+double calcDPHlogL_DPH(const double* T, const double* a, const double* t, const double* B, const double* Nij, const double* Ni, 
+		int J, const int** id_T){
+	
+	int i = 0, j = 0;
+	double logL = 0;
+
+	for (i=0; i<J; i++){
+		logL = logL + B[i] * log(a[i]) + Ni[i] * log(t[i]);
+		for (j=0; j<J; j++){
+			logL = logL + Nij[id_T[i][j]] * T[id_T[i][j]];
+		}
 	}
 	
 	return logL;
@@ -320,6 +356,7 @@ int dispDPHres(double m,double dL, double dmax, const double* T, const double* a
 	nb = mexPrintf("iteration %.0f: d=%.3e (dmin=%.0e) dL=%.3e\n",m,dmax,DMIN,dL);
 	
 	// write probabilities
+	/*
 	nb = nb + mexPrintf("Initial probabilities:\n");
 	for (i=0; i<J; i++){
 		nb = nb + mexPrintf("\t%.4f",a[i]);
@@ -333,6 +370,7 @@ int dispDPHres(double m,double dL, double dmax, const double* T, const double* a
 		}
 		nb = nb + mexPrintf("\n");
 	}
+	*/
 	mexEvalString("drawnow;");
 	
 	return nb;
@@ -366,6 +404,10 @@ bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	/* Check for dimensions */
 	
 	int J = (int) mxGetNumberOfElements(prhs[0]);
+	if (J<=0){
+		mexErrMsgTxt("Input (1) must contain at least one element.");
+		return 0;
+	}
 	int J1 = (int) mxGetM(prhs[1]);
 	if (J1!=J){
 		mexErrMsgTxt("The numbers of elements in input (1) and of rows in input (2) must be equal.");
