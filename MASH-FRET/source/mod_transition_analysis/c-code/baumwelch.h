@@ -3,7 +3,7 @@
 
 // DEFAULTS
 #define DMIN 0.00000001 // convergence criterion on parameters (from SMACKS)
-#define MAXITER 50000 // maximum number of EM iterations
+#define MAXITER 100000 // maximum number of EM iterations
 
 
 double getMaxDiff(const double* T, const double* T_prev, const double* ip, const double* ip_prev, int J);
