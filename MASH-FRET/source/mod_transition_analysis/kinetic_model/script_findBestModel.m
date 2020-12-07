@@ -31,8 +31,8 @@ V = numel(states);
 mdl = cell(1,J_deg_max);
 logL = Inf(V,J_deg_max);
 for J_deg = 1:J_deg_max
-    fprintf('for %i degenerated states: ',J_deg);
-    mdl{J_deg} = script_inferPH(dt,states,expT,dt_bin,repmat(J_deg,[1,V]),0);
+    fprintf('for %i degenerated states:\n',J_deg);
+    mdl{J_deg} = script_inferPH(dt,states,expT,dt_bin,repmat(J_deg,[1,V]),1);
     LogL_v = [];
     for v = 1:V
         LogL_v = cat(1,LogL_v,mdl{J_deg}.logL(v));
@@ -72,7 +72,9 @@ end
 [~,cmb_opt] = min(BIC_cmb);
 degen = cmb(cmb_opt,:);
 id = [];
+% degen = zeros(1,V);
 for v = 1:V
+%     [~,degen(v)] = min(BIC(v,:));
     id = cat(2,id,repmat(v,[1,degen(v)]));
 end
 fprintf(['Most sufficient state configuration:\n[%0.2f',...
