@@ -21,8 +21,7 @@ mdl = struct;
 
 % defaults
 PH_type = 1;% 1 for discrete, 2 for continuous
-n_rs = 10; % number of EM restarts
-nb = 0; % initializes number of bytes written in command window
+n_rs = 5; % number of EM restarts
 
 expT_bin = dt_bin*expT;
 n = 0;
@@ -46,7 +45,7 @@ end
 x = P;
 for v = 1:V
     dt_z = dt(dt(:,3)==v,1);
-    edg = 0.5:1:(max(dt_z)+0.5);
+    edg = 0.5:(max(dt_z)+0.5);
     x{v} = mean([edg(2:end);edg(1:end-1)],1);
     P{v} = histcounts(dt_z,edg);
     if plotIt
@@ -65,12 +64,8 @@ if plotIt
     w_fit = pi_fit;
     tau_fit = pi_fit;
 end
-totcnt = V*n_rs;
-cnt = 0;
-nb = dispProgress(sprintf('%i%%%%',round(100*cnt/totcnt)),nb);
 for v = 1:V
     v_e = ones(J_deg(v),1);
-    incl = P{v}>0;
 
     pi_fit{v} = NaN(1,J_deg(v));
     tp_fit{v} = NaN(J_deg(v),J_deg(v)+1);
@@ -80,11 +75,15 @@ for v = 1:V
         tau_fit{v} = NaN(J_deg(v),1);
         w_fit{v} = NaN(J_deg(v)+1,J_deg(v)+1);
     end
+    
+    incl = (x{v}>0 & P{v}>0);
 
     % generate random PH parameters
     a_fit = [];
     T_fit = [];
     for rs = 1:n_rs
+        
+        fprintf('state %i/%i, restart %i/%i: ',v,V,rs,n_rs);
 
         % use random starting guess
         a_start = ones(1,J_deg(v));
@@ -112,10 +111,10 @@ for v = 1:V
         end
 
         % train a PH model on experimental CDF
-%         [a_res,T_res,logL_res] = ...
-%             trainPH(a_start,T_start,[x{v}(incl);P{v}(incl)]);
-        [a_res,T_res,logL_res,err] = trainPH_matlab(PH_type,a_start,...
-            T_start,[x{v}(incl);P{v}(incl)]);
+        [a_res,T_res,logL_res] = ...
+            trainPH(a_start,T_start,[x{v}(incl);P{v}(incl)]);
+%         [a_res,T_res,logL_res] = trainPH_matlab(PH_type,a_start,...
+%             T_start,[x{v}(incl);P{v}(incl)]);
         if isempty(a_res) || isempty(T_res)
 %             disp(['Optimization failed: ' errstr]);
             continue
@@ -125,9 +124,6 @@ for v = 1:V
             a_fit = a_res;
             T_fit = T_res;
         end
-        
-        cnt = cnt+1;
-        nb = dispProgress(sprintf('%i%%%%',round(100*cnt/totcnt)),nb);
     end
     if isempty(a_fit) || isempty(T_fit)
         if plotIt
@@ -175,7 +171,8 @@ for v = 1:V
         tau_fit{v} = expT./r_v;
         w_fit{v} = w;
     end
-    nDat(v) = sum(x{v}.*P{v});
+%     nDat(v) = sum(x{v}.*P{v});
+    nDat(v) = sum(P{v});
 end
 mdl.pi_fit = pi_fit;
 mdl.tp_fit = tp_fit;
