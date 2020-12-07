@@ -95,12 +95,6 @@ bool optDPH(double* T, double* a, double* logL, const double* cnts, int J, int n
 	buildIdMat(id_Jv,J,1);
 	buildIdMat(id_Jh,1,J);
 	
-	/*
-	// TEST MATPOW
-	setVect(T_prev,(const double*) T,J*J);
-	matpow(T,(const double*) T_prev,J,53,(const int**) id_T);
-	*/
-	
 	// calculate starting exit prob.
 	for (i=0; i<J; i++){
 		t[i] = 1;
@@ -110,7 +104,7 @@ bool optDPH(double* T, double* a, double* logL, const double* cnts, int J, int n
 	}
 	
 	// calculate initial likelihood
-	*logL = calcDPHlogL_PH( (const double*) T, (const double*) a, (const double*) t, cnts,J,nDt, (const int**) id_T, (const int**) id_P, (const int**) id_Jv);
+	*logL = calcDPHlogL( (const double*) T, (const double*) a, (const double*) t, cnts,J,nDt, (const int**) id_T, (const int**) id_P, (const int**) id_Jv);
 	nb = dispDPHres(m,*logL-logL_prev,dmax, (const double*) T, (const double*) a,J, (const int**) id_T,0);
 	
 	// calculate total number of dwell times
@@ -129,30 +123,23 @@ bool optDPH(double* T, double* a, double* logL, const double* cnts, int J, int n
 		// E-step
 		EstepDPH(B,Nij,Ni,cnts,(const double*) a,(const double*) T,(const double*) t,nDt,J, 
 				(const int**) id_T,(const int**) id_P,(const int**) id_Jh,(const int**) id_Jv,(const int**) id_mat);
-		//mexPrintf("Nij = ");
-		//disp2DVectMatrix((const double*) Nij,J,J,(const int**) id_T);
-		//mexPrintf("Ni = ");
-		//dispVect_double(Ni,J);
-		
-		
+				
 		// M-step
 		MstepDPH(a,T,t,(const double*) B,(const double*) Nij,(const double*) Ni,totCnt,J,(const int**) id_T);
-		//mexPrintf("T = ");
-		//disp2DVectMatrix((const double*) T,J,J,(const int**) id_T);
-		//mexPrintf("a = ");
-		//dispVect_double(a,J);
 		
 		// likelihood
-		*logL = calcDPHlogL_PH( (const double*) T, (const double*) a, (const double*) t, cnts,J,nDt, (const int**) id_T, (const int**) id_P, (const int**) id_Jv);
-		//*logL = calcDPHlogL_DPH((const double*) T, (const double*) a, (const double*) t, (const double*) B, (const double*) Nij, (const double*) Ni,J,(const int**) id_T);
-		//mexPrintf("logL=%.3f\n",*logL);
-		
+		*logL = calcDPHlogL( (const double*) T, (const double*) a, (const double*) t, cnts,J,nDt, (const int**) id_T, (const int**) id_P, (const int**) id_Jv);
+
 		// check for convergence
 		dmax = calcMaxDev( (const double*) T, (const double*) T_prev, (const double*) a, (const double*) a_prev,J);
-		if (dmax<DMIN){ cvg = 1; }
-		//mexPrintf("dmax=%.3f\n",dmax);
+		//if (dmax<DMIN){ cvg = 1; }
+		if ((*logL-logL_prev)<DLMIN){ cvg = 1; }
 		
 		nb = dispDPHres(m,*logL-logL_prev,dmax, (const double*) T, (const double*) a,J, (const int**) id_T,nb);
+	}
+	
+	if (!cvg){
+		nb = eraseAndWrite("maximum number of iterations has been reached\n",nb);
 	}
 	
 	// free memory outside the while loop for speed
@@ -206,32 +193,19 @@ void EstepDPH(double* B, double* Nij, double* Ni, const double* P, const double*
 		
 		// {T^(x-1)} and {K(x)} matrices
 		matpow(matpow_n,(const double*) mat,2*J,dt-1,id_mat);
-		/*mexPrintf("MAT^(%.0f-1)\n",dt);
-		disp2DVectMatrix((const double*) matpow_n,2*J,2*J,id_mat);*/
-		
 		for (i=0; i<J; i++){
 			for (j=0; j<J; j++){
 				Tpow_n[id_T[i][j]] = matpow_n[id_mat[i][j]];
 				K_n[id_T[i][j]] = matpow_n[id_mat[i][j+J]];
 			}
 		}
-		/*
-		mexPrintf("T^(%.0f-1)\n",dt);
-		disp2DVectMatrix((const double*) Tpow_n,J,J,id_T);
-		mexPrintf("K(%.0f)\n",dt);
-		disp2DVectMatrix((const double*) K_n,J,J,id_T);*/
-		
 
 		// denominator {a}*{T^(x-1)}*{t}
 		matprod(tmp_J,Tpow_n,t,J,J,1,id_Jv,id_T,id_Jv);
 		for (i=0; i<J; i++){
 			denom_n = denom_n + a[i] * tmp_J[i];
 		}
-		//mexPrintf("denom=%.2e\n",denom_n);
-		if (denom_n<=0 || denom_n!=denom_n){
-			//mexPrintf("Insufficient precision for dt=%.2e\n", dt);
-			continue; 
-		}
+		if (denom_n<=0 || denom_n!=denom_n){ continue; }
 		
 		// expectations
 		for (i=0; i<J; i++){
@@ -302,7 +276,7 @@ double calcMaxDev(const double* T, const double* T_prev, const double* a,const d
 }
 
 
- double calcDPHlogL_PH(const double* T, const double* a, const double* t, const double* P, int J, int nDt, 
+ double calcDPHlogL(const double* T, const double* a, const double* t, const double* P, int J, int nDt, 
 		const int** id_T, const int** id_P, const int** id_v){
 	
 	int i = 0, j = 0;
@@ -312,6 +286,7 @@ double calcMaxDev(const double* T, const double* T_prev, const double* a,const d
 	for (i=0; i<nDt; i++){
 		matpow(Tpow,T,J,(P[id_P[0][i]]-1),id_T);
 		matprod(tmp,Tpow,t,J,J,1,id_v,id_T,id_v);
+		Li = 0;
 		for (j=0; j<J; j++){
 			Li = Li + a[j]*tmp[j];
 		}
@@ -322,7 +297,7 @@ double calcMaxDev(const double* T, const double* T_prev, const double* a,const d
 }
 
 
-double calcDPHlogL_DPH(const double* T, const double* a, const double* t, const double* B, const double* Nij, const double* Ni, 
+double calcDPHlogL_2(const double* T, const double* a, const double* t, const double* B, const double* Nij, const double* Ni, 
 		int J, const int** id_T){
 	
 	int i = 0, j = 0;
@@ -336,6 +311,23 @@ double calcDPHlogL_DPH(const double* T, const double* a, const double* t, const 
 	}
 	
 	return logL;
+}
+
+int eraseAndWrite(char* str, int nb){
+	char strb[nb+1];
+	int i = 0;
+	
+	// erase previous message
+	if (nb>0){
+		for (i=0; i<nb; i++){
+			strb[i] = '\b';
+		}
+		strb[nb] = '\0';
+		mexPrintf(strb);
+	}
+	
+	// write iteration
+	nb = mexPrintf(str);
 }
 
 
