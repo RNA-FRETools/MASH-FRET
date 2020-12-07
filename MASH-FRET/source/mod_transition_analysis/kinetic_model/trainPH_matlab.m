@@ -4,6 +4,7 @@ function [a,T,logL,actstr] = trainPH_matlab(PH_type,a0,T0,P)
 M = 1E5; % maximum number of EM iterations
 dL_min = 1E-6; % convergeance criteria on likelihood (faster)
 d_min = 1E-8; % convergeance criteria on parameters (from SMACKS)
+nb = 0;
 
 N = sum(P(2,:));
 
@@ -44,18 +45,20 @@ for s = 1:S
         % likelihood
         logL = PH_likelihood(PH_type,a,T,P);
         
+        dmax = max([max(max(abs(T-T_prev))),max(abs(a-a_prev))]);
+        dL = logL-logL_prev;
+        
+        nb = dispProgress(...
+            sprintf('iteration %i: d=%.3E dL=%.3E',m,dmax,dL),nb);
+        
         % check for convergence
-%         if (logL-logL_prev)<dL_min || ...
-%                 all(all(abs(T-T_prev)<d_min)) && all(abs(a-a_prev)<d_min)
-        if (logL-logL_prev)<dL_min
+%         if dmax<d_min
+        if dL<dL_min
             actstr = 'EM successfully converged';
             break
         end
 
         m = m+1;
-        if m==M
-            actstr = 'maximum number of iterations as been reached';
-        end
     end
 
 %     fprintf('Best fit: logL=%d, %i iterations\n',logL,m);
@@ -64,9 +67,11 @@ for s = 1:S
         a = [];
         T = [];
         logL = -Inf;
-        actstr = 'The maximum number of iteration has been reached';
+        nb = dispProgress('maximum number of iterations has been reached',...
+            nb);
     end
 end
+fprintf('\n');
 
 
 function [B,Z,Nij,Ni] = PH_Estep(PH_type,a,T,data,Ty,Mij,mat,denom,B,Z,Ni,Nij,E,v_e)
@@ -185,6 +190,6 @@ elseif PH_type==1 % discrete PH
     t = ones(J,1)-T*ones(J,1);
     logL = 0;
     for n = 1:N
-        logL = logL + data(2,n)*log(a*(T^(data(1,n)-1)*t));
+        logL = logL + data(2,n)*log(a*((T^(data(1,n)-1))*t));
     end
 end
