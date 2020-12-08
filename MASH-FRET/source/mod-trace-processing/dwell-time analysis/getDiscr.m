@@ -11,16 +11,31 @@ function d_traces = getDiscr(method, traces, incl, prm, thresh, calc, ...
 %    out-of-range [-0.2;1.2], include all data point back and discretize
 %    out-of-range data.
 
-if sum(incl)<2
-    incl = true(size(traces));
-end
+% default
+is2D = false;
+
 mute_action = false;
 if numel(str_discr)==1 && str_discr==0
     mute_action = true;
 end
-
-d_traces = nan(size(traces));
-N = size(d_traces,1);
+if iscell(traces)
+    is2D = true;
+    N = numel(traces);
+    incl = cell(1,N);
+    d_traces = cell(1,N);
+    for n = 1:N
+        if sum(incl{n})<2
+            incl{n} = true(1,size(traces{n},2));
+        end
+        d_traces{n} = nan(size(traces{n}));
+    end
+else
+    if sum(incl)<2
+        incl = true(size(traces));
+    end
+    d_traces = nan(size(traces));
+    N = size(d_traces,1);
+end
 
 if method == 2 % VbFRET
     nSlopes = 0;
@@ -55,8 +70,10 @@ warning('off', 'stats:kmeans:EmptyCluster');
 for n = 1:N
     
     % added by MH, 30.3.2019
-    if sum(~incl(n,:))==size(traces,2)
+    if ~is2D && sum(~incl(n,:))==size(traces,2)
         incl(n,:) = true;
+    elseif is2D && sum(~incl{n})==size(traces{n},2)
+        incl{n}(:,:) = true;
     end
     
     switch method
@@ -74,10 +91,19 @@ for n = 1:N
             minN = prm(n,1);
             maxN = prm(n,2);
             n_iter = prm(n,3);
-            data = cell(1,1);
-            data{1} = traces(n,incl(n,:));
-            [d_traces(n,incl(n,:)),o] = discr_vbFRET(minN,maxN,n_iter,data, ...
-                h_fig,lb,mute_action);
+            if ~is2D
+                data = cell(1,1);
+                data{1} = traces(n,incl(n,:));
+                [vbres,o] = discr_vbFRET(minN,maxN,n_iter,data, ...
+                    h_fig,lb,mute_action,1);
+                d_traces(n,incl(n,:)) = vbres{1};
+            else
+                data = cell(1,1);
+                data{1} = traces{n};
+                [vbres,o] = discr_vbFRET(minN,maxN,n_iter,data, ...
+                    h_fig,lb,mute_action,2);
+                d_traces{n}(:,incl{n}) = vbres{1}';
+            end
 %             ct = toc(t);
 %             if exist('C:\Users\SigelPC18\Desktop', 'dir')
 %                 f = fopen(['C:\Users\SigelPC18\Desktop\' ...
@@ -121,22 +147,44 @@ for n = 1:N
 %             end
     end
     
-    for l = 1:size(d_traces,2)
-        if l>1 && isnan(d_traces(n,l)) && ~isnan(d_traces(n,l-1))
-            d_traces(n,l) = d_traces(n,l-1);
-        elseif l>1 && ~isnan(d_traces(n,l)) && isnan(d_traces(n,l-1))
-            d_traces(n,isnan(d_traces(n,1:l))) = d_traces(n,l);
+    if is2D
+        for m = 1:size(d_traces{n},1)
+            for l = 1:size(d_traces{n},2)
+                if l>1 && isnan(d_traces{n}(m,l)) && ~isnan(d_traces{n}(m,l-1))
+                    d_traces{n}(m,l) = d_traces{n}(m,l-1);
+                elseif l>1 && ~isnan(d_traces{n}(m,l)) && isnan(d_traces{n}(m,l-1))
+                    d_traces{n}(m,isnan(d_traces{n}(m,1:l))) = d_traces{n}(m,l);
+                end
+            end
+            d_traces{n}(m,isnan(d_traces{n}(m,:))) = 0;
+
+            if prm(n,7)
+                d_traces{n}(m,:) = deblurrSeq(d_traces{n}(m,:));
+            end
+            d_traces{n}(m,:) = binDiscrVal(prm(n,6), d_traces{n}(m,:));
+            d_traces{n}(m,:) = refineDiscr(prm(n,5), d_traces{n}(m,:), traces{n}(m,:));
+            if calc
+                d_traces{n}(m,:) = aveStates(traces{n}(m,:), d_traces{n}(m,:));
+            end
         end
-    end
-    d_traces(n,isnan(d_traces(n,:))) = 0;
-    
-    if prm(n,7)
-        d_traces(n,:) = deblurrSeq(d_traces(n,:));
-    end
-    d_traces(n,:) = binDiscrVal(prm(n,6), d_traces(n,:));
-    d_traces(n,:) = refineDiscr(prm(n,5), d_traces(n,:), traces(n,:));
-    if calc
-        d_traces(n,:) = aveStates(traces(n,:), d_traces(n,:));
+    else
+        for l = 1:size(d_traces,2)
+            if l>1 && isnan(d_traces(n,l)) && ~isnan(d_traces(n,l-1))
+                d_traces(n,l) = d_traces(n,l-1);
+            elseif l>1 && ~isnan(d_traces(n,l)) && isnan(d_traces(n,l-1))
+                d_traces(n,isnan(d_traces(n,1:l))) = d_traces(n,l);
+            end
+        end
+        d_traces(n,isnan(d_traces(n,:))) = 0;
+
+        if prm(n,7)
+            d_traces(n,:) = deblurrSeq(d_traces(n,:));
+        end
+        d_traces(n,:) = binDiscrVal(prm(n,6), d_traces(n,:));
+        d_traces(n,:) = refineDiscr(prm(n,5), d_traces(n,:), traces(n,:));
+        if calc
+            d_traces(n,:) = aveStates(traces(n,:), d_traces(n,:));
+        end
     end
 
     if lb && method == 4

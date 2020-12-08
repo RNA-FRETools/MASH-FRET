@@ -7,6 +7,9 @@ function p = discrTraces(h_fig, m, p)
 % Last update: MH, 30.3.2019
 % >> comment and reorganize code (no modification)
 
+% default
+is2D = false; % 2D vbFRET
+
 % collect interface parameters
 h = guidata(h_fig);
 mute = h.mute_actions;
@@ -37,6 +40,7 @@ prm_DTA = p.proj{proj}.prm{m}{4};
 method = prm_DTA{1}(1);
 toBottom = prm_DTA{1}(2); % discretize bottom(1)/top->bottom(0)/top+bottom(2)
 calc = prm_DTA{1}(3);
+is2D = is2D & method==2;
 if nF>0
     gamma = p.proj{proj}.prm{m}{6}{1}(1,:);
     if nS>0
@@ -90,8 +94,37 @@ if toBottom
     else
         actstr = 'Discretisation of bottom traces...';
     end
-    bot_DTA = (getDiscr(method, [FRET_tr; S_tr], incl_bot, prm, thresh, ...
-        calc, actstr, h_fig))';
+    
+    if is2D % vbFRET 2D
+        I_tr = cell(1,nF);
+        for n = 1:nF
+            % identify donor and acceptor discretized intensity-time 
+            % traces
+            don = FRET(n,1); acc = FRET(n,2);
+            [o,l_f,o] = find(exc==chanExc(FRET(n,1)));
+            I_tr{n} = [I_den(:,don,l_f)';I_den(:,acc,l_f)'];
+            for chan = size(I_tr{n},1)
+                I_tr{n}(chan,:) = (I_tr{n}(chan,:)-mean(I_tr{n}(chan,:)))/...
+                    std(I_tr{n}(chan,:));
+            end
+        end
+        res2d = (getDiscr(method, I_tr, incl_bot, prm, thresh, ...
+            calc, actstr, h_fig));
+        bot_DTA = zeros(numel(res2d{n}(1,:)),nF);
+        for n = 1:nF
+            stateVals = unique(res2d{n}(1,:));
+            FRET_st = zeros(size(res2d{n}(1,:)));
+            for val = stateVals
+                FRET_st(res2d{n}(1,:)==val) = ...
+                    mean(FRET_tr(incl_fret & res2d{n}(1,:)==val));
+            end
+            bot_DTA(:,n) = FRET_st';
+        end
+        
+    else
+        bot_DTA = (getDiscr(method, [FRET_tr; S_tr], incl_bot, prm, thresh, ...
+            calc, actstr, h_fig))';
+    end
 
     % identify and sort resulting states
     for n = 1:(nF+nS)
@@ -103,7 +136,6 @@ end
 
 % discretize top traces
 if toBottom == 2 || ~toBottom
-
     % format intensity-time traces
     I_tr = [];
     for l = 1:nExc
