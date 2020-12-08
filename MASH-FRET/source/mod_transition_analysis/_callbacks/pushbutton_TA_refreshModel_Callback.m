@@ -57,28 +57,58 @@ dat = dat_new;
 dat_new = [];
 nMol = numel(mols);
 seq = cell(1,nMol);
+exclmols = false(1,nMol);
 for m = 1:nMol
     dat_m = dat(dat(:,4)==mols(m),:);
     if isempty(dat_m)
+        exclmols(m) = true;
         continue
     end
-    seq{m} = getDiscrFromDt(dat_m(:,[1,7,8]),expT);
     
-    % re-arrange state sequences by cancelling transitions belonging to diagonal clusters
+    % get state sequences
+    seq{m} = getDiscrFromDt(dat_m(:,[1,7,8]),expT);
+    if all(seq{m}==0)
+        exclmols(m) = true;
+        continue
+    end
+    
+    % replace "0" in state sequences
+    for l = 1:numel(seq{m})
+        if l==1 && seq{m}(1)==0
+            for l2 = 2:numel(seq{m})
+                if seq{m}(l2)~=0
+                    seq{m}(1) = seq{m}(l2);
+                    break
+                end
+            end
+        elseif seq{m}(l)==0
+            seq{m}(l)= seq{m}(l-1);
+        end
+    end
+    
+    % re-arrange dwell times by cancelling transitions belonging to diagonal clusters
     if rearr
         dat_m = adjustDt(dat_m);
-%         if size(dat_m,1)==1
-%             continue
-%         end
-        if excl
-            dat_m([1,end],:) = [];
+        if size(dat_m,1)<=0
+            exclmols(m) = true;
+            continue
         end
-        dat_new = cat(1,dat_new,dat_m);
     end
+    
+    % remove first and last dwell times
+    if excl
+        dat_m([1,end],:) = [];
+        if size(dat_m,1)<=0
+            exclmols(m) = true;
+            continue
+        end
+    end
+    dat_new = cat(1,dat_new,dat_m);
 end
-if rearr
+if rearr || excl
     dat = dat_new;
 end
+seq(exclmols) = [];
 
 
 % get relative number of transitions
