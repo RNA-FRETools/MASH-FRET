@@ -4,12 +4,13 @@ function trans_mat = getTransSchemes(J)
 
 N_nod_max = J-1;
 
-trs = getTransScheme(N_nod_max,J);
+% get all possible combinations of number of transitions
+trs = getConnexionComb(N_nod_max,J);
 trs_sort = trs;
 
+% select valid and unique combinations
 trs_sum = sum(trs,2);
 Sums = unique(trs_sum)';
-
 cmb_all = [];
 for Sum = Sums
     rows = find(trs_sum==Sum);
@@ -39,6 +40,7 @@ for Sum = Sums
     end
 end
 
+% find corresponding transition matrices
 n_cmb = size(cmb_all,3);
 ok = false(1,n_cmb);
 trans_mat = NaN(J,J,n_cmb);
@@ -72,25 +74,7 @@ for c = 1:n_cmb
 end
 
 
-
-function arr_refined = rmduplicates(arr)
-% remove row duplicates in a [M-by-N] array
-arr_refined = [];
-for sch1 = 1:size(arr,1)
-    duplicate = false;
-    for sch2 = 1:size(arr_refined,1)
-        if isequal(arr(sch1,:),arr_refined(sch2,:))
-            duplicate = true;
-            break
-        end
-    end
-    if ~duplicate
-        arr_refined = cat(1,arr_refined,arr(sch1,:));
-    end
-end
-
-
-function vects = getTransScheme(Max,J)
+function vects = getConnexionComb(Max,J)
 % get all possible networks having J nods that can make a maximum number
 % Max of connexions with other nods
 
@@ -103,7 +87,7 @@ for n = 0:Max
     vect = zeros(1,J);
     vect(1) = n;
     if (J-1)>0
-        cmb = getTransScheme(Max,J-1);
+        cmb = getConnexionComb(Max,J-1);
         vect = [repmat(n,size(cmb,1),1),cmb];
     end
     vects = cat(1,vects,vect);
