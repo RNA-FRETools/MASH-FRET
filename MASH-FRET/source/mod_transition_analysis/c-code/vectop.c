@@ -16,6 +16,31 @@
 #include "engine.h"
 
 
+void transposeMat(double* dest, const double* src, int R, int C){
+	int i = 0, j = 0, k = 0, k0 = 0;
+	for (i=0; i<R; i++){
+		for (j=0; j<R; j++){
+			k0 = linid(i,j,0,R,C);
+			k = linid(j,i,0,C,R);
+			dest[k] = src[k0];
+		}
+	}
+	return;
+}
+
+
+double maxVal(const double* vect, int sz){
+	int i = 0;
+	double valmax = vect[0];
+	for (i=1; i<sz; i++){
+		if (vect[i]>valmax){
+			valmax = vect[i];
+		}
+	}
+	return valmax;
+}
+
+
 void disp2DMatrix(const double** mat, int R, int C){
 	int r = 0, c = 0;
 	for (r=0; r<R; r++){
@@ -26,6 +51,7 @@ void disp2DMatrix(const double** mat, int R, int C){
 	}
 	mexEvalString("drawnow;");
 }
+
 
 void disp2DVectMatrix(const double* mat, int R, int C, const int** id){
 	int r = 0, c = 0;

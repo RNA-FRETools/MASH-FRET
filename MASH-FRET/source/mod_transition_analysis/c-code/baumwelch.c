@@ -42,7 +42,7 @@
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-	int i = 0; // loop index
+	int i = 0, j = 0, k = 0; // loop indexes
 	
 	// check input and output arguments
 	if (!validArg(nlhs, plhs, nrhs, prhs)){
@@ -58,7 +58,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	// get input values
 	const double *T0 = (const double *) mxGetDoubles(prhs[0]);
 	const double *B = (const double *) mxGetDoubles(prhs[1]);
-	double *seq[N];
 	const double *ip0 = (const double *) mxGetDoubles(prhs[3]);
 	
 	// prepare output
@@ -72,11 +71,25 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	double *logL = mxGetDoubles(plhs[3]);
 	
 	// get trajectory lentghs
-	double L[N]; 
+	double L[N];
+	int Lsum = 0; 
 	mwIndex n = 0;
 	for (n=0; n<seqDim[1]; n++){
-		seq[(int) n] = (double *) mxGetDoubles(mxGetCell(prhs[2],n));
 		L[(int) n] = (double) mxGetNumberOfElements(mxGetCell(prhs[2],n));
+		Lsum = Lsum + (int) L[(int) n];
+	}
+	
+	// store sequences in a linear vector (for speed)
+	double seq[N*Lsum], *tmp;
+	i = 0;
+	for (n=0; n<seqDim[1]; n++){
+		tmp = (double *) mxGetDoubles(mxGetCell(prhs[2],n));
+		k = 0;
+		for (j=i; j<(i+L[n]); j++){
+			seq[j] = tmp[k];
+			k++;
+		}
+		i = j;
 	}
 	
 	// print data characteristics
@@ -85,158 +98,151 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		mexPrintf(" %.0f",L[i]);
 	}
 	mexPrintf(")\n");
-		
-	// optimize prob.
-	setVect(T,T0,J*J);
+	
+	// transpose T matrix (for speed) and initialize prob.
+	double Tt[J*J];
+	transposeMat(Tt,T0,J,J);
 	setVect(ip,ip0,J);
-
-	*cvg = (double) optBW(T,ip,logL,B,(const double**) seq,J,N,V,L); 
+	
+	// optimize prob.
+	//*cvg = (double) optBW(Tt,ip,logL,(const double*) B,(const double*) seq,J,N,V,(const double*) L);
+	
+	// back-transpose T matrix for return
+	transposeMat(T,(const double*) Tt,J,J);
 	
 	return;
 }
 
 
-bool optBW(double* T, double* ip, double* logL, const double* B, const double** seq, int J, int N, int V, double* L){
+bool optBW(double* T, double* ip, double* logL, const double* B, const double* seq, int J, int N, int V, const double* L){
 	
 	// intialization
-	int n = 0, i = 0, j = 0, l = 0, nb = 0;
-	double Nij[J][J], Ni[J], N0[J];
-	double sum_gam = 0, sum_xi = 0;
-	double xi[J][J], gamma[J], *fwd[N][J], *bwd[N][J], *coeff[N], T_prev[J*J], ip_prev[J];
+	long o = 0, p_i = 0, p_j = 0, l = 0; // large indexes
+	int i = 0, j = 0, k = 0, n = 0, nb = 0;
+	double Nij[J*J], Ni[J], N0[J];
+	double sum_gam = 0, sum_xi = 0, Lmax = maxVal(L,N);
+	double xi[J*J], gamma[J], fwd[J*((long)Lmax)], bwd[J*((long)Lmax)], coeff[((long)Lmax)], T_prev[J*J], ip_prev[J];
 	bool cvg = 0;
 	double logL_prev = -pow(10,9), dmax = 0, m = 0;
 	
-	// build index matrix
-	int** id_T = (int **) malloc(J * sizeof(int *));
+	// builds index matrix
 	int** id_B = (int **) malloc(V * sizeof(int *));
-	int** id_seq = (int **) malloc(1 * sizeof(int *));
-	for (i=0; i<J; i++){
-		id_T[i] = (int *) malloc(J * sizeof(int));
-	}
 	for (i=0; i<V; i++){
 		id_B[i] = (int *) malloc(J * sizeof(int));
 	}
-	
-	buildIdMat(id_T,J,J);
-	buildIdMat(id_B,V,J);
-		
-	
-	// calculate forward and backward prob.
-	for (n=0; n<N; n++){
-		coeff[n] = (double *)malloc(L[n] * sizeof(double));
-		for (i=0; i<J; i++){
-			fwd[n][i] = (double *)malloc(L[n] * sizeof(double));
-			bwd[n][i] = (double *)malloc(L[n] * sizeof(double));
-		}
-
-		fwdprob(fwd[n],coeff[n],J,L[n],V,(const double*) seq[n],(const double*) T,B,(const double*) ip,
-				(const int**) id_T,(const int**) id_B);
-		bwdprob(bwd[n],(const double*) coeff[n],J,L[n],V,(const double*) seq[n],(const double*) T,B,
-				(const int**) id_T,(const int**) id_B);
-	}
-	
-	
-	// calculate initial likelihood
-	*logL = calcLogL((const double**) coeff,N,L);
-	nb = dispProb(m,*logL-logL_prev,0,(const double*) T,(const double*) ip,J,0,(const int**) id_T);
+	buildIdMat(id_B,V,J);	
 	
 	// E-M cycles
 	while (!cvg && m<MAXITER){
 		
-		m = m+1;
-		
 		logL_prev = *logL;
 		setVect(T_prev,(const double*) T,J*J);
 		setVect(ip_prev,(const double*) ip,J);
-		
-		// reset counts
+
+		// resets counts
+		k = 0; // initializes transition matrix running index
 		for (i=0; i<J; i++){
 			N0[i] = 0;
 			Ni[i] = 0;
 			for (j=0; j<J; j++){
-				Nij[i][j] = 0;
+				Nij[k] = 0;
+				
+				k++; // increment transition matrix running index
 			}
 		}
+		*logL = 0;
+		
+		o = 0; // initializes sequence running index
 		for (n=0; n<N; n++){
+			
+			// updates forward & backward probabilities
+			fwdprob(fwd,coeff,J,L[n],V,(const double*) seq,o,(const double*) T,(const double*) B,(const double*) ip,(const int**) id_B);
+			bwdprob(bwd,(const double*) coeff,J,L[n],V,(const double*) seq,o,(const double*) T,(const double*) B,(const int**) id_B);
+			
+			p_i = 0; // initializes 1st probability running index
+			p_j = J; // initializes 2nd probability running index
 			for (l=0; l<L[n]; l++){
 				// calculate temporary variables
 				sum_gam = 0;
 				sum_xi = 0;
+				k = 0; // initializes transition matrix running index
 				for (i=0; i<J; i++){
-					gamma[i] = fwd[n][i][l] * bwd[n][i][l];
+					gamma[i] = fwd[p_i] * bwd[p_i];
 					sum_gam = sum_gam + gamma[i];
 					
-					if (l==(L[n]-1)){ continue; }
-					for (j=0; j<J; j++){
-						xi[i][j] = fwd[n][i][l] * T[id_T[i][j]] * bwd[n][j][l+1] * B[id_B[(int) seq[n][l+1]-1][j]];
-						sum_xi = sum_xi + xi[i][j];
+					if (l<(L[n]-1)){
+						for (j=0; j<J; j++){
+							xi[k] = fwd[p_i] * T[k] * bwd[p_j] * B[id_B[(int) seq[o+1]-1][j]];
+							sum_xi = sum_xi + xi[k];
+							
+							k++; // increment transition matrix running index
+							p_j++; // increment 1st probability running index
+						}
+						p_j = p_j-J; // reset 2nd probability running index
 					}
+					
+					p_i++; // increment 1st probability running index
 				}
+				p_j = p_j + J; // increment 2nd probability running index
 				
 				// normalize and count transitions
+				k = 0; // initializes transition matrix running index
 				for (i=0; i<J; i++){
 					gamma[i] = gamma[i] / sum_gam;
 					if (l==0){
 						N0[i] = N0[i] + gamma[i];
 					}
 					
-					if (l==(L[n]-1)){ continue; }
-					Ni[i] = Ni[i] + gamma[i];
-					for (j=0; j<J; j++){
-						xi[i][j] = xi[i][j] / sum_xi;
-						Nij[i][j] = Nij[i][j] + xi[i][j];
+					if (l<(L[n]-1)){
+						Ni[i] = Ni[i] + gamma[i];
+						for (j=0; j<J; j++){
+							xi[k] = xi[k] / sum_xi;
+							Nij[k] = Nij[k] + xi[k];
+
+							k++; // increment transition matrix running index
+						}
 					}
 				}
 				
+				// updates log-likelihood
+				*logL = *logL + log(coeff[l]);
+
+				o++; // increment sequence running index
 			}
 		}
-		// update model parameters
+		
+		// calculates maximum parameter deviation
+		dmax = getMaxDiff((const double*) T,(const double*) T_prev,(const double*) ip,(const double*) ip_prev,J);
+		
+		// displays results
+		nb = dispProb(m,*logL-logL_prev,dmax,(const double*) T,(const double*) ip,J,nb);
+		
+		// checks for convergence
+		if (dmax<DMIN){ cvg = 1; }
+		
+		// updates model parameters
+		k = 0; // initializes transition matrix running index
 		for (i=0; i<J; i++){
 			ip[i] = N0[i] / ((double) N);
 			for (j=0; j<J; j++){
-				T[id_T[i][j]] = Nij[i][j] / Ni[i];
+				T[k] = Nij[k] / Ni[i];
+				
+				k++; // increment transition matrix running index
 			}
 		}
-
-		// update forward & backward probabilities
-		for (n=0; n<N; n++){
-			fwdprob(fwd[n],coeff[n],J,L[n],V,(const double*) seq[n],(const double*) T,(const double*) B,(const double*) ip,
-					(const int**) id_T,(const int**) id_B);
-			bwdprob(bwd[n],(const double*) coeff[n],J,L[n],V,(const double*) seq[n],(const double*) T,(const double*) B,(const int**) 
-					id_T,(const int**) id_B);
-		}
 		
-		// update likelihood
-		*logL = calcLogL((const double**) coeff,N,L);
-		dmax = getMaxDiff((const double*) T,(const double*) T_prev,(const double*) ip,(const double*) ip_prev,J);
-		
-		// check for convergence
-		if (dmax<DMIN){
-			cvg = 1;
-		}
-		
-		nb = dispProb(m,*logL-logL_prev,dmax,(const double*) T,(const double*) ip,J,nb,(const int**) id_T);
+		// increases iteration count
+		m = m+1;
 	}
 	
 	if (!cvg){
-		mexPrintf("The model failed to converged;: mximum number of iterations has been reached.\n");
+		mexPrintf("The model failed to converged: maximum number of iterations has been reached.\n");
 	}
 	
 	// free memory
-	for (n=0; n<N; n++){
-		for (i=0; i<J; i++){
-			free(fwd[n][i]);
-			free(bwd[n][i]);
-		}
-		free(coeff[n]);
-	}
-	for (i=0; i<J; i++){
-		free(id_T[i]);
-	}
 	for (i=0; i<V; i++){
 		free(id_B[i]);
 	}
-	free(id_T);
 	free(id_B);
 	
 	return cvg;
@@ -261,9 +267,9 @@ double getMaxDiff(const double* T, const double* T_prev, const double* ip,const 
 }
 
 
-int dispProb(double m, double dL, double dmax, const double* T, const double* ip, int J, int nb, const int** id_T){
+int dispProb(double m, double dL, double dmax, const double* T, const double* ip, int J, int nb){
 	char str[nb+1];
-	int i = 0, j = 0;
+	int i = 0, j = 0, k = 0;
 	
 	// erase previous message
 	if (nb>0){
@@ -285,9 +291,11 @@ int dispProb(double m, double dL, double dmax, const double* T, const double* ip
 	nb = nb + mexPrintf("\n");
 	
 	nb = nb + mexPrintf("Transition probabilities:\n");
+	k = 0;
 	for (i=0; i<J; i++){
 		for (j=0; j<J; j++){
-			nb = nb + mexPrintf("\t%.4f",T[id_T[i][j]]);
+			k = k++;
+			nb = nb + mexPrintf("\t%.4f",T[k]);
 		}
 		nb = nb + mexPrintf("\n");
 	}

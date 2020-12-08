@@ -1,6 +1,8 @@
 #ifndef VECTOP_H
 #define VECTOP_H
 
+void transposeMat(double* dest, const double* src, int R, int C);
+double maxVal(const double* vect, int sz);
 void disp2DMatrix(const double** mat, int R, int C);
 void disp2DVectMatrix(const double* mat, int R, int C, const int** id);
 void setVect(double* v, const double* v0, int sz);

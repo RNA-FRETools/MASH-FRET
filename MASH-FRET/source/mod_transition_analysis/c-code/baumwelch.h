@@ -7,8 +7,8 @@
 
 
 double getMaxDiff(const double* T, const double* T_prev, const double* ip, const double* ip_prev, int J);
-int dispProb(double m, double dL, double dmax, const double* T, const double* ip, int J, int nb, const int** id_T);
-bool optBW(double* T, double* ip, double *logL, const double* B, const double** seq, int J, int N, int V, double* L);
+int dispProb(double m, double dL, double dmax, const double* T, const double* ip, int J, int nb);
+bool optBW(double* T, double* ip, double *logL, const double* B, const double* seq, int J, int N, int V, const double* L);
 bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]);
 
 #endif

@@ -16,62 +16,93 @@
 #include "fwdbwd.h"
  
  
-void fwdprob(double** fwd, double* coeff, int J, int L, int V, const double* seq, 
-				const double* T, const double* B, const double* ip, const int** id_T, const int** id_B){
+void fwdprob(double* fwd, double* coeff, int J, int L, int V, const double* seq, long l1,
+				const double* T, const double* B, const double* ip, const int** id_B){
 					
-	int l = 0, i = 0, j = 0;
+	int l = 0, i = 0, j = 0, k = 0, fi = 0, fj = 0;
 	double sum_j = 0;
 	
-	// initialize
-	coeff[0] = 0;
+	// initialization
 	for (i=0; i<J; i++){
-		fwd[i][0] = ip[i] * B[id_B[(int) seq[l]-1][i]];
-		coeff[0] = coeff[0] + fwd[i][0];
+		fwd[fi] = ip[i] * B[id_B[(int) seq[l1]-1][i]];
+		coeff[0] = coeff[0] + fwd[fi];
+		fi++; // increment 1st probability running index
 	}
-	// normalize
+	
+	// normalization
+	fi = fi-J; // reset 1st probability running index
 	for (i=0; i<J; i++){
-		fwd[i][0] = fwd[i][0] / coeff[0];
+		fwd[fi] = fwd[fi] / coeff[0];
+		fi++; // increment 1st probability running index
 	}
 	
 	// forward calculations
 	for (l=1; l<L; l++){
+		
+		// initializes
 		coeff[l] = 0;
+		
+		k = 0; // initialize transition matrix running index
+		// calculate prob.
 		for (i=0; i<J; i++){
+
 			sum_j = 0;
 			for (j=0; j<J; j++){
-				sum_j = sum_j + fwd[j][l-1] * T[id_T[j][i]];
+				sum_j = sum_j + fwd[fj] * T[k];
+				
+				k++; // increment transition matrix running index
+				fj++; // increment 2nd probability running index
 			}
-			fwd[i][l] = B[id_B[(int) seq[l]-1][i]] * sum_j;
-			coeff[l] = coeff[l] + fwd[i][l];
+			fwd[fi] = B[id_B[(int) seq[l1+l]-1][i]] * sum_j;
+			coeff[l] = coeff[l] + fwd[fi];
+			
+			fj = fj-J; // reset 2nd probability running index
+			fi++; // increment 1st probability running index
 		}
+		
+		fj = fj + J; // increment 2nd probability running index
+		
 		// normalize
+		fi = fi-J; // reset 1st probability running index
 		for (i=0; i<J; i++){
-			fwd[i][l] = fwd[i][l] / coeff[l];
+			fwd[fi] = fwd[fi] / coeff[l];
+			
+			fi++; // increment 1st probability running index
 		}
 		
 	}
 }
 
 
-void bwdprob(double** bwd, const double* coeff, int J, int L, int V, const double* seq, 
-				const double* T, const double* B, const int** id_T, const int** id_B){
+void bwdprob(double* bwd, const double* coeff, int J, int L, int V, const double* seq, long l1,
+				const double* T, const double* B, const int** id_B){
 					
-	int l = 0, i = 0, j = 0;
+	int l = 0, i = 0, j = 0, k = 0, fi = J*(L-1), fj = J*(L-1);
 	
-	// initialize
-	for (i=0; i<J; i++){
-		bwd[i][L-1] = 1;
+	// initialization
+	for (i=(J-1); i>=0; i--){
+		bwd[fi] = 1;
+		
+		fi--; // decrement 1st probability running index
 	}
-	
+
 	// forward calculations
 	for (l=(L-2); l>=0; l--){
-		for (i=0; i<J; i++){
-			bwd[i][l] = 0;
+		k = 0;
+		for (i=(J-1); i>=0; i--){
+			bwd[fi] = 0;
 			for (j=0; j<J; j++){
-				bwd[i][l] = bwd[i][l] + 
-					(bwd[j][l+1] * T[id_T[i][j]] * B[id_B[(int) seq[l+1]-1][j]]) / coeff[l+1];
+				k++;
+				bwd[fi] = bwd[fi] + 
+					(bwd[fj] * T[k] * B[id_B[(int) seq[l1+l+1]-1][j]]) / coeff[l+1];
+					
+				fj = fj--; // decrement 2nd probability running index
 			}
+			
+			fj = fj+J; // reset 2nd probability running index
+			fi--; // decrement 1st probability running index
 		}
+		fj = fj-J; // decrement 2nd probability running index
 	}
 }
 
