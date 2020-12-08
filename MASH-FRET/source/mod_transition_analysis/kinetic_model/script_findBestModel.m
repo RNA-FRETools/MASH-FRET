@@ -23,7 +23,7 @@ function [degen,mdl,cmb,BIC_cmb,BIC] = script_findBestModel(dt,J_deg_max,states,
 t_comp = tic;
 
 % default
-plotIt = false;
+plotIt = true;
 
 % Get optimum DPHs for each model complexity
 disp('Train DPH distributions on binned dwelltime histograms...')
@@ -32,7 +32,8 @@ mdl = cell(1,J_deg_max);
 logL = Inf(V,J_deg_max);
 for J_deg = 1:J_deg_max
     fprintf('for %i degenerated states:\n',J_deg);
-    mdl{J_deg} = script_inferPH(dt,states,expT,dt_bin,repmat(J_deg,[1,V]),1);
+    mdl{J_deg} = script_inferPH(dt,states,expT,dt_bin,repmat(J_deg,[1,V]),...
+        plotIt);
     LogL_v = [];
     for v = 1:V
         LogL_v = cat(1,LogL_v,mdl{J_deg}.logL(v));
