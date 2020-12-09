@@ -11,13 +11,12 @@ function d_traces = getDiscr(method, traces, incl, prm, thresh, calc, ...
 %    out-of-range [-0.2;1.2], include all data point back and discretize
 %    out-of-range data.
 
-% default
-is2D = false;
-
 mute_action = false;
 if numel(str_discr)==1 && str_discr==0
     mute_action = true;
 end
+
+is2D = false;
 if iscell(traces)
     is2D = true;
     N = numel(traces);
@@ -87,7 +86,6 @@ for n = 1:N
                 discrVal, low, up, nbStates);
 
         case 2 % VbFRET
-%             t = tic;
             minN = prm(n,1);
             maxN = prm(n,2);
             n_iter = prm(n,3);
@@ -104,47 +102,24 @@ for n = 1:N
                     h_fig,lb,mute_action,2);
                 d_traces{n}(:,incl{n}) = vbres{1}';
             end
-%             ct = toc(t);
-%             if exist('C:\Users\SigelPC18\Desktop', 'dir')
-%                 f = fopen(['C:\Users\SigelPC18\Desktop\' ...
-%                     'calculation_times_VbFRET.txt'], 'At');
-%                 fprintf(f, '%i\t1\t%d\n', maxN, ct);
-%                 fclose(f);
-%             end
 
         case 3 % One state
             d_traces(n,incl(n,:)) = ones(size(traces(n,incl(n,:))))* ...
                 mean(traces(n,incl(n,:)));
 
         case 4 % CPA
-%             t = tic;
             maxN = 0; % not used
             n_bss = prm(n,1);
             lvl = prm(n,2);
             ana_type = prm(n,3);
             d_traces(n,incl(n,:)) = discr_cpa(traces(n,incl(n,:)),...
                 mute_action,n_bss,lvl,ana_type, maxN);
-%             ct = toc(t);
-%             if exist('C:\Users\SigelPC18\Desktop', 'dir')
-%                 f = fopen(['C:\Users\SigelPC18\Desktop\' ...
-%                     'calculation_times_CPA.txt'], 'At');
-%                 fprintf(f, 'Inf\t%d\n', ct);
-%                 fclose(f);
-%             end
             
         case 5 % STaSI
-%             t = tic;
             maxN = prm(n,1);
             [MDL,dat] = discr_stasi(traces(n,incl(n,:)),maxN,mute_action);
             [o,idx] = min(MDL);
             d_traces(n,incl(n,:)) = dat(idx,:)';
-%             ct = toc(t);
-%             if exist('C:\Users\SigelPC18\Desktop', 'dir')
-%                 f = fopen(['C:\Users\SigelPC18\Desktop\' ...
-%                     'calculation_times_STaSI.txt'], 'At');
-%                 fprintf(f, '%d\t%d\n', maxN, ct);
-%                 fclose(f);
-%             end
     end
     
     if is2D
