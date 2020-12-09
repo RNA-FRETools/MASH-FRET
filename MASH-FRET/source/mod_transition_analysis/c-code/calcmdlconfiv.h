@@ -7,9 +7,9 @@
 #define MINPROBSTEP 0.001 // minimum probability step
 
 void calcRateIv(double* posiv, double* negiv, const double* T0, const double* ip, const double* B, 
-		const double** seq, int J, int N, int V, double* L);
-double getRateBound(double* T, int j1, int j2, double step, double logL0, double*** fwd, double** coeff, 
-		const double* ip, const double* B, const double** seq, int J, int N, int V, double* L, const int** id_T, const int** id_B);
+		const double* seq, int J, int N, int V, double* L);
+double getRateBound(double* T, int id_ij, int id_ii, double tpMax, double step, double logL0, double* fwd, double* coeff, 
+		const double* ip, const double* B, const double* seq, int J, int N, int V, double* L, const int** id_B);
 bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]);
 
 #endif

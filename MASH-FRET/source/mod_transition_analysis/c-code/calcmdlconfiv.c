@@ -42,7 +42,7 @@
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-	int i = 0; // loop index
+	int i = 0, k = 0; // loop index
 	
 	// check input and output arguments
 	if (!validArg(nlhs, plhs, nrhs, prhs)){
@@ -68,11 +68,25 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	double *negiv = mxGetDoubles(plhs[1]);
 	
 	// get trajectory lentghs
-	double L[N]; 
+	double L[N];
+	int Lsum = 0; 
 	mwIndex n = 0;
 	for (n=0; n<seqDim[1]; n++){
-		seq[(int) n] = (double *) mxGetDoubles(mxGetCell(prhs[1],n));
-		L[(int) n] = (double) mxGetNumberOfElements(mxGetCell(prhs[1],n));
+		L[(int) n] = (double) mxGetNumberOfElements(mxGetCell(prhs[2],n));
+		Lsum = Lsum + (int) L[(int) n];
+	}
+	
+	// store sequences in a linear vector (for speed)
+	double seq[N*Lsum], *tmp;
+	i = 0;
+	for (n=0; n<seqDim[1]; n++){
+		tmp = (double *) mxGetDoubles(mxGetCell(prhs[2],n));
+		k = 0;
+		for (j=i; j<(i+L[(int) n]); j++){
+			seq[j] = tmp[k];
+			k++;
+		}
+		i = j;
 	}
 	
 	// print data characteristics
@@ -81,88 +95,111 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		mexPrintf(" %.0f",L[i]);
 	}
 	mexPrintf(")\n");
+	
+	// transpose transition matrix (for speed)
+	double T0t[J*J], posivt[J*J], negivt[J*J];
+	transposeMat(T0t,T0,J,J);
 		
 	// calculate intervals
-	calcRateIv(posiv,negiv,T0,ip,B,(const double**) seq,J,N,V,L);
+	calcRateIv(posivt,negivt,T0t,ip,B,(const double**) seq,J,N,V,L);
+	
+	// transpose error matrices to be returned
+	transposeMat(posiv,posivt,J,J);
+	transposeMat(negiv,negivt,J,J);
 	
 	return;
 }
 
 
 void calcRateIv(double* posiv, double* negiv, 
-		const double* T0, const double* ip, const double* B, const double** seq, int J, int N, int V, double* L){
+		const double* T0, const double* ip, const double* B, const double* seq, int J, int N, int V, double* L){
 	
-	int i = 0, j = 0, id_ij = 0;
-	double tp0 = 0, tp0_ii = 0, tp_up = 0, tp_low = 0, logL0 = 0;
-	double T[J*J];
-	double*** fwd = (double ***) malloc(N * sizeof(double **));
-	double** coeff = (double **) malloc(N * sizeof(double *));
-	
-	// pre-allocate memory for large vectors
-	for (i=0; i<N; i++){
-		coeff[i] = (double *) malloc(L[i] * sizeof(double));
-		fwd[i] = (double **) malloc(J * sizeof(double *));
-		for (j=0; j<J; j++){
-			fwd[i][j] = (double *) malloc(L[i] * sizeof(double));
-		}
-	}
+	int i = 0, j = 0, k = 0, k2 = 0;
+	int k0[J];
+	long o = 0;
+	double tp_up = 0, tp_low = 0, logL0 = 0, Lmax = maxVal(L,N);
+	double T[J*J], tpMax[J*J];
+	double fwd = [J*((long) Lmax)], coeff[(long) Lmax];
 	
 	// build index matrix
-	int** id_T = (int **) malloc(J * sizeof(int *));
 	int** id_B = (int **) malloc(V * sizeof(int *));
-	for (i=0; i<J; i++){
-		id_T[i] = (int *) malloc(J * sizeof(int));
-	}
 	for (i=0; i<V; i++){
 		id_B[i] = (int *) malloc(J * sizeof(int));
 	}
-	buildIdMat(id_T,J,J);
 	buildIdMat(id_B,V,J);
 	
 	// set transition matrix
 	setVect(T,T0,J*J);
 	
 	// calculate initial likelihood
+	o = 0; //ini. seq. running index
+	logL0= 0;
 	for (i=0; i<N; i++){
-		fwdprob(fwd[i],coeff[i],J,L[i],V,seq[i],T0,B,ip,(const int**) id_T,(const int**) id_B);
+		fwdprob(fwd,coeff,J,L[i],V,seq,o,T0,B,ip,(const int**) id_B);
+		
+		// update total log-likelihood
+		for (j=0; j<L[i]; l++){
+			logL0 = logL0 + log(coeff[j]);
+		}
+		
+		o = o+L[i]; // incr. seq. running index
 	}
-	logL0 = calcLogL((const double**) coeff,N,L);
 	
-	// calculate confidence intervals
+	// calculate diagonal indexes
+	k = 0; // ini. trans. mat. running index
 	for (i=0; i<J; i++){
 		for (j=0; j<J; j++){
-			if (i==j){ continue; }
-			
-			mexPrintf(">> interval for transition %i->%i...\n",i,j);
-			mexEvalString("drawnow;");
-			
-			id_ij = id_T[i][j];
-			if (T0[id_ij]==0){ continue; }
-			
-			tp0 = T0[id_ij];
-			
-			// increases rate coefficient
-			tp_up = getRateBound(T,i,j,STEP,logL0,fwd,coeff,ip,B,seq,J,N,V,L,(const int**) id_T,(const int**) id_B);
-			posiv[id_ij] = tp_up-tp0;
-			setVect(T,T0,J*J); // reset prob. to original
+			if (i==j){ k0[i] = k; }
+			k++; // incr. trans. mat. running index
+		}
+	}
 	
-			// decreases rate coefficient
-			tp_low = getRateBound(T,i,j,0-STEP,logL0,fwd,coeff,ip,B,seq,J,N,V,L,(const int**) id_T,(const int**) id_B);
-			negiv[id_ij] = tp0-tp_low;
-			setVect(T,T0,J*J); // reset prob. to original
+	// determine maximum transition probabilities (max. 1 transition per frame)
+	k = 0; // ini. trans. mat. running index
+	k2 = 0; // ini. 2nd trans. mat. running index
+	for (i=0; i<J; i++){
+		for (j=0; j<J; j++){
+			for (l=0; l<J; l++){
+				if (l!=i && l!=j){
+					tpMax[k] = tpMax[k] + T[k2];
+				}
+				k2 = k2++; // incr. 2nd trans. mat. running index
+			}
+			tpMax[k] = 1-tpMax[k];
+			
+			k++; // incr. trans. mat. running index
+			k2 = k2-J; // reset 2nd trans. mat. running index
+		}
+		k2 = k2+J; // incr. 2nd trans. mat. running index
+	}
+	
+	// calculate confidence intervals
+	k = 0; // ini. trans. mat. running index
+	for (i=0; i<J; i++){
+		for (j=0; j<J; j++){
+			if (i!=j){
+			
+				mexPrintf(">> interval for transition %i->%i...\n",i,j);
+				mexEvalString("drawnow;");
+
+				if (T0[k]>0){
+					// increases rate coefficient
+					tp_up = getRateBound(T,k,k0[i],tpMax[k],STEP,logL0,fwd,coeff,ip,B,seq,J,N,V,L,(const int**) id_B);
+					posiv[k] = tp_up-T0[k];
+					setVect(T,T0,J*J); // reset prob. to original
+			
+					// decreases rate coefficient
+					tp_low = getRateBound(T,k,k0[i],tpMax[k],0-STEP,logL0,fwd,coeff,ip,B,seq,J,N,V,L,(const int**) id_B);
+					negiv[k] = T0[k]-tp_low;
+					setVect(T,T0,J*J); // reset prob. to original
+				}
+			}
+			
+			k++; // incr. trans. mat. running index
 		}
 	}
 	
 	// free memory
-	for (i=0; i<N; i++){
-		for (j=0; j<J; j++){
-			free(fwd[i][j]);
-		}
-		free(fwd[i]);
-		free(coeff[i]);
-	}
-	free(fwd);
-	free(coeff);
 	for (i=0; i<J; i++){
 		free(id_T[i]);
 	}
@@ -174,21 +211,14 @@ void calcRateIv(double* posiv, double* negiv,
 }
 
 
-double getRateBound(double* T, int j1, int j2, double step, double logL0, double*** fwd, double** coeff, 
-		const double* ip, const double* B, const double** seq, int J, int N, int V, double* L, const int** id_T, const int** id_B){
+double getRateBound(double* T, int id_ij, int id_ii, double tpMax, double step, double logL0, double* fwd, double* coeff, 
+		const double* ip, const double* B, const double* seq, int J, int N, int V, double* L, const int** id_B){
 	
-	int i = 0, n = 0, id_ij = id_T[j1][j2], id_ii = id_T[j1][j1];
+	int i = 0, n = 0;
+	long o = 0;
 	double a = 0, b = 0;
-	double tp = 0, tpMax = 0, logL = 0, LR1 = 0, LR2 = 0, tp1 = 0;
-	
-	// determine maximum transition probabilities (max. 1 transition per frame)
-	for (i=0; i<J; i++){
-		if (i!=j1 && i!=j2){
-			tpMax = tpMax + T[id_T[j1][i]];
-		}
-	}
-	tpMax = 1-tpMax;
-	
+	double tp = 0, logL = 0, LR1 = 0, LR2 = 0, tp1 = 0;
+
 	// determine absolute step
 	step = step*T[id_ij];
 	if (step>=0 && step<MINPROBSTEP){ step = MINPROBSTEP; }
@@ -206,15 +236,23 @@ double getRateBound(double* T, int j1, int j2, double step, double logL0, double
 		T[id_ii] = tpMax-T[id_ij];
 		
 		// calculate lieklihood ratio
+		o = 0; // ini. seq. running index
+		logL = 0;
 		for (n=0; n<N; n++){
-			fwdprob(fwd[n],coeff[n],J,L[n],V,seq[n],(const double*) T,B,ip,id_T,id_B);
+			fwdprob(fwd,coeff,J,L[n],V,seq,o,(const double*) T,B,ip,id_B);
+			
+			// update total log-likeihhod
+			for (i=0; i<L[n]; i++){
+				logL = logL + log(coeff[i]);
+			}
+			
+			o = o+L[n];// incr. seq. running index
 		}
-		logL = calcLogL((const double**) coeff,N,L);
+		
+		// calculate log of likelihood ratio
 		LR2 = 2*(logL0-logL);
 
-		if (LR2>LRMAX){
-			break;
-		}
+		if (LR2>LRMAX){ break; }
 	}
 	
 	// find exact point where logL curve crosses theshold
@@ -236,11 +274,10 @@ double getRateBound(double* T, int j1, int j2, double step, double logL0, double
 
 bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	
-	/* Declare variables */
 	int i = 0;
 	char str[1000];
 	
-	/* Check for proper number of input and output arguments. */    
+	// Check for proper number of input and output arguments.
 	if (nrhs!=4) {
 		mexErrMsgTxt("Four input arguments are required.");
 		return 0;
@@ -250,7 +287,7 @@ bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 		return 0;
 	}
 
-	/* Check for proper data type in input arguments. */
+	// Check for proper data type in input arguments. 
 	for (i==0; i<nrhs; i++){
 		if (i==1 && !(mxIsCell(prhs[1]))){
 			sprintf(str,"Input argument %i must be a {1-by-N} cell row vector.",i+1);
@@ -264,7 +301,7 @@ bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 		}
 	}
 	
-	/* Check for dimensions */
+	// Check for dimensions 
 	int J1 = (int) mxGetM(prhs[0]);
 	int J2 = (int) mxGetN(prhs[0]);
 	if (J2!=J1){
