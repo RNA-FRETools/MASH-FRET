@@ -106,17 +106,3 @@ void bwdprob(double* bwd, const double* coeff, int J, int L, int V, const double
 	}
 }
 
-
-double calcLogL(const double** coeff, int N, double* L){
-	
-	double logL = 1;
-	int n = 0, l = 0;
-	
-	for (n=0; n<N; n++){
-		for (l=0; l<L[n]; l++){
-			logL = logL + log(coeff[n][l]);
-		}
-	}
-	
-	return logL;
-}
