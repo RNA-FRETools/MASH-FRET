@@ -1,5 +1,8 @@
 function plotKinMdl(h_axes,prm,v_res)
 
+% defaults
+norm = 1;
+
 % clear axes
 for ax = 1:numel(h_axes)
     cla(h_axes(ax));
@@ -113,13 +116,24 @@ ylim(h_axes(3),'auto');
 legend(h_axes(3),'exp','sim','location','northoutside');
 
 % plot dwell time histograms
-scatter(h_axes(4),simdat.cumdstrb{v_res}(1,:),simdat.cumdstrb{v_res}(2,:),...
-    '+k');
+t = simdat.cumdstrb{v_res}(1,:);
+cumPexp = simdat.cumdstrb{v_res}(2,:);
+cumPsim = simdat.cumdstrb{v_res}(3,:);
+if norm
+    cumPexp = cumPexp/max(cumPexp);
+end
+if norm
+    cumPsim = cumPsim/max(cumPsim);
+end
+scatter(h_axes(4),t,cumPexp,'+k');
 h_axes(4).NextPlot = 'add';
-scatter(h_axes(4),simdat.cumdstrb{v_res}(1,:),simdat.cumdstrb{v_res}(3,:),...
-    '+r');
+scatter(h_axes(4),t,cumPsim,'+r');
 h_axes(4).NextPlot = 'replacechildren';
-h_axes(4).XLim = simdat.cumdstrb{v_res}(1,[1,end]);
-ylim(h_axes(4),'auto');
+h_axes(4).XLim = t([1,end]);
+if norm
+    h_axes(4).YLim = [0,1];
+else
+    ylim(h_axes(4),'auto');
+end
 legend(h_axes(4),'exp','sim','location','east');
 
