@@ -16,11 +16,11 @@ else
     cols = [5,6];
 end
 
-% identify states in TDP's range
+% identify clustered transitions
 id = find(dat0(:,cols(1))>0);
 I = numel(id);
 
-% all states are out-of-TDP-range
+% all transitions left out of clusters
 if I==0
     if size(dat0,2)==8
         dat = [sum(dat0(:,1)),NaN,NaN,dat0(1,4),0,0,0,0];
@@ -34,12 +34,13 @@ else
     i = 1;
     while i<=I
         
-        % first state is out-of-range
+        % sum up time before first clustered transition
         if i==1 && id(i)>1
             dt = sum(dat0(1:id(i),1));
             dat0(id(i),1) = dt;
         end
         
+        % sum up time between two successive clustered transitions
         if i<I
             j = i+1;
             match = false;
@@ -51,6 +52,7 @@ else
                 j = j+1;
             end
             
+            % determine state after transition
             if match
                 dt = sum(dat0(id(i):id(j)-1,1));
                 val2 = dat0(id(j),2);
@@ -77,6 +79,7 @@ else
                 end
             end
             
+            % update dwell time table
             if size(dat0,2)==8
                 dat = cat(1,dat,[dt,dat0(id(i),2),val2,dat0(id(i),4:5),y,...
                     dat0(id(i),7),j2]);
@@ -87,7 +90,8 @@ else
             end
            
             i = j-1;
-            
+        
+        % sum up time after last clustered transition
         else
             dt = sum(dat0(id(i):end,1));
             val2 = dat0(id(i),2);
