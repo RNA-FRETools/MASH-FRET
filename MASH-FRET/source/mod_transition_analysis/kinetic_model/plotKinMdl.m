@@ -71,7 +71,11 @@ if ~isempty(BICres)
     end
     h_axes(5).XLim = [cmblow-0.5,cmbup+0.5];
     BICmax = max(BIC(cmblow:cmbup));
-    ylim(h_axes(5),[BICmin,BICmax]);
+    if BICmin==BICmax
+        ylim(h_axes(5),BICmin+[-1,1]);
+    else
+        ylim(h_axes(5),[BICmin,BICmax]);
+    end
     h_axes(5).XTick = cmblow:cmbup;
     xlbl = compose(repmat('%i',1,size(cmb,2)),cmb)';
     h_axes(5).XTickLabel = xlbl(cmblow:cmbup);

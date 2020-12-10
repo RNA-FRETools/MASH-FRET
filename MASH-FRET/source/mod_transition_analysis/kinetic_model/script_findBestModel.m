@@ -48,8 +48,8 @@ nCmb = size(cmb,1);
 J = sum(cmb,2);
 [J,id] = sort(J,'ascend');
 cmb = cmb(id,:);
-% df = (J.*(J+1))'; % J initial prob, J^2 trans prob
-df = ((J.^2)-1)'; % (J-1) initial prob, J*(J-1) trans prob
+df = (J.*(J+1))'; % J initial prob, J^2 trans prob
+% df = ((J.^2)-1)'; % (J-1) initial prob, J*(J-1) trans prob
 BIC_cmb = -Inf(1,nCmb);
 for c = 1:nCmb
     logL_c = 0;
@@ -119,7 +119,11 @@ cmbs = 1:nCmb;
 ha = subplot(1,2,2);
 xlabel('Model complexity');
 plot(ha,cmbs(incl),BIC_cmb(incl),'+b','linewidth',2);
-ha.YLim = [min(BIC_cmb(incl)),max(BIC_cmb(incl))];
+if min(BIC_cmb(incl))==max(BIC_cmb(incl))
+    ha.YLim = min(BIC_cmb(incl)) + [-1,1];
+else
+    ha.YLim = [min(BIC_cmb(incl)),max(BIC_cmb(incl))];
+end
 ha.XLim = [0.5,nCmb+0.5];
 ha.XTick = cmbs;
 ha.XTickLabel = compose(repmat('%i',1,V),cmb)';
