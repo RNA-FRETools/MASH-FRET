@@ -42,8 +42,6 @@
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-	int i = 0, j = 0, k = 0; // loop indexes
-	
 	// check input and output arguments
 	if (!validArg(nlhs, plhs, nrhs, prhs)){
 		return;
@@ -72,20 +70,20 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	
 	// get trajectory lentghs
 	double L[N];
-	int Lsum = 0; 
+	long Lsum = 0; 
 	mwIndex n = 0;
 	for (n=0; n<seqDim[1]; n++){
 		L[(int) n] = (double) mxGetNumberOfElements(mxGetCell(prhs[2],n));
-		Lsum = Lsum + (int) L[(int) n];
+		Lsum = Lsum + (long) L[(int) n];
 	}
-	
+
 	// store sequences in a linear vector (for speed)
-	double seq[N*Lsum], *tmp;
-	i = 0;
+	double seq[Lsum], *tmp;
+	long i = 0, j = 0, k = 0;
 	for (n=0; n<seqDim[1]; n++){
 		tmp = (double *) mxGetDoubles(mxGetCell(prhs[2],n));
 		k = 0;
-		for (j=i; j<(i+L[n]); j++){
+		for (j=i; j<(i+((long) L[n])); j++){
 			seq[j] = tmp[k];
 			k++;
 		}
@@ -95,7 +93,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	// print data characteristics
 	mexPrintf("Optimize HMM (%i states, %i values) for %i trajectories (lengths:",J,V,N);
 	for (i=0; i<N; i++){
-		mexPrintf(" %.0f",L[i]);
+		mexPrintf(" %i",((long) L[i]));
 	}
 	mexPrintf(")\n");
 	
@@ -105,7 +103,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	setVect(ip,ip0,J);
 	
 	// optimize prob.
-	//*cvg = (double) optBW(Tt,ip,logL,(const double*) B,(const double*) seq,J,N,V,(const double*) L);
+	*cvg = (double) optBW(Tt,ip,logL,B,(const double*) seq,J,N,V,(const double*) L);
 	
 	// back-transpose T matrix for return
 	transposeMat(T,(const double*) Tt,J,J);
@@ -117,13 +115,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 bool optBW(double* T, double* ip, double* logL, const double* B, const double* seq, int J, int N, int V, const double* L){
 	
 	// intialization
-	long o = 0, p_i = 0, p_j = 0, l = 0; // large indexes
 	int i = 0, j = 0, k = 0, n = 0, nb = 0;
-	double Nij[J*J], Ni[J], N0[J];
-	double sum_gam = 0, sum_xi = 0, Lmax = maxVal(L,N);
-	double xi[J*J], gamma[J], fwd[J*((long)Lmax)], bwd[J*((long)Lmax)], coeff[((long)Lmax)], T_prev[J*J], ip_prev[J];
+	long o = 0, p_i = 0, p_j = 0, l = 0; // large indexes
+	long Lmax = (long) maxVal(L,N);
+	double Nij[J*J], Ni[J], N0[J], xi[J*J], gamma[J], fwd[J*Lmax], bwd[J*Lmax], coeff[Lmax], T_prev[J*J], ip_prev[J];
+	double sum_gam = 0, sum_xi = 0, logL_prev = -pow(10,9), dmax = 0, m = 0;
 	bool cvg = 0;
-	double logL_prev = -pow(10,9), dmax = 0, m = 0;
 	
 	// builds index matrix
 	int** id_B = (int **) malloc(V * sizeof(int *));
@@ -156,31 +153,32 @@ bool optBW(double* T, double* ip, double* logL, const double* B, const double* s
 		for (n=0; n<N; n++){
 			
 			// updates forward & backward probabilities
-			fwdprob(fwd,coeff,J,L[n],V,(const double*) seq,o,(const double*) T,(const double*) B,(const double*) ip,(const int**) id_B);
-			bwdprob(bwd,(const double*) coeff,J,L[n],V,(const double*) seq,o,(const double*) T,(const double*) B,(const int**) id_B);
+			fwdprob(fwd,coeff,J,(long) L[n],V,(const double*) seq,o,(const double*) T,B,(const double*) ip,(const int**) id_B);
+			bwdprob(bwd,(const double*) coeff,J,(long) L[n],V,(const double*) seq,o,(const double*) T,B,(const int**) id_B);
 			
 			p_i = 0; // initializes 1st probability running index
 			p_j = J; // initializes 2nd probability running index
-			for (l=0; l<L[n]; l++){
-				// calculate temporary variables
+			for (l=0; l<((long) L[n]); l++){
+				
+				// reset temporary variables
 				sum_gam = 0;
 				sum_xi = 0;
+				
+				// calculate temporary variables
 				k = 0; // initializes transition matrix running index
 				for (i=0; i<J; i++){
 					gamma[i] = fwd[p_i] * bwd[p_i];
 					sum_gam = sum_gam + gamma[i];
-					
-					if (l<(L[n]-1)){
-						for (j=0; j<J; j++){
-							xi[k] = fwd[p_i] * T[k] * bwd[p_j] * B[id_B[(int) seq[o+1]-1][j]];
+					for (j=0; j<J; j++){
+						if (l<((long) L[n]-1)){
+							xi[k] = fwd[p_i] * T[k] * bwd[p_j] * B[id_B[(int) (seq[o+1]-1)][j]];
 							sum_xi = sum_xi + xi[k];
-							
-							k++; // increment transition matrix running index
-							p_j++; // increment 1st probability running index
 						}
-						p_j = p_j-J; // reset 2nd probability running index
+						
+						k++; // increment transition matrix running index
+						p_j++; // increment 1st probability running index
 					}
-					
+					p_j = p_j-J; // reset 2nd probability running index
 					p_i++; // increment 1st probability running index
 				}
 				p_j = p_j + J; // increment 2nd probability running index
@@ -189,18 +187,17 @@ bool optBW(double* T, double* ip, double* logL, const double* B, const double* s
 				k = 0; // initializes transition matrix running index
 				for (i=0; i<J; i++){
 					gamma[i] = gamma[i] / sum_gam;
-					if (l==0){
-						N0[i] = N0[i] + gamma[i];
-					}
 					
-					if (l<(L[n]-1)){
-						Ni[i] = Ni[i] + gamma[i];
-						for (j=0; j<J; j++){
+					if (l==0){ N0[i] = N0[i] + gamma[i]; }
+					
+					if (l<((long) L[n]-1)){ Ni[i] = Ni[i] + gamma[i]; }
+					
+					for (j=0; j<J; j++){
+						if (l<((long) L[n]-1)){
 							xi[k] = xi[k] / sum_xi;
 							Nij[k] = Nij[k] + xi[k];
-
-							k++; // increment transition matrix running index
 						}
+						k++; // increment transition matrix running index
 					}
 				}
 				
@@ -208,6 +205,16 @@ bool optBW(double* T, double* ip, double* logL, const double* B, const double* s
 				*logL = *logL + log(coeff[l]);
 
 				o++; // increment sequence running index
+			}
+		}
+		
+		// updates model parameters
+		k = 0; // initializes transition matrix running index
+		for (i=0; i<J; i++){
+			ip[i] = N0[i] / ((double) N);
+			for (j=0; j<J; j++){
+				T[k] = Nij[k] / Ni[i];
+				k++; // increment transition matrix running index
 			}
 		}
 		
@@ -219,17 +226,6 @@ bool optBW(double* T, double* ip, double* logL, const double* B, const double* s
 		
 		// checks for convergence
 		if (dmax<DMIN){ cvg = 1; }
-		
-		// updates model parameters
-		k = 0; // initializes transition matrix running index
-		for (i=0; i<J; i++){
-			ip[i] = N0[i] / ((double) N);
-			for (j=0; j<J; j++){
-				T[k] = Nij[k] / Ni[i];
-				
-				k++; // increment transition matrix running index
-			}
-		}
 		
 		// increases iteration count
 		m = m+1;
@@ -294,8 +290,8 @@ int dispProb(double m, double dL, double dmax, const double* T, const double* ip
 	k = 0;
 	for (i=0; i<J; i++){
 		for (j=0; j<J; j++){
-			k = k++;
 			nb = nb + mexPrintf("\t%.4f",T[k]);
+			k++;
 		}
 		nb = nb + mexPrintf("\n");
 	}
