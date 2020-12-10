@@ -19,7 +19,7 @@
 void transposeMat(double* dest, const double* src, int R, int C){
 	int i = 0, j = 0, k = 0, k0 = 0;
 	for (i=0; i<R; i++){
-		for (j=0; j<R; j++){
+		for (j=0; j<C; j++){
 			k0 = linid(i,j,0,R,C);
 			k = linid(j,i,0,C,R);
 			dest[k] = src[k0];
