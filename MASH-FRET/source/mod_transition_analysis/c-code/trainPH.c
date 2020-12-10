@@ -345,7 +345,7 @@ int dispDPHres(double m,double dL, double dmax, const double* T, const double* a
 	}
 	
 	// write iteration
-	nb = mexPrintf("iteration %.0f: d=%.3e (dmin=%.0e) dL=%.3e\n",m,dmax,DMIN,dL);
+	nb = mexPrintf("iteration %.0f: dL=%.3e (dLmin=%.0e) d=%.3e\n",m,dL,DLMIN,dmax);
 	
 	// write probabilities
 	/*
