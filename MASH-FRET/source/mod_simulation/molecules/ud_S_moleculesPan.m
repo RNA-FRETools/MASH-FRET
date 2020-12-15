@@ -58,11 +58,11 @@ end
 % set state configuration
 set(h.edit_nbStates, 'String', num2str(p.nbStates));
 state = get(h.popupmenu_states, 'Value');
-set(h.popupmenu_states, 'Value', state, 'String', ...
-    cellstr(num2str((1:p.nbStates)'))');
 if state > p.nbStates
     state = p.nbStates;
 end
+set(h.popupmenu_states, 'Value', state, 'String', ...
+    cellstr(num2str((1:p.nbStates)'))');
 if p.impPrm && isfield(p.molPrm, 'stateVal')
     set([h.edit_nbStates h.popupmenu_states h.edit_stateVal ...
         h.edit_simFRETw], 'Enable', 'off');

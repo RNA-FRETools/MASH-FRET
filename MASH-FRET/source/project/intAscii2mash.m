@@ -45,7 +45,7 @@ end
 % movie
 if isMov
     mov_file = p{2}{2};
-    [data ok] = getFrames(mov_file, 1, {}, h_fig, false);
+    [data,ok] = getFrames(mov_file, 1, {}, h_fig, false);
     if ~ok
         return
     end
@@ -394,7 +394,7 @@ if isCoord && size(intensities,2)/nChan ~= size(coord_tot,1)
 end
 
 nS = 0;
-nMol = size(fname,2);
+nMol = size(intensities,2)/nChan;
 
 s.date_creation = datestr(now);
 s.date_last_modif = s.date_creation;
@@ -446,6 +446,6 @@ end
 s.FRET_DTA = fret_DTA;
 
 s.S_DTA = nan([size(intensities,1) nS*nMol]);
-s.bool_intensities = incl;
+s.bool_intensities = ~~incl;
 
 

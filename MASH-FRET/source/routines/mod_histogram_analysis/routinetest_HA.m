@@ -98,7 +98,7 @@ end
 
 switch opt
     case 'all'
-        module = 'module Transition analysis';
+        module = 'module Histogram analysis';
     case 'project management'
         module = cat(2,upper(opt(1)),opt(2:end),' area');
     case 'visualization'
