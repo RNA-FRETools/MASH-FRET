@@ -158,9 +158,10 @@ It identifies bright spots considering:
 
 The Schmied2012 algorithm was written in C and was compiled to .mex file via the `mex` function of MATLAB. 
 The .mex file may work with certain MATLAB versions and lead to errors with others. 
-If the use of Schmied2012 gives an error, please recompile the .mex file by typing in MATLAB's command window:
+If the use of Schmied2012 gives an error, please recompile the .mex file by entering in MATLAB's command window the following:
 
 ```matlab
+cd 'xxxxx\MASH-FRET\source\extern\schmied2012'
 mex 'xxxxx\MASH-FRET\source\extern\schmied2012\forloop.c'
 ```
 

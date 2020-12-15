@@ -20,8 +20,8 @@ If working with Windows 32bit:
 
 	3) move the new .mexw32 files to MASH-FRET\source\extern\ITALS\runtime32
 
-If you have the MATLAB error message about a msising compiler (like I do), go to MATLAB menu "Environment"/"Add ons" and search for "mingw-w64".
-Then, apparently, you should follow the prompt instruction (which I can't access).
+If you have the MATLAB error message about a msising compiler, go to MATLAB menu "Environment"/"Add ons" and search for "mingw-w64".
+Then follow the prompt instruction.
 
 Once installed, try again steps 2) and 3).
 To be sure, test by add the "Gaussian filter (sensitive)".

@@ -124,7 +124,7 @@ To build the TDP:
    [Include last states](panels/panel-transition-density-plot.html#include-last-states)  
      
 1. Update the TDP and display by pressing 
-   ![Update](../../assets/images/gui/TA-but-update.png "Update").
+   ![Update](../assets/images/gui/TA-but-update.png "Update").
 
 
 ---
@@ -154,7 +154,7 @@ The number
 An example for 
 [*J*](){: .math_var } = 4 and for each cluster configuration is given below:
 
-<img src="../../assets/images/figures/TA-panel-state-configuration-clusters-config.png">
+<img src="../assets/images/figures/TA-panel-state-configuration-clusters-config.png">
 
 In the case of well-separated transition clusters, 
 [*K*](){: .math_var } is easily determined by eye, where a simple partition algorithm, like k-mean or manual clustering, can be used to cluster data.
@@ -290,7 +290,7 @@ To export data to files:
    [Molecule subgroup list](panels/panel-transition-density-plot.html#molecule-subgroup-list)  
      
 1. Open export options by pressing 
-   ![Export](../../assets/images/gui/TA-but-export.png "Export") and set the options as desired; please refer to 
+   ![Export](../assets/images/gui/TA-but-export.png "Export") and set the options as desired; please refer to 
    [Set export options](functionalities/set-export-options.html) for help.
      
 1. Press 

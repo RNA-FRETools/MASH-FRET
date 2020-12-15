@@ -1,6 +1,6 @@
 #!/bin/sh
 
-tag_commit_hash=`git describe --always`
+tag_commit_hash=`git describe --always --tags`
 tag=`echo $tag_commit_hash | cut -d'-' -f 1 | tr -d v`
 prev_commit_hash=`echo $tag_commit_hash | cut -d'-' -f 3 | cut -c 2-`
 
