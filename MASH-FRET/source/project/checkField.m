@@ -116,6 +116,9 @@ s.molTagClr = adjustParam('molTagClr',pMov.defTagClr,s_in);
 
 %% check video entries
 % check movie file >> set movie dimensions and reading infos
+if ~isempty(s.movie_file)
+    s.movie_file = which(s.movie_file); % get absolute path
+end
 if ~isempty(s.movie_file) && exist(s.movie_file, 'file')
     s.is_movie = 1;
     

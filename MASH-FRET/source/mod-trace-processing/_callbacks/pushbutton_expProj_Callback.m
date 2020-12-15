@@ -32,18 +32,22 @@ if iscell(obj)
 else
     if ~isempty(p.proj{proj}.proj_file)
         projName = p.proj{proj}.proj_file;
-        [pName,projName,o] = fileparts(projName);
+        [pname,projName,o] = fileparts(projName);
+        if ~isempty(pname)
+            pname = what(pname); % get absolute path
+            pname = pname.path;
+        end
 
     elseif ~isempty(p.proj{proj}.exp_parameters{1,2})
-        pName = pwd;
+        pname = pwd;
         projName = getCorrName(p.proj{proj}.exp_parameters{1,2}, [], ...
             h_fig);
     else
-        pName = pwd;
+        pname = pwd;
         projName = 'project';
     end
 
-    defName = [pName filesep projName '.mash'];
+    defName = [pname filesep projName '.mash'];
     [fname,pname,o] = uiputfile(...
         {'*.mash;', 'MASH project(*.mash)'; ...
          '*.*', 'All Files (*.*)'}, 'Export MASH project', defName);

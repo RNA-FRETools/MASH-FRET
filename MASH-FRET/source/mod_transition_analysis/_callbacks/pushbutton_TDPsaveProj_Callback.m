@@ -27,8 +27,12 @@ else
     else
         projName = 'project.mash';
     end
-    [pName, projName,o] = fileparts(projName);
-    defName = [pName filesep projName '.mash'];
+    [pname, projName,o] = fileparts(projName);
+    if ~isempty(pname)
+        pname = what(pname); % get absolute path
+        pname = pname.path;
+    end
+    defName = [pname filesep projName '.mash'];
     [fname,pname,o] = uiputfile(...
         {'*.mash;','MASH project(*.mash)';'*.*', 'All Files (*.*)'},...
         'Export MASH project',defName);

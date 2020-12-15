@@ -99,9 +99,20 @@ for i = 1:p.nChan
             % check for correct compilation of mex file for method Schmied2012
             if exist('forloop','file')~=3
                 h = guidata(h_fig);
-                if ~h.mute_actions
+                if h.mute_actions
                     disp(cat(2,'This spotfinder method can not be used:',...
                     ' problem with mex compilation.'));
+%                     disp('MASH-FRET will proceed to file compilation...');
+%                     try
+%                         mex(which('forloop.c'));
+%                     catch err
+%                         if strcmp(err.identifier,...
+%                                 'MATLAB:mex:NoCompilerFound_link_Win64')
+%                             disp()
+%                         else
+%                             throw(err);
+%                         end
+%                     end
                 else
                     setContPan(cat(2,'This spotfinder method can not be ',...
                         'used: problem with mex compilation.'),'error',...
