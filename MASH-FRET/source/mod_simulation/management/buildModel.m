@@ -9,6 +9,9 @@ function ok = buildModel(h_fig)
 % update by MH, 17.12.2019: remove dependency on updateMov.m (called from the pushbutton callback function)
 % update by RB, 6.3.2018: review initial state probabilities
 
+% defaults
+Lmin = 5; % minimum trace length
+
 % initialize execution failure/success
 ok = 0;
 
@@ -75,6 +78,9 @@ if J>1 && isTrans
             Ln = round(ceil(random('exp',bleachL)));
             if Ln>L
                 Ln = L;
+            end
+            if Ln<Lmin
+                Ln = Lmin;
             end
         else
             Ln = L;
