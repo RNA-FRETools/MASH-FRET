@@ -34,23 +34,19 @@ for j = 1:numel(J_deg)
     end
 end
 dt(:,1) = round(dt(:,1)/expT_bin);
-dt(dt(:,1)==0,1) = 1;
 
 % calculate experimental complementary CDF for each state value z
 V = numel(states);
 P = cell(1,V);
-if plotIt
-    cmplP = P;
-end
 x = P;
 for v = 1:V
     dt_z = dt(dt(:,3)==v,1);
+    if isempty(dt_z)
+        continue
+    end
     edg = 0.5:(max(dt_z)+0.5);
     x{v} = mean([edg(2:end);edg(1:end-1)],1);
     P{v} = histcounts(dt_z,edg);
-    if plotIt
-        cmplP{v} = 1-cumsum(P{v}/sum(P{v}));
-    end
 end
 
 % calculate phase-type complementary CDF for each state value z
@@ -60,11 +56,17 @@ logL = -Inf(1,V);
 nDat = zeros(1,V);
 if plotIt
     P_fit = pi_fit;
-    cmplP_fit = pi_fit;
     w_fit = pi_fit;
     tau_fit = pi_fit;
 end
 for v = 1:V
+    if isempty(P{v})
+        pi_fit{v} = 1;
+        tp_fit{v} = [1,0];
+        fprintf('state %i/%i: trap state (irreversible transition)\n',v,V);
+        continue
+    end
+    
     v_e = ones(J_deg(v),1);
 
     pi_fit{v} = NaN(1,J_deg(v));
@@ -128,7 +130,6 @@ for v = 1:V
     if isempty(a_fit) || isempty(T_fit)
         if plotIt
             P_fit{v}(1,:) = 0;
-            cmplP_fit{v}(1,:) = 0;
         end
         continue
     end
@@ -144,10 +145,6 @@ for v = 1:V
                 P_fit{v}(1,l) = a_fit*expm(T_fit*x{v}(l))*v_e;
             end
         end
-        P_fit{v}(1,:) = P_fit{v}(1,:)/sum(P_fit{v}(1,:));
-        cumP_fit = cumsum(P_fit{v}(1,:));
-        cumP_fit(cumP_fit>1) = 1;
-        cmplP_fit{v}(1,:) = 1-cumP_fit;
     end
 
     % get parameters from trained PH model
@@ -189,33 +186,50 @@ if plotIt
         case 2
             PH_type_str = 'continuous';
     end
+    
+    existPlot = false;
     for v = 1:V
         ha1 = subplot(1,2*V,2*v-1);
+        xlabel(ha1,sprintf('dwell time is state %i (seconds)',v));
+        if v==1
+            ylabel(ha1,'PDF');
+        end
+        ha2 = subplot(1,2*V,2*v);
+        xlabel(ha2,sprintf('dwell time is state %i (seconds)',v));
+        if v==V
+            hst = sgtitle(['Dwell time histograms and respective ',...
+                PH_type_str,' PH distribution']);
+            hst.FontSize = 12;
+        end
+        if isempty(P{v})
+            continue
+        end
+        
         ha1.NextPlot = 'add';
-        xlabel(sprintf('dwell time is state %i (seconds)',v));
         plot(ha1,expT_bin*x{v},P{v},'color','black','linewidth',1);
         plot(ha1,expT_bin*x{v},sum(P{v})*P_fit{v},'color','blue',...
             'linewidth',1);
         ha1.YLim = [0,max(P{v})];
-
-        if v==1
+        if ~existPlot
             legend(ha1,'data','fit');
-            ylabel('Compl. CDF');
+            existPlot = true;
         end
 
-        ha2 = subplot(1,2*V,2*v);
         ha2.NextPlot = 'add';
         ha2.YScale = 'log';
-        xlabel(sprintf('dwell time is state %i (seconds)',v));
-        plot(ha2,expT_bin*x{v},sum(P{v})*cmplP{v},'color','black','linewidth',2);
-        plot(ha2,expT_bin*x{v},sum(P{v})*cmplP_fit{v},'color','blue',...
+        plot(ha2,expT_bin*x{v},P{v},'color','black','linewidth',2);
+        plot(ha2,expT_bin*x{v},sum(P{v})*P_fit{v},'color','blue',...
             'linewidth',1);
-        ha2.YLim = [1,sum(P{v})];
+        if max(P{v})==1
+            ha2.YLim = [1,2];
+        else
+            ha2.YLim = [1,max(P{v})];
+        end
 
         str_mat = 'w:\n';
         str_mat = [str_mat,...
             repmat([repmat('%0.2f  ',1,J_deg(v)),'%0.2f  \n'],[1,J_deg(v)+1])];
-        ht3 = text(ha2.XLim(2)/8,ha2.YLim(2)*0.3,...
+        ht3 = text(ha2.XLim(2)/8,ha2.YLim(1)+(ha2.YLim(2)-ha2.YLim(1))*0.3,...
             sprintf(str_mat,w_fit{v}'),'color','blue');
 
         str_tau = 'tau (s)\n';
@@ -231,20 +245,8 @@ if plotIt
             'fontweight','bold');
 
         str_logL = sprintf('logL=%0.6f',logL(v));
-        text(ha2.XLim(2)/2,ha2.YLim(2)*0.07,str_logL,'color','blue',...
-            'fontweight','bold');
-
-        if v==V
-            hst = sgtitle(['Dwell time histograms and respective ',...
-                PH_type_str,' PH distribution']);
-            hst.FontSize = 12;
-        end
+        text(ha2.XLim(2)/2,ha2.YLim(1)+(ha2.YLim(2)-ha2.YLim(1))*0.07,...
+            str_logL,'color','blue','fontweight','bold');
     end
 end
-
-
-
-
-
-
 

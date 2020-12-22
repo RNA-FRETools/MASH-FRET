@@ -23,7 +23,7 @@ function [degen,mdl,cmb,BIC_cmb,BIC] = script_findBestModel(dt,J_deg_max,states,
 t_comp = tic;
 
 % default
-plotIt = true;
+plotIt = false;
 
 % Get optimum DPHs for each model complexity
 disp('Train DPH distributions on binned dwelltime histograms...')
@@ -42,14 +42,24 @@ for J_deg = 1:J_deg_max
 end
 
 % calculate BIC for all possible combinations of DPHs
-N = sum(mdl{1}.N);
+Nv = mdl{1}.N;
+N = sum(Nv);
 cmb = getCombinations(1:J_deg_max,1:V);
+
+% remove combinations with multiple degenerated levels if state is a trap
+for v = 1:V
+    if Nv(v)==0
+        cmb = cmb(cmb(:,v)==1,:);
+        logL(v,1) = 0;
+    end
+end
+
 nCmb = size(cmb,1);
 J = sum(cmb,2);
 [J,id] = sort(J,'ascend');
 cmb = cmb(id,:);
-df = (J.*(J+1))'; % J initial prob, J^2 trans prob
-% df = ((J.^2)-1)'; % (J-1) initial prob, J*(J-1) trans prob
+% df = (J.*(J+1))'; % J initial prob, J^2 trans prob
+df = ((J.^2)-1)'; % (J-1) initial prob, J*(J-1) trans prob
 BIC_cmb = -Inf(1,nCmb);
 for c = 1:nCmb
     logL_c = 0;
@@ -65,8 +75,7 @@ for J_deg = 1:J_deg_max
 %     df = (J_deg*(J_deg+1));
     df = ((J_deg^2)-1);
     for v = 1:V
-        N = mdl{1}.N(v);
-        BIC(v,J_deg) = df*log(N)-2*logL(v,J_deg);
+        BIC(v,J_deg) = df*log(Nv(v))-2*logL(v,J_deg);
     end
 end
 
