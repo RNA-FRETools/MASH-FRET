@@ -153,8 +153,8 @@ bool optBW(double* T, double* ip, double* logL, const double* B, const double* s
 		for (n=0; n<N; n++){
 			
 			// updates forward & backward probabilities
-			fwdprob(fwd,coeff,J,(long) L[n],V,(const double*) seq,o,(const double*) T,B,(const double*) ip,(const int**) id_B);
-			bwdprob(bwd,(const double*) coeff,J,(long) L[n],V,(const double*) seq,o,(const double*) T,B,(const int**) id_B);
+			fwdprob(fwd,coeff,J,(long) L[n],V,seq,o,(const double*) T,B,(const double*) ip,(const int**) id_B);
+			bwdprob(bwd,(const double*) coeff,J,(long) L[n],V,seq,o,(const double*) T,B,(const int**) id_B);
 			
 			p_i = 0; // initializes 1st probability running index
 			p_j = J; // initializes 2nd probability running index

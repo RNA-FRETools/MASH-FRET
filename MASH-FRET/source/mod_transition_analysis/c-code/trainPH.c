@@ -417,8 +417,8 @@ bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 		mexErrMsgTxt("Input(3) must have 2 rows.");
 		return 0;
 	}
-	if (nDt<3){
-		mexErrMsgTxt("Input(3) must have at least 3 columns.");
+	if (nDt<1){
+		mexErrMsgTxt("Input(3) must have at least 1 column.");
 		return 0;
 	}
 
