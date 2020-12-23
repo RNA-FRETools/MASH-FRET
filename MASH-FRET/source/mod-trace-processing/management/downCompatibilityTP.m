@@ -6,7 +6,8 @@ function p_proj = downCompatibilityTP(p_proj,n)
 % proj: h.param.ttPr.proj{i), with h the structure saved in main figure's handle and i the project index in the project list
 % n: molecule index in the project
 
-% Last update 13.1.2020 by MH: manage down compatibility by moving cross-talks coefficients to general parameters
+% Last update 23.12.2020 by MH: add vbFRET 2D
+% update 13.1.2020 by MH: manage down compatibility by moving cross-talks coefficients to general parameters
 % update 10.1.2020 by MH: manage down compatibility by moving factor correction in 6th cell and adding default parameters for ES regression
 % update 29.3.2019 by MH: manage down-compatibility and adapt reorganization of cross-talk coefficients to new parameter structure (see project/setDefPrm_traces.m)
 
@@ -188,4 +189,16 @@ if size(p_proj.prm{n},2)>=2 && ...
         p_proj.prm{n}{4}{4}(:,:,id_excl) = []; % rearrange DTA (thresh)
     end
 end
+
+% added by MH, 23.12.2020: add method vbFRET 2D
+if size(p_proj.prm{n},2)>=4 && size(p_proj.prm{n}{4},2)>=2 && ...
+        size(p_proj.prm{n}{4}{2},1)<6
+    if p_proj.prm{n}{4}{1}(1)>2
+        p_proj.prm{n}{4}{1}(1) = p_proj.prm{n}{4}{1}(1) + 1;
+    end
+    p_proj.prm{n}{4}{2} = [p_proj.prm{n}{4}{2}(1:2,:,:);...
+        repmat([1,2,5,2,0,0,1],[1,1,size(p_proj.prm{n}{4}{2},3)]);...
+        p_proj.prm{n}{4}{2}(3:end,:,:)];
+end
+
 

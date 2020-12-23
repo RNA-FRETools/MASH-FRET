@@ -1,12 +1,7 @@
 function ud_DTA(h_fig)
 
-% Last update: by MH, 3.4.2019
-% >> update "data" popupmenu string according to which traces are 
-%    discretized: if only bottom traces are, only bottom traces data
-%    are listed, otherwise all data aappear.
-% >> improve code synthaxe
-% >> adjust control enability when discretization is applied to top traces 
-%    only and render static text off- or on- enable depending on settings
+% Last update by MH, 23.12.2020: add method vbFRET 2D
+% update by MH, 3.4.2019: (1) update "data" popupmenu string according to which traces are discretized: if only bottom traces are, only bottom traces data are listed, otherwise all data aappear, (2) improve code synthaxe, (3) adjust control enability when discretization is applied to top traces only and render static text off- or on- enable depending on settings
 
 h = guidata(h_fig);
 p = h.param.ttPr;
@@ -149,20 +144,27 @@ if ~isempty(p)
             h.edit_TP_states_highThresh],'Enable','off','string','');
         
         switch method
-            case 2 % VbFRET
+            case 2 % vbFRET-1D
                 set(h_param(1),'TooltipString','Minimum number of states');
                 set(h_param(2),'TooltipString','Maximum number of states');
                 set(h_param(3),'TooltipString','Iteration number');
                 
                 set(h.popupmenu_TP_states_data, 'Enable', 'on');
                 
-            case 3 % One state
+            case 3 % vbFRET-2D
+                set(h_param(1),'TooltipString','Minimum number of states');
+                set(h_param(2),'TooltipString','Maximum number of states');
+                set(h_param(3),'TooltipString','Iteration number');
+                
+                set(h.popupmenu_TP_states_data, 'Enable', 'on');
+                
+            case 4 % One state
                 set(h_param(1:7), 'Enable','off','string','');
                 set(h_param_txt(1:7), 'Enable','off');
                 
                 set(h.popupmenu_TP_states_data,'enable','off');
 
-            case 4 % CPA
+            case 5 % CPA
                 set(h_param(1),'TooltipString',...
                     'Number of bootstrap samples');
                 set(h_param(2),'TooltipString','Significance level (in %)');
@@ -171,7 +173,7 @@ if ~isempty(p)
                 
                 set(h.popupmenu_TP_states_data,'Enable','on');
                 
-            case 5 % STaSI
+            case 6 % STaSI
                 set(h_param([2,3]),'Enable','off','string','');
                 set(h_param_txt([2,3]),'Enable','off');
                 set(h_param(1),'TooltipString','Maximum number of states');
