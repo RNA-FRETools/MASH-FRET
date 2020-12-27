@@ -18,15 +18,15 @@ FRET = p.proj{proj}.FRET;   nF = size(FRET,1);
 S = p.proj{proj}.S;         nS = size(S,1);
 
 % check for already-discretized top traces
-isDiscrTop = ~isempty(p.proj{proj}.intensities_DTA) && ~all(isnan(sum(sum(...
-    p.proj{proj}.intensities_DTA(:,((m-1)*nC+1):m*nC,:),3),2)));
+isDiscrTop = ~isempty(p.proj{proj}.intensities_DTA) && ~all(all(all(isnan(...
+    p.proj{proj}.intensities_DTA(:,((m-1)*nC+1):m*nC,:)))));
 
 % check for already-discretized bottom traces
 isDiscrBot = ~isempty(p.proj{proj}.FRET_DTA) && ...
-    ~all(isnan(sum(p.proj{proj}.FRET_DTA(:,((m-1)*nF+1):m*nF),2)));
+    ~all(all(isnan(p.proj{proj}.FRET_DTA(:,((m-1)*nF+1):m*nF))));
 if nS>0
 	isDiscrBot = isDiscrBot && ~isempty(p.proj{proj}.S_DTA) && ...
-        ~all(isnan(sum(p.proj{proj}.S_DTA(:,((m-1)*nS+1):m*nS),2)));
+        ~all(all(isnan(p.proj{proj}.S_DTA(:,((m-1)*nS+1):m*nS))));
 end
 
 % collect processing parameters

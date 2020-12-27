@@ -1,15 +1,9 @@
 function d_traces = getDiscr(method, traces, incl, prm, thresh, calc, ...
     str_discr, h_fig)
 
-% Last update: MH, 29.5.2019
-% >> handle error better for ratio data: if less than 2 data points remains 
-%    because of out-of-range [-0.2;1.2] data, include all data point back 
-%    and discretize out-of-range data.
-%
-% update: MH, 30.3.2019
-% >> fix error for ratio data: if all data points were excluded because 
-%    out-of-range [-0.2;1.2], include all data point back and discretize
-%    out-of-range data.
+% Last update by MH, 27.12.2020: add 2D-vbFRET
+% update by MH, 29.5.2019: handle error better for ratio data: if less than 2 data points remains because of out-of-range [-0.2;1.2] data, include all data point back and discretize out-of-range data.
+% update by MH, 30.3.2019: fix error for ratio data: if all data points were excluded because out-of-range [-0.2;1.2], include all data point back and discretize out-of-range data.
 
 mute_action = false;
 if numel(str_discr)==1 && str_discr==0
@@ -36,7 +30,7 @@ else
     N = size(d_traces,1);
 end
 
-if method == 2 % VbFRET
+if method==2 || method==3 % VbFRET
     nSlopes = 0;
     for n = 1:N
         minN = prm(n,1);
@@ -50,7 +44,7 @@ end
 
 h = guidata(h_fig);
 lb = 0;
-if ~isfield(h, 'barData') && sum(method == [2 4])
+if ~isfield(h, 'barData') && sum(method == [2,3,5])
     % loading bar parameters-----------------------------------------------
     intrupt = loading_bar('init', h_fig, nSlopes, str_discr);
     if intrupt
@@ -85,29 +79,32 @@ for n = 1:N
             d_traces(n,incl(n,:)) = discr_thresh(traces(n,incl(n,:)), ...
                 discrVal, low, up, nbStates);
 
-        case 2 % VbFRET
+        case 2 % 1D-VbFRET
             minN = prm(n,1);
             maxN = prm(n,2);
             n_iter = prm(n,3);
-            if ~is2D
-                data = cell(1,1);
-                data{1} = traces(n,incl(n,:));
-                [vbres,o] = discr_vbFRET(minN,maxN,n_iter,data, ...
-                    h_fig,lb,mute_action,1);
-                d_traces(n,incl(n,:)) = vbres{1};
-            else
-                data = cell(1,1);
-                data{1} = traces{n};
-                [vbres,o] = discr_vbFRET(minN,maxN,n_iter,data, ...
-                    h_fig,lb,mute_action,2);
-                d_traces{n}(:,incl{n}) = vbres{1}';
-            end
+            data = cell(1,1);
+            data{1} = traces(n,incl(n,:));
+            [vbres,o] = discr_vbFRET(minN,maxN,n_iter,data,h_fig,lb,...
+                mute_action,1);
+            d_traces(n,incl(n,:)) = vbres{1};
 
-        case 3 % One state
+            
+        case 3 % 2D-VbFRET
+            minN = prm(n,1);
+            maxN = prm(n,2);
+            n_iter = prm(n,3);
+            data = cell(1,1);
+            data{1} = traces{n};
+            [vbres,o] = discr_vbFRET(minN,maxN,n_iter,data,h_fig,lb,...
+                mute_action,2);
+            d_traces{n}(:,incl{n}) = vbres{1}';
+
+        case 4 % One state
             d_traces(n,incl(n,:)) = ones(size(traces(n,incl(n,:))))* ...
                 mean(traces(n,incl(n,:)));
 
-        case 4 % CPA
+        case 5 % CPA
             maxN = 0; % not used
             n_bss = prm(n,1);
             lvl = prm(n,2);
@@ -115,7 +112,7 @@ for n = 1:N
             d_traces(n,incl(n,:)) = discr_cpa(traces(n,incl(n,:)),...
                 mute_action,n_bss,lvl,ana_type, maxN);
             
-        case 5 % STaSI
+        case 6 % STaSI
             maxN = prm(n,1);
             [MDL,dat] = discr_stasi(traces(n,incl(n,:)),maxN,mute_action);
             [o,idx] = min(MDL);
@@ -162,17 +159,17 @@ for n = 1:N
         end
     end
 
-    if lb && method == 4
+    if lb && method==5
         intrpt = loading_bar('update', h_fig);
         if intrpt
-            return;
+            return
         end
     end
 end
 
 warning('on', 'stats:kmeans:EmptyCluster');
 
-if lb && sum(method == [2 4])
+if lb && sum(method == [2,3,5])
     loading_bar('close', h_fig);
 end
 
