@@ -1,5 +1,7 @@
 function menu_kinSoft_Callback(obj,evd,step,h_fig)
 
+% Last update by MH, 29.12.2020: remove useless step 4 (back-simulation)
+
 % save current interface
 h = guidata(h_fig);
 h_prev = h;
@@ -13,7 +15,7 @@ h.param.OpFiles.overwrite = true;
 h.mute_actions = true;
 
 if ~isfield(h,'kinsoft_res')
-    h.kinsoft_res = cell(1,4);
+    h.kinsoft_res = cell(1,3);
 end
 guidata(h_fig,h);
 
@@ -34,7 +36,7 @@ try
         t_1 = toc(t1);
 
         h.kinsoft_res{1} = {t_1,pname,fname,res,Js};
-        h.kinsoft_res(2:end) = cell(1,3);
+        h.kinsoft_res(2:end) = cell(1,2);
         guidata(h_fig,h);
     end
 
@@ -57,7 +59,7 @@ try
         t_2 = toc(t2);
 
         h.kinsoft_res{2} = {t_2,states};
-        h.kinsoft_res(3:end) = cell(1,2);
+        h.kinsoft_res(3:end) = cell(1,1);
         guidata(h_fig,h);
     end
 
@@ -80,32 +82,7 @@ try
         t_3 = toc(t3);
 
         h.kinsoft_res{3} = {t_3,mat,tau,ip};
-        h.kinsoft_res(end) = cell(1,1);
         guidata(h_fig,h);
-    end
-
-    % select the final number of states by comparing simulations
-    if sum(step==[0,4])
-        if isempty(h.kinsoft_res{3})
-            disp(' ')
-            disp('step 3 must first be performed.')
-            return
-        end
-        
-        pname = h.kinsoft_res{1}{2};
-        fname = h.kinsoft_res{1}{3};
-        Js = h.kinsoft_res{1}{5}(:,1)';
-        states = h.kinsoft_res{2}{2};
-        mat = h.kinsoft_res{3}{2};
-        ip = h.kinsoft_res{3}{4};
-        
-        t4 = tic;
-        
-        [TDPs,logL] = routine_backSim(pname,fname,Js,states,mat,ip,h_fig);
-        
-        t_4 = toc(t4);
-        
-        h.kinsoft_res{4} = {t_4,TDPs,logL};
     end
     
     t_ana = 0;
@@ -199,14 +176,6 @@ try
                         mat(1,:,6));
                     fprintf(f,['%i\t',repmat('%d\t',[1,size(mat,2)-1]),'\n'],...
                         mat(2:end,:,6)');
-                    
-                    if ~isempty(h.kinsoft_res{4})
-                        logL = h.kinsoft_res{4}{3};
-                        
-                        fprintf(f,'\nBest configuration:\n');
-                        fprintf(f,'J\tlogL\n');
-                        fprintf(f,'%i\t%d\n',[Js,logL']');
-                    end
                 end
             end
             fclose(f);
