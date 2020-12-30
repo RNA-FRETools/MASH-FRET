@@ -76,10 +76,8 @@ for restart = 1:T
     tp_iter = tp0;
     
     % recover matrix calculated from simulated data
-    if restart==1
+    if restart==1 && plotIt
         plotKinMdlSim(degen,tp_iter,ones(1,J)/J,expPrm,h_fig1);
-    else
-        plotKinMdlSim(degen,tp_iter,ones(1,J)/J,expPrm,[]);
     end
 
     [cvg,tp_iter,ip,bestgof] = baumwelch(tp_iter,B0,expPrm.seq,ones(1,J)/J);
