@@ -1,11 +1,12 @@
-function states = routine_getFRETstates(pname,fname,Js,h_fig)
-% states = routine_getFRETstates(pname,fname,Js,h_fig)
+function states = routine_getFRETstates(pname,fname,Js,gaussNoise,h_fig)
+% states = routine_getFRETstates(pname,fname,Js,gaussNoise,h_fig)
 %
 % Analyze data of Kinsoft challenge to find FRET states and associated deviations
 %
 % pname: source directory
 % fname: .mash source file name
 % Js: [1-by-nJ] optimum number of states
+% gaussNoise: noise in FRET trajectories in Gaussian-distributed
 % h_fig: handle to main figure
 % states: {1-by-nJ} [J-by-2] FRET states and associated deviations
 
@@ -13,8 +14,11 @@ function states = routine_getFRETstates(pname,fname,Js,h_fig)
 states = {};
 
 % defauts
-meth = 2; % 1D-vbFRET (no intensity interruptions)
-% meth = 3; % 2D-vbFRET (intensity interruptions)
+if gaussNoise
+    meth = 2; % 1D-vbFRET (Gaussian noise)
+else
+    meth = 6; % STaSI (Poisson noise)
+end
 Jmin = 1; % minimum number of states to find in traces
 iter = 10; % number of vbFRET iterations
 trace = 1; % index in list of traces to apply state finding algorithm to (bottom traces)
@@ -56,9 +60,13 @@ setDef_kinsoft_TP(p,h_fig);
 for Jmax = Js
     fprintf('>>>>>> process with Jmax=%i...\n',Jmax);
     
-    p.fsPrm(meth,1,:) = Jmin;
-    p.fsPrm(meth,2,:) = Jmax;
-    p.fsPrm(meth,3,:) = iter;
+    if meth==2 % vbFRET
+        p.fsPrm(meth,1,:) = Jmin;
+        p.fsPrm(meth,2,:) = Jmax;
+        p.fsPrm(meth,3,:) = iter;
+    else % STaSI
+        p.fsPrm(meth,1,:) = Jmax;
+    end
     p.fsPrm(meth,7,:) = deblurr;
     set_TP_findStates(meth,trace,p.fsPrm,p.fsThresh,p.nChan,p.nL,h_fig);
     pushbutton_applyAll_DTA_Callback(h.pushbutton_applyAll_DTA,[],h_fig);

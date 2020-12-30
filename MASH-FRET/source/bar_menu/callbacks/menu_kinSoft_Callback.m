@@ -33,6 +33,21 @@ try
         if strcmp(choice,'Yes')
             ip = inputdlg('number of FRET states = ','Number of FRET states');
             V = str2num(ip{1});
+        elseif ~strcmp(choice,'No')
+            return
+        end
+        
+        % ask for noise ditribution
+        if step==0
+            gaussNoise = false;
+            choice = questdlg(['How is the noise distribution in the ',...
+                'FRET trajectories?'],'Noise distribution',...
+                'Gaussian noise','other','other');
+            if strcmp(choice,'Gaussian noise')
+                gaussNoise = true;
+            elseif ~strcmp(choice,'other')
+                return
+            end
         end
         
         t1 = tic;
@@ -57,13 +72,26 @@ try
             return
         end
         
+        % ask for noise ditribution
+        if step==2
+            gaussNoise = false;
+            choice = questdlg(['How is the noise distribution in the ',...
+                'FRET trajectories?'],'Noise distribution',...
+                'Gaussian noise','other','other');
+            if strcmp(choice,'Gaussian noise')
+                gaussNoise = true;
+            elseif ~strcmp(choice,'other')
+                return
+            end
+        end
+        
         pname = h.kinsoft_res{1}{2};
         fname = h.kinsoft_res{1}{3};
         Js = h.kinsoft_res{1}{5}(:,1)';
         
         t2 = tic;
         
-        states = routine_getFRETstates(pname,fname,Js,h_fig);
+        states = routine_getFRETstates(pname,fname,Js,gaussNoise,h_fig);
         
         t_2 = toc(t2);
 
