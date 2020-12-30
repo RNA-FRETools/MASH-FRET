@@ -26,15 +26,24 @@ try
     % Find optimum number of states
     if sum(step==[0,1])
         
-        t1 = tic;
-        
-        [pname,fname,res,Js] = routine_findJ(h_fig);
-        if isempty(res)
-            return
+        % ask for the number of states
+        V = NaN;
+        choice = questdlg('Is the number of FRET states known?',...
+            'Number of FRET states','Yes','No','No');
+        if strcmp(choice,'Yes')
+            ip = inputdlg('number of FRET states = ','Number of FRET states');
+            V = str2num(ip{1});
         end
         
-        t_1 = toc(t1);
+        t1 = tic;
+        
+        [pname,fname,res,Js] = routine_findJ(h_fig,V);
+        if isnan(V) && isempty(res)
+            return
+        end
 
+        t_1 = toc(t1);
+        
         h.kinsoft_res{1} = {t_1,pname,fname,res,Js};
         h.kinsoft_res(2:end) = cell(1,2);
         guidata(h_fig,h);
@@ -92,18 +101,23 @@ try
         end
     end
     
-    if ~isempty(h.kinsoft_res{1})        
+    if ~isempty(h.kinsoft_res{1})
+        
+        knowStateNb = isempty(h.kinsoft_res{1}{4});
+        
         pname = h.kinsoft_res{1}{2};
         if ~strcmp(pname(end),filesep)
             pname = [pname,filesep];
         end
         [~,fname,~] = fileparts(pname(1:end-1));
-        BICs = h.kinsoft_res{1}{4}.BIC;
         Js = h.kinsoft_res{1}{5}(:,1);
-        BICs = [(1:numel(BICs))',BICs',zeros(numel(BICs),1)];
-        BICs(isinf(BICs(:,2)),:) = [];
-        for j = 1:numel(Js)
-            BICs(BICs(:,1)==Js(j),3) = 1;
+        if ~knowStateNb
+            BICs = h.kinsoft_res{1}{4}.BIC;
+            BICs = [(1:numel(BICs))',BICs',zeros(numel(BICs),1)];
+            BICs(isinf(BICs(:,2)),:) = [];
+            for j = 1:numel(Js)
+                BICs(BICs(:,1)==Js(j),3) = 1;
+            end
         end
         for j = 1:numel(Js)
             f = fopen(...
@@ -112,9 +126,13 @@ try
 
             fprintf(f,'Total processing time (in seconds):%d\n',t_ana);
             
-            fprintf(f,'\nNumber of states:\n');
-            fprintf(f,'J\tBIC\tselected\n');
-            fprintf(f,'%i\t%d\t%i\n',BICs');
+            if ~knowStateNb
+                fprintf(f,'\nNumber of states:\n');
+                fprintf(f,'J\tBIC\tselected\n');
+                fprintf(f,'%i\t%d\t%i\n',BICs');
+            else
+                fprintf(f,'\nNumber of states:%i\n',Js(j));
+            end
             
             if ~isempty(h.kinsoft_res{2})
                 states = h.kinsoft_res{2}{2}{j};

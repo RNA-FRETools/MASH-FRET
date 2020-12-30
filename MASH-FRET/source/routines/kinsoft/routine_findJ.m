@@ -1,10 +1,11 @@
-function [pname,fname,res,Js] = routine_findJ(h_fig)
-% [pname,fname,res,Js] = routine_findJ(h_fig)
+function [pname,fname,res,Js] = routine_findJ(h_fig,V)
+% [pname,fname,res,Js] = routine_findJ(h_fig,V)
 %
 % Analyze data of Kinsoft challenge to find the optimum number of states
 % In case different configurations lead to similar goodness of fit, the corresponding number of states are given all together as a result
 %
 % h_fig: handle to main figure
+% V: number of FRET states (NaN if unknown)
 % pname: source directory
 % fname: base name used in exported files
 % res: clustering results for all model complexities
@@ -17,7 +18,8 @@ Js = [];
 
 % defauts
 Jmax = 10; % maximum number of states to find
-meth = 5; % state finding method index in list (STaSI)
+shape = 4; % gaussian cluster shape (4:freely rotating multivariate gaussian)
+meth = 6; % state finding method index in list (STaSI)
 trace = 1; % index in list of traces to apply state finding algorithm to (bottom traces)
 deblurr = true; % activate "deblurr" option
 tdp_dat = 3; % data to plot in TDP (FRET data)
@@ -65,6 +67,12 @@ set_VP_projOpt(p.projOpt,p.wl(1:p.nL),h.pushbutton_editParam,h_fig);
 % save project
 pushbutton_expProj_Callback({p.dumpdir,fname_mash},[],h_fig);
 
+if ~isnan(V)
+    fprintf('>> results: J = %i\n',V);
+    Js = [V,0];
+    return
+end
+
 disp('>>>> process single FRET traces with STaSI...');
 
 % set interface to default values
@@ -106,6 +114,7 @@ exportAxes({[p.dumpdir,filesep,fname_tdpImg]},[],h_fig);
 disp('>>>> cluster transitions with Gaussian mixtures...');
 
 % set clustering settings and cluster transitions
+p.clstConfig(4) = shape;
 set_TA_stateConfig(p.clstMeth,p.clstMethPrm,p.clstConfig,p.clstStart,...
     h_fig);
 pushbutton_TDPupdateClust_Callback(h.pushbutton_TDPupdateClust,[],h_fig);
