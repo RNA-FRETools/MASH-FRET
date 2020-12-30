@@ -13,7 +13,8 @@ function states = routine_getFRETstates(pname,fname,Js,h_fig)
 states = {};
 
 % defauts
-meth = 2; % state finding method index in list (vbFRET)
+meth = 2; % 1D-vbFRET (no intensity interruptions)
+% meth = 3; % 2D-vbFRET (intensity interruptions)
 Jmin = 1; % minimum number of states to find in traces
 iter = 10; % number of vbFRET iterations
 trace = 1; % index in list of traces to apply state finding algorithm to (bottom traces)
@@ -119,13 +120,22 @@ for Jmax = Js
     tag = q.curr_tag(proj);
     prm = q.proj{proj}.prm{tag,tpe};
     res = prm.clst_res{1};
+    mu = res.mu{Jmax};
+    bin = prm.lft_start{2}(3);
     K = getClusterNb(Jmax,p.clstConfig(1),p.clstConfig(2));
     [j1,j2] = getStatesFromTransIndexes(1:K,Jmax,p.clstConfig(1),...
         p.clstConfig(2));
-    states_J = [res.mu{Jmax}(1:Jmax,2),zeros(Jmax,1)];
-    for j = 1:Jmax
-        states_J(j,2) = (mean(sqrt(res.o{Jmax}(1,1,j1==j & j2~=j))) + ...
-            mean(sqrt(res.o{Jmax}(2,2,j2==j & j1~=j))))/2;
+    [stateVals,jbin] = binStateValues(mu,bin,[j1,j2]);
+    V = size(stateVals,1);
+    states_J = [stateVals,zeros(V,1)];
+    for v = 1:V
+        ox = [];
+        oy = [];
+        for j = jbin{v}
+            ox = cat(2,ox,mean(sqrt(res.o{Jmax}(1,1,j1==j & j2~=j))));
+            oy = cat(2,oy,mean(sqrt(res.o{Jmax}(2,2,j2==j & j1~=j))));
+        end
+        states_J(v,2) = mean([ox,oy]);
     end
     states = cat(2,states,states_J);
     

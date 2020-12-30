@@ -119,9 +119,10 @@ p.factPrm{3} = [-0.2,50,1.2
 
 % default find states parameters
 nDat = p.nChan*p.nL+size(p.projOpt.FRET,1)+size(p.projOpt.S,1);
-p.fsMeth = 5; % threshold, vbFRET, one state, CPA, STaSI
+p.fsMeth = 6; % threshold, vbFRET, 2D-vbFRET, one state, CPA, STaSI
 p.fsDat = 1; % bottom, top , all
 p.fsPrm = [2  0  0 1 0 0 0 0
+    1  2  1 1 0 0 0 0
     1  2  1 1 0 0 0 0
     0  0  0 0 0 0 0 0
     50 90 2 1 0 0 0 0
