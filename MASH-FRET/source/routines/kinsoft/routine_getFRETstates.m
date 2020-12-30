@@ -16,8 +16,10 @@ states = {};
 % defauts
 if gaussNoise
     meth = 2; % 1D-vbFRET (Gaussian noise)
+    str_meth = 'vbFRET';
 else
-    meth = 6; % STaSI (Poisson noise)
+    meth = 6; % STaSI (other noise)
+    str_meth = 'STaSI';
 end
 Jmin = 1; % minimum number of states to find in traces
 iter = 10; % number of vbFRET iterations
@@ -51,7 +53,7 @@ disp(cat(2,'>>>> import ',fname_mashIn,' in Trace processing...'));
 switchPan(h.togglebutton_TP,[],h_fig);
 pushbutton_addTraces_Callback({p.dumpdir,fname_mashIn},[],h_fig);
 
-disp('>>>> process single FRET traces with vbFRET...');
+disp(['>>>> process single FRET traces with ',str_meth,'...']);
 
 % set interface to default values
 setDef_kinsoft_TP(p,h_fig);
