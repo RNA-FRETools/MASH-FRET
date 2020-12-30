@@ -11,7 +11,6 @@ To compile the mex functions:
 2. Execute the following commands in MATLAB's command window:
 
 	mex  -R2018a -O trainPH.c vectop.c
-	mex  -R2018a -O trainGMM.c vectop.c
 	mex  -R2018a -O baumwelch.c vectop.c fwdbwd.c
 	mex  -R2018a -O calcmdlconfiv.c vectop.c fwdbwd.c
 
