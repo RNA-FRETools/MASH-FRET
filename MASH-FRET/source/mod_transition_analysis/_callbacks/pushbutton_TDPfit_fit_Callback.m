@@ -22,7 +22,7 @@ curr = p.proj{proj}.curr{tag,tpe};
 if obj==h.pushbutton_TA_slFitAll
     V = size(curr.clst_res{4},2);
     vals = 1:V;
-    if loading_bar('init',h_fig,V,'Fitting all dwell time histograms...');
+    if loading_bar('init',h_fig,V,'Fitting all dwell time histograms...')
         return
     end
     h = guidata(h_fig);
