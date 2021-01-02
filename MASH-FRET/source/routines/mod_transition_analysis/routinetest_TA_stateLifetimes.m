@@ -44,7 +44,7 @@ for excl = [1,0]
         if rearr
             str_rearr = '_rearr';
         end
-        set(h.checkbox_tdp_rearrSeq,'value',rarr);
+        set(h.checkbox_tdp_rearrSeq,'value',rearr);
         checkbox_tdp_rearrSeq_Callback(h.checkbox_tdp_rearrSeq,[],h_fig);
 
         % test automated fit on all histograms

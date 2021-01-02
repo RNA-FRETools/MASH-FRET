@@ -137,8 +137,8 @@ for v2 = vs
         p_fit.start = reshape(res.boba_mean(:,1:2:end,1)',...
             [1,numel(res.boba_mean(:,1:2:end,1))]);
     else
-        p_fit.start = reshape(res.fit_res(:,:,1)',...
-            [1,numel(res.fit_res(:,:,1))]);
+        p_fit.start = reshape(res.fit_ref(:,:,1)',...
+            [1,numel(res.fit_ref(:,:,1))]);
     end
 
     % constrain decay constants

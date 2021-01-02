@@ -24,6 +24,7 @@ popupmenu_TA_slStates_Callback(q.popupmenu_TA_slStates,[],h_fig);
 set(q.radiobutton_TA_slAuto,'value',expPrm(1));
 radiotbutton_TA_slAuto_Callback(q.radiobutton_TA_slAuto,[],h_fig);
 if expPrm(1)
+    close(h.figure_TA_fitSettings);
     return
 end
 
