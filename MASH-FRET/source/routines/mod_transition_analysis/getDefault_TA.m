@@ -95,7 +95,8 @@ for nL = 1:nL_max
 end
 
 % default export options
-p.tdp_expOpt = [false,4,false,3,false,false,false,false];
+p.tdp_expOpt = [false,4,false,3,false,false,false,false false,false,false,...
+    false];
 
 % default TDP settings
 p.tdpDat = (p.nChan*p.nL)+1;
@@ -115,9 +116,10 @@ p.exp_defSlct = 'clstStartDef_%i_%i';
 
 % default exponential fit settings
 p.nMax = nMax;
+p.stateBin = 0.03; % state binning
 p.dtExcl = true; % exclude first and last dwell times in sequences
 p.dtRearr = true; % re-arrange state sequences
-p.expPrm = [0,1,0,0,100]; % stretched, decay nb., boba, weight, sample nb.
+p.expPrm = [1,0,1,0,0,100]; % auto, stretched, decay nb., boba, weight, sample nb.
 amp = permute(...
     [zeros(nMax,1),flip(logspace(-2,0,nMax),2)',Inf(nMax,1)],...
     [3,2,1]);
@@ -131,4 +133,15 @@ p.fitPrm(2,2,3) = 10;
 p.exp_dt = 'dthist';
 p.exp_logScale = 'dthist_log.png';
 p.exp_linScale = 'dthist_lin.png';
+
+% default kinetic model
+p.mdlMeth = 1; % starting guess (1:from DPH fit + BIC, 2:from lifetime panel)
+p.Dmax = 3; % max. degeneracy for DPH fit
+p.mdlRestart = 5; % nb. of Baum-Welch restarts
+p.exp_mdl = 'mdl';
+p.exp_mdlBIC = 'mdl_BIC.png';
+p.exp_mdlSimdt = 'mdl_dt_%i.png';
+p.exp_mdlPop = 'mdl_pop.png';
+p.exp_mdlTrans = 'mdl_trans.png';
+
 

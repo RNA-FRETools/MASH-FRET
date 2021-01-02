@@ -3,7 +3,7 @@ function set_TA_expOpt(opt,h_fig)
 %
 % Set ASCII files export options to proper values
 %
-% opt: [1-by-8] export options as set in getDefault_TA (see p.expOpt)
+% opt: [1-by-12] export options as set in getDefault_TA (see p.expOpt)
 % h_fig: handle to main figure
 
 % collect interface parameters
@@ -35,6 +35,18 @@ checkbox_expTDPopt_kinCurves_Callback(q.checkbox_kinCurves,[],h_fig);
 
 set(q.checkbox_kinBOBA,'value',opt(8));
 checkbox_expTDPopt_kinBOBA_Callback(q.checkbox_kinBOBA,[],h_fig);
+
+set(q.checkbox_figBOBA,'value',opt(9));
+checkbox_expTDPopt_figBOBA_Callback(q.checkbox_figBOBA,[],h_fig);
+
+set(q.checkbox_mdlSlct,'value',opt(10));
+checkbox_expTDPopt_mdlSlct_Callback(q.checkbox_mdlSlct,[],h_fig);
+
+set(q.checkbox_mdlOpt,'value',opt(11));
+checkbox_expTDPopt_mdlOpt_Callback(q.checkbox_mdlOpt,[],h_fig);
+
+set(q.checkbox_mdlSim,'value',opt(12));
+checkbox_expTDPopt_mdlSim_Callback(q.checkbox_mdlSim,[],h_fig);
 
 
 

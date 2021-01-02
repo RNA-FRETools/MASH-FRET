@@ -242,9 +242,10 @@ p.factPrm{2} = [p.nL,0,2,1,10]; % settings of photobleaching-based calculation m
 p.factPrm{3} = [1,-0.2,50,1.2,1,50,5,1]; % settings of ES linear regression calculation method
 
 % set default find states parameters
-p.fsMeth = 5; % index in list of state finding method
+p.fsMeth = 6; % index in list of state finding method
 p.fsDat = 1; % find states in (1) bottom traces, (2) top traces, (3) all traces
 p.fsPrm = [2  0  0 1 0 0 0 0 % state finding method settings
+    1  2  1 1 0 0 0 0
     1  2  1 1 0 0 0 0
     0  0  0 0 0 0 0 0
     50 90 2 1 0 0 0 0

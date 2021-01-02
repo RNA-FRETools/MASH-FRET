@@ -9,7 +9,7 @@ function routinetest_TA_stateConfiguration(h_fig,p,prefix)
 
 % defaults
 nShapes = [3,4,3];
-opt0 = [false,4,false,3,true,false,false,false];
+opt0 = [false,4,false,3,true,false,false,false,false,false,false];
 
 setDefault_TA(h_fig,p);
 
