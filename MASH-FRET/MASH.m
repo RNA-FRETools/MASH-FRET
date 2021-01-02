@@ -8,6 +8,10 @@ addpath(genpath(codePath));
 % set MATLAB's character encoding
 feature('DefaultCharacterSet','windows-1252');
 
+% compile C functions
+disp('checking mex files...');
+checkMASHmex
+
 disp('build GUI...')
 % get MASH version
 version_str = getMASHversion(codePath);

@@ -24,11 +24,25 @@ if isMov==0 || isMov==1
     [pname,o,o] = fileparts(fullFname);
     cd(pname);
     
-    if ~exist('SPEImport')
-        setContPan(cat(2,'SPE import can not be used: problem with mex ',...
-            'compilation.'),'error',h.figure_MASH);
-        ok = 0;
-        return;
+    % check for correct compilation of mex file for method SIFImport
+    if exist('SPEImport','file')~=3
+        h = guidata(h_fig);
+        if h.mute_actions
+            disp('MASH-FRET will proceed to file compilation...');
+        else
+            setContPan(cat(2,'MASH-FRET will proceed to file ',...
+                'compilation...'),'warning',h_fig);
+        end
+        switch computer
+            case 'PCWIN' % 32bit windows
+                mex(which('SPEImport.c'),'-L./lib','-lITASL32');
+            case 'PCWIN64' % 64bit windows
+                mex(which('SPEImport.c'),'-L./lib','-lITASL64');
+            case 'GLNX86' % 32bit Linux
+                mex(which('SPEImport.c'),'-L./lib','-lITASL32');
+            case 'GLNX64' % 64bit Linux
+                mex(which('SPEImport.c'),'-L./lib','-lITASL64');
+        end
     end
     
     try
