@@ -60,23 +60,23 @@ void mexFunction(int nlhs, mxArray *plhs[],
         mwSize dims[] = {fI[0].height, fI[0].width, fI[0].frames};
         if(fI[0].format == 4) {//unsigned byte            
             plhs[0] = mxCreateNumericArray(ndim, dims, mxUINT8_CLASS, mxREAL);
-			pUINT8Data = mxGetPr(plhs[0]);
+			pUINT8Data = mxGetUint8s(plhs[0]);
             getDataUInt8(pUINT8Data, &fI[0]);
         } else if(fI[0].format == 3) {//unsigned short            
             plhs[0] = mxCreateNumericArray(ndim, dims, mxUINT16_CLASS, mxREAL);
-			pUINT16Data = mxGetPr(plhs[0]);
+			pUINT16Data = mxGetUint16s(plhs[0]);
             getDataUInt16(pUINT16Data, &fI[0]);
         } else if(fI[0].format == 2) {//short            
             plhs[0] = mxCreateNumericArray(ndim, dims, mxINT16_CLASS, mxREAL);
-			pINT16Data = mxGetPr(plhs[0]);
+			pINT16Data = mxGetInt16s(plhs[0]);
             getDataInt16(pINT16Data, &fI[0]);
         } else if(fI[0].format == 1) {//int            
             plhs[0] = mxCreateNumericArray(ndim, dims, mxUINT32_CLASS, mxREAL);
-			pINT32Data = mxGetPr(plhs[0]);
+			pINT32Data = mxGetInt32s(plhs[0]);
             getDataInt32(pINT32Data, &fI[0]);
         } else {               
             plhs[0] = mxCreateNumericArray(ndim, dims, mxDOUBLE_CLASS, mxREAL);
-            pDOUBLEData = mxGetPr(plhs[0]);
+            pDOUBLEData = mxGetDoubles(plhs[0]);
             getDataReal64(pDOUBLEData, &fI[0]);
          }
     } else 
