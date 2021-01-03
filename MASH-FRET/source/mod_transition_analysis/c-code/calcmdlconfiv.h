@@ -3,6 +3,7 @@
 
 // DEFAULTS
 #define STEP 0.1 // relative variation of rate coefficients at each step (10%)
+#define TPMIN 1E-8 // minimum transition probability
 #define LRMAX 3.8416 // maximum likelihood ratio for 95% confidence (6.6358 for 99%)
 #define MINPROBSTEP 0.001 // minimum probability step
 

@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "mex.h"
 #include "fwdbwd.h"
 #include "vectop.h"
@@ -42,7 +43,6 @@
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-	int i = 0, k = 0; // loop index
 	
 	// check input and output arguments
 	if (!validArg(nlhs, plhs, nrhs, prhs)){
@@ -57,7 +57,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	
 	// get input values
 	const double *T0 = (const double *) mxGetDoubles(prhs[0]);
-	double *seq[N];
 	const double *B = (const double *) mxGetDoubles(prhs[2]);
 	const double *ip = (const double *) mxGetDoubles(prhs[3]);
 	
@@ -69,20 +68,20 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	
 	// get trajectory lentghs
 	double L[N];
-	int Lsum = 0; 
+	long Lsum = 0; 
 	mwIndex n = 0;
 	for (n=0; n<seqDim[1]; n++){
-		L[(int) n] = (double) mxGetNumberOfElements(mxGetCell(prhs[2],n));
-		Lsum = Lsum + (int) L[(int) n];
+		L[(int) n] = (double) mxGetNumberOfElements(mxGetCell(prhs[1],n));
+		Lsum = Lsum + (long) L[(int) n];
 	}
-	
+
 	// store sequences in a linear vector (for speed)
-	double seq[N*Lsum], *tmp;
-	i = 0;
+	double seq[Lsum], *tmp;
+	long i = 0, j = 0, k = 0;
 	for (n=0; n<seqDim[1]; n++){
-		tmp = (double *) mxGetDoubles(mxGetCell(prhs[2],n));
+		tmp = (double *) mxGetDoubles(mxGetCell(prhs[1],n));
 		k = 0;
-		for (j=i; j<(i+L[(int) n]); j++){
+		for (j=i; j<(i+((long) L[n])); j++){
 			seq[j] = tmp[k];
 			k++;
 		}
@@ -99,9 +98,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	// transpose transition matrix (for speed)
 	double T0t[J*J], posivt[J*J], negivt[J*J];
 	transposeMat(T0t,T0,J,J);
-		
+	
+	//initializes arrays
+	initVect_double(posivt,J*J,0);
+	initVect_double(negivt,J*J,0);
+	
 	// calculate intervals
-	calcRateIv(posivt,negivt,T0t,ip,B,(const double**) seq,J,N,V,L);
+	calcRateIv(posivt,negivt,T0t,ip,B,(const double*) seq,J,N,V,L);
 	
 	// transpose error matrices to be returned
 	transposeMat(posiv,posivt,J,J);
@@ -114,12 +117,15 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 void calcRateIv(double* posiv, double* negiv, 
 		const double* T0, const double* ip, const double* B, const double* seq, int J, int N, int V, double* L){
 	
-	int i = 0, j = 0, k = 0, k2 = 0;
+	int i = 0, k = 0, k2 = 0;
 	int k0[J];
-	long o = 0;
+	long o = 0, j = 0, l = 0;
 	double tp_up = 0, tp_low = 0, logL0 = 0, Lmax = maxVal(L,N);
 	double T[J*J], tpMax[J*J];
-	double fwd = [J*((long) Lmax)], coeff[(long) Lmax];
+	double fwd[J*((long) Lmax)], coeff[(long) Lmax];
+	
+	// initializes max. prob.
+	initVect_double(tpMax,J*J,0);
 	
 	// build index matrix
 	int** id_B = (int **) malloc(V * sizeof(int *));
@@ -135,14 +141,14 @@ void calcRateIv(double* posiv, double* negiv,
 	o = 0; //ini. seq. running index
 	logL0= 0;
 	for (i=0; i<N; i++){
-		fwdprob(fwd,coeff,J,L[i],V,seq,o,T0,B,ip,(const int**) id_B);
+		fwdprob(fwd,coeff,J,(long) L[i],V,seq,o,T0,B,ip,(const int**) id_B);
 		
 		// update total log-likelihood
-		for (j=0; j<L[i]; l++){
+		for (j=0; j<((long) L[i]); j++){
 			logL0 = logL0 + log(coeff[j]);
 		}
 		
-		o = o+L[i]; // incr. seq. running index
+		o = o + (long) L[i]; // incr. seq. running index
 	}
 	
 	// calculate diagonal indexes
@@ -163,7 +169,7 @@ void calcRateIv(double* posiv, double* negiv,
 				if (l!=i && l!=j){
 					tpMax[k] = tpMax[k] + T[k2];
 				}
-				k2 = k2++; // incr. 2nd trans. mat. running index
+				k2++; // incr. 2nd trans. mat. running index
 			}
 			tpMax[k] = 1-tpMax[k];
 			
@@ -200,13 +206,9 @@ void calcRateIv(double* posiv, double* negiv,
 	}
 	
 	// free memory
-	for (i=0; i<J; i++){
-		free(id_T[i]);
-	}
 	for (i=0; i<V; i++){
 		free(id_B[i]);
 	}
-	free(id_T);
 	free(id_B);
 }
 
@@ -214,8 +216,8 @@ void calcRateIv(double* posiv, double* negiv,
 double getRateBound(double* T, int id_ij, int id_ii, double tpMax, double step, double logL0, double* fwd, double* coeff, 
 		const double* ip, const double* B, const double* seq, int J, int N, int V, double* L, const int** id_B){
 	
-	int i = 0, n = 0;
-	long o = 0;
+	int n = 0;
+	long i = 0, o = 0;
 	double a = 0, b = 0;
 	double tp = 0, logL = 0, LR1 = 0, LR2 = 0, tp1 = 0;
 
@@ -223,23 +225,25 @@ double getRateBound(double* T, int id_ij, int id_ii, double tpMax, double step, 
 	step = step*T[id_ij];
 	if (step>=0 && step<MINPROBSTEP){ step = MINPROBSTEP; }
 	else if (step<0 && step>(0-MINPROBSTEP)){ step = 0-MINPROBSTEP; }
-	
+
 	// varies prob and evaluate likelihood ratio
-	while (T[id_ij]>0 && T[id_ij]<tpMax){
+	while (T[id_ij]>TPMIN && T[id_ij]<tpMax){
 		
 		LR1 = LR2;
-		tp1 = T[id_ij];
+		if (T[id_ij]<=TPMIN){ tp1 = TPMIN; }
+		else if (T[id_ij]>=tpMax){ tp1 = tpMax; }
+		else{ tp1 = T[id_ij]; }
 		
 		T[id_ij] = T[id_ij]+step;
-		if (T[id_ij]<0){ T[id_ij] = 0; }
+		if (T[id_ij]<TPMIN){ T[id_ij] = TPMIN; }
 		if (T[id_ij]>tpMax){ T[id_ij] = tpMax; }
 		T[id_ii] = tpMax-T[id_ij];
-		
-		// calculate lieklihood ratio
+
+		// calculate likelihood ratio
 		o = 0; // ini. seq. running index
 		logL = 0;
 		for (n=0; n<N; n++){
-			fwdprob(fwd,coeff,J,L[n],V,seq,o,(const double*) T,B,ip,id_B);
+			fwdprob(fwd,coeff,J,(long) L[n],V,seq,o,(const double*) T,B,ip,id_B);
 			
 			// update total log-likeihhod
 			for (i=0; i<L[n]; i++){
@@ -251,7 +255,7 @@ double getRateBound(double* T, int id_ij, int id_ii, double tpMax, double step, 
 		
 		// calculate log of likelihood ratio
 		LR2 = 2*(logL0-logL);
-
+		
 		if (LR2>LRMAX){ break; }
 	}
 	

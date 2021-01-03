@@ -16,6 +16,14 @@
 #include "engine.h"
 
 
+void initVect_double(double* vect, int nelem, double val){
+	int n = 0;
+	for (n=0; n<nelem; n++){
+		vect[n] = val;
+	}
+}
+
+
 void transposeMat(double* dest, const double* src, int R, int C){
 	int i = 0, j = 0, k = 0, k0 = 0;
 	for (i=0; i<R; i++){
