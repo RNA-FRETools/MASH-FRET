@@ -102,9 +102,23 @@ if toBottom
                     std(I_tr{n}(chan,:));
             end
         end
+        for n = 1:nS
+            % identify donor and acceptor discretized intensity-time 
+            % traces
+            [o,ldon,o] = find(exc==chanExc(S(n,1)));
+            [o,lacc,o] = find(exc==chanExc(S(n,2)));
+            don0 = sum(I_den(:,:,ldon),2);
+            acc0 = sum(I_den(:,:,lacc),2);
+            I_tr{nF+n} = [don0';acc0'];
+            for chan = size(I_tr{n},1)
+                I_tr{nF+n}(chan,:) = (I_tr{nF+n}(chan,:)-...
+                    mean(I_tr{nF+n}(chan,:)))/std(I_tr{nF+n}(chan,:));
+            end
+        end
         res2d = (getDiscr(method, I_tr, incl_bot, prm, thresh, ...
             calc, actstr, h_fig));
-        bot_DTA = zeros(numel(res2d{n}(1,:)),nF);
+        
+        bot_DTA = zeros(numel(res2d{n}(1,:)),nF+nS);
         for n = 1:nF
             stateVals = unique(res2d{n}(1,:));
             FRET_st = zeros(size(res2d{n}(1,:)));
@@ -114,24 +128,34 @@ if toBottom
             end
             bot_DTA(:,n) = FRET_st';
         end
+        for n = 1:nS
+            stateVals = unique(res2d{nF+n}(1,:));
+            S_st = zeros(size(res2d{nF+n}(1,:)));
+            
+            for val = stateVals
+                S_st(res2d{nF+n}(1,:)==val) = ...
+                    mean(S_tr(incl_s & res2d{nF+n}(1,:)==val));
+            end
+            bot_DTA(:,nF+n) = S_st';
+        end
         
     else
         bot_DTA = (getDiscr(method, [FRET_tr; S_tr], incl_bot, prm, thresh, ...
             calc, actstr, h_fig))';
-    end
 
-    % identify and sort resulting states
-    for n = 1:(nF+nS)
-        states_i = (sort(unique(bot_DTA(:,n)), 'descend'))';
-        J = numel(states_i);
-        states(n,1:J) = states_i;
+        % identify and sort resulting states
+        for n = 1:(nF+nS)
+            states_i = (sort(unique(bot_DTA(:,n)), 'descend'))';
+            J = numel(states_i);
+            states(n,1:J) = states_i;
+        end
     end
 end
 
 % discretize top traces
 if toBottom == 2 || ~toBottom
     if is2D % vbFRET 2D
-        I_tr = cell(1,nF);
+        I_tr = cell(1,nF+nS);
         for n = 1:nF
             % identify donor and acceptor discretized intensity-time 
             % traces
@@ -143,11 +167,27 @@ if toBottom == 2 || ~toBottom
                     std(I_tr{n}(chan,:));
             end
         end
+        for n = 1:nS
+            % identify donor and acceptor discretized intensity-time 
+            % traces
+            [o,ldon,o] = find(exc==chanExc(S(n,1)));
+            [o,lacc,o] = find(exc==chanExc(S(n,2)));
+            don0 = sum(I_den(:,:,ldon),2);
+            acc0 = sum(I_den(:,:,lacc),2);
+            I_tr{nF+n} = [don0';acc0'];
+            for chan = size(I_tr{n},1)
+                I_tr{nF+n}(chan,:) = (I_tr{nF+n}(chan,:)-mean(I_tr{nF+n}(chan,:)))/...
+                    std(I_tr{nF+n}(chan,:));
+            end
+        end
         res2d = (getDiscr(method, I_tr, incl_bot, prm, thresh, calc, ...
             actstr, h_fig));
-        bot_DTA = zeros(numel(res2d{n}(1,:)),nF);
+        
+        % calculate states from 2D FRET discretization
+        bot_DTA = zeros(numel(res2d{n}(1,:)),nF+nS);
         top_DTA = zeros(size(I_den)); % set to 0 all intensity state seq
         for n = 1:nF
+            % calculate FRET states
             stateVals = unique(res2d{n}(1,:));
             FRET_st = zeros(size(res2d{n}(1,:)));
             
@@ -157,12 +197,25 @@ if toBottom == 2 || ~toBottom
             end
             bot_DTA(:,n) = FRET_st';
             
+            % calculate intensity states
             don = FRET(n,1); acc = FRET(n,2);
             [o,l_f,o] = find(exc==chanExc(FRET(n,1)));
             top_DTA(res2d{n}(1,:)==val,don,l_f) = ...
                 mean(I_den(incl_fret & res2d{n}(1,:)==val,don,l_f));
             top_DTA(res2d{n}(1,:)==val,acc,l_f) = ...
                 mean(I_den(incl_fret & res2d{n}(1,:)==val,acc,l_f));
+        end
+        
+        % calculate stoichiometry states from 2D discretization
+        for n = 1:nS
+            stateVals = unique(res2d{nF+n}(1,:));
+            S_st = zeros(size(res2d{nF+n}(1,:)));
+            
+            for val = stateVals
+                S_st(res2d{nF+n}(1,:)==val) = ...
+                    mean(S_tr(incl_s & res2d{nF+n}(1,:)==val));
+            end
+            bot_DTA(:,nF+n) = S_st';
         end
         
     else
