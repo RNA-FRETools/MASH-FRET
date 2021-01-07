@@ -78,7 +78,7 @@ for nL = 1:nL_max
             [3 0 true 1 2 (2+nChan-1) nChan nL false 5 5 0],p.wl(1:nL)};
         p.asciiOpt{nL,nChan}.vidImp = {false ''};
         p.asciiOpt{nL,nChan}.coordImp = ...
-            {{false,'',{reshape(1:2*nChan,2,nChan)',1},256},[false 1]};
+            {{false,'',{reshape(1:2*nChan,2,nChan)',1},100},[false 1]};
         p.asciiOpt{nL,nChan}.expCond = defprm_nL;
         p.asciiOpt{nL,nChan}.factImp = {false '' {} false '' {}};
         
