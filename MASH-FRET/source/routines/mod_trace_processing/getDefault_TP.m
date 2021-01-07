@@ -42,8 +42,9 @@ p.nL_max = nL_max;
 p.nChan = nChan_def;
 p.nL = nL_def;
 p.wl = [];
-while isempty(p.wl) || numel(unique(p.wl))~=nL_max
-    p.wl = round(1000*sort(rand(1,nL_max))); % laser wavelengths
+while isempty(p.wl) || numel(unique(p.wl))~=nL_max % laser wavelengths
+%     p.wl = round(1000*sort(rand(1,nL_max))); % use random numbers
+    p.wl = (0:nL_max-1)*106 + 532; % use fixed numbers (for merging compatibile projects)
 end
 p.mash_files = cell(nL_max,nChan_max);
 p.ascii_dir = cell(nL_max,nChan_max);
@@ -163,6 +164,7 @@ p.contrast = 90;
 p.brightness = 60;
 
 % parameters for panel Background
+p.mash_file_bga = '2chan2exc_short'; % data set used in background analyzer (shorter traces=faster), must have the same number of channel and laser as default set
 p.bgMeth = 2;
 p.bgPrm = [... % param1, param2, bg intensity, x-dark, y-dark, auto dark
     0   20 100 0  0  0 % Manual
