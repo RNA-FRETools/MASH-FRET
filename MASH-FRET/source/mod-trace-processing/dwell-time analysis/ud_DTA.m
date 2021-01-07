@@ -17,11 +17,11 @@ if ~isempty(p)
     p_panel = p.proj{proj}.curr{mol}{4};
     chan = p.proj{proj}.fix{3}(4);
     method = p_panel{1}(1);
-    toFRET = p_panel{1}(2);
+    toBot = p_panel{1}(2);
     
     data_str = getStrPop('DTA_chan',...
         {labels FRET S exc p.proj{proj}.colours});
-    if toFRET==1 && (nFRET+nS)>0
+    if toBot==1 && (nFRET+nS)>0
         if chan>(nFRET+nS)
             chan = nFRET + nS;
         end
@@ -54,11 +54,11 @@ if ~isempty(p)
     
     set(h.popupmenu_TP_states_method, 'Value', method);
     
-    if method == 3 % one state
+    if method==4 % one state
         set(h.popupmenu_TP_states_data, 'String', {'none'}, 'Value', 1);
     end
     
-    switch toFRET
+    switch toBot
         case 2 % all
             set(h.popupmenu_TP_states_applyTo, 'Value', 3);
         case 1 % bottom
@@ -104,12 +104,12 @@ if ~isempty(p)
             'off');
     end
 
-    if ~(~toFRET && (nFRET + nS)>0 && chan<=nFRET+nS)
+    if ~(~toBot && (nFRET + nS)>0 && chan<=nFRET+nS)
         set(h_param(4),'Enable','off','string','');
         set(h_param_txt(4),'Enable','off');
     end
 
-    if method == 1 % Thresholding
+    if method==1 % Thresholding
 
         set([h.text_TP_states_lowThresh,h.text_TP_states_state,...
             h.text_TP_states_highThresh h.text_TP_states_thresholds ...
@@ -182,7 +182,7 @@ if ~isempty(p)
         end
     end
     
-    if ~toFRET && chan<=nFRET+nS
+    if ~toBot && chan<=nFRET+nS
         set(h_param([1:3,5:6]),'Enable','off','string','');
         set(h_param_txt([1:3,5:6]),'Enable','off');
         set([h.text_TP_states_thresholds h.popupmenu_TP_states_indexThresh ...
