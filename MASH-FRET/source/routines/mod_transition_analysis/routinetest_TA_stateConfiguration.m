@@ -128,12 +128,6 @@ for meth = 1:nMeth
                 pushbutton_expTDPopt_next_Callback({p.dumpdir,...
                     [sprintf(p.exp_clst,meth,cnfg),'_nodiag.clst']},[],...
                     h_fig);
-                
-                % save default project
-                if meth==p.clstMeth && isequal(clstConfig,p.clstConfig)
-                    pushbutton_TDPsaveProj_Callback(...
-                        {p.annexpth,p.mash_file},[],h_fig);
-                end
 
                 disp(cat(2,prefix,'>> >> with diagonal clusters...'));
                 clstConfig(2) = 1;
@@ -215,12 +209,6 @@ for meth = 1:nMeth
             set_TA_expOpt(opt0,h_fig);
             pushbutton_expTDPopt_next_Callback({p.dumpdir,...
                 [sprintf(p.exp_clst,meth,cnfg),'.clst']},[],h_fig);
-
-            % save default project
-            if meth==p.clstMeth && isequal(clstConfig,p.clstConfig)
-                pushbutton_TDPsaveProj_Callback({p.annexpth,p.mash_file},...
-                    [],h_fig);
-            end
         end
     end
 end
