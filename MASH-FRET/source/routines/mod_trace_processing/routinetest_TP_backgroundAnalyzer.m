@@ -11,10 +11,6 @@ h = guidata(h_fig);
 
 setDefault_TP(h_fig,p);
 
-disp(cat(2,prefix,'>> import file ',p.mash_files{nL,nChan}));
-pushbutton_addTraces_Callback({p.annexpth,p.mash_files{nL,nChan}},...
-    [],h_fig);
-
 % test Background analyzer
 pushbutton_optBg_Callback(h.pushbutton_optBg,[],h_fig);
 h = guidata(h_fig);
