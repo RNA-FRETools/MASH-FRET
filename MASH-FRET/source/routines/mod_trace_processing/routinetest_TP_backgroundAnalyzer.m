@@ -9,7 +9,12 @@ function routinetest_TP_backgroundAnalyzer(h_fig,p,prefix)
 
 h = guidata(h_fig);
 
+p.mash_files{p.nL,p.nChan} = p.mash_file_bga;
 setDefault_TP(h_fig,p);
+
+disp(cat(2,prefix,'>> import file ',p.mash_files{nL,nChan}));
+pushbutton_addTraces_Callback({p.annexpth,p.mash_files{nL,nChan}},...
+    [],h_fig);
 
 % test Background analyzer
 pushbutton_optBg_Callback(h.pushbutton_optBg,[],h_fig);
