@@ -10,7 +10,13 @@ if ~isempty(p.proj)
     proj = p.curr_proj;
     mol = p.curr_mol(proj);
     val = get(obj, 'Value');
-    
+    meth = p.proj{proj}.curr{mol}{4}{1}(1);
+    if meth==3 && val~=1
+        val = 1;
+        disp(['2D analysis is available for intensity ratio (bottom)',...
+            ' traces only.']);
+    end
+
     switch val
         
         case 1 % bottom

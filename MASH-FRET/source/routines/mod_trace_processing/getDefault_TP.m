@@ -24,7 +24,8 @@ p.dumpdir = cat(2,pname,filesep,'dump'); % path to exported data
 if exist(p.dumpdir,'dir')
     cd(p.annexpth); % change directory
     try
-        rmdir(p.dumpdir); % delete dump directory
+        warning off MATLAB:RMDIR:RemovedFromPath
+        rmdir(p.dumpdir,'s'); % delete dump directory
     catch err
         disp(cat(2,'WARNING: the previous dump directory could not be ',...
             'deleted (needs administrator privileges).'));
@@ -41,8 +42,9 @@ p.nL_max = nL_max;
 p.nChan = nChan_def;
 p.nL = nL_def;
 p.wl = [];
-while isempty(p.wl) || numel(unique(p.wl))~=nL_max
-    p.wl = round(1000*sort(rand(1,nL_max))); % laser wavelengths
+while isempty(p.wl) || numel(unique(p.wl))~=nL_max % laser wavelengths
+%     p.wl = round(1000*sort(rand(1,nL_max))); % use random numbers
+    p.wl = (0:nL_max-1)*106 + 532; % use fixed numbers (for merging compatibile projects)
 end
 p.mash_files = cell(nL_max,nChan_max);
 p.ascii_dir = cell(nL_max,nChan_max);
@@ -77,7 +79,7 @@ for nL = 1:nL_max
             [3 0 true 1 2 (2+nChan-1) nChan nL false 5 5 0],p.wl(1:nL)};
         p.asciiOpt{nL,nChan}.vidImp = {false ''};
         p.asciiOpt{nL,nChan}.coordImp = ...
-            {{false,'',{reshape(1:2*nChan,2,nChan)',1},256},[false 1]};
+            {{false,'',{reshape(1:2*nChan,2,nChan)',1},100},[false 1]};
         p.asciiOpt{nL,nChan}.expCond = defprm_nL;
         p.asciiOpt{nL,nChan}.factImp = {false '' {} false '' {}};
         
