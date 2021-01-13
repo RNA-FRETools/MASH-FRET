@@ -121,7 +121,7 @@ if toBottom
         res2d = (getDiscr(method, I_tr, [], prm, thresh, calc, actstr, ...
             h_fig));
         
-        bot_DTA = zeros(numel(res2d{n}(1,:)),nF+nS);
+        bot_DTA = zeros(numel(res2d{numel(res2d)}(1,:)),nF+nS);
         for n = 1:nF
             stateVals = unique(res2d{n}(1,:));
             FRET_st = zeros(size(res2d{n}(1,:)));
