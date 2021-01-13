@@ -1,6 +1,6 @@
-Last update 08.01.2021 by mcash
+Last update 13.01.2021 by mcash
 
-How to visualize the local doc as rendered on the web (for Windows users for Windows users)?
+How to visualize the local doc as rendered on the web (for Windows users)?
 
 In order to visualize the local documentation as rendered on the web, you will need to:
 - install Ruby
