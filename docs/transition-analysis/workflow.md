@@ -129,9 +129,9 @@ To build the TDP:
 
 ---
 
-## Determine the most sufficient state configuration
+## Determine the observablle state configuration
 
-Identifying the most probable configuration of clusters is equivalent to identifying the most probable state configuration.
+Clustering transition densities is equivalent to identifying the most probable configuration of states having distinct observed values.
 
 Ideally, the TDP can be partitioned into a <u>cluster matrix</u> made of 
 [*K* = *J*<sup>2</sup>](){: .math_var } clusters, with 
@@ -207,17 +207,49 @@ To determine the most sufficient state configuration:
 
 ---
 
-## Estimate state transition rates and associated cross-sample variability
+## Estimate state lifetimes 
 
-Rate coefficients 
-[*k*<sub>*j*,*j'*</sub>](){: .math_var} are similar to rates involved in a chemical equilibrium, where two states 
-[*j*](){: .math_var } and 
-[*j'*](){: .math_var } are in equilibrium.
-Rates [*k*<sub>*j*,*j'*</sub>](){: .math_var} are associated to the probability or speed (in second<sup>-1</sup>) of transformation of a molecule in state 
-[*j*](){: .math_var } into a state 
+## Estimate the kinetic model and associated transition rate coefficients
+
+We've just seen how multiple state sequences are grouped to give a global state configuration.
+Up to now, states have distinct observed values, which allows us to collect the associated dwell times in all state sequences and build dwell time histograms.
+To solve the kinetic model that desscribe our data set, we must:
+- Disantangle the potential degenerated states hidden behind observed states (degenerated states share the same observed value but differ in their kinetics),
+- identify allowed/forbidden state transitions and quantify the associated rate coefficients.
+
+To ease the comprehension, a kinetic model is represented as a treilli diagram, where states are depicted by circles and allowed transitions by arrows.
+For instance, the kinetic model of 2 observed FRET states (
+[*FRET*<sub>1</sub>](){: .math_var}=0.2 and 
+[*FRET*<sub>2</sub>](){: .math_var}=0.7) with one state being degenerated three times can be depicted as:
+
+<a href="../assets/images/figures/TA-workflow-scheme-treilli-example.png" title="Four-state kinetic model"><img src="../assets/images/figures/TA-workflow-scheme-treilli-example.png" alt="Illustration of a four-state kinetic model"></a>
+
+where 
+[*k*<sub>*j*,*j'*</sub>](){: .math_var} is the rate coefficient that governs transitions from state 
+[*j*](){: .math_var } to 
+[*j'*](){: .math_var }.
+Rate coeffcicients are equivalent to the transformation frequency (in events per second) of a molecule in state 
+[*j*](){: .math_var } to state 
 [*j'*](){: .math_var }.
 
-They can be determined from the cumulative histogram of dwell times 
+#### Characterization of state degeneracy
+
+By definition, the dwell times of an unambiguous state follow a single exponential distribution. 
+The presence of degenerated states usually breaks this simple shape by introducing multiple decays.
+
+<a href="../assets/images/figures/TA-workflow-scheme-dt-degen.png" title="Dwell time histograms with and without degeneracy"><img src="../assets/images/figures/TA-workflow-scheme-dt-degen.png" alt="Illustration of degeneracy in dwell time histograms"></a>
+
+In MASH-FRET, state degeneracy is determined from dwell time histgrams via two methods:
+- estimation of the most sufficient **discrete-phase type distribution**
+- fit of a **mixture of exponentials** (weighted sum of exponential)
+
+Historically, the number of degenerated states, or degeneracy, is determined as the number of components in the mixture necessary to describe the histogram.
+However, the 
+As time-binned data suffer from an absence of dwell times below 1 data point, the normalized complementary cumulative dwell time histogram is used. 
+This minimizes the impact of this first histogram bin while preserving the overall shape.
+
+
+Transition rate coefficients can be determined from the cumulative histogram of dwell times 
 [&#916;*t*<sub>*j*,*j'*</sub>](){: .math_var } in state 
 [*j*](){: .math_var } prior transiting to state 
 [*j'*](){: .math_var } by fitting an exponential decay function such as:
