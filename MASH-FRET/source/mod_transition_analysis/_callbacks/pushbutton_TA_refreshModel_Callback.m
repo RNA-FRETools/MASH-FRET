@@ -178,8 +178,8 @@ else % use guess from panel "Exponential fit"
                 pop = prm.lft_res{v1,1}(:,1,2:end)./repmat(dec',[1,1,V-1]);
                 pop = pop(:)';
             else
-                dec = prm.lft_res{v1,1}(:,2,1)';
-                pop = prm.lft_res{v1,1}(:,2,2:end)./repmat(dec',[1,1,V-1]);
+                dec = prm.lft_res{v1,2}(:,2,1)';
+                pop = prm.lft_res{v1,2}(:,2,2:end)./repmat(dec',[1,1,V-1]);
                 pop = pop(:)';
             end
             r = cat(2,r,1./dec);
