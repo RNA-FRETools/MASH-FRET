@@ -16,6 +16,7 @@ proj = p.curr_proj;
 tpe = p.curr_type(proj);
 tag = p.curr_tag(proj);
 
+p.proj{proj}.curr{tag,tpe}.clst_start{3}(k,:) = rgb;
 p.proj{proj}.prm{tag,tpe}.clst_start{3}(k,:) = rgb;
 
 h.param.TDP = p;
