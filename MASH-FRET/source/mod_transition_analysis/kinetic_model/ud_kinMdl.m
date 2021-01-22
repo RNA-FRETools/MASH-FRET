@@ -18,7 +18,7 @@ tag = p.curr_tag(proj);
 curr = p.proj{proj}.curr{tag,tpe};
 prm = p.proj{proj}.prm{tag,tpe};
 
-% set all control enabled
+% set all control off-enabled
 setProp(h.uipanel_TA_kineticModel, 'Enable', 'off');
 
 if ~(isfield(curr,'clst_res') && ~isempty(curr.clst_res{1}))
@@ -45,6 +45,7 @@ set([h.text_TA_mdlComplexity,h.popupmenu_TA_mdlMeth,...
     h.pushbutton_TA_refreshModel,h.edit_TA_mdlRestartNb,...
     h.text_TA_mdlRestartNb],'enable','on');
 set(h.edit_TA_mdlRestartNb,'string',num2str(T));
+set(h.popupmenu_TA_mdlMeth,'value',meth_mdl);
 if meth_mdl==1
     set([h.text_TA_mdlJmax,h.edit_TA_mdlJmax],'enable','on');
     set(h.edit_TA_mdlJmax,'string',num2str(D));
