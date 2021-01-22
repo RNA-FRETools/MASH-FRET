@@ -111,10 +111,26 @@ for meth = 1:nMeth
                         sprintf(p.exp_defSlct,cnfg,shape),'_nodiag.png']},...
                         [],h_fig);
                 end
+                
+                % test cluster color list prior clustering
+                K = numel(get(h.popupmenu_TA_setClstClr,'string'));
+                for k = 1:K
+                    set(h.popupmenu_TA_setClstClr,'value',k);
+                    popupmenu_TA_setClstClr_Callback(...
+                        h.popupmenu_TA_setClstClr,[],h_fig);
+                end
 
                 % start clustering
                 pushbutton_TDPupdateClust_Callback(...
                     h.pushbutton_TDPupdateClust,[],h_fig);
+                
+                % test cluster color list after clustering
+                K = numel(get(h.popupmenu_TA_setClstClr,'string'));
+                for k = 1:K
+                    set(h.popupmenu_TA_setClstClr,'value',k);
+                    popupmenu_TA_setClstClr_Callback(...
+                        h.popupmenu_TA_setClstClr,[],h_fig);
+                end
 
                 % save project
                 pushbutton_TDPsaveProj_Callback({p.dumpdir,...
@@ -195,9 +211,25 @@ for meth = 1:nMeth
                     h_fig);
                 defTested(cnfg,shape) = true;
             end
+            
+            % test cluster color list prior clustering
+            K = numel(get(h.popupmenu_TA_setClstClr,'string'));
+            for k = 1:K
+                set(h.popupmenu_TA_setClstClr,'value',k);
+                popupmenu_TA_setClstClr_Callback(...
+                    h.popupmenu_TA_setClstClr,[],h_fig);
+            end
 
             pushbutton_TDPupdateClust_Callback(h.pushbutton_TDPupdateClust,...
                 [],h_fig);
+            
+            % test cluster color list after clustering
+            K = numel(get(h.popupmenu_TA_setClstClr,'string'));
+            for k = 1:K
+                set(h.popupmenu_TA_setClstClr,'value',k);
+                popupmenu_TA_setClstClr_Callback(h.popupmenu_TA_setClstClr,...
+                    [],h_fig);
+            end
 
             % save project
             pushbutton_TDPsaveProj_Callback(...
