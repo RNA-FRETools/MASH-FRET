@@ -15,7 +15,7 @@ State configuration is the second panel of module Transition analysis.
 
 Use this panel to determine the optimum number of transition clusters and associated cross-sample variability.
 
-<a class="plain" href="../../assets/images/gui/TA-panel-state-configuration.png"><img src="../../assets/images/gui/TA-panel-state-configuration.png" style="max-width:491px;"></a>
+<a class="plain" href="../../assets/images/gui/TA-panel-state-configuration.png"><img src="../../assets/images/gui/TA-panel-state-configuration.png" style="max-width:437px;"></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -275,7 +275,7 @@ Press
 
 ## Visualization area
 
-Use this interface to visualize the TDP and analysis results.
+Use this interface to visualize the TDP and analysis results or to modify cluster color code.
 
 The axes display two types of plots depending on which stage the transition analysis is at.
 
@@ -302,8 +302,8 @@ When hoovering the axes with the mouse selection tool activated, mouse coordinat
 
 After completing TDP clustering, clustered transition are indicated by cross markers that are colored according to the cluster they belong to.
 
-Cluster colors can be modified in the 
-[Transitions](panel-state-transition-rates.html#transitions) panel.
+Cluster colors can be modified by selecting the cluster index in list **(b)** prior opening the color picker by pressing 
+![Set color](../../assets/images/gui/TA-but-set-color.png "Set color").
 
 When the 
 [Method settings](#method-settings) include the use of GM clustering, the contour of each Gaussian-shaped cluster is plotted as a white solid line.
