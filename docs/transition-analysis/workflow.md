@@ -359,7 +359,7 @@ To estimate state degeneracy via stretched exponential fit:
 A kinetic model can be presented as a treilli diagram, where states are depicted by circles and state transitions by arrows.
 For instance, the kinetic model of 2 observed FRET states (
 [*FRET*<sub>1</sub>](){: .math_var}=0.2 and 
-[*FRET*<sub>2</sub>](){: .math_var}=0.7) with the highest FRET value hiding three degenerated states, can be depicted as:
+[*FRET*<sub>2</sub>](){: .math_var}=0.7) with the highest FRET value hiding three degenerated states that do not interconvert, can be depicted as:
 
 <a href="../assets/images/figures/TA-workflow-scheme-treilli-example.png" title="Four-state kinetic model"><img src="../assets/images/figures/TA-workflow-scheme-treilli-example.png" alt="Illustration of a four-state kinetic model"></a>
 
@@ -390,13 +390,13 @@ It eventually converges to a maximum likelihood estimator (MLE) of transition pr
 where 
 [*k<sub>jj'</sub>*](){: .math_var } is the rate coefficient that governs transitions from state 
 [*j*](){: .math_var } to state 
-[*j'*](){: .math_var } (in seconds^-1), 
-[*p<sub>jj'</sub>*](){: .math_var } is the associated transition probability correspoonding to the matrix element at row 
+[*j'*](){: .math_var } (in seconds<sup>-1</sup>), 
+[*p<sub>jj'</sub>*](){: .math_var } is the associated transition probability corresponding to the matrix element at row 
 [*j*](){: .math_var } and column
 [*j'*](){: .math_var } and 
 [*t*<sub>exp</sub>](){: .math_var } is the bin time in trajectories (in seconds).
 
-To ensure the validity of the model, a syntheic set of state trajectories is simulated using the kinetic model parameters and the experimental mensurations (sample size, trajectory length) and compared visually with the experimental data set.
+To ensure the validity of the inferred model, a set of synthetic state trajectories is produced using the kinetic model parameters and the experimental mensurations (sample size, trajectory length), which is then compared to the experimental data set.
 Special attention is given to the shape of each dwell time hisotgram, the populations of observed states and the number of transitions between observed states. 
 
 To estimate transition rate coefficients via transition probabilities:
