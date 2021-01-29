@@ -97,9 +97,9 @@ switch sect
     case 'ta state configuration'
         link_str = cat(2,base_ta,'panels/panel-state-configuration.html');
     case 'state lifetimes'
-        link_str = cat(2,base_ta,'panels/panel-state-transition-rates.html');
+        link_str = cat(2,base_ta,'panels/panel-dwell-time-histograms.html');
     case 'kinetic model'
-        link_str = cat(2,base_ta,'panels/panel-state-transition-rates.html');
+        link_str = cat(2,base_ta,'panels/panel-kinetic-model.html');
     case 'ta export options'
         link_str = cat(2,base_ta,'functionalities/set-export-options.html');
         
