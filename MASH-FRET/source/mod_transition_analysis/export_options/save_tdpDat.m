@@ -387,7 +387,7 @@ if isRes && tdp_clust
                     '\tbootstrapped number of states: ');
             elseif mat==2
                 str_prm = cat(2,str_prm,'\tbootstrapped number of',...
-                    ' states for half-TDP: ');
+                    ' clusters for half-TDP: ');
             else
                 str_prm = cat(2,str_prm,...
                     '\tbootstrapped number of clusters: ');

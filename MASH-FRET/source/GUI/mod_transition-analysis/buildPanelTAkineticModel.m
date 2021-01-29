@@ -17,14 +17,14 @@ fact = 5;
 str0 = ' Go! ';
 str1 = 'model complexity';
 str2 = {'Find most sufficient complexity (recommended)',...
-    'Use "State lifetimes" complexity'};
+    'Use "Dwell time histograms" complexity'};
 str3 = 'max';
 str4 = 'restart';
 ttl0 = 'BIC';
 ttl1 = 'Dwell times';
 ttl2 = 'Pop.';
 ttl3 = 'Trans.';
-ttstr0 = wrapHtmlTooltipString('Method to determine the <b>number of degenerated levels</b> for each state value: (1) determined via E-M inferrences of DPH fit and BIC-based model selection, and (2) use the model complexity defined in panel "State lifetimes".');
+ttstr0 = wrapHtmlTooltipString('Method to determine the <b>number of degenerated levels</b> for each state value: (1) determined via E-M inferrences of DPH fit and BIC-based model selection, and (2) use the model complexity defined in panel "Dwell time histograms".');
 ttstr1 = wrapHtmlTooltipString('Maximum number of degenerated levels to fit');
 ttstr2 = wrapHtmlTooltipString('Number of <b>matrix initializations</b> used to infer transition rate constants: a large number prevents to converge to a local maxima but is time consuming; <b>restart = 5</b> is a good compromise between time and accuracy');
 ttstr3 = wrapHtmlTooltipString('<b>Refresh transition rate constants</b> and simulation');

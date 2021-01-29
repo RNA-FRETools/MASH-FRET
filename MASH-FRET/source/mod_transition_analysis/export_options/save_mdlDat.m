@@ -48,7 +48,7 @@ if opt(1) % model selection results
 end
 
 if opt(2) % optimized kinetic model parameters
-    fname_mdl = [pname,rname,'_model.txt'];
+    fname_mdl = [pname,rname,'_mdl.txt'];
     fname_mdl = getCorrName(fname_mdl, [], h_fig);
     if sum(fname_mdl)
         fname_mdl = overwriteIt(fname_mdl,pname,h_fig);
@@ -102,7 +102,7 @@ if opt(2) % optimized kinetic model parameters
 end
 
 if opt(3) % experimental vs simulated data
-    fname_sim = [pname,rname,'_simdata.txt'];
+    fname_sim = [pname,rname,'.dt'];
     fname_sim = getCorrName(fname_sim, [], h_fig);
     if sum(fname_sim)
         fname_sim = overwriteIt(fname_sim,pname,h_fig);
@@ -121,7 +121,8 @@ if opt(3) % experimental vs simulated data
         
         % write data to file
         f = fopen([pname fname_sim], 'Wt');
-        fprintf(f,'dwell time(s)\tmolecule\tstate before\tstate after\n');
+        fprintf(f,['dwell time (seconds)\tmolecule\tstate\tstate after ',...
+            'transition\n']);
         fprintf(f,'%d\t%i\t%i\t%i\t\n',dt');
         fclose(f);
         
