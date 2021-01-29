@@ -48,7 +48,7 @@ if opt(1) % model selection results
 end
 
 if opt(2) % optimized kinetic model parameters
-    fname_mdl = [pname,rname,'_model.txt'];
+    fname_mdl = [pname,rname,'_mdl.txt'];
     fname_mdl = getCorrName(fname_mdl, [], h_fig);
     if sum(fname_mdl)
         fname_mdl = overwriteIt(fname_mdl,pname,h_fig);
@@ -102,7 +102,7 @@ if opt(2) % optimized kinetic model parameters
 end
 
 if opt(3) % experimental vs simulated data
-    fname_sim = [pname,rname,'_simdata.txt'];
+    fname_sim = [pname,rname,'.dt'];
     fname_sim = getCorrName(fname_sim, [], h_fig);
     if sum(fname_sim)
         fname_sim = overwriteIt(fname_sim,pname,h_fig);
