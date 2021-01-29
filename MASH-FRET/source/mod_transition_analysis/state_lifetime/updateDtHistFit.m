@@ -70,10 +70,11 @@ if auto
     end
     
     fitprm = res.fit_ref(:,:,1);
+    stchExp = false;
     nExp = size(fitprm,1);
     boba = true;
     
-    prm.lft_start{1}{v,1}(2) = false; % stretched exp
+    prm.lft_start{1}{v,1}(2) = stchExp; % stretched exp
     prm.lft_start{1}{v,1}(3) = nExp; % exp nb.
     prm.lft_start{1}{v,1}(5) = boba; % boba
     prm.lft_start{1}{v,1}(7) = nSpl; % sample number
@@ -104,11 +105,13 @@ else
     
     % fit all dwell times (to get lifetimes)
     if stchExp
+        nExp = 1;
         % amp, dec, beta
         p_fit.lower = lft_k{2}(1,[1 4 7]);
         p_fit.start = lft_k{2}(1,[2 5 8]);
         p_fit.upper = lft_k{2}(1,[3 6 9]);
     else
+        nExp = size(lft_k{2}(:,[1 4]),1);
         % amp1, dec1, amp2, dec2 ...
         p_fit.lower = reshape(lft_k{2}(:,[1 4])', [1 ...
             numel(lft_k{2}(:,[1 4]))]);
@@ -151,21 +154,35 @@ for v2 = vs
     end
 
     % fit
-    if auto % mute confirmation about number of replicates
-        h = guidata(h_fig);
-        prevMute = h.mute_actions;
-        h.mute_actions = true;
-        guidata(h_fig, h);
-    end
-    subres = fitDt(dat,v,v2,excl,prm.clst_res{4}{v,k},p_fit,p_boba,h_fig,...
-        lb);
-    if auto % reset action muting
-        h = guidata(h_fig);
-        h.mute_actions = prevMute;
-        guidata(h_fig, h);
-    end
-    if isempty(subres)
-        return
+    if isempty(prm.clst_res{4}{v,k})
+        if stchExp
+            ncol = 3;
+        else
+            ncol = 2;
+        end
+        subres.boba_mean = NaN(nExp,2*ncol);
+        subres.boba_inf = NaN(nExp,ncol);
+        subres.boba_sup = NaN(nExp,ncol);
+        subres.histspl = [];
+        subres.boba_fitres = [];
+        subres.fit_ref = NaN(nExp,ncol);
+    else
+        if auto % mute confirmation about number of replicates
+            h = guidata(h_fig);
+            prevMute = h.mute_actions;
+            h.mute_actions = true;
+            guidata(h_fig, h);
+        end
+        subres = fitDt(dat,v,v2,excl,prm.clst_res{4}{v,k},p_fit,p_boba,...
+            h_fig,lb);
+        if auto % reset action muting
+            h = guidata(h_fig);
+            h.mute_actions = prevMute;
+            guidata(h_fig, h);
+        end
+        if isempty(subres)
+            return
+        end
     end
 
     % concatenate results
