@@ -19,7 +19,7 @@ The window is accessed by pressing
 Press 
 ![Next >>](../../assets/images/gui/TA-but-next-supsup.png "Next >>") to start file export.
 
-<a href="../../assets/images/gui/TA-area-project-management-export.png"><img src="../../assets/images/gui/TA-area-project-management-export.png" style="max-width: 246px;"/></a>
+<a href="../../assets/images/gui/TA-area-project-management-export.png"><img src="../../assets/images/gui/TA-area-project-management-export.png" style="max-width: 466px;"/></a>
 
 ## Window components
 {: .no_toc .text-delta }
@@ -32,7 +32,7 @@ Press
 
 ## Transition density plot (TDP)
 
-Use this panel to define the file formats to export the TDP and clustering results.
+Use this panel to export the TDP and clustering results.
 
 <img src="../../assets/images/gui/TA-area-project-management-export-tdp.png" style="max-width: 219px;"/>
 
@@ -60,7 +60,7 @@ The TDP matrix can also be exported to a PNG image file by activating the option
 
 ## Kinetic analysis
 
-Use this panel to define the file formats to export dwell time histograms and fitting results.
+Use this panel to export dwell time histograms and fitting results.
 
 <img src="../../assets/images/gui/TA-area-project-management-export-kin.png" style="max-width: 210px;"/>
 
@@ -72,6 +72,28 @@ Fitting results can also be exported to separated ASCII
 
 If the fitting 
 [Method settings](../panels/panel-state-transition-rates.html#method-settings) include BOBA-FRET:
-* the .fit file can be appended with bootstrapping parameters and results by activating the option in **(c)**
-* plots of bootstrap histogram samples and associated fit can be exported to a multi-pages .pdf file by activating the option in **(d)**
+* the [.fit file](../../output-files/fit-dwelltime-fit.html) can be appended with bootstrapping parameters and results by activating the option in **(c)**
+* plots of bootstrap histogram samples and associated fit can be exported to a multi-pages [.pdf file](../../output-files/pdf-histogram-analysis-bootstrap-plots.html) by activating the option in **(d)**
+
+---
+
+## Kinetic model
+
+Use this panel to export results of model selection on DPHs, the kinetic model parameters and simulated data.
+
+<img src="../../assets/images/gui/TA-area-project-management-export-model.png" style="max-width: 201px;"/>
+
+If state degeneracy was determined with model selection on DPHs, the BIC values obtained for all state degeneracy can be summarize in ASCII 
+[.txt files](../../output-files/txt-dph-model-select.html) by activating the options in **(a)**.
+
+The inferred kinetic model including state values, lifetimes, initial probabilities and transition rate coefficients can be exported to ASCII 
+[.txt files](../../output-files/txt-kinetic-model.html) by activating the options in **(b)**.
+
+The synthetic dwell time set created with the kinetic model parameters can be exported to ASCII 
+[.dt files](../../output-files/dt-dwelltimes.html) by activating the options in **c)**.
+
+
+
+
+
 
