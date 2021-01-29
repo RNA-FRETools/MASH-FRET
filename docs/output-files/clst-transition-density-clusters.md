@@ -55,44 +55,100 @@ Clustering methods, parameters and results are written using the following struc
 ### Method settings
 {: .no_toc }
 
-Method settings common to all type of clustering concern the clustering method, the maximum number of state to use in the cluster configuration, as well as TDP bootstrapping parameters, and are written such as:
+Method settings common to all types of clustering concern the clustering method, the cluster configuration as well as the cluster shapes, and are written as:
 
 ```
-method: [...]
-number of max. states: [...]
+method: [...] clustering
+constraint on clusters: [...]
+diagonal clusters: [...]
+cluster shape: [...]
 bootstrapping: [...]
 ```
 
-If the TDP is processed with k-mean clustering, the starting guess for states, state-specific tolerance radii and the maximum umber of k-mean iterations are written as:
+If the TDP is processed with `k-mean` clustering, the maximum number of k-mean iterations is written as:
 
 ```
-state [j]:[...], tolerance radius: [...]
-max. number of k-mean iterations: [...]
+max. number of iterations: [...]
 ```
 
-If the TDP is processed with 2D Gaussian mixture model-based clustering, the cluster shape and the number of E-M initializations are written as:
+If the TDP is processed with `GM` clustering, the number of E-M initializations and the type of likelihood calculation are written as:
 
 ```
-cluster shape: [...]
 number of model initialisations: [...]
+likelihood: [...]
 ```
+
+If TDP bootstrapping was used, the bootstrap parameters are written as:
+```
+number of samples: [...]
+number of replicates: [...]
+```
+
+The maximum complexity of the cluster configuration depends on the cluster contraint that was used and is written as:
+- for the `matrix` constraint:
+```
+max. number of states: [...]
+```
+- for the `symmetrical` constraint:
+```
+max. number of clusters in a half-TDP: [...]
+```
+- for the `free` constraint:
+```
+max. number of clusters: [...]
+```
+
+Finally, if the TDP is processed with `k-mean` or `simple` clustering, the starting guess for states and state-specific tolerance radii are listed as:
+```
+state [j]: [...], tolerance radius: [...]
+```
+with `[j]` the state indexe.
+
+When the `symmetrical` or `free` cluster constraints were used, the state transitions associated to each cluster are listed as:
+```
+cluster [k]: state [j] to [j']
+```
+with `[k]` the cluster index and `[j]`/`[j']` the state indexes.
 
 ### Clustering results
 {: .no_toc }
 
-Clustering results common to all type of clustering concern the number of states used to cluster transitions, as well as the inferred states (or cluster centers) and corresponding time fraction in state trajectories.
-Results are written such as:
-
+The final configuration complexity used to cluster transitions depends on the cluster constraint that was used and is written as:
+- for the `matrix` constraint:
 ```
 number of states in model: [...]
-state [j]: [...], time fraction: [...]
 ```
-with `[j]` the state index.
+- for the `symmetrical` constraint:
+```
+number of clusters in model for half-TDP: [...]
+```
+- for the `simple` constraint:
+```
+number of clusters in model: [...]
+```
 
-If method settings include TDP bootstrapping, the bootstrap mean and standard deviation of the most sufficient number of states across the samples is written as:
+with a special mention to the BIC value corresponding to the optimum model if the `GM` clustering was used.
 
+Clustering results are ommon to all type of clustering and concern the inferred states (cluster centers), the associated time fraction in state trajectories, as well as the cluster populations relative to the the total number of clustered transitions.
+Results are written such as:
+```
+state: [j]: [...], time fraction: [...]
+cluster [k] (state [j] to state [j'] ), relative population: [...]
+```
+with `[k]` the cluster index and `[j]`/`[j']` the state indexes.
+
+If method settings include TDP bootstrapping, the bootstrap mean and standard deviation of the most sufficient complexity across the samples is written as:
+- for the `matrix` constraint:
 ```
 bootstrapped number of states: [...] +/- [...]
+```
+- for the `symmetrical` constraint:
+```
+bootstrapped number of clusters in model for half-TDP: [...] +/- [...]
+```
+- for the `simple` constraint:
+```
+bootstrapped number of clusters: [...] +/- [...]
 ```
 
 If the TDP is processed with 2D Gaussian mixture model-based clustering, optimum parameters of 2D-Gaussian in the model are added such as:
