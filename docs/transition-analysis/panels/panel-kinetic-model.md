@@ -32,26 +32,39 @@ Use this interface to set the starting conditions of model inference and visuali
 
 <img src="../../assets/images/gui/TA-panel-kinetic-model-settings.png" style="max-width:174px;">
 
-The kinetic model is obtain by optimizing transition probabilities for state sequences with the Baum-Welch algorithm as described in Transition analysis
-[Workflow](../workflow.html#solve-the-kinetic-model).
-
 The state configuration used in model inferrence can be determined via two methods listed in **(a)**:
-- `Find most sufficient complexity (recommended)`: finds state degeneracy via optimization and BIC-selection of discrete-phase type distributions on dwell time histograms
+- `Find most sufficient complexity (recommended)`
+  [<sup>1</sup>](#references): finds state degeneracy via optimization and BIC-selection of discrete-phase type distributions on dwell time histograms
 - `Use "State lifetimes" complexity`: uses the state degeneracy from dwell time histogram fit in panel [State lifetimes](panel-dwelltime-histograms.html#state-lifetimes)
 
 With the first method, a maximum degeneracy (maximum number of degenerated levels for one observed state value) must be defined in **(b)**.
 
-Additionally and in both case, a number of model initializations must be defined in **(c)** (the larger the more accurate, but also the higher the computation cost).
+Additionally and in both cases, a number of model initializations must be defined in **(c)** (the larger the more accurate, but also the higher the computation cost).
 
-Press 
-![Go!](../../assets/images/gui/TA-but-go.png "Go!") to start model inference.
+The kinetic model is then obtain by optimizing transition probabilities for state sequences with the Baum-Welch algorithm as described in Transition analysis
+[Workflow](../workflow.html#solve-the-kinetic-model).
+After model inferrence, the negative and positive errors 
+[&Delta;*p<sub>jj'</sub>*<sup>-</sup>](){: .math_var } and 
+[&Delta;*p<sub>jj'</sub>*<sup>+</sup>](){: .math_var } on transition probabilities are automatically estimated via a 95% confidence likelihood ratio test
+[<sup>2</sup>](#references), giving an estimated range delimited by the lower bound 
+[*p<sub>j,j'</sub>* - &Delta;*p<sub>jj'</sub>*<sup>-</sup>](){: .math_var } and the upper bound 
+[*p<sub>j,j'</sub>* + &Delta;*p<sub>jj'</sub>*<sup>+</sup>](){: .math_var }.
+
+&#8618; Press 
+![Go!](../../assets/images/gui/TA-but-go.png "Go!") to start model inference and error estimation.
 The inferrence time varies from seconds to days depending on (1) the size of the data set, (2) the model complexity (number of states) and (3) the number of model initializations.
 Unfortunately, once started the process can not be interrupted in a standard manner.
 To stop calculations, Matlab must be forced to close.
 
-Once model inferrence is completed, the most probable kinetic model (maximum likelihood estimator) is show as a treillis diagram in **(d)** and plots in the  
+Once model inferrence is completed, the most probable kinetic model (maximum likelihood estimator) is show as a treillis diagram in **(d)** and plots in the 
 [Visualization area](#visualization-area) are updated.
 
+
+### References
+{: .no_toc }
+
+1. M. Bladt and B.F. Nielsen, *Estimation of Phase-Type Distributions. In: Matrix-Exponential Distributions in Applied Probability.*,  *Probability Theory and Stochastic Modelling* **2017**, DOI: [10.1007/978-1-4939-7049-0_13](https://doi.org/10.1007/978-1-4939-7049-0_13)
+2. S. Schmid and T. Hugel, *Efficient use of single molecule time traces to resolve kinetic rates, models and uncertainties*, *J Chem Phys.* **2018**, DOI: [10.1063/1.5006604](https://doi.org/10.1063/1.5006604)
 
 ---
 

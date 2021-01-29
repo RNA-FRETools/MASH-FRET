@@ -396,6 +396,12 @@ where
 [*j'*](){: .math_var } and 
 [*t*<sub>exp</sub>](){: .math_var } is the bin time in trajectories (in seconds).
 
+The negative and positive errors 
+[&Delta;*k<sub>jj'</sub>*<sup>-</sup>](){: .math_var } and 
+[&Delta;*k<sub>jj'</sub>*<sup>+</sup>](){: .math_var } on rate coefficients are estimated via a 95% confidence likelihood ratio test, giving an estimated range delimited by the lower bound 
+[*k<sub>j,j'</sub>* - &Delta;*k<sub>jj'</sub>*<sup>-</sup>](){: .math_var } and the upper bound 
+[*k<sub>j,j'</sub>* + &Delta;*k<sub>jj'</sub>*<sup>+</sup>](){: .math_var }.
+
 To ensure the validity of the inferred model, a set of synthetic state trajectories is produced using the kinetic model parameters and the experimental mensurations (sample size, trajectory length), which is then compared to the experimental data set.
 Special attention is given to the shape of each dwell time hisotgram, the populations of observed states and the number of transitions between observed states. 
 
@@ -434,13 +440,31 @@ Therefore, transitions can be counted directly in transition clusters and lifeti
 In this case, transition rate coefficients can be calculated with the following equation:
 
 {: .equation }
-<img src="../../assets/images/equations/TA-kin-ana-04.gif" alt="k_{j,j'} = \frac{w_{j,j'}}{\sum_{k \neq j}^{J} w_{j,k}} \times \frac{1}{\tau_{j,j'}}">
+<img src="../../assets/images/equations/TA-kin-ana-04.gif" alt="k_{j,j'} = \frac{w_{j,j'}}{\sum_{k \neq j}^{J} w_{j,k}} \times \frac{1}{\tau_{j}}">
 
 where 
 [*w*<sub>*j*,*j'*</sub>](){: .math_var } is the cluster population for transition 
 [*j*](){: .math_var } to 
 [*j'*](){: .math_var }. Cluster populations are available in the 
 [Transition density cluster file](../../output-files/clst-transition-density-clusters.html).
+
+The outcome of such analysis are single estimates of the rate coefficients.
+One way to estimate the variability of rate coefficients is to evaluate the variability of 
+[*&tau;<sub>j</sub>*](){: .math_var } across the sample using the bootstrap-based analysis called BOBA-FRET.
+BOBA-FRET infers the bootstrap means and bootstrap standard deviations of all fitting parameters for the given sample, including 
+[*&tau;<sub>j</sub>*](){: .math_var }.
+The variability can then be propagated to 
+[*k<sub>j,j'</sub>*](){: .math_var } such as:
+
+{: .equation }
+<img src="../../assets/images/equations/TA-kin-ana-11.gif" alt="\Delta k_{jj'} = \frac{\sigma_{\tau,j}}{\tau_{j}} \times k_{jj'}">
+
+where 
+[&Delta;*k<sub>jj'</sub>*](){: .math_var } is the error on rate coefficient 
+[*k<sub>jj'</sub>*](){: .math_var } and 
+[*&sigma;<sub>&tau;,j</sub>*](){: .math_var } is the bootstrap standard deviation of parameter 
+[*&tau;<sub>j</sub>*](){: .math_var }
+
 
 To estimate transition rate coefficients via exponential fit:
 

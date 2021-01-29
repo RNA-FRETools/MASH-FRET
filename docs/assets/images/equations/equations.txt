@@ -184,7 +184,7 @@ Multi-exponential fit (equation 02):
 Beta-exponential fit (equation 03):
 	1- F( \Delta t_{j} ) = \exp \left [ - \left( \frac{\Delta t_{j}}{\tau_j} \right)^{\beta_{j}} \right ]
 Rate coefficients in an homogenous system (equation 04):
-	k_{j,j'} = \frac{w_{j,j'}}{\sum_{k \neq j}^{J} w_{j,k}} \times \frac{1}{\tau_{j,j'}}
+	k_{j,j'} = \frac{w_{j,j'}}{\sum_{k \neq j}^{J} w_{j,k}} \times \frac{1}{\tau_{j}}
 Relative contribution (equation 05):
 	\alpha_{j,j'}^d = \frac{a_{j,j'}^d}{\sum_{k=1}^{D}a_{j,j'}^k}
 Discrete phase-type distribution (equaition 06):
@@ -197,3 +197,5 @@ Hyper-exponential sub-intensity matrix (equation 09):
 	T = \begin{pmatrix} p_{11} & 0 & \cdots & 0 \\ 0 & p_{22} & \cdots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & p_{DD} \end{pmatrix}
 Transition probabilities to rate coefficients (equation 10):
 	k_{jj'} = \frac{p_{jj'}}{t_\textup{exp}}
+Error on rate coefficients (equation 11):
+	\Delta k_{jj'} = \frac{\sigma_{\tau,j}}{\tau_{j}} \times k_{jj'}
