@@ -121,7 +121,8 @@ if opt(3) % experimental vs simulated data
         
         % write data to file
         f = fopen([pname fname_sim], 'Wt');
-        fprintf(f,'dwell time(s)\tmolecule\tstate before\tstate after\n');
+        fprintf(f,['dwell time (seconds)\tmolecule\tstate\tstate after ',...
+            'transition\n']);
         fprintf(f,'%d\t%i\t%i\t%i\t\n',dt');
         fclose(f);
         
