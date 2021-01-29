@@ -22,13 +22,13 @@ curr = p.proj{proj}.curr{tag,tpe};
 prm = p.proj{proj}.prm{tag,tpe};
 
 % set all control enabled
-setProp(h.uipanel_TA_stateLifetimes, 'Enable', 'on');
+setProp(h.uipanel_TA_dtHistograms, 'Enable', 'on');
 
 % reset edit field background color
 set(h.edit_TA_slBin,'backgroundcolor',[1 1 1]);
 
 if ~(isfield(curr,'clst_res') && ~isempty(curr.clst_res{1}))
-    setProp(h.uipanel_TA_stateLifetimes, 'Enable', 'off');
+    setProp(h.uipanel_TA_dtHistograms, 'Enable', 'off');
     return
 end
 

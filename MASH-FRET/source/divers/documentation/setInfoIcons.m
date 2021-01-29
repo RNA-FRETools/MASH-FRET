@@ -190,9 +190,9 @@ for o = 1:O
         case h.uipanel_TA_stateConfiguration
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('ta state configuration'),obj(o),tbl));
-        case h.uipanel_TA_stateLifetimes
+        case h.uipanel_TA_dtHistograms
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('state lifetimes'),obj(o),tbl));
+                getDocLink('dt histograms'),obj(o),tbl));
         case h.uipanel_TA_kineticModel
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('kinetic model'),obj(o),tbl));

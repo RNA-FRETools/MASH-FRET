@@ -1,11 +1,11 @@
-function h = buildPanelTAstateLifetimes(h,p)
-% h = buildPanelTAstateLifetimes(h,p)
+function h = buildPanelTAdtHistograms(h,p)
+% h = buildPanelTAdtHistograms(h,p)
 %
-% Builds panel "State lifetimes" in "Transition analysis" module.
+% Builds panel "Dwell time hisotgrams" in "Transition analysis" module.
 %
 % h: structure to update with handles to new UI components and that must contain fields:
 %   h.figure_MASH: handle to main figure
-%   h.uipanel_TA_stateLifetimes: handle to panel "State lifetimes"
+%   h.uipanel_TA_dtHistograms: handle to panel "Dwell time histograms"
 % p: structure containing default and often-used parameters which must contain fields:
 %   p.posun: position units
 %   p.fntun: font size units
