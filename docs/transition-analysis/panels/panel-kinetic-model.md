@@ -35,7 +35,7 @@ Use this interface to set the starting conditions of model inference and visuali
 The state configuration used in model inferrence can be determined via two methods listed in **(a)**:
 - `Find most sufficient complexity (recommended)`
   [<sup>1</sup>](#references): finds state degeneracy via optimization and BIC-selection of discrete-phase type distributions on dwell time histograms
-- `Use "State lifetimes" complexity`: uses the state degeneracy from dwell time histogram fit in panel [State lifetimes](panel-dwelltime-histograms.html#state-lifetimes)
+- `Use "Dwell time histograms" complexity`: uses the state degeneracy from dwell time histogram fit in panel [Dwell time histograms](panel-dwelltime-histograms.html#state-lifetimes)
 
 With the first method, a maximum degeneracy (maximum number of degenerated levels for one observed state value) must be defined in **(b)**.
 

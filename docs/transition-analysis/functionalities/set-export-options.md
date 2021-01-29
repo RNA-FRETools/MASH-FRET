@@ -70,10 +70,10 @@ Dwell time histograms can be exported to ASCII
 Fitting results can also be exported to separated ASCII
 [.fit files](../../output-files/fit-dwelltime-fit.html) by activating the option in **(b)**. 
 
-If the fitting 
-[Method settings](../panels/panel-state-transition-rates.html#method-settings) include BOBA-FRET:
+If the 
+[Fit settings](../panels/panel-dwell-time-histograms.html#fit-settings) include BOBA-FRET:
 * the [.fit file](../../output-files/fit-dwelltime-fit.html) can be appended with bootstrapping parameters and results by activating the option in **(c)**
-* plots of bootstrap histogram samples and associated fit can be exported to a multi-pages [.pdf file](../../output-files/pdf-histogram-analysis-bootstrap-plots.html) by activating the option in **(d)**
+* plots of bootstrap histogram samples and associated fit can be exported to a multi-pages [.pdf file](../../output-files/pdf-transition-analysis-bootstrap-plots.html) by activating the option in **(d)**
 
 ---
 
