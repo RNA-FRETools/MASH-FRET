@@ -64,7 +64,7 @@ ttstr13 = wrapHtmlTooltipString('Select a <b>state transition</b>');
 
 % parent
 h_fig = h.figure_MASH;
-h_pan = h.uipanel_TA_stateLifetimes;
+h_pan = h.uipanel_TA_dtHistograms;
 
 % dimensions
 pospan = get(h_pan,'position');
