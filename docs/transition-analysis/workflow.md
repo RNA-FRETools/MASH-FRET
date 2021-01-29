@@ -241,8 +241,8 @@ In comparison to our problem:
 - the absorbing state is any state having a different value than the degenerated states,
 - absorbing times [*t*<sub>abs</sub>](){: .math_var } are the dwell times [&Delta;*t<sub>j</sub>*](){: .math_var }.
 
-As time-binned data suffer from an absence of dwell times shorter than the time bin, dwell times are re-binned using a 10-time larger bin size. 
-This minimizes the impact of this first histogram bin while preserving the overall shape.
+As time-binned data suffer from an absence of very short dwell times, dwell times are re-binned using a 10-time larger bin size. 
+This minimizes the impact of this first histogram bins while preserving the overall shape.
 
 As histogram counts are discrete data, it is preferable to use discrete PH distributions (DPH) as models.
 Their probability density function depends on transition probabilties between degenerated states  
@@ -297,9 +297,9 @@ More specifically, the mixture of exponential distributions is a special case of
 
 Therefore, estimation of state degeneracy with exponential fit is most optimal for this type of systems.
 
-As time-binned data suffer from an absence of dwell times shorter than the time bin, the normalized complementary cumulative dwell time histogram 
+As time-binned data suffer from an absence of very short dwell times, the normalized complementary cumulative dwell time histogram 
 [1-*F*(&Delta;*t<sub>j</sub>*)](){: .math_var } is used. 
-This minimizes the impact of this first histogram bin while preserving the overall shape.
+This minimizes the impact of this first histogram bins while preserving the overall shape.
 
 The dwell time histogram is fitted either by a sum of 
 [*D*](){: .math_var } exponential functions with the respective lifetimes 
@@ -426,7 +426,7 @@ The rate coefficient
 In homogenous systems (no state degeneracy), states 
 [*j*](){: .math_var } and 
 [*j'*](){: .math_var } are distinguishable by their values.
-Therefore, transitions can be counted directly in transition clusters and lifetimes can be estimated with a simple exponential fit on each dwell time hisotgram, such as:
+Therefore, transitions can be counted directly in transition clusters and lifetimes can be estimated with a simple exponential fit on each normalized complementary cumulative dwell time hisotgram, such as:
 
 {: .equation }
 <img src="../../assets/images/equations/TA-kin-ana-01.gif" alt="k_{j,j'} = \frac{w_{j,j'}}{\sum_{k \neq j}^{J} w_{j,k}} \times \frac{1}{\tau_{j,j'}}">
