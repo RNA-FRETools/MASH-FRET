@@ -159,13 +159,10 @@ Generaized apparent FRET efficiency (equation 15):
 	I_{\textup{denoise}}^{A}(t)=\frac{\sum_{r=r_{1}}^{r_{4}}\left [w_{t-r}^{A}(t)\bar{I}_{t-r}^{A}(t)+w_{t+r}^{A}(t)\bar{I}_{t-r}^{A}(t)\right ]}{\sum_{r=r_{1}}^{r_{4}}\left [ w_{t-r}^{A}(t)+w_{t+r}^{A}(t)+w_{t-r}^{D}(t)+w_{t+r}^{D}(t)\right ]}
 
 >> BIC (equation 01):
-	BIC\left (J \right ) = p\left (J \right ) \times \textup{log}( N_{\textup{total}} ) - \textup{log}\left [ likelihood\left (J \right ) \right ]
+	BIC\left (J \right ) = p\left (J \right ) \times \log( N_{\textup{total}} ) - 2 \times \log \left [ likelihood\left (J \right ) \right ]
 	and (equation 02):
 	p\left ( J\right ) = p_{\textup{means}} + p_{\textup{widths}} + p_{\textup{weights}} = 3J - 1
 	and (equation 03):
-	p\left ( K\right ) = p_{\textup{means}}\left ( K\right ) + p_{\textup{widths}}\left ( K\right ) + p_{\textup{weights}}\left ( K\right )
-	and (equation 04):
-	BIC\left (K \right ) = p\left (K \right ) \times \textup{log}( N_{\textup{total}} ) - \textup{log}\left [ likelihood\left (K \right ) \right ]
 
 >> Histogram populations:
 	X_{j} = \frac{S_{j}}{\sum_{j'=1}^{J}( S_{j'})}

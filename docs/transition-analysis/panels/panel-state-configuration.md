@@ -92,7 +92,7 @@ The
 [*BIC*](){: .math_var } is similar to a penalized likelihood and is expressed such as:
 
 {: .equation }
-<img src="../../assets/images/equations/HA-eq-bic.gif" alt="BIC\left (J \right ) = p\left (J \right ) \times \textup{log}( N_{\textup{total}} ) - \textup{log}\left [ likelihood\left (J \right ) \right ]">
+<img src="../../assets/images/equations/HA-eq-bic.gif" alt="BIC\left (J \right ) = p\left (J \right ) \times \log ( N_{\textup{total}} ) - 2 \times \log \left [ likelihood\left (J \right ) \right ]">
 
 with 
 [*p*(*J*)](){: .math_var } the number of parameters necessary to describe the mixture, with 
