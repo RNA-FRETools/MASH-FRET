@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Write MASH-FRET release version and last commit hash in file 
+# MASH-FRET/.release_version.json, which is used by MASH-FRET's GUI.
+# Author: Fabio Steffen
 tag_commit_hash=`git describe --always --tags`
 tag=`echo $tag_commit_hash | cut -d'-' -f 1 | tr -d v`
 prev_commit_hash=`echo $tag_commit_hash | cut -d'-' -f 3 | cut -c 2-`
@@ -10,3 +13,50 @@ echo \"prev_commit_hash\" : \"$prev_commit_hash\" >> MASH-FRET/.release_version.
 echo } >> MASH-FRET/.release_version.json
 
 git add MASH-FRET/.release_version.json
+
+
+# Set YAML property "nav_order" in pages of doc section "Output files" usign the 
+# alphabetical order of .md file names. Strangely, this is not done automatically 
+# when "nav_order" is absent. Therefore, "nav_order" must be updated manually for 
+# every single file.
+# Author: Mélodie Hadzic
+sourcedir='docs/output-files'
+parentfile="${sourcedir}/output-files.md"
+file_list=$(ls $sourcedir/*.md | sort)
+nav_order=0
+for opfile in $file_list
+do
+  # ignore parent file
+  if [ "$opfile" = "$parentfile" ]
+  then
+    continue
+  fi
+  
+  # update navigation order
+  (( nav_order++ ))
+  
+  # search for YAML property "nav_order" in file
+  navorderline=$(cat -n $opfile | grep nav_order | awk '{print $1}')
+  isnavorder=$(echo $navorderline | wc -m)
+  
+  # replace "nav_order" if exists, insert a new line otherwise
+  if [ $isnavorder -gt 1 ]
+  then
+    sedcmd=$(echo $navorderline's#.*#nav_order: '$nav_order'#')
+    sed -i "$sedcmd" $opfile
+  else
+    yamlsep=$(cat -n $opfile | grep -e '---' | awk '{print $1}')
+    firstsep=$(echo $yamlsep | awk '{print $1}')
+    sepnb=$(echo $yamlsep | wc -w)
+    if [ $sepnb -ge 2 ] && [ $firstsep -eq 1 ]
+    then
+      secondsep=$(echo $yamlsep | awk '{print $2}')
+      awkcmd=$(echo "NR==${secondsep}{print \"nav_order: ${nav_order}\"}1")
+      awk "$awkcmd" $opfile
+    else
+      awkcmd=$(echo "NR==1{print RS \"---\" RS \"nav_order: ${nav_order}\" RS \"---\" RS}1")
+      awk "$awkcmd" $opfile > "$opfile.tmp"
+      mv "$opfile.tmp" $opfile
+     fi
+  fi
+done
