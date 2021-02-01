@@ -44,19 +44,23 @@ do
   then
     sedcmd=$(echo $navorderline's#.*#nav_order: '$nav_order'#')
     sed -i "$sedcmd" $opfile
+	
   else
     yamlsep=$(cat -n $opfile | grep -e '---' | awk '{print $1}')
     firstsep=$(echo $yamlsep | awk '{print $1}')
     sepnb=$(echo $yamlsep | wc -w)
+	
     if [ $sepnb -ge 2 ] && [ $firstsep -eq 1 ]
     then
       secondsep=$(echo $yamlsep | awk '{print $2}')
       awkcmd=$(echo "NR==${secondsep}{print \"nav_order: ${nav_order}\"}1")
-      awk "$awkcmd" $opfile
+	  
     else
       awkcmd=$(echo "NR==1{print RS \"---\" RS \"nav_order: ${nav_order}\" RS \"---\" RS}1")
-      awk "$awkcmd" $opfile > "$opfile.tmp"
-      mv "$opfile.tmp" $opfile
-     fi
+    fi
+	
+    awk "$awkcmd" $opfile > "$opfile.tmp"
+	mv "$opfile.tmp" $opfile
+	
   fi
 done
