@@ -2,7 +2,7 @@
 layout: default
 title: (*.txt) State populations from Histogram analysis
 parent: /output-files.html
-nav_order: 34
+nav_order: 30
 nav_exclude: 1
 ---
 
