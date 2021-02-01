@@ -64,3 +64,5 @@ do
 	
   fi
 done
+
+git add "${sourcedir}/*.md"
