@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Visualization area
-parent: /video-processing/panels.html
-grand_parent: /video-processing.html
+parent: Panels
+grand_parent: Video processing
 nav_order: 1
 ---
 

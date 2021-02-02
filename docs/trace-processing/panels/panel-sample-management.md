@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Sample management
-parent: /trace-processing/panels.html
-grand_parent: /trace-processing.html
+parent: Panels
+grand_parent: Trace processing
 nav_order: 2
 ---
 

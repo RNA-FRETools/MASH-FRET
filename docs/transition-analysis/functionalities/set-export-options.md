@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Set export options
-parent: /transition-analysis/functionalities.html
-grand_parent: /transition-analysis.html
+parent: Functionalities
+grand_parent: Transition analysis
 nav_order: 1
 ---
 

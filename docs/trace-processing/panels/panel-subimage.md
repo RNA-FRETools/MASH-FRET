@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Sub-images
-parent: /trace-processing/panels.html
-grand_parent: /trace-processing.html
+parent: Panels
+grand_parent: Trace processing
 nav_order: 4
 ---
 

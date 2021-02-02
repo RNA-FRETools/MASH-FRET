@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Dwell time histograms
-parent: /transition-analysis/panels.html
-grand_parent: /transition-analysis.html
+parent: Panels
+grand_parent: Transition analysis
 nav_order: 4
 ---
 
