@@ -2,7 +2,7 @@
 layout: default
 title: (*.txt) State configurations from Histogram analysis
 parent: /output-files.html
-nav_order: 33
+nav_order: 29
 nav_exclude: 1
 ---
 

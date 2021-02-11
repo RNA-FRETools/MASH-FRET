@@ -2,7 +2,7 @@
 layout: default
 title: (*.spots) Spotfinder coordinates
 parent: /output-files.html
-nav_order: 24
+nav_order: 25
 nav_exclude: 1
 ---
 

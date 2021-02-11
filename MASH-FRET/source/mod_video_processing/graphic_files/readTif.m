@@ -36,12 +36,17 @@ if isempty(fDat)
     % If the *.tif file has been exported from SIRA, the cycletime is
     % stored in ImageDescription field of structure info.
     if isfield(info,'ImageDescription')
-        strdat = str2num(info(1,1).ImageDescription);
-        if ~isempty(strdat)
-            cycleTime = strdat(1); % time delay between each frame
-            if ~isnan(cycleTime)
-                txt = num2str(cycleTime);
+        descr = info(1,1).ImageDescription;
+        if strcmp(descr(1:5),'<?xml')
+            cycleTime = getTIFexpT(descr);
+        else
+            strdat = str2num(descr);
+            if ~isempty(strdat)
+                cycleTime = strdat(1); % time delay between each frame
             end
+        end
+        if ~isempty(cycleTime) && ~isnan(cycleTime)
+            txt = num2str(cycleTime);
         end
     end
     
