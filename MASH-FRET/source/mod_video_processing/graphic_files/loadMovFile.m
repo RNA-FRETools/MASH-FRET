@@ -13,11 +13,11 @@ ok = 0;
 
 % get source file
 if ~iscell(txt)
-    [fname,pname,o] = uigetfile({cat(2,'*.sif;*.sira;*.tif;*.gif;*.png;',...
-        '*.spe;*.pma;*.crd;*.spots;*.coord;*.avi'), ...
-        ['Supported Graphic File Format',cat(2,'(*.sif,*.sira,*.tif,',...
-        '*.gif,*.png,*.spe,*.pma,*.crd,*.spots,*.coord,*.avi)')]; ...
-        '*.*','All File Format(*.*)'},txt);
+    [fname,pname,o] = uigetfile({cat(2,'*.vsi;*.ets;*.sif;*.sira;*.tif;',...
+        '*.gif;*.png;*.spe;*.pma;*.crd;*.spots;*.coord;*.avi'), ...
+        ['Supported Graphic File Format',cat(2,'(*.vsi,*.ets,*.sif,',...
+        '*.sira,*.tif,*.gif,*.png,*.spe,*.pma,*.crd,*.spots,*.coord,',...
+        '*.avi)')];'*.*','All File Format(*.*)'},txt);
 else
     pname = txt{1}; % ex: C:\Users\MASH\Documents\MATLAB\
     fname = txt{2}; % ex: movie.sif
@@ -64,6 +64,10 @@ p = h.param.movPr;
 
 [o, o, fExt] = fileparts(fname);
 switch fExt
+    case '.vsi'
+        fExt = 'bf';
+    case '.ets'
+        fExt = 'bf';
     case '.sif'
         fExt = 'sif';
     case '.gif'
@@ -114,6 +118,10 @@ h.movie.speCursor = data.fCurs; % cursor position in the file where movie data b
 nChan = str2double(get(h.edit_nChannel, 'String'));
 sub_w = floor(h.movie.pixelX/nChan);
 h.movie.split = (1:nChan-1)*sub_w;
+
+% set experiment settings if any
+if isfield(data,'lightsrc')
+end
 
 % store video processing parameters
 p.rate = h.movie.cyctime;
