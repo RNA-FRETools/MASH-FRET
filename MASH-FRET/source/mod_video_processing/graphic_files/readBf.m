@@ -23,6 +23,7 @@ end
 
 if isempty(fDat)
     % get video dimensions
+    bfInitLogging();
     r = bfGetReader(fullFname, 0);
     frameLen = r.getImageCount(); % video length
     img = bfGetPlane(r, 1);
@@ -95,6 +96,7 @@ if strcmp(n,'all')
         h.barData.prev_var = h.barData.curr_var;
         guidata(h_fig, h);
         
+        bfInitLogging();
         r = bfGetReader(fullFname, 0);
         if isMov==0
             % allocate new memory
@@ -142,6 +144,7 @@ else
     if isMov==2
         frameCur = h.movie.movie(:,:,n);
     else
+        bfInitLogging();
         r = bfGetReader(fullFname, 0);
         frameCur = bfGetPlane(r, n)';
         r.close();

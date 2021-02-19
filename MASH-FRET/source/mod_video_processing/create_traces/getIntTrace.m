@@ -45,7 +45,8 @@ switch fFormat
                 return
             end
         end
-        r = bfGetReader(fullFname, 0);
+        bfInitLogging();
+        r = bfGetReader(movFile, 0);
         prev = 0;
         trace_vect = zeros(zTot,nCoord,aDim^2);
         for zz = 1:zTot
