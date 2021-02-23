@@ -55,7 +55,6 @@ dat = dat_new;
 % get state sequences
 [mols,o,o] = unique(dat(:,4));
 dat_new = [];
-dat_dph = [];
 nMol = numel(mols);
 seq = cell(1,nMol);
 exclmols = false(1,nMol);
@@ -103,17 +102,11 @@ for m = 1:nMol
             exclmols(m) = true;
             continue
         end
-        dat_dph = cat(1,dat_dph,dat_m);
-    else
-        % remove last dwell time for DPH fit (irreversible transitions
-        % bias the distribution)
-        dat_dph = cat(1,dat_dph,dat_m(1:end-1,:)); 
     end
     dat_new = cat(1,dat_new,dat_m);
 end
 dat = dat_new;
 seq(exclmols) = [];
-
 
 % get relative number of transitions
 clstPop = zeros(V);
@@ -129,7 +122,7 @@ clstPop = clstPop/sum(sum(clstPop));
 
 if guessMeth==1 % determine guess from DPH fit & BIC model selection
     [D,mdl,cmb,BIC,~] = ...
-        script_findBestModel(dat_dph(:,[1,4,7,8]),Dmax,states,expT,dt_bin);
+        script_findBestModel(dat(:,[1,4,7,8]),Dmax,states,expT,dt_bin);
     J = sum(D);
     tp0 = zeros(J);
     j1 = 0;
@@ -212,6 +205,7 @@ end
 prm.mdl_res{5} = states;
 p.proj{proj}.prm{tag,tpe} = prm;
 p.proj{proj}.curr{tag,tpe} = prm;
+h = guidata(h_fig);
 h.param.TDP = p;
 guidata(h_fig,h);
 updateTAplots(h_fig,'mdl'); 
