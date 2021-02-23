@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Interface
-parent: /histogram-analysis.html
+parent: Histogram analysis
 nav_order: 1
 ---
 

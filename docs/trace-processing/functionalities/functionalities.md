@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Functionalities
-parent: /trace-processing.html
+parent: Trace processing
 nav_order: 3
 has_children: true
 permalink: /trace-processing/functionalities.html

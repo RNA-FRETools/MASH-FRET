@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Functionalities
-parent: /transition-analysis.html
+parent: Transition analysis
 nav_order: 3
 has_children: true
 permalink: /transition-analysis/functionalities.html

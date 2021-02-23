@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Import trajectories
-parent: /histogram-analysis/functionalities.html
-grand_parent: /histogram-analysis.html
+parent: Functionalities
+grand_parent: Histogram analysis
 nav_order: 2
 ---
 

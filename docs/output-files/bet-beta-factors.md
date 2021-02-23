@@ -1,7 +1,7 @@
 ---
 layout: default
 title: (*.bet) Beta factors
-parent: /output-files.html
+parent: Output files
 nav_order: 1
 nav_exclude: 1
 ---
