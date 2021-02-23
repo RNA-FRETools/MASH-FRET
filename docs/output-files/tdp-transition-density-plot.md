@@ -1,9 +1,14 @@
 ---
 layout: default
 title: (*.tdp) Transition density plot
+<<<<<<< HEAD
 parent: /output-files.html
 nav_order: 27
+=======
+parent: Output files
+>>>>>>> MASH-FRET-1.3.2-doc
 nav_exclude: 1
+nav_order: 27
 ---
 
 <img src="../assets/images/logos/logo-output-files_400px.png" width="170" style="float:right; margin-left: 15px;"/>

@@ -13,7 +13,7 @@
 		{% endif %}
 		
 	{% else %}
-		{% if node.parent == page.url %}
+		{% if node.parent == page.title %}
 			<li><a href="{{ node.url | absolute_url}}">Step {{ node.nav_order }}: {{ node.subtitle }}</a></li>
 		{% endif %}
 	{% endif %}

@@ -2,8 +2,8 @@
 layout: default
 title: Step 2
 subtitle: Find states in traces
-grand_parent: /tutorials.html
-parent: /tutorials/analyze-data.html
+grand_parent: Tutorials
+parent: Analyze data
 nav_order: 2
 has_toc: false
 nav_exclude: true

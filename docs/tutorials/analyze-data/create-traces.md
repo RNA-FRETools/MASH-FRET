@@ -2,8 +2,8 @@
 layout: default
 title: Step 1
 subtitle: Create traces
-grand_parent: /tutorials.html
-parent: /tutorials/analyze-data.html
+grand_parent: Tutorials
+parent: Analyze data
 nav_order: 1
 has_toc: false
 nav_exclude: true
