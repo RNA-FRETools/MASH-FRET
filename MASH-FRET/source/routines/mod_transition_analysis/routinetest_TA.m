@@ -71,10 +71,16 @@ try
         routinetest_TA_stateConfiguration(h_fig,p,subprefix);
     end
 
-    % test panel state transition rates
-    if strcmp(opt,'all') || strcmp(opt,'state transition rates')
-        disp('test panel state transition rates...');
-        routinetest_TA_stateTransitionRates(h_fig,p,subprefix);
+    % test panel state lifetimes
+    if strcmp(opt,'all') || strcmp(opt,'state lifetimes')
+        disp('test panel state lifetimes...');
+        routinetest_TA_stateLifetimes(h_fig,p,subprefix);
+    end
+
+    % test panel kinetic model
+    if strcmp(opt,'all') || strcmp(opt,'kinetic model')
+        disp('test panel kinetic model...');
+        routinetest_TA_kineticModel(h_fig,p,subprefix);
     end
     
 catch err

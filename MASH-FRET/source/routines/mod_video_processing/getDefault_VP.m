@@ -22,7 +22,8 @@ p.dumpdir = cat(2,pname,filesep,'dump'); % path to exported data
 if exist(p.dumpdir,'dir')
     cd(p.annexpth); % change directory
     try
-        rmdir(p.dumpdir); % delete dump directory
+        warning off MATLAB:RMDIR:RemovedFromPath
+        rmdir(p.dumpdir,'s'); % delete dump directory
     catch err
         disp(cat(2,'WARNING: the previous dump directory could not be ',...
             'deleted (needs administrator privileges).'));

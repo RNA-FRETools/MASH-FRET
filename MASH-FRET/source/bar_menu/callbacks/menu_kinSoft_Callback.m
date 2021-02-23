@@ -1,5 +1,7 @@
 function menu_kinSoft_Callback(obj,evd,step,h_fig)
 
+% Last update by MH, 29.12.2020: remove useless step 4 (back-simulation)
+
 % save current interface
 h = guidata(h_fig);
 h_prev = h;
@@ -13,7 +15,7 @@ h.param.OpFiles.overwrite = true;
 h.mute_actions = true;
 
 if ~isfield(h,'kinsoft_res')
-    h.kinsoft_res = cell(1,4);
+    h.kinsoft_res = cell(1,3);
 end
 guidata(h_fig,h);
 
@@ -24,17 +26,41 @@ try
     % Find optimum number of states
     if sum(step==[0,1])
         
-        t1 = tic;
-        
-        [pname,fname,res,Js] = routine_findJ(h_fig);
-        if isempty(res)
+        % ask for the number of states
+        V = NaN;
+        choice = questdlg('Is the number of FRET states known?',...
+            'Number of FRET states','Yes','No','No');
+        if strcmp(choice,'Yes')
+            ip = inputdlg('number of FRET states = ','Number of FRET states');
+            V = str2num(ip{1});
+        elseif ~strcmp(choice,'No')
             return
         end
         
-        t_1 = toc(t1);
+        % ask for noise ditribution
+        if step==0
+            gaussNoise = false;
+            choice = questdlg(['How is the noise distribution in the ',...
+                'FRET trajectories?'],'Noise distribution',...
+                'Gaussian noise','other','other');
+            if strcmp(choice,'Gaussian noise')
+                gaussNoise = true;
+            elseif ~strcmp(choice,'other')
+                return
+            end
+        end
+        
+        t1 = tic;
+        
+        [pname,fname,res,Js] = routine_findJ(h_fig,V);
+        if isnan(V) && isempty(res)
+            return
+        end
 
+        t_1 = toc(t1);
+        
         h.kinsoft_res{1} = {t_1,pname,fname,res,Js};
-        h.kinsoft_res(2:end) = cell(1,3);
+        h.kinsoft_res(2:end) = cell(1,2);
         guidata(h_fig,h);
     end
 
@@ -46,18 +72,31 @@ try
             return
         end
         
+        % ask for noise ditribution
+        if step==2
+            gaussNoise = false;
+            choice = questdlg(['How is the noise distribution in the ',...
+                'FRET trajectories?'],'Noise distribution',...
+                'Gaussian noise','other','other');
+            if strcmp(choice,'Gaussian noise')
+                gaussNoise = true;
+            elseif ~strcmp(choice,'other')
+                return
+            end
+        end
+        
         pname = h.kinsoft_res{1}{2};
         fname = h.kinsoft_res{1}{3};
         Js = h.kinsoft_res{1}{5}(:,1)';
         
         t2 = tic;
         
-        states = routine_getFRETstates(pname,fname,Js,h_fig);
+        states = routine_getFRETstates(pname,fname,Js,gaussNoise,h_fig);
         
         t_2 = toc(t2);
 
         h.kinsoft_res{2} = {t_2,states};
-        h.kinsoft_res(3:end) = cell(1,2);
+        h.kinsoft_res(3:end) = cell(1,1);
         guidata(h_fig,h);
     end
 
@@ -75,38 +114,12 @@ try
         
         t3 = tic;
         
-        [ks,mat,prob0] = routine_getRates(pname,fname,Js,h_fig);
+        [mat,tau,ip] = routine_getRates(pname,fname,Js,h_fig);
         
         t_3 = toc(t3);
 
-        h.kinsoft_res{3} = {t_3,ks,mat,prob0};
-        h.kinsoft_res(end) = cell(1,1);
+        h.kinsoft_res{3} = {t_3,mat,tau,ip};
         guidata(h_fig,h);
-    end
-
-    % select the final number of states by comparing simulations
-    if sum(step==[0,4])
-        if isempty(h.kinsoft_res{3})
-            disp(' ')
-            disp('step 3 must first be performed.')
-            return
-        end
-        
-        pname = h.kinsoft_res{1}{2};
-        fname = h.kinsoft_res{1}{3};
-        Js = h.kinsoft_res{1}{5}(:,1)';
-        states = h.kinsoft_res{2}{2};
-        mat = h.kinsoft_res{3}{3};
-        prob0 = h.kinsoft_res{3}{4};
-        
-        t4 = tic;
-        
-        [TDPs,logL,useProb0] = routine_backSim(pname,fname,Js,states,mat,...
-            prob0,h_fig);
-        
-        t_4 = toc(t4);
-        
-        h.kinsoft_res{4} = {t_4,TDPs,logL};
     end
     
     t_ana = 0;
@@ -116,18 +129,23 @@ try
         end
     end
     
-    if ~isempty(h.kinsoft_res{1})        
+    if ~isempty(h.kinsoft_res{1})
+        
+        knowStateNb = isempty(h.kinsoft_res{1}{4});
+        
         pname = h.kinsoft_res{1}{2};
         if ~strcmp(pname(end),filesep)
             pname = [pname,filesep];
         end
         [~,fname,~] = fileparts(pname(1:end-1));
-        BICs = h.kinsoft_res{1}{4}.BIC;
         Js = h.kinsoft_res{1}{5}(:,1);
-        BICs = [(1:numel(BICs))',BICs',zeros(numel(BICs),1)];
-        BICs(isinf(BICs(:,2)),:) = [];
-        for j = 1:numel(Js)
-            BICs(BICs(:,1)==Js(j),3) = 1;
+        if ~knowStateNb
+            BICs = h.kinsoft_res{1}{4}.BIC;
+            BICs = [(1:numel(BICs))',BICs',zeros(numel(BICs),1)];
+            BICs(isinf(BICs(:,2)),:) = [];
+            for j = 1:numel(Js)
+                BICs(BICs(:,1)==Js(j),3) = 1;
+            end
         end
         for j = 1:numel(Js)
             f = fopen(...
@@ -136,9 +154,13 @@ try
 
             fprintf(f,'Total processing time (in seconds):%d\n',t_ana);
             
-            fprintf(f,'\nNumber of states:\n');
-            fprintf(f,'J\tBIC\tselected\n');
-            fprintf(f,'%i\t%d\t%i\n',BICs');
+            if ~knowStateNb
+                fprintf(f,'\nNumber of states:\n');
+                fprintf(f,'J\tBIC\tselected\n');
+                fprintf(f,'%i\t%d\t%i\n',BICs');
+            else
+                fprintf(f,'\nNumber of states:%i\n',Js(j));
+            end
             
             if ~isempty(h.kinsoft_res{2})
                 states = h.kinsoft_res{2}{2}{j};
@@ -147,75 +169,59 @@ try
                 fprintf(f,'%i\t%d\t%d\n',[(1:Js(j))',states]');
                 
                 if ~isempty(h.kinsoft_res{3})
-                    ks = h.kinsoft_res{3}{2}{j};
-                    mat = h.kinsoft_res{3}{3}{j};
-                    prob0 = h.kinsoft_res{3}{4}{j};
-                    nExp = (size(ks,2)-4)/8;
+                    mat = h.kinsoft_res{3}{2}{j};
+                    tau = h.kinsoft_res{3}{3}{j};
+                    ip = h.kinsoft_res{3}{4}{j};
+
                     fprintf(f,...
-                        '\nFitting results and rate coefficients (second-1):\n');
-                    fprintf(f,['state1\tstate2',...
-                        repmat('\tamp%i\td_amp%i\ttau%i\td_tau%i',[1,nExp]),...
-                        repmat('\tk0%i\td_k0%i',[1,nExp]),'\tw12',...
-                        repmat('\tA%i\td_A%i',[1,nExp]),'\tvalid\n'],...
-                        [reshape(repmat(1:nExp,[4,1]),[1,4*nExp]),....
-                        reshape(repmat(1:nExp,[2,1]),[1,2*nExp]),....
-                        reshape(repmat(1:nExp,[2,1]),[1,2*nExp])]);
-                    fprintf(f,[repmat('%d\t',[1,size(ks,2)]),'\n'],ks');
-                    
-                    if useProb0
-                        fprintf(f,...
-                            '\nInitial state probabilties:\n');
-                        fprintf(f,'%i\t%d\n',prob0);
-                    end
+                        '\nInitial state probabilties:\n');
+                    fprintf(f,'%i\t%d\n',ip);
                     
                     fprintf(f,...
-                        '\nRestricted rates (second-1):\n');
+                        '\nState lifetimes (second):\n');
+                    fprintf(f,'%i\t%d\n',tau);
+                    
+                    fprintf(f,...
+                        '\nTransition probabilities:\n');
                     fprintf(f,[repmat('%i\t',[1,size(mat,2)]),'\n'],...
                         mat(1,:,1));
                     fprintf(f,['%i\t',repmat('%d\t',[1,size(mat,2)-1]),'\n'],...
                         mat(2:end,:,1)');
                     
                     fprintf(f,...
-                        '\nRestricted rate deviations (second-1):\n');
+                        '\nTransition probability positive deviation:\n');
                     fprintf(f,[repmat('%i\t',[1,size(mat,2)]),'\n'],...
                         mat(1,:,2));
                     fprintf(f,['%i\t',repmat('%d\t',[1,size(mat,2)-1]),'\n'],...
                         mat(2:end,:,2)');
-                    
+
                     fprintf(f,...
-                        '\nTransition probabilities:\n');
+                        '\nTransition probability negative deviation:\n');
                     fprintf(f,[repmat('%i\t',[1,size(mat,2)]),'\n'],...
                         mat(1,:,3));
                     fprintf(f,['%i\t',repmat('%d\t',[1,size(mat,2)-1]),'\n'],...
                         mat(2:end,:,3)');
                     
                     fprintf(f,...
-                        '\nTransition probabilities deviations:\n');
+                        '\nTransition rate coefficients:\n');
                     fprintf(f,[repmat('%i\t',[1,size(mat,2)]),'\n'],...
                         mat(1,:,4));
                     fprintf(f,['%i\t',repmat('%d\t',[1,size(mat,2)-1]),'\n'],...
                         mat(2:end,:,4)');
-
+                    
                     fprintf(f,...
-                        '\nUnrestricted rates (second-1):\n');
+                        '\nTransition rate coefficient positive deviation:\n');
                     fprintf(f,[repmat('%i\t',[1,size(mat,2)]),'\n'],...
                         mat(1,:,5));
                     fprintf(f,['%i\t',repmat('%d\t',[1,size(mat,2)-1]),'\n'],...
                         mat(2:end,:,5)');
-                    
+
                     fprintf(f,...
-                        '\nUnrestricted rate deviations (second-1):\n');
+                        '\nTransition rate coefficient negative deviation:\n');
                     fprintf(f,[repmat('%i\t',[1,size(mat,2)]),'\n'],...
                         mat(1,:,6));
                     fprintf(f,['%i\t',repmat('%d\t',[1,size(mat,2)-1]),'\n'],...
                         mat(2:end,:,6)');
-                    if ~isempty(h.kinsoft_res{4})
-                        logL = h.kinsoft_res{4}{3};
-                        
-                        fprintf(f,'\nBest configuration:\n');
-                        fprintf(f,'J\tlogL\n');
-                        fprintf(f,'%i\t%d\n',[Js,logL']');
-                    end
                 end
             end
             fclose(f);

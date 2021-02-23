@@ -34,7 +34,6 @@ switch mode
         for i = 1:length(pList)
            fprintf('- %s (version installed %s)\n', pList(i).Name, pList(i).Version);
         end
-        fprintf('- %s (version installed %s)\n', pList(i).Name, pList(i).Version);
         fprintf('\nNote: only toolboxes that are required and installed are listed.\nRun Discovery mode only on full installations (all toolboxes present).\ncheck_dependencies.m will list those that are required\n')
 
         if ~exist(requirementsFile, 'file')

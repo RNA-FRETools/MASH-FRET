@@ -17,7 +17,8 @@ function h = buildPanelTPfindStates(h,p)
 %   p.fntclr2: text color in special pushbuttons
 %   p.tbl: reference table listing character's pixel dimensions
 
-% Last update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
+% Last update by MH, 22.12.2020: add vFRET 2D
+% update by MH, 19.3.2020: increase speed by replacing wrapStrToWidth by wrapHtmlTooltipString
 % created by MH, 19.10.2019
 
 % default
@@ -34,7 +35,7 @@ str4 = 'tol';
 str5 = 'refine';
 str6 = 'binning';
 str7 = 'deblurr';
-str8 = {'Thresholds','vbFRET','One state','CPA','STaSI'};
+str8 = {'Thresholds','vbFRET-1D','vbFRET-2D','One state','CPA','STaSI'};
 str9 = {'bottom','top','all'};
 str10 = {'Select a trace'};
 str11 = 'Results (states):';

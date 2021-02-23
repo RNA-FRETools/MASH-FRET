@@ -13,15 +13,21 @@ t_min = 1;
 
 L = numel(dat);
 l0 = 1;
-for l = 2:L
+for l = 2:L-1
     if dat_db(l)~=dat_db(l0)
+        if l0==1 % skip first plateau
+            l0 = l;
+            continue
+        end
         if (l-l0)<=t_min
-            if l0>1
+            state0 = dat_db(l-t_min-1);
+            state1 = dat_db(l-1);
+            state2 = dat_db(l);
+            if (state0<state1 && state1<state2) || ...
+                    (state0>state1 && state1>state2)
                 newval = dat_db(l0-1); % elongates previous state
-            else
-                newval = dat_db(l); % elongates next state
+                dat_db(l0:l-1) = newval;
             end
-            dat_db(l0:l-1) = newval;
         end
         l0 = l;
     end

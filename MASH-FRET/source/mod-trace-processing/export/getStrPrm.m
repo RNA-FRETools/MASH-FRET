@@ -1,24 +1,8 @@
 function str_prm = getStrPrm(s, m, incl, h_fig)
 
-%% Last update: by MH, 24.4.2019
-% >> adapt code to multiple molecule tags
-%
-% update: by MH, 3.4.2019
-% >> fix error occuring when exporting ASCII: cross-talks section is
-%    adapted to new parameter formats (see project/setDefPrm_traces.m)
-% >> add new input argument "incl" to correct exported molecule index (m_i 
-%    and nMol_i)
-% >> correct photobleaching method
-% >> write to file new parameters: date of export, MASH version at project 
-%    creation to file (in addition to version at last saving) and molecule 
-%    tag
-% >> compact dwell time analysis section
-% >> improve file aesthetic and efficacity by replacing channel indexes by 
-%    labels, removing html tags in data labels taken from popupmenus,
-%    replace sprintf(...) by num2str(...) to get pretty number formats, add 
-%    categories "PROJECT", "VIDEO PROCESSING", "EXPERIMENT SETTINGS" and 
-%    "MOLECULE"
-%%
+% Last update by MH, 23.12.2020: add vbFRET-2D
+% update by MH, 24.4.2019: adapt code to multiple molecule tags
+% update by MH, 3.4.2019: (1) fix error occuring when exporting ASCII: cross-talks section is adapted to new parameter formats (see project/setDefPrm_traces.m), (2) add new input argument "incl" to correct exported molecule index (m_i and N_i), (3) correct photobleaching method, (4) write to file new parameters: date of export, MASH version at project creation to file (in addition to version at last saving) and molecule tag, (5) compact dwell time analysis section, (6) improve file aesthetic and efficacity by replacing channel indexes by labels, removing html tags in data labels taken from popupmenus, replace sprintf(...) by num2str(...) to get pretty number formats, add categories "PROJECT", "VIDEO PROCESSING", "EXPERIMENT SETTINGS" and "MOLECULE"
 
 
 %% collect parameters
@@ -419,7 +403,7 @@ elseif prm_dta{1}(2)==0 % to top only, deduct bottom
         ' top traces and use shared transitions in bottom traces');
 end
 
-if prm_dta{1}(1)==3 % One state
+if prm_dta{1}(1)==4 % One state
     ids = [];
     str_dta = cat(2,str_dta,'\n');
 else
@@ -461,7 +445,7 @@ for i = ids
             
             str_dta = cat(2,str_dta,'\n');
 
-        case 2 % VbFRET
+        case 2 % vbFRET-1D
             str_dta = cat(2,str_dta,'\tfor ',str_chan_dta{i},':');
             if prm_dta{1}(2) || (prm_dta{1}(2)==0 && i>nFRET+nS)
                 str_dta = cat(2,str_dta, ...
@@ -491,7 +475,37 @@ for i = ids
             
             str_dta = cat(2,str_dta,'\n');
 
-        case 4 % CPA
+        case 3 % vbFRET-2D
+            str_dta = cat(2,str_dta,'\tfor ',str_chan_dta{i},':');
+            if prm_dta{1}(2) || (prm_dta{1}(2)==0 && i>nFRET+nS)
+                str_dta = cat(2,str_dta, ...
+                    ' min. number of states: ', ...
+                    num2str(prm_dta{2}(prm_dta{1}(1),1,i)), ...
+                    ', max. number of states: ', ...
+                    num2str(prm_dta{2}(prm_dta{1}(1),2,i)), ...
+                    ', max. iteration number: ', ...
+                    num2str(prm_dta{2}(prm_dta{1}(1),3,i)), ...
+                    ', number of refinment cycles: ', ...
+                    num2str(prm_dta{2}(prm_dta{1}(1),5,i)), ...
+                    ', state binning: ', ...
+                    num2str(prm_dta{2}(prm_dta{1}(1),6,i)),...
+                    ', remove blurr states: ', ...
+                    num2str(prm_dta{2}(prm_dta{1}(1),7,i)));
+            else
+                str_dta = cat(2,str_dta,...
+                    ' tolerance window size: ', ...
+                    num2str(prm_dta{2}(prm_dta{1}(1),4,i)), ...
+                    ', number of refinment cycles: ', ...
+                    num2str(prm_dta{2}(prm_dta{1}(1),5,i)), ...
+                    ', state binning: ', ...
+                    num2str(prm_dta{2}(prm_dta{1}(1),6,i)),...
+                    ', remove blurr states: ', ...
+                    num2str(prm_dta{2}(prm_dta{1}(1),7,i)));
+            end
+            
+            str_dta = cat(2,str_dta,'\n');
+
+        case 5 % CPA
             str_dta = cat(2,str_dta,'\tfor ',str_chan_dta{i},':');
             if prm_dta{1}(2) || (prm_dta{1}(2)==0 && i>nFRET+nS)
                 switch prm_dta{2}(prm_dta{1}(1),3,i)
@@ -525,7 +539,7 @@ for i = ids
             
             str_dta = cat(2,str_dta,'\n');
 
-        case 5 % STaSI
+        case 6 % STaSI
             str_dta = cat(2,str_dta,'\tfor ',str_chan_dta{i},':');
             if prm_dta{1}(2) || (prm_dta{1}(2)==0 && i>nFRET+nS)
                 str_dta = cat(2,str_dta,...

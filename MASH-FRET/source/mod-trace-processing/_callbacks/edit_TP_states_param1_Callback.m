@@ -1,8 +1,7 @@
 function edit_TP_states_param1_Callback(obj, evd, h_fig)
 
-% Last update: by MH, 3.4.2019
-% >> adjust selected data index in popupmenu, chan_in, to shorter 
-%    popupmenu size when discretization is only applied to bottom traces
+% Last update by MH, 27.12.2020: add method vbFRET 2D
+% update by MH, 3.4.2019: adjust selected data index in popupmenu, chan_in, to shorter popupmenu size when discretization is only applied to bottom traces
 
 h = guidata(h_fig);
 p = h.param.ttPr;
@@ -22,11 +21,11 @@ if ~isempty(p.proj)
         end
     end
     
-    if sum(double(method == [1,2,4,5]))
+    if sum(double(method == [1,2,5,6]))
         val = round(str2num(get(obj, 'String')));
         set(obj, 'String', num2str(val));
         
-        if method == 2 % VbFRET
+        if method==2 || method==3 % VbFRET
             maxVal = p.proj{proj}.curr{mol}{4}{2}(method,2,chan_in);
         else
             maxVal = Inf;
@@ -41,16 +40,21 @@ if ~isempty(p.proj)
                     updateActPan('Number of states must be > 0', ...
                         h_fig, 'error');
                     
-                case 2 % VbFRET
+                case 2 % VbFRET-1D
+                    updateActPan(cat(2,'Minimum number of states must be ',...
+                        '> 0 and < ',num2str(maxVal)),h_fig,...
+                        'error');
+                    
+                case 3 % VbFRET-2D
                     updateActPan(cat(2,'Minimum number of states must be ',...
                         '> 0 and < ',num2str(maxVal)),h_fig,...
                         'error');
 
-                case 4 % CPA
+                case 5 % CPA
                     updateActPan('Number of bootstrap samples must be > 0', ...
                         h_fig, 'error');
                     
-                case 5 % STaSI
+                case 6 % STaSI
                     updateActPan('Maximum number of states must be > 0', ...
                         h_fig, 'error');
             end

@@ -9,6 +9,9 @@ function ok = buildModel(h_fig)
 % update by MH, 17.12.2019: remove dependency on updateMov.m (called from the pushbutton callback function)
 % update by RB, 6.3.2018: review initial state probabilities
 
+% defaults
+Lmin = 5; % minimum trace length
+
 % initialize execution failure/success
 ok = 0;
 
@@ -17,201 +20,166 @@ setContPan(cat(2,'Generate random state sequences...'),'process',h_fig);
 
 % collect parameters
 h = guidata(h_fig);
-n_max = h.param.sim.molNb;
+N = h.param.sim.molNb;
 bleach = h.param.sim.bleach;
 expT = 1/h.param.sim.rate;
-bleachT = h.param.sim.bleach_t;
-K = h.param.sim.nbStates;
+bleachL = h.param.sim.bleach_t/expT;
+J = h.param.sim.nbStates;
 impPrm = h.param.sim.impPrm;
 molPrm = h.param.sim.molPrm;
 imp_kx = impPrm & isfield(molPrm, 'kx');
-imp_wx = impPrm & isfield(molPrm, 'wx');
-imp_p0 = impPrm & isfield(molPrm, 'p0');
+imp_ip = impPrm & isfield(molPrm, 'p0');
 
-if imp_kx
+if imp_kx % transition rate coefficients from presets
     kx_all = molPrm.kx;
-else
+else % transition rate coefficients from interface
     kx = h.param.sim.kx;
-    kx_all  = repmat(kx,[1,1,n_max]);
+    kx_all  = repmat(kx,[1,1,N]);
 end
-if imp_wx
-    wx_all = molPrm.wx;
-else
-    wx = h.param.sim.wx;
-    if size(wx,2)<K
-        wx = ones(K);
-    end
-    wx_all = repmat(wx,[1,1,n_max]);
+kx_all = kx_all(1:J,1:J,:);
+tau_all = 1./permute(sum(kx_all,2),[3,1,2]);
+if imp_ip % initial state prob. from presets
+    ip_all = molPrm.p0;
+else % initial prob. calculated from state lifetimes
+    ip_all = tau_all./repmat(sum(tau_all,2),[1,J,1]);
 end
-ref = ~~(kx_all);
-isTrans = prod(double(sum(sum(ref(1:K,1:K,1:n_max),1),2)),3);
+isTrans = prod(double(sum(sum(~~kx_all(1:J,1:J,1:N),1),2)),3);
 
-N = h.param.sim.nbFrames;
-mix = cell(1,n_max);
-discr_seq = cell(1,n_max);
-dt_final = cell(1,n_max);
+L = h.param.sim.nbFrames;
+mix = cell(1,N);
+discr_seq = cell(1,N);
+dt_final = cell(1,N);
 
-if K>1 && isTrans
+if J>1 && isTrans
     n = 1;
-    while n <= n_max
-        kx = kx_all(1:K,1:K,n);
-        kx(~~eye(size(kx))) = 0;
-        wx = wx_all(1:K,1:K,n);
-        wx(~~eye(size(wx))) = 0;
-        wx = wx./repmat(sum(wx,2),[1,K]);
-        if imp_p0
-            % MH 17.3.2020: pre-defined initial state probabilities
-            Prob = molPrm.p0(n,:);
-            
-        else
-            % MH 19.12.2019: identify zero sums in rate matrix
-            if sum(sum(kx,1)>0)~=K || sum(sum(kx,2)>0)~=K
-                setContPan(cat(2,'Simulation aborted: at least one ',...
-                    'transition from and to each state must be defined ',...
-                    '(rate non-null).'),'error',h_fig);
+    while n <= N
+        kx = kx_all(:,:,n);
+        kx(~~eye(J)) = 0;
+        wx = kx./repmat(sum(kx,2),[1,J]);
+        wx(isnan(wx)) = 0;
+        ip = ip_all(n,:);
+        tau = tau_all(n,:)/expT;
 
-                % clear any results to avoid conflict
-                if isfield(h,'results') && isfield(h.results,'sim')
-                    h.results = rmfield(h.results,'sim');
-                end
-                guidata(h_fig,h);
-                return
-            end
-
-            % initial state probabilities from rates
-%             P = kx*N; // M.CAS Hadzic 2015
-%             P = double(~~(kx)); %  M.CAS Hadzic 2014, to be updated
-%             P = kx.*expT; % simple rate-to-prob-model for Markov chains, 2018-03-12 RB
-            P = (kx*expT).*wx; % MH 17.3.2020: use HMM transition probabilities
-            for i=1:K 
-%                 P(:,i) = (kx(:,i)./sum(kx,2)(i))*(1-exp(-sum(kx,2)(i)*expT)); % 2018-03-12 RB PlosOne
-%                 P(i,i) = 1 - sum(kx(i,:))*expT; % simple rate-to-prob-model for Markov chains, 2018-03-12 RB
-                P(i,i) = 1 - sum(P(i,:)); % use HMM transition probabilities, MH 17.3.2020
-            end
-            [V,D,W]=eig(P);
-            D = diag(D);
-            for i=1:K
-                if round(1e5*real(D(i)))/1e5==1 && round(imag(D(i)))==0 
-                    break   
-                end
-            end
-            Prob = W(:,i)./sum(W(:,i));
-        end
+%         % MH 19.12.2019: identify zero sums in rate matrix
+%         if sum(sum(kx,1)>0)~=J || sum(sum(kx,2)>0)~=J
+%             setContPan(cat(2,'Simulation aborted: at least one ',...
+%                 'transition from and to each state must be defined ',...
+%                 '(rate non-null).'),'error',h_fig);
+% 
+%             % clear any results to avoid conflict
+%             if isfield(h,'results') && isfield(h.results,'sim')
+%                 h.results = rmfield(h.results,'sim');
+%             end
+%             guidata(h_fig,h);
+%             return
+%         end
         
         if bleach
-            end_t = ceil(random('exp',bleachT));
-            if end_t > N*expT
-                end_t = N*expT;
+            Ln = round(ceil(random('exp',bleachL)));
+            if Ln>L
+                Ln = L;
+            end
+            if Ln<Lmin
+                Ln = Lmin;
             end
         else
-            end_t = N*expT;
+            Ln = L;
         end
 
-        if n <= n_max
-            mix{n} = zeros(K,N);
-            discr_seq{n} = zeros(N,1);
-
-            t = 0;
-            stes = zeros(K,N);
+        if n <= N
+            mix{n} = zeros(J,L);
+            discr_seq{n} = zeros(L,1);
+            stes = zeros(J,L);
+            state1 = randsample(1:J, 1, true, ip); % pick a first state
             
-            % pick a "first state" randomly with uniform probabilities
-            %s_curr = randsample(1:K, 1, true, double(~~(kx))); % M.CAS Hadzic 2014
-            
-            % pick a "first state" randomly weighted with state propabilities 
-            s_curr = randsample(1:K, 1, true, Prob); % 2018-03-12, RB PlosOne
-          
-            while t<end_t
-
-                curr_f = ceil(t/expT);
-                if curr_f==0
-                    curr_f = 1;
-                elseif sum(stes(:,curr_f),1)==1
-                    curr_f = curr_f+1;
+            l = 0;
+            while l<Ln
+                
+                curr_l = ceil(l);
+                if curr_l==0
+                    curr_l = 1;
+                elseif curr_l>Ln
+                    curr_l = Ln;
+                elseif sum(stes(:,curr_l),1)==1
+                    curr_l = curr_l+1;
                 end
                 
-                s_prev = s_curr; % previous state
+                % pick a first state
+                if sum(wx(state1,:))==0
+                    state2 = state1;
+                else
+                    state2 = randsample(1:J, 1, true, wx(state1,:)); % pick a next state
+                end
                 
-                 % pick a "next state" randomly with uniform probabilities
-                %s_curr = randsample(1:K, 1, true, double(~~P(s_prev,:)));
-                
-                % pick a "next state" randomly with P-based probabilities
-                %s_curr = randsample(1:K, 1, true, P(s_prev,:));
-                
-                % pick a "next state" randomly with k-based probabilities
-%                 s_curr = randsample(1:K, 1, true, kx(s_prev,:)/sum(kx(s_prev,:)));
-                
-                % pick a "next state" randomly with defined probabilities, MH 17.3.2020
-                s_curr = randsample(1:K, 1, true, wx(s_prev,:));
-                
-                % dwell in s
-                dt = random('exp',1/kx(s_prev,s_curr)); 
+                % dwell in numer of time bins
+                if isinf(tau) % kinetic trap
+                    dl = Ln-l;
+                else
+                    dl = random('exp',tau(state1));
+                end
                 
                 % truncate dwell if larger than remaining time
-                if (t+dt)>end_t
-                    dt = end_t - t;
+                if (l+dl)>Ln
+                    dl = Ln-l;
                 end
                 
-                dt_final{n} = [dt_final{n}; [dt s_prev s_curr]];
+                dt_final{n} = [dt_final{n}; [dl*expT state1 state2]];
 
-                if t>0 && sum(stes(:,curr_f),1)<=1
+                if l>0 && sum(stes(:,curr_l),1)<=1
                     
                     % the cumulation of the dt generated overflows or 
                     % reaches the integration time limit
-                    if dt/expT>=(1-sum(stes(:,curr_f),1))
-                        dt = dt - expT*(1 - sum(stes(:,curr_f),1));
-                        t = t + expT*(1 - sum(stes(:,curr_f),1));
-                        stes(s_prev,curr_f) = stes(s_prev,curr_f) + ...
-                            1 - sum(stes(:,curr_f),1);
-                        curr_f = curr_f + 1;
+                    if dl>=(1-sum(stes(:,curr_l),1))
+                        dl = dl - (1 - sum(stes(:,curr_l),1));
+                        l = l + (1 - sum(stes(:,curr_l),1));
+                        stes(state1,curr_l) = stes(state1,curr_l) + 1 - ...
+                            sum(stes(:,curr_l),1);
+                        curr_l = curr_l + 1;
                     
                     % the cumulation of the dt generated does not reach the
                     % integration time limit
                     else
-                        stes(s_prev,curr_f) = stes(s_prev,curr_f) + ...
-                            dt/expT;
-                        t = t + dt;
-                        dt = 0;
+                        stes(state1,curr_l) = stes(state1,curr_l) + dl;
+                        l = l + dl;
                         continue;
                     end
                 end
 
-                addl = fix(dt/expT);
-                if addl>0
-                    stes(s_prev,(curr_f):(curr_f+addl-1)) = 1;
+                addl = fix(dl);
+                if dl>0
+                    stes(state1,(curr_l):(curr_l+addl-1)) = 1;
                 end
                 
-                fract_end = dt-addl*expT;
+                fract_end = dl-addl;
                 % the cumulation of the dt generated overflows the 
                 % integration time limit
                 if fract_end>0
-                    stes(s_prev,curr_f+addl) = fract_end;
+                    stes(state1,curr_l+addl) = fract_end;
                 end
                 
-                t = t + fract_end*expT + addl*expT;
+                l = l + fract_end + addl;
+                state1 = state2;
             end
             
-            stes = stes(:,1:N);
-            mix{n} = stes./repmat(sum(stes,1),[K,1]);
+            stes = stes(:,1:L);
+            mix{n} = stes./repmat(sum(stes,1),[J,1]);
             [o,max_ste] = max(stes,[],1);
             discr_seq{n} = max_ste';
             
-            if end_t/expT < N
-                discr_seq{n}(1+end_t/expT:N,:) = -1;
-                mix{n}(1,1+end_t/expT:N) = -1;
+            if Ln < L
+                discr_seq{n}(1+Ln:L,:) = -1;
+                mix{n}(1,1+Ln:L) = -1;
             end
             n = n+1;
         end
     end
     
 else
-    for n = 1:n_max
-        mix{n} = zeros(K,N);
-        if K > 1
-            if imp_p0
-                % MH 17.3.2020: pre-defined initial state probabilities
-                Prob = molPrm.p0(n,:);
-
-            else
+    for n = 1:N
+        ip = ip_all(n,:);
+        mix{n} = zeros(J,L);
+        if J > 1
+            if sum(sum(kx,1)>0)~=J || sum(sum(kx,2)>0)~=J
                 % MH 19.12.2019: identify zero sums in rate matrix
                 setContPan(cat(2,'Simulation aborted: when no transition ',...
                     'is defined (null rates), initial state probabilities',...
@@ -224,27 +192,28 @@ else
                 guidata(h_fig,h);
                 return
             end
+            
             % pick a "first state" randomly
-            s_curr = randsample(1:K, 1, true, sum(Prob,1));
+            state1 = randsample(1:J, 1, true, sum(ip,1));
         else
-            s_curr = 1;
+            state1 = 1;
         end
         
         if bleach
-            end_t = ceil(random('exp',bleachT));
-            if end_t > N*expT
-                end_t = N*expT;
+            Ln = ceil(random('exp',bleachL));
+            if Ln > L*expT
+                Ln = L*expT;
             end
         else
-            end_t = N*expT;
+            Ln = L*expT;
         end
         
-        mix{n}(s_curr,:) = 1;
-        dt_final{n} = [N*expT s_curr NaN];
-        discr_seq{n} = s_curr*ones(N,1);
-        if end_t/expT < N
-            discr_seq{n}(1+end_t/expT:N,:) = -1;
-            mix{n}(1,1+end_t/expT:N) = -1;
+        mix{n}(state1,:) = 1;
+        dt_final{n} = [L state1 NaN];
+        discr_seq{n} = state1*ones(L,1);
+        if Ln < L
+            discr_seq{n}(1+Ln:L,:) = -1;
+            mix{n}(1,1+Ln:L) = -1;
         end
     end
 end
@@ -258,9 +227,6 @@ h.results.sim.mix = mix;
 h.results.sim.discr_seq = discr_seq;
 h.results.sim.dt_final = dt_final;
 guidata(h_fig,h);
-
-% cancelled by MH, 17.12.2019
-% updateMov(h_fig);
 
 % return execution success
 ok = 1;

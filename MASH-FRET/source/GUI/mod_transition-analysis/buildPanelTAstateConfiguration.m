@@ -21,6 +21,7 @@ function h = buildPanelTAstateConfiguration(h,p)
 
 % defaults
 hedit0 = 20;
+hbut0 = 20;
 htxt0 = 14;
 hpop0 = 22;
 wedit0 = 40;
@@ -31,6 +32,9 @@ meth = 2;
 xlbl0 = 'Value before transition';
 ylbl0 = 'Value after transition';
 clbl0 = 'normalized occurrence';
+str11 = {'red','green','blue','yellow','cyan','magenta','olive','orange',...
+    'wine','marine','kaki','turpuoise','purple','brown','pink','violet',...
+    'grey','canary','pastel blue'};
 str0 = 'method';
 str2 = {'k-mean','GM','simple'};
 str3 = 'Jmax';
@@ -38,12 +42,17 @@ str4 = 'BOBA FRET';
 str5 = 'replic.';
 str6 = 'samp.';
 str7 = 'x=0 y=0';
+str8 = 'cluster:';
+str9 = {'Select cluster'};
+str10 = 'Set color';
 ttl0 = 'Clusters';
 ttl1 = 'Results';
 ttstr0 = wrapHtmlTooltipString('<b>Clustering method:</b> <u>k-mean:</u> iterative process where state transitions are assigned to the nearest cluster center; <u>GM:</u> iterative process where transitions are assigned to the most probable Gaussian cluster (<i>model selection:</i> 2D-Gaussian mixtures with increasing complexities are successively fit to the TDP and overfitting is penalized using the BIC); <u>simple:</u> state transitions are assigned to the cluser in which they are contained.');
 ttstr2 = wrapHtmlTooltipString('<b>TDP bootstrapping:</b> when activated, sample TDPs are created prior clustering and from molecules randomly selected in the project (replicates); the resulting bootstrap mean and standard deviation are used to estimate the cross-sample variability of model complexity.');
 ttstr3 = wrapHtmlTooltipString('<b>Number of bootstrap replicates:</b> number of molecules randomly selected in the project, used to create one sample TDP.');
 ttstr4 = wrapHtmlTooltipString('<b>Number of bootstrap samples:</b> number of sample TDPs to create in order to estimate cross-sample variability.');
+ttstr5 = wrapHtmlTooltipString('Open color picker to set <b>cluster color</b>.');
+ttstr6 = wrapHtmlTooltipString('Select a transition cluster');
 
 % parents
 h_fig = h.figure_MASH;
@@ -51,6 +60,8 @@ h_pan = h.uipanel_TA_stateConfiguration;
 
 % dimensions
 pospan = get(h_pan,'position');
+wbut0 = getUItextWidth(str10,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
+wtxt0 = getUItextWidth(str8,p.fntun,p.fntsz1,'normal',p.tbl);
 warea = 2*p.mg+p.mg/2+2*wedit0;
 wpop0 = warea-2*p.mg;
 wcb0 = warea-2*p.mg;
@@ -61,7 +72,7 @@ hpan0 = p.mgpan+hpop0+p.mg/2+htxt0+hpop0+p.mg/fact+hedit0+p.mg/2+hedit0+...
 mgarea = (hpan0-htxt0-hpop0-htxt0-hedit0-hedit0-p.mg/fact-htxt0-hedit0-p.mg)/2;
 wpan1 = pospan(3)-warea-wpan0-2*p.mg;
 waxes0 = warea+wpan0+wpan1-2*p.mg;
-haxes0 = pospan(4)-p.mgpan-hpan0-p.mg-htxt0-2*p.mg;
+haxes0 = pospan(4)-p.mgpan-hpan0-p.mg-hpop0-2*p.mg;
 
 % GUI
 x = p.mg;
@@ -138,13 +149,37 @@ h.edit_TDPnSpl = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
     'tooltipstring',ttstr4,'callback',{@edit_TDPnSpl_Callback,h_fig});
 
 x = p.mg;
-y = p.mg;
+y = p.mg+(hpop0-htxt0)/2;
 
 h.text_TA_tdpCoord = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'position',[x,y,waxes0,htxt0],'fontunits',p.fntun,'fontsize',...
     p.fntsz1,'horizontalalignment','left','string',str7);
 
-y = y+htxt0+p.mg;
+x = pospan(3)-p.mg-wbut0;
+y = y-(hbut0-htxt0)/2;
+
+h.pushbutton_TA_setClstClr = uicontrol('style','pushbutton','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wbut0,hbut0],'string',str10,'tooltipstring',ttstr5,'callback',...
+    {@pushbutton_TA_setClstClr_Callback,h_fig});
+
+x = x-p.mg-wedit0;
+y = y-(hpop0-hbut0)/2;
+
+h.popupmenu_TA_setClstClr = uicontrol('style','popupmenu','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wedit0,hpop0],'string',str9,'tooltipstring',ttstr6,'callback',...
+    {@popupmenu_TA_setClstClr_Callback,h_fig});
+
+x = x-p.mg-wtxt0;
+y = y+(hpop0-hbut0)/2;
+
+h.text_TA_setClstClr = uicontrol('style','text','parent',h_pan,'units',...
+    p.posun,'position',[x,y,wtxt0,htxt0],'fontunits',p.fntun,'fontsize',...
+    p.fntsz1,'horizontalalignment','left','string',str8);
+
+x = p.mg;
+y = y-(hpop0-htxt0)/2+hpop0+p.mg;
 
 h.axes_TDPplot1 = axes('parent',h_pan,'units',p.posun,'fontunits',p.fntun,...
     'fontsize',p.fntsz1,'position',[x,y,waxes0,haxes0],'xlim',lim0,'ylim',...
@@ -187,4 +222,7 @@ pospan2 = get(h.uipanel_TA_selectTool,'position');
 pospan2(1) = pospan1(1)+posbut(1)+posbut(3);
 pospan2(2) = pospan1(2)+posbut(2)-(pospan2(4)-posbut(4))/2;
 set(h.uipanel_TA_selectTool,'position',pospan2);
+
+% store default color list
+h.color_list = str0;
 

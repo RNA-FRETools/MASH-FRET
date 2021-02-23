@@ -127,10 +127,24 @@ if isempty(fDat)
     else % manage older versions with SIFImport
         
         % check for correct compilation of mex file for method SIFImport
-        if ~exist('SIFImport')
-            setContPan(cat(2,'SIF files of older versions can not be ',...
-                'imported: problem with mex compilation.'),'error',h_fig);
-            return;
+        if exist('SIFImport','file')~=3
+            h = guidata(h_fig);
+            if h.mute_actions
+                disp('MASH-FRET will proceed to file compilation...');
+            else
+                setContPan(cat(2,'MASH-FRET will proceed to file ',...
+                    'compilation...'),'warning',h_fig);
+            end
+            switch computer
+                case 'PCWIN' % 32bit windows
+                    mex(which('SIFImport.c'),'-L./lib','-lITASL32');
+                case 'PCWIN64' % 64bit windows
+                    mex(which('SIFImport.c'),'-L./lib','-lITASL64');
+                case 'GLNX86' % 32bit Linux
+                    mex(which('SIFImport.c'),'-L./lib','-lITASL32');
+                case 'GLNX64' % 64bit Linux
+                    mex(which('SIFImport.c'),'-L./lib','-lITASL64');
+            end
         end
         
         [imgDat,dat] = SIFImport(fullFname);

@@ -1,7 +1,7 @@
 function edit_TP_states_param3_Callback(obj, evd, h_fig)
 
-% created by MH, 3.4.2019
-% >> function was missing (???)
+% Last update by MH, 27.12.2020: add 2D-vbFRET
+% created by MH, 3.4.2019: function was missing (???)
 
 h = guidata(h_fig);
 p = h.param.ttPr;
@@ -21,20 +21,25 @@ if ~isempty(p.proj)
         end
     end
     
-    if sum(double(method == [2,4]))
+    if sum(double(method == [2,3,5]))
         val = round(str2num(get(obj, 'String')));
         set(obj, 'String', num2str(val));
 
         if isempty(val) || numel(val)~=1 || isnan(val) || ...
-                (method==2 && val<=0) || (method==4 && ~(val==1 || val==2))
+                ((method==2 || method==3) && val<=0) || ...
+                (method==5 && ~(val==1 || val==2))
             set(obj, 'BackgroundColor', [1 0.75 0.75]);
             
             switch method
-                case 2 % VbFRET
+                case 2 % VbFRET-1D
+                    updateActPan('Number of iterations must be > 0',...
+                        h_fig,'error');
+                    
+                case 3 % VbFRET-2D
                     updateActPan('Number of iterations must be > 0',...
                         h_fig,'error');
 
-                case 4 % CPA
+                case 5 % CPA
                     updateActPan(cat(2,'Method for change localisation ',...
                         'must be 1 or 2 ("max." or "MSE")'),h_fig,...
                         'error');

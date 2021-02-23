@@ -1,6 +1,6 @@
-function saveTDP(h_fig,varargin)
-% saveTDP(h_fig)
-% saveTDP(h_fig,file_out)
+function exportTA(h_fig,varargin)
+% exportTA(h_fig)
+% exportTA(h_fig,file_out)
 %
 % Export files from Transition analysis
 %
@@ -38,6 +38,11 @@ kinFit = q{3}(2);
 kinBoba = q{3}(3);
 bobaFig = q{3}(4);
 
+% export parameters for kinetic model
+mdlSlct = q{4}(1);
+mdlOpt = q{4}(2);
+mdlSim = q{4}(3);
+
 % check presence of TDP
 if ~sum(sum(prm.plot{2}))
     TDPascii = false;
@@ -56,20 +61,31 @@ if ~isfield(prm,'clst_start')
 end
 
 % check presence of fit
-if ~(isfield(prm,'kin_res') && size(prm.kin_res,2)>=2 && ...
-        sum(~cellfun('isempty',prm.kin_res(:,2))))
+if ~(isfield(prm,'lft_res') && size(prm.lft_res,2)>=2 && ...
+        sum(~cellfun('isempty',prm.lft_res(:,2))))
     kinFit = false;
 end
 
 % check presence of boba fit
-if ~(isfield(prm,'kin_res') && size(prm.kin_res,2)>=5 && ...
-        sum(~cellfun('isempty',prm.kin_res(:,5))))
+if ~(isfield(prm,'lft_res') && size(prm.lft_res,2)>=5 && ...
+        sum(~cellfun('isempty',prm.lft_res(:,5))))
     kinBoba = false;
     bobaFig = false;
 end
 
+% check presence of kinetic model
+if ~(isfield(prm,'mdl_res') && size(prm.mdl_res,2)>=5 && ...
+        sum(~cellfun('isempty',prm.mdl_res(1,:))))
+    mdlSlct = false;
+    mdlOpt = false;
+    mdlSim = false;
+elseif ~(isfield(prm,'mdl_start') && size(prm.mdl_start,2)>=3 && ...
+        prm.mdl_start(1)==1)
+    mdlSlct = false;
+end
+
 if ~(TDPascii || TDPimg || TDPclust || kinDtHist || kinFit || kinBoba || ...
-        bobaFig)
+        bobaFig || mdlSlct || mdlOpt || mdlSim)
     setContPan('There is no data to export.', 'warning', h_fig);
     return
 end
@@ -108,10 +124,7 @@ tdp_png_conv = TDPimg & (TDPimg_fmt==2 | TDPimg_fmt==3);
 bol_tdp = [tdp_mat tdp_conv tdp_coord tdp_png tdp_png_conv TDPclust];
 
 if sum(bol_tdp)
-    
     setContPan('Export TDP and clustering results ...', 'process', h_fig);
-
-    pname_tdp = setCorrectPath([pname 'clustering'], h_fig);
 
     if numel(prm.plot{2})==1 && isnan(prm.plot{2})
         disp(['no TDP built for data ' str_tpe{tpe}]);
@@ -124,6 +137,7 @@ if sum(bol_tdp)
                 removeHtml(str_tag{tag})]);
         end
     else
+        pname_tdp = setCorrectPath([pname 'clustering'], h_fig);
         if tag==1
             name_tdp = cat(2,name,'_',str_tpe{tpe});
         else
@@ -133,7 +147,7 @@ if sum(bol_tdp)
         [ok,str_tdp] = save_tdpDat(prm,pname_tdp,name_tdp,bol_tdp,...
             h_fig);
         if ~ok
-            return;
+            return
         end
         str_act = cat(2,str_act,str_tdp);
     end
@@ -144,17 +158,15 @@ end
 
 bol_kin = [kinDtHist kinFit kinBoba bobaFig];
 
-if sum(bol_kin) && isfield(prm,'clst_start');
+if sum(bol_kin) && isfield(prm,'clst_start')
     setContPan('Export kinetic results ...', 'process', h_fig);
-    
-    pname_kin = setCorrectPath([pname 'kinetics'], h_fig);
-    
+
     % export dwell-time histogram files & fitting results (if)
-    J = prm.kin_start{2}(1);
+    J = prm.lft_start{2}(1);
     mat = prm.clst_start{1}(4);
     clstDiag = prm.clst_start{1}(9);
     if ~isempty(prm.clst_res{4}) && J>0
-
+        pname_kin = setCorrectPath([pname 'lifetimes'], h_fig);
         if tag==1
             name_kin0 = cat(2,name,'_',str_tpe{tpe});
         else
@@ -163,17 +175,20 @@ if sum(bol_kin) && isfield(prm,'clst_start');
         end
         
         nTrs = getClusterNb(J,mat,clstDiag);
-        for k = 1:nTrs
-            if ~(size(prm.clst_res{4},2)>=k && ...
-                    ~isempty(prm.clst_res{4}{k}))
+        bin = prm.lft_start{2}(3);
+        [j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
+        [vals,js] = binStateValues(prm.clst_res{1}.mu{J},bin,[j1,j2]);
+        V = numel(vals);
+        for v = 1:V
+            if ~(size(prm.clst_res{4},2)>=v && ...
+                    ~isempty(prm.clst_res{4}{v}))
                 continue
             end
-            val = round(100*prm.clst_res{1}.mu{J}(k,:))/100;
+            val = round(100*vals(v))/100;
 
-            name_kin = cat(2,name_kin0,'_',num2str(val(1)),'to',...
-                num2str(val(2)));
+            name_kin = cat(2,name_kin0,'_',num2str(val(1)));
 
-            [ok,str_kin] = save_kinDat(bol_kin, prm,k, pname_kin, name_kin, ...
+            [ok,str_kin] = save_kinDat(bol_kin,prm,v,pname_kin,name_kin, ...
                 h_fig);
             if ~ok
                 return
@@ -181,6 +196,28 @@ if sum(bol_kin) && isfield(prm,'clst_start');
             str_act = cat(2,str_act,str_kin);
         end
     end
+end
+
+%% Export Kinetic model results
+bol_mdl = [mdlSlct, mdlOpt, mdlSim];
+if sum(bol_mdl)
+    setContPan('Export kinetic model and associated results ...','process',...
+        h_fig);
+
+    pname_mdl = setCorrectPath([pname 'kinetic model'], h_fig);
+
+    if tag==1
+        name_mdl = cat(2,name,'_',str_tpe{tpe});
+    else
+        name_mdl = cat(2,name,'_',str_tpe{tpe},'_',...
+            removeHtml(str_tag{tag}));
+    end
+    [ok,str_mdl] = save_mdlDat(prm,pname_mdl,name_mdl,bol_mdl,...
+        h_fig);
+    if ~ok
+        return
+    end
+    str_act = cat(2,str_act,str_mdl);
 end
 
 str_act = str_act(1:end-2); % remove last '\n'

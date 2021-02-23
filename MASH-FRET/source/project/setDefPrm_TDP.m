@@ -2,32 +2,24 @@ function def = setDefPrm_TDP(p, proj)
 % prm = setDefparam_TDP(prm_in, trace)
 %
 % Set project parameters for TDP analysis if not existing
-% "prm_in" >> TDP parameters loaded from project file and for the data type
-% "trace" >> discretised traces of all molecules and from data type
-% "isRatio" >> data in trace are intensity ratio (between 0 and 1)
-% "N" >> number of molecules
 %
-% Requires external function: adjustParam.
+% p: structure containing interface parameters
+% proj: project index in TA's project list
 
-% Create the 29th of April 2014 by Mélodie C.A.S. Hadzic
-%
-% Last update: 23rd of February 2019 by Mélodie Hadzic
-% --> Initialize number of replicates with number of molecules in the
-%     sample.
-% --> Increase initial TDP binning to 0.01
-% --> Activate Gaussian convolution and normalized units on intial TDP
-% --> Increase initial max. number of states from 4 to 8
+% Last update, 25.4.2020 by MH: add field "sim_start" and "sim_res"
+% update, 24.4.2020 by MH: rename fields "kin_def", "kin_start" and "kin_res" in "lft_def", "lft_start" and "lft_res" to identify projects prior new dwelltime analysis and adapt down-compatibility
+% update, 23.2.2019 by MH: (1) Initialize number of replicates with number of molecules in the sample (2) Increase initial TDP binning to 0.01 (3) Activate Gaussian convolution and normalized units on intial TDP (4) Increase initial max. number of states from 4 to 8
+% created 29.4.2014 by MH
 
 % defaults
 J = 5;
-nExp = 1;
 method = 2;
 ratioAxis = [0.01 -0.2 1.2];
 nbins = 150;
 gconv = true;
 norm = true;
 sglcnt = false;
-rearr = false;
+rearr_tdp = false;
 inclDiag = true;
 shape = 1;
 mat = 1; % constraint on clusters
@@ -36,6 +28,16 @@ logl = 1; % 0: incomplete data, 1: complete data
 nspl_clst = 20;
 niter = 10;
 boba_clst = false;
+nExp = 1;
+boba_lft = true;
+nspl_lft = 100;
+wght = false;
+excl = false;
+rearr_lft = false;
+auto_lft = true;
+bin_lft = 0.01;
+niter_mdl = 5;
+Jdeg_max = 4;
 
 % collect project parameters
 nChan = p.proj{proj}.nb_channel;
@@ -53,19 +55,20 @@ nTag = size(p.proj{proj}.molTagNames,2);
 N = size(p.proj{proj}.coord_incl,2);
 nTpe = nChan*nExc + nFRET + nS;
 
-% collect interface parameters
+% initialize default processing parameters
 def = cell(nTag+1,nTpe);
 
 % set default processing parameters
 for tpe = 1:nTpe
     for tag = 1:nTag+1
         
-        def{tag,tpe}.plot = adjustParam('plot', cell(1,3), def{tag,tpe});
-        def{tag,tpe}.clst_start = adjustParam('clst_start', cell(1,3), def{tag,tpe});
-        def{tag,tpe}.clst_res = adjustParam('clst_res', cell(1,4), def{tag,tpe});
-        def{tag,tpe}.kin_def = adjustParam('kin_def', cell(1,2), def{tag,tpe});
-        def{tag,tpe}.kin_start = adjustParam('kin_start', cell(1,2), def{tag,tpe});
-        def{tag,tpe}.kin_res = adjustParam('kin_res', cell(1,4), def{tag,tpe});
+        def{tag,tpe}.plot = cell(1,3);
+        def{tag,tpe}.clst_start = cell(1,3);
+        def{tag,tpe}.clst_res = cell(1,4);
+        def{tag,tpe}.lft_def = cell(1,2);
+        def{tag,tpe}.lft_start = cell(1,2);
+        def{tag,tpe}.lft_res = cell(1,4);
+        def{tag,tpe}.mdl_res = cell(1,4);
         
         % get default TDP axis
         isRatio = 0;
@@ -106,81 +109,97 @@ for tpe = 1:nTpe
         % empty  empty      empty
         % empt   gconv      norm 
         % count  re-arrange diag
-        pplot{1} = [xy_axis; [0,0,0]; [0,gconv,norm]; ...
-            [sglcnt,rearr,inclDiag]];
+        def{tag,tpe}.plot{1} = [xy_axis; [0,0,0]; [0,gconv,norm]; ...
+            [sglcnt,rearr_tdp,inclDiag]];
         
         % TDP matrix
-        pplot{2} = [];
+        def{tag,tpe}.plot{2} = [];
         
         % dwells, ini. val., fin. val., molecule
-        pplot{3} = [];
-
-        def{tag,tpe}.plot = adjustVal(def{tag,tpe}.plot,pplot);
+        def{tag,tpe}.plot{3} = [];
 
         %% Clustering parameters
         % method, shape, max. nb. of states, state-dependant, restart nb., 
         % BOBA FRET, sample nb., replicate nb., cluster diagonal
         % transitions
-        clst_start{1} = [method shape J mat niter boba_clst nspl_clst N ...
-            clstDiag logl];
+        def{tag,tpe}.clst_start{1} = [method shape J mat niter boba_clst ...
+            nspl_clst N clstDiag logl];
         % state x, state y, tol. radius x, tol. radius y
-        clst_start{2} = [];
+        def{tag,tpe}.clst_start{2} = [];
         % cluster colors
-        clst_start{3} = [];
-
-        def{tag,tpe}.clst_start = adjustVal(def{tag,tpe}.clst_start,clst_start);
+        def{tag,tpe}.clst_start{3} = [];
 
         %% Clustering results
         % struct.mu, struct.a, struct.o, struct.BIC, struct.clusters, 
         % struct.fract, struct.pop
-        clst_res{1} = [];
+        def{tag,tpe}.clst_res{1} = [];
 
         % Jopt mean, Jopt deviation
-        clst_res{2} = [];
+        def{tag,tpe}.clst_res{2} = [];
 
         % nb of states in plot
-        clst_res{3} = 1;
+        def{tag,tpe}.clst_res{3} = 1;
 
         % dwells, occ., norm. occ(1)., cum. occ, 1-cum(P)
-        clst_res{4} = [];
-
-        def{tag,tpe}.clst_res = adjustVal(def{tag,tpe}.clst_res,clst_res);
+        def{tag,tpe}.clst_res{4} = [];
 
         %% Default fitting parameters
-        % stretch, exp nb, curr exp, apply BOBA, repl nb, smple nb, 
-        % weigthing, excl, re-arrange
-        kin_def{1} = [0 nExp 1 1 20 100 0 0 0];
+        % stretch, exp nb, curr exp, apply BOBA, repl nb, smple nb,weigthing, excl, re-arrange
+        % model selection,stretch,exp nb,curr exp,apply BOBA,repl nb,smple nb,weigthing
+        def{tag,tpe}.lft_def{1} = ...
+            [auto_lft 0 nExp 1 boba_lft 20 nspl_lft wght];
         
         % low A, start A, up A, low tau, start tau, up tau, low beta, 
         % start beta, up beta]
-        kin_def{2} = repmat([0 0.8 Inf 0 10 Inf 0 0.5 2],nExp,1);
-        
-        def{tag,tpe}.kin_def = adjustVal(def{tag,tpe}.kin_def,kin_def);
+        def{tag,tpe}.lft_def{2} = ...
+            repmat([0 0.8 Inf 0 10 Inf 0 0.5 2],nExp,1);
+
         
         %% Actual fitting parameters (depends on J and nb. of exponentials)
-        kin_start{1} = cell(1,2);
-        % model used in kinetic analysis, current transition
-        kin_start{2} = [1,1]; 
+        def{tag,tpe}.lft_start{1} = cell(1,2);
         
-        def{tag,tpe}.kin_start = adjustVal(def{tag,tpe}.kin_start,kin_start);
+        % used model,current state value,state binning,excl,re-arrange
+        def{tag,tpe}.lft_start{2} = [1,1,bin_lft,excl,rearr_lft]; 
 
-        %% Fitting results
-        % boba fit: amp, sig_amp, dec, sig_dec, beta, sig_beta
-        kin_res{1} = [];
+        %% Fitting results {v-by-5} 
+        % [nDegen-by-6-by-nTrs] boba fit: amp, sig_amp, dec, sig_dec, beta, sig_beta
+        def{tag,tpe}.lft_res{1} = [];
         
-        % reference fit: amp, dec, beta
-        kin_res{2} = [];
+        % [nDegen-by-3-by-nTrs] reference fit: amp, dec, beta
+        def{tag,tpe}.lft_res{2} = [];
         
-        % lowest boba fit: amp, dec, beta
-        kin_res{3} = [];
+        % [nDegen-by-3-by-nTrs] lowest boba fit: amp, dec, beta
+        def{tag,tpe}.lft_res{3} = [];
         
-        % highest boba fit: amp, dec, beta
-        kin_res{4} = [];
+        % [nDegen-by-3-by-nTrs] highest boba fit: amp, dec, beta
+        def{tag,tpe}.lft_res{4} = [];
         
-        % dwell time histogram sample
-        kin_res{5} = [];
+        % {1-by-2} {1-by-nSpl}[nDt-by-2] sample dwell time histograms and [nSpl-by-3 or -nDegen*2] sample fit results
+        def{tag,tpe}.lft_res{5} = [];
         
-        def{tag,tpe}.kin_res = adjustVal(def{tag,tpe}.kin_res,kin_res);
+        %% Kinetic model start parameters
+        % starting guess, number of restart
+        def{tag,tpe}.mdl_start = [1,niter_mdl,Jdeg_max];
+        
+        %% Kinetic model results
+        % transition probabilities
+        def{tag,tpe}.mdl_res{1} = []; 
+        
+        % transtion probability deviations
+        def{tag,tpe}.mdl_res{2} = []; 
+        
+        % initial probabilities
+        def{tag,tpe}.mdl_res{3} = []; 
+        
+        % simulated data
+        def{tag,tpe}.mdl_res{4} = []; 
+        
+        % final state values (incl. degenerated levels)
+        def{tag,tpe}.mdl_res{5} = []; 
+        
+        % [Dmax^V-by-V+1] nb. of degenerated states, BIC
+        def{tag,tpe}.mdl_res{6} = []; 
+        
     end
 end
 

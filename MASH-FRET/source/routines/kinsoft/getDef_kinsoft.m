@@ -9,7 +9,7 @@ defprm = {'Movie name' '' ''
        '[K+]' [] 'mM'};
 deflbl = {'don','acc1'};
 nMax = 3; % maximum number of exponential to fit
-expT = 0.1; % exposure time
+T = 5; % number of restart in model optimization
 
 % general
 p.dumpdir = cat(2,pname,'MASH-FRET-analysis');
@@ -119,9 +119,10 @@ p.factPrm{3} = [-0.2,50,1.2
 
 % default find states parameters
 nDat = p.nChan*p.nL+size(p.projOpt.FRET,1)+size(p.projOpt.S,1);
-p.fsMeth = 5; % threshold, vbFRET, one state, CPA, STaSI
+p.fsMeth = 6; % threshold, vbFRET, 2D-vbFRET, one state, CPA, STaSI
 p.fsDat = 1; % bottom, top , all
 p.fsPrm = [2  0  0 1 0 0 0 0
+    1  2  1 1 0 0 0 0
     1  2  1 1 0 0 0 0
     0  0  0 0 0 0 0 0
     50 90 2 1 0 0 0 0
@@ -132,7 +133,7 @@ p.fsThresh = [-Inf,0,0.6
 p.fsThresh = repmat(p.fsThresh,[1,1,nDat]);
 
 % default TDP settings
-p.tdpPrm = [-0.2,0.025,1.2,1,0,0,1,1];
+p.tdpPrm = [-0.2,0.01,1.2,1,0,0,1,1];
 
 % default state configuration
 Jmax = 10;
@@ -144,19 +145,9 @@ p.clstStart = [linspace(0,1,Jmax)',repmat(0.1,[Jmax,1])];
 % default export options
 p.tdp_expOpt = [false,4,false,3,false,false,false,false];
 
-% default exponential fit settings
+% default parameters for model optimization
 p.nMax = nMax;
-p.expPrm = [0,1,0,0,100]; % stretched, decay nb., boba, weight, sample nb.
-amp = permute(...
-    [zeros(nMax,1),flip(logspace(-2,0,nMax),2)',Inf(nMax,1)],...
-    [3,2,1]);
-dec = permute(...
-    [zeros(nMax,1),flip(logspace(2,log10(expT),nMax),2)',Inf(nMax,1)],...
-    [3,2,1]);
-beta = permute([zeros(nMax,1),0.5*ones(nMax,1),2*ones(nMax,1)],[3,2,1]);
-p.fitPrm = cat(1,amp,dec,beta);
-p.fitPrm(2,2,2) = 5;
-p.fitPrm(2,2,3) = 10;
+p.restartNb = T;
 
 % defaults for simulation
 p.L = 100; % video length (frames)

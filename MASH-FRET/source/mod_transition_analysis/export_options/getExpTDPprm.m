@@ -14,4 +14,11 @@ def{2} = [1 1 4 3 1];
 % results.
 def{3} = [1 1 1 1];
 
+%% Kinetic model
+
+% Most sufficient model analysis, optimized model parameters, experimental
+% vs simulated data
+def{4} = [1,1,1];
+
+
 
