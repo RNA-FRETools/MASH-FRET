@@ -178,7 +178,7 @@ with
 Gaussian mixtures with increasing 
 [*J*](){: .math_var } are fit to the TDP.
 For each 
-[*J*](){: .math_var }, the models that gives the best description of the data, *i. e.*, that gives the highest likelihood, are compared to each other.
+[*J*](){: .math_var }, the models that discribe the data the best, *i. e.*, that maximize the likelihood, are compared to each other.
 
 As the model likelihood fundamentally increases with the number of components, inferred models are compared via the Bayesian information criterion (BIC), with the most sufficient cluster model having the lowest BIC.
 
