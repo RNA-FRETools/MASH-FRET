@@ -119,8 +119,11 @@ nChan = str2double(get(h.edit_nChannel, 'String'));
 sub_w = floor(h.movie.pixelX/nChan);
 h.movie.split = (1:nChan-1)*sub_w;
 
-% set experiment settings if any
-if isfield(data,'lightsrc')
+% set experiment settings read from video file if any
+if isfield(data,'lasers')
+    p.itg_nLasers = numel(data.lasers);
+    p.itg_wl = data.lasers;
+    p = ud_VP_nL(p);
 end
 
 % store video processing parameters

@@ -1,9 +1,15 @@
-function [expT,lord,exc] = getTIFOME_metadata(str)
-% [expT,lord,exc] = getTIFOME_metadata(str)
+function [expT,lord,laserWl] = getTIFOME_metadata(str)
+% [expT,lord,laserWl] = getTIFOME_metadata(str)
 %
 % Retrieve video sampling time, recording order and laser wavelength from TIF file XML metadata.
 % Sampling time is calculated as the difference between the time stamps of two successive image recordings.
 % Image recordings are written within XML tags "<ONE:Plane .../>" and time stamps are assigned to properties "DeltaT"
+%
+% str: metadata string
+% expT: sampling time
+% lord: frame indexes ordered according to record time stamp
+% laserWl: laser wavelength ordered according to time of appearance
+
 % Created by MH, 11.2.2021
 
 % read data from file
@@ -24,22 +30,45 @@ strl = split(str,sprintf('\n'));
 S = numel(strl);
 planes = {};
 t = [];
-exc = [];
+laserid = [];
+laserWl = [];
 for s = 1:S
     if contains(strl{s},'<OME:Plane')
         planes = cat(2,planes,strl{s});
-        t = cat(2,t,str2num(extrPlaneProp(strl{s},'DeltaT')));
+        t = cat(2,t,str2num(extrOMEProp(strl{s},'DeltaT')));
+        laserid = cat(2,laserid,str2num(extrOMEProp(strl{s},'TheC')));
+    end
+    if contains(strl{s},'<OME:Channel')
+        lasername = extrOMEProp(strl{s},'Name');
+        if contains(lasername,'TIRF')
+            laserWl = cat(2,laserWl,...
+                str2num(lasername(1:(end-length('TIRF')))));
+        end
     end
 end
 
 % retrieve frame order
 [t,lord] = sort(t,'ascend');
 
+% retrieve laser order
+if ~isempty(laserid)
+    laserid = laserid(lord)+1;
+    nLaser = numel(unique(laserid));
+    if numel(laserWl)==nLaser
+        laserWl = laserWl(laserid);
+        laserWl = laserWl(1:nLaser);
+    else
+        laserWl = [];
+    end
+else
+    laserWl = [];
+end
+
 % calculate sampling time
 expT = t(2)-t(1);
 
 
-function prop = extrPlaneProp(str,propname)
+function prop = extrOMEProp(str,propname)
 
 pos = strfind(str,[propname,'=']);
 char1 = pos+length([propname,'="']);

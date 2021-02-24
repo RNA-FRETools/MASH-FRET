@@ -5,6 +5,7 @@ ok = 1;
 cycleTime = 1; % arbitrary time delay between each frame
 data = [];
 movie = [];
+exc = [];
 
 h = guidata(h_fig);
 isMov = 0; % no movie variable was defined before (no memory is allocated)
@@ -16,7 +17,6 @@ if ~isempty(h_fig)
         end
     end
 end
-
 if ~useMov
     isMov = 0;
 end
@@ -31,13 +31,17 @@ if isempty(fDat)
     pixelX = size(img,1); % width of the movie after 90° rotation
     r.close();
     
-    % get sampling time
+    % get sampling time and laser order
+    txt_exc = '';
     try
-        props = readBf_props(fullFname);
+        [props,excord] = readBf_props(fullFname);
         t_str = props(contains(props(:,1),...
             regexpPattern('^(Value #)[0-9]*$')),2);
         u_str = props(contains(props(:,1),...
             regexpPattern('^(Units #)[0-9]*$')),2);
+        exc_str = props(contains(props(:,1),...
+            regexpPattern('^(Channel name #)[0-9]*$')),2);
+        
         t = NaN(frameLen,1);
         for l = 1:frameLen
             s_fact = getSecondsFromString(u_str{l,1});
@@ -46,8 +50,30 @@ if isempty(fDat)
         t = sort(t);
         cycleTime = t(2)-t(1);
         txt = num2str(cycleTime);
+        
+        nExc = numel(exc_str);
+        for l = 1:nExc
+            if contains(exc_str{l},'TIRF')
+                exc = cat(2,exc,str2num(exc_str{l}(1:end-length('TIRF'))));
+            end
+        end
+        if ~isempty(exc) && numel(exc)==numel(excord)
+            exc = exc(excord);
+            txt_exc = 'Lasers = ';
+            for l = 1:numel(exc)
+                if l==1
+                    txt_exc = cat(2,txt_exc,num2str(exc(l)),'nm');
+                else
+                    txt_exc = cat(2,txt_exc,', ',num2str(exc(l)),'nm');
+                end
+            end
+            txt_exc = cat(2,txt_exc,'\n');
+        else
+            exc = [];
+        end
+        
     catch err
-        disp('/!\ unable to read sampling time from vis file.')
+        disp('/!\ unable to read sampling time from file.')
         txt = ['arbitrary ' num2str(cycleTime)];
     end
 
@@ -56,13 +82,15 @@ if isempty(fDat)
             'Cycle time = ' txt 's-1\n' ...
             'Movie dimensions = ' num2str(pixelX) 'x' num2str(pixelY) ...
             ' pixels\n' ...
-            'Movie length = ' num2str(frameLen) ' frames\n'], h_fig);
+            'Movie length = ' num2str(frameLen) ' frames\n' ...
+            txt_exc], h_fig);
     else
         fprintf(['\nTagged Image File Format(*.tiff)\n' ...
             'Cycle time = ' txt 's-1\n' ...
             'Movie dimensions = ' num2str(pixelX) 'x' num2str(pixelY) ...
             ' pixels\n' ...
-            'Movie length = ' num2str(frameLen) ' frames\n']);
+            'Movie length = ' num2str(frameLen) ' frames\n' ...
+            txt_exc]);
     end
 else
     frameLen = fDat{3};
@@ -162,4 +190,7 @@ data = struct('cycleTime', cycleTime, ...
               'fCurs', [], ...
               'frameCur', frameCur, ...
               'movie', movie);
+if ~isempty(exc)
+    data.lasers = exc;
+end
         

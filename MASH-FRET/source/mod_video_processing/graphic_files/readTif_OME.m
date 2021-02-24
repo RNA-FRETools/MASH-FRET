@@ -5,6 +5,7 @@ ok = 1;
 cycleTime = 1; % arbitrary time delay between each frame
 data = [];
 movie = [];
+exc = [];
 
 h = guidata(h_fig);
 isMov = 0; % no movie variable was defined before (no memory is allocated)
@@ -25,11 +26,23 @@ end
 info = imfinfo(fullFname); % information array of .tif file
 frameLen = numel(info); % number total of frames    
 txt = ['arbitrary ' num2str(cycleTime)];
+txt_exc = '';
 if isfield(info(1,1),'ImageDescription')
     descr = info(1,1).ImageDescription;
     [cycleTime,lord,exc] = getTIFOME_metadata(descr);
     if ~isempty(cycleTime) && ~isnan(cycleTime)
         txt = num2str(cycleTime);
+    end
+    if ~isempty(exc)
+        txt_exc = 'Lasers = ';
+        for l = 1:numel(exc)
+            if l==1
+                txt_exc = cat(2,txt_exc,num2str(exc(l)),'nm');
+            else
+                txt_exc = cat(2,txt_exc,', ',num2str(exc(l)),'nm');
+            end
+        end
+        txt_exc = cat(2,txt_exc,'\n');
     end
 end
 pixelY = info(1,1).Width; % height of the movie after 90° rotation
@@ -41,13 +54,15 @@ if isempty(fDat)
             'Cycle time = ' txt 's-1\n' ...
             'Movie dimensions = ' num2str(pixelX) 'x' num2str(pixelY) ...
             ' pixels\n' ...
-            'Movie length = ' num2str(frameLen) ' frames\n'], h_fig);
+            'Movie length = ' num2str(frameLen) ' frames\n' ...
+            txt_exc], h_fig);
     else
         fprintf(['\nTagged Image File Format(*.tiff)\n' ...
             'Cycle time = ' txt 's-1\n' ...
             'Movie dimensions = ' num2str(pixelX) 'x' num2str(pixelY) ...
             ' pixels\n' ...
-            'Movie length = ' num2str(frameLen) ' frames\n']);
+            'Movie length = ' num2str(frameLen) ' frames\n' ...
+            txt_exc]);
     end
 end
 
@@ -133,4 +148,7 @@ data = struct('cycleTime', cycleTime, ...
               'fCurs', [], ...
               'frameCur', frameCur, ...
               'movie', movie);
+if ~isempty(exc)
+    data.lasers = exc;
+end
         
