@@ -1,9 +1,10 @@
-function openTrImpOpt(obj, evd, h_fig)
-% openTrImpOpt([],[],h_fig)
+function h_opt = openTrImpOpt(obj, evd, h_fig)
+% h_opt = openTrImpOpt([],[],h_fig)
 %
 % Open import options window for ASCII traces import in module Trace processing and Transition analysis
 % 
 % h_fig: handle to main figure
+% h_opt: handle to option window
 
 h = guidata(h_fig);
 p = h.param.ttPr.impPrm;
@@ -21,6 +22,6 @@ for i = 1:nChan_imp
     end
 end
 
-buildWinTrOpt(p, h_fig);
+h_opt = buildWinTrOpt(p, h_fig);
 
 

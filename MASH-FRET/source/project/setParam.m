@@ -373,7 +373,6 @@ p.impPrm = adjustParam('impPrm', p_imp, p_input);
 p.impFRET = adjustParam('impFRET', [], p_input);
 p.impS = adjustParam('impS', [], p_input);
 p.proj = {};
-p.curr_proj = 0;
 p.curr_mol = [];
 p.defTagNames = {'static', 'dynamic'};
 p.defTagClr = {'#4298B5','#DD5F32','#92B06A','#ADC4CC','#E19D29'};

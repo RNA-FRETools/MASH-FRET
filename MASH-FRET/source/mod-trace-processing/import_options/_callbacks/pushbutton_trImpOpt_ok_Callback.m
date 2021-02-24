@@ -29,6 +29,7 @@ m{5} = exc_imp;
 
 % save podifications
 h.param.ttPr.impPrm = m;
+h.trImpOpt_ok = true;
 guidata(h_fig, h);
 
 % close option window

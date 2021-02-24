@@ -319,9 +319,13 @@ if def.mol{2}{1}(2) <= 0
     def.mol{2}{1}(2) = mol{2}{1}(2);
 end
 
-% apply discretisation to top traces only if no bottom traces
+% apply discretisation to top traces only and forbid 2D-vbFRET if no bottom 
+% traces
 if (nFRET + nS) == 0
     def.mol{4}{1}(2) = 0;
+    if def.mol{4}{1}(1)==3 % 2D-vbFRET
+        def.mol{4}{1}(1) = 6; % STaSI
+    end
 end
 
 % adjust the cutoff frame if higher than the total number of frames

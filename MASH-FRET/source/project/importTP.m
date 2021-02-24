@@ -1,88 +1,21 @@
-function pushbutton_addTraces_Callback(obj, evd, h_fig)
-% pushbutton_addTraces_Callback([],[],h_fig)
-% pushbutton_addTraces_Callback(files,[],h_fig)
-% pushbutton_addTraces_Callback([],merged,h_fig)
+function p = importTP(p,dat,fext,nFiles,h_fig)
+% p = importTP(p,dat,fext,nFiles,h_fig)
 %
+% p: structure containing parameters for Trace processing interface
+% dat: structure containing project data
+% nFiles: number of imported files
 % h_fig: handle to main figure
-% files: {1-by-2} source directory and files to import
-% merged: project structure from merged projects
 
-% Last update, 13.1.2020 by MH: move down-compatibility management to separate function downCompatibilityTP.m
-% update, 3.4.2019 by MH: (1) adapt gamma factor import for more than one FRET calculation (2) correct MH's past modifications: gamma factors must be saved in prm and in curr parameters to be taken into account
-% update, 2.4.2019 by MH: fix error when importing ASCII traces: correct dimensions of bleedthrough coefficients when resetting cross-talks to 0. (2) reset cross-talks to 0 whether or not gamma files were successfully imported or not.
-% update, 29.3.2019 by MH: cancel saving of ASCII-improted gamma factors in p.proj{i}.prm: if save in prm, molecule won't be processed with new gammas
-% update, 28.3.2019 by MH: For ASCII traces import: gamma factors files are recovered from import options
-% update, 28.3.2018 by FS: if ASCII file and not MASH project is loaded: load gamma factor file if it exists; assign gamma value only if number of values in .gam file equals the number of loaded restructured ASCII files
-
-h = guidata(h_fig);
-p = h.param.ttPr;
-
+% defaults
 resetCrossTalks = false;
 isBeta = false;
 isGamma = false;
 
-% collect project data to import
-if iscell(evd)
-    % project from merging
-    dat = evd{1};
-    fext = '.mash';
-else
-    % project from file(s)
-    if iscell(obj)
-        pname = obj{1};
-        fname = obj{2};
-        if ~strcmp(pname,filesep)
-            pname = [pname,filesep];
-        end
-    else
-        defPth = h.folderRoot;
-        [fname,pname,o] = uigetfile({'*.mash', 'MASH project(*.mash)'; '*.*', ...
-            'All files(*.*)'},'Select trace files',defPth,'MultiSelect','on');
-    end
-    if isempty(pname) || ~sum(pname)
-        return
-    end
-
-    % covert to cell if only one file is imported
-    if ~iscell(fname)
-        fname = {fname};
-    end
-
-    % check if the project file is not already loaded
-    excl_f = false(size(fname));
-    str_proj = get(h.listbox_traceSet,'string');
-    if isfield(p,'proj')
-        for i = 1:numel(fname)
-            for j = 1:numel(p.proj)
-                if strcmp(cat(2,pname,fname{i}),p.proj{j}.proj_file)
-                    excl_f(i) = true;
-                    disp(cat(2,'project "',str_proj{j},'" is already ',...
-                        'opened (',p.proj{j}.proj_file,').'));
-                end
-            end
-        end
-    end
-    
-    fname(excl_f) = [];
-    if isempty(fname)
-        return
-    end
-    
-    % get file extension
-    [o,o,fext] = fileparts(fname{1});
-
-    % load project data
-    [dat,ok] = loadProj(pname, fname, 'intensities', h_fig);
-    if ~ok
-        return
-    end
-end
+% add project to list
 p.proj = [p.proj dat];
 
 % load gamma factor file if it exists; added by FS, 28.3.2018
 if ~strcmp(fext, '.mash') % if ASCII file and not MASH project is loaded
-    nMolFiles = numel(fname);
-    
     resetCrossTalks = true;
 
     % added by MH, 28.3.2019
@@ -103,7 +36,7 @@ if ~strcmp(fext, '.mash') % if ASCII file and not MASH project is loaded
         gammas = cell2mat(gammasCell');
 
         % added by FS, 28.3.2018
-        if size(gammas,1) ~= nMolFiles
+        if size(gammas,1) ~= nFiles
             updateActPan(cat(2,'number of gamma factors does not ',...
                 'match the number of ASCII files loaded. Set all ',...
                 'gamma factors to 1.'), h_fig, 'error');
@@ -127,7 +60,7 @@ if ~strcmp(fext, '.mash') % if ASCII file and not MASH project is loaded
             end
         end
         betas = cell2mat(betasCell');
-        if size(betas,1) ~= nMolFiles
+        if size(betas,1) ~= nFiles
             updateActPan(cat(2,'number of beta factors does not ',...
                 'match the number of ASCII files loaded. Set all ',...
                 'beta factors to 1.'), h_fig, 'error');
@@ -136,8 +69,7 @@ if ~strcmp(fext, '.mash') % if ASCII file and not MASH project is loaded
     end
 end
 
-% define molecule processing parameters applied (prm) and to apply
-% (curr)
+% define molecule processing parameters applied (prm) and to apply (curr)
 for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
 
     % moved here by MH, 29.3.2019
@@ -205,6 +137,7 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
         p.proj{i}.fix{4}{2} = zeros(nExc-1,nChan);
     end
 
+    p.proj{i}.curr = cell(1,nMol);
     for n = 1:nMol % set current param. for all mol.
         if n > size(p.proj{i}.prm,2)
             p.proj{i}.prm{n} = {};
@@ -257,35 +190,3 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
     p.proj{i}.prm = p.proj{i}.prm(1:nMol);
     p.proj{i}.curr = p.proj{i}.curr(1:nMol);
 end
-
-% set last-improted project as current project
-p.curr_proj = size(p.proj,2);
-
-% update project list
-p = ud_projLst(p, h.listbox_traceSet);
-h.param.ttPr = p;
-guidata(h_fig, h);
-
-% display action
-if ~iscell(evd)
-    if size(fname,2) > 1
-        str_files = 'files:\n';
-    else
-        str_files = 'file: ';
-    end
-    for i = 1:size(fname,2)
-        str_files = cat(2,str_files,pname,fname{i},'\n');
-    end
-    str_files = str_files(1:end-2);
-    setContPan(['Project successfully imported from ' str_files],'success',...
-        h_fig);
-end
-
-% update GUI according to new project parameters
-ud_TTprojPrm(h_fig);
-
-% update sample management area
-ud_trSetTbl(h_fig);
-
-% update calculations and GUI
-updateFields(h_fig, 'ttPr');

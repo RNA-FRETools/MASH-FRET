@@ -119,7 +119,7 @@ for o = 1:O
         case h_pushbutton_trImpOpt_cancel
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('tp import options'),obj(o),[-1,1]));
-        case h.pushbutton_traceImpOpt
+        case h.pushbutton_TP_projUpdate
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('tp project management'),obj(o),[-1,1]));
         case h.uipanel_TP_sampleManagement
@@ -162,7 +162,7 @@ for o = 1:O
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('tp visualization'),obj(o),[-2,-2]));
             
-        case h.pushbutton_thm_impASCII
+        case h.pushbutton_HA_projUpdate
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('ha project management'),obj(o),[-1,1]));
         case h.uipanel_HA_histogramAndPlot
@@ -178,7 +178,7 @@ for o = 1:O
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('ha visualization'),obj(o),[-2,-2]));
 
-        case h.pushbutton_TDPimpOpt
+        case h.pushbutton_TA_projUpdate
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('ta project management'),obj(o),[-1,1]));
         case h_pushbutton_expTDPopt_cancel

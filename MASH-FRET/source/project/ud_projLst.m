@@ -6,7 +6,7 @@ if ~isempty(p.proj)
     for i = 1:size(p.proj,2)
         proj_name = p.proj{i}.exp_parameters{1,2};
         if isempty(proj_name)
-            if ~isempty(p.proj{i}.proj_file);
+            if ~isempty(p.proj{i}.proj_file)
                 [o,proj_name,o] = fileparts(p.proj{i}.proj_file);
             else
                 proj_name = 'Project';

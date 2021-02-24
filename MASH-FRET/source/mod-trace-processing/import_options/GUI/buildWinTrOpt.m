@@ -1,5 +1,5 @@
-function buildWinTrOpt(opt,h_fig)
-% buildWinTrOpt(opt,h_fig)
+function h_fig2 = buildWinTrOpt(opt,h_fig)
+% h_fig2 = buildWinTrOpt(opt,h_fig)
 %
 % buildWinTrOpt builds a figure that presents import settings for ASCII traces
 %
@@ -37,6 +37,7 @@ function buildWinTrOpt(opt,h_fig)
 %   opt{6}{5}: source directory for beta factor files
 %   opt{6}{6}: {1-by-nFiles} source beta factor files
 % h_fig: handle to main figure
+% h_fig2: handle to option window
 
 % Last update, 28.3.2019 by MH: (1) Add "Gamma factor" panel (2) Add "State trajectories" panel (3) Change "Movie" to "Video" 
 
@@ -181,6 +182,7 @@ q.pushbutton_help = setInfoIcons(q.pushbutton_trImpOpt_cancel,h_fig,...
 
 % save modifications
 h.trImpOpt = q;
+h.trImpOpt_ok = false;
 guidata(h.figure_trImpOpt,opt);
 guidata(h_fig,h);
 

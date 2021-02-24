@@ -37,7 +37,7 @@ htxt0 = 14;
 wedit0 = 40;
 fact = 5;
 waxes1 = 83;
-str0 = 'ASCII options...';
+str0 = 'Update';
 str1 = 'Add';
 str2 = 'Remove';
 str3 = 'Export...';
@@ -53,7 +53,7 @@ ylim0 = [0,0.01];
 xlbl0 = 'data';
 ylbl0 = 'normalized occurence';
 ylbl1 = 'normalized cumulative occurence';
-ttstr0 = wrapHtmlTooltipString('Open <b>import options</b> to configure how intensity-time traces are imported from ASCII files.');
+ttstr0 = wrapHtmlTooltipString('<b>Synchronize project data</b> throughout all modules.');
 ttstr1 = wrapHtmlTooltipString('<b>Import traces</b> from a .mash file or from a set of ASCII files.');
 ttstr2 = wrapHtmlTooltipString('<b>Close selected project</b> and remove it from the list.');
 ttstr3 = wrapHtmlTooltipString('<b>Export results</b> to ASCII files: including histograms, state configurations and state populations.');
@@ -65,7 +65,7 @@ h_pan = h.uipanel_HA;
 
 % dimensions
 pospan = get(h_pan,'position');
-posbut0 = get(h.pushbutton_traceImpOpt,'position');
+posbut0 = get(h.pushbutton_TP_projUpdate,'position');
 posbut1 = get(h.pushbutton_addTraces,'position');
 poslst0 = get(h.listbox_traceSet,'position');
 posbut2 = get(h.pushbutton_remTraces,'position');
@@ -89,25 +89,25 @@ waxes0 = pospan(3)-5*p.mg-poslst0(3)-wpan1-wpan2;
 haxes0 = (pospan(4)-3*p.mg)/2;
 
 % GUI
-h.pushbutton_thm_impASCII = uicontrol('style','pushbutton','parent',h_pan,...
+h.pushbutton_HA_projUpdate = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     posbut0,'string',str0,'tooltipstring',ttstr0,'callback',...
-    {@pushbutton_thm_impASCII_Callback,h_fig});
+    {@pushbutton_projUpdate_Callback,h_fig});
 
 h.pushbutton_thm_addProj = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight',...
     'bold','position',posbut1,'string',str1,'tooltipstring',ttstr1,...
-    'callback',{@pushbutton_thm_addProj_Callback,h_fig},'foregroundcolor',...
+    'callback',{@pushbutton_openProj_Callback,h_fig},'foregroundcolor',...
     p.fntclr2);
 
 h.listbox_thm_projLst = uicontrol('style','listbox','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',poslst0,...
-    'string',{''},'callback',{@listbox_thm_projLst_Callback,h_fig});
+    'string',{''},'callback',{@listbox_projList_Callback,h_fig});
 
 h.pushbutton_thm_rmProj = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     posbut2,'string',str2,'tooltipstring',ttstr2,'callback',...
-    {@pushbutton_thm_rmProj_Callback,h_fig});
+    {@pushbutton_closeProj_Callback,h_fig});
 
 x = posbut3(1)-(wbut0-posbut3(3))/2;
 
@@ -120,7 +120,7 @@ h.pushbutton_thm_export = uicontrol('style','pushbutton','parent',h_pan,...
 h.pushbutton_thm_saveProj = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight',...
     'bold','position',posbut4,'string',str4,'tooltipstring',ttstr4,...
-    'callback',{@pushbutton_thm_saveProj_Callback,h_fig});
+    'callback',{@pushbutton_saveProj_Callback,h_fig});
 
 h.uipanel_HA_histogramAndPlot = uipanel('parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','title',...
