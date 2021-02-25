@@ -27,10 +27,16 @@ hedit0 = 20;
 htxt0 = 13;
 hsld0 = 13;
 hpop0 = 22;
+hbut0 = 25;
+wbut0 = 25;
 wedit0 = 40;
 wlst1 = 90; % default label list width (invisible)
 hlst1 = 80; % default label list height (invisible)
 fact = 5;
+file_icon1 = 'open_file.png';
+file_icon2 = 'close_file.png';
+file_icon3 = 'save_file.png';
+file_icon5 = 'edit_file.png';
 wrelaxes = 0.78;
 limAx0 = [0 10000];
 limAx1 = [0 0.001];
@@ -38,18 +44,13 @@ xlbl0 = 'time (s)';
 xlbl1 = 'norm. freq.';
 ylbl0 = 'FRET / S';
 ylbl1 = 'counts per s. per pixel';
-str0 = 'Update';
-str1 = 'Add';
-str2 = 'Remove';
-str3 = 'Edit...';
-str4 = 'Save';
-str5 = 'int. units /';
-str6 = 's';
-str7 = 'pixel';
-str8 = 'auto.';
-str9 = 'Show';
-str10 = 'Opt.';
-str11 = {'default labels'};
+str0 = 'int. units /';
+str1 = 's';
+str2 = 'pixel';
+str3 = 'auto.';
+str4 = 'Show';
+str5 = 'Opt.';
+str6 = {'default labels'};
 ttl0 = 'Sample management';
 ttl1 = 'Plot';
 ttl2 = 'Sub-images';
@@ -59,7 +60,6 @@ ttl5 = 'Factor corrections';
 ttl6 = 'Denoising';
 ttl7 = 'Photobleaching';
 ttl8 = 'Find states';
-ttstr0 = wrapHtmlTooltipString('<b>Synchronize project data</b> throughout all modules.');
 ttstr1 = wrapHtmlTooltipString('<b>Import traces</b> from a .mash file or from a set of ASCII files.');
 ttstr2 = wrapHtmlTooltipString('<b>Close selected project</b> and remove it from the list.');
 ttstr3 = wrapHtmlTooltipString('Open <b>project options:</b> includes informations about emitters, FRET pairs and user-defined experimental conditions for the selected project.');
@@ -71,17 +71,12 @@ h_pan = h.uipanel_TP;
 
 % dimensions
 pospan = get(h_pan,'position');
-wbut0 = getUItextWidth(str0,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wbut1 = getUItextWidth(str1,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
-wbut2 = getUItextWidth(str2,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wbut3 = getUItextWidth(str3,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wbut4 = getUItextWidth(str4,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
-wtxt0 = getUItextWidth(str5,p.fntun,p.fntsz1,'bold',p.tbl);
-wcb0 = getUItextWidth(str6,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
-wcb1 = getUItextWidth(str7,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
-wcb2 = getUItextWidth(str8,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
-wbut5 = getUItextWidth(str9,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wbut6 = getUItextWidth(str10,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
+wtxt0 = getUItextWidth(str0,p.fntun,p.fntsz1,'bold',p.tbl);
+wcb0 = getUItextWidth(str1,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
+wcb1 = getUItextWidth(str2,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
+wcb2 = getUItextWidth(str3,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
+wbut5 = getUItextWidth(str4,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
+wbut6 = getUItextWidth(str5,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 wpan0 = 2*p.mg+wtxt0+wcb0+wcb1;
 wpan1 = 2*p.mg+4*p.mg/fact+2*wedit0+wcb2+wbut5+wbut6;
 hpan0 = p.mgpan+6*p.mg/fact+2*p.mg+hpop0+6*hedit0+2*htxt0;
@@ -97,9 +92,15 @@ mgpan = (pospan(4)-p.mg-p.mg/2-hpan2-hpan3-hpan4-hpan5-hpan6-hpan7)/5;
 waxes0 = wrelaxes*(pospan(3)-4*p.mg-p.mg/2-wpan0-wpan1);
 waxes1 = (1-wrelaxes)*(pospan(3)-4*p.mg-p.mg/2-wpan0-wpan1);
 haxes0 = pospan(4)-3*p.mg-hpan8;
-mgproj0 = (wpan0-p.wbuth-wbut0-wbut1)/2;
-mgproj1 = (wpan0-wbut2-wbut3-wbut4)/2;
+mgproj0 = (wpan0-p.wbuth-4*wbut0)/4;
 hlst0 = pospan(4)-3*p.mg-p.mg/2-2*p.mg/fact-hpan0-hpan1-2*hedit0;
+
+% images
+pname = [fileparts(fileparts(mfilename('fullpath'))),filesep];
+img1 = imread([pname,file_icon1]);
+img2 = imread([pname,file_icon2]);
+img3 = imread([pname,file_icon3]);
+img5 = imread([pname,file_icon5]);
 
 % GUI
 x = p.mg+wpan0+p.mg;
@@ -140,20 +141,35 @@ h.axes_topRight = axes('parent',h_pan,'units',p.posun,'fontunits',p.fntun,...
     'ylim',limAx0,'xticklabel',{},'yticklabel',{});
 
 x = p.mg+p.wbuth+mgproj0;
-y = pospan(4)-p.mg-hedit0;
-
-h.pushbutton_TP_projUpdate = uicontrol('style','pushbutton','parent',h_pan,...
-    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wbut0,hedit0],'string',str0,'callback',...
-    {@pushbutton_projUpdate_Callback,h_fig},'tooltipstring',ttstr0);
-
-x = x+wbut0+mgproj0;
+y = pospan(4)-p.mg-hbut0;
 
 h.pushbutton_addTraces = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight',...
-    'bold','position',[x,y,wbut1,hedit0],'string',str1,'callback',...
+    'bold','position',[x,y,wbut0,hbut0],'string','','callback',...
     {@pushbutton_openProj_Callback,h_fig},'tooltipstring',ttstr1,...
-    'foregroundcolor',p.fntclr2);
+    'foregroundcolor',p.fntclr2,'cdata',img1);
+
+x = x+wbut0+mgproj0;
+
+h.pushbutton_remTraces = uicontrol('style','pushbutton','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wbut0,hbut0],'string','','tooltipstring',ttstr2,'callback',...
+    {@pushbutton_closeProj_Callback,h_fig},'cdata',img2);
+
+x = x+wbut0+mgproj0;
+
+h.pushbutton_editParam = uicontrol('style','pushbutton','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wbut0,hbut0],'string','','tooltipstring',ttstr3,'callback',...
+    {@pushbutton_editParam_Callback,h_fig},'cdata',img5);
+
+x = x+wbut0+mgproj0;
+
+h.pushbutton_expProj = uicontrol('style','pushbutton','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight',...
+    'bold','position',[x,y,wbut0,hbut0],'string','','callback',...
+    {@pushbutton_saveProj_Callback,h_fig},'tooltipstring',ttstr4,'cdata',...
+    img3);
 
 x = p.mg;
 y = y-p.mg/fact-hlst0;
@@ -162,27 +178,6 @@ h.listbox_traceSet = uicontrol('style','listbox','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wpan0,hlst0],'string',{''},'callback',...
     {@listbox_projList_Callback,h_fig});
-
-y = y-p.mg/fact-hedit0;
-
-h.pushbutton_remTraces = uicontrol('style','pushbutton','parent',h_pan,...
-    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wbut2,hedit0],'string',str2,'tooltipstring',ttstr2,'callback',...
-    {@pushbutton_closeProj_Callback,h_fig});
-
-x = x+wbut2+mgproj1;
-
-h.pushbutton_editParam = uicontrol('style','pushbutton','parent',h_pan,...
-    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wbut3,hedit0],'string',str3,'tooltipstring',ttstr3,'callback',...
-    {@pushbutton_editParam_Callback,h_fig});
-
-x = x+wbut3+mgproj1;
-
-h.pushbutton_expProj = uicontrol('style','pushbutton','parent',h_pan,...
-    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight',...
-    'bold','position',[x,y,wbut4,hedit0],'string',str4,'callback',...
-    {@pushbutton_saveProj_Callback,h_fig},'tooltipstring',ttstr4);
 
 x = p.mg;
 y = y-p.mg-hpan0;
@@ -261,7 +256,7 @@ y = pospan(2)+posbut(2)+posbut(4)-hlst1;
 
 h.listbox_TP_defaultTags = uicontrol('style','listbox','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wlst1,hlst1],'string',str11,'visible','off','callback',...
+    [x,y,wlst1,hlst1],'string',str6,'visible','off','callback',...
     {@listbox_TP_defaultTags_Callback,h_fig});
 
 

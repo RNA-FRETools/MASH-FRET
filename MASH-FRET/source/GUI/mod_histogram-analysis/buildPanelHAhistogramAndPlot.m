@@ -7,7 +7,7 @@ function h = buildPanelHAhistogramAndPlot(h,p)
 %   h.figure_MASH: handle to main figure
 %   h.uipanel_HA_histogramAndPlot: handle to panel "Histogram and plot"
 %   h.listbox_thm_projLst: handle to project list
-%   h.pushbutton_thm_saveProj: handle to "Save" pushbutton
+%   h.pushbutton_thm_export: handle to "Export..." pushbutton
 % p: structure containing default and often-used parameters which must contain fields:
 %   p.posun: position units
 %   p.fntun: font size units
@@ -43,7 +43,7 @@ ttstr5 = wrapHtmlTooltipString('<b>Histogram extremities:</b> when activated, th
 h_fig = h.figure_MASH;
 h_pan = h.uipanel_HA_histogramAndPlot;
 h_lst = h.listbox_thm_projLst;
-h_but = h.pushbutton_thm_saveProj;
+h_but = h.pushbutton_thm_export;
 
 % dimensions
 poslist = get(h_lst,'position');

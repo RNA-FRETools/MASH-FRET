@@ -141,8 +141,7 @@ if strcmp(opt, 'thm') || strcmp(opt, 'all')
         cla(h.axes_hist1); cla(h.axes_hist2); cla(h.axes_thm_BIC);
 
         set([h.axes_hist1,h.axes_hist2,h.axes_thm_BIC], 'Visible','off');
-        set([h.pushbutton_help h.pushbutton_HA_projUpdate ...
-            h.pushbutton_thm_addProj],'Enable', 'on');
+        set([h.pushbutton_help h.pushbutton_thm_addProj],'Enable', 'on');
     end
 end
 
@@ -168,8 +167,7 @@ if strcmp(opt, 'TDP') || strcmp(opt, 'all')
 
     else
         setProp(get(h.uipanel_TA, 'Children'), 'Enable', 'off');
-        set([h.pushbutton_help h.pushbutton_TA_projUpdate ...
-            h.pushbutton_TDPaddProj], 'Enable', 'on');
+        set([h.pushbutton_help h.pushbutton_TDPaddProj], 'Enable', 'on');
         set(h.popupmenu_TA_slStates, 'String', {'Select a state value'}, ...
             'Value', 1);
         set([h.axes_TDPplot1 h.colorbar_TA h.axes_TDPplot2 h.axes_TDPcmap ...
