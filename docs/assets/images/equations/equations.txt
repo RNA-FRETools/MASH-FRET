@@ -17,7 +17,8 @@ Initial state probabilities (equation 05):
 	\pi_{j}=\frac{\pi_{j}'}{\sum_{j'}\left(\pi_{j'}' \right )}
 Repartition factors (equation 08):
 	w_{jj{'}} = \frac{N_{jj{'}}}{\sum_{k \neq j} N_{jk}}
-	
+Transition probabilities (equation 09):
+	w_{ij} = \frac{p_{ij}}{\sum_{j' \neq i}\left ( p_{ij'}\right)}
 
 >> Simulated frame rate
 	f = \frac{1}{t_{\textup{exp}}}
