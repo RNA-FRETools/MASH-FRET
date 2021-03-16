@@ -23,7 +23,7 @@ else
     tp = mdl_res{1};
     simdat = mdl_res{4};
     states = mdl_res{5};
-    BICres = mdl_res{6};
+    BICres = mdl_res{6}{1};
 end
 
 % draw state diagram
@@ -69,16 +69,16 @@ if ~isempty(BICres)
     if cmbup>nCmb
         cmbup = nCmb;
     end
-    h_axes(5).XLim = [cmblow-0.5,cmbup+0.5];
     BICmax = max(BIC(cmblow:cmbup));
     if BICmin==BICmax
         ylim(h_axes(5),BICmin+[-1,1]);
     else
         ylim(h_axes(5),[BICmin,BICmax]);
     end
-    h_axes(5).XTick = cmblow:cmbup;
+    h_axes(5).XTick = 1:nCmb;
     xlbl = compose(repmat('%i',1,size(cmb,2)),cmb)';
-    h_axes(5).XTickLabel = xlbl(cmblow:cmbup);
+    h_axes(5).XTickLabel = xlbl(1:nCmb);
+    h_axes(5).XLim = [cmblow-0.5,cmbup+0.5];
 end
 
 % plot experimental vs simulation

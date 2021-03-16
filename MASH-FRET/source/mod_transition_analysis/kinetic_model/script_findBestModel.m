@@ -54,21 +54,6 @@ for v = 1:V
     end
 end
 
-nCmb = size(cmb,1);
-J = sum(cmb,2);
-[J,id] = sort(J,'ascend');
-cmb = cmb(id,:);
-% df = (J.*(J+1))'; % J initial prob, J^2 trans prob
-df = ((J.^2)-1)'; % (J-1) initial prob, J*(J-1) trans prob
-BIC_cmb = -Inf(1,nCmb);
-for c = 1:nCmb
-    logL_c = 0;
-    for v = 1:V
-        logL_c = logL_c + logL(v,cmb(c,v));
-    end
-    BIC_cmb(c) = df(c)*log(N)-2*logL_c;
-end
-
 % calculate BIC for each DPH
 BIC = -Inf(V,J_deg_max);
 for J_deg = 1:J_deg_max
@@ -79,12 +64,29 @@ for J_deg = 1:J_deg_max
     end
 end
 
-[~,cmb_opt] = min(BIC_cmb);
-degen = cmb(cmb_opt,:);
+nCmb = size(cmb,1);
+J = sum(cmb,2);
+[J,id] = sort(J,'ascend');
+cmb = cmb(id,:);
+% % df = (J.*(J+1))'; % J initial prob, J^2 trans prob
+% df = ((J.^2)-1)'; % (J-1) initial prob, J*(J-1) trans prob
+% BIC_cmb = -Inf(1,nCmb);
+BIC_cmb = zeros(1,nCmb);
+for c = 1:nCmb
+%     logL_c = 0;
+    for v = 1:V
+%         logL_c = logL_c + logL(v,cmb(c,v));
+        BIC_cmb(c) = BIC_cmb(c) + BIC(v,cmb(c,v));
+    end
+%     BIC_cmb(c) = df(c)*log(N)-2*logL_c;
+end
+
+% [~,cmb_opt] = min(BIC_cmb);
+% degen = cmb(cmb_opt,:);
 id = [];
-% degen = zeros(1,V);
+degen = zeros(1,V);
 for v = 1:V
-%     [~,degen(v)] = min(BIC(v,:));
+    [~,degen(v)] = min(BIC(v,:));
     id = cat(2,id,repmat(v,[1,degen(v)]));
 end
 fprintf(['Most sufficient state configuration:\n[%0.2f',...
@@ -96,6 +98,14 @@ mdl = script_inferPH(dt,states,expT,1,degen,plotIt);
 
 fprintf('Most sufficient model complexity found in %0.0f seconds\n',...
     toc(t_comp));
+
+% for DPH test: store computation time
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+hfig = gcf;
+h = guidata(hfig);
+h.t_dphtest = t_comp;
+guidata(hfig,h);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if ~plotIt
     return
