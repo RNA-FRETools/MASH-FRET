@@ -15,7 +15,7 @@ Kinetic model is the fourth panel of module Transition analysis.
 
 Use this panel to infer the most probable kinetic model and compare experiment to simulation.
 
-<a class="plain" href="../../assets/images/gui/TA-panel-kinetic-model.png"><img src="../../assets/images/gui/TA-panel-kinetic-model.png" style="max-width:359px;"></a>
+<a class="plain" href="../../assets/images/gui/TA-panel-kinetic-model.png"><img src="../../assets/images/gui/TA-panel-kinetic-model.png" style="max-width:437px;"></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -30,12 +30,12 @@ Use this panel to infer the most probable kinetic model and compare experiment t
 
 Use this interface to set the starting conditions of model inference and visualize the inferred model.
 
-<img src="../../assets/images/gui/TA-panel-kinetic-model-settings.png" style="max-width:174px;">
+<img src="../../assets/images/gui/TA-panel-kinetic-model-settings.png" style="max-width:213px;">
 
 The state configuration used in model inferrence can be determined via two methods listed in **(a)**:
-- `Find most sufficient complexity (recommended)`
+- `Estimate with BIC-ML-DPH`
   [<sup>1</sup>](#references): finds state degeneracy via optimization and BIC-selection of discrete-phase type distributions on dwell time histograms
-- `Use "Dwell time histograms" complexity`: uses the state degeneracy from dwell time histogram fit in panel [Dwell time histograms](panel-dwelltime-histograms.html#state-lifetimes)
+- `From exponential fit`: uses the state degeneracy from dwell time histogram fit in panel [Dwell time histograms](panel-dwelltime-histograms.html#state-lifetimes)
 
 With the first method, a maximum degeneracy (maximum number of degenerated levels for one observed state value) must be defined in **(b)**.
 
