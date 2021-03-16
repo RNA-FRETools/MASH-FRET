@@ -1,9 +1,9 @@
 ---
 layout: default
 title: (*.txt) Traces from simulation
-parent: /output-files.html
-nav_order: 28
+parent: Output files
 nav_exclude: 1
+nav_order: 34
 ---
 
 <img src="../assets/images/logos/logo-output-files_400px.png" width="170" style="float:right; margin-left: 15px;"/>
@@ -55,14 +55,15 @@ Simulate time traces and state trajectories are organized column-wise with:
 * columns `Idon noise(a.u.)` and `Iacc noise(a.u.)` containing donor and acceptor intensity-time traces respectively, in image or photon counts
 * columns `Idon ideal(a.u.)` and `Iacc ideal(a.u.)` containing the noiseless, background-free and gamma factor-free photon count-time traces of donor and acceptor respectively
 * column `FRET` containing FRET-time traces
-* column `FRET ideal` containing noiseless, background-free and gamma factor-free FRET-time traces
+* column `FRET ideal (blurr)` containing noiseless, background-free and gamma factor-free FRET-time traces with camera blurring effect
+* column `FRET ideal` containing noiseless, background-free and gamma factor-free FRET-time traces without camera blurring effect
 * column `state sequence` containing state indexes
 
 ```
-time(s)		frame		Idon noise(a.u.)	Iacc noise(a.u.)	Idon ideal(a.u.)	Iacc ideal(a.u.)	FRET		FRET ideal	state sequence
-1.000000e-01	1		1.099392e+03		1.356064e+03		2.160000e+01		1.440000e+01		5.522657e-01	4.000000e-01	1
-2.000000e-01	2		1.833139e+03		9.384295e+02		2.160000e+01		1.440000e+01		3.385915e-01	4.000000e-01	1
-3.000000e-01	3		6.421135e+02		1.047066e+03		2.160000e+01		1.440000e+01		6.198666e-01	4.000000e-01	1
+time(s)	frame	Idon noise(photons)	Iacc noise(photons)	Idon ideal(photons)	Iacc ideal(photons)	FRET	FRET ideal (blurr)	FRET ideal	state sequence
+2.000000e-01	1	1.996415e+01	4.003952e+01	1.680000e+01	3.920000e+01	6.672846e-01	7.000000e-01	7.000000e-01	2
+4.000000e-01	2	1.767607e+01	4.298884e+01	1.680000e+01	3.920000e+01	7.086278e-01	7.000000e-01	7.000000e-01	2
+6.000000e-01	3	1.528009e+01	3.938020e+01	1.680000e+01	3.920000e+01	7.204535e-01	7.000000e-01	7.000000e-01	2
 ```
 
 

@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Simulate sample heterogeneity
-parent: /simulation/functionalities.html
-grand_parent: /simulation.html
+parent: Functionalities
+grand_parent: Simulation
 nav_order: 3
 ---
 
