@@ -121,7 +121,7 @@ end
 clstPop = clstPop/sum(sum(clstPop));
 
 if guessMeth==1 % determine guess from DPH fit & BIC model selection
-    [D,mdl,cmb,BIC,~] = ...
+    [D,mdl,cmb,BIC_cmb,BIC] = ...
         script_findBestModel(dat(:,[1,4,7,8]),Dmax,states,expT,dt_bin);
     J = sum(D);
     tp0 = zeros(J);
@@ -144,7 +144,7 @@ if guessMeth==1 % determine guess from DPH fit & BIC model selection
         j1 = j1+D(v1);
     end
     states = states(degen);
-    prm.mdl_res{6} = [cmb,BIC'];
+    prm.mdl_res{6} = {[cmb,BIC_cmb'],[1:Dmax;BIC]'};
     
 else % use guess from panel "Exponential fit"
     % check for state lifetimes

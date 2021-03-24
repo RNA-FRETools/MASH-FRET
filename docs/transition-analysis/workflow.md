@@ -134,25 +134,25 @@ To build the TDP:
 Clustering transition densities is equivalent to identifying the most probable configuration of states having distinct observed values.
 
 Ideally, the TDP can be partitioned into a <u>cluster matrix</u> made of 
-[*K* = *J*<sup>2</sup>](){: .math_var } clusters, with 
-[*J*](){: .math_var } the number of states. 
+[*K* = *V*<sup>2</sup>](){: .math_var } clusters, with 
+[*V*](){: .math_var } the number of states having different observed values. 
 The transitions close to the diagonal, *i. e.*, the small-amplitude state jumps rising from noise discretization, are grouped with on-diagonal one-state sequences into diagonal clusters in order to prevent the participation of noise-induced transitions to dwell-time histograms and to leave state transition rate coefficients unbiased.
 
 However, modelling the TDP with a matrix of clusters presumes that all possible transitions between all states occur, which is usually not the case. 
 Although the majority of TDPs do not resemble a cluster matrix, they do share a common feature which is the <u>symmetry of clusters</u> relative to the TDP diagonal. 
 In this case, one TDP can be modelled with 
-[*K* = 2*J*](){: .math_var } clusters, 
-[*J*](){: .math_var } being the number of clusters on one side of the TDP diagonal.
+[*K* = 2*V*](){: .math_var } clusters, 
+[*V*](){: .math_var } being the number of clusters on one side of the TDP diagonal.
 
 Cluster symmetry becomes broken when irreversible state transitions are present - which is a rare case in structural dynamic studies. 
 For this particular cluster configuration, the TDP is modelled with 
-[*K* = *J*](){: .math_var } <u>clusters free of constraint</u>, 
-[*J*](){: .math_var } being the total number of clusters.
+[*K* = *V*](){: .math_var } <u>clusters free of constraint</u>, 
+[*V*](){: .math_var } being the total number of clusters.
 
 The number 
-[*J*](){: .math_var } is called the model complexity and depends on the type of cluster configuration. 
+[*V*](){: .math_var } is called the model complexity and depends on the type of cluster configuration. 
 An example for 
-[*J*](){: .math_var } = 4 and for each cluster configuration is given below:
+[*V*](){: .math_var } = 4 and for each cluster configuration is given below:
 
 <img src="../assets/images/figures/TA-panel-state-configuration-clusters-config.png">
 
@@ -164,30 +164,30 @@ One way of objectively identifying the number of overlapping clusters is to mode
 [*K*](){: .math_var } 2D-Gaussians, with each Gaussian modelling a cluster, such as:
 
 {: .equation }
-<img src="../assets/images/equations/TA-eq-gmm.gif" alt="TDP( val_{i};val_{i'} ) = \sum_{j=1}^{J} \sum_{j'=1}^{J} a_{j,j'}G_{j,j'}( val_{i};val_{i'} )">
+<img src="../assets/images/equations/TA-eq-gmm.gif" alt="TDP( val_{i};val_{i'} ) = \sum_{k=1}^{K} a_{k}G_{k}( val_{i};val_{i'} )">
 
 with 
+[*val*<sub>*i*</sub>](){: .math_var } and [*val*<sub>*i'*</sub>](){: .math_var } the TDPS's x- and y- coordinates respectively, 
 [*a*<sub>*k*</sub>](){: .math_var } the weight in the sum of the Gaussian 
 [G<sub>*k*</sub>](){: .math_var } with bi-dimensional mean 
-[&#956;<sub>*k*</sub>](){: .math_var } that contains information about inferred states 
-( [*val*<sub>*j*</sub>](){: .math_var };[*val*<sub>*j'*</sub>](){: .math_var } ), and covariance 
-[*&#931;*<sub>*k*</sub>](){: .math_var } that contains information about cluster's shape.
+[&#956;<sub>*k*</sub>](){: .math_var } and covariance 
+[*&#931;*<sub>*k*</sub>](){: .math_var } that respectively contain information about the global states' observed values and cluster's shape.
 
 <a href="../assets/images/figures/TA-workflow-scheme-clustering.png" title="Gaussian mixture clustering"><img src="../assets/images/figures/TA-workflow-scheme-clustering.png" alt="Gaussian mixture clustering"></a>
 
 Gaussian mixtures with increasing 
-[*J*](){: .math_var } are fit to the TDP.
+[*V*](){: .math_var } are fit to the TDP.
 For each 
-[*J*](){: .math_var }, the models that discribe the data the best, *i. e.*, that maximize the likelihood, are compared to each other.
+[*V*](){: .math_var }, the models that discribe the data the best, *i. e.*, that maximize the likelihood, are compared to each other.
 
 As the model likelihood fundamentally increases with the number of components, inferred models are compared via the Bayesian information criterion (BIC), with the most sufficient cluster model having the lowest BIC.
 
 The outcome of such analysis is a single estimate of the most sufficient model, meaning that it carries no information about variability of the model across the sample.
 
 To estimate the cross-sample variability of the most sufficient model complexity 
-[*J*](){: .math_var }, the clustering procedure can be combined with TDP bootstrapping, giving the bootstrap mean 
-[*&#956;*<sub>*J*</sub>](){: .math_var } and bootstrap standard deviation
-[*&#963;*<sub>*J*</sub>](){: .math_var } for the given sample.
+[*V*](){: .math_var }, the clustering procedure can be combined with TDP bootstrapping, giving the bootstrap mean 
+[*&#956;*<sub>*V*</sub>](){: .math_var } and bootstrap standard deviation
+[*&#963;*<sub>*V*</sub>](){: .math_var } for the given sample.
 This method is similar to the bootstrap-based analysis applied to histograms and called BOBA-FRET.
 
 To determine the most sufficient state configuration:
@@ -211,10 +211,10 @@ To determine the most sufficient state configuration:
 
 We've seen how to obtain a global state configuration from multiple state sequences, where states have distinct observed values.
 This allows us to collect the associated dwell times through all state sequences and build dwell time histograms.
-Next, to solve the underlying kinetic model we must disantangle the potential **degenerated states**, *i.e.*, states that share the same observed value but differ in their transition probabilities.
+Next, to solve the underlying kinetic model we must disantangle the potential **degenerate states**, *i.e.*, states that share the same observed value but differ in their transition probabilities.
 
 According to the scientific consensus, the dwell times for an unambiguously identified state follow an exponential distribution. 
-The presence of degenerated states usually breaks this simple shape by overlaying multiple distributions.
+The presence of degenerate states usually breaks this simple shape by overlaying multiple distributions.
 
 <a href="../assets/images/figures/TA-workflow-scheme-dt-degen.png" title="Dwell time histograms with and without degeneracy"><img src="../assets/images/figures/TA-workflow-scheme-dt-degen.png" alt="Illustration of degeneracy in dwell time histograms"></a>
 
@@ -236,16 +236,16 @@ Such a jump process is illustrated below:
 <a href="../assets/images/figures/TA-workflow-scheme-absorbing-hmm.png" title="Hidden Markov jump process until absorption"><img src="../assets/images/figures/TA-workflow-scheme-absorbing-hmm.png" alt="Hidden Markov jump process until absorption"></a>
 
 In comparison to our problem:
-- the phases labeled 1 to [*D*](){: .math_var } are the states sharing the same value (degenerated states), 
+- the phases labeled 1 to [*D*](){: .math_var } are the states sharing the same value (degenerate states), 
 - the underlying Markov jump process represents the transition probabilities between the degenerate states, 
-- the absorbing state is any state having a different value than the degenerated states,
-- absorbing times [*t*<sub>abs</sub>](){: .math_var } are the dwell times [&Delta;*t<sub>j</sub>*](){: .math_var }.
+- the absorbing state is any state having a different value than the degenerate states,
+- absorbing times [*t*<sub>abs</sub>](){: .math_var } are the dwell times [&Delta;*t<sub>v</sub>*](){: .math_var }.
 
 As time-binned data suffer from an absence of very short dwell times, dwell times are re-binned using a 10-time larger bin size. 
 This minimizes the impact of this first histogram bins while preserving the overall shape.
 
 As histogram counts are discrete data, it is preferable to use discrete PH distributions (DPH) as models.
-Their probability density function depends on transition probabilties between degenerated states  
+Their probability density function depends on transition probabilties between degenerate states  
 [*p<sub>dd'</sub>*](){: .math_var }, transition probabilities to the absorbing state
 [*p<sub>d0</sub>*](){: .math_var } as well as starting probabilities 
 [*&pi;<sub>d</sub>*](){: .math_var } and is calculated as:
@@ -258,22 +258,24 @@ Where
 [*T*](){: .math_var } the sub-intensity matrix and
 [*&mu;*](){: .math_var } the exit rate vector.
 
-One way of objectively identifying the number of degenerated states (or phases) is to, first, find the DPH that describes the data the best for different 
+One way of objectively identifying the number of degenerate states (or phases) is to, first, find the DPH that describes the data the best for different 
 [*D*](){: .math_var }, and then to compare optimum models with each other. 
 As the likelihood fundamentally increases with the model complexity, inferred models are compared via the Bayesian information criterion (BIC). 
 The BIC is used to rank models according to their sufficiency, with the most sufficient model having the lowest BIC.
-In our particular case, it is calculated for a combination of likelihoods, such as:
+In our particular case, it is calculated as the sum of BIC values obtained for each dwell time histogram, such as:
 
 {: .equation }
-<img src="../assets/images/equations/TA-kin-ana-07.gif" alt="BIC = \sum_{j=1}^{J} np(D_j)\times log(N_{\textup{total}})-2 \times \sum_{j=1}^{J} log(likelihood(D_j))">
+<img src="../assets/images/equations/TA-kin-ana-07.gif" alt="BIC = \sum_{v=1}^{V} BIC(D_v) = \sum_{v=1}^{V} np(D_v)\times \log(M_v)-2 \times \sum_{v=1}^{V} \log(likelihood(D_v))">
 
 Where 
-[*D<sub>j</sub>*](){: .math_var } is the number of phases in the optimum DPH that describes dwell times in state 
-[*j*](){: .math_var } and where the number of free parameters 
+[*D<sub>v</sub>*](){: .math_var } is the number of phases in the optimum DPH that describes dwell times of observed state 
+[*v*](){: .math_var }, 
+[*M<sub>v</sub>*](){: .math_var } is the number of observed dwell times in state 
+[*v*](){: .math_var }, and where the number of free parameters 
 [*np*](){: .math_var } is calculated as:
 
 {: .equation }
-<img src="../assets/images/equations/TA-kin-ana-08.gif" alt="np(D_j) = D_j^2-1">
+<img src="../assets/images/equations/TA-kin-ana-08.gif" alt="np(D_v) = D_v^2-1">
 
 To estimate state degeneracy via phase-type distributions:
 
@@ -282,15 +284,15 @@ To estimate state degeneracy via phase-type distributions:
    [Model inferrence](panels/panel-kinetic-model.html#model-inferrence)  
      
 1. Start DPH analysis and subsequent model optimization by pressing 
-   ![Go!](../assets/images/gui/TA-but-go.png); after completion, BIC values are plotted against state degeneracy in the 
+   ![Start](../assets/images/gui/TA-but-start.png); after completion, BIC values are plotted against state degeneracy in the 
    [Visualization area](panels/panel-kinetic-model.html#bic)
    
 
 ### Exponential fit
 {: .no_toc }
 
-Here, the number of degenerated states corresponds to the number of components in the mixture necessary to describe the histogram.
-More specifically, the mixture of exponential distributions is a special case of phase-type distributions, called the **hyper-exponential distribution**, where transitions between degenerated states are forbidden, using the sub-intensity matrix:
+Here, the number of degenerate states corresponds to the number of components in the mixture necessary to describe the histogram.
+More specifically, the mixture of exponential distributions is a special case of phase-type distributions, called the **hyper-exponential distribution**, where transitions between degenerate states are forbidden, using the sub-intensity matrix:
 
 {: .equation }
 <img src="../assets/images/equations/TA-kin-ana-09.gif" alt="T = \begin{pmatrix} p_{11} & 0 & \cdots & 0 \\ 0 & p_{22} & \cdots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & p_{DD} \end{pmatrix}">
@@ -298,36 +300,37 @@ More specifically, the mixture of exponential distributions is a special case of
 Therefore, estimation of state degeneracy with exponential fit is most optimal for this type of systems.
 
 As time-binned data suffer from an absence of very short dwell times, the normalized complementary cumulative dwell time histogram 
-[1-*F*(&Delta;*t<sub>j</sub>*)](){: .math_var } is used. 
+[1-*F*(&Delta;*t<sub>v</sub>*)](){: .math_var } is used. 
 This minimizes the impact of this first histogram bins while preserving the overall shape.
 
 The dwell time histogram is fitted either by a sum of 
 [*D*](){: .math_var } exponential functions with the respective lifetimes 
-[*&tau;<sub>j,d</sub>*](){: .math_var } and weighted by the respective 
-[*a<sub>j,d</sub>*](){: .math_var } coefficients, such as:
+[*&tau;<sub>v,d</sub>*](){: .math_var } and weighted by the respective 
+[*a<sub>v,d</sub>*](){: .math_var } coefficients, such as:
 
 {: .equation }
-<img src="../assets/images/equations/TA-kin-ana-02.gif" alt="1- F( \Delta t_{j}) = \sum_{d=1}^{D} a_{j,d}\exp \left ( - \frac{\Delta t_{j}}{\tau_{j,d}} \right )">
+<img src="../assets/images/equations/TA-kin-ana-02.gif" alt="1- F( \Delta t_{v}) = \sum_{d=1}^{D_v} a_{v,d}\exp \left ( - \frac{\Delta t_{v}}{\tau_{v,d}} \right )">
 
 or by a stretched exponential function, such as:
 
 {: .equation }
-<img src="../assets/images/equations/TA-kin-ana-03.gif" alt="1- F( \Delta t_{j} ) = \exp \left [ - \left( \frac{\Delta t_{j}}{\tau_j} \right)^{\beta_{j}} \right ]">
+<img src="../assets/images/equations/TA-kin-ana-03.gif" alt="1- F( \Delta t_{v} ) = \exp \left [ - \left( \frac{\Delta t_{v}}{\tau_v} \right)^{\beta_{v}} \right ]">
 
 with the stretching exponent 
-[*&#946;<sub>j</sub>*](){: .math_var } being an indicator of the degeneracy 
-([*&#946;*](){: .math_var } = 0.5 indicates the mixture of a two exponential functions).
+[*&#946;<sub>v</sub>*](){: .math_var } being an indicator of the degeneracy 
+([*&#946;*](){: .math_var } = 0.5 indicates the mixture of a 
+[*D<sub>v</sub>* = 2](){: .math_var } exponential functions).
 
 The outcome of such analysis are single estimates of the fit parameters.
 One way to estimate the variability of fitting parameters across the sample is to use the bootstrap-based analysis called BOBA-FRET.
 BOBA-FRET applies to all fit functions, and infers the bootstrap means and bootstrap standard deviations of all fitting parameters for the given sample, including 
-[*&tau;<sub>j,d</sub>*](){: .math_var } and 
-[*&#946;<sub>j</sub>*](){: .math_var }.
+[*&tau;<sub>v,d</sub>*](){: .math_var } and 
+[*&#946;<sub>v</sub>*](){: .math_var }.
 
 The variability 
-[*&sigma;<sub>j,d</sub>*](){: .math_var } of state lifetimes 
-[*&tau;<sub>j,d</sub>*](){: .math_var } is used to estimate error ranges (
-[*&tau;<sub>j,d</sub>* &#8723; 3*&sigma;<sub>j,d</sub>*](){: .math_var }) and thus, to select the most sufficient model complexity.
+[*&sigma;<sub>v,d</sub>*](){: .math_var } of state lifetimes 
+[*&tau;<sub>v,d</sub>*](){: .math_var } is used to estimate error ranges (
+[*&tau;<sub>v,d</sub>* &#8723; 3*&sigma;<sub>v,d</sub>*](){: .math_var }) and thus, to select the most sufficient model complexity.
 Sufficiency is reached when adding a new component to the mixture causes an overlap of two error ranges or more. 
 This procedure is automated in MASH-FRET in order to prevent redundant user action.
 
@@ -359,7 +362,7 @@ To estimate state degeneracy via stretched exponential fit:
 A kinetic model can be presented as a treilli diagram, where states are depicted by circles and state transitions by arrows.
 For instance, the kinetic model of 2 observed FRET states (
 [*FRET*<sub>1</sub>](){: .math_var}=0.2 and 
-[*FRET*<sub>2</sub>](){: .math_var}=0.7) with the highest FRET value hiding three degenerated states that do not interconvert, can be depicted as:
+[*FRET*<sub>2</sub>](){: .math_var}=0.7) with the highest FRET value being degenerate into three states that do not interconvert, can be depicted as:
 
 <a href="../assets/images/figures/TA-workflow-scheme-treilli-example.png" title="Four-state kinetic model"><img src="../assets/images/figures/TA-workflow-scheme-treilli-example.png" alt="Illustration of a four-state kinetic model"></a>
 
@@ -411,8 +414,8 @@ To estimate transition rate coefficients via transition probabilities:
 1. Set inferrence parameters in 
    [Model inferrence](panels/panel-kinetic-model.html#model-inferrence)  
      
-1. Start the Baume-Welch algorithm by pressing 
-   ![Go!](../assets/images/gui/TA-but-go.png) (see 
+1. Start the Baum-Welch algorithm by pressing 
+   ![Start](../assets/images/gui/TA-but-start.png) (see 
    [Remarks](#remarks) for more information); after completion, the maximum likelihood estimator of the kinetic model is shown as a treillis diagram in 
    [Model inference](panels/panel-kinetic-model.html#model-inferrence) and experimental data are plotted next to simulation in the 
    [Visualization area](panels/panel-kinetic-model.html#visualization-area) for comparison.
@@ -463,7 +466,9 @@ where
 [&Delta;*k<sub>jj'</sub>*](){: .math_var } is the error on rate coefficient 
 [*k<sub>jj'</sub>*](){: .math_var } and 
 [*&sigma;<sub>&tau;,j</sub>*](){: .math_var } is the bootstrap standard deviation of parameter 
-[*&tau;<sub>j</sub>*](){: .math_var }
+[*&tau;<sub>j</sub>*](){: .math_var }.
+
+95% confidence intervals are given by [*k<sub>jj'</sub>* &#177; 2&Delta;*k<sub>jj'</sub>*](){: .math_var }.
 
 
 To estimate transition rate coefficients via exponential fit:

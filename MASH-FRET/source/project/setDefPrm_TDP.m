@@ -197,7 +197,7 @@ for tpe = 1:nTpe
         % final state values (incl. degenerated levels)
         def{tag,tpe}.mdl_res{5} = []; 
         
-        % [Dmax^V-by-V+1] nb. of degenerated states, BIC
+        % [Dmax^V-by-V+1] nb. of degenerated states, BIC combinations, BIC
         def{tag,tpe}.mdl_res{6} = []; 
         
     end

@@ -23,7 +23,7 @@ else
     tp = mdl_res{1};
     simdat = mdl_res{4};
     states = mdl_res{5};
-    BICres = mdl_res{6};
+    BICres = mdl_res{6}{1};
 end
 
 % draw state diagram
