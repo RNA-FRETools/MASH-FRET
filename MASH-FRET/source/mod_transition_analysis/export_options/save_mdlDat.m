@@ -13,7 +13,7 @@ if opt(1) % model selection results
         end
         
         % collect data
-        BIC = prm.mdl_res{6};
+        BIC = prm.mdl_res{6}{2};
         J = prm.lft_start{2}(1);
         mat = prm.clst_start{1}(4);
         clstDiag = prm.clst_start{1}(9);
@@ -28,10 +28,9 @@ if opt(1) % model selection results
         
         % write data to file
         f = fopen([pname fname_bic], 'Wt');
-        fprintf(f,...
-            [repmat('nb. of degen. levels (state %0.2f)\t',[1,V]),'BIC\n'],...
+        fprintf(f,['D\t',repmat('BIC(state %0.2f)\t',[1,V]),'\n'],...
             stateVals);
-        fprintf(f,[repmat('%i\t',[1,V]),'%d\n'],BIC');
+        fprintf(f,['%i\t',repmat('%d\t',[1,V]),'\n'],BIC');
         fclose(f);
         
         % update action

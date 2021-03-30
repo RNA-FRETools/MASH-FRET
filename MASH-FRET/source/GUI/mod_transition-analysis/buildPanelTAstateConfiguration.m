@@ -32,12 +32,9 @@ meth = 2;
 xlbl0 = 'Value before transition';
 ylbl0 = 'Value after transition';
 clbl0 = 'normalized occurrence';
-str11 = {'red','green','blue','yellow','cyan','magenta','olive','orange',...
-    'wine','marine','kaki','turpuoise','purple','brown','pink','violet',...
-    'grey','canary','pastel blue'};
 str0 = 'method';
 str2 = {'k-mean','GM','simple'};
-str3 = 'Jmax';
+str3 = 'Vmax';
 str4 = 'BOBA FRET';
 str5 = 'replic.';
 str6 = 'samp.';

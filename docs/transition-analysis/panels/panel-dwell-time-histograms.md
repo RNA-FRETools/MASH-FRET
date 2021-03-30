@@ -58,7 +58,7 @@ Press
 
 As described in Transition analysis
 [Workflow](../workflow.html#via-exponential-fit), fitting the cumulative dwell time histogram allows to:
-- determine the state **transition rate coefficients in an homogenous system** (no degenerated state) from single exponential fit
+- determine the state **transition rate coefficients in an homogenous system** (no degenerate state) from single exponential fit
 - estimate **state degeneracy** via fitting a mixture of exponential functions or a single stretched exponential function
 
 Fit settings are specific to each state value listed in **(a)**.
@@ -82,9 +82,9 @@ In order to not over-represent short trajectories in the bootstrap histograms, r
 This is done by activating the option in **(h)**.
 
 Parameters 
-[*a<sub>j</sub><sup>d</sup>*](){: .math_var },
-[*&tau;<sub>j</sub><sup>d</sup>*](){: .math_var } and 
-[*&#946;<sub>j</sub>*](){: .math_var } as described in detail in Transition analysis
+[*a<sub>v,d</sub>*](){: .math_var },
+[*&tau;<sub>v,d</sub>*](){: .math_var } and 
+[*&#946;<sub>v</sub>*](){: .math_var } as described in detail in Transition analysis
 [Workflow](../workflow.html#via-exponential-fit) are respectively set in rows **(l)**, **(m)** and **(n)**, with the staring guess in column **(o)**, the lower bound in column **(p)** and higher bound in column **(q)**.
 
 Once the fit is completed, fit parameters of the function selected in list **(k)** are displayed in column **(r)**.
@@ -121,35 +121,35 @@ Shows state lifetimes and relative contributions calculated from fit parameters.
 <img src="../../assets/images/gui/TA-panel-dwell-time-histograms-lifetimes.png" style="max-width:152px;">
 
 States are defined by two indexes: 
-- [*j*](){: .math_var } for the observed state value
+- [*v*](){: .math_var } for the observed state value
 - [*d*](){: .math_var } for the degenerate level 
 
 The lifetime 
-[*&tau;<sub>j</sub><sup>d</sup>*](){: .math_var } of each degenerated state 
+[*&tau;<sub>v,d</sub>*](){: .math_var } of each degenerate state 
 [*d*](){: .math_var } listed in **(b)** with the observed state value 
-[*j*](){: .math_var } listed in **(a)**
+[*v*](){: .math_var } listed in **(a)**
 is shown in **(d)** .
 When using BOBA-FRET, the bootstrap mean and standard deviation are respectively shown in **(d)** and **(e)**.
 
 In the case of an homogeneous system (no state degeneracy), the transition rate coefficients 
-[*k*<sub>*j*,*j'*</sub>](){: .math_var } can be calculated as the inverse of the state lifetime
-[*&tau;*<sub>*j*,*j'*</sub>](){: .math_var } weighted by the associated number of transitions, such as:
+[*k*<sub>*v*,*v'*</sub>](){: .math_var } can be calculated as the inverse of the state lifetime
+[*&tau;*<sub>*v*</sub>](){: .math_var } weighted by the associated number of transitions, such as:
 
 {: .equation }
-<img src="../../assets/images/equations/TA-kin-ana-04.gif" alt="k_{j,j'} = \frac{w_{j,j'}}{\sum_{k \neq j}^{J} w_{j,k}} \times \frac{1}{\tau_{j,j'}}">
+<img src="../../assets/images/equations/TA-kin-ana-04.gif" alt="k_{v,v'} = \frac{w_{v,v'}}{\sum_{k \neq v}^{J} w_{v,k}} \times \frac{1}{\tau_{v}}">
 
 Where 
-[*w*<sub>*j*,*j'*</sub>](){: .math_var } is the cluster population for transition 
-[*j*](){: .math_var } to 
-[*j'*](){: .math_var }. Cluster populations are available in the 
+[*w*<sub>*v*,*v'*</sub>](){: .math_var } is the cluster population for transition 
+[*v*](){: .math_var } to 
+[*v'*](){: .math_var }. Cluster populations are available in the 
 [Transition density cluster file](../../output-files/clst-transition-density-clusters.html).
 
 The relative contribution 
-[*&alpha;*](){: .math_var } of the degenerate state selected in **(b)** to the dwell time set characterized by the state values selected in **(a)** (before transition) and **(c)** (after transition), is shown in **(f)**.
+[*&alpha;*](){: .math_var } of the exponential component selected in **(b)** to the dwell time set characterized by the state values selected in **(a)** (before transition) and **(c)** (after transition), is shown in **(f)**.
 It is calculated from exponential amplitudes such as:
 
 {: .equation }
-<img src="../../assets/images/equations/TA-kin-ana-05.gif" alt="\alpha_{j,j'}^d = \frac{a_{j,j'}^d}{\sum_{k=1}^{D}a_{j,j'}^k}">
+<img src="../../assets/images/equations/TA-kin-ana-05.gif" alt="\alpha_{v,v',d} = \frac{a_{v,v',d}}{\sum_{k=1}^{D_v}a_{v,v',k}}">
 
 
 ---

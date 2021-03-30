@@ -50,13 +50,13 @@ Data types supported in dwell time files are:
 ## Structure
 
 Model selection results are organized column-wise with:
-* columns `nb. of degen. levels (state [val])` containing state state degeneracy for state value `[val]`
-* column `BIC` containing BIC values calculated as described in Transition analysis 
+* column `D` containing state degeneracy 
+* columns `BIC (state [val])` containing BIC values calculated for observed state value `[val]` as described in Transition analysis 
   [Workflow](../transition-analysis/workflow.html#model-selection-on-phase-type-distributions)
 
 ```
-nb. of degen. levels (state -0.00)	nb. of degen. levels (state 0.70)	BIC
-1	1	4.375403e+03
-2	1	4.397227e+03
-1	2	4.311630e+03
+D	BIC(state -0.00)	BIC(state 0.70)	
+1	2.437739e+03	3.264867e+03	
+2	2.443784e+03	3.195992e+03	
+3	2.468310e+03	3.224519e+03	
 ```
