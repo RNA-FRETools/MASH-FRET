@@ -32,12 +32,45 @@ nCoord = numel(lim.Xinf);
 isMov = ~isempty(vid);
 
 [o,o,fFormat] = fileparts(movFile);
+if strcmp(fFormat,'.vsi') || strcmp(fFormat,'.ets')
+    fFormat = '.bf';
+end
 
 switch fFormat
+        
+    case '.bf'
+        if isMov
+            if memAlloc(zTot*nCoord*aDim^2*4)
+                trace = tracesFromMatrix(vid,zTot,lim,aDim,nPix,mute);
+                return
+            end
+        end
+        bfInitLogging();
+        r = bfGetReader(movFile, 0);
+        prev = 0;
+        trace_vect = zeros(zTot,nCoord,aDim^2);
+        for zz = 1:zTot
+            img = bfGetPlane(r, zz)';
+            for c = 1:nCoord
+                vect = reshape(img(lim.Yinf(c):(lim.Yinf(c)+aDim-1), ...
+                    lim.Xinf(c):(lim.Xinf(c)+aDim-1)), [1 aDim^2]);
+                trace_vect(zz,c,1:numel(vect)) = permute(vect,[1 3 2]);
+            end
+
+            if ~mute && round(100*zz/zTot) > prev
+                prev = round(100*zz/zTot);
+                disp(['Generating intensity-time traces: ' ...
+                    num2str(prev) '%']);
+            end
+        end
+        r.close();
+        
+        trace = getNpixFromVect(trace_vect, nPix);
+        return
     
     case '.sif'
         if isMov
-            if memAlloc(zTot*nCoord*aDim^2*4);
+            if memAlloc(zTot*nCoord*aDim^2*4)
                 trace = tracesFromMatrix(vid,zTot,lim,aDim,nPix,mute);
                 return
             end
@@ -94,7 +127,6 @@ switch fFormat
         return
         
     case '.sira'
-
         if isMov
             if memAlloc(zTot*nCoord*aDim^2*4);
                 trace = tracesFromMatrix(vid,zTot,lim,aDim,nPix,mute);
@@ -158,9 +190,13 @@ switch fFormat
         return
         
     case '.tif'
+        if isMov
+            if memAlloc(zTot*nCoord*aDim^2*4)
+                trace = tracesFromMatrix(vid,zTot,lim,aDim,nPix,mute);
+                return
+            end
+        end
         imgInfo = imfinfo(movFile);
-        zTot = size(imgInfo,1);
-        nCoord = numel(lim.Xinf);
         prev = 0;
         trace_vect = zeros(zTot,nCoord,aDim^2);
         for zz = 1:zTot
@@ -182,9 +218,12 @@ switch fFormat
         return
         
     case '.gif'
-        imgInfo = imfinfo(movFile);
-        zTot = size(imgInfo,1);
-        nCoord = numel(lim.Xinf);
+        if isMov
+            if memAlloc(zTot*nCoord*aDim^2*4)
+                trace = tracesFromMatrix(vid,zTot,lim,aDim,nPix,mute);
+                return
+            end
+        end
         prev = 0;
         trace_vect = zeros(zTot,nCoord,aDim^2);
         for zz = 1:zTot
@@ -206,8 +245,6 @@ switch fFormat
         return
         
     case '.png'
-        
-        nCoord = numel(lim.Xinf);
         trace_vect = zeros(1,nCoord,aDim^2);
         
         info = imfinfo(movFile); % information array of .tif file
@@ -235,13 +272,19 @@ switch fFormat
         return
         
     case '.pma'
+        if isMov
+            if memAlloc(zTot*nCoord*aDim^2*4)
+                trace = tracesFromMatrix(vid,zTot,lim,aDim,nPix,mute);
+                return
+            end
+        end
         f = fopen(movFile, 'r');
         if f < 0 
             errordlg('Could not open the file.');
         else
             prev = 0;
             trace_vect = zeros(zTot,nCoord,aDim^2);
-            for zz = 1:zTot;
+            for zz = 1:zTot
                 for c = 1:nCoord
                     kk = 1;
                     vect = zeros(1,1,aDim^2);

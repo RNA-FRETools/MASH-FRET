@@ -17,7 +17,7 @@ if iscell(obj)
 else
     argin = 'Select a graphic file:';
 end
-if ~loadMovFile('all',argin,1,h_fig);
+if ~loadMovFile('all',argin,1,h_fig)
     return
 end
 
