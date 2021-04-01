@@ -81,6 +81,9 @@ for v1 = 1:V
         ylbl = cat(2,ylbl,sprintf('%i%i',v1,v2));
     end
 end
+Nexp = Nexp/sum(Nexp);
+Nsim = Nsim/sum(Nsim);
+res.ntrs = [Nexp;Nsim];
 
 % build dwell time histgrams
 sumExp = 0;
@@ -114,7 +117,8 @@ for v = 1:V
     sumExp = sumExp+ndtExp{v};
     sumSim = sumSim+ndtSim{v};
 end
-res.ntrs = [Nexp;Nsim];
+popExp = popExp/sum(popExp);
+popSim = popSim/sum(popSim);
 res.pop = [popExp;popSim];
 
 % plot data
