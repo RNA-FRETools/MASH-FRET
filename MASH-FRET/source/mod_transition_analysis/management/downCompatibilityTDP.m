@@ -251,6 +251,11 @@ if isfield(prm,'kin_start') && ~isfield(prm,'lft_start')
             prm.lft_start{2} = [prm.kin_start{2},bin,excl,rearr];
         end
         
+        % adjust current state id after state binning
+        if prm.lft_start{2}(2)>V
+            prm.lft_start{2}(2) = V;
+        end
+        
         % recalculate histograms
         prm2 = ud_kinPrm(prm,def,J);
         prm.clst_res{4} = prm2.clst_res{4};
