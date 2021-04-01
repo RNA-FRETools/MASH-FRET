@@ -21,7 +21,7 @@ prm = p.proj{proj}.prm{tag,tpe};
 % set all control off-enabled
 setProp(h.uipanel_TA_kineticModel, 'Enable', 'off');
 
-if ~(isfield(curr,'clst_res') && ~isempty(curr.clst_res{1}))
+if ~(isfield(prm,'clst_res') && ~isempty(prm.clst_res{1}))
     return
 end
 

@@ -13,6 +13,9 @@ nTrs = getClusterNb(J,mat,clstDiag);
     [j1,j2]);
 V = numel(vals);
 
+% update number of observed states in cluster config
+prm.lft_start{2}(1) = J;
+
 % correct current state value
 if prm.lft_start{2}(2)>V
     prm.lft_start{2}(2) = V;

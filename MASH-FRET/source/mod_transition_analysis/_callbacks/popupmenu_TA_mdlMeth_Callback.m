@@ -1,4 +1,4 @@
-function popupmenu_TA_mdlDtState_Callback(obj,evd,h_fig)
+function popupmenu_TA_mdlMeth_Callback(obj,evd,h_fig)
 
 h = guidata(h_fig);
 p = h.param.TDP;

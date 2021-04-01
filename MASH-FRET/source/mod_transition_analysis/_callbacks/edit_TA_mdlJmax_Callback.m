@@ -13,7 +13,7 @@ val = round(str2double(get(obj, 'String')));
 set(obj, 'String', num2str(val));
 if ~(numel(val)==1 && ~isnan(val) && val>0)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    setContPan('The maximum number of degenerated levels is ill-defined.',...
+    setContPan('The maximum number of degenerate levels is ill-defined.',...
         'error',h_fig);
     return
 end

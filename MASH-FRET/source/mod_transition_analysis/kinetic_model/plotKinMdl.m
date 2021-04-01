@@ -1,4 +1,4 @@
-function plotKinMdl(h_axes,prm,v_res)
+function plotKinMdl(h_axes,prm,def,v_res)
 
 % defaults
 norm = 1;
@@ -12,18 +12,13 @@ if ~isempty(h_axes(1).UserData)
 end
 
 % collect results
-if ~(isfield(prm,'mdl_res'))
-    mdl_res = [];
-else
-    mdl_res = prm.mdl_res;
-end
-if isempty(mdl_res)
+if ~(isfield(prm,'mdl_res')) || isequal(prm.mdl_res,def.mdl_res)
     states = [];
 else
-    tp = mdl_res{1};
-    simdat = mdl_res{4};
-    states = mdl_res{5};
-    BICres = mdl_res{6}{1};
+    tp = prm.mdl_res{1};
+    simdat = prm.mdl_res{4};
+    states = prm.mdl_res{5};
+    BICres = prm.mdl_res{6}{1};
 end
 
 % draw state diagram
