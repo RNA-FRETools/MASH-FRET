@@ -104,7 +104,6 @@ curr.clst_res = prm.clst_res;
 curr.lft_def = prm.lft_def;
 curr.lft_start = prm.lft_start;
 curr.lft_res = prm.lft_res;
-curr.mdl_start = prm.mdl_start;
 curr.mdl_res = prm.mdl_res;
 
 p.proj{proj}.prm{tag,tpe} = prm;

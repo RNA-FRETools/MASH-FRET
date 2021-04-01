@@ -40,6 +40,7 @@ proj = p.curr_proj;
 
 tag = p.curr_tag(proj);
 tpe = p.curr_type(proj);
+def = p.proj{proj}.def{tag,tpe};
 curr = p.proj{proj}.curr{tag,tpe};
 prm = p.proj{proj}.prm{tag,tpe};
 v_lft = curr.lft_start{2}(2);
@@ -55,5 +56,5 @@ if strcmp(opt,'all') || strcmp(opt,'kin')
 end
 if strcmp(opt,'all') || strcmp(opt,'mdl')
     plotKinMdl([h.axes_TDPplot3,h.axes_TA_mdlPop,h.axes_TA_mdlTrans,...
-        h.axes_TA_mdlDt,h.axes_TA_mdlBIC],prm,v_mdl);
+        h.axes_TA_mdlDt,h.axes_TA_mdlBIC],prm,def,v_mdl);
 end

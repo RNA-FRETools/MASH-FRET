@@ -17,6 +17,7 @@ end
 if isfield(prm,'plot') && size(prm.plot{1},1)<4
     prm.plot = def.plot;
 end
+
 % add boba parameters if none
 if isfield(prm,'clst_start') && size(prm.clst_start,2)>=1 && ...
         size(prm.clst_start{1},2)<8
@@ -273,6 +274,14 @@ if isfield(prm,'kin_res') && ~isfield(prm,'lft_res') % reset fit results
         'https://github.com/RNA-FRETools/MASH-FRET/releases).\n'])
     prm.lft_res = def.lft_res;
     prm = rmfield(prm,'kin_res');
+end
+
+if ~isfield(prm,'mdl_start')
+    prm.mdl_start = def.mdl_start;
+end
+
+if ~isfield(prm,'mdl_res')
+    prm.mdl_res = def.mdl_res;
 end
 
 p_proj.prm{tag,tpe} = prm;

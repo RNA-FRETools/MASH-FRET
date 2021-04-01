@@ -17,17 +17,18 @@ end
 proj = p.curr_proj;
 tpe = p.curr_type(proj);
 tag = p.curr_tag(proj);
-prm = p.proj{proj}.prm{tag,tpe};
 def = p.proj{proj}.def{tag,tpe};
+prm = p.proj{proj}.prm{tag,tpe};
+curr = p.proj{proj}.curr{tag,tpe};
 
-prm.lft_start{2}(3) = val;
+curr.lft_start{2}(3) = val;
 
 % recalculate histograms and reset fit results
 J = prm.lft_start{2}(1);
-prm = ud_kinPrm(prm,def,J);
+curr = ud_kinPrm(curr,def,J);
 
-p.proj{proj}.prm{tag,tpe} = prm;
-p.proj{proj}.curr{tag,tpe} = prm;
+p.proj{proj}.curr{tag,tpe} = curr;
+p.proj{proj}.prm{tag,tpe} = curr;
 h.param.TDP = p;
 guidata(h_fig, h);
 
