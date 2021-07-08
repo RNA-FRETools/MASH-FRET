@@ -9,15 +9,13 @@ end
 proj = p.curr_proj;
 tpe = p.curr_type(proj);
 tag = p.curr_tag(proj);
-trs = p.proj{proj}.curr{tag,tpe}.kin_start{2}(2);
-kin_k = p.proj{proj}.curr{tag,tpe}.kin_start{1};
-if kin_k{trs,1}(1) ~= get(obj, 'Value') && ~kin_k{trs,1}(1)
-    kin_k{trs,1}(1) = get(obj, 'Value');
-    
-    p.proj{proj}.curr{tag,tpe}.kin_start{1} = kin_k;
+v = p.proj{proj}.curr{tag,tpe}.lft_start{2}(2);
+strtch = p.proj{proj}.curr{tag,tpe}.lft_start{1}{v,1}(2);
+if strtch~=get(obj,'Value') && ~strtch
+    p.proj{proj}.curr{tag,tpe}.lft_start{1}{v,1}(2) = get(obj,'Value');
 
     h.param.TDP = p;
     guidata(h_fig, h);
 end
 
-ud_kinFit(h_fig);
+ud_fitSettings(h_fig);

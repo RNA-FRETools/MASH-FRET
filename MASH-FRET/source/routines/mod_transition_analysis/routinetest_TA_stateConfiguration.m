@@ -9,7 +9,7 @@ function routinetest_TA_stateConfiguration(h_fig,p,prefix)
 
 % defaults
 nShapes = [3,4,3];
-opt0 = [false,4,false,3,true,false,false,false];
+opt0 = [false,4,false,3,true,false,false,false,false,false,false,false];
 
 setDefault_TA(h_fig,p);
 
@@ -111,10 +111,26 @@ for meth = 1:nMeth
                         sprintf(p.exp_defSlct,cnfg,shape),'_nodiag.png']},...
                         [],h_fig);
                 end
+                
+                % test cluster color list prior clustering
+                K = numel(get(h.popupmenu_TA_setClstClr,'string'));
+                for k = 1:K
+                    set(h.popupmenu_TA_setClstClr,'value',k);
+                    popupmenu_TA_setClstClr_Callback(...
+                        h.popupmenu_TA_setClstClr,[],h_fig);
+                end
 
                 % start clustering
                 pushbutton_TDPupdateClust_Callback(...
                     h.pushbutton_TDPupdateClust,[],h_fig);
+                
+                % test cluster color list after clustering
+                K = numel(get(h.popupmenu_TA_setClstClr,'string'));
+                for k = 1:K
+                    set(h.popupmenu_TA_setClstClr,'value',k);
+                    popupmenu_TA_setClstClr_Callback(...
+                        h.popupmenu_TA_setClstClr,[],h_fig);
+                end
 
                 % save project
                 pushbutton_TDPsaveProj_Callback({p.dumpdir,...
@@ -128,12 +144,6 @@ for meth = 1:nMeth
                 pushbutton_expTDPopt_next_Callback({p.dumpdir,...
                     [sprintf(p.exp_clst,meth,cnfg),'_nodiag.clst']},[],...
                     h_fig);
-                
-                % save default project
-                if meth==p.clstMeth && isequal(clstConfig,p.clstConfig)
-                    pushbutton_TDPsaveProj_Callback(...
-                        {p.annexpth,p.mash_file},[],h_fig);
-                end
 
                 disp(cat(2,prefix,'>> >> with diagonal clusters...'));
                 clstConfig(2) = 1;
@@ -201,9 +211,25 @@ for meth = 1:nMeth
                     h_fig);
                 defTested(cnfg,shape) = true;
             end
+            
+            % test cluster color list prior clustering
+            K = numel(get(h.popupmenu_TA_setClstClr,'string'));
+            for k = 1:K
+                set(h.popupmenu_TA_setClstClr,'value',k);
+                popupmenu_TA_setClstClr_Callback(...
+                    h.popupmenu_TA_setClstClr,[],h_fig);
+            end
 
             pushbutton_TDPupdateClust_Callback(h.pushbutton_TDPupdateClust,...
                 [],h_fig);
+            
+            % test cluster color list after clustering
+            K = numel(get(h.popupmenu_TA_setClstClr,'string'));
+            for k = 1:K
+                set(h.popupmenu_TA_setClstClr,'value',k);
+                popupmenu_TA_setClstClr_Callback(h.popupmenu_TA_setClstClr,...
+                    [],h_fig);
+            end
 
             % save project
             pushbutton_TDPsaveProj_Callback(...
@@ -215,12 +241,6 @@ for meth = 1:nMeth
             set_TA_expOpt(opt0,h_fig);
             pushbutton_expTDPopt_next_Callback({p.dumpdir,...
                 [sprintf(p.exp_clst,meth,cnfg),'.clst']},[],h_fig);
-
-            % save default project
-            if meth==p.clstMeth && isequal(clstConfig,p.clstConfig)
-                pushbutton_TDPsaveProj_Callback({p.annexpth,p.mash_file},...
-                    [],h_fig);
-            end
         end
     end
 end

@@ -1,8 +1,9 @@
 ---
 layout: default
-title: Analyze simulated data
-grand_parent: /tutorials.html
-parent: /tutorials/validate-results.html
+title: Step 3
+subtitle: Analyze simulated data
+grand_parent: Tutorials
+parent: Validate results
 nav_order: 3
 nav_exclude: true
 has_toc: false
@@ -14,6 +15,10 @@ has_toc: false
 {: .no_toc }
 
 Follow this procedure to validate the state configuration, state populations and state transition rates determined from an experimental smFRET video analysis.
+
+{% include tutorial_toc.html %}
+
+---
 
 {% include tutorial_head.html %}
 

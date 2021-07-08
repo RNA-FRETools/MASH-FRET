@@ -1,12 +1,7 @@
 function ud_DTA(h_fig)
 
-% Last update: by MH, 3.4.2019
-% >> update "data" popupmenu string according to which traces are 
-%    discretized: if only bottom traces are, only bottom traces data
-%    are listed, otherwise all data aappear.
-% >> improve code synthaxe
-% >> adjust control enability when discretization is applied to top traces 
-%    only and render static text off- or on- enable depending on settings
+% Last update by MH, 23.12.2020: add method vbFRET 2D
+% update by MH, 3.4.2019: (1) update "data" popupmenu string according to which traces are discretized: if only bottom traces are, only bottom traces data are listed, otherwise all data aappear, (2) improve code synthaxe, (3) adjust control enability when discretization is applied to top traces only and render static text off- or on- enable depending on settings
 
 h = guidata(h_fig);
 p = h.param.ttPr;
@@ -22,11 +17,11 @@ if ~isempty(p)
     p_panel = p.proj{proj}.curr{mol}{4};
     chan = p.proj{proj}.fix{3}(4);
     method = p_panel{1}(1);
-    toFRET = p_panel{1}(2);
+    toBot = p_panel{1}(2);
     
     data_str = getStrPop('DTA_chan',...
         {labels FRET S exc p.proj{proj}.colours});
-    if toFRET==1 && (nFRET+nS)>0
+    if toBot==1 && (nFRET+nS)>0
         if chan>(nFRET+nS)
             chan = nFRET + nS;
         end
@@ -59,11 +54,11 @@ if ~isempty(p)
     
     set(h.popupmenu_TP_states_method, 'Value', method);
     
-    if method == 3 % one state
+    if method==4 % one state
         set(h.popupmenu_TP_states_data, 'String', {'none'}, 'Value', 1);
     end
     
-    switch toFRET
+    switch toBot
         case 2 % all
             set(h.popupmenu_TP_states_applyTo, 'Value', 3);
         case 1 % bottom
@@ -109,12 +104,12 @@ if ~isempty(p)
             'off');
     end
 
-    if ~(~toFRET && (nFRET + nS)>0 && chan<=nFRET+nS)
+    if ~(~toBot && (nFRET + nS)>0 && chan<=nFRET+nS)
         set(h_param(4),'Enable','off','string','');
         set(h_param_txt(4),'Enable','off');
     end
 
-    if method == 1 % Thresholding
+    if method==1 % Thresholding
 
         set([h.text_TP_states_lowThresh,h.text_TP_states_state,...
             h.text_TP_states_highThresh h.text_TP_states_thresholds ...
@@ -149,20 +144,27 @@ if ~isempty(p)
             h.edit_TP_states_highThresh],'Enable','off','string','');
         
         switch method
-            case 2 % VbFRET
+            case 2 % vbFRET-1D
                 set(h_param(1),'TooltipString','Minimum number of states');
                 set(h_param(2),'TooltipString','Maximum number of states');
                 set(h_param(3),'TooltipString','Iteration number');
                 
                 set(h.popupmenu_TP_states_data, 'Enable', 'on');
                 
-            case 3 % One state
+            case 3 % vbFRET-2D
+                set(h_param(1),'TooltipString','Minimum number of states');
+                set(h_param(2),'TooltipString','Maximum number of states');
+                set(h_param(3),'TooltipString','Iteration number');
+                
+                set(h.popupmenu_TP_states_data, 'Enable', 'on');
+                
+            case 4 % One state
                 set(h_param(1:7), 'Enable','off','string','');
                 set(h_param_txt(1:7), 'Enable','off');
                 
                 set(h.popupmenu_TP_states_data,'enable','off');
 
-            case 4 % CPA
+            case 5 % CPA
                 set(h_param(1),'TooltipString',...
                     'Number of bootstrap samples');
                 set(h_param(2),'TooltipString','Significance level (in %)');
@@ -171,7 +173,7 @@ if ~isempty(p)
                 
                 set(h.popupmenu_TP_states_data,'Enable','on');
                 
-            case 5 % STaSI
+            case 6 % STaSI
                 set(h_param([2,3]),'Enable','off','string','');
                 set(h_param_txt([2,3]),'Enable','off');
                 set(h_param(1),'TooltipString','Maximum number of states');
@@ -180,7 +182,7 @@ if ~isempty(p)
         end
     end
     
-    if ~toFRET && chan<=nFRET+nS
+    if ~toBot && chan<=nFRET+nS
         set(h_param([1:3,5:6]),'Enable','off','string','');
         set(h_param_txt([1:3,5:6]),'Enable','off');
         set([h.text_TP_states_thresholds h.popupmenu_TP_states_indexThresh ...

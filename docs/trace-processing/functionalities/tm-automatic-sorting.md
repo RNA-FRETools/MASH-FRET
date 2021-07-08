@@ -2,8 +2,8 @@
 layout: default
 title: Use Trace manager
 sub_title: Automatic sorting
-parent: /trace-processing/functionalities.html
-grand_parent: /trace-processing.html
+parent: Functionalities
+grand_parent: Trace processing
 main_nav: /trace-processing/functionalities/tm-overview.html
 nav_order: 3
 subnav_order: 2

@@ -42,8 +42,7 @@ if sum(fname)==0
     return
 end
 
-setContPan(['Save project ' fname ' ...'], 'process' , ...
-    h_fig);
+setContPan(['Save project ' fname ' ...'], 'process' , h_fig);
 cd(pname);
 [o,fname,o] = fileparts(fname);
 fname_proj = getCorrName([fname '.mash'], pname, ...

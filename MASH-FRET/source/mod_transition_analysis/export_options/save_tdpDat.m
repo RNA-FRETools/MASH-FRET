@@ -254,7 +254,7 @@ if isRes && tdp_clust
         clstDiag = prm.clst_start{1}(9);
         logl = prm.clst_start{1}(10);
         guess = prm.clst_start{2};
-        J = prm.kin_start{2}(1);
+        J = prm.lft_start{2}(1);
         res = prm.clst_res;
         Kmax = getClusterNb(Jmax,mat,clstDiag);
         [j1_start,j2_start] = getStatesFromTransIndexes(1:Kmax,Jmax,mat,...
@@ -387,7 +387,7 @@ if isRes && tdp_clust
                     '\tbootstrapped number of states: ');
             elseif mat==2
                 str_prm = cat(2,str_prm,'\tbootstrapped number of',...
-                    ' states for half-TDP: ');
+                    ' clusters for half-TDP: ');
             else
                 str_prm = cat(2,str_prm,...
                     '\tbootstrapped number of clusters: ');

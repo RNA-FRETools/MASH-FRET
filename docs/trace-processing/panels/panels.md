@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Panels
-parent: /trace-processing.html
+parent: Trace processing
 nav_order: 4
 has_children: true
 numbered_toc: true

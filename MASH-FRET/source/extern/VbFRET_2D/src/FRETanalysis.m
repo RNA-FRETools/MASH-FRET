@@ -1,4 +1,4 @@
-function [dat analysis fit_par] = FRETanalysis()
+function [dat,analysis,fit_par] = FRETanalysis()
 % function FRETanalysis()
 % This function does the actual data analysis in vbFRET
 % last edited fall 2009 by Jonathan E Bronson (jeb2126@columbia.edu) for 

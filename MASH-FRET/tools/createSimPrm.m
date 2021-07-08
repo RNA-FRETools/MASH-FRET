@@ -38,7 +38,8 @@ function createSimPrm(varargin)
 
 %%%%% EDIT HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FRET = [];
+N = 15;
+FRET = repmat([0.2,0;0.7,0;0.2,0;0.7,0],1,1,N);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -49,53 +50,21 @@ FRET = [];
 % j to j' in trans_rates(j,j')
 % A rate of 0 means a forbidden transition.
 
-% example: very complicated 19-states transition matrix with many 
-% degenrated states (rates were taken from multi exponential fits on 
-% experimental dwell time histograms in Transition analysis)
+% example: 3-states matrix were only step-wise transitions are allowed
 %
-% k1a2 = 19.02692; % FRET1 to FRET2, 1st rate
-% k1b2 = 17.10321; % FRET1 to FRET2, 2nd rate
-% k1c2 = 10.33113; % FRET1 to FRET2, 3rd rate
-% k2a1 = 72.35241; % FRET2 to FRET1, 1st rate
-% k2b1 = 7.36367; %  FRET2 to FRET1, 2nd rate
-% k2c1 = 7.36366; %  FRET2 to FRET1, 3rd rate
-% k2af = 5.99528; %  FRET2 to FRET3, 1st rate
-% k2bf = 13.28571; % FRET2 to FRET3, 2nd rate
-% k2cf = 1.58003; %  FRET2 to FRET3, 3rd rate
-% kfa2 = 1.54325; %  FRET3 to FRET2, 1st rate
-% kfb2 = 4.03368; %  FRET3 to FRET2, 2nd rate
-% kfc2 = 2.14883; %  FRET3 to FRET2, 3rd rate
-% kfan = 15.25118; % FRET3 to FRET4, 1st rate
-% kfbn = 1.6639; %   FRET3 to FRET4, 2nd rate
-% knf = 9.89685; %   FRET4 to FRET3, 1st rate
-% 
-% trans_rates = [
-%     0    0    0    k1a2 k1a2 k1a2 k1a2 k1a2 k1a2 k1a2 k1a2 k1a2 0    0    0    0    0    0    0
-%     0    0    0    k1b2 k1b2 k1b2 k1b2 k1b2 k1b2 k1b2 k1b2 k1b2 0    0    0    0    0    0    0
-%     0    0    0    k1c2 k1c2 k1c2 k1c2 k1c2 k1c2 k1c2 k1c2 k1c2 0    0    0    0    0    0    0
-%     k2a1 k2a1 k2a1 0    0    0    0    0    0    0    0    0    k2af k2af k2af k2af k2af k2af 0
-%     k2b1 k2b1 k2b1 0    0    0    0    0    0    0    0    0    k2af k2af k2af k2af k2af k2af 0
-%     k2c1 k2c1 k2c1 0    0    0    0    0    0    0    0    0    k2af k2af k2af k2af k2af k2af 0
-%     k2a1 k2a1 k2a1 0    0    0    0    0    0    0    0    0    k2bf k2bf k2bf k2af k2af k2af 0
-%     k2b1 k2b1 k2b1 0    0    0    0    0    0    0    0    0    k2bf k2bf k2bf k2af k2af k2af 0
-%     k2c1 k2c1 k2c1 0    0    0    0    0    0    0    0    0    k2bf k2bf k2bf k2af k2af k2af 0
-%     k2a1 k2a1 k2a1 0    0    0    0    0    0    0    0    0    k2cf k2cf k2cf k2af k2af k2af 0
-%     k2b1 k2b1 k2b1 0    0    0    0    0    0    0    0    0    k2cf k2cf k2cf k2af k2af k2af 0
-%     k2c1 k2c1 k2c1 0    0    0    0    0    0    0    0    0    k2cf k2cf k2cf k2af k2af k2af 0
-%     0    0    0    kfa2 kfa2 kfa2 kfa2 kfa2 kfa2 kfa2 kfa2 kfa2 0    0    0    0    0    0    kfan
-%     0    0    0    kfb2 kfb2 kfb2 kfb2 kfb2 kfb2 kfb2 kfb2 kfb2 0    0    0    0    0    0    kfan
-%     0    0    0    kfc2 kfc2 kfc2 kfc2 kfc2 kfc2 kfc2 kfc2 kfc2 0    0    0    0    0    0    kfan
-%     0    0    0    kfa2 kfa2 kfa2 kfa2 kfa2 kfa2 kfa2 kfa2 kfa2 0    0    0    0    0    0    kfbn
-%     0    0    0    kfb2 kfb2 kfb2 kfb2 kfb2 kfb2 kfb2 kfb2 kfb2 0    0    0    0    0    0    kfbn
-%     0    0    0    kfc2 kfc2 kfc2 kfc2 kfc2 kfc2 kfc2 kfc2 kfc2 0    0    0    0    0    0    kfbn
-%     0    0    0    0    0    0    0    0    0    0    0    0    knf  knf  knf  knf  knf  knf  0   ];
-%
+% trans_rates = [0   0.2 0
+%                0.3 0   0.01
+%                0   0.1 0];
 %
 % trans_rates = repmat(trans_rates,[1,1,N]);
 
 %%%%% EDIT HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-trans_rates = [];
+trans_rates = [	0       0.05	0       0
+                0.02	0       0       0
+                0.001	0       0       0.5
+                0       0       0.2     0];
+trans_rates = repmat(trans_rates,1,1,N);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -132,7 +101,7 @@ trans_prob = [];
 
 %%%%% EDIT HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-ini_prob = [];
+ini_prob = repmat([0 0 0 1],[N,1]);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -225,8 +194,8 @@ else
     file = cat(2,pname,fname);
 end
 
-save(file,'FRET','trans_rates','trans_prob','gamma','tot_intensity',...
-    'coordinates','psf_width','-mat');
+save(file,'FRET','trans_rates','trans_prob','ini_prob','gamma',...
+    'tot_intensity','coordinates','psf_width','-mat');
 
 disp(cat(2,'Preset parameters were successfully written in file: ',file));
 

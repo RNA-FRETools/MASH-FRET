@@ -30,10 +30,12 @@ nSpl = curr.clst_start{1}(7);
 nRpl = curr.clst_start{1}(8);
 
 % set all controls on-enabled
-set([h.text_TA_clstMeth h.popupmenu_TA_clstMeth h.text_TDPiter ...
-    h.edit_TDPmaxiter h.text_TDPnStates h.edit_TDPnStates ...
-    h.checkbox_TDPboba h.edit_TDPnRepl h.text_TDPnRepl h.edit_TDPnSpl ...
-    h.text_TDPnSpl], 'Enable','on','Visible','on');
+set([h.text_TA_clstMeth,h.popupmenu_TA_clstMeth,h.text_TDPiter, ...
+    h.edit_TDPmaxiter,h.text_TDPnStates,h.edit_TDPnStates, ...
+    h.checkbox_TDPboba,h.edit_TDPnRepl,h.text_TDPnRepl,h.edit_TDPnSpl, ...
+    h.text_TDPnSpl,h.text_TA_tdpCoord,h.popupmenu_TA_setClstClr,...
+    h.text_TA_setClstClr,h.pushbutton_TA_setClstClr], 'Enable','on',...
+    'Visible','on');
 
 % reset edit field background color
 set([h.edit_TDPmaxiter h.edit_TDPnStates h.edit_TDPnRepl h.edit_TDPnSpl], ...
@@ -68,4 +70,22 @@ end
 ud_clustersPan(h_fig);
 
 ud_resultsPan(h_fig);
+
+% update cluster colors
+prm = p.proj{proj}.prm{tag,tpe}; % interface settings at last analysis
+if isfield(prm,'clst_res') && ~isempty(prm.clst_res{1})
+    isRes = true;
+    clr = prm.clst_start{3};
+else
+    isRes = false;
+    clr = curr.clst_start{3};
+end
+K = size(clr,1);
+k = h.popupmenu_TA_setClstClr.Value;
+if k>K
+    k = K;
+end
+str_pop = getClrStrPop(cellstr(num2str((1:K)'))',clr);
+set(h.popupmenu_TA_setClstClr,'string',str_pop,'value',k);
+set(h.pushbutton_TA_setClstClr,'backgroundcolor',clr(k,:));
 

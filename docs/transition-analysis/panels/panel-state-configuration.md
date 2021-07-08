@@ -1,8 +1,8 @@
 ---
 layout: default
 title: State configuration
-parent: /transition-analysis/panels.html
-grand_parent: /transition-analysis.html
+parent: Panels
+grand_parent: Transition analysis
 nav_order: 3
 ---
 
@@ -15,7 +15,7 @@ State configuration is the second panel of module Transition analysis.
 
 Use this panel to determine the optimum number of transition clusters and associated cross-sample variability.
 
-<a class="plain" href="../../assets/images/gui/TA-panel-state-configuration.png"><img src="../../assets/images/gui/TA-panel-state-configuration.png" style="max-width:491px;"></a>
+<a class="plain" href="../../assets/images/gui/TA-panel-state-configuration.png"><img src="../../assets/images/gui/TA-panel-state-configuration.png" style="max-width:437px;"></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -30,7 +30,7 @@ Use this panel to determine the optimum number of transition clusters and associ
 
 Use this interface to define a method to cluster transitions.
 
-<img src="../../assets/images/gui/TA-panel-state-configuration-method.png" style="max-width:110px;">
+<img src="../../assets/images/gui/TA-panel-state-configuration-method.png" style="max-width:105px;">
 
 TDP clustering consists in partitioning the state transitions into groups. 
 Clustering can be done in an iterative fashion to search for the optimum cluster configuration, or in a non-iterative fashion by simply imposing a starting configuration.
@@ -43,15 +43,15 @@ The clustering method is chosen in list **(a)** which includes:
 
 In all cases, the algorithms look for a number of clusters 
 [*K*](){: .math_var} that depends on the cluster configuration chosen in 
-[Clusters](#clusters) and in the complexity 
-[*J*](){: .math_var} set in **(b)**, such as:
+[Clusters](#clusters) and on the complexity 
+[*V*](){: .math_var} set in **(b)**, such as:
 
 | configuration                    |  [*K*](){: .math_var }            |
 | -------------------------------- |:---------------------------------:|
-| `matrix` incl. diagonal clusters | [*J*<sup>2</sup>](){: .math_var } |
-| `matrix` excl. diagonal clusters | [*J*(*J* - 1)](){: .math_var }    |
-| `symmetrical`                    | [2*J*](){: .math_var }            |
-| `free`                           | [*J*](){: .math_var }             |
+| `matrix` incl. diagonal clusters | [*V*<sup>2</sup>](){: .math_var } |
+| `matrix` excl. diagonal clusters | [*V*(*V* - 1)](){: .math_var }    |
+| `symmetrical`                    | [2*V*](){: .math_var }            |
+| `free`                           | [*V*](){: .math_var }             |
 
 Once the clusters are identified, states are deduced from the x- and y- coordinates of their centers.
 
@@ -92,13 +92,13 @@ The
 [*BIC*](){: .math_var } is similar to a penalized likelihood and is expressed such as:
 
 {: .equation }
-<img src="../../assets/images/equations/HA-eq-bic.gif" alt="BIC\left (J \right ) = p\left (J \right ) \times \textup{log}( N_{\textup{total}} ) - \textup{log}\left [ likelihood\left (J \right ) \right ]">
+<img src="../../assets/images/equations/HA-eq-bic.gif" alt="BIC\left (V \right ) = p\left (V \right ) \times \log ( M_{\textup{total}} ) - 2 \times \log \left [ likelihood\left (V \right ) \right ]">
 
 with 
-[*p*(*J*)](){: .math_var } the number of parameters necessary to describe the mixture, with 
-[*J*](){: .math_var } the model complexity  set in 
+[*p*(*V*)](){: .math_var } the number of parameters necessary to describe the mixture, with 
+[*V*](){: .math_var } the model complexity  set in 
 [Method settings](#method-settings), and
-[*N*<sub>total</sub>](){: .math_var } the total number of counts in the TDP.
+[*M*<sub>total</sub>](){: .math_var } the total number of counts in the TDP.
 
 The number of parameters necessary to describe the model includes the number of Gaussian means, 
 [*p*<sub>means</sub>](){: .math_var }, the number of parameters to describe Gaussian covariances, 
@@ -106,19 +106,19 @@ The number of parameters necessary to describe the model includes the number of 
 [*p*<sub>weights</sub>](){: .math_var }, and is calculated such as:
 
 {: .equation }
-<img src="../../assets/images/equations/TA-eq-bic-03.gif" alt="p_{\textup{means}}\left ( J\right ) + p_{\textup{widths}}\left ( J\right ) + p_{\textup{weights}}\left ( J\right )">
+<img src="../../assets/images/equations/TA-eq-bic-03.gif" alt="p\left (V \right ) = p_{\textup{means}}\left ( V\right ) + p_{\textup{widths}}\left ( V\right ) + p_{\textup{weights}}\left ( V\right )">
 
 The number of parameters necessary to describe the means of the 
 [*K*](){: .math_var } 2D-Gaussians depend on the cluster constraint set in 
 [Clusters](#clusters) and the complexity 
-[*J*](){: .math_var }:
+[*V*](){: .math_var }:
 
 | configuration                    |  [*p*<sub>means</sub>](){: .math_var }  |
 | -------------------------------- |:---------------------------------------:|
-| `matrix` incl. diagonal clusters | [*J*](){: .math_var }                   |
-| `matrix` excl. diagonal clusters | [*J*](){: .math_var }                   |
-| `symmetrical`                    | [2*J*](){: .math_var }                  |
-| `free`                           | [2*J*](){: .math_var }                  |
+| `matrix` incl. diagonal clusters | [*V*](){: .math_var }                   |
+| `matrix` excl. diagonal clusters | [*V*](){: .math_var }                   |
+| `symmetrical`                    | [2*V*](){: .math_var }                  |
+| `free`                           | [2*V*](){: .math_var }                  |
 
 The number of parameters necessary to describe the weights of 
 [*K*](){: .math_var } 2D-Gaussians is calculated as: [*p*<sub>weights</sub> = *K* - 1](){: .math_var }
@@ -164,20 +164,20 @@ Cluster centers are constrained according to one of the three types of configura
 
 |  constraint   | description                                                                                                 |
 |:-------------:| ----------------------------------------------------------------------------------------------------------- |
-| `matrix`      | [*J*](){: .math_var }-by[*J*](){: .math_var } cluster matrix defined by [*J*](){: .math_var } states        |
-| `symmetrical` | [*J*](){: .math_var } clusters having their symmetrical projection on the opposite side of the TDP diagonal |
-| `free`        | [*J*](){: .math_var } clusters free of constraint                                                           |
+| `matrix`      | [*V*](){: .math_var }-by[*V*](){: .math_var } cluster matrix defined by [*V*](){: .math_var } states        |
+| `symmetrical` | [*V*](){: .math_var } clusters having their symmetrical projection on the opposite side of the TDP diagonal |
+| `free`        | [*V*](){: .math_var } clusters free of constraint                                                           |
 
 with 
-[*J*](){: .math_var } being defined in 
+[*V*](){: .math_var } being defined in 
 [Method settings](#method-settings).
 
 When using the `matrix` configuration, the 
-[*J*](){: .math_var } clusters on the TDP diagonal are used to group together low-amplitude state transitions that are usually artefacts rising from noise discretization. 
+[*V*](){: .math_var } clusters on the TDP diagonal are used to group together low-amplitude state transitions that are usually artefacts rising from noise discretization. 
 To remove diagonal clusters from the `matrix` configuration, deactivate the option in **(b)**.
 
 The different cluster configurations for a complexity 
-[*J*](){: .math_var } = 4 are shown below:
+[*V*](){: .math_var } = 4 are shown below:
 
 <img src="../../assets/images/figures/TA-panel-state-configuration-clusters-config.png">
 
@@ -251,12 +251,12 @@ Coordinates and radii in the y-direction are not adjustable when using `matrix` 
 
 Use this interface to visualize results of a state configuration analysis.
 
-<img src="../../assets/images/gui/TA-panel-state-configuration-results.png" style="max-width:172px;">
+<img src="../../assets/images/gui/TA-panel-state-configuration-results.png" style="max-width:153px;">
 
 After transition clustering, GM-clustering results are summarized in a bar plot where the BIC is presented in function of the number of components.
 
 The complexity 
-[*J*](){: .math_var } of the most sufficient model is displayed in **(b)**.
+[*V*](){: .math_var } of the most sufficient model is displayed in **(b)**.
 When using BOBA-FRET, the bootstrap mean and standard deviation of the most sufficient number of components are respectively displayed in **(b)** and **(c)**.
 
 Other inferred models can be visualized in the 
@@ -275,7 +275,7 @@ Press
 
 ## Visualization area
 
-Use this interface to visualize the TDP and analysis results.
+Use this interface to visualize the TDP and analysis results or to modify cluster color code.
 
 The axes display two types of plots depending on which stage the transition analysis is at.
 
@@ -302,8 +302,8 @@ When hoovering the axes with the mouse selection tool activated, mouse coordinat
 
 After completing TDP clustering, clustered transition are indicated by cross markers that are colored according to the cluster they belong to.
 
-Cluster colors can be modified in the 
-[Transitions](panel-state-transition-rates.html#transitions) panel.
+Cluster colors can be modified by selecting the cluster index in list **(b)** prior opening the color picker by pressing 
+![Set color](../../assets/images/gui/TA-but-set-color.png "Set color").
 
 When the 
 [Method settings](#method-settings) include the use of GM clustering, the contour of each Gaussian-shaped cluster is plotted as a white solid line.

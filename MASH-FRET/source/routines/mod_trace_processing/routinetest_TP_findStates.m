@@ -26,6 +26,11 @@ for meth = 1:nMeth
             str_trace{trace},' traces...'));
 
         set_TP_findStates(meth,trace,fsPrm,fsThresh,p.nChan,p.nL,h_fig);
+        
+        if meth==3 && trace>1 % 2D-vbFRET
+            continue
+        end
+        
         pushbutton_ttGo_Callback(h.pushbutton_ttGo,[],h_fig);
 
         % test display of results

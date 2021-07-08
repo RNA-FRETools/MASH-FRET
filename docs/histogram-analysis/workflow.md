@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Workflow
-parent: /histogram-analysis.html
+parent: Histogram analysis
 nav_order: 2
 ---
 

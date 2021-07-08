@@ -1,9 +1,9 @@
 ---
 layout: default
 title: (*.txt) State configurations from Histogram analysis
-parent: /output-files.html
-nav_order: 33
+parent: Output files
 nav_exclude: 1
+nav_order: 30
 ---
 
 <img src="../assets/images/logos/logo-output-files_400px.png" width="170" style="float:right; margin-left: 15px;"/>

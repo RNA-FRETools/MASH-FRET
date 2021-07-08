@@ -18,28 +18,28 @@ end
 proj = p.curr_proj;
 tpe = p.curr_type(proj);
 tag = p.curr_tag(proj);
-trs = p.proj{proj}.curr{tag,tpe}.kin_start{2}(2);
-kin_k = p.proj{proj}.curr{tag,tpe}.kin_start{1};
-prev_val = kin_k{trs,1}(2);
+v = p.proj{proj}.curr{tag,tpe}.lft_start{2}(2);
+lft_k = p.proj{proj}.curr{tag,tpe}.lft_start{1};
+prev_val = lft_k{v,1}(3);
 if prev_val==val
     return
 end
 
 for t = 1:val
     if prev_val < t
-        kin_k{trs,2}(t,:) = kin_k{trs,2}(t-1,:);
+        lft_k{v,2}(t,:) = lft_k{v,2}(t-1,:);
     end
 end
-kin_k{trs,2} = kin_k{trs,2}(1:val,:);
-kin_k{trs,1}(2) = val;
-if kin_k{trs,1}(3) > val
-    kin_k{trs,1}(3) = val;
+lft_k{v,2} = lft_k{v,2}(1:val,:);
+lft_k{v,1}(3) = val;
+if lft_k{v,1}(4) > val
+    lft_k{v,1}(4) = val;
 end
 
-p.proj{proj}.curr{tag,tpe}.kin_start{1} = kin_k;
+p.proj{proj}.curr{tag,tpe}.lft_start{1} = lft_k;
 
 h.param.TDP = p;
 guidata(h_fig, h);
 
-ud_kinFit(h_fig);
+ud_fitSettings(h_fig);
 

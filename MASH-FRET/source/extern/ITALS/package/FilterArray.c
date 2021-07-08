@@ -9,8 +9,7 @@
  * right-hand-side-input (prhs) [height,width,frames(optional)] size matrix, structure with {string filter; double P1 ; double P2(opt)} which defines the filter
 */ 
 
-void mexFunction(int nlhs, mxArray *plhs[],
-                 int nrhs, const mxArray *prhs[])
+void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 { 
 	
 	mwSize width, height, nFilter;
@@ -91,7 +90,6 @@ void mexFunction(int nlhs, mxArray *plhs[],
 			mexPrintf("The filter field with number %d must have string data.\n", jstruct+1);
 			filtererror = true;
 		} else {
-			buflen = (mxGetM(tmp) * mxGetN(tmp)) + 1;
 			filtername = mxArrayToString(tmp);
 			if(strcmp(filtername, "none") == 0) {
 				fP[jstruct].filtertype = -1;
@@ -176,15 +174,16 @@ void mexFunction(int nlhs, mxArray *plhs[],
 	dataSize = dims[0]*dims[1];
 	height = dims[0];
 	width = dims[1];
-	//mexPrintf("dataSize = %d, width = %d, height = %d", dataSize, height, width);
+	//mexPrintf("ndim = %d, width = %d, height = %d", ndim, height, width);
+	
    //do nothing now
 	if(mxIsInt8(prhs[0])) {
 		plhs[0] = mxCreateNumericArray(ndim, dims, mxINT8_CLASS, mxREAL);
-		pINT8DataIn = mxGetPr(prhs[0]);
-		pINT8DataOut  = mxGetPr(plhs[0]);
+		pINT8DataIn = mxGetInt8s(prhs[0]);
+		pINT8DataOut  = mxGetInt8s(plhs[0]);
 		if(withBackg) {
 			plhs[1]  = mxCreateNumericArray(ndim, dims, mxINT8_CLASS, mxREAL);
-			pINT8DataBackg  = mxGetPr(plhs[1]);
+			pINT8DataBackg  = mxGetInt8s(plhs[1]);
 		}
 		if(ndim == 2 || dims[2] == 1) {//onedimensional matrix	
 			if(withBackg)
@@ -204,11 +203,11 @@ void mexFunction(int nlhs, mxArray *plhs[],
 		}
 	} else if(mxIsUint8(prhs[0])) {
 		plhs[0] = mxCreateNumericArray(ndim, dims, mxUINT8_CLASS, mxREAL);
-		pUINT8DataIn = mxGetPr(prhs[0]);
-		pUINT8DataOut  = mxGetPr(plhs[0]);
+		pUINT8DataIn = mxGetUint8s(prhs[0]);
+		pUINT8DataOut  = mxGetUint8s(plhs[0]);
 		if(withBackg) {
 			plhs[1]  = mxCreateNumericArray(ndim, dims, mxUINT8_CLASS, mxREAL);
-			pUINT8DataBackg  = mxGetPr(plhs[1]);
+			pUINT8DataBackg  = mxGetUint8s(plhs[1]);
 		}
 		if(ndim == 2 || dims[2] == 1) {//onedimensional matrix	
 			if(withBackg)
@@ -228,11 +227,11 @@ void mexFunction(int nlhs, mxArray *plhs[],
 		}
 	} else if(mxIsInt16(prhs[0])) {
 		plhs[0] = mxCreateNumericArray(ndim, dims, mxINT16_CLASS, mxREAL);
-		pINT16DataIn = mxGetPr(prhs[0]);
-		pINT16DataOut  = mxGetPr(plhs[0]);
+		pINT16DataIn = mxGetInt16s(prhs[0]);
+		pINT16DataOut  = mxGetInt16s(plhs[0]);
 		if(withBackg) {
 			plhs[1]  = mxCreateNumericArray(ndim, dims, mxINT16_CLASS, mxREAL);
-			pINT16DataBackg  = mxGetPr(plhs[1]);
+			pINT16DataBackg  = mxGetInt16s(plhs[1]);
 		}
 		if(ndim == 2 || dims[2] == 1) {//onedimensional matrix	
 			if(withBackg)
@@ -252,11 +251,11 @@ void mexFunction(int nlhs, mxArray *plhs[],
 		}
 	} else if(mxIsUint16(prhs[0])) {
 		plhs[0] = mxCreateNumericArray(ndim, dims, mxUINT16_CLASS, mxREAL);
-		pUINT16DataIn = mxGetPr(prhs[0]);
-		pUINT16DataOut  = mxGetPr(plhs[0]);
+		pUINT16DataIn = mxGetUint16s(prhs[0]);
+		pUINT16DataOut  = mxGetUint16s(plhs[0]);
 		if(withBackg) {
 			plhs[1]  = mxCreateNumericArray(ndim, dims, mxUINT16_CLASS, mxREAL);
-			pUINT16DataBackg  = mxGetPr(plhs[1]);
+			pUINT16DataBackg  = mxGetUint16s(plhs[1]);
 		}
 		if(ndim == 2 || dims[2] == 1) {//onedimensional matrix		
 			if(withBackg)
@@ -276,11 +275,11 @@ void mexFunction(int nlhs, mxArray *plhs[],
 		}
 	} else if(mxIsInt32(prhs[0])) {
 		plhs[0] = mxCreateNumericArray(ndim, dims, mxINT32_CLASS, mxREAL);
-		pINT32DataIn = mxGetPr(prhs[0]);
-		pINT32DataOut  = mxGetPr(plhs[0]);
+		pINT32DataIn = mxGetInt32s(prhs[0]);
+		pINT32DataOut  = mxGetInt32s(plhs[0]);
 		if(withBackg) {
 			plhs[1]  = mxCreateNumericArray(ndim, dims, mxINT32_CLASS, mxREAL);
-			pINT32DataBackg  = mxGetPr(plhs[1]);
+			pINT32DataBackg  = mxGetInt32s(plhs[1]);
 		}
 		if(ndim == 2 || dims[2] == 1) {//onedimensional matrix
 			if(withBackg)
@@ -300,11 +299,11 @@ void mexFunction(int nlhs, mxArray *plhs[],
 		}
 	} else if(mxIsUint32(prhs[0])) {
 		plhs[0] = mxCreateNumericArray(ndim, dims, mxUINT32_CLASS, mxREAL);
-		pUINT32DataIn = mxGetPr(prhs[0]);
-		pUINT32DataOut  = mxGetPr(plhs[0]);
+		pUINT32DataIn = mxGetUint32s(prhs[0]);
+		pUINT32DataOut  = mxGetUint32s(plhs[0]);
 		if(withBackg) {
 			plhs[1]  = mxCreateNumericArray(ndim, dims, mxUINT32_CLASS, mxREAL);
-			pUINT32DataBackg  = mxGetPr(plhs[1]);
+			pUINT32DataBackg  = mxGetUint32s(plhs[1]);
 		}
 		if(ndim == 2 || dims[2] == 1) {//onedimensional matrix
 			if(withBackg) 
@@ -324,11 +323,11 @@ void mexFunction(int nlhs, mxArray *plhs[],
 		}
 	} else if(mxIsInt64(prhs[0])) { //64bit integer not supported up to now
 		plhs[0] = mxCreateNumericArray(ndim, dims, mxINT64_CLASS, mxREAL);
-		pINT64DataIn = mxGetPr(prhs[0]);
-		pINT64DataOut  = mxGetPr(plhs[0]);
+		pINT64DataIn = mxGetInt64s(prhs[0]);
+		pINT64DataOut  = mxGetInt64s(plhs[0]);
 		if(withBackg) {
 			plhs[1]  = mxCreateNumericArray(ndim, dims, mxINT64_CLASS, mxREAL);
-			pINT64DataBackg  = mxGetPr(plhs[1]);
+			pINT64DataBackg  = mxGetInt64s(plhs[1]);
 		}
 		if(ndim == 2 || dims[2] == 1) {//onedimensional matrix	
 			if(withBackg) 
@@ -348,11 +347,11 @@ void mexFunction(int nlhs, mxArray *plhs[],
 		}
 	} else if(mxIsUint64(prhs[0])) {
 		plhs[0] = mxCreateNumericArray(ndim, dims, mxUINT32_CLASS, mxREAL);
-		pUINT64DataIn = mxGetPr(prhs[0]);
-		pUINT64DataOut  = mxGetPr(plhs[0]);
+		pUINT64DataIn = mxGetUint64s(prhs[0]);
+		pUINT64DataOut  = mxGetUint64s(plhs[0]);
 		if(withBackg) {
 			plhs[1]  = mxCreateNumericArray(ndim, dims, mxUINT64_CLASS, mxREAL);
-			pUINT64DataBackg  = mxGetPr(plhs[1]);
+			pUINT64DataBackg  = mxGetUint64s(plhs[1]);
 		}
 		if(ndim == 2 || dims[2] == 1) {//onedimensional matrix	
 			if(withBackg) 
@@ -372,11 +371,11 @@ void mexFunction(int nlhs, mxArray *plhs[],
 		}
 	} else if(mxIsSingle(prhs[0])) {
 		plhs[0] = mxCreateNumericArray(ndim, dims, mxSINGLE_CLASS, mxREAL);
-		pFLOATDataIn = mxGetPr(prhs[0]);
-		pFLOATDataOut  = mxGetPr(plhs[0]);
+		pFLOATDataIn = mxGetSingles(prhs[0]);
+		pFLOATDataOut  = mxGetSingles(plhs[0]);
 		if(withBackg) {
 			plhs[1]  = mxCreateNumericArray(ndim, dims, mxSINGLE_CLASS, mxREAL);
-			pFLOATDataBackg  = mxGetPr(plhs[1]);
+			pFLOATDataBackg  = mxGetSingles(plhs[1]);
 		}
 		if(ndim == 2 || dims[2] == 1) {//onedimensional matrix	
 			if(withBackg) 
@@ -396,13 +395,15 @@ void mexFunction(int nlhs, mxArray *plhs[],
 		}
 	} else {
 		plhs[0] = mxCreateNumericArray(ndim, dims, mxDOUBLE_CLASS, mxREAL);
-		pDOUBLEDataIn = mxGetPr(prhs[0]);
-		pDOUBLEDataOut  = mxGetPr(plhs[0]);
+		pDOUBLEDataIn = mxGetDoubles(prhs[0]);
+		pDOUBLEDataOut  = mxGetDoubles(plhs[0]);
+
 		if(withBackg) {
 			plhs[1]  = mxCreateNumericArray(ndim, dims, mxDOUBLE_CLASS, mxREAL);
-			pDOUBLEDataBackg  = mxGetPr(plhs[1]);
+			pDOUBLEDataBackg  = mxGetDoubles(plhs[1]);
 		}
-		if(ndim == 2 || dims[2] == 1) {//onedimensional matrix	
+
+		if(ndim==2) {//onedimensional matrix	
 			if(withBackg) 
 				filterArrayReal64Back(pDOUBLEDataIn,pDOUBLEDataOut, pDOUBLEDataBackg, width, height,fP,nFilters);
 			else

@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Use the mapping tool
-parent: /video-processing/functionalities.html
-grand_parent: /video-processing.html
+parent: Functionalities
+grand_parent: Video processing
 nav_order: 2
 ---
 

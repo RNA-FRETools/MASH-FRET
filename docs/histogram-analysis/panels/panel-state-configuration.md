@@ -1,8 +1,8 @@
 ---
 layout: default
 title: State configuration
-parent: /histogram-analysis/panels.html
-grand_parent: /histogram-analysis.html
+parent: Panels
+grand_parent: Histogram analysis
 nav_order: 3
 ---
 
@@ -76,12 +76,12 @@ The
 [*BIC*](){: .math_var } is similar to a penalized likelihood and it is expressed such as:
 
 {: .equation }
-<img src="../../assets/images/equations/HA-eq-bic.gif" alt="BIC\left (J \right ) = p\left (J \right ) \times \textup{log}( N_{\textup{total}} ) - \textup{log}\left [ likelihood\left (J \right ) \right ]">
+<img src="../../assets/images/equations/HA-eq-bic.gif" alt="BIC\left (V \right ) = p\left (V \right ) \times \log ( M_{\textup{total}} ) - 2 \times \log \left [ likelihood\left (V \right ) \right ]">
 
 with 
 [*p*](){: .math_var } the number of parameters necessary to describe the model with 
-[*J*](){: .math_var } components and
-[*N*<sub>total</sub>](){: .math_var } the total number of counts in the histogram.
+[*V*](){: .math_var } components and
+[*M*<sub>total</sub>](){: .math_var } the total number of counts in the histogram.
 
 The number of parameters necessary to describe the model includes the number of Gaussian means 
 [*p*<sub>means</sub>](){: .math_var }, standard deviations 
@@ -89,7 +89,7 @@ The number of parameters necessary to describe the model includes the number of 
 [*p*<sub>weights</sub>](){: .math_var }, and is calculated such as:
 
 {: .equation }
-<img src="../../assets/images/equations/HA-eq-bic-02.gif" alt="p\left ( J\right ) = p_{\textup{means}} + p_{\textup{widths}} + p_{\textup{weights}} = 3J - 1">
+<img src="../../assets/images/equations/HA-eq-bic-02.gif" alt="p\left ( V\right ) = p_{\textup{means}} + p_{\textup{widths}} + p_{\textup{weights}} = 3V - 1">
 
 
 ---

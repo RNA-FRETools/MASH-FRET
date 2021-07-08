@@ -1,8 +1,7 @@
 function edit_TP_states_param2_Callback(obj, evd, h_fig)
 
-% Last update: by MH, 3.4.2019
-% >> adjust selected data index in popupmenu, chan_in, to shorter 
-%    popupmenu size when discretization is only applied to bottom traces
+% Last update by MH, 27.12.2020: add method vbFRET 2D
+% update by MH, 3.4.2019: adjust selected data index in popupmenu, chan_in, to shorter popupmenu size when discretization is only applied to bottom traces
 
 h = guidata(h_fig);
 p = h.param.ttPr;
@@ -22,11 +21,11 @@ if ~isempty(p.proj)
         end
     end
     
-    if sum(double(method == [2,4]))
+    if sum(double(method == [2,3,5]))
         val = round(str2num(get(obj, 'String')));
         set(obj, 'String', num2str(val));
     
-        if method == 2 % VbFRET
+        if method==2 || method==3 % VbFRET
             minVal = p.proj{proj}.curr{mol}{4}{2}(method,1,chan_in);
             maxVal = Inf;
         else
@@ -42,8 +41,12 @@ if ~isempty(p.proj)
                 case 2 % VbFRET
                     updateActPan(cat(2,'Maximum number of states must be ',...
                         '>= ',num2str(minVal)),h_fig,'error');
+                    
+                case 3 % VbFRET
+                    updateActPan(cat(2,'Maximum number of states must be ',...
+                        '>= ',num2str(minVal)),h_fig,'error');
 
-                case 4 % CPA
+                case 5 % CPA
                     updateActPan('Confidence level must be >= 0 and <= 100', ...
                         h_fig, 'error');
             end

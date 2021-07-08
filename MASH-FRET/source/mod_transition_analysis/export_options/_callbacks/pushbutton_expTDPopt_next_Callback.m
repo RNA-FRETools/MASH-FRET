@@ -16,7 +16,7 @@ close(h_fig_opt);
 
 if iscell(obj)
     file_out = obj;
-    saveTDP(h_fig,file_out);
+    exportTA(h_fig,file_out);
 else
-    saveTDP(h_fig);
+    exportTA(h_fig);
 end
