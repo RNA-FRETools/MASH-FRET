@@ -18,17 +18,17 @@ proj = p.curr_proj;
 tpe = p.curr_type(proj);
 tag = p.curr_tag(proj);
 curr = p.proj{proj}.curr{tag,tpe};
-trs = curr.kin_start{2}(2);
-strch = curr.kin_start{1}{trs,1}(1);
+v = curr.lft_start{2}(2);
+strch = curr.lft_start{1}{v,1}(2);
 if strch
     n = 1;
 else
-    n = p.proj{proj}.curr{tag,tpe}.kin_start{1}{trs,1}(3);
+    n = p.proj{proj}.curr{tag,tpe}.lft_start{1}{v,1}(4);
 end
 
-p.proj{proj}.curr{tag,tpe}.kin_start{1}{trs,2}(n,2) = val;
+p.proj{proj}.curr{tag,tpe}.lft_start{1}{v,2}(n,2) = val;
 
 h.param.TDP = p;
 guidata(h_fig, h);
 
-ud_kinFit(h_fig);
+ud_fitSettings(h_fig);

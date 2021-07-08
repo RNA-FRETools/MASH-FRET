@@ -5,13 +5,14 @@ function def = setDefPrm_traces(p, proj)
 % "def" >> 1-by-n cell array containing molecule parameters for each of ...
 %          the n panels
 
-% Last update by MH, 15.1.2020: add parameter tolerance in photobleaching-based gamma calculation parameters
-% update by MH, 14.1.2020: (1) make parameters for gamma/beta factor calculations dependent on the FRET pair (necessary for ES histograms)
-% update 13.1.2020 by MH: (1) add beta factors (2) move bleethrough and direct excitation coefficients from molecule to general parameters
-% update 10.1.2020 by MH: (1) separate parameters for factor corrections from cross-talks: store parameters for factor corrections in 6th cell
-% update 3.4.2019 by MH: (1) correct default value for bottom axes plot (2) change default state finding algorithm to STaSI
-% update 29.3.2019 by MH: (1) change bleedthrough coefficient (mol{5}{1}) structure: coefficients are independant of laser (2) change direct excitation coefficient (mol{5}{2}) structure: direct excitation possible by every laser but emitter-specific illumination (nExc-1) and is calculated only based on emitter intensities at emitter-specific laser (possibility to choose another laser was removed)
-% update 28.4.2014 by MH
+% Last update 23.12.2020 by MH: add method vbFRET 2D
+% update 15.01.2020 by MH: add parameter tolerance in photobleaching-based gamma calculation parameters
+% update 14.01.2020 by MH: (1) make parameters for gamma/beta factor calculations dependent on the FRET pair (necessary for ES histograms)
+% update 13.01.2020 by MH: (1) add beta factors (2) move bleethrough and direct excitation coefficients from molecule to general parameters
+% update 10.01.2020 by MH: (1) separate parameters for factor corrections from cross-talks: store parameters for factor corrections in 6th cell
+% update 03.04.2019 by MH: (1) correct default value for bottom axes plot (2) change default state finding algorithm to STaSI
+% update 29.03.2019 by MH: (1) change bleedthrough coefficient (mol{5}{1}) structure: coefficients are independant of laser (2) change direct excitation coefficient (mol{5}{2}) structure: direct excitation possible by every laser but emitter-specific illumination (nExc-1) and is calculated only based on emitter intensities at emitter-specific laser (possibility to choose another laser was removed)
+% update 28.04.2014 by MH
 
 if ~isfield(p, 'defProjPrm')
     p.defProjPrm = [];
@@ -162,16 +163,17 @@ end
 
 % DTA
 if nFRET > 0 || nS > 0
-    mol{4}{1} = [5 1 0]; % method/apply to FRET/recalc states;
+    mol{4}{1} = [6 1 0]; % method/apply to FRET/recalc states;
 else
-    mol{4}{1} = [5 0 0];
+    mol{4}{1} = [6 0 0];
 end
 
 for i = 1:nFRET
 
     mol{4}{2}(:,:,i) = ...
-        [2  0  0 2 0 0 0 %   Thresholds J   ,none,none,tol ,refine,bin, blurr
-         1  2  5 2 0 0 0 %   vbFRET     minJ,maxJ,prm1,tol ,refine,bin, blurr
+        [2  0  0 2 0 0 0 %   Thresholds	J,none,none,tol ,refine,bin, blurr
+         1  2  5 2 0 0 1 %   vbFRET-1D	minJ,maxJ,prm1,tol ,refine,bin, blurr
+         1  2  5 2 0 0 1 %   vbFRET-2D	minJ,maxJ,prm1,tol ,refine,bin, blurr
          1  0  0 0 0 0 0 %   One state  none,none,none,none,none  ,none,none
          50 90 2 2 0 0 0 %   CPA        prm1,prm2,prm3,tol ,refine,bin, blurr
          2  0  0 2 0 0 0]; % STaSI      maxJ,none,none,tol ,refine,bin, blurr
@@ -185,8 +187,9 @@ end
 for i = 1:nS
     
     mol{4}{2}(:,:,nFRET+i) = ...
-        [2  0  0 2 0 0 0 %   Thresholds J   ,none,none,tol ,refine,bin, blurr
-         1  2  5 2 0 0 0 %   vbFRET     minJ,maxJ,prm1,tol ,refine,bin, blurr
+        [2  0  0 2 0 0 0 %   Thresholds J,none,none,tol ,refine,bin, blurr
+         1  2  5 2 0 0 1 %   vbFRET-1D	minJ,maxJ,prm1,tol ,refine,bin, blurr
+         1  2  5 2 0 0 1 %   vbFRET-2D	minJ,maxJ,prm1,tol ,refine,bin, blurr
          1  0  0 0 0 0 0 %   One state  none,none,none,none,none  ,none,none
          50 90 2 2 0 0 0 %   CPA        prm1,prm2,prm3,tol ,refine,bin, blurr
          2  0  0 2 0 0 0]; % STaSI      maxJ,none,none,tol ,refine,bin, blurr
@@ -203,7 +206,8 @@ for j = 1:nExc
     for i = 1:nChan
         mol{4}{2}(:,:,nFRET+nS+(j-1)*nChan+i) = ...
             [2  0  0 2 0 0 0 %   Thresholds J   ,none,none,tol ,refine,bin, blurr
-             1  2  5 2 0 0 0 %   vbFRET     minJ,maxJ,prm1,tol ,refine,bin, blurr
+             1  2  5 2 0 0 1 %   vbFRET-1D	minJ,maxJ,prm1,tol ,refine,bin, blurr
+             1  2  5 2 0 0 1 %   vbFRET-2D	minJ,maxJ,prm1,tol ,refine,bin, blurr
              1  0  0 0 0 0 0 %   One state  none,none,none,none,none  ,none,none
              50 90 2 2 0 0 0 %   CPA        prm1,prm2,prm3,tol ,refine,bin, blurr
              2  0  0 2 0 0 0]; % STaSI      maxJ,none,none,tol ,refine,bin, blurr

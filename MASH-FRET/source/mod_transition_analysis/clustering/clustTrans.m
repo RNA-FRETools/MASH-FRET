@@ -344,6 +344,16 @@ for J = Jmin:Jmax
         end
     end
     
+    % add cluster assignment for last state in state sequences
+    dt_bin_new = [];
+    for n = mols'
+        dt_bin_n = dt_bin_j(dt_bin_j(:,4)==n,:);
+        if size(dt_bin_n,1)>1 % ignore static molecules
+            dt_bin_n(end,[7 8]) = dt_bin_n(end-1,8);
+        end
+        dt_bin_new = cat(1,dt_bin_new,dt_bin_n);
+    end
+    
     dt_bin_new = dt_bin_j;
 
     if isempty(dt_bin_new)

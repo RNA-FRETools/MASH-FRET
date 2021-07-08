@@ -13,7 +13,8 @@ lbl0 = 'All panels';
 lbl1 = 'project management area';
 lbl2 = 'panel "Transition density plot"';
 lbl3 = 'panel "State configuration"';
-lbl4 = 'panel "State transition rates"';
+lbl4 = 'panel "State lifetimes"';
+lbl5 = 'panel "Kinetic model"';
 
 % parents
 h_fig = h.figure_MASH;
@@ -33,4 +34,7 @@ h.menu_TA_stateConfigurationTest = uimenu(h_men,'label',lbl3,'callback',...
     {@menu_routineTest_Callback,'ta','state configuration',h_fig});
 
 h.menu_TA_stateTranditionRatesTest = uimenu(h_men,'label',lbl4,'callback',...
-    {@menu_routineTest_Callback,'ta','state transition rates',h_fig});
+    {@menu_routineTest_Callback,'ta','state lifetimes',h_fig});
+
+h.menu_TA_kineticModelTest = uimenu(h_men,'label',lbl5,'callback',...
+    {@menu_routineTest_Callback,'ta','kinetic model',h_fig});

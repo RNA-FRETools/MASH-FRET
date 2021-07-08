@@ -11,7 +11,7 @@ function h = buildMenuRoutine(h)
 
 % default
 lbl0 = 'Test interface';
-lbl1 = 'Kinsoft challenge';
+lbl1 = 'Standard kinetic analysis';
 
 % parents
 h_men = h.menu_routine;
@@ -20,6 +20,6 @@ h_men = h.menu_routine;
 h.menu_testInterface = uimenu(h_men,'label',lbl0);
 h = buildMenuTestInterface(h);
 
-h.menu_kinsoftChallenge = uimenu(h_men,'label',lbl1);
-h = buildMenuKinsoftChallenge(h);
+h.menu_kineticAnalysis = uimenu(h_men,'label',lbl1);
+h = buildMenuKineticAnalysis(h);
 

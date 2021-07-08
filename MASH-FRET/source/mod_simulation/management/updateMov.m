@@ -97,6 +97,7 @@ Iacc_id = {};
 Idon = {};
 Idon_id = {};
 discr = cell(1,N);
+discr_blurr = cell(1,N);
 
 genNewCoord = isempty(p.coord);
 if genNewCoord
@@ -124,29 +125,31 @@ for n = 1:N
     end
     fretVal(fretVal<0) = 0;
     fretVal(fretVal>1) = 1;
+    
+    discr{n} = discr_seq{n};
+    discr{n}(discr{n}>=0) = fretVal(discr_seq{n}(discr_seq{n}>=0));
+    discr_blurr{n} = sum(repmat(fretVal',[1 size(mix{n},2)]).*mix{n},1)';
+    discr_blurr{n}(discr_blurr{n}<0 | isnan(discr_blurr{n})) = -1;
 
-    discr{n} = sum(repmat(fretVal',[1 size(mix{n},2)]).*mix{n},1)';
-    discr{n}(discr{n}<0 | isnan(discr{n})) = -1;
-
-    if impPrm && isfield(molPrm,'totInt');
+    if impPrm && isfield(molPrm,'totInt')
         I_sum = random('norm',molPrm.totInt(n),molPrm.totInt_width(n));
     else
         I_sum = random('norm',totInt,Itot_w);
     end
     I_sum(I_sum<0) = 0;
 
-    if impPrm && isfield(molPrm,'gamma');
+    if impPrm && isfield(molPrm,'gamma')
         g_mol = random('norm',molPrm.gamma(n),molPrm.gammaW(n));
     else
         g_mol = random('norm',gamma,gammaW);
     end
     g_mol(g_mol<0) = 0;
 
-    Iacc_id{size(Iacc_id,2)+1} = discr{n}*I_sum;
+    Iacc_id{size(Iacc_id,2)+1} = discr_blurr{n}*I_sum;
     Iacc_id{size(Iacc_id,2)}(Iacc_id{size(Iacc_id,2)}==-I_sum) = 0;
     Iacc{size(Iacc,2)+1} = Iacc_id{size(Iacc_id,2)};
 
-    Idon_id{size(Idon_id,2)+1} = (1-discr{n})*I_sum;
+    Idon_id{size(Idon_id,2)+1} = (1-discr_blurr{n})*I_sum;
     Idon_id{size(Idon_id,2)}(Idon_id{size(Idon_id,2)}==2*I_sum) = 0;
 
     % inversed gamma correction for the different quantum and detection efficiencies of donor and acceptor 
@@ -154,12 +157,13 @@ for n = 1:N
     Idon{size(Idon,2)+1} = Idon_id{size(Idon_id,2)}/g_mol;
 end
 
-discr_seq = discr_seq(1:N);
 discr = discr(1:N);
+discr_seq = discr_seq(1:N);
+discr_blurr = discr_blurr(1:N);
 
 % save results
 h.param.sim.coord = coord;
 h.results.sim.dat = {Idon Iacc coord};
-h.results.sim.dat_id = {Idon_id Iacc_id discr discr_seq};
+h.results.sim.dat_id = {Idon_id Iacc_id discr_blurr discr discr_seq};
 guidata(h_fig, h);
 

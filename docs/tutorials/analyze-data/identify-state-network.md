@@ -2,8 +2,8 @@
 layout: default
 title: Step 3
 subtitle: Identify state network
-grand_parent: /tutorials.html
-parent: /tutorials/analyze-data.html
+grand_parent: Tutorials
+parent: Analyze data
 nav_order: 3
 has_toc: false
 nav_exclude: true

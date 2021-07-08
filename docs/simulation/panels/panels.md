@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Panels
-parent: /simulation.html
+parent: Simulation
 nav_order: 4
 has_children: true
 numbered_toc: true

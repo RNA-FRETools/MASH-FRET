@@ -127,8 +127,9 @@ Iacc = dat{2};
 coord = dat{3};
 Idon_id = dat_id{1};
 Iacc_id = dat_id{2};
-discr = dat_id{3};
-discr_seq = dat_id{4};
+discr_blurr = dat_id{3};
+discr = dat_id{4};
+discr_seq = dat_id{5};
 L = size(Idon{1},1);
 
 if isMov || isAvi || isMatTr || isAsciiTr
@@ -298,12 +299,13 @@ if isMatTr || isAsciiTr || isDt
             % format data
             FRET = Iacc_out./(Iacc_out+Idon_out);
             output = [timeAxis,frameAxis,Idon_out,Iacc_out,Idon_id{n},...
-                Iacc_id{n},FRET,discr{n},discr_seq{n}];
+                Iacc_id{n},FRET,discr_blurr{n},discr{n},discr_seq{n}];
+            output = output(discr{n}>=0,:);
             fmt_coord = cat(2,'coordinates ',repmat('\t%0.2f',[1,4]),'\n');
             str_head = cat(2,'time(s)\tframe\tIdon noise(',units,...
                 ')\tIacc noise(',units,')\tIdon ideal(',units,')\t',...
-                'Iacc ideal(',units,')\tFRET\tFRET ideal\t',...
-                'state sequence\n'); 
+                'Iacc ideal(',units,')\tFRET\tFRET ideal (blurr)\t',...
+                'FRET ideal\tstate sequence\n'); 
             str_output = repmat('%d\t',[1,size(output,2)]);
             str_output(end) = 'n';
             

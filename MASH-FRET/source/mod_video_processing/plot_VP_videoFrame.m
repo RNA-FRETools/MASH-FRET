@@ -7,7 +7,7 @@ function h_img = plot_VP_videoFrame(h_axes, h_cb, img, chansplit, p)
 % h_cb: handle to color bar
 % img: current video frame
 % chansplit: positions on x-axis of channel splitting
-% p: structure containing processing paarmeters and spots coordinates
+% p: structure containing processing parameters and spots coordinates
 % h_img: handle to image plot
 
 % defaults

@@ -1,5 +1,5 @@
 function [x_res, bestOut] = discr_vbFRET(kmin, K, I, data, h_fig, lb, ...
-    mute_action)
+    mute_action, D)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % This is a command line version of vbFRET which will anlayze the raw
@@ -32,11 +32,8 @@ function [x_res, bestOut] = discr_vbFRET(kmin, K, I, data, h_fig, lb, ...
     % parameter settings
     %%%%%%%%%%%%%%%%%%%%%
     
-    x_res = [];
+    x_res = {};
     bestOut = [];
-
-    % analyze data in 1D or 2D
-    D = 1;
     
     for i = 1:size(data,2)
         if size(data{1},2) == 2
@@ -182,9 +179,9 @@ function [x_res, bestOut] = discr_vbFRET(kmin, K, I, data, h_fig, lb, ...
         end
         [o, best] = max(maxLP);
         if ~isempty(x_hat{n,best})
-            x_res(n,:) = x_hat{n,best};
+            x_res{n} = x_hat{n,best};
         else
-            x_res(n,:) = ones(size(data{n}))*mean(data{n});
+            x_res{n} = ones(size(data{n}))*mean(data{n});
         end
     end
     if ~mute_action

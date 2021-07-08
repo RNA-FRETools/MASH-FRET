@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Background correction
-parent: /trace-processing/panels.html
-grand_parent: /trace-processing.html
+parent: Panels
+grand_parent: Trace processing
 nav_order: 5
 ---
 

@@ -1,11 +1,11 @@
 function h = buildPanelTAselectTool(h,p)
 % h = buildPanelTAselectTool(h,p);
 %
-% Builds title-less panel for tool selection in "Transition analysis" module.
+% Builds toggle panel for tool selection in "Transition analysis" module.
 %
 % h: structure to update with handles to new UI components and that must contain fields:
 %   h.figure_MASH: handle to main figure
-%   h.uipanel_TA_selectTool: handle to title-less panel for tool selection
+%   h.uipanel_TA_selectTool: handle to toggle panel for tool selection
 % p: structure containing default and often-used parameters which must contain fields:
 %   p.posun: position units
 %   p.fntun: font size units

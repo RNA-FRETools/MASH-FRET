@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Functionalities
-parent: /histogram-analysis.html
+parent: Histogram analysis
 nav_order: 3
 has_children: true
 permalink: /histogram-analysis/functionalities.html

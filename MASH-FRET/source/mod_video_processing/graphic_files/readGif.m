@@ -69,7 +69,7 @@ if strcmp(n, 'all')
             'time traces.');
         setContPan(str,'warning',h_fig);
 
-        [data,ok] = readGif(fullFname,1,fDat,h_fig,0);
+        [data,ok] = readGif(fullFname,1,h_fig,0);
         frameCur = data.frameCur;
         
     else

@@ -18,8 +18,8 @@ if mat==1
 else
     J = get(h.popupmenu_tdp_model,'Value');
 end
-curr.kin_start{2}(1) = J;
-curr = ud_kinPrm(curr,def,curr.kin_start{2}(1));
+curr.lft_start{2}(1) = J;
+curr = ud_kinPrm(curr,def,curr.lft_start{2}(1));
 
 h.param.TDP.proj{proj}.prm{tag,tpe} = curr;
 h.param.TDP.proj{proj}.curr{tag,tpe} = curr;

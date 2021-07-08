@@ -25,6 +25,7 @@ if ~isempty(p.proj)
     mov_file = p.proj{proj}.movie_file;
     fCurs = p.proj{proj}.movie_dat{1};
     L = p.proj{proj}.movie_dat{3};
+    L_adj = nExc*L_ex;
             
     split = round(res_x/nChan)*(1:nChan-1);
     lim_x = [0 split res_x];
@@ -46,7 +47,7 @@ if ~isempty(p.proj)
 
             I = nan(L_ex,1,nExc);
             for i = 1:nExc
-                I(:,1,i) = trace(i:nExc:L,:);
+                I(:,1,i) = trace(i:nExc:L_adj,:);
             end
 
             p.proj{proj}.coord(mol,(2*c-1):2*c) = new_coord;

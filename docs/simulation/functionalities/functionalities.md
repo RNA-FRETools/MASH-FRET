@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Functionalities
-parent: /simulation.html
+parent: Simulation
 nav_order: 3
 has_children: true
 permalink: /simulation/functionalities.html

@@ -13,7 +13,7 @@ function exportSimLogFile(fpath,h)
 %  "PRESETS", "MOLECULES", "EXPERIMENTAL SETUP" and "EXPORT OPTIONS"
 
 % defaults
-yesno = {'yes','no'};
+yesno = {'no','yes'};
 units_ic = 'ic';
 units_pc = 'pc';
 

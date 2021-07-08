@@ -20,13 +20,13 @@ proj = p.curr_proj;
 tag = p.curr_tag(proj);
 tpe = p.curr_type(proj);
 prm = p.proj{proj}.prm{tag,tpe};
-kin_res = prm.kin_res(j,:);
-kin_start = prm.kin_start{1}(j,:);
-strch = kin_start{1}(1);
-nExp = kin_start{1}(2);
-histspl =  kin_res{5}{1};
-fitres = kin_res{5}{2}; 
-nSpl = size(kin_res{5}{1},2);
+lft_res = prm.lft_res(j,:);
+lft_start = prm.lft_start{1}(j,:);
+strch = lft_start{1}(2);
+nExp = lft_start{1}(3);
+histspl =  lft_res{5}{1};
+fitres = lft_res{5}{2}; 
+nSpl = size(lft_res{5}{1},2);
 
 if loading_bar('init', h_fig, ceil(nSpl/3), ['Build *.pdf figures of ' ...
         'bootstrapped histograms ...'])

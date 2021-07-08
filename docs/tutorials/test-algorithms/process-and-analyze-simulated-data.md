@@ -1,8 +1,9 @@
 ---
 layout: default
-title: Process and analyze simulated data
-grand_parent: /tutorials.html
-parent: /tutorials/test-algorithms.html
+title: Step 3
+subtitle: Process and analyze simulated data
+grand_parent: Tutorials
+parent: Test algorithms
 nav_order: 3
 nav_exclude: true
 has_toc: false
@@ -16,6 +17,11 @@ has_toc: false
 Follow this procedure to determine the optimal methods and method parameters to analyse your data.
 
 **Note:** *Step 1 is optional and concerns only the case where an algorithm is tested and optimized for particular experimental data*
+
+{% include tutorial_toc.html %}
+
+
+---
 
 {% include tutorial_head.html %}
 

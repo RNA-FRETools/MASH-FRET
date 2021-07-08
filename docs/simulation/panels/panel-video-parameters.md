@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Video parameters
-parent: /simulation/panels.html
-grand_parent: /simulation.html
+parent: Panels
+grand_parent: Simulation
 nav_order: 1
 ---
 

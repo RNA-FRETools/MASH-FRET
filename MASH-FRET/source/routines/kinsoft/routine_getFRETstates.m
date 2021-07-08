@@ -1,11 +1,12 @@
-function states = routine_getFRETstates(pname,fname,Js,h_fig)
-% states = routine_getFRETstates(pname,fname,Js,h_fig)
+function states = routine_getFRETstates(pname,fname,Js,gaussNoise,h_fig)
+% states = routine_getFRETstates(pname,fname,Js,gaussNoise,h_fig)
 %
 % Analyze data of Kinsoft challenge to find FRET states and associated deviations
 %
 % pname: source directory
 % fname: .mash source file name
 % Js: [1-by-nJ] optimum number of states
+% gaussNoise: noise in FRET trajectories in Gaussian-distributed
 % h_fig: handle to main figure
 % states: {1-by-nJ} [J-by-2] FRET states and associated deviations
 
@@ -13,7 +14,13 @@ function states = routine_getFRETstates(pname,fname,Js,h_fig)
 states = {};
 
 % defauts
-meth = 2; % state finding method index in list (vbFRET)
+if gaussNoise
+    meth = 2; % 1D-vbFRET (Gaussian noise)
+    str_meth = 'vbFRET';
+else
+    meth = 6; % STaSI (other noise)
+    str_meth = 'STaSI';
+end
 Jmin = 1; % minimum number of states to find in traces
 iter = 10; % number of vbFRET iterations
 trace = 1; % index in list of traces to apply state finding algorithm to (bottom traces)
@@ -46,7 +53,7 @@ disp(cat(2,'>>>> import ',fname_mashIn,' in Trace processing...'));
 switchPan(h.togglebutton_TP,[],h_fig);
 pushbutton_addTraces_Callback({p.dumpdir,fname_mashIn},[],h_fig);
 
-disp('>>>> process single FRET traces with vbFRET...');
+disp(['>>>> process single FRET traces with ',str_meth,'...']);
 
 % set interface to default values
 setDef_kinsoft_TP(p,h_fig);
@@ -55,9 +62,13 @@ setDef_kinsoft_TP(p,h_fig);
 for Jmax = Js
     fprintf('>>>>>> process with Jmax=%i...\n',Jmax);
     
-    p.fsPrm(meth,1,:) = Jmin;
-    p.fsPrm(meth,2,:) = Jmax;
-    p.fsPrm(meth,3,:) = iter;
+    if meth==2 % vbFRET
+        p.fsPrm(meth,1,:) = Jmin;
+        p.fsPrm(meth,2,:) = Jmax;
+        p.fsPrm(meth,3,:) = iter;
+    else % STaSI
+        p.fsPrm(meth,1,:) = Jmax;
+    end
     p.fsPrm(meth,7,:) = deblurr;
     set_TP_findStates(meth,trace,p.fsPrm,p.fsThresh,p.nChan,p.nL,h_fig);
     pushbutton_applyAll_DTA_Callback(h.pushbutton_applyAll_DTA,[],h_fig);
@@ -119,13 +130,22 @@ for Jmax = Js
     tag = q.curr_tag(proj);
     prm = q.proj{proj}.prm{tag,tpe};
     res = prm.clst_res{1};
+    mu = res.mu{Jmax};
+    bin = prm.lft_start{2}(3);
     K = getClusterNb(Jmax,p.clstConfig(1),p.clstConfig(2));
     [j1,j2] = getStatesFromTransIndexes(1:K,Jmax,p.clstConfig(1),...
         p.clstConfig(2));
-    states_J = [res.mu{Jmax}(1:Jmax,2),zeros(Jmax,1)];
-    for j = 1:Jmax
-        states_J(j,2) = (mean(sqrt(res.o{Jmax}(1,1,j1==j & j2~=j))) + ...
-            mean(sqrt(res.o{Jmax}(2,2,j2==j & j1~=j))))/2;
+    [stateVals,jbin] = binStateValues(mu,bin,[j1,j2]);
+    V = size(stateVals,1);
+    states_J = [stateVals,zeros(V,1)];
+    for v = 1:V
+        ox = [];
+        oy = [];
+        for j = jbin{v}
+            ox = cat(2,ox,mean(sqrt(res.o{Jmax}(1,1,j1==j & j2~=j))));
+            oy = cat(2,oy,mean(sqrt(res.o{Jmax}(2,2,j2==j & j1~=j))));
+        end
+        states_J(v,2) = mean([ox,oy]);
     end
     states = cat(2,states,states_J);
     

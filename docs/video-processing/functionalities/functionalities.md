@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Functionalities
-parent: /video-processing.html
+parent: Video processing
 nav_order: 3
 has_children: true
 permalink: /video-processing/functionalities.html

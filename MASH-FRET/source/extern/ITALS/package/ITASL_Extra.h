@@ -135,10 +135,10 @@ struct trackSetup{
 	EXPORT bool SetupAndTrackData(double *data, struct trackSetup* config, bool bIOistransposed);
 
 	//get width of the tracjetory data
-	EXPORT signed __int32 getTSizeX();
+	EXPORT signed int getTSizeX();
 
 	//get height of the tracjetory data
-	EXPORT signed __int32 getTSizeY();
+	EXPORT signed int getTSizeY();
 
 	//gets trajectory data and resets spottracker
 	EXPORT void getTData(double *Tdata);
@@ -167,9 +167,9 @@ struct trackSetup{
 
 	EXPORT void getDataUInt16(unsigned short *data, struct fileInfo* fI);
 
-	EXPORT void getDataInt32(signed __int32 *data, struct fileInfo* fI);
+	EXPORT void getDataInt32(signed int *data, struct fileInfo* fI);
 
-	EXPORT void getDataUInt32(unsigned __int32 *data, struct fileInfo* fI);
+	EXPORT void getDataUInt32(unsigned int *data, struct fileInfo* fI);
 
 	EXPORT void getDataReal32(float *data, struct fileInfo* fI);
 
