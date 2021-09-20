@@ -2,7 +2,7 @@
 
 
 ## What is MASH-FRET?
-MASH-FRET is a GUI-based software package written in **Matlab** for the analysis of **single-molecule FRET trajectories**. The framework encompasses the entire workflow from spot detection and trace processing to histogram and dwell time analysis. The program is structured in five modules:
+MASH-FRET is a GUI-based software package mainly written in **Matlab** for the analysis of **single-molecule FRET trajectories**. The framework encompasses the entire workflow from spot detection and trace processing to histogram and dwell time analysis. The program is structured in five modules:
 - Simulation
 - Movie Processing
 - Trace Processing
@@ -19,7 +19,7 @@ git clone https://github.com/RNA-FRETools/MASH-FRET.git
 ```
 Within Matlab, add MASH-FRET to your path by going to `Home → Set Path → Add with Subfolders`
 
-**Note:** *MASH-FRET is tested to run under Matlab version R2011a and above*
+**Note:** ***MASH-FRET 1.3.1** and above are tested to run under Matlab version R2020b on Windows 8.1 and Linux-Unbuntu 20.04. Earlier releases were tested under Matlab 2016a on Windows 8.1*
 
 ## Documentation
 

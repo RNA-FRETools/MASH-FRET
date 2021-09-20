@@ -1,9 +1,9 @@
 ---
 layout: default
 title: (*.spots) Spotfinder coordinates
-parent: /output-files.html
-nav_order: 24
+parent: Output files
 nav_exclude: 1
+nav_order: 25
 ---
 
 <img src="../assets/images/logos/logo-output-files_400px.png" width="170" style="float:right; margin-left: 15px;"/>

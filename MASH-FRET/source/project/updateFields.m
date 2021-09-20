@@ -151,9 +151,7 @@ end
 
 if strcmp(opt, 'TDP') || strcmp(opt, 'all')
     set(h.edit_TDPcontPan, 'Enable', 'inactive');
-    
-    updateTAplots(h_fig);
-    
+
     p = h.param.TDP;
     if ~isempty(p.proj)
         set([h.listbox_TDPprojList h.pushbutton_TDPremProj ...
@@ -164,6 +162,7 @@ if strcmp(opt, 'TDP') || strcmp(opt, 'all')
         ud_TDPplot(h_fig);
         ud_TDPmdlSlct(h_fig);
         ud_kinFit(h_fig);
+        ud_kinMdl(h_fig)
         
         h = guidata(h_fig);
 
@@ -171,10 +170,13 @@ if strcmp(opt, 'TDP') || strcmp(opt, 'all')
         setProp(get(h.uipanel_TA, 'Children'), 'Enable', 'off');
         set([h.pushbutton_help h.pushbutton_TDPimpOpt ...
             h.pushbutton_TDPaddProj], 'Enable', 'on');
-        set(h.listbox_TDPtrans, 'String', {''}, 'Value', 1);
+        set(h.popupmenu_TA_slStates, 'String', {'Select a state value'}, ...
+            'Value', 1);
         set([h.axes_TDPplot1 h.colorbar_TA h.axes_TDPplot2 h.axes_TDPcmap ...
             h.axes_tdp_BIC], 'Visible', 'off');
     end
+    
+    updateTAplots(h_fig);
 end
 
 guidata(h_fig, h);

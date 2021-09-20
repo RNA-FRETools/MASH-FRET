@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Find states
-parent: /trace-processing/panels.html
-grand_parent: /trace-processing.html
+parent: Panels
+grand_parent: Trace processing
 nav_order: 10
 ---
 
@@ -33,10 +33,11 @@ Use this menu to select the state finding algorithm.
 State finding algorithm are applied to the traces selected in 
 [Data to discretize](#data-to-discretize).
 
-Five state finding algorithms are available and are described in the following sections:
+Six state finding algorithms are available and are described in the following sections:
 
 * [`Thresholds`](#thresholds)
 * [`vbFRET`](#vbfret) [<sup>1</sup>](#references)
+* [`vbFRET-2D`](#vbfret-2d) [<sup>1</sup>](#references)
 * [`One state`](#one-state)
 * [`CPA`](#cpa) [<sup>2</sup>](#references)
 * [`STaSI`](#stasi) [<sup>3</sup>](#references)
@@ -44,7 +45,7 @@ Five state finding algorithms are available and are described in the following s
 After selecting an algorithm, set the corresponding parameters in 
 [Method parameters](#method-parameters).
 
-The MATLAB scripts for method `vbFRET` was  downloaded from 
+The MATLAB scripts for methods `vbFRET` and `vbFRET-2D` were  downloaded from 
 [vbFRET sourceforge](http://vbfret.sourceforge.net/) page.
 
 The MATLAB scripts for method `STaSI` was downloaded from 
@@ -86,6 +87,21 @@ This can be corrected by using the post processing method
 [State binning](#state-binning).
 
 
+### vbFRET-2D
+{: .no_toc }
+
+The vbFRET-2D 
+[<sup>1</sup>](#references) algorithm functions as 
+[vbFRET](#vbfret) but analyzes the donor and acceptor intensities instead of the FRET signal.
+It looks for states hidden in 2D-Gaussian noise.
+
+When state transitions occur within a time bin, the averaged value can be detected as a transient artefactual state, or "blurr state".
+This can be corrected by using the post processing method 
+[Remove blurr states](#remove-blurr-states).
+
+Moreover, if the noise distribution in the time trace deviates from a Gaussian distribution, recurrent low-amplitude transition to artefactual states might occurs. 
+This can be corrected by using the post processing method 
+[State binning](#state-binning).
 
 
 ### One state
@@ -158,13 +174,13 @@ Use this interface to define settings of the [Discretization method](#discretiza
 Parameters are specific to each time-trace.
 Select the time trace in menu **(a)** to configure the method for and set parameters in **(b-h)** as described in the table below.
 
-| method                                         | parametrization                                                                                                                                                                                                     | default parameters                |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
-| `Threshold`                                    | **(b)**: maximum number of states, **(e)**: state, **(f)**: state's lower threshold, **(g)**: state's value, **(h)**: state's higher threshold                                                                      | **(f)**=3, **(g)**=3, **(h)**=3   |
-| `vbFRET` [<sup>1</sup>](#references)           | **(b)**: minimum number of states , **(c)**: maximum number of states, **(d)**: number of process iterations                                                                                                        | **(b)**=1, **(c)**=2, **(d)**=5   |
-| `One state`                                    | no parameter to be set                                                                                                                                                                                              |                                   |
-| `CPA` [<sup>2</sup>](#references)              | **(b)**: number of bootstrap samples, **(c)**: confidence level to identify a transition (%), **(d)**: change point localization by (1) maximum jump amplitude, or (2) minimum RMSE before and after change point   | **(b)**=50, **(c)**=90, **(d)**=2 |
-| `STaSI` [<sup>3</sup>](#references)            | **(b)**: maximum number of states                                                                                                                                                                                   | **(b)**=2                         |
+| method                                               | parametrization                                                                                                                                                                                                     | default parameters                |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| `Threshold`                                          | **(b)**: maximum number of states, **(e)**: state, **(f)**: state's lower threshold, **(g)**: state's value, **(h)**: state's higher threshold                                                                      | **(f)**=3, **(g)**=3, **(h)**=3   |
+| `vbFRET` and `vbFRET-2D` [<sup>1</sup>](#references) | **(b)**: minimum number of states , **(c)**: maximum number of states, **(d)**: number of process iterations                                                                                                        | **(b)**=1, **(c)**=2, **(d)**=5   |
+| `One state`                                          | no parameter to be set                                                                                                                                                                                              |                                   |
+| `CPA` [<sup>2</sup>](#references)                    | **(b)**: number of bootstrap samples, **(c)**: confidence level to identify a transition (%), **(d)**: change point localization by (1) maximum jump amplitude, or (2) minimum RMSE before and after change point   | **(b)**=50, **(c)**=90, **(d)**=2 |
+| `STaSI` [<sup>3</sup>](#references)                  | **(b)**: maximum number of states                                                                                                                                                                                   | **(b)**=2                         |
 
 
 ---

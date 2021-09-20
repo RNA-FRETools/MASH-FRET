@@ -28,35 +28,24 @@ if kinDtHist
         end
         
         % collect data
-        mat = prm.clst_start{1}(4);
-        clstDiag = prm.clst_start{1}(9);
-        J = prm.kin_start{2}(1);
-        clst = prm.clst_res{1}.clusters{J};
-        wght = prm.kin_start{1}{j,1}(7);
-        excl = prm.kin_start{1}{j,1}(8);
-        rearr = prm.kin_start{1}{j,1}(9);
-        % re-arrange state sequences by cancelling transitions belonging to diagonal clusters
-        if rearr
-            [mols,o,o] = unique(clst(:,4));
-            dat_new = [];
-            for m = mols'
-                dat_m = clst(clst(:,4)==m,:);
-                if isempty(dat_m)
-                    continue
-                end
-                dat_m = adjustDt(dat_m);
-                if size(dat_m,1)==1
-                    continue
-                end
-                dat_new = cat(1,dat_new,dat_m);
-            end
-            clst = dat_new;
+        dt_hist = prm.clst_res{4}{j};
+        bin = prm.lft_start{2}(3);
+        excl = prm.lft_start{2}(4);
+        rearr = prm.lft_start{2}(5);
+        str_excl = 'no';
+        str_rearr = 'no';
+        if excl
+            str_excl = 'yes';
         end
-        [j1,j2] = getStatesFromTransIndexes(j,J,mat,clstDiag);
-        dt_hist = getDtHist(clst, [j1,j2], [], excl, wght);
+        if rearr
+            str_rearr = 'yes';
+        end
         
         % write data to file
         f = fopen([pname fname_hdt], 'Wt');
+        fprintf(f, ['state binning: %d\n',...
+            'excluded first and last dwell times: ',str_excl,'\n',...
+            're-calculate dwell times: ',str_rearr,'\n\n'],bin);
         fprintf(f, ['dwell-times(s)\tcount\tnorm. count\tcum. count\t' ...
             'compl. norm. count\n']);
         fprintf(f, '%d\t%d\t%d\t%d\t%d\n', dt_hist');
@@ -88,14 +77,14 @@ if kinFit
         end
         
         % format data
-        isFit = size(prm.kin_res,1)>=j & ~isempty(prm.kin_res{j,2});
+        isFit = size(prm.lft_res,1)>=j & ~isempty(prm.lft_res{j,2});
         if isFit
-            kin_start = prm.kin_start{1}(j,:);
-            kin_res = prm.kin_res(j,:);
+            lft_start = prm.lft_start{1}(j,:);
+            lft_res = prm.lft_res(j,:);
             
-            nExp = kin_start{1}(2);
-            strch = kin_start{1}(1);
-            boba = kin_start{1}(4) & kinBoba;
+            nExp = lft_start{1}(3);
+            strch = lft_start{1}(2);
+            boba = lft_start{1}(5) & kinBoba;
             [str_eq o] = getEqExp(strch, nExp);
             str_prm = cat(2,'equation: %s\n', ...
                 'starting parameters:\n', ...
@@ -154,25 +143,25 @@ if kinFit
             end
 
             if strch
-                fit_prm = kin_start{2}(1,:);
-                fit_res_ref = kin_res{2}(1,:);
+                fit_prm = lft_start{2}(1,:);
+                fit_res_ref = lft_res{2}(1,:);
                 if boba
-                    fit_res_boba = kin_res{1}(1,:);
+                    fit_res_boba = lft_res{1}(1,:);
                 end
 
             elseif ~strch
-                fit_prm = reshape(kin_start{2}(1:nExp,1:6)', [1 nExp*2*3]);
-                fit_res_ref = reshape(kin_res{2}(1:nExp,1:2)', [1 nExp*2]);
+                fit_prm = reshape(lft_start{2}(1:nExp,1:6)', [1 nExp*2*3]);
+                fit_res_ref = reshape(lft_res{2}(1:nExp,1:2)', [1 nExp*2]);
                 if boba
-                    fit_res_boba = reshape(kin_res{1}(1:nExp,1:4)', ...
+                    fit_res_boba = reshape(lft_res{1}(1:nExp,1:4)', ...
                         [1 nExp*4]);
                 end
             end
 
             if boba
-                rpl = kin_start{1}(5);
-                spl = kin_start{1}(6);
-                wght = kin_start{1}(7);
+                rpl = lft_start{1}(6);
+                spl = lft_start{1}(7);
+                wght = lft_start{1}(8);
                 if wght
                     str_w = 'yes';
                 else
@@ -203,7 +192,7 @@ if kinFit
     end
 end
 
-if bobaFig && ~isempty(prm.kin_res{j,5})
+if bobaFig && ~isempty(prm.lft_res{j,5})
     fname_pdf = strcat(name,'.pdf');
     fname_pdf = getCorrName(fname_pdf, [], h_fig);
     if ~sum(fname_pdf)

@@ -100,25 +100,12 @@ for i = 1:p.nChan
             if exist('forloop','file')~=3
                 h = guidata(h_fig);
                 if h.mute_actions
-                    disp(cat(2,'This spotfinder method can not be used:',...
-                    ' problem with mex compilation.'));
-%                     disp('MASH-FRET will proceed to file compilation...');
-%                     try
-%                         mex(which('forloop.c'));
-%                     catch err
-%                         if strcmp(err.identifier,...
-%                                 'MATLAB:mex:NoCompilerFound_link_Win64')
-%                             disp()
-%                         else
-%                             throw(err);
-%                         end
-%                     end
+                    disp('MASH-FRET will proceed to file compilation...');
                 else
-                    setContPan(cat(2,'This spotfinder method can not be ',...
-                        'used: problem with mex compilation.'),'error',...
-                        h_fig);
+                    setContPan(cat(2,'MASH-FRET will proceed to file ',...
+                        'compilation...'),'warning',h_fig);
                 end
-                return
+                mex(which('forloop.c'));
             end
 
             d_edge =darkArea(2);

@@ -1,4 +1,10 @@
 function pushbutton_simImpPrm_Callback(obj, evd, h_fig)
+% pushbutton_simImpPrm_Callback([],[],h_fig)
+% pushbutton_simImpPrm_Callback({pname,fname},[],h_fig)
+%
+% h_fig: handle to main figure
+% pname: folder where preset file is located
+% fname: preset file name
 
 % Last update by MH, 18.12.2019
 % >> modify input & output arguments of impSimPrm according to new

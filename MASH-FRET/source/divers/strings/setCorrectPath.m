@@ -52,7 +52,8 @@ elseif (strcmp(folder, 'spotfinder') || ...
     pth = [pth1 folder];
 
 elseif (strcmp(folder, 'clustering') || ...
-        strcmp(folder, 'kinteics'))
+        strcmp(folder, 'lifetimes') || ...
+        strcmp(folder, 'kinetic model'))
 
     pth1 = setCorrectPath('transition_analysis', h_fig);
     pth = [pth1 folder];

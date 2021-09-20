@@ -39,7 +39,12 @@ if numel(h_axes)>2
         if isBIC
             BIC = res{3,1}(:,2);
             barh(h_axes(3), 1:Jmax, BIC');
-            xlim(h_axes(3),[min(BIC) mean(BIC)]);
+            BIC_min = min(BIC(~isinf(BIC)));
+            BIC_mean = mean(BIC(~isinf(BIC)));
+            if BIC_min==BIC_mean
+                BIC_min = BIC_mean-1;
+            end
+            xlim(h_axes(3),[BIC_min BIC_mean]);
             ylim(h_axes(3),[0 Jmax+1]);
             title(h_axes(3),'BIC');
             

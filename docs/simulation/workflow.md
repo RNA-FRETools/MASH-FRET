@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Workflow
-parent: /simulation.html
+parent: Simulation
 nav_order: 2
 ---
 
@@ -50,7 +50,7 @@ Considering a population of unsynchronized molecules, the probability
 
 where 
 [&#928;'](){: .math_var } is the non-normalized initial state probability vector, 
-[*&#955;*](){: math_var } is the eigenvalue associated to 
+[*&#955;*](){: .math_var } is the eigenvalue associated to 
 [&#928;'](){: .math_var }, and 
 [P](){: .math_var } is the transition probability matrix described such as:
 
@@ -96,13 +96,13 @@ Repartition factors can be set via preset parameter files (by default, factors a
 Diagonal terms are calculated from off-diagonal probabilities such as:
 
 {: .equation }
-![p_{jj}=1-\sum_{j'\neq j} p_{jj'}](../assets/images/equations/sim-eq-transition-probability-02.gif "Diagonal transition probabilities")
+![p_{jj}=1-\sum_{j'\neq j} p_{jj'}](../assets/images/equations/sim-eq-transition-probability-07.gif "Diagonal transition probabilities")
 
 FRET state sequences are elongated by randomly drawing a next FRET value using the normalized off-diagonal transition probabilities 
-[*p*<sub>*jj'*</sub>](){: .math_var } such as:
+[*w*<sub>*ij*</sub>](){: .math_var } such as:
 
 {: .equation }
-![p_{jj'}=\frac{p_{jj'}}{\sum_{i\neq j}\left(p_{ji} \right )}](../assets/images/equations/sim-eq-transition-probability-07.gif "Normalized off-diagonal transition probabilities")
+![w_{ij}=\frac{p_{ij}}{\sum_{j'\neq i}\left(p_{ij'} \right )}](../assets/images/equations/sim-eq-transition-probability-09.gif "Normalized off-diagonal transition probabilities")
 
 The duration of the corresponding plateau is randomly generated from an exponential distribution using the decay constant
 [*k*<sub>*jj'*</sub>](){: .math_var }. 

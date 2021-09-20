@@ -68,11 +68,28 @@ for i = 1:nChan
     int = img(:,frames);
     
     if sum(meth==[2 5:10]) % gaussian, outlier, ggf, lwf, gwf, histotresh, simpletresh
-        myfilter(1).filter = p.movBg_myfilter{meth};
-        myfilter(1).P1 = prm{i+1}(1);
-        myfilter(1).P2 = prm{i+1}(2);
-        int = FilterArray(int, myfilter);
-        img(:,frames) = int;
+        disp(['This filter is not available because of library issues: ',...
+            'the applied filter has no effect']);
+%         % check for correct compilation of mex file 
+%         if exist('FilterArray','file')~=3
+%             pnameC = fileparts(which('FilterArray.c'));
+%             if strcmp(computer,'PCWIN') || strcmp(computer,'GLNX86') % 32bit OS
+%                 pnameMex = [pnameC,filesep,'..',filesep,'runtime32'];
+%                 cd(pnameMex);
+%                 mex('-R2018a',[pnameC,filesep,'FilterArray.c'],...
+%                     ['-L',pnameC,filesep,'lib'],'-lITASL32');
+%             elseif strcmp(computer,'PCWIN64') || strcmp(computer,'GLNX64') % 64bit OS
+%                 pnameMex = [pnameC,filesep,'..',filesep,'runtime64'];
+%                 cd(pnameMex);
+%                 mex('-R2018a',[pnameC,filesep,'FilterArray.c'],...
+%                     ['-L',pname,filesep,'lib'],'-lITASL64');
+%             end
+%         end
+%         myfilter.filter = p.movBg_myfilter{meth};
+%         myfilter.P1 = prm{i+1}(1);
+%         myfilter.P2 = prm{i+1}(2);
+%         int = FilterArray(int, myfilter);
+%         img(:,frames) = int;
         
     elseif meth==3 % mean filter
         img(:,frames) = filter2(ones(prm{i+1}(1))/(prm{i+1}(1)^2),int);

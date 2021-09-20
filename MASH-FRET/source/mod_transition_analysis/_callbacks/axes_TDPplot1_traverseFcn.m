@@ -8,12 +8,9 @@ y = pos(2);
 
 set(h.text_TA_tdpCoord,'string',cat(2,'x=',num2str(x),' y=',num2str(y)));
 
-tool = get(h.tooglebutton_TDPmanStart,'userdata');
-if tool~=2
-    return
-end
-
 set(h_fig,'pointer','crosshair');
+
+tool = get(h.tooglebutton_TDPmanStart,'userdata');
 
 ud = get(h.axes_TDPplot1,'userdata');
 if size(ud{2},2)==1
@@ -24,7 +21,7 @@ else
     pos0 = ud{2}(1,2:3);
 end
 
-if isDown && ~isempty(pos0)
+if tool==2 && isDown && ~isempty(pos0)
     p = h.param.TDP;
     proj = p.curr_proj;
     tpe = p.curr_type(proj);
@@ -92,7 +89,7 @@ if isDown && ~isempty(pos0)
     set(h.axes_TDPplot1,'xlim',lim_x);
     set(h.axes_TDPplot1,'ylim',lim_y);
     
-elseif isDown
+elseif tool==2 && isDown
     ud{2} = [isDown,x,y];
     set(h.axes_TDPplot1,'userdata',ud);
 end
