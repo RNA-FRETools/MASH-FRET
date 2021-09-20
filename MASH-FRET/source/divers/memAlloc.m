@@ -2,9 +2,9 @@ function ok = memAlloc(arr_size)
 ok = 1;
 if ~contains(computer,'PCWIN') % not Windows platfroms
     % from angainor (https://stackoverflow.com/questions/12350598/how-to-access-memory-information-in-matlab-on-unix-equivalent-of-user-view-max)
-    [~,w] = unix('free | grep Mem');
+    [~,w] = unix('free -b | grep Mem');
     stats = str2double(regexp(w, '[0-9]*', 'match'));
-    maxsz = stats(3)+stats(end);
+    maxsz = stats(end);
 else
     mem = memory;
     maxsz = mem.MaxPossibleArrayBytes;
