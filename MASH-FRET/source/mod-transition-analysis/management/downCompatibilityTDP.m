@@ -17,6 +17,7 @@ end
 if isfield(prm,'plot') && size(prm.plot{1},1)<4
     prm.plot = def.plot;
 end
+
 % add boba parameters if none
 if isfield(prm,'clst_start') && size(prm.clst_start,2)>=1 && ...
         size(prm.clst_start{1},2)<8
@@ -251,6 +252,11 @@ if isfield(prm,'kin_start') && ~isfield(prm,'lft_start')
             prm.lft_start{2} = [prm.kin_start{2},bin,excl,rearr];
         end
         
+        % adjust current state id after state binning
+        if prm.lft_start{2}(2)>V
+            prm.lft_start{2}(2) = V;
+        end
+        
         % recalculate histograms
         prm2 = ud_kinPrm(prm,def,J);
         prm.clst_res{4} = prm2.clst_res{4};
@@ -275,6 +281,14 @@ if isfield(prm,'plot') && size(prm.plot,2)==3
     prm.plot = [prm.plot,def.plot{4}];
 end
 
-p_proj.TA.prm{tag,tpe} = prm;
+if ~isfield(prm,'mdl_start')
+    prm.mdl_start = def.mdl_start;
+end
+
+if ~isfield(prm,'mdl_res')
+    prm.mdl_res = def.mdl_res;
+end
+
+p_proj.prm{tag,tpe} = prm;
 
 

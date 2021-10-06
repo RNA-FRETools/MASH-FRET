@@ -65,7 +65,7 @@ for m = 1:nMol
     end
 
     % get state sequences
-    seq{m} = getDiscrFromDt(dat_m(:,[1,7,8]),expT);
+    seq{m} = getDiscrFromDt(dat_m(:,[1,7,8]),nL*expT);
     if all(seq{m}==0)
         exclmols(m) = true;
         continue
@@ -121,7 +121,7 @@ clstPop = clstPop/sum(sum(clstPop));
 
 if guessMeth==1 % determine guess from DPH fit & BIC model selection
     [D,mdl,cmb,BIC_cmb,BIC] = ...
-        script_findBestModel(dat(:,[1,4,7,8]),Dmax,states,expT,dt_bin);
+        script_findBestModel(dat(:,[1,4,7,8]),Dmax,states,nL*expT,dt_bin);
     J = sum(D);
     tp0 = zeros(J);
     j1 = 0;

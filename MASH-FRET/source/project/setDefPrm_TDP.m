@@ -36,7 +36,7 @@ rearr_lft = false;
 auto_lft = true;
 bin_lft = 0.01;
 niter_mdl = 5;
-Jdeg_max = 4;
+Dmax = 4;
 
 % collect project parameters
 colList = p.TDP.colList;
@@ -189,7 +189,7 @@ for tpe = 1:nTpe
         
         %% Kinetic model start parameters
         % starting guess, number of restart
-        def{tag,tpe}.mdl_start = [1,niter_mdl,Jdeg_max];
+        def{tag,tpe}.mdl_start = [1,niter_mdl,Dmax];
         
         %% Kinetic model results
         % transition probabilities

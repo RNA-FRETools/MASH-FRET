@@ -19,8 +19,7 @@ tag = p.TDP.curr_tag(proj);
 curr = p.proj{proj}.TA.curr{tag,tpe};
 prm = p.proj{proj}.TA.prm{tag,tpe};
 
-if ~(isfield(curr,'clst_res') && ~isempty(curr.clst_res{1}))
-    setProp(get(h_pan,'children'), 'Enable', 'off');
+if ~(isfield(prm,'clst_res') && ~isempty(prm.clst_res{1}))
     return
 end
 

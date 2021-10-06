@@ -24,7 +24,7 @@ prm.lft_start{2}(3) = val;
 
 % recalculate histograms and reset fit results
 J = prm.lft_start{2}(1);
-prm = ud_kinPrm(prm,def,J);
+curr = ud_kinPrm(curr,def,J);
 
 p.proj{proj}.TA.prm{tag,tpe} = prm;
 p.proj{proj}.TA.curr{tag,tpe} = prm;

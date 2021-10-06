@@ -1,4 +1,5 @@
-function [degen,mdl,cmb,BIC_cmb,BIC] = script_findBestModel(dt,J_deg_max,states,expT,dt_bin)
+function [degen,mdl,cmb,BIC_cmb,BIC] = script_findBestModel(dt,J_deg_max,...
+    states,expT,dt_bin)
 % [degen,mdl,cmb,BIC_cmb,BIC] = script_findBestModel(dt,J_deg_max,states,expT,dt_bin)
 %
 % Import dwell times from .clst file
