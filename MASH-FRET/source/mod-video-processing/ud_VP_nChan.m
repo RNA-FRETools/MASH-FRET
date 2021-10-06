@@ -1,4 +1,4 @@
-function p = ud_VP_nChan(p)
+function prm = ud_VP_nChan(prm)
 % p = ud_VP_nChan(p)
 %
 % Adjust Video processing parameters to number of channels
@@ -6,108 +6,108 @@ function p = ud_VP_nChan(p)
 % p: structure to update with new parameters
 
 % collect processing parameters
-nC = p.nChan;
+nC = prm.nChan;
 
 % update background corrections
-if size(p.movBg_p,2)<nC
-    p.movBg_p = cat(2,p.movBg_p,...
-        repmat(p.movBg_p(:,end),[1,nC-size(p.movBg_p,2)]));
+if size(prm.movBg_p,2)<nC
+    prm.movBg_p = cat(2,prm.movBg_p,...
+        repmat(prm.movBg_p(:,end),[1,nC-size(prm.movBg_p,2)]));
 end
-p.movBg_p = p.movBg_p(:,1:nC);
-if ~isempty(p.bgCorr)
-    if size(p.bgCorr,2)<(nC+1)
-        p.bgCorr = cat(2,p.bgCorr,...
-            repmat(p.bgCorr(:,end),[1,(nC+1)-size(p.bgCorr,2)]));
+prm.movBg_p = prm.movBg_p(:,1:nC);
+if ~isempty(prm.bgCorr)
+    if size(prm.bgCorr,2)<(nC+1)
+        prm.bgCorr = cat(2,prm.bgCorr,...
+            repmat(prm.bgCorr(:,end),[1,(nC+1)-size(prm.bgCorr,2)]));
     end
-    p.bgCorr = p.bgCorr(:,1:(nC+1));
+    prm.bgCorr = prm.bgCorr(:,1:(nC+1));
 end
 
 % update plot colors
-clr = getDefTrClr(p.itg_nLasers,p.itg_wl,nC,size(p.itg_expFRET,1),...
-    size(p.itg_expS,1));
-if size(p.itg_clr{1},2)<nC
-    p.itg_clr{1} = cat(2,p.itg_clr{1},clr{1}(:,(size(p.itg_clr{1},2)+1):end));
+clr = getDefTrClr(prm.itg_nLasers,prm.itg_wl,nC,size(prm.itg_expFRET,1),...
+    size(prm.itg_expS,1));
+if size(prm.itg_clr{1},2)<nC
+    prm.itg_clr{1} = cat(2,prm.itg_clr{1},clr{1}(:,(size(prm.itg_clr{1},2)+1):end));
 end
 
 % update default emitter labels
-if size(p.labels_def,2)<nC
-    for c = (size(p.labels_def,2)+1):nC
-        p.labels_def{c} = sprintf('Cy%i', (2*c+1));
+if size(prm.labels_def,2)<nC
+    for c = (size(prm.labels_def,2)+1):nC
+        prm.labels_def{c} = sprintf('Cy%i', (2*c+1));
     end
 end
-p.labels = p.labels_def(1:nC);
+prm.labels = prm.labels_def(1:nC);
 
 % update channel-specific excitations
-if size(p.chanExc,2)<nC
-    for c = (size(p.chanExc,2)+1):nC
-        if c > size(p.chanExc,2)
-            if c <= p.itg_nLasers
-                p.chanExc(c) = p.itg_wl(c);
+if size(prm.chanExc,2)<nC
+    for c = (size(prm.chanExc,2)+1):nC
+        if c > size(prm.chanExc,2)
+            if c <= prm.itg_nLasers
+                prm.chanExc(c) = prm.itg_wl(c);
             else
-                p.chanExc(c) = 0;
+                prm.chanExc(c) = 0;
             end
         end
     end
 end
-p.chanExc = p.chanExc(1:nC);
+prm.chanExc = prm.chanExc(1:nC);
 
 % remove ill-defined FRET and stoichiometry calculations
-[excl,o,o] = find(p.itg_expFRET>nC);
-p.itg_expFRET(excl,:) = [];
-[excl,o,o] = find(p.itg_expS>nC);
-p.itg_expS(excl,:) = [];
+[excl,o,o] = find(prm.itg_expFRET>nC);
+prm.itg_expFRET(excl,:) = [];
+[excl,o,o] = find(prm.itg_expS>nC);
+prm.itg_expS(excl,:) = [];
 
 % adjust spot finder parameters
-if size(p.SF_minI,2)<nC
-    nadd = nC-size(p.SF_minI,2);
-    p.SF_minI = cat(2,p.SF_minI,repmat(p.SF_minI(end),[1,nadd]));
-    p.SF_intThresh = cat(2,p.SF_intThresh,...
-        repmat(p.SF_intThresh(end),[1,nadd]));
-    p.SF_intRatio = cat(2,p.SF_intRatio,...
-        repmat(p.SF_intRatio(end),[1,nadd]));
-    p.SF_w = cat(2,p.SF_w,repmat(p.SF_w(end),[1,nadd]));
-    p.SF_h = cat(2,p.SF_h,repmat(p.SF_h(end),[1,nadd]));
-    p.SF_darkW = cat(2,p.SF_darkW,repmat(p.SF_darkW(end),[1,nadd]));
-    p.SF_darkH = cat(2,p.SF_darkH,repmat(p.SF_darkH(end),[1,nadd]));
-    p.SF_maxN = cat(2,p.SF_maxN,repmat(p.SF_maxN(end),[1,nadd]));
-    p.SF_minHWHM = cat(2,p.SF_minHWHM,repmat(p.SF_minHWHM(end),[1,nadd]));
-    p.SF_maxHWHM = cat(2,p.SF_maxHWHM,repmat(p.SF_maxHWHM(end),[1,nadd]));
-    p.SF_maxAssy = cat(2,p.SF_maxAssy,repmat(p.SF_maxAssy(end),[1,nadd]));
-    p.SF_minDspot = cat(2,p.SF_minDspot,...
-        repmat(p.SF_minDspot(end),[1,nadd]));
-    p.SF_minDedge = cat(2,p.SF_minDedge,...
-        repmat(p.SF_minDedge(end),[1,nadd]));
+if size(prm.SF_minI,2)<nC
+    nadd = nC-size(prm.SF_minI,2);
+    prm.SF_minI = cat(2,prm.SF_minI,repmat(prm.SF_minI(end),[1,nadd]));
+    prm.SF_intThresh = cat(2,prm.SF_intThresh,...
+        repmat(prm.SF_intThresh(end),[1,nadd]));
+    prm.SF_intRatio = cat(2,prm.SF_intRatio,...
+        repmat(prm.SF_intRatio(end),[1,nadd]));
+    prm.SF_w = cat(2,prm.SF_w,repmat(prm.SF_w(end),[1,nadd]));
+    prm.SF_h = cat(2,prm.SF_h,repmat(prm.SF_h(end),[1,nadd]));
+    prm.SF_darkW = cat(2,prm.SF_darkW,repmat(prm.SF_darkW(end),[1,nadd]));
+    prm.SF_darkH = cat(2,prm.SF_darkH,repmat(prm.SF_darkH(end),[1,nadd]));
+    prm.SF_maxN = cat(2,prm.SF_maxN,repmat(prm.SF_maxN(end),[1,nadd]));
+    prm.SF_minHWHM = cat(2,prm.SF_minHWHM,repmat(prm.SF_minHWHM(end),[1,nadd]));
+    prm.SF_maxHWHM = cat(2,prm.SF_maxHWHM,repmat(prm.SF_maxHWHM(end),[1,nadd]));
+    prm.SF_maxAssy = cat(2,prm.SF_maxAssy,repmat(prm.SF_maxAssy(end),[1,nadd]));
+    prm.SF_minDspot = cat(2,prm.SF_minDspot,...
+        repmat(prm.SF_minDspot(end),[1,nadd]));
+    prm.SF_minDedge = cat(2,prm.SF_minDedge,...
+        repmat(prm.SF_minDedge(end),[1,nadd]));
 end
 
 % adjust coordinates transformation parameters
-if size(p.trsf_refImp_rw{1},1)<nC
-    for c = (size(p.trsf_refImp_rw{1},1)+1):nC
-        p.trsf_refImp_rw{1}(c,1) = p.trsf_refImp_rw{1}(c-1,1) + ...
-            p.trsf_refImp_rw{1}(c-1,2) - 1;
-        p.trsf_refImp_rw{1}(c,3) = nC;
-        p.trsf_refImp_cw{1}(c,1:2) = p.trsf_refImp_cw{1}(c-1,1:2) + 2;
+if size(prm.trsf_refImp_rw{1},1)<nC
+    for c = (size(prm.trsf_refImp_rw{1},1)+1):nC
+        prm.trsf_refImp_rw{1}(c,1) = prm.trsf_refImp_rw{1}(c-1,1) + ...
+            prm.trsf_refImp_rw{1}(c-1,2) - 1;
+        prm.trsf_refImp_rw{1}(c,3) = nC;
+        prm.trsf_refImp_cw{1}(c,1:2) = prm.trsf_refImp_cw{1}(c-1,1:2) + 2;
     end
 end
 
 % adjust intensity integration import parameters
-if size(p.itg_impMolPrm{1},1)<nC
+if size(prm.itg_impMolPrm{1},1)<nC
     for c = 1:nC
-        if c>size(p.itg_impMolPrm{1},1)
-            p.itg_impMolPrm{1} = ...
-                cat(1,p.itg_impMolPrm{1},p.itg_impMolPrm{1}(end,1:2)+2);
+        if c>size(prm.itg_impMolPrm{1},1)
+            prm.itg_impMolPrm{1} = ...
+                cat(1,prm.itg_impMolPrm{1},prm.itg_impMolPrm{1}(end,1:2)+2);
         end
     end
 end
 
 % reset spot finder results
-p.SFres = {};
+prm.SFres = {};
 
 % set spotfinder parameters
-for i = 1:p.nChan
-    if size(p.SFprm,2)<(i+1)
-        p.SFprm = cat(2,p.SFprm,[p.SF_w(i),p.SF_h(i); p.SF_darkW(i),...
-            p.SF_darkH(i); p.SF_intThresh(i),p.SF_intRatio(i)]);
+for i = 1:prm.nChan
+    if size(prm.SFprm,2)<(i+1)
+        prm.SFprm = cat(2,prm.SFprm,[prm.SF_w(i),prm.SF_h(i); prm.SF_darkW(i),...
+            prm.SF_darkH(i); prm.SF_intThresh(i),prm.SF_intRatio(i)]);
     end
 end
-p.SFprm = p.SFprm(1,1:(p.nChan+1));
+prm.SFprm = prm.SFprm(1,1:(prm.nChan+1));
     

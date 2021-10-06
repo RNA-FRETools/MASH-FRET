@@ -18,13 +18,17 @@ end
 
 % Check for correct patterned background image
 h = guidata(h_fig);
-if h.param.sim.bgType == 3 % pattern
-    p = h.param.sim;
-    [ok,p] = checkBgPattern(p, h_fig);
+p = h.param;
+proj = p.curr_proj;
+prm = p.proj{proj}.sim;
+
+if prm.bgType == 3 % pattern
+    [ok,prm] = checkBgPattern(prm, h_fig);
     if ~ok
         return
     end
-    h.param.sim = p;
+    p.proj{proj}.sim = prm;
+    h.param = p;
     guidata(h_fig, h);
 end
 

@@ -1,15 +1,21 @@
 function checkbox_thm_ovrfl_Callback(obj, evd, h_fig)
+
 h = guidata(h_fig);
-p = h.param.thm;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    tpe = p.curr_tpe(proj);
-    tag = p.curr_tag(proj);
-    prm = p.proj{proj}.prm{tag,tpe};
-    prm.plot{1}(4) = get(obj, 'Value');
-    prm.plot{2} = [];
-    p.proj{proj}.prm{tag,tpe} = prm;
-    h.param.thm = p;
-    guidata(h_fig, h);
-    updateFields(h_fig, 'thm');
+p = h.param;
+if ~isModuleOn(p,'HA')
+    return
 end
+
+proj = p.curr_proj;
+tpe = p.thm.curr_tpe(proj);
+tag = p.thm.curr_tag(proj);
+curr = p.proj{proj}.HA.curr{tag,tpe};
+
+curr.plot{1}(4) = get(obj, 'Value');
+curr.plot{2} = [];
+
+p.proj{proj}.HA.curr{tag,tpe} = curr;
+
+h.param = p;
+guidata(h_fig, h);
+updateFields(h_fig, 'thm');

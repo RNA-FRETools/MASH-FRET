@@ -6,20 +6,21 @@ if numel(rgb)==1
 end
 
 h = guidata(h_fig);
-p = h.param.TDP;
-if isempty(p.proj)
+p = h.param;
+if ~isModuleOn(p,'TA')
     return
 end
 
-k = get(h.popupmenu_TA_setClstClr, 'Value');
 proj = p.curr_proj;
-tpe = p.curr_type(proj);
-tag = p.curr_tag(proj);
+tpe = p.TDP.curr_type(proj);
+tag = p.TDP.curr_tag(proj);
 
-p.proj{proj}.curr{tag,tpe}.clst_start{3}(k,:) = rgb;
-p.proj{proj}.prm{tag,tpe}.clst_start{3}(k,:) = rgb;
+k = get(h.popupmenu_TA_setClstClr, 'Value');
 
-h.param.TDP = p;
+p.proj{proj}.TA.curr{tag,tpe}.clst_start{3}(k,:) = rgb;
+p.proj{proj}.TA.prm{tag,tpe}.clst_start{3}(k,:) = rgb;
+
+h.param = p;
 guidata(h_fig, h);
 
 updateFields(h_fig, 'TDP');

@@ -31,17 +31,6 @@ isBet = p{6}{4} & sum(p{6}{5}) & ~isempty(p{6}{6}) ;
 % det default project parameters
 FRET = [];
 
-exp_param = {'Movie name' '' ''
-    'Molecule name' '' ''
-    '[Mg2+]' [] 'mM'
-    '[K+]' [] 'mM'};
-for i = 1:nExc
-    exp_param{size(exp_param,1)+1,1} = ['Power(' ...
-        num2str(round(wl(i))) 'nm)'];
-    exp_param{size(exp_param,1),2} = '';
-    exp_param{size(exp_param,1),3} = 'mW';
-end
-
 % movie
 if isMov
     mov_file = p{2}{2};

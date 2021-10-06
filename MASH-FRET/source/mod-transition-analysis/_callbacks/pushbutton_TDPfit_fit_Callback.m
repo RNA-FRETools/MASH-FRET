@@ -8,15 +8,15 @@ function pushbutton_TDPfit_fit_Callback(obj, evd, h_fig)
 
 % get interface parameters
 h = guidata(h_fig);
-p = h.param.TDP;
-if isempty(p.proj)
+p = h.param;
+if ~isModuleOn(p,'TA')
     return
 end
 
 proj = p.curr_proj;
-tpe = p.curr_type(proj);
-tag = p.curr_tag(proj);
-curr = p.proj{proj}.curr{tag,tpe};
+tag = p.TDP.curr_tag(proj);
+tpe = p.TDP.curr_type(proj);
+curr = p.proj{proj}.TA.curr{tag,tpe};
 
 % get state index
 if obj==h.pushbutton_TA_slFitAll
@@ -47,7 +47,7 @@ if ~lb
 end
 
 % save results
-h.param.TDP = p;
+h.param = p;
 guidata(h_fig,h);
 
 % update plots and GUI

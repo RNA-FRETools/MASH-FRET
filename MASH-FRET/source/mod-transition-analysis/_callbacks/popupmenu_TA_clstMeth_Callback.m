@@ -1,23 +1,28 @@
+
 function popupmenu_TA_clstMeth_Callback(obj,evd,h_fig)
 
 h = guidata(h_fig);
-p = h.param.TDP;
-if isempty(p.proj)
+p = h.param;
+if ~isModuleOn(p,'TA')
     return
 end
 
 proj = p.curr_proj;
-tpe = p.curr_type(proj);
-tag = p.curr_tag(proj);
+tpe = p.TDP.curr_type(proj);
+tag = p.TDP.curr_tag(proj);
+colList = p.TDP.colList;
+curr = p.proj{proj}.TA.curr{tag,tpe};
 
 val = get(obj,'value');
-p.proj{proj}.curr{tag,tpe}.clst_start{1}(1) = val;
+curr.clst_start{1}(1) = val;
 
 % update cluster starting guess and colors
-[p.proj{proj}.curr{tag,tpe},p.colList] = ...
-    ud_clstPrm(p.proj{proj}.curr{tag,tpe},p.colList);
+[curr,colList] = ud_clstPrm(curr,colList);
 
-h.param.TDP = p;
+p.proj{proj}.TA.curr{tag,tpe} = curr;
+p.TDP.colList = colList;
+
+h.param = p;
 guidata(h_fig, h);
 
 if val==2 % GM

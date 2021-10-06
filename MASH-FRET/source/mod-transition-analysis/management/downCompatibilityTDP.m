@@ -7,8 +7,8 @@ function p_proj = downCompatibilityTDP(p_proj,tpe,tag)
 % tpe: index in list of data type
 % tag: index in list of molecule tag
 
-def = p_proj.def{tag,tpe};
-prm = p_proj.prm{tag,tpe};
+def = p_proj.TA.def{tag,tpe};
+prm = p_proj.TA.prm{tag,tpe};
 
 if ~isstruct(prm)
     return
@@ -270,6 +270,11 @@ if isfield(prm,'kin_res') && ~isfield(prm,'lft_res') % reset fit results
     prm = rmfield(prm,'kin_res');
 end
 
-p_proj.prm{tag,tpe} = prm;
+% 30.3.2021: add colormap
+if isfield(prm,'plot') && size(prm.plot,2)==3
+    prm.plot = [prm.plot,def.plot{4}];
+end
+
+p_proj.TA.prm{tag,tpe} = prm;
 
 

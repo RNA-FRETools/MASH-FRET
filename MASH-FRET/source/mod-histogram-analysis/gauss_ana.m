@@ -1,19 +1,27 @@
 function gauss_ana(h_fig)
 
-% Last update: 23.4.2019 by MH
-% >> use loading bar only for BOBA-FRET
+% update 23.4.2019 by MH: use loading bar only for BOBA-FRET
 
 % recover parameters from MASH interface
 h = guidata(h_fig);
-p = h.param.thm;
+p = h.param;
 proj = p.curr_proj;
-tpe = p.curr_tpe(proj);
-tag = p.curr_tag(proj);
+tpe = p.thm.curr_tpe(proj);
+tag = p.thm.curr_tag(proj);
 
-prm_plot = p.proj{proj}.prm{tag,tpe}.plot;
+molTag = p.proj{proj}.molTag;
+m_incl = p.proj{proj}.coord_incl;
+def = p.proj{proj}.HA.def{tag,tpe};
+prm = p.proj{proj}.HA.prm{tag,tpe};
+curr = p.proj{proj}.HA.curr{tag,tpe};
+
+prm_plot = prm.plot;
 ovrfl = prm_plot{1}(1,4); % remove (or not) first and last bin
 
-prm_start = p.proj{proj}.prm{tag,tpe}.thm_start;
+prm.thm_start([1,3]) = curr.thm_start([1,3]);
+prm.thm_res(2,:) = def.thm_res(2,:);
+
+prm_start = prm.thm_start;
 boba = prm_start{1}(2); % apply (or not) bootstraping
 nRpl = prm_start{1}(3); % number of replicates (usually the number of SM)
 w = prm_start{1}(5); % weight (or not) the SM contribution to the histogram 
@@ -28,15 +36,12 @@ param = prm_start{3};
 
 J = size(param,1); % number of gaussian functions to fit
 
-m_incl = p.proj{proj}.coord_incl;
 nMol = size(m_incl,2); % inital number of molecules
-
 if boba
     mols = 1:nMol;
     if tag==1
         mols = mols(m_incl);
     else
-        molTag = p.proj{proj}.molTag;
         mols = mols(m_incl & molTag(:,tag-1)');
     end
     N = size(mols,2); % number of user-selected molecules
@@ -72,18 +77,13 @@ if boba
     setContPan(cat(2,'Bootstrap (',num2str(nRpl),' replicates, ',...
         num2str(nSpl),' samples) and fit histograms with ',num2str(J),...
         ' Gaussians ...'),'process',h_fig);
-    
-    % loading bar %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    err = loading_bar('init', h_fig, nSpl, ['Performing randomisation and ' ...
-        'Gaussian fitting ...']);
-    if err
-        return;
+    if loading_bar('init', h_fig, nSpl, ['Performing randomisation and ' ...
+            'Gaussian fitting ...'])
+        return
     end
     h = guidata(h_fig);
     h.barData.prev_var = h.barData.curr_var;
     guidata(h_fig, h);
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 else
     setContPan(cat(2,'Fit histogram with ',num2str(J),'Gaussians ...'),...
         'process',h_fig);
@@ -144,11 +144,8 @@ for s = 1:nSpl
     P_bs(:,s) = P_s(:,2);
     
     % update loading bar
-    if boba
-        err = loading_bar('update', h_fig);
-        if err
-            return;
-        end
+    if boba && loading_bar('update', h_fig)
+        return
     end
 end
 
@@ -163,10 +160,12 @@ res(1,:) = mean(cf(R,:),1)';
 res(2,:) = std(cf(R,:),0,1)';
 res = reshape(reshape(res,[1,numel(res)])',[8 J])';
 
-p.proj{proj}.prm{tag,tpe}.thm_res{2,1} = res;
-p.proj{proj}.prm{tag,tpe}.thm_res{2,2} = cf;
-p.proj{proj}.prm{tag,tpe}.thm_res{2,3} = cat(2,P_s(:,1),P_bs);
-h.param.thm = p;
+prm.thm_res(2,:) = {res, cf, cat(2,P_s(:,1),P_bs)};
+curr.thm_res(2,:) = prm.thm_res(2,:);
+
+p.proj{proj}.HA.prm{tag,tpe} = prm;
+p.proj{proj}.HA.curr{tag,tpe} = curr;
+h.param = p;
 guidata(h_fig,h);
 
 if boba

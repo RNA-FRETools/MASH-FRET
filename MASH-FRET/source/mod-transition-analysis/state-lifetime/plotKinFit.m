@@ -12,6 +12,10 @@ ttl = 'Kinetic analysis from dwell-times';
 xlbl = 'dwell-times (s)';
 ylbl = 'normalised (1 - cum(P))';
 
+% collect interface and default processing parameters
+proj = p.curr_proj;
+def = p.proj{proj}.TA.def{tag,tpe};
+
 % get y-axis scale
 if strcmp(scl, 'y-log scale')
     scl = 'linear';
@@ -36,11 +40,7 @@ if isempty(hist_ref)
     return
 end
 
-% collect interface parameters
-proj = p.curr_proj;
-
-% collect processing parameters and results
-def = p.proj{proj}.def{tag,tpe};
+% collect processing parameters
 boba = prm.lft_start{1}{v,1}(5);
 strch = prm.lft_start{1}{v,1}(2);
 

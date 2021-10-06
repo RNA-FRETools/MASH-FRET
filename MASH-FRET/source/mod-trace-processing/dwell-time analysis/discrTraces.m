@@ -30,7 +30,7 @@ if nS>0
 end
 
 % collect processing parameters
-prm_DTA = p.proj{proj}.prm{m}{4};
+prm_DTA = p.proj{proj}.TP.prm{m}{4};
 method = prm_DTA{1}(1);
 toBottom = prm_DTA{1}(2); % discretize bottom(1)/top->bottom(0)/top+bottom(2)
 calc = prm_DTA{1}(3);
@@ -39,9 +39,9 @@ if is2D
     toBottom = 1;
 end
 if nF>0
-    gamma = p.proj{proj}.prm{m}{6}{1}(1,:);
+    gamma = p.proj{proj}.TP.prm{m}{6}{1}(1,:);
     if nS>0
-        beta = p.proj{proj}.prm{m}{6}{1}(2,:);
+        beta = p.proj{proj}.TP.prm{m}{6}{1}(2,:);
     end
 end
     
@@ -287,6 +287,6 @@ if ~isempty(S)
 end
 
 % save resulting states
-p.proj{proj}.prm{m}{4}{3} = states;
+p.proj{proj}.TP.prm{m}{4}{3} = states;
 
 

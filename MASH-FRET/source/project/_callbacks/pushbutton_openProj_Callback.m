@@ -11,14 +11,11 @@ function pushbutton_openProj_Callback(obj, evd, h_fig)
 
 % get interface parameters
 h = guidata(h_fig);
-pTP = h.param.ttPr;
-pHA = h.param.thm;
-pTA = h.param.TDP;
+p = h.param;
 
 % get project data
 if iscell(evd) % from project merging
     dat = evd{1};
-    fext = '.mash';
     
 else % from file
     if iscell(obj) % called by test routine
@@ -28,30 +25,17 @@ else % from file
             pname = [pname,filesep];
         end
         
-    else % called by GUI
-        fmt = questdlg(...
-            'What file format would you like to import data from?',...
-            'File format','.mash file(s)','Text file(s)','Cancel',...
-            '.mash file(s)');
-        if strcmp(fmt,'Cancel')
-            return
-        end
-        if strcmp(fmt,'Text file(s)')
-            h_opt = openTrImpOpt([],[],h_fig);
-            uiwait(h_opt);
-            h = guidata(h_fig);
-            if ~h.trImpOpt_ok % import option settings were aborted
-                h = rmfield(h,'trImpOpt_ok');
-                guidata(h_fig,h);
-                return
-            end
-            h = rmfield(h,'trImpOpt_ok');
-        end
-        
+    else % called by GUI        
         % open file browser
-        defPth = h.folderRoot;
-        [fname,pname,o] = uigetfile({'*.*', 'All files(*.*)'},...
-            'Select trace files',defPth,'MultiSelect','on');
+        if ~isempty(p.proj)
+            proj = p.curr_proj;
+            defPth = p.proj{proj}.folderRoot;
+        else
+            defPth = p.folderRoot;
+        end
+        [fname,pname,o] = uigetfile({'*.mash','MASH-FRET project files';...
+            '*.*', 'All files(*.*)'},'Select project',defPth,'MultiSelect',...
+            'on');
     end
     if isempty(pname) || ~sum(pname)
         return
@@ -62,14 +46,14 @@ else % from file
 
     % check if the project file is not already loaded
     excl_f = false(size(fname));
-    str_proj = get(h.listbox_traceSet,'string');
-    if isfield(pTP,'proj')
+    str_proj = get(h.listbox_proj,'string');
+    if isfield(p,'proj')
         for i = 1:numel(fname)
-            for j = 1:numel(pTP.proj)
-                if strcmp(cat(2,pname,fname{i}),pTP.proj{j}.proj_file)
+            for j = 1:numel(p.proj)
+                if strcmp(cat(2,pname,fname{i}),p.proj{j}.proj_file)
                     excl_f(i) = true;
                     disp(cat(2,'project "',str_proj{j},'" is already ',...
-                        'opened (',pTP.proj{j}.proj_file,').'));
+                        'opened (',p.proj{j}.proj_file,').'));
                 end
             end
         end
@@ -78,9 +62,6 @@ else % from file
     if isempty(fname)
         return
     end
-    
-    % get file extension
-    [o,o,fext] = fileparts(fname{1});
 
     % load project data
     [dat,ok] = loadProj(pname, fname, 'intensities', h_fig);
@@ -89,34 +70,29 @@ else % from file
     end
 end
 
+% add project to list
+proj1 = numel(p.proj)+1;
+proj2 = numel(p.proj)+numel(dat);
+p.proj = [p.proj dat];
+
+% manage compatibility
+p = projDownCompatibility(p,proj1:proj2);
+
 % set interface parameters
-pTP = importTP(pTP,dat,fext,numel(fname),h_fig);
-pHA = importHA(pHA,dat,h_fig);
-pTA = importTA(pTA,dat,h_fig);
+p = importSim(p,proj1:proj2);
+p = importVP(p,proj1:proj2);
+p = importTP(p,proj1:proj2);
+p = importHA(p,proj1:proj2);
+p = importTA(p,proj1:proj2);
 
 % set last-imported project as current project
-pTP.curr_proj = size(pTP.proj,2);
-pHA.curr_proj = pTP.curr_proj;
-pTA.curr_proj = pTP.curr_proj;
+p.curr_proj = size(p.proj,2);
 
 % update project lists
-pTP = ud_projLst(pTP, h.listbox_traceSet);
-pHA = ud_projLst(pHA, h.listbox_thm_projLst);
-pTA = ud_projLst(pTA, h.listbox_TDPprojList);
-
-% update TDP
-proj = pTA.curr_proj;
-tag = pTA.curr_tag(proj);
-tpe = pTA.curr_type(proj);
-[pTA,ok,str] = buildTDP(pTA,tag,tpe);
-if ~ok
-    setContPan(str, 'warning', h_fig);
-end
+p = ud_projLst(p, h.listbox_proj);
 
 % save modifications
-h.param.ttPr = pTP;
-h.param.thm = pHA;
-h.param.TDP = pTA;
+h.param = p;
 guidata(h_fig,h);
 
 % display action
@@ -134,18 +110,21 @@ if ~iscell(evd)
         h_fig);
 end
 
-% update TP's GUI according to new project parameters
-ud_TTprojPrm(h_fig);
-
-% update TP's sample management area
-ud_trSetTbl(h_fig);
-
-% clear HA's axes
-cla(h.axes_hist1);
-cla(h.axes_hist2);
+% switch to proper module
+if ~isempty(p.proj{p.curr_proj}.TA)
+    switchPan(h.togglebutton_TA,[],h_fig);
+elseif ~isempty(p.proj{p.curr_proj}.HA)
+    switchPan(h.togglebutton_HA,[],h_fig);
+elseif ~isempty(p.proj{p.curr_proj}.TP)
+    switchPan(h.togglebutton_TP,[],h_fig);
+elseif ~isempty(p.proj{p.curr_proj}.VP)
+    switchPan(h.togglebutton_VP,[],h_fig);
+elseif ~isempty(p.proj{p.curr_proj}.sim)
+    switchPan(h.togglebutton_S,[],h_fig);
+else
+    switchPan(h.togglebutton_S,[],h_fig);
+end
 
 % update plots and GUI
-updateFields(h_fig,'ttPr');
-updateFields(h_fig,'thm');
-updateFields(h_fig,'TDP');
+updateFields(h_fig);
 

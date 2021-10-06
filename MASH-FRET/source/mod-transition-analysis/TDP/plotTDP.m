@@ -28,13 +28,6 @@ xlbl = 'Value before transition';
 ylbl = 'Value after transition';
 clbl = {'normalized occurrence','occurrence'};
 
-% collect processing parameters
-bin = prm.plot{1}(1,1);
-lim = prm.plot{1}(1,2:3);
-gconv = curr.plot{1}(3,2);
-norm = curr.plot{1}(3,3);
-TDP = prm.plot{2};
-
 % get haxes handles
 h_axes_TDP = hndls(1);
 h_cb_TDP = hndls(2);
@@ -44,7 +37,16 @@ h_axes_BIC = hndls(3);
 cla(h_axes_TDP);
 cla(h_axes_BIC);
 set(h_axes_BIC,'visible','off');
+if isempty(prm)
+    return
+end
 
+% collect processing parameters
+bin = prm.plot{1}(1,1);
+lim = prm.plot{1}(1,2:3);
+gconv = curr.plot{1}(3,2);
+norm = curr.plot{1}(3,3);
+TDP = prm.plot{2};
 if isempty(TDP) || (numel(TDP)==1 && isnan(TDP))
     return
 end

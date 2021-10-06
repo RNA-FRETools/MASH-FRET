@@ -2,35 +2,28 @@ function ud_HA_stateConfig(h_fig)
 
 % update 8.4.2019 by MH: correct update of checkbox_thm_BS
 
+% collect interface parameters
 h = guidata(h_fig);
-p = h.param.thm;
+p = h.param;
 
-% make elements invisible if panel is collapsed
 h_pan = h.uipanel_HA_stateConfiguration;
-if isPanelOpen(h_pan)==1
-    setProp(get(h_pan,'children'),'visible','off');
-    return
-else
-    setProp(get(h_pan,'children'),'visible','on');
-end
-
-if isempty(p.proj)
+if ~prepPanel(h_pan,h)
     return
 end
 
+% collect experiment settings
 proj = p.curr_proj;
-tpe = p.curr_tpe(proj);
-tag = p.curr_tag(proj);
-prm = p.proj{proj}.prm{tag,tpe};
+tpe = p.thm.curr_tpe(proj);
+tag = p.thm.curr_tag(proj);
+prm = p.proj{proj}.HA.prm{tag,tpe};
+curr = p.proj{proj}.HA.curr{tag,tpe};
 
 if isempty(prm.plot{2})
     setProp(get(h_pan,'children'),'Enable', 'off');
     return
-else
-    setProp(get(h_pan,'children'),'Enable', 'on');
 end
 
-start = prm.thm_start;
+start = curr.thm_start;
 res = prm.thm_res;
 
 set([h.edit_thm_penalty h.edit_thm_maxGaussNb h.edit_thm_LogL ...

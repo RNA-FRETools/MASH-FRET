@@ -36,13 +36,15 @@ function [ok,str] = updateMov(h_fig)
 % Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
 
 h = guidata(h_fig);
-p = h.param.sim;
+p = h.param;
+proj = p.curr_proj;
+prm = p.proj{proj}.sim;
 ok = 1;
 str = {}; % action string
 
 % collect sample size and video length
-N = p.molNb;
-L = p.nbFrames;
+N = prm.molNb;
+L = prm.nbFrames;
 
 % collect simulated state sequences
 if isfield(h,'results') && isfield(h.results,'sim') && ...
@@ -79,16 +81,16 @@ end
 setContPan('Updating intensity data...', 'process', h_fig);
 
 % collect simulation parameters
-totInt = p.totInt;
-Itot_w = p.totInt_width;
-stateVal = p.stateVal;
-FRETw = p.FRETw;
-gamma = p.gamma;
-gammaW = p.gammaW;
-impPrm = p.impPrm;
-molPrm = p.molPrm;
-res_x = p.movDim(1);
-res_y = p.movDim(2);
+totInt = prm.totInt;
+Itot_w = prm.totInt_width;
+stateVal = prm.stateVal;
+FRETw = prm.FRETw;
+gamma = prm.gamma;
+gammaW = prm.gammaW;
+impPrm = prm.impPrm;
+molPrm = prm.molPrm;
+res_x = prm.movDim(1);
+res_y = prm.movDim(2);
 splt = round(res_x/2);
 
 % initialize results
@@ -99,11 +101,11 @@ Idon_id = {};
 discr = cell(1,N);
 discr_blurr = cell(1,N);
 
-genNewCoord = isempty(p.coord);
+genNewCoord = isempty(prm.coord);
 if genNewCoord
     coord = zeros(N,4);
 else
-    coord = p.coord;
+    coord = prm.coord;
 end
 
 excl = []; % excluded coordinates
@@ -162,7 +164,8 @@ discr_seq = discr_seq(1:N);
 discr_blurr = discr_blurr(1:N);
 
 % save results
-h.param.sim.coord = coord;
+p.proj{proj}.sim.coord = coord;
+h.param = p;
 h.results.sim.dat = {Idon Iacc coord};
 h.results.sim.dat_id = {Idon_id Iacc_id discr_blurr discr discr_seq};
 guidata(h_fig, h);

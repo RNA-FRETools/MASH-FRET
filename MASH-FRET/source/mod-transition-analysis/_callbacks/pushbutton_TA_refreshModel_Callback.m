@@ -5,22 +5,21 @@ dt_bin = 10; % dwell time binning for DPH fit (depends on discretization algorit
 
 % get interface parameters
 h = guidata(h_fig);
-p = h.param.TDP;
-proj = p.curr_proj;
-if isempty(p.proj)
+p = h.param;
+if ~isModuleOn(p,'TA')
     return
 end
+
+proj = p.curr_proj;
+tag = p.TDP.curr_tag(proj);
+tpe = p.TDP.curr_type(proj);
+prm = p.proj{proj}.TA.prm{tag,tpe};
+curr = p.proj{proj}.TA.curr{tag,tpe};
+def = p.proj{proj}.TA.def{tag,tpe};
 
 % get project parameters
 nL = p.proj{proj}.nb_excitations;
 expT = p.proj{proj}.frame_rate;
-
-% get processing parameters and analyiss results
-tag = p.curr_tag(proj);
-tpe = p.curr_type(proj);
-prm = p.proj{proj}.prm{tag,tpe};
-curr = p.proj{proj}.curr{tag,tpe};
-def = p.proj{proj}.def{tag,tpe};
 
 J = prm.lft_start{2}(1);
 mat = prm.clst_start{1}(4);
@@ -203,11 +202,11 @@ end
 
 % update plot with diagram
 prm.mdl_res{5} = states;
-p.proj{proj}.prm{tag,tpe} = prm;
-p.proj{proj}.curr{tag,tpe} = prm;
-h = guidata(h_fig);
-h.param.TDP = p;
+p.proj{proj}.TA.prm{tag,tpe} = prm;
+p.proj{proj}.TA.curr{tag,tpe} = prm;
+h.param = p;
 guidata(h_fig,h);
+
 updateTAplots(h_fig,'mdl'); 
 drawnow;
 
@@ -222,10 +221,10 @@ expPrm.seq = seq;
 prm.mdl_res(1:4) = {tp,err,ip,simdat};
 prm.mdl_start = curr.mdl_start;
 
-p.proj{proj}.prm{tag,tpe} = prm;
-p.proj{proj}.curr{tag,tpe} = prm;
+p.proj{proj}.TA.prm{tag,tpe} = prm;
+p.proj{proj}.TA.curr{tag,tpe} = prm;
 
-h.param.TDP = p;
+h.param = p;
 guidata(h_fig,h);
 
 ud_kinMdl(h_fig);

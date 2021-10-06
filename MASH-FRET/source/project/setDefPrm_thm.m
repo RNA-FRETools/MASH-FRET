@@ -29,13 +29,10 @@ end
 plotPrm{1} = [xy_axis 0];
 % plotPrm{2} = [interval, probability, cumulative probability]
 plotPrm{2} = [];
+% plotPrm{3} = total number of data points
+plotPrm{3} = 0;
 
 prm.plot = adjustParam('plot', plotPrm, prm_in);
-
-if size(prm.plot,2)>2
-    prm.plot = prm.plot(1:2);
-end
-
 
 %% strating parameters for thermodynamic analysis
 % thm{1} = [method, apply BOBA, repl. nb., sample nb., weighting]
@@ -57,11 +54,13 @@ prm.thm_start = adjustParam('thm_start', thm, prm_in);
 % res{1,1} = [relative pop., sigma]
 % res{1,2} = bootstrap populations
 % res{1,3} = sampled histograms
+
 % res{2,1} = [amp. fit, amp. sigma, center fit, center sigma, FWHM fit, 
 %           FWHM sigma, rel. occ. fit, rel. occ. sigma]
 % res{2,2} = [bootstrap amp., bootstrap center, bootstrap FWHM, bootstrap 
 %           rel. occ.]
 % res{2,3} = sampled histograms
+
 % res{3,1} = [logL BIC AIC]
 % res{3,2}{K} = [best amp., best center, best FWHM]
 % res{3,3} = []

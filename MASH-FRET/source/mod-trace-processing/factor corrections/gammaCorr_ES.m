@@ -16,7 +16,7 @@ elseif isempty(p_proj.ES{i})
     disp('ES linear regression: calculate ES histograms...');
     
     % update all intensity corrections before re-building ES hist
-    N = size(p.proj{proj}.prm,2);
+    N = size(p.proj{proj}.TP.prm,2);
     for n = 1:N
         [p,opt] = resetMol(n, 'ttPr', p);
         p = plotSubImg(n, p, []);

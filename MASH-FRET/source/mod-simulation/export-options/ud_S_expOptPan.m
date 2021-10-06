@@ -7,31 +7,27 @@ function ud_S_expOptPan(h_fig)
 
 % collect interface parameters
 h = guidata(h_fig);
-p = h.param.sim;
+p = h.param;
 
-% make elements invisible if panel is collapsed
-h_pan = h.uipanel_S_exportOptions;
-if isPanelOpen(h_pan)==1
-    setProp(get(h_pan,'children'),'visible','off');
+if ~prepPanel(h.uipanel_S_exportOptions,h)
     return
-else
-    setProp(get(h_pan,'children'),'visible','on');
 end
 
-% set all controls on-enabled
-setProp(get(h_pan,'children'),'enable','on');
+% collect experiment settings and video parameters
+proj = p.curr_proj;
+prm = p.proj{proj}.sim;
 
 % set file export options
-set(h.checkbox_simParam, 'Value', p.export_param);
-set(h.checkbox_traces, 'Value', p.export_traces);
-set(h.checkbox_movie, 'Value', p.export_movie);
-set(h.checkbox_avi, 'Value', p.export_avi);
-set(h.checkbox_procTraces, 'Value', p.export_procTraces);
-set(h.checkbox_dt, 'Value', p.export_dt);
-set(h.checkbox_expCoord, 'Value', p.export_coord);
+set(h.checkbox_simParam, 'Value', prm.export_param);
+set(h.checkbox_traces, 'Value', prm.export_traces);
+set(h.checkbox_movie, 'Value', prm.export_movie);
+set(h.checkbox_avi, 'Value', prm.export_avi);
+set(h.checkbox_procTraces, 'Value', prm.export_procTraces);
+set(h.checkbox_dt, 'Value', prm.export_dt);
+set(h.checkbox_expCoord, 'Value', prm.export_coord);
 
 % set exported intensity units
-if strcmp(p.intOpUnits, 'photon')
+if strcmp(prm.intOpUnits, 'photon')
     set(h.popupmenu_opUnits, 'Value', 1);
 else
     set(h.popupmenu_opUnits, 'Value', 2);

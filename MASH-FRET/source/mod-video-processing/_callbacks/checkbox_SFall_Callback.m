@@ -2,10 +2,17 @@ function checkbox_SFall_Callback(obj, evd, h_fig)
 
 % collect interface parameters
 h = guidata(h_fig);
+p = h.param;
+if ~isModuleOn(p,'VP')
+    return
+end
 
-h.param.movPr.SF_all = get(obj, 'Value');
+proj = p.curr_proj;
+
+p.proj{proj}.VP.SF_all = get(obj, 'Value');
 
 % save modifications
+h.param = p;
 guidata(h_fig, h);
 
 % set GUI to proper values

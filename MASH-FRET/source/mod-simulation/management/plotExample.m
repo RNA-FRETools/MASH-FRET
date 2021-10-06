@@ -13,7 +13,9 @@ function plotExample(h_fig)
 
 % collect simulation parameters
 h = guidata(h_fig);
-p = h.param.sim;
+p = h.param;
+proj = p.curr_proj;
+prm = p.proj{proj}.sim;
 
 % collect simulated state sequences and coordinates
 dat = h.results.sim.dat;
@@ -28,7 +30,7 @@ coord = dat{3};
 L = size(Idon{1},1);
 
 % get background image
-[img_bg,err] = getBackgroundImage(p);
+[img_bg,err] = getBackgroundImage(prm);
 if isempty(img_bg)
     % abort if background image can not be created
     updateActPan(err, h_fig, 'error');
@@ -36,11 +38,11 @@ if isempty(img_bg)
 end
 
 % determine camera saturation value (slow process, done only once per update)
-[~,p.sat] = Saturation(p.bitnr);
+[~,prm.sat] = Saturation(prm.bitnr);
 
 % create first donor-acceptor intensity traces
 [I_don_ic,I_acc_ic,err] = createIntensityTraces(Idon{1},Iacc{1},coord(1,:),...
-    img_bg,p);
+    img_bg,prm);
 if isempty(I_don_ic) || isempty(I_acc_ic)
     % abort if traces can not be created
     updateActPan(err, h_fig, 'error');
@@ -48,7 +50,7 @@ if isempty(I_don_ic) || isempty(I_acc_ic)
 end
 
 % create first video frame
-[img,p.matGauss,err] = createVideoFrame(1,Idon,Iacc,coord,img_bg,p);
+[img,prm.matGauss,err] = createVideoFrame(1,Idon,Iacc,coord,img_bg,prm);
 if isempty(img)
     % abort if video frame can not be created
     updateActPan(err, h_fig, 'error');
@@ -56,20 +58,21 @@ if isempty(img)
 end
 
 % save calculated parameters (p.sat and p.gaussMat)
-h.param.sim = p;
+p.proj{proj}.sim = prm;
+h.param = p;
 guidata(h_fig, h);
 
 % get plot units
-units = p.intOpUnits;
+units = prm.intOpUnits;
 if ~strcmp(units, 'photon')
     units = 'image';
 end
 
 % plot first traces
-timeaxis = (1:L)'/p.rate;
+timeaxis = (1:L)'/prm.rate;
 plot(h.axes_example, timeaxis,I_don_ic,'-b',timeaxis,I_acc_ic,'-r');
 ylim(h.axes_example,'auto');
-xlim(h.axes_example,[0 size(I_don_ic,1)/p.rate]);
+xlim(h.axes_example,[0 size(I_don_ic,1)/prm.rate]);
 xlabel(h.axes_example,'time (sec)');
 ylabel(h.axes_example,[units,' counts']);
 grid(h.axes_example,'on');
@@ -84,7 +87,7 @@ legend(h.axes_example,'donor','acceptor');
 mtlbDat = ver;
 for i = 1:size(mtlbDat,2)
     if strcmp(mtlbDat(1,i).Name,'MATLAB')
-        break;
+        break
     end
 end
 newvers = str2num(mtlbDat(1,i).Version) >= 9;
@@ -114,10 +117,10 @@ grid(h.axes_example_hist, 'on');
 legend(h.axes_example_hist, 'donor', 'acceptor');
 
 % plot video frame
-imagesc(h.axes_example_mov,'xdata',[0.5,p.movDim(1)-0.5],'ydata',...
-    [0.5,p.movDim(2)-0.5],'cdata',img);
-xlim(h.axes_example_mov,[0,p.movDim(1)]);
-ylim(h.axes_example_mov,[0,p.movDim(2)]);
+imagesc(h.axes_example_mov,'xdata',[0.5,prm.movDim(1)-0.5],'ydata',...
+    [0.5,prm.movDim(2)-0.5],'cdata',img);
+xlim(h.axes_example_mov,[0,prm.movDim(1)]);
+ylim(h.axes_example_mov,[0,prm.movDim(2)]);
 caxis(h.axes_example_mov,[min(min(img)),max(max(img))]);
 ylabel(h.cb_example_mov, [units,' counts/time bin']);
 

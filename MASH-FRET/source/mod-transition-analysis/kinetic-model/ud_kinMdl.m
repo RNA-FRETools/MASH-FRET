@@ -5,33 +5,22 @@ function ud_kinMdl(h_fig)
 
 % collect interface parameters
 h = guidata(h_fig);
-p = h.param.TDP;
+p = h.param;
 
-% make elements invisible if panel is collapsed
 h_pan = h.uipanel_TA_kineticModel;
-if isPanelOpen(h_pan)==1
-    setProp(get(h_pan,'children'),'visible','off');
-    return
-else
-    setProp(get(h_pan,'children'),'visible','on');
-end
-
-if isempty(p.proj)
+if ~prepPanel(h.uipanel_TA_kineticModel,h)
     return
 end
 
+% collect experiment settings
 proj = p.curr_proj;
-tpe = p.curr_type(proj);
-tag = p.curr_tag(proj);
-
-% collect processing parameters
-curr = p.proj{proj}.curr{tag,tpe};
-prm = p.proj{proj}.prm{tag,tpe};
-
-% set all control off-enabled
-setProp(get(h_pan,'children'), 'Enable', 'off');
+tpe = p.TDP.curr_type(proj);
+tag = p.TDP.curr_tag(proj);
+curr = p.proj{proj}.TA.curr{tag,tpe};
+prm = p.proj{proj}.TA.prm{tag,tpe};
 
 if ~(isfield(curr,'clst_res') && ~isempty(curr.clst_res{1}))
+    setProp(get(h_pan,'children'), 'Enable', 'off');
     return
 end
 
@@ -51,14 +40,13 @@ nTrs = getClusterNb(J,mat,clstDiag);
 V = numel(states);
 
 % check for state lifetimes
-set([h.text_TA_mdlComplexity,h.popupmenu_TA_mdlMeth,...
-    h.pushbutton_TA_refreshModel,h.edit_TA_mdlRestartNb,...
-    h.text_TA_mdlRestartNb],'enable','on');
 set(h.edit_TA_mdlRestartNb,'string',num2str(T));
 set(h.popupmenu_TA_mdlMeth,'value',meth_mdl);
 if meth_mdl==1
-    set([h.text_TA_mdlJmax,h.edit_TA_mdlJmax],'enable','on');
     set(h.edit_TA_mdlJmax,'string',num2str(D));
+else
+    set([h.text_TA_mdlJmax,h.edit_TA_mdlJmax],'enable','off');
+    set(h.edit_TA_mdlJmax,'string','');
 end
 
 if ~(isfield(prm,'mdl_res') && size(prm.mdl_res,2)>=5 && ...
@@ -66,7 +54,6 @@ if ~(isfield(prm,'mdl_res') && size(prm.mdl_res,2)>=5 && ...
     return
 end
 if ~isempty(prm.mdl_res{3})
-    set([h.popupmenu_TA_mdlDtState,h.text_TA_mdlDtState],'Enable','on');
     if get(h.popupmenu_TA_mdlDtState,'Value')>V
         set(h.popupmenu_TA_mdlDtState,'Value',V);
     end
@@ -75,6 +62,8 @@ if ~isempty(prm.mdl_res{3})
         str_pop{v} = sprintf('%0.2f',states(v));
     end
     set(h.popupmenu_TA_mdlDtState,'String',str_pop);
+else
+    set([h.popupmenu_TA_mdlDtState,h.text_TA_mdlDtState],'Enable','off');
 end
 
 

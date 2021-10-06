@@ -1,6 +1,11 @@
 function tooglebutton_TDPmanStart_Callback(obj,evd,h_fig,action)
 
+% get interface parameters
 h = guidata(h_fig);
+p = h.param;
+if ~isModuleOn(p,'TA')
+    return
+end
 
 switch action
     case 'close'

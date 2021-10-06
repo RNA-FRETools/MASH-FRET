@@ -6,10 +6,8 @@ function pushbutton_closeProj_Callback(obj, evd, h_fig, varargin)
 % mute: (1) to mute user confirmations and action display, (0) otherwise
 
 h = guidata(h_fig);
-pTP = h.param.ttPr;
-pHA = h.param.thm;
-pTA = h.param.TDP;
-if isempty(pTP.proj)
+p = h.param;
+if isempty(p.proj)
     return
 end
 
@@ -19,15 +17,18 @@ if ~isempty(varargin)
 end
     
 % collect selected projects
-slct = get(h.listbox_traceSet, 'Value');
+slct = get(h.listbox_proj, 'Value');
+if isempty(slct)
+    return
+end
 
 % build confirmation message box
 if mute
     del = 'Yes';
 else
-    str_proj = ['"' pTP.proj{slct(1)}.exp_parameters{1,2} '"'];
+    str_proj = ['"' p.proj{slct(1)}.exp_parameters{1,2} '"'];
     for pj = 2:numel(slct)
-        str_proj = [str_proj ', "' pTP.proj{slct(pj)}.exp_parameters{1,2} ...
+        str_proj = [str_proj ', "' p.proj{slct(pj)}.exp_parameters{1,2} ...
             '"'];
     end
     del = questdlg(['Remove project ' str_proj ' from the list?'], ...
@@ -38,42 +39,43 @@ if ~strcmp(del, 'Yes')
 end
 
 % build action
-list_str = get(h.listbox_traceSet, 'String');
+list_str = get(h.listbox_proj, 'String');
 str_act = '';
 for i = slct
-    str_act = cat(2,str_act,'"',list_str{i},'" (',...
-        pTP.proj{i}.proj_file,')\n');
+    str_act = cat(2,str_act,'"',list_str{i},'"');
+    if ~isempty(p.proj{i}.proj_file)
+        str_act = cat(2,str_act,'(',p.proj{i}.proj_file,')');
+    end
+    str_act = cat(2,str_act,'\n');
 end
 str_act = str_act(1:end-2);
 
 % update current project, molecule index, data type and molecule subgroup
-pTP.proj(slct) = [];
-pHA.proj(slct) = [];
-pTA.proj(slct) = [];
-pTP.curr_mol(slct) = [];
-pHA.curr_tpe(slct) = [];
-pHA.curr_tag(slct) = [];
-pTA.curr_type(slct) = [];
-pTA.curr_tag(slct) = [];
+p.proj(slct) = [];
+p.sim.curr_plot(slct) = [];
+p.movPr.curr_plot(slct) = [];
+p.movPr.curr_frame(slct) = [];
+p.ttPr.curr_mol(slct) = [];
+p.ttPr.curr_plot(slct) = [];
+p.thm.curr_tpe(slct) = [];
+p.thm.curr_tag(slct) = [];
+p.thm.curr_plot(slct) = [];
+p.TDP.curr_type(slct) = [];
+p.TDP.curr_tag(slct) = [];
+p.TDP.curr_plot(slct) = [];
 
 % set new current project
-if size(pTP.proj,2) <= 1
-    pTP.curr_proj = 1;
-elseif slct(end) < size(pTP.proj,2)
-    pTP.curr_proj = slct(end)-numel(slct) + 1;
+if size(p.proj,2) <= 1
+    p.curr_proj = 1;
+elseif slct(end) < size(p.proj,2)
+    p.curr_proj = slct(end)-numel(slct) + 1;
 else
-    pTP.curr_proj = slct(end)-numel(slct);
+    p.curr_proj = slct(end)-numel(slct);
 end
-pHA.curr_proj = pTP.curr_proj;
-pTA.curr_proj = pTP.curr_proj;
 
 % update project lists
-pTP = ud_projLst(pTP, h.listbox_traceSet);
-pHA = ud_projLst(pHA, h.listbox_thm_projLst);
-pTA = ud_projLst(pTA, h.listbox_TDPprojList);
-h.param.ttPr = pTP;
-h.param.thm = pHA;
-h.param.TDP = pTA;
+p = ud_projLst(p, h.listbox_proj);
+h.param = p;
 guidata(h_fig, h);
 
 % update GUI with current project parameters
@@ -87,9 +89,7 @@ cla(h.axes_hist1);
 cla(h.axes_hist2);
 
 % update calculations and GUI
-updateFields(h_fig, 'ttPr');
-updateFields(h_fig, 'thm');
-updateFields(h_fig, 'TDP');
+updateFields(h_fig);
 
 % display action
 if numel(slct)>1

@@ -22,16 +22,16 @@ if ~isBgCorr
     else
         for c = 1:size(I,2)
             for l = 1:size(I,3)
-                p.proj{proj}.prm{mol}{3}{2}(l,c) = 1; % method manual
+                p.proj{proj}.TP.prm{mol}{3}{2}(l,c) = 1; % method manual
             end
         end
     end
 
     for c = 1:size(I,2)
         for l = 1:size(I,3)
-            method = p.proj{proj}.prm{mol}{3}{2}(l,c);
-            prm = p.proj{proj}.prm{mol}{3}{3}{l,c}(method,:);
-            apply = p.proj{proj}.prm{mol}{3}{1}(l,c);
+            method = p.proj{proj}.TP.prm{mol}{3}{2}(l,c);
+            prm = p.proj{proj}.TP.prm{mol}{3}{3}{l,c}(method,:);
+            apply = p.proj{proj}.TP.prm{mol}{3}{1}(l,c);
             
             img = [];
 
@@ -109,7 +109,8 @@ if ~isBgCorr
                         coord_dark(coord_dark(:,1)>=max_x)=max_x-1;
                         coord_dark(coord_dark(:,2)>=max_y)=max_y-1;
                     end
-                    p.proj{proj}.prm{mol}{3}{3}{l,c}(6,4:5) = coord_dark;
+                    p.proj{proj}.TP.prm{mol}{3}{3}{l,c}(6,4:5) = ...
+                        coord_dark;
                     [o,I_bg] = create_trace(coord_dark,aDim,nPix,fDat,...
                         true);
                     I_bg = slideAve(I_bg(l:size(I,3):end,:), prm(1));
@@ -120,7 +121,7 @@ if ~isBgCorr
                     bg = nPix*bg;
             end
 
-            p.proj{proj}.prm{mol}{3}{3}{l,c}(method,3) = mean(bg);
+            p.proj{proj}.TP.prm{mol}{3}{3}{l,c}(method,3) = mean(bg);
             if apply
                 I_bgCorr(:,c,l) = I(:,c,l) - bg;
             end

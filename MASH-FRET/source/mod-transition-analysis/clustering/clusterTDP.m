@@ -2,9 +2,9 @@ function p = clusterTDP(p,tag,tpe,h_fig)
 
 % collect interface parameters
 proj = p.curr_proj;
-prm = p.proj{proj}.prm{tag,tpe};
-curr = p.proj{proj}.curr{tag,tpe};
-def = p.proj{proj}.def{tag,tpe};
+prm = p.proj{proj}.TA.prm{tag,tpe};
+curr = p.proj{proj}.TA.curr{tag,tpe};
+def = p.proj{proj}.TA.def{tag,tpe};
 
 % make current settings the processing parameters at last update
 prm.clst_start = curr.clst_start;
@@ -107,5 +107,5 @@ curr.lft_res = prm.lft_res;
 curr.mdl_start = prm.mdl_start;
 curr.mdl_res = prm.mdl_res;
 
-p.proj{proj}.prm{tag,tpe} = prm;
-p.proj{proj}.curr{tag,tpe} = curr;
+p.proj{proj}.TA.prm{tag,tpe} = prm;
+p.proj{proj}.TA.curr{tag,tpe} = curr;

@@ -8,22 +8,18 @@ ttstr0{3} = wrapHtmlTooltipString('Select the <b>inferred model</b> to show on t
 
 % collect interface parameters
 h = guidata(h_fig);
-p = h.param.TDP;
+p = h.param;
+
+if ~prepPanel(h.uipanel_TA_results,h)
+    return
+end
+
+% collect experiment settings
 proj = p.curr_proj;
-tpe = p.curr_type(proj);
-tag = p.curr_tag(proj);
-
-% collect processing parameters
-curr = p.proj{proj}.curr{tag,tpe};
-prm = p.proj{proj}.prm{tag,tpe};
-
-set([h.text_TDPbobaRes h.text_TDPbobaSig h.edit_TDPbobaRes ...
-    h.edit_TDPbobaSig h.text_tdp_showModel h.text_tdp_Jequal h.text_tdp_BIC...
-    h.edit_tdp_BIC h.popupmenu_tdp_model h.pushbutton_tdp_impModel ...
-    h.pushbutton_TDPresetClust],'Enable','on');
-
-set([h.edit_TDPbobaRes h.edit_TDPbobaSig h.edit_tdp_BIC],'BackgroundColor',...
-    [1 1 1]);
+tpe = p.TDP.curr_type(proj);
+tag = p.TDP.curr_tag(proj);
+curr = p.proj{proj}.TA.curr{tag,tpe};
+prm = p.proj{proj}.TA.prm{tag,tpe};
 
 if isfield(curr,'clst_res') && ~isempty(curr.clst_res{1})
     isRes = true;

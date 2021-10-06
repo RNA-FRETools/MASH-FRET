@@ -7,28 +7,20 @@ function ud_VP_molCoordPan(h_fig)
 
 % collect interface parameters
 h = guidata(h_fig);
-p = h.param.movPr;
+p = h.param;
 
-% make elements invisible if panel is collapsed
-h_pan = h.uipanel_VP_moleculeCoordinates;
-if isPanelOpen(h_pan)==1
-    setProp(get(h_pan,'children'),'visible','off');
+if ~prepPanel(h.uipanel_VP_moleculeCoordinates,h)
     return
-else
-    setProp(get(h_pan,'children'),'visible','on');
 end
 
-% set all uicontrol enabled
-setProp(get(h_pan,'children'),'enable','on');
-
-% reset edit fields background color
-set([h.edit_aveImg_iv,h.edit_aveImg_start,h.edit_aveImg_end],...
-    'backgroundcolor',[1,1,1]);
+% collect processing parameters
+proj = p.curr_proj;
+prm = p.proj{proj}.VP;
 
 % set average image
-set(h.edit_aveImg_iv, 'String', num2str(p.ave_iv));
-set(h.edit_aveImg_start, 'String', num2str(p.ave_start));
-set(h.edit_aveImg_end, 'String', num2str(p.ave_stop));
+set(h.edit_aveImg_iv, 'String', num2str(prm.ave_iv));
+set(h.edit_aveImg_start, 'String', num2str(prm.ave_start));
+set(h.edit_aveImg_end, 'String', num2str(prm.ave_stop));
 
 % set spot finder
 ud_VP_sfPan(h_fig);

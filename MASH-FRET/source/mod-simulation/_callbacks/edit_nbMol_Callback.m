@@ -15,12 +15,17 @@ end
 
 % store value
 h = guidata(h_fig);
-h.param.sim.molNb = val;
+p = h.param;
+proj = p.curr_proj;
+prm = p.proj{proj}.sim;
+prm.molNb = val;
 
 % re-sort/clear coordinates
-h.param.sim = resetSimCoord(h.param.sim,h_fig);
+prm = resetSimCoord(prm,h_fig);
 
 % save results
+p.proj{proj}.sim = prm;
+h.param = p;
 guidata(h_fig, h);
 
 % set GUI to proper values

@@ -8,17 +8,16 @@ if ~(isfield(h,'figure_TA_fitSettings') && ...
     return
 end
 
-p = h.param.TDP;
+% collect interface and project parameters
+p = h.param;
 proj = p.curr_proj;
-tpe = p.curr_type(proj);
-tag = p.curr_tag(proj);
+tpe = p.TDP.curr_type(proj);
+tag = p.TDP.curr_tag(proj);
+curr = p.proj{proj}.TA.curr{tag,tpe};
+prm = p.proj{proj}.TA.prm{tag,tpe};
 
 h_fig2 = h.figure_TA_fitSettings;
 q = guidata(h_fig2);
-
-% collect project parameters
-curr = p.proj{proj}.curr{tag,tpe};
-prm = p.proj{proj}.prm{tag,tpe};
 
 % set all control enabled
 setProp(h.figure_TA_fitSettings, 'Enable', 'on');

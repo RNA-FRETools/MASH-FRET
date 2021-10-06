@@ -1,4 +1,4 @@
-function p = resetSimCoord(p,h_fig)
+function prm = resetSimCoord(prm,h_fig)
 % p = resetSimCoord(p,h_fig)
 %
 % Reset PSF factor matrix and erases previous coordinates if randomly generated or re-sort coordinates according to video dimensions if imported from file.
@@ -18,91 +18,85 @@ function p = resetSimCoord(p,h_fig)
 %
 % created by MH, 17.12.2019
 
-% collect parameters
-h = guidata(h_fig);
-
 % save current coordinates
-coord_prev = p.coord;
+coord_prev = prm.coord;
 
 % resort coordinates if imported from preset file
-if p.impPrm && isfield(p.molPrm,'coord')
+if prm.impPrm && isfield(prm.molPrm,'coord')
     setContPan(cat(2,'Re-sorting coordinates imported from the preset ',...
         'file according to the new video dimensions...'),'process',h_fig);
     
     % read original coordinates from file
-    [p.molPrm,errmsg] = setSimPrm(load(p.prmFile,'-mat'), p.movDim);
+    [prm.molPrm,errmsg] = setSimPrm(load(prm.prmFile,'-mat'), prm.movDim);
     if ~isempty(errmsg)
         setContPan(errmsg,'error',h_fig);
     end
 
-    if ~isfield(p.molPrm,'coord') || (isfield(p.molPrm,'coord') && ...
-            isempty(p.molPrm.coord))
+    if ~isfield(prm.molPrm,'coord') || (isfield(prm.molPrm,'coord') && ...
+            isempty(prm.molPrm.coord))
         % upon import/sorting failure, default is set to random coordinates
-        p.genCoord = 1;
+        prm.genCoord = 1;
         
     else
-        if ~isempty(p.coordFile)
+        if ~isempty(prm.coordFile)
             % discard ASCII file if any
-            p.coordFile = [];
+            prm.coordFile = [];
             setContPan(cat(2,'Coordinates are now imported from the preset',...
                 ' file: the coordinates file was automaticaly discarded.'),...
                 'warning',h_fig);
         end
         
         % set new sample size and coordinates
-        p.molNb = p.molPrm.molNb;
-        p.genCoord = 0;
-        p.coord = p.molPrm.coord;
+        prm.molNb = prm.molPrm.molNb;
+        prm.genCoord = 0;
+        prm.coord = prm.molPrm.coord;
         setContPan(cat(2,'Re-sorting completed!'),'success',h_fig);
     end
 end
 
 % resort coordinates if imported from ASCII file
-if ~isempty(p.coordFile)
+if ~isempty(prm.coordFile)
     setContPan(cat(2,'Re-sorting coordinates imported from the ASCII ',...
         'file according to the new video dimensions...'),'process',h_fig);
     
     % read original coordinates from file
-    coord_0 = readCoordFromFile(p.coordFile);
+    coord_0 = readCoordFromFile(prm.coordFile);
     
     % set sample size
-    if p.impPrm
-        N = p.molNb;
+    if prm.impPrm
+        N = prm.molNb;
     else
         N = 0;
     end
     
     % sort coordinates according to video dimensions and sample size
-    [ferr,p.coord,errmsg] = sortSimCoord(coord_0, p.movDim, N);
+    [ferr,prm.coord,errmsg] = sortSimCoord(coord_0, prm.movDim, N);
 
-    if isempty(p.coord)
+    if isempty(prm.coord)
         % show import/sorting failure messages
         setContPan(errmsg,'error',h_fig);
         
         % coordinates are from now on randomly generated
-        p.genCoord = 1;
+        prm.genCoord = 1;
         
         if ferr
             % discard file if import error
-            p.coordFile = [];
+            prm.coordFile = [];
         end
     else
         % set new sample size
-        p.molNb = size(p.coord,1);
+        prm.molNb = size(prm.coord,1);
         setContPan(cat(2,'Re-sorting completed!'),'success',h_fig);
     end
 end
 
 % clear coordinates if randomly generated
-if p.genCoord
-    p.coord = [];
+if prm.genCoord
+    prm.coord = [];
 end
 
 % clear PSF factorization matrix if coordinates changed after resorting/clearing
-if ~isequal(p.coord,coord_prev) || isempty(p.coord)
-    p.matGauss = cell(1,4);
+if ~isequal(prm.coord,coord_prev) || isempty(prm.coord)
+    prm.matGauss = cell(1,4);
 end
-
-% show potentially new coordinates in table
-setSimCoordTable(p, h.uitable_simCoord);
 

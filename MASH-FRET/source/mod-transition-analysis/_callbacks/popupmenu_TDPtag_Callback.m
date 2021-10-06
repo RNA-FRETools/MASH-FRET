@@ -1,15 +1,17 @@
 function popupmenu_TDPtag_Callback(obj,evd,h_fig)
 
 h = guidata(h_fig);
-p = h.param.TDP;
-if isempty(p.proj)
+p = h.param;
+if ~isModuleOn(p,'TA')
     return
 end
-    
+
 proj = p.curr_proj;
+tag = p.TDP.curr_tag(proj);
+
 val = get(obj,'Value');
 
-if val==p.curr_tag(proj)
+if val==tag
     return
 end
 
@@ -21,8 +23,8 @@ else
     setContPan('Select all molecule.','success',h_fig);
 end
 
-p.curr_tag(proj) = val;
-h.param.TDP = p;
+p.TDP.curr_tag(proj) = val;
+h.param = p;
 guidata(h_fig, h);
 
 % update TDP and plot

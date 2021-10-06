@@ -10,8 +10,13 @@ function pushbutton_loadFactors_Callback(obj, ~, h_fig)
 % update by MH, 3.4.2019: (1) moved pushbutton_loadGamma_Callback from gammaOpt.m to separate file to allow calling from multiple sources (2) adapt import for multiple FRET data and manage actions
 
 h = guidata(h_fig);
-p = h.param.ttPr;
-defPth = h.folderRoot;
+p = h.param;
+if ~isModuleOn(p,'TP')
+    return
+end
+
+proj = p.curr_proj;
+defPth = p.proj{proj}.folderRoot;
 
 % load gamma factor file if it exists
 if iscell(obj)

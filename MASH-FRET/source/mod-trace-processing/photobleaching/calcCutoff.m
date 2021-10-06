@@ -16,12 +16,12 @@ nFRET = size(p.proj{proj}.FRET,1);
 S = p.proj{proj}.S;
 nS = size(S,1);
 if nFRET>0
-    gamma = p.proj{proj}.curr{mol}{6}{1}(1,:);
+    gamma = p.proj{proj}.TP.curr{mol}{6}{1}(1,:);
     if nS>0
-        beta = p.proj{proj}.curr{mol}{6}{1}(2,:);
+        beta = p.proj{proj}.TP.curr{mol}{6}{1}(2,:);
     end
 end
-prm = p.proj{proj}.curr{mol}{2};
+prm = p.proj{proj}.TP.curr{mol}{2};
 
 apply = prm{1}(1);
 start = ceil(prm{1}(4)/nExc);
@@ -129,7 +129,7 @@ else
     incl(start:firstNan-1) = true;
 end
 
-p.proj{proj}.prm{mol}{2}{1}(4+method) = cutOff*nExc;
+p.proj{proj}.TP.prm{mol}{2}{1}(4+method) = cutOff*nExc;
 p.proj{proj}.bool_intensities(:,mol) = incl;
 
 

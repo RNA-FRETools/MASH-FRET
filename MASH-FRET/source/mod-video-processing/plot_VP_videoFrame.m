@@ -1,4 +1,4 @@
-function h_img = plot_VP_videoFrame(h_axes, h_cb, img, chansplit, p)
+function h_img = plot_VP_videoFrame(h_axes, h_cb, img, chansplit, prm)
 % h_img = plot_VP_videoFrame(h_axes, h_cb, img, chansplit, l0, p)
 %
 % Plot current video frame after image filtering and spots coordinates after transformation or spot finfing
@@ -17,38 +17,39 @@ chanstl = '--w';
 chanlw = 2;
 
 % get spots coordinates
+nChan = numel(chansplit)+1;
 spots = [];
-switch p.coord2plot
+switch prm.coord2plot
     case 1 % spotfinder
-        if ~isempty(p.SFres)
-            for c = 1:p.nChan
-                if size(p.SFres,2)>=c && ~isempty(p.SFres{2,c})
-                    spots = cat(1, spots, p.SFres{2,c}(:,1:2));
+        if ~isempty(prm.SFres)
+            for c = 1:nChan
+                if size(prm.SFres,2)>=c && ~isempty(prm.SFres{2,c})
+                    spots = cat(1, spots, prm.SFres{2,c}(:,1:2));
                 end
             end
         end
     case 2 % reference coordinates
-        for c = 1:p.nChan
-            if size(p.trsf_coordRef)>=(2*c)
-                spots = cat(1, spots, p.trsf_coordRef(:,(2*c-1):(2*c)));
+        for c = 1:nChan
+            if size(prm.trsf_coordRef)>=(2*c)
+                spots = cat(1, spots, prm.trsf_coordRef(:,(2*c-1):(2*c)));
             end
         end
     case 3 % coordinates to tranform
-        for c = 1:p.nChan
-            if size(p.coordMol)>=(2*c)
-                spots = cat(1, spots, p.coordMol(:,(2*c-1):(2*c)));
+        for c = 1:nChan
+            if size(prm.coordMol)>=(2*c)
+                spots = cat(1, spots, prm.coordMol(:,(2*c-1):(2*c)));
             end
         end
     case 4 % transformed coordinates
-        for c = 1:p.nChan
-            if size(p.coordTrsf)>=(2*c)
-                spots = cat(1, spots, p.coordTrsf(:,(2*c-1):(2*c)));
+        for c = 1:nChan
+            if size(prm.coordTrsf)>=(2*c)
+                spots = cat(1, spots, prm.coordTrsf(:,(2*c-1):(2*c)));
             end
         end
     case 5 % transformed coordinates
-        for c = 1:p.nChan
-            if size(p.coordItg)>=(2*c)
-                spots = cat(1, spots, p.coordItg(:,(2*c-1):(2*c)));
+        for c = 1:nChan
+            if size(prm.coordItg)>=(2*c)
+                spots = cat(1, spots, prm.coordItg(:,(2*c-1):(2*c)));
             end
         end
 end
@@ -84,7 +85,7 @@ set(h_axes,'nextPlot','replacechildren','xlim',[0,w],'ylim',[0,h],'clim',...
     [img_min,img_max]);
 
 % set colorbar label
-if p.perSec
+if prm.perSec
     ylabel(h_cb, 'intensity(counts /pix /s)');
 else
     ylabel(h_cb, 'intensity(counts /pix)');

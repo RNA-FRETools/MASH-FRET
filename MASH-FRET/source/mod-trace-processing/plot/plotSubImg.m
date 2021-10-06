@@ -9,18 +9,18 @@ if ~isempty(p.proj)
     proj = p.curr_proj;
     if p.proj{proj}.is_coord && p.proj{proj}.is_movie
         nChan = p.proj{proj}.nb_channel;
-        exc = p.proj{proj}.fix{1}(1);
+        exc = p.proj{proj}.TP.fix{1}(1);
         res_x = p.proj{proj}.movie_dim(1);
         res_y = p.proj{proj}.movie_dim(2);
         split = round(res_x/nChan)*(1:nChan-1);
         img = p.proj{proj}.aveImg{exc};
         lim_x = [0 split res_x];
         q.lim.y = [0 res_y];
-        q.brght = p.proj{proj}.fix{1}(3); % [-1:1]
-        q.ctrst = p.proj{proj}.fix{1}(4); % [-1:1]
+        q.brght = p.proj{proj}.TP.fix{1}(3); % [-1:1]
+        q.ctrst = p.proj{proj}.TP.fix{1}(4); % [-1:1]
         q.itgArea = p.proj{proj}.pix_intgr(1);
         
-        p_bg = p.proj{proj}.curr{mol}{3};
+        p_bg = p.proj{proj}.TP.curr{mol}{3};
 
         for c = 1:nChan
             q.lim.x = [lim_x(c) lim_x(c+1)];
@@ -36,7 +36,7 @@ if ~isempty(p.proj)
                     set(h_axes(c), 'NextPlot', 'add');
                     if p_bg{3}{exc,c}(6,6) % auto dark
                         coord_dark = getDarkCoord(exc,mol,c,p,q.dimImg);
-                        p.proj{proj}.curr{mol}{3}{3}{exc,c}(6,4:5) = ...
+                        p.proj{proj}.TP.curr{mol}{3}{3}{exc,c}(6,4:5) = ...
                             coord_dark;
                     else
                         coord_dark = p_bg{3}{exc,c}(6,4:5)+0.5;
@@ -48,7 +48,7 @@ if ~isempty(p.proj)
                         [0,1,0]);
                     plot(h_axes(c),crdCenter(1),crdCenter(2),'+g', ...
                         'MarkerSize',10);
-                    set(h_axes(c), 'NextPlot', 'replace');
+                    set(h_axes(c), 'NextPlot', 'replacechildren');
                 end
             end
         end
@@ -101,7 +101,7 @@ for m = 1:size(coord,1)
     end
 end
 
-set(h_axes, 'NextPlot', 'replace');
+set(h_axes, 'NextPlot', 'replacechildren');
 axis(h_axes, 'image');
 xlim(h_axes, lim_img_x);
 ylim(h_axes, lim_img_y);

@@ -1,15 +1,13 @@
-function p = importTA(p,dat,h_fig)
-% p = importTA(p,dat,h_fig)
+function p = importTA(p,projs)
+% p = importTA(p,projs)
 %
-% p: structure containing parameters for Transition analysis interface
-% dat: structure containing project data
-% h_fig: handle to main figure
-
-% add project to list
-p.proj = [p.proj dat];
+% Ensure proper import of input projects' TA analysis parameters.
+%
+% p: structure containing interface parameters
+% projs: indexes of projects
 
 % define data processing parameters applied (prm)
-for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
+for i = projs
     
     nChan = p.proj{i}.nb_channel;
     nExc = p.proj{i}.nb_excitations;
@@ -17,40 +15,35 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
     nS = size(p.proj{i}.S,1);
     nTpe = nChan*nExc + nFRET + nS;
     nTag = numel(p.proj{i}.molTagNames);
+
+    % set default processing parameters
+    p.proj{i}.TA.def = setDefPrm_TDP(p.proj{i},p);
     
-    p.curr_type(i) = 1;
-    p.curr_tag(i) = 1;
-
-    p.proj{i}.def = setDefPrm_TDP(p,i);
-
-    if ~isfield(p.proj{i}, 'prmTDP')
-        p.proj{i}.prm = cell(nTag+1,nTpe);
-    else
-        p.proj{i}.prm = p.proj{i}.prmTDP;
-        p.proj{i} = rmfield(p.proj{i}, 'prmTDP');
+    % initializes processing parameters
+    if ~isfield(p.proj{i}.TA, 'prm')
+        p.proj{i}.TA.prm = cell(nTag+1,nTpe);
     end
-    if ~isfield(p.proj{i}, 'expTDP')
+    
+    % initializes export options
+    if ~isfield(p.proj{i}.TA, 'exp')
         p.proj{i}.exp = [];
-    else
-        p.proj{i}.exp = p.proj{i}.expTDP;
-        p.proj{i} = rmfield(p.proj{i}, 'expTDP');
     end
     
     % if the number of data changed, reset results and resize
-    if size(p.proj{i}.prm,2)~=(nTpe)
+    if size(p.proj{i}.TA.prm,2)~=(nTpe)
         disp(['Data types changed since last saving: Transition analysis ',...
             'results are reset.']);
-        p.proj{i}.prm = cell(nTag+1,nTpe);
+        p.proj{i}.TA.prm = cell(nTag+1,nTpe);
     end
     
     % if the number of tags changed, reset results and resize
-    if size(p.proj{i}.prm,1)~=(nTag+1)
+    if size(p.proj{i}.TA.prm,1)~=(nTag+1)
         disp(['Molecule subgroups changed since last saving: Transition ',...
             'analysis results are reset.']);
-        p.proj{i}.prm = cat(1,p.proj{i}.prm(1,:),cell(nTag,nTpe));
+        p.proj{i}.TA.prm = cat(1,p.proj{i}.TA.prm(1,:),cell(nTag,nTpe));
     end
     
-    p.proj{i}.curr = cell(nTag+1,nTpe);
+    p.proj{i}.TA.curr = cell(nTag+1,nTpe);
     for tpe = 1:nTpe
         for tag = 1:(nTag+1)
 
@@ -58,8 +51,13 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
 
             % if size of already applied parameters is different from
             % defaults, used defaults
-            p.proj{i}.curr{tag,tpe} = checkValTDP(p,p.proj{i}.prm{tag,tpe},...
-                p.proj{i}.def{tag,tpe});
+            p.proj{i}.TA.curr{tag,tpe} = checkValTDP(p,...
+                p.proj{i}.TA.prm{tag,tpe},p.proj{i}.TA.def{tag,tpe});
         end
     end
+    
+    % initializes current data type, tag and plot
+    p.TDP.curr_type(i) = 1;
+    p.TDP.curr_tag(i) = 1;
+    p.TDP.curr_plot(i) = 1;
 end

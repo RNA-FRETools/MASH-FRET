@@ -2,8 +2,8 @@ function [p,ok,str] = buildTDP(p,tag,tpe)
 
 % collect interface parameters
 proj = p.curr_proj;
-prm = p.proj{proj}.prm{tag,tpe};
-curr = p.proj{proj}.curr{tag,tpe};
+prm = p.proj{proj}.TA.prm{tag,tpe};
+curr = p.proj{proj}.TA.curr{tag,tpe};
 
 % make current settings the processing parameters at last update
 prm.plot = curr.plot;
@@ -15,7 +15,7 @@ rearrng = prm.plot{1}(4,2);
 incldiag = prm.plot{1}(4,3);
 
 % build TDP matrix
-[TDP,dt_bin,ok,str] = getTDPmat(tpe, tag, [xaxis,onecount,rearrng,incldiag], ...
+[TDP,dt_bin,ok,str] = getTDPmat(tpe,tag,[xaxis,onecount,rearrng,incldiag], ...
     p.proj{proj});
 
 prm.plot{2} = TDP;
@@ -25,7 +25,7 @@ prm.plot{3} = dt_bin;
 curr.plot = prm.plot;
 
 % save modifications
-p.proj{proj}.prm{tag,tpe} = prm;
-p.proj{proj}.curr{tag,tpe} = curr;
+p.proj{proj}.TA.prm{tag,tpe} = prm;
+p.proj{proj}.TA.curr{tag,tpe} = curr;
 
 

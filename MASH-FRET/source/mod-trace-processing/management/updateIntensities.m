@@ -17,10 +17,10 @@ if ~isBgCorr
 end
 
 % save current processing parameters
-if isempty(p.proj{proj}.prm{m})
-    p.proj{proj}.prm{m} = cell(1,size(p.proj{proj}.curr{m},2));
+if isempty(p.proj{proj}.TP.prm{m})
+    p.proj{proj}.TP.prm{m} = cell(1,size(p.proj{proj}.TP.curr{m},2));
 end
-p.proj{proj}.prm{m}([1:3,5]) = p.proj{proj}.curr{m}([1:3,5]);
+p.proj{proj}.TP.prm{m}([1:3,5]) = p.proj{proj}.TP.curr{m}([1:3,5]);
 
 % correct background
 if strcmp(opt2, 'ttBg') || strcmp(opt2, 'ttPr')
@@ -46,6 +46,6 @@ if strcmp(opt2, 'debleach') || strcmp(opt2, 'denoise') || ...
 end
 
 % save changes to current parameters
-p.proj{proj}.curr{m}([1:3,5]) = p.proj{proj}.prm{m}([1:3,5]);
-p.proj{proj}.def.mol([1:3,5]) = p.proj{proj}.prm{m}([1:3,5]);
+p.proj{proj}.TP.curr{m}([1:3,5]) = p.proj{proj}.TP.prm{m}([1:3,5]);
+p.proj{proj}.TP.def.mol([1:3,5]) = p.proj{proj}.TP.prm{m}([1:3,5]);
 

@@ -1,25 +1,31 @@
 function pushbutton_TDPresetClust_Callback(obj, evd, h_fig)
 
+% get interface parameters
 h = guidata(h_fig);
-p = h.param.TDP;
-if isempty(p.proj)
+p = h.param;
+if ~isModuleOn(p,'TA')
     return
 end
 
 proj = p.curr_proj;
-tpe = p.curr_type(proj);
-tag = p.curr_tag(proj);
+tag = p.TDP.curr_tag(proj);
+tpe = p.TDP.curr_type(proj);
+def = p.proj{proj}.TA.def{tag,tpe};
+prm = p.proj{proj}.TA.prm{tag,tpe};
+curr = p.proj{proj}.TA.curr{tag,tpe};
 
-p.proj{proj}.prm{tag,tpe}.clst_res = p.proj{proj}.def{tag,tpe}.clst_res;
-p.proj{proj}.prm{tag,tpe}.lft_start = p.proj{proj}.def{tag,tpe}.lft_start;
-p.proj{proj}.prm{tag,tpe}.lft_res = p.proj{proj}.def{tag,tpe}.lft_res;
-p.proj{proj}.prm{tag,tpe}.mdl_res = p.proj{proj}.def{tag,tpe}.mdl_res;
-p.proj{proj}.curr{tag,tpe}.clst_res = p.proj{proj}.prm{tag,tpe}.clst_res;
-p.proj{proj}.curr{tag,tpe}.lft_start = p.proj{proj}.prm{tag,tpe}.lft_start;
-p.proj{proj}.curr{tag,tpe}.lft_res = p.proj{proj}.prm{tag,tpe}.lft_res;
-p.proj{proj}.curr{tag,tpe}.mdl_res = p.proj{proj}.prm{tag,tpe}.mdl_res;
+prm.clst_res = def.clst_res;
+prm.lft_start = def.lft_start;
+prm.lft_res = def.lft_res;
+prm.mdl_res = def.mdl_res;
+curr.clst_res = prm.clst_res;
+curr.lft_start = prm.lft_start;
+curr.lft_res = prm.lft_res;
+curr.mdl_res = prm.mdl_res;
 
-h.param.TDP = p;
+p.proj{proj}.TA.prm{tag,tpe} = prm;
+p.proj{proj}.TA.curr{tag,tpe} = curr;
+h.param = p;
 guidata(h_fig, h);
 
 % update plots and GUI

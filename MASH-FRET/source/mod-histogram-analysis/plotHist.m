@@ -4,6 +4,12 @@ if isempty(P)
     return
 end
 
+% collect interface parameters
+h = guidata(h_fig);
+p = h.param;
+proj = p.curr_proj;
+tpe = p.thm.curr_tpe(proj);
+
 isInt = ~isempty(intUnits);
 if isInt
     perSec = intUnits{1,1};
@@ -235,11 +241,6 @@ switch meth
             set(h_axes(2),'NextPlot','replace');
         end
 end
-
-h = guidata(h_fig);
-p = h.param.thm;
-proj = p.curr_proj;
-tpe = p.curr_tpe(proj);
 
 str_tpe = get(h.popupmenu_thm_tpe, 'String');
 

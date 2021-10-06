@@ -1,6 +1,10 @@
 function tooglebutton_TDPselect_Callback(obj,evd,h_fig,ind)
 
 h = guidata(h_fig);
+p = h.param;
+if ~isModuleOn(p,'TA')
+    return
+end
 
 switch ind
     case 1 % reset tool
@@ -17,15 +21,17 @@ switch ind
         ud_TDPmdlSlct(h_fig);
         
     case 3 % reset selection
-        p = h.param.TDP;
-        proj = p.curr_proj;
-        tpe = p.curr_type(proj);
-        tag = p.curr_tag(proj);
 
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(:,[1,2]) = 0;
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(:,[3,4]) = Inf;
+        proj = p.curr_proj;
+        tpe = p.TDP.curr_type(proj);
+        tag = p.TDP.curr_tag(proj);
+        curr = p.proj{proj}.TA.curr{tag,tpe};
+
+        curr.clst_start{2}(:,[1,2]) = 0;
+        curr.clst_start{2}(:,[3,4]) = Inf;
         
-        h.param.TDP = p;
+        p.proj{proj}.TA.curr{tag,tpe} = curr;
+        h.param = p;
         guidata(h_fig,h);
         
         updateFields(h_fig,'TDP');

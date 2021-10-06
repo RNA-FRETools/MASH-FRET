@@ -26,16 +26,20 @@ ttstr1{3} = wrapHtmlTooltipString('Select a cluster to configure');
 
 % collect interface parameters
 h = guidata(h_fig);
-p = h.param.TDP;
-if isempty(p.proj)
+p = h.param;
+
+if ~prepPanel(h.uipanel_TA_clusters,h)
+    set(h.uipanel_TA_selectTool,'visible','off');
+    set(h.tooglebutton_TDPmanStart,'value',0);
     return
 end
-proj = p.curr_proj;
-tpe = p.curr_type(proj);
-tag = p.curr_tag(proj);
 
-% collect processing parameters
-curr = p.proj{proj}.curr{tag,tpe};
+% collect experiment settings
+proj = p.curr_proj;
+tpe = p.TDP.curr_type(proj);
+tag = p.TDP.curr_tag(proj);
+curr = p.proj{proj}.TA.curr{tag,tpe};
+
 meth = curr.clst_start{1}(1);
 shape = curr.clst_start{1}(2);
 Jmax = curr.clst_start{1}(3);

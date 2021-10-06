@@ -13,17 +13,24 @@ function TTgenGo(h_fig,varargin)
 % update by MH, 18.2.2019: change default folder to video_processing comment code
 
 h = guidata(h_fig);
-p = h.param.movPr;
+p = h.param;
+if ~isModuleOn(p,'VP')
+    return
+end
+
+proj = p.curr_proj;
+folderRoot = p.proj{proj}.folderRoot;
+prm = p.proj{proj}.VP;
 
 % update data
 updateFields(h_fig,'movPr');
 
-if ~(isfield(p,'itg_movFullPth') && ~isempty(p.itg_movFullPth))
+if ~(isfield(prm,'itg_movFullPth') && ~isempty(prm.itg_movFullPth))
     set(h.edit_movItg,'BackgroundColor',[1 0.75 0.75]);
     updateActPan('No movie loaded.',h_fig,'error');
     return
 end
-if ~(isfield(p, 'coordItg') && ~isempty(p.coordItg))
+if ~(isfield(prm,'coordItg') && ~isempty(prm.coordItg))
     set(h.edit_itg_coordFile,'BackgroundColor',[1,0.75,0.75]);
     updateActPan('No coordinates loaded.',h_fig,'error');
     return
@@ -38,8 +45,8 @@ if ~isempty(varargin)
     end
     fromRoutine = true;
 else
-    [o,movName,o] = fileparts(p.itg_movFullPth);
-    defName = cat(2,setCorrectPath(h.folderRoot,h_fig),movName,...
+    [o,movName,o] = fileparts(prm.itg_movFullPth);
+    defName = cat(2,setCorrectPath(folderRoot,h_fig),movName,...
         '.mash');
     [fname,pname,o] = uiputfile({'*.mash;', 'MASH project(*.mash)'; ...
          '*.*','All Files (*.*)'},'Export MASH project',defName);
@@ -68,5 +75,6 @@ save(cat(2,pname,fname_proj),'-struct','dat');
 if ~fromRoutine
     pname = [];
 end
-saveTraces(dat,pname,fname_proj,{p.itg_expMolFile p.itg_expFRET},h_fig);
+saveTraces(dat,pname,fname_proj,...
+    {prm.itg_expMolFile prm.itg_expFRET},h_fig);
 

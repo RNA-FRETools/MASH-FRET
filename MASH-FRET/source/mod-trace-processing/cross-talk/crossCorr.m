@@ -34,7 +34,7 @@ if ~isCrossCorr
             for c2 = 1:nChan % c bleeds into c2
                 if c ~= c2
                     n = n+1;
-                    coeff = p.proj{proj}.fix{4}{1}(c,n);
+                    coeff = p.proj{proj}.TP.fix{4}{1}(c,n);
                     I_corr(:,c2,:) = I_corr(:,c2,:)-coeff*I_bgCorr(:,c,:);
                 end
             end
@@ -46,11 +46,11 @@ if ~isCrossCorr
 
             l0 = find(exc==chanExc(c));
             if isempty(l0)
-                if sum(p.proj{proj}.fix{4}{2}(:,c))
+                if sum(p.proj{proj}.TP.fix{4}{2}(:,c))
                     disp(cat(2,labels{c},'-specific illumination ',...
                         'is not defined: direct excitation can not be ',...
                         'calculated; DE coefficient set to zero.'));
-                    p.proj{proj}.fix{4}{2}(:,c) = 0;
+                    p.proj{proj}.TP.fix{4}{2}(:,c) = 0;
                 end
                 continue;
             end
@@ -61,7 +61,7 @@ if ~isCrossCorr
                 if l ~= l0
                     n = n+1;
 
-                    coeff = p.proj{proj}.fix{4}{2}(n,c);
+                    coeff = p.proj{proj}.TP.fix{4}{2}(n,c);
                     I_corr(:,c,l) = I_corr(:,c,l) - coeff*I_corr(:,c,l0);
                 end
             end

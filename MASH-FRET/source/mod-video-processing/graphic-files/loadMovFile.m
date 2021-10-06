@@ -8,16 +8,25 @@ function ok = loadMovFile(n, txt, setMovParam, h_fig)
 % setMovParam: obsolete
 % h_fig: handle to the main figure
 
+% default
+vidfmt = {'.sif','.vsi','.ets','.sira','.tif','.gif','.png','.spe','.pma',...
+    '.avi'};
+
 % initialize output
 ok = 0;
 
 % get source file
 if ~iscell(txt)
-    [fname,pname,o] = uigetfile({cat(2,'*.vsi;*.ets;*.sif;*.sira;*.tif;',...
-        '*.gif;*.png;*.spe;*.pma;*.crd;*.spots;*.coord;*.avi'), ...
-        ['Supported Graphic File Format',cat(2,'(*.vsi,*.ets,*.sif,',...
-        '*.sira,*.tif,*.gif,*.png,*.spe,*.pma,*.crd,*.spots,*.coord,',...
-        '*.avi)')];'*.*','All File Format(*.*)'},txt);
+    str0 = ['*',vidfmt{1}];
+    str1 = ['(*',vidfmt{1}];
+    for fmt = 2:numel(vidfmt)
+        str0 = cat(2,str0,';*',vidfmt{fmt});
+        str1 = cat(2,str1,',*',vidfmt{fmt});
+    end
+    str1 = [str1,')'];
+    [fname,pname,o] = uigetfile({...
+        str0,['Supported Graphic File Format',str1]; ...
+        '*.*','All File Format(*.*)'},txt);
 else
     pname = txt{1}; % ex: C:\Users\MASH\Documents\MATLAB\
     fname = txt{2}; % ex: movie.sif
@@ -94,7 +103,7 @@ switch fExt
         fExt = 'spots';
     otherwise
         updateActPan('File format not supported.', h_fig, 'error');
-        return;
+        return
 end
 
 % set video parameters

@@ -6,8 +6,8 @@ function pushbutton_thm_export_Callback(obj, evd, h_fig)
 % file_out: {1-by-2} destination folder and file
 
 h = guidata(h_fig);
-p = h.param.thm;
-if isempty(p.proj)
+p = h.param;
+if ~isModuleOn(p,'HA')
     return
 end
 

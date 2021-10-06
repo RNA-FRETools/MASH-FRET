@@ -19,8 +19,8 @@ if ~isempty(varargin)
 end
 
 h = guidata(h_fig);
-p = h.param.TDP;
-if isempty(p.proj)
+p = h.param;
+if ~isModuleOn(p,'TA')
     cla(h.axes_TDPplot1);
     cla(h.axes_tdp_BIC);
     cla(h.axes_TDPplot2);
@@ -33,15 +33,22 @@ if isempty(p.proj)
     cla(h.axes_TA_mdlBIC);
     cla(h.axes_TA_mdlPop);
     cla(h.axes_TA_mdlTrans);
+    
+    % make axes invisible
+    set([h.axes_TDPplot1,h.axes_tdp_BIC,h.colorbar_TA,h.axes_TDPplot2,...
+        h.axes_TDPplot3,h.axes_TDPcmap,h.axes_TA_mdlDt,h.axes_TA_mdlBIC,...
+        h.axes_TA_mdlPop,h.axes_TA_mdlTrans], 'Visible', 'off');
+    
     return
 end
 
 proj = p.curr_proj;
+tag = p.TDP.curr_tag(proj);
+tpe = p.TDP.curr_type(proj);
+curr = p.proj{proj}.TA.curr{tag,tpe};
+prm = p.proj{proj}.TA.prm{tag,tpe};
+def = p.proj{proj}.TA.def{tag,tpe};
 
-tag = p.curr_tag(proj);
-tpe = p.curr_type(proj);
-curr = p.proj{proj}.curr{tag,tpe};
-prm = p.proj{proj}.prm{tag,tpe};
 v_lft = curr.lft_start{2}(2);
 v_mdl = get(h.popupmenu_TA_mdlDtState,'Value');
 k = get(h.popupmenu_TA_slTrans,'value');
@@ -55,5 +62,5 @@ if strcmp(opt,'all') || strcmp(opt,'kin')
 end
 if strcmp(opt,'all') || strcmp(opt,'mdl')
     plotKinMdl([h.axes_TDPplot3,h.axes_TA_mdlPop,h.axes_TA_mdlTrans,...
-        h.axes_TA_mdlDt,h.axes_TA_mdlBIC],prm,v_mdl);
+        h.axes_TA_mdlDt,h.axes_TA_mdlBIC],prm,def,v_mdl);
 end

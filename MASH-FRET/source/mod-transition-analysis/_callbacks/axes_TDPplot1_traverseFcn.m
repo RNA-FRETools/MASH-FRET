@@ -1,6 +1,15 @@
 function axes_TDPplot1_traverseFcn(h_fig,pos)
 
 h = guidata(h_fig);
+p = h.param;
+if ~isModuleOn(p,'TA')
+    return
+end
+
+proj = p.curr_proj;
+tpe = p.TDP.curr_type(proj);
+tag = p.TDP.curr_tag(proj);
+curr = p.proj{proj}.TA.curr{tag,tpe};
 
 pos = posFigToAxes(pos,h_fig,h.axes_TDPplot1,'normalized');
 x = pos(1);
@@ -22,17 +31,12 @@ else
 end
 
 if tool==2 && isDown && ~isempty(pos0)
-    p = h.param.TDP;
-    proj = p.curr_proj;
-    tpe = p.curr_type(proj);
-    tag = p.curr_tag(proj);
-
-    J = p.proj{proj}.curr{tag,tpe}.clst_start{1}(3);
-    mat = p.proj{proj}.curr{tag,tpe}.clst_start{1}(4);
-    clstDiag = p.proj{proj}.curr{tag,tpe}.clst_start{1}(9);
+    J = curr.clst_start{1}(3);
+    mat = curr.clst_start{1}(4);
+    clstDiag = curr.clst_start{1}(9);
     
     % get cluster shape
-    shape = p.proj{proj}.curr{tag,tpe}.clst_start{1}(2);
+    shape = curr.clst_start{1}(2);
     
     % get shape radius
     wslct = abs(pos0(1)-x);
@@ -59,30 +63,31 @@ if tool==2 && isDown && ~isempty(pos0)
         [j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
         kx = j1==state;
         ky = j2==state;
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(kx,1) = pos0(1)+(x-pos0(1))/2;
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(ky,2) = pos0(1)+(x-pos0(1))/2;
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(kx,3) = halfw;
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(ky,4) = halfw;
+        curr.clst_start{2}(kx,1) = pos0(1)+(x-pos0(1))/2;
+        curr.clst_start{2}(ky,2) = pos0(1)+(x-pos0(1))/2;
+        curr.clst_start{2}(kx,3) = halfw;
+        curr.clst_start{2}(ky,4) = halfw;
         
     elseif mat==2 % symmetrical
         k = get(h.popupmenu_TDPstate, 'Value');
         k1 = k;
         k2 = k+J;
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k1,[1,2]) = pos0+([x,y]-pos0)/2;
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k2,[2,1]) = pos0+([x,y]-pos0)/2;
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k1,[3,4]) = [halfw,halfh];
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k2,[4,3]) = [halfw,halfh];
+        curr.clst_start{2}(k1,[1,2]) = pos0+([x,y]-pos0)/2;
+        curr.clst_start{2}(k2,[2,1]) = pos0+([x,y]-pos0)/2;
+        curr.clst_start{2}(k1,[3,4]) = [halfw,halfh];
+        curr.clst_start{2}(k2,[4,3]) = [halfw,halfh];
         
     else % free
         k = get(h.popupmenu_TDPstate, 'Value');
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k,[1,2]) = pos0+([x,y]-pos0)/2;
-        p.proj{proj}.curr{tag,tpe}.clst_start{2}(k,[3,4]) = [halfw,halfh];
+        curr.clst_start{2}(k,[1,2]) = pos0+([x,y]-pos0)/2;
+        curr.clst_start{2}(k,[3,4]) = [halfw,halfh];
     end
     
     lim_x = get(h.axes_TDPplot1,'xlim');
     lim_y = get(h.axes_TDPplot1,'ylim');
-
-    h.param.TDP = p;
+    
+    p.proj{proj}.TA.curr{tag,tpe} = curr;
+    h.param = p;
     guidata(h_fig, h);
     updateFields(h_fig, 'TDP');
     

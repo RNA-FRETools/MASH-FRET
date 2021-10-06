@@ -7,9 +7,9 @@ function ud_TTprojPrm(h_fig)
 % update, 28.3.2019 by MH: Visibility of UI controls for DE coefficients is not manage here anymore but in ud_cross.m
 
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
 
-setProp(get(h.uipanel_TP, 'Children'), 'Visible', 'on');
+% setProp(get(h.uipanel_TP, 'Children'), 'Visible', 'on');
 
 % set default tag name list invisible and update corresponding button 
 % appearance
@@ -27,7 +27,7 @@ if isfield(h, 'axes_subImg')
     h = rmfield(h, 'axes_subImg');
 end
 
-if ~isempty(p.proj)
+if isModuleOn(p,'TP')
     proj = p.curr_proj;
     isMov = p.proj{proj}.is_movie;
     isCoord = p.proj{proj}.is_coord;
@@ -35,23 +35,20 @@ if ~isempty(p.proj)
     labels = p.proj{proj}.labels;
     FRET = p.proj{proj}.FRET;
     S = p.proj{proj}.S;
-    nFRET = size(FRET,1);
-    nS = size(S,1);
     exc = p.proj{proj}.excitations;
     nExc = p.proj{proj}.nb_excitations;
-    
-    % added by MH, 29.3.2019
     chanExc = p.proj{proj}.chanExc;
-    
     incl = p.proj{proj}.coord_incl;
-    p_fix = p.proj{proj}.fix;
+    clr = p.proj{proj}.colours;
+    p_fix = p.proj{proj}.TP.fix;
+    
     nMol = size(incl,2);
     perSec = p_fix{2}(4);
     perPix = p_fix{2}(5);
     
     setProp(get(h.uipanel_TP, 'Children'), 'Enable', 'on');
     set(h.text_molTot, 'String', ['total: ' num2str(nMol) ' molecules']);
-    set(h.listbox_traceSet, 'Max', 2, 'Min', 0);
+    set(h.listbox_proj, 'Max', 2, 'Min', 0);
 
     if ~isCoord
         setProp([h.text_TP_subImg_exc h.popupmenu_subImg_exc ...
@@ -104,6 +101,8 @@ if ~isempty(p.proj)
     end
     
     % manage control visibility for gamma correction
+    nFRET = size(FRET,1);
+    nS = size(S,1);
     if nFRET>0
         
         % modified MH, 3.4.2019, 13.1.2020
@@ -129,8 +128,7 @@ if ~isempty(p.proj)
         set(h.text_topAxes, 'String', 'channel');
     else
         set(h.popupmenu_plotBottom, 'String', getStrPop('plot_botChan', ...
-            {FRET S exc p.proj{proj}.colours labels}), 'Value', ...
-            p_fix{2}(3));
+            {FRET S exc clr labels}), 'Value', p_fix{2}(3));
         set([h.popupmenu_TP_states_applyTo h.text_TP_states_applyTo ...
             h.popupmenu_plotBottom h.text_plotBottom], 'enable', 'on');
         set(h.text_topAxes, 'String', 'top axes:');
@@ -146,17 +144,17 @@ if ~isempty(p.proj)
 %         h.popupmenu_ttPlotExc h.popupmenu_excDirExc], 'Value', 1);
 
     set(h.popupmenu_trBgCorr_data, 'String', getStrPop('bg_corr', ...
-        {labels exc p.proj{proj}.colours}));
+        {labels exc clr}));
     set([h.popupmenu_corr_chan h.popupmenu_TP_subImg_channel], 'String', ...
-        getStrPop('chan',{labels p_fix{3}(1) p.proj{proj}.colours{1}}));
+        getStrPop('chan',{labels p_fix{3}(1) clr{1}}));
     set(h.popupmenu_bt, 'String', getStrPop('bt_chan', ...
-        {labels p_fix{3}(2) p_fix{3}(1) p.proj{proj}.colours{1}}));
+        {labels p_fix{3}(2) p_fix{3}(1) clr{1}}));
     set(h.popupmenu_TP_states_data, 'String', getStrPop('DTA_chan', ...
-        {labels FRET S exc p.proj{proj}.colours}));
+        {labels FRET S exc clr}));
     set(h.popupmenu_plotTop, 'String', getStrPop('plot_topChan', ...
-        {labels p_fix{2}(1) p.proj{proj}.colours{1}}));
+        {labels p_fix{2}(1) clr{1}}));
     set(h.popupmenu_bleachChan, 'String', getStrPop('bleach_chan', ...
-        {labels FRET S exc p.proj{proj}.colours}));
+        {labels FRET S exc clr}));
     
     % modified by MH 29.3.2019
 %     set([h.popupmenu_subImg_exc h.popupmenu_corr_exc], 'String', ...
@@ -171,7 +169,7 @@ if ~isempty(p.proj)
     
     % cancelled by MH, 29.3.2019
 %     set(h.popupmenu_excDirExc, 'String', getStrPop('dir_exc', ...
-%         {exc, p_fix{3}(1), p_fix{3}(2), p.proj{proj}.colours{1}}));
+%         {exc, p_fix{3}(1), p_fix{3}(2), clr{1}}));
 
     set(h.popupmenu_ttPlotExc, 'String', getStrPop('plot_exc', exc));
     
@@ -202,46 +200,30 @@ if ~isempty(p.proj)
     % create sub-image axes and calculate laser-specific avergae images
     if isCoord && isMov
         
-        % collect initial panel units
-        unitsPanel = get(h.uipanel_TP, 'Units');
-        unitsTopaxes = get(h.axes_top, 'Units');
-        unitsList = get(h.listbox_traceSet, 'Units');
-        unitsBg = get(h.uipanel_TP_backgroundCorrection, 'Units');
-        
-        % set panel units to pixels
-        set(h.uipanel_TP,'Units','pixels');
-        set(h.axes_top, 'Units','pixels');
-        set(h.listbox_traceSet,'Units','pixels');
-        set(h.uipanel_TP_backgroundCorrection,'Units','pixels');
-        
         % collect panel positions in pixels
-        posList = get(h.listbox_traceSet, 'Position');
-        posPanel = get(h.uipanel_TP, 'Position');
-        posTopaxes = get(h.axes_top, 'Position');
-        posBg = get(h.uipanel_TP_backgroundCorrection, 'Position');
-        
-        % set panel units to initial units
-        set(h.uipanel_TP,'Units',unitsPanel);
-        set(h.axes_top, 'Units',unitsTopaxes);
-        set(h.listbox_traceSet,'Units',unitsList);
-        set(h.uipanel_TP_backgroundCorrection,'Units',unitsBg);
+        postab = getPixPos(h.uitab_TP_plot_traces);
+        mg = postab(1);
+        mgtab = mg;
         
         % create sub-image axes
-        mg = posList(1);
-        yNext = posTopaxes(2) + posTopaxes(4) + 2*mg;
-        xNext = posList(1) + posList(3) + mg;
-        wImg = (posBg(1)-(posList(1)+posList(3))-(nC+1)*mg)/nC;
-        hImg = posPanel(4) - yNext - mg;
-        c = (linspace(0, 1, 50))';
+        wImg = (postab(3)-(nC+1)*mg)/nC;
+        hImg = (postab(4)-mgtab-5*mg)/3.7;
+        y = postab(4)-mgtab-hImg;
+        x = mg;
+        c = (linspace(0,1,50))';
         cmap = [c c c];
         for i = 1:nC
-            h.axes_subImg(i) = axes('Parent',h.uipanel_TP, ...
-                'Units','pixels','Position',[xNext yNext wImg hImg], ...
+            h.axes_subImg(i) = axes('Parent',h.uitab_TP_plot_traces, ...
+                'Units','pixels','Position',[x y wImg hImg], ...
                 'FontUnits',get(h.axes_top,'FontUnits'),'FontSize',...
                 get(h.axes_top,'FontSize'),'Visible','off');
-            set(h.axes_subImg(i),'Units','normalized');
             colormap(h.axes_subImg(i), cmap);
-            xNext = xNext + wImg + mg;
+            tiaxes = get(h.axes_subImg(i),'tightinset');
+            posaxes = getRealPosAxes([x y wImg hImg],tiaxes,'traces');
+            set(h.axes_subImg(i),'position',posaxes);
+            set(h.axes_subImg(i),'units','normalized');
+            
+            x = x + wImg + mg;
         end
         set(h.axes_subImg,'uicontextmenu',h.cm_zoom);
         
@@ -259,14 +241,13 @@ if ~isempty(p.proj)
                     return;
                 end
                 p.proj{proj}.aveImg{l} = img;
-                h.param.ttPr = p;
+                h.param = p;
             end
         end
     end
 else
     % set Trace processing module off-enabled
-    setProp(get(h.uipanel_TP, 'Children'), 'Enable', 'off');
-    setProp(h.pushbutton_addTraces, 'Enable', 'on');
+%     setProp(get(h.uipanel_TP, 'Children'), 'Enable', 'off');
     set(h.pushbutton_help,'enable','on');
     set([h.popupmenu_plotTop h.popupmenu_bleachChan h.popupmenu_corr_chan ...
         h.popupmenu_bt h.popupmenu_TP_states_data ...

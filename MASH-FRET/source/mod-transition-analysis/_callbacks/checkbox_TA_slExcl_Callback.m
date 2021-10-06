@@ -1,16 +1,16 @@
 function checkbox_TA_slExcl_Callback(obj,evd,h_fig)
 
 h = guidata(h_fig);
-p = h.param.TDP;
-if isempty(p.proj)
+p = h.param;
+if ~isModuleOn(p,'TA')
     return
 end
 
 proj = p.curr_proj;
-tpe = p.curr_type(proj);
-tag = p.curr_tag(proj);
-prm = p.proj{proj}.prm{tag,tpe};
-curr = p.proj{proj}.curr{tag,tpe};
+tpe = p.TDP.curr_type(proj);
+tag = p.TDP.curr_tag(proj);
+prm = p.proj{proj}.TA.prm{tag,tpe};
+curr = p.proj{proj}.TA.curr{tag,tpe};
 
 curr.lft_start{2}(4) = get(obj, 'Value');
 prm.lft_start{2}(4) = curr.lft_start{2}(4);
@@ -41,9 +41,9 @@ for v1 = 1:V
 end
 curr.clst_res{4} = prm.clst_res{4};
 
-p.proj{proj}.prm{tag,tpe} = prm;
-p.proj{proj}.curr{tag,tpe} = curr;
-h.param.TDP = p;
+p.proj{proj}.TA.prm{tag,tpe} = prm;
+p.proj{proj}.TA.curr{tag,tpe} = curr;
+h.param = p;
 guidata(h_fig, h);
 
 ud_kinFit(h_fig);

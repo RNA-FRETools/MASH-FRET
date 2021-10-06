@@ -1,60 +1,53 @@
 function plotData(mol, p, axes, prm, plotDscr)
 
-% Last update by MH, 29.11.2019
-% >> remove double axis labels when both axes (intensity & ratio) are used
-%
-% Last update: MH, 3.4.2019
-% >> correct data selection for plotting in bottom axes (curr_chan_bottom)
+% update 29.11.2019 by MH: remove double axis labels when both axes (intensity & ratio) are used
+% update 3.4.2019 by MH: correct data selection for plotting in bottom axes (curr_chan_bottom)
 
+% collect experiment settings and processing parameters
 proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
-nFRET = size(p.proj{proj}.FRET,1);
-nS = size(p.proj{proj}.S,1);
+FRET = p.proj{proj}.FRET;
+S = p.proj{proj}.S;
 exc = p.proj{proj}.excitations;
 nExc = p.proj{proj}.nb_excitations;
 chanExc = p.proj{proj}.chanExc;
+valid = p.proj{proj}.coord_incl;
+incl = p.proj{proj}.bool_intensities;
+int_den = p.proj{proj}.intensities_denoise;
+int_dta = p.proj{proj}.intensities_DTA;
+FRET_dta = p.proj{proj}.FRET_DTA;
+S_dta = p.proj{proj}.S_DTA;
+rate = p.proj{proj}.frame_rate;
+nPix = p.proj{proj}.pix_intgr(2);
+clr = p.proj{proj}.colours;
+fix = p.proj{proj}.TP.fix;
 
-incl = ~~p.proj{proj}.bool_intensities(:,mol)';
-I = p.proj{proj}.intensities_denoise(incl,((mol-1)*nChan+1):mol*nChan,:);
+nFRET = size(FRET,1);
+nS = size(S,1);
+incl = ~~incl(:,mol)';
+I = int_den(incl,((mol-1)*nChan+1):mol*nChan,:);
 if plotDscr
-    discrI = p.proj{proj}.intensities_DTA(incl, ...
-        ((mol-1)*nChan+1):mol*nChan,:);
+    discrI = int_dta(incl,((mol-1)*nChan+1):mol*nChan,:);
     if nFRET > 0
-        discrFRET = p.proj{proj}.FRET_DTA(incl, ...
-            ((mol-1)*nFRET+1):mol*nFRET,:);
+        discrFRET = FRET_dta(incl,((mol-1)*nFRET+1):mol*nFRET,:);
     end
     if nS > 0
-        discrS = p.proj{proj}.S_DTA(incl,((mol-1)*nS+1):mol*nS,:);
+        discrS = S_dta(incl,((mol-1)*nS+1):mol*nS,:);
     end
 end
 frames = find(incl);
 x_lim = [((frames(1)-1)*nExc+1) frames(end)*nExc];
 FRETlim = [-0.2 1.2];
 
-curr_exc = p.proj{proj}.fix{2}(1);
-nExc = p.proj{proj}.nb_excitations;
+curr_exc = fix{2}(1);
 if curr_exc > nExc
     curr_exc = 1:nExc;
 end
-
-curr_chan_top = p.proj{proj}.fix{2}(2) - 1; % "none" in first position
-nChan = p.proj{proj}.nb_channel;
+curr_chan_top = fix{2}(2) - 1; % "none" in first position
 if curr_chan_top > nChan
     curr_chan_top = 1:nChan;
 end
-
-curr_chan_bottom = p.proj{proj}.fix{2}(3) - 1; % "none" in first position
-
-% modified by MH, 3.4.2019
-% if curr_chan_bottom > nFRET + nS
-%     if nFRET > 1 && curr_chan_bottom == nFRET + nS + 1 % "all FRET"
-%         curr_chan_bottom = 1:nFRET;
-%     elseif nS > 1 && curr_chan_bottom == nFRET + nS + 1 % "all S"
-%         curr_chan_bottom = nFRET+1:nFRET+nS;
-%     else % "all"
-%         curr_chan_bottom = 1:(nFRET+nS);
-%     end
-% end
+curr_chan_bottom = fix{2}(3) - 1; % "none" in first position
 is_allfret = double(nFRET>1);
 is_alls = double(nS>1);
 is_all = double(nFRET>0 & nS>0);
@@ -66,12 +59,9 @@ elseif is_all && curr_chan_bottom==(nFRET+nS+is_allfret+is_alls+is_all) % all
     curr_chan_bottom = 1:(nFRET+nS);
 end
 
-rate = p.proj{proj}.frame_rate;
-nPix = p.proj{proj}.pix_intgr(2);
-perSec = p.proj{proj}.fix{2}(4);
-perPix = p.proj{proj}.fix{2}(5);
-x_inSec = p.proj{proj}.fix{2}(7);
-
+perSec = fix{2}(4);
+perPix = fix{2}(5);
+x_inSec = fix{2}(7);
 if perSec
     I = I/rate;
     if plotDscr
@@ -99,8 +89,6 @@ if x_inSec
     cutOff = cutOff*rate;
     x_axis = x_axis*rate;
 end
-
-clr = p.proj{proj}.colours;
 
 if isfield(axes, 'axes_traceTop')
     cla(axes.axes_traceTop);
@@ -196,14 +184,12 @@ if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
     end
     
     if nFRET > 0
-        FRET = p.proj{proj}.FRET;
-        gamma = p.proj{proj}.prm{mol}{6}{1}(1,:);
+        gamma = prm{6}{1}(1,:);
         f_tr = calcFRET(nChan, nExc, exc, chanExc, FRET, I, gamma);
     end
     if nS > 0
-        S = p.proj{proj}.S;
-        gamma = p.proj{proj}.prm{mol}{6}{1}(1,:);
-        beta = p.proj{proj}.prm{mol}{6}{1}(2,:);
+        gamma = prm{6}{1}(1,:);
+        beta = prm{6}{1}(2,:);
         s_tr = calcS(exc, chanExc, S, FRET, I, gamma, beta);
     end
 
@@ -326,7 +312,6 @@ if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
     end
 end
 
-valid = p.proj{proj}.coord_incl;
 if ~valid(mol)
     shad = [0.85 0.85 0.85];
 else

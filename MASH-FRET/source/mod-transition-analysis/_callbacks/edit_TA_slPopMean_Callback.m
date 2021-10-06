@@ -1,8 +1,8 @@
 function edit_TA_slPopMean_Callback(obj,evd,h_fig)
 
 h = guidata(h_fig);
-p = h.param.TDP;
-if isempty(p.proj)
+p = h.param;
+if ~isModuleOn(p,'TA')
     return
 end
 

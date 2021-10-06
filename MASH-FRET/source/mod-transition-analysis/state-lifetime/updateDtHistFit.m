@@ -7,9 +7,9 @@ nSpl = 100;
 proj = p.curr_proj;
 
 % collect processing parameters
-prm = p.proj{proj}.prm{tag,tpe};
-curr = p.proj{proj}.curr{tag,tpe};
-def = p.proj{proj}.def{tag,tpe};
+prm = p.proj{proj}.TA.prm{tag,tpe};
+curr = p.proj{proj}.TA.curr{tag,tpe};
+def = p.proj{proj}.TA.def{tag,tpe};
 
 % make current settings the last applied settings
 prm.lft_start = curr.lft_start;
@@ -210,5 +210,5 @@ curr.lft_res = prm.lft_res;
 curr.mdl_res = prm.mdl_res;
 
 % save modifications
-p.proj{proj}.prm{tag,tpe} = prm;
-p.proj{proj}.curr{tag,tpe} = curr;
+p.proj{proj}.TA.prm{tag,tpe} = prm;
+p.proj{proj}.TA.curr{tag,tpe} = curr;

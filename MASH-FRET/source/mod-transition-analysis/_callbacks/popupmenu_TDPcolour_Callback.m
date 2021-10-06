@@ -1,20 +1,23 @@
 function popupmenu_TDPcolour_Callback(obj, evd, h_fig)
 
 h = guidata(h_fig);
-p = h.param.TDP;
-if isempty(p.proj)
+p = h.param;
+if ~isModuleOn(p,'TA')
     return
 end
 
-val = get(obj, 'Value');
 proj = p.curr_proj;
-tpe = p.curr_type(proj);
-tag = p.curr_tag(proj);
-trans = p.proj{proj}.curr{tag,tpe}.kin_start{2}(2);
+tpe = p.TDP.curr_type(proj);
+tag = p.TDP.curr_tag(proj);
+curr = p.proj{proj}.TA.curr{tag,tpe};
 
-p.proj{proj}.prm{tag,tpe}.clst_start{3}(trans,:) = p.colList(val,:);
+val = get(obj, 'Value');
+trans = curr.kin_start{2}(2);
 
-h.param.TDP = p;
+p.proj{proj}.TA.prm{tag,tpe}.clst_start{3}(trans,:) = p.colList(val,:);
+p.proj{proj}.TA.curr{tag,tpe}.clst_start{3}(trans,:) = p.colList(val,:);
+
+h.param = p;
 guidata(h_fig, h);
 
 updateFields(h_fig, 'TDP');

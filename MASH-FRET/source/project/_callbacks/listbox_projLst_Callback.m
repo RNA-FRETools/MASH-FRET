@@ -1,25 +1,24 @@
 function listbox_projLst_Callback(obj, evd, h_fig)
+
 h = guidata(h_fig);
-pTP = h.param.ttPr;
-if isempty(pTP.proj)
+p = h.param;
+if isempty(p.proj)
     return
 end
 val = get(obj, 'Value');
-if ~(numel(val)==1 && val~=pTP.curr_proj)
+if ~(numel(val)==1 && val~=p.curr_proj)
     return
 end
 
-pTP.curr_proj = val;
-pHA.curr_proj = val;
-pTA.curr_proj = val;
-h.param.ttPr = pTP;
-h.param.thm = pHA;
-h.param.TDP = pTA;
+p.curr_proj = val;
+h.param = p;
 guidata(h_fig, h);
 
 proj_name = get(obj,'string');
-str_proj = cat(2,'Project selected: "',proj_name{val},'" (',...
-    pTP.proj{val}.proj_file,')');
+str_proj = cat(2,'Project selected: "',proj_name{val},'"');
+if ~isempty(p.proj{val}.proj_file)
+    str_proj = cat(2,str_proj,'(',p.proj{val}.proj_file,')');
+end
 setContPan(str_proj,'none',h_fig);
 
 % update TP project parameters and molecule list
@@ -34,5 +33,4 @@ cla(h.axes_hist2);
 pushbutton_TDPupdatePlot_Callback(h.pushbutton_TDPupdatePlot,[],h_fig);
 
 % update GUI
-updateFields(h_fig, 'ttPr');
-updateFields(h_fig, 'thm');
+updateFields(h_fig);

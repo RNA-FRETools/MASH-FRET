@@ -7,16 +7,17 @@ function ud_VP_coordTransfPan(h_fig)
 
 % collect interface parameters
 h = guidata(h_fig);
-p = h.param.movPr;
+p = h.param;
 
-% set all uicontrol enabled
-setProp(h.uipanel_VP_coordinatesTransformation,'enable','on');
+if ~prepPanel(h.uipanel_VP_coordinatesTransformation,h)
+    return
+end
 
-% reset edit fields background color
-set([h.edit_refCoord_file,h.edit_tr_file,h.edit_coordFile],...
-    'backgroundcolor',[1,1,1]);
+% collect processing parameters
+proj = p.curr_proj;
+prm = p.proj{proj}.VP;
 
 % set files
-set(h.edit_refCoord_file, 'String', p.trsf_coordRef_file);
-set(h.edit_tr_file, 'String', p.trsf_tr_file);
-set(h.edit_coordFile, 'String', p.coordMol_file);
+set(h.edit_refCoord_file, 'String', prm.trsf_coordRef_file);
+set(h.edit_tr_file, 'String', prm.trsf_tr_file);
+set(h.edit_coordFile, 'String', prm.coordMol_file);

@@ -15,7 +15,7 @@ state = 0;
 tol = Inf;
 
 % collect interface parameters
-clr = p.colList;
+% clr = p.colList;
 
 % collect processing parameters
 prm.plot = adjustParam('plot', def.plot, prm);
@@ -63,11 +63,11 @@ else
     clst_start{2} = clst_start{2}(1:nTrs,:);
 end
 
-% adjust cluster colors
-if size(clr,1)<nTrs
-    clr = cat(1,clr,rand(nTrs-size(clr,1),3)); 
-end
-clst_start{3} = clr(1:nTrs,:);
+% % adjust cluster colors
+% if size(clr,1)<nTrs
+%     clr = cat(1,clr,rand(nTrs-size(clr,1),3)); 
+% end
+% clst_start{3} = clr(1:nTrs,:);
 
 lft_def{1} = adjustVal(lft_def{1},def.lft_def{1});
 

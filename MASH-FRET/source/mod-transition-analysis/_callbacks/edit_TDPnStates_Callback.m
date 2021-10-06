@@ -1,15 +1,17 @@
 function edit_TDPnStates_Callback(obj, evd, h_fig)
 
 h = guidata(h_fig);
-p = h.param.TDP;
-if isempty(p.proj)
+p = h.param;
+if ~isModuleOn(p,'TA')
     return
 end
 
 proj = p.curr_proj;
-tpe = p.curr_type(proj);
-tag = p.curr_tag(proj);
-curr = p.proj{proj}.curr{tag,tpe};
+tpe = p.TDP.curr_type(proj);
+tag = p.TDP.curr_tag(proj);
+curr = p.proj{proj}.TA.curr{tag,tpe};
+colList = p.TDP.colList;
+
 mat = curr.clst_start{1}(4);
 
 val = round(str2double(get(obj, 'String')));
@@ -34,13 +36,14 @@ end
 curr.clst_start{1}(3) = val;
 
 % update cluster starting guess and colors
-[curr,p.colList] = ud_clstPrm(curr,p.colList);
+[curr,colList] = ud_clstPrm(curr,colList);
 
 % save changes
-p.proj{proj}.curr{tag,tpe} = curr;
+p.TDP.colList = colList;
+p.proj{proj}.TA.curr{tag,tpe} = curr;
 
-h.param.TDP = p;
+h.param = p;
 guidata(h_fig, h);
 
-updateFields(h_fig, 'TDP');
+updateFields(h_fig,'TDP');
 

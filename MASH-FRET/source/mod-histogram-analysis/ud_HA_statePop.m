@@ -2,43 +2,40 @@ function ud_HA_statePop(h_fig)
 
 % update 8.4.2019 by MH: correct update of checkbox_thm_BS
 
+% collect interface parameters
 h = guidata(h_fig);
-p = h.param.thm;
+p = h.param;
 
-% make elements invisible if panel is collapsed
 h_pan = h.uipanel_HA_statePopulations;
-if isPanelOpen(h_pan)==1
-    setProp(get(h_pan,'children'),'visible','off');
-    return
-else
-    setProp(get(h_pan,'children'),'visible','on');
-end
-
-if isempty(p.proj)
+if ~prepPanel(h_pan,h)
+    % remove bold font from radiobuttons
+    set([h.radiobutton_thm_gaussFit h.radiobutton_thm_thresh], ...
+        'Value', 0, 'FontWeight', 'normal');
     return
 end
 
+% collect experiment settings
 proj = p.curr_proj;
-tpe = p.curr_tpe(proj);
-tag = p.curr_tag(proj);
-prm = p.proj{proj}.prm{tag,tpe};
+tpe = p.thm.curr_tpe(proj);
+tag = p.thm.curr_tag(proj);
+clr = p.thm.colList;
+prm = p.proj{proj}.HA.prm{tag,tpe};
+curr = p.proj{proj}.HA.curr{tag,tpe};
 
 if isempty(prm.plot{2})
     setProp(get(h_pan,'children'),'Enable', 'off');
     return
-else
-    setProp(get(h_pan,'children'),'Enable', 'on');
 end
 
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
-start = prm.thm_start;
-res = prm.thm_res;
-clr = p.colList;
 perSec = p.proj{proj}.cnt_p_sec;
 perPix = p.proj{proj}.cnt_p_pix;
 expT = p.proj{proj}.frame_rate;
 nPix = p.proj{proj}.pix_intgr(2);
+
+start = curr.thm_start;
+res = prm.thm_res;
 isInt = tpe <= 2*nChan*nExc;
 
 meth = start{1}(1);
@@ -95,7 +92,8 @@ switch meth
         set(h.popupmenu_thm_gaussNb, 'String', str_gauss, 'Value', ...
             curr_gauss);
         
-        set(h.edit_thm_gaussClr, 'BackgroundColor', clr(curr_gauss,:));
+        set(h.edit_thm_gaussClr,'backgroundcolor',clr(curr_gauss,:),...
+            'enable','inactive');
         
         set(h.edit_thm_ampLow, 'String', num2str(fit_start(curr_gauss,1)));
         
@@ -238,7 +236,8 @@ switch meth
                 set([h.text_thm_popSigma h.edit_thm_popSigma], ...
                     'Enable', 'off');
             end
-            set(h.edit_thm_threshclr, 'BackgroundColor', clr(curr_pop,:))
+            set(h.edit_thm_threshclr,'backgroundcolor',clr(curr_pop,:),...
+                'enable','inactive')
         else
             set([h.text_thm_relOccThr h.popupmenu_thm_pop ...
                 h.text_thm_pop h.edit_thm_pop h.text_thm_popSigma ...

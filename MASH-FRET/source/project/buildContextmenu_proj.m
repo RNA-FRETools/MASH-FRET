@@ -23,5 +23,5 @@ h.projMenu_export= uimenu('parent',h_cm,'label',lbl3,'callback',...
 h.projMenu_merge = uimenu('parent',h_cm,'label',lbl4,'callback',...
     {@menu_projMenu_merge_Callback,h_fig});
 
-set(h.listbox_traceSet,'uicontextmenu',h_cm);
+set(h.listbox_proj,'uicontextmenu',h_cm);
 

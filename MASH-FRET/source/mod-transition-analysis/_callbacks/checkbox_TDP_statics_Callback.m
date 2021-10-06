@@ -1,18 +1,18 @@
 function checkbox_TDP_statics_Callback(obj,evd,h_fig)
 
 h = guidata(h_fig);
-p = h.param.TDP;
-if isempty(p.proj)
+p = h.param;
+if ~isModuleOn(p,'TA')
     return
 end
 
 proj = p.curr_proj;
-tpe = p.curr_type(proj);
-tag = p.curr_tag(proj);
+tpe = p.TDP.curr_type(proj);
+tag = p.TDP.curr_tag(proj);
 
-p.proj{proj}.curr{tag,tpe}.plot{1}(4,3) = get(obj, 'Value');
+p.proj{proj}.TA.curr{tag,tpe}.plot{1}(4,3) = get(obj, 'Value');
 
-h.param.TDP = p;
+h.param = p;
 guidata(h_fig, h);
 
 ud_TDPplot(h_fig);

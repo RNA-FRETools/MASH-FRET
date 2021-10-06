@@ -7,7 +7,7 @@ if isempty(p.proj)
 end
     
 % collect selected projects
-slct = get(h.listbox_traceSet, 'Value');
+slct = get(h.listbox_proj, 'Value');
 nProj = numel(slct);
 
 % check project compatibility

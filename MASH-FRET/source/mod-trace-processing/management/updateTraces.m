@@ -23,7 +23,7 @@ p = plotSubImg(mol, p, axes_molImg);
 
 if strcmp(opt1, 'subImg')
     h = guidata(h_fig);
-    h.param.ttPr = p;
+    h.param = p;
     return
 end
 
@@ -46,7 +46,7 @@ p = updateStateSequences(h_fig, mol, p);
 
 % modified by MH, 12.1.2020
 if ~isempty(axes)
-    plotData(mol, p, axes, p.proj{proj}.prm{mol}, 1);
+    plotData(mol, p, axes, p.proj{proj}.TP.prm{mol}, 1);
 end
 % if (strcmp(opt2, 'plot') || strcmp(opt2, 'gamma') || ...
 %         strcmp(opt2, 'DTA') || strcmp(opt2, 'debleach') || ...

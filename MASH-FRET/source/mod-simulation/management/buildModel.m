@@ -20,20 +20,24 @@ setContPan(cat(2,'Generate random state sequences...'),'process',h_fig);
 
 % collect parameters
 h = guidata(h_fig);
-N = h.param.sim.molNb;
-bleach = h.param.sim.bleach;
-expT = 1/h.param.sim.rate;
-bleachL = h.param.sim.bleach_t/expT;
-J = h.param.sim.nbStates;
-impPrm = h.param.sim.impPrm;
-molPrm = h.param.sim.molPrm;
+p = h.param;
+proj = p.curr_proj;
+prm = p.proj{proj}.sim;
+
+N = prm.molNb;
+bleach = prm.bleach;
+expT = 1/prm.rate;
+bleachL = prm.bleach_t/expT;
+J = prm.nbStates;
+impPrm = prm.impPrm;
+molPrm = prm.molPrm;
 imp_kx = impPrm & isfield(molPrm, 'kx');
 imp_ip = impPrm & isfield(molPrm, 'p0');
 
 if imp_kx % transition rate coefficients from presets
     kx_all = molPrm.kx;
 else % transition rate coefficients from interface
-    kx = h.param.sim.kx;
+    kx = prm.kx;
     kx_all  = repmat(kx,[1,1,N]);
 end
 kx_all = kx_all(1:J,1:J,:);
@@ -45,7 +49,7 @@ else % initial prob. calculated from state lifetimes
 end
 isTrans = prod(double(sum(sum(~~kx_all(1:J,1:J,1:N),1),2)),3);
 
-L = h.param.sim.nbFrames;
+L = prm.nbFrames;
 mix = cell(1,N);
 discr_seq = cell(1,N);
 dt_final = cell(1,N);

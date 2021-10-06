@@ -1,4 +1,4 @@
-function plotKinMdl(h_axes,prm,v_res)
+function plotKinMdl(h_axes,prm,def,v_res)
 
 % defaults
 norm = 1;
@@ -17,7 +17,7 @@ if ~(isfield(prm,'mdl_res'))
 else
     mdl_res = prm.mdl_res;
 end
-if isempty(mdl_res)
+if isempty(mdl_res) || isequal(mdl_res,def.mdl_res)
     states = [];
 else
     tp = mdl_res{1};

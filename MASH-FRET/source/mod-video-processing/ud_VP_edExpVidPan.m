@@ -28,44 +28,35 @@ ttstr0 = {'','';... % none
 
 % collect interface parameters
 h = guidata(h_fig);
-p = h.param.movPr;
+p = h.param;
 
-% make elements invisible if panel is collapsed
-h_pan = h.uipanel_VP_editAndExportVideo;
-if isPanelOpen(h_pan)==1
-    setProp(get(h_pan,'children'),'visible','off');
+if ~prepPanel(h.uipanel_VP_editAndExportVideo,h)
     return
-else
-    setProp(get(h_pan,'children'),'visible','on');
 end
 
-% set all uicontrol enabled
-setProp(get(h_pan,'children'),'enable','on');
-
-h_ed = [h.edit_bgParam_01,h.edit_bgParam_02];
-
-% reset edit fields background color
-set([h_ed,h.edit_startMov,h.edit_endMov],'backgroundcolor',[1,1,1]);
-
-% collect processing parameters
-labels = p.labels;
-meth = p.movBg_method;
+% collect experiment settings and processing parameters
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+labels =  p.proj{proj}.labels;
+prm = p.proj{proj}.VP;
+meth = prm.movBg_method;
 
 % set background correction method
 set(h.popupmenu_bgCorr, 'Value', meth);
-set(h.checkbox_bgCorrAll, 'Value', ~p.movBg_one);
+set(h.checkbox_bgCorrAll, 'Value', ~prm.movBg_one);
 
 % set channel
 chan = get(h.popupmenu_bgChanel,'value');
-if chan>p.nChan
-    chan = p.nChan;
+if chan>nChan
+    chan = nChan;
 end
-set(h.popupmenu_bgChanel, 'String', getStrPop('chan',{labels,[]}),'value',...
-    chan);
+set(h.popupmenu_bgChanel, 'String', getStrPop('chan',{labels,[]}),...
+    'value',chan);
 
 % set correction parameters
+h_ed = [h.edit_bgParam_01,h.edit_bgParam_02];
 for i = 1:size(h_ed,2)
-    set(h_ed(i),'String',num2str(p.movBg_p{meth,chan}(i)),'TooltipString',...
+    set(h_ed(i),'String',num2str(prm.movBg_p{meth,chan}(i)),'TooltipString',...
         ttstr0{meth,i});
 end
 if sum(meth==[1,13,14,15,17])
@@ -82,6 +73,6 @@ end
 ud_lstBg(h_fig);
 
 % set export parameters
-set(h.edit_startMov,'String',num2str(p.mov_start));
-set(h.edit_endMov,'String',num2str(p.mov_end));
+set(h.edit_startMov,'String',num2str(prm.mov_start));
+set(h.edit_endMov,'String',num2str(prm.mov_end));
 

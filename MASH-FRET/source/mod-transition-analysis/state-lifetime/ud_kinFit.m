@@ -8,34 +8,19 @@ function ud_kinFit(h_fig)
 
 % collect interface parameters
 h = guidata(h_fig);
-p = h.param.TDP;
+p = h.param;
 
-% make elements invisible if panel is collapsed
 h_pan = h.uipanel_TA_dtHistograms;
-if isPanelOpen(h_pan)==1
-    setProp(get(h_pan,'children'),'visible','off');
-    return
-else
-    setProp(get(h_pan,'children'),'visible','on');
-end
-
-if isempty(p.proj)
+if ~prepPanel(h.uipanel_TA_dtHistograms,h)
     return
 end
 
+% collect experiment settings
 proj = p.curr_proj;
-tpe = p.curr_type(proj);
-tag = p.curr_tag(proj);
-
-% collect project parameters
-curr = p.proj{proj}.curr{tag,tpe};
-prm = p.proj{proj}.prm{tag,tpe};
-
-% set all control enabled
-setProp(get(h_pan,'children'), 'Enable', 'on');
-
-% reset edit field background color
-set(h.edit_TA_slBin,'backgroundcolor',[1 1 1]);
+tpe = p.TDP.curr_type(proj);
+tag = p.TDP.curr_tag(proj);
+curr = p.proj{proj}.TA.curr{tag,tpe};
+prm = p.proj{proj}.TA.prm{tag,tpe};
 
 if ~(isfield(curr,'clst_res') && ~isempty(curr.clst_res{1}))
     setProp(get(h_pan,'children'), 'Enable', 'off');

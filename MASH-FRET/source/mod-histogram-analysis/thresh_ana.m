@@ -1,13 +1,22 @@
 function thresh_ana(h_fig)
 
 h = guidata(h_fig);
-p = h.param.thm;
+p = h.param;
 proj = p.curr_proj;
-tpe = p.curr_tpe(proj);
-tag = p.curr_tag(proj);
+tpe = p.thm.curr_tpe(proj);
+tag = p.thm.curr_tag(proj);
 
-prm_start = p.proj{proj}.prm{tag,tpe}.thm_start;
-prm_plot = p.proj{proj}.prm{tag,tpe}.plot;
+molTag = p.proj{proj}.molTag;
+m_incl = p.proj{proj}.coord_incl;
+def = p.proj{proj}.HA.def{tag,tpe};
+curr = p.proj{proj}.HA.curr{tag,tpe};
+prm = p.proj{proj}.HA.prm{tag,tpe};
+
+prm.thm_start([1,2]) = curr.thm_start([1,2]);
+prm.thm_res(1,:) = def.thm_res(1,:);
+
+prm_start = prm.thm_start;
+prm_plot = prm.plot;
 ovrfl = prm_plot{1}(1,4);
 boba = prm_start{1}(2);
 nRpl = prm_start{1}(3);
@@ -39,7 +48,6 @@ if ~boba
     nSpl = 1;
 end
 
-m_incl = p.proj{proj}.coord_incl;
 nMol = size(m_incl,2); % inital number of molecules
 
 if boba
@@ -47,7 +55,6 @@ if boba
     if tag==1
         mols = mols(m_incl);
     else
-        molTag = p.proj{proj}.molTag;
         mols = mols(m_incl & molTag(:,tag-1)');
     end
     N = size(mols,2); % number of user-selected molecules
@@ -88,13 +95,12 @@ if boba
     loading_bar('close', h_fig);
 end
 
-p.proj{proj}.prm{tag,tpe}.thm_res{1,1} = res;
-p.proj{proj}.prm{tag,tpe}.thm_res{1,2} = pop;
-p.proj{proj}.prm{tag,tpe}.thm_res{1,3} = cat(2,P_s(:,1),P_bs);
-h.param.thm = p;
+prm.thm_res(1,:) = {res, pop, cat(2,P_s(:,1),P_bs)};
+curr.thm_res(1,:) = prm.thm_res(1,:);
+
+p.proj{proj}.HA.prm{tag,tpe} = prm;
+h.param = p;
 guidata(h_fig,h);
 
 setContPan('State relative populations successfully calculated.','success',...
     h_fig);
-
-

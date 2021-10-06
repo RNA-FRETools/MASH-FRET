@@ -1,19 +1,21 @@
 function popupmenu_TDP_expNum_Callback(obj, evd, h_fig)
 
 h = guidata(h_fig);
-p = h.param.TDP;
-if isempty(p.proj)
+p = h.param;
+if ~isModuleOn(p,'TA')
     return
 end
 
 proj = p.curr_proj;
-tpe = p.curr_type(proj);
-tag = p.curr_tag(proj);
-v = p.proj{proj}.curr{tag,tpe}.lft_start{2}(2);
+tpe = p.TDP.curr_type(proj);
+tag = p.TDP.curr_tag(proj);
+curr = p.proj{proj}.TA.curr{tag,tpe};
 
-p.proj{proj}.curr{tag,tpe}.lft_start{1}{v,1}(4) = get(obj, 'Value');
+v = curr.lft_start{2}(2);
 
-h.param.TDP = p;
+p.proj{proj}.TA.curr{tag,tpe}.lft_start{1}{v,1}(4) = get(obj, 'Value');
+
+h.param = p;
 guidata(h_fig, h);
 
 ud_fitSettings(h_fig);
