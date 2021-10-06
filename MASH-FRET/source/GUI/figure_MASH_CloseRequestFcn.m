@@ -2,14 +2,6 @@ function figure_MASH_CloseRequestFcn(obj, evd)
 
 h = guidata(obj);
 
-if isfield(h, 'figure_actPan') && ishandle(h.figure_actPan)
-    h_pan = guidata(h.figure_actPan);
-    success = saveActPan(get(h_pan.text_actions, 'String'), h.figure_MASH);
-    if ~success
-        return
-    end
-    delete(h.figure_actPan);
-end
 if isfield(h, 'wait') && isfield(h.wait, 'figWait') && ...
         ishandle(h.wait.figWait)
     delete(h.wait.figWait);
@@ -32,7 +24,7 @@ if isfield(h, 'figure_dummy') && ~isempty(h.figure_dummy) && ...
 end
 
 param = h.param;
-if ~isempty(param.ttPr.proj)
+if ~isempty(param.proj)
     % remove background intensities
     for c = 1:size(param.ttPr.defProjPrm.mol{3}{3},2)
         for l = 1:size(param.ttPr.defProjPrm.mol{3}{3},1)
@@ -42,7 +34,9 @@ if ~isempty(param.ttPr.proj)
 
     % remove discretisation results
     param.ttPr.defProjPrm.mol{3}{4} = [];
+    h.param.folderRoot = h.param.proj{h.param.curr_proj}.folderRoot;
 end
+h.param = rmfield(h.param,{'proj','curr_proj'});
 [mfile_path,o,o] = fileparts(which('MASH'));
 save([mfile_path filesep 'default_param.ini'], '-struct', 'param');
 

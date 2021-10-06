@@ -5,6 +5,7 @@ function setContPan(str, state, h_fig)
 % --> fix find edit fields to display action in
 
 % default
+nLmax = 100;
 colRed = [1 0.9 0.9];
 colGreen = [0.9 1 0.9];
 colYellow = [1 1 0.9];
@@ -44,44 +45,50 @@ if ~iscell(str)
     str = newStr;
 end
 
-curr_obj = get(h_fig, 'CurrentObject');
-curr_panel = get(curr_obj, 'Parent');
-
-while 1
-    if isempty(curr_panel) || (isprop(curr_panel,'Parent') && ...
-            (curr_panel == h.uipanel_S || ...
-            curr_panel == h.uipanel_TA ||  ...
-            curr_panel == h.uipanel_HA || ...
-            curr_panel == h_fig || ...
-            curr_panel == groot))
-        break;
-    else
-        curr_panel = get(curr_panel, 'Parent');
-    end
+% get and format date
+dateTime = clock;
+hr = num2str(dateTime(4));
+if length(hr) == 1
+    hr = ['0' hr];
+end
+m = num2str(dateTime(5));
+if length(m) == 1
+    m = ['0' m];
 end
 
-if ~isempty(curr_panel)
-    switch curr_panel
-        case h.uipanel_S
-            h_edit = h.edit_simContPan;
-        case h.uipanel_TA
-            h_edit = h.edit_TDPcontPan;
-        case h.uipanel_HA
-            h_edit = h.edit_thmContPan;
-        otherwise
-            h_edit = [];
-    end
-else
-    h_edit = [];
+% add time to the new action string
+t = [hr ':' m ' '];
+str{1,1} = [t,str{1,1}];
+
+% append log file with action
+str2save = cell(size(str));
+str2save{1} = str{1};
+for i = 2:numel(str)
+    str2save{i} = [repmat(' ',[1,length(t)]),str{i}];
+end
+success = saveActPan(str2save, h_fig);
+if ~success
+    disp('Impossible to append actions in daily log file.');
+end
+for i = 1:numel(str2save,1)
+    disp(str2save{i});
 end
 
-updateActPan(str,h_fig,state);
-
-if ~isempty(h_edit)
-    str = wrapActionString('none',h_edit,[h.figure_dummy,h.text_dummy],...
-        str);
-    set(h_edit, 'String', str, 'BackgroundColor', colBg);
-    drawnow;
+% update control panel
+str0 = get(h.edit_actPan,'userdata');
+if size(str0,1)>1
+    str0 = str0';
+end
+if size(str,1)>1
+    str = str';
+end
+str = [str,str0];
+if numel(str)>nLmax
+    str((nLmax+1):end) = [];
 end
 
-
+strWrap = wrapActionString('none',h.edit_actPan,...
+    [h.figure_dummy,h.text_dummy],str);
+set(h.edit_actPan, 'String', strWrap, 'BackgroundColor', colBg,'userdata',...
+    str);
+drawnow;
