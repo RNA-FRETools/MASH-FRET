@@ -24,7 +24,7 @@ a = strfind(figname, 'MASH-FRET ');
 b = a + numel('MASH-FRET ');
 s.MASH_version = adjustParam('MASH_version', figname(b:end), s_in);
 s.proj_file = fname;
-s.uptodate = adjustParam('uptodate', initUptodateArr, s_in);
+% s.uptodate = adjustParam('uptodate', initUptodateArr, s_in);
 
 % movie
 s.movie_file = adjustParam('movie_file', [], s_in); % movie path/file
@@ -358,23 +358,23 @@ if numel(s.molTagClr)<nTag
 end
 
 % check uptodate's keys
-utd_ref = initUptodateArr;
-K1 = size(utd_ref,1);
-for k1 = 1:K1
-    key1 = utd_ref{k1,1};
-    val1 = utd_ref{k1,2};
-    if isempty(findKey(s.uptodate,key1))
-        s.uptodate = setKey(s.uptodate,key1,val1);
-    end
-    K2 = size(utd_ref{k1,2},1);
-    for k2 = 1:K2
-        key2 = utd_ref{k1,2}{k2,1};
-        val2 = utd_ref{k1,2}{k2,2};
-        if isempty(findKey(s.uptodate{findKey(s.uptodate,key1),2},key2))
-            s.uptodate = setKey(s.uptodate,key2,val2);
-        end
-    end
-end
+% utd_ref = initUptodateArr;
+% K1 = size(utd_ref,1);
+% for k1 = 1:K1
+%     key1 = utd_ref{k1,1};
+%     val1 = utd_ref{k1,2};
+%     if isempty(findKey(s.uptodate,key1))
+%         s.uptodate = setKey(s.uptodate,key1,val1);
+%     end
+%     K2 = size(utd_ref{k1,2},1);
+%     for k2 = 1:K2
+%         key2 = utd_ref{k1,2}{k2,1};
+%         val2 = utd_ref{k1,2}{k2,2};
+%         if isempty(findKey(s.uptodate{findKey(s.uptodate,key1),2},key2))
+%             s.uptodate = setKey(s.uptodate,key2,val2);
+%         end
+%     end
+% end
 
 
 
