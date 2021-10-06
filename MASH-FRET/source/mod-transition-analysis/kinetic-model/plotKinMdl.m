@@ -12,17 +12,20 @@ if ~isempty(h_axes(1).UserData)
 end
 
 % collect results
-if ~(isfield(prm,'mdl_res')) || isequal(mdl_res,def.mdl_res)
+if ~(isfield(prm,'mdl_res') && ~isequal(prm.mdl_res,def.mdl_res))
     states = [];
 else
     tp = prm.mdl_res{1};
     simdat = prm.mdl_res{4};
     states = prm.mdl_res{5};
-    BICres = prm.mdl_res{6}{1};
+    BICres = prm.mdl_res{6};
 end
 
 % draw state diagram
 if isempty(states)
+    for ax = 1:numel(h_axes)
+        h_axes(ax).Visible = 'off';
+    end
     return
 end
 if isempty(simdat)
@@ -41,6 +44,7 @@ end
 
 % plot BIC results
 if ~isempty(BICres)
+    h_axes(5).Visible = 'on';
     nCmb = size(BICres,1);
     BIC = BICres(:,end)';
     incl = ~isinf(BIC);
@@ -74,11 +78,20 @@ if ~isempty(BICres)
     xlbl = compose(repmat('%i',1,size(cmb,2)),cmb)';
     h_axes(5).XTickLabel = xlbl(1:nCmb);
     h_axes(5).XLim = [cmblow-0.5,cmbup+0.5];
+else
+    h_axes(5).Visible = 'off';
 end
 
 % plot experimental vs simulation
 if isempty(simdat)
+    for ax = 2:4
+        h_axes(ax).Visible = 'off';
+    end
     return
+else
+    for ax = 2:4
+        h_axes(ax).Visible = 'on';
+    end
 end
 
 % plot state value populations

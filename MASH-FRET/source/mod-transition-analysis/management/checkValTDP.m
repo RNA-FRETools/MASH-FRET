@@ -34,10 +34,14 @@ lft_start = prm.lft_start;
 lft_res = prm.lft_res;
 
 % adjust TDP parameters
+if ~isequal(size(pplot),size(def.plot))
+    pplot = def.plot;
+end
 pplot{1} = adjustVal(pplot{1},def.plot{1});
 if ~isequal(pplot{1},prm.plot{1})
     pplot{2} = def.plot{2}; % reset TDP
     pplot{3} = def.plot{3}; % reset dt table
+    pplot{4} = def.plot{4}; % reset colormap
 end
 
 % adjust clustering parameters
