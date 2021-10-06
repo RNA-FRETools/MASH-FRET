@@ -12,6 +12,7 @@ proj = p.curr_proj;
 tpe = p.thm.curr_tpe(proj);
 tag = p.thm.curr_tag(proj);
 colList = p.thm.colList;
+def = p.proj{proj}.HA.def{tag,tpe};
 prm = p.proj{proj}.HA.prm{tag,tpe};
 curr = p.proj{proj}.HA.curr{tag,tpe};
 

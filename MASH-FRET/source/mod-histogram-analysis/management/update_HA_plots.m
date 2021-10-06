@@ -23,13 +23,29 @@ perPix = p.proj{proj}.cnt_p_pix;
 expT = p.proj{proj}.frame_rate;
 nPix = p.proj{proj}.pix_intgr(2);
 prm = p.proj{proj}.HA.prm{tag,tpe};
+curr = p.proj{proj}.HA.curr{tag,tpe};
 
-thm_start = prm.thm_start;
-thm_res = prm.thm_res;
-P = prm.plot{2};
+if isfield(prm,'thm_start')
+    thm_start = prm.thm_start;
+else
+    thm_start = curr.thm_start;
+end
 boba = thm_start{1}(2);
 
-x_lim = prm.plot{1}(1,2:3);
+if isfield(prm,'thm_res')
+    thm_res = prm.thm_res;
+else
+    thm_res = curr.thm_res;
+end
+
+if isfield(prm,'plot')
+    P = prm.plot{2};
+    x_lim = prm.plot{1}(1,2:3);
+else
+    P = curr.plot{2};
+    x_lim = curr.plot{1}(1,2:3);
+end
+
 nExc = numel(exc);
 em0 = find(chanExc~=0);
 nDE = numel(em0);

@@ -19,6 +19,7 @@ S_discr = p.proj{proj}.S_DTA;
 m_incl = p.proj{proj}.coord_incl;
 incl = p.proj{proj}.bool_intensities;
 molTag = p.proj{proj}.molTag;
+curr = p.proj{proj}.HA.curr{tag,tpe};
 prm = p.proj{proj}.HA.prm{tag,tpe};
 prmTP = p.proj{proj}.TP.prm;
 
@@ -131,8 +132,8 @@ end
 
 trace = trace(:,m);
 
-x_bin = prm.plot{1}(1,1);
-x_lim = prm.plot{1}(1,2:3);
+x_bin = curr.plot{1}(1,1);
+x_lim = curr.plot{1}(1,2:3);
 x_axis = x_lim(1):x_bin:x_lim(2);
 x_edge = [x_axis(1)-x_bin,x_axis];
 

@@ -26,7 +26,7 @@ if isequal(res,def.thm_res)
 end
 prm.thm_res = def.thm_res; % reset analysis results
 prm.thm_res(3,1:2) = res;
-prm.thm_start{4} = curr.thm_start{4};
+prm.thm_start = curr.thm_start;
 curr.thm_res = prm.thm_res;
 
 L = prm.thm_res{3,1}(:,1);

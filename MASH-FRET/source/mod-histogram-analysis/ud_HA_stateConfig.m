@@ -24,13 +24,17 @@ if isempty(prm.plot{2})
 end
 
 start = curr.thm_start;
-res = prm.thm_res;
+rmse_start = start{4}; % [apply penalty, penalty, max. nb. of Gaussian]
+
+if isfield(prm,'thm_res') && size(prm.thm_res,1)>=3
+    res = prm.thm_res;
+    rmse_res = res{3,1}; % [logL BIC]
+else
+    rmse_res = [];
+end
 
 set([h.edit_thm_penalty h.edit_thm_maxGaussNb h.edit_thm_LogL ...
     h.edit_thm_BIC], 'BackgroundColor', [1 1 1]);
-
-rmse_start = start{4}; % [apply penalty, penalty, max. nb. of Gaussian]
-rmse_res = res{3,1}; % [logL BIC]
 
 set(h.radiobutton_thm_penalty, 'Value', rmse_start(1));
 set(h.radiobutton_thm_BIC, 'Value', ~rmse_start(1));

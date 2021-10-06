@@ -22,7 +22,7 @@ clr = p.thm.colList;
 prm = p.proj{proj}.HA.prm{tag,tpe};
 curr = p.proj{proj}.HA.curr{tag,tpe};
 
-if isempty(prm.plot{2})
+if ~(isfield(prm,'plot') && size(prm.plot,2>=2) && ~isempty(prm.plot{2}))
     setProp(get(h_pan,'children'),'Enable', 'off');
     return
 end
@@ -35,7 +35,11 @@ expT = p.proj{proj}.frame_rate;
 nPix = p.proj{proj}.pix_intgr(2);
 
 start = curr.thm_start;
-res = prm.thm_res;
+if isfield(prm,'thm_res')
+    res = prm.thm_res;
+else
+    res = [];
+end
 isInt = tpe <= 2*nChan*nExc;
 
 meth = start{1}(1);
@@ -62,9 +66,13 @@ switch meth
         fit_start = start{3}; % [low amp., start amp., up amp., low center,
                               %  start center, up center, low FWHM, 
                               %  start FWHM, up FWHM]
-        fit_res = res{2,1}; % [amp. fit, amp. sigma, center fit, 
-                          %  center sigma, FWHM fit, FWHM sigma, 
-                          % rel. occ. fit, rel. occ. sigma]
+        if ~isempty(res)
+            fit_res = res{2,1}; % [amp. fit, amp. sigma, center fit, 
+                              %  center sigma, FWHM fit, FWHM sigma, 
+                              % rel. occ. fit, rel. occ. sigma]
+        else
+            fit_res = [];
+        end
         if isInt
             if perSec
                 fit_start(:,4:9) = fit_start(:,4:9)/expT;
@@ -188,7 +196,11 @@ switch meth
             end
         end
         
-        thr_res = res{1,1}; % [relative pop. sigma r g b]
+        if ~isempty(res)
+            thr_res = res{1,1}; % [relative pop. sigma r g b]
+        else
+            thr_res = [];
+        end
         
         set(h.radiobutton_thm_gaussFit, 'Value', 0, 'FontWeight', ...
             'normal');
