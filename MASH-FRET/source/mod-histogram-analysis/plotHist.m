@@ -75,6 +75,7 @@ if numel(h_axes)>2
 end
 
 % plot state population
+set(h_axes([1,2]),'visible','on');
 switch meth
     case 1 % Gaussfit
         % plot experimental data

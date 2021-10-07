@@ -135,13 +135,13 @@ trace = trace(:,m);
 x_bin = curr.plot{1}(1,1);
 x_lim = curr.plot{1}(1,2:3);
 x_axis = x_lim(1):x_bin:x_lim(2);
-x_edge = [x_axis(1)-x_bin,x_axis];
 
 if numel(x_axis)<2
     Ptbl = [0 0 0];
     return;
 end
 
+x_edge = [x_axis(1)-x_bin,x_axis];
 L = 0;
 if w
     Pn = NaN(numel(m),numel(x_axis));
