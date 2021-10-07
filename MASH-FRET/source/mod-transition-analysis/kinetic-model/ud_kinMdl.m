@@ -7,45 +7,17 @@ function ud_kinMdl(h_fig)
 h = guidata(h_fig);
 p = h.param;
 
+% check if panel control must be updated
+if ~prepPanel(h.uipanel_TA_kineticModel,h)
+    return
+end
+
 % collect experiment settings
 proj = p.curr_proj;
 tpe = p.TDP.curr_type(proj);
 tag = p.TDP.curr_tag(proj);
 curr = p.proj{proj}.TA.curr{tag,tpe};
 prm = p.proj{proj}.TA.prm{tag,tpe};
-
-% set popup menu list in simdata axes
-if isfield(prm,'clst_res') && ~isempty(prm.clst_res{1}) && ...
-        isfield(prm,'mdl_res') && size(prm.mdl_res,2)>=5 && ...
-        ~isempty(prm.mdl_res{3})
-    
-    % bin states
-    J = prm.lft_start{2}(1);
-    mat = prm.clst_start{1}(4);
-    clstDiag = prm.clst_start{1}(9);
-    mu = prm.clst_res{1}.mu{J};
-    bin = prm.lft_start{2}(3);
-    nTrs = getClusterNb(J,mat,clstDiag);
-    [j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
-    [states,~] = binStateValues(mu,bin,[j1,j2]);
-    V = numel(states);
-    
-    if get(h.popupmenu_TA_mdlDtState,'Value')>V
-        set(h.popupmenu_TA_mdlDtState,'Value',V);
-    end
-    str_pop = cell(1,V);
-    for v = 1:V
-        str_pop{v} = sprintf('%0.2f',states(v));
-    end
-    set(h.popupmenu_TA_mdlDtState,'String',str_pop);
-else
-    set([h.popupmenu_TA_mdlDtState,h.text_TA_mdlDtState],'Enable','off');
-end
-
-% check if panel control must be updated
-if ~prepPanel(h.uipanel_TA_kineticModel,h)
-    return
-end
 
 if ~(isfield(prm,'clst_res') && ~isempty(prm.clst_res{1}))
     return
