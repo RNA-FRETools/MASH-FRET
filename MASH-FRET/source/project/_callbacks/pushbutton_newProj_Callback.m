@@ -17,7 +17,7 @@ h0 = guidata(h_fig);
 proj_id = numel(h0.param.proj)+1;
 switch act
     case 1
-        proj = setProjDef_sim(proj,h0.param.sim);
+        proj = setProjDef_sim(proj,h0.param);
         h = h0;
         mod = 'S';
         

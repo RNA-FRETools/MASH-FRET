@@ -31,6 +31,7 @@ s.movie_file = adjustParam('movie_file', [], s_in); % movie path/file
 s.is_movie = adjustParam('is_movie', ~isempty(s.movie_file), s_in);
 s.movie_dim = adjustParam('movie_dim', [], s_in);
 s.movie_dat = adjustParam('movie_dat', [], s_in);
+s.spltime_from_video = adjustParam('spltime_from_video',s.is_movie,s_in);
 
 s.frame_rate = adjustParam('frame_rate', 1, s_in);
 s.frame_rate(s.frame_rate<=0) = 1;

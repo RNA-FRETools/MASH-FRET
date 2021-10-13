@@ -3,6 +3,10 @@ function ud_expSet_excPlot(h_fig)
 % get interface content
 h = guidata(h_fig);
 
+if ~(isfield(h,'tab_exc') && ishandle(h.tab_exc))
+    return
+end
+
 % get project data
 proj = h_fig.UserData;
 

@@ -3,6 +3,10 @@ function ud_expSet_chanPlot(h_fig)
 % get interface content
 h = guidata(h_fig);
 
+if ~(isfield(h,'tab_chan') && ishandle(h.tab_chan))
+    return
+end
+
 % get project data
 proj = h_fig.UserData;
 if ~proj.is_movie

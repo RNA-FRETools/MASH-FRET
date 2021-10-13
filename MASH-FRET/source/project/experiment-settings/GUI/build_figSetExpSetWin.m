@@ -61,20 +61,24 @@ x = mg;
 y = hfig-mg-htab;
 
 h.tabg = uitabgroup('parent',h_fig,'units',un,'position',[x,y,wtab,htab]);
-h.tab_imp = uitab('parent',h.tabg,'units',un,'title',ttl0);
-h.tab_chan = uitab('parent',h.tabg,'units',un,'title',ttl1);
-h.tab_exc = uitab('parent',h.tabg,'units',un,'title',ttl2);
-h.tab_calc = uitab('parent',h.tabg,'units',un,'title',ttl3);
+if ~strcmp(dat2import,'sim')
+    if ~isempty(dat2import)
+        h.tab_imp = uitab('parent',h.tabg,'units',un,'title',ttl0);
+        h.tab_chan = uitab('parent',h.tabg,'units',un,'title',ttl1);
+        h.tab_exc = uitab('parent',h.tabg,'units',un,'title',ttl2);
+    end
+    h.tab_calc = uitab('parent',h.tabg,'units',un,'title',ttl3);
+end
 h.tab_div = uitab('parent',h.tabg,'units',un,'title',ttl4);
 
-h = build_setExpSetImport(h,dat2import,h_fig0);
-
-h = build_setExpSetTabChan(h,proj.nb_channel);
-
-h = build_setExpSetTabExc(h,proj.nb_excitations,h_fig0);
-
-h = build_setExpSetTabCalc(h);
-
+if ~strcmp(dat2import,'sim')
+    if ~isempty(dat2import)
+        h = build_setExpSetImport(h,dat2import,h_fig0);
+        h = build_setExpSetTabChan(h,proj.nb_channel);
+        h = build_setExpSetTabExc(h,proj.nb_excitations,h_fig0);
+    end
+    h = build_setExpSetTabCalc(h);
+end
 h = build_setExpSetTabDiv(h,h_fig0);
 
 guidata(h_fig,h);

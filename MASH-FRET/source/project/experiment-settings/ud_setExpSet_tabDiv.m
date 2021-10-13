@@ -11,7 +11,7 @@ set(h.edit_projName,'string',proj.exp_parameters{1,2});
 
 % refresh video sampling time
 if proj.spltime_from_video
-    set(h.edit_splTime,'enable','inactive');
+    set(h.edit_splTime,'enable','off');
 else
     set(h.edit_splTime,'enable','on');
 end

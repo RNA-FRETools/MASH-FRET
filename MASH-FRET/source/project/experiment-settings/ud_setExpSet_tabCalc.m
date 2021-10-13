@@ -3,6 +3,10 @@ function ud_setExpSet_tabCalc(h_fig)
 % retrieve interface content
 h = guidata(h_fig);
 
+if ~(isfield(h,'tab_calc') && ishandle(h.tab_calc))
+    return
+end
+
 % retrieve project parameters
 proj = h_fig.UserData;
 

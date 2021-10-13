@@ -9,6 +9,11 @@ function ud_setExpSet_tabChan(h_fig)
 % get interface content
 h = guidata(h_fig);
 
+if ~(isfield(h,'tab_chan') && ishandle(h.tab_chan))
+    return
+end
+    
+
 % get project parameters
 proj = h.figure.UserData;
 

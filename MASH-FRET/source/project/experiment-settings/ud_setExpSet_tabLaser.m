@@ -2,6 +2,10 @@ function ud_setExpSet_tabLaser(h_fig)
 
 h = guidata(h_fig);
 
+if ~(isfield(h,'tab_exc') && ishandle(h.tab_exc))
+    return
+end
+
 proj = h_fig.UserData;
 
 % set number of lasers

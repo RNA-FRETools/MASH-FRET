@@ -9,6 +9,10 @@ function ud_setExpSet_tabImp(h_fig)
 % get interface content
 h = guidata(h_fig);
 
+if ~(isfield(h,'tab_imp') && ishandle(h.tab_imp))
+    return
+end
+
 % get project parameters
 proj = h_fig.UserData;
 
