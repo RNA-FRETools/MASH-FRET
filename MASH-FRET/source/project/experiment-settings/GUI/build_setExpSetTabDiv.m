@@ -1,9 +1,10 @@
-function h = build_setExpSetTabDiv(h)
-% h = build_setExpSetTabDiv(h)
+function h = build_setExpSetTabDiv(h,h_fig0)
+% h = build_setExpSetTabDiv(h,h_fig0)
 %
-% Builds fourth tabbed panel "Divers" of "Experiment settings" window.
+% Builds fifth tabbed panel "Divers" of "Experiment settings" window.
 %
 % h: structure containing handles to all figure's children
+% h_fig0: handle to main figure
 
 % defaults
 str0 = 'Project name:';
@@ -25,7 +26,7 @@ wpan = (postab(3)-3*h.mg)/2;
 wedit1 = wpan-wtxt0;
 wedit2 = wpan-wtxt1;
 hpan0 = postab(4)-h.mgtab-h.htxt-h.hedit-2*h.mg;
-hpan1 = h.mgtab+h.htxt+h.hpop+h.mg;
+hpan1 = h.mgpan+h.htxt+h.hpop+h.mg+h.hedit+h.mg;
 
 % GUI
 x = h.mg;
@@ -75,4 +76,4 @@ y = h.mg;
 
 h.push_save = uicontrol('parent',h_tab,'style','pushbutton','units',h.un,...
     'fontunits',h.fun,'fontsize',h.fsz,'string',str3,'position',...
-    [x,y,wbut,h.hedit],'callback',{@push_setExpSet_save,h_fig});
+    [x,y,wbut,h.hedit],'callback',{@push_setExpSet_save,h_fig,h_fig0});

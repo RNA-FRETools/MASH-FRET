@@ -1,10 +1,11 @@
-function h = build_setExpSetTabExc(h,nExc)
-% h = build_setExpSetTabExc(h,nExc)
+function h = build_setExpSetTabExc(h,nExc,h_fig0)
+% h = build_setExpSetTabExc(h,nExc,h_fig0)
 %
-% Builds second tabbed panel "Lasers" of "Experiment settings" window.
+% Builds third tabbed panel "Lasers" of "Experiment settings" window.
 %
 % h: structure containing handles to all figure's children
 % nExc: number of alternating lasers
+% h_fig0: handle to main figure
 
 % defaults
 str0 = 'Number of alternating lasers:';
@@ -32,14 +33,14 @@ y = y-(h.hedit-h.htxt)/2;
 
 h.edit_nExc = uicontrol('parent',h_tab,'style','edit','units',h.un,...
     'fontunits',h.fun,'fontsize',h.fsz,'position',[x,y,h.wedit0,h.hedit],...
-    'callback',{@edit_setExpSet_nExc,h_fig});
+    'callback',{@edit_setExpSet_nExc,h_fig,h_fig0});
 
-h = setExpSet_buildExcArea(h,nExc);
+h = setExpSet_buildExcArea(h,nExc,h_fig0);
 
 y = y-h.mg-hare-h.mg-h.hedit;
 x = postab(3)-h.mg-wbut0;
 
 h.push_nextExc = uicontrol('parent',h_tab,'style','pushbutton','units',...
     h.un,'fontunits',h.fun,'fontsize',h.fsz,'string',str1,'position',...
-    [x,y,wbut0,h.hedit],'callback',{@push_setExpSet_next,h_fig,2});
+    [x,y,wbut0,h.hedit],'callback',{@push_setExpSet_next,h_fig,3});
 

@@ -1,14 +1,15 @@
 function h = build_setExpSetTabChan(h,nChan)
 % h = build_setExpSetTabChan(h,nChan)
 %
-% Builds first tabbed panel "Channels" of "Experiment settings" window.
+% Builds second tabbed panel "Channels" of "Experiment settings" window.
 %
 % h: structure containing handles to all figure's children
 % nChan: number of channels
 
 % defaults
 str0 = 'Number of channels:';
-str1 = ['Next ',char(9658)];
+str1 = 'average image over all video frames';
+str2 = ['Next ',char(9658)];
 
 % parents
 h_fig = h.figure;
@@ -16,9 +17,11 @@ h_tab = h.tab_chan;
 
 % dimensions
 postab = h_tab.Position;
-hare = postab(4)-h.mgtab-h.hedit-2*h.mg-h.hedit-h.mg;
 wtxt0 = getUItextWidth(str0,h.fun,h.fsz,'normal',h.tbl)+h.wpad;
-wbut0 = getUItextWidth(str1,h.fun,h.fsz,'normal',h.tbl)+h.wbrd;
+wbut0 = getUItextWidth(str2,h.fun,h.fsz,'normal',h.tbl)+h.wbrd;
+haxe = postab(4)-h.mgtab-h.hedit-h.mg-h.htxt-h.mg-h.htxt-h.hedit-h.mg-...
+    h.htxt-h.mg-h.hedit-h.mg;
+waxe = postab(3)-2*h.mg;
 
 x = h.mg;
 y = postab(4)-h.mgtab-h.hedit+(h.hedit-h.htxt)/2;
@@ -36,9 +39,22 @@ h.edit_nChan = uicontrol('parent',h_tab,'style','edit','units',h.un,...
 
 h = setExpSet_buildChanArea(h,nChan);
 
-y = y-h.mg-hare-h.mg-h.hedit;
+x = h.mg;
+y = h.mg+h.hedit+h.mg+h.htxt;
+
+h.axes_chan = axes('parent',h_tab,'units',h.un,'fontunits',h.fun,...
+    'fontsize',h.fsz,'position',[x,y,waxe,haxe],'xtick',[],'ytick',[],...
+    'nextplot','replacechildren');
+
+y = y-h.htxt;
+
+h.text_chanLgd = uicontrol('parent',h_tab,'style','text','units',h.un,...
+    'fontunits',h.fun,'fontsize',h.fsz,'string',str1,'position',...
+    [x,y,waxe,h.htxt]);
+
+y = h.mg;
 x = postab(3)-h.mg-wbut0;
 
 h.push_nextChan = uicontrol('parent',h_tab,'style','pushbutton','units',...
-    h.un,'fontunits',h.fun,'fontsize',h.fsz,'string',str1,'position',...
-    [x,y,wbut0,h.hedit],'callback',{@push_setExpSet_next,h_fig,1});
+    h.un,'fontunits',h.fun,'fontsize',h.fsz,'string',str2,'position',...
+    [x,y,wbut0,h.hedit],'callback',{@push_setExpSet_next,h_fig,2});

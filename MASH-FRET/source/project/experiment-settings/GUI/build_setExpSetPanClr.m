@@ -9,6 +9,7 @@ function h = build_setExpSetPanClr(h)
 str0 = 'data:';
 str1 = {'Select data'};
 str2 = 'Set color';
+str3 = 'Apply default colors';
 
 % parents
 h_fig = h.figure;
@@ -16,8 +17,9 @@ h_pan = h.panel_clr;
 
 % dimensions
 pospan = h_pan.Position;
-wbut = getUItextWidth(str2,h.fun,h.fsz,'normal',h.tbl)+h.wbrd;
-wpop = pospan(3)-3*h.mg-wbut;
+wbut0 = getUItextWidth(str2,h.fun,h.fsz,'normal',h.tbl)+h.wbrd;
+wpop = pospan(3)-3*h.mg-wbut0;
+wbut1 = pospan(3)-2*h.mg;
 
 % GUI
 x = h.mg;
@@ -38,5 +40,12 @@ y = y+(h.hpop-h.hedit)/2;
 
 h.push_clr = uicontrol('parent',h_pan,'style','pushbutton','units',h.un,...
     'fontunits',h.fun,'fontsize',h.fsz,'string',str2,'position',...
-    [x,y,wbut,h.hedit],'callback',{@push_setExpSet_clr,h_fig});
+    [x,y,wbut0,h.hedit],'callback',{@push_setExpSet_clr,h_fig});
+
+x = h.mg;
+y = y-h.mg-h.hedit;
+
+h.push_defclr = uicontrol('parent',h_pan,'style','pushbutton','units',h.un,...
+    'fontunits',h.fun,'fontsize',h.fsz,'string',str3,'position',...
+    [x,y,wbut1,h.hedit],'callback',{@push_setExpSet_defclr,h_fig});
 

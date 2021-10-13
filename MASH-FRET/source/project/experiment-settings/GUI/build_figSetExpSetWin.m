@@ -1,10 +1,11 @@
-function h_fig = build_figSetExpSetWin(proj,h_fig0)
-% h_fig = build_figSetExpSetWin(proj,h_fig0)
+function h_fig = build_figSetExpSetWin(proj,dat2import,h_fig0)
+% h_fig = build_figSetExpSetWin(proj,dat2import,h_fig0)
 %
 % Builds Experiment settings window and returns associated handle.
 %
 % h_fig0: handle to main figure
 % proj: project's structure
+% dat2import: data to import from file ('video' or 'trajectories')
 % h_fig: handle to Experiment settings figure
 
 % default
@@ -13,7 +14,7 @@ hfig = 400;
 un = 'pixels';
 fun = 'points';
 mg = 10;
-mgtab = 30;
+mgtab = 10;
 mgpan = 20;
 wbrd = 10;
 wpad = 25;
@@ -25,12 +26,11 @@ wedit0 = 40;
 bgclr = [0,0,0];
 fgclr = [1,1,1];
 wintitle = 'Experiment settings';
-ttl0 = 'Channels';
-ttl1 = 'Lasers';
-ttl2 = 'Calculations';
-ttl3 = 'Divers';
-nChan = 3;
-nExc = 3;
+ttl0 = 'Import';
+ttl1 = 'Channels';
+ttl2 = 'Lasers';
+ttl3 = 'Calculations';
+ttl4 = 'Divers';
 
 % get table of character pixel widths
 h0 = guidata(h_fig0);
@@ -61,20 +61,25 @@ x = mg;
 y = hfig-mg-htab;
 
 h.tabg = uitabgroup('parent',h_fig,'units',un,'position',[x,y,wtab,htab]);
-h.tab_chan = uitab('parent',h.tabg,'units',un,'title',ttl0);
-h.tab_exc = uitab('parent',h.tabg,'units',un,'title',ttl1);
-h.tab_calc = uitab('parent',h.tabg,'units',un,'title',ttl2);
-h.tab_div = uitab('parent',h.tabg,'units',un,'title',ttl3);
+h.tab_imp = uitab('parent',h.tabg,'units',un,'title',ttl0);
+h.tab_chan = uitab('parent',h.tabg,'units',un,'title',ttl1);
+h.tab_exc = uitab('parent',h.tabg,'units',un,'title',ttl2);
+h.tab_calc = uitab('parent',h.tabg,'units',un,'title',ttl3);
+h.tab_div = uitab('parent',h.tabg,'units',un,'title',ttl4);
 
-h = build_setExpSetTabChan(h,nChan);
+h = build_setExpSetImport(h,dat2import,h_fig0);
 
-h = build_setExpSetTabExc(h,nExc);
+h = build_setExpSetTabChan(h,proj.nb_channel);
+
+h = build_setExpSetTabExc(h,proj.nb_excitations,h_fig0);
 
 h = build_setExpSetTabCalc(h);
 
-h = build_setExpSetTabDiv(h);
+h = build_setExpSetTabDiv(h,h_fig0);
 
 guidata(h_fig,h);
 
-ud_setExpSet_tabChan(h_fig)
+setProp([h_fig,h_fig.Children],'units','normalized');
+
+ud_expSetWin(h_fig);
 
