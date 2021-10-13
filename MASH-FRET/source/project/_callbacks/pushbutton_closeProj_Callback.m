@@ -93,7 +93,9 @@ cla(h.axes_hist2);
 updateFields(h_fig);
 
 % switch to new current project's module
-switchPan(eval(['h.togglebutton_',p.curr_mod{p.curr_proj}]),[],h_fig);
+if ~isempty(p.proj)
+    switchPan(eval(['h.togglebutton_',p.curr_mod{p.curr_proj}]),[],h_fig);
+end
 
 % display action
 if numel(slct)>1
