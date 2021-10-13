@@ -1,4 +1,4 @@
-function def = setDefPrm_sim(p)
+function defprm = setDefPrm_sim(p)
 % def = setDefPrm_sim(p)
 %
 % Set new or adjust project's simulation default parameters to current
@@ -43,71 +43,45 @@ inun = 'electron'; % input intensity units
 isPSF = true;
 PSFw = [0.35260 0.38306]; % PSF width (um)
 outun = 'electron';
-  
-if ~isfield(p, 'defProjPrm')
-    p.defProjPrm = [];
+
+% retrieve existing default parameters
+if ~isfield(p.sim, 'defProjPrm')
+    p.sim.defProjPrm = [];
 end
-def = p.defProjPrm;
+defprm = p.sim.defProjPrm;
+
+% plot parameters
+def{1} = 1; % colormap
 
 % video parameters
-def.nbFrames = adjustParam('nbFrames', L, def); % nb of video frames
-def.rate = adjustParam('rate', rate, def); % frame rate (s-1)
-def.bitnr = adjustParam('bitnr', br, def); % bit rate
-def.noiseType = adjustParam('noiseType', camNoise, def);
-def.movDim = adjustParam('movDim', viddim, def);
-def.pixDim = adjustParam('pixDim', pixsz, def);
-def.camNoise = adjustParam('camNoise', noisePrm, def);
+def{2}{1} = [L,rate,br,pixsz]; % [video length,frame rate(s-1),bit rate,pixel size(um)]
+def{2}{2} = viddim;
+def{2}{3} = {camNoise,noisePrm};
 
 % molecule parameters
-def.genCoord = adjustParam('genCoord', 1, def);
-def.coordFile = adjustParam('coordFile', [], def);
-def.impPrm = adjustParam('impPrm', 0, def);
-def.prmFile = adjustParam('prmFile', [], def);
-def.molPrm = adjustParam('molPrm', [], def);
-def.bleach = adjustParam('bleach', 0, def); % fluorophore bleaching (0/1)
-def.bleach_t = adjustParam('bleach_t', def.nbFrames/def.rate, def); % bleaching decay time (s-1)
-def.nbStates = adjustParam('nbStates', J, def); % nb of FRET states
-def.molNb = adjustParam('molNb', N, def); % nb of simulated molecules 
-def.kx = adjustParam('kx', kx, def);
-def.wx = adjustParam('kx', wx, def);
-def.stateVal = adjustParam('stateVal', ...
-    round(10*linspace(0,1,def.nbStates))/10, def);
-def.FRETw = adjustParam('FRETw', zeros(1,def.nbStates), def); % FRET width for heterogenous broadening
-def.gamma = adjustParam('gamma', 1, def); % gamma factor (correction for different quantum yields and detection efficiencies of the fluorophors)
-def.gammaW = adjustParam('gammaW', 0, def); % gamma width for molecule variations
-def.totInt = adjustParam('totInt', Itot, def); % total emitted intennsity 
-def.totInt_width = adjustParam('totInt_width', 0, def); % total emitted Intensity width for heterogenous broadening
-def.coord = adjustParam('coord', [], def); % only allocation of sm coordinates
-def.molPrm = adjustParam('molPrm', [], def); % only allocation of sm parameters
-def.btD = adjustParam('btD', BtD, def);  % default bleedthrough D excitation D emmission in A channel
-def.btA = adjustParam('btA', 0, def);     % default bleedthrough A excitation A emmission in D channel
-def.deD = adjustParam('deD', 0, def);     % default direct excitation of D after A excitation
-def.deA = adjustParam('deA', DEA, def);  % default direct excitation of A after D excitation
-def.intUnits = adjustParam('intUnits',inun, def);
+def{3}{1} = {N,true,[],[]}; % {nb. of molecules,random coordinates,coordinates file,coordinates}
+def{3}{2} = {false,[],[]}; % {import presets from file,presets file,presets}
+def{3}{3} = [false,L/rate]; % [photobleaching,bleaching time constant(s)]
+def{3}{4} = {J,kx,wx,...
+    [round(10*linspace(0,1,def.nbStates))/10;zeros(1,J)]}; % {nb. of states,transition rate constants(s-1),transition prob.,FRET values,FRET broadening}
+def{3}{5} = [1,0]; % gamma factor and broadening
+def{3}{6} = {Itot,0,inun}; % total emitted intensity(PC),broadening(PC),input units
+def{3}{7} = [BtD,0;0,DEA];  % default bleedthrough and direct excitation coefficients
 
 % setup parameters
-def.bgInt_don = adjustParam('bgInt_don', 0, def);
-def.bgInt_acc = adjustParam('bgInt_acc', 0, def);
-def.bgType = adjustParam('bgType', 1, def); % 1: constant, 2: TIRF profile, 3: patterned 
-def.TIRFdim = adjustParam('TIRFdim', [floor(def.movDim(1)/4) ...
-    def.movDim(2)/2], def);
-def.bgDec = adjustParam('bgDec', 0, def);
-def.cstDec = adjustParam('cstDec', def.nbFrames*def.rate/10, def);
-def.ampDec = adjustParam('ampDec', 1, def);
-def.PSF = adjustParam('PSF', isPSF, def);
-def.PSFw = adjustParam('PSFw', PSFw, def);
-def.zDec = adjustParam('zDec', 0, def); % defocusing
-def.z0Dec = adjustParam('z0Dec', 0, def); % lateral chromatic aberration
-def.matGauss = cell(1,4);
+def{4}{1} = {1,... % BG type (1:constant, 2:TIRF profile, 3:patterned)
+    [0,0],... % don and acc BG intensities
+    [floor(viddim(1)/4),viddim(2)/2],... TIRF profile x- and y-dimensions
+    [0,L*rate/10,1]}; % exp. decaying BG, decay constant(s),amplitude
+def{4}{2} = {isPSF,... % PSF convolution
+    PSFw,... % don and acc PSF widths
+    cell(1,4)}; % convolution factor matrix
+def{4}{3} = [0,0]; % defocusing, lateral chromatic aberration
 
-% other parameters
-def.export_traces = adjustParam('export_traces', 0, def);
-def.export_movie = adjustParam('export_movie', 0, def);
-def.export_avi = adjustParam('export_avi', 0, def);
-def.export_procTraces = adjustParam('export_procTraces', 0, def);
-def.export_dt = adjustParam('export_dt', 0, def);
-def.export_coord = adjustParam('export_coord', 0, def);
-def.export_param = adjustParam('export_param', 0, def);
-def.intOpUnits = adjustParam('intOpUnits', outun, def);
-def.cmap = adjustParam('cmap', 1, def);
+% export parameters
+def{5}{1} = [0,0,0,0,0,0,0]; % exported files
+def{5}{2} = outun; % exported intensity units
+
+% check and correct inconsistensies in structure
+defprm = adjustVal(defprm,def);
 
