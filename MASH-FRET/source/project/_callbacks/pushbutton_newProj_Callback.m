@@ -44,18 +44,7 @@ end
 % add project to list and initialize list indexes
 p = h.param;
 p.proj = [p.proj,proj];
-p.curr_mod = [p.curr_mod,mod];
-p.sim.curr_plot = [p.sim.curr_plot,1];
-p.movPr.curr_frame = [p.movPr.curr_frame,1];
-p.movPr.curr_plot = [p.movPr.curr_plot,1];
-p.ttPr.curr_plot = [p.ttPr.curr_plot,1];
-p.ttPr.curr_mol = [p.ttPr.curr_mol,1];
-p.thm.curr_tpe = [p.thm.curr_tpe,1];
-p.thm.curr_tag = [p.thm.curr_tag,1];
-p.thm.curr_plot = [p.thm.curr_plot,1];
-p.TDP.curr_type = [p.TDP.curr_type,1];
-p.TDP.curr_tag = [p.TDP.curr_tag,1];
-p.TDP.curr_plot = [p.TDP.curr_plot,1];
+p = adjustProjIndexLists(p,1,{mod});
 
 p.curr_proj = proj_id;
 

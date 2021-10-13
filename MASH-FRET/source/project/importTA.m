@@ -8,6 +8,9 @@ function p = importTA(p,projs)
 
 % define data processing parameters applied (prm)
 for i = projs
+    if isempty(p.proj{i}.TA)
+        continue
+    end
     
     nChan = p.proj{i}.nb_channel;
     nExc = p.proj{i}.nb_excitations;
@@ -26,7 +29,7 @@ for i = projs
     
     % initializes export options
     if ~isfield(p.proj{i}.TA, 'exp')
-        p.proj{i}.exp = [];
+        p.proj{i}.TA.exp = [];
     end
     
     % if the number of data changed, reset results and resize
@@ -47,7 +50,7 @@ for i = projs
     for tpe = 1:nTpe
         for tag = 1:(nTag+1)
 
-            p.proj{i} = downCompatibilityTDP(p.proj{i},tpe,tag);
+            p.proj{i}.TA = downCompatibilityTDP(p.proj{i}.TA,tpe,tag);
 
             % if size of already applied parameters is different from
             % defaults, used defaults

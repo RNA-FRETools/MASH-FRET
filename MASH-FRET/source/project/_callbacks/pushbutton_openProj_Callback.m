@@ -78,6 +78,25 @@ p.proj = [p.proj dat];
 % manage compatibility
 p = projDownCompatibility(p,proj1:proj2);
 
+% increment project lists
+mod = {};
+for pj = proj1:proj2
+    if ~isempty(p.proj{p.curr_proj}.TA)
+        p.curr_mod = cat(2,mod,'TA');
+    elseif ~isempty(p.proj{p.curr_proj}.HA)
+        p.curr_mod = cat(2,mod,'HA');
+    elseif ~isempty(p.proj{p.curr_proj}.TP)
+        p.curr_mod = cat(2,mod,'TP');
+    elseif ~isempty(p.proj{p.curr_proj}.VP)
+        p.curr_mod = cat(2,mod,'VP');
+    elseif ~isempty(p.proj{p.curr_proj}.sim)
+        p.curr_mod = cat(2,mod,'S');
+    else
+        p.curr_mod = cat(2,mod,'S');
+    end
+end
+p = adjustProjIndexLists(p,numel(proj1:proj2),mod);
+
 % set interface parameters
 p = importSim(p,proj1:proj2);
 p = importVP(p,proj1:proj2);
@@ -87,23 +106,6 @@ p = importTA(p,proj1:proj2);
 
 % set last-imported project as current project
 p.curr_proj = size(p.proj,2);
-
-% set current modules of all projects
-for pj = proj1:proj2
-    if ~isempty(p.proj{p.curr_proj}.TA)
-        p.curr_mod = cat(2,p.curr_mod,'TA');
-    elseif ~isempty(p.proj{p.curr_proj}.HA)
-        p.curr_mod = cat(2,p.curr_mod,'HA');
-    elseif ~isempty(p.proj{p.curr_proj}.TP)
-        p.curr_mod = cat(2,p.curr_mod,'TP');
-    elseif ~isempty(p.proj{p.curr_proj}.VP)
-        p.curr_mod = cat(2,p.curr_mod,'VP');
-    elseif ~isempty(p.proj{p.curr_proj}.sim)
-        p.curr_mod = cat(2,p.curr_mod,'S');
-    else
-        p.curr_mod = cat(2,p.curr_mod,'S');
-    end
-end
 
 % update project lists
 p = ud_projLst(p, h.listbox_proj);

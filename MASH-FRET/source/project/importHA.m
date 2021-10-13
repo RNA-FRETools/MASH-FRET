@@ -8,6 +8,10 @@ function p = importHA(p,projs)
 
 % define data processing parameters applied (prm)
 for i = projs
+    if isempty(p.proj{i}.HA)
+        continue
+    end
+    
     nChan = p.proj{i}.nb_channel;
     nExc = p.proj{i}.nb_excitations;
     allExc = p.proj{i}.excitations;
@@ -190,7 +194,7 @@ for i = projs
             p.proj{i}.HA.def{tag,tpe} = setDefPrm_thm([],trace,isratio,...
                 p.thm.colList);
             
-            p.proj{i} = downCompatibilityHA(p.proj{i},tpe,tag);
+            p.proj{i}.HA = downCompatibilityHA(p.proj{i}.HA,tpe,tag);
             
             p.proj{i}.HA.curr{tag,tpe} = setDefPrm_thm(...
                 p.proj{i}.HA.prm{tag,tpe}, trace, isratio, p.thm.colList);

@@ -8,7 +8,7 @@ p = h.param;
 proj = p.proj{p.curr_proj};
 
 % ask user for experiment settings
-if isModuleOn(p,'sim')
+if ~isempty(proj.sim)
     proj_new = setExpSetWin(proj,'sim',h_fig);
 else
     proj_new = setExpSetWin(proj,'',h_fig);

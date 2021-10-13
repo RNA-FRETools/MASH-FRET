@@ -7,8 +7,8 @@ function p_proj = downCompatibilityTDP(p_proj,tpe,tag)
 % tpe: index in list of data type
 % tag: index in list of molecule tag
 
-def = p_proj.TA.def{tag,tpe};
-prm = p_proj.TA.prm{tag,tpe};
+def = p_proj.def{tag,tpe};
+prm = p_proj.prm{tag,tpe};
 
 if ~isstruct(prm)
     return

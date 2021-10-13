@@ -7,8 +7,8 @@ function p_proj = downCompatibilityHA(p_proj,tpe,tag)
 % tpe: index in list of data type
 % tag: index in list of molecule tag
 
-def = p_proj.HA.def{tag,tpe};
-prm = p_proj.HA.prm{tag,tpe};
+def = p_proj.def{tag,tpe};
+prm = p_proj.prm{tag,tpe};
 
 if ~isstruct(prm)
     return
@@ -18,6 +18,6 @@ if isfield(prm,'plot') && size(prm.plot,2)==2
     prm.plot = [prm.plot,def.plot{3}];
 end
 
-p_proj.TA.prm{tag,tpe} = prm;
+p_proj.prm{tag,tpe} = prm;
 
 

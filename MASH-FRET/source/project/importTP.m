@@ -8,6 +8,10 @@ function p = importTP(p,projs)
 
 % define molecule processing parameters applied (prm) and to apply (curr)
 for i = projs
+    if isempty(p.proj{i}.TP)
+        continue
+    end
+    
     % collect experiment settings
     N = numel(p.proj{i}.coord_incl);
     nChan = p.proj{i}.nb_channel;
@@ -67,8 +71,4 @@ for i = projs
     end
     p.proj{i}.TP.prm = p.proj{i}.TP.prm(1:N);
     p.proj{i}.TP.curr = p.proj{i}.TP.curr(1:N);
-    
-    % initializes current molecule and plot
-    p.ttPr.curr_mol(i) = 1;
-    p.ttPr.curr_plot(i) = 1;
 end
