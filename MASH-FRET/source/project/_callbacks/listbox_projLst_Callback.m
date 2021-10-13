@@ -29,6 +29,9 @@ ud_trSetTbl(h_fig);
 cla(h.axes_hist1);
 cla(h.axes_hist2);
 
+% switch to proper module
+switchPan(eval(['h.togglebutton_',p.curr_mod{p.curr_proj}]),[],h_fig);
+
 % update TDP and plot
 pushbutton_TDPupdatePlot_Callback(h.pushbutton_TDPupdatePlot,[],h_fig);
 

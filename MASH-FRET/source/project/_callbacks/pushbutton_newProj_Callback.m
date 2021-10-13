@@ -19,6 +19,7 @@ switch act
     case 1
         proj = setProjDef_sim(proj,h0.param.sim);
         h = h0;
+        mod = 'S';
         
     case 2
         % ask user for video file and import data
@@ -28,6 +29,7 @@ switch act
             return
         end
         h = guidata(h_fig);
+        mod = 'VP';
         
     case 3
         % ask user for trajectory files and import data
@@ -36,11 +38,13 @@ switch act
             guidata(h_fig,h0); % reset modif made to guidata
             return
         end
+        mod = 'TP';
 end
 
 % add project to list and initialize list indexes
 p = h.param;
 p.proj = [p.proj,proj];
+p.curr_mod = [p.curr_mod,mod];
 p.sim.curr_plot = [p.sim.curr_plot,1];
 p.movPr.curr_frame = [p.movPr.curr_frame,1];
 p.movPr.curr_plot = [p.movPr.curr_plot,1];
@@ -63,12 +67,6 @@ h.param = p;
 guidata(h_fig,h);
 
 % switch to proper module
-switch act
-    case 1
-        switchPan(h.togglebutton_S,[],h_fig);
-    case 2
-        switchPan(h.togglebutton_VP,[],h_fig);
-    case 3
-        switchPan(h.togglebutton_TP,[],h_fig);
-end
+switchPan(eval(['h.togglebutton_',p.curr_mod{p.curr_proj}]),[],h_fig);
+
 updateFields(h_fig);

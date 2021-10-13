@@ -2,14 +2,15 @@ function slider_img_Callback(obj, evd, h_fig)
 
 % get interface parameters
 h = guidata(h_fig);
-p = h.param.movPr;
+p = h.param;
+proj = p.curr_proj;
 
 % get video parameters
-videoFile = [h.movie.path h.movie.file];
-fcurs = h.movie.speCursor;
-resX = h.movie.pixelX;
-resY = h.movie.pixelY;
-L = h.movie.framesTot;
+videoFile = p.proj{proj}.movie_file;
+fcurs = p.proj{proj}.movie_dat{1};
+resX = p.proj{proj}.movie_dim(1);
+resY = p.proj{proj}.movie_dim(2);
+L = p.proj{proj}.movie_dat{3};
 
 % adjust slider position
 l = round(get(obj, 'Value'));
@@ -29,11 +30,11 @@ if ~ok
 end
 
 % update current video frame
-h.movie.frameCurNb = l;
-h.movie.frameCur = data.frameCur;
+p.movPr.curr_frame(proj) = l;
+p.proj{proj}.VP.curr_img = data.frameCur;
 
 % save modifications
-h.param.movPr = p;
+h.param = p;
 guidata(h_fig, h);
 
 % set GUI to proper values and refresh plot

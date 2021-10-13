@@ -41,7 +41,7 @@ nChan = proj.nb_channel;
 def.curr_img = img; 
 def.perSec = adjustParam('perSec', 1, def);
 def.cmap = adjustParam('cmap', 1, def);
-sub_w = floor(h.movie.pixelX/nChan);
+sub_w = floor(proj.movie_dim(1)/nChan);
 def.split = (1:nChan-1)*sub_w;
 
 % edit and export video
@@ -91,7 +91,7 @@ def.trsf_tr = [];
 def.trsf_tr_file = [];
 def.trsf_refImp_mode = adjustParam('trsf_refImp_mode', 'rw', def);
 def.trsf_refImp_rw = adjustParam('trsf_refImp_rw', {[((1:nChan)' + 1) ...
-    def.nChan*ones(nChan,1) zeros(nChan,1)] [1 2]}, def);
+    nChan*ones(nChan,1) zeros(nChan,1)] [1 2]}, def);
 def.trsf_refImp_cw = adjustParam('trsf_refImp_cw', {...
     reshape((1:2*nChan), [nChan 2]) 1}, def);
 def.trsf_type = adjustParam('tr_type', 1, def);

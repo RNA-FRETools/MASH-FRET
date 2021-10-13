@@ -52,6 +52,7 @@ str_act = str_act(1:end-2);
 
 % update current project, molecule index, data type and molecule subgroup
 p.proj(slct) = [];
+p.curr_mod(slct) = [];
 p.sim.curr_plot(slct) = [];
 p.movPr.curr_plot(slct) = [];
 p.movPr.curr_frame(slct) = [];
@@ -90,6 +91,9 @@ cla(h.axes_hist2);
 
 % update calculations and GUI
 updateFields(h_fig);
+
+% switch to new current project's module
+switchPan(eval(['h.togglebutton_',p.curr_mod{p.curr_proj}]),[],h_fig);
 
 % display action
 if numel(slct)>1

@@ -5,14 +5,12 @@ function ud_VP_plotPan(h_fig)
 %
 % h_fig: handle to main figure
 
-% defaults
-memClr = [1,0.6,0.6];
-
 % collect interface parameters
 h = guidata(h_fig);
 p = h.param;
 
 if ~prepPanel(h.uitabgroup_VP_plot,h)
+    set([h.axes_movie,h.colorbar],'visible','off');
     return
 end
 
@@ -53,10 +51,10 @@ for i = 1:size(chansplit,2)
 end
 set(h.text_split, 'String', ['Channel splitting: ' txt_split]);
 
-% set "Free" button color
-if isFullMov
-    set(h.pushbutton_VP_freeMem, 'backgroundcolor', memClr);
-end
+% % set "Free" button color
+% if isFullMov
+%     set(h.pushbutton_VP_freeMem, 'backgroundcolor', memClr);
+% end
 
 % set video file
 set(h.edit_movFile, 'String', vidFile);

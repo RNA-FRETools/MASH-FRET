@@ -88,12 +88,32 @@ p = importTA(p,proj1:proj2);
 % set last-imported project as current project
 p.curr_proj = size(p.proj,2);
 
+% set current modules of all projects
+for pj = proj1:proj2
+    if ~isempty(p.proj{p.curr_proj}.TA)
+        p.curr_mod = cat(2,p.curr_mod,'TA');
+    elseif ~isempty(p.proj{p.curr_proj}.HA)
+        p.curr_mod = cat(2,p.curr_mod,'HA');
+    elseif ~isempty(p.proj{p.curr_proj}.TP)
+        p.curr_mod = cat(2,p.curr_mod,'TP');
+    elseif ~isempty(p.proj{p.curr_proj}.VP)
+        p.curr_mod = cat(2,p.curr_mod,'VP');
+    elseif ~isempty(p.proj{p.curr_proj}.sim)
+        p.curr_mod = cat(2,p.curr_mod,'S');
+    else
+        p.curr_mod = cat(2,p.curr_mod,'S');
+    end
+end
+
 % update project lists
 p = ud_projLst(p, h.listbox_proj);
 
 % save modifications
 h.param = p;
 guidata(h_fig,h);
+
+% update TP project-dependant interface
+ud_TTprojPrm(h_fig);
 
 % display action
 if ~iscell(evd)
@@ -111,19 +131,7 @@ if ~iscell(evd)
 end
 
 % switch to proper module
-if ~isempty(p.proj{p.curr_proj}.TA)
-    switchPan(h.togglebutton_TA,[],h_fig);
-elseif ~isempty(p.proj{p.curr_proj}.HA)
-    switchPan(h.togglebutton_HA,[],h_fig);
-elseif ~isempty(p.proj{p.curr_proj}.TP)
-    switchPan(h.togglebutton_TP,[],h_fig);
-elseif ~isempty(p.proj{p.curr_proj}.VP)
-    switchPan(h.togglebutton_VP,[],h_fig);
-elseif ~isempty(p.proj{p.curr_proj}.sim)
-    switchPan(h.togglebutton_S,[],h_fig);
-else
-    switchPan(h.togglebutton_S,[],h_fig);
-end
+switchPan(eval(['h.togglebutton_',p.curr_mod{p.curr_proj}]),[],h_fig);
 
 % update plots and GUI
 updateFields(h_fig);

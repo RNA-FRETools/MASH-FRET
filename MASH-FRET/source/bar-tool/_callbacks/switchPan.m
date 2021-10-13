@@ -1,26 +1,33 @@
 function switchPan(obj,evd,h_fig)
 
 h = guidata(h_fig);
+p = h.param;
 
 green = [0.76 0.87 0.78];
 grey = [240/255 240/255 240/255];
 
+mod = {'S','VP','TP','HA','TA'};
 h_tb = [h.togglebutton_S,h.togglebutton_VP,h.togglebutton_TP,...
     h.togglebutton_HA,h.togglebutton_TA];
 h_pan = [h.uipanel_S,h.uipanel_VP,h.uipanel_TP,h.uipanel_HA,h.uipanel_TA];
 
-set(obj, 'BackgroundColor', green, 'Value', 1);
+set(h_tb(h_tb==obj), 'BackgroundColor', green, 'Value', 1);
 set(h_tb(h_tb~=obj), 'BackgroundColor', grey, 'Value', 0);
-
-isVis = strcmp(get(h_pan(h_tb==obj),'Visible'),'on');
 set(h_pan(h_tb==obj), 'Visible', 'on');
 set(h_pan(h_tb~=obj), 'Visible', 'off');
-if ~isVis
+
+if any(h_tb==obj) && ~strcmp(get(h_pan(h_tb==obj),'Visible'),'on')
     setContPan(['Module "',get(obj,'string'),'" selected.'],'none',h_fig);
 end
 
+% save current module of current project
+if ~isempty(p.proj)
+    p.curr_mod{p.curr_proj} = mod{h_tb==obj};
+    h.param = p;
+    guidata(h_fig,h);
+end
+
 % set proper colormap
-p = h.param;
 switch obj
     case h.togglebutton_S
         if isModuleOn(p,'sim')

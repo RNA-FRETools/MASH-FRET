@@ -39,6 +39,7 @@ end
 
 % set project list
 h.param.proj = {};
+h.param.curr_mod = {};
 h.param.curr_proj = 0;
 
 % set root folder
@@ -283,6 +284,7 @@ p = p_input;
 % projects' current data types, molecule subgroup tags and plots
 p.curr_type = [];
 p.curr_tag = [];
+p.curr_plot = [];
 
 % interface defaults
 p.colList = colList;

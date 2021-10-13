@@ -27,11 +27,23 @@ p = h.param;
 % set folder root
 if ~isempty(p.proj)
     proj = p.curr_proj;
-    folderRoot = p.proj{proj}.folderRoot;
+    set(h.edit_rootFolder,'string',p.proj{proj}.folderRoot);
+    set([h.pushbutton_rootFolder,h.edit_rootFolder],'enable','on');
 else
-    folderRoot = p.folderRoot;
+    set(h.edit_rootFolder,'string','');
+    set([h.pushbutton_rootFolder,h.edit_rootFolder],'enable','off');
 end
-set(h.edit_rootFolder,'string',folderRoot);
+
+% Tool bar
+h_tb = [h.togglebutton_S,h.togglebutton_VP,h.togglebutton_TP,...
+    h.togglebutton_HA,h.togglebutton_TA];
+isOn = [isModuleOn(p,'sim'),isModuleOn(p,'VP'),isModuleOn(p,'TP'),...
+        isModuleOn(p,'HA'),isModuleOn(p,'TA')];
+set(h_tb(isOn),'enable','on');
+set(h_tb(~isOn),'enable','off','value',0);
+if all(~isOn)
+    switchPan(0,[],h_fig);
+end
 
 % Simulation module
 if strcmp(opt, 'sim') || strcmp(opt, 'all')
@@ -43,8 +55,7 @@ end
 if strcmp(opt,'imgAxes') || strcmp(opt, 'movPr') || strcmp(opt, 'all')
     
     % refresh data processing and plot
-    if (strcmp(opt, 'all') || strcmp(opt, 'imgAxes')) && ...
-            isfield(h, 'movie')
+    if (strcmp(opt, 'all') || strcmp(opt, 'imgAxes'))
         updateImgAxes(h_fig);
     end
     

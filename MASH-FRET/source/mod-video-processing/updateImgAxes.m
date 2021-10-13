@@ -19,7 +19,7 @@ end
 
 % collect experiment settings and video parameters
 proj = p.curr_proj;
-n = p.VP.curr_frame(proj);
+n = p.movPr.curr_frame(proj);
 expT = 1/p.proj{proj}.frame_rate;
 videoFile = p.proj{proj}.movie_file;
 fcurs = p.proj{proj}.movie_dat{1};

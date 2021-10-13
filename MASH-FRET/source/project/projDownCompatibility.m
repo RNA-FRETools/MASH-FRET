@@ -31,7 +31,7 @@ for i = projs
             p.proj{i}.TP.exp = p.proj{i}.expTT;
             p.proj{i} = rmfield(p.proj{i},'expTT');
         end
-        if ~isfield(p.proj{i}, 'prmTT')
+        if isfield(p.proj{i}, 'prmTT')
             p.proj{i}.TP.prm = p.proj{i}.prmTT;
             p.proj{i} = rmfield(p.proj{i}, 'prmTT');
         end
