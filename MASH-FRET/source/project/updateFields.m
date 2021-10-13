@@ -24,6 +24,15 @@ end
 h = guidata(h_fig);
 p = h.param;
 
+% set project list
+if isempty(p.proj)
+    set([h.pushbutton_closeProj,h.pushbutton_editProj,...
+        h.pushbutton_saveProj,h.listbox_proj],'enable','off');
+else
+    set([h.pushbutton_closeProj,h.pushbutton_editProj,...
+        h.pushbutton_saveProj,h.listbox_proj],'enable','on');
+end
+
 % set folder root
 if ~isempty(p.proj)
     proj = p.curr_proj;
