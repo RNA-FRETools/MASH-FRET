@@ -10,12 +10,7 @@ function [ferr,coord,errmsg] = sortSimCoord(coord_0, movDim, N_0)
 % coord: [N_1-by-4] or [N_0-by-4] sorted coordinates 
 % errmsg: error messages upon import failure
 
-% Last update by MH, 19.12.2019
-% >> identify out-of-range coordinates with external function iswithinbound
-% >> distinguish failure due to file from failure due to too no valid 
-%  coordinates by returning file error in "ferr" and error messages in
-%  "errmsg"
-%
+% update by MH, 19.12.2019: identify out-of-range coordinates with external function iswithinbound (2) distinguish failure due to file from failure due to too no valid coordinates by returning file error in "ferr" and error messages in "errmsg"
 % created by MH, 17.12.2019
 
 % initialize output

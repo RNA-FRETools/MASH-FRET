@@ -1,4 +1,4 @@
-function defprm = setDefPrm_sim(p)
+function prm = setDefPrm_sim(prm_in)
 % def = setDefPrm_sim(p)
 %
 % Set new or adjust project's simulation default parameters to current
@@ -44,44 +44,54 @@ isPSF = true;
 PSFw = [0.35260 0.38306]; % PSF width (um)
 outun = 'electron';
 
-% retrieve existing default parameters
-if ~isfield(p.sim, 'defProjPrm')
-    p.sim.defProjPrm = [];
-end
-defprm = p.sim.defProjPrm;
+% parameters for plot
+plotprm = cell(1,1);
+plotprm{1} = 1;
+prm.plot = adjustParam('plot',plotprm,prm_in);
 
-% plot parameters
-def{1} = 1; % colormap
+% parameters for dwell time generation
+gen_dt = cell(1,2);
+gen_dt{1} = [N,L,J,rate,false,L/rate]; % sample size,video length,nb. of states,frame rate(s-1),bleaching,bleaching time constant(s)
+gen_dt{2} = cat(3,kx,wx); % transition rate constants,transition prob.
+gen_dt{3} = {false,[],''}; % is presets,presets file, presets
+prm.gen_dt = adjustParam('gen_dt',gen_dt,prm_in);
 
-% video parameters
-def{2}{1} = [L,rate,br,pixsz]; % [video length,frame rate(s-1),bit rate,pixel size(um)]
-def{2}{2} = viddim;
-def{2}{3} = {camNoise,noisePrm};
-
-% molecule parameters
-def{3}{1} = {N,true,[],[]}; % {nb. of molecules,random coordinates,coordinates file,coordinates}
-def{3}{2} = {false,[],[]}; % {import presets from file,presets file,presets}
-def{3}{3} = [false,L/rate]; % [photobleaching,bleaching time constant(s)]
-def{3}{4} = {J,kx,wx,...
-    [round(10*linspace(0,1,def.nbStates))/10;zeros(1,J)]}; % {nb. of states,transition rate constants(s-1),transition prob.,FRET values,FRET broadening}
-def{3}{5} = [1,0]; % gamma factor and broadening
-def{3}{6} = {Itot,0,inun}; % total emitted intensity(PC),broadening(PC),input units
-def{3}{7} = [BtD,0;0,DEA];  % default bleedthrough and direct excitation coefficients
-
-% setup parameters
-def{4}{1} = {1,... % BG type (1:constant, 2:TIRF profile, 3:patterned)
+% parameters to calculate coordinates,intensities,FRET and video frame
+gen_dat = cell(1,3);
+gen_dat{1} = {{true,[],[]},... % rand. coord, coord, coord file
+    {viddim,br,pixsz,camNoise,noisePrm}}; % video dimensions(px),bit rate,pixel size(um),camera noise,noise param.
+gen_dat{2} = [round(10*linspace(0,1,J))/10;zeros(1,J)]; % FRET values and broadening
+gen_dat{3} = {[Itot,0],inun}; % total intensity, broadening and input units
+gen_dat{4} = [1,0]; % gamma factor and broadening
+gen_dat{5} = [BtD,0;0,DEA]; % bleedthrough and direct excitation coefficients
+gen_dat{6} = {isPSF,... % PSF convolution
+    PSFw,... % don and acc PSF widths
+    cell(1,2)}; % convolution factor matrix
+gen_dat{7} = [0,0,0]; % defocusing, lateral chromatic aberration, amplitude
+gen_dat{8} = {1,... % BG type (1:constant, 2:TIRF profile, 3:patterned)
     [0,0],... % don and acc BG intensities
     [floor(viddim(1)/4),viddim(2)/2],... TIRF profile x- and y-dimensions
+    {[],''},... % background image, imported file
     [0,L*rate/10,1]}; % exp. decaying BG, decay constant(s),amplitude
-def{4}{2} = {isPSF,... % PSF convolution
-    PSFw,... % don and acc PSF widths
-    cell(1,4)}; % convolution factor matrix
-def{4}{3} = [0,0]; % defocusing, lateral chromatic aberration
+prm.gen_dat = adjustParam('gen_dat',gen_dat,prm_in);
 
-% export parameters
-def{5}{1} = [0,0,0,0,0,0,0]; % exported files
-def{5}{2} = outun; % exported intensity units
+% parameters for export
+expprm{1} = [0,0,0,0,0,0,0]; % exported files
+expprm{2} = outun; % exported intensity units
+prm.exp = adjustParam('exp',expprm,prm_in);
 
-% check and correct inconsistensies in structure
-defprm = adjustVal(defprm,def);
+% state sequences
+%  res_seq{1}: [J-by-L-by-N] state occupancy trajectories
+%  res_seq{2}: [L-by-N] trajectories of state indexes
+%  res_seq{3}: {1-by-N}[nDt-by-3] dwell times
+res_dt = cell(1,3);
+prm.res_dt = adjustParam('res_dt',res_dt,prm_in);
+
+% coordinates, intensity and FRET trajectories
+%  res_trc{1}: [N-by-4] molecule coordinates
+%  res_trc{2}: [L-by-4-by-N] donor and acceptor intensity-time traces and state sequences
+%  res_trc{3}: [L-by-3-by-N] blurr FRET state sequences, max. prob. FRET state sequences, state index sequences
+res_dat = cell(1,3);
+prm.res_dat = adjustParam('res_dat',res_dat,prm_in);
+
 

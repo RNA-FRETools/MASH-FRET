@@ -7,20 +7,9 @@ function [ok,str_action] = exportResults(h_fig,varargin)
 % ok: execution success (1) or failure (0)
 % str_action: export action string
 
-% Last update: 5.12.2019 by MH
-% >> use separate functions for creating the background image, intensity-
-%  time traces and video frames; this allows to call the same scripts from 
-%  here and plotExample.m, preventing unilateral modifications
-% >> use separate functions for writing in .sira and .avi files; this 
-%  allows to call the same script from both modules Video processing and 
-%  Simulation, preventing unilateral modifications
-% >> use separate function exportSimLogFile.m to write .log files
-%
-% update: 20th of February 2019 by Mélodie Hadzic
-% >> add headers to dwell-time files
-% >> modify dwell-times file name for coherence with trace processing
-%
-% Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
+% update 5.12.2019 by MH: (1) use separate functions for creating the background image, intensity-time traces and video frames; this allows to call the same scripts from here and plotExample.m, preventing unilateral modifications (2) use separate functions for writing in .sira and .avi files; this allows to call the same script from both modules Video processing and Simulation, preventing unilateral modifications (3) use separate function exportSimLogFile.m to write .log files
+% update 20.2.2019 by MH: (1) add headers to dwell-time files (2) modify dwell-times file name for coherence with trace processing
+% created the 23.4.2014 by MH
 
 % initialize output arguments
 ok = 0;
@@ -44,19 +33,42 @@ end
 cd(pname);
 [~,fname,~] = fileparts(fname);
 
-% collect simulation parameters and results
+% retrieve project content
 h = guidata(h_fig);
-p = h.param.sim;
-res = h.results.sim;
+p = h.param;
+proj = p.curr_proj;
+curr = p.proj{proj}.sim.curr;
+prm = p.proj{proj}.sim.prm;
 
-% collect export options
-isPrm = p.export_param; % export simulation parameters (0/1)
-isAvi = p.export_avi; % export movie (0/1)
-isMov = p.export_movie; % export movie (0/1)
-isMatTr = p.export_traces; % export Matlab traces (0/1)
-isAsciiTr = p.export_procTraces; % export ASCII traces (0/1)
-isCrd = p.export_coord; % export coordinates (0/1)
-isDt = p.export_dt; % export dwell-times (0/1)
+% apply current export options to project
+prm.exp = curr.exp;
+
+% collect simulation parameters
+N = prm.gen_dt{1}(1);
+rate = prm.gen_dt{1}(4);
+isPresets = prm.gen_dt{3}{1};
+presets = prm.gen_dt{3}{2};
+coord =  prm.gen_dat{1}{1}{2};
+viddim = prm.gen_dat{1}{2}{1};
+FRETval = prm.gen_dat{2}(1,:);
+isPrm = prm.exp{1}(1); % export simulation parameters (0/1)
+isAsciiTr = prm.exp{1}(2); % export ASCII traces (0/1)
+isMatTr = prm.exp{1}(3); % export Matlab traces (0/1)
+isDt = prm.exp{1}(4); % export dwell-times (0/1)
+isMov = prm.exp{1}(5); % export movie (0/1)
+isAvi = prm.exp{1}(6); % export movie (0/1)
+isCrd = prm.exp{1}(7); % export coordinates (0/1)
+outun = prm.exp{2};
+
+% collect simulated state sequences and coordinates
+dat = prm.res_dat;
+Idon = permute(dat{1}(:,1,:),[1,3,2]);
+Iacc = permute(dat{1}(:,2,:),[1,3,2]);
+Idon_id = permute(dat{1}(:,3,:),[1,3,2]);
+Iacc_id = permute(dat{1}(:,4,:),[1,3,2]);
+discr_blurr = permute(dat{2}(:,1,:),[1,3,2]);
+discr = permute(dat{2}(:,2,:),[1,3,2]);
+discr_seq = permute(dat{2}(:,3,:),[1,3,2]);
 
 % abort if no export options are defined
 if ~(isPrm || isAvi || isMov || isMatTr || isAsciiTr || isCrd || isDt)
@@ -95,8 +107,7 @@ if isCrd
         mkdir([pname 'coordinates']);
     end
     fname_coord = [fname '.coord'];
-    fname_coord = overwriteIt(fname_coord,[pname 'coordinates'],...
-        h_fig);
+    fname_coord = overwriteIt(fname_coord,[pname 'coordinates'],h_fig);
     if isempty(fname_coord)
         setContPan('Process interrupted.','error',h_fig);
         return;
@@ -119,34 +130,18 @@ if isDt
     pname_dt = setCorrectPath(cat(2,pname,'dwell-times'), h_fig);
 end
 
-% collect simulated state sequences and coordinates
-dat = res.dat;
-dat_id = res.dat_id;
-Idon = dat{1};
-Iacc = dat{2};
-coord = dat{3};
-Idon_id = dat_id{1};
-Iacc_id = dat_id{2};
-discr_blurr = dat_id{3};
-discr = dat_id{4};
-discr_seq = dat_id{5};
-L = size(Idon{1},1);
-
+L = size(Idon,1);
 if isMov || isAvi || isMatTr || isAsciiTr
-    
     % display action
     setContPan('Create background image ...', 'process', h_fig);
     
     % get background image
-    [img_bg,err] = getBackgroundImage(p);
+    [img_bg,err] = getBackgroundImage(prm);
     if isempty(img_bg)
         % abort if background image can not be created
         updateActPan(err, h_fig, 'error');
         return
     end
-    
-    % determine camera saturation value
-    [~,p.sat] = Saturation(p.bitnr);
 end
 
 % export SMV
@@ -162,19 +157,19 @@ if isMov || isAvi % sira or avi file
         vers = figname(length('MASH-FRET '):end);
         
         % write sira file headers
-        f = writeSiraFile('init',[pname,fname_sira],vers,[1/p.rate,...
-            p.movDim,L]);
+        f = writeSiraFile('init',[pname,fname_sira],vers,...
+            [1/rate,viddim,L]);
         if f==-1
             setContPan(['Enable to open file ',fname_sira],'error',h_fig);
             return;
         end
         
         % get number of pixels in one frame
-        nPix = p.movDim(1)*p.movDim(2);
+        nPix = viddim(1)*viddim(2);
     end
 
     if isAvi
-        v = writeAviFile('init',[pname,fname_avi],1/p.rate);
+        v = writeAviFile('init',[pname,fname_avi],1/rate);
     end
 
     for l = 1:L % number of frames
@@ -185,7 +180,7 @@ if isMov || isAvi % sira or avi file
         end
         
         % create video frame
-        [img,gaussMat,err] = createVideoFrame(l,Idon,Iacc,coord,img_bg,p);
+        [img,~,err] = createVideoFrame(l,Idon,Iacc,coord,img_bg,prm,outun);
         if isempty(img)
             % abort if video frame can not be created
             updateActPan(err, h_fig, 'error');
@@ -240,7 +235,7 @@ if isMatTr || isAsciiTr || isDt
     
     % get frame and time axis for trace export
     frameAxis = (1:L)';
-    timeAxis = frameAxis/p.rate;
+    timeAxis = frameAxis/rate;
     
     % initialize trace matrix for MATLAB file export
     if isMatTr
@@ -250,7 +245,7 @@ if isMatTr || isAsciiTr || isDt
     % get intensity units for trace file export
     if isMatTr || isAsciiTr
         % output intensity units
-        if strcmp(p.intOpUnits,'photon')
+        if strcmp(outun,'photon')
             units = 'photons';
         else
             units = 'a.u.';
@@ -259,20 +254,20 @@ if isMatTr || isAsciiTr || isDt
     
     % get state configuration for dwell times export
     if isDt
-        if ~(p.impPrm && isfield(p.molPrm,'stateVal'))
-            states = p.stateVal;
+        if ~(isPresets && isfield(presets,'stateVal'))
+            states = FRETval;
             J = numel(states);
         else
-            J = size(p.molPrm.stateVal,2);
+            J = size(presets.stateVal,2);
         end
     end
 
-    for n = 1:p.molNb
+    for n = 1:N
         
         if isMatTr || isAsciiTr
             % create donor-acceptor intensity-time traces
-            [Idon_out,Iacc_out,err] = createIntensityTraces(Idon{n},...
-                Iacc{n},coord(n,:),img_bg,p);
+            [Idon_out,Iacc_out,err] = createIntensityTraces(Idon(:,n),...
+                Iacc(:,n),coord(n,:),img_bg,prm,outun);
             if isempty(Idon_out) || isempty(Iacc_out)
                 % abort if traces can not be created
                 updateActPan(err, h_fig, 'error');
@@ -289,7 +284,7 @@ if isMatTr || isAsciiTr || isDt
         if isAsciiTr
             % check for file overwriting (one file exported per molecule)
             fname_proc = cat(2,pname_proc,fname,'_mol',num2str(n),'of',...
-                num2str(p.molNb),'.txt');
+                num2str(N),'.txt');
             fname_proc = overwriteIt(fname_proc,pname_proc,h_fig);
             if isempty(fname_proc)
                 setContPan('Process interrupted.','error',h_fig);
@@ -298,9 +293,10 @@ if isMatTr || isAsciiTr || isDt
             
             % format data
             FRET = Iacc_out./(Iacc_out+Idon_out);
-            output = [timeAxis,frameAxis,Idon_out,Iacc_out,Idon_id{n},...
-                Iacc_id{n},FRET,discr_blurr{n},discr{n},discr_seq{n}];
-            output = output(discr{n}>=0,:);
+            output = [timeAxis,frameAxis,Idon_out,Iacc_out,Idon_id(:,n),...
+                Iacc_id(:,n),FRET,discr_blurr(:,n),discr(:,n),...
+                discr_seq(:,n)];
+            output = output(discr(:,n)>=0,:);
             fmt_coord = cat(2,'coordinates ',repmat('\t%0.2f',[1,4]),'\n');
             str_head = cat(2,'time(s)\tframe\tIdon noise(',units,...
                 ')\tIacc noise(',units,')\tIdon ideal(',units,')\t',...
@@ -320,16 +316,16 @@ if isMatTr || isAsciiTr || isDt
         % export molecule dwell times to ASCII file
         if isDt
             fname_dt = cat(2,pname_dt,fname,'_mol',num2str(n),'of',...
-                num2str(p.molNb),'_FRET1to2.dt');
+                num2str(N),'_FRET1to2.dt');
             fname_dt = overwriteIt(fname_dt,pname_dt,h_fig);
             if isempty(fname_dt)
                 setContPan('Process interrupted.','error',h_fig);
                 return;
             end
             
-            dt = res.dt_final{n};
-            if p.impPrm && isfield(p.molPrm,'stateVal')
-                states = p.molPrm.stateVal(n,:);
+            dt = prm.res_dt{3}{n};
+            if isPresets && isfield(presets,'stateVal')
+                states = presets.stateVal(n,:);
             end
             for j = 1:J
                 dt(dt(:,2)==j,2) = states(j);
@@ -387,6 +383,11 @@ if isPrm
     str_action = cat(2,str_action,['Simulation parameters written to file',...
         ': ',fname_log,' in folder: ',pname]);
 end
+
+% save modifications
+p.proj{proj}.sim.prm = prm;
+h.param = p;
+guidata(h_fig,h);
 
 % return success
 ok = 1;

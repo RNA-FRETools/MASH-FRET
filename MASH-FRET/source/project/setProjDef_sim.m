@@ -31,5 +31,5 @@ proj.colours = getDefTrClr(nExc,exc,nChan,size(FRET,1),size(S,1));
 % set video parameters
 proj.spltime_from_video = true;
 
-% set processing parameters
-proj.sim = setDefPrm_sim(p.sim);
+% tag project
+proj.sim.from = 'sim';

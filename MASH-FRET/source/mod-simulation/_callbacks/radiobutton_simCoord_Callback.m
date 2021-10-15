@@ -1,6 +1,9 @@
 function radiobutton_simCoord_Callback(obj,evd,h_fig)
 
 h = guidata(h_fig);
+p = h.param;
+proj = p.curr_proj;
+curr = p.proj{proj}.sim.curr;
 
 switch obj
     case h.radiobutton_randCoord
@@ -8,14 +11,16 @@ switch obj
             double(~h.radiobutton_randCoord.Value);
 
         % clear file data, coordinates and PSF factorization matrix
-        h.param.sim.coordFile = [];
-        h.param.sim.coord = [];
-        h.param.sim.matGauss = cell(1,4);
+        curr.gen_dat{1}{1}{2} = [];
+        curr.gen_dat{1}{1}{3} = [];
+        curr.gen_dat{6}{3} = cell(1,4);
 
         % set default to random coordinates
-        h.param.sim.genCoord = 1;
+        curr.gen_dat{1}{1}{1} = 1;
         
         % save changes
+        p.proj{proj}.sim.curr = curr;
+        h.param = p;
         guidata(h_fig, h);
 
     case h.radiobutton_simCoordFile

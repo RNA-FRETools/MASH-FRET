@@ -24,7 +24,7 @@ if isfield(h, 'figure_dummy') && ~isempty(h.figure_dummy) && ...
 end
 
 param = h.param;
-if ~isempty(param.proj)
+if ~isempty(param.proj) && isfield(param.ttPr,'defProjPrm')
     % remove background intensities
     for c = 1:size(param.ttPr.defProjPrm.mol{3}{3},2)
         for l = 1:size(param.ttPr.defProjPrm.mol{3}{3},1)

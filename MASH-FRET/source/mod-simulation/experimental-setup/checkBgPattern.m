@@ -1,13 +1,18 @@
-function [ok, p] = checkBgPattern(p, h_fig)
+function [ok, prm] = checkBgPattern(prm, h_fig)
 
-% Last update: 20.4.2019 by Mélodie Hadzic
-% >> correct intensity units conversion
-% >> control dimensions of background image and manage communication with
-%    user.
+% 13.10.2021 by MH: adapt to new prm/curr structure
+% 20.04.2019 by MH: (1) correct intensity units conversion, (2) control dimensions of background image and manage communication with user.
 
 ok = 1;
 
-if isfield(p, 'bgImg') && ~isempty(p.bgImg)
+% collect simulation parameters
+viddim = prm.gen_dat{1}{2}{1};
+noisetype = prm.gen_dat{1}{2}{4};
+noiseprm = prm.gen_dat{1}{2}{5};
+inun = prm.gen_dat{3}{2};
+bgimg = prm.gen_dat{8}{4}{1};
+
+if ~isempty(bgimg)
     return
 end
 
@@ -16,13 +21,13 @@ if isempty(data)
     ok = 0;
     return
 end
-if strcmp(p.intUnits, 'electron')
-    [o,K,eta] = getCamParam(p.noiseType,p.camNoise);
+if strcmp(inun,'electron')
+    [o,K,eta] = getCamParam(noisetype,noiseprm);
     data.frameCur = ele2phtn(data.frameCur,K,eta);
     if size(data.frameCur,3)>1
         data.frameCur = sum(data.frameCur,3);
     end
-    if size(data.frameCur,1)~=p.movDim(1) || size(data.frameCur,2)~=p.movDim(2)
+    if size(data.frameCur,1)~=viddim(1) || size(data.frameCur,2)~=viddim(2)
         setContPan(cat(2,'Dimensions of the background image are not ',...
             'consistent with video dimensions: please adjust video ',...
             'dimensions or modify the dimensions of the background ',...
@@ -32,5 +37,6 @@ if strcmp(p.intUnits, 'electron')
     end
 end
 
-p.bgImg = data;
+prm.gen_dat{8}{4}{1} = data.frameCur;
+prm.gen_dat{8}{4}{2} = data.file;
 

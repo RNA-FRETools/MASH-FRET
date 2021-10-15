@@ -1,5 +1,5 @@
-function [dat_noisy,err] = addCameraNoise(dat,p)
-% [dat_noisy,err] = addCameraNoise(dat,p)
+function [dat_noisy,err] = addCameraNoise(dat,prm)
+% [dat_noisy,err] = addCameraNoise(dat,prm)
 %
 % Add camera noise to input data vector or matrix (photon count coming from the fluorophors and background). 
 % Unless Gaussian camera noise is to be applied, in which case the shot noise is included in the model, input data must be Poisson-distributed. 
@@ -12,30 +12,24 @@ function [dat_noisy,err] = addCameraNoise(dat,p)
 % Pdark = @(nic,noe,nie,g,f,r) (P(nie,G(noe,nie,g))*N(f*nic,noe,r))*(f*nic);
 %
 % dat: data vector or matrix containing photon counts
-% p: structure containing simulation parameters that must have fields:
-%   p.noiseType: camera noise distribution ('poiss','norm','user','none','hirsch')
-%   p.camNoise: [1-by-6] distribution parameters
-%   p.sat: saturation pixel value calculated from camera bit rate
-%
+% prm: simulation parameters
 % dat_noisy: data vector or matrix containing camera-detected image counts
 % err: potential error message
 
-% Last update: 29.11.2019 by MH
-% >> move script that add camera noise from plotExample.m to this separate 
-%  file; this allows to call the same script from createVideoFrame.m and 
-%  createIntensityTraces, preventing unilateral modifications
-%
-% update: 7th of March 2018 by Richard Börner
-% >> Comments adapted for Boerner et al 2017
-% >> Noise models adapted for Boerner et al 2017.
-% >> Simulation default parameters adapted for Boerner et al 2017.
+% update 29.11.2019 by MH: move script that add camera noise from plotExample.m to this separate file; this allows to call the same script from createVideoFrame.m and createIntensityTraces, preventing unilateral modifications
+% update 7.3.2018 by Richard Börner: (1) Comments adapted for Boerner et al 2017 (2) Noise models adapted for Boerner et al 2017. (3) Simulation default parameters adapted for Boerner et al 2017.
 
 % initialize returned arguments
 dat_noisy = [];
 err = '';
 
+% collect parameters
+noisetype = prm.gen_dat{1}{2}{4};
+noiseprm = prm.gen_dat{1}{2}{5};
+sat = prm.gen_dat{1}{2}{5}(2,6);
+
 % collect camera parameters
-switch p.noiseType
+switch noisetype
     case 'poiss'
         noiseCamInd = 1;
     case 'norm'
@@ -50,11 +44,11 @@ switch p.noiseType
         err = 'Unknown camera noise distribution';
         return
 end
-noisePrm = p.camNoise(noiseCamInd,:);
+noisePrm = noiseprm(noiseCamInd,:);
 
-[mu_y_dark,K,eta] = getCamParam(p.noiseType,p.camNoise);
+[mu_y_dark,K,eta] = getCamParam(noisetype,noiseprm);
 
-switch p.noiseType
+switch noisetype
 
     case 'poiss' % Poisson or P-model from Börner et al. 2017
         
@@ -145,4 +139,4 @@ end
 % Correction of out-of-range values.
 % Due to noise calculated values out of the detection range 0 <= 0I <= bitrate. 
 dat_noisy(dat_noisy<0) = 0;
-dat_noisy(dat_noisy>p.sat) = p.sat;
+dat_noisy(dat_noisy>sat) = sat;

@@ -1,8 +1,5 @@
 function ok = pushbutton_exportSim_Callback(obj, evd, h_fig)
 
-% set fields to proper values
-updateFields(h_fig, 'sim');
-
 % % Check for correct patterned background image
 % h = guidata(h_fig);
 % if h.param.sim.bgType == 3 % pattern

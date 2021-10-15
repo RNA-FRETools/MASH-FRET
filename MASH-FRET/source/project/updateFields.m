@@ -23,6 +23,7 @@ end
 
 h = guidata(h_fig);
 p = h.param;
+proj = p.curr_proj;
 
 % set project list
 if isempty(p.proj)
@@ -35,7 +36,6 @@ end
 
 % set folder root
 if ~isempty(p.proj)
-    proj = p.curr_proj;
     set(h.edit_rootFolder,'string',p.proj{proj}.folderRoot);
     set([h.pushbutton_rootFolder,h.edit_rootFolder],'enable','on');
 else
@@ -46,12 +46,18 @@ end
 % Tool bar
 h_tb = [h.togglebutton_S,h.togglebutton_VP,h.togglebutton_TP,...
     h.togglebutton_HA,h.togglebutton_TA];
-isOn = [isModuleOn(p,'sim'),isModuleOn(p,'VP'),isModuleOn(p,'TP'),...
-        isModuleOn(p,'HA'),isModuleOn(p,'TA')];
+if isempty(p.proj)
+    isOn = false(size(h_tb));
+else
+    isOn = [~isempty(p.proj{proj}.sim),~isempty(p.proj{proj}.VP),...
+        ~isempty(p.proj{proj}.TP),~isempty(p.proj{proj}.HA),...
+        ~isempty(p.proj{proj}.TA)];
+end
 set(h_tb(isOn),'enable','on');
 set(h_tb(~isOn),'enable','off','value',0);
 if all(~isOn)
     switchPan(0,[],h_fig);
+    h = guidata(h_fig);
 end
 
 % Simulation module

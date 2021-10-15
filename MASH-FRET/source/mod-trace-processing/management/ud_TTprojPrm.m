@@ -257,13 +257,17 @@ else
         'string',{'none'});
 end
 
-% clear and sett off-visible all axes
+% clear and set off-visible all axes
+cla(h.axes_example);
+cla(h.axes_example_hist);
+cla(h.axes_example_mov);
 cla(h.axes_top);
 cla(h.axes_topRight);
 cla(h.axes_bottom);
 cla(h.axes_bottomRight);
-set([h.axes_top, h.axes_topRight, h.axes_bottom, h.axes_bottomRight], ...
-    'Visible', 'off');
+set([h.axes_example,h.axes_example_hist,h.axes_example_mov,...
+    h.cb_example_mov,h.axes_top,h.axes_topRight,h.axes_bottom,...
+    h.axes_bottomRight],'visible','off');
 
 % save changes in h (delete/creation of sub-image axes)
 guidata(h_fig, h);

@@ -1,12 +1,7 @@
 function pushbutton_simImpCoord_Callback(obj, evd, h_fig)
 
-% Last update by MH, 17.12.2019
-% >> modify input & output arguments of impSimCoord according to new
-%  definition
-%
-% update by MH, 6.12.2019
-% >> modify first input argument of setSimCoordTable to display coordinates 
-%  imported from preset files
+% update by MH, 17.12.2019: modify input & output arguments of impSimCoord according to new definition
+% update by MH, 6.12.2019: modify first input argument of setSimCoordTable to display coordinates imported from preset files
 
 % get source file
 if ~iscell(obj)

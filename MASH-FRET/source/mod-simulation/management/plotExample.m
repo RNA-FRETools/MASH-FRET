@@ -3,31 +3,29 @@ function plotExample(h_fig)
 %
 % h_fig: handle to main MASH-FRET figure.
 
-% Last update: 29.11.2019 by MCASH
-% >> create separate functions for 1) generating the background image, 2) 
-%    create intensity time traces and 3) create video frame; this allows to 
-%    call the same scripts here and in exportResults.m and prevents 
-%    unilateral modifications
-% >> remove useless handling of font size in axes labels (set upstream
-%    when building MASH-FRET main figure)
+% update 29.11.2019 by MH: (1) create separate functions for 1) generating the background image, 2) create intensity time traces and 3) create video frame; this allows to call the same scripts here and in exportResults.m and prevents unilateral modifications (2) remove useless handling of font size in axes labels (set upstream when building MASH-FRET main figure)
 
 % collect simulation parameters
 h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
-prm = p.proj{proj}.sim;
+curr = p.proj{proj}.sim.curr;
+prm = p.proj{proj}.sim.prm;
 
-% collect simulated state sequences and coordinates
-dat = h.results.sim.dat;
-N = size(dat{1},2);
+% collect simulation parameters
+rate = prm.gen_dt{1}(4);
+viddim = prm.gen_dat{1}{2}{1};
+br = prm.gen_dat{1}{2}{2};
+outun = curr.exp{2};
+
+% retrieve simulated trajectories and coordinates
+N = size(prm.res_dat{1},3);
 if N==0
-    % abort if no state sequence was simulated
     return
 end
-Idon = dat{1};
-Iacc = dat{2};
-coord = dat{3};
-L = size(Idon{1},1);
+coord = prm.gen_dat{1}{1}{2};
+Idon = permute(prm.res_dat{1}(:,1,:),[1,3,2]);
+Iacc = permute(prm.res_dat{1}(:,2,:),[1,3,2]);
 
 % get background image
 [img_bg,err] = getBackgroundImage(prm);
@@ -38,11 +36,11 @@ if isempty(img_bg)
 end
 
 % determine camera saturation value (slow process, done only once per update)
-[~,prm.sat] = Saturation(prm.bitnr);
+[~,prm.gen_dat{1}{2}{5}(2,6)] = Saturation(br);
 
 % create first donor-acceptor intensity traces
-[I_don_ic,I_acc_ic,err] = createIntensityTraces(Idon{1},Iacc{1},coord(1,:),...
-    img_bg,prm);
+[I_don_ic,I_acc_ic,err] = ...
+    createIntensityTraces(Idon(:,1),Iacc(:,1),coord(1,:),img_bg,prm,outun);
 if isempty(I_don_ic) || isempty(I_acc_ic)
     % abort if traces can not be created
     updateActPan(err, h_fig, 'error');
@@ -50,7 +48,8 @@ if isempty(I_don_ic) || isempty(I_acc_ic)
 end
 
 % create first video frame
-[img,prm.matGauss,err] = createVideoFrame(1,Idon,Iacc,coord,img_bg,prm);
+[img,prm.gen_dat{6}{3},err] = ...
+    createVideoFrame(1,Idon,Iacc,coord,img_bg,prm,outun);
 if isempty(img)
     % abort if video frame can not be created
     updateActPan(err, h_fig, 'error');
@@ -58,21 +57,23 @@ if isempty(img)
 end
 
 % save calculated parameters (p.sat and p.gaussMat)
-p.proj{proj}.sim = prm;
+p.proj{proj}.sim.prm = prm;
+p.proj{proj}.sim.curr.gen_dat = prm.gen_dat;
 h.param = p;
 guidata(h_fig, h);
 
 % get plot units
-units = prm.intOpUnits;
+units = outun;
 if ~strcmp(units, 'photon')
     units = 'image';
 end
 
 % plot first traces
-timeaxis = (1:L)'/prm.rate;
+L = size(Idon,1);
+timeaxis = (1:L)'/rate;
 plot(h.axes_example, timeaxis,I_don_ic,'-b',timeaxis,I_acc_ic,'-r');
 ylim(h.axes_example,'auto');
-xlim(h.axes_example,[0 size(I_don_ic,1)/prm.rate]);
+xlim(h.axes_example,[0 size(I_don_ic,1)/rate]);
 xlabel(h.axes_example,'time (sec)');
 ylabel(h.axes_example,[units,' counts']);
 grid(h.axes_example,'on');
@@ -117,10 +118,10 @@ grid(h.axes_example_hist, 'on');
 legend(h.axes_example_hist, 'donor', 'acceptor');
 
 % plot video frame
-imagesc(h.axes_example_mov,'xdata',[0.5,prm.movDim(1)-0.5],'ydata',...
-    [0.5,prm.movDim(2)-0.5],'cdata',img);
-xlim(h.axes_example_mov,[0,prm.movDim(1)]);
-ylim(h.axes_example_mov,[0,prm.movDim(2)]);
+imagesc(h.axes_example_mov,'xdata',[0.5,viddim(1)-0.5],'ydata',...
+    [0.5,viddim(2)-0.5],'cdata',img);
+xlim(h.axes_example_mov,[0,viddim(1)]);
+ylim(h.axes_example_mov,[0,viddim(2)]);
 caxis(h.axes_example_mov,[min(min(img)),max(max(img))]);
 ylabel(h.cb_example_mov, [units,' counts/time bin']);
 

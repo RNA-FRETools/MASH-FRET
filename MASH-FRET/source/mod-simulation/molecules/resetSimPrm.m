@@ -3,59 +3,69 @@ function resetSimPrm(h_fig)
 % defaults
 Jmax = 5; % maximum number of states allowed in GUI
 
+% retrieve project content
 h = guidata(h_fig);
-p = h.param.sim;
+p = h.param;
+proj = p.curr_proj;
+curr = p.proj{proj}.sim.curr;
 
-if isfield(p.molPrm, 'nbStates')
+% collect simulation parameters
+J = curr.gen_dt{1}(3);
+presets = curr.gen_dt{3}{2};
+coordfile = curr.gen_dat{1}{1}{3};
+PSFw = curr.gen_dat{6}{2};
+
+if isfield(presets, 'nbStates')
     % adjust number of states to maximum allowed
-    if p.nbStates>Jmax
-        
-        p.nbStates = Jmax;
-        
-        h.param.sim = p;
+    if J>Jmax
+        curr.gen_dt{1}(3) = Jmax;
+        p.proj{proj}.sim.curr = curr;
+        h.param = p;
         guidata(h_fig,h);
         
         updateSimStates(h_fig);
         
         h = guidata(h_fig);
-        p = h.param.sim;
+        p = h.param;
+        curr = p.proj{proj}.sim.curr;
     end
 end
 
-if isfield(p.molPrm, 'coord')
-    if ~(isempty(p.molPrm.coord) && ~isempty(p.coordFile))
+if isfield(presets, 'coord')
+    if ~(isempty(presets.coord) && ~isempty(coordfile))
         % clear coordinates and PSF factorization matrix if imported from preset file
-        p.coord = [];
-        p.matGauss = cell(1,4);
+        curr.gen_dat{1}{1}{2} = [];
+        curr.gen_dat{6}{3} = cell(1,4);
         
         % set default to random coordinates
-        p.genCoord = 1;
+        curr.gen_dat{1}{1}{1} = 1;
     else
         % resort coordinates imported from ASCII file (sample size can increases)
-        p = resetSimCoord(p,h_fig);
+        curr = resetSimCoord(curr,h_fig);
     end
 end
 
-if isfield(p.molPrm, 'psf_width')
+if isfield(presets, 'psf_width')
     % keep PSF widths of the first molecule as simulation parameters
-    p.PSFw = p.PSFw(1,:);
+    curr.gen_dat{6}{2} = PSFw(1,:);
     % clear PSF factorization matrix
-    p.matGauss = cell(1,4);
+    curr.gen_dat{6}{3} = cell(1,4);
 end
 
-if isfield(p.molPrm, 'molNb')
-    if ~isempty(p.coordFile)
+if isfield(presets, 'molNb')
+    if ~isempty(coordfile)
         % resort coordinates imported from ASCII file (sample size can increases)
-        p = resetSimCoord(p,h_fig);
+        curr = resetSimCoord(curr,h_fig);
     end
 end
 
 % reset parameters of presets file
-p.molPrm = [];
-p.impPrm = 0;
-p.prmFile = [];
+curr.gen_dt{3}{1} = 0;
+curr.gen_dt{3}{2} = [];
+curr.gen_dt{3}{3} = '';
 
 % save modifications
-h.param.sim = p;
+p.proj{proj}.sim.curr = curr;
+h.param = p;
 guidata(h_fig,h);
 

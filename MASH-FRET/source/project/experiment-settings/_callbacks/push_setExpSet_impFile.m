@@ -53,7 +53,6 @@ if dat.cycleTime==1
 else
     proj.spltime_from_video = true;
 end
-proj.firstFrame = dat.frameCur; % add first video frame to project param
 
 h_fig.UserData = proj;
 

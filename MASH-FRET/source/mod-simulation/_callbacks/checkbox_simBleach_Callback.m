@@ -1,17 +1,13 @@
 function checkbox_simBleach_Callback(obj, evd, h_fig)
 
-% Last update by MH, 19.12.2019
-% >> delete previous state sequences (and associated results) when
-%  photobleaching option changes
-
+% save modifications
 h = guidata(h_fig);
-h.param.sim.bleach = get(obj, 'Value');
+p = h.param;
 
-% clear any results to avoid conflict
-if isfield(h,'results') && isfield(h.results,'sim')
-    h.results = rmfield(h.results,'sim');
-end
+p.proj{p.curr_proj}.sim.curr.gen_dt{1}(5) = get(obj,'value');
 
+h.param = p;
 guidata(h_fig, h);
 
+% refresh panel
 ud_S_moleculesPan(h_fig);

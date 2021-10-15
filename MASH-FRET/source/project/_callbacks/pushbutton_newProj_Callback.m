@@ -44,9 +44,15 @@ end
 % add project to list and initialize list indexes
 p = h.param;
 p.proj = [p.proj,proj];
+p.curr_proj = proj_id;
 p = adjustProjIndexLists(p,1,{mod});
 
-p.curr_proj = proj_id;
+% set processing parameters
+p = importSim(p,proj_id);
+p = importVP(p,proj_id);
+p = importTP(p,proj_id);
+p = importHA(p,proj_id);
+p = importTA(p,proj_id);
 
 % update project list
 p = ud_projLst(p, h.listbox_proj);

@@ -1,4 +1,4 @@
-function [img,gaussMat,err] = createVideoFrame(l,Idon,Iacc,coord,img_bg,p)
+function [img,gaussMat,err] = createVideoFrame(l,Idon,Iacc,coord,img_bg,prm,outun)
 % Create requested indexed video frame from the corresponding intensity 
 % state sequences and fluorescent background image: add cross talks, 
 % background, shot noise, PSF convoltion and camera noise.
@@ -8,61 +8,49 @@ function [img,gaussMat,err] = createVideoFrame(l,Idon,Iacc,coord,img_bg,p)
 % Iacc: {1-by-N} [L-by-1] acceptor intensity state sequences
 % coord: [N-vy-4] molecule coordinates
 % img_bg: fluorescent background image (photon counts)
-% p: structure containing simulation parameters that must have fields:
-%   p.movDim: video dimensions in x- and y-directions
-%   p.rate: frame rate (s-1)
-%   p.pixDim: pixel dimensions (in micrometers)
-%   p.noiseType: camera noise distribution ('poiss','norm','user','none','hirsch')
-%   p.camNoise: [1-by-6] distribution parameters
-%   p.sat: saturation pixel value calculated from camera bit rate
-%   p.totInt: total emitted intensity (a.u.)
-%   p.btD: bleedthrough coefficients D -> A
-%   p.btA: bleedthrough coefficients A -> D, usually zero
-%   p.deD: direct excitation coefficients D, usually zero
-%   p.deA: direct excitation coefficients A
-%   p.PSF: convolute with PSF (0/1)
-%   p.PSFw: PSF standard deviation (in micrometers)
-%   p.matGauss: PSF factor matrix
-%   p.z0Dec: defocusing exponential amplitude (in construction)
-%   p.zDec: defocusing exponential time decay constant (in construction)
-%   p.bgDec: exponentially decreasing background (0/1)
-%   p.ampDec: background exponential amplitude
-%   p.cstDec: background exponential time decay constant
-%
+% prm: simulation parameters
+% outun: output intensity units
 % img: camera-detected video frame
 % gaussMat: updated PSF factor matrix
 % err: potential error message
 
-% Last update: 29.11.2019 by MH
-% >> move script that create video frames from plotExample.m to this 
-%  separate file; this allows to call the same script from plotExample.m 
-%  and exportResults.m, preventing unilateral modifications
-% >> move script that generate exponentially decaying background to the 
-%  separate function expBackground.m, and script that add camera noise to 
-%  addCameraNoise.m; this allows to call the same script from here and 
-%  createIntensityTraces.m, preventing unilateral modifications
-%
-% update: 7th of March 2018 by Richard Börner
-% >> Comments adapted for Boerner et al 2017
+% update 29.11.2019 by MH: (1) move script that create video frames from plotExample.m to this separate file; this allows to call the same script from plotExample.m and exportResults.m, preventing unilateral modifications (2) move script that generate exponentially decaying background to the separate function expBackground.m, and script that add camera noise to addCameraNoise.m; this allows to call the same script from here and createIntensityTraces.m, preventing unilateral modifications
+% update 7.3.2018 by RN: Comments adapted for Boerner et al 2017
 
 % defaults
 bgDec_dir = {'decrease','decrease'};
 
-% get sample size (number of simulated molecules)
-N = numel(Idon);
+% collect parameters
+rate = prm.gen_dt{1}(4);
+viddim = prm.gen_dat{1}{2}{1};
+pixsz = prm.gen_dat{1}{2}{3};
+noisetype = prm.gen_dat{1}{2}{4};
+noiseprm = prm.gen_dat{1}{2}{5};
+Itot = prm.gen_dat{3}{1}(1);
+btD = prm.gen_dat{5}(1,1);
+btA = prm.gen_dat{5}(1,2);
+deD = prm.gen_dat{5}(2,1);
+deA = prm.gen_dat{5}(2,2);
+isPSF = prm.gen_dat{6}{1};
+PSFw = prm.gen_dat{6}{2};
+factmat = prm.gen_dat{6}{3};
+isbgdec = prm.gen_dat{8}{5}(1);
+bgcst = prm.gen_dat{8}{5}(2);
+bgamp = prm.gen_dat{8}{5}(3);
 
-% get trace length
-L = numel(Idon{1});
+
+% get sample size and video length
+[L,N] = size(Idon);
 
 % identify gaussian camera noise
-isgaussnoise = strcmp(p.noiseType,'norm'); % gaussian camera noise
+isgaussnoise = strcmp(noisetype,'norm'); % gaussian camera noise
 
 % get pixel indexes from double coordinates
 xy = ceil(coord);
 
 % initialize first frame
-res_x = p.movDim(1); % movie with
-res_y = p.movDim(2); % movie height
+res_x = viddim(1); % movie with
+res_y = viddim(2); % movie height
 splt = round(res_x/2);
 img_don = zeros(res_y,splt);
 img_acc = zeros(res_y,res_x-splt);
@@ -72,12 +60,12 @@ img_bg_don = img_bg(:,1:splt);
 img_bg_acc = img_bg(:,(splt+1):end);
 
 % adjust exp decay of background, to check
-if p.bgDec
-    timeaxis = (1:L)'/p.rate;
-    img_bg_don = expBackground(l,bgDec_dir{1},timeaxis,img_bg_don,p.ampDec,...
-        p.cstDec);
-    img_bg_acc = expBackground(l,bgDec_dir{2},timeaxis,img_bg_acc,p.ampDec,...
-        p.cstDec);
+if isbgdec
+    timeaxis = (1:L)'/rate;
+    img_bg_don = expBackground(l,bgDec_dir{1},timeaxis,img_bg_don,bgamp,...
+        bgcst);
+    img_bg_acc = expBackground(l,bgDec_dir{2},timeaxis,img_bg_acc,bgamp,...
+        bgcst);
 end
 
 % add noise to fluorescent background image
@@ -94,13 +82,13 @@ for n = 1:N
     % measurements. Therefore, direct excitation should only be
     % simulated for ALEX type simulations.
     % I_de = I + De*I_j
-    I_don_de = Idon{n}(l,1) + p.deD*p.totInt; % there is no direct excitation of the Donor 
-    I_acc_de = Iacc{n}(l,1) + p.deA*p.totInt;
+    I_don_de = Idon(l,n) + deD*Itot; % there is no direct excitation of the Donor 
+    I_acc_de = Iacc(l,n) + deA*Itot;
 
     % bleedthrough (missing signal in each channel will be added in the other)
     % I_bt = I_de - Bt*I_j_de
-    I_don_bt = (1-p.btD)*I_don_de + p.btA*I_acc_de;
-    I_acc_bt = (1-p.btA)*I_acc_de + p.btD*I_don_de;
+    I_don_bt = (1-btD)*I_don_de + btA*I_acc_de;
+    I_acc_bt = (1-btA)*I_acc_de + btD*I_don_de;
 
     % add photon emission noise, which is Poisson-noise
     if ~isgaussnoise % shot noise included in gaussian camera noise
@@ -109,8 +97,8 @@ for n = 1:N
     end
 
     % define Point-Spread-Function (PSF) for each simulated molecule
-    if p.PSF
-        o_psf = p.PSFw/p.pixDim; % PSF sigma (for both channels)
+    if isPSF
+        o_psf = PSFw/pixsz; % PSF sigma (for both channels)
         if size(o_psf,1)>1
             o_psf1 = o_psf(n,1); 
             o_psf2 = o_psf(n,1);
@@ -136,16 +124,16 @@ for n = 1:N
 end
 
 % build noisy + PSF convoluted sm fluorescence image
-if p.PSF
+if isPSF
     lim_don.x = [1,splt];
     lim_don.y = [1,res_y];
     lim_acc.x = [1,res_x-splt];
     lim_acc.y = [1,res_y];
-    [img_don,gaussMat{1}] = getImgGauss(lim_don,p_don,1,p.matGauss{1});
-    [img_acc,gaussMat{2}] = getImgGauss(lim_acc,p_acc,1,p.matGauss{2});
+    [img_don,gaussMat{1}] = getImgGauss(lim_don,p_don,1,factmat{1});
+    [img_acc,gaussMat{2}] = getImgGauss(lim_acc,p_acc,1,factmat{2});
 else
     % return previous PSF factor image
-    gaussMat = p.matGauss;
+    gaussMat = factmat;
 end
 
 img_don = img_don + img_bg_don;
@@ -154,11 +142,11 @@ img_acc = img_acc + img_bg_acc;
 img = [img_don,img_acc];
 
 % add camera noise
-[img,err] = addCameraNoise(img,p);
+[img,err] = addCameraNoise(img,prm);
 
 % convert to proper intensity units
-if strcmp(p.intOpUnits, 'photon')
-    [mu_y_dark,K,eta] = getCamParam(p.noiseType,p.camNoise);
+if strcmp(outun, 'photon')
+    [mu_y_dark,K,eta] = getCamParam(noisetype,noiseprm);
     img = arb2phtn(img, mu_y_dark, K, eta);
 end
 

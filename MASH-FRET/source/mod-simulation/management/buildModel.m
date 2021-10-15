@@ -18,42 +18,55 @@ ok = 0;
 % display action
 setContPan(cat(2,'Generate random state sequences...'),'process',h_fig);
 
-% collect parameters
+% retrieve project content
 h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
-prm = p.proj{proj}.sim;
+prm = p.proj{proj}.sim.prm;
+curr = p.proj{proj}.sim.curr;
+def = p.proj{proj}.sim.def;
 
-N = prm.molNb;
-bleach = prm.bleach;
-expT = 1/prm.rate;
-bleachL = prm.bleach_t/expT;
-J = prm.nbStates;
-impPrm = prm.impPrm;
-molPrm = prm.molPrm;
-imp_kx = impPrm & isfield(molPrm, 'kx');
-imp_ip = impPrm & isfield(molPrm, 'p0');
+% apply current parameter set to project
+prm.gen_dt = curr.gen_dt;
 
+% collect simulation parameters
+N = prm.gen_dt{1}(1);
+L = prm.gen_dt{1}(2);
+J = prm.gen_dt{1}(3);
+rate = prm.gen_dt{1}(4);
+isblch = prm.gen_dt{1}(5);
+blch_cst = prm.gen_dt{1}(6);
+kx = prm.gen_dt{2}(:,:,1);
+wx = prm.gen_dt{2}(:,:,2);
+isPresets = prm.gen_dt{3}{1};
+presets = prm.gen_dt{3}{2};
+
+% get proper transition rate constants
+imp_kx = isPresets & isfield(presets, 'kx');
 if imp_kx % transition rate coefficients from presets
-    kx_all = molPrm.kx;
+    kx_all = presets.kx;
 else % transition rate coefficients from interface
-    kx = prm.kx;
     kx_all  = repmat(kx,[1,1,N]);
 end
 kx_all = kx_all(1:J,1:J,:);
+
+% get proper starting probabilities
+imp_ip = isPresets & isfield(presets, 'p0');
 tau_all = 1./permute(sum(kx_all,2),[3,1,2]);
 if imp_ip % initial state prob. from presets
-    ip_all = molPrm.p0;
+    ip_all = presets.p0;
 else % initial prob. calculated from state lifetimes
     ip_all = tau_all./repmat(sum(tau_all,2),[1,J,1]);
 end
-isTrans = prod(double(sum(sum(~~kx_all(1:J,1:J,1:N),1),2)),3);
 
-L = prm.nbFrames;
-mix = cell(1,N);
-discr_seq = cell(1,N);
+% initializes results
+mix = -ones(J,L,N);
+discr_seq = -ones(L,N);
 dt_final = cell(1,N);
 
+% generate dwell times
+expT = 1/rate;
+isTrans = prod(double(sum(sum(~~kx_all(1:J,1:J,1:N),1),2)),3);
 if J>1 && isTrans
     n = 1;
     while n <= N
@@ -78,8 +91,8 @@ if J>1 && isTrans
 %             return
 %         end
         
-        if bleach
-            Ln = round(ceil(random('exp',bleachL)));
+        if isblch
+            Ln = round(ceil(random('exp',blch_cst)));
             if Ln>L
                 Ln = L;
             end
@@ -91,8 +104,6 @@ if J>1 && isTrans
         end
 
         if n <= N
-            mix{n} = zeros(J,L);
-            discr_seq{n} = zeros(L,1);
             stes = zeros(J,L);
             state1 = randsample(1:J, 1, true, ip); % pick a first state
             
@@ -166,13 +177,13 @@ if J>1 && isTrans
             end
             
             stes = stes(:,1:L);
-            mix{n} = stes./repmat(sum(stes,1),[J,1]);
+            mix(:,:,n) = stes./repmat(sum(stes,1),[J,1]);
             [o,max_ste] = max(stes,[],1);
-            discr_seq{n} = max_ste';
+            discr_seq(:,n) = max_ste';
             
             if Ln < L
-                discr_seq{n}(1+Ln:L,:) = -1;
-                mix{n}(1,1+Ln:L) = -1;
+                discr_seq(1+Ln:L,n) = -1;
+                mix(1,1+Ln:L,n) = -1;
             end
             n = n+1;
         end
@@ -181,7 +192,6 @@ if J>1 && isTrans
 else
     for n = 1:N
         ip = ip_all(n,:);
-        mix{n} = zeros(J,L);
         if J > 1
             if sum(sum(kx,1)>0)~=J || sum(sum(kx,2)>0)~=J
                 % MH 19.12.2019: identify zero sums in rate matrix
@@ -203,8 +213,8 @@ else
             state1 = 1;
         end
         
-        if bleach
-            Ln = ceil(random('exp',bleachL));
+        if isblch
+            Ln = ceil(random('exp',blch_cst));
             if Ln > L*expT
                 Ln = L*expT;
             end
@@ -212,24 +222,30 @@ else
             Ln = L*expT;
         end
         
-        mix{n}(state1,:) = 1;
+        mix(state1,:,n) = 1;
         dt_final{n} = [L state1 NaN];
-        discr_seq{n} = state1*ones(L,1);
+        discr_seq(:,n) = state1*ones(L,1);
         if Ln < L
-            discr_seq{n}(1+Ln:L,:) = -1;
-            mix{n}(1,1+Ln:L) = -1;
+            discr_seq(1+Ln:L,n) = -1;
+            mix(1,1+Ln:L,n) = -1;
         end
     end
 end
 
-% clear previous results
-if isfield(h,'results') && isfield(h.results,'sim')
-    h.results = rmfield(h.results,'sim');
-end
+% save results in project parameters
+prm.res_dt{1} = mix;
+prm.res_dt{2} = discr_seq;
+prm.res_dt{3} = dt_final;
+curr.res_dt = prm.res_dt;
 
-h.results.sim.mix = mix;
-h.results.sim.discr_seq = discr_seq;
-h.results.sim.dt_final = dt_final;
+% reset following results
+prm.res_dat = def.res_dat;
+curr.res_dat = prm.res_dat;
+
+% save modifications
+p.proj{proj}.sim.curr = curr;
+p.proj{proj}.sim.prm = prm;
+h.param = p;
 guidata(h_fig,h);
 
 % return execution success

@@ -9,10 +9,15 @@ function p_input = adjustVal(p_input, p_def)
 if (iscell(p_def) && ~iscell(p_input)) || ...
         (~iscell(p_def) && iscell(p_input))
     p_input = p_def;
-    return;
+    return
 end
 
-% remove dimensions > 0 is array is empty
+% ignore differences in strings
+if isstring(p_input) && (isstring(p_def) || ~isempty(p_def))
+    return
+end
+
+% remove dimensions > 0 if array is empty
 if size(p_def,1)==0 || size(p_def,2)==0
     if iscell(p_def)
         p_def = {};

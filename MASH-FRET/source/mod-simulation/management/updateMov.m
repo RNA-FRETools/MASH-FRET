@@ -9,48 +9,31 @@ function [ok,str] = updateMov(h_fig)
 %
 % Requires external files: setContPan.m
 
-% Last update by MH, 19.12.2019
-% >> remove control of coordinates and PSF factorization matrix (done 
-%  upstream at import or when video dimensions change) 
-%
-% update by MH, 17.12.2019
-% >> check for sufficient number of data points in state sequences
-% >> return success/failure variable and potential error message
-% >> correct how coordinates are collected genCoord=1 --> randomly
-%  generated only, genCoord=0 --> imported from coordinates or presets file
-% >> remove control of sample size when coordinates are imported from file 
-%  (controlled upstream at import)
-% >> remove dependency on plotExample.m and setSimCoordTable.m (called from 
-%  the pushbutton callback function)
-%
-% update by MH, 6.12.2019
-% >> reset PSF factorisation matrix (matGauss) when coordinates are 
-%  imported from a pre-set file and some are excluded along the way: size 
-%  conflict was happenning after two successive "generate" runs
-% >> modify first input argument of setSimCoordTable to display coordinates 
-%  imported from preset files
-%
-% update: 7th of March 2018 by Richard Börner
-% >> Comments adapted for Boerner et al 2017
-%
-% Created the 23rd of April 2014 by Mélodie C.A.S Hadzic
+% update by MH, 19.12.2019: remove control of coordinates and PSF factorization matrix (done upstream at import or when video dimensions change) 
+% update by MH, 17.12.2019: (1) check for sufficient number of data points in state sequences, (2) return success/failure variable and potential error message, (3) correct how coordinates are collected genCoord=1 --> randomly generated only, genCoord=0 --> imported from coordinates or presets file, (4) remove control of sample size when coordinates are imported from file (controlled upstream at import), (5) remove dependency on plotExample.m and setSimCoordTable.m (called from the pushbutton callback function)
+% update by MH, 6.12.2019: (1) reset PSF factorisation matrix (matGauss) when coordinates are imported from a pre-set file and some are excluded along the way: size conflict was happenning after two successive "generate" runs, (2) modify first input argument of setSimCoordTable to display coordinates imported from preset files
+% update by RB, 7.3.2018: (1) comments adapted for Boerner et al 2017
+% created by MH, 23.4.2014
 
-h = guidata(h_fig);
-p = h.param;
-proj = p.curr_proj;
-prm = p.proj{proj}.sim;
+% defaults
 ok = 1;
 str = {}; % action string
 
-% collect sample size and video length
-N = prm.molNb;
-L = prm.nbFrames;
+% retrieve project content
+h = guidata(h_fig);
+p = h.param;
+proj = p.curr_proj;
+curr = p.proj{proj}.sim.curr;
+prm = p.proj{proj}.sim.prm;
+
+% collect new sample size and video length
+N = curr.gen_dt{1}(1);
+L = curr.gen_dt{1}(2);
 
 % collect simulated state sequences
-if isfield(h,'results') && isfield(h.results,'sim') && ...
-        isfield(h.results.sim,'mix') && ~isempty(h.results.sim.mix)
-    mix = h.results.sim.mix;
-    discr_seq = h.results.sim.discr_seq;
+if isfield(prm,'res_dt') && ~isempty(prm.res_dt{1})
+    mix = prm.res_dt{1};
+    seq = prm.res_dt{2};
 else
     setContPan({'Error: State sequences have to be generated first.',...
         'Push the "Generate" button to do so.'},'error',h_fig);
@@ -59,7 +42,7 @@ else
 end
 
 % check for a sufficient number of simulated state sequences
-if size(mix,2)<N
+if size(mix,3)<N
     setContPan({['Error: Not enough state sequences were simulated to ',...
         'satisfy the sample size N=',num2str(N),'.'],['Push the ',...
         '"Generate" button to re-simulate state sequences.']},'error',...
@@ -69,7 +52,7 @@ if size(mix,2)<N
 end
 
 % check for a sufficient number of data points in simulated state sequences
-if size(mix{1},2)<L
+if size(mix,2)<L
     setContPan({['Error: Simulated state sequences have to few data points',...
         ' to satisfy the length parameter.'],['Push the "Generate" button',...
         ' to re-simulate state sequences.']},'error',h_fig);
@@ -80,93 +63,108 @@ end
 % display action
 setContPan('Updating intensity data...', 'process', h_fig);
 
+% apply current parameter set to project
+prm.gen_dat = curr.gen_dat;
+
 % collect simulation parameters
-totInt = prm.totInt;
-Itot_w = prm.totInt_width;
-stateVal = prm.stateVal;
-FRETw = prm.FRETw;
-gamma = prm.gamma;
-gammaW = prm.gammaW;
-impPrm = prm.impPrm;
-molPrm = prm.molPrm;
-res_x = prm.movDim(1);
-res_y = prm.movDim(2);
-splt = round(res_x/2);
+isPresets = prm.gen_dt{3}{1};
+presets = prm.gen_dt{3}{2};
+res_x = prm.gen_dat{1}{2}{1}(1);
+res_y = prm.gen_dat{1}{2}{1}(2);
+coord = prm.gen_dat{1}{1}{2};
+stateVal = prm.gen_dat{2}(1,:);
+FRETw = prm.gen_dat{2}(2,:);
+totInt = prm.gen_dat{3}{1}(1);
+Itot_w = prm.gen_dat{3}{1}(2);
+gamma = prm.gen_dat{4}(1);
+gammaW = prm.gen_dat{4}(2);
 
 % initialize results
-Iacc = {};
-Iacc_id = {};
-Idon = {};
-Idon_id = {};
-discr = cell(1,N);
-discr_blurr = cell(1,N);
-
-genNewCoord = isempty(prm.coord);
+genNewCoord = isempty(coord);
 if genNewCoord
     coord = zeros(N,4);
-else
-    coord = prm.coord;
 end
+Iacc = zeros(L,N);
+Iacc_id = Iacc;
+Idon = Iacc;
+Idon_id = Iacc;
+discr = Iacc;
+discr_blurr = Iacc;
+discr_seq = Iacc;
 
-excl = []; % excluded coordinates
-
+% calculate trajectories
+splt = round(res_x/2);
 for n = 1:N
-    
     if genNewCoord
         coord(n,1:2) = [rand(1)*splt rand(1)*res_y];
         coord(n,3:4) = [(coord(n,1)+splt) coord(n,2)];
     end
-
-    mix{n} = mix{n}(:,1:L);
-    discr_seq{n} = discr_seq{n}(1:L,:);
-
-    if impPrm && isfield(molPrm, 'stateVal')
-        fretVal = random('norm',molPrm.stateVal(n,:),molPrm.FRETw(n,:));
+    
+    if isPresets && isfield(presets, 'stateVal')
+        fretVal = random('norm',presets.stateVal(n,:),presets.FRETw(n,:));
     else
         fretVal = random('norm',stateVal,FRETw);
     end
     fretVal(fretVal<0) = 0;
     fretVal(fretVal>1) = 1;
     
-    discr{n} = discr_seq{n};
-    discr{n}(discr{n}>=0) = fretVal(discr_seq{n}(discr_seq{n}>=0));
-    discr_blurr{n} = sum(repmat(fretVal',[1 size(mix{n},2)]).*mix{n},1)';
-    discr_blurr{n}(discr_blurr{n}<0 | isnan(discr_blurr{n})) = -1;
+    discr_seq(:,n) = seq(1:L,n);
+    
+    discr(:,n) = discr_seq(:,n);
+    posid = discr(:,n)>=0;
+    discr(posid,n) = fretVal(discr_seq(posid,n));
+    
+    discr_blurr(:,n) = sum(repmat(fretVal',[1,L]).*mix(:,1:L,n),1)';
+    discr_blurr(discr_blurr(:,n)<0 | isnan(discr_blurr(:,n)),n) = -1;
 
-    if impPrm && isfield(molPrm,'totInt')
-        I_sum = random('norm',molPrm.totInt(n),molPrm.totInt_width(n));
+    if isPresets && isfield(presets,'totInt')
+        I_sum = random('norm',presets.totInt(n),presets.totInt_width(n));
     else
         I_sum = random('norm',totInt,Itot_w);
     end
     I_sum(I_sum<0) = 0;
 
-    if impPrm && isfield(molPrm,'gamma')
-        g_mol = random('norm',molPrm.gamma(n),molPrm.gammaW(n));
+    if isPresets && isfield(presets,'gamma')
+        g_mol = random('norm',presets.gamma(n),presets.gammaW(n));
     else
         g_mol = random('norm',gamma,gammaW);
     end
     g_mol(g_mol<0) = 0;
 
-    Iacc_id{size(Iacc_id,2)+1} = discr_blurr{n}*I_sum;
-    Iacc_id{size(Iacc_id,2)}(Iacc_id{size(Iacc_id,2)}==-I_sum) = 0;
-    Iacc{size(Iacc,2)+1} = Iacc_id{size(Iacc_id,2)};
+    Iacc_id(:,n) = discr_blurr(:,n)*I_sum;
+    Iacc_id(Iacc_id(:,n)==-I_sum,n) = 0;
+    
+    Iacc(:,n) = Iacc_id(:,n);
 
-    Idon_id{size(Idon_id,2)+1} = (1-discr_blurr{n})*I_sum;
-    Idon_id{size(Idon_id,2)}(Idon_id{size(Idon_id,2)}==2*I_sum) = 0;
+    Idon_id(:,n) = (1-discr_blurr(:,n))*I_sum;
+    Idon_id(Idon_id(:,n)==(2*I_sum),n) = 0;
 
     % inversed gamma correction for the different quantum and detection efficiencies of donor and acceptor 
     % Idon_exp = Idon_id/gamma
-    Idon{size(Idon,2)+1} = Idon_id{size(Idon_id,2)}/g_mol;
+    Idon(:,n) = Idon_id(:,n)/g_mol;
 end
 
-discr = discr(1:N);
-discr_seq = discr_seq(1:N);
-discr_blurr = discr_blurr(1:N);
+Idon = permute(Idon,[1,3,2]);
+Iacc = permute(Iacc,[1,3,2]);
+Idon_id = permute(Idon_id,[1,3,2]);
+Iacc_id = permute(Iacc_id,[1,3,2]);
+discr = permute(discr(:,1:N),[1,3,2]);
+discr_seq = permute(discr_seq(:,1:N),[1,3,2]);
+discr_blurr = permute(discr_blurr(:,1:N),[1,3,2]);
 
-% save results
-p.proj{proj}.sim.coord = coord;
+% save results in project parameters
+prm.gen_dat{1}{1}{2} = coord;
+prm.res_dat{1} = cat(2,Idon,Iacc,Idon_id,Iacc_id);
+prm.res_dat{2} = cat(2,discr_blurr,discr,discr_seq);
+curr.res_dat = prm.res_dat;
+curr.gen_dat = prm.gen_dat;
+
+% h.results.sim.dat = {Idon Iacc coord};
+% h.results.sim.dat_id = {Idon_id Iacc_id discr_blurr discr discr_seq};
+
+% save modifications
+p.proj{proj}.sim.prm = prm;
+p.proj{proj}.sim.curr = curr;
 h.param = p;
-h.results.sim.dat = {Idon Iacc coord};
-h.results.sim.dat_id = {Idon_id Iacc_id discr_blurr discr discr_seq};
 guidata(h_fig, h);
 

@@ -45,7 +45,14 @@ end
 
 % collect experiment settings and video parameters
 proj = p.curr_proj;
-prm = p.proj{proj}.sim;
+curr = p.proj{proj}.sim.curr;
+L = curr.gen_dt{1}(2);
+rate = curr.gen_dt{1}(4);
+viddim = curr.gen_dat{1}{2}{1};
+br = curr.gen_dat{1}{2}{2};
+pxsz = curr.gen_dat{1}{2}{3};
+noisetype = curr.gen_dat{1}{2}{4};
+noiseprm = curr.gen_dat{1}{2}{5};
 
 h_txt = [h.text_camNoise_01 h.text_camNoise_02 h.text_camNoise_03 ...
     h.text_camNoise_04 h.text_camNoise_05 h.text_camNoise_06];
@@ -53,15 +60,15 @@ h_ed = [h.edit_camNoise_01 h.edit_camNoise_02 h.edit_camNoise_03 ...
     h.edit_camNoise_04 h.edit_camNoise_05 h.edit_camNoise_06];
 
 % set GUI to proper values
-set(h.edit_length, 'String', num2str(prm.nbFrames));
-set(h.edit_simRate, 'String', num2str(prm.rate));
-set(h.edit_pixDim, 'String', num2str(prm.pixDim));
-set(h.edit_simBitPix,'String', num2str(prm.bitnr));
-set(h.edit_simMov_w, 'String', num2str(prm.movDim(1)));
-set(h.edit_simMov_h, 'String', num2str(prm.movDim(2)));
+set(h.edit_length, 'String', num2str(L));
+set(h.edit_simRate, 'String', num2str(rate));
+set(h.edit_simBitPix,'String', num2str(br));
+set(h.edit_pixDim, 'String', num2str(pxsz));
+set(h.edit_simMov_w, 'String', num2str(viddim(1)));
+set(h.edit_simMov_h, 'String', num2str(viddim(2)));
 
 % get camera noise index
-switch prm.noiseType
+switch noisetype
     case 'poiss' % Poisson or prm-model from Börner et al. 2017
         ind = 1;
     case 'norm' % Gaussian, Normal or N-model from Börner et al. 2017
@@ -78,22 +85,19 @@ set(h.popupmenu_noiseType, 'Value', ind);
 % set all camera noise parameters
 for i = 1:size(h_txt,2)
     set(h_txt(i),'string',str{ind,i});
-    set(h_ed(i),'string',num2str(prm.camNoise(ind,i)),'tooltipstring',...
+    set(h_ed(i),'string',num2str(noiseprm(ind,i)),'tooltipstring',...
         ttstr0{ind}{i});
 end
 
-% adjust parameters
-switch prm.noiseType
+% adjust edit field properties
+switch noisetype
     case 'poiss' % Poisson or prm-model from Börner et al. 2017
         % turn off unused parameters
         set([h_txt([2,5,4,6]) h_ed([2,5,4,6])],'enable','off');
         set(h_ed([2,4,6]),'string','');
         
     case 'norm' % Gaussian, Normal or N-model from Börner et al. 2017
-        % generate and set saturation value
-        [o,mu_rho_stat] = Saturation(prm.bitnr);
-        set(h.edit_camNoise_06, 'Enable', 'inactive','string',...
-            num2str(mu_rho_stat));
+        set(h.edit_camNoise_06, 'Enable', 'inactive');
         
     case 'none' 
         % turn off unused parameters

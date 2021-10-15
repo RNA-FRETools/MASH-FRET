@@ -10,16 +10,25 @@ if isempty(d)
     return
 end
 
+% retrieve project content
 h = guidata(h_fig);
-p = h.param.sim;
+p = h.param;
+proj = p.curr_proj;
+curr = p.proj{proj}.sim.curr;
 
-if strcmp(p.intUnits, 'electron')
-    [o,K,eta] = getCamParam(p.noiseType,p.camNoise);
+% collect simulation parameters
+inun = curr.gen_dat{3}{2};
+noisetype = curr.gen_dat{1}{2}{4};
+noiseprm = curr.gen_dat{1}{2}{5};
+viddim = curr.gen_dat{1}{2}{1};
+
+if strcmp(inun, 'electron')
+    [o,K,eta] = getCamParam(noisetype,noiseprm);
     d.frameCur = ele2phtn(d.frameCur,K,eta);
     if size(d.frameCur,3)>1
         d.frameCur = sum(d.frameCur,3);
     end
-    if size(d.frameCur,1)~=p.movDim(1) || size(d.frameCur,2)~=p.movDim(2)
+    if size(d.frameCur,1)~=viddim(1) || size(d.frameCur,2)~=viddim(2)
         setContPan(cat(2,'Dimensions of the background image are not ',...
             'consistent with video dimensions: please adjust video ',...
             'dimensions or modify the dimensions of the background ',...
@@ -28,9 +37,12 @@ if strcmp(p.intUnits, 'electron')
     end
 end
 
-p.bgImg = d;
+curr.gen_dat{8}{4}{1} = d.frameCur;
+curr.gen_dat{8}{4}{2} = d.file;
 
-h.param.sim = p;
+% save modifications
+p.proj{proj}.sim.curr = curr;
+h.param = p;
 guidata(h_fig,h);
 
 ud_S_expSetupPan(h_fig);

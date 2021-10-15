@@ -15,19 +15,19 @@ end
 
 % collect experiment settings and video parameters
 proj = p.curr_proj;
-prm = p.proj{proj}.sim;
+expprm = p.proj{proj}.sim.curr.exp;
 
 % set file export options
-set(h.checkbox_simParam, 'Value', prm.export_param);
-set(h.checkbox_traces, 'Value', prm.export_traces);
-set(h.checkbox_movie, 'Value', prm.export_movie);
-set(h.checkbox_avi, 'Value', prm.export_avi);
-set(h.checkbox_procTraces, 'Value', prm.export_procTraces);
-set(h.checkbox_dt, 'Value', prm.export_dt);
-set(h.checkbox_expCoord, 'Value', prm.export_coord);
+set(h.checkbox_simParam, 'Value', expprm{1}(1));
+set(h.checkbox_procTraces, 'Value', expprm{1}(2));
+set(h.checkbox_traces, 'Value', expprm{1}(3));
+set(h.checkbox_dt, 'Value', expprm{1}(4));
+set(h.checkbox_movie, 'Value', expprm{1}(5));
+set(h.checkbox_avi, 'Value', expprm{1}(6));
+set(h.checkbox_expCoord, 'Value', expprm{1}(7));
 
 % set exported intensity units
-if strcmp(prm.intOpUnits, 'photon')
+if strcmp(expprm{2}, 'photon')
     set(h.popupmenu_opUnits, 'Value', 1);
 else
     set(h.popupmenu_opUnits, 'Value', 2);

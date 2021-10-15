@@ -5,27 +5,36 @@ function updateSimStates(h_fig)
 %
 % h_fig: handle to main figure
 
+% retrieve project content
 h = guidata(h_fig);
-p = h.param.sim;
+p = h.param;
+proj = p.curr_proj;
+curr = p.proj{proj}.sim.curr;
+def = p.proj{proj}.sim.def;
 
-if size(p.stateVal,2)==p.nbStates
+% collect simulation parameters
+J = curr.gen_dt{1}(3);
+stateDat = curr.gen_dat{2};
+
+if size(stateDat,2)==J
     return
 end
 
-for i = 1:p.nbStates
-    if i > size(p.stateVal,2)
-        p.stateVal(i) = p.stateVal(i-1);
-        p.FRETw(i) = p.FRETw(i-1);
+% adjust FRET values and broadening
+for i = 1:J
+    if i > size(stateDat,2)
+        stateDat = cat(2,stateDat,stateDat(:,i-1));
     end
 end
-p.stateVal = p.stateVal(1:p.nbStates);
-p.FRETw = p.FRETw(1:p.nbStates);
+curr.gen_dat{2} = stateDat(:,1:J);
 
-if isfield(h,'results') && isfield(h.results,'sim')
-    h.results = rmfield(h.results,'sim');
-end
+% reset simulation results
+curr.res_dt = def.res_dt;
+curr.res_dat = def.res_dat;
 
-h.param.sim = p;
+% save modifications
+p.proj{proj}.sim.curr = curr;
+h.param = p;
 guidata(h_fig, h);
 
 
