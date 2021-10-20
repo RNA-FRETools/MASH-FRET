@@ -1,49 +1,57 @@
 function ok = export2Png(h_fig, fname, pname)
-% Export the movie / image with background corrections to a .png file
+% ok = export2Png(h_fig, fname, pname)
 %
-% Requires functions: loading_bar, updateActPan, updateBgCorr.
+% Export the image with background corrections to a .png file
+%
+% h_fig: handle to main figure
+% fname: file name
+% pname: file location
+% ok: 1 for succes, 0 otherwise
 
 % defaults
-isMov = 0;
-isBgCorr = 0;
-ok = 1;
+ok = 0;
 
+% collect video processing parameters
 h = guidata(h_fig);
-p = h.param.movPr;
+p = h.param;
+expT = p.proj{p.curr_proj}.frame_rate;
+vidfile = p.proj{p.curr_proj}.movie_file;
+viddat = p.proj{p.curr_proj}.movie_dat;
+curr = p.proj{p.curr_proj}.VP.curr;
+filtlst = curr.edit{1}{4};
+start = curr.edit{2}(1);
 
-if isfield(h,'movie') && isfield(h.movie,'movie') && ...
-    ~isempty(h.movie.movie)
-    isMov = 1;
+% control full-length video
+isMov = isFullLengthVideo(h_fig);
+
+% control image filters
+isBgCorr = ~isempty(filtlst);
+
+% abort if the file being written is the one being accessed for reading data
+if ~isMov && isequal(vidfile,[pname fname])
+    updateActPan(cat(2,'The exported file must be different from the ',...
+        'original one.'),h_fig);
+    return
 end
-if isfield(p, 'bgCorr') && ~isempty(p.bgCorr)
-    isBgCorr = 1;
-end
 
-startFrame = p.mov_start;
-
+% get video frame
 if isMov
-    img = h.movie.movie(:,:,startFrame);
+    img = h.movie.movie(:,:,start);
 else
-    [dat,ok] = getFrames([h.movie.path h.movie.file], startFrame, ...
-        {h.movie.speCursor, [h.movie.pixelX h.movie.pixelY], ...
-        h.movie.framesTot}, h_fig, true);
-    if ~ok
-        return;
+    [data,succ] = getFrames(vidfile, start, viddat, h_fig, true);
+    if ~succ
+        return
     end
-    img = dat.frameCur;
+    img = data.frameCur;
 end
 
-% Apply background corrections if exist
+% apply background corrections if any
 if isBgCorr
-    [img,avImg] = updateBgCorr(img, p, h.movie, h_fig);
-    if ~isfield(h.movie,'avImg')
-        h.movie.avImg = avImg;
-        guidata(h_fig,h);
-    end
+    img = updateBgCorr(img, p, h_fig);
 end
 
+% write image to file
 imwrite(uint16(65535*(img-min(min(img)))/(max(max(img))-min(min(img)))), ...
-    [pname fname], 'png', 'BitDepth', 16, 'Description', ...
-    [num2str(h.movie.cyctime) ' ' num2str(max(max(img))) ' ' ...
-    num2str(min(min(img)))]);
+    [pname fname],'png','BitDepth',16,'Description',[num2str(expT) ' ' ...
+    num2str(max(max(img))) ' ' num2str(min(min(img)))]);
 

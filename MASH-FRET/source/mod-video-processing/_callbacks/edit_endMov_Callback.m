@@ -1,29 +1,28 @@
 function edit_endMov_Callback(obj, evd, h_fig)
 
-% get interface parameters
-val = round(str2num(get(obj, 'String')));
+% get VP parameters
 h = guidata(h_fig);
-p = h.param.movPr;
+p = h.param;
+L = p.proj{p.curr_proj}.movie_dat{3};
+curr = p.proj{p.curr_proj}.VP.curr;
+start = curr.edit{2}(1);
 
-% get video parameters
-tot = h.movie.framesTot;
-
-% get processing parameters
-start = p.mov_start;
-
+% retrieve value from edit field
+val = round(str2num(get(obj, 'String')));
 set(obj, 'String', num2str(val));
-if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= start && ...
-        val <= tot)
+if ~(~isempty(val) && numel(val)==1 && ~isnan(val) && val>=start && ...
+        val<=L)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    updateActPan(['Ending frame must be >= starting frame and <= ' ...
-        'frame length.'], h_fig, 'error');
+    updateActPan(['Ending frame must be >= starting frame and <= frame ',...
+        'length.'],h_fig,'error');
     return
 end
 
-p.mov_end = val;
+curr.edit{2}(2) = val;
 
 % save modifications
-h.param.movPr = p;
+p.proj{p.curr_proj}.VP.curr = curr;
+h.param = p;
 guidata(h_fig, h);
 
 % set GUI to proper values

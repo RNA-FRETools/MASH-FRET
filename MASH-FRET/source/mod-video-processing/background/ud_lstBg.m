@@ -6,13 +6,15 @@ function ud_lstBg(h_fig)
 % h_fig: handle to main figure
 
 h = guidata(h_fig);
-p = h.param.movPr;
+p = h.param;
+curr = p.proj{p.curr_proj}.VP.curr;
+filtlst = curr.edit{1}{4};
 
 % build list
 str_methods = get(h.popupmenu_bgCorr, 'String');
 str = {};
-for i = 1:size(p.bgCorr,1)
-    str = cat(2, str, str_methods{p.bgCorr{i,1}});
+for i = 1:size(filtlst,1)
+    str = cat(2, str, str_methods{filtlst{i,1}});
 end
 
 % adjust list selection
@@ -20,8 +22,8 @@ corr = get(h.listbox_bgCorr,'value');
 if ~isempty(str) && corr==0
     corr = 1;
 end
-if corr>size(p.bgCorr,1)
-    corr = size(p.bgCorr,1);
+if corr>size(filtlst,1)
+    corr = size(filtlst,1);
 end
 
 set(h.listbox_bgCorr, 'Value', corr, 'String', str);

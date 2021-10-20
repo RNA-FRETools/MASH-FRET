@@ -7,12 +7,10 @@ if ~isModuleOn(p,'VP')
     return
 end
 
-proj = p.curr_proj;
-
-proj{proj}.VP.itg_ave = get(obj, 'Value');
+p.proj{p.curr_proj}.VP.curr.gen_int{3}(3) = get(obj, 'Value');
 
 % save modifications
-
+h.param = p;
 guidata(h_fig, h);
 
 % set GUI to proper values

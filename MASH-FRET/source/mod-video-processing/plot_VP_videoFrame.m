@@ -7,7 +7,7 @@ function h_img = plot_VP_videoFrame(h_axes, h_cb, img, chansplit, prm)
 % h_cb: handle to color bar
 % img: current video frame
 % chansplit: positions on x-axis of channel splitting
-% p: structure containing processing parameters and spots coordinates
+% prm: processing parameters
 % h_img: handle to image plot
 
 % defaults
@@ -16,40 +16,49 @@ mksz = 10;
 chanstl = '--w';
 chanlw = 2;
 
+% collect processing parameters
+persec = prm.plot{1}(1);
+toplot = prm.plot{1}(3);
+coordsf = prm.gen_crd{2}{5};
+coordref = prm.gen_crd{3}{2}{1};
+coord2tr = prm.gen_crd{3}{1}{1};
+coordtr = prm.gen_crd{3}{4};
+coordsm = prm.gen_int{2}{1};
+
 % get spots coordinates
 nChan = numel(chansplit)+1;
 spots = [];
-switch prm.coord2plot
+switch toplot
     case 1 % spotfinder
-        if ~isempty(prm.SFres)
+        if ~isempty(coordsf)
             for c = 1:nChan
-                if size(prm.SFres,2)>=c && ~isempty(prm.SFres{2,c})
-                    spots = cat(1, spots, prm.SFres{2,c}(:,1:2));
+                if size(coordsf,2)>=c && ~isempty(coordsf{c})
+                    spots = cat(1, spots, coordsf{c}(:,1:2));
                 end
             end
         end
     case 2 % reference coordinates
         for c = 1:nChan
-            if size(prm.trsf_coordRef)>=(2*c)
-                spots = cat(1, spots, prm.trsf_coordRef(:,(2*c-1):(2*c)));
+            if size(coordref)>=(2*c)
+                spots = cat(1, spots, coordref(:,(2*c-1):(2*c)));
             end
         end
     case 3 % coordinates to tranform
         for c = 1:nChan
-            if size(prm.coordMol)>=(2*c)
-                spots = cat(1, spots, prm.coordMol(:,(2*c-1):(2*c)));
+            if size(coord2tr)>=(2*c)
+                spots = cat(1, spots, coord2tr(:,(2*c-1):(2*c)));
             end
         end
     case 4 % transformed coordinates
         for c = 1:nChan
-            if size(prm.coordTrsf)>=(2*c)
-                spots = cat(1, spots, prm.coordTrsf(:,(2*c-1):(2*c)));
+            if size(coordtr)>=(2*c)
+                spots = cat(1, spots, coordtr(:,(2*c-1):(2*c)));
             end
         end
-    case 5 % transformed coordinates
+    case 5 % coordinates for intensity integration
         for c = 1:nChan
-            if size(prm.coordItg)>=(2*c)
-                spots = cat(1, spots, prm.coordItg(:,(2*c-1):(2*c)));
+            if size(coordsm)>=(2*c)
+                spots = cat(1, spots, coordsm(:,(2*c-1):(2*c)));
             end
         end
 end
@@ -57,35 +66,46 @@ end
 % set axes visible
 set([h_axes,h_cb],'visible','on');
 
-% plot image
-[h,w] = size(img);
-h_img = imagesc(h_axes,[0.5 w-0.5],[0.5 h-0.5],img);
+% plot video frame
+[h,w,~] = size(img);
+h_img = imagesc(h_axes(1),[0.5 w-0.5],[0.5 h-0.5],img(:,:,1));
+
+% plot average image
+imagesc(h_axes(2),[0.5 w-0.5],[0.5 h-0.5],img(:,:,2));
 
 % plot spots coordinates
 set(h_axes,'nextplot','add');
 if ~isempty(spots)
-    plot(h_axes,spots(:,1),spots(:,2),mkstl,'markersize',mksz);
+    plot(h_axes(1),spots(:,1),spots(:,2),mkstl,'markersize',mksz);
+    plot(h_axes(2),spots(:,1),spots(:,2),mkstl,'markersize',mksz);
 end
 
 % plot channel separation
 for c = 1:size(chansplit,2)
-    plot(h_axes, [chansplit(c) chansplit(c)], [0 h], chanstl, 'LineWidth', ...
+    plot(h_axes(1), [chansplit(c),chansplit(c)],[0 h],chanstl,'LineWidth', ...
+        chanlw);
+    plot(h_axes(2), [chansplit(c),chansplit(c)],[0 h],chanstl,'LineWidth', ...
         chanlw);
 end
 
 % set axes limits
-if min(min(img))==max(max(img))
+if min(min(img,[],1),[],2)==max(max(img,[],1),[],2)
     img_min = 0;
     img_max = 1;
 else
-    img_min = min(min(img));
-    img_max = max(max(img));
+    img_min = min(min(img,[],1),[],2);
+    img_max = max(max(img,[],1),[],2);
 end
-set(h_axes,'nextPlot','replacechildren','xlim',[0,w],'ylim',[0,h],'clim',...
-    [img_min,img_max]);
+set(h_axes(1),'nextPlot','replacechildren','xlim',[0,w],'ylim',[0,h],...
+    'clim',[img_min(1),img_max(1)]);
+set(h_axes(2),'nextPlot','replacechildren','xlim',[0,w],'ylim',[0,h],...
+    'clim',[img_min(2),img_max(2)]);
+
+% align axes positions
+h_axes(2).Position = h_axes(1).Position;
 
 % set colorbar label
-if prm.perSec
+if persec
     ylabel(h_cb, 'intensity(counts /pix /s)');
 else
     ylabel(h_cb, 'intensity(counts /pix)');

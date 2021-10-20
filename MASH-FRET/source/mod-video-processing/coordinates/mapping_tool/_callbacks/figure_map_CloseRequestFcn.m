@@ -25,7 +25,7 @@ h.map = q;
 guidata(h_fig,h);
 
 nb_points = size(q.pnt,1);
-if nb_points >= 15 || nb_points == 0;
+if nb_points >= 15 || nb_points == 0
     exit_choice = 'Yes';
 else
     msgStr = {[num2str(nb_points) ' reference coordinates have been ',...
@@ -72,13 +72,7 @@ if ~strcmp(exit_choice, 'Yes')
 end
 
 % save coordinates to file
-if ~iscell(obj)
-    ok = saveMapCoord(h_fig);
-else
-    pname = obj{1};
-    fname = obj{2};
-    ok = saveMapCoord(h_fig,pname,fname);
-end
+ok = saveMapCoord(h_fig);
 
 % close mapping tool
 h = guidata(h_fig);

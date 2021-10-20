@@ -24,11 +24,14 @@ ok = 1;
 isMov = 0;
 isBgcorr = 0;
 
-% collect interface parameters
+% collect parameters
 h = guidata(h_fig);
-p = h.param.movPr;
+p = h.param;
+curr = p.proj{p.curr_proj}.VP.curr;
+tocurr = curr.edit{1}(2);
+filtlst = curr.edit{1}{4};
 
-% get processing parameters
+% get calculation parameters
 startFrame = param.start; % start data
 stopFrame = param.stop; % stop data
 iv = param.iv; % interval averaged
@@ -42,19 +45,22 @@ L0 = numel(startFrame:iv:stopFrame);
 % initialize output
 img_ave = zeros(resY,resX);
 
-if useMov && isfield(h,'movie') && isfield(h.movie,'movie') && ...
-    ~isempty(h.movie.movie)
+% control full-length video
+if useMov && isFullLengthVideo(h_fig)
     isMov = 1;
 end
-if corr && isfield(p,'bgCorr') && ~isempty(p.bgCorr)
+
+% control filter correction
+if corr && ~isempty(filtlst)
     isBgcorr = 1;
 end
 
+% control frame range bounds
 if ~(stopFrame<=L && startFrame>=1)
     if ~isempty(h_fig)
-        updateActPan('Input parameters inconsitents.', h_fig, 'error');
+        updateActPan('Frame interval is out-of-range.', h_fig, 'error');
     else
-        disp('Input parameters inconsitents.');
+        disp('Frame interval is out-of-range.');
     end
     return
 end
@@ -87,11 +93,10 @@ for i = startFrame:iv:stopFrame
     end
 
     if isBgcorr && ~isempty(h_fig)
-        avBg = p.movBg_one;
-        if ~avBg
-            [imgNext,~] = updateBgCorr(imgNext, p, h.movie, h_fig);
-        elseif avBg==n
-            [imgNext,~] = updateBgCorr(imgNext, p, h.movie, h_fig);
+        if ~tocurr
+            imgNext = updateBgCorr(imgNext, p, h_fig);
+        elseif tocurr==n
+            imgNext = updateBgCorr(imgNext, p, h_fig);
         end
     end
 

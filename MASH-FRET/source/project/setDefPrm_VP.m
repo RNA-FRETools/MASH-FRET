@@ -1,12 +1,11 @@
-function defprm = setDefPrm_VP(proj,p,img)
-% def = setDefPrm_VP(proj,p,img)
+function def = setDefPrm_VP(proj,p)
+% def = setDefPrm_VP(proj)
 %
-% Set new or adjust project's simulation default parameters to current
-% standard.
+% Set new or adjust project's video processing default parameters to 
+% current standard.
 %
-% p: video processing interface's defaults
 % proj: project structure
-% img: current video frame
+% prm_in: existing video processing parameters
 % def: adjusted project's defaults
 
 % defaults
@@ -32,49 +31,67 @@ u = {[0 0] % image filter parameters
      [0 0]};
 filtlist = {'','gauss','mean','median','ggf','lwf','gwf','outlier',...
     'histotresh','simpletresh'};
-
-% retrieve existing default parameters
-if ~isfield(p.VP, 'defProjPrm')
-    p.VP.defProjPrm = [];
-end
-defprm = p.VP.defProjPrm;
+ 
+% initializes fields
+p.VP = adjustParam('VP',[],p);
+p.VP.defProjPrm = adjustParam('defProjPrm',[],p.VP);
+p.VP.defProjPrm = initDefPrmFields_VP(p.VP.defProjPrm);
+def = p.VP.defProjPrm;
 
 % get project parameters
 nChan = proj.nb_channel;
+L = proj.movie_dat{3};
+avimg = proj.aveImg{1};
 sub_w = floor(proj.movie_dim(1)/nChan);
 
 % plot
-def{1}{1} = img; % currently displayed video frame
-def{1}{2} = [perSec,1]; % IC per second, colormap
-def{1}{3} = (1:nChan-1)*sub_w; % channel split pixel positions
+plotprm{1} = [perSec,1,0]; % IC per second, colormap,coord to plot
+plotprm{2} = (1:nChan-1)*sub_w; % channel split pixel positions
+def.plot = adjustVal(def.plot,plotprm);
 
 % edit and export video
-def{2}{1} = {[1,0],... % filter index,apply to current frame only
+editprm{1} = {[1,0],... % filter index,apply to current frame only
     repmat(u,[1,nChan]),... % filter parameters
     filtlist,... % external filter list
-    {}}; % applied filter list
-def{2}{2} = [1,1]; % starting and ending video frame for export
+    {}}; % {nFilt-by-(1+2*nChan)} applied filter and parameters
+editprm{2} = [1,L,1]; % starting and ending video frame for export
+def.edit = adjustVal(def.edit,editprm);
 
-% molecule coordinates
-def{3}{1} = [1,proj.movie_dat{3},1]; % start,end and frame interval for average image calculation
-def{3}{2} = {[1,false],... % SF method, gaussian fit
+% molecule coordinates parameters
+gen_crd{1} = [1,L,1]; % start,end and frame interval for average image calculation
+gen_crd{2} = {[1,0],... % SF method, gaussian fit
     repmat([0,1.4,7,7,9,9,0],[nChan,1]),... % SF parameters (int threshold,ratio threshold,spot's width and height(px),fitting area width and height(px),apply to all frames)
     repmat([200,0,0,5,150,0,3],[nChan,1]),... % section rules (max. nb. of spots,min. intensity,min. and max. spot's width(px),max. assymetry,min. interspot distance,min. spot-edge distance)
-    {},... % SF coord
-    {}}; % selected coord
-def{3}{3} = {{[],'',[1,2]},... % coord to transform,imported file,imported x- and -y columns
+    [],... % {1-by-nChan}[Nsf-by-8] SF coord,intensities,assymetries,dimensions,orientation angle,offset
+    []}; % {1-by-nChan}[Nslct-by-8] selected coord
+gen_crd{3} = {{[],'',[1,2]},... % coord to transform,imported file,imported x- and -y columns
     {[],'','rw',... % reference coord, imported file, import mode
         {[((1:nChan)'+1),nChan*ones(nChan,1),zeros(nChan,1)],[1,2]},... % ref. coord file row-wise import options
         {reshape((1:2*nChan),[nChan 2]) 1}},... % ref. coord file column-wise import options
-    {[],1,'',[256,256]},... % transformation,transformation type,imported file,transformation dimensions
+    {[],1,''},... % transformation,transformation type,imported file,transformation dimensions
     []}; % transformed coordinates
+def.gen_crd = adjustVal(def.gen_crd,gen_crd);
 
 % intensity integration
-def{4}{1} = {'',... % used video file
-    '',... % used coordinates file
-    {reshape(1:2*nChan,2,nChan)' 1}}; % coordinates import options
-def{4}{2} = [5,8,1]; % area dimensions,nb. of brightest pixels,averaging intensity
-def{4}{3} = [1 1 0 0 0 0 0 0]; % export file options
+gen_int{1} = {''}; % used video file
+gen_int{2} = {[],'',{reshape(1:2*nChan,2,nChan)' 1}}; % used coord., coord file, import options
+gen_int{3} = [5,8,1]; % area dimensions,nb. of brightest pixels,averaging intensity
+gen_int{4} = [1 1 0 0 0 0 0 0]; % export file options
+def.gen_int = adjustVal(def.gen_int,gen_int);
 
-% check and correct inconsistensies in structure
-defprm = adjustVal(defprm,def);
+% single molecule coordinates
+% def.res_crd: [N-by-nChan*2] x- and y- single moelcule coordinates
+
+% single molecule intensities
+% def.res_int: [L/nExc-by-nChan-by-nExc] intensities upon each laser illumination
+
+% plot images
+% res_plot: {1-by-2} images to plot with:
+%  res_plot{1}: current video frame
+%  res_plot{2}: average image
+%  res_plot{3}: {1-by-2} images for transformation
+%   res_plot{3}{1}: reference image
+%   res_plot{3}{2}: transformed image
+def.res_plot{1} = [];
+def.res_plot{2} = avimg;
+def.res_plot{3} = cell(1,2);

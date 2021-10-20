@@ -15,12 +15,12 @@ end
 
 % collect processing parameters
 proj = p.curr_proj;
-prm = p.proj{proj}.VP;
+curr = p.proj{proj}.VP.curr;
 
 % set average image
-set(h.edit_aveImg_iv, 'String', num2str(prm.ave_iv));
-set(h.edit_aveImg_start, 'String', num2str(prm.ave_start));
-set(h.edit_aveImg_end, 'String', num2str(prm.ave_stop));
+set(h.edit_aveImg_start, 'String', num2str(curr.gen_crd{1}(1)));
+set(h.edit_aveImg_end, 'String', num2str(curr.gen_crd{1}(2)));
+set(h.edit_aveImg_iv, 'String', num2str(curr.gen_crd{1}(3)));
 
 % set spot finder
 ud_VP_sfPan(h_fig);

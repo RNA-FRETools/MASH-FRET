@@ -1,8 +1,6 @@
 function switchMovTool(obj, evd, h_fig)
 
-% Last update by MH, 19.12.2019
-% >> do not update image plot after change in order to preserve axis limits
-%  (preserving zoom for instance)
+% update by MH, 19.12.2019: do not update image plot after change in order to preserve axis limits (preserving zoom for instance)
 
 h = guidata(h_fig);
 switch obj
@@ -16,7 +14,7 @@ switch obj
 
     case h.togglebutton_zoom
         set(h.togglebutton_target, 'Value', 0);
-        set(h.axes_movie, 'ButtonDownFcn', {});
+        set(h.axes_VP_vid, 'ButtonDownFcn', {});
         set(0, 'CurrentFigure', h_fig);
         zoom on;
 end

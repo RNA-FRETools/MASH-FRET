@@ -13,17 +13,23 @@ for i = projs
     end
     
     % set default processing parameters
-    p.VP.defProjPrm = setDefPrm_VP(p); % interface default
+    p.VP.defProjPrm = setDefPrm_VP(p.proj{i},p); % interface default
     p.proj{i}.VP.def = p.VP.defProjPrm; % project default
     
     % initializes applied processing parameters 
     if ~isfield(p.proj{i}.VP, 'prm')
         p.proj{i}.VP.prm = {}; % empty param
     end
+    p.proj{i}.VP.prm = initDefPrmFields_VP(p.proj{i}.VP.prm);
     
     % correct down-compatibility issues
     p.proj{i} = downCompatibilityVP(p.proj{i});
 
-    % if size of prm is different from def, use def
-    p.proj{i}.VP.curr = adjustVal(p.proj{i}.VP.prm,p.proj{i}.VP.def);
+    % build up currently displayed parameters
+    fldnms = fieldnames(p.proj{i}.VP.def);
+    for fld = 1:numel(fldnms)
+        eval(['p.proj{i}.VP.curr.',fldnms{fld},'= ',...
+            'adjustVal(p.proj{i}.VP.prm.',fldnms{fld},',',...
+            'p.proj{i}.VP.def.',fldnms{fld},');']); 
+    end
 end

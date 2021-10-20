@@ -1,16 +1,16 @@
 function edit_intNpix_Callback(obj, evd, h_fig)
 
-% gte interface parameters
-val = round(str2double(get(obj,'String')));
+% get VP parameters
 h = guidata(h_fig);
-p = h.param.movPr;
+p = h.param;
+curr = p.proj{p.curr_proj}.VP.curr;
+pxdim = curr.gen_int{3}(1);
 
-% get processing parameterss
-nMax = prod(p.itg_dim^2);
-
+% retrieve value from edit field
+nMax = pxdim^2;
+val = round(str2double(get(obj,'String')));
 if val>nMax
     val = nMax;
-    set(obj, 'String', num2str(val));
 end
 set(obj, 'String', num2str(val));
 if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val > 0)
@@ -20,10 +20,12 @@ if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val > 0)
     return
 end
 
-p.itg_n = val;
+% save number of brigthest pixels
+curr.gen_int{3}(1) = val;
     
 % save modifications
-h.param.movPr = p;
+p.proj{p.curr_proj}.VP.curr = curr;
+h.param = p;
 guidata(h_fig, h);
 
 % set GUI to proper values 

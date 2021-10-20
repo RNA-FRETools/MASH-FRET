@@ -15,18 +15,12 @@ end
 
 % collect experiemnt settings and processing parameters
 proj = p.curr_proj;
-prm = p.proj{proj}.VP;
-isMov = p.proj{proj}.is_movie;
+curr = p.proj{proj}.VP.curr;
 
 % set parameters
-set(h.edit_itg_coordFile, 'String', prm.coordItg_file);
-if isMov
-    if isfield(h.movie, 'file')
-        set(h.edit_movItg, 'String', h.movie.file);
-    end
-end
-set(h.edit_TTgen_dim, 'String', num2str(prm.itg_dim));
-set(h.edit_intNpix, 'String', num2str(prm.itg_n));
-set(h.checkbox_meanVal, 'Value', prm.itg_ave);
+set(h.edit_itg_coordFile, 'String', curr.gen_int{2}{2});
+set(h.edit_TTgen_dim, 'String', num2str(curr.gen_int{3}(1)));
+set(h.edit_intNpix, 'String', num2str(curr.gen_int{3}(2)));
+set(h.checkbox_meanVal, 'Value', curr.gen_int{3}(3));
 
 

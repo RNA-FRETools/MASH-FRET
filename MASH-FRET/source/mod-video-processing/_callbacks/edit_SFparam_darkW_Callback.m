@@ -1,11 +1,10 @@
 function edit_SFparam_darkW_Callback(obj, evd, h_fig)
 
-% collect interface parameters
-val = round(str2double(get(obj, 'String')));
+% retrieve interface parameters
 h = guidata(h_fig);
-channel = get(h.popupmenu_SFchannel, 'Value');
-p = h.param.movPr;
 
+% get intensity threshold from edit field
+val = str2double(get(obj, 'String'));
 set(obj, 'String', num2str(val));
 if ~(numel(val) == 1 && ~isnan(val) && val > 0 && mod(val,2))
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -13,11 +12,14 @@ if ~(numel(val) == 1 && ~isnan(val) && val > 0 && mod(val,2))
         'error');
     return
 end
-    
-p.SF_darkW(channel) = val;
 
 % save modifications
-h.param.movPr = p;
+p = h.param;
+chan = get(h.popupmenu_SFchannel, 'Value');
+
+p.proj{p.curr_proj}.VP.curr.gen_crd{2}{2}(chan,3);
+
+h.param = p;
 guidata(h_fig, h);
 
 % set GUI to proper values

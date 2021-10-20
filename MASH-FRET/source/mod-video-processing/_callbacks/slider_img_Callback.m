@@ -31,7 +31,7 @@ end
 
 % update current video frame
 p.movPr.curr_frame(proj) = l;
-p.proj{proj}.VP.curr_img = data.frameCur;
+p.proj{proj}.VP.curr.res_plot{1} = data.frameCur;
 
 % save modifications
 h.param = p;

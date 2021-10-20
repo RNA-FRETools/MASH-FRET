@@ -31,6 +31,7 @@ ttl1 = 'Edit and export video';
 ttl2 = 'Molecule coordinates';
 ttl3 = 'Intensity integration';
 tabttl0 = 'Video';
+tabttl1 = 'Average image';
 
 % parents
 h_pan = h.uipanel_VP;
@@ -43,7 +44,7 @@ wpan0 = pospan(3)-3*p.mg-wtab;
 hpan0 = p.mgpan+p.mg/2+p.mg/fact+hedit0+hpop0;
 hpan1 = p.mgpan+hpop0+hedit0+p.mg/2+hpop0+p.mg/fact+hedit0+p.mg/2+hedit0+...
     p.mg/2;
-hpan3 = p.mgpan+4*p.mg/2+4*hedit0;
+hpan3 = p.mgpan+3*(p.mg/2+hedit0);
 hpan2 = pospan(4)-2*p.mg-3*p.mg/2-hpan0-hpan1-hpan3;
 
 % GUI
@@ -57,6 +58,10 @@ h_tabgrp = h.uitabgroup_VP_plot;
 h.uitab_VP_plot_vid = uitab('parent',h_tabgrp,'units',p.posun,'title',...
     tabttl0);
 h = buildVPtabPlotVid(h,p);
+
+h.uitab_VP_plot_avimg = uitab('parent',h_tabgrp,'units',p.posun,'title',...
+    tabttl1);
+h = buildVPtabPlotAvimg(h,p);
 
 x = x+wtab+p.mg;
 y = pospan(4)-p.mg-hpan1;

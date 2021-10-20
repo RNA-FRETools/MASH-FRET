@@ -7,7 +7,11 @@ switch action
     
     case 'reset'
         if sum(double(curr_axes == ...
-                [h.axes_movie, h.axes_example_mov]))
+                [h.axes_VP_vid, h.axes_VP_avimg, h.axes_example_mov]))
+            axis(curr_axes, 'image');
+            
+        elseif isfield(h,'axes_VP_tr') && ishandle(h.axes_VP_tr) && ...
+                curr_axes == h.axes_VP_tr
             axis(curr_axes, 'image');
 
         elseif sum(double(curr_axes == [h.axes_top h.axes_topRight ...

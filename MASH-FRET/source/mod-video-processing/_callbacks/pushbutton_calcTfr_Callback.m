@@ -5,81 +5,53 @@ function pushbutton_calcTfr_Callback(obj, evd, h_fig)
 % h_fig: handle to main figure
 % outfile: {1-by-2} destination folder and file
 
-% collect interface parameters
+% collect parameters
 h = guidata(h_fig);
-p = h.param.movPr;
+p = h.param;
+nChan = p.proj{p.curr_proj}.nb_channel;
+curr = p.proj{p.curr_proj}.VP.curr;
+coordref = curr.gen_crd{3}{2}{1};
+trtype = curr.gen_crd{3}{3}{2};
 
-if p.nChan<=1 || p.nChan>3
-    updateActPan(['This functionality is available for 2 or 3 ' ...
-        'channels only.'], h_fig, 'error');
+% control number of channels
+if nChan<=1 || nChan>3
+    setContPan('This functionality is available for 2 or 3 channels only.',...
+        'error',h_fig);
     return
 end
 
-if ~(isfield(p, 'trsf_coordRef') && ~isempty(p.trsf_coordRef))
-    updateActPan('No reference coordinates loaded.', h_fig, 'error');
+% control reference coordinates
+if isempty(coordref)
+    setContPan(['No reference coordinates detected. Please map or import ',...
+        'reference coordinates'],'error',h_fig);
     return
 end
 
-tform_type = p.trsf_type;
-if tform_type<=1
-    updateActPan('Select a transformation type.', h_fig, 'error');
+% control transformation type
+if trtype<=1
+    setContPan('Select a transformation type.','error',h_fig);
     return
 end
 
 % calculate transformation
-tr = createTrafo(tform_type, p.trsf_coordRef, h_fig);
+tr = createTrafo(trtype,coordref,h_fig);
 if isempty(tr)
     return
 end
 
-p.trsf_tr = tr;
+% save transformation
+curr.gen_crd{3}{3}{1} = tr;
 
-str_type = get(h.popupmenu_trType, 'String');
-str_type = str_type{tform_type};
-
-% get file name
-saved = 1;
-if iscell(obj)
-    pname = obj{1};
-    fname = obj{2};
-    if ~strcmp(pname(end),filesep)
-        pname =[pname,filesep];
-    end
-else
-    if isfield(p, 'trsf_coordRef_file') && ~isempty(p.trsf_coordRef_file)
-        [o,fname,o] = fileparts(p.trsf_coordRef_file);
-    else
-        fname = 'transformation';
-    end
-    defName = [setCorrectPath('transformed', h_fig) fname '.mat'];
-    [fname,pname,o] = uiputfile({'*.mat', 'Matlab files(*.mat)'; ...
-        '*.*', 'All files(*.*)'}, 'Export transformation', defName);
-end
-if ~sum(fname)
-    saved = 0;
-else
-    % save transformation to file
-    cd(pname);
-    [o,fname,o] = fileparts(fname);
-    fname_tr = getCorrName([fname '_trs.mat'], pname, h_fig);
-    if ~sum(fname_tr)
-        saved = 0;
-    end
-end
-if ~saved
-    p.trsf_tr_file = [];
-else
-    save([pname fname_tr], '-mat', 'tr' );
-    p.trsf_tr_file = fname_tr;
-end
+% reset transformation file
+curr.gen_crd{3}{3}{3} = '';
 
 % save modifications
-h.param.movPr = p;
-guidata(h_fig, h);
+p.proj{p.curr_proj}.VP.curr = curr;
+h.param = p;
+guidata(h_fig,h);
 
 % set GUI to proper values
 ud_VP_coordTransfPan(h_fig);
 
 % show action
-updateActPan(['Transformation from type "' str_type '" was successfully ',...
-    'calculated and exported to file: ' pname fname_tr], h_fig, 'success');
+setContPan('Transformation was successfully calculated','success',h_fig);

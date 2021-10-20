@@ -1,27 +1,31 @@
 function edit_SFparam_maxN_Callback(obj, evd, h_fig)
 
-% collect interface parameters
+% retrieve value from edit field
 val = round(str2double(get(obj, 'String')));
-h = guidata(h_fig);
-chan = get(h.popupmenu_SFchannel, 'Value');
-p = h.param.movPr;
-
 set(obj, 'String', num2str(val));
 if ~(numel(val)==1 && ~isnan(val) && val>=0)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
     updateActPan('Max. number of peak must be >= 0.', h_fig, 'error');
     return
 end
-    
-p.SF_maxN(chan) = val;
+
+% collect processing parameters
+h = guidata(h_fig);
+p = h.param;
+curr = p.proj{p.curr_proj}.VP.curr;
+coordslct = curr.gen_crd{2}{5};
+
+% save maximum number of spots
+curr.gen_crd{2}{3}(1) = val;
 
 % reset spot selection
-if size(p.SFres,1)>=2
-    p.SFres(2,:) = [];
+if size(coordslct,1)>=0
+    curr.gen_crd{2}{5} = [];
 end
 
 % save modifications
-h.param.movPr = p;
+p.proj{p.curr_proj}.VP.curr = curr;
+h.param = p;
 guidata(h_fig, h);
 
 % refresh calculations, plot and set GUI to proper values

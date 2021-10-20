@@ -7,9 +7,7 @@ if ~isModuleOn(p,'VP')
     return
 end
 
-proj = p.curr_proj;
-
-p.proj{proj}.VP.SF_gaussFit = get(obj, 'Value');
+p.proj{p.curr_proj}.VP.curr.gen_crd{2}{1}(2) = get(obj, 'Value');
 
 % save modifications
 h.param = p;

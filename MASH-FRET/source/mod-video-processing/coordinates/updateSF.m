@@ -1,45 +1,51 @@
-function p = updateSF(img, lb, p, h_fig)
-% p = updateSF(img, lb, p)
+function prm = updateSF(img, lb, prm, h_fig)
+% prm = updateSF(img, lb, prm, h_fig)
 %
 % Find spots in the image and select coordinates according to selection rules.
 %
 % img: current video frame
 % lb: 1 if a loading bar is already opened, 0 otherwise
-% p: sutructure containing processing parameters
+% prm: processing parameters
 % h_fig: handle to main figure
 
 % Last update: 5th of February 2014 by Mélodie C.A.S Hadzic
 
-meth = p.SF_method;
+% collect processing parameters
+meth = prm.gen_crd{2}{1}(1);
+sfcoord = prm.gen_crd{2}{4};
+
 if meth<=1
     return
 end
 
 % no result: run spotfinder
-if size(p.SFres,1)<1
-    spots = determineSpots(p.SFprm, img, lb, p, h_fig);
-    p.SFres = spots;
+if size(sfcoord,1)<1
+    [spots,ok] = determineSpots(img, lb, prm, h_fig);
+    if ~ok
+        return
+    end
+    prm.gen_crd{2}{4} = spots;
 
 % recover results from previous spotfinder run
 else
-    spots = p.SFres(1,:);
-    p.SFres = spots;
+    spots = prm.gen_crd{2}{4};
+    prm.gen_crd{2}{4} = spots;
 end
 
 % apply selection rules
 [imgY,imgX] = size(img);
-p.SFres = cat(1,p.SFres,selectSpots(spots, imgX, imgY, p));
+prm.gen_crd{2}{5} = cat(1,prm.gen_crd{2}{4},...
+    selectSpots(spots,imgX,imgY,prm));
 
 
-function [spots,ok] = determineSpots(param, img, lb, p, h_fig)
-% [spots,ok] = determineSpots(param, img, lb, p, h_fig)
+function [spots,ok] = determineSpots(img, lb, prm, h_fig)
+% [spots,ok] = determineSpots(img, lb, p, h_fig)
 %
 % Target bright spots in the image and return their coordinates.
 %
-% param: {1-by-nChan+1} cell array containing spotfinder parameters
 % img: input image
 % lb: 1 if a loading bar is already opened, 0 otherwise
-% p: sutructure containing processing parameters
+% prm: processing parameters
 % h_fig: handle to main figure
 % "spots" >> {1-by-n}cell array, contains coordinates of targetted spots in
 % each of the n channels
@@ -47,15 +53,22 @@ function [spots,ok] = determineSpots(param, img, lb, p, h_fig)
 % Requires external functions: isScreen, loading_bar, spotGaussFit
 % Last update: 5th of February 2014 by Mélodie C.A.S Hadzic
 
+
+% collect processing parameters
+meth = prm.gen_crd{2}{1}(1);
+gaussfit = prm.gen_crd{2}{1}(2);
+sfprm = prm.gen_crd{2}{2};
+nChan = size(sfprm,1);
+
 % initialize output
-spots = cell(1,p.nChan);
 ok = 1;
+spots = cell(1,nChan);
 
 [imgY,imgX] = size(img);
 peaksNb = imgX*imgY;
 
-sub_w = floor(imgX/p.nChan);
-lim = [0 (1:p.nChan-1)*sub_w imgX];
+sub_w = floor(imgX/nChan);
+lim = [0 (1:nChan-1)*sub_w imgX];
 
 warning('on', 'verbose');
 warning('off', 'stats:nlinfit:IterationLimitExceeded');
@@ -66,14 +79,14 @@ warning('off', 'MATLAB:rankDeficientMatrix');
 warning('off', 'MATLAB:singularMatrix');
 
 
-for i = 1:p.nChan
+for i = 1:nChan
     int = img(:, lim(i)+1:lim(i+1));
-    spotSize = param{1,i+1}(1,:);
-    darkArea = param{1,i+1}(2,:);
-    minInt = param{1,i+1}(3,1);
-    ratioInt = param{1,i+1}(3,2);
+    minInt = sfprm(i,1);
+    ratioInt = sfprm(i,2);
+    darkArea = sfprm(i,[3,4]);
+    spotSize = sfprm(i,[5,6]);
     
-    switch p.SF_method
+    switch meth
         case 2 % in-serie screening
             spots{i} = isScreen(int, peaksNb, minInt, darkArea);
             if ~isempty(spots{i})
@@ -138,7 +151,7 @@ for i = 1:p.nChan
         
     end
 
-    if ~p.SF_gaussFit
+    if ~gaussfit
         continue
     end
     
@@ -148,7 +161,7 @@ for i = 1:p.nChan
     N = size(spots{i},1);
     if ~lb
         if loading_bar('init',h_fig,N,...
-                sprintf('Fitting peaks in channel %i',i));
+                sprintf('Fitting peaks in channel %i',i))
             ok = 0;
             return
         end

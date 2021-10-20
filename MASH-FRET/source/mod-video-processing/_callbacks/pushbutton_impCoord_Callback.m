@@ -5,11 +5,15 @@ function pushbutton_impCoord_Callback(obj, evd, h_fig)
 % h_fig: handle to main figure
 % coordfile: {1-by-2} source folder and source file containing coordinates to transform
 
-% collect interface parameters
+% collect parameters
 h = guidata(h_fig);
-p = h.param.movPr;
+p = h.param;
+nChan = p.proj{p.curr_proj}.nb_channel;
+curr = p.proj{p.curr_proj}.VP.curr;
+impprm = curr.gen_crd{3}{1}{3};
 
-if p.nChan<=1 || p.nChan>3
+% control number of channels
+if nChan<=1 || nChan>3
     updateActPan(['This functionality is available for 2 or 3 channels ',...
         'only.'], h_fig, 'error');
     return
@@ -34,9 +38,8 @@ cd(pname);
 
 % import coordinates
 fData = importdata([pname fname], '\n');
-prm = h.param.movPr.trsf_coordImp;
-col_x = prm(1);
-col_y = prm(2);
+col_x = impprm(1);
+col_y = impprm(2);
 nCoord = size(fData,1);
 coord = [];
 for i = 1:nCoord
@@ -52,12 +55,13 @@ if isempty(coord)
 end
 
 % save coordiantes and file
-p.coordMol = coord;
-p.coordMol_file = fname;
-p.coord2plot = 3;
+curr.gen_crd{3}{1}{1} = coord;
+curr.gen_crd{3}{1}{2} = fname;
+curr.plot{1}(3) = 3;
 
 % save modifications
-h.param.movPr = p;
+p.proj{p.curr_proj}.VP.curr = curr;
+h.param = p;
 guidata(h_fig, h);
 
 % set GUI to proper values and refresh plot

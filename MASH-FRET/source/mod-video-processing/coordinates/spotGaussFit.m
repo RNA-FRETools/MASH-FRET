@@ -13,7 +13,7 @@ function [res,intrupt] = spotGaussFit(spots, I, spotSize, lb, h_fig)
 % spotSize: size of square area around each coordinates to fit
 % lb: 1 if a loading bar is already opened, 0 otherwise
 % h_fig: handle to main figure
-% res: [N-by-8] fitting results (x and y coordinates, intensity, spot width and height, assymetry)
+% res: [N-by-8] fitting results (x and y coordinates, intensity, assymetry, spot width and height, orientation angle, offset)
 % intrupt: 1 if process was interrupted, 0 otherwise
 
 % Last update by MH, 14.3.2019: Review Gaussian assymetry calculation

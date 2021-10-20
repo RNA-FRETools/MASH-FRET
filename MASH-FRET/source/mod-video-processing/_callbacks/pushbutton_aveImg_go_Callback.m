@@ -5,95 +5,46 @@ function pushbutton_aveImg_go_Callback(obj, evd, h_fig)
 % h_fig: handle to main figure
 % file_out: {1-by-2} destination folder and file for average image
 
-% collect interface parameters
+% collect parameters
 h = guidata(h_fig);
-p = h.param.movPr;
+p = h.param;
+vidfile = p.proj{p.curr_proj}.movie_file;
+viddat = p.proj{p.curr_proj}.movie_dat;
+curr = p.proj{p.curr_proj}.VP.curr;
+prm = p.proj{p.curr_proj}.VP.prm;
+start = curr.gen_crd{1}(1);
+stop = curr.gen_crd{1}(2);
+iv = curr.gen_crd{1}(3);
 
-if ~isfield(h,'movie')
-    updateActPan('No graphic file loaded!', h_fig, 'error');
-    return
-end
-
-% collect video parameters
-vidfold = h.movie.path;
-vidfile = h.movie.file;
-fcurs = h.movie.speCursor;
-resX = h.movie.pixelX;
-resY = h.movie.pixelY;
-L = h.movie.framesTot;
-expT = h.movie.cyctime;
-
-% get destination image file
-if iscell(obj)
-    pname = obj{1};
-    fname = obj{2};
-    if ~strcmp(pname(end),filesep)
-        pname = [pname,filesep];
-    end
-else
-    [o,nameMov,o] = fileparts(vidfile);
-    defName = [setCorrectPath('average_images', h_fig) nameMov '_ave'];
-    [fname,pname,o] = uiputfile({ ...
-        '*.png', 'Portable Network Graphics(*.png)'; ...
-        '*.sira', 'SIRA Graphic File Format(*.sira)'; ...
-        '*.tif', 'Tagged Image File Format(*.tif)'; ...
-        '*.*', 'All files(*.*)'}, ...
-        'Export average image', defName);
-end
-if ~sum(fname)
-    return
-end
-cd(pname);
-[o,name,fext] = fileparts(fname);
-if ~sum(double(strcmp(fext, {'.png' '.tif' '.sira'})))
-    fname = [name '.png'];
-end
-fname = getCorrName(fname, pname, h_fig);
+% apply current parameters to project
+prm.gen_crd{1} = curr.gen_crd{1};
 
 % build average image
-param.start = p.ave_start;
-param.stop = p.ave_stop;
-param.iv = p.ave_iv;
-param.file = [vidfold,vidfile];
-param.extra{1} = fcurs;
-param.extra{2} = [resX resY]; 
-param.extra{3} = L;
+param.start = start;
+param.stop = stop;
+param.iv = iv;
+param.file = vidfile;
+param.extra = viddat;
 [img_ave,ok] = createAveIm(param,true,true,h_fig);
 if ~ok
-    return;
+    return
 end
 
-% save image to file
-if strcmp(fext, '.png')
-    imwrite(uint16(65535*(img_ave-min(min(img_ave)))/ ...
-        (max(max(img_ave))-min(min(img_ave)))), [pname fname], ...
-        'png', 'BitDepth', 16, 'Description', ...
-        [num2str(h.movie.cyctime) ' ' num2str(max(max(img_ave)))...
-        ' ' num2str(min(min(img_ave)))]);
+% save average image
+prm.res_plot{2} = img_ave;
 
-elseif strcmp(fext, '.tif')
-    min_img = min(min(round(img_ave)));
-    if min_img >= 0
-        min_img = 0;
-    end
-    img_16 = uint16(round(img_ave)+abs(min_img));
-    imwrite(img_16, [pname fname], 'tif', 'WriteMode', ...
-        'overwrite', 'Description', ...
-        sprintf('%d\t%d', h.movie.cyctime, min_img));
+% save modifications
+p.proj{p.curr_proj}.VP.prm = prm;
+p.proj{p.curr_proj}.VP.curr.res_plot = prm.res_plot;
 
-elseif strcmp(fext, '.sira')
-    figname = get(h_fig, 'Name');
-    vers = figname(length('MASH-FRET '):end);
-    f = writeSiraFile('init', [pname,fname], vers, [1/expT,[resX,resY],L]);
-    if f==-1
-        setContPan(['Enable to open file ',fname],'error',h_fig);
-        return
-    end
-    writeSiraFile('append', f, img_ave, resX*resY);
-    fclose(f);
-end
+h.param = p;
+guidata(h_fig,h);
 
-updateActPan(['The average image (' num2str(param.start) ':' ...
-    num2str(param.iv) ':' num2str(param.stop) ') has been saved to file: ' ...
-    fname '\nin folder: ' pname], h_fig, 'success');
+% update calculations, plot and panels
+updateFields(h_fig,'imgAxes');
+
+% display success
+setContPan(['The average image (' num2str(param.start) ':' ...
+    num2str(param.iv) ':' num2str(param.stop) ') has been successfully ',...
+    'created'], 'success', h_fig);
 

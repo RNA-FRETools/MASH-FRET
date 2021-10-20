@@ -1,38 +1,39 @@
-function spots = selectSpots(spots, w, h, p)
-% spots = selectSpots(spots, w, h, p)
+function spots = selectSpots(spots, w, h, prm)
+% spots = selectSpots(spots, w, h, prm)
 %
 % Select coordinates corresponding to the selection criteria (minimum intensity, spot size, spot assymetry, inter-spot distance, distance from image edge, maximum number of spots)
 %
 % spots: {1-by-nChan} cell array containing spots parameters (x and y coordinates, intensity, spot width and height, assymetry) for each channel
 % w: image dimension in the x-direction (in pixels)
 % h: image dimension in the y-direction (in pixels)
-% h_fig: handle to main figure
+% prm: processing parameters
 
 % Last update: 5th of February 2014 by Mélodie C.A.S Hadzic
 
 % collect processing parameters
-gaussFit = p.SF_gaussFit;
-nChan = p.nChan;
+gaussFit = prm.gen_crd{2}{1}(2);
+slctprm = prm.gen_crd{2}{3};
 
 % get channel limits
-sub_w = floor(w/p.nChan);
+nChan = size(slctprm,1);
+sub_w = floor(w/nChan);
 limX = [0 (1:nChan)*sub_w w];
 limY = [1 h];
 
 for i = 1:nChan
-    minDspot = p.SF_minDspot(i);
-    minDedge = p.SF_minDedge(i);
+    minDspot = slctprm(i,6);
+    minDedge = slctprm(i,7);
 
     % check the intensity
     if ~isempty(spots{i})
-        minI = p.SF_minI(i);
+        minI = slctprm(i,2);
         spots{i} = spots{i}((spots{i}(:,3)>=minI),:);
     end
 
     if ~isempty(spots{i}) && size(spots{i},2)>3 && gaussFit
         % check the spot WHM
-        minw = p.SF_minHWHM(i);
-        maxw = p.SF_maxHWHM(i);
+        minw = slctprm(i,3);
+        maxw = slctprm(i,4);
         spots{i} = spots{i}((spots{i}(:,5)>minw & spots{i}(:,5)<maxw),:);
         if ~isempty(spots{i})
             spots{i} = spots{i}((spots{i}(:,6)>minw & spots{i}(:,6)<maxw),:);
@@ -40,7 +41,7 @@ for i = 1:nChan
         
         if ~isempty(spots{i})
             % check the spot assymetry
-            assym = p.SF_maxAssy(i);
+            assym = slctprm(i,5);
             spots{i} = spots{i}((spots{i}(:,4)<=(assym/100)),:);
         end
         
@@ -67,7 +68,7 @@ for i = 1:nChan
     % check the number of spots
     if ~isempty(spots{i})
         spots{i} = sortrows(spots{i},3);
-        maxN = p.SF_maxN(i);
+        maxN = slctprm(i,1);
         if size(spots{i},1) > maxN
             spots{i} = spots{i}(end-maxN+1:end,:);
         end

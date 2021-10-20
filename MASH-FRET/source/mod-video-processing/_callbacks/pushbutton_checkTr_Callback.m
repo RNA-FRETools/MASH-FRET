@@ -7,18 +7,29 @@ function pushbutton_checkTr_Callback(obj, evd, h_fig)
 %  imgfiles(1,:): source folder and file for reference image
 %  imgfiles(2,:): destination folder and file for transformed image
 
-% collect interface parameters
-h = guidata(h_fig);
-p = h.param.movPr;
+% default
+vidfmt = {'.sif','.vsi','.ets','.sira','.tif','.gif','.png','.spe','.pma',...
+    '.avi'};
+tabttl = 'Transformed image';
 
-if p.nChan<=1 || p.nChan>3
-    updateActPan(['This functionality is available for 2 or 3 ' ...
-        'channels only.'], h_fig, 'error');
+% collect parameters
+h = guidata(h_fig);
+p = h.param;
+nChan = p.proj{p.curr_proj}.nb_channel;
+curr = p.proj{p.curr_proj}.VP.curr;
+tr = curr.gen_crd{3}{3}{1};
+
+% control number of channels
+if nChan<=1 || nChan>3
+    setContPan('This functionality is available for 2 or 3 channels only.',...
+        'error',h_fig);
     return
 end
 
-if ~(isfield(p,'trsf_tr') && ~isempty(p.trsf_tr))
-    updateActPan('No Transformation loaded.', h_fig, 'error');
+% control tranformation
+if isempty(tr)
+    setContPan(['No Transformation detected. Please calculate or load a ',...
+        'transformation'],'error',h_fig);
     return
 end
 
@@ -31,35 +42,59 @@ if iscell(obj)
     fromRoutine = true;
 else
     % ask user for image to transform
-    [fname,pname,o] = uigetfile({...
-        '*.png;*.tif','Image files(*.png;*.tif)'; ...
-        '*.*', 'All files(*.*)'}, ...
-        'Select an image to transform',...
-        setCorrectPath('average_images', h_fig));
+    cd(setCorrectPath('average_images', h_fig));
+
+    str0 = ['*',vidfmt{1}];
+    str1 = ['(*',vidfmt{1}];
+    for fmt = 2:numel(vidfmt)
+        str0 = cat(2,str0,';*',vidfmt{fmt});
+        str1 = cat(2,str1,',*',vidfmt{fmt});
+    end
+    str1 = [str1,')'];
+    [fname,pname,o] = uigetfile({str0,...
+        ['Supported Graphic File Format',str1]; ...
+        '*.*','All File Format(*.*)'},'Select an image to transform');
     fromRoutine = false;
 end
 if ~sum(fname)
     return
 end
-
-% get image
 cd(pname);
-img = imread([pname fname]);
+
+% display progress
+setContPan(['Loading file ',pname,fname],'process',h_fig);
+
+% get image data
+[data,ok] = getFrames([pname,fname], 1, [], h_fig, true);
+if ~ok
+    return
+end
+img = data.frameCur;
 
 % transform image
-[imgtrsf,ok] = constrTrafoImage(p.trsf_tr, img, h_fig);
+[imgtrsf,ok] = constrTrafoImage(tr,img,h_fig);
 if ~ok || isempty(imgtrsf)
     return
 end
 
 % show transformed image
-h_fig2 = figure('NumberTitle','off','Name','Transformed image','visible',...
-    'off');
-h_axes = axes('Parent', h_fig2);
-imagesc(imgtrsf, 'Parent', h_axes);
-axis(h_axes, 'image');
+if ~(isfield(h,'axes_VP_tr') && ishandle(h.axes_VP_tr))
+    h.uitab_VP_plot_tr = uitab('parent',h.uitabgroup_VP_plot,'units',...
+        h.dimprm.posun,'title',tabttl);
+    h = buildVPtabPlotTr(h,h.dimprm);
+    setProp([h.uitab_VP_plot_tr,h.uitab_VP_plot_tr.Children],'Units',...
+        h.uitabgroup_VP_plot.Units);
 
-% save image and close figure
+    % save modifications
+    guidata(h_fig,h);
+end
+imagesc(imgtrsf,'parent',h.axes_VP_tr);
+axis(h.axes_VP_tr,'image');
+
+% align axes
+h.axes_VP_tr.Position = h.axes_VP_vid.Position;
+
+% save image if from routine call
 if fromRoutine
     pname_out = obj{2,1};
     fname_out = obj{2,2};
@@ -68,7 +103,5 @@ if fromRoutine
     end
     print(h_fig2,[pname_out,fname_out],'-dpng');
     close(h_fig2);
-else
-    set(h_fig2,'visible','on');
 end
 

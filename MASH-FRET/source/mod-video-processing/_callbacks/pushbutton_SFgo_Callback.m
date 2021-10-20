@@ -1,63 +1,63 @@
 function pushbutton_SFgo_Callback(obj, evd, h_fig)
 
-% collect interface parameters
+% collect parameters
 h = guidata(h_fig);
-p = h.param.movPr;
+p = h.param;
+nChan = p.proj{p.curr_proj}.nb_channel;
+expT = p.proj{p.curr_proj}.frame_rate;
+curr = p.proj{p.curr_proj}.VP.curr;
+avimg = curr.res_plot{2};
+meth = curr.gen_crd{2}{1}(1);
+bgfilt = curr.edit{1}{4};
+persec = curr.plot{1}(1);
 
-if ~isfield(h, 'movie')
-    updateActPan('No graphic file loaded!', h_fig, 'error');
+% control average image
+if isempty(avimg)
+    setContPan(['No average image detected. Please calculate or load the ',...
+        'average imagehe average image must be calculated first.'],...
+        'error',h_fig);
     return
 end
 
-% get spotfinder method
-meth = p.SF_method;
+% control spotfinder method
 if meth==1
     return
 end
 
-% ask to load average image
-if ~h.mute_actions && h.movie.framesTot>1
-    loadAveIm = questdlg('Load the average image first?');
-    if ~(strcmp(loadAveIm, 'Yes') || strcmp(loadAveIm, 'No'))
-        return
-    end
-    
-    % import average image
-    if strcmp(loadAveIm, 'Yes')
-        cd(setCorrectPath('average_images', h_fig));
-        if ~loadMovFile(1,'Select a graphic file:',1,h_fig);
-            return
-        end
-
-        % recover modifications
-        h = guidata(h_fig);
-        p = h.param.movPr;
-
-        % set video file for intensity integration
-        p.itg_movFullPth = [h.movie.path h.movie.file];
-
-        % set frame acquisition time
-        p.rate = h.movie.cyctime;
-    end
-end
-
-% collect video parameters
-l0 = h.movie.frameCurNb;
-
 % reset results
-p.SFres = {};
-p.coord2plot = 1;
+curr.gen_crd{2}{4} = [];
+curr.gen_crd{2}{5} = [];
 
-% set spotfinder parameters
-p.SFprm = cell(1,1+p.nChan);
-p.SFprm{1} = [meth p.SF_gaussFit l0];
-for i = 1:p.nChan
-    p.SFprm{i+1} = [p.SF_w(i),p.SF_h(i); p.SF_darkW(i),p.SF_darkH(i); ...
-        p.SF_intThresh(i),p.SF_intRatio(i)];
+% plot SF coordinates
+curr.plot{1}(3) = 1;
+
+% check if any image filter is applied
+isBgCorr = ~isempty(bgfilt);
+
+% filter image
+if isBgCorr
+     avimg = updateBgCorr(avimg, p, h_fig);
 end
+
+% convert to proper intensity units
+if persec
+    avimg = avimg/expT;
+end
+
+% find spots
+curr = updateSF(avimg, false, curr, h_fig);
+
+% set coordinates to transform
+spots = [];
+for c = 1:nChan
+    spots = cat(1,spots,curr.gen_crd{2}{5}{c});
+end
+curr.gen_crd{3}{1}{1} = spots(:,[1,2]);
 
 % save modifications
-h.param.movPr = p;
+p.proj{p.curr_proj}.VP.curr = curr;
+p.proj{p.curr_proj}.VP.prm.gen_crd{2} = curr.gen_crd{2};
+h.param = p;
 guidata(h_fig, h);
 
 % refresh calculations, plot and GUI

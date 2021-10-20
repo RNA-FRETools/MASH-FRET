@@ -37,9 +37,15 @@ proj = p.curr_proj;
 rate = p.proj{proj}.frame_rate;
 nC = p.proj{proj}.nb_channel;
 labels = p.proj{proj}.labels;
-prm = p.proj{proj}.VP;
-meth = prm.SF_method;
-isRes = size(prm.SFres,1)>=2;
+curr = p.proj{proj}.VP.curr;
+persec = curr.plot{1}(1);
+meth = curr.gen_crd{2}{1}(1);
+gaussfit = curr.gen_crd{2}{1}(2);
+coordsf = curr.gen_crd{2}{4};
+sfprm = curr.gen_crd{2}{2};
+slctprm = curr.gen_crd{2}{3};
+
+isRes = ~isempty(coordsf);
 
 % set channel
 chan = get(h.popupmenu_SFchannel, 'Value');
@@ -51,41 +57,39 @@ set(h.popupmenu_SFchannel, 'Value', chan, 'String', ...
 
 % convert intensity to proper units
 str_units = 'counts';
-if prm.perSec
+if persec
     str_units = strcat(str_units, ' /s');
-    prm.SF_intThresh(chan) = prm.SF_intThresh(chan)/rate;
-    prm.SF_minI(chan) = prm.SF_minI(chan)/rate;
+    sfprm(chan,1) = sfprm(chan,1)/rate;
+    slctprm(chan,2) = slctprm(chan,2)/rate;
 end
 
 % set method settings
 set(h.popupmenu_SF, 'Value', meth);
-set(h.checkbox_SFgaussFit, 'Value', prm.SF_gaussFit);
-set(h.checkbox_SFall, 'Value', prm.SF_all);
+set(h.checkbox_SFgaussFit, 'Value', gaussfit);
 
 % set spot detection parameters
-set(h.edit_SFparam_minI,'String',num2str(prm.SF_minI(chan)),'TooltipString',...
+set(h.edit_SFparam_minI,'String',num2str(slctprm(chan,2)),'TooltipString',...
     sprintf(ttstr0,str_units));
-set(h.edit_SFparam_darkW,'String',num2str(prm.SF_darkW(chan)),...
-    'TooltipString',ttstr2{meth});
-set(h.edit_SFparam_darkH,'String',num2str(prm.SF_darkH(chan)),...
-    'TooltipString',ttstr3{meth});
-set(h.edit_SFparam_maxN,'String',num2str(prm.SF_maxN(chan)));
-set(h.edit_SFparam_minDspot,'String',num2str(prm.SF_minDspot(chan)));
-set(h.edit_SFparam_minDedge,'String',num2str(prm.SF_minDedge(chan)));
+set(h.edit_SFparam_darkW,'String',num2str(sfprm(chan,3)),'TooltipString',...
+    ttstr2{meth});
+set(h.edit_SFparam_darkH,'String',num2str(sfprm(chan,4)),'TooltipString',...
+    ttstr3{meth});
+set(h.edit_SFparam_maxN,'String',num2str(slctprm(chan,1)));
+set(h.edit_SFparam_minDspot,'String',num2str(slctprm(chan,6)));
+set(h.edit_SFparam_minDedge,'String',num2str(slctprm(chan,7)));
 if meth==1 % none
     set([h.edit_SFintThresh h.edit_SFparam_minI h.edit_SFparam_w ...
         h.edit_SFparam_h h.edit_SFparam_darkW h.edit_SFparam_darkH ...
         h.edit_SFparam_maxN h.edit_SFparam_minHWHM h.edit_SFparam_maxHWHM ...
         h.edit_SFparam_maxAssy h.edit_SFparam_minDspot ...
         h.edit_SFparam_minDedge h.edit_SFres],'Enable','off','String','');
-    set([h.popupmenu_SFchannel h.checkbox_SFgaussFit h.checkbox_SFall], ...
-        'Enable','off');
+    set([h.popupmenu_SFchannel h.checkbox_SFgaussFit], 'Enable','off');
 elseif meth==4 % Schmied2012
-    set(h.edit_SFintThresh, 'String', num2str(prm.SF_intRatio(chan)),...
+    set(h.edit_SFintThresh, 'String', num2str(sfprm(chan,2)),...
         'TooltipString', ttstr1{meth});
     set(h.edit_SFparam_darkW, 'Enable', 'off');
 else
-    set(h.edit_SFintThresh, 'String', num2str(prm.SF_intThresh(chan)),...
+    set(h.edit_SFintThresh, 'String', num2str(sfprm(chan,1)),...
         'TooltipString', sprintf(ttstr1{meth},str_units));
     if meth==5 % twotone
         set(h.edit_SFparam_darkH, 'Enable', 'off');
@@ -93,12 +97,12 @@ else
 end
 
 % set spot selection parameters
-if prm.SF_gaussFit
-    set(h.edit_SFparam_w, 'String', num2str(prm.SF_w(chan)));
-    set(h.edit_SFparam_h, 'String', num2str(prm.SF_h(chan)));
-    set(h.edit_SFparam_minHWHM, 'String', num2str(prm.SF_minHWHM(chan)));
-    set(h.edit_SFparam_maxHWHM, 'String', num2str(prm.SF_maxHWHM(chan)));
-    set(h.edit_SFparam_maxAssy, 'String', num2str(prm.SF_maxAssy(chan)));
+if gaussfit
+    set(h.edit_SFparam_w, 'String', num2str(sfprm(chan,5)));
+    set(h.edit_SFparam_h, 'String', num2str(sfprm(chan,6)));
+    set(h.edit_SFparam_minHWHM, 'String', num2str(slctprm(chan,3)));
+    set(h.edit_SFparam_maxHWHM, 'String', num2str(slctprm(chan,4)));
+    set(h.edit_SFparam_maxAssy, 'String', num2str(slctprm(chan,5)));
 else
     set([h.edit_SFparam_w h.edit_SFparam_h h.edit_SFparam_minHWHM ...
         h.edit_SFparam_maxHWHM h.edit_SFparam_maxAssy],'Enable','off',...
@@ -107,8 +111,8 @@ end
 
 % set results
 if isRes
-    set(h.edit_SFres, 'String', num2str(size(prm.SFres{2,chan},1)), 'Enable', ...
-        'inactive', 'BackgroundColor', resClr);
+    set(h.edit_SFres,'String',num2str(size(coordsf{chan},1)),'Enable', ...
+        'inactive','BackgroundColor',resClr);
 else
     set(h.edit_SFres, 'Enable', 'off', 'String', '');
 end

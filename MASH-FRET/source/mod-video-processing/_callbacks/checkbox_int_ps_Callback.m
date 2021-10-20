@@ -7,9 +7,7 @@ if ~isModuleOn(p,'VP')
     return
 end
 
-proj = p.curr_proj;
-
-pproj{proj}.VP.perSec = get(obj, 'Value');
+p.proj{p.curr_proj}.VP.curr.plot{1}(1) = get(obj, 'Value');
 
 % save modifications
 h.param = p;

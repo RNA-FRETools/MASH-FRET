@@ -5,17 +5,14 @@ function ok = pushbutton_export_Callback(obj, evd, h_fig)
 % h_fig: handle to main figure
 % obj: {1-by-2} destination folder and file
 
-% collect interface parameters
+% collect parameters
 h = guidata(h_fig);
+p = h.param;
+vidfile = p.proj{p.curr_proj}.movie_file;
 
-if ~isfield(h, 'movie')
-    return
-end
-
-% export video/image
-if isfield(h.movie, 'path') && exist(h.movie.path, 'dir')
-    cd(h.movie.path);
-end
+% set current directory to video file location
+[pname,~,~] = fileparts(vidfile);
+cd(pname);
 
 if iscell(obj)
     pname = obj{1};

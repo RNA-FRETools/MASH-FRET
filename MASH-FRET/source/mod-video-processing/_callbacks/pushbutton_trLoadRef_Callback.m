@@ -5,13 +5,18 @@ function pushbutton_trLoadRef_Callback(obj, evd, h_fig)
 % h_fig: handle to main figure
 % coordfile: {1-by-2} source folder and source file containing reference coordinates
 
-% collect interface parameters
+% collect parameters
 h = guidata(h_fig);
-p = h.param.movPr;
+p = h.param;
+nChan = p.proj{p.curr_proj}.nb_channel;
+curr = p.proj{p.curr_proj}.VP.curr;
+viddim = p.proj{p.curr_proj}.movie_dim;
+impprm = curr.gen_crd{3}{2};
 
-if p.nChan<=1 || p.nChan>3
-    updateActPan(['This functionality is available for 2 or 3 channels ',...
-        'only.'], h_fig, 'error');
+% control nb of channel
+if nChan<=1 || nChan>3
+    setContPan(['This functionality is available for 2 or 3 channels ',...
+        'only.'], 'error', h_fig);
     return
 end
 
@@ -40,32 +45,33 @@ if isstruct(fDat)
 end
 
 % organize coordinate sin a column-wise fashion
-res_x = p.trsf_coordLim(1);
-mode = p.trsf_refImp_mode;
+res_x = viddim(1);
+mode = impprm{3};
 switch mode
     case 'rw'
-        prm = p.trsf_refImp_rw;
+        readprm = impprm{4};
     case 'cw'
-        prm = p.trsf_refImp_cw;
+        readprm = impprm{5};
 end
-coord_ref = orgCoordCol(fDat, mode, prm, p.nChan, res_x, h_fig);
-if isempty(coord_ref) || size(coord_ref,2)~=(2*p.nChan)
+coordref = orgCoordCol(fDat, mode, readprm, nChan, res_x, h_fig);
+if isempty(coordref) || size(coordref,2)~=(2*nChan)
     return
 end
 
 % save reference coordinates and file
-p.trsf_coordRef = coord_ref;
-p.trsf_coordRef_file = fname;
-p.coord2plot = 2;
+curr.gen_crd{3}{2}{1} = coordref;
+curr.gen_crd{3}{2}{2} = fname;
+curr.plot{1}(3) = 2;
 
 % save modifications
-h.param.movPr = p;
+p.proj{p.curr_proj}.VP.curr = curr;
+h.param = p;
 guidata(h_fig,h);
 
 % set GUI to proper values and refresh plot
 updateFields(h_fig,'imgAxes');
 
-% show action
-updateActPan(['Reference coordinates were successfully imported from file:' ...
-    ' ' pname fname], h_fig);
+% display success
+setContPan(['Reference coordinates were successfully imported from file: ' ...
+    pname fname],'success',h_fig);
 

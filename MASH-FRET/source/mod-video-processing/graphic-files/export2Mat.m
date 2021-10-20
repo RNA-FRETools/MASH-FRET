@@ -1,79 +1,85 @@
-function ok = export2Mat(h_fig, nameMain, pathName)
+function ok = export2Mat(h_fig, pname, fname)
+% ok = export2Mat(h_fig, fname, pname)
+%
 % Export the movie / image with background corrections to a .mat file
 %
-% Requires functions: loading_bar, updateActPan, updateBgCorr.
+% h_fig: handle to main figure
+% fname: file name
+% pname: file location
+% ok: 1 for succes, 0 otherwise
 
 % defaults
-ok = 1;
 iv = 1;
-isMov = 0;
-isBgCorr = 0;
+ok = 0;
 
+% collect video processing parameters
 h = guidata(h_fig);
-p = h.param.movPr;
+p = h.param;
+vidfile = p.proj{p.curr_proj}.movie_file;
+viddim = p.proj{p.curr_proj}.movie_dim;
+viddat = p.proj{p.curr_proj}.movie_dat;
+curr = p.proj{p.curr_proj}.VP.curr;
+filtlst = curr.edit{1}{4};
+start = curr.edit{2}(1);
+stop = curr.edit{2}(2);
+tocurr = curr.edit{1}{1}(2);
 
-if isfield(h,'movie') && isfield(h.movie,'movie') && ...
-    ~isempty(h.movie.movie)
-    isMov = 1;
+% control full-length video
+isMov = isFullLengthVideo(h_fig);
+
+% control image filters
+isBgCorr = ~isempty(filtlst);
+
+% abort if the file being written is the one being accessed for reading data
+if ~isMov && isequal(vidfile,[pname fname])
+    updateActPan(cat(2,'The exported file must be different from the ',...
+        'original one.'),h_fig);
+    return
 end
-if isfield(p, 'bgCorr') && ~isempty(p.bgCorr)
-    isBgCorr = 1;
-end
 
-startFrame = p.mov_start;
-lastFrame = p.mov_end;
-L = numel(startFrame:iv:lastFrame);
-
-% loading bar parameters---------------------------------------------------
-if loading_bar('init',h_fig,L,'Export to a *.mat file...');
-    ok = 0;
-    return;
+% initialize loading bar
+if loading_bar('init', h_fig, L, 'Export to a *.mat file...')
+    return
 end
 h = guidata(h_fig);
 h.barData.prev_var = h.barData.curr_var;
 guidata(h_fig, h);
-% -------------------------------------------------------------------------
 
-img = zeros(h.movie.pixelY,h.movie.pixelX,L);
-
-for i = startFrame:iv:lastFrame
+% process video frames
+img = zeros([viddim,viddat{3}]);
+for i = start:iv:stop
     
+    % get video frame
     if isMov
-        img = h.movie.movie(:,:,i);
+        img(:,:,i) = h.movie.movie(:,:,i);
     else
-        [dat,ok] = getFrames([h.movie.path h.movie.file], i, ...
-            {h.movie.speCursor, [h.movie.pixelX h.movie.pixelY], ...
-            h.movie.framesTot}, h_fig, true);
-        if ~ok
-            return;
+        [data,succ] = getFrames(vidfile, i, viddat, h_fig, true);
+        if ~succ
+            return
         end
-        img(:,:,i) = dat.frameCur;
+        img(:,:,i) = data.frameCur;
     end
     
-    % Apply background corrections if exist
+    % apply background corrections if any
     if isBgCorr
-        avBg = p.movBg_one;
-        if ~avBg
-            [img,avImg] = updateBgCorr(img, p, h.movie, h_fig);
+        if ~tocurr
+            img = updateBgCorr(img, p, h_fig);
         else % Apply only if the bg-corrected frame is displayed
-            if avBg==i
-                [img,avImg] = updateBgCorr(img, p, h.movie, h_fig);
+            if tocurr==i
+                img = updateBgCorr(img, p, h_fig);
             end
         end
-        if ~isfield(h.movie,'avImg')
-            h.movie.avImg = avImg;
-            guidata(h_fig,h);
-        end
     end
 
-    % loading bar updating-------------------------------------------------
-    if loading_bar('update', h_fig);
-        ok = 0;
-        return;
+    % increment loading bar
+    if loading_bar('update', h_fig)
+        return
     end
-    % ---------------------------------------------------------------------
 end
 
-save([pathName nameMain], 'img', '-mat');
+% close loading bar
 loading_bar('close', h_fig);
+
+% save data to file
+save([pname fname], 'img', '-mat');
 

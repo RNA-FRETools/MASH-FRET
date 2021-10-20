@@ -15,9 +15,12 @@ end
 
 % collect processing parameters
 proj = p.curr_proj;
-prm = p.proj{proj}.VP;
+curr = p.proj{proj}.VP.curr;
+
+% set transformation type
+set(h.popupmenu_trType,'value',curr.gen_crd{3}{3}{2});
 
 % set files
-set(h.edit_refCoord_file, 'String', prm.trsf_coordRef_file);
-set(h.edit_tr_file, 'String', prm.trsf_tr_file);
-set(h.edit_coordFile, 'String', prm.coordMol_file);
+set(h.edit_coordFile, 'String', curr.gen_crd{3}{1}{2});
+set(h.edit_refCoord_file, 'String', curr.gen_crd{3}{2}{2});
+set(h.edit_tr_file, 'String', curr.gen_crd{3}{3}{3});

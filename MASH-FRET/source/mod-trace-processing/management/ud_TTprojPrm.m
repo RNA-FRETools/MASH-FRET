@@ -229,20 +229,10 @@ if isModuleOn(p,'TP')
         
         % calculate laser-specific average images
         if ~(isfield(p.proj{proj}, 'aveImg') && ...
-                size(p.proj{proj}.aveImg,2) == nExc)
-            param.stop = p.proj{proj}.movie_dat{3};
-            param.iv = nExc;
-            param.file = p.proj{proj}.movie_file;
-            param.extra = p.proj{proj}.movie_dat; 
-            for l = 1:nExc
-                param.start = l;
-                [img,ok] = createAveIm(param,false,false,h_fig);
-                if ~ok
-                    return;
-                end
-                p.proj{proj}.aveImg{l} = img;
-                h.param = p;
-            end
+                size(p.proj{proj}.aveImg,2)==(nExc+1))
+            p.proj{proj}.aveImg = calcAveImg('all',p.proj{proj}.movie_file,...
+                p.proj{proj}.movie_dat,nExc,h_fig);
+            h.param = p;
         end
     end
 else
@@ -261,12 +251,15 @@ end
 cla(h.axes_example);
 cla(h.axes_example_hist);
 cla(h.axes_example_mov);
+cla(h.axes_VP_vid);
+cla(h.axes_VP_avimg);
 cla(h.axes_top);
 cla(h.axes_topRight);
 cla(h.axes_bottom);
 cla(h.axes_bottomRight);
 set([h.axes_example,h.axes_example_hist,h.axes_example_mov,...
-    h.cb_example_mov,h.axes_top,h.axes_topRight,h.axes_bottom,...
+    h.cb_example_mov,h.axes_VP_vid,h.cb_VP_vid,h.axes_VP_avimg,...
+    h.cb_VP_avimg,h.axes_top,h.axes_topRight,h.axes_bottom,...
     h.axes_bottomRight],'visible','off');
 
 % save changes in h (delete/creation of sub-image axes)

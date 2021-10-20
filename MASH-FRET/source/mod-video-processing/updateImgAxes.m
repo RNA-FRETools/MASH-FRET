@@ -13,73 +13,63 @@ h = guidata(h_fig);
 p = h.param;
 
 if ~prepPanel(h.uitabgroup_VP_plot,h)
-    set([h.axes_movie,h.colorbar],'visible','off');
+    set([h.axes_VP_vid,h.cb_VP_vid,h.axes_VP_avimg,h.cb_VP_avimg],...
+        'visible','off');
     return
 end
 
 % collect experiment settings and video parameters
 proj = p.curr_proj;
 n = p.movPr.curr_frame(proj);
-expT = 1/p.proj{proj}.frame_rate;
+expT = p.proj{proj}.frame_rate;
 videoFile = p.proj{proj}.movie_file;
 fcurs = p.proj{proj}.movie_dat{1};
 resX = p.proj{proj}.movie_dat{2}(1);
 resY = p.proj{proj}.movie_dat{2}(2);
 L = p.proj{proj}.movie_dat{3};
-prm = p.proj{proj}.VP;
-chsplit = prm.split;
+curr = p.proj{proj}.VP.curr;
 
-% check if full-length video is loaded in memory
-isFullMov = isfield(h.movie,'movie') && ~isempty(h.movie.movie);
+% collect CP parameters
+chsplit = curr.plot{2};
+tocurr = curr.edit{1}{1}(2);
+bgfilt = curr.edit{1}{4};
+persec = curr.plot{1}(1);
+avimg = curr.res_plot{2};
 
 % check if any image filter is applied
-isBgCorr = isfield(prm,'bgCorr') && ~isempty(prm.bgCorr);
+isBgCorr = ~isempty(bgfilt);
 
 % get current video frame
-if isFullMov
+if isFullLengthVideo(h_fig)
     img = double(h.movie.movie(:,:,n));
 else
-    [dat,ok] = getFrames(videoFile, n, {fcurs,[resX,resY],L}, h_fig, true);
+    [dat,ok] = getFrames(videoFile,n,{fcurs,[resX,resY],L},h_fig,true);
     if ~ok
         return
     end
     img =  double(dat.frameCur);
 end
-prm.curr_img =img;
+curr.res_plot{1} = img;
 
 % filter image
 if isBgCorr
-    avBg = prm.movBg_one;
-    if ~avBg
-        [img,avImg] = updateBgCorr(img, p, h_fig);
-    elseif avBg==n
-        [img,avImg] = updateBgCorr(img, p, h_fig);
+     avimg = updateBgCorr(avimg, p, h_fig);
+    if ~tocurr
+        img = updateBgCorr(img, p, h_fig);
+    elseif tocurr==n
+        img = updateBgCorr(img, p, h_fig);
     end
-    if exist('avImg','var')
-        prm.proj{proj}.aveImg{1} = avImg;
-    end
-end
-
-% find spots
-SFall = prm.SF_all;
-frameSF = prm.SFprm{1}(3);
-if (~SFall && n==frameSF) || SFall
-    if SFall && prm.SFprm{1}(3)~=n
-        prm.SFprm{1}(3) = n;
-        prm.SFres = {};
-    end
-    prm = updateSF(img, false, prm, h_fig);
-else
-    prm.SFres = {};
 end
 
 % convert to proper intensity units
-if prm.perSec
+if persec
     img = img/expT;
+    avimg = avimg/expT;
 end
 
 % plot video frame
-h.imageMov = plot_VP_videoFrame(h.axes_movie,h.colorbar,img,chsplit,prm);
+h.imageMov = plot_VP_videoFrame([h.axes_VP_vid,h.axes_VP_avimg],...
+    [h.cb_VP_vid,h.cb_VP_avimg],cat(3,img,avimg),chsplit,curr);
 
 % set tool
 if get(h.togglebutton_target, 'Value')
@@ -87,12 +77,12 @@ if get(h.togglebutton_target, 'Value')
     zoom off
     set(h.imageMov, 'ButtonDownFcn', {@pointITT, h_fig});
 else
-    set(h.axes_movie, 'ButtonDownFcn', {});
+    set(h.axes_VP_vid, 'ButtonDownFcn', {});
     set(0, 'CurrentFigure', h_fig);
     zoom on
 end
 
 % save modifications
-prm.proj{proj}.VP = prm;
+p.proj{proj}.VP.curr = curr;
 h.param = p;
 guidata(h_fig, h);

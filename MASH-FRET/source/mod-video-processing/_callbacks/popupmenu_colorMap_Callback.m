@@ -1,20 +1,18 @@
 function popupmenu_colorMap_Callback(obj, evd, h_fig)
 
-% collect interface parameters
-str_pop = get(obj,'String');
-val = get(obj, 'Value');
+% save colormap
 h = guidata(h_fig);
-p = h.param.movPr;
+p = h.param;
 
-p.cmap = val;
+val = get(obj, 'Value');
+p.proj{p.curr_proj}.VP.curr.plot{1}(2) = val;
 
-% set colormap
-cm_str = str_pop{val};
-updateActPan([cm_str ' colormap applied.'], h_fig);
-
-% save modifications
-h.param.movPr = p;
+h.param = p;
 guidata(h_fig, h);
 
-% set GUI to proper values
+% refresh panel
 ud_VP_plotPan(h_fig);
+
+% display success
+str_pop = get(obj,'String');
+setContPan([str_pop{val} ' colormap applied.'],'success',h_fig);

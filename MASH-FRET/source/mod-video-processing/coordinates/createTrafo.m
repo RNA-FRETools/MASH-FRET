@@ -20,7 +20,7 @@ matlabver = ver;
 for v = 1:numel(matlabver)
     if strcmp(matlabver(v).Name,'MATLAB')
         matlabver = str2num(matlabver(v).Version);
-        break;
+        break
     end
 end
     
@@ -79,14 +79,14 @@ switch method
     otherwise
         setContPan(cat(2,'Transformation type no supported'),'error',...
             h_fig);
-        return;
+        return
 end
 
 if size(refCoord,1)<n_min
     setContPan(cat(2,'At least ',num2str(n_min),' non-collinear points ',...
         'needed to infer ',tform_type,' (',tform_name,') transform'),...
         'error',h_fig);
-    return;
+    return
 end
 
 

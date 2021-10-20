@@ -7,13 +7,14 @@ if ~isModuleOn(p,'VP')
     return
 end
 
-proj = p.curr_proj;
+curr = p.proj{p.curr_proj}.VP.curr;
 
-p.proj{proj}.VP.movBg_one = ~get(obj, 'Value');
-if p.proj{proj}.VP.movBg_one
-    p.proj{proj}.VP.movBg_one = p.VP.curr_frame(proj);
+curr.edit{1}{2}(2) = ~get(obj, 'Value');
+if curr.edit{1}{2}(2)
+    curr.edit{1}{2}(2) = p.VP.curr_frame(proj);
 end
 
 % save modifications
+p.proj{p.curr_proj}.VP.curr = curr;
 h.param = p;
 guidata(h_fig, h);

@@ -5,24 +5,23 @@ function pushbutton_addBgCorr_Callback(obj, evd, h_fig)
 % h_fig: handle to main figure
 % bgfile: source image file used in image subtration
 
-% collect interface parameters
+% collect parameters
 h = guidata(h_fig);
-p = h.param.movPr;
+p = h.param;
+l = p.movPr.curr_frame(p.curr_proj);
+nChan = p.proj{p.curr_proj}.nb_channel;
+curr = p.proj{p.curr_proj}.VP.curr;
+meth = curr.edit{1}{1}(1);
+tocurr = curr.edit{1}{1}(2);
+filtprm = curr.edit{1}{2};
+filtlist = curr.edit{1}{4};
 
-if ~isfield(h,'movie')
-    updateActPan('No graphic file loaded!', h_fig, 'error');
-    return
-end
-
-% collect video parameters
-l = h.movie.frameCurNb;
-
-% collect processing parameters
-meth = p.movBg_method;
+% control filter index
 if meth<=1
     return
 end
 
+% add filter to project
 if meth==17 % image subtraction
     if iscell(obj)
         dat = getFile2sub('Pick an image to subtract', h_fig, obj{1});
@@ -32,8 +31,7 @@ if meth==17 % image subtraction
     if isempty(dat)
         return
     end
-    p.bgCorr{size(h.param.movPr.bgCorr,1)+1,1} = meth;
-    p.movBg_p{meth,1} = dat;
+    curr.edit{1}{4} = cat(1,filtlist,{meth,dat});
 
 else
     if sum(meth==[2 5:10]) && exist('FilterArray','file')~=3
@@ -41,18 +39,21 @@ else
             'compilation.'),'error',h_fig);
         return
     end
-    p.bgCorr{size(p.bgCorr,1)+1,1} = meth;
-    for c = 1:p.nChan
-        p.bgCorr{end,c+1} = p.movBg_p{meth,c};
+    curr.edit{1}{4} = cat(1,filtlist,cell(1,nChan+1));
+    curr.edit{1}{4}{end,1} = meth;
+    for c = 1:nChan
+        curr.edit{1}{4}{end,c+1} = filtprm{meth,c};
     end
 end
 
-if p.movBg_one
-    p.movBg_one = l;
+% save current frame index
+if tocurr
+    curr.edit{1}{1}(2) = l;
 end
 
 % save modifications
-h.param.movPr = p;
+p.proj{p.curr_proj}.VP.curr = curr;
+h.param = p;
 guidata(h_fig, h);
 
 % refresh calculations, plot and set GUI to proper values

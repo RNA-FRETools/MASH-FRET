@@ -253,5 +253,8 @@ h = buildPanelTA(h,p);
 h.figure_dummy = figure('name','dummy','visible','off');
 h.text_dummy = uicontrol('style','text','parent',h.figure_dummy);
 
+% save GUI dimension parameters
+h.dimprm = p;
+
 guidata(h_fig,h);
 

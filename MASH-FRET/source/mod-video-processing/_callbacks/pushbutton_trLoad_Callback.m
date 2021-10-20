@@ -7,11 +7,13 @@ function pushbutton_trLoad_Callback(obj, evd, h_fig)
 
 % collect interface parameters
 h = guidata(h_fig);
-p = h.param.movPr;
+p = h.param;
+nChan = p.proj{p.curr_proj}.nb_channel;
 
-if p.nChan<=1 || p.nChan>3
-    updateActPan(['This functionality is available for 2 or 3 channels ',...
-        'only.'], h_fig, 'error');
+% control nb of channels
+if nChan<=1 || nChan>3
+    setActPan('This functionality is available for 2 or 3 channels only.',...
+        'error', h_fig);
     return
 end
 
@@ -33,7 +35,7 @@ end
 cd(pname);
 [o, o, fExt] = fileparts(fname);
 if ~strcmp(fExt, '.mat')
-    updateActPan('Wrong file format.', h_fig, 'error');
+    setActPan('Wrong file format.', 'error', h_fig);
     return
 end
 
@@ -42,19 +44,23 @@ TFORM = open([pname fname]);
 if isfield(TFORM, 'tr') && ~isempty(TFORM.tr)
     tr = TFORM.tr;
 else
-    updateActPan('Unable to load transformations.', h_fig, 'error');
+    setActPan('Unable to load transformations.', 'error', h_fig);
     return
 end
 
-updateActPan(['Spatial transformation has been successfully imported from',...
-    ' file: ' fname '\nin folder: ' pname], h_fig, 'success');
-p.trsf_tr = tr;
-p.trsf_tr_file = fname;
+% save transformation and file
+curr.gen_crd{3}{3}{1} = tr;
+curr.gen_crd{3}{3}{3} = fname;
 
 % save modifications
-h.param.movPr = p;
+p.proj{p.curr_proj}.VP.curr = curr;
+h.param = p;
 guidata(h_fig, h);
 
 % set GUI to proper values
 ud_VP_coordTransfPan(h_fig);
+
+% display success
+setActPan(['Spatial transformation has been successfully imported from',...
+    ' file: ' fname '\nin folder: ' pname], 'success', h_fig);
 

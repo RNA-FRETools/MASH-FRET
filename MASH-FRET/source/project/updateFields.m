@@ -63,6 +63,7 @@ end
 % Simulation module
 if strcmp(opt, 'sim') || strcmp(opt, 'all')
     ud_S_panels(h_fig);
+    plotData_sim(h_fig);
     h = guidata(h_fig);
 end
 
@@ -97,10 +98,6 @@ if strcmp(opt, 'ttPr') || strcmp(opt, 'subImg') || strcmp(opt, 'cross') || ...
         p = updateTraces(h_fig, opt, mol, p, axes);
         h.param = p;
         guidata(h_fig, h);
-        
-    else
-        % update axes and control properties
-        ud_TTprojPrm(h_fig);
     end
     
     ud_TP_panels(h_fig);

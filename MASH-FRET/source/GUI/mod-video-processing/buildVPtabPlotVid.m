@@ -12,10 +12,9 @@ htxt0 = 14;
 hpop0 = 22;
 hsld0 = 20;
 fact = 5;
-lim = [0,10000];
+lim = [0,99999];
 limMov = [0,9999];
 gray = [0.93,0.93,0.93];
-defclr = [0.94, 0.94, 0.94];
 maxframe = 99999;
 str0 = 'File:';
 str1 = 'Units per s.';
@@ -64,17 +63,17 @@ wtxt9 = postab(3)-2*p.mg-2*p.mg-wtxt3-wtxt4*2-wtxt5-wtxt6-wtxt7*2-wtxt8;
 x = p.mg;
 y = p.mg+htxt0+p.mg+hedit0+p.mg;
 
-h.axes_movie = axes('parent',h_tab,'units',p.posun,'fontunits',p.fntun,...
+h.axes_VP_vid = axes('parent',h_tab,'units',p.posun,'fontunits',p.fntun,...
     'fontsize',p.fntsz1,'xlim',limMov,'ylim',limMov,'clim',lim,'nextplot',...
     'replacechildren','DataAspectRatioMode','manual','DataAspectRatio',...
     [1 1 1],'ydir','reverse');
-h_axes = h.axes_movie;
+h_axes = h.axes_VP_vid;
 tiaxes = get(h_axes,'tightinset');
 posaxes = getRealPosAxes([x,y,waxes0,haxes0],tiaxes,'traces');
 
-h.colorbar = colorbar(h_axes,'units',p.posun);
-ylabel(h.colorbar,ylbl0);
-poscb = get(h.colorbar,'position');
+h.cb_VP_vid = colorbar(h_axes,'units',p.posun);
+ylabel(h.cb_VP_vid,ylbl0);
+poscb = get(h.cb_VP_vid,'position');
 
 posaxes(3) = posaxes(3)-2.6*poscb(3);
 set(h_axes,'position',posaxes);

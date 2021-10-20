@@ -1,11 +1,7 @@
 function edit_SFparam_maxHWHM_Callback(obj, evd, h_fig)
 
-% collect interface parameters
+% retrieve max. spot width from edit field
 val = str2double(get(obj, 'String'));
-h = guidata(h_fig);
-chan = get(h.popupmenu_SFchannel, 'Value');
-p = h.param.movPr;
-
 set(obj, 'String', num2str(val));
 if ~(numel(val)==1 && ~isnan(val))
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
@@ -13,15 +9,24 @@ if ~(numel(val)==1 && ~isnan(val))
     return
 end
 
-p.SF_maxHWHM(chan) = val;
+% collect VP parameters
+h = guidata(h_fig);
+p = h.param;
+curr = p.proj{p.curr_proj}.VP.curr;
+slctcrd = curr.gen_crd{2}{5};
+
+% save to project
+chan = get(h.popupmenu_SFchannel, 'Value');
+curr.gen_crd{2}{3}(chan,4) = val;
 
 % reset spot selection
-if size(p.SFres,1)>=2
-    p.SFres(2,:) = [];
+if size(slctcrd,1)>=0
+    curr.gen_crd{2}{5} = [];
 end
 
 % save modifications
-h.param.movPr = p;
+p.proj{p.curr_proj}.VP.curr = curr;
+h.param = p;
 guidata(h_fig, h);
 
 % refresh calculations, plot and set GUI to proper values

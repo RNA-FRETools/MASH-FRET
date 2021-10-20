@@ -5,20 +5,16 @@ function openItgFileOpt(obj, evd, h_fig)
 %          has been called (usually empty)
 % "h" >> main data structure stored in figure_MASH's handle
 
-% Last update: 4th of February 2019 by M�lodie Hadzic
-% --> created function from scratch
+% update 4.2.2019 by MH: created function from scratch
 
 h = guidata(h_fig);
-pMov = h.param.movPr;
+p = h.param;
+coordsm = p.proj{p.curr_proj}.VP.curr.gen_int{2}{1};
 
-if ~(isfield(pMov,'itg_movFullPth') && ~isempty(pMov.itg_movFullPth))
-    set(h.edit_movItg,'BackgroundColor',[1 0.75 0.75]);
-    updateActPan('No movie loaded.',h_fig,'error');
-    return
-end
-if ~(isfield(pMov, 'coordItg') && ~isempty(pMov.coordItg))
-        set(h.edit_itg_coordFile,'BackgroundColor',[1,0.75,0.75]);
-        updateActPan('No coordinates loaded.',h_fig,'error');
+if isempty(coordsm)
+    setContPan(['No single molecule coordinates detected. Please ',...
+        'transform spots coordinates or import single molecule ',...
+        'coordinates.'],'error',h_fig);
     return
 end
 

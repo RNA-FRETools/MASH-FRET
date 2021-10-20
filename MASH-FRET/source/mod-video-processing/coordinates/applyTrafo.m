@@ -1,30 +1,39 @@
-function coordTrsf = applyTrafo(tr, coord, p, h_fig)
+function coordtr = applyTrafo(tr, coord, q, h_fig)
 % Apply spatial transformation(s) to coordinates and return transformed
 % coordinates.
-% "tr" >>
-% "coord" >>
-% "p" >>
-% "h_fig" >>
-% "coordTrasf" >>
+%
+% tr: transformation
+% coord: {1-by-Chan}[N-by-2] coordinates to transform
+% q: structure containing fields:
+%  q.res_x: video pixel width
+%  q.res_y: video pixel height
+%  q.nChan: nb of channels
+%  q.spotDmin: minimum inter-spot distance
+%  q.edgeDmin: minimum distance between spots and image edges
+% h_fig: handle to main figure
+% coordtr: transformed coordinates
 
-% Requires external function: updateActPan.
 % Last update: 10th of February 2014 by Mélodie C.A.S Hadzic
 
-coordTrsf = [];
+% default
+coordtr = [];
 
-res_x = p.res_x;
-res_y = p.res_y;
-nChan = p.nChan;
-spotDmin = p.spotDmin;
-edgeDmin = p.edgeDmin;
+res_x = q.res_x;
+res_y = q.res_y;
+nChan = q.nChan;
+spotDmin = q.spotDmin;
+edgeDmin = q.edgeDmin;
 
 lim = [0 (1:(nChan-1))*round(res_x/nChan) res_x];
+coord_i = cell(1,nChan);
+nocoord = true;
 for i = 1:nChan
     coord_i{i} = coord((coord(:,1)>lim(i) & coord(:,1)<lim(i+1)) & ...
         (coord(:,2)>0 & coord(:,2)<res_y),:);
+    nocoord = nocoord & isempty(coord_i{i});
 end
 
-if isempty(coord_i)
+if nocoord
     updateActPan(['Unconsistent coordinates.'...
         '\nPlease check the import options.'], h_fig, 'error');
     return
@@ -52,31 +61,31 @@ for i = 1:nChan
     end
 end
 
-coordTrsf = [];
+coordtr = [];
 for i = 1:nChan
-    coordTrsf = cat(2,coordTrsf,coordTrsf_i{i});
+    coordtr = cat(2,coordtr,coordTrsf_i{i});
 end
 
-ok = exclude_doublecoord(3, coordTrsf);
-coordTrsf = coordTrsf(ok',:);
-if ~isempty(coordTrsf)
+ok = exclude_doublecoord(3, coordtr);
+coordtr = coordtr(ok',:);
+if ~isempty(coordtr)
     for i = 1:nChan
-        if ~isempty(coordTrsf)
-            ok = select_spots_distfromedge(coordTrsf(:,2*i-1:2*i), ...
+        if ~isempty(coordtr)
+            ok = select_spots_distfromedge(coordtr(:,2*i-1:2*i), ...
                 edgeDmin(i), [lim(i) lim(i+1);0 res_y]);
-            coordTrsf = coordTrsf(ok,:);
+            coordtr = coordtr(ok,:);
         end
     end
     for i = 1:nChan
-        if ~isempty(coordTrsf)
-            ok = select_spots_distance(coordTrsf(:,2*i-1:2*i), ...
+        if ~isempty(coordtr)
+            ok = select_spots_distance(coordtr(:,2*i-1:2*i), ...
                 spotDmin(i));
-            coordTrsf = coordTrsf(ok,:);
+            coordtr = coordtr(ok,:);
         end
     end
 end
 
-if isempty(coordTrsf)
+if isempty(coordtr)
     str_spotDmin= [];
     str_edgeDmin= [];
     for c = 1:nChan

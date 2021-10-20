@@ -1,33 +1,34 @@
 function edit_bgParam_02_Callback(obj, evd, h_fig)
 
-% get interface parameters
-val = str2num(get(obj, 'String'));
-h = guidata(h_fig);
-channel = get(h.popupmenu_bgChanel, 'Value');
-p = h.param.movPr;
-
 % collect processing parameters
-method = p.movBg_method;
+h = guidata(h_fig);
+p = h.param;
+curr = p.proj{p.curr_proj}.VP.curr;
+meth = curr.edit{1}{1}(1);
 
+% retrieve value from edit field
+val = str2double(get(obj, 'String'));
 set(obj, 'String', val);
 if ~(numel(val)==1 && ~isnan(val) && val>=0)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
     updateActPan('Background correction parameter must be >= 0.', ...
         h_fig, 'error');
     return
-elseif method==8 && val>1
+elseif meth==8 && val>1
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
     updateActPan('Background correction must be in the range [0,1].', ...
         h_fig, 'error');
     return
 end
-    
 
-p.movBg_p{method,channel}(2) = val;
+% save filter's parameter 1
+chan = get(h.popupmenu_bgChanel, 'Value');
+curr.edit{1}{2}{meth,chan}(2) = val;
 
 % save modifications
-h.param.movPr = p;
+p.proj{p.curr_proj}.VP.curr = curr;
+h.param = p;
 guidata(h_fig, h);
 
-% set GUI to proper values
-ud_VP_edExpVidPan(h_fig)
+% refresh panel
+ud_VP_edExpVidPan(h_fig);

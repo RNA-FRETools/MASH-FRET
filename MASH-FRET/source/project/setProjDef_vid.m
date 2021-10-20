@@ -25,8 +25,5 @@ if isempty(proj)
     return
 end
 
-% set default video processing parameters
-proj.VP = setDefPrm_VP(proj,p.movPr,proj.firstFrame);
-
-% remove first video frame from project parameters
-proj = rmfield(proj,'firstFrame');
+% tag project
+proj.VP.from = 'VP';

@@ -1,6 +1,9 @@
 function radiobutton_cw_Callback(obj, evd, h_fig)
+
+% retrieve parameters
 h = guidata(h_fig);
-nChan = h.param.movPr.nChan;
+nChan = p.proj{p.curr_proj}.nb_channel;
+
 switch get(obj, 'Value')
     case 1
         set(h.trsfOpt.radiobutton_cw, 'FontWeight', 'bold');

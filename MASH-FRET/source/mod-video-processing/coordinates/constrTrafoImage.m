@@ -16,7 +16,6 @@ function [img_final,ok] = constrTrafoImage(tr, img, h_fig)
 %    transformPointsInverse functions
 
 img_final = [];
-ok = 1;
 
 [res_y,res_x,res_n] = size(img);
 if res_n > 1
@@ -33,9 +32,8 @@ for i = 1:nChan
 end
 
 [xy_tr,ok] = transformPoints(tr,xy,nChan,h_fig);
-
 if ~ok
-    return;
+    return
 end
 
 img_final = zeros([res_y res_x 3]);

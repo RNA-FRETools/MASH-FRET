@@ -2,15 +2,18 @@ function pushbutton_remBgCorr_Callback(obj, evd, h_fig)
 
 % collect interface parameters
 h = guidata(h_fig);
-p = h.param.movPr;
-n = get(h.listbox_bgCorr, 'Value');
+p = h.param;
+filtlst = p.proj{p.curr_proj}.VP.curr.edit{1}{4};
 
-if n>0 && size(p.bgCorr,1)>=n
-    p.bgCorr(n,:) = [];
+% update applied filter list
+n = get(h.listbox_bgCorr, 'Value');
+if n>0 && size(filtlst,1)>=n
+    filtlst(n,:) = [];
 end
 
 % save modifications
-h.param.movPr = p;
+p.proj{p.curr_proj}.VP.curr.edit{1}{4} = filtlst;
+h.param = p;
 guidata(h_fig, h);
 
 % set GUI to proper values and refresh plot

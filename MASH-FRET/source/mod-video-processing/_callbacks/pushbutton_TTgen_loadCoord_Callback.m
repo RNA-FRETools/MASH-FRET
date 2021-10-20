@@ -7,15 +7,13 @@ function pushbutton_TTgen_loadCoord_Callback(obj, evd, h_fig)
 
 % Last update by MH, 28.3.2019: (1) Fix error when calling orgCoordCol.m with too few input arguments (2) Remove action "Unable to import coordinates" to avoid double action with orgCoordCol
 
-% get interface parameters
+% get parameters
 h = guidata(h_fig);
-p = h.param.movPr;
-
-if ~isfield(h,'movie')
-    setContPan(['The access to the video dimensions is needed: please ',...
-        'load the corresponding video first.'],'error',h_fig);
-    return
-end
+p = h.param;
+nChan = p.proj{p.curr_proj}.nb_channel;
+res_x = p.proj{p.curr_proj}.movie_dim(1);
+curr = p.proj{p.curr_proj}.VP.curr;
+impprm = curr.gen_int{2}{3};
 
 % get coordinates file
 if iscell(obj)
@@ -40,26 +38,25 @@ setContPan('Load coordinates ...','process',h_fig);
 fDat = importdata([pname fname], '\n');
 
 % organize coordinates in a column-wise fashion
-coord_itg = orgCoordCol(fDat, 'cw', p.itg_impMolPrm, p.nChan, ...
-    h.movie.pixelX, h_fig);
-if isempty(coord_itg) || size(coord_itg, 2)~=(2*p.nChan)
+coord = orgCoordCol(fDat, 'cw', impprm, nChan, res_x, h_fig);
+if isempty(coord) || size(coord, 2)~=(2*nChan)
     return
 end
 
-% set coordinates and file for intensity integration
-p.coordItg = coord_itg;
-p.coordItg_file = fname;
-p.itg_coordFullPth = [pname fname];
-p.coord2plot = 5;
+% save coordinates and file for intensity integration
+curr.gen_int{2}{1} = coord;
+curr.gen_int{2}{2} = [pname fname];
+curr.plot{1}(3) = 5;
 
 % save modifications
-h.param.movPr = p;
+p.proj{p.curr_proj}.VP.curr = curr;
+h.param = p;
 guidata(h_fig, h);
 
 % set GUI to proper values and refresh plot
 updateFields(h_fig,'imgAxes');
 
-% show action
+% display success
 setContPan(cat(2,'Coordinates were successfully imported from file: ',...
     pname,fname),'success',h_fig);
 

@@ -32,7 +32,7 @@ for i = 1:nChan
                         'again.\n\n,Error message:' err.message],h_fig, ...
                         'error');
                     ok = 0;
-                    return;
+                    return
                 end
             end
 
@@ -57,7 +57,7 @@ for i = 1:nChan
                         'again.\n\n,Error message:' err.message],h_fig, ...
                         'error');
                     ok = 0;
-                    return;
+                    return
                 end
             end
 
@@ -90,7 +90,7 @@ for i = 1:nChan
             updateActPan(['Empty transform matrices.\nPlease check the import ' ...
                 'options.'], h_fig, 'error');
             ok = 0;
-            return;
+            return
         end
     end
 end

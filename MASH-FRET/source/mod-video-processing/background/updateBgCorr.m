@@ -1,35 +1,31 @@
-function [img,avImg] = updateBgCorr(img, p, h_fig)
-% [img,avImg] = updateBgCorr(img, p, h_mov)
+function img = updateBgCorr(img, p, h_fig)
+% img = updateBgCorr(img, p, h_mov)
 %
 % Apply image filters to input video frame.
-% When using "Ha-all" filter, the actual average image is returned
 %
 % img: video frame
 % p: structure containg processing parameters
-% h_mov: structure containing video parameters
-% avImg: average image
+% h_fig: handle to main figure
 
 % Last update: 5th of February 2014 by Mélodie C.A.S Hadzic
 
-% initialize output
-proj = p.curr_proj;
-avImg = p.proj{proj}.aveImg{1};
-prm = p.proj{proj}.VP;
+% collect video processing parameters
+t = p.movPr.curr_frame(p.curr_proj);
+curr = p.proj{p.curr_proj}.VP.curr;
+bgfilt = curr.edit{1}{4};
 
-if ~isempty(prm.bgCorr)
-    nCorr = size(prm.bgCorr, 1);
+if ~isempty(bgfilt)
+    nCorr = size(bgfilt, 1);
     for i = 1:nCorr
-        [img,avImg] = applyBg(prm.bgCorr(i,:), img, p.proj{proj}, ...
-            p.VP.curr_frame(proj), h_fig);
+        img = applyBg(bgfilt(i,:),img,p.proj{p.curr_proj},t,h_fig);
     end
 end
 
 
-function [img,aveImg] = applyBg(prmBg, img, p_proj, l, h_fig)
-% [img,aveImg] = applyBg(prm, img, p_proj, l, h_fig)
+function img = applyBg(prmBg, img, p_proj, l, h_fig)
+% img = applyBg(prm, img, p_proj, l, h_fig)
 %
 % Apply input image filter to input image.
-% When using "Ha-all" filter, the actual average image is returned
 %
 % prm: {1-by-nChan} channel-specific filter configuration
 % img: video frame
@@ -37,7 +33,6 @@ function [img,aveImg] = applyBg(prmBg, img, p_proj, l, h_fig)
 % p_proj: structure containing experiment settings
 % l: current frame index
 % h_fig: handle to main figure
-% aveImg: averaged image
 %
 % Last update: 5th of February 2014 by Mélodie C.A.S Hadzic
 
@@ -45,15 +40,10 @@ function [img,aveImg] = applyBg(prmBg, img, p_proj, l, h_fig)
 nChan = p_proj.nb_channel;
 resX = p_proj.movie_dat{2}(1);
 resY = p_proj.movie_dat{2}(2);
-L = p_proj.movie_dat{3};
-videoFile = p_proj.movie_file;
-fcurs = p_proj.movie_dat{1};
 aveImg = p_proj.aveImg{1};
-prm = p_proj.VP;
 
 % get processing parameters
 meth = prmBg{1};
-movBg_p = prm.movBg_p;
 
 % get channel limits
 sub_w = floor(resX/nChan);
@@ -106,20 +96,6 @@ for i = 1:nChan
 
 
     elseif meth==14 % Ha-all
-        if isempty(aveImg)
-            param.start = 1; % start data
-            param.stop = L; % stop data
-            param.iv = 1; % interval averaged
-            param.file = videoFile; % path + file
-            % {file cursor, dimension WxH, movie length}
-            param.extra{1} = fcurs; 
-            param.extra{2} = [resX resY]; 
-            param.extra{3} = L;
-            [aveImg,ok] = createAveIm(param,false,true,h_fig);
-            if ~ok
-                return
-            end
-        end
         bg = BgCorr_ha32([resX resY],aveImg)-10;
         img(:,frames) = img(:,frames)-bg(:,frames);
         
@@ -136,7 +112,7 @@ for i = 1:nChan
         img(:,frames) = int;
         
     elseif meth == 17 % empty function 2: subtract image
-        dat2sub = movBg_p{meth,1};
+        dat2sub = prmBg{2};
         if l<dat2sub.frameLen
             [data,ok] = getFrames(dat2sub.file, l, ...
                 {dat2sub.fCurs, [dat2sub.pixelX dat2sub.pixelY], ...
@@ -146,7 +122,8 @@ for i = 1:nChan
             end
             int = data.frameCur(:,frames);
             img(:,frames) = img(:,frames) - int;
-        elseif dat2sub.frameLen == 1
+            
+        elseif dat2sub.frameLen==1
             [data,ok] = getFrames(dat2sub.file, 1, {dat2sub.fCurs, ...
                 [dat2sub.pixelX dat2sub.pixelY], dat2sub.frameLen}, h_fig);
             if ~ok
