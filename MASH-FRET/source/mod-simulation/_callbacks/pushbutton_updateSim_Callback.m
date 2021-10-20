@@ -2,7 +2,7 @@ function ok = pushbutton_updateSim_Callback(obj, evd, h_fig)
 
 % update 17.12.2019 by MH: adapt code to new output arguments of updateMov.m (call plotExample.m and setSimCoordTable from here)
 
-% Check for correct patterned background image
+% check for correct patterned background image
 h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
@@ -17,14 +17,17 @@ if curr.gen_dat{8}{1}==3 % pattern
     guidata(h_fig, h);
 end
 
-% Calculate intensity state sequences and generate coordinates
+% calculate intensity state sequences and generate coordinates
 [ok,actstr] = updateMov(h_fig);
 if ~ok
     return
 end
 
-% Build and plot traces of first molecule in set and first frame in video
-plotExample(h_fig);
+% build traces of first molecule and first video frame
+refreshPlotExample(h_fig);
+
+% plot data
+plotData_sim(h_fig);
 
 % update actions
 setContPan([cat(2,'Success: molecule coordinates and sample heterogeneity',...

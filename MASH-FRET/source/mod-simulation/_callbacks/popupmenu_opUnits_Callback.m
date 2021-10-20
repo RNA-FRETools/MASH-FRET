@@ -5,11 +5,14 @@ p = h.param;
 
 switch get(obj, 'Value')
     case 1
-        p.proj{p.curr_proj}.sim.curr.gen_dat{3}{2} = 'photon';
+        p.proj{p.curr_proj}.sim.curr.exp{2} = 'photon';
     case 2
-        p.proj{p.curr_proj}.sim.curr.gen_dat{3}{2} = 'electron';
+        p.proj{p.curr_proj}.sim.curr.exp{2} = 'electron';
 end
 
 h.param = p;
 guidata(h_fig, h);
-updateFields(h_fig, 'sim');
+
+% update plots
+refreshPlotExample(h_fig);
+plotData_sim(h_fig);

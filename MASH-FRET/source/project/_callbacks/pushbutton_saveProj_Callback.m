@@ -23,12 +23,13 @@ else
     projtitle = p.proj{proj}.exp_parameters{1,2};
     rootfolder = p.proj{proj}.folderRoot;
     if ~isempty(projfile)
-        [pname,projName,o] = fileparts(projfile);
+        [pname,projName,~] = fileparts(projfile);
     elseif ~isempty(projtitle)
         projName = getCorrName([projtitle,'.mash'],[],h_fig);
+        [~,projName,~] = fileparts(projName);
         pname = rootfolder;
     else
-        projName = 'project.mash';
+        projName = 'project';
         pname = rootfolder;
     end
     defName = [pname filesep projName '.mash'];
@@ -49,8 +50,10 @@ setContPan(['Save project ' fname_proj ' ...'], 'process' , h_fig);
 
 % update processing parameters and export settings
 dat = p.proj{proj};
-dat.cnt_p_sec = p.proj{proj}.TP.fix{2}(4);
-dat.cnt_p_pix = p.proj{proj}.TP.fix{2}(5);
+if ~isempty(p.proj{proj}.TP)
+    dat.cnt_p_sec = p.proj{proj}.TP.fix{2}(4);
+    dat.cnt_p_pix = p.proj{proj}.TP.fix{2}(5);
+end
 
 % udpdate MASH version and modification date
 figname = get(h_fig, 'Name');
@@ -74,12 +77,18 @@ save([pname fname_proj], '-struct', 'dat');
 setContPan(['Project has been successfully saved to file: ' pname ...
     fname_proj], 'success' , h_fig);
 
-% set interface default param. to project's default param.
+% set interface default param. to project's param.
 if ~isempty(p.proj{proj}.sim)
-    p.sim.defProjPrm = p.proj{proj}.sim.def;
+    p.sim.defProjPrm = p.proj{proj}.sim.curr;
+    p.sim.defProjPrm.res_dt = p.proj{proj}.sim.def.res_dt;
+    p.sim.defProjPrm.res_dat = p.proj{proj}.sim.def.res_dat;
+    p.sim.defProjPrm.res_plot = p.proj{proj}.sim.def.res_plot;
 end
 if ~isempty(p.proj{proj}.VP)
-    p.movPr.defProjPrm = p.proj{proj}.VP.def;
+    p.VP.defProjPrm = p.proj{proj}.VP.curr;
+    p.VP.defProjPrm.res_crd = p.proj{proj}.VP.def.res_crd;
+    p.VP.defProjPrm.res_int = p.proj{proj}.VP.def.res_int;
+    p.VP.defProjPrm.res_plot = p.proj{proj}.VP.def.res_plot;
 end
 if ~isempty(p.proj{proj}.TP)
     p.ttPr.defProjPrm = p.proj{proj}.TP.def;
@@ -92,22 +101,24 @@ if ~isempty(p.proj{proj}.TA)
 end
 p.es = setExpSetFromProj(dat);
 
-% save current project's cross-talks as default
-p.ttPr.defProjPrm.general{4} = p.proj{proj}.TP.fix{4};
+if ~isempty(p.proj{proj}.TP)
+    % save current project's cross-talks as default
+    p.ttPr.defProjPrm.general{4} = p.proj{proj}.TP.fix{4};
 
-% reorder DE coefficients according to laser chromatic order
-chanExc = p.proj{proj}.chanExc;
-exc = p.proj{proj}.excitations;
-cf_bywl = p.ttPr.defProjPrm.general{4}{2};
-if size(cf_bywl,1)>0
-    for c = 1:dat.nb_channel
-        if sum(exc==chanExc(c))
-            exc_but_c = exc(exc~=chanExc(c));
-            if isempty(exc_but_c)
-                continue
+    % reorder DE coefficients according to laser chromatic order
+    chanExc = p.proj{proj}.chanExc;
+    exc = p.proj{proj}.excitations;
+    cf_bywl = p.ttPr.defProjPrm.general{4}{2};
+    if size(cf_bywl,1)>0
+        for c = 1:dat.nb_channel
+            if sum(exc==chanExc(c))
+                exc_but_c = exc(exc~=chanExc(c));
+                if isempty(exc_but_c)
+                    continue
+                end
+                [o,id] = sort(exc_but_c,'ascend'); % chronological index sorted as wl
+                p.ttPr.defProjPrm.general{4}{2}(:,c) = cf_bywl(id,c);
             end
-            [o,id] = sort(exc_but_c,'ascend'); % chronological index sorted as wl
-            p.ttPr.defProjPrm.general{4}{2}(:,c) = cf_bywl(id,c);
         end
     end
 end

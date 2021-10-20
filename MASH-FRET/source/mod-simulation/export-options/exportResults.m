@@ -15,6 +15,20 @@ function [ok,str_action] = exportResults(h_fig,varargin)
 ok = 0;
 str_action = {};
 
+% retrieve project content
+h = guidata(h_fig);
+p = h.param;
+proj = p.curr_proj;
+prm = p.proj{proj}.sim.prm;
+
+% check simulated state sequences
+if ~(isfield(prm,'res_dt') && ~isempty(prm.res_dt{1}))
+    setContPan({'Error: State sequences have to be generated first.',...
+        'Push the "Generate" button to do so.'},'error',h_fig);
+    ok = 0;
+    return
+end
+
 % identify function call from script routine
 fromRoutine = size(varargin,2)==2;
 
@@ -33,15 +47,11 @@ end
 cd(pname);
 [~,fname,~] = fileparts(fname);
 
-% retrieve project content
-h = guidata(h_fig);
-p = h.param;
-proj = p.curr_proj;
-curr = p.proj{proj}.sim.curr;
-prm = p.proj{proj}.sim.prm;
-
 % apply current export options to project
-prm.exp = curr.exp;
+prm.exp = p.proj{proj}.sim.curr.exp;
+p.proj{proj}.sim.prm = prm;
+h.param = p;
+guidata(h_fig,h);
 
 % collect simulation parameters
 N = prm.gen_dt{1}(1);
@@ -377,7 +387,7 @@ if isPrm
     % display action
     setContPan('Write simulation parameters to file ...','process',h_fig);
     
-    exportSimLogFile(cat(2,pname,fname_log),h);
+    exportSimLogFile(cat(2,pname,fname_log),h_fig);
     
     % append action string
     str_action = cat(2,str_action,['Simulation parameters written to file',...

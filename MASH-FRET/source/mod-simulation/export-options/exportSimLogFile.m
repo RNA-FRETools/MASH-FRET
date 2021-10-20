@@ -1,8 +1,10 @@
-function exportSimLogFile(fpath,h)
+function exportSimLogFile(fpath,h_fig)
+% exportSimLogFile(fpath,h_fig)
+%
 % Write simulation parameters and export options to a .log file.
 %
 % fpath: full destination file path
-% p: structure containing simulation parameters and export options.
+% h_fig: handle to main figure
 
 % update 5.12.2019 by MH: move script that create .log files to this separate function
 % update 20.4.2019 by MH: improve file aesthetic and efficacity by renaming intensity units "image counts/time bin" by "ic", add categories "VIDEO PARAMETERS","PRESETS", "MOLECULES", "EXPERIMENTAL SETUP" and "EXPORT OPTIONS"
@@ -13,6 +15,7 @@ units_ic = 'ic';
 units_pc = 'pc';
 
 % retrieve project content
+h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
 prm = p.proj{proj}.sim.prm;
@@ -184,16 +187,16 @@ if ~isPresets || (isPresets && ~isfield(presets, 'psf_width'))
     end
 end
 if strcmp(inun,'pc')
-    bgDon = phtn2ele(bgdon,K,eta);
-    bgAcc = phtn2ele(bgacc,K,eta);
+    bgdon = phtn2ele(bgdon,K,eta);
+    bgacc = phtn2ele(bgacc,K,eta);
 end
 bg_str = get(h.popupmenu_simBg_type,'String');
 fprintf(f,'> background type: %s\n',bg_str{bgtype});
 if bgtype==1 || bgtype==2
     fprintf(f,cat(2,'> fluorescent background intensity in donor channel(',...
-        inun,'): ',num2str(bgDon),'\n'));
+        inun,'): ',num2str(bgdon),'\n'));
     fprintf(f,cat(2,'> fluorescent background intensity in acceptor ',...
-        'channel (',inun,'): ',num2str(bgAcc),'\n'));
+        'channel (',inun,'): ',num2str(bgacc),'\n'));
 end
 if bgtype == 2
     fprintf(f,cat(2,'> TIRF (x,y) widths (pixel): (',num2str(tirfdim(1)),...

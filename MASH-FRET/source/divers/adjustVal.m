@@ -17,6 +17,11 @@ if isstring(p_input) && (isstring(p_def) || ~isempty(p_def))
     return
 end
 
+% ignore differences in structures
+if isstruct(p_input) && (isstruct(p_def) || ~isempty(p_def))
+    return
+end
+
 % remove dimensions > 0 if array is empty
 if size(p_def,1)==0 || size(p_def,2)==0
     if iscell(p_def)

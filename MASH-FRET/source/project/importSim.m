@@ -13,20 +13,23 @@ for i = projs
     end
     
     % set default processing parameters
-    if isfield(p.sim,'defProjPrm')
-        p.proj{i}.sim.def = setDefPrm_sim(p.sim.defProjPrm); 
-    else
-        p.proj{i}.sim.def = setDefPrm_sim([]); 
-    end
+    p.sim.defProjPrm = setDefPrm_sim(p);
+    p.proj{i}.sim.def = p.sim.defProjPrm; 
     
     % initializes applied processing parameters 
     if ~isfield(p.proj{i}.sim, 'prm')
         p.proj{i}.sim.prm = {}; % empty param. for all mol.
     end
+    p.proj{i}.sim.prm = initDefPrmFields_sim(p.proj{i}.sim.prm);
     
     % correct down-compatibility issues
     p.proj{i}.sim = downCompatibilitySim(p.proj{i}.sim);
     
     % build up currently displayed parameters
-    p.proj{i}.sim.curr = setDefPrm_sim(p.proj{i}.sim.prm); 
+    fldnms = fieldnames(p.proj{i}.sim.def);
+    for fld = 1:numel(fldnms)
+        eval(['p.proj{i}.sim.curr.',fldnms{fld},'= ',...
+            'adjustVal(p.proj{i}.sim.prm.',fldnms{fld},',',...
+            'p.proj{i}.sim.def.',fldnms{fld},');']); 
+    end
 end

@@ -31,8 +31,6 @@ str5 = 'Video (*.avi)';
 str6 = 'Coordinates (ASCII)';
 str7 = 'Exported intensity units';
 str8 = {'photon counts','image counts'};
-str9 = 'Update';
-str10 = 'Export files';
 ttstr0 = wrapHtmlTooltipString('Export one MATLAB binary file (.mat) that contains <b>intensity-time traces</b> and <b>coordinates</b> of all molecules.');
 ttstr1 = wrapHtmlTooltipString('Export simulated <b>single molecule video</b> written in one binary MASH-FRET file.');
 ttstr2 = wrapHtmlTooltipString('Export simulated <b>single molecule video</b> written in one uncompressed AVI file with RGB24 video.');
@@ -41,8 +39,6 @@ ttstr4 = wrapHtmlTooltipString('Export ASCII files that contain the list of <b>d
 ttstr5 = wrapHtmlTooltipString('Export one ASCII file containing the list of <b>parameters used in the simulation</b>.');
 ttstr6 = wrapHtmlTooltipString('Export one ASCII file containing all <b>single molecule coordinates</b> used in the simulation.');
 ttstr7 = wrapHtmlTooltipString('Select <b>intensity units</b> to export.');
-ttstr8 = wrapHtmlTooltipString('<b>Refresh calculations</b> of intensities in traces and single molecule images.');
-ttstr9 = wrapHtmlTooltipString('<b>Export simulated data</b> to selected files.');
 
 % parents
 h_fig = h.figure_MASH;
@@ -51,8 +47,6 @@ h_pan = h.uipanel_S_exportOptions;
 % dimensions
 pospan = get(h_pan,'position');
 wcb0 = pospan(3)-2*p.mg;
-wbut0 = getUItextWidth(str9,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
-wbut1 = getUItextWidth(str10,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
 
 % GUI
 x = p.mg;
@@ -117,18 +111,4 @@ h.popupmenu_opUnits = uicontrol('style','popupmenu','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wcb0,hpop0],'string',str8,'callback',...
     {@popupmenu_opUnits_Callback,h_fig},'tooltipstring',ttstr7);
-
-y = p.mg/2;
-
-h.pushbutton_updateSim = uicontrol('style','pushbutton','parent',h_pan,...
-    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight',...
-    'bold','position',[x,y,wbut0,hedit0],'string',str9,'callback',...
-    {@pushbutton_updateSim_Callback,h_fig},'tooltipstring',ttstr8);
-
-x = pospan(3)-p.mg/2-wbut1;
-
-h.pushbutton_exportSim = uicontrol('style','pushbutton','parent',h_pan,...
-    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight',...
-    'bold','position',[x,y,wbut1,hedit0],'string',str10,'callback',...
-    {@pushbutton_exportSim_Callback,h_fig},'tooltipstring',ttstr9);
 

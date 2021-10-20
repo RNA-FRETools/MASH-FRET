@@ -81,18 +81,19 @@ p = projDownCompatibility(p,proj1:proj2);
 % increment project lists
 mod = {};
 for pj = proj1:proj2
-    if ~isempty(p.proj{p.curr_proj}.TA)
-        p.curr_mod = cat(2,mod,'TA');
-    elseif ~isempty(p.proj{p.curr_proj}.HA)
-        p.curr_mod = cat(2,mod,'HA');
-    elseif ~isempty(p.proj{p.curr_proj}.TP)
-        p.curr_mod = cat(2,mod,'TP');
-    elseif ~isempty(p.proj{p.curr_proj}.VP)
-        p.curr_mod = cat(2,mod,'VP');
-    elseif ~isempty(p.proj{p.curr_proj}.sim)
-        p.curr_mod = cat(2,mod,'S');
+    if ~isempty(p.proj{pj}.TA)
+        mod = cat(2,mod,'TA');
+    elseif ~isempty(p.proj{pj}.HA)
+        mod = cat(2,mod,'HA');
+    elseif ~isempty(p.proj{pj}.TP)
+        mod = cat(2,mod,'TP');
+    elseif ~isempty(p.proj{pj}.VP)
+        mod = cat(2,mod,'VP');
+    elseif ~isempty(p.proj{pj}.sim)
+        mod = cat(2,mod,'S');
     else
-        p.curr_mod = cat(2,mod,'S');
+        disp('Invalid project can not be opened.')
+        return
     end
 end
 p = adjustProjIndexLists(p,numel(proj1:proj2),mod);
@@ -114,7 +115,7 @@ p = ud_projLst(p, h.listbox_proj);
 h.param = p;
 guidata(h_fig,h);
 
-% update TP project-dependant interface
+% update project-dependant interface
 ud_TTprojPrm(h_fig);
 
 % display action

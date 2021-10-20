@@ -9,10 +9,15 @@ if ~ok
     return
 end
 
-% Check for correct patterned background image
+% save sampling time in project parameters
 h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
+p.proj{proj}.frame_rate = 1/p.proj{proj}.sim.prm.gen_dt{1}(4);
+h.param = p;
+guidata(h_fig,h);
+
+% Check for correct patterned background image
 curr = p.proj{proj}.sim.curr;
 if curr.gen_dat{8}{1}==3 % pattern
     [ok,curr] = checkBgPattern(curr, h_fig);
@@ -30,8 +35,11 @@ if ~ok
     return
 end
 
-% Build and plot traces of first molecule in set and first frame in video
-plotExample(h_fig);
+% build traces of first molecule and first video frame
+refreshPlotExample(h_fig);
+
+% plot data
+plotData_sim(h_fig);
 
 h = guidata(h_fig);
 p = h.param;

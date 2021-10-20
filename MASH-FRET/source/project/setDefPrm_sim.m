@@ -1,10 +1,10 @@
-function prm = setDefPrm_sim(prm_in)
+function def = setDefPrm_sim(p)
 % def = setDefPrm_sim(p)
 %
 % Set new or adjust project's simulation default parameters to current
 % standard.
 %
-% p: simulation interface's defaults
+% p: structure containing interface content
 % def: adjusted project's defaults
 
 % defaults
@@ -44,20 +44,22 @@ isPSF = true;
 PSFw = [0.35260 0.38306]; % PSF width (um)
 outun = 'electron';
 
+% initializes fields
+p.sim.defProjPrm = adjustParam('defProjPrm',[],p.sim);
+p.sim.defProjPrm = initDefPrmFields_sim(p.sim.defProjPrm);
+def = p.sim.defProjPrm;
+
 % parameters for plot
-plotprm = cell(1,1);
 plotprm{1} = 1;
-prm.plot = adjustParam('plot',plotprm,prm_in);
+def.plot = adjustVal(def.plot,plotprm);
 
 % parameters for dwell time generation
-gen_dt = cell(1,2);
 gen_dt{1} = [N,L,J,rate,false,L/rate]; % sample size,video length,nb. of states,frame rate(s-1),bleaching,bleaching time constant(s)
 gen_dt{2} = cat(3,kx,wx); % transition rate constants,transition prob.
 gen_dt{3} = {false,[],''}; % is presets,presets file, presets
-prm.gen_dt = adjustParam('gen_dt',gen_dt,prm_in);
+def.gen_dt = adjustVal(def.gen_dt,gen_dt);
 
 % parameters to calculate coordinates,intensities,FRET and video frame
-gen_dat = cell(1,3);
 gen_dat{1} = {{true,[],[]},... % rand. coord, coord, coord file
     {viddim,br,pixsz,camNoise,noisePrm}}; % video dimensions(px),bit rate,pixel size(um),camera noise,noise param.
 gen_dat{2} = [round(10*linspace(0,1,J))/10;zeros(1,J)]; % FRET values and broadening
@@ -73,25 +75,26 @@ gen_dat{8} = {1,... % BG type (1:constant, 2:TIRF profile, 3:patterned)
     [floor(viddim(1)/4),viddim(2)/2],... TIRF profile x- and y-dimensions
     {[],''},... % background image, imported file
     [0,L*rate/10,1]}; % exp. decaying BG, decay constant(s),amplitude
-prm.gen_dat = adjustParam('gen_dat',gen_dat,prm_in);
+def.gen_dat = adjustVal(def.gen_dat,gen_dat);
 
 % parameters for export
 expprm{1} = [0,0,0,0,0,0,0]; % exported files
 expprm{2} = outun; % exported intensity units
-prm.exp = adjustParam('exp',expprm,prm_in);
+def.exp = adjustVal(def.exp,expprm);
 
 % state sequences
-%  res_seq{1}: [J-by-L-by-N] state occupancy trajectories
-%  res_seq{2}: [L-by-N] trajectories of state indexes
-%  res_seq{3}: {1-by-N}[nDt-by-3] dwell times
-res_dt = cell(1,3);
-prm.res_dt = adjustParam('res_dt',res_dt,prm_in);
+%  res_dt{1}: [J-by-L-by-N] state occupancy trajectories
+%  res_dt{2}: [L-by-N] trajectories of state indexes
+%  res_dt{3}: {1-by-N}[nDt-by-3] dwell times
 
 % coordinates, intensity and FRET trajectories
-%  res_trc{1}: [N-by-4] molecule coordinates
-%  res_trc{2}: [L-by-4-by-N] donor and acceptor intensity-time traces and state sequences
-%  res_trc{3}: [L-by-3-by-N] blurr FRET state sequences, max. prob. FRET state sequences, state index sequences
-res_dat = cell(1,3);
-prm.res_dat = adjustParam('res_dat',res_dat,prm_in);
+%  res_dat{1}: [N-by-4] molecule coordinates
+%  res_dat{2}: [L-by-4-by-N] donor and acceptor intensity-time traces and state sequences
+%  res_dat{3}: [L-by-3-by-N] blurr FRET state sequences, max. prob. FRET state sequences, state index sequences
+
+% data to plot
+%  res_plot{1}: first video frame
+%  res_plot{2}: first intensity trajectory
+
 
 

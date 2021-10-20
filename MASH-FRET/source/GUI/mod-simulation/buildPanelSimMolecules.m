@@ -50,8 +50,7 @@ wrb0 = max([getUItextWidth(str1,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox,...
 wtxt0 = getUItextWidth(str0,p.fntun,p.fntsz1,'normal',p.tbl);
 wbut0 = getUItextWidth(str3,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 wpan0 = pospan(3)-2*p.mg;
-hpan0 = p.mgpan+htxt0+hpop0+p.mg/2+htxt0+5*(1+hedit0)+htxt0+p.mg/2+hedit0+...
-    p.mg/2;
+hpan0 = p.mgpan+htxt0+hpop0+p.mg/2+htxt0+5*(1+hedit0)+htxt0+p.mg/2;
 hpan1 = p.mgpan+htxt0+hedit0+p.mg/fact+hedit0+p.mg/2+htxt0+hedit0+p.mg/2+...
     hedit0+p.mg/2;
 wedit1 = pospan(3)-p.mg-wrb0-p.mg/fact-wbut0-p.mg;

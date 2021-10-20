@@ -46,7 +46,7 @@ switch obj
     case h.togglebutton_VP
         if isModuleOn(p,'VP')
             cmaps = get(h.popupmenu_colorMap, 'String');
-            cmap = cmaps{p.proj{p.curr_proj}.VP.cmap};
+            cmap = cmaps{p.proj{p.curr_proj}.VP.curr.plot{1}(2)};
             colormap(cmap);
         end
         

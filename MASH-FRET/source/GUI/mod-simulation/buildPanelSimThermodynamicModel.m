@@ -30,7 +30,6 @@ str2 = 'state (j)';
 str3 = 'FRETj';
 str4 = 'wFRETj';
 str5 = 'Transition rates (kjj'' in s-1)';
-str6 = 'Generate';
 ttstr0 = wrapHtmlTooltipString('<b>Number of FRET states:</b> including degenerated states.');
 ttstr1 = wrapHtmlTooltipString('Select a <b>state</b> to configurate.');
 ttstr2 = wrapHtmlTooltipString('<b>FRET value</b> assigned to the selected state.');
@@ -41,7 +40,6 @@ for j1 = 1:Jmax
         ttstr4{j1,j2} = wrapHtmlTooltipString(sprintf('rate of transition <b>%i->%i</b>',j1,j2));
     end
 end
-ttstr5 = wrapHtmlTooltipString('Generate <b>new FRET state sequences</b>.');
 
 % parents
 h_fig = h.figure_MASH;
@@ -58,7 +56,6 @@ for j = 1:Jmax
         wtxt2 = w;
     end
 end
-wbut0 = getUItextWidth(str6,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
 
 % GUI
 x = p.mg;
@@ -154,12 +151,3 @@ for j1 = 1:Jmax
    
     x = x+wedit0+1;
 end
-
-y = y-p.mg/2-hedit0;
-x = pospan(3)-p.mg-wbut0;
-
-h.pushbutton_startSim = uicontrol('style','pushbutton','parent',...
-    h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
-    'fontweight','bold','position',[x,y,wbut0,hedit0],'string',str6,...
-    'callback',{@pushbutton_startSim_Callback,h_fig},'tooltipstring',...
-    ttstr5);

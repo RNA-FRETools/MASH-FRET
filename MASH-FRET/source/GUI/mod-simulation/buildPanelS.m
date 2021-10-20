@@ -28,6 +28,9 @@ hedit0 = 20;
 hpop0 = 22;
 wedit0 = 40;
 str0 = 'nb. of states (J)';
+str1 = 'GENERATE';
+str2 = 'UPDATE';
+str3 = 'EXPORT';
 ttl0 = 'Video parameters';
 ttl1 = 'Molecules';
 ttl2 = 'Experimental setup';
@@ -35,28 +38,34 @@ ttl3 = 'Export options';
 tabttl0 = 'Video';
 tabttl1 = 'Traces';
 tabttl2 = 'Distributions';
+ttstr0 = wrapHtmlTooltipString('Generate <b>new FRET state sequences</b>.');
+ttstr1 = wrapHtmlTooltipString('<b>Refresh calculations</b> of intensities in traces and single molecule images.');
+ttstr2 = wrapHtmlTooltipString('<b>Export simulated data</b> to selected files.');
 
 % parents
+h_fig = h.figure_MASH;
 h_pan = h.uipanel_S;
 
 % dimensions
 pospan = get(h_pan,'position');
 wtxt0 = getUItextWidth(str0,p.fntun,p.fntsz1,'normal',p.tbl);
+wbut0 = getUItextWidth(str1,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
+wbut1 = getUItextWidth(str2,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
+wbut2 = getUItextWidth(str3,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
 wspan0 = p.mg+wtxt0+wedit0+p.mg/2+wedit0+p.mg/fact+wedit0+p.mg/fact+wedit0+...
     p.mg;
 wpan0 = 2*p.mg+wspan0;
 hspan0 = p.mgpan+hpop0+p.mg/2+hedit0+p.mg/fact+hedit0+p.mg/fact+hedit0+...
     p.mg/2;
 hpan0 = p.mgpan+htxt0+hedit0+p.mg/2+htxt0+hedit0+p.mg/2+hspan0+p.mg/2;
-hspan1 = p.mgpan+htxt0+hpop0+p.mg/2+htxt0+5*(1+hedit0)+htxt0+p.mg/2+hedit0+...
-    p.mg/2;
+hspan1 = p.mgpan+htxt0+hpop0+p.mg/2+htxt0+5*(1+hedit0)+htxt0+p.mg/2;
 hspan2 = p.mgpan+htxt0+hedit0+p.mg/fact+hedit0+p.mg/2+htxt0+hedit0+p.mg/2+...
     hedit0+p.mg/2;
 hpan1 = p.mgpan+hedit0+p.mg/fact+hedit0+p.mg+hedit0+p.mg/2+hspan1+p.mg/2+...
     hspan2+p.mg/2;
 hspan3 = p.mgpan+hpop0+p.mg/2+htxt0+hedit0+p.mg/2+htxt0+hedit0+p.mg/2;
 hpan2 = p.mgpan+htxt0+hedit0+p.mg/2+htxt0+hedit0+p.mg/2+hspan3+p.mg;
-hpan3 = p.mgpan+7*hedit0+p.mg/2+hedit0+hpop0+p.mg/2+hedit0+p.mg/2;
+hpan3 = p.mgpan+7*hedit0+p.mg/2+hedit0+hpop0+p.mg/2;
 wtab = pospan(3)-3*p.mg-wpan0;
 htab = pospan(4)-2*p.mg;
 
@@ -107,4 +116,27 @@ h.uipanel_S_exportOptions = uipanel('parent',h_pan,'title',ttl3,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold',...
     'position',[x,y,wpan0,hpan3]);
 h = buildPanelSimExportOptions(h,p);
+
+y = p.mg;
+x = pospan(3)-p.mg-wbut2-p.mg/2-wbut1-p.mg/2-wbut0;
+
+h.pushbutton_startSim = uicontrol('style','pushbutton','parent',...
+    h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
+    'fontweight','bold','position',[x,y,wbut0,hedit0],'string',str1,...
+    'callback',{@pushbutton_startSim_Callback,h_fig},'tooltipstring',...
+    ttstr0);
+
+x = x+wbut0+p.mg/2;
+
+h.pushbutton_updateSim = uicontrol('style','pushbutton','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight',...
+    'bold','position',[x,y,wbut1,hedit0],'string',str2,'callback',...
+    {@pushbutton_updateSim_Callback,h_fig},'tooltipstring',ttstr1);
+
+x = x+wbut1+p.mg/2;
+
+h.pushbutton_exportSim = uicontrol('style','pushbutton','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight',...
+    'bold','position',[x,y,wbut2,hedit0],'string',str3,'callback',...
+    {@pushbutton_exportSim_Callback,h_fig},'tooltipstring',ttstr2);
 
