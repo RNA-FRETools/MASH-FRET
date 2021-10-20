@@ -23,15 +23,21 @@ end
 
 % import video data
 h = guidata(h_fig0);
-h.movie.movie = []; % reset video data currently loaded in memory
+h.movie.movie = [];
+h.movie.proj = 0;
 guidata(h_fig0,h);
-[dat,ok] = getFrames([pname,filesep,fname],1,[],h_fig0,true);
+[dat,ok] = getFrames([pname,filesep,fname],'all',[],h_fig0,true);
 if ~ok
     return
 end
-h = guidata(h_fig0); % recover possibly refilled video data (memory management)
-if ~(isfield(h.movie,'movie') && ~isempty(h.movie.movie))
+h = guidata(h_fig0);
+p = h.param;
+if ~isempty(dat.movie)
     h.movie.movie = dat.movie;
+    h.movie.proj = p.curr_proj;
+    guidata(h_fig0,h);
+elseif ~isempty(h.movie.movie)
+    h.movie.proj = p.curr_proj;
     guidata(h_fig0,h);
 end
 
@@ -46,7 +52,7 @@ proj.movie_file = vfile;
 proj.is_movie = true;
 proj.movie_dim = vinfo{2};
 proj.movie_dat = vinfo;
-proj.frame_rate = 1/dat.cycleTime;
+proj.frame_rate = dat.cycleTime;
 proj.aveImg = aveimg;
 if dat.cycleTime==1
     proj.spltime_from_video = false;
