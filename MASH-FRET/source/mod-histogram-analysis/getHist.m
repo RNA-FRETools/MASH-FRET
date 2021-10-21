@@ -20,10 +20,16 @@ m_incl = p.proj{proj}.coord_incl;
 incl = p.proj{proj}.bool_intensities;
 molTag = p.proj{proj}.molTag;
 curr = p.proj{proj}.HA.curr{tag,tpe};
-prm = p.proj{proj}.HA.prm{tag,tpe};
 prmTP = p.proj{proj}.TP.prm;
 
 em0 = find(chanExc~=0);
+inclem = true(1,numel(em0));
+for em = 1:numel(em0)
+    if ~sum(chanExc(em)==allExc)
+        inclem(em) = false;
+    end
+end
+em0 = em0(inclem);
 nDE = numel(em0);
 nFRET = size(FRET,1);
 nS = size(S,1);

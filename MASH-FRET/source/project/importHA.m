@@ -18,10 +18,6 @@ for i = projs
     chanExc = p.proj{i}.chanExc;
     nFRET = size(p.proj{i}.FRET,1);
     nS = size(p.proj{i}.S,1);
-    em0 = find(chanExc~=0);
-    nDE = numel(em0);
-    nTpe = 2*nChan*nExc + 2*nDE + 2*nFRET + 2*nS;
-    nTag = numel(p.proj{i}.molTagNames);
     I = p.proj{i}.intensities_denoise;
     I_discr = p.proj{i}.intensities_DTA;
     m_incl = p.proj{i}.coord_incl;
@@ -29,6 +25,18 @@ for i = projs
     FRET_discr = p.proj{i}.FRET_DTA;
     S = p.proj{i}.S;
     S_discr = p.proj{i}.S_DTA;
+
+    em0 = find(chanExc~=0);
+    inclem = true(1,numel(em0));
+    for em = 1:numel(em0)
+        if ~sum(chanExc(em)==allExc)
+            inclem(em) = false;
+        end
+    end
+    em0 = em0(inclem);
+    nDE = numel(em0);
+    nTpe = 2*nChan*nExc + 2*nDE + 2*nFRET + 2*nS;
+    nTag = numel(p.proj{i}.molTagNames);
     L = size(I,1); N = size(I,2)/nChan;
 
     % initializes applied parameters
@@ -188,8 +196,12 @@ for i = projs
                 % current data is an intensity ratio
                 isratio = 1;
             end
-
-            trace = trace(:,m_incl & m_tag);
+            
+            try
+                trace = trace(:,m_incl & m_tag);
+            catch err
+                disp(err)
+            end
             
             p.proj{i}.HA.def{tag,tpe} = setDefPrm_thm([],trace,isratio,...
                 p.thm.colList);

@@ -40,6 +40,13 @@ x_bin = curr.plot{1}(1,1);
 x_lim = curr.plot{1}(1,2:3);
 nExc = numel(exc);
 em0 = find(chanExc~=0);
+inclem = true(1,numel(em0));
+for em = 1:numel(em0)
+    if ~sum(chanExc(em)==exc)
+        inclem(em) = false;
+    end
+end
+em0 = em0(inclem);
 nDE = numel(em0);
 isInt = tpe <= (2*nChan*nExc + 2*nDE);
 if isInt % intensities
