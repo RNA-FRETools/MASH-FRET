@@ -60,4 +60,20 @@ for i = projs
             p.proj{i} = rmfield(p.proj{i}, 'expTDP');
         end
     end
+    
+    % tag project
+    if isfield(p.proj{i},'intensities') && ~isempty(p.proj{i}.intensities)
+        if p.proj{i}.is_movie && p.proj{i}.is_coord
+            if ~isfield(p.proj{i}.VP,'from')
+                p.proj{i}.VP.from = 'VP';
+                p.proj{i}.TP.from = 'VP';
+                p.proj{i}.HA.from = 'VP';
+                p.proj{i}.TA.from = 'VP';
+            end
+        elseif ~isfield(p.proj{i}.TP,'from')
+            p.proj{i}.TP.from = 'TP';
+            p.proj{i}.HA.from = 'TP';
+            p.proj{i}.TA.from = 'TP';
+        end
+    end
 end

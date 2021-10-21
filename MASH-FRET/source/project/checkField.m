@@ -32,6 +32,7 @@ s.is_movie = adjustParam('is_movie', ~isempty(s.movie_file), s_in);
 s.movie_dim = adjustParam('movie_dim', [], s_in);
 s.movie_dat = adjustParam('movie_dat', [], s_in);
 s.spltime_from_video = adjustParam('spltime_from_video',s.is_movie,s_in);
+s.aveImg = adjustParam('aveImg',[],s_in);
 
 s.frame_rate = adjustParam('frame_rate', 1, s_in);
 s.frame_rate(s.frame_rate<=0) = 1;
@@ -123,6 +124,10 @@ if ~isempty(s.movie_file) && istestfile(s.movie_file)
 end
 if ~isempty(s.movie_file) && exist(s.movie_file, 'file')
     s.is_movie = 1;
+    if size(s.aveImg,2)~=(s.nb_excitations+1)
+        s.aveImg = calcAveImg('all',s.movie_file,s.movie_dat,...
+            s.nb_excitations,h_fig);
+    end
     
 elseif ~isempty(s.movie_file)
     [o,name_proj,ext] = fileparts(fname);

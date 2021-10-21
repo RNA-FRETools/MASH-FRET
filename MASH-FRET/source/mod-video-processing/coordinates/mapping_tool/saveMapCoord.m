@@ -36,7 +36,7 @@ prm{2}(2) = 2;
 coord_org = orgCoordCol(coord, 'rw', prm, nChan, q.res_x);
 
 % set reference coordinates for transformation
-curr.gen_crd{3}{2}{1} = coord_org;
+curr.res_crd{3} = coord_org;
 curr.plot{1}(3) = 2;
 
 % save modifications

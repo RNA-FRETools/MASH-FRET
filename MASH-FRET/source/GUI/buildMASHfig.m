@@ -16,6 +16,7 @@ field_name = 'tbl'; % file's field containing character pixel dimensions
 posun = 'pixels'; % position and dimension units
 fntun = 'points'; % font units
 fntsz1 = 8; % common font size
+fntsz0 = 9; % bigger font size
 mg = 10; % common margin
 mgpan = 20; % top margin inside a panel (includes title)
 mgtab = 15; % top margin inside a tabbed panel (includes header)
@@ -24,13 +25,13 @@ wbrd = 4; % width of pushbutton borders
 warr = 20; % width of downwards arrow in popupmenu
 fntclr1 = 'blue'; % text color in file/folder fields
 fntclr2 = 'blue'; % text color in special pushbuttons
+fntclr3 = 'red'; % text color for cross check marks
 wbuth = 25;
 hfig = 622;
 wfig = 1024;
 wlst_norm = 0.1530; % width of project list (normalized units)
 hlst_norm = 0.1693; % height of project list (normalized units)
 fact = 5;
-fntsz0 = 9;
 hedit0 = 20;
 hbut0 = 30;
 hbut1 = 25;
@@ -69,9 +70,10 @@ else
 end
 
 % build often-used parameter structure
-p = struct('posun',posun,'fntun',fntun,'fntsz1',fntsz1,'mg',mg,'mgpan',...
-    mgpan,'wbrd',wbrd,'wbox',wbox,'warr',warr,'fntclr1',fntclr1,'fntclr2',...
-    fntclr2,'wbuth',wbuth,'fname_boba',fname_boba,'mgtab',mgtab);
+p = struct('posun',posun,'fntun',fntun,'fntsz0',fntsz0,'fntsz1',fntsz1,...
+    'mg',mg,'mgpan',mgpan,'wbrd',wbrd,'wbox',wbox,'warr',warr,'fntclr1',...
+    fntclr1,'fntclr2',fntclr2,'fntclr3',fntclr3,'wbuth',wbuth,'fname_boba',...
+    fname_boba,'mgtab',mgtab);
 p.tbl = h.charDimTable; % table listing character pixel dimensions
 
 % dimensions

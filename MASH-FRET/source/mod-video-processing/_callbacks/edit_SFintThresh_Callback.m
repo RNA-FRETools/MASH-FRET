@@ -28,7 +28,7 @@ if meth==4 % Schmied2012
 else
     % convert to proper intensity units
     if persec
-        val = val/expT;
+        val = val*expT;
     end
     curr.gen_crd{2}{2}(chan,1) = val;
 end

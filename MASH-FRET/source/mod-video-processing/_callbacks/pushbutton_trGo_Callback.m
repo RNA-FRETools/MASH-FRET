@@ -9,8 +9,8 @@ p = h.param;
 viddim = p.proj{p.curr_proj}.movie_dim;
 nChan = p.proj{p.curr_proj}.nb_channel;
 curr = p.proj{p.curr_proj}.VP.curr;
-coord2tr = curr.gen_crd{3}{1}{1};
-tr = curr.gen_crd{3}{3}{1};
+coord2tr = curr.res_crd{1};
+tr = curr.res_crd{2};
 
 % control number of channels
 if nChan<=1 || nChan>3
@@ -45,8 +45,7 @@ if isempty(coordtr)
 end
 
 % save transformed coordinates
-curr.gen_crd{3}{4} = coordtr;
-curr.gen_int{2}{1} = coordtr;
+curr.res_crd{4} = coordtr;
 
 % reset single molecule coordinates file
 curr.gen_int{2}{2} = '';
@@ -57,6 +56,7 @@ curr.plot{1}(3) = 4;
 % save modifications
 p.proj{p.curr_proj}.VP.curr = curr;
 p.proj{p.curr_proj}.VP.prm.gen_crd{3} = curr.gen_crd{3};
+p.proj{p.curr_proj}.VP.prm.res_crd = curr.res_crd;
 h.param = p;
 guidata(h_fig, h);
 

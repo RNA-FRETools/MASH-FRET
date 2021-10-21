@@ -27,6 +27,7 @@ htxt0 = 14;
 hpop0 = 22;
 hsld0 = 20;
 fact = 5;
+ttl0 = 'Plot';
 ttl1 = 'Edit and export video';
 ttl2 = 'Molecule coordinates';
 ttl3 = 'Intensity integration';
@@ -41,11 +42,13 @@ pospan = get(h_pan,'position');
 htab = pospan(4)-2*p.mg;
 wtab = htab-hedit0-2*p.mg-hsld0-p.mg-htxt0;
 wpan0 = pospan(3)-3*p.mg-wtab;
-hpan0 = p.mgpan+p.mg/2+p.mg/fact+hedit0+hpop0;
+hpan0 = p.mgpan+hpop0+p.mg/2;
 hpan1 = p.mgpan+hpop0+hedit0+p.mg/2+hpop0+p.mg/fact+hedit0+p.mg/2+hedit0+...
     p.mg/2;
+hpan2a = p.mgpan+hpop0+p.mg/2+hpop0+p.mg/2+hedit0+p.mg/2+hedit0+p.mg;
+hpan2b = p.mgpan+3*hedit0+3*p.mg/2+hedit0+p.mg;
+hpan2 = p.mgpan+hedit0+p.mg/2+hpan2a+p.mg/2+hpan2b+p.mg/2;
 hpan3 = p.mgpan+3*(p.mg/2+hedit0);
-hpan2 = pospan(4)-2*p.mg-3*p.mg/2-hpan0-hpan1-hpan3;
 
 % GUI
 x = p.mg;
@@ -64,7 +67,14 @@ h.uitab_VP_plot_avimg = uitab('parent',h_tabgrp,'units',p.posun,'title',...
 h = buildVPtabPlotAvimg(h,p);
 
 x = x+wtab+p.mg;
-y = pospan(4)-p.mg-hpan1;
+y = pospan(4)-p.mg-hpan0;
+
+h.uipanel_VP_plot = uipanel('parent',h_pan,'units',p.posun,'fontunits',...
+    p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
+    [x,y,wpan0,hpan0],'title',ttl0);
+h = buildPanelVPplot(h,p);
+
+y = y-p.mg/2-hpan1;
 
 h.uipanel_VP_editAndExportVideo = uipanel('parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...

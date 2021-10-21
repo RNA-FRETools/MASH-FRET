@@ -55,7 +55,7 @@ if isempty(coord)
 end
 
 % save coordiantes and file
-curr.gen_crd{3}{1}{1} = coord;
+curr.res_crd{1} = coord;
 curr.gen_crd{3}{1}{2} = fname;
 curr.plot{1}(3) = 3;
 

@@ -9,12 +9,11 @@ function openItgFileOpt(obj, evd, h_fig)
 
 h = guidata(h_fig);
 p = h.param;
-coordsm = p.proj{p.curr_proj}.VP.curr.gen_int{2}{1};
+intsm = p.proj{p.curr_proj}.intensities;
 
-if isempty(coordsm)
-    setContPan(['No single molecule coordinates detected. Please ',...
-        'transform spots coordinates or import single molecule ',...
-        'coordinates.'],'error',h_fig);
+if isempty(intsm)
+    setContPan(['No single molecule intensity-time trace detected. Please',...
+        ' create traces first by pressing "Create".'],'error',h_fig);
     return
 end
 

@@ -18,6 +18,7 @@ a = strfind(figname, 'MASH-FRET ');
 b = a + numel('MASH-FRET ');
 p.MASH_version = figname(b:end);
 p.proj_file = '';
+p.module = '';
 
 % experiment settings
 p.folderRoot = pwd;

@@ -34,8 +34,7 @@ end
 
 % apply selection rules
 [imgY,imgX] = size(img);
-prm.gen_crd{2}{5} = cat(1,prm.gen_crd{2}{4},...
-    selectSpots(spots,imgX,imgY,prm));
+prm.gen_crd{2}{5} = selectSpots(spots,imgX,imgY,prm);
 
 
 function [spots,ok] = determineSpots(img, lb, prm, h_fig)

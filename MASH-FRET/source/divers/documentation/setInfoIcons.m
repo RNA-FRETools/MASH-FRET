@@ -100,6 +100,9 @@ for o = 1:O
         case h_pushbutton_itgExpOpt_cancel
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('project options'),obj(o),[-1,1]));
+        case h.uipanel_VP_plot
+            hBut = cat(2,hBut,mkbutton(cdata,...
+                getDocLink('vp plot'),obj(o),tbl));
         case h.uipanel_VP_editAndExportVideo
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('edit video'),obj(o),tbl));

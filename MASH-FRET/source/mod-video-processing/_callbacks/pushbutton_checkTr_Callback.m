@@ -17,7 +17,7 @@ h = guidata(h_fig);
 p = h.param;
 nChan = p.proj{p.curr_proj}.nb_channel;
 curr = p.proj{p.curr_proj}.VP.curr;
-tr = curr.gen_crd{3}{3}{1};
+tr = curr.res_crd{2};
 
 % control number of channels
 if nChan<=1 || nChan>3
@@ -84,15 +84,14 @@ if ~(isfield(h,'axes_VP_tr') && ishandle(h.axes_VP_tr))
     h = buildVPtabPlotTr(h,h.dimprm);
     setProp([h.uitab_VP_plot_tr,h.uitab_VP_plot_tr.Children],'Units',...
         h.uitabgroup_VP_plot.Units);
-
-    % save modifications
-    guidata(h_fig,h);
 end
-imagesc(imgtrsf,'parent',h.axes_VP_tr);
-axis(h.axes_VP_tr,'image');
 
-% align axes
-h.axes_VP_tr.Position = h.axes_VP_vid.Position;
+% save modifications
+curr.res_plot{3} = imgtrsf;
+
+p.proj{p.curr_proj}.VP.curr = curr;
+h.param = p;
+guidata(h_fig,h);
 
 % save image if from routine call
 if fromRoutine
@@ -105,3 +104,8 @@ if fromRoutine
     close(h_fig2);
 end
 
+% refresh plot
+updateFields(h_fig,'imgAxes');
+
+% display success
+setContPan('Image sucessfully transformed!','success',h_fig);

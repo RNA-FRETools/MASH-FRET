@@ -5,6 +5,7 @@ function ud_VP_panels(h_fig)
 %
 % h_fig: handle to main figure
 
+ud_VP_visuArea(h_fig);
 ud_VP_plotPan(h_fig);
 ud_VP_edExpVidPan(h_fig);
 ud_VP_molCoordPan(h_fig);

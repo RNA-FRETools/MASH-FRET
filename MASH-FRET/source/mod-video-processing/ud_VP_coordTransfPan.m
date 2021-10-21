@@ -5,22 +5,45 @@ function ud_VP_coordTransfPan(h_fig)
 %
 % h_fig: handle to main figure
 
+% default
+str_yes = char(10004);
+str_no = char(10006);
+clr_yes = [0,0.5,0];
+clr_no = 'red';
+
 % collect interface parameters
 h = guidata(h_fig);
 p = h.param;
+curr = p.proj{p.curr_proj}.VP.curr;
+coord2tr = curr.res_crd{1};
+tr = curr.res_crd{2};
+coordref = curr.res_crd{3};
 
 if ~prepPanel(h.uipanel_VP_coordinatesTransformation,h)
     return
 end
 
-% collect processing parameters
-proj = p.curr_proj;
-curr = p.proj{proj}.VP.curr;
+if ~isempty(coord2tr)
+    h.text_VP_checkCoord2tr.String = str_yes;
+    h.text_VP_checkCoord2tr.ForegroundColor = clr_yes;
+else
+    h.text_VP_checkCoord2tr.String = str_no;
+    h.text_VP_checkCoord2tr.ForegroundColor = clr_no;
+end
 
-% set transformation type
-set(h.popupmenu_trType,'value',curr.gen_crd{3}{3}{2});
+if ~isempty(tr)
+    h.text_VP_checkTrsf.String = str_yes;
+    h.text_VP_checkTrsf.ForegroundColor = clr_yes;
+else
+    h.text_VP_checkTrsf.String = str_no;
+    h.text_VP_checkTrsf.ForegroundColor = clr_no;
+end
 
-% set files
-set(h.edit_coordFile, 'String', curr.gen_crd{3}{1}{2});
-set(h.edit_refCoord_file, 'String', curr.gen_crd{3}{2}{2});
-set(h.edit_tr_file, 'String', curr.gen_crd{3}{3}{3});
+if ~isempty(coordref)
+    h.text_VP_checkCoordref.String = str_yes;
+    h.text_VP_checkCoordref.ForegroundColor = clr_yes;
+else
+    h.text_VP_checkCoordref.String = str_no;
+    h.text_VP_checkCoordref.ForegroundColor = clr_no;
+end
+

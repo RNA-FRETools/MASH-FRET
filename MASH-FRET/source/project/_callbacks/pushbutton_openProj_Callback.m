@@ -92,11 +92,11 @@ for pj = proj1:proj2
     elseif ~isempty(p.proj{pj}.sim)
         mod = cat(2,mod,'S');
     else
-        disp('Invalid project can not be opened.')
+        setContPan('Invalid project can not be opened.','error',h_fig);
         return
     end
 end
-p = adjustProjIndexLists(p,numel(proj1:proj2),mod);
+p = adjustProjIndexLists(p,proj1:proj2,mod);
 
 % set interface parameters
 p = importSim(p,proj1:proj2);

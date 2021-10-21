@@ -34,7 +34,7 @@ end
 
 % collect experiemnt settings and processing parameters
 proj = p.curr_proj;
-rate = p.proj{proj}.frame_rate;
+expT = p.proj{proj}.frame_rate;
 nC = p.proj{proj}.nb_channel;
 labels = p.proj{proj}.labels;
 curr = p.proj{proj}.VP.curr;
@@ -59,8 +59,8 @@ set(h.popupmenu_SFchannel, 'Value', chan, 'String', ...
 str_units = 'counts';
 if persec
     str_units = strcat(str_units, ' /s');
-    sfprm(chan,1) = sfprm(chan,1)/rate;
-    slctprm(chan,2) = slctprm(chan,2)/rate;
+    sfprm(chan,1) = sfprm(chan,1)/expT;
+    slctprm(chan,2) = slctprm(chan,2)/expT;
 end
 
 % set method settings
@@ -68,15 +68,10 @@ set(h.popupmenu_SF, 'Value', meth);
 set(h.checkbox_SFgaussFit, 'Value', gaussfit);
 
 % set spot detection parameters
-set(h.edit_SFparam_minI,'String',num2str(slctprm(chan,2)),'TooltipString',...
-    sprintf(ttstr0,str_units));
 set(h.edit_SFparam_darkW,'String',num2str(sfprm(chan,3)),'TooltipString',...
     ttstr2{meth});
 set(h.edit_SFparam_darkH,'String',num2str(sfprm(chan,4)),'TooltipString',...
     ttstr3{meth});
-set(h.edit_SFparam_maxN,'String',num2str(slctprm(chan,1)));
-set(h.edit_SFparam_minDspot,'String',num2str(slctprm(chan,6)));
-set(h.edit_SFparam_minDedge,'String',num2str(slctprm(chan,7)));
 if meth==1 % none
     set([h.edit_SFintThresh h.edit_SFparam_minI h.edit_SFparam_w ...
         h.edit_SFparam_h h.edit_SFparam_darkW h.edit_SFparam_darkH ...
@@ -95,6 +90,11 @@ else
         set(h.edit_SFparam_darkH, 'Enable', 'off');
     end
 end
+set(h.edit_SFparam_minI,'String',num2str(slctprm(chan,2)),'TooltipString',...
+    sprintf(ttstr0,str_units));
+set(h.edit_SFparam_maxN,'String',num2str(slctprm(chan,1)));
+set(h.edit_SFparam_minDspot,'String',num2str(slctprm(chan,6)));
+set(h.edit_SFparam_minDedge,'String',num2str(slctprm(chan,7)));
 
 % set spot selection parameters
 if gaussfit

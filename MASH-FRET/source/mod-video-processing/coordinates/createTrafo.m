@@ -26,7 +26,7 @@ end
     
 % Perform spatial transformation
 switch method
-    case 2
+    case 1
         if matlabver<=9
             tform_type = 'nonreflective similarity';
         else
@@ -34,34 +34,34 @@ switch method
         end
         tform_name = 'nrsim';
         n_min = 2;
-    case 3
+    case 2
         tform_type = 'similarity';
         tform_name = 'sim';
         n_min = 3;
-    case 4
+    case 3
         tform_type = 'affine';
         tform_name = 'aff';
         n_min = 3;
-    case 5
+    case 4
         tform_type = 'projective';
         tform_name = 'proj';
         n_min = 4;
-    case 6
+    case 5
         tform_type = 'polynomial';
         tform_order = 2;
         tform_name = 'pol2';
         n_min = 6;
-    case 7
+    case 6
         tform_type = 'polynomial';
         tform_order = 3;
         tform_name = 'pol3';
         n_min = 10;
-    case 8
+    case 7
         tform_type = 'polynomial';
         tform_order = 4;
         tform_name = 'pol4';
         n_min = 15;
-    case 9
+    case 8
         if matlabver<=9
             tform_type = 'piecewise linear';
         else
@@ -70,7 +70,7 @@ switch method
         tform_name = 'plin';
         n_min = 4;
         
-    case 10
+    case 9
         tform_type = 'lwm';
         tform_name = 'lwm';
         tform_order = 12; % MATLAB default

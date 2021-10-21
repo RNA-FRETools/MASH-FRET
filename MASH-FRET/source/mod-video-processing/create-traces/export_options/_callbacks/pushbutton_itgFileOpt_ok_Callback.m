@@ -19,12 +19,15 @@ guidata(h_fig, h);
 close(h.figure_itgFileOpt);
 
 if ~iscell(obj)
-    TTgenGo(h_fig);
+    expTraces(h_fig);
 else
     pname = obj{1};
     fname = obj{2};
     if ~strcmp(pname,filesep)
         pname = [pname,filesep];
     end
-    TTgenGo(h_fig,pname,fname);
+    expTraces(h_fig,pname,fname);
 end
+
+setContPan('Traces were successfully exported!','success',h_fig);
+

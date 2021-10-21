@@ -75,4 +75,5 @@ ud_lstBg(h_fig);
 % set export parameters
 set(h.edit_startMov,'String',num2str(curr.edit{2}(1)));
 set(h.edit_endMov,'String',num2str(curr.edit{2}(2)));
+set(h.edit_ivMov,'String',num2str(curr.edit{2}(3)));
 

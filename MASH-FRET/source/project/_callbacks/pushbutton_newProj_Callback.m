@@ -45,7 +45,7 @@ end
 p = h.param;
 p.proj = [p.proj,proj];
 p.curr_proj = proj_id;
-p = adjustProjIndexLists(p,1,{mod});
+p = adjustProjIndexLists(p,proj_id,{mod});
 
 % set processing parameters
 p = importSim(p,proj_id);

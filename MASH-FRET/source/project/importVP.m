@@ -27,9 +27,15 @@ for i = projs
 
     % build up currently displayed parameters
     fldnms = fieldnames(p.proj{i}.VP.def);
+    fldnms(contains(fldnms,'res_plot')) = [];
+    fldnms(contains(fldnms,'res_crd')) = [];
     for fld = 1:numel(fldnms)
         eval(['p.proj{i}.VP.curr.',fldnms{fld},'= ',...
             'adjustVal(p.proj{i}.VP.prm.',fldnms{fld},',',...
             'p.proj{i}.VP.def.',fldnms{fld},');']); 
     end
+    
+    % get previous results
+    p.proj{i}.VP.curr.res_plot = p.proj{i}.VP.prm.res_plot;
+    p.proj{i}.VP.curr.res_crd = p.proj{i}.VP.prm.res_crd;
 end

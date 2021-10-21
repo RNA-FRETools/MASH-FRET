@@ -59,7 +59,7 @@ if isempty(coordref) || size(coordref,2)~=(2*nChan)
 end
 
 % save reference coordinates and file
-curr.gen_crd{3}{2}{1} = coordref;
+curr.res_crd{3} = coordref;
 curr.gen_crd{3}{2}{2} = fname;
 curr.plot{1}(3) = 2;
 

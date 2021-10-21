@@ -4,12 +4,10 @@ function pushbutton_SFgo_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 p = h.param;
 nChan = p.proj{p.curr_proj}.nb_channel;
-expT = p.proj{p.curr_proj}.frame_rate;
 curr = p.proj{p.curr_proj}.VP.curr;
 avimg = curr.res_plot{2};
 meth = curr.gen_crd{2}{1}(1);
 bgfilt = curr.edit{1}{4};
-persec = curr.plot{1}(1);
 
 % control average image
 if isempty(avimg)
@@ -25,8 +23,9 @@ if meth==1
 end
 
 % reset results
-curr.gen_crd{2}{4} = [];
-curr.gen_crd{2}{5} = [];
+curr.gen_crd{2}{4} = []; % uncharted
+curr.gen_crd{2}{5} = []; % final sorted
+curr.res_crd{1} = []; % sm coordinates
 
 % plot SF coordinates
 curr.plot{1}(3) = 1;
@@ -39,11 +38,6 @@ if isBgCorr
      avimg = updateBgCorr(avimg, p, h_fig);
 end
 
-% convert to proper intensity units
-if persec
-    avimg = avimg/expT;
-end
-
 % find spots
 curr = updateSF(avimg, false, curr, h_fig);
 
@@ -52,11 +46,15 @@ spots = [];
 for c = 1:nChan
     spots = cat(1,spots,curr.gen_crd{2}{5}{c});
 end
-curr.gen_crd{3}{1}{1} = spots(:,[1,2]);
+curr.res_crd{1} = spots(:,[1,2]);
+
+% reset coordinates file to transform
+curr.gen_crd{3}{1}{2} = '';
 
 % save modifications
 p.proj{p.curr_proj}.VP.curr = curr;
 p.proj{p.curr_proj}.VP.prm.gen_crd{2} = curr.gen_crd{2};
+p.proj{p.curr_proj}.VP.prm.res_crd = curr.res_crd;
 h.param = p;
 guidata(h_fig, h);
 

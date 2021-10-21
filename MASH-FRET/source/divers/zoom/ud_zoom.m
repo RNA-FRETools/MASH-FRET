@@ -16,15 +16,15 @@ switch action
 
         elseif sum(double(curr_axes == [h.axes_top h.axes_topRight ...
                 h.axes_bottom h.axes_bottomRight]))
-            p = h.param.ttPr;
+            p = h.param;
             proj = p.curr_proj;
-            mol = p.curr_mol(proj);
+            mol = p.ttPr.curr_mol(proj);
             axes.axes_traceTop = h.axes_top;
             axes.axes_histTop = h.axes_topRight;
             axes.axes_traceBottom = h.axes_bottom;
             axes.axes_histBottom = h.axes_bottomRight;
             
-            plotData(mol, p, axes, p.proj{proj}.prm{mol}, 1);
+            plotData(mol, p, axes, p.proj{proj}.TP.prm{mol}, 1);
             
         elseif curr_axes == h.axes_TDPcmap
             ylim(curr_axes, 'auto');
@@ -34,14 +34,14 @@ switch action
                 sum(double(isfield(h, 'axes_subImg'))) && ...
                 sum(double(curr_axes == h.axes_subImg))
             axes = h.axes_subImg;
-            p = h.param.ttPr;
+            p = h.param;
             proj = p.curr_proj;
-            mol = p.curr_mol(proj);
+            mol = p.ttPr.curr_mol(proj);
             
             p = plotSubImg(mol, p, axes);
             
             h = guidata(h_fig);
-            h.param.ttPr = p;
+            h.param = p;
 
         elseif curr_axes == h.axes_hist1 || curr_axes == h.axes_hist2 ||...
                 curr_axes == h.axes_thm_BIC
@@ -51,11 +51,11 @@ switch action
             updateTAplots(h_fig);
             
         elseif curr_axes == h.axes_tdp_BIC
-            p = h.param.TDP;
+            p = h.param;
             proj = p.curr_proj;
-            tag = p.curr_tag(proj);
-            tpe = p.curr_type(proj);
-            plotBIC_TA(h.axes_tdp_BIC,p.proj{proj}.prm{tag,tpe});
+            tag = p.TDP.curr_tag(proj);
+            tpe = p.TDP.curr_type(proj);
+            plotBIC_TA(h.axes_tdp_BIC,p.proj{proj}.TA.prm{tag,tpe});
             
         else
             xlim(curr_axes, 'auto');

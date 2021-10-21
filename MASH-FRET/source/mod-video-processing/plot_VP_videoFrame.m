@@ -19,11 +19,12 @@ chanlw = 2;
 % collect processing parameters
 persec = prm.plot{1}(1);
 toplot = prm.plot{1}(3);
-coordsf = prm.gen_crd{2}{5};
-coordref = prm.gen_crd{3}{2}{1};
-coord2tr = prm.gen_crd{3}{1}{1};
-coordtr = prm.gen_crd{3}{4};
-coordsm = prm.gen_int{2}{1};
+coordsf = prm.res_crd{1};
+coordref = prm.res_crd{3};
+coord2tr = prm.res_crd{1};
+coordtr = prm.res_crd{4};
+coordsm = prm.res_crd{4};
+imgtrsf = prm.res_plot{3};
 
 % get spots coordinates
 nChan = numel(chansplit)+1;
@@ -73,19 +74,30 @@ h_img = imagesc(h_axes(1),[0.5 w-0.5],[0.5 h-0.5],img(:,:,1));
 % plot average image
 imagesc(h_axes(2),[0.5 w-0.5],[0.5 h-0.5],img(:,:,2));
 
+% plot transformed image
+if numel(h_axes)>=3
+    imagesc(h_axes(3),[0.5 w-0.5],[0.5 h-0.5],imgtrsf);
+end
+
 % plot spots coordinates
 set(h_axes,'nextplot','add');
 if ~isempty(spots)
-    plot(h_axes(1),spots(:,1),spots(:,2),mkstl,'markersize',mksz);
-    plot(h_axes(2),spots(:,1),spots(:,2),mkstl,'markersize',mksz);
+    plot(h_axes(1),spots(:,1),spots(:,2),mkstl,'markersize',mksz,'hittest',...
+        'off','pickableparts','none');
+    plot(h_axes(2),spots(:,1),spots(:,2),mkstl,'markersize',mksz,'hittest',...
+        'off','pickableparts','none');
 end
 
 % plot channel separation
 for c = 1:size(chansplit,2)
     plot(h_axes(1), [chansplit(c),chansplit(c)],[0 h],chanstl,'LineWidth', ...
-        chanlw);
+        chanlw,'hittest','off','pickableparts','none');
     plot(h_axes(2), [chansplit(c),chansplit(c)],[0 h],chanstl,'LineWidth', ...
-        chanlw);
+        chanlw,'hittest','off','pickableparts','none');
+    if numel(h_axes)>=3
+        plot(h_axes(3), [chansplit(c),chansplit(c)],[0 h],chanstl,...
+            'LineWidth', chanlw,'hittest','off','pickableparts','none');
+    end
 end
 
 % set axes limits
@@ -100,9 +112,15 @@ set(h_axes(1),'nextPlot','replacechildren','xlim',[0,w],'ylim',[0,h],...
     'clim',[img_min(1),img_max(1)]);
 set(h_axes(2),'nextPlot','replacechildren','xlim',[0,w],'ylim',[0,h],...
     'clim',[img_min(2),img_max(2)]);
+if numel(h_axes)>=3
+    set(h_axes(3),'nextPlot','replacechildren','xlim',[0,w],'ylim',[0,h]);
+end
 
 % align axes positions
 h_axes(2).Position = h_axes(1).Position;
+if numel(h_axes)>=3
+    h_axes(3).Position = h_axes(1).Position;
+end
 
 % set colorbar label
 if persec

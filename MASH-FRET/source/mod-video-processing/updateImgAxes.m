@@ -12,7 +12,13 @@ function updateImgAxes(h_fig)
 h = guidata(h_fig);
 p = h.param;
 
-if ~prepPanel(h.uitabgroup_VP_plot,h)
+if ~isModuleOn(p,'VP')
+    cla(h.axes_VP_vid);
+    cla(h.axes_VP_avimg);
+    if isfield(h,'axes_VP_tr') && ishandle(h.axes_VP_tr)
+        cla(h.axes_VP_tr);
+        set(h.axes_VP_tr,'visible','off');
+    end
     set([h.axes_VP_vid,h.cb_VP_vid,h.axes_VP_avimg,h.cb_VP_avimg],...
         'visible','off');
     return
@@ -68,8 +74,12 @@ if persec
 end
 
 % plot video frame
-h.imageMov = plot_VP_videoFrame([h.axes_VP_vid,h.axes_VP_avimg],...
-    [h.cb_VP_vid,h.cb_VP_avimg],cat(3,img,avimg),chsplit,curr);
+h_axes = [h.axes_VP_vid,h.axes_VP_avimg];
+if isfield(h,'axes_VP_tr') && ishandle(h.axes_VP_tr)
+    h_axes = cat(2,h_axes,h.axes_VP_tr);
+end
+h.imageMov = plot_VP_videoFrame(h_axes,[h.cb_VP_vid,h.cb_VP_avimg],...
+    cat(3,img,avimg),chsplit,curr);
 
 % set tool
 if get(h.togglebutton_target, 'Value')
@@ -81,6 +91,11 @@ else
     set(0, 'CurrentFigure', h_fig);
     zoom on
 end
+
+% apply current parameter set to project
+p.proj{proj}.VP.prm.res_plot = curr.res_plot;
+p.proj{proj}.VP.prm.plot = curr.plot;
+p.proj{proj}.VP.prm.edit{1} = curr.edit{1};
 
 % save modifications
 p.proj{proj}.VP.curr = curr;

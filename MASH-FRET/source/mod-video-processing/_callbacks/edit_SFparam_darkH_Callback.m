@@ -27,7 +27,7 @@ chan = get(h.popupmenu_SFchannel, 'Value');
 
 % save modifications
 
-p.proj{p.curr_proj}.VP.curr.gen_crd{2}{2}(chan,4);
+p.proj{p.curr_proj}.VP.curr.gen_crd{2}{2}(chan,4) = val;
 
 h.param = p;
 guidata(h_fig, h);

@@ -14,7 +14,7 @@ coordsf = curr.gen_crd{2}{5};
 
 % control SF coordinates
 if isempty(coordsf)
-    updateActPan('Start a "spotfinder" procedure first.','error',h_fig);
+    setContPan('Start a "spotfinder" procedure first.','error',h_fig);
     return
 end
 

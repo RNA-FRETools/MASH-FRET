@@ -44,7 +44,7 @@ if isempty(coord) || size(coord, 2)~=(2*nChan)
 end
 
 % save coordinates and file for intensity integration
-curr.gen_int{2}{1} = coord;
+curr.res_crd{4} = coord;
 curr.gen_int{2}{2} = [pname fname];
 curr.plot{1}(3) = 5;
 

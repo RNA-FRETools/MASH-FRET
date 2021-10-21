@@ -5,13 +5,15 @@ function pushbutton_calcTfr_Callback(obj, evd, h_fig)
 % h_fig: handle to main figure
 % outfile: {1-by-2} destination folder and file
 
+% default
+trtype = 4; % projective
+
 % collect parameters
 h = guidata(h_fig);
 p = h.param;
 nChan = p.proj{p.curr_proj}.nb_channel;
 curr = p.proj{p.curr_proj}.VP.curr;
-coordref = curr.gen_crd{3}{2}{1};
-trtype = curr.gen_crd{3}{3}{2};
+coordref = curr.res_crd{3};
 
 % control number of channels
 if nChan<=1 || nChan>3
@@ -27,12 +29,6 @@ if isempty(coordref)
     return
 end
 
-% control transformation type
-if trtype<=1
-    setContPan('Select a transformation type.','error',h_fig);
-    return
-end
-
 % calculate transformation
 tr = createTrafo(trtype,coordref,h_fig);
 if isempty(tr)
@@ -40,7 +36,7 @@ if isempty(tr)
 end
 
 % save transformation
-curr.gen_crd{3}{3}{1} = tr;
+curr.res_crd{2} = tr;
 
 % reset transformation file
 curr.gen_crd{3}{3}{3} = '';

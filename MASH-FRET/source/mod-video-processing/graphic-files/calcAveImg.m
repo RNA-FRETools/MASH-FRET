@@ -19,6 +19,10 @@ function aveimg = calcAveImg(laser,vfile,vinfo,nExc,h_fig)
 % control full-length video
 isMov = isFullLengthVideo(h_fig);
 
+% control loadingbar
+h = guidata(h_fig);
+isLb = isfield(h,'barData');
+
 % initializes image
 if strcmp(laser,'all')
     aveimg = cell(1,nExc+1);
@@ -30,7 +34,6 @@ else
 end
 
 if isMov
-    h = guidata(h_fig);
     if strcmp(laser,'all')
         aveimg{1} = mean(h.movie.movie,3);
         for l = 1:nExc
@@ -41,7 +44,8 @@ if isMov
     end
 else
     % open loading bar
-    if loading_bar('init',h_fig,vinfo{3},'Calculate average images...')
+    if ~isLb && loading_bar('init',h_fig,vinfo{3},...
+            'Calculate average images...')
         return
     end
     h = guidata(h_fig);
@@ -55,24 +59,27 @@ else
             return
         end
         if strcmp(laser,'all')
-            aveimg{1} = aveimg{1}+dat.frameCur/vinfo{3};
+            aveimg{1} = aveimg{1}+double(dat.frameCur)/vinfo{3};
         end
 
         for l = 1:nExc
             if strcmp(laser,'all') && ((l~=nExc && mod(t,nExc)==l) || ...
                     (l==nExc && mod(t,nExc)==0))
-                aveimg{l+1} = aveimg{l+1}+nExc*dat.frameCur/vinfo{3};
+                aveimg{l+1} = aveimg{l+1}+nExc*double(dat.frameCur)/...
+                    vinfo{3};
 
             elseif ~strcmp(laser,'all') && ...
                     ((laser~=nExc && mod(t,nExc)==laser) || ...
                     (laser==nExc && mod(t,nExc)==0))
-                aveimg = aveimg+nExc*dat.frameCur/vinfo{3};
+                aveimg = aveimg+nExc*double(dat.frameCur)/vinfo{3};
             end
         end
-        if loading_bar('update',h_fig)
+        if ~isLb && loading_bar('update',h_fig)
             return
         end
     end
-    loading_bar('close',h_fig);
+    if ~isLb
+        loading_bar('close',h_fig);
+    end
 end
 

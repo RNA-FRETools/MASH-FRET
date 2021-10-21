@@ -23,9 +23,10 @@ hedit0 = 20;
 htxt0 = 14;
 hpop0 = 22;
 str0 = 'Units per s.';
-str1 = 'cmap:';
-str2 = {'Jet','Gray','Hot','Cool','Spring','Summer','Autumn','Winter',...
-    'Pink','Bone','Copper'};
+str1 = 'colormap:';
+str2 = {'parula','turbo','hsv','hot','cool','spring','summer','autumn',...
+    'winter','gray','bone','copper','pink','jet','lines','colorcube',...
+    'prism','flag','white'};
 ttstr0 = wrapHtmlTooltipString('<b>Intensity units:</b> image counts per time bin or per second (affects displayed intensities in the visualization area, displayed intensities when using the "create trace" cursor and intensity parameters used in Spotfinder).');
 ttstr1 = wrapHtmlTooltipString('<b>Select a colormap:</b> color scale for pixel intensities.');
 
@@ -35,27 +36,28 @@ h_pan = h.uipanel_VP_plot;
 
 % dimensions
 pospan = get(h_pan,'position');
-wcb0 = pospan(3)-2*p.mg;
+wcb0 = getUItextWidth(str0,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
 wtxt0 = getUItextWidth(str1,p.fntun,p.fntsz1,'normal',p.tbl);
-wpop0 = wcb0-wtxt0;
+wpop0 = pospan(3)-p.mg/2-wcb0-p.mg-wtxt0-p.mg/2;
 
 % GUI
-x = p.mg;
-y = pospan(4)-p.mgpan-hedit0;
+x = p.mg/2;
+y = pospan(4)-p.mgpan-hpop0+(hpop0-hedit0)/2;
 
 h.checkbox_int_ps = uicontrol('style','checkbox','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wcb0,hedit0],'string',str0,'callback',...
     {@checkbox_int_ps_Callback,h_fig},'tooltipstring',ttstr0);
 
-y = p.mg/2+(hpop0-htxt0)/2;
+y = y+(hedit0-htxt0)/2;
+x = x+wcb0+p.mg;
 
 h.text_VP_cmap = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wtxt0,htxt0],'string',str1);
 
 x = x+wtxt0;
-y = p.mg/2;
+y = y-(hpop0-htxt0)/2;
 
 h.popupmenu_colorMap = uicontrol('style','popupmenu','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...

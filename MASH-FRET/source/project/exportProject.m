@@ -1,4 +1,10 @@
-function proj = exportProject(fname,h_fig)
+function proj = exportProject(h_fig)
+% proj = exportProject(h_fig)
+%
+% Builds project's structure using data generated in VP
+%
+% h_fig: handle to main figure
+% proj: project's structure
 
 % update by MH, 24.4.2019: fetch default tag names and colors in interface's defaults (default_param.ini)
 % update by MH, 24.4.2019: (1) modify molecule tag names by removing label 'unlabelled' (2) modify molecule tag structure to allow multiple tags per molecule, by using the first dimension for molecule idexes and the second dimension for label indexes (3) add tag's default colors to project
@@ -10,7 +16,7 @@ nChan = proj.nb_channel;
 nExc = proj.nb_excitations;
 L = proj.movie_dat{3};
 curr = proj.VP.curr;
-coordsm = curr.gen_int{2}{1};
+coordsm = curr.res_crd{4};
 pxdim = curr.gen_int{3}(1);
 npix = curr.gen_int{3}(2);
 avecnt = curr.gen_int{3}(3);
@@ -58,7 +64,7 @@ if ~isempty(I)
     proj.coord_incl = true(1,size(I,2)/nChan);
     proj.is_coord = 1;
     
-    proj.proj_file = fname; % project file
+    proj.proj_file = ''; % project file
 
     proj.pix_intgr = [pxdim npix]; % intgr. area dim. + nb of intgr pix
     proj.cnt_p_sec = persec; % intensities in counts per second

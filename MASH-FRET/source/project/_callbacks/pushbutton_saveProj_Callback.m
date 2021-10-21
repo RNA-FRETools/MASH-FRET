@@ -62,6 +62,7 @@ b = a + numel('MASH-FRET ');
 vers = figname(b:end);
 dat.MASH_version = vers;
 dat.date_last_modif = datestr(now);
+dat.module = p.curr_mod{proj};
 
 % update project file, date and intensity units
 dat.proj_file = [pname fname_proj];
@@ -87,7 +88,6 @@ end
 if ~isempty(p.proj{proj}.VP)
     p.VP.defProjPrm = p.proj{proj}.VP.curr;
     p.VP.defProjPrm.res_crd = p.proj{proj}.VP.def.res_crd;
-    p.VP.defProjPrm.res_int = p.proj{proj}.VP.def.res_int;
     p.VP.defProjPrm.res_plot = p.proj{proj}.VP.def.res_plot;
 end
 if ~isempty(p.proj{proj}.TP)

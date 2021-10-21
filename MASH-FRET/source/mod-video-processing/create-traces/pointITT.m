@@ -13,59 +13,63 @@ function pointITT(obj, evd, h_fig)
 % Plot is exported to .png image file if pointITT is called from a test routine.
 
 h = guidata(h_fig);
+p = h.param;
 
 if iscell(obj)
     newPnt = obj{1};
     file_out = obj{2};
     fromRoutine = true;
 else
-    newPnt = floor(get(h.axes_movie, 'CurrentPoint'))+0.5;
+    newPnt = floor(get(h.axes_VP_vid, 'CurrentPoint'))+0.5;
     newPnt = newPnt(1,[1 2]);
     fromRoutine = false;
 end
 
-nLasers = h.param.movPr.itg_nLasers;
-int_ave = h.param.movPr.itg_ave;
-perSec = h.param.movPr.perSec;
-nPix = h.param.movPr.itg_n;
-aDim = h.param.movPr.itg_dim;
+nExc = p.proj{p.curr_proj}.nb_excitations;
+vidfile = p.proj{p.curr_proj}.movie_file;
+viddat = p.proj{p.curr_proj}.movie_dat;
+expT = p.proj{p.curr_proj}.frame_rate;
+curr = p.proj{p.curr_proj}.VP.curr;
+persec = curr.plot{1}(1);
+pxdim = curr.gen_int{3}(1);
+npix = curr.gen_int{3}(2);
+avcnt = curr.gen_int{3}(3);
 
-if nLasers>h.movie.framesTot
-    nLasers = h.movie.framesTot;
+if nExc>viddat{3}
+    nExc = viddat{3};
 end
 
-pleaseWait('start', h_fig);
+% display process
+setContPan('Generating intensity-time traces...','process',h_fig);
 
-fDat{1} = [h.movie.path h.movie.file];
-fDat{2}{1} = h.movie.speCursor;
-if isfield(h, 'movie') && ~isempty(h.movie.movie)
+fDat{1} = vidfile;
+fDat{2}{1} = viddat{1};
+if isFullLengthVideo(h_fig)
     fDat{2}{2} = h.movie.movie;
 else
     fDat{2}{2} = [];
 end
-fDat{3} = [h.movie.pixelY h.movie.pixelX];
-fDat{4} = h.movie.framesTot;
-[o,data] = create_trace(newPnt,aDim,nPix,fDat);
+fDat{3} = viddat{2};
+fDat{4} = viddat{3};
+[o,data] = create_trace(newPnt,pxdim,npix,fDat);
 
 str_ave = [];
 str_sec = [];
-if perSec
+if persec
     str_sec = ' /s';
-    data = data/h.movie.cyctime;
+    data = data/expT;
 end
-if int_ave
+if avcnt
     str_ave = ' /pix. ';
-    data = data/nPix;
+    data = data/npix;
 end
 
-pleaseWait('close', h_fig);
+time_ax = expT*((1:size(data,1))');
 
-time_ax = h.movie.cyctime*((1:size(data,1))');
-
-ITT = cell(1,nLasers);
-for i = 1:nLasers
-    ITT{i}(:,1) = time_ax(i:nLasers:end,1)*h.movie.cyctime;
-    ITT{i}(:,2) = data(i:nLasers:end,1);
+ITT = cell(1,nExc);
+for i = 1:nExc
+    ITT{i}(:,1) = time_ax(i:nExc:end,1)*expT;
+    ITT{i}(:,2) = data(i:nExc:end,1);
 end
 
 h_figBG_mov = figure('Color', [1 1 1], 'NumberTitle', 'off', ...
@@ -81,7 +85,7 @@ clr = [0 0 1
     0 1 0
     0 0 0];
 leg_str = {};
-for i = 1:nLasers
+for i = 1:nExc
     leg_str = cat(2,leg_str,cat(2,'laser ',num2str(i)));
     if size(clr,1)<i
         clr = cat(1,clr,rand(1,3));
@@ -107,6 +111,10 @@ legend(h_axes, leg_str);
 grid on;
 
 guidata(h_fig, h);
+
+% display success
+setContPan('Intensity-time traces were sucessfully generated!','success',...
+    h_fig);
 
 if ~fromRoutine
     set(h_figBG_mov,'visible','on');
