@@ -13,6 +13,9 @@ nbins = 50; % number of histogram bins
 h = guidata(h_fig);
 p = h.param;
 if ~isModuleOn(p,'sim')
+    cla(h.axes_example);
+    cla(h.axes_example_hist);
+    cla(h.axes_example_mov);
     set([h.axes_example,h.axes_example_hist,h.axes_example_mov,...
         h.cb_example_mov],'visible','off');
     return
