@@ -23,6 +23,7 @@ function [img_ave,ok] = createAveIm(param,corr,useMov,h_fig)
 ok = 1;
 isMov = 0;
 isBgcorr = 0;
+fext_bf = {'.ets','.vsi'};
 
 % collect interface parameters
 h = guidata(h_fig);
@@ -67,7 +68,7 @@ end
 
 if ~isempty(h_fig)
     % loading bar parameters
-    if loading_bar('init', h_fig, L0, 'Build average image...');
+    if loading_bar('init', h_fig, L0, 'Build average image...')
         return
     end
     h = guidata(h_fig);
@@ -79,10 +80,11 @@ for i = startFrame:iv:stopFrame
     if isMov
         imgNext = h.movie.movie(:,:,i);
     else
-        [data,ok] = getFrames(fullname, i, param.extra, h_fig, false);
+        [data,ok] = getFrames(fullname, i, fDat, h_fig, false);
         if ~ok
             return
         end
+        fDat = {{data.fCurs},fDat{2},fDat{3}};
         imgNext = data.frameCur;
     end
 

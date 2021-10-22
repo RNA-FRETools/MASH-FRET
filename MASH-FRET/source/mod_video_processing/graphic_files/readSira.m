@@ -85,6 +85,17 @@ if isempty(fDat)
     
 else
     fCurs = fDat{1};
+    if iscell(fCurs)
+        vers = fCurs{2}{1};
+        is_os = fCurs{2}{2};
+        is_sgl = fCurs{2}{3};
+        if is_sgl
+            prec = 'single';
+        else
+            prec = 'uint16';
+        end
+        fCurs = fCurs{1};
+    end
     pixelX = fDat{2}(1); % Width of the movie
     pixelY = fDat{2}(2); % Height of the movie
     frameLen = fDat{3}; % number total of frames
@@ -269,6 +280,10 @@ end
 
 if exist('f','var')
     fclose(f);
+end
+
+if exist('vers','var')
+    fCurs = {fCurs,{vers,is_os,is_sgl}};
 end
 
 data = struct('cycleTime', cycleTime, ...
