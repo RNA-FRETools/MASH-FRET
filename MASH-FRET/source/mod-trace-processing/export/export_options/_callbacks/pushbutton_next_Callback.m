@@ -6,6 +6,8 @@ function pushbutton_next_Callback(obj, evd, h_fig)
 % file_out: {1-by-2} destination folder and file name
 
 h = guidata(h_fig);
+p = h.param;
+proj = p.curr_proj;
 
 if ~h.mute_actions
     choice = questdlg('Automatically process molecules unprocessed? ', ...
@@ -14,15 +16,15 @@ else
     choice = 'Yes';
 end
 if strcmp(choice, 'Yes')
-    h.param.ttPr.proj{h.param.ttPr.curr_proj}.exp.process = 1;
+    p.proj{proj}.TP.exp.process = 1;
 elseif strcmp(choice, 'No')
-    h.param.ttPr.proj{h.param.ttPr.curr_proj}.exp.process = 0;
+    p.proj{proj}.TP.exp.process = 0;
 else
-    return;
+    return
 end
+
+h.param = p;
 guidata(h_fig, h);
-p = h.param;
-proj = p.curr_proj;
 
 if iscell(obj)
     pname = obj{1};
@@ -46,4 +48,4 @@ end
 
 [o,fname_proc,o] = fileparts(fname);
 close(h.optExpTr.figure_optExpTr);
-saveProcAscii(h_fig, h.param, h.param.proj{proj}.exp, pname, fname_proc);
+saveProcAscii(h_fig, p, p.proj{proj}.TP.exp, pname, fname_proc);

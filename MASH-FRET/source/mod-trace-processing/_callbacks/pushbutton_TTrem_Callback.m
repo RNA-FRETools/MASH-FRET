@@ -60,9 +60,9 @@ end
 m = 1:numel(incl);
 prm_mol = {}; prm_curr = {}; curr_mol = 1;
 for i = m(incl)
-    prm_mol = [prm_mol p.proj{proj}.TP.prm(i)];
-    prm_curr = [prm_curr p.proj{proj}.TP.curr(i)];
-    if i == p.curr_mol(proj)
+    prm_mol = cat(2,prm_mol,p.proj{proj}.TP.prm(i));
+    prm_curr = cat(2,prm_curr,p.proj{proj}.TP.curr(i));
+    if i == p.ttPr.curr_mol(proj)
         curr_mol = size(prm_mol,2);
     end
 end

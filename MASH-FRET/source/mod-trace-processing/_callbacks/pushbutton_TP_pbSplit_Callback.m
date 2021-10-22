@@ -124,11 +124,11 @@ if ~isempty(p.proj{proj}.S_DTA)
 end
 
 % update processing parameters
-p.proj{proj}.prm = p.proj{proj}.TP.prm(mol_id);
-p.proj{proj}.curr = p.proj{proj}.TP.curr(mol_id);
-p.proj{proj}.curr{n+1}{2}{1}(4) =  1;
-p.proj{proj}.curr{n+1}{2}{1}(4+meth) = L_right*nL;
-p.proj{proj}.curr{n}{2}{1}(1) = true;
+p.proj{proj}.TP.prm = p.proj{proj}.TP.prm(mol_id);
+p.proj{proj}.TP.curr = p.proj{proj}.TP.curr(mol_id);
+p.proj{proj}.TP.curr{n+1}{2}{1}(4) =  1;
+p.proj{proj}.TP.curr{n+1}{2}{1}(4+meth) = L_right*nL;
+p.proj{proj}.TP.curr{n}{2}{1}(1) = true;
 
 % add tag
 if ~sum(~cellfun('isempty',strfind(p.proj{proj}.molTagNames,'split')))

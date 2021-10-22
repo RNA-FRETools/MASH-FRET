@@ -38,7 +38,7 @@ topChan = p_fig.topChan;
 isBot = p_fig.isBot;
 botChan = p_fig.botChan;
 
-if ~isfield(p_mol.proj{p_mol.curr_proj},'fix')
+if ~isfield(p_mol.proj{p_mol.curr_proj}.TP,'fix')
     p_mol.proj{p_mol.curr_proj}.TP.fix = cell(1,2);
     p_mol.proj{p_mol.curr_proj}.TP.fix{2} = zeros(1,7);
     p_mol.proj{p_mol.curr_proj}.TP.fix{2}(4) = 0; % perSec

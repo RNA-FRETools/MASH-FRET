@@ -605,7 +605,7 @@ h.optExpTr.pushbutton_cancel = uicontrol('Style', 'pushbutton', ...
 
 guidata(h_fig,h);
 h.optExpTr.pushbutton_help = setInfoIcons(h.optExpTr.pushbutton_cancel,...
-    h_fig,h.param.movPr.infos_icon_file);
+    h_fig,h.param.infos_icon_file);
 
 xNext = xNext + w_but + mg;
 

@@ -3,7 +3,7 @@ function checkbox_photobl_fixStart_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
-mol = p.ttPt.curr_mol(proj);
+mol = p.ttPr.curr_mol(proj);
 nMol = size(p.proj{proj}.coord_incl,2);
 
 val = get(obj, 'Value');

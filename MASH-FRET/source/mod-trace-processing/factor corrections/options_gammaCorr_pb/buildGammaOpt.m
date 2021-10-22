@@ -50,7 +50,7 @@ hfig = mg+hedit0+mg+haxes0+mg+htxt0+hpop0+mg+wpic0+mg;
 
 % lists
 proj = p.curr_proj;
-mol = p.curr_mol(proj);
+mol = p.ttPr.curr_mol(proj);
 exc = p.proj{proj}.excitations;
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;

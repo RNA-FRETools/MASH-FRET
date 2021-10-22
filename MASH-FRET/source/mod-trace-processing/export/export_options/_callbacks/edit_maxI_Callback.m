@@ -1,25 +1,33 @@
 function edit_maxI_Callback(obj, evd, h_fig)
-val = str2num(get(obj, 'String'));
+
 h = guidata(h_fig);
-min = h.param.proj{h.param.curr_proj}.TP.exp.hist{2}(1,2);
+p = h.param;
+expT = p.proj{p.curr_proj}.frame_rate;
+nPix = p.proj{p.curr_proj}.pix_intgr(2);
+perSec = p.proj{p.curr_proj}.TP.fix{2}(4);
+perPix = p.proj{p.curr_proj}.TP.fix{2}(5);
+min = p.proj{p.curr_proj}.TP.exp.hist{2}(1,2);
+
+val = str2num(get(obj, 'String'));
 if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val > min)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
     updateActPan('Max. value must be > min. value.', h_fig, 'error');
     return;
 end
 set(obj, 'BackgroundColor', [1 1 1]);
-perSec = h.param.proj{h.param.curr_proj}.TP.fix{2}(4);
-perPix = h.param.proj{h.param.curr_proj}.TP.fix{2}(5);
+
 if perSec
-    rate = h.param.proj{h.param.curr_proj}.frame_rate;
-    val = val*rate;
+    val = val*expT;
 end
 if perPix
-    nPix = h.param.proj{h.param.curr_proj}.pix_intgr(2);
     val = val*nPix;
 end
-h.param.ttPr.proj{h.param.ttPr.curr_proj}.exp.hist{2}(1,4) = val;
+
+p.proj{p.curr_proj}.exp.hist{2}(1,4) = val;
+
+h.param = p;
 guidata(h_fig, h);
+
 ud_optExpTr('hist', h_fig);
 
 

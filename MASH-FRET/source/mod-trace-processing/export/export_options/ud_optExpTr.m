@@ -8,6 +8,10 @@ proj = p.curr_proj;
 prm = p.proj{proj}.TP.exp;
 nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
+expT = p.proj{proj}.frame_rate;
+nPix = p.proj{proj}.pix_intgr(2);
+perSec = p.proj{proj}.TP.fix{2}(4);
+perPix = p.proj{proj}.TP.fix{2}(5);
 
 set(h.optExpTr.checkbox_molValid, 'Value', prm.mol_valid);
 if prm.mol_valid
@@ -99,14 +103,14 @@ if strcmp(opt, 'hist') || strcmp(opt, 'all')
     % cancel by MH, 10.4.2019
 %     set(h.optExpTr.checkbox_histDiscr, 'Value', prm.hist{1}(2));
 %     set(h.optExpTr.checkbox_histI, 'Value', prm.hist{2}(1,1));
-%     perSec = h.param.ttPr.proj{h.param.ttPr.curr_proj}.fix{2}(4);
-%     perPix = h.param.ttPr.proj{h.param.ttPr.curr_proj}.fix{2}(5);
+%     perSec = h.param.proj{h.param.curr_proj}.fix{2}(4);
+%     perPix = h.param.proj{h.param.curr_proj}.fix{2}(5);
 %     if perSec
-%         rate = h.param.ttPr.proj{h.param.ttPr.curr_proj}.frame_rate;
+%         rate = h.param.proj{h.param.curr_proj}.frame_rate;
 %         prm.hist{2}(1,2:4) = prm.hist{2}(1,2:4)/rate;
 %     end
 %     if perPix
-%         nPix = h.param.ttPr.proj{h.param.ttPr.curr_proj}.pix_intgr(2);
+%         nPix = h.param.proj{h.param.curr_proj}.pix_intgr(2);
 %         prm.hist{2}(1,2:4) = prm.hist{2}(1,2:4)/nPix;
 %     end
 %     set(h.optExpTr.edit_minI, 'String', num2str(prm.hist{2}(1,2)));
@@ -130,14 +134,10 @@ if strcmp(opt, 'hist') || strcmp(opt, 'all')
         % moved here by MH, 10.4.2019
         set(h.optExpTr.checkbox_histDiscr, 'Value', prm.hist{1}(2));
         set(h.optExpTr.checkbox_histI, 'Value', prm.hist{2}(1,1));
-        perSec = h.param.ttPr.proj{h.param.ttPr.curr_proj}.fix{2}(4);
-        perPix = h.param.ttPr.proj{h.param.ttPr.curr_proj}.fix{2}(5);
         if perSec
-            rate = h.param.ttPr.proj{h.param.ttPr.curr_proj}.frame_rate;
-            prm.hist{2}(1,2:4) = prm.hist{2}(1,2:4)/rate;
+            prm.hist{2}(1,2:4) = prm.hist{2}(1,2:4)/expT;
         end
         if perPix
-            nPix = h.param.ttPr.proj{h.param.ttPr.curr_proj}.pix_intgr(2);
             prm.hist{2}(1,2:4) = prm.hist{2}(1,2:4)/nPix;
         end
         set(h.optExpTr.edit_minI, 'String', num2str(prm.hist{2}(1,2)));

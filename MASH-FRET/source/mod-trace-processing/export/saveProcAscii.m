@@ -27,17 +27,28 @@ fromTT = isequalwithequalnans(p, h.param);
 
 proj = p.curr_proj;
 nC = p.proj{proj}.nb_channel;
-nMol = size(p.proj{proj}.intensities,2)/nC;
 coord = p.proj{proj}.coord;
+molTagNames = p.proj{proj}.molTagNames;
+molTag = p.proj{proj}.molTag;
+exc = p.proj{proj}.excitations;
+chanExc = p.proj{proj}.chanExc;
+expT = p.proj{proj}.frame_rate; % MH: this is the EXPOSURE TIME
+FRET = p.proj{proj}.FRET;
+S = p.proj{proj}.S;
+FRET_DTA = p.proj{proj}.FRET_DTA;
+S_DTA = p.proj{proj}.S_DTA;
+intensities = p.proj{proj}.intensities_denoise;
+intensities_DTA = p.proj{proj}.intensities_DTA;
+nMol = size(intensities,2)/nC;
 if fromTT && xp.mol_valid
     mol_incl = p.proj{proj}.coord_incl;
 else
     mol_incl = true(1,nMol);
 end
+mol_TagVal = p.proj{proj}.TP.exp.mol_TagVal;
 
 % added by FS, 24.4.2018
-mol_TagVal = h.param.ttPr.proj{h.param.ttPr.curr_proj}.exp.mol_TagVal;
-if mol_TagVal > numel(p.proj{proj}.molTagNames)
+if mol_TagVal > numel(molTagNames)
     
     % modified by MH, 24.4.2019
 %     mol_incl_tag = mol_incl;
@@ -47,36 +58,25 @@ else
     
     % modified by MH, 24.4.2019
 %     mol_incl_tag = p.proj{proj}.molTag == mol_TagVal;
-    mol_incl_tag = p.proj{proj}.molTag(:,mol_TagVal)';
+    mol_incl_tag = molTag(:,mol_TagVal)';
     
 end
 
-exc = p.proj{proj}.excitations;
-chanExc = p.proj{proj}.chanExc;
-expT = p.proj{proj}.frame_rate; % MH: this is the EXPOSURE TIME
 
-FRET = p.proj{proj}.FRET;
-S = p.proj{proj}.S;
 %N = numel(find(mol_incl));
 N = numel(find(mol_incl & mol_incl_tag)); % added by FS, 24.4. 2018
 nFRET = size(FRET,1);
 nS = size(S,1);
 nExc = numel(exc);
 
-intensities = p.proj{proj}.intensities_denoise;
-if fromTT
-    intensities_DTA = p.proj{proj}.intensities_DTA;
-else
+if ~fromTT
     intensities_DTA = p.proj{proj}.adj.intensities_DTA;
 end
 
 % export intensity in counts per frame (fixed units)
 iunits = 'counts';
 
-if fromTT
-    FRET_DTA = p.proj{proj}.FRET_DTA;
-    S_DTA = p.proj{proj}.S_DTA;
-else
+if ~fromTT
     FRET_DTA = p.proj{proj}.adj.FRET_DTA;
     S_DTA = p.proj{proj}.adj.S_DTA;
 end
