@@ -9,9 +9,12 @@ function pushbutton_TTrem_Callback(obj, evd, h_fig)
 %%
 
 h = guidata(h_fig);
-if isempty(h.param.ttPr.proj)
-    return
-end
+p = h.param;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+nFRET = size(p.proj{proj}.FRET,1);
+nS = size(p.proj{proj}.S,1);
+incl = p.proj{proj}.coord_incl;
     
 if ~h.mute_actions
     del = questdlg('Clear unselected molecules from the project?', ...
@@ -23,16 +26,9 @@ end
 
 setContPan('Clear selected molecules from project...','process',h_fig);
 
-p = h.param.ttPr;
-proj = p.curr_proj;
-nChan = p.proj{proj}.nb_channel;
-nFRET = size(p.proj{proj}.FRET,1);
-nS = size(p.proj{proj}.S,1);
-
-incl = p.proj{proj}.coord_incl;
 if sum(incl)==numel(incl)
     setContPan('Molecule selection empty.','error',h_fig);
-    return;
+    return
 else
     rem_mols = find(~incl);
 end
@@ -64,22 +60,22 @@ end
 m = 1:numel(incl);
 prm_mol = {}; prm_curr = {}; curr_mol = 1;
 for i = m(incl)
-    prm_mol = [prm_mol p.proj{proj}.prm(i)];
-    prm_curr = [prm_curr p.proj{proj}.curr(i)];
+    prm_mol = [prm_mol p.proj{proj}.TP.prm(i)];
+    prm_curr = [prm_curr p.proj{proj}.TP.curr(i)];
     if i == p.curr_mol(proj)
         curr_mol = size(prm_mol,2);
     end
 end
-p.proj{proj}.prm = prm_mol;
-p.proj{proj}.curr = prm_curr;
-p.curr_mol(proj) = curr_mol;
+p.proj{proj}.TP.prm = prm_mol;
+p.proj{proj}.TP.curr = prm_curr;
+p.ttPr.curr_mol(proj) = curr_mol;
 p.proj{proj}.coord_incl = incl(incl);
 
 % modified by MH, 24.4.2019
 %         p.proj{proj}.molTag = p.proj{proj}.molTag(incl); % added by FS, 27.6.2018
 p.proj{proj}.molTag = p.proj{proj}.molTag(incl,:);
 
-h.param.ttPr = p;
+h.param = p;
 guidata(h_fig, h);
 
 ud_TTprojPrm(h_fig);

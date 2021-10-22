@@ -10,32 +10,28 @@ function pushbutton_optGamma_Callback(obj, evd, h_fig)
 % update by MH, 3.4.2019: use the same button to load gamma files (in manual mode) or open photobleaching-based parameters
 
 h = guidata(h_fig);
-p = h.param.ttPr;
-if ~isempty(p.proj)
-    proj = p.curr_proj;
-    mol = p.curr_mol(proj);
-    fret = p.proj{proj}.fix{3}(8);
-    method = p.proj{proj}.curr{mol}{6}{2}(fret);
-    
-    % modified by MH, 3.4.2019
-%     gammaOpt(h_fig);
-    switch method
-        case 0 % manual: load gamma from files
-            if iscell(obj)
-                pname = obj{1};
-                fnames = obj{2};
-                if ~strcmp(pname(end),filesep)
-                    pname = [pname,filesep];
-                end
-                pushbutton_loadFactors_Callback({pname,fnames},[],h_fig);
-            else
-                pushbutton_loadFactors_Callback([],[],h_fig);
+p = h.param;
+proj = p.curr_proj;
+mol = p.ttPr.curr_mol(proj);
+fret = p.proj{proj}.TP.fix{3}(8);
+method = p.proj{proj}.TP.curr{mol}{6}{2}(fret);
+
+switch method
+    case 0 % manual: load gamma from files
+        if iscell(obj)
+            pname = obj{1};
+            fnames = obj{2};
+            if ~strcmp(pname(end),filesep)
+                pname = [pname,filesep];
             end
-            
-        case 1 % photobleaching-based: photo-bleaching otpions
-            gammaOpt(h_fig);
-        
-        case 2 % photobleaching-based: photo-bleaching otpions
-            ESlinRegOpt(h_fig);
-    end
+            pushbutton_loadFactors_Callback({pname,fnames},[],h_fig);
+        else
+            pushbutton_loadFactors_Callback([],[],h_fig);
+        end
+
+    case 1 % photobleaching-based: photo-bleaching otpions
+        gammaOpt(h_fig);
+
+    case 2 % photobleaching-based: photo-bleaching otpions
+        ESlinRegOpt(h_fig);
 end

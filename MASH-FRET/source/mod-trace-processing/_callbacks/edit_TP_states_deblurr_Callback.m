@@ -1,11 +1,16 @@
 function edit_TP_states_deblurr_Callback(obj,evd,h_fig)
 
+% collect project parameters
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
+proj = p.curr_proj;
+mol = p.ttPr.curr_mol(proj);
+nFRET = size(p.proj{proj}.FRET,1);
+nS = size(p.proj{proj}.S,1);
+chan_in = p.proj{proj}.TP.fix{3}(4);
+method = p.proj{proj}.TP.curr{mol}{4}{1}(1);
+toFRET = p.proj{proj}.TP.curr{mol}{4}{1}(2);
 
-if isempty(p.proj)
-    return
-end
 
 val = round(str2num(get(obj, 'String')));
 set(obj, 'String', num2str(val));
@@ -17,15 +22,6 @@ if ~(numel(val)==1 && (val==0 || val==1))
     return
 end
 
-% collect project parameters
-proj = p.curr_proj;
-mol = p.curr_mol(proj);
-method = p.proj{proj}.curr{mol}{4}{1}(1);
-nFRET = size(p.proj{proj}.FRET,1);
-nS = size(p.proj{proj}.S,1);
-toFRET = p.proj{proj}.curr{mol}{4}{1}(2);
-chan_in = p.proj{proj}.fix{3}(4);
-
 % correct selected channel if necessary
 if toFRET==1 && (nFRET+nS)>0
     if chan_in>(nFRET+nS)
@@ -34,8 +30,8 @@ if toFRET==1 && (nFRET+nS)>0
 end
 
 % save new parameters
-p.proj{proj}.curr{mol}{4}{2}(method,7,chan_in) = val;
-h.param.ttPr = p;
+p.proj{proj}.TP.curr{mol}{4}{2}(method,7,chan_in) = val;
+h.param = p;
 guidata(h_fig, h);
 
 % update panel

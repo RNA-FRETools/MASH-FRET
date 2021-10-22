@@ -1,8 +1,8 @@
 function menu_projMenu_merge_Callback(obj,evd,h_fig)
 
 h = guidata(h_fig);
-p = h.param.ttPr;
-if isempty(p.proj)
+p = h.param;
+if ~isModuleOn('TP')
     return
 end
     
@@ -107,7 +107,7 @@ for proj = 1:nProj
 end
 
 % general parameters
-s.fixTT = p.proj{1}.fix;
+s.fixTT = p.proj{1}.TP.fix;
 
 % concatenate data
 s.coord = [];
@@ -204,8 +204,8 @@ for proj = 1:nProj
     % processing parameters
     N = size(p.proj{proj}.coord_incl,2);
     for n = 1:N
-        if ~isempty(p.proj{proj}.prm{n})
-            prm_n = rearrangeProcPrm(p.proj{proj}.prm{n},...
+        if ~isempty(p.proj{proj}.TP.prm{n})
+            prm_n = rearrangeProcPrm(p.proj{proj}.TP.prm{n},...
                 laserOrder,fretOrder,sOrder);
         else
             prm_n = {};
