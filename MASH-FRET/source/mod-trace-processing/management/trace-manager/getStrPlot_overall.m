@@ -10,7 +10,7 @@ function str_out = getStrPlot_overall(h_fig)
 
 % get guidata
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 
 % get variables from the indiviudal project `proj`

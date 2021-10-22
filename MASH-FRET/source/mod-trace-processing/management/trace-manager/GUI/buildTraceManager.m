@@ -130,7 +130,7 @@ h.tm.togglebutton_videoView = uicontrol('style','togglebutton','parent',...
 
 guidata(h_fig,h);
 h.tm.pushbutton_help = setInfoIcons(h.tm.togglebutton_videoView,h_fig,...
-    h.param.movPr.infos_icon_file);
+    h.param.infos_icon_file);
 
 
 %% build main panels

@@ -3,9 +3,9 @@ function ud_optExpTr(opt, h_fig)
 % Last update, 10.4.2019 by MH: (1) set edit fields with empty strings and checkboxes unchecked when main export options are deactivated (2) set checkboxes for trace options to unchecked when formats other than "custommed format" are used and prevent the selection of the option "external file(.log)" for processing parameters export
 
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
-prm = p.proj{proj}.exp;
+prm = p.proj{proj}.TP.exp;
 nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
 

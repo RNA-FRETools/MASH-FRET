@@ -50,15 +50,15 @@ nMol_i = numel(find(incl));
 m_i = find(find(incl) == m);
 
 % collect processing parameters
-perSec = s.fix{2}(4); % intensity units per second
-perPix = s.fix{2}(5); % intensity units per pixel
-inSec = s.fix{2}(7); % x-axis in second
-prm_bg = s.prm{m}{3};
-prm_cross = s.fix{4};
-prm_fact = s.prm{m}{6};
-prm_den = s.prm{m}{1};
-prm_bleach = s.prm{m}{2};
-prm_dta = s.prm{m}{4};
+perSec = s.TP.fix{2}(4); % intensity units per second
+perPix = s.TP.fix{2}(5); % intensity units per pixel
+inSec = s.TP.fix{2}(7); % x-axis in second
+prm_bg = s.TP.prm{m}{3};
+prm_cross = s.TP.fix{4};
+prm_fact = s.TP.prm{m}{6};
+prm_den = s.TP.prm{m}{1};
+prm_bleach = s.TP.prm{m}{2};
+prm_dta = s.TP.prm{m}{4};
 
 % collect infos from GUI
 h = guidata(h_fig);

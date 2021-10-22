@@ -1,7 +1,8 @@
 function bg_m = calcBg_BA(m, p1, subdim, h_fig)
+
 g = guidata(h_fig);
 h = guidata(g.figure_MASH);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 nExc = p.proj{proj}.nb_excitations;
 nChan = p.proj{proj}.nb_channel;
@@ -39,8 +40,7 @@ for l = 1:nExc
         end
         lim_img_y = ceil(lim_img_y);
         lim_img_x = ceil(lim_img_x);
-        img = p.proj{proj}.aveImg{l}( ...
-            lim_img_y(1):lim_img_y(2), ...
+        img = p.proj{proj}.aveImg{l}(lim_img_y(1):lim_img_y(2), ...
             lim_img_x(1):lim_img_x(2));
         
         switch g.param{1}{m}(l,c,1)

@@ -1,7 +1,7 @@
 function h_fig2 = buildGammaOpt(h_fig)
 
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
 
 % defaults
 file_check = 'check.png';
@@ -56,11 +56,11 @@ nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
 clr = p.proj{proj}.colours;
 labels = p.proj{proj}.labels;
-fret = p.proj{proj}.fix{3}(8);
+fret = p.proj{proj}.TP.fix{3}(8);
 str_dat = removeHtml(get(h.popupmenu_gammaFRET,'string'));
 bgcol = clr{2}(fret,1:3);
 fntcol = ones(1,3)*(sum(clr{2}(fret,1:3))<=1.5);
-showCutoff = p.proj{proj}.curr{mol}{6}{3}(fret,1);
+showCutoff = p.proj{proj}.TP.curr{mol}{6}{3}(fret,1);
 c = p.proj{proj}.FRET(fret,2);
 str_acc = getStrPop('bg_corr',{labels,exc,clr});
 str_acc = str_acc(((1:nExc)-1)*nChan+c);

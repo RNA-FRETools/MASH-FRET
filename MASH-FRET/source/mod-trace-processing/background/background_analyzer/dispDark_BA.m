@@ -7,7 +7,8 @@ function coord_dark = dispDark_BA(h_fig,varargin)
 
 g = guidata(h_fig);
 h = guidata(g.figure_MASH);
-p = h.param.ttPr;
+p = h.param;
+
 proj = p.curr_proj;
 res_y = p.proj{proj}.movie_dim(2);
 res_x = p.proj{proj}.movie_dim(1);
@@ -20,7 +21,7 @@ fDat{2}{2} = [];
 fDat{3} = [res_y res_x];
 fDat{4} = p.proj{proj}.movie_dat{3};
 nFrames = size(p.proj{proj}.intensities,1)*p.proj{proj}.nb_excitations;
-perSec = p.proj{proj}.fix{2}(4);
+perSec = p.proj{proj}.TP.fix{2}(4);
 rate = p.proj{proj}.frame_rate;
 
 m = g.curr_m;

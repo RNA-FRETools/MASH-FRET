@@ -6,7 +6,7 @@ def_niv = 50;
 
 % get project parameters
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
@@ -16,9 +16,9 @@ nI0 = sum(chanExc>0);
 nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
 clr = p.proj{proj}.colours;
-perSec = p.proj{proj}.fix{2}(4);
-perPix = p.proj{proj}.fix{2}(5);
-inSec = p.proj{proj}.fix{2}(7);
+perSec = p.proj{proj}.TP.fix{2}(4);
+perPix = p.proj{proj}.TP.fix{2}(5);
+inSec = p.proj{proj}.TP.fix{2}(7);
 
 % get existing plot data
 dat1 = get(h.tm.axes_ovrAll_1,'UserData');

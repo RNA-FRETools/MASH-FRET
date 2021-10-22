@@ -13,7 +13,7 @@ function updatePanel_single(h_fig, nb_mol_disp)
 %
     
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 
 nFRET = size(p.proj{proj}.FRET,1);

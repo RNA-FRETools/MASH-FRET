@@ -8,14 +8,14 @@ function pushbutton_preview_Callback(obj, evd, h_fig)
 % Last update, 10.4.2019 by MH: display processing action when creating figure preview (slow process)
 
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 incl = p.proj{proj}.coord_incl;
 nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
 [o,m_valid,o] = find(incl);
 
-prm = p.proj{proj}.exp.fig;
+prm = p.proj{proj}.TP.exp.fig;
 molPerFig = prm{1}(3);
 min_end = min([molPerFig numel(m_valid)]);
 p_fig.isSubimg = prm{1}(4);

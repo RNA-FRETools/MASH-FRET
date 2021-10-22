@@ -11,10 +11,10 @@ if ~(numel(val)==1 && ~isnan(val))
 end
 
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
-perSec = p.proj{proj}.fix{2}(4);
-perPix = p.proj{proj}.fix{2}(5);
+perSec = p.proj{proj}.TP.fix{2}(4);
+perPix = p.proj{proj}.TP.fix{2}(5);
 if perSec
     rate = p.proj{proj}.frame_rate;
     val = val*rate;

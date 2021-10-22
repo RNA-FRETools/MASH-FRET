@@ -19,7 +19,7 @@ if ~h.mute_actions
     end
 end
 
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 
 % added by MH, 13.1.2020: reset ES histograms
@@ -40,7 +40,7 @@ p.proj{proj}.molTagNames = h.tm.molTagNames; % added by FS, 24.4.2018
 % added by MH, 24.4.2019
 p.proj{proj}.molTagClr = h.tm.molTagClr;
 
-h.param.ttPr = p;
+h.param = p;
 h.tm.ud = true;
 guidata(h_fig,h);
 

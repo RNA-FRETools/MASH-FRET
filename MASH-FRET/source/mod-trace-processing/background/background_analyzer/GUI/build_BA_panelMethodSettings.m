@@ -56,7 +56,7 @@ wbut3 = getUItextWidth(str15,p.fntun,p.fntsz,'normal',p.tbl) + p.wbrd;
 
 % collect inetrface parameters
 h = guidata(h_fig);
-p_proj = h.param.ttPr.proj{h.param.ttPr.curr_proj};
+p_proj = h.param.proj{h.param.curr_proj};
 
 % collect project parameters
 labels = p_proj.labels;

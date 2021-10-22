@@ -21,7 +21,7 @@ h = guidata(h_fig);
 
 % saveProcAscii is/isn't called from trace processing export window
 % (openExpTtpr.m)--> can be called in a routine:
-fromTT = isequalwithequalnans(p, h.param.ttPr);
+fromTT = isequalwithequalnans(p, h.param);
 
 %% collect project parameters
 
@@ -290,8 +290,8 @@ try
 
         % intensity traces are/aren't discretized
         if fromTT
-            discrInt = ~p.proj{proj}.prm{m}{4}{1}(2) || ...
-                p.proj{proj}.prm{m}{4}{1}(2)==2;
+            discrInt = ~p.proj{proj}.TP.prm{m}{4}{1}(2) || ...
+                p.proj{proj}.TP.prm{m}{4}{1}(2)==2;
         else
             discrInt = 1;
         end
@@ -309,8 +309,8 @@ try
         end
         
         if fromTT
-            gamma = p.proj{proj}.prm{m}{6}{1}(1,:);
-            beta = p.proj{proj}.prm{m}{6}{1}(2,:);
+            gamma = p.proj{proj}.TP.prm{m}{6}{1}(1,:);
+            beta = p.proj{proj}.TP.prm{m}{6}{1}(2,:);
         else
             gamma = ones(1,nFRET);
             beta = ones(1,nFRET);
@@ -457,8 +457,8 @@ try
         if saveTr && saveFact
             for i = 1:nFRET
                 if fromTT
-                    gammaAll(m,i) = p.proj{proj}.prm{m}{6}{1}(1,i);
-                    betaAll(m,i) = p.proj{proj}.prm{m}{6}{1}(2,i);
+                    gammaAll(m,i) = p.proj{proj}.TP.prm{m}{6}{1}(1,i);
+                    betaAll(m,i) = p.proj{proj}.TP.prm{m}{6}{1}(2,i);
                 else
                     gammaAll(m,i) = 1;
                     betaAll(m,i) = 1;
@@ -803,7 +803,7 @@ try
             p2 = p;
             if ~fromTT
                 if isfield(p.proj{proj},'prmTT')
-                    p2.proj{proj}.prm = p.proj{proj}.prmTT;
+                    p2.proj{proj}.TP.prm = p.proj{proj}.prmTT;
                 end
                 p2.proj{proj}.intensities_DTA = ...
                     p2.proj{proj}.adj.intensities_DTA;
@@ -880,10 +880,10 @@ catch err
     end
     h = guidata(h_fig);
     if fromTT
-        h.param.ttPr = p;
+        h.param = p;
         guidata(h_fig, h);
     end
-    return;
+    return
 end
 
 
@@ -1166,7 +1166,7 @@ loading_bar('close', h_fig);
 
 if fromTT
     h = guidata(h_fig);
-    h.param.ttPr = p;
+    h.param = p;
     guidata(h_fig, h);
 end
 

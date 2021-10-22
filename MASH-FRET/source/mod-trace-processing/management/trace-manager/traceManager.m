@@ -17,7 +17,7 @@ h = guidata(h_fig);
 h.tm.ud = false;
 guidata(h_fig,h);
 
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 
 % molecule tags, added by FS, 24.4.2018

@@ -1,8 +1,13 @@
 function plot_bgRes(h_fig)
+
 g = guidata(h_fig);
 h = guidata(g.figure_MASH);
 p = h.param.ttPr;
 proj = p.curr_proj;
+rate = p.proj{proj}.frame_rate;
+nPix = p.proj{proj}.pix_intgr(2);
+perSec = p.proj{proj}.TP.fix{2}(4);
+
 m = g.curr_m;
 l = g.curr_l;
 c = g.curr_c;
@@ -14,9 +19,7 @@ res_m = g.res{m,l,c};
 if isempty(res_m)
     return
 end
-perSec = p.proj{proj}.fix{2}(4);
-rate = p.proj{proj}.frame_rate;
-nPix = p.proj{proj}.pix_intgr(2);
+
 str_un = '(a.u. /pix)';
 if perSec
     str_un = '(a.u. /pix /s)';

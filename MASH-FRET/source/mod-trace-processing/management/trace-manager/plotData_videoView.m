@@ -9,7 +9,7 @@ mkSize = 10;
 lineWidth = 2;
 
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 nExc = p.proj{proj}.nb_excitations;
 nChan = p.proj{proj}.nb_channel;
@@ -18,8 +18,8 @@ coord = p.proj{proj}.coord;
 molTags = h.tm.molTag;
 
 % abort if no average image or coordinates are available in project
-if ~(isfield(p.proj{proj},'aveImg') && size(p.proj{proj}.aveImg,2)==nExc && ...
-        ~isempty(coord))
+if ~(isfield(p.proj{proj},'aveImg') && ...
+        size(p.proj{proj}.aveImg,2)==(nExc+1) && ~isempty(coord))
     if ~isfield(h.tm,'text_novid')
         xLim = get(h.tm.axes_videoView,'xlim');
         yLim = get(h.tm.axes_videoView,'ylim');
@@ -49,12 +49,9 @@ end
 % get proper average image
 exc = get(h.tm.popupmenu_VV_exc,'value');
 if exc>nExc
-    img = p.proj{proj}.aveImg{1}/nExc;
-    for l = 2:nExc
-        img = img + p.proj{proj}.aveImg{l}/nExc;
-    end
+    img = p.proj{proj}.aveImg{1};
 else
-    img = p.proj{proj}.aveImg{exc};
+    img = p.proj{proj}.aveImg{exc+1};
 end
 
 % get image size

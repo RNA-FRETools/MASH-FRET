@@ -6,8 +6,8 @@ g = guidata(h.bga.figure_bgopt);
 if ~checkfield_BA(g.figure_bgopt)
     return
 end
-h = guidata(g.figure_MASH);
-p = h.param.ttPr;
+
+p = h.param;
 proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;

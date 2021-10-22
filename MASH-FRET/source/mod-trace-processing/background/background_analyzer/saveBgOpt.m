@@ -10,16 +10,16 @@ function saveBgOpt(h_fig,varargin)
 
 g = guidata(h_fig);
 h = guidata(g.figure_MASH);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
 nMol = size(p.proj{proj}.intensities,2)/nChan;
 exc = p.proj{proj}.excitations;
 labels = p.proj{proj}.labels;
-perSec = p.proj{proj}.fix{2}(4);
 rate = p.proj{proj}.frame_rate;
 nPix = p.proj{proj}.pix_intgr(2);
+perSec = p.proj{proj}.TP.fix{2}(4);
 
 if ~isempty(varargin)
     pname = varargin{1};
@@ -45,7 +45,7 @@ for l = 1:nExc
                 meth = g.param{1}{m}(l,c,1);
                 dat = g.res{m,l,c}(:,2:end);
             end
-            if meth~=g.param{1}{m}(l,c,1);
+            if meth~=g.param{1}{m}(l,c,1)
                 updateActPan(['The export function supports only a ' ...
                     'unique correction method for all molecules.'], ...
                     g.figure_MASH, 'error');

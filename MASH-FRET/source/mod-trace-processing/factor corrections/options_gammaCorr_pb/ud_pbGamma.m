@@ -8,11 +8,11 @@ udCalc_pbGamma(h_fig,h_fig2);
 
 % collect project parameters
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
-perSec = p.proj{proj}.fix{2}(4);
-perPix = p.proj{proj}.fix{2}(5);
-inSec = p.proj{proj}.fix{2}(7);
+perSec = p.proj{proj}.TP.fix{2}(4);
+perPix = p.proj{proj}.TP.fix{2}(5);
+inSec = p.proj{proj}.TP.fix{2}(7);
 rate = p.proj{proj}.frame_rate;
 
 % collect option parameters
@@ -61,8 +61,8 @@ drawCheck(h_fig2);
 
 % plot traces and cutoff
 nC = p.proj{proj}.nb_channel;
-m = p.curr_mol(proj);
-fret = p.proj{proj}.fix{3}(8);
+m = p.ttPr.curr_mol(proj);
+fret = p.proj{proj}.TP.fix{3}(8);
 don = p.proj{proj}.FRET(fret,1);
 acc = p.proj{proj}.FRET(fret,2);
 I_a = p.proj{proj}.intensities_denoise(:,(m-1)*nC+acc,prm(1));

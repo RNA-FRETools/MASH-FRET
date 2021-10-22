@@ -4,7 +4,7 @@ function plotData_conctrace(h_axes,ind,h_fig)
 fcn_ovrAll_1 = {@axes_ovrAll_1_ButtonDownFcn,h_fig};
 
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 chanExc = p.proj{proj}.chanExc;
 exc = p.proj{proj}.excitations;
@@ -15,7 +15,7 @@ FRET = p.proj{proj}.FRET;
 nFRET = size(FRET,1);
 S = p.proj{proj}.S;
 nS = size(S,1);
-inSec = p.proj{proj}.fix{2}(7);
+inSec = p.proj{proj}.TP.fix{2}(7);
 expT = p.proj{proj}.frame_rate; % this is truely the exposure time
 
 if h_axes==h.tm.axes_ovrAll_1

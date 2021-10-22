@@ -1,26 +1,32 @@
 function edit_binI_Callback(obj, evd, h_fig)
-val = str2num(get(obj, 'String'));
+
 h = guidata(h_fig);
-max = abs(diff(h.param.ttPr.proj{h.param.ttPr.curr_proj}.exp.hist{2}(1, ...
-    [2 4])));
+p = h.param;
+expT = p.proj{p.curr_proj}.frame_rate;
+nPix = p.proj{p.curr_proj}.pix_intgr(2);
+max = abs(diff(p.proj{p.curr_proj}.TP.exp.hist{2}(1,[2 4])));
+perSec = p.proj{p.curr_proj}.TP.fix{2}(4);
+perPix = p.proj{p.curr_proj}.TP.fix{2}(5);
+
+val = str2num(get(obj, 'String'));
 if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val < max)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
     updateActPan('Bin value must be < interval size', h_fig, 'error');
     return;
 end
 set(obj, 'BackgroundColor', [1 1 1]);
-perSec = h.param.ttPr.proj{h.param.ttPr.curr_proj}.fix{2}(4);
-perPix = h.param.ttPr.proj{h.param.ttPr.curr_proj}.fix{2}(5);
 if perSec
-    rate = h.param.ttPr.proj{h.param.ttPr.curr_proj}.frame_rate;
-    val = val*rate;
+    val = val*expT;
 end
 if perPix
-    nPix = h.param.ttPr.proj{h.param.ttPr.curr_proj}.pix_intgr(2);
     val = val*nPix;
 end
-h.param.ttPr.proj{h.param.ttPr.curr_proj}.exp.hist{2}(1,3) = val;
+
+p.proj{p.curr_proj}.TP.exp.hist{2}(1,3) = val;
+
+h.param = p;
 guidata(h_fig, h);
+
 ud_optExpTr('hist', h_fig);
 
 

@@ -1,13 +1,13 @@
 function ud_EScalc(h_fig,h_fig2)
 h = guidata(h_fig);
 q = guidata(h_fig2);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
-mol = p.curr_mol(proj);
-prev_fact = p.proj{proj}.curr{mol}{6}{1};
+mol = p.ttPr.curr_mol(proj);
+prev_fact = p.proj{proj}.TP.curr{mol}{6}{1};
 
 curr = q.prm{2};
-fret = p.proj{proj}.fix{3}(8);
+fret = p.proj{proj}.TP.fix{3}(8);
 p.proj{proj}.ES = q.prm{4}; % modify temporary ES field in project
 
 [p,ES,gamma,beta,ok,str] = gammaCorr_ES(fret,p,curr,prev_fact,h_fig);
@@ -27,7 +27,7 @@ end
 q.prm{1} = [round(gamma,2);round(beta,2)];
 guidata(h_fig2,q);
 
-h.param.ttPr = p;
+h.param = p;
 guidata(h_fig,h);
 
 

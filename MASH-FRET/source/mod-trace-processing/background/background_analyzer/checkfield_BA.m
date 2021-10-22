@@ -1,8 +1,10 @@
 function ok = checkfield_BA(h_fig)
+
 ok = 0;
+
 g = guidata(h_fig);
 h = guidata(g.figure_MASH);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;

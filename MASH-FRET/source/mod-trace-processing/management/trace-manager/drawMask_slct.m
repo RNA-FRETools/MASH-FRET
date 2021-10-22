@@ -7,11 +7,11 @@ a = 0.5;
 fcn = {@axes_ovrAll_1_ButtonDownFcn,h_fig};
 
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 nExc = p.proj{proj}.nb_excitations;
 incl = p.proj{proj}.bool_intensities;
-inSec = p.proj{proj}.fix{2}(7);
+inSec = p.proj{proj}.TP.fix{2}(7);
 expT = p.proj{proj}.frame_rate; % this is truely the exposure time
 dat3 = get(h.tm.axes_histSort,'userdata');
 mol = str2num(get(h.tm.checkbox_molNb(1),'string'));

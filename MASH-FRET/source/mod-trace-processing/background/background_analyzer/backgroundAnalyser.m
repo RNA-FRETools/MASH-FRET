@@ -20,7 +20,7 @@ h.bga = q;
 guidata(h_fig,h);
 
 h.bga.pushbutton_help = setInfoIcons(q.pushbutton_save,h_fig,...
-    h.param.movPr.infos_icon_file);
+    h.param.infos_icon_file);
 
 % update q structure
 q = h.bga;

@@ -21,7 +21,7 @@ else
     return;
 end
 guidata(h_fig, h);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 
 if iscell(obj)
@@ -46,5 +46,4 @@ end
 
 [o,fname_proc,o] = fileparts(fname);
 close(h.optExpTr.figure_optExpTr);
-saveProcAscii(h_fig, h.param.ttPr, h.param.ttPr.proj{proj}.exp, pname, ...
-    fname_proc);
+saveProcAscii(h_fig, h.param, h.param.proj{proj}.exp, pname, fname_proc);

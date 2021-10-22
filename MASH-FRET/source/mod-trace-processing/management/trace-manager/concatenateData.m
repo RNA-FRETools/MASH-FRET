@@ -28,7 +28,7 @@ ok = true;
 
 % collect project parameters
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 nMol = numel(h.tm.molValid);
 nChan = p.proj{proj}.nb_channel;
@@ -40,8 +40,8 @@ FRET = p.proj{proj}.FRET;
 nFRET = size(FRET,1);
 S = p.proj{proj}.S;
 nS = size(S,1);
-perSec = p.proj{proj}.fix{2}(4);
-perPix = p.proj{proj}.fix{2}(5);
+perSec = p.proj{proj}.TP.fix{2}(4);
+perPix = p.proj{proj}.TP.fix{2}(5);
 rate = p.proj{proj}.frame_rate;
 nPix = p.proj{proj}.pix_intgr(2);
 
@@ -176,7 +176,7 @@ for i = 1:nMol
         end
         
         I = intensities(incl,(nChan*(i-1)+1):nChan*i,:);
-        gamma = p.proj{proj}.curr{i}{6}{1}(1,:);
+        gamma = p.proj{proj}.TP.curr{i}{6}{1}(1,:);
         fret = calcFRET(nChan, nExc, exc, chanExc, FRET, I, gamma);
         for n = 1:nFRET
             ind = ind + 1;
@@ -207,7 +207,7 @@ for i = 1:nMol
         if nS==0
             continue
         end
-        beta = p.proj{proj}.curr{i}{6}{1}(2,:);
+        beta = p.proj{proj}.TP.curr{i}{6}{1}(2,:);
         s = calcS(exc, chanExc, S, FRET, I, gamma, beta);
         for n = 1:nS
             ind = ind + 1;

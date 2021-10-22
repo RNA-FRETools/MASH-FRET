@@ -1,12 +1,12 @@
 function udCalc_pbGamma(h_fig,h_fig2)
 
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
-m = p.curr_mol(proj);
-fret = p.proj{proj}.fix{3}(8);
+m = p.ttPr.curr_mol(proj);
+fret = p.proj{proj}.TP.fix{3}(8);
 
 q = guidata(h_fig2);
 prm = q.prm{2}(1:6);
@@ -14,7 +14,7 @@ prm = q.prm{2}(1:6);
 % collect molecule traces
 incl = p.proj{proj}.bool_intensities(:,m);
 I_den = p.proj{proj}.intensities_denoise(incl,((m-1)*nChan+1):m*nChan,:);
-prm_dta = p.proj{proj}.curr{m}{4};
+prm_dta = p.proj{proj}.TP.curr{m}{4};
 
 [I_dta,cutOff,gamma,ok,str] = gammaCorr_pb(fret,I_den,prm,prm_dta,...
     p.proj{proj},h_fig);

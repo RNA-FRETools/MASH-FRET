@@ -23,7 +23,7 @@ if exist([mfile_path filesep 'default_param.ini'], 'file')
 end
 
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
 nMol = size(p.proj{proj}.intensities,2)/nChan;
@@ -32,7 +32,7 @@ nExc = numel(exc);
 nChan = p.proj{proj}.nb_channel;
 
 % get channel and laser corresponding to selected data
-selected_chan = p.proj{proj}.fix{3}(6);
+selected_chan = p.proj{proj}.TP.fix{3}(6);
 chan = 0;
 for l = 1:nExc
     for c = 1:nChan
@@ -46,7 +46,7 @@ for l = 1:nExc
     end
 end
 
-curr_m = p.curr_mol(proj); % current molecule
+curr_m = p.ttPr.curr_mol(proj); % current molecule
 curr_l = l; % current excitation
 curr_c = c; % current channel
 
@@ -55,7 +55,7 @@ for m = 1:nMol
         param{1}{m} = prm_prev.m;
     end
 
-    p_BG = p.proj{proj}.curr{m}{3};
+    p_BG = p.proj{proj}.TP.curr{m}{3};
     meth = p_BG{2};
     def{1}{m}(:,:,1) = meth; % [nExc-by-nChan] correction methods
     

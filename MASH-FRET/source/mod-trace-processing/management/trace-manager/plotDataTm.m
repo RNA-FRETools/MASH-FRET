@@ -5,14 +5,14 @@ function plotDataTm(h_fig)
 %    is completed
 
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
 isBot = nFRET | nS;
 
-mol = p.curr_mol(proj);
-prm = p.proj{proj}.prm{mol};
+mol = p.ttPr.curr_mol(proj);
+prm = p.proj{proj}.TP.prm{mol};
 nDisp = size(h.tm.checkbox_molNb,2);
 
 for i = 1:nDisp

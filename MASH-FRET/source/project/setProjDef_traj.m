@@ -6,11 +6,6 @@ function proj = setProjDef_traj(proj,h_fig)
 % proj: project structure
 % h_fig: handle to main figure
 
-% defaults
-resetCrossTalks = false;
-isBeta = false;
-isGamma = false;
-
 % ask user for file structure
 h_opt = openTrImpOpt([],[],h_fig);
 uiwait(h_opt);
@@ -22,67 +17,158 @@ if ~h.trImpOpt_ok % import option settings were aborted
     return
 end
 h = rmfield(h,'trImpOpt_ok');
-guidata(h_fig);
-
+guidata(h_fig,h);
 p = h.param;
+impPrm = p.es.impTrajPrm;
+
+% ask for trajectory files
+if ~isempty(p.proj)
+    proj = p.curr_proj;
+    defPth = p.proj{proj}.folderRoot;
+else
+    defPth = p.folderRoot;
+end
+[fname,pname,o] = uigetfile({'*.*','All files(*.*)'},...
+    'Select trajectory files',defPth,'MultiSelect','on');
+if numel(fname)==1 && ~sum(fname)
+    proj = [];
+    return
+end
+
+% read data from files
+[mov,coord,intensities,factors,FRET] = readTrajFromAscii(pname,fname,...
+    impPrm,h_fig);
+
+mov_file = mov{1};
+mov_dim = mov{2};
+mov_dat = mov{3};
+nChan = mov{4};
+wl = mov{5};
+exptime = mov{6};
+coord_file = coord{1};
+coord_imp = coord{2};
+coord_tot = coord{3};
+FRETchan = FRET{1};
+FRET_DTA = FRET{2};
+nS = 0;
+nMol = size(intensities,2)/nChan;
+
+% set default project parameters
+[path,name,o] = fileparts(pname);
+if isempty(name)
+    [o,name,o] = fileparts(path);
+end
+s.proj_file = [pname,name,'.mash'];
+
+% set default project experiment settings
+s.folderRoot = pname;
+s.nb_channel = nChan; % nb of channel
+s.labels = {};
+s.nb_excitations = numel(wl);
+s.excitations = wl; % laser wavelengths (chronological order)
+s.chanExc = zeros(1,nChan);
+for c = 1:nChan
+    s.labels{c} = sprintf('chan%i', c);
+    if c <= s.nb_excitations
+        s.chanExc(c) = s.excitations(c);
+    end
+end
+s.FRET = FRETchan;
+s.S = [];
+s.exp_parameters = es.expCond; % default parameters
+s.frame_rate = exptime;
+s.colours = {};
+s.traj_import_opt = impPrm;
+
+% set default video infos
+s.movie_file = mov_file; % movie path/file
+s.is_movie = ~isempty(mov_file);
+s.movie_dim = mov_dim;
+s.movie_dat = mov_dat;
+s.ave_img = [];
+s.is_coord = ~isempty(coord_tot);
+s.coord = coord_tot; % molecule coordinates in all channels
+s.coord_file = coord_file; % coordinates path/file
+s.coord_imp_param = coord_imp; % coordinates import parameters
+s.pix_intgr = [1 1]; % intgr. area dim. + nb of intgr pix
+
+% sample
+s.coord_incl = true(1,size(intensities,2)/nChan);
+
+% set default trajectory parameters
+s.cnt_p_pix = 1; % intensities in counts per pixels
+s.cnt_p_sec = 0; % intensities in counts per second
+s.intensities = intensities;
+s.intensities_bgCorr = intensities;
+s.intensities_crossCorr = intensities;
+s.intensities_denoise = intensities;
+s.bool_intensities = ~~incl;
+s.intensities_DTA = nan(size(intensities));
+if isempty(FRET_DTA) && size(FRETchan,1)>0
+    FRET_DTA = nan([size(intensities,1) size(FRETchan,1)*nMol]);
+end
+s.FRET_DTA = FRET_DTA;
+
+% processing parameters
+p.sim = []; % simulation
+p.VP = []; % video processing
+p.TP = []; % trace processing
+p.HA = []; % histogram analysis
+p.TA = []; % transition analysis
 
 % load gamma factor file if it exists; added by FS, 28.3.2018
-if ~strcmp(fext, '.mash') % if ASCII file and not MASH project is loaded
-    resetCrossTalks = true;
-
-    % added by MH, 28.3.2019
-    pnameGamma = p.impPrm{6}{2};
-    fnameGamma = p.impPrm{6}{3};
-    isGamma = p.impPrm{6}{1} & ~isempty(fnameGamma) & sum(pnameGamma);
-    if isGamma
-        gammasCell = cell(1,length(fnameGamma));
-        for f = 1:length(fnameGamma)
-            filename = [pnameGamma fnameGamma{f}];
-            content = importdata(filename);
-            if isstruct(content)
-                gammasCell{f} = content.data;
-            else
-                gammasCell{f} = content;
-            end
-        end
-        gammas = cell2mat(gammasCell');
-
-        % added by FS, 28.3.2018
-        if size(gammas,1) ~= nFiles
-            updateActPan(cat(2,'number of gamma factors does not ',...
-                'match the number of ASCII files loaded. Set all ',...
-                'gamma factors to 1.'), h_fig, 'error');
-            isGamma = false;
+% added by MH, 28.3.2019
+pnameGamma = impPrm{6}{2};
+fnameGamma = impPrm{6}{3};
+isGamma = impPrm{6}{1} & ~isempty(fnameGamma) & sum(pnameGamma);
+if isGamma
+    gammasCell = cell(1,length(fnameGamma));
+    for f = 1:length(fnameGamma)
+        filename = [pnameGamma fnameGamma{f}];
+        content = importdata(filename);
+        if isstruct(content)
+            gammasCell{f} = content.data;
+        else
+            gammasCell{f} = content;
         end
     end
+    gammas = cell2mat(gammasCell');
 
-    % added by MH, 16.1.2020
-    pnameBeta = p.impPrm{6}{5};
-    fnameBeta = p.impPrm{6}{6};
-    isBeta = p.impPrm{6}{4} & ~isempty(fnameBeta) & sum(pnameBeta);
-    if isBeta
-        betasCell = cell(1,length(fnameBeta));
-        for f = 1:length(fnameBeta)
-            filename = [pnameBeta fnameBeta{f}];
-            content = importdata(filename);
-            if isstruct(content)
-                betasCell{f} = content.data;
-            else
-                betasCell{f} = content;
-            end
+    % added by FS, 28.3.2018
+    if size(gammas,1) ~= nFiles
+        updateActPan(cat(2,'number of gamma factors does not ',...
+            'match the number of ASCII files loaded. Set all ',...
+            'gamma factors to 1.'), h_fig, 'error');
+        isGamma = false;
+    end
+end
+
+% added by MH, 16.1.2020
+pnameBeta = impPrm{6}{5};
+fnameBeta = impPrm{6}{6};
+isBeta = impPrm{6}{4} & ~isempty(fnameBeta) & sum(pnameBeta);
+if isBeta
+    betasCell = cell(1,length(fnameBeta));
+    for f = 1:length(fnameBeta)
+        filename = [pnameBeta fnameBeta{f}];
+        content = importdata(filename);
+        if isstruct(content)
+            betasCell{f} = content.data;
+        else
+            betasCell{f} = content;
         end
-        betas = cell2mat(betasCell');
-        if size(betas,1) ~= nFiles
-            updateActPan(cat(2,'number of beta factors does not ',...
-                'match the number of ASCII files loaded. Set all ',...
-                'beta factors to 1.'), h_fig, 'error');
-            isBeta = false;
-        end
+    end
+    betas = cell2mat(betasCell');
+    if size(betas,1) ~= nFiles
+        updateActPan(cat(2,'number of beta factors does not ',...
+            'match the number of ASCII files loaded. Set all ',...
+            'beta factors to 1.'), h_fig, 'error');
+        isBeta = false;
     end
 end
 
 % define molecule processing parameters applied (prm) and to apply (curr)
-for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
+for i = proj1:proj2
 
     % moved here by MH, 29.3.2019
     nMol = numel(p.proj{i}.coord_incl);
@@ -135,12 +221,10 @@ for i = (size(p.proj,2)-size(dat,2)+1):size(p.proj,2)
         p.proj{i} = rmfield(p.proj{i}, 'prmTT');
     end
 
-    if resetCrossTalks
-        % added by MH, 13.1.2020
-        % reset cross-talks if ASCII import
-        p.proj{i}.fix{4}{1} = zeros(nChan,nChan-1);
-        p.proj{i}.fix{4}{2} = zeros(nExc-1,nChan);
-    end
+    % added by MH, 13.1.2020
+    % reset cross-talks if ASCII import
+    p.proj{i}.fix{4}{1} = zeros(nChan,nChan-1);
+    p.proj{i}.fix{4}{2} = zeros(nExc-1,nChan);
 
     p.proj{i}.curr = cell(1,nMol);
     for n = 1:nMol % set current param. for all mol.
