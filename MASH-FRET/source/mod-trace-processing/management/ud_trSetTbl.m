@@ -44,6 +44,9 @@ end
 h.param.ttPr = p.ttPr;
 guidata(h_fig, h);
 
+% update current molecule
+set(h.edit_currMol,'string',num2str(mol));
+
 % update molecule select checkbox
 set(h.checkbox_TP_selectMol,'string',cat(2,'include (',num2str(sum(incl)),...
     ' included)'),'value',incl(mol));

@@ -33,16 +33,13 @@ p_panel = p.proj{proj}.TP.curr{mol}{2};
 cutIt = p_panel{1}(1);
 method = p_panel{1}(2);
 chan = p_panel{1}(3);
-start = p_panel{1}(4);
 cutOff = p_panel{1}(4+method);
 prm = p_panel{2}(chan,:);
 
 perSec = fix{2}(4);
 perPix = fix{2}(5);
-fixIt = fix{2}(6);
 inSec = fix{2}(7);
 if inSec
-    start = start*rate;
     cutOff = cutOff*rate;
     prm(2:3) = prm(2:3)*rate;
 end
@@ -60,12 +57,6 @@ if chan > nFRET+nS % intensity channel
     end
 end
 
-set(h.checkbox_photobl_fixStart, 'Value', fixIt);
-set(h.checkbox_photobl_insec, 'Value', inSec);
-set(h.edit_photobl_start, 'String', num2str(start));
-if fixIt
-    set(h.edit_photobl_start, 'Enable', 'inactive');
-end
 set(h.edit_photobl_stop, 'String', num2str(cutOff));
 set(h.popupmenu_debleachtype, 'Value', method);
 set(h.checkbox_cutOff, 'Value', cutIt);
