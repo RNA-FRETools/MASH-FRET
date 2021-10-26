@@ -79,6 +79,9 @@ else
         if ~ok
             return
         end
+        if t==1
+            vinfo = {{dat.fCurs},vinfo{2},vinfo{3}};
+        end
         
         if strcmp(laser,'all')
             aveimg{1} = aveimg{1}+double(dat.frameCur)/vinfo{3};
