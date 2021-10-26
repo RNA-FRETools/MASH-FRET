@@ -40,8 +40,9 @@ str9 = {'bottom','top','all'};
 str10 = {'Select a trace'};
 str11 = 'Results (states):';
 str12 = {'Select a state'};
-str13 = 'state';
-str14 = 'thresholds:';
+str19 = 'state';
+str13 = 'value';
+str14 = 'threshold';
 str15 = 'low';
 str16 = 'high';
 str17 = 'Adjust to data';
@@ -69,10 +70,10 @@ h_pan = h.uipanel_TP_findStates;
 % dimensions
 pospan = get(h_pan,'position');
 wpop0 = getUItextWidth(str11,p.fntun,p.fntsz1,'normal',p.tbl);
-wpop1 = 2*wedit0+p.mg/fact;
-wtxt0 = getUItextWidth(str14,p.fntun,p.fntsz1,'normal',p.tbl);
-wpop2 = wtxt0+p.mg/fact+wedit0;
 wbut0 = getUItextWidth(str18,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
+wpop1 = 2*wedit0+p.mg/fact;
+wpop2 = pospan(3)-p.mg/2-3*(p.mg/fact+wedit0)-p.mg/2;
+wcb0 = 3*wedit0+2*p.mg/fact;
 
 % GUI
 x = p.mg/2;
@@ -158,22 +159,20 @@ h.edit_TP_states_param3 = uicontrol('style','edit','parent',h_pan,'units',...
     [x,y,wedit0,hedit0],'callback',{@edit_TP_states_param3_Callback,h_fig});
 
 x = p.mg/2;
-y = y-p.mg-htxt0-hedit0+(hedit0-htxt0)/2;
+y = y-p.mg-htxt0;
 
 h.text_TP_states_thresholds = uicontrol('style','text','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontangle',...
-    'italic','position',[x,y,wtxt0,htxt0],'string',str14,...
-    'horizontalalignment','right');
+    'italic','position',[x,y,wpop2,htxt0],'string',str14);
 
-x = x+wtxt0+p.mg/fact;
-y = y-(hpop0-htxt0)/2;
+y = y-hpop0;
 
 h.popupmenu_TP_states_indexThresh = uicontrol('style','popupmenu','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
-    'position',[x,y,wedit0,hpop0],'string',str12,'tooltipstring',ttstr9,...
+    'position',[x,y,wpop2,hpop0],'string',str12,'tooltipstring',ttstr9,...
     'callback',{@popupmenu_TP_states_indexThresh_Callback,h_fig});
 
-x = x+wedit0+p.mg/fact;
+x = x+wpop2+p.mg/fact;
 y = y+(hpop0-hedit0)/2;
 
 h.edit_TP_states_lowThresh = uicontrol('style','edit','parent',h_pan,'units',...
@@ -274,7 +273,7 @@ y = y-p.mg/fact-hedit0;
 
 h.checkbox_recalcStates = uicontrol('style','checkbox','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wpop0,hedit0],'string',str17,'tooltipstring',ttstr13,...
+    [x,y,wcb0,hedit0],'string',str17,'tooltipstring',ttstr13,...
     'callback',{@checkbox_recalcStates_Callback,h_fig});
 
 x = p.mg/2;
@@ -283,7 +282,7 @@ y = y-p.mg-hpop0+(hpop0-htxt0)/2;
 h.text_TP_states_resultsStates = uicontrol('style','text','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontangle',...
     'italic','position',[x,y,wpop0,htxt0],'string',str11,...
-    'horizontalalignment','right');
+    'horizontalalignment','left');
 
 x = x+wpop0+p.mg/fact;
 y = y-(hpop0-htxt0)/2;
@@ -293,8 +292,14 @@ h.popupmenu_TP_states_index = uicontrol('style','popupmenu','parent',...
     'position',[x,y,wedit0,hpop0],'string',str12,'tooltipstring',ttstr7,...
     'callback',{@popupmenu_TP_states_index_Callback,h_fig});
 
+y = y+hpop0;
+
+h.text_TP_states_index = uicontrol('style','text','parent',h_pan,'units',...
+    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wedit0,htxt0],'string',str19);
+
 x = x+wedit0+p.mg/fact;
-y = y+(hpop0-hedit0)/2;
+y = y-hpop0+(hpop0-hedit0)/2;
 
 h.edit_TP_states_result = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
