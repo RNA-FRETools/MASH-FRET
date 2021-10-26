@@ -3,7 +3,7 @@ function pushbutton_TTgen_create_Callback(obj,evd,h_fig)
 % retrieve parameters
 h = guidata(h_fig);
 p = h.param;
-curr = p.proj{p.proj}.VP.curr;
+curr = p.proj{p.curr_proj}.VP.curr;
 coordsm = curr.res_crd{4};
 
 % control single molecule coordinates
