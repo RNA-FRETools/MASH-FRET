@@ -112,7 +112,7 @@ if ~isBgCorr
                     p.proj{proj}.TP.prm{mol}{3}{3}{l,c}(6,4:5) = ...
                         coord_dark;
                     [o,I_bg] = create_trace(coord_dark,aDim,nPix,fDat,...
-                        true);
+                        false);
                     I_bg = slideAve(I_bg(l:size(I,3):end,:), prm(1));
                     bg = I_bg(1:size(I,1));
                     

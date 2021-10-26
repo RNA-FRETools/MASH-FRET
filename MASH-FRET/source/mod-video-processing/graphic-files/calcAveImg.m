@@ -80,7 +80,7 @@ else
             return
         end
         if t==1
-            vinfo = {{dat.fCurs},vinfo{2},vinfo{3}};
+            vinfo = {dat.fCurs,vinfo{2},vinfo{3}};
         end
         
         if strcmp(laser,'all')

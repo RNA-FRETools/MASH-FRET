@@ -2,7 +2,7 @@ function trace = getIntTrace(lim, aDim, nPix, fDat, varargin)
 % trace = getIntTrace(lim, aDim, nPix, fDat)
 % trace = getIntTrace(lim, aDim, nPix, fDat, mute)
 %
-% Inegrate intensities for specific positions in the video and build up corresponding intensity-time traces.
+% Inegrate intensities for specific positions in the fDat{2}{2}eo and build up corresponding intensity-time traces.
 % Intensities are calculated as the sum of the brightest pixels in a square zone around the molecule coordinates.
 %
 % lim: structure containing fields:
@@ -10,17 +10,22 @@ function trace = getIntTrace(lim, aDim, nPix, fDat, varargin)
 %  lim.Yinf: [1-by-N] pixel position of the zone's lower bound in the y-direction 
 % aDim: zone's pixel dimensions
 % nPix: number of brightest pixels to sum up
-% fDat: {1-by-4} video file data and meta data with:
-%  fDat{1}: source video file
-%  fDat{2}: {1-by-2} position in file where pixel data starts and full-length video data if loaded in memory (empty otherwise)
-%  fDat{3}: [1-by-2] video dimensions in the x- and y- directions
-%  fDat{4}: video length (in frames)
+% fDat: {1-by-4} fDat{2}{2}eo file data and meta data with:
+%  fDat{1}: source fDat{2}{2}eo file
+%  fDat{2}: {1-by-2} position in file where pixel data starts and full-length fDat{2}{2}eo data if loaded in memory (empty otherwise)
+%  fDat{3}: [1-by-2] fDat{2}{2}eo dimensions in the x- and y- directions
+%  fDat{4}: fDat{2}{2}eo length (in frames)
 % mute: (1) to mute actions, (0) otherwise
 
 trace = [];
 movFile = fDat{1};
 fCurs = fDat{2}{1};
-vid = fDat{2}{2};
+if iscell(fCurs)
+    vers = fCurs{2}{1};
+    is_os = fCurs{2}{2};
+    is_sgl = fCurs{2}{3};
+    fCurs = fCurs{1};
+end
 s = fDat{3};
 zTot = fDat{4};
 mute = false;
@@ -29,7 +34,7 @@ if ~isempty(varargin)
 end
 
 nCoord = numel(lim.Xinf);
-isMov = ~isempty(vid);
+isMov = ~isempty(fDat{2}{2});
 
 [o,o,fFormat] = fileparts(movFile);
 if strcmp(fFormat,'.vsi') || strcmp(fFormat,'.ets')
@@ -41,7 +46,7 @@ switch fFormat
     case '.bf'
         if isMov
             if memAlloc(zTot*nCoord*aDim^2*4)
-                trace = tracesFromMatrix(vid,zTot,lim,aDim,nPix,mute);
+                trace = tracesFromMatrix(fDat{2}{2},zTot,lim,aDim,nPix,mute);
                 return
             end
         end
@@ -71,7 +76,7 @@ switch fFormat
     case '.sif'
         if isMov
             if memAlloc(zTot*nCoord*aDim^2*4)
-                trace = tracesFromMatrix(vid,zTot,lim,aDim,nPix,mute);
+                trace = tracesFromMatrix(fDat{2}{2},zTot,lim,aDim,nPix,mute);
                 return
             end
         end
@@ -128,13 +133,15 @@ switch fFormat
         
     case '.sira'
         if isMov
-            if memAlloc(zTot*nCoord*aDim^2*4);
-                trace = tracesFromMatrix(vid,zTot,lim,aDim,nPix,mute);
+            if memAlloc(zTot*nCoord*aDim^2*4)
+                trace = tracesFromMatrix(fDat{2}{2},zTot,lim,aDim,nPix,mute);
                 return
             end
         end
         
-        [vers,is_sgl,is_os] = getSiraDat(movFile,[]);
+        if ~exist('vers','var')
+            [~,is_sgl,is_os] = getSiraDat(movFile,[]);
+        end
         if is_sgl
             prec = 'single';
         else
@@ -192,7 +199,7 @@ switch fFormat
     case '.tif'
         if isMov
             if memAlloc(zTot*nCoord*aDim^2*4)
-                trace = tracesFromMatrix(vid,zTot,lim,aDim,nPix,mute);
+                trace = tracesFromMatrix(fDat{2}{2},zTot,lim,aDim,nPix,mute);
                 return
             end
         end
@@ -220,7 +227,7 @@ switch fFormat
     case '.gif'
         if isMov
             if memAlloc(zTot*nCoord*aDim^2*4)
-                trace = tracesFromMatrix(vid,zTot,lim,aDim,nPix,mute);
+                trace = tracesFromMatrix(fDat{2}{2},zTot,lim,aDim,nPix,mute);
                 return
             end
         end
@@ -274,7 +281,7 @@ switch fFormat
     case '.pma'
         if isMov
             if memAlloc(zTot*nCoord*aDim^2*4)
-                trace = tracesFromMatrix(vid,zTot,lim,aDim,nPix,mute);
+                trace = tracesFromMatrix(fDat{2}{2},zTot,lim,aDim,nPix,mute);
                 return
             end
         end
