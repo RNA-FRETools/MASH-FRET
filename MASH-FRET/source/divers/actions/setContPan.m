@@ -20,14 +20,29 @@ end
 
 switch state
     case 'error'
+        str_icon = char(9888);
+        clr_icon = [1,0.5,0.5];
+        str_status = 'Warning!';
         colBg = colRed;
     case 'success'
+        clr_icon = [0,0.5,0];
+        str_icon = char(10004);
+        str_status = 'Success!';
         colBg = colGreen;
     case 'process'
+        str_icon = char(8987);
+        clr_icon = [0,0,1];
+        str_status = 'Processing...';
         colBg = colYellow;
     case 'warning'
+        clr_icon = [1,0.5,0.5];
+        str_icon = char(9888);
+        str_status = ' Warning!';
         colBg = colOrange;
     otherwise
+        clr_icon = [0,0.5,0];
+        str_icon = char(10004);
+        str_status = 'Success!';
         colBg = colWhite;
 end
 
@@ -58,37 +73,46 @@ end
 
 % add time to the new action string
 t = [hr ':' m ' '];
-str{1,1} = [t,str{1,1}];
+str2save = str;
+str2save{1,1} = [t,str2save{1,1}];
 
 % append log file with action
-str2save = cell(size(str));
-str2save{1} = str{1};
-for i = 2:numel(str)
-    str2save{i} = [repmat(' ',[1,length(t)]),str{i}];
+for i = 2:numel(str2save)
+    str2save{i} = [repmat(' ',[1,length(t)]),str2save{i}];
 end
 success = saveActPan(str2save, h_fig);
 if ~success
     disp('Impossible to append actions in daily log file.');
 end
-for i = 1:numel(str2save,1)
+for i = 1:numel(str2save)
     disp(str2save{i});
 end
 
-% update control panel
+% make last action bold
+if size(str,1)>1
+    str = str';
+end
+str2disp = str;
+str2disp{1} = ['*** ',str2disp{1}];
+str2disp{end} = [str2disp{end},' ***'];
+
+% concatenate with old actions
 str0 = get(h.edit_actPan,'userdata');
 if size(str0,1)>1
     str0 = str0';
 end
-if size(str,1)>1
-    str = str';
-end
 str = [str,str0];
+str2disp = [str2disp,str0];
 if numel(str)>nLmax
     str((nLmax+1):end) = [];
+    str2disp((nLmax+1):end) = [];
 end
 
-strWrap = wrapActionString('none',h.edit_actPan,...
-    [h.figure_dummy,h.text_dummy],str);
-set(h.edit_actPan, 'String', strWrap, 'BackgroundColor', colBg,'userdata',...
+% strWrap = wrapActionString('none',h.edit_actPan,...
+%     [h.figure_dummy,h.text_dummy],str);
+
+set(h.text_statusIcon,'String',str_icon,'ForegroundColor',clr_icon);
+set(h.text_status,'String',str_status);
+set(h.edit_actPan,'String',str2disp,'BackgroundColor',colBg,'userdata',...
     str);
 drawnow;

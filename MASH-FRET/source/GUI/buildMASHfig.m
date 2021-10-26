@@ -32,6 +32,7 @@ wfig = 1024;
 wlst_norm = 0.1530; % width of project list (normalized units)
 hlst_norm = 0.1693; % height of project list (normalized units)
 fact = 5;
+htxt0 = 14;
 hedit0 = 20;
 hbut0 = 30;
 hbut1 = 25;
@@ -50,6 +51,9 @@ str2 = 'Trace processing';
 str3 = 'Histogram analysis';
 str4 = 'Transition analysis';
 str6 = '...';
+str7 = char(10004);
+str8 = 'Ready!';
+clr_icon = [0,0.5,0];
 ttstr0 = wrapHtmlTooltipString('<b>Root directory:</b> default destination to export files to');
 ttstr1 = wrapHtmlTooltipString('Browse directories...');
 ttstr2 = wrapHtmlTooltipString('<b>New</b> project');
@@ -81,9 +85,11 @@ set(0,'units','pixels');
 pos0 = get(0,'monitorpositions');
 xfig = (pos0(1,3)-wfig)/2;
 yfig = (pos0(1,4)-hfig)/2;
+wtxt0 = getUItextWidth(str7,fntun,fntsz1,'bold',p.tbl);
 wlst = wfig*wlst_norm;
 hlst = hfig*hlst_norm;
-hedit1 = hfig-mg-hbut1-mg/fact-hlst-mg-hedit0-5*(mg+hbut0)-2*mg;
+wtxt1 = wlst-wtxt0;
+hedit1 = hfig-mg-hbut1-mg/fact-hlst-mg-hedit0-5*(mg+hbut0)-mg-htxt0-2*mg;
 wpan0 = wfig-2*mg-wlst;
 mgbut = (wlst-wbuth-mg-5*wbut1)/5;
 wbut0 = getUItextWidth(str6,fntun,fntsz1,'normal',p.tbl)+wbrd;
@@ -221,12 +227,25 @@ h.togglebutton_TA = uicontrol('style','togglebutton','parent',h_fig,...
     'position',[x,y,wlst,hbut0],'string',str4,'callback',...
     {@switchPan,h_fig});
 
-y = y-p.mg-hedit1;
+y = y-mg-htxt0;
+
+h.text_statusIcon = uicontrol('style','text','parent',h_fig,'units',posun,...
+    'fontunits',fntun,'fontsize',fntsz1,'fontweight','bold','string',str7,...
+    'position',[x,y,wtxt0,htxt0],'foregroundcolor',clr_icon);
+
+x = x+wtxt0;
+
+h.text_status = uicontrol('style','text','parent',h_fig,'units',posun,...
+    'fontunits',fntun,'fontsize',fntsz1,'string',str8,'position',...
+    [x,y,wtxt1,htxt0],'horizontalalignment','left');
+
+x = mg;
+y = y-mg-hedit1;
 
 h.edit_actPan = uicontrol('style','edit','parent',h_fig,'units',posun,...
     'fontunits',fntun,'fontsize',fntsz1,'max',2,'position',...
     [x,y,wlst,hedit1],'enable','inactive','horizontalalignment','left',...
-    'fontname','FixedWidth');
+    'fontname','Courier');
 
 x = mg+wlst+mg;
 y = 0;
