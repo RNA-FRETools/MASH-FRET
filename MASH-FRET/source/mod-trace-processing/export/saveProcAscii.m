@@ -268,9 +268,16 @@ try
 
         % if requested, process molecule data before exporting
         if fromTT && xp.process
+            h = guidata(h_fig);
+            h.mute_actions = true;
+            guidata(h_fig,h);
 
             % process data
             p = updateTraces(h_fig, 'ttPr', m, p, []);
+            
+            h = guidata(h_fig);
+            h.mute_actions = false;
+            guidata(h_fig,h);
 
             % collect processed data
             intensities = p.proj{proj}.intensities_denoise;
@@ -1171,7 +1178,7 @@ if fromTT
 end
 
 str = str(1:end-2); % remove last '\n'
-setContPan(cat(2,'Export completed:\n',str),'process',h_fig);
+setContPan(cat(2,'Export completed:\n',str),'success',h_fig);
 
 
 function upgradeKinFile(fname_kin,fname_dt,kinDat)

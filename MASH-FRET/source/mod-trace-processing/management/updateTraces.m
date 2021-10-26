@@ -9,6 +9,8 @@ if isempty(p.proj)
     return
 end
 
+setContPan('Process current traces...','process',h_fig);
+
 % update images
 if ~(~isempty(axes) && isfield(axes, 'axes_molImg'))
     axes_molImg = [];
@@ -59,6 +61,5 @@ end
 % p.proj{proj}.def.mol = p.proj{proj}.prm{mol};
 % p.proj{proj}.curr{mol} = p.proj{proj}.prm{mol};
 
-
-
+setContPan('Traces are up to date!','success',h_fig);
 

@@ -130,7 +130,7 @@ switch status
             if isfield(h, 'barData')
                 h = rmfield(h, 'barData');
             end
-            disp('The loading bar does not exist: update is impossible.');
+            setContPan('Process interrupted.','error',h_fig);
             stop = 1;
             guidata(h_fig,h);
             return
@@ -181,6 +181,7 @@ switch status
         if isfield(h, 'barData')
             if isfield(h.barData,'fig_bar') && ishandle(h.barData.fig_bar)
                 close(h.barData.fig_bar);
+                h = rmfield(h, 'barData');
                 disp('Process completed.');
             else
                 h = rmfield(h, 'barData');
