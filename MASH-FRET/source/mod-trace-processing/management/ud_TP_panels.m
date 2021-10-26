@@ -14,3 +14,4 @@ ud_denoising(h_fig);
 ud_bleach(h_fig);
 ud_factors(h_fig);
 ud_DTA(h_fig);
+ud_TP_currMol(h_fig);

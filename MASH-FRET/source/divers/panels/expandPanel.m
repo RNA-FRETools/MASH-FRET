@@ -42,7 +42,8 @@ for c = 1:nChld
             strcmp(hchld(c).Style,'pushbutton')
         if isExtButton(hchld(c))
             incl_but(c) = true;
-        elseif isempty(hchld(c).String)
+        elseif isempty(hchld(c).String) && ...
+                ~strcmp(hchld(c).UserData,'nohelp')
             incl_hlp(c) = true;
         end
     end

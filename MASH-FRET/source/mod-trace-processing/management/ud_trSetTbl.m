@@ -15,37 +15,11 @@ end
 % collect experiment settings
 proj = p.curr_proj;
 mol = p.ttPr.curr_mol(proj);
-nC = p.proj{proj}.nb_channel;
-chanExc = p.proj{proj}.chanExc;
-exc = p.proj{proj}.excitations;
 incl = p.proj{proj}.coord_incl;
 molTag = p.proj{proj}.molTag;
 tagNames = p.proj{proj}.molTagNames;
 nTag = size(tagNames,2);
 colorlist = p.proj{proj}.molTagClr;
-
-% save current molecule's parameters and cross talks as default
-p.ttPr.defProjPrm.mol = p.proj{proj}.TP.curr{mol};
-p.ttPr.defProjPrm.general = p.proj{proj}.TP.fix;
-p.ttPr.defProjPrm.exp = p.proj{proj}.TP.exp;
-p.ttPr.defProjPrm.general{4} = p.proj{proj}.TP.fix{4};
-de_bywl = p.ttPr.defProjPrm.general{4}{2};
-if size(de_bywl,1)>0
-    % reorder DE coefficients chromatically
-    for c = 1:nC
-        if sum(exc==chanExc(c)) 
-            exc_but_c = exc(exc~=chanExc(c));
-            [o,id] = sort(exc_but_c,'ascend');
-
-            p.ttPr.defProjPrm.general{4}{2}(:,c) = de_bywl(id,c);
-        end
-    end
-end
-h.param.ttPr = p.ttPr;
-guidata(h_fig, h);
-
-% update current molecule
-set(h.edit_currMol,'string',num2str(mol));
 
 % update molecule select checkbox
 set(h.checkbox_TP_selectMol,'string',cat(2,'include (',num2str(sum(incl)),...

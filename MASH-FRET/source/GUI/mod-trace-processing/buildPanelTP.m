@@ -28,13 +28,19 @@ htxt0 = 13;
 hsld0 = 13;
 hpop0 = 22;
 wedit0 = 40;
+wbut0 = 23;
 wlst1 = 90; % default label list width (invisible)
 hlst1 = 80; % default label list height (invisible)
 fact = 5;
+[pname,o,o] = fileparts(mfilename('fullpath'));
+cdata = imread(cat(2,pname,filesep,'arrow.png'));
 str0 = 'auto.';
 str1 = 'Show';
 str2 = 'Opt.';
 str3 = {'default labels'};
+str4 = 'UPDATE';
+str5 = 'UPDATE ALL';
+str6 = 'EXPORT...';
 ttl0 = 'Sample management';
 ttl1 = 'Plot';
 ttl2 = 'Sub-images';
@@ -45,6 +51,12 @@ ttl6 = 'Denoising';
 ttl7 = 'Photobleaching';
 ttl8 = 'Find states';
 tabttl0 = 'Traces';
+ttstr0 = wrapHtmlTooltipString('Go to <b>previous molecule</b> in the list.');
+ttstr1 = wrapHtmlTooltipString('<b>Current molecule</b> index in the list.');
+ttstr2 = wrapHtmlTooltipString('Go to <b>next molecule</b> in the list.');
+ttstr3 = wrapHtmlTooltipString('<b>Refresh calculations</b> for the current molecule only.');
+ttstr4 = wrapHtmlTooltipString('<b>Refresh calculations</b> for all molecules in the list.');
+ttstr5 = wrapHtmlTooltipString('Open <b>export options</b> to configure the export of time-traces, state sequences, histograms and dwell times to various ASCII files and figures.');
 
 % parents
 h_fig = h.figure_MASH;
@@ -53,11 +65,15 @@ h_pan = h.uipanel_TP;
 % dimensions
 pospan = get(h_pan,'position');
 wcb2 = getUItextWidth(str0,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
+wbut1 = getUItextWidth(str4,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
+wbut2 = getUItextWidth(str5,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
+wbut3 = getUItextWidth(str6,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 wbut5 = getUItextWidth(str1,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 wbut6 = getUItextWidth(str2,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 wpan1 = 2*p.mg+4*p.mg/fact+2*wedit0+wcb2+wbut5+wbut6;
 wtab = pospan(3)-3*p.mg-wpan1;
 htab = pospan(4)-2*p.mg;
+wtxt0 = pospan(3)-p.mg-wtab-p.mg-2*wbut0+wedit0-p.mg/2-p.mg;
 hpan0 = p.mgpan+6*p.mg/fact+2*p.mg+hpop0+6*hedit0+2*htxt0;
 hpan1 = p.mgpan+3*p.mg/fact+2*p.mg+2*hpop0+3*hedit0+2*htxt0;
 hpan2 = p.mgpan+p.mg/2+2*p.mg/fact+4*htxt0+hsld0+hedit0;
@@ -144,6 +160,57 @@ h.uipanel_TP_findStates = uipanel('parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
     [x,y,wpan1,hpan8],'title',ttl8);
 h = buildPanelTPfindStates(h,p);
+
+x = p.mg+wtab+p.mg;
+y = p.mg+hedit0+p.mg/2;
+
+h.pushbutton_molPrev = uicontrol('style','pushbutton','parent',h_pan,...
+    'units',p.posun,'position',[x,y,wbut0,hedit0],'tooltipstring',ttstr0,...
+    'callback',{@pushbutton_molPrev_Callback,h_fig},'cdata',cdata,...
+    'userdata','nohelp');
+
+x = x+wbut0;
+
+h.edit_currMol = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,hedit0],...
+    'callback',{@edit_currMol_Callback,h_fig},'tooltipstring',ttstr1);
+
+x = x+wedit0;
+
+h.pushbutton_molNext = uicontrol('style','pushbutton','parent',h_pan,...
+    'units',p.posun,'position',[x,y,wbut0,hedit0],'tooltipstring',ttstr2,...
+    'callback',{@pushbutton_molNext_Callback,h_fig},'cdata',flip(cdata,2),...
+    'userdata','nohelp');
+
+x = x+wbut0+p.mg/2;
+y = y+(hedit0-htxt0)/2;
+
+h.text_molTot = uicontrol('style','text','parent',h_pan,'units',p.posun,...
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wtxt0,htxt0],...
+    'string','','horizontalalignment','left');
+
+x = p.mg+wtab+p.mg;
+y = y-(hedit0-htxt0)/2-p.mg/2-hedit0;
+
+h.pushbutton_ttGo = uicontrol('style','pushbutton','parent',h_pan,'units',...
+    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold',...
+    'position',[x,y,wbut1,hedit0],'string',str4,'tooltipstring',ttstr3,...
+    'callback',{@pushbutton_ttGo_Callback,h_fig},'foregroundcolor',...
+    p.fntclr2);
+
+x = x+wbut1+p.mg/2;
+
+h.pushbutton_TP_updateAll = uicontrol('style','pushbutton','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight',...
+    'bold','position',[x,y,wbut2,hedit0],'string',str5,'tooltipstring',...
+    ttstr4,'callback',{@pushbutton_TP_updateAll_Callback,h_fig});
+
+x = pospan(3)-p.mg-wbut3;
+
+h.pushbutton_expTraces = uicontrol('style','pushbutton','parent',h_pan,'units',...
+    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wbut3,hedit0],'string',str6,'tooltipstring',ttstr5,'callback',...
+    {@pushbutton_expTraces_Callback,h_fig});
 
 % place invivisible label list
 posbut = get(h.togglebutton_TP_addTag,'position');
