@@ -35,7 +35,15 @@ for i = projs
             'p.proj{i}.VP.def.',fldnms{fld},');']); 
     end
     
-    % get previous results
+    % get previously calculated images
     p.proj{i}.VP.curr.res_plot = p.proj{i}.VP.prm.res_plot;
+    if isempty(p.proj{i}.VP.curr.res_plot{2})
+        p.proj{i}.VP.curr.res_plot{2} = p.proj{i}.VP.def.res_plot{2};
+    end
+    
+    % get previously calculated coordinates
     p.proj{i}.VP.curr.res_crd = p.proj{i}.VP.prm.res_crd;
+    if isempty(p.proj{i}.VP.curr.res_crd{4})
+        p.proj{i}.VP.curr.res_crd{4} = p.proj{i}.VP.def.res_crd{4};
+    end
 end
