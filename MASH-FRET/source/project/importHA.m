@@ -18,7 +18,8 @@ for i = projs
     chanExc = p.proj{i}.chanExc;
     nFRET = size(p.proj{i}.FRET,1);
     nS = size(p.proj{i}.S,1);
-    I = p.proj{i}.intensities_denoise;
+    I = p.proj{i}.intensities;
+    I_den = p.proj{i}.intensities_denoise;
     I_discr = p.proj{i}.intensities_DTA;
     m_incl = p.proj{i}.coord_incl;
     FRET = p.proj{i}.FRET;
@@ -37,7 +38,7 @@ for i = projs
     nDE = numel(em0);
     nTpe = 2*nChan*nExc + 2*nDE + 2*nFRET + 2*nS;
     nTag = numel(p.proj{i}.molTagNames);
-    L = size(I,1); N = size(I,2)/nChan;
+    L = size(I_den,1); N = size(I_den,2)/nChan;
 
     % initializes applied parameters
     if ~isfield(p.proj{i}.HA,'prm')
@@ -47,12 +48,6 @@ for i = projs
     % initializes export options
     if ~isfield(p.proj{i}.HA,'exp')
         p.proj{i}.HA.exp = [];
-    end
-
-    % if project was not processed in Trace processing, get raw intensities
-    if ~isfield(p.proj{i}.TP,'prm')
-        p.proj{i}.TP.prm = cell(1,N);
-        I = p.proj{i}.intensities;
     end
 
     if nTpe>size(p.proj{i}.HA.prm,2)
@@ -93,20 +88,33 @@ for i = projs
             if tpe <= nChan*nExc % intensity
                 i_c = mod(tpe,nChan); i_c(i_c==0) = nChan;
                 i_l = ceil(tpe/nChan);
-                trace = I(:,i_c:nChan:end,i_l);
+                if sum(all(isnan(I_den(:,i_c:nChan:end,i_l))))
+                    trace = I(:,i_c:nChan:end,i_l);
+                else
+                    trace = I_den(:,i_c:nChan:end,i_l);
+                end
 
             elseif tpe <= 2*nChan*nExc % discr. intensity
                 i_c = mod(tpe-nChan*nExc,nChan); i_c(i_c==0) = nChan;
                 i_l = ceil((tpe-nChan*nExc)/nChan);
-                trace = I_discr(:,i_c:nChan:end,i_l);
+                if sum(all(isnan(I_discr(:,i_c:nChan:end,i_l))))
+                    trace = I(:,i_c:nChan:end,i_l);
+                else
+                    trace = I_discr(:,i_c:nChan:end,i_l);
+                end
 
             elseif tpe <= (2*nChan*nExc + nDE) % total intensity
                 id = tpe - 2*nChan*nExc;
                 trace = [];
                 l0 = allExc==chanExc(em0(id));
                 for n = 1:N
-                    trace = cat(2,trace,...
-                        sum(I(:,((n-1)*nChan+1):(n*nChan),l0),2));
+                    I_n = sum(I_den(:,((n-1)*nChan+1):(n*nChan),l0),2);
+                    if all(isnan(I_n))
+                        trace = cat(2,trace,...
+                            sum(I(:,((n-1)*nChan+1):(n*nChan),l0),2));
+                    else
+                        trace = cat(2,trace,I_n);
+                    end
                 end
 
             elseif tpe <= (2*nChan*nExc + 2*nDE) % total discr. intensity
@@ -114,14 +122,19 @@ for i = projs
                 trace = [];
                 l0 = allExc==chanExc(em0(id));
                 for n = 1:N
-                    trace = cat(2,trace,...
-                        sum(I_discr(:,((n-1)*nChan+1):(n*nChan),l0),2));
+                    I_n = sum(I_discr(:,((n-1)*nChan+1):(n*nChan),l0),2);
+                    if all(isnan(I_n))
+                        trace = cat(2,trace,...
+                            sum(I(:,((n-1)*nChan+1):(n*nChan),l0),2));
+                    else
+                        trace = cat(2,trace,I_n);
+                    end
                 end
 
             elseif tpe <= (2*nChan*nExc + 2*nDE + nFRET) % FRET
                 I_re = nan(L*N,nChan,nExc);
                 for c = 1:nChan
-                    I_re(:,c,:) = reshape(I(:,c:nChan:end,:), ...
+                    I_re(:,c,:) = reshape(I_den(:,c:nChan:end,:), ...
                         [N*L 1 nExc]);
                 end
                 i_f = tpe - 2*nChan*nExc - 2*nDE;
@@ -158,7 +171,7 @@ for i = projs
             elseif tpe <= (2*nChan*nExc + 2*nDE + 2*nFRET+nS) % Stoichiometry
                 I_re = nan(L*N,nChan,nExc);
                 for c = 1:nChan
-                    I_re(:,c,:) = reshape(I(:,c:nChan:end,:), ...
+                    I_re(:,c,:) = reshape(I_den(:,c:nChan:end,:), ...
                         [N*L 1 nExc]);
                 end
                 i_s = tpe - 2*nChan*nExc - 2*nDE - 2*nFRET;
