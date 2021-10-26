@@ -8,7 +8,7 @@ movie = [];
 
 h = guidata(h_fig);
 isMov = 0; % no movie variable was defined before (no memory is allocated)
-if ~isempty(h_fig)
+if ~isempty(h_fig)l
     if isfield(h,'movie') && isfield(h.movie,'movie')
         isMov = 1; % the movie variable exist and is free (free memory already allocated)
         if ~isempty(h.movie.movie)
@@ -21,27 +21,27 @@ if ~useMov
     isMov = 0;
 end
 
-% get video infos
-info = imfinfo(fullFname); % information array of .tif file
-frameLen = numel(info); % number total of frames    
-txt = ['arbitrary ' num2str(cycleTime)];
-
-% If the *.tif file has been exported from SIRA, the cycletime is
-% stored in ImageDescription field of structure info.
-if isfield(info,'ImageDescription')
-    descr = info(1,1).ImageDescription;
-    strdat = str2num(descr);
-    if ~isempty(strdat)
-        cycleTime = strdat(1); % time delay between each frame
-    end
-    if ~isempty(cycleTime) && ~isnan(cycleTime)
-        txt = num2str(cycleTime);
-    end
-end
-pixelX = info(1,1).Width; % width of the movie
-pixelY = info(1,1).Height; % height of the movie
-
 if isempty(fDat)
+    % get video infos
+    fCurs = imfinfo(fullFname); % information array of .tif file
+    frameLen = numel(fCurs); % number total of frames    
+    txt = ['arbitrary ' num2str(cycleTime)];
+
+    % If the *.tif file has been exported from SIRA, the cycletime is
+    % stored in ImageDescription field of structure info.
+    if isfield(fCurs,'ImageDescription')
+        descr = fCurs(1,1).ImageDescription;
+        strdat = str2num(descr);
+        if ~isempty(strdat)
+            cycleTime = strdat(1); % time delay between each frame
+        end
+        if ~isempty(cycleTime) && ~isnan(cycleTime)
+            txt = num2str(cycleTime);
+        end
+    end
+    pixelX = fCurs(1,1).Width; % width of the movie
+    pixelY = fCurs(1,1).Height; % height of the movie
+    
     if ~isempty(h_fig)
         updateActPan(['Tagged Image File Format(*.tiff)\n' ...
             'Cycle time = ' txt 's-1\n' ...
@@ -55,6 +55,11 @@ if isempty(fDat)
             ' pixels\n' ...
             'Movie length = ' num2str(frameLen) ' frames\n']);
     end
+else
+    fCurs = fDat{1};
+    frameLen = fDat{3};
+    pixelX = fDat{2}(1);
+    pixelY = fDat{2}(2);
 end
 
 if strcmp(n,'all')
@@ -88,14 +93,14 @@ if strcmp(n,'all')
             movie = zeros(pixelY,pixelX,frameLen);
             for i = 1:frameLen
                 os = 0;
-                if isfield(info(i,1),'ImageDescription')
-                    strdat = str2num(info(i,1).ImageDescription);
+                if isfield(fCurs(i,1),'ImageDescription')
+                    strdat = str2num(fCurs(i,1).ImageDescription);
                     if size(strdat,2) > 1
                         os = strdat(2); % negative intensity offset
                     end
                 end
                 movie(:,:,i) = double(imread(fullFname,'Index',i,...
-                    'Info',info)) - os;
+                    'Info',fCurs)) - os;
                 
                 if loading_bar('update', h_fig)
                     ok = 0;
@@ -110,14 +115,14 @@ if strcmp(n,'all')
 
             for i = 1:frameLen
                 os = 0;
-                if isfield(info(i,1),'ImageDescription') && ...
-                        ischar(info(i,1).ImageDescription)
-                    strdat = str2num(info(i,1).ImageDescription);
+                if isfield(fCurs(i,1),'ImageDescription') && ...
+                        ischar(fCurs(i,1).ImageDescription)
+                    strdat = str2num(fCurs(i,1).ImageDescription);
                     if size(strdat,2) > 1
                         os = strdat(2); % negative intensity offset
                     end
                 end
-                img = double(imread(fullFname,'Index',i,'Info',info)) - os;
+                img = double(imread(fullFname,'Index',i,'Info',fCurs)) - os;
                 if size(img,3)>1
                     img = sum(img,3);
                 end
@@ -141,15 +146,15 @@ else
         frameCur = h.movie.movie(:,:,n);
     else
         os = 0;
-        if isfield(info(n,1),'ImageDescription') && ...
-                ~isempty(info(n,1).ImageDescription)
-            strdat = str2num(info(n,1).ImageDescription);
+        if isfield(fCurs(n,1),'ImageDescription') && ...
+                ~isempty(fCurs(n,1).ImageDescription)
+            strdat = str2num(fCurs(n,1).ImageDescription);
             if size(strdat,2) > 1
                 os = strdat(2); % negative intensity offset
             end
         end
         
-        frameCur = double(imread(fullFname,'Index',n,'Info',info)) + os;
+        frameCur = double(imread(fullFname,'Index',n,'Info',fCurs)) + os;
         if size(frameCur,3)>1
             frameCur = sum(frameCur,3);
         end
@@ -161,7 +166,7 @@ data = struct('cycleTime', cycleTime, ...
               'pixelY', pixelY, ...
               'pixelX', pixelX, ...
               'frameLen', frameLen, ...
-              'fCurs', [], ...
               'frameCur', frameCur, ...
               'movie', movie);
+data.fCurs = fCurs;
         
