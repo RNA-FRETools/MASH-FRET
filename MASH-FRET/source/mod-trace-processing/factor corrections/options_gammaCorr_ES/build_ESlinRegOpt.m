@@ -67,10 +67,10 @@ waxes0 = hfig-mg-mg;
 haxes0 = hfig-mg-mg;
 wfig = mg+wpan0+mg+waxes0+mg;
 
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 clr = p.proj{proj}.colours;
-fret = p.proj{proj}.fix{3}(8);
+fret = p.proj{proj}.TP.fix{3}(8);
 str_dat = removeHtml(get(h.popupmenu_gammaFRET,'string'));
 bgcol = clr{2}(fret,1:3);
 fntcol = ones(1,3)*(sum(clr{2}(fret,1:3))<=1.5);

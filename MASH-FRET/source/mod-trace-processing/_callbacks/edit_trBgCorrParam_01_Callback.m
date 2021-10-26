@@ -3,10 +3,10 @@ function edit_trBgCorrParam_01_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
-mol = p.curr_mol(proj);
+mol = p.ttPr.curr_mol(proj);
 nExc = p.proj{proj}.nb_excitations;
 nChan = p.proj{proj}.nb_channel;
-selected_chan = p.proj{proj}.fix{3}(6);
+selected_chan = p.proj{proj}.TP.fix{3}(6);
 
 % get channel and laser corresponding to selected data
 chan = 0;
@@ -21,7 +21,7 @@ for l = 1:nExc
         break
     end
 end
-method = p.proj{proj}.curr{mol}{3}{2}(l,c);
+method = p.proj{proj}.TP.curr{mol}{3}{2}(l,c);
 if ~sum(double(method~=[1 2]))
     return
 end

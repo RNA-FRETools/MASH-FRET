@@ -23,7 +23,7 @@ for l = 1:nExc
         break
     end
 end
-method = p.proj{proj}.curr{mol}{3}{2}(l,c);
+method = p.proj{proj}.TP.curr{mol}{3}{2}(l,c);
 if method~=6 % dark trace
     return
 end
