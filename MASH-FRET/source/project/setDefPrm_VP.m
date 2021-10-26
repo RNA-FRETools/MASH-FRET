@@ -74,8 +74,9 @@ gen_crd{2} = {[1,0],... % SF method, gaussian fit
 gen_crd{3} = {{[],'',[1,2]},... % coord to transform,imported file,imported x- and -y columns
     {[],'','rw',... % reference coord, imported file, import mode
         {[((1:nChan)'+1),nChan*ones(nChan,1),zeros(nChan,1)],[1,2]},... % ref. coord file row-wise import options
-        {reshape((1:2*nChan),[nChan 2]) 1}},... % ref. coord file column-wise import options
-    {[],4,''},... % transformation,transformation type,imported file,transformation dimensions
+        {reshape((1:2*nChan),[nChan 2]) 1},... % ref. coord file column-wise import options
+        ''} % reference image file
+    {[],4,''},... % transformation,transformation type,imported file
     []}; % transformed coordinates
 def.gen_crd = adjustVal(def.gen_crd,gen_crd);
 
@@ -90,7 +91,7 @@ def.gen_int = adjustVal(def.gen_int,gen_int);
 def.res_crd{1} = []; % spots coordinates
 def.res_crd{2} = []; % transformation
 def.res_crd{3} = []; % reference coordinates
-def.res_crd{4} = []; % single moelcule coordinates
+def.res_crd{4} = coordsm; % single moelcule coordinates
 
 % plot images
 % res_plot: {1-by-2} images to plot with:

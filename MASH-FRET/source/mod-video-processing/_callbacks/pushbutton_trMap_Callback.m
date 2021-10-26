@@ -28,7 +28,7 @@ if ~iscell(obj)
     str1 = [str1,')'];
     [fname,pname,o] = uigetfile({str0,...
         ['Supported Graphic File Format',str1]; ...
-        '*.*','All File Format(*.*)'},'Select a reference image file');
+        '*.*','All File Format(*.*)'},'Select a reference video file');
 else
     pname = obj{1}; % ex: C:\Users\MASH\Documents\MATLAB\
     fname = obj{2}; % ex: movie.sif
@@ -45,7 +45,7 @@ cd(pname);
 setContPan(['Loading file ',pname,fname],'process',h_fig);
 
 % get image data
-[data,ok] = getFrames([pname,fname], 1, [], h_fig, true);
+[data,ok] = getFrames([pname,fname], 1, [], h_fig, false);
 if ~ok
     return
 end
@@ -58,6 +58,27 @@ if ~isequal(viddim,[data.pixelX,data.pixelY])
     return
 end
 
+if data.frameLen>1
+    % display progress
+    setContPan(['Calculate average image ',pname,fname],'process',h_fig);
+
+    % calculate average image if necessary
+    img = calcAveImg(0,[pname,fname],{data.fCurs,viddim,data.frameLen},1,...
+        h_fig);
+else
+    img = data.frameCur;
+end
+
+% store reference image file
+p.proj{p.curr_proj}.VP.curr.gen_crd{3}{2}{6} = [pname,fname];
+
+% save modifications
+h.param = p;
+guidata(h_fig,h);
+
 % open mapping tool
 lim_x = [0 (1:nChan-1)*round(viddim(1)/nChan) viddim(1)];
-openMapping(data.frameCur, lim_x, h_fig, fname);
+openMapping(img, lim_x, h_fig, fname);
+
+% display success
+setContPan('Mapping tool is ready!','success',h_fig);

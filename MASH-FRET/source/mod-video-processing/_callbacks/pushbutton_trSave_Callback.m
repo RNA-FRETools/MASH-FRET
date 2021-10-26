@@ -10,6 +10,7 @@ h = guidata(h_fig);
 p = h.param;
 nChan = p.proj{p.curr_proj}.nb_channel;
 curr = p.proj{p.curr_proj}.VP.curr;
+vidfile = p.proj{p.curr_proj}.movie_file;
 coordtr = curr.res_crd{4};
 coordfile = curr.gen_crd{3}{1}{2};
 
@@ -35,11 +36,10 @@ if iscell(obj)
         pname = [pname,filesep];
     end
 else
-    if ~isempty(coordfile)
-        [o,fname,o] = fileparts(coordfile);
-    else
-        fname = 'transformed_coordinates';
+    if isempty(coordfile)
+        coordfile = vidfile;
     end
+    [o,fname,o] = fileparts(coordfile);
     defName = [setCorrectPath('transformed', h_fig),fname,'.coord'];
     [fname,pname,o] = uiputfile({...
         '*.coord', 'Transformed coordinates files(*.coord)'; ...

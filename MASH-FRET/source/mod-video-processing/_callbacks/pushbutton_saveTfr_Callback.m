@@ -8,7 +8,9 @@ function pushbutton_saveTfr_Callback(obj, evd, h_fig)
 % collect parameters
 h = guidata(h_fig);
 p = h.param;
+vidfile = p.proj{p.curr_proj}.movie_file;
 tr = p.proj{p.curr_proj}.VP.curr.res_crd{2};
+coordreffile = p.proj{p.curr_proj}.VP.curr.gen_crd{3}{2}{2};
 
 % control transformation
 if isempty(tr)
@@ -25,11 +27,10 @@ if iscell(obj)
         pname =[pname,filesep];
     end
 else
-    if isfield(p, 'trsf_coordRef_file') && ~isempty(p.trsf_coordRef_file)
-        [o,fname,o] = fileparts(p.trsf_coordRef_file);
-    else
-        fname = 'transformation';
+    if isempty(coordreffile)
+        coordreffile = vidfile;
     end
+    [o,fname,o] = fileparts(coordreffile);
     defName = [setCorrectPath('transformed', h_fig) fname '.mat'];
     [fname,pname,o] = uiputfile({'*.mat', 'Matlab files(*.mat)'; ...
         '*.*', 'All files(*.*)'}, 'Export transformation', defName);

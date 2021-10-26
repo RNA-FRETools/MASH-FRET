@@ -11,7 +11,9 @@ function pushbutton_expTrsfCoord_Callback(obj,evd,h_fig)
 h = guidata(h_fig);
 p = h.param;
 nChan = p.proj{p.curr_proj}.nb_channel;
+vidfile = p.proj{p.curr_proj}.movie_file;
 coordtr = p.proj{p.curr_proj}.VP.curr.res_crd{4};
+coordfile = p.proj{p.curr_proj}.VP.curr.gen_crd{3}{1}{2};
 
 % control transformed coordinates
 if isempty(coordtr)
@@ -28,7 +30,10 @@ if iscell(obj)
         pname = [pname,filesep];
     end
 else
-    [o,defName,o] = fileparts(q.refimgfile);
+    if isempty(coordfile)
+        coordfile = vidfile;
+    end
+    [o,defName,o] = fileparts(coordfile);
     defName = [setCorrectPath('transformed', h_fig) defName '.coord'];
     [fname,pname,o] = uiputfile({...
         '*.coord','Transformed coordinates files(*.coord)'; ...

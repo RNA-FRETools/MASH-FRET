@@ -10,7 +10,9 @@ function pushbutton_trSaveRef_Callback(obj,evd,h_fig)
 % retrieve parameters
 h = guidata(h_fig);
 p = h.param;
+vidfile = p.proj{p.curr_proj}.movie_file;
 coordref = p.proj{p.curr_proj}.VP.curr.res_crd{3};
+imgfile = p.proj{p.curr_proj}.VP.curr.gen_crd{3}{2}{6};
 
 % control reference coordinates
 if isempty(coordref)
@@ -27,7 +29,10 @@ if iscell(obj)
         pname = [pname,filesep];
     end
 else
-    [o,defName,o] = fileparts(q.refimgfile);
+    if isempty(imgfile)
+        imgfile = vidfile;
+    end
+    [o,defName,o] = fileparts(imgfile);
     defName = [setCorrectPath('mapping', h_fig) defName '.map'];
     [fname,pname,o] = uiputfile({'*.map','Mapped coordinates files(*.map)'; ...
         '*.*','All files(*.*)'},'Export coordinates', defName);
