@@ -92,22 +92,16 @@ if ~isempty(p.proj{proj}.VP)
 end
 if ~isempty(p.proj{proj}.TP)
     p.ttPr.defProjPrm = p.proj{proj}.TP.def;
-end
-if ~isempty(p.proj{proj}.HA)
-    p.thm.defProjPrm = p.proj{proj}.HA.def;
-end
-if ~isempty(p.proj{proj}.TA)
-    p.TDP.defProjPrm = p.proj{proj}.TA.def;
-end
-p.es = setExpSetFromProj(dat);
-
-if ~isempty(p.proj{proj}.TP)
+    
+    % save current molecule's parameters
+    p.ttPr.defProjPrm.mol = p.proj{proj}.TP.curr{p.curr_mol(proj)};
+    p.ttPr.defProjPrm.general = p.proj{proj}.TP.fix;
+    p.ttPr.defProjPrm.exp = p.proj{proj}.TP.exp;
+    
     % save current project's cross-talks as default
     p.ttPr.defProjPrm.general{4} = p.proj{proj}.TP.fix{4};
 
     % reorder DE coefficients according to laser chromatic order
-    chanExc = p.proj{proj}.chanExc;
-    exc = p.proj{proj}.excitations;
     cf_bywl = p.ttPr.defProjPrm.general{4}{2};
     if size(cf_bywl,1)>0
         for c = 1:dat.nb_channel
@@ -122,6 +116,13 @@ if ~isempty(p.proj{proj}.TP)
         end
     end
 end
+if ~isempty(p.proj{proj}.HA)
+    p.thm.defProjPrm = p.proj{proj}.HA.def;
+end
+if ~isempty(p.proj{proj}.TA)
+    p.TDP.defProjPrm = p.proj{proj}.TA.def;
+end
+p.es = setExpSetFromProj(dat);
 
 % save interface default and current project's new file name
 h.param = p;
