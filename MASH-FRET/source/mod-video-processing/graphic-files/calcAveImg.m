@@ -12,22 +12,29 @@ function aveimg = calcAveImg(laser,vfile,vinfo,nExc,h_fig)
 % nExc: if argument 'laser' is set to 'all' nExc is the number of alternating lasers
 % h_fig: handle to main figure
 % aveimg: average images:
-%  if argument 'laser' is a frame index, aveimg is a matrix
+%  if argument 'laser' is an index, aveimg is a matrix
 %  if argument 'laser' is 'all', aveimg is a {1-by-nExc+1} with 
 %    aveImg{1} being the average over all laser illuminations
+%    aveImg{1+exc} being the average over frames illuminated by laser with
+%     index exc
 
 % control full-length video
-isMov = isFullLengthVideo(h_fig);
+h = guidata(h_fig);
+p = h.param;
+if strcmp(p.proj{p.curr_proj}.movie_file,vfile)
+    isMov = isFullLengthVideo(h_fig);
+else
+    isMov = false;
+end
 
 % control loadingbar
-h = guidata(h_fig);
 isLb = isfield(h,'barData');
 
 % initializes image
 if strcmp(laser,'all')
     aveimg = cell(1,nExc+1);
-    for l = 1:(nExc+1)
-        aveimg{l} = zeros(flip(vinfo{2}));
+    for exc = 1:(nExc+1)
+        aveimg{exc} = zeros(flip(vinfo{2}));
     end
 else
     aveimg = zeros(flip(vinfo{2}));
@@ -35,13 +42,27 @@ end
 
 if isMov
     if strcmp(laser,'all')
-        aveimg{1} = mean(h.movie.movie,3);
-        for l = 1:nExc
-            aveimg{l+1} = mean(h.movie.movie(:,:,l:nExc:end),3);
+        % loop uses less memory than "mean"
+        for t = 1:vinfo{3}
+            aveimg{1} = aveimg{1}+h.movie.movie(:,:,t)/vinfo{3};
+            for exc = 1:nExc
+                aveimg{1+exc} = aveimg{1+exc}+...
+                    nExc*h.movie.movie(:,:,t)/vinfo{3};
+            end
         end
     else
-        aveimg = mean(h.movie.movie(:,:,laser:nExc:end),3);
+        % loop uses less memory than "mean"
+        if laser==0
+            for t = 1:vinfo{3}
+                aveimg = aveimg+h.movie.movie(:,:,t)/vinfo{3};
+            end
+        else
+            for t = laser:nExc:vinfo{3}
+                aveimg = aveimg+nExc*h.movie.movie(:,:,t)/vinfo{3};
+            end
+        end
     end
+    
 else
     % open loading bar
     if ~isLb && loading_bar('init',h_fig,vinfo{3},...
@@ -54,18 +75,21 @@ else
     
     % calculate average images
     for t = 1:vinfo{3}
-        [dat,ok] = getFrames(vfile,t,vinfo,h_fig,true);
+        [dat,ok] = getFrames(vfile,t,vinfo,h_fig,false);
         if ~ok
             return
         end
+        
         if strcmp(laser,'all')
             aveimg{1} = aveimg{1}+double(dat.frameCur)/vinfo{3};
+        elseif laser==0
+            aveimg = aveimg+double(dat.frameCur)/vinfo{3};
         end
 
-        for l = 1:nExc
-            if strcmp(laser,'all') && ((l~=nExc && mod(t,nExc)==l) || ...
-                    (l==nExc && mod(t,nExc)==0))
-                aveimg{l+1} = aveimg{l+1}+nExc*double(dat.frameCur)/...
+        for exc = 1:nExc
+            if strcmp(laser,'all') && ((exc~=nExc && mod(t,nExc)==exc) || ...
+                    (exc==nExc && mod(t,nExc)==0))
+                aveimg{exc+1} = aveimg{exc+1}+nExc*double(dat.frameCur)/...
                     vinfo{3};
 
             elseif ~strcmp(laser,'all') && ...
