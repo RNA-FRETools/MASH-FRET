@@ -23,7 +23,6 @@ function [img_ave,ok] = createAveIm(param,corr,useMov,h_fig)
 ok = 1;
 isMov = 0;
 isBgcorr = 0;
-fext_bf = {'.ets','.vsi'};
 
 % collect parameters
 h = guidata(h_fig);
@@ -90,7 +89,7 @@ for i = startFrame:iv:stopFrame
         if ~ok
             return
         end
-        fDat = {{data.fCurs},fDat{2},fDat{3}};
+        fDat = {data.fCurs,fDat{2},fDat{3}};
         imgNext = data.frameCur;
     end
 
@@ -112,4 +111,3 @@ end
 if ~isempty(h_fig)
     loading_bar('close', h_fig);
 end
-
