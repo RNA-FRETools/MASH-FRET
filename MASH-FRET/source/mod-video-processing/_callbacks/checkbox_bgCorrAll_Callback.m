@@ -9,9 +9,9 @@ end
 
 curr = p.proj{p.curr_proj}.VP.curr;
 
-curr.edit{1}{2}(2) = ~get(obj, 'Value');
-if curr.edit{1}{2}(2)
-    curr.edit{1}{2}(2) = p.VP.curr_frame(proj);
+curr.edit{1}{1}(2) = ~get(obj, 'Value');
+if curr.edit{1}{1}(2)
+    curr.edit{1}{1}(2) = p.movPr.curr_frame(p.curr_proj);
 end
 
 % save modifications
