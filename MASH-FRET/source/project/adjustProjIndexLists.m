@@ -13,7 +13,7 @@ function p = adjustProjIndexLists(p,xn,mod)
 
 excl = false(size(p.sim.curr_plot));
 for x = 1:numel(xn)
-    if x<0
+    if xn(x)<0
         excl(x) = true;
     else
         if isfield(p.proj{xn(x)},'module') && ...
