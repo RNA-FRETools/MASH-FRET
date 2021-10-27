@@ -40,9 +40,9 @@ switch state
         str_status = ' Warning!';
         colBg = colOrange;
     otherwise
-        clr_icon = [0,0.5,0];
-        str_icon = char(10004);
-        str_status = 'Success!';
+        clr_icon = [];
+        str_icon = '';
+        str_status = '';
         colBg = colWhite;
 end
 
@@ -111,8 +111,11 @@ end
 % strWrap = wrapActionString('none',h.edit_actPan,...
 %     [h.figure_dummy,h.text_dummy],str);
 
-set(h.text_statusIcon,'String',str_icon,'ForegroundColor',clr_icon);
-set(h.text_status,'String',str_status);
-set(h.edit_actPan,'String',str2disp,'BackgroundColor',colBg,'userdata',...
-    str);
+if ~isempty(str_status)
+    set(h.text_statusIcon,'String',str_icon,'ForegroundColor',clr_icon);
+    set(h.text_status,'String',str_status);
+    set(h.edit_actPan,'BackgroundColor',colBg);
+end
+set(h.edit_actPan,'String',str2disp,'userdata',str);
+
 drawnow;

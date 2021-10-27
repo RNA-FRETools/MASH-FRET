@@ -43,7 +43,7 @@ else
     set([h.pushbutton_rootFolder,h.edit_rootFolder],'enable','off');
 end
 
-% Tool bar
+% tool bar
 h_tb = [h.togglebutton_S,h.togglebutton_VP,h.togglebutton_TP,...
     h.togglebutton_HA,h.togglebutton_TA];
 if isempty(p.proj)
