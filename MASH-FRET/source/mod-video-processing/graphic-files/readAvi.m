@@ -3,22 +3,12 @@ function [data ok] = readAvi(fullFname, n, h_fig)
 data = [];
 ok = 1;
 
-if ~isempty(h_fig)
-    pleaseWait('start', h_fig);
-else
-    disp('Please wait ...');
-end
-
 v = VideoReader(fullFname);
 movie = [];
 while hasFrame(v)
     img = readFrame(v);
     img = uint16(sum(img,3));
     movie = cat(3,movie,img);
-end
-
-if ~isempty(h_fig)
-    pleaseWait('close', h_fig);
 end
 
 % Store useful movie data in hanldes.movie variable

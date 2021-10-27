@@ -23,6 +23,7 @@ if c>=1
         ud_setExpSet_tabLaser(h_fig);
         return
     else
+        proj.chanExc(proj.chanExc==proj.excitations(l)) = 0;
         proj.chanExc(c) = proj.excitations(l);
     end
 else

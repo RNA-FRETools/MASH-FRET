@@ -9,14 +9,16 @@ ok = 1;
 h = guidata(h_fig);
 isMov = 0; % no movie variable was defined before (no memory is allocated)
 if ~isempty(h_fig)
-    if isfield(h,'movie') && isfield(h.movie,'movie')
+    h = guidata(h_fig);
+    p = h.param;
+    isprojvid = strcmp(p.proj{p.curr_proj}.movie_file,fullFname);
+    if isprojvid && isFullLengthVideo(h_fig)
+        isMov = 2; % the movie variable exist and contain the video file data
+    elseif isfield(h,'movie') && isfield(h.movie,'movie') && ...
+            isempty(h.movie.movie)
         isMov = 1; % the movie variable exist and is free (free memory already allocated)
-        if ~isempty(h.movie.movie)
-            isMov = 2; % the movie variable exist and contain the video data
-        end
     end
 end
-
 if ~useMov
     isMov = 0;
 end
@@ -269,12 +271,8 @@ else
         fseek(f,((pixelX*pixelY+double(is_os))*2*(1+double(is_sgl))*(n-1)),...
             'cof');
         frameCur = fread(f,(pixelX*pixelY+double(is_os)),[prec '=>single']);
-        try
         frameCur = reshape(frameCur(1:end-double(is_os)),[pixelY,pixelX]) - ...
             single(is_os)*frameCur(end);
-        catch err
-            pouet = [];
-        end
     end
 end
 

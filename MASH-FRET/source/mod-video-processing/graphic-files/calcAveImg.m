@@ -18,14 +18,10 @@ function aveimg = calcAveImg(laser,vfile,vinfo,nExc,h_fig)
 %    aveImg{1+exc} being the average over frames illuminated by laser with
 %     index exc
 
-% control full-length video
 h = guidata(h_fig);
-p = h.param;
-if strcmp(p.proj{p.curr_proj}.movie_file,vfile)
-    isMov = isFullLengthVideo(h_fig);
-else
-    isMov = false;
-end
+
+% control full-length video
+isMov = isFullLengthVideo(vfile,h_fig);
 
 % control loadingbar
 isLb = isfield(h,'barData');
@@ -46,8 +42,11 @@ if isMov
         for t = 1:vinfo{3}
             aveimg{1} = aveimg{1}+h.movie.movie(:,:,t)/vinfo{3};
             for exc = 1:nExc
-                aveimg{1+exc} = aveimg{1+exc}+...
-                    nExc*h.movie.movie(:,:,t)/vinfo{3};
+                if (exc~=nExc && mod(t,nExc)==exc) || ...
+                        (exc==nExc && mod(t,nExc)==0)
+                    aveimg{1+exc} = aveimg{1+exc}+....
+                        nExc*h.movie.movie(:,:,t)/vinfo{3};
+                end
             end
         end
     else

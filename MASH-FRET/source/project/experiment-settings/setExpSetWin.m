@@ -9,7 +9,15 @@ function proj = setExpSetWin(proj,dat2import,h_fig0)
 % dat2import: data to import from file ('video' or 'trajectories')
 % h_fig0: handle to main figure
 
+
+% display process
+setContPan('Opening experiment settings window...','process',h_fig0);
+
 h_fig = build_figSetExpSetWin(proj,dat2import,h_fig0);
+
+% display success
+setContPan('Experiment settings window ready!','success',h_fig0);
+
 uiwait(h_fig);
 
 % recover updated project's structure

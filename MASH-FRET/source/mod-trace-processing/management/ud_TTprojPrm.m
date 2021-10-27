@@ -231,7 +231,8 @@ if isModuleOn(p,'TP')
         if ~(isfield(p.proj{proj}, 'aveImg') && ...
                 size(p.proj{proj}.aveImg,2)==(nExc+1))
             p.proj{proj}.aveImg = calcAveImg('all',p.proj{proj}.movie_file,...
-                p.proj{proj}.movie_dat,nExc,h_fig);
+                p.proj{proj}.movie_dat,p.proj{proj}.nb_excitations,...
+                p.proj{proj},h_fig);
             h.param = p;
         end
     end

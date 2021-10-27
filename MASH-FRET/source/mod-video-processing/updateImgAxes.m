@@ -46,7 +46,7 @@ avimg = curr.res_plot{2};
 isBgCorr = ~isempty(bgfilt);
 
 % get current video frame
-if isFullLengthVideo(h_fig)
+if isFullLengthVideo(videoFile,h_fig)
     img = double(h.movie.movie(:,:,n));
 else
     [dat,ok] = getFrames(videoFile,n,{fcurs,[resX,resY],L},h_fig,true);

@@ -7,14 +7,14 @@ ok = 1;
 h = guidata(h_fig);
 isMov = 0; % no movie variable was defined before (no memory is allocated)
 if ~isempty(h_fig)
-    if isfield(h,'movie') && isfield(h.movie,'movie')
+    h = guidata(h_fig);
+    if isFullLengthVideo(fullFname,h_fig)
+        isMov = 2; % the movie variable exist and contain the video file data
+    elseif isfield(h,'movie') && isfield(h.movie,'movie') && ...
+            isempty(h.movie.movie)
         isMov = 1; % the movie variable exist and is free (free memory already allocated)
-        if ~isempty(h.movie.movie)
-            isMov = 2; % the movie variable exist and contain the video data
-        end
     end
 end
-
 if ~useMov
     isMov = 0;
 end

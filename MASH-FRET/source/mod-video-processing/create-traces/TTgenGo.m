@@ -23,22 +23,21 @@ vidfile = p.proj{p.curr_proj}.movie_file;
 viddat = p.proj{p.curr_proj}.movie_dat;
 
 % control video data
-if ~isFullLengthVideo(h_fig)
+if ~isFullLengthVideo(vidfile,h_fig)
     h.movie.movie = [];
-    h.movie.proj = 0;
+    h.movie.file = '';
     guidata(h_fig,h);
     [dat,ok] = getFrames(vidfile,'all',viddat,h_fig,true);
     if ~ok
         return
     end
     h = guidata(h_fig);
-    p = h.param;
     if ~isempty(dat.movie)
         h.movie.movie = dat.movie;
-        h.movie.proj = p.curr_proj;
+        h.movie.file = vidfile;
         guidata(h_fig,h);
     elseif ~isempty(h.movie.movie)
-        h.movie.proj = p.curr_proj;
+        h.movie.file = vidfile;
         guidata(h_fig,h);
     end
 end

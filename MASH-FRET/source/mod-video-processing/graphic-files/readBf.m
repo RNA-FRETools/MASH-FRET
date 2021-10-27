@@ -6,15 +6,14 @@ cycleTime = 1; % arbitrary time delay between each frame
 data = [];
 movie = [];
 exc = [];
-
-h = guidata(h_fig);
 isMov = 0; % no movie variable was defined before (no memory is allocated)
 if ~isempty(h_fig)
-    if isfield(h,'movie') && isfield(h.movie,'movie')
+    h = guidata(h_fig);
+    if isFullLengthVideo(fullFname,h_fig)
+        isMov = 2; % the movie variable exist and contain the video file data
+    elseif isfield(h,'movie') && isfield(h.movie,'movie') && ...
+            isempty(h.movie.movie)
         isMov = 1; % the movie variable exist and is free (free memory already allocated)
-        if ~isempty(h.movie.movie)
-            isMov = 2; % the movie variable exist and contain the video data
-        end
     end
 end
 if ~useMov
@@ -25,11 +24,12 @@ if isempty(fDat)
     % get video dimensions
     bfInitLogging();
     r = bfGetReader(fullFname, 0);
+    
     frameLen = r.getImageCount(); % video length
     img = bfGetPlane(r, 1);
+
     pixelY = size(img,2); % height of the movie after 90° rotation
     pixelX = size(img,1); % width of the movie after 90° rotation
-    r.close();
     
     % get sampling time and laser order
     txt_exc = '';
@@ -67,7 +67,6 @@ if isempty(fDat)
                     txt_exc = cat(2,txt_exc,', ',num2str(exc(l)),'nm');
                 end
             end
-            txt_exc = cat(2,txt_exc,'\n');
         else
             exc = [];
         end
@@ -76,16 +75,17 @@ if isempty(fDat)
         disp('/!\ unable to read sampling time from file.')
         txt = ['arbitrary ' num2str(cycleTime)];
     end
-
+    
+    [~,~,fext] = fileparts(fullFname);
     if ~isempty(h_fig)
-        updateActPan(['Tagged Image File Format(*.tiff)\n' ...
+        updateActPan(['Bioformat (*',fext,')\n' ...
             'Cycle time = ' txt 's-1\n' ...
             'Movie dimensions = ' num2str(pixelX) 'x' num2str(pixelY) ...
             ' pixels\n' ...
             'Movie length = ' num2str(frameLen) ' frames\n' ...
             txt_exc], h_fig);
     else
-        fprintf(['\nTagged Image File Format(*.tiff)\n' ...
+        fprintf(['\nBioformat (*',fext,')\n' ...
             'Cycle time = ' txt 's-1\n' ...
             'Movie dimensions = ' num2str(pixelX) 'x' num2str(pixelY) ...
             ' pixels\n' ...
@@ -93,9 +93,9 @@ if isempty(fDat)
             txt_exc]);
     end
 else
-    frameLen = fDat{3};
     pixelX = fDat{2}(1);
     pixelY = fDat{2}(2);
+    frameLen = fDat{3};
 end
 
 % get video frames
@@ -124,8 +124,10 @@ if strcmp(n,'all')
         h.barData.prev_var = h.barData.curr_var;
         guidata(h_fig, h);
         
-        bfInitLogging();
-        r = bfGetReader(fullFname, 0);
+        if ~exist('r','var')
+            bfInitLogging();
+            r = bfGetReader(fullFname, 0);
+        end
         if isMov==0
             % allocate new memory
             movie = zeros(pixelY,pixelX,frameLen);
@@ -161,8 +163,6 @@ if strcmp(n,'all')
             guidata(h_fig,h);
             frameCur = h.movie.movie(:,:,1);
         end
-        
-        r.close();
         if ~isempty(h_fig)
             loading_bar('close', h_fig);
         end
@@ -172,15 +172,20 @@ else
     if isMov==2
         frameCur = h.movie.movie(:,:,n);
     else
-        bfInitLogging();
-        r = bfGetReader(fullFname, 0);
+        if ~exist('r','var')
+            bfInitLogging();
+            r = bfGetReader(fullFname, 0);
+        end
         frameCur = bfGetPlane(r, n)';
-        r.close();
         if size(frameCur,3)>1
             frameCur = sum(frameCur,3);
         end
         movie = [];
     end
+end
+
+if exist('r','var')
+    r.close();
 end
  
 data = struct('cycleTime', cycleTime, ...

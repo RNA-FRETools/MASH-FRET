@@ -42,7 +42,8 @@ end
 cd(pname);
 
 % display progress
-setContPan(['Loading file ',pname,fname],'process',h_fig);
+setContPan(['Import reference image from file: ',pname,fname,' ...'],...
+    'process',h_fig);
 
 % get image data
 [data,ok] = getFrames([pname,fname], 1, [], h_fig, false);
@@ -64,7 +65,7 @@ if data.frameLen>1
 
     % calculate average image if necessary
     img = calcAveImg(0,[pname,fname],{data.fCurs,viddim,data.frameLen},1,...
-        h_fig);
+        p.proj{p.curr_proj},h_fig);
 else
     img = data.frameCur;
 end

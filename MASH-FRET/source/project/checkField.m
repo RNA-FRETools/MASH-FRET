@@ -126,7 +126,7 @@ if ~isempty(s.movie_file) && exist(s.movie_file, 'file')
     s.is_movie = 1;
     if size(s.aveImg,2)~=(s.nb_excitations+1)
         s.aveImg = calcAveImg('all',s.movie_file,s.movie_dat,...
-            s.nb_excitations,h_fig);
+            s.nb_excitations,s,h_fig);
     end
     
 elseif ~isempty(s.movie_file)

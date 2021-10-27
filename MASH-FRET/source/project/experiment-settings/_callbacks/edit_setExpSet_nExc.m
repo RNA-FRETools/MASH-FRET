@@ -15,6 +15,7 @@ end
 if nExc>10
     nExc = 10;
 end
+
 proj.nb_excitations = nExc;
 
 % adjust laser wavelengths
@@ -36,8 +37,11 @@ proj.chanExc(excl) = 0;
 
 % recalculate average images
 if proj.is_movie
+    setContPan('Recalculate average images...','process',h_fig0);
     proj.aveImg = calcAveImg('all',proj.movie_file,proj.movie_dat,...
-        proj.nb_excitations,h_fig0);
+        proj.nb_excitations,proj,h_fig0);
+    setContPan('Average images successfully recalculated!','success',...
+        h_fig0);
 end
 
 % update project data
