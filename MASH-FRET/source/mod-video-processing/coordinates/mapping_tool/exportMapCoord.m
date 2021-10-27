@@ -61,6 +61,9 @@ if ~sum(fname)
     return
 end
 
+% display process
+setContPan('Write reference coordinates to file...','process',h_fig);
+
 % save coordinates to file
 f = fopen([pname fname], 'Wt');
 fprintf(f, 'x\ty\n');

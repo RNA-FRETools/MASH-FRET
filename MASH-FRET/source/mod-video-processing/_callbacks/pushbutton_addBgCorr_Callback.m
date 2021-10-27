@@ -56,5 +56,14 @@ p.proj{p.curr_proj}.VP.curr = curr;
 h.param = p;
 guidata(h_fig, h);
 
+% display progress
+filtstr = h.popupmenu_bgCorr.String;
+filtname = filtstr{meth};
+setContPan(['Adding background filter "',filtname,'"...'],'process',h_fig);
+
 % refresh calculations, plot and set GUI to proper values
 updateFields(h_fig,'imgAxes');
+
+% display success
+setContPan(['Background filter "',filtname,'" successfully added!'],...
+    'success',h_fig);

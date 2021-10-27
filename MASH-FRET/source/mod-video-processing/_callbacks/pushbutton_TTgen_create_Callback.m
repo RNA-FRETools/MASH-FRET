@@ -17,6 +17,10 @@ end
 % apply current parameters to project
 prm = curr;
 
+% display process
+setContPan('Calculate single moelcule intensity-time traces...','process',...
+    h_fig);
+
 % generate traces and save to project
 if ~TTgenGo(h_fig)
     return

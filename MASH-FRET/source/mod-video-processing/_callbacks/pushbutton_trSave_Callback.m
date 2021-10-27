@@ -16,14 +16,14 @@ coordfile = curr.gen_crd{3}{1}{2};
 
 % control number of channels
 if nChan<=1 || nChan>3
-    setActPan('This functionality is available for 2 or 3 channels only.',...
+    setContPan('This functionality is available for 2 or 3 channels only.',...
         'error',h_fig);
     return
 end
 
 % control coordinates
 if isempty(coordtr)
-    setActPan(['No coordinates detected. Please start a transformation ',...
+    setContPan(['No coordinates detected. Please start a transformation ',...
         'procedure or or import transformed coordinates.'],'error',h_fig);
     return
 end
@@ -55,6 +55,9 @@ if ~sum(fname)
     return
 end
 
+% display process
+setContPan('Write transformed coordinates to file...','process',h_fig);
+
 % write coordinates to file
 str_header = 'x1\ty1'; str_fmt = '%d\t%d';
 for i = 2:nChan
@@ -76,5 +79,5 @@ guidata(h_fig, h);
 updateFields(h_fig,'imgAxes');
 
 % display success
-setActPan(['Transformed coordinates were successfully saved to ',...
-    'file: ' pname fname], 'success', h_fig);
+setContPan(['Transformed coordinates successfully saved to file: ',pname,...
+    fname],'success',h_fig);

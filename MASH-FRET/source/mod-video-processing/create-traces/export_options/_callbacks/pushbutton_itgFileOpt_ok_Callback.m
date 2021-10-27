@@ -18,6 +18,9 @@ guidata(h_fig, h);
 
 close(h.figure_itgFileOpt);
 
+% display process
+setContPan('Export time traces to files...','process',h_fig);
+
 if ~iscell(obj)
     expTraces(h_fig);
 else
@@ -29,5 +32,5 @@ else
     expTraces(h_fig,pname,fname);
 end
 
-setContPan('Traces were successfully exported!','success',h_fig);
+setContPan('Time traces were successfully exported!','success',h_fig);
 

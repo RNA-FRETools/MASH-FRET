@@ -40,6 +40,10 @@ if ~strcmp(fExt, '.mat')
     return
 end
 
+% display process
+setContPan(['Import transformation from file ',fname,pname,' ...'],...
+    'process',h_fig);
+
 % import transformation
 TFORM = open([pname fname]);
 if isfield(TFORM, 'tr') && ~isempty(TFORM.tr)
@@ -62,6 +66,5 @@ guidata(h_fig, h);
 ud_VP_coordTransfPan(h_fig);
 
 % display success
-setContPan(['Spatial transformation has been successfully imported from',...
-    ' file: ' fname '\nin folder: ' pname], 'success', h_fig);
+setContPan('Transformation successfully imported!', 'success', h_fig);
 

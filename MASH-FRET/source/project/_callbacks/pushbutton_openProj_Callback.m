@@ -43,6 +43,7 @@ else % from file
     if ~iscell(fname) % covert to cell if only one file is imported
         fname = {fname};
     end
+    cd(pname);
 
     % check if the project file is not already loaded
     excl_f = false(size(fname));
@@ -61,6 +62,20 @@ else % from file
     fname(excl_f) = [];
     if isempty(fname)
         return
+    end
+    
+    % display process
+    if numel(fname)==1
+        setContPan(['Importing project from file: ',fname{1},' ...'],...
+            'process',h_fig);
+    else
+        str_fname = '';
+        for i = 1:numel(fname)
+            str_fname = cat(2,str_fname,fname{i},', ');
+        end
+        str_fname = str_fname(1:end-2);
+        setContPan(['Importing projects from files: ',str_fname,' ...'],...
+            'process',h_fig);
     end
 
     % load project data
@@ -121,16 +136,16 @@ ud_TTprojPrm(h_fig);
 % display action
 if ~iscell(evd)
     if size(fname,2) > 1
-        str_files = 'files:\n';
+        str_files = 'files: ';
     else
         str_files = 'file: ';
     end
     for i = 1:size(fname,2)
-        str_files = cat(2,str_files,pname,fname{i},'\n');
+        str_files = cat(2,str_files,pname,fname{i},', ');
     end
     str_files = str_files(1:end-2);
-    setContPan(['Project successfully imported from ' str_files],'success',...
-        h_fig);
+    setContPan(['Project successfully imported from ' str_files,' !'],...
+        'success',h_fig);
 end
 
 % switch to proper module

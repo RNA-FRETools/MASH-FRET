@@ -14,8 +14,8 @@ impprm = curr.gen_crd{3}{1}{3};
 
 % control number of channels
 if nChan<=1 || nChan>3
-    updateActPan(['This functionality is available for 2 or 3 channels ',...
-        'only.'], h_fig, 'error');
+    setContPan(['This functionality is available for 2 or 3 channels ',...
+        'only.'], 'error', h_fig);
     return
 end
 
@@ -36,6 +36,11 @@ if ~sum(fname)
 end
 cd(pname);
 
+
+% display progress
+setContPan(['Import coordinates to transform from file: ',pname,fname],...
+    'process',h_fig);
+
 % import coordinates
 fData = importdata([pname fname], '\n');
 col_x = impprm(1);
@@ -49,8 +54,8 @@ for i = 1:nCoord
     end
 end
 if isempty(coord)
-    updateActPan(cat(2,'No coordinates imported: please check the import ',...
-        'options.'),h_fig,'error');
+    setContPan(cat(2,'No coordinates imported: please check the import ',...
+        'options.'),'error',h_fig);
     return
 end
 
@@ -68,5 +73,5 @@ guidata(h_fig, h);
 updateFields(h_fig,'imgAxes');
 
 % show action
-updateActPan(['Molecule coordinates imported from file: ',pname,fname], ...
-    h_fig,'success');
+setContPan('Coordinates to transform successfully imported!','success',...
+    h_fig);

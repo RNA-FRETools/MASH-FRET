@@ -55,6 +55,9 @@ cd(pname);
 [o,fname,o] = fileparts(coordfile);
 coordfile = [pname fname '.spots'];
 
+% display process
+setContPan('Write spots coordinates to file...','process',h_fig);
+
 % get spots coordinates
 spots = [];
 for c = 1:nChan
@@ -87,3 +90,7 @@ f = fopen(coordfile, 'Wt');
 fprintf(f, str_header);
 fprintf(f, str_fmt, spots');
 fclose(f);
+
+% display success
+setContPan(['Spots coordinates have been successfully written to ',...
+    'file: ',coordfile], 'success', h_fig);

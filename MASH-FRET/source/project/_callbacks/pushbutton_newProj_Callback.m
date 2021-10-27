@@ -38,6 +38,7 @@ switch act
             guidata(h_fig,h0); % reset modif made to guidata
             return
         end
+        h = guidata(h_fig);
         mod = 'TP';
 end
 
@@ -61,7 +62,14 @@ p = ud_projLst(p, h.listbox_proj);
 h.param = p;
 guidata(h_fig,h);
 
+% make root folder current directory
+cd(p.proj{p.curr_proj}.folderRoot);
+
 % switch to proper module
 switchPan(eval(['h.togglebutton_',p.curr_mod{p.curr_proj}]),[],h_fig);
 
 updateFields(h_fig);
+
+% display success
+setContPan(['Project "',p.proj{p.curr_proj}.exp_parameters{1,2},'" ready!'],...
+    'success',h_fig);

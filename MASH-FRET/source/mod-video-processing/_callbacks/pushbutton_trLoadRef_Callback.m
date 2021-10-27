@@ -38,6 +38,10 @@ if ~sum(fname)
 end
 cd(pname);
 
+% display process
+setContPan(['Import reference coordinates from file ',pname,fname,' ...'],...
+    'process',h_fig);
+
 % import coordinates
 fDat = importdata([pname fname], '\n');
 if isstruct(fDat)
@@ -72,6 +76,5 @@ guidata(h_fig,h);
 updateFields(h_fig,'imgAxes');
 
 % display success
-setContPan(['Reference coordinates were successfully imported from file: ' ...
-    pname fname],'success',h_fig);
+setContPan('Reference coordinates successfully imported!','success',h_fig);
 

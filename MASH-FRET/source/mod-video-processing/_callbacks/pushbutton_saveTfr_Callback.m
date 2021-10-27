@@ -14,8 +14,8 @@ coordreffile = p.proj{p.curr_proj}.VP.curr.gen_crd{3}{2}{2};
 
 % control transformation
 if isempty(tr)
-    setActPan(['No transformation detected. Please calculate or import a ',...
-        'transformation.'],'error',h_fig);
+    setContPan(['No transformation detected. Please calculate or import a',...
+        ' transformation.'],'error',h_fig);
     return
 end
 
@@ -45,6 +45,9 @@ if ~sum(fname_tr)
     return
 end
 
+% display process
+setContPan('Write transformation to file...','process',h_fig);
+
 % save transformation to file
 save([pname fname_tr],'-mat','tr');
 
@@ -52,5 +55,5 @@ save([pname fname_tr],'-mat','tr');
 ud_VP_coordTransfPan(h_fig);
 
 % display success
-setActPan(['Transformation was successfully exported to file: ',pname,...
-    fname_tr],'success',h_fig);
+setContPan(['Transformation successfully saved to file: ',pname,fname_tr],...
+    'success',h_fig);

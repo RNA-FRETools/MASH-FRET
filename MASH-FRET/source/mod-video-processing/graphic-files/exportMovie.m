@@ -59,6 +59,9 @@ if ~sum(fname)
     return
 end
 
+% display progress
+setContPan('Write video to file... ','process',h_fig);
+
 % export video/image to file
 switch findex
     case 1
@@ -93,9 +96,9 @@ if ~isempty(filtlst)
     end
 end
 
-% show action
-updateActPan([grType str_bg 'has been successfully exported to file: ' ...
-    pname fname], h_fig, 'success');
+% display success
+setContPan([grType str_bg 'has been successfully exported to file: ' ...
+    pname fname], 'success', h_fig);
 
 ok = 1;
 

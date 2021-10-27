@@ -62,7 +62,7 @@ end
 cd(pname);
 
 % display progress
-setContPan(['Loading file ',pname,fname],'process',h_fig);
+setContPan(['Import image from file: ',pname,fname],'process',h_fig);
 
 % get image data
 [data,ok] = getFrames([pname,fname], 1, [], h_fig, true);
@@ -70,6 +70,10 @@ if ~ok
     return
 end
 img = data.frameCur;
+
+
+% display progress
+setContPan('Transform image...','process',h_fig);
 
 % transform image
 [imgtrsf,ok] = constrTrafoImage(tr,img,h_fig);

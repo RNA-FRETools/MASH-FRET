@@ -92,5 +92,4 @@ guidata(h_fig, h);
 ud_TTprojPrm(h_fig);
 
 % display success
-setContPan('Project parameters have been successfully modified.','success',...
-    h_fig);
+setContPan('Experiment settings successfully modified!','success',h_fig);

@@ -41,7 +41,8 @@ end
 cd(pname);
 
 % display progress
-setContPan(['Loading file ',pname,fname],'process',h_fig);
+setContPan(['Import average image from file: ',pname,fname,' ...'],...
+    'process',h_fig);
 
 % get image data
 [data,ok] = getFrames([pname,fname], 1, [], h_fig, true);
@@ -65,3 +66,6 @@ guidata(h_fig, h);
 
 % refresh calculations, plot and set GUI to proper values
 updateFields(h_fig, 'imgAxes');
+
+% display success
+setContPan('Average image successfully imported!','process',h_fig);

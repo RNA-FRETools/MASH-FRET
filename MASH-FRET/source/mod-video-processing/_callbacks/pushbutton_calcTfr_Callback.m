@@ -29,6 +29,9 @@ if isempty(coordref)
     return
 end
 
+% display process
+setContPan('Start transformation calculation...','process',h_fig);
+
 % calculate transformation
 tr = createTrafo(trtype,coordref,h_fig);
 if isempty(tr)
@@ -50,4 +53,4 @@ guidata(h_fig,h);
 ud_VP_coordTransfPan(h_fig);
 
 % show action
-setContPan('Transformation was successfully calculated','success',h_fig);
+setContPan('Transformation successfully calculated!','success',h_fig);

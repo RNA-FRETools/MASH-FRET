@@ -19,6 +19,9 @@ iv = curr.gen_crd{1}(3);
 % apply current parameters to project
 prm.gen_crd{1} = curr.gen_crd{1};
 
+% display process
+setContPan('Start average image calculation...','process',h_fig);
+
 % build average image
 param.start = start;
 param.stop = stop;
@@ -44,7 +47,5 @@ guidata(h_fig,h);
 updateFields(h_fig,'imgAxes');
 
 % display success
-setContPan(['The average image (' num2str(param.start) ':' ...
-    num2str(param.iv) ':' num2str(param.stop) ') has been successfully ',...
-    'created'], 'success', h_fig);
+setContPan('Average image successfully calculated!', 'success', h_fig);
 

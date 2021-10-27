@@ -12,8 +12,7 @@ bgfilt = curr.edit{1}{4};
 % control average image
 if isempty(avimg)
     setContPan(['No average image detected. Please calculate or load the ',...
-        'average imagehe average image must be calculated first.'],...
-        'error',h_fig);
+        'average image first.'],'error',h_fig);
     return
 end
 
@@ -21,6 +20,9 @@ end
 if meth==1
     return
 end
+
+% display process
+setContPan('Start a spotfinder procedure...','process',h_fig);
 
 % reset results
 curr.gen_crd{2}{4} = []; % uncharted
@@ -60,3 +62,6 @@ guidata(h_fig, h);
 
 % refresh calculations, plot and GUI
 updateFields(h_fig, 'imgAxes');
+
+% display success
+setContPan('Spotfinder procedure successfully completed!','success',h_fig);

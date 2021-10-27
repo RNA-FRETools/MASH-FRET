@@ -33,6 +33,9 @@ if isempty(tr)
     return
 end
 
+% display process
+setContPan('Transform coordinates...','process',h_fig);
+
 % transform coordinates
 q.res_x = viddim(1);
 q.res_y = viddim(2);
@@ -64,4 +67,4 @@ guidata(h_fig, h);
 updateFields(h_fig,'imgAxes');
 
 % display success
-setContPan('Coordinates were successfully transformed','success',h_fig);
+setContPan('Coordinates were successfully transformed!','success',h_fig);

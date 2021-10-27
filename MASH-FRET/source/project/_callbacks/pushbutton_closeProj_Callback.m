@@ -38,6 +38,13 @@ if ~strcmp(del, 'Yes')
     return
 end
 
+% display process
+if numel(slct)>1
+    setContPan('Closing projects...','process',h_fig);
+else
+    setContPan('Closing project...','process',h_fig);
+end
+
 % build action
 list_str = get(h.listbox_proj, 'String');
 str_act = '';
@@ -46,24 +53,13 @@ for i = slct
     if ~isempty(p.proj{i}.proj_file)
         str_act = cat(2,str_act,'(',p.proj{i}.proj_file,')');
     end
-    str_act = cat(2,str_act,'\n');
+    str_act = cat(2,str_act,', ');
 end
 str_act = str_act(1:end-2);
 
 % update current project, molecule index, data type and molecule subgroup
 p.proj(slct) = [];
-p.curr_mod(slct) = [];
-p.sim.curr_plot(slct) = [];
-p.movPr.curr_plot(slct) = [];
-p.movPr.curr_frame(slct) = [];
-p.ttPr.curr_mol(slct) = [];
-p.ttPr.curr_plot(slct) = [];
-p.thm.curr_tpe(slct) = [];
-p.thm.curr_tag(slct) = [];
-p.thm.curr_plot(slct) = [];
-p.TDP.curr_type(slct) = [];
-p.TDP.curr_tag(slct) = [];
-p.TDP.curr_plot(slct) = [];
+p = adjustProjIndexLists(p,-slct,[]);
 
 % set new current project
 if size(p.proj,2) <= 1
@@ -97,13 +93,11 @@ if ~isempty(p.proj)
     switchPan(eval(['h.togglebutton_',p.curr_mod{p.curr_proj}]),[],h_fig);
 end
 
-% display action
+% display success
 if numel(slct)>1
-    str_act = cat(2,'Project has been sucessfully removed form ',...
-        'the list: ',str_act);
+    str_act = cat(2,'Project ',str_act,' sucessfully closed!');
 else
-    str_act = cat(2,'Projects have been sucessfully removed form ',...
-        'the list:\n',str_act);
+    str_act = cat(2,'Projects ',str_act,' sucessfully closed!',str_act);
 end
-setContPan(str_act,'none',h_fig);
+setContPan(str_act,'success',h_fig);
 

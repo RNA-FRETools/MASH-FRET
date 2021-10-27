@@ -7,6 +7,9 @@ function menu_map_export(obj,evd,h_fig)
 %  file{1}: file locations
 %  file{2}: file name
 
+% display process
+setContPan('Open export options window...','process',h_fig);
+
 if iscell(obj)
     pname = obj{1};
     fname = obj{2};

@@ -47,6 +47,9 @@ if ~sum(fname)
     return
 end
 
+% display process
+setContPan('Write reference coordinates to file...','process',h_fig);
+
 % save coordinates to file
 f = fopen([pname fname], 'Wt');
 fprintf(f, 'x\ty\n');
@@ -54,5 +57,5 @@ fprintf(f, '%d\t%d\n', coordref');
 fclose(f);
 
 % display succes
-setContPan(['Reference coordinates were successfully saved to file: ',...
-    pname,fname], 'success', h_fig);
+setContPan(['Reference coordinates successfully saved to file: ',pname,...
+    fname], 'success', h_fig);

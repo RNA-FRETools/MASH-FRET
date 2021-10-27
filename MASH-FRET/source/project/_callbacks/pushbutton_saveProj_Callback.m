@@ -12,6 +12,7 @@ if isempty(p.proj)
 end
 
 proj = p.curr_proj;
+projtitle = p.proj{proj}.exp_parameters{1,2};
 if iscell(obj)
     pname = obj{1};
     fname = obj{2};
@@ -20,7 +21,6 @@ if iscell(obj)
     end
 else
     projfile = p.proj{proj}.proj_file;
-    projtitle = p.proj{proj}.exp_parameters{1,2};
     rootfolder = p.proj{proj}.folderRoot;
     if ~isempty(projfile)
         [pname,projName,~] = fileparts(projfile);
@@ -46,7 +46,9 @@ fname_proj = getCorrName([fname '.mash'], pname, h_fig);
 if ~sum(fname_proj)
     return
 end
-setContPan(['Save project ' fname_proj ' ...'], 'process' , h_fig);
+
+% display process
+setContPan(['Save project "',projtitle,'" to file ...'],'process',h_fig);
 
 % update processing parameters and export settings
 dat = p.proj{proj};
@@ -73,10 +75,6 @@ p.proj{proj}.cnt_p_pix = dat.cnt_p_pix;
 
 % save to file
 save([pname fname_proj], '-struct', 'dat');
-
-% show action
-setContPan(['Project has been successfully saved to file: ' pname ...
-    fname_proj], 'success' , h_fig);
 
 % set interface default param. to project's param.
 if ~isempty(p.proj{proj}.sim)
@@ -128,3 +126,6 @@ p.es = setExpSetFromProj(dat);
 h.param = p;
 guidata(h_fig,h);
 
+% display success
+setContPan(['Project "',projtitle,'" was successfully saved to file: ' ...
+    fname_proj ' ...'],'success',h_fig);

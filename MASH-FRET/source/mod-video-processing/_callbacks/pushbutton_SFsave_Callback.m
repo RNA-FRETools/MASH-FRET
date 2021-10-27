@@ -37,7 +37,3 @@ end
 if isempty(coordfile)
     return
 end
-
-% display success
-setContPan(['Spots coordinates have been successfully written to ',...
-    'file: ',coordfile], 'success', h_fig);

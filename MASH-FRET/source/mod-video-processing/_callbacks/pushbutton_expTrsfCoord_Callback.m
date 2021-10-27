@@ -49,6 +49,9 @@ if ~sum(fname)
     return
 end
 
+% display progress
+setContPan('Write transformed coordinates to file...','process',h_fig);
+
 % save coordinates to file
 str_hd = [];
 str_fmt = [];
@@ -64,5 +67,5 @@ fprintf(f, str_fmt, coordtr');
 fclose(f);
 
 % display succes
-setContPan(['Transformed coordinates were successfully saved to file: ',...
+setContPan(['Transformed coordinates successfully saved to file: ',...
     pname,fname], 'success', h_fig);

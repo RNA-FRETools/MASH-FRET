@@ -42,6 +42,9 @@ if ~sum(double(strcmp(fext, {'.png' '.tif' '.sira'})))
 end
 fname = getCorrName(fname, pname, h_fig);
 
+% display process
+setContPan('Write average image to file...','process',h_fig);
+
 % save image to file
 if strcmp(fext, '.png')
     imwrite(uint16(65535*(img_ave-min(min(img_ave)))/ ...
@@ -72,6 +75,6 @@ elseif strcmp(fext, '.sira')
     fclose(f);
 end
 
-updateActPan(['The average image (' num2str(param.start) ':' ...
-    num2str(param.iv) ':' num2str(param.stop) ') has been saved to file: ' ...
-    pname,fname], h_fig, 'success');
+% display success
+setContPan(['Average image successfully written to file: ',pname,fname],...
+    'success',h_fig);

@@ -33,6 +33,9 @@ if ~sum(fname)
 end
 cd(pname);
 
+% display process
+setContPan('Import single molecule coordinates...','process',h_fig);
+
 % import coordinates form file
 setContPan('Load coordinates ...','process',h_fig);
 fDat = importdata([pname fname], '\n');
@@ -57,6 +60,6 @@ guidata(h_fig, h);
 updateFields(h_fig,'imgAxes');
 
 % display success
-setContPan(cat(2,'Coordinates were successfully imported from file: ',...
-    pname,fname),'success',h_fig);
+setContPan(cat(2,'Single molecule coordinates successfully imported from ',...
+    'file: ',pname,fname),'success',h_fig);
 
