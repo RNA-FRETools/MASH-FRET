@@ -51,7 +51,7 @@ if ~isempty(coordsm)
 end
 
 % plot
-plotprm{1} = [perSec,1,0]; % IC per second, colormap,coord to plot
+plotprm{1} = [perSec,2,0]; % IC per second, colormap,coord to plot
 plotprm{2} = (1:nChan-1)*sub_w; % channel split pixel positions
 def.plot = adjustVal(def.plot,plotprm);
 def.plot{1}(3) = coord2plot;
@@ -75,7 +75,7 @@ gen_crd{3} = {{[],'',[1,2]},... % coord to transform,imported file,imported x- a
     {[],'','rw',... % reference coord, imported file, import mode
         {[((1:nChan)'+1),nChan*ones(nChan,1),zeros(nChan,1)],[1,2]},... % ref. coord file row-wise import options
         {reshape((1:2*nChan),[nChan 2]) 1},... % ref. coord file column-wise import options
-        ''} % reference image file
+        ''},... % reference image file
     {[],4,''},... % transformation,transformation type,imported file
     []}; % transformed coordinates
 def.gen_crd = adjustVal(def.gen_crd,gen_crd);
