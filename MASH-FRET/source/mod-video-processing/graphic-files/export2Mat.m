@@ -1,4 +1,4 @@
-function ok = export2Mat(h_fig, pname, fname)
+function ok = export2Mat(h_fig, fname, pname)
 % ok = export2Mat(h_fig, fname, pname)
 %
 % Export the movie / image with background corrections to a .mat file
@@ -25,7 +25,7 @@ iv =  curr.edit{2}(3);
 tocurr = curr.edit{1}{1}(2);
 
 % control full-length video
-isMov = isFullLengthVideo(h_fig);
+isMov = isFullLengthVideo([pname,fname],h_fig);
 
 % control image filters
 isBgCorr = ~isempty(filtlst);
@@ -33,11 +33,12 @@ isBgCorr = ~isempty(filtlst);
 % abort if the file being written is the one being accessed for reading data
 if ~isMov && isequal(vidfile,[pname fname])
     setContPan(cat(2,'The exported file must be different from the ',...
-        'original one.'),'error'h_fig);
+        'original one.'),'error',h_fig);
     return
 end
 
 % initialize loading bar
+L = numel(start:iv:stop);
 if loading_bar('init', h_fig, L, 'Export to a *.mat file...')
     return
 end
@@ -82,4 +83,7 @@ loading_bar('close', h_fig);
 
 % save data to file
 save([pname fname], 'img', '-mat');
+
+% return success
+ok = 1;
 

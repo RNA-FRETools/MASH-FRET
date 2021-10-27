@@ -28,7 +28,7 @@ iv =  curr.edit{2}(3);
 tocurr = curr.edit{1}{1}(2);
 
 % control full-length video
-isMov = isFullLengthVideo(h_fig);
+isMov = isFullLengthVideo([pname,fname],h_fig);
 
 % control image filters
 isBgCorr = ~isempty(filtlst);

@@ -36,13 +36,9 @@ if ~isempty(varargin)
     end
 else
     str_fmt = {};
-    for fmt = 1:numel(fmtext)-1
+    for fmt = 1:numel(fmtext)
         str_fmt = cat(1,str_fmt,...
             {['*',fmtext{fmt}],[fmtname{fmt},'(*',fmtext{fmt},')']});
-    end
-    if stop==start
-        str_fmt = cat(1,str_fmt,...
-            {['*',fmtext{end}],[fmtname{end},'(*',fmtext{end},')']});
     end
     
     [~,expname,~] = fileparts(vidfile);
@@ -67,9 +63,9 @@ switch findex
     case 1
         ok = export2Sira(h_fig, fname, pname);
     case 2
-        ok = export2Tiff(h_fig, fname, pname);
-    case 3
         ok = export2Gif(h_fig, fname, pname);
+    case 3
+        ok = export2Tiff(h_fig, fname, pname);
     case 4
         ok = export2Mat(h_fig, fname, pname);
     case 5

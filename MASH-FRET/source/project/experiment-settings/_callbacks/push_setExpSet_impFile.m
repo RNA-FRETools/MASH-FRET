@@ -90,7 +90,7 @@ else
     setContPan('Calculate average images...','process',h_fig0);
 
     % calculate average images
-    aveimg = calcAveImg('all',vfile,vinfo,proj.nb_excitations,proj,h_fig0);
+    aveimg = calcAveImg('all',vfile,vinfo,proj.nb_excitations,h_fig0);
 
     proj.aveImg = aveimg;
     

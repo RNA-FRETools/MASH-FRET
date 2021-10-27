@@ -22,7 +22,7 @@ filtlst = curr.edit{1}{4};
 start = curr.edit{2}(1);
 
 % control full-length video
-isMov = isFullLengthVideo(h_fig);
+isMov = isFullLengthVideo([pname,fname],h_fig);
 
 % control image filters
 isBgCorr = ~isempty(filtlst);
@@ -54,4 +54,7 @@ end
 imwrite(uint16(65535*(img-min(min(img)))/(max(max(img))-min(min(img)))), ...
     [pname fname],'png','BitDepth',16,'Description',[num2str(expT) ' ' ...
     num2str(max(max(img))) ' ' num2str(min(min(img)))]);
+
+% return success
+ok = 1;
 

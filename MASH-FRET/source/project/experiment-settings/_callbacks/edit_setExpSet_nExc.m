@@ -39,7 +39,7 @@ proj.chanExc(excl) = 0;
 if proj.is_movie
     setContPan('Recalculate average images...','process',h_fig0);
     proj.aveImg = calcAveImg('all',proj.movie_file,proj.movie_dat,...
-        proj.nb_excitations,proj,h_fig0);
+        proj.nb_excitations,h_fig0);
     setContPan('Average images successfully recalculated!','success',...
         h_fig0);
 end

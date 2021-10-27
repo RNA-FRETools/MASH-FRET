@@ -65,7 +65,7 @@ if data.frameLen>1
 
     % calculate average image if necessary
     img = calcAveImg(0,[pname,fname],{data.fCurs,viddim,data.frameLen},1,...
-        p.proj{p.curr_proj},h_fig);
+        h_fig);
 else
     img = data.frameCur;
 end
