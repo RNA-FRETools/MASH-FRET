@@ -32,11 +32,7 @@ spots = [];
 switch toplot
     case 1 % spotfinder
         if ~isempty(coordsf)
-            for c = 1:nChan
-                if size(coordsf,2)>=c && ~isempty(coordsf{c})
-                    spots = cat(1, spots, coordsf{c}(:,1:2));
-                end
-            end
+            spots = prm.res_crd{1};
         end
     case 2 % reference coordinates
         for c = 1:nChan

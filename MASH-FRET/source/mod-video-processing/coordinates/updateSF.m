@@ -29,7 +29,6 @@ if size(sfcoord,1)<1
 % recover results from previous spotfinder run
 else
     spots = prm.gen_crd{2}{4};
-    prm.gen_crd{2}{4} = spots;
 end
 
 % apply selection rules

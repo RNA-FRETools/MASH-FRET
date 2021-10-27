@@ -41,7 +41,7 @@ curr = p.proj{proj}.VP.curr;
 persec = curr.plot{1}(1);
 meth = curr.gen_crd{2}{1}(1);
 gaussfit = curr.gen_crd{2}{1}(2);
-coordsf = curr.gen_crd{2}{4};
+coordsf = curr.gen_crd{2}{5};
 sfprm = curr.gen_crd{2}{2};
 slctprm = curr.gen_crd{2}{3};
 
