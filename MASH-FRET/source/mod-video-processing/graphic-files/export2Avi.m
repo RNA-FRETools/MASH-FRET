@@ -25,6 +25,7 @@ curr = p.proj{p.curr_proj}.VP.curr;
 filtlst = curr.edit{1}{4};
 start = curr.edit{2}(1);
 stop = curr.edit{2}(2);
+iv =  curr.edit{2}(3);
 tocurr = curr.edit{1}{1}(2);
 
 % control full-length video
@@ -35,8 +36,8 @@ isBgCorr = ~isempty(filtlst);
 
 % abort if the file being written is the one being accessed for reading data
 if ~isMov && isequal(vidfile,[pname fname])
-    updateActPan(cat(2,'The exported file must be different from the ',...
-        'original one.'),h_fig);
+    setContPan(cat(2,'The exported file must be different from the ',...
+        'original one.'),'error',h_fig);
     return
 end
 

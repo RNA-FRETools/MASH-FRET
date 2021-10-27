@@ -29,8 +29,8 @@ isBgCorr = ~isempty(filtlst);
 
 % abort if the file being written is the one being accessed for reading data
 if ~isMov && isequal(vidfile,[pname fname])
-    updateActPan(cat(2,'The exported file must be different from the ',...
-        'original one.'),h_fig);
+    setContPan(cat(2,'The exported file must be different from the ',...
+        'original one.'),'error',h_fig);
     return
 end
 

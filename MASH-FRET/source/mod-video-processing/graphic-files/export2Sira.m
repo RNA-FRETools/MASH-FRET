@@ -11,7 +11,6 @@ function ok = export2Sira(h_fig, fname, pname)
 % update 5.12.2019 by MH: use external function writeSiraFile.m to create and write pixel data in sira file (this allows to call the same script from both modules Video processing and Simulation)
 
 % defaults
-iv = 1;
 ok = 0;
 
 % collect video processing parameters
@@ -25,6 +24,7 @@ curr = p.proj{p.curr_proj}.VP.curr;
 filtlst = curr.edit{1}{4};
 start = curr.edit{2}(1);
 stop = curr.edit{2}(2);
+iv =  curr.edit{2}(3);
 tocurr = curr.edit{1}{1}(2);
 
 % control full-length video
@@ -35,8 +35,8 @@ isBgCorr = ~isempty(filtlst);
 
 % abort if the file being written is the one being accessed for reading data
 if ~isMov && isequal(vidfile,[pname fname])
-    updateActPan(cat(2,'The exported file must be different from the ',...
-        'original one.'),h_fig);
+    setContPan(cat(2,'The exported file must be different from the ',...
+        'original one.'),'error',h_fig);
     return
 end
 
@@ -51,7 +51,7 @@ vers = figname(length('MASH-FRET ')+1:end);
 % write sira file headers
 f = writeSiraFile('init',[pname fname],vers,[expT,viddim,L]);
 if f == -1
-    setActPan(['Enable to open file ' fname],'error',h_fig);
+    setContPan(['Enable to open file ' fname],'error',h_fig);
     return
 end
 
