@@ -34,12 +34,12 @@ str7 = 'Reference coord.:';
 str8 = 'Map';
 str9 = 'Import options...';
 str10 = char(10006);
-ttstr0 = wrapHtmlTooltipString('Open the <b>Mapping tool</b> to map reference coordinates used to calculate the transformation.');
+ttstr0 = wrapHtmlTooltipString('<b>Save mapped coordinates</b> to a file.');
 ttstr1 = wrapHtmlTooltipString('Open browser and select the <b>reference coordinates file</b> used to calculate channel transformation.');
-ttstr3 = wrapHtmlTooltipString('<b>Calculate transformation</b> and export to file.');
+ttstr3 = wrapHtmlTooltipString('<b>Export transformation</b> to a file.');
 ttstr4 = wrapHtmlTooltipString('Open browser and select the <b>transformation file</b>: source file where channel transformations are taken from.');
 ttstr5 = wrapHtmlTooltipString('Open browser and select the <b>reference image</b> to check the quality of imported transformation.');
-ttstr6 = wrapHtmlTooltipString('Open browser and select the <b>spots coordinates file</b> to transform.');
+ttstr6 = wrapHtmlTooltipString('<b>Export transformed coordinates</b> to a file.');
 ttstr7 = wrapHtmlTooltipString('Open <b>import options</b> to configure how coordinates are imported from the reference and spots coordinate files.');
 ttstr8 = wrapHtmlTooltipString('Transform and export coordinates');
 

@@ -36,12 +36,12 @@ end
 nCoord = numel(lim.Xinf);
 isMov = ~isempty(fDat{2}{2});
 
-[o,o,fFormat] = fileparts(movFile);
-if strcmp(fFormat,'.vsi') || strcmp(fFormat,'.ets')
-    fFormat = '.bf';
+[o,o,fext] = fileparts(movFile);
+if strcmp(fext,'.vsi') || strcmp(fext,'.ets')
+    fext = '.bf';
 end
 
-switch fFormat
+switch fext
         
     case '.bf'
         if isMov
