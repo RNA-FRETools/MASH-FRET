@@ -3,10 +3,8 @@ function edit_binI_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 p = h.param;
 expT = p.proj{p.curr_proj}.frame_rate;
-nPix = p.proj{p.curr_proj}.pix_intgr(2);
+perSec = p.proj{p.curr_proj}.cnt_p_sec;
 max = abs(diff(p.proj{p.curr_proj}.TP.exp.hist{2}(1,[2 4])));
-perSec = p.proj{p.curr_proj}.TP.fix{2}(4);
-perPix = p.proj{p.curr_proj}.TP.fix{2}(5);
 
 val = str2num(get(obj, 'String'));
 if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val < max)
@@ -17,9 +15,6 @@ end
 set(obj, 'BackgroundColor', [1 1 1]);
 if perSec
     val = val*expT;
-end
-if perPix
-    val = val*nPix;
 end
 
 p.proj{p.curr_proj}.TP.exp.hist{2}(1,3) = val;

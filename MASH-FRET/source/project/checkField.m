@@ -62,8 +62,10 @@ s.coord_incl = adjustParam('coord_incl', [], s_in);
 
 % intensity integration
 s.pix_intgr = adjustParam('pix_intgr', [1 1], s_in);
-s.cnt_p_pix = adjustParam('cnt_p_pix', 1, s_in);
+
+% units
 s.cnt_p_sec = adjustParam('cnt_p_sec', 0, s_in);
+s.time_in_sec = adjustParam('time_in_sec', 0, s_in);
 
 % intensity-time traces processing
 s.intensities = adjustParam('intensities', nan(4000, ...

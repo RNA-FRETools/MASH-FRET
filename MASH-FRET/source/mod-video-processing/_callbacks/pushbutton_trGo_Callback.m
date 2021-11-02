@@ -54,7 +54,7 @@ curr.res_crd{4} = coordtr;
 curr.gen_int{2}{2} = '';
 
 % set coordinates to plot
-curr.plot{1}(3) = 4;
+curr.plot{1}(2) = 4;
 
 % save modifications
 p.proj{p.curr_proj}.VP.curr = curr;
@@ -62,6 +62,9 @@ p.proj{p.curr_proj}.VP.prm.gen_crd{3} = curr.gen_crd{3};
 p.proj{p.curr_proj}.VP.prm.res_crd = curr.res_crd;
 h.param = p;
 guidata(h_fig, h);
+
+% bring tab forefront
+h.uitabgroup_VP_plot.SelectedTab = h.uitab_VP_plot_avimg;
 
 % set GUI to proper values and refresh plot
 updateFields(h_fig,'imgAxes');

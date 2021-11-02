@@ -65,7 +65,7 @@ end
 % save reference coordinates and file
 curr.res_crd{3} = coordref;
 curr.gen_crd{3}{2}{2} = fname;
-curr.plot{1}(3) = 2;
+curr.plot{1}(2) = 2;
 
 % save modifications
 p.proj{p.curr_proj}.VP.curr = curr;

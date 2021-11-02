@@ -49,12 +49,15 @@ end
 % save coordinates and file for intensity integration
 curr.res_crd{4} = coord;
 curr.gen_int{2}{2} = [pname fname];
-curr.plot{1}(3) = 5;
+curr.plot{1}(2) = 5;
 
 % save modifications
 p.proj{p.curr_proj}.VP.curr = curr;
 h.param = p;
 guidata(h_fig, h);
+
+% bring tab forefront
+h.uitabgroup_VP_plot.SelectedTab = h.uitab_VP_plot_avimg;
 
 % set GUI to proper values and refresh plot
 updateFields(h_fig,'imgAxes');

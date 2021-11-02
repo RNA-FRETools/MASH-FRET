@@ -40,10 +40,8 @@ FRET = p.proj{proj}.FRET;
 nFRET = size(FRET,1);
 S = p.proj{proj}.S;
 nS = size(S,1);
-perSec = p.proj{proj}.TP.fix{2}(4);
-perPix = p.proj{proj}.TP.fix{2}(5);
+perSec = p.proj{proj}.cnt_p_sec;
 rate = p.proj{proj}.frame_rate;
-nPix = p.proj{proj}.pix_intgr(2);
 
 % get time traces
 intensities = p.proj{proj}.intensities_denoise;
@@ -106,10 +104,6 @@ for i = 1:nMol
                     I = I/rate;
                     I_DTA = I_DTA/rate;
                 end
-                if perPix
-                    I = I/nPix;
-                    I_DTA = I_DTA/nPix;
-                end
 
                 % concatenate traces
                 dat1.trace{ind} = [dat1.trace{ind};I]; % intensits-time trace
@@ -146,10 +140,6 @@ for i = 1:nMol
                 if perSec
                     I0 = I0/rate;
                     I0_DTA = I0_DTA/rate;
-                end
-                if perPix
-                    I0 = I0/nPix;
-                    I0_DTA = I0_DTA/nPix;
                 end
 
                 % concatenate traces

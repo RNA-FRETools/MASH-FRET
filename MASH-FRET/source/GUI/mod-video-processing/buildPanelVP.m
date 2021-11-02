@@ -31,14 +31,21 @@ ttl0 = 'Plot';
 ttl1 = 'Edit and export video';
 ttl2 = 'Molecule coordinates';
 ttl3 = 'Intensity integration';
+str0 = 'EXPORT...';
+str1 = 'CALCULATE TRACES';
 tabttl0 = 'Video';
 tabttl1 = 'Average image';
+ttstr0 = wrapHtmlTooltipString('<b>Export intensity-time traces:</b> opens export options.');
+ttstr1 = wrapHtmlTooltipString('<b>Create intensity-time traces</b> using the transformed coordinates.');
 
 % parents
+h_fig = h.figure_MASH;
 h_pan = h.uipanel_VP;
 
 % dimensions
 pospan = get(h_pan,'position');
+wbut0 = getUItextWidth(str0,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
+wbut1 = getUItextWidth(str1,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
 htab = pospan(4)-2*p.mg;
 wtab = htab-hedit0-2*p.mg-hsld0-p.mg-htxt0;
 wpan0 = pospan(3)-3*p.mg-wtab;
@@ -48,7 +55,7 @@ hpan1 = p.mgpan+hpop0+hedit0+p.mg/2+hpop0+p.mg/fact+hedit0+p.mg/2+hedit0+...
 hpan2a = p.mgpan+hpop0+p.mg/2+hpop0+p.mg/2+hedit0+p.mg/2+hedit0+p.mg;
 hpan2b = p.mgpan+3*hedit0+3*p.mg/2+hedit0+p.mg;
 hpan2 = p.mgpan+hedit0+p.mg/2+hpan2a+p.mg/2+hpan2b+p.mg/2;
-hpan3 = p.mgpan+3*(p.mg/2+hedit0);
+hpan3 = p.mgpan+2*(p.mg/2+hedit0);
 
 % GUI
 x = p.mg;
@@ -94,4 +101,21 @@ h.uipanel_VP_intensityIntegration = uipanel('parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
     [x,y,wpan0,hpan3],'title',ttl3);
 h = buildPanelVPintensityIntegration(h,p);
+
+x = pospan(3)-p.mg-wbut0-p.mg-wbut1;
+y = p.mg/2;
+
+h.pushbutton_TTgen_create = uicontrol('style','pushbutton','parent',...
+    h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
+    'fontweight','bold','position',[x,y,wbut1,hedit0],'string',str1,...
+    'tooltipstring',ttstr1,'callback',...
+    {@pushbutton_TTgen_create_Callback,h_fig});
+
+x = x+wbut1+p.mg;
+
+h.pushbutton_TTgen_fileOpt = uicontrol('style','pushbutton','parent',...
+    h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
+    'fontweight','bold','position',[x,y,wbut0,hedit0],'string',str0,...
+    'tooltipstring',ttstr0,'callback',...
+    {@pushbutton_TTgen_fileOpt_Callback,h_fig});
 

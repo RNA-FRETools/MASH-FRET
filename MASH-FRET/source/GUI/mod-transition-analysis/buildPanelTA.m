@@ -32,30 +32,47 @@ hbut0 = 20;
 hcb0 = 20;
 hedit0 = 20;
 htxt0 = 14;
+wedit0 = 40;
 fact = 5;
+str0 = 'Data:';
+str1 = {'Select data'};
+str2 = 'Tag:';
+str3 = {'Select subgroup'};
+str4 = 'diagonal';
 ttl0 = 'Transition density plot';
 ttl1 = 'State configuration';
 ttl2 = 'Dwell time hisotgrams';
 ttl3 = 'Kinetic model';
 tabttl0 = 'TDP';
-tabttl1 = 'Dwell times';
-tabttl2 = 'BIC (ML-DPH)';
-tabttl3 = 'Diagram';
-tabttl4 = 'Simulation';
+tabttl1 = 'BIC (ML-GMM)';
+tabttl2 = 'Dwell times';
+tabttl3 = 'BIC (ML-DPH)';
+tabttl4 = 'Diagram';
+tabttl5 = 'Simulation';
+ttstr0 = wrapHtmlTooltipString('<b>Select data</b> to histogram in 2D and analyze.');
+ttstr1 = wrapHtmlTooltipString('<b>Select molecule subgroup</b> to histogram in 2D and analyze.');
 
 % parents
+h_fig = h.figure_MASH;
 h_pan = h.uipanel_TA;
 
 % dimensions
 pospan = get(h_pan,'position');
-wtab = (pospan(3)-3*p.mg)/2;
+wcb0 = getUItextWidth(str4,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
+wpan0a = p.mg+wcb0+p.mg/fact+wcb0+p.mg;
+wpan0 = p.mg+wedit0+p.mg/2+wedit0+p.mg+wpan0a+p.mg;
+wtab = pospan(3)-2*p.mg-wpan0-p.mg;
 htab = pospan(4)-2*p.mg;
-wpan0 = pospan(3)-3*p.mg-wtab;
-hpan0 = p.mgpan+hpop0+2*(htxt0+hedit0+p.mg/2)+p.mg+3*(hedit0+p.mg/2)+p.mg/2+hbut0+p.mg;
-hpan1 = p.mgpan+p.mgpan+hpop0+p.mg/2+htxt0+hpop0+p.mg/fact+hedit0+p.mg/2+...
-    hedit0+p.mg/2+hedit0+p.mg+p.mg;
-hpan2 = p.mgpan+hedit0+2*(p.mg/fact+hcb0)+2*(p.mg+hbut0)+p.mg;
-hpan3 = p.mgpan+htxt0+hpop0+p.mg;
+wpop0 = (wpan0-p.mg/fact)/2;
+hpan0 = p.mgpan+htxt0+hedit0+p.mg/2+5*hedit0+p.mg/2+hpop0+p.mg/2;
+hpan1a = p.mgpan+hpop0+p.mg/2+htxt0+hpop0+p.mg/fact+hedit0+p.mg/2+...
+    hedit0+p.mg/2+hedit0+p.mg;
+hpan1b = p.mgpan+htxt0+hpop0+p.mg/2+hbut0+p.mg;
+hpan1 = p.mgpan+hpan1a+p.mg+hpan1b+p.mg;
+hpan2a = p.mgpan+htxt0+hpop0+p.mg/2+htxt0+hpop0+p.mg;
+hpan2 = p.mgpan+htxt0+hedit0+hedit0/2+p.mg/2+htxt0+hpop0+p.mg/2+hbut0+...
+    p.mg/2+hpan2a+p.mg;
+hpan3 = p.mgpan+htxt0+hpop0+p.mg/2+hbut0+p.mg;
 
 % GUI
 x = p.mg;
@@ -69,24 +86,56 @@ h.uitab_TA_plot_TDP = uitab('parent',h_tabgrp,'units',p.posun,'title',...
     tabttl0);
 h = buildTAtabPlotTDP(h,p);
 
-h.uitab_TA_plot_dt = uitab('parent',h_tabgrp,'units',p.posun,'title',...
+h.uitab_TA_plot_BICGMM = uitab('parent',h_tabgrp,'units',p.posun,'title',...
     tabttl1);
+h = buildTAtabPlotBICGMM(h,p);
+
+h.uitab_TA_plot_dt = uitab('parent',h_tabgrp,'units',p.posun,'title',...
+    tabttl2);
 h = buildTAtabPlotDt(h,p);
 
-h.uitab_TA_plot_BIC = uitab('parent',h_tabgrp,'units',p.posun,'title',...
-    tabttl2);
-h = buildTAtabPlotBIC(h,p);
+h.uitab_TA_plot_BICDPH = uitab('parent',h_tabgrp,'units',p.posun,'title',...
+    tabttl3);
+h = buildTAtabPlotBICDPH(h,p);
 
 h.uitab_TA_plot_mdl = uitab('parent',h_tabgrp,'units',p.posun,'title',...
-    tabttl3);
+    tabttl4);
 h = buildTAtabPlotMdl(h,p);
 
 h.uitab_TA_plot_sim = uitab('parent',h_tabgrp,'units',p.posun,'title',...
-    tabttl4);
+    tabttl5);
 h = buildTAtabPlotSim(h,p);
 
 x = x+wtab+p.mg;
-y = pospan(4)-p.mgpan-hpan0;
+y = pospan(4)-p.mgpan-htxt0;
+
+h.text_TDPdataType = uicontrol('style','text','parent',h_pan,'units',...
+    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wpop0,htxt0],'string',str0);
+
+x = x+wpop0+p.mg/fact;
+
+h.text_TDPtag = uicontrol('style','text','parent',h_pan,'units',...
+    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wpop0,htxt0],'string',str2);
+
+x = p.mg+wtab+p.mg;
+y = y-hpop0;
+
+h.popupmenu_TDPdataType = uicontrol('style','popupmenu','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wpop0,hpop0],'string',str1,'tooltipstring',ttstr0,'callback',...
+    {@popupmenu_TDPdataType_Callback,h_fig});
+
+x = x+wpop0+p.mg/fact;
+
+h.popupmenu_TDPtag = uicontrol('style','popupmenu','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wpop0,hpop0],'string',str3,'tooltipstring',ttstr1,'callback',...
+    {@popupmenu_TDPtag_Callback,h_fig});
+
+x = p.mg+wtab+p.mg;
+y = y-p.mg-hpan0;
 
 h.uipanel_TA_transitionDensityPlot = uipanel('parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold',...

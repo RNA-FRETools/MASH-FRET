@@ -43,8 +43,6 @@ if isModuleOn(p,'TP')
     p_fix = p.proj{proj}.TP.fix;
     
     nMol = size(incl,2);
-    perSec = p_fix{2}(4);
-    perPix = p_fix{2}(5);
     
     setProp(get(h.uipanel_TP, 'Children'), 'Enable', 'on');
     set(h.text_molTot, 'String', ['total: ' num2str(nMol) ' molecules']);
@@ -192,10 +190,6 @@ if isModuleOn(p,'TP')
     
     % cancelled by MH 29.3.2019
 %     set(h.popupmenu_excDirExc, 'Value', p_fix{3}(7));
-    
-    % x-axis settings
-    set(h.checkbox_ttPerSec, 'Value', perSec);
-    set(h.checkbox_ttAveInt, 'Value', perPix);
 
     % create sub-image axes and calculate laser-specific avergae images
     if isCoord && isMov

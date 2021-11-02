@@ -16,11 +16,12 @@ labels = s.labels;
 tag = s.molTag;
 tagName = s.molTagNames;
 exptime = s.frame_rate;
-nPix = s.pix_intgr(2);
 FRET = s.FRET; 
 S = s.S;
 projprm = s.exp_parameters;
 coord = s.coord;
+perSec = s.cnt_p_sec; % intensity units per second
+inSec = s.time_in_sec; % x-axis in second
 
 if ~isempty(s.proj_file)
     proj_file = strrep(s.proj_file, '\', '\\');
@@ -50,9 +51,6 @@ nMol_i = numel(find(incl));
 m_i = find(find(incl) == m);
 
 % collect processing parameters
-perSec = s.TP.fix{2}(4); % intensity units per second
-perPix = s.TP.fix{2}(5); % intensity units per pixel
-inSec = s.TP.fix{2}(7); % x-axis in second
 prm_bg = s.TP.prm{m}{3};
 prm_cross = s.TP.fix{4};
 prm_fact = s.TP.prm{m}{6};
@@ -134,9 +132,6 @@ str_units = 'counts';
 if perSec
     str_units = cat(2,str_units, ' per second');
 end
-if perPix
-    str_units = cat(2,str_units, ' per pixel');
-end
 
 % FRET
 if nFRET > 0
@@ -189,9 +184,6 @@ for l = 1:nExc
             bgInt = prm_bg{3}{l,c}(prm_bg{2}(l,c),3);
             if perSec
                 bgInt = bgInt/exptime;
-            end
-            if perPix
-                bgInt = bgInt/nPix;
             end
             
             str_bg = cat(2,str_bg,', BG intensity: ',num2str(bgInt), ...

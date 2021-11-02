@@ -30,7 +30,7 @@ curr.gen_crd{2}{5} = []; % final sorted
 curr.res_crd{1} = []; % sm coordinates
 
 % plot SF coordinates
-curr.plot{1}(3) = 1;
+curr.plot{1}(2) = 1;
 
 % check if any image filter is applied
 isBgCorr = ~isempty(bgfilt);
@@ -48,7 +48,11 @@ spots = [];
 for c = 1:nChan
     spots = cat(1,spots,curr.gen_crd{2}{5}{c});
 end
-curr.res_crd{1} = spots(:,[1,2]);
+if isempty(spots)
+    curr.res_crd{1} = [];
+else
+    curr.res_crd{1} = spots(:,[1,2]);
+end
 
 % reset coordinates file to transform
 curr.gen_crd{3}{1}{2} = '';
@@ -59,6 +63,9 @@ p.proj{p.curr_proj}.VP.prm.gen_crd{2} = curr.gen_crd{2};
 p.proj{p.curr_proj}.VP.prm.res_crd = curr.res_crd;
 h.param = p;
 guidata(h_fig, h);
+
+% bring tab forefront
+h.uitabgroup_VP_plot.SelectedTab = h.uitab_VP_plot_avimg;
 
 % refresh calculations, plot and GUI
 updateFields(h_fig, 'imgAxes');

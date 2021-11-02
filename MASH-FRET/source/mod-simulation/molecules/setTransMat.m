@@ -1,9 +1,25 @@
 function setTransMat(transMat, h_fig)
+% setTransMat(transMat, h_fig)
+%
+% fill up edit fields with transition rate constants
+%
+% transMat: transition rate constant matrix (in frame-1)
+% h_fig: handle to main figure
 
 % default
 lightgray = [0.939,0.939,0.939];
 
 h = guidata(h_fig);
+p = h.param;
+inSec = p.proj{p.curr_proj}.time_in_sec;
+rate = p.proj{p.curr_proj}.sim.curr.gen_dt{1}(4);
+
+if inSec
+    transMat = transMat*rate;
+    str_un = 'second-1';
+else
+    str_un = 'frame-1';
+end
 
 h_ed = [h.edit11 h.edit21 h.edit31 h.edit41 h.edit51 
     h.edit12 h.edit22 h.edit32 h.edit42 h.edit52
@@ -15,7 +31,10 @@ J = size(h_ed,1);
 
 for j1 = 1:J
     for j2 = 1:J
-        set(h_ed(j1,j2),'string',num2str(transMat(j2,j1)));
+        ttstr = wrapHtmlTooltipString(sprintf(['transition rate constant ',...
+            '<b>%i->%i</b> (in ',str_un,')'],j1,j2));
+        set(h_ed(j1,j2),'string',num2str(transMat(j2,j1)),'tooltipstring',...
+            ttstr);
         if transMat(j2,j1)==0
             set(h_ed(j1,j2),'backgroundcolor',lightgray);
         end

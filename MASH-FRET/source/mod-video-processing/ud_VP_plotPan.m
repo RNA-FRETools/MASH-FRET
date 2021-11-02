@@ -18,10 +18,5 @@ proj = p.curr_proj;
 curr = p.proj{proj}.VP.curr;
 
 % set color map menu
-set(h.popupmenu_colorMap, 'Value', curr.plot{1}(2));
-str_map = get(h.popupmenu_colorMap,'string');
-cm = colormap(eval(lower(str_map{curr.plot{1}(2)})));
-colormap(h.axes_VP_vid,cm);
+set(h.popupmenu_colorMap, 'Value', curr.plot{1}(1));
 
-% set image count units
-set(h.checkbox_int_ps, 'Value', curr.plot{1}(1));

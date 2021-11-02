@@ -42,19 +42,19 @@ Dmax = 4;
 colList = p.TDP.colList;
 nChan = proj.nb_channel;
 nExc = proj.nb_excitations;
+I = proj.intensities;
+I_den = proj.intensities_denoise;
 I_DTA = proj.intensities_DTA;
 FRET_DTA = proj.FRET_DTA;
 S_DTA = proj.S_DTA;
 expT = proj.frame_rate;
 perSec = proj.cnt_p_sec;
-perPix = proj.cnt_p_pix;
-nPix = proj.pix_intgr(2);
 nFRET = size(proj.FRET,1);
 nS = size(proj.S,1);
 nTag = size(proj.molTagNames,2);
 N = size(proj.coord_incl,2);
 nTpe = nChan*nExc + nFRET + nS;
-cmap = 'jet';
+cmap = 2;
 
 % initialize default processing parameters
 def = cell(nTag+1,nTpe);
@@ -83,12 +83,9 @@ for tpe = 1:nTpe
             i_c = mod(tpe,nChan); i_c(i_c==0) = nChan;
             i_l = ceil(tpe/nChan);
             trace = I_DTA(:,i_c:nChan:end,i_l);
-            if perSec
-                trace = trace/expT;
-            end
-            if perPix
-                trace = trace/nPix;
-            end
+%             if perSec
+%                 trace = trace/expT;
+%             end
 
         elseif tpe <= nChan*nExc+nFRET % FRET
             i_f = tpe - nChan*nExc;
@@ -126,7 +123,7 @@ for tpe = 1:nTpe
         def{tag,tpe}.plot{3} = [];
         
         % colormap
-        def{tag,tpe}.plot{4} = colormap(cmap);
+        def{tag,tpe}.plot{4} = cmap;
 
         %% Clustering parameters
         % method, shape, max. nb. of states, state-dependant, restart nb., 

@@ -45,6 +45,7 @@ file_icon4 = 'edit_file.png';
 lbl1 = 'Routines';
 lbl2 = 'Options';
 lbl3 = 'Tools';
+lbl4 = 'Units';
 str0 = 'Simulation';
 str1 = 'Video processing';
 str2 = 'Trace processing';
@@ -126,6 +127,9 @@ h = buildMenuOptions(h);
 
 h.menu_tools = uimenu(h_fig,'label',lbl3);
 h = buildMenuTools(h);
+
+h.menu_units = uimenu(h_fig,'label',lbl4);
+h = buildMenuUnits(h);
 
 
 %% side bar

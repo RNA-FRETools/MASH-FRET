@@ -29,11 +29,10 @@ nExc = p.proj{p.curr_proj}.nb_excitations;
 vidfile = p.proj{p.curr_proj}.movie_file;
 viddat = p.proj{p.curr_proj}.movie_dat;
 expT = p.proj{p.curr_proj}.frame_rate;
+persec = p.proj{p.curr_proj}.cnt_p_sec;
 curr = p.proj{p.curr_proj}.VP.curr;
-persec = curr.plot{1}(1);
 pxdim = curr.gen_int{3}(1);
 npix = curr.gen_int{3}(2);
-avcnt = curr.gen_int{3}(3);
 
 if nExc>viddat{3}
     nExc = viddat{3};
@@ -44,7 +43,7 @@ setContPan('Generating intensity-time traces...','process',h_fig);
 
 fDat{1} = vidfile;
 fDat{2}{1} = viddat{1};
-if isFullLengthVideo(h_fig)
+if isFullLengthVideo(vidfile,h_fig)
     fDat{2}{2} = h.movie.movie;
 else
     fDat{2}{2} = [];
@@ -53,15 +52,10 @@ fDat{3} = viddat{2};
 fDat{4} = viddat{3};
 [o,data] = create_trace(newPnt,pxdim,npix,fDat);
 
-str_ave = [];
 str_sec = [];
 if persec
     str_sec = ' /s';
     data = data/expT;
-end
-if avcnt
-    str_ave = ' /pix. ';
-    data = data/npix;
 end
 
 time_ax = expT*((1:size(data,1))');
@@ -106,7 +100,7 @@ end
 
 ylim(h_axes, 'auto');
 xlabel(h_axes, 'time (s)');
-ylabel(h_axes, ['intensity (counts' str_ave str_sec ')']);
+ylabel(h_axes, ['intensity (counts' str_sec ')']);
 legend(h_axes, leg_str);
 grid on;
 

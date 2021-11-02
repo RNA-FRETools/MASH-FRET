@@ -54,8 +54,8 @@ p.molTag = [];
 p.molTagClr = es.tagClr;
 
 % trajectories
-p.cnt_p_pix = false;
-p.cnt_p_sec = true;
+p.time_in_sec = false;
+p.cnt_p_sec = false;
 p.intensities = [];
 p.intensities_bgCorr = [];
 p.intensities_crossCorr = [];

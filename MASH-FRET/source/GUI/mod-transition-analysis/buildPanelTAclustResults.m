@@ -1,5 +1,5 @@
-function h = buildPanelTAresults(h,p)
-% h = buildPanelTAresults(h,p);
+function h = buildPanelTAclustResults(h,p)
+% h = buildPanelTAclustResults(h,p);
 %
 % Builds panel "Results" in "Transition analysis" module.
 %
@@ -25,16 +25,14 @@ htxt0 = 14;
 hpop0 = 22;
 wedit0 = 40;
 fact = 5;
-lim0 = [0.5,10.5];
-axttl0 = 'BIC';
 str0 = 'Vopt';
 str1 = 'sigma';
-str2 = 'Show model:';
-str3 = 'V =';
+str2 = 'Model:';
+str3 = 'V';
 str4 = {'Select a number of states'};
-str5 = '>>';
+str5 = 'Use this config.';
 str6 = 'BIC:';
-str7 = 'reset';
+str7 = 'Reset results';
 ttstr0 = wrapHtmlTooltipString('<b>Model complexity:</b> optimum number of states; when BOBA FRET activated, the bootstrap mean is shown here.');
 ttstr1 = wrapHtmlTooltipString('<b>Sample variability:</b> when BOBA FRET activated, the bootstrap standard deviation of optimum number of states is shown here.');
 ttstr3 = wrapHtmlTooltipString('<b>Export transition clusters</b> from the selected state configuration to panel "State trasition rates" for dwell time analysis.');
@@ -47,28 +45,14 @@ h_pan = h.uipanel_TA_results;
 
 % dimensions
 pospan = get(h_pan,'position');
-waxes0 = pospan(3)-p.mg-p.mg/2-p.mg/fact-2*wedit0;
-haxes0 = pospan(4)-p.mgpan-p.mg;
-wtxt0 = pospan(3)-p.mg-p.mg/2-waxes0;
-wtxt1 = getUItextWidth(str3,p.fntun,p.fntsz1,'normal',p.tbl);
-wbut0 = getUItextWidth(str5,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wpop0 = pospan(3)-p.mg-p.mg/2-p.mg/fact-waxes0-wtxt1-wbut0;
-mgres = (pospan(4)-p.mgpan-htxt0-hedit0-hedit0-htxt0-hpop0-hedit0-p.mg)/3;
+wtxt0 = getUItextWidth(str2,p.fntun,p.fntsz1,'normal',p.tbl);
+wpop0 = pospan(3)-p.mg-wedit0-p.mg/fact-wedit0-wtxt0-2*p.mg/fact-wedit0-...
+    p.mg;
+wbut0 = wpop0+p.mg/fact+wedit0;
+wbut1 = wedit0+p.mg/fact+wedit0;
 
 % GUI
-x = 0;
-y = pospan(4)-p.mgpan-haxes0;
-
-h.axes_tdp_BIC = axes('parent',h_pan,'units',p.posun,'fontunits',p.fntun,...
-    'fontsize',p.fntsz1,'position',[x,y,waxes0,haxes0],'ylim',lim0,'xtick',...
-    [], 'nextplot', 'replacechildren');
-h_axes = h.axes_tdp_BIC;
-title(h_axes,axttl0);
-tiaxes = get(h_axes,'tightinset');
-posaxes = getRealPosAxes([x,y,waxes0,haxes0],tiaxes,'traces');
-set(h_axes,'position',posaxes);
-
-x = waxes0+p.mg/2;
+x = p.mg;
 y = pospan(4)-p.mgpan-htxt0;
 
 h.text_TDPbobaRes = uicontrol('style','text','parent',h_pan,'units',...
@@ -81,8 +65,8 @@ h.text_TDPbobaSig = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wedit0,htxt0],'string',str1);
 
-x = waxes0+p.mg/2;
-y = y-hedit0;
+x = p.mg;
+y = y-hpop0+(hpop0-hedit0)/2;
 
 h.edit_TDPbobaRes = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
@@ -96,21 +80,21 @@ h.edit_TDPbobaSig = uicontrol('style','edit','parent',h_pan,'units',...
     [x,y,wedit0,hedit0],'tooltipstring',ttstr1,'callback',...
     {@edit_TDPbobaSig_Callback,h_fig});
 
-x = waxes0+p.mg/2;
-y = y-mgres-htxt0;
+x = x+wedit0;
+y = y+(hedit0-htxt0)/2;
 
 h.text_tdp_showModel = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wtxt0,htxt0],'string',str2,'horizontalalignment','left');
+    [x,y,wtxt0,htxt0],'string',str2,'horizontalalignment','right');
 
-y = y-p.mg/fact-hpop0+(hpop0-htxt0)/2;
+x = x+wtxt0+p.mg/fact;
+y = y-(hpop0-htxt0)/2+hpop0;
 
 h.text_tdp_Jequal = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wtxt1,htxt0],'string',str3);
+    [x,y,wpop0,htxt0],'string',str3);
 
-x = x+wtxt1;
-y = y-(hpop0-htxt0)/2;
+y = y-hpop0;
 
 h.popupmenu_tdp_model = uicontrol('style','popupmenu','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
@@ -118,32 +102,30 @@ h.popupmenu_tdp_model = uicontrol('style','popupmenu','parent',h_pan,...
     {@popupmenu_tdp_model_Callback,h_fig});
 
 x = x+wpop0+p.mg/fact;
-y = y+(hpop0-hedit0)/2;
+y = y+hpop0;
+
+h.text_tdp_BIC =  uicontrol('style','text','parent',h_pan,'units',...
+    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wedit0,htxt0],'string',str6);
+
+y = y-hpop0+(hpop0-hedit0)/2;
+
+h.edit_tdp_BIC = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,hedit0],...
+    'tooltipstring',ttstr4,'callback',{@edit_tdp_bic_Callback,h_fig});
+
+x = x-p.mg/fact-wpop0;
+y = y-hpop0-p.mg/2;
 
 h.pushbutton_tdp_impModel = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wbut0,hedit0],'string',str5,'tooltipstring',ttstr3,'callback',...
     {@pushbutton_tdp_impModel_Callback,h_fig});
 
-x = waxes0+p.mg/2;
-y = y-(hpop0-hedit0)/2-mgres-hedit0+(hedit0-htxt0)/2;
-
-h.text_tdp_BIC =  uicontrol('style','text','parent',h_pan,'units',...
-    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wtxt1,htxt0],'string',str6);
-
-x = x+wtxt1;
-y = y-(hedit0-htxt0)/2;
-
-h.edit_tdp_BIC = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,hedit0],...
-    'tooltipstring',ttstr4,'callback',{@edit_tdp_bic_Callback,h_fig});
-
-x = x-wtxt1;
-y = y-mgres-hedit0;
+x = p.mg;
 
 h.pushbutton_TDPresetClust = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wtxt0,hedit0],'string',str7,'tooltipstring',ttstr5,'callback',...
+    [x,y,wbut1,hedit0],'string',str7,'tooltipstring',ttstr5,'callback',...
     {@pushbutton_TDPresetClust_Callback,h_fig});
 

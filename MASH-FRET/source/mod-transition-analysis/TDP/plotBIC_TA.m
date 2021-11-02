@@ -10,11 +10,20 @@ Jmax = size(prm.clst_res{1}.BIC,2);
 BICs = prm.clst_res{1}.BIC;
 
 set(h_axes,'visible','on');
-barh(h_axes,1:Jmax,BICs);
+bar(h_axes,1:Jmax,BICs);
 if numel(BICs)==1
-    xlim(h_axes,'auto');
+    ylim(h_axes,'auto');
 else
-    xlim(h_axes,[min(BICs) mean(BICs)]);
+    BICmin = min(BICs);
+    BICmax = max(BICs);
+    if BICmin==BICmax
+        ylim(h_axes,BICmin+[-1,1]);
+    else
+        ylim(h_axes,[min(BICs) max(BICs)]);
+    end
 end
-ylim(h_axes,[0,Jmax+1]);
-title(h_axes,'BIC');
+h_axes.XTick = 1:Jmax;
+h_axes.XTickLabel = num2cell(num2str((1:Jmax)'))';
+xlim(h_axes,[0,Jmax+1]);
+xlabel(h_axes,'V');
+ylabel(h_axes,'BIC');

@@ -63,7 +63,7 @@ end
 % add noisy fluorescent background trace
 % I_bg = I_bt + bg 
 if isbgdec % exp decay of background, to check
-    timeaxis = (1:L)'/rate;
+    timeaxis = (1:L)';
     bg_trace_don = expBackground('all',bgDec_dir{1},timeaxis,...
         img_bg(xy(2),xy(1)),bgamp,bgcst);
     bg_trace_acc = expBackground('all',bgDec_dir{2},timeaxis,...

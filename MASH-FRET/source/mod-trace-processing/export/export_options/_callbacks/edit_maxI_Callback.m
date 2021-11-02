@@ -3,9 +3,7 @@ function edit_maxI_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 p = h.param;
 expT = p.proj{p.curr_proj}.frame_rate;
-nPix = p.proj{p.curr_proj}.pix_intgr(2);
-perSec = p.proj{p.curr_proj}.TP.fix{2}(4);
-perPix = p.proj{p.curr_proj}.TP.fix{2}(5);
+perSec = p.proj{p.curr_proj}.cnt_p_sec;
 min = p.proj{p.curr_proj}.TP.exp.hist{2}(1,2);
 
 val = str2num(get(obj, 'String'));
@@ -18,9 +16,6 @@ set(obj, 'BackgroundColor', [1 1 1]);
 
 if perSec
     val = val*expT;
-end
-if perPix
-    val = val*nPix;
 end
 
 p.proj{p.curr_proj}.exp.hist{2}(1,4) = val;

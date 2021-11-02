@@ -7,6 +7,9 @@ function ud_S_moleculesPan(h_fig)
 
 % defaults
 Jmax = 5; % maximum number of states allowed by interface
+ttstr0 = '<b>Total intensity</b> (in %s): pure donor fluorescence intensity collected in absence of acceptor.';
+ttstr1 = '<b>Total intensity sample heterogeneity</b> (in %s): standard deviation of the Itot,em Gaussian distribution.';
+ttstr2 = '<b>Photobleaching time constant</b> (in %s): characterizes the distribution of photobleaching times.';
 
 % collect interface parameters
 h = guidata(h_fig);
@@ -18,10 +21,13 @@ end
 
 % collect simulation parameters
 proj = p.curr_proj;
+inSec = p.proj{proj}.time_in_sec;
+perSec = p.proj{proj}.cnt_p_sec;
 curr = p.proj{proj}.sim.curr;
 
 N = curr.gen_dt{1}(1);
 J = curr.gen_dt{1}(3);
+rate = curr.gen_dt{1}(4);
 isblch = curr.gen_dt{1}(5);
 blchcst = curr.gen_dt{1}(6);
 kx = curr.gen_dt{2}(:,:,1);
@@ -36,6 +42,21 @@ Itot = curr.gen_dat{3}{1};
 inun = curr.gen_dat{3}{2};
 gamma = curr.gen_dat{4};
 crstlk = curr.gen_dat{5};
+
+% convert time units
+if inSec
+    blchcst = blchcst/rate;
+    str_tun = 'seconds';
+else
+    str_tun = 'frames';
+end
+if perSec
+    str_iun = [inun,' counts per second'];
+else
+    str_iun = [inun,' counts'];
+end
+
+% convert intensity units
 
 h_ed = [h.edit11 h.edit21 h.edit31 h.edit41 h.edit51 
     h.edit12 h.edit22 h.edit32 h.edit42 h.edit52
@@ -131,6 +152,10 @@ if isPresets && isfield(presets,'totInt')
         presets.totInt = phtn2ele(presets.totInt(1,1),K,eta);
         presets.totInt_width = phtn2ele(presets.totInt_width(1,1),K,eta);
     end
+    if perSec
+        presets.totInt = presets.totInt*rate;
+        presets.totInt_width = presets.totInt_width*rate;
+    end
     set([h.edit_totInt h.edit_dstrbNoise],'enable','off');
     set(h.edit_totInt,'string',num2str(presets.totInt(1,1)));
     set(h.edit_dstrbNoise,'string',num2str(presets.totInt_width(1,1)));
@@ -138,9 +163,16 @@ else
     if strcmp(inun,'electron')
         Itot = phtn2ele(Itot,K,eta);
     end
+    if perSec
+        Itot = Itot*rate;
+    end
     set(h.edit_totInt,'string',num2str(Itot(1)));
     set(h.edit_dstrbNoise,'string',num2str(Itot(2)));
 end
+set(h.edit_totInt,'tooltipstring',wrapHtmlTooltipString(...
+    sprintf(ttstr0,str_iun)));
+set(h.edit_dstrbNoise,'tooltipstring',wrapHtmlTooltipString(...
+    sprintf(ttstr1,str_iun)));
 
 % set gamma factor
 if isPresets && isfield(presets,'gamma')
@@ -161,7 +193,8 @@ set(h.edit_simBtA,'string',num2str(crstlk(1,2)));
 % set bleaching parameters
 set(h.checkbox_simBleach,'value',isblch);
 if isblch
-    set(h.edit_simBleach,'string',num2str(blchcst));
+    set(h.edit_simBleach,'string',num2str(blchcst),'tooltipstring',...
+        wrapHtmlTooltipString(sprintf(ttstr2,str_tun)));
 else
     set(h.edit_simBleach,'enable','off','string','');
 end

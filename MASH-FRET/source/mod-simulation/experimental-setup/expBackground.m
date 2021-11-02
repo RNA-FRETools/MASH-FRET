@@ -3,10 +3,10 @@ function exp_bg = expBackground(frame,dir,timeaxis,bg,amp,cst)
 %
 % frame: frame index at which the background intensity should be calculated and returned (or 'all' to return background for all time axis)
 % dir: background variation ('increasing' or 'decreasing')
-% timeaxis: [1-by-L] time points in the trace
-% bg: initial background intensity
+% timeaxis: [1-by-L] time points in the trace (in time units)
+% bg: initial background intensity (in counts)
 % amp: multiplication factor for initial intensity
-% cst: exponential time constant
+% cst: exponential time constant (in time units)
 %
 % exp_bg: exponentially decaying or increasing background
 

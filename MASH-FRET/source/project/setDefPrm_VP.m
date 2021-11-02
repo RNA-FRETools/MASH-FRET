@@ -9,7 +9,6 @@ function def = setDefPrm_VP(proj,p)
 % def: adjusted project's defaults
 
 % defaults
-perSec = true;
 u = {[0 0] % image filter parameters
      [3 0]
      [3 0]
@@ -51,7 +50,7 @@ if ~isempty(coordsm)
 end
 
 % plot
-plotprm{1} = [perSec,2,0]; % IC per second, colormap,coord to plot
+plotprm{1} = [2,0]; % colormap,coord to plot
 plotprm{2} = (1:nChan-1)*sub_w; % channel split pixel positions
 def.plot = adjustVal(def.plot,plotprm);
 def.plot{1}(3) = coord2plot;
@@ -63,6 +62,7 @@ editprm{1} = {[1,0],... % filter index,apply to current frame only
     {}}; % {nFilt-by-(1+2*nChan)} applied filter and parameters
 editprm{2} = [1,L,1]; % starting frame, ending frame and frame interval for video export
 def.edit = adjustVal(def.edit,editprm);
+def.edit{2}(2) = L;
 
 % molecule coordinates parameters
 gen_crd{1} = [1,L,1]; % start,end and frame interval for average image calculation
@@ -79,11 +79,12 @@ gen_crd{3} = {{[],'',[1,2]},... % coord to transform,imported file,imported x- a
     {[],4,''},... % transformation,transformation type,imported file
     []}; % transformed coordinates
 def.gen_crd = adjustVal(def.gen_crd,gen_crd);
+def.gen_crd{1}(2) = L;
 
 % intensity integration
 gen_int{1} = {''}; % used video file
 gen_int{2} = {coordsm,'',{reshape(1:2*nChan,2,nChan)' 1}}; % used coord., coord file, import options
-gen_int{3} = [5,8,1]; % area dimensions,nb. of brightest pixels,averaging intensity
+gen_int{3} = [5,8]; % area dimensions,nb. of brightest pixels
 gen_int{4} = [1 1 0 0 0 0 0 0]; % export file options
 def.gen_int = adjustVal(def.gen_int,gen_int);
 

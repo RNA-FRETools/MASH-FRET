@@ -21,7 +21,6 @@ function [img,gaussMat,err] = createVideoFrame(l,Idon,Iacc,coord,img_bg,prm,outu
 bgDec_dir = {'decrease','decrease'};
 
 % collect parameters
-rate = prm.gen_dt{1}(4);
 viddim = prm.gen_dat{1}{2}{1};
 pixsz = prm.gen_dat{1}{2}{3};
 noisetype = prm.gen_dat{1}{2}{4};
@@ -61,7 +60,7 @@ img_bg_acc = img_bg(:,(splt+1):end);
 
 % adjust exp decay of background, to check
 if isbgdec
-    timeaxis = (1:L)'/rate;
+    timeaxis = (1:L)';
     img_bg_don = expBackground(l,bgDec_dir{1},timeaxis,img_bg_don,bgamp,...
         bgcst);
     img_bg_acc = expBackground(l,bgDec_dir{2},timeaxis,img_bg_acc,bgamp,...

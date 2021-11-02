@@ -21,7 +21,8 @@ fDat{2}{2} = [];
 fDat{3} = [res_y res_x];
 fDat{4} = p.proj{proj}.movie_dat{3};
 nFrames = size(p.proj{proj}.intensities,1)*p.proj{proj}.nb_excitations;
-perSec = p.proj{proj}.TP.fix{2}(4);
+perSec = p.proj{proj}.cnt_p_sec;
+inSec = p.proj{proj}.time_in_sec;
 rate = p.proj{proj}.frame_rate;
 
 m = g.curr_m;
@@ -56,10 +57,6 @@ if meth == 6
         y_lab = [y_lab '/s'];
     end
 
-    I_bg = I_bg/nPix;
-    y_lab = [y_lab ' /pix'];
-
-    inSec = p.proj{proj}.fix{2}(7);
     x_axis = l:nExc:nFrames;
     if inSec
         x_axis = x_axis*rate;

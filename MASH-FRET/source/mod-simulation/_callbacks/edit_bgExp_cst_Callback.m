@@ -12,6 +12,13 @@ end
 % save modifications
 h = guidata(h_fig);
 p = h.param;
+inSec = p.proj{p.curr_proj}.time_in_sec;
+rate = p.proj{p.curr_proj}.sim.curr.gen_dt{1}(4);
+
+% convert to samling steps
+if inSec
+    val = val*rate;
+end
 
 p.proj{p.curr_proj}.sim.curr.gen_dat{8}{5}(2) = val;
 

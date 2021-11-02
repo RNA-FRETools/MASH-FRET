@@ -25,6 +25,19 @@ h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
 
+% menu bar
+if isempty(p.proj)
+    set(h.menu_units,'enable','off');
+else
+    yes = {'off','on'};
+    set(h.menu_units,'enable','on');
+    inSec = p.proj{proj}.time_in_sec;
+    perSec = p.proj{proj}.cnt_p_sec;
+    set(h.menu_inSec,'checked',yes{inSec+1});
+    set(h.menu_inFrame,'checked',yes{~inSec+1});
+    set(h.menu_perSec,'checked',yes{perSec+1});
+end
+
 % set project list
 if isempty(p.proj)
     set([h.pushbutton_closeProj,h.pushbutton_editProj,...

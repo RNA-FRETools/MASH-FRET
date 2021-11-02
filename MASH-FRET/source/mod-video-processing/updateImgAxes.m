@@ -33,13 +33,13 @@ fcurs = p.proj{proj}.movie_dat{1};
 resX = p.proj{proj}.movie_dat{2}(1);
 resY = p.proj{proj}.movie_dat{2}(2);
 L = p.proj{proj}.movie_dat{3};
+persec = p.proj{proj}.cnt_p_sec;
 curr = p.proj{proj}.VP.curr;
 
 % collect CP parameters
 chsplit = curr.plot{2};
 tocurr = curr.edit{1}{1}(2);
 bgfilt = curr.edit{1}{4};
-persec = curr.plot{1}(1);
 avimg = curr.res_plot{2};
 
 % check if any image filter is applied
@@ -79,7 +79,7 @@ if isfield(h,'axes_VP_tr') && ishandle(h.axes_VP_tr)
     h_axes = cat(2,h_axes,h.axes_VP_tr);
 end
 h.imageMov = plot_VP_videoFrame(h_axes,[h.cb_VP_vid,h.cb_VP_avimg],...
-    cat(3,img,avimg),chsplit,curr);
+    cat(3,img,avimg),chsplit,curr,persec);
 
 % set tool
 if get(h.togglebutton_target, 'Value')

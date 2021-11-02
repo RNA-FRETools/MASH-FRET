@@ -33,7 +33,6 @@ prm.gen_dt = curr.gen_dt;
 N = prm.gen_dt{1}(1);
 L = prm.gen_dt{1}(2);
 J = prm.gen_dt{1}(3);
-rate = prm.gen_dt{1}(4);
 isblch = prm.gen_dt{1}(5);
 blch_cst = prm.gen_dt{1}(6);
 kx = prm.gen_dt{2}(:,:,1);
@@ -65,7 +64,6 @@ discr_seq = -ones(L,N);
 dt_final = cell(1,N);
 
 % generate dwell times
-expT = 1/rate;
 isTrans = prod(double(sum(sum(~~kx_all(1:J,1:J,1:N),1),2)),3);
 if J>1 && isTrans
     n = 1;
@@ -75,7 +73,7 @@ if J>1 && isTrans
         wx = kx./repmat(sum(kx,2),[1,J]);
         wx(isnan(wx)) = 0;
         ip = ip_all(n,:);
-        tau = tau_all(n,:)/expT;
+        tau = tau_all(n,:);
 
 %         % MH 19.12.2019: identify zero sums in rate matrix
 %         if sum(sum(kx,1)>0)~=J || sum(sum(kx,2)>0)~=J
@@ -138,7 +136,7 @@ if J>1 && isTrans
                     dl = Ln-l;
                 end
                 
-                dt_final{n} = [dt_final{n}; [dl*expT state1 state2]];
+                dt_final{n} = [dt_final{n}; [dl state1 state2]];
 
                 if l>0 && sum(stes(:,curr_l),1)<=1
                     
@@ -215,11 +213,11 @@ else
         
         if isblch
             Ln = ceil(random('exp',blch_cst));
-            if Ln > L*expT
-                Ln = L*expT;
+            if Ln > L
+                Ln = L;
             end
         else
-            Ln = L*expT;
+            Ln = L;
         end
         
         mix(state1,:,n) = 1;

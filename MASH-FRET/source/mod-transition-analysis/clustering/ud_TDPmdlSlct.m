@@ -27,7 +27,6 @@ proj = p.curr_proj;
 tpe = p.TDP.curr_type(proj);
 tag = p.TDP.curr_tag(proj);
 curr = p.proj{proj}.TA.curr{tag,tpe};
-prm = p.proj{proj}.TA.prm{tag,tpe}; % interface settings at last analysis
 
 meth = curr.clst_start{1}(1);
 Jmax = curr.clst_start{1}(3);
@@ -66,19 +65,4 @@ end
 ud_clustersPan(h_fig);
 
 ud_resultsPan(h_fig);
-
-% update cluster colors
-if isfield(prm,'clst_res') && ~isempty(prm.clst_res{1})
-    clr = prm.clst_start{3};
-else
-    clr = curr.clst_start{3};
-end
-K = size(clr,1);
-k = h.popupmenu_TA_setClstClr.Value;
-if k>K
-    k = K;
-end
-str_pop = getClrStrPop(cellstr(num2str((1:K)'))',clr);
-set(h.popupmenu_TA_setClstClr,'string',str_pop,'value',k);
-set(h.pushbutton_TA_setClstClr,'backgroundcolor',clr(k,:));
 

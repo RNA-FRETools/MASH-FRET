@@ -7,7 +7,7 @@ mol = p.ttPr.curr_mol(proj);
 expT = p.proj{proj}.frame_rate;
 nExc = p.proj{proj}.nb_excitations;
 len = nExc*size(p.proj{proj}.intensities,1);
-inSec = p.proj{proj}.TP.fix{2}(7);
+inSec = p.proj{proj}.time_in_sec;
 method = p.proj{proj}.TP.curr{mol}{2}{1}(2);
 start = p.proj{proj}.TP.curr{mol}{2}{1}(4);
 

@@ -14,15 +14,9 @@ isInt = ~isempty(intUnits);
 if isInt
     perSec = intUnits{1,1};
     expT = intUnits{1,2};
-    perPix = intUnits{2,1};
-    nPix = intUnits{2,2};
     if perSec
         P(:,1) = P(:,1)/expT;
         lim(1,:) = lim(1,:)/expT;
-    end
-    if perPix
-        P(:,1) = P(:,1)/nPix;
-        lim(1,:) = lim(1,:)/nPix;
     end
 end
 
@@ -44,15 +38,16 @@ if numel(h_axes)>2
         
         if isBIC
             BIC = res{3,1}(:,2);
-            barh(h_axes(3), 1:Jmax, BIC');
+            bar(h_axes(3), 1:Jmax, BIC');
             BIC_min = min(BIC(~isinf(BIC)));
             BIC_mean = mean(BIC(~isinf(BIC)));
             if BIC_min==BIC_mean
                 BIC_min = BIC_mean-1;
             end
-            xlim(h_axes(3),[BIC_min BIC_mean]);
-            ylim(h_axes(3),[0 Jmax+1]);
-            title(h_axes(3),'BIC');
+            ylim(h_axes(3),[BIC_min BIC_mean]);
+            xlim(h_axes(3),[0 Jmax+1]);
+            xlabel(h_axes(3),'number of Gaussians');
+            ylabel(h_axes(3),'BIC');
             
         else
             penalty = start{4}(2);
@@ -60,12 +55,13 @@ if numel(h_axes)>2
             for k = 2:Jmax
                 dL(k-1) = 1 + ((L(k)-L(k-1))/abs(L(k-1)));
             end
-            barh(h_axes(3), 2:Jmax, dL);
+            bar(h_axes(3), 2:Jmax, dL);
             set(h_axes(3),'nextplot','add');
-            plot(h_axes(3),penalty*ones(1,Jmax+2), 0:Jmax+1, '-r');
-            xlim(h_axes(3),[1,2*(penalty-1)+1]);
-            ylim(h_axes(3),[0,Jmax+1]);
-            title(h_axes(3),'penalty');
+            plot(h_axes(3), 0:Jmax+1, penalty*ones(1,Jmax+2), '-r');
+            ylim(h_axes(3),[1,2*(penalty-1)+1]);
+            xlim(h_axes(3),[0,Jmax+1]);
+            xlabel(h_axes(3),'number of Gaussians');
+            ylabel(h_axes(3),'Penalty');
             set(h_axes(3),'nextplot','replacechildren');
         end
     else
@@ -75,7 +71,10 @@ if numel(h_axes)>2
 end
 
 % plot state population
-set(h_axes([1,2]),'visible','on');
+set(h_axes(1),'visible','on');
+if numel(h_axes)>1
+    set(h_axes(2),'visible','on');
+end
 switch meth
     case 1 % Gaussfit
         % plot experimental data
@@ -89,9 +88,6 @@ switch meth
                 if isInt
                     if perSec
                         mus = mus/expT;
-                    end
-                    if perPix
-                        mus = mus/nPix;
                     end
                 end
                 for k = 1:K
@@ -119,9 +115,6 @@ switch meth
                 if perSec
                     fitprm(:,3:6) = fitprm(:,3:6)/expT;
                 end
-                if perPix
-                    fitprm(:,3:6) = fitprm(:,3:6)/nPix;
-                end
             end
             
             % convert FWHM to sigma
@@ -146,10 +139,6 @@ switch meth
                         if perSec
                             o_min = o_min/expT;
                             o_max = o_max/expT;
-                        end
-                        if perPix
-                            o_min = o_min/nPix;
-                            o_max = o_max/nPix;
                         end
                     end
                     y_min = A_min*exp(-((P(:,1)-fitprm(k,3)).^2)/ ...
@@ -179,9 +168,6 @@ switch meth
                     if perSec
                         fitprm(:,[2 3]) = fitprm(:,[2 3])/expT;
                     end
-                    if perPix
-                        fitprm(:,[2 3]) = fitprm(:,[2 3])/nPix;
-                    end
                 end
                 
                 % convert FWHM to sigma
@@ -209,9 +195,6 @@ switch meth
         if isInt
             if perSec
                 thresh = thresh/expT;
-            end
-            if perPix
-                thresh = thresh/nPix;
             end
         end
         

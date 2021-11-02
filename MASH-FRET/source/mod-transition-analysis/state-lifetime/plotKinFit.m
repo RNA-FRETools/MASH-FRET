@@ -8,7 +8,6 @@ lwfit = 2;
 stboba = '--';
 clrboba = [1 0 0];
 lwboba = 1.5;
-ttl = 'Kinetic analysis from dwell-times';
 xlbl = 'dwell-times (s)';
 ylbl = 'normalised (1 - cum(P))';
 
@@ -69,7 +68,6 @@ end
 
 if ~(size(prm.lft_res,1)>=v && ~isequal(prm.lft_res(v,:),def.lft_res))
     set(h_axes,'Visible','on','YScale',scl);
-    title(h_axes, ttl);
     xlim(h_axes,x_lim);
     ylim(h_axes,y_lim);
     xlabel(h_axes, xlbl);
@@ -155,7 +153,6 @@ else % single-/multiexponential fit
     
 end
 
-title(h_axes, ttl);
 xlabel(h_axes, xlbl);
 ylabel(h_axes, ylbl);
 xlim(h_axes,x_lim);

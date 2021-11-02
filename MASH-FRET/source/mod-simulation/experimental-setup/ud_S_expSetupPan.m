@@ -22,9 +22,11 @@ end
 
 % collect experiment settings and video parameters
 proj = p.curr_proj;
+inSec = p.proj{p.curr_proj}.time_in_sec;
 curr = p.proj{proj}.sim.curr;
 isPresets = curr.gen_dt{3}{1};
 presets = curr.gen_dt{3}{2};
+rate = curr.gen_dt{1}(4);
 noisetype = curr.gen_dat{1}{2}{4};
 noiseprm = curr.gen_dat{1}{2}{5};
 inun = curr.gen_dat{3}{2};
@@ -41,6 +43,16 @@ bgfile = curr.gen_dat{8}{4}{2};
 isbgdec = curr.gen_dat{8}{5}(1);
 bgcst = curr.gen_dat{8}{5}(2);
 bgamp = curr.gen_dat{8}{5}(3);
+
+% convert time units
+if inSec
+    bgcst = bgcst/rate;
+end
+
+% convert intensity units
+if perSec
+    bgint = bgint*rate;
+end
 
 % set PSF convolution
 set(h.checkbox_convPSF,'value',isPSF);

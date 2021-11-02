@@ -11,11 +11,18 @@ if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
     return
 end
 
-% save modifications
+% convert to sampling steps units
 h = guidata(h_fig);
 p = h.param;
+inSec = p.proj{p.curr_proj}.time_in_sec;
+rate = p.proj{p.curr_proj}.sim.curr.gen_dt{1}(4);
+k = getTransMat(h_fig);
+if inSec
+    k = k/rate;
+end
 
-p.proj{p.curr_proj}.sim.curr.gen_dt{2}(:,:,1) = getTransMat(h_fig);
+% save modifications
+p.proj{p.curr_proj}.sim.curr.gen_dt{2}(:,:,1) = k;
 
 h.param = p;
 guidata(h_fig, h);

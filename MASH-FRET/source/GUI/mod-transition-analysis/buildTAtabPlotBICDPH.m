@@ -1,10 +1,10 @@
-function h = buildTAtabPlotBIC(h,p)
-% h = buildTAtabPlotBIC(h,p)
+function h = buildTAtabPlotBICDPH(h,p)
+% h = buildTAtabPlotBICDPH(h,p)
 %
 % Builds tab "BIC (ML-DPH)" in Transition analysis' visualization tabbed panel.
 %
 % h: structure to update with handles to new UI components and that must contain fields:
-%   h.uitab_TA_plot_BIC: handle to tab "BIC (ML-DPH)"
+%   h.uitab_TA_plot_BICDPH: handle to tab "BIC (ML-DPH)"
 
 % defaults
 tick0 = 1:5;
@@ -14,7 +14,7 @@ ylbl0 = 'BIC';
 fntsz = 6;
 
 % parents
-h_tab = h.uitab_TA_plot_BIC;
+h_tab = h.uitab_TA_plot_BICDPH;
 
 % dimensions
 postab = get(h_tab,'position');

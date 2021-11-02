@@ -30,9 +30,7 @@ end
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
 perSec = p.proj{proj}.cnt_p_sec;
-perPix = p.proj{proj}.cnt_p_pix;
 expT = p.proj{proj}.frame_rate;
-nPix = p.proj{proj}.pix_intgr(2);
 
 start = curr.thm_start;
 if isfield(prm,'thm_res')
@@ -76,9 +74,6 @@ switch meth
         if isInt
             if perSec
                 fit_start(:,4:9) = fit_start(:,4:9)/expT;
-            end
-            if perPix
-                fit_start(:,4:9) = fit_start(:,4:9)/nPix;
             end
         end
         
@@ -132,9 +127,6 @@ switch meth
             if isInt
                 if perSec
                     fit_res(:,3:6) = fit_res(:,3:6)/expT;
-                end
-                if perPix
-                    fit_res(:,3:6) = fit_res(:,3:6)/nPix;
                 end
             end
         
@@ -190,9 +182,6 @@ switch meth
         if isInt
             if perSec
                 thresh = thresh/expT;
-            end
-            if perPix
-                thresh = thresh/nPix;
             end
         end
         

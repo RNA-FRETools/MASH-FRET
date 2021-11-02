@@ -34,15 +34,10 @@ if toFRET==1 && (nFRET+nS)>0
 end
 
 if chan_in > (nFRET + nS)
-    perSec = p.proj{proj}.TP.fix{2}(4);
-    perPix = p.proj{proj}.TP.fix{2}(5);
+    perSec = p.proj{proj}.cnt_p_sec;
     if perSec
         expTe = p.proj{proj}.frame_rate;
         val = val*expTe;
-    end
-    if perPix
-        nPix = p.proj{proj}.pix_intgr(2);
-        val = val*nPix;
     end
 end
 

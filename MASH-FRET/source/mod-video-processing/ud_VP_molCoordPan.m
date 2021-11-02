@@ -15,9 +15,16 @@ end
 
 % collect processing parameters
 proj = p.curr_proj;
+inSec = p.proj{proj}.time_in_sec;
+expT = p.proj{proj}.frame_rate;
 curr = p.proj{proj}.VP.curr;
 
 % set average image
+if inSec
+    curr.gen_crd{1}(1) = curr.gen_crd{1}(1)*expT;
+    curr.gen_crd{1}(2) = curr.gen_crd{1}(2)*expT;
+    curr.gen_crd{1}(3) = curr.gen_crd{1}(3)*expT;
+end
 set(h.edit_aveImg_start, 'String', num2str(curr.gen_crd{1}(1)));
 set(h.edit_aveImg_end, 'String', num2str(curr.gen_crd{1}(2)));
 set(h.edit_aveImg_iv, 'String', num2str(curr.gen_crd{1}(3)));

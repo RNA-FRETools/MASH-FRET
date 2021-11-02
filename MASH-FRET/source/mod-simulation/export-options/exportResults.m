@@ -19,6 +19,8 @@ str_action = {};
 h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
+inSec = p.proj{proj}.time_in_sec;
+perSec = p.proj{proj}.cnt_p_sec;
 prm = p.proj{proj}.sim.prm;
 
 % check simulated state sequences
@@ -334,6 +336,7 @@ if isMatTr || isAsciiTr || isDt
             end
             
             dt = prm.res_dt{3}{n};
+            dt(:,1) = dt(:,1)/rate;
             if isPresets && isfield(presets,'stateVal')
                 states = presets.stateVal(n,:);
             end

@@ -19,9 +19,7 @@ exc = p.proj{proj}.excitations;
 nChan = p.proj{proj}.nb_channel;
 chanExc = p.proj{proj}.chanExc;
 perSec = p.proj{proj}.cnt_p_sec;
-perPix = p.proj{proj}.cnt_p_pix;
 expT = p.proj{proj}.frame_rate;
-nPix = p.proj{proj}.pix_intgr(2);
 prm = p.proj{proj}.HA.prm{tag,tpe};
 curr = p.proj{proj}.HA.curr{tag,tpe};
 
@@ -53,8 +51,6 @@ isInt = tpe <= (2*nChan*nExc + 2*nDE);
 if isInt
     intUnits{1,1} = perSec;
     intUnits{1,2} = expT;
-    intUnits{2,1} = perPix;
-    intUnits{2,2} = nPix;
 else
     intUnits = [];
 end

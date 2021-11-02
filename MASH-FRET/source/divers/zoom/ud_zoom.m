@@ -25,10 +25,6 @@ switch action
             axes.axes_histBottom = h.axes_bottomRight;
             
             plotData(mol, p, axes, p.proj{proj}.TP.prm{mol}, 1);
-            
-        elseif curr_axes == h.axes_TDPcmap
-            ylim(curr_axes, 'auto');
-            xlim(curr_axes, [0 100]);
 
         elseif isfield(h, 'axes_subImg') && ...
                 sum(double(isfield(h, 'axes_subImg'))) && ...
@@ -45,7 +41,7 @@ switch action
 
         elseif curr_axes == h.axes_hist1 || curr_axes == h.axes_hist2 ||...
                 curr_axes == h.axes_thm_BIC
-            ud_thmPlot(h_fig);
+            update_HA_plots(h_fig);
             
         elseif curr_axes == h.axes_TDPplot1
             updateTAplots(h_fig);

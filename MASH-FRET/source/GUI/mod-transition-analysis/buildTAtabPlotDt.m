@@ -12,7 +12,6 @@ hbut0 = 20;
 lim0 = [0,10000];
 xlbl0 = 'dwell-times (s)';
 ylbl0 = 'normalized (1 - cum(P))';
-axttl0 = 'Kinetic analysis from dwell-times';
 str0 = 'y-log scale';
 ttstr0 = wrapHtmlTooltipString('Show histogram''s y-axis in a <b>logarithmic scale</b>.');
 
@@ -36,7 +35,6 @@ h.axes_TDPplot2 = axes('parent',h_tab,'units',p.posun,'fontunits',p.fntun,...
 h_axes = h.axes_TDPplot2;
 xlabel(h_axes,xlbl0);
 ylabel(h_axes,ylbl0);
-title(h_axes,axttl0);
 tiaxes = get(h_axes,'tightinset');
 posaxes = getRealPosAxes([x,y,waxes0,haxes0],tiaxes,'traces');
 set(h_axes,'position',posaxes);

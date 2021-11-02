@@ -8,11 +8,26 @@ function export_thm(h_fig,varargin)
 % Last update 23.4.2019 by MH: correct export for Gaussian fit without BOBA-FRET
 
 h = guidata(h_fig);
-p = h.param.thm;
+p = h.param;
 proj = p.curr_proj;
-tpe = p.curr_tpe(proj);
-tag = p.curr_tag(proj);
+nChan = p.proj{proj}.nb_channel;
+nExc = p.proj{proj}.nb_excitations;
+perSec = p.proj{proj}.cnt_p_sec;
+expT = p.proj{proj}.frame_rate;
+tpe = p.thm.curr_tpe(proj);
+tag = p.thm.curr_tag(proj);
+prm = p.proj{proj}.HA.prm{tag,tpe};
 
+% control histogram
+if ~(isfield(prm,'plot') && ~isempty(prm.plot{2}))
+    setContPan('There is no histogram or results to export.','warning',...
+        h_fig)
+    return
+end
+pplot = prm.plot;
+P = pplot{2};
+
+% get file name
 str_tpe = get(h.popupmenu_thm_tpe, 'String');
 str_tpe = strrep(strrep(strrep(str_tpe{tpe}, ' ', ''),'>',''),'.','');
 if tag>1
@@ -22,54 +37,6 @@ if tag>1
 else
     str_tag = '';
 end
-prm = p.proj{proj}.prm{tag,tpe};
-pplot = prm.plot;
-P = pplot{2};
-
-if isempty(P)
-    disp('There is no histogram or results to export.')
-    return
-end
-
-pstart = prm.thm_start;
-pres = prm.thm_res;
-
-nChan = p.proj{proj}.nb_channel;
-nExc = p.proj{proj}.nb_excitations;
-isInt = tpe <= 2*nChan*nExc;
-perSec = p.proj{proj}.cnt_p_sec;
-perPix = p.proj{proj}.cnt_p_pix;
-expT = p.proj{proj}.frame_rate;
-nPix = p.proj{proj}.pix_intgr(2);
-
-if isInt
-    str_units = 'a.u.';
-    if perSec
-        str_units = cat(2,str_units,' s-1');
-        pstart{2} = pstart{2}/expT; % thresholds
-        pstart{3}(:,4:9) = pstart{3}(:,4:9)/expT; % Gaussian param.
-    end
-    if perPix
-        str_units = cat(2,str_units,' pix-1');
-        pstart{3}(:,4:9) = pstart{3}(:,4:9)/nPix;
-    end
-else
-    str_units = '';
-end
-
-meth = pstart{1}(1);
-boba = pstart{1}(2);
-if boba
-    nRpl = pstart{1}(3);
-    nSpl = pstart{1}(4);
-end
-w = pstart{1}(5);
-if w
-    str_w = 'yes';
-else
-    str_w = 'no';
-end
-
 if ~isempty(varargin)
     pname = varargin{1}{1};
     fname = varargin{1}{2};
@@ -86,46 +53,76 @@ else
     [fname,pname,o] = uiputfile({'*.txt', 'Text files(*.txt)'; '*.*', ...
         'All files(*.*)'},'Export analysis',defname);
 end
-
 if ~sum(fname)
-    return;
+    return
 end
-
-% display action
-setContPan('Exporting results from histogram analysis...','process',h_fig);
-
-expfig = 0;
-
 [o,name,o] = fileparts(fname);
 
+isres = isfield(prm,'thm_start') && isfield(prm,'thm_res');
+isInt = tpe <= 2*nChan*nExc;
+expfig = 0;
 str_action = '';
 
+% display process
+setContPan('Writes histogram analysis results to files...','process',h_fig);
+
 % export histogram
-if ~isempty(P)
+if isInt
+    str_units = 'a.u.';
+    if perSec
+        str_units = cat(2,str_units,' s-1');
+        P(:,1) = P(:,1)/expT;
+    end
+else
+    str_units = '';
+end
+
+% build file name
+fname = cat(2,name,'.hist');
+
+% write data to file
+f = fopen(cat(2,pname,fname),'Wt');
+fprintf(f,cat(2,str_tpe,'(',str_units,')\tfrequency count\t',...
+    'probability\tcumulative frequency count\t',...
+    'cumulative probability\n'));
+fprintf(f,'%d\t%d\t%d\t%d\t%d\n',[P(:,[1,2]),P(:,2)/sum(P(:,2)), ...
+    P(:,3),P(:,3)/sum(P(:,2))]');
+fclose(f);
+
+% update action
+str_action = cat(2,str_action,'Histogram written to file: ',fname,...
+    '\nin folder: ',pname,'\n');
+
+if isres
+    pstart = prm.thm_start;
+    pres = prm.thm_res;
     if isInt
         if perSec
-            P(:,1) = P(:,1)/expT;
-        end
-        if perPix
-            P(:,1) = P(:,1)/nPix;
+            pstart{2} = pstart{2}/expT; % thresholds
+            pstart{3}(:,4:9) = pstart{3}(:,4:9)/expT; % Gaussian param.
         end
     end
-    
-    % build file name
-    fname = cat(2,name,'.hist');
-    
-    % write data to file
-    f = fopen(cat(2,pname,fname),'Wt');
-    fprintf(f,cat(2,str_tpe,'(',str_units,')\tfrequency count\t',...
-        'probability\tcumulative frequency count\t',...
-        'cumulative probability\n'));
-    fprintf(f,'%d\t%d\t%d\t%d\t%d\n',[P(:,[1,2]),P(:,2)/sum(P(:,2)), ...
-        P(:,3),P(:,3)/sum(P(:,2))]');
-    fclose(f);
-    
-    % update action
-    str_action = cat(2,str_action,'Histogram written to file: ',fname,...
-        '\nin folder: ',pname,'\n');
+
+    meth = pstart{1}(1);
+    boba = pstart{1}(2);
+    if boba
+        nRpl = pstart{1}(3);
+        nSpl = pstart{1}(4);
+    end
+    w = pstart{1}(5);
+    if w
+        str_w = 'yes';
+    else
+        str_w = 'no';
+    end
+end
+
+if ~isres
+    % display success
+    if ~isempty(str_action)
+        setContPan(str_action,'success',h_fig);
+    end
+    return
 end
 
 % Export RMSE analysis results
@@ -187,9 +184,6 @@ if ~isempty(pres{3,1})
                 if perSec
                     outres{3,2}{K}(:,[2 3]) = outres{3,2}{K}(:,[2 3])/expT;
                 end
-                if perPix
-                    outres{3,2}{K}(:,[2 3]) = outres{3,2}{K}(:,[2 3])/nPix;
-                end
             end
 
             fprintf(f, cat(2,'%i\t%d\t%d',repmat('\t%d',[1,3*K]), ...
@@ -217,9 +211,6 @@ switch meth
                 if perSec
                     outres{2,1}(:,3:6) = outres{2,1}(:,3:6)/expT;
                 end
-                if perPix
-                    outres{2,1}(:,3:6) = outres{2,1}(:,3:6)/nPix;
-                end
             end
             
             fname = [name '_gauss.txt'];
@@ -238,9 +229,6 @@ switch meth
                 if isInt
                     if perSec
                         outres{2,2}(:,[2 3]) = outres{2,2}(:,[2 3])/expT;
-                    end
-                    if perPix
-                        outres{2,2}(:,[2 3]) = outres{2,2}(:,[2 3])/nPix;
                     end
                 end
             
@@ -365,7 +353,7 @@ if expfig
 
     start{1}(1) = meth;
     start{2} = pstart{2};
-    clr = p.colList;
+    clr = p.thm.colList;
 
     switch meth
         case 1 % Gaussian fit
@@ -385,8 +373,6 @@ if expfig
     if isInt
         intUnits{1,1} = perSec;
         intUnits{1,2} = expT;
-        intUnits{2,1} = perPix;
-        intUnits{2,2} = nPix;
     else
         intUnits = [];
     end
@@ -500,10 +486,11 @@ if expfig
         str_action = cat(2,str_action,'Sample figures written to file ',...
             fname_pdf,'\nin folder: ',pname,'\n');
     end
+
+    loading_bar('close', h_fig);
 end
 
-loading_bar('close', h_fig);
-
+% display success
 if ~isempty(str_action)
     setContPan(str_action,'success',h_fig);
 end

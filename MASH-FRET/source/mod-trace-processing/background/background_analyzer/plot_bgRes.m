@@ -6,7 +6,7 @@ p = h.param.ttPr;
 proj = p.curr_proj;
 rate = p.proj{proj}.frame_rate;
 nPix = p.proj{proj}.pix_intgr(2);
-perSec = p.proj{proj}.TP.fix{2}(4);
+perSec = p.proj{proj}.cnt_p_sec;
 
 m = g.curr_m;
 l = g.curr_l;
@@ -20,9 +20,9 @@ if isempty(res_m)
     return
 end
 
-str_un = '(a.u. /pix)';
+str_un = '(a.u.)';
 if perSec
-    str_un = '(a.u. /pix /s)';
+    str_un = '(a.u. /s)';
     res_m(:,1) = res_m(:,1)/rate;
 end
 res_m(:,1) = res_m(:,1)/nPix;

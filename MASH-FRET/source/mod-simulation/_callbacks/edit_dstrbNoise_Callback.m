@@ -12,15 +12,20 @@ end
 % collect simulation parameters
 h = guidata(h_fig);
 p = h.param;
+perSec = p.proj{p.curr_proj}.cnt_p_sec;
 curr = p.proj{p.curr_proj}.sim.curr;
+rate = curr.gen_dt{1}(4);
 inun = curr.gen_dat{3}{2};
 noisetype = curr.gen_dat{1}{2}{4};
 noiseprm = curr.gen_dat{1}{2}{5};
 
-% convert intensity to PC
+% convert intensity units
 if strcmp(inun, 'electron')
     [~,K,eta] = getCamParam(noisetype,noiseprm);
     val = ele2phtn(val,K,eta);
+end
+if perSec
+    val = val/rate;
 end
 
 % save modifications

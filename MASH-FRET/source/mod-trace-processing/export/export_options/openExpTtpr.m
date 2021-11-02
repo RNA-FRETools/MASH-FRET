@@ -36,8 +36,7 @@ tagNames = p.proj{proj}.molTagNames;
 tagClr = p.proj{proj}.molTagClr;
 labels = p.proj{proj}.labels;
 clr = p.proj{proj}.colours;
-perSec = p.proj{p.curr_proj}.TP.fix{2}(4);
-perPix = p.proj{p.curr_proj}.TP.fix{2}(5);
+perSec = p.proj{p.curr_proj}.cnt_p_sec;
 plotchan = p.proj{proj}.TP.fix{1}(1);
 
 str_figTopExc = getStrPop('plot_exc', exc);
@@ -262,9 +261,6 @@ xNext = xNext + w_med_big;
 tooltip = 'counts';
 if perSec
     tooltip = [tooltip ' per sec'];
-end
-if perPix
-    tooltip = [tooltip ' per pixel'];
 end
 
 h.optExpTr.edit_minI = uicontrol('Style', 'edit', 'Units', 'pixels', ...

@@ -47,33 +47,36 @@ figname = get(h_fig, 'Name');
 a = strfind(figname, 'MASH-FRET ');
 b = a + numel('MASH-FRET ');
 s.MASH_version = figname(b:end);
+s.module = p.proj{slct(1)}.module;
+s.folderRoot = p.proj{slct(1)}.folderRoot;
 
 s.movie_file = '';
 s.is_movie = false;
 s.movie_dim = [];
 s.movie_dat = {};
+s.spltime_from_video = p.proj{slct(1)}.spltime_from_video;
 
-s.nb_channel = p.proj{1}.nb_channel;
-s.nb_excitations = p.proj{1}.nb_excitations;
-s.excitations = p.proj{1}.excitations;
-s.chanExc = p.proj{1}.chanExc;
-s.FRET = p.proj{1}.FRET;
-s.S = p.proj{1}.S;
+s.nb_channel = p.proj{slct(1)}.nb_channel;
+s.nb_excitations = p.proj{slct(1)}.nb_excitations;
+s.excitations = p.proj{slct(1)}.excitations;
+s.chanExc = p.proj{slct(1)}.chanExc;
+s.FRET = p.proj{slct(1)}.FRET;
+s.S = p.proj{slct(1)}.S;
 nFRET = size(s.FRET,1);
 nS = size(s.S,1);
-s.exp_parameters = p.proj{1}.exp_parameters;
+s.exp_parameters = p.proj{slct(1)}.exp_parameters;
 s.exp_parameters{1,2} = 'merged';
-s.labels = p.proj{1}.labels;
-s.colours = p.proj{1}.colours;
+s.labels = p.proj{slct(1)}.labels;
+s.colours = p.proj{slct(1)}.colours;
 
 s.coord_file = '';
 s.coord_imp_param = {[1 2] 1};
 s.is_coord = false;
 
-s.frame_rate = p.proj{1}.frame_rate;
-s.pix_intgr = p.proj{1}.pix_intgr;
-s.cnt_p_pix = p.proj{1}.cnt_p_pix;
-s.cnt_p_sec = p.proj{1}.cnt_p_sec;
+s.frame_rate = p.proj{slct(1)}.frame_rate;
+s.pix_intgr = p.proj{slct(1)}.pix_intgr;
+s.cnt_p_sec = p.proj{slct(1)}.cnt_p_sec;
+s.time_in_sec = p.proj{slct(1)}.time_in_sec;
 
 if nFRET>0
     s.ES = cell(1,nFRET);
@@ -87,6 +90,7 @@ s.dt_fname = [];
 s.dt = {};
 
 L = -Inf;
+s.traj_import_opt = [];
 s.molTagNames = {};
 s.molTagClr = {};
 for proj = 1:nProj
@@ -107,7 +111,7 @@ for proj = 1:nProj
 end
 
 % general parameters
-s.fixTT = p.proj{1}.TP.fix;
+s.fixTT = p.proj{slct(1)}.TP.fix;
 
 % concatenate data
 s.coord = [];
@@ -272,11 +276,6 @@ for proj = 2:nProj
     end
     if ~isequal(p_proj{proj}.labels,lbls)
         errmsg = 'Projects have different emitter labels.';
-        return
-    end
-    if ~isequal(p_proj{proj}.pix_intgr,pixPrm)
-        errmsg = cat(2,'Projects have different inetnsity integration ',...
-            'parameters.');
         return
     end
 end

@@ -21,19 +21,12 @@ function h = buildPanelHAhistogramAndPlot(h,p)
 % Created by MH, 3.11.2019
 
 % default
-hpop0 = 22;
 hedit0 = 20;
 htxt0 = 14;
 fact = 5;
-str0 = 'data';
-str1 = {'Select data'};
-str2 = 'subgroup';
-str3 = {'Select subgroup'};
 str4 = 'x-limits:';
 str5 = 'x-binning:';
 str6 = 'overflow bins';
-ttstr0 = wrapHtmlTooltipString('<b>Select data</b> to histogram and analyze.');
-ttstr1 = wrapHtmlTooltipString('<b>Select subgroup</b> to histogram and analyze.');
 ttstr2 = wrapHtmlTooltipString('<b>Histogram boundaries:</b> lower limit of x-axis.');
 ttstr3 = wrapHtmlTooltipString('<b>Histogram boundaries:</b> upper limit of x-axis.');
 ttstr4 = wrapHtmlTooltipString('<b>Histogram binning:</b> bin size.');
@@ -50,34 +43,9 @@ wtxt0 = getUItextWidth(str5,p.fntun,p.fntsz1,'normal',p.tbl);
 wedit0 = (wpop0-wtxt0-p.mg/fact)/2;
 
 % GUI
+
 x = p.mg;
-y = pospan(4)-p.mgpan-htxt0;
-
-h.text_thm_data = uicontrol('style','text','parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wpop0,htxt0],...
-    'string',str0,'horizontalalignment','left');
-
-y = y-hpop0;
-
-h.popupmenu_thm_tpe = uicontrol('style','popupmenu','parent',h_pan,'units',...
-    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wpop0,hpop0],'string',str1,'tooltipstring',ttstr0,'callback',...
-    {@popupmenu_thm_tpe_Callback,h_fig});
-
-y = y-p.mg/fact-htxt0;
-
-h.text_thm_tag = uicontrol('style','text','parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wpop0,htxt0],...
-    'string',str2,'horizontalalignment','left');
-
-y = y-hpop0;
-
-h.popupmenu_thm_tag = uicontrol('style','popupmenu','parent',h_pan,'units',...
-    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wpop0,hpop0],'string',str3,'tooltipstring',ttstr1,'callback',...
-    {@popupmenu_thm_tag_Callback,h_fig});
-
-y = y-p.mg/2-hedit0+(hedit0-htxt0)/2;
+y = pospan(4)-p.mgpan-hedit0+(hedit0-htxt0)/2;
 
 h.text_thm_xlim = uicontrol('style','text','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wtxt0,htxt0],...

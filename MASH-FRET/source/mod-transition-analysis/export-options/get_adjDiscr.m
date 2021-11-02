@@ -6,21 +6,14 @@ chanExc = p.chanExc;
 nExc = numel(exc);
 FRET = p.FRET;
 S = p.S;
+perSec = p.cnt_p_sec;
+rate = p.frame_rate;
 nFRET = size(FRET,1);
 nS = size(S,1);
 N = size(p.intensities,1);
 nMol = numel(p.coord_incl);
 nTpe = nChan*nExc + nFRET + nS;
 
-if isfield(p,'fix')
-    perSec = p.fix{2}(4);
-    perPix = p.fix{2}(5);
-else
-    perSec = 0;
-    perPix = 1;
-end
-nPix = p.pix_intgr(2);
-rate = p.frame_rate;
 
 trace_tot = zeros(nMol*N,nChan,nExc);
 incl = p.bool_intensities;
@@ -34,9 +27,6 @@ for l = 1:nExc
         trace{tpe} = p.intensities_denoise(:,c:nChan:end,l);
         if perSec
             trace{tpe} = trace{tpe}/rate;
-        end
-        if perPix
-            trace{tpe} = trace{tpe}/nPix;
         end
         trace_tot(:,c,l) = reshape(trace{tpe},[numel(trace{tpe}) 1]);
     end
@@ -126,9 +116,6 @@ for l = 1:nExc
 end
 if perSec
     adj.intensities_DTA = adj.intensities_DTA*rate;
-end
-if perPix
-    adj.intensities_DTA = adj.intensities_DTA*nPix;
 end
 
 for n = 1:nFRET

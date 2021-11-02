@@ -19,12 +19,10 @@ labels = p.proj{proj}.labels;
 exc = p.proj{proj}.excitations;
 clr = p.proj{proj}.colours;
 expT = p.proj{proj}.frame_rate;
+insec = p.proj{proj}.time_in_sec;
 p_fix = p.proj{proj}.TP.fix;
 start = p.proj{proj}.TP.curr{mol}{2}{1}(4);
-insec = p_fix{2}(7);
 isfix = p_fix{2}(6);
-perpix = p_fix{2}(5);
-persec = p_fix{2}(4);
 
 % set lists
 if (nFRET+nS) > 0
@@ -45,6 +43,3 @@ end
 
 % set checkboxes
 set(h.checkbox_photobl_fixStart,'value',isfix);
-set(h.checkbox_photobl_insec,'value',insec);
-set(h.checkbox_ttAveInt,'value',perpix);
-set(h.checkbox_ttPerSec,'value',persec);

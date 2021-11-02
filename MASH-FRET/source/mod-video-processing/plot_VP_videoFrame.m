@@ -1,5 +1,5 @@
-function h_img = plot_VP_videoFrame(h_axes, h_cb, img, chansplit, prm)
-% h_img = plot_VP_videoFrame(h_axes, h_cb, img, chansplit, l0, p)
+function h_img = plot_VP_videoFrame(h_axes, h_cb, img, chansplit, prm, persec)
+% h_img = plot_VP_videoFrame(h_axes, h_cb, img, chansplit, prm, persec)
 %
 % Plot current video frame after image filtering and spots coordinates after transformation or spot finfing
 %
@@ -8,6 +8,7 @@ function h_img = plot_VP_videoFrame(h_axes, h_cb, img, chansplit, prm)
 % img: current video frame
 % chansplit: positions on x-axis of channel splitting
 % prm: processing parameters
+% persec: (1) if intensity units are in IC/second, (0) if they are in IC
 % h_img: handle to image plot
 
 % defaults
@@ -17,8 +18,7 @@ chanstl = '--w';
 chanlw = 2;
 
 % collect processing parameters
-persec = prm.plot{1}(1);
-toplot = prm.plot{1}(3);
+toplot = prm.plot{1}(2);
 coordsf = prm.res_crd{1};
 coordref = prm.res_crd{3};
 coord2tr = prm.res_crd{1};

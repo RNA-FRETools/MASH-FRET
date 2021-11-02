@@ -20,7 +20,7 @@ FRET = p.proj{proj}.FRET;
 S = p.proj{proj}.S;
 clr = p.proj{proj}.colours;
 rate = p.proj{proj}.frame_rate;
-nPix = p.proj{proj}.pix_intgr(2);
+perSec = p.proj{proj}.cnt_p_sec;
 fix = p.proj{proj}.TP.fix;
 curr = p.proj{proj}.TP.curr{mol};
 
@@ -47,17 +47,10 @@ thresh = p_panel{4}(:,:,chan);
 states = p_panel{3}(chan,:);
 
 if chan > (nFRET + nS)
-    perSec = fix{2}(4);
-    perPix = fix{2}(5);
     if perSec
         states = states/rate;
         thresh = thresh/rate;
         prm(6) = prm(6)/rate;
-    end
-    if perPix
-        states = states/nPix;
-        thresh = thresh/nPix;
-        prm(6) = prm(6)/nPix;
     end
 end
 

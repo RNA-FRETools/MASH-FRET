@@ -18,7 +18,8 @@ int_dta = p.proj{proj}.intensities_DTA;
 FRET_dta = p.proj{proj}.FRET_DTA;
 S_dta = p.proj{proj}.S_DTA;
 rate = p.proj{proj}.frame_rate;
-nPix = p.proj{proj}.pix_intgr(2);
+perSec = p.proj{proj}.cnt_p_sec;
+inSec = p.proj{proj}.time_in_sec;
 clr = p.proj{proj}.colours;
 fix = p.proj{proj}.TP.fix;
 
@@ -59,19 +60,10 @@ elseif is_all && curr_chan_bottom==(nFRET+nS+is_allfret+is_alls+is_all) % all
     curr_chan_bottom = 1:(nFRET+nS);
 end
 
-perSec = fix{2}(4);
-perPix = fix{2}(5);
-x_inSec = fix{2}(7);
 if perSec
     I = I/rate;
     if plotDscr
         discrI = discrI/rate;
-    end
-end
-if perPix
-    I = I/nPix;
-    if plotDscr
-        discrI = discrI/nPix;
     end
 end
 
@@ -85,7 +77,7 @@ else
 end
 
 x_axis = x_lim(1):x_lim(2);
-if x_inSec
+if inSec
     cutOff = cutOff*rate;
     x_axis = x_axis*rate;
 end
@@ -143,12 +135,9 @@ if curr_chan_top > 0
         yLab = [yLab ' per s.'];
         
     end
-    if perPix
-        yLab = [yLab ' per pixel'];
-    end
     if isfield(axes, 'axes_traceTop')
         ylabel(axes.axes_traceTop, yLab);
-        if x_inSec
+        if inSec
             xlabel(axes.axes_traceTop, 'time (s)');
         else
             xlabel(axes.axes_traceTop, 'frames');
@@ -273,7 +262,7 @@ if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
         end
     end
     if isfield(axes,'axes_traceBottom')
-        if x_inSec
+        if inSec
             xlabel(axes.axes_traceBottom, 'time (s)');
         else
             xlabel(axes.axes_traceBottom, 'frames');

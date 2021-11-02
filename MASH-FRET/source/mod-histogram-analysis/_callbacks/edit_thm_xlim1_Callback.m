@@ -11,23 +11,30 @@ tpe = p.thm.curr_tpe(proj);
 tag = p.thm.curr_tag(proj);
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
+exc = p.proj{proj}.excitations;
+chanExc = p.proj{proj}.chanExc;
 perSec = p.proj{proj}.cnt_p_sec;
-perPix = p.proj{proj}.cnt_p_pix;
 expT = p.proj{proj}.frame_rate;
-nPix = p.proj{proj}.pix_intgr(2);
 curr = p.proj{proj}.HA.curr{tag,tpe};
 
 val = str2num(get(obj, 'String'));
 set(obj, 'String', num2str(val));
 
-isInt = tpe <= 2*nChan*nExc;
+em0 = find(chanExc~=0);
+inclem = true(1,numel(em0));
+for em = 1:numel(em0)
+    if ~sum(chanExc(em)==exc)
+        inclem(em) = false;
+    end
+end
+em0 = em0(inclem);
+nDE = numel(em0);
+
+isInt = tpe <= (2*nChan*nExc + 2*nDE);
 maxVal = curr.plot{1}(1,3);
 if isInt
     if perSec
         maxVal = maxVal/expT;
-    end
-    if perPix
-        maxVal = maxVal/nPix;
     end
 end
 
@@ -41,9 +48,6 @@ end
 if isInt
     if perSec
         val = val*expT;
-    end
-    if perPix
-        val = val*nPix;
     end
 end
 curr.plot{1}(1,2) = val;

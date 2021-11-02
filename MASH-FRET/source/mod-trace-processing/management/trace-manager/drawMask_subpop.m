@@ -9,7 +9,7 @@ p = h.param;
 proj = p.curr_proj;
 nExc = p.proj{proj}.nb_excitations;
 incl = p.proj{proj}.bool_intensities;
-inSec = p.proj{proj}.TP.fix{2}(7);
+inSec = p.proj{proj}.time_in_sec;
 expT = p.proj{proj}.frame_rate; % this is truely the exposure time
 
 if isfield(h.tm,'area_subpop')

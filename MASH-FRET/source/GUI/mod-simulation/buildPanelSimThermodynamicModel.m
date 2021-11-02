@@ -29,7 +29,7 @@ str1 = {'Select a state'};
 str2 = 'state (j)';
 str3 = 'FRETj';
 str4 = 'wFRETj';
-str5 = 'Transition rates (kjj'' in s-1)';
+str5 = 'Transition rate constants (kjj'')';
 ttstr0 = wrapHtmlTooltipString('<b>Number of FRET states:</b> including degenerated states.');
 ttstr1 = wrapHtmlTooltipString('Select a <b>state</b> to configurate.');
 ttstr2 = wrapHtmlTooltipString('<b>FRET value</b> assigned to the selected state.');
@@ -37,7 +37,7 @@ ttstr3 = wrapHtmlTooltipString('<b>Sample heterogeneity:</b> standard deviation 
 ttstr4 = cell(1,Jmax^2);
 for j1 = 1:Jmax
     for j2 = 1:Jmax
-        ttstr4{j1,j2} = wrapHtmlTooltipString(sprintf('rate of transition <b>%i->%i</b>',j1,j2));
+        ttstr4{j1,j2} = wrapHtmlTooltipString(sprintf('transition rate constant <b>%i->%i</b>',j1,j2));
     end
 end
 

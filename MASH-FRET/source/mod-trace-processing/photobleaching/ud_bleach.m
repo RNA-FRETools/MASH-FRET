@@ -26,8 +26,8 @@ labels = p.proj{p.curr_proj}.labels;
 exc = p.proj{proj}.excitations;
 clr = p.proj{proj}.colours;
 rate = p.proj{proj}.frame_rate;
-nPix = p.proj{proj}.pix_intgr(2);
-fix = p.proj{proj}.TP.fix;
+inSec = p.proj{proj}.time_in_sec;
+perSec = p.proj{proj}.cnt_p_sec;
 p_panel = p.proj{proj}.TP.curr{mol}{2};
 
 cutIt = p_panel{1}(1);
@@ -36,9 +36,6 @@ chan = p_panel{1}(3);
 cutOff = p_panel{1}(4+method);
 prm = p_panel{2}(chan,:);
 
-perSec = fix{2}(4);
-perPix = fix{2}(5);
-inSec = fix{2}(7);
 if inSec
     cutOff = cutOff*rate;
     prm(2:3) = prm(2:3)*rate;
@@ -50,10 +47,6 @@ if chan > nFRET+nS % intensity channel
     if perSec
         prm(1) = prm(1)/rate;
         str_un = cat(2,str_un,' /second');
-    end
-    if perPix
-        prm(1) = prm(1)/nPix;
-        str_un = cat(2,str_un,' /pixel');
     end
 end
 

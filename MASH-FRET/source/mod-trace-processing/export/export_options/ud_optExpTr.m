@@ -9,9 +9,7 @@ prm = p.proj{proj}.TP.exp;
 nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
 expT = p.proj{proj}.frame_rate;
-nPix = p.proj{proj}.pix_intgr(2);
-perSec = p.proj{proj}.TP.fix{2}(4);
-perPix = p.proj{proj}.TP.fix{2}(5);
+perSec = p.proj{proj}.cnt_p_sec;
 
 set(h.optExpTr.checkbox_molValid, 'Value', prm.mol_valid);
 if prm.mol_valid
@@ -99,33 +97,7 @@ end
 if strcmp(opt, 'hist') || strcmp(opt, 'all')
     set(h.optExpTr.radiobutton_saveHist, 'Value', prm.hist{1}(1));
     set(h.optExpTr.radiobutton_noHist, 'Value', ~prm.hist{1}(1));
-    
-    % cancel by MH, 10.4.2019
-%     set(h.optExpTr.checkbox_histDiscr, 'Value', prm.hist{1}(2));
-%     set(h.optExpTr.checkbox_histI, 'Value', prm.hist{2}(1,1));
-%     perSec = h.param.proj{h.param.curr_proj}.fix{2}(4);
-%     perPix = h.param.proj{h.param.curr_proj}.fix{2}(5);
-%     if perSec
-%         rate = h.param.proj{h.param.curr_proj}.frame_rate;
-%         prm.hist{2}(1,2:4) = prm.hist{2}(1,2:4)/rate;
-%     end
-%     if perPix
-%         nPix = h.param.proj{h.param.curr_proj}.pix_intgr(2);
-%         prm.hist{2}(1,2:4) = prm.hist{2}(1,2:4)/nPix;
-%     end
-%     set(h.optExpTr.edit_minI, 'String', num2str(prm.hist{2}(1,2)));
-%     set(h.optExpTr.edit_binI, 'String', num2str(prm.hist{2}(1,3)));
-%     set(h.optExpTr.edit_maxI, 'String', num2str(prm.hist{2}(1,4)));
-%     set(h.optExpTr.checkbox_histFRET, 'Value', prm.hist{2}(2,1));
-%     set(h.optExpTr.edit_minFRET, 'String', num2str(prm.hist{2}(2,2)));
-%     set(h.optExpTr.edit_binFRET, 'String', num2str(prm.hist{2}(2,3)));
-%     set(h.optExpTr.edit_maxFRET, 'String', num2str(prm.hist{2}(2,4)));
-%     set(h.optExpTr.checkbox_histS, 'Value', prm.hist{2}(3,1));
-%     set(h.optExpTr.edit_minS, 'String', num2str(prm.hist{2}(3,2)));
-%     set(h.optExpTr.edit_binS, 'String', num2str(prm.hist{2}(3,3)));
-%     set(h.optExpTr.edit_maxS, 'String', num2str(prm.hist{2}(3,4)));
-    
-    
+
     if prm.hist{1}(1)
         
         set(h.optExpTr.radiobutton_saveHist, 'FontWeight', 'bold');
@@ -136,9 +108,6 @@ if strcmp(opt, 'hist') || strcmp(opt, 'all')
         set(h.optExpTr.checkbox_histI, 'Value', prm.hist{2}(1,1));
         if perSec
             prm.hist{2}(1,2:4) = prm.hist{2}(1,2:4)/expT;
-        end
-        if perPix
-            prm.hist{2}(1,2:4) = prm.hist{2}(1,2:4)/nPix;
         end
         set(h.optExpTr.edit_minI, 'String', num2str(prm.hist{2}(1,2)));
         set(h.optExpTr.edit_binI, 'String', num2str(prm.hist{2}(1,3)));

@@ -1,4 +1,4 @@
-function plotKinMdl(h_axes,h_pop,prm,def,v_res)
+function plotKinMdl(h_axes,prm,def,v_res)
 
 % defaults
 norm = 1;
@@ -30,7 +30,6 @@ if isempty(states)
     for ax = 1:numel(h_axes)
         h_axes(ax).Visible = 'off';
     end
-    set(h_pop,'enable','off');
     return
 end
 if isempty(simdat)
@@ -92,13 +91,11 @@ if isempty(simdat)
     for ax = 2:4
         h_axes(ax).Visible = 'off';
     end
-    set(h_pop,'enable','off');
     return
 else
     for ax = 2:4
         h_axes(ax).Visible = 'on';
     end
-    set(h_pop,'enable','on');
 end
 
 % plot state value populations
@@ -155,25 +152,4 @@ else
     ylim(h_axes(4),'auto');
 end
 legend(h_axes(4),'exp','sim','location','east');
-
-% set popup menu list in simdata axes
-% bin states
-J = prm.lft_start{2}(1);
-mat = prm.clst_start{1}(4);
-clstDiag = prm.clst_start{1}(9);
-mu = prm.clst_res{1}.mu{J};
-bin = prm.lft_start{2}(3);
-nTrs = getClusterNb(J,mat,clstDiag);
-[j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
-[states,~] = binStateValues(mu,bin,[j1,j2]);
-V = numel(states);
-    
-if get(h_pop(1),'value')>V
-    set(h_pop(1),'value',V);
-end
-str_pop = cell(1,V);
-for v = 1:V
-    str_pop{v} = sprintf('%0.2f',states(v));
-end
-set(h_pop(1),'string',str_pop);
 

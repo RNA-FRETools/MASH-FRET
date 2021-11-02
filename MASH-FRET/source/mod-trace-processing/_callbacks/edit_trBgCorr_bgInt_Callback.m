@@ -7,10 +7,8 @@ mol = p.ttPr.curr_mol(proj);
 nExc = p.proj{proj}.nb_excitations;
 nChan = p.proj{proj}.nb_channel;
 expT = p.proj{proj}.frame_rate;
-nPix = p.proj{proj}.pix_intgr(2);
+perSec = p.proj{proj}.cnt_p_sec;
 selected_chan = p.proj{proj}.TP.fix{3}(6);
-perSec = p.proj{proj}.TP.fix{2}(4);
-perPix = p.proj{proj}.TP.fix{2}(5);
     
 % get channel and laser corresponding to selected data
 chan = 0;
@@ -39,9 +37,6 @@ end
 
 if perSec
     val = val*expT;
-end
-if perPix
-    val = val*nPix;
 end
 
 p.proj{proj}.TP.curr{mol}{3}{3}{l,c}(method,3) = val;

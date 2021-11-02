@@ -5,7 +5,10 @@ h = guidata(h_fig);
 p = h.param;
 
 val = get(obj, 'Value');
-p.proj{p.curr_proj}.VP.curr.plot{1}(2) = val;
+p.proj{p.curr_proj}.VP.curr.plot{1}(1) = val;
+p.proj{p.curr_proj}.VP.prm.plot{1}(1) = val;
+
+colormap(obj.String{val});
 
 h.param = p;
 guidata(h_fig, h);

@@ -1,14 +1,14 @@
-function p_proj = downCompatibilityTDP(p_proj,tpe,tag)
-% p_proj = downCompatibilityTDP(p_proj,tpe,tag)
+function p_TA = downCompatibilityTDP(p_TA,tpe,tag)
+% p_proj = downCompatibilityTDP(p_TA,tpe,tag)
 %
 % Re-arrange processing parameters and analysis results of older projects according to current MASH version.
 %
-% p_proj: structure containing project's data
+% p_proj: structure containing project's TA data
 % tpe: index in list of data type
 % tag: index in list of molecule tag
 
-def = p_proj.def{tag,tpe};
-prm = p_proj.prm{tag,tpe};
+def = p_TA.def{tag,tpe};
+prm = p_TA.prm{tag,tpe};
 
 if ~isstruct(prm)
     return
@@ -289,6 +289,11 @@ if ~isfield(prm,'mdl_res')
     prm.mdl_res = def.mdl_res;
 end
 
-p_proj.prm{tag,tpe} = prm;
+% 30.10.2021: use colormap index instead of map
+if isfield(prm,'plot') && numel(prm.plot{4})>1
+    prm.plot{4} = def.plot{4};
+end
+
+p_TA.prm{tag,tpe} = prm;
 
 

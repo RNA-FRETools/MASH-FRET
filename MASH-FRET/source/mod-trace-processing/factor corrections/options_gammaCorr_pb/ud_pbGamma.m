@@ -10,9 +10,8 @@ udCalc_pbGamma(h_fig,h_fig2);
 h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
-perSec = p.proj{proj}.TP.fix{2}(4);
-perPix = p.proj{proj}.TP.fix{2}(5);
-inSec = p.proj{proj}.TP.fix{2}(7);
+perSec = p.proj{proj}.cnt_p_sec;
+inSec = p.proj{proj}.time_in_sec;
 rate = p.proj{proj}.frame_rate;
 
 % collect option parameters
@@ -27,10 +26,6 @@ if inSec
 end
 if perSec
     prm(2) = prm(2)/rate;
-end
-if perPix
-    nPix = p.proj{proj}.pix_intgr(2);
-    prm(2) = prm(2)/nPix;
 end
 
 % update GUI

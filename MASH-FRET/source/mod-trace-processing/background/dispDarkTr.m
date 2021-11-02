@@ -14,10 +14,9 @@ nChan = p.proj{proj}.nb_channel;
 expT = p.proj{proj}.frame_rate;
 aDim = p.proj{proj}.pix_intgr(1);
 nPix = p.proj{proj}.pix_intgr(2);
+perSec = p.proj{proj}.cnt_p_sec;
+inSec = p.proj{proj}.time_in_sec;
 selected_chan = p.proj{proj}.TP.fix{3}(6);
-perSec = p.proj{proj}.TP.fix{2}(4);
-perPix = p.proj{proj}.TP.fix{2}(5);
-inSec = p.proj{proj}.TP.fix{2}(7);
 methods = p.proj{proj}.TP.curr{mol}{3}{2};
 bgprm = p.proj{proj}.TP.curr{mol}{3}{3};
 res_y = p.proj{proj}.movie_dim(2);
@@ -63,7 +62,11 @@ guidata(h_fig, h);
 % build background intensity-time trace
 fDat{1} = vidfile;
 fDat{2}{1} = viddat{1};
-fDat{2}{2} = [];
+if isFullLengthVideo(p.proj{proj}.movie_file,h_fig)
+    fDat{2}{2} = h.movie.movie;
+else
+    fDat{2}{2} = [];
+end
 fDat{3} = [res_y res_x];
 fDat{4} = viddat{3};
 
@@ -78,10 +81,6 @@ y_lab = 'counts';
 if perSec
     I_bg = I_bg/expT;
     y_lab = [y_lab 'per s.'];
-end
-if perPix
-    I_bg = I_bg/nPix;
-    y_lab = [y_lab ' per pix.'];
 end
 x_axis = l:nExc:nFrames;
 if inSec

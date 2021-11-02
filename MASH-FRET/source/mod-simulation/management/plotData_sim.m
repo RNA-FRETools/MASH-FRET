@@ -21,6 +21,8 @@ if ~isModuleOn(p,'sim')
     return
 end
 
+inSec = p.proj{p.curr_proj}.time_in_sec;
+perSec = p.proj{p.curr_proj}.cnt_p_sec;
 prm = p.proj{p.curr_proj}.sim.prm;
 
 % check for existing data
@@ -49,14 +51,28 @@ units = outun;
 if ~strcmp(units, 'photon')
     units = 'image';
 end
+if perSec
+    img = img*rate;
+    I_don_ic = I_don_ic*rate;
+    I_acc_ic = I_acc_ic*rate;
+    str_iun = [units,' counts / seconds'];
+else
+    str_iun = [units,' counts'];
+end
 
 % plot first traces
-timeaxis = (1:L)'/rate;
+timeaxis = (1:L)';
+if inSec
+    timeaxis = timeaxis/rate;
+    str_tun = 'seconds';
+else
+    str_tun = 'frames';
+end
 plot(h.axes_example, timeaxis,I_don_ic,'-b',timeaxis,I_acc_ic,'-r');
 ylim(h.axes_example,'auto');
-xlim(h.axes_example,[0 size(I_don_ic,1)/rate]);
-xlabel(h.axes_example,'time (sec)');
-ylabel(h.axes_example,[units,' counts']);
+xlim(h.axes_example,[timeaxis(1) timeaxis(end)]);
+xlabel(h.axes_example,['time (',str_tun,')']);
+ylabel(h.axes_example,['intensity (',str_iun,')']);
 grid(h.axes_example,'on');
 legend(h.axes_example,'donor','acceptor');
 
@@ -93,7 +109,7 @@ set(h.axes_example_hist,'yscale','log','nextplot','replacechildren',...
     'xtickmode','auto');
 xlim(h.axes_example_hist, 'auto');
 ylim(h.axes_example_hist, 'auto');
-xlabel(h.axes_example_hist, [units ' counts']);
+xlabel(h.axes_example_hist, ['intensity (',str_iun,')']);
 ylabel(h.axes_example_hist, 'frequency');
 grid(h.axes_example_hist, 'on');
 legend(h.axes_example_hist, 'donor', 'acceptor');
@@ -104,4 +120,4 @@ imagesc(h.axes_example_mov,'xdata',[0.5,viddim(1)-0.5],'ydata',...
 xlim(h.axes_example_mov,[0,viddim(1)]);
 ylim(h.axes_example_mov,[0,viddim(2)]);
 caxis(h.axes_example_mov,[min(min(img)),max(max(img))]);
-ylabel(h.cb_example_mov, [units,' counts/time bin']);
+ylabel(h.cb_example_mov, ['intensity (',str_iun,')']);

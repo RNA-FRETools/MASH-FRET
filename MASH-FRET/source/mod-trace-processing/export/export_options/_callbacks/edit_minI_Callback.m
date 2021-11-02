@@ -8,15 +8,10 @@ if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val < max)
     return;
 end
 set(obj, 'BackgroundColor', [1 1 1]);
-perSec = h.param.proj{h.param.curr_proj}.TP.fix{2}(4);
-perPix = h.param.proj{h.param.curr_proj}.TP.fix{2}(5);
+perSec = h.param.proj{h.param.curr_proj}.cnt_p_sec;
 if perSec
     rate = h.param.proj{h.param.curr_proj}.frame_rate;
     val = val*rate;
-end
-if perPix
-    nPix = h.param.proj{h.param.curr_proj}.pix_intgr(2);
-    val = val*nPix;
 end
 h.param.proj{h.param.curr_proj}.TP.exp.hist{2}(1,2) = val;
 guidata(h_fig, h);

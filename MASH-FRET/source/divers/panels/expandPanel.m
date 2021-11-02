@@ -103,7 +103,7 @@ for c = 1:nChld
     
     % set panel position relative to top panels
     if c==1 % toppest panel
-        y = hght_prnt-mgpan-hght;
+        y = hcpan(c).Position(2)+hcpan(c).Position(4)-hght;
     else
         y = hcpan(c-1).Position(2)-mg-hght;
     end

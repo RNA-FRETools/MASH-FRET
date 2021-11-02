@@ -37,6 +37,8 @@ end
 % collect experiment settings and processing parameters
 proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
+inSec = p.proj{proj}.time_in_sec;
+expT = p.proj{proj}.frame_rate;
 labels =  p.proj{proj}.labels;
 curr = p.proj{proj}.VP.curr;
 meth = curr.edit{1}{1}(1);
@@ -73,6 +75,11 @@ end
 ud_lstBg(h_fig);
 
 % set export parameters
+if inSec
+    curr.edit{2}(1) = curr.edit{2}(1)*expT;
+    curr.edit{2}(2) = curr.edit{2}(2)*expT;
+    curr.edit{2}(3) = curr.edit{2}(3)*expT;
+end
 set(h.edit_startMov,'String',num2str(curr.edit{2}(1)));
 set(h.edit_endMov,'String',num2str(curr.edit{2}(2)));
 set(h.edit_ivMov,'String',num2str(curr.edit{2}(3)));

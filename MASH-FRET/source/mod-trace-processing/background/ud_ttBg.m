@@ -18,7 +18,7 @@ exc = p.proj{proj}.excitations;
 nChan = p.proj{proj}.nb_channel;
 clr = p.proj{proj}.colours;
 rate = p.proj{proj}.frame_rate;
-nPix = p.proj{proj}.pix_intgr(2);
+perSec = p.proj{proj}.cnt_p_sec;
 fix = p.proj{proj}.TP.fix;
 curr = p.proj{proj}.TP.curr{mol};
 
@@ -106,13 +106,8 @@ switch method
             sprintf(['Calculation method\n\t1: median(median_y)\n\t2: ',...
             '0.5*(median(median_y)+median(median_x))']));
 end
-perSec = fix{2}(4);
-perPix = fix{2}(5);
 if perSec
     prm(3) = prm(3)/rate;
-end
-if perPix
-    prm(3) = prm(3)/nPix;
 end
 set(h.edit_trBgCorrParam_01, 'String', num2str(prm(1)));
 set(h.edit_subImg_dim, 'String', num2str(prm(2)), 'TooltipString', ...

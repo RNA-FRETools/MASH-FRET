@@ -50,9 +50,12 @@ wpop0 = warea-2*p.mg;
 wcb0 = warea-2*p.mg;
 wedit1 = (warea-2*p.mg-p.mg/fact)/2;
 wpan0 = 2*p.mg+2*p.mg/fact+3*wedit0;
-hpan0 = pospan(4)-p.mgpan-p.mg;
-mgarea = (hpan0-htxt0-hpop0-htxt0-hedit0-hedit0-p.mg/fact-htxt0-hedit0-p.mg)/2;
-wpan1 = pospan(3)-warea-wpan0-2*p.mg;
+hpan0 = p.mgpan+hpop0+p.mg/2+htxt0+hpop0+p.mg/fact+hedit0+p.mg/2+...
+    hedit0+p.mg/2+hedit0+p.mg;
+hpan1 = p.mgpan+htxt0+hpop0+p.mg/2+hedit0+p.mg;
+mgarea = (hpan0-htxt0-hpop0-htxt0-hedit0-hedit0-p.mg/fact-htxt0-hedit0-...
+    p.mg)/2;
+wpan1 = warea-p.mg+wpan0;
 
 % GUI
 x = p.mg;
@@ -135,11 +138,12 @@ h.uipanel_TA_clusters = uipanel('parent',h_pan,'units',p.posun,'fontunits',...
     p.fntun,'fontsize',p.fntsz1,'position',[x,y,wpan0,hpan0],'title',ttl0);
 h = buildPanelTAclusters(h,p);
 
-x = x+wpan0+p.mg;
+x = p.mg;
+y = y-p.mg-hpan1;
 
 h.uipanel_TA_results = uipanel('parent',h_pan,'units',p.posun,'fontunits',...
-    p.fntun,'fontsize',p.fntsz1,'position',[x,y,wpan1,hpan0],'title',ttl1);
-h = buildPanelTAresults(h,p);
+    p.fntun,'fontsize',p.fntsz1,'position',[x,y,wpan1,hpan1],'title',ttl1);
+h = buildPanelTAclustResults(h,p);
 
 h.uipanel_TA_selectTool = uipanel('parent',h_pan,'units',p.posun,'title',...
     '','visible','off');

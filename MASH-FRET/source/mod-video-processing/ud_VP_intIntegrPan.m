@@ -35,6 +35,5 @@ end
 % set parameters
 set(h.edit_TTgen_dim, 'String', num2str(curr.gen_int{3}(1)));
 set(h.edit_intNpix, 'String', num2str(curr.gen_int{3}(2)));
-set(h.checkbox_meanVal, 'Value', curr.gen_int{3}(3));
 
 

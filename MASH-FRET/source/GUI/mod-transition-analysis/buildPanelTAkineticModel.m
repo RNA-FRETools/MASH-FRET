@@ -12,10 +12,9 @@ htxt0 = 14;
 hbut0 = 20;
 hpop0 = 22;
 hedit0 = 20;
-wedit0 = 40;
 fact = 5;
-str0 = 'Start';
-str1 = 'state degen.';
+str0 = 'Find best model';
+str1 = 'state degeneracy';
 str3 = 'Dmax';
 str4 = 'restart';
 str5 = {'Estimate with BIC-ML-DPH',...
@@ -32,7 +31,8 @@ h_pan = h.uipanel_TA_kineticModel;
 % dimensions
 pospan = get(h_pan,'position');
 wbut0 = getUItextWidth(str0,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wpop0 = (pospan(3)-3*p.mg)/2-2*wedit0-wbut0-3*p.mg/fact;
+wpop0 = getUItextWidth(str5{1},p.fntun,p.fntsz1,'normal',p.tbl)+p.warr;
+wedit0 = (pospan(3)-p.mg-wpop0-p.mg/fact-p.mg/fact-p.mg)/2;
 
 x = p.mg;
 y = pospan(4)-p.mgpan-htxt0;
@@ -76,8 +76,8 @@ h.edit_TA_mdlRestartNb = uicontrol('style','edit','parent',h_pan,'units',...
     [x,y,wedit0,hedit0],'tooltipstring',ttstr2,'callback',...
     {@edit_TA_mdlRestartNb_Callback,h_fig});
 
-x = x+wedit0+p.mg/fact;
-y = y+(hedit0-hbut0)/2;
+x = p.mg;
+y = y-(hpop0-hedit0)/2-p.mg/2-hbut0;
 
 h.pushbutton_TA_refreshModel = uicontrol('style','pushbutton','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...

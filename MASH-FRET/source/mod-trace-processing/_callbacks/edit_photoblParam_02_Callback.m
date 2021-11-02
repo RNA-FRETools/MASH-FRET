@@ -7,7 +7,7 @@ mol = p.ttPr.curr_mol(proj);
 nExc = p.proj{proj}.nb_excitations;
 len = nExc*size(p.proj{proj}.intensities,1);
 expT = p.proj{proj}.frame_rate;
-inSec = p.proj{proj}.fix{2}(7);
+inSec = p.proj{proj}.time_in_sec;
 method = p.proj{proj}.TP.curr{mol}{2}{1}(2);
 
 if method~=2 % Threshold

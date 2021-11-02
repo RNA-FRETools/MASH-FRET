@@ -84,7 +84,7 @@ end
 f = fopen(fpath, 'Wt');
 fprintf(f,'VIDEO PARAMETERS\n');
 fprintf(f,cat(2,'> frame rate (s-1): ',num2str(rate),'\n'));
-fprintf(f, '> trace length (frame): %i\n',L);
+fprintf(f, '> trace length (frames): %i\n',L);
 fprintf(f, '> movie dimension (pixels): %i,%i\n',viddim);
 fprintf(f,cat(2,'> pixel dimension (um): ',num2str(pxsz),'\n'));
 fprintf(f, '> bit rate: %i\n', br);
@@ -145,7 +145,7 @@ if (~isPresets || (isPresets && ~isfield(presets,'kx'))) && J>1
         str_fmt = cat(2,str_fmt,'\t%1.3f');
     end
     str_fmt = cat(2,str_fmt,'\n');
-    transMat = kx;
+    transMat = kx*rate;
     fprintf(f,str_fmt,transMat(1:J,1:J)');
 end
 if ~isPresets || (isPresets && ~isfield(presets, 'totInt'))
@@ -173,8 +173,8 @@ fprintf(f,cat(2,'> donor direct excitation coefficient: ',num2str(100*deD),...
 fprintf(f,cat(2,'> acceptor direct excitation coefficient: ',...
     num2str(100*deA),'%% of total intensity\n'));
 if isblch
-    fprintf(f,cat(2,'> photobleaching time decay: ',num2str(blchcst),...
-        ' s\n'));
+    fprintf(f,cat(2,'> photobleaching decay constant (frames): ',...
+        num2str(blchcst),' s\n'));
 end
 
 fprintf(f,'\nEXPERIMENTAL SETUP\n');
@@ -209,7 +209,8 @@ elseif bgtype == 3
     end
 end
 if isbgdec
-    fprintf(f,cat(2,'> background decay (s): ',num2str(bgcst),'\n'));
+    fprintf(f,cat(2,'> background decay constant (frames): ',...
+        num2str(bgcst),'\n'));
     fprintf(f,cat(2,'> initial background amplitude: ',num2str(bgamp),...
         '\n'));
 end

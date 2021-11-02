@@ -19,15 +19,13 @@ curr = proj.VP.curr;
 coordsm = curr.res_crd{4};
 pxdim = curr.gen_int{3}(1);
 npix = curr.gen_int{3}(2);
-avecnt = curr.gen_int{3}(3);
 coordfile = curr.gen_int{2}{2};
 impprm = curr.gen_int{2}{3};
-persec = curr.plot{1}(1);
 
 % collect video file parameters
 fDat{1} = proj.movie_file;
 fDat{2}{1} = proj.movie_dat{1};
-if isFullLengthVideo(h_fig)
+if isFullLengthVideo(proj.movie_file,h_fig)
     fDat{2}{2} = h.movie.movie;
 else
     fDat{2}{2} = [];
@@ -67,8 +65,6 @@ if ~isempty(I)
     proj.proj_file = ''; % project file
 
     proj.pix_intgr = [pxdim npix]; % intgr. area dim. + nb of intgr pix
-    proj.cnt_p_sec = persec; % intensities in counts per second
-    proj.cnt_p_pix = avecnt; % intensities in counts per pixels
   
     proj.intensities = I;
     proj.intensities_bgCorr = nan(size(I));

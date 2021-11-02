@@ -18,8 +18,7 @@ nMol = size(p.proj{proj}.intensities,2)/nChan;
 exc = p.proj{proj}.excitations;
 labels = p.proj{proj}.labels;
 rate = p.proj{proj}.frame_rate;
-nPix = p.proj{proj}.pix_intgr(2);
-perSec = p.proj{proj}.TP.fix{2}(4);
+perSec = p.proj{proj}.cnt_p_sec;
 
 if ~isempty(varargin)
     pname = varargin{1};
@@ -54,12 +53,11 @@ for l = 1:nExc
             dat = [dat g.res{m,l,c}(:,1)];
         end
         
-        str_un = '(a.u. /pix)';
+        str_un = '(a.u.)';
         if perSec
-            str_un = '(a.u. /pix /s)';
+            str_un = '(a.u. /s)';
             dat(:,3:end) = dat(:,3:end)/rate;
         end
-        dat(:,3:end) = dat(:,3:end)/nPix;
 
         % export BG intensities and statistics
         f = fopen([pname fname '_' labels{c} '-' num2str(exc(l)) ...

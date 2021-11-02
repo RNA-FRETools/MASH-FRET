@@ -191,7 +191,7 @@ if saveAsAscii
         for i = 1:N
             for j = 1:nChan
                 str_coord = cat(2,str_coord,'\t%4.2f,%4.2f');
-                str_dat_hd = cat(2,str_dat_hd,'\tI_',num2str(j),'(a.u.)');
+                str_dat_hd = cat(2,str_dat_hd,'\tI_',num2str(j),'(counts)');
                 str_dat = cat(2,str_dat,'\t%d');
             end
         end
@@ -225,7 +225,7 @@ if saveAsAscii
             str_dat = '%d\t%i';
             for j = 1:nChan
                 str_coord = cat(2,str_coord,'\t%4.2f,%4.2f');
-                str_dat_hd = cat(2,str_dat_hd,'\tI_',num2str(j),'(a.u.)');
+                str_dat_hd = cat(2,str_dat_hd,'\tI_',num2str(j),'(counts)');
                 str_dat = cat(2,str_dat,'\t%d');
             end
             str_hd_coord = cat(2,'coordinates:\t',str_coord,'\n');

@@ -36,8 +36,8 @@ if ~isModuleOn(p,'TA')
     
     % make axes invisible
     set([h.axes_TDPplot1,h.axes_tdp_BIC,h.colorbar_TA,h.axes_TDPplot2,...
-        h.axes_TDPplot3,h.axes_TDPcmap,h.axes_TA_mdlDt,h.axes_TA_mdlBIC,...
-        h.axes_TA_mdlPop,h.axes_TA_mdlTrans], 'Visible', 'off');
+        h.axes_TDPplot3,h.axes_TA_mdlDt,h.axes_TA_mdlBIC,h.axes_TA_mdlPop,...
+        h.axes_TA_mdlTrans], 'Visible', 'off');
     
     return
 end
@@ -62,6 +62,5 @@ if strcmp(opt,'all') || strcmp(opt,'kin')
 end
 if strcmp(opt,'all') || strcmp(opt,'mdl')
     plotKinMdl([h.axes_TDPplot3,h.axes_TA_mdlPop,h.axes_TA_mdlTrans,...
-        h.axes_TA_mdlDt,h.axes_TA_mdlBIC],[h.popupmenu_TA_mdlDtState,...
-        h.text_TA_mdlDtState],prm,def,v_mdl);
+        h.axes_TA_mdlDt,h.axes_TA_mdlBIC],prm,def,v_mdl);
 end

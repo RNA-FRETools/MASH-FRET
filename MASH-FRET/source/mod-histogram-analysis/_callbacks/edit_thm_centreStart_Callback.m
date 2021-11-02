@@ -13,9 +13,7 @@ tag = p.thm.curr_tag(proj);
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
 perSec = p.proj{proj}.cnt_p_sec;
-perPix = p.proj{proj}.cnt_p_pix;
 expT = p.proj{proj}.frame_rate;
-nPix = p.proj{proj}.pix_intgr(2);
 curr = p.proj{proj}.HA.curr{tag,tpe};
 
 isInt = tpe <= 2*nChan*nExc;
@@ -29,10 +27,6 @@ if isInt
     if perSec
         minVal = minVal/expT;
         maxVal = maxVal/expT;
-    end
-    if perPix
-        minVal = minVal/nPix;
-        maxVal = maxVal/nPix;
     end
 end
 
@@ -49,9 +43,6 @@ end
 if isInt
     if perSec
         val = val*expT;
-    end
-    if perPix
-        val = val*nPix;
     end
 end
 

@@ -12,15 +12,20 @@ function coordfile = saveSpots(p,h_fig,varargin)
 
 % Last update by MH, 23.4.2019: correct typos in exported file
 
+% default
+defbfname = 'frame_t_0';
+
 % initialize output
 coordfile = [];
 
 % collect parameters
 nChan = p.proj{p.curr_proj}.nb_channel;
+projfile = p.proj{p.curr_proj}.proj_file;
+projtle = p.proj{p.curr_proj}.exp_parameters{1,2};
 vidfile = p.proj{p.curr_proj}.movie_file;
 expT = p.proj{p.curr_proj}.frame_rate;
+persec = p.proj{p.curr_proj}.cnt_p_sec;
 curr = p.proj{p.curr_proj}.VP.curr;
-persec = curr.plot{1}(1);
 coordsf = curr.gen_crd{2}{5};
 
 % control SF coordinates
@@ -36,8 +41,15 @@ if ~isempty(varargin)
     pname = varargin{1};
     fname = varargin{2};
 else
-    [o, nameMov, o] = fileparts(vidfile);
-    defName = [setCorrectPath('spotfinder', h_fig) nameMov '.spots'];
+    if ~isempty(projfile)
+        [o,name,o] = fileparts(projfile);
+    else
+        [o,name,o] = fileparts(vidfile);
+    end
+    if strcmp(name,defbfname)
+        name = projtle;
+    end
+    defName = [setCorrectPath('spotfinder', h_fig) name '.spots'];
     [fname,pname,o] = uiputfile({ ...
         '*.spots', 'Coordinates file(*.spots)'; ...
         '*.*', 'All files(*.*)'}, 'Export coordinates', defName);

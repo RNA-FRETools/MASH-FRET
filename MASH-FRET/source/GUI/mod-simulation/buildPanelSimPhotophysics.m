@@ -31,10 +31,10 @@ str5 = 'dED';
 str6 = 'dEA';
 str7 = 'BtD';
 str8 = 'BtA';
-str9 = 'Photobleaching decay (s):';
+str9 = 'Photobleaching time constant:';
 str10 = 'decay (s)';
-ttstr0 = wrapHtmlTooltipString('<b>Total intensity</b> (counts/time bin): pure donor fluorescence intensity collected in absence of acceptor.');
-ttstr1 = wrapHtmlTooltipString('<b>Sample heterogeneity:</b> standard deviation of the Itot,em Gaussian distribution (counts/time bin).');
+ttstr0 = wrapHtmlTooltipString('<b>Total intensity</b>: pure donor fluorescence intensity collected in absence of acceptor.');
+ttstr1 = wrapHtmlTooltipString('<b>Sample heterogeneity:</b> standard deviation of the Itot,em Gaussian distribution.');
 ttstr2 = wrapHtmlTooltipString('<b>Intensity units of simulation parameters:</b> photon counts or amplified electron counts (only total intensity and background intensities are concerned).');
 ttstr3 = wrapHtmlTooltipString('<b>Gamma factor:</b> modulate the donor fluorescence intensity.');
 ttstr4 = wrapHtmlTooltipString('<b>Sample heterogeneity:</b> standard deviation of the &#947; factor Gaussian distribution.');
@@ -43,7 +43,7 @@ ttstr6 = wrapHtmlTooltipString('<b>Direct excitation coefficient</b> of acceptor
 ttstr7 = wrapHtmlTooltipString('<b>Bleedthrough coefficient</b> of donor emission in acceptor channel.');
 ttstr8 = wrapHtmlTooltipString('<b>Bleedthrough coefficient</b> of acceptor emission in acceptor channel.');
 ttstr9 = wrapHtmlTooltipString('<b>Simulate donor photobleaching</b>: photobleaching times are randomly drawn from an exponentially decaying ditribution.');
-ttstr10 = wrapHtmlTooltipString('<b>Decay constant (in seconds)</b>: characterizes the distribution of photobleaching times.');
+ttstr10 = wrapHtmlTooltipString('<b>Decay constant</b>: characterizes the distribution of photobleaching times.');
 
 % parents
 h_fig = h.figure_MASH;

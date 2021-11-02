@@ -7,10 +7,8 @@ p = h.param;
 % parameters from MASH
 proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
-perSec = p.proj{proj}.TP.fix{2}(4);
-perPix = p.proj{proj}.TP.fix{2}(5);
+perSec = p.proj{proj}.cnt_p_sec;
 rate = p.proj{proj}.frame_rate;
-nPix = p.proj{proj}.pix_intgr(2);
 
 % parameters from BG analyser
 m = g.curr_m;
@@ -28,11 +26,6 @@ mlt_subdim = squeeze(g.param{2}{3}(l,c,:))';
 fix_param1 = g.param{3}(1);
 fix_subdim = g.param{3}(2);
 allmol = g.param{3}(3);
-
-str_un = '(a.u. /pix)';
-if perSec
-    str_un = '(a.u. /pix /s)';
-end
 
 % set popupmenu strings and values
 set(g.popupmenu_data,'Value',nChan*(l-1)+c);
@@ -131,9 +124,6 @@ end
 
 if perSec
     bgVal = bgVal/rate;
-end
-if perPix
-    bgVal = bgVal/nPix;
 end
 edit_param1 = [g.edit_param1 g.edit_param1_i];
 param1 = [sngl_param1 mlt_param1];

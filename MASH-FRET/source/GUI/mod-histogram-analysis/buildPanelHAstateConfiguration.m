@@ -37,8 +37,6 @@ str8 = 'Gaussians:';
 str9 = 'LogL:';
 str10 = 'BIC:';
 str11 = '>>';
-ylim0 = [1,10];
-axttl0 = 'BIC';
 ttstr0 = wrapHtmlTooltipString('<b>Maximum model complexity:</b> largest number of Gaussians to fit to the histogram.');
 ttstr1 = wrapHtmlTooltipString('<b>Infer state configurations:</b> Gaussian mixtures with increasing complexities will be successfully fit to the histogram.');
 ttstr2 = wrapHtmlTooltipString('<b>Model selection:</b> overfitting is penalized using a <b>minimum improvement</b> in likelihood (the model is selected if further increase in complexity does not sufficiently improve the likelihood).');
@@ -65,8 +63,6 @@ wtxt4 = getUItextWidth(str8,p.fntun,p.fntsz1,'normal',p.tbl);
 wpop0 = pospan(3)-2*p.mg-wtxt3-wtxt4;
 wbut1 = getUItextWidth(str11,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 wedit2 = (pospan(3)-2*p.mg-2*p.mg/fact-wbut1)/2;
-waxes0 = pospan(3)-2*p.mg;
-haxes0 = pospan(4)-p.mgpan-p.mg-5*p.mg/2-2*p.mg/fact-5*hedit0-hpop0-htxt1-htxt0;
 
 % GUI
 x = p.mg;
@@ -182,17 +178,4 @@ h.pushbutton_thm_impPrm = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wbut1,hedit0],'string',str11,'tooltipstring',ttstr6,'callback',...
     {@pushbutton_thm_impPrm_Callback,h_fig});
-
-x = p.mg;
-y = p.mg;
-
-h.axes_thm_BIC = axes('parent',h_pan,'units',p.posun,'fontunits',p.fntun,...
-    'fontsize',p.fntsz1,'position',[x,y,waxes0,haxes0],'xticklabelmode',...
-    'manual');
-h_axes = h.axes_thm_BIC;
-ylim(h_axes,ylim0);
-title(h_axes,axttl0);
-tiaxes = get(h_axes,'tightinset');
-posaxes = getRealPosAxes([x,y,waxes0,haxes0],tiaxes,'traces');
-set(h_axes,'position',posaxes);
 

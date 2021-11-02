@@ -62,12 +62,15 @@ end
 % save coordiantes and file
 curr.res_crd{1} = coord;
 curr.gen_crd{3}{1}{2} = fname;
-curr.plot{1}(3) = 3;
+curr.plot{1}(2) = 3;
 
 % save modifications
 p.proj{p.curr_proj}.VP.curr = curr;
 h.param = p;
 guidata(h_fig, h);
+
+% bring tab forefront
+h.uitabgroup_VP_plot.SelectedTab = h.uitab_VP_plot_avimg;
 
 % set GUI to proper values and refresh plot
 updateFields(h_fig,'imgAxes');

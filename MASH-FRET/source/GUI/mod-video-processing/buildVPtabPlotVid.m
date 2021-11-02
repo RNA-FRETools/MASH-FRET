@@ -21,9 +21,10 @@ str2 = 'Z';
 str3 = 'Tool:';
 str4 = 'Frame';
 str5 = 'of';
-str6 = 'Size:';
-str7 = 'x';
-str8 = 'Channel splitting:';
+str6 = 's';
+str7 = 'Size:';
+str8 = 'x';
+str9 = 'Channel splitting:';
 ylbl0 = 'intensity(counts /pix)';
 ttstr0 = wrapHtmlTooltipString('Activate <b>"create trace" cursor:</b> clicking on one pixel of the video will create intensity-time traces from this position.');
 ttstr1 = wrapHtmlTooltipString('Activate <b>zoom cursor:</b> regular MATLAB zoom tool.');
@@ -43,11 +44,12 @@ wtxt0 = getUItextWidth(str0,p.fntun,p.fntsz1,'normal',p.tbl);
 wtxt2 = getUItextWidth(str3,p.fntun,p.fntsz1,'normal',p.tbl);
 wtxt3 = getUItextWidth(str4,p.fntun,p.fntsz1,'normal',p.tbl);
 wtxt4 = getUItextWidth(num2str(maxframe),p.fntun,p.fntsz1,'normal',p.tbl);
-wtxt5 = getUItextWidth(str5,p.fntun,p.fntsz1,'normal',p.tbl);
-wtxt6 = getUItextWidth(str6,p.fntun,p.fntsz1,'normal',p.tbl);
-wtxt7 = getUItextWidth(num2str(limMov(2)),p.fntun,p.fntsz1,'normal',p.tbl);
-wtxt8 = getUItextWidth(str7,p.fntun,p.fntsz1,'normal',p.tbl);
-wtxt9 = postab(3)-2*p.mg-2*p.mg-wtxt3-wtxt4*2-wtxt5-wtxt6-wtxt7*2-wtxt8;
+wtxt5 = getUItextWidth(str6,p.fntun,p.fntsz1,'normal',p.tbl);
+wtxt6 = getUItextWidth(str5,p.fntun,p.fntsz1,'normal',p.tbl);
+wtxt7 = getUItextWidth(str7,p.fntun,p.fntsz1,'normal',p.tbl);
+wtxt8 = getUItextWidth(num2str(limMov(2)),p.fntun,p.fntsz1,'normal',p.tbl);
+wtxt9 = getUItextWidth(str8,p.fntun,p.fntsz1,'normal',p.tbl);
+wtxt10 = postab(3)-2*p.mg-2*p.mg-wtxt3-wtxt4*2-wtxt6-wtxt7-wtxt8*2-wtxt9;
 
 % GUI
 x = p.mg;
@@ -128,43 +130,49 @@ h.text_frameCurr = uicontrol('style','text','parent',h_tab,'units',p.posun,...
 x = x+wtxt4;
 
 h.text_frameOf = uicontrol('style','text','parent',h_tab,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wtxt5,htxt0],...
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wtxt6,htxt0],...
     'string',str5);
 
-x = x+wtxt5;
+x = x+wtxt6;
 
 h.text_frameEnd = uicontrol('style','text','parent',h_tab,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wtxt4,htxt0],...
     'string','');
 
+x = x+wtxt4;
+
+h.text_frameUnits = uicontrol('style','text','parent',h_tab,'units',...
+    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wtxt5,htxt0],'string',str6,'horizontalalignment','left');
+
 x = x+wtxt4+p.mg;
 
 h.text_VP_size = uicontrol('style','text','parent',h_tab,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wtxt6,htxt0],...
-    'string',str6,'horizontalalignment','right');
-
-x = x+wtxt6;
-
-h.text_movW = uicontrol('style','text','parent',h_tab,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wtxt7,htxt0],...
-    'string','');
+    'string',str7,'horizontalalignment','right');
 
 x = x+wtxt7;
 
-h.text_VP_x = uicontrol('style','text','parent',h_tab,'units',p.posun,...
+h.text_movW = uicontrol('style','text','parent',h_tab,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wtxt8,htxt0],...
-    'string',str7);
+    'string','');
 
 x = x+wtxt8;
 
+h.text_VP_x = uicontrol('style','text','parent',h_tab,'units',p.posun,...
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wtxt9,htxt0],...
+    'string',str8);
+
+x = x+wtxt9;
+
 h.text_movH = uicontrol('style','text','parent',h_tab,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wtxt7,htxt0],...
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wtxt8,htxt0],...
     'string','');
 
-x = x+wtxt7+p.mg;
+x = x+wtxt8+p.mg;
 
 h.text_split = uicontrol('style','text','parent',h_tab,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wtxt9,htxt0],...
-    'string',str8,'horizontalalignment','left');
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wtxt10,htxt0],...
+    'string',str9,'horizontalalignment','left');
 
 

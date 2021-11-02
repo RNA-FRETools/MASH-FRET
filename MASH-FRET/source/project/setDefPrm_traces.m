@@ -81,10 +81,10 @@ else
     gen{2}(3) = 1;
 end
 
-gen{2}(4) = p.proj{proj}.cnt_p_sec; % plot in intensity units per second
-gen{2}(5) = p.proj{proj}.cnt_p_pix; % plot in intensity units per pixels
+gen{2}(4) = 0; % nothing (prev: intensity units per second)
+gen{2}(5) = 0; % nothing (prev: intensity units per pixel)
 gen{2}(6) = 0; % fix first frame for all molecules
-gen{2}(7) = 1; % x-axis in second
+gen{2}(7) = 0; % nothing (prev: time units in second)
 
 % Main popupmenu values
 gen{3}(1) = 1; % laser for direct excitation
