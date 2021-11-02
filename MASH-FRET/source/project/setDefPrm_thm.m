@@ -16,7 +16,7 @@ else
     tr_max = trace; tr_max(isnan(tr_max)) = -Inf;
     minVal = min(min(tr_min)); maxVal = max(max(tr_max));
     bin = (maxVal-minVal)/150;
-    minVal = (minVal-2*bin);
+    minVal = 0;
     maxVal = (maxVal+2*bin);
 end
 xy_axis = [bin minVal maxVal];

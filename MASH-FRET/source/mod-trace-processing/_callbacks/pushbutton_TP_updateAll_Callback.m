@@ -27,7 +27,7 @@ try
         % reset traces according to changes in parameters
         [p,opt{m}] = resetMol(m, 'ttPr', p);
         p = plotSubImg(m, p, []);
-        [p,~] = updateIntensities(opt{m},m,p);
+        [p,~] = updateIntensities(opt{m},m,p,h_fig);
 
         % loading bar update
         if loading_bar('update',h_fig)
@@ -82,6 +82,17 @@ catch err
     return
 end
 
+% update project data (dwelltimes in particular)
+dat = checkField(p.proj{proj},'',h_fig);
+if isempty(dat)
+    return
+end
+p.proj{p.curr_proj} = dat;
+
+% set default HA and TA parameters
+p = importHA(p,p.curr_proj);
+p = importTA(p,p.curr_proj);
+
 % collect processed data
 h = guidata(h_fig);
 h.param = p;
@@ -89,6 +100,6 @@ guidata(h_fig, h);
 
 loading_bar('close',h_fig);
 
-updateFields(h_fig,'ttPr');
+updateFields(h_fig);
 
 setContPan('Update completed !','success',h_fig);
