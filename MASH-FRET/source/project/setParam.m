@@ -161,7 +161,7 @@ end
 p.FRETpairs = adjustParam('FRETpairs', [], p_input);
 p.FRETpairs(~isValidFRETpair(p.FRETpairs,p.chanExc)) = [];
 p.Spairs = adjustParam('Spairs', [], p_input);
-p.Spairs(~isValidSpair(p.Spairs,p.FRETpairs,p.chanExc)) = [];
+p.Spairs(~isValidSpair(p.Spairs,p.FRETpairs,p.chanExc),:) = [];
 
 % experimental conditions
 p.expCondDef = expCond;
