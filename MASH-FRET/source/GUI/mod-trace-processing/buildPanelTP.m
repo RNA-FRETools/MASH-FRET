@@ -54,9 +54,9 @@ tabttl0 = 'Traces';
 ttstr0 = wrapHtmlTooltipString('Go to <b>previous molecule</b> in the list.');
 ttstr1 = wrapHtmlTooltipString('<b>Current molecule</b> index in the list.');
 ttstr2 = wrapHtmlTooltipString('Go to <b>next molecule</b> in the list.');
-ttstr3 = wrapHtmlTooltipString('<b>Refresh calculations</b> for the current molecule only.');
-ttstr4 = wrapHtmlTooltipString('<b>Refresh calculations</b> for all molecules in the list.');
-ttstr5 = wrapHtmlTooltipString('Open <b>export options</b> to configure the export of time-traces, state sequences, histograms and dwell times to various ASCII files and figures.');
+ttstr3 = wrapHtmlTooltipString('<b>Refresh calculations</b> for current trajectories.');
+ttstr4 = wrapHtmlTooltipString('<b>Refresh calculations</b> for all trajectories.');
+ttstr5 = wrapHtmlTooltipString('Open <b>export options</b>.');
 
 % parents
 h_fig = h.figure_MASH;
@@ -65,9 +65,9 @@ h_pan = h.uipanel_TP;
 % dimensions
 pospan = get(h_pan,'position');
 wcb2 = getUItextWidth(str0,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
-wbut1 = getUItextWidth(str4,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wbut2 = getUItextWidth(str5,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wbut3 = getUItextWidth(str6,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
+wbut1 = getUItextWidth(str4,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
+wbut2 = getUItextWidth(str5,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
+wbut3 = getUItextWidth(str6,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
 wbut5 = getUItextWidth(str1,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 wbut6 = getUItextWidth(str2,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 wpan1 = 2*p.mg+4*p.mg/fact+2*wedit0+wcb2+wbut5+wbut6;
