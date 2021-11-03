@@ -16,14 +16,14 @@ setContPan('Export transition analysis data ...', 'process', h_fig);
 
 % general parameters
 h = guidata(h_fig);
-p = h.param.TDP;
+p = h.param;
 proj = p.curr_proj;
-q = p.proj{proj}.exp;
+q = p.proj{proj}.TA.exp;
 str_tpe = get(h.popupmenu_TDPdataType, 'String');
 str_tag = get(h.popupmenu_TDPtag, 'String');
-tpe = p.curr_type(proj);
-tag = p.curr_tag(proj);
-prm = p.proj{proj}.prm{tag,tpe};
+tpe = p.TDP.curr_type(proj);
+tag = p.TDP.curr_tag(proj);
+prm = p.proj{proj}.TA.prm{tag,tpe};
 
 % export parameters for TDP
 TDPascii = q{2}(1);

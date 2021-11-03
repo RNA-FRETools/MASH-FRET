@@ -10,7 +10,7 @@ proj = p.curr_proj;
 tpe = p.TDP.curr_type(proj);
 tag = p.TDP.curr_tag(proj);
 def = p.proj{proj}.TA.def{tag,tpe};
-prm = p.proj{proj}.TA.prm{tag,tpe};
+curr = p.proj{proj}.TA.prm{tag,tpe};
 
 val = str2num(get(obj, 'String'));
 set(obj, 'String', num2str(val));
@@ -20,14 +20,14 @@ if ~(numel(val)==1 && ~isnan(val) && val>=0)
     return
 end
 
-prm.lft_start{2}(3) = val;
+curr.lft_start{2}(3) = val;
 
 % recalculate histograms and reset fit results
-J = prm.lft_start{2}(1);
+J = curr.lft_start{2}(1);
 curr = ud_kinPrm(curr,def,J);
 
-p.proj{proj}.TA.prm{tag,tpe} = prm;
-p.proj{proj}.TA.curr{tag,tpe} = prm;
+p.proj{proj}.TA.prm{tag,tpe} = curr;
+p.proj{proj}.TA.curr{tag,tpe} = curr;
 h.param = p;
 guidata(h_fig, h);
 

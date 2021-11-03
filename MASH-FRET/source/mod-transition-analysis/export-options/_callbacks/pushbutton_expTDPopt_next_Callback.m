@@ -7,9 +7,8 @@ function pushbutton_expTDPopt_next_Callback(obj, evd, h_fig)
 
 h = guidata(h_fig);
 h_fig_opt = h.expTDPopt.figure_expTDPopt;
-proj = h.param.TDP.curr_proj;
 q = guidata(h_fig_opt);
-h.param.TDP.proj{proj}.exp = q;
+h.param.proj{h.param.curr_proj}.TA.exp = q;
 guidata(h_fig, h);
 
 close(h_fig_opt);

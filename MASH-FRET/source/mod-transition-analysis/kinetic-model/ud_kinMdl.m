@@ -20,6 +20,7 @@ curr = p.proj{proj}.TA.curr{tag,tpe};
 prm = p.proj{proj}.TA.prm{tag,tpe};
 
 if ~(isfield(prm,'clst_res') && ~isempty(prm.clst_res{1}))
+    set(h.uipanel_TA_kineticModel.Children,'enable','off');
     return
 end
 

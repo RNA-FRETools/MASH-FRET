@@ -1,12 +1,12 @@
 function ud_expTDPopt(h_fig)
 h = guidata(h_fig);
 q = h.expTDPopt;
-p = h.param.TDP;
+p = h.param;
 
 proj = p.curr_proj;
-tpe = p.curr_type(proj);
-tag = p.curr_tag(proj);
-prm = p.proj{proj}.prm{tag,tpe};
+tpe = p.TDP.curr_type(proj);
+tag = p.TDP.curr_tag(proj);
+prm = p.proj{proj}.TA.prm{tag,tpe};
 
 opt = guidata(q.figure_expTDPopt);
 

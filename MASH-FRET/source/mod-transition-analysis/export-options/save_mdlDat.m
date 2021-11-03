@@ -62,7 +62,7 @@ if opt(2) % optimized kinetic model parameters
         states = prm.mdl_res{5};
         J = numel(states);
         h = guidata(h_fig);
-        p = h.param.TDP;
+        p = h.param;
         proj = p.curr_proj;
         expT = p.proj{proj}.frame_rate;
         k = tp/expT;
@@ -111,7 +111,7 @@ if opt(3) % experimental vs simulated data
         
         % collect data
         h = guidata(h_fig);
-        p = h.param.TDP;
+        p = h.param;
         proj = p.curr_proj;
         expT = p.proj{proj}.frame_rate;
         simdat = prm.mdl_res{4};

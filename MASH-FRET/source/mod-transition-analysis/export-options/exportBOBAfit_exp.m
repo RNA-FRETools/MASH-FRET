@@ -15,11 +15,11 @@ nCol = 3;
 nRow = 4;
 
 h = guidata(h_fig);
-p = h.param.TDP;
+p = h.param;
 proj = p.curr_proj;
-tag = p.curr_tag(proj);
-tpe = p.curr_type(proj);
-prm = p.proj{proj}.prm{tag,tpe};
+tag = p.TDP.curr_tag(proj);
+tpe = p.TDP.curr_type(proj);
+prm = p.proj{proj}.TA.prm{tag,tpe};
 lft_res = prm.lft_res(j,:);
 lft_start = prm.lft_start{1}(j,:);
 strch = lft_start{1}(2);
