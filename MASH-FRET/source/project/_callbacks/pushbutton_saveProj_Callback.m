@@ -92,7 +92,7 @@ if ~isempty(p.proj{proj}.TP)
     p.ttPr.defProjPrm = p.proj{proj}.TP.def;
     
     % save current molecule's parameters
-    p.ttPr.defProjPrm.mol = p.proj{proj}.TP.curr{p.curr_mol(proj)};
+    p.ttPr.defProjPrm.mol = p.proj{proj}.TP.curr{p.ttPr.curr_mol(proj)};
     p.ttPr.defProjPrm.general = p.proj{proj}.TP.fix;
     p.ttPr.defProjPrm.exp = p.proj{proj}.TP.exp;
     
@@ -103,8 +103,9 @@ if ~isempty(p.proj{proj}.TP)
     cf_bywl = p.ttPr.defProjPrm.general{4}{2};
     if size(cf_bywl,1)>0
         for c = 1:dat.nb_channel
-            if sum(exc==chanExc(c))
-                exc_but_c = exc(exc~=chanExc(c));
+            if sum(p.proj{proj}.excitations==p.proj{proj}.chanExc(c))
+                exc_but_c = p.proj{proj}.excitations(...
+                    p.proj{proj}.excitations~=p.proj{proj}.chanExc(c));
                 if isempty(exc_but_c)
                     continue
                 end
@@ -121,6 +122,7 @@ if ~isempty(p.proj{proj}.TA)
     p.TDP.defProjPrm = p.proj{proj}.TA.def;
 end
 p.es = setExpSetFromProj(dat);
+p.folderRoot = dat.folderRoot;
 
 % save interface default and current project's new file name
 h.param = p;
