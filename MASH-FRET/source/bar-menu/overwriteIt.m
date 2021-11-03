@@ -12,7 +12,7 @@ function OutfName = overwriteIt(fName, pName, h_fig)
 
 OutfName = [];
 
-fullPath = ~isempty(strfind(pName, filesep));
+fullPath = contains(pName,filesep);
 % set correct saving path
 if fullPath
     pth = pName;
