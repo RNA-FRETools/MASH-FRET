@@ -6,10 +6,10 @@ function setContPan(str, state, h_fig)
 
 % default
 nLmax = 100;
-colRed = [1 0.9 0.9];
-colGreen = [0.9 1 0.9];
-colYellow = [1 1 0.9];
-colOrange = [1 0.95 0.9];
+colRed = [1 0.85 0.85];
+colGreen = [0.85 1 0.85];
+colYellow = [1 1 0.85];
+colOrange = [1 0.925 0.85];
 colWhite = [1 1 1];
 
 h = guidata(h_fig);
