@@ -32,21 +32,21 @@ tocurr = curr.edit{1}(2);
 filtlst = curr.edit{1}{4};
 
 % get calculation parameters
-startFrame = param.start; % start data
-stopFrame = param.stop; % stop data
+start = param.start; % start data
+stop = param.stop; % stop data
 iv = param.iv; % interval averaged
 fullname = param.file; % path + file
 fDat = param.extra; % file data for accelerate reading
 resX = fDat{2}(1);
 resY = fDat{2}(2);
 L = fDat{3};
-L0 = numel(startFrame:iv:stopFrame);
+L0 = numel(start:iv:stop);
 
 % initialize output
 img_ave = zeros(resY,resX);
 
 % control full-length video
-if useMov && isFullLengthVideo(h_fig)
+if useMov && isFullLengthVideo(fullname,h_fig)
     isMov = 1;
 end
 
@@ -56,7 +56,7 @@ if corr && ~isempty(filtlst)
 end
 
 % control frame range bounds
-if ~(stopFrame<=L && startFrame>=1)
+if ~(stop<=L && start>=1)
     if ~isempty(h_fig)
         updateActPan('Frame interval is out-of-range.', h_fig, 'error');
     else
@@ -67,7 +67,10 @@ end
 
 % original average image
 if isMov && ~isBgcorr
-    img_ave = sum(h.movie.movie(:,:,startFrame:iv:stopFrame),3)/L;
+    img_ave = zeros(resY,resX);
+    for l = start:iv:stop
+        img_ave = img_ave+h.movie.movie(:,:,l)/L0;
+    end
     return
 end
 
@@ -81,7 +84,7 @@ if ~isempty(h_fig)
     guidata(h_fig, h);
 end
 
-for i = startFrame:iv:stopFrame
+for i = start:iv:stop
     if isMov
         imgNext = h.movie.movie(:,:,i);
     else

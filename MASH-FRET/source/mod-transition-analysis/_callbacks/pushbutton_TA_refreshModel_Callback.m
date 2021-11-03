@@ -17,6 +17,14 @@ prm = p.proj{proj}.TA.prm{tag,tpe};
 curr = p.proj{proj}.TA.curr{tag,tpe};
 def = p.proj{proj}.TA.def{tag,tpe};
 
+% control clustering results
+if ~(isfield(prm,'clst_res') && ~isempty(prm.clst_res{1}))
+    setContPan(['No state configuration detected. Please infer a state ',...
+        'configuration by pressing "Start" in panel "State ',...
+        'configuration".'],'error',h_fig);
+    return
+end
+
 % get project parameters
 nL = p.proj{proj}.nb_excitations;
 expT = p.proj{proj}.frame_rate;
@@ -36,6 +44,9 @@ Dmax = curr.mdl_start(3);
 
 % reset results
 prm.mdl_res = def.mdl_res;
+
+% display process
+setContPan('Infer a kinetic model...','process',h_fig);
 
 % bin states
 nTrs = getClusterNb(J,mat,clstDiag);
@@ -120,6 +131,12 @@ end
 clstPop = clstPop/sum(sum(clstPop));
 
 if guessMeth==1 % determine guess from DPH fit & BIC model selection
+
+    % display process
+    setContPan(['Determine state degeneracies (refer to MATLAB''s command',...
+        ' window for more details about the process'' progress)...'],...
+        'process',h_fig);
+
     [D,mdl,cmb,BIC_cmb,BIC] = ...
         script_findBestModel(dat(:,[1,4,7,8]),Dmax,states,nL*expT,dt_bin);
     J = sum(D);
@@ -207,8 +224,13 @@ p.proj{proj}.TA.curr{tag,tpe} = prm;
 h.param = p;
 guidata(h_fig,h);
 
-updateTAplots(h_fig,'mdl'); 
+updateTAplots(h_fig,'TDP');
 drawnow;
+
+% display process
+setContPan(['Infer transition rate constants (refer to MATLAB''s command ',...
+    'window for more details about the process'' progress)...'],'process',...
+    h_fig);
 
 expPrm.expT = nL*expT;
 expPrm.Ls = sum(p.proj{proj}.bool_intensities,1);
@@ -228,5 +250,7 @@ h.param = p;
 guidata(h_fig,h);
 
 ud_kinMdl(h_fig);
-updateTAplots(h_fig,'mdl');
+updateTAplots(h_fig,'TDP');
 
+% display process
+setContPan('The kinetic model was successfully inferred!','success',h_fig);

@@ -12,9 +12,12 @@ end
 % save modifications
 h = guidata(h_fig);
 p = h.param;
+nPix = p.proj{p.curr_proj}.VP.curr.gen_int{3}(2);
 
 p.proj{p.curr_proj}.VP.curr.gen_int{3}(1) = val;
-p.proj{p.curr_proj}.VP.curr.gen_int{3}(2) = val^2;
+if nPix>val^2
+    p.proj{p.curr_proj}.VP.curr.gen_int{3}(2) = val^2;
+end
 
 % save modifications
 h.param = p;

@@ -7,9 +7,14 @@ function pushbutton_trSaveRef_Callback(obj,evd,h_fig)
 %  file{1}: file locations
 %  file{2}: file name
 
+% default
+defbfname = 'frame_t_0';
+
 % retrieve parameters
 h = guidata(h_fig);
 p = h.param;
+projfile = p.proj{p.curr_proj}.proj_file;
+projtle = p.proj{p.curr_proj}.exp_parameters{1,2};
 vidfile = p.proj{p.curr_proj}.movie_file;
 coordref = p.proj{p.curr_proj}.VP.curr.res_crd{3};
 imgfile = p.proj{p.curr_proj}.VP.curr.gen_crd{3}{2}{6};
@@ -29,13 +34,19 @@ if iscell(obj)
         pname = [pname,filesep];
     end
 else
-    if isempty(imgfile)
-        imgfile = vidfile;
+    if ~isempty(imgfile)
+        [o,name,o] = fileparts(imgfile);
+    elseif ~isempty(projfile)
+        [o,name,o] = fileparts(projfile);
+    else
+        [o,name,o] = fileparts(vidfile);
     end
-    [o,defName,o] = fileparts(imgfile);
-    defName = [setCorrectPath('mapping', h_fig) defName '.map'];
+    if strcmp(name,defbfname)
+        name = projtle;
+    end
+    fname = [setCorrectPath('mapping', h_fig) name '.map'];
     [fname,pname,o] = uiputfile({'*.map','Mapped coordinates files(*.map)'; ...
-        '*.*','All files(*.*)'},'Export coordinates', defName);
+        '*.*','All files(*.*)'},'Export coordinates', fname);
 end
 if ~sum(fname)
     return

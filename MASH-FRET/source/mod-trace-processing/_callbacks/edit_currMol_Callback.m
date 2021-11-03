@@ -11,11 +11,10 @@ mol_prev = p.ttPr.curr_mol(proj);
 nMax = size(p.proj{proj}.coord_incl,2);
 fixStart = p.proj{proj}.TP.fix{2}(6);
 
+val = round(str2num(get(obj, 'String')));
 if isequal(val, mol_prev)
     return
 end
-
-val = round(str2num(get(obj, 'String')));
 set(obj, 'String', num2str(val))
 if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val > 0 ...
         && val <= nMax)

@@ -5,9 +5,14 @@ function pushbutton_saveTfr_Callback(obj, evd, h_fig)
 % h_fig: handle to main figure
 % outfile: {1-by-2} destination folder and file
 
+% default
+defbfname = 'frame_t_0';
+
 % collect parameters
 h = guidata(h_fig);
 p = h.param;
+projfile = p.proj{p.curr_proj}.proj_file;
+projtle = p.proj{p.curr_proj}.exp_parameters{1,2};
 vidfile = p.proj{p.curr_proj}.movie_file;
 tr = p.proj{p.curr_proj}.VP.curr.res_crd{2};
 coordreffile = p.proj{p.curr_proj}.VP.curr.gen_crd{3}{2}{2};
@@ -27,20 +32,26 @@ if iscell(obj)
         pname =[pname,filesep];
     end
 else
-    if isempty(coordreffile)
-        coordreffile = vidfile;
+    if ~isempty(coordreffile)
+        [o,name,o] = fileparts(coordreffile);
+    elseif ~isempty(projfile)
+        [o,name,o] = fileparts(projfile);
+    else
+        [o,name,o] = fileparts(vidfile);
     end
-    [o,fname,o] = fileparts(coordreffile);
-    defName = [setCorrectPath('transformed', h_fig) fname '.mat'];
+    if strcmp(name,defbfname)
+        name = projtle;
+    end
+    fname = [setCorrectPath('transformed', h_fig) name '.mat'];
     [fname,pname,o] = uiputfile({'*.mat', 'Matlab files(*.mat)'; ...
-        '*.*', 'All files(*.*)'}, 'Export transformation', defName);
+        '*.*', 'All files(*.*)'}, 'Export transformation', fname);
 end
 if ~sum(fname)
     return
 end
 cd(pname);
-[o,fname,o] = fileparts(fname);
-fname_tr = getCorrName([fname '_trs.mat'], pname, h_fig);
+[o,name,o] = fileparts(fname);
+fname_tr = getCorrName([name '_trs.mat'], pname, h_fig);
 if ~sum(fname_tr)
     return
 end

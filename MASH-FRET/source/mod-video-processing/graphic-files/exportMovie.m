@@ -9,6 +9,7 @@ function ok = exportMovie(h_fig,varargin)
 % fname: destination file name
 
 % default
+defbfname = 'frame_t_0';
 fmtext = {'.sira','.gif','.tif','.mat','.avi','.png'};
 fmtname = {'MASH-FRET video format','Graphics Interchange Format',...
     'Tagged Image File Format','MATLAB binary file format',...
@@ -18,6 +19,7 @@ ok = 0;
 % collect parameters
 h = guidata(h_fig);
 p = h.param;
+projfile = p.proj{p.curr_proj}.proj_file;
 vidfile = p.proj{p.curr_proj}.movie_file;
 curr = p.proj{p.curr_proj}.VP.curr;
 start = curr.edit{2}(1);
@@ -41,10 +43,16 @@ else
             {['*',fmtext{fmt}],[fmtname{fmt},'(*',fmtext{fmt},')']});
     end
     
-    [~,expname,~] = fileparts(vidfile);
+    if ~isempty(projfile)
+        [o,name,o] = fileparts(projfile);
+    else
+        [o,name,o] = fileparts(vidfile);
+    end
+    if strcmp(name,defbfname)
+        name = projtle;
+    end
     
-    [fname,pname,findex] = uiputfile(str_fmt,'Export video to file',...
-        expname);
+    [fname,pname,findex] = uiputfile(str_fmt,'Export video to file',name);
 end
 if ~sum(fname)
     return

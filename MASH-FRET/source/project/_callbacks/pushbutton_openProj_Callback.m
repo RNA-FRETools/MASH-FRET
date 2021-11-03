@@ -133,6 +133,12 @@ guidata(h_fig,h);
 % update project-dependant interface
 ud_TTprojPrm(h_fig);
 
+% switch to proper module
+switchPan(eval(['h.togglebutton_',p.curr_mod{p.curr_proj}]),[],h_fig);
+
+% update plots and GUI
+updateFields(h_fig);
+
 % display action
 if ~iscell(evd)
     if size(fname,2) > 1
@@ -147,10 +153,4 @@ if ~iscell(evd)
     setContPan(['Project successfully imported from ' str_files,' !'],...
         'success',h_fig);
 end
-
-% switch to proper module
-switchPan(eval(['h.togglebutton_',p.curr_mod{p.curr_proj}]),[],h_fig);
-
-% update plots and GUI
-updateFields(h_fig);
 

@@ -5,12 +5,17 @@ function pushbutton_trSave_Callback(obj, evd, h_fig)
 % h_fig: handle to main figure
 % fileout: {1-by-2} destination folder and file
 
+% default
+defbfname = 'frame_t_0';
+
 % collect interface parameters
 h = guidata(h_fig);
 p = h.param;
 nChan = p.proj{p.curr_proj}.nb_channel;
-curr = p.proj{p.curr_proj}.VP.curr;
+projfile = p.proj{p.curr_proj}.proj_file;
+projtle = p.proj{p.curr_proj}.exp_parameters{1,2};
 vidfile = p.proj{p.curr_proj}.movie_file;
+curr = p.proj{p.curr_proj}.VP.curr;
 coordtr = curr.res_crd{4};
 coordfile = curr.gen_crd{3}{1}{2};
 
@@ -36,11 +41,17 @@ if iscell(obj)
         pname = [pname,filesep];
     end
 else
-    if isempty(coordfile)
-        coordfile = vidfile;
+    if ~isempty(coordfile)
+        [o,name,o] = fileparts(coordfile);
+    elseif ~isempty(projfile)
+        [o,name,o] = fileparts(projfile);
+    else
+        [o,name,o] = fileparts(vidfile);
     end
-    [o,fname,o] = fileparts(coordfile);
-    defName = [setCorrectPath('transformed', h_fig),fname,'.coord'];
+    if strcmp(name,defbfname)
+        name = projtle;
+    end
+    defName = [setCorrectPath('transformed', h_fig),name,'.coord'];
     [fname,pname,o] = uiputfile({...
         '*.coord', 'Transformed coordinates files(*.coord)'; ...
         '*.*', 'All files(*.*)'}, 'Export transformation', defName);
@@ -49,8 +60,8 @@ if ~sum(fname)
     return
 end
 cd(pname);
-[o,fname,o] = fileparts(fname);
-fname = getCorrName([fname '.coord'], pname, h_fig);
+[o,name,o] = fileparts(fname);
+fname = getCorrName([name '.coord'], pname, h_fig);
 if ~sum(fname)
     return
 end

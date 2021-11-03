@@ -21,7 +21,7 @@ if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val > 0)
 end
 
 % save number of brigthest pixels
-curr.gen_int{3}(1) = val;
+curr.gen_int{3}(2) = val;
     
 % save modifications
 p.proj{p.curr_proj}.VP.curr = curr;

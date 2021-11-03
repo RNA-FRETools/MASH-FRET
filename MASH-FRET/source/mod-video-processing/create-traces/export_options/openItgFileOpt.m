@@ -1,4 +1,4 @@
-function openItgFileOpt(obj, evd, h_fig)
+function ok = openItgFileOpt(obj, evd, h_fig)
 % Open a window to modify file options for export of raw traces
 % "obj" >> handle of pushbutton from which the function has been called
 % "evd" >> eventdata structure of the pushbutton from which the function
@@ -7,14 +7,21 @@ function openItgFileOpt(obj, evd, h_fig)
 
 % update 4.2.2019 by MH: created function from scratch
 
+% default
+ok = 0;
+
 h = guidata(h_fig);
 p = h.param;
 intsm = p.proj{p.curr_proj}.intensities;
 
 if isempty(intsm)
     setContPan(['No single molecule intensity-time trace detected. Please',...
-        ' create traces first by pressing "Create".'],'error',h_fig);
+        ' create traces first by pressing "CALCULATE TRACES".'],'error',...
+        h_fig);
     return
 end
 
 buildItgFileOpt(h_fig);
+
+% return success
+ok = 1;

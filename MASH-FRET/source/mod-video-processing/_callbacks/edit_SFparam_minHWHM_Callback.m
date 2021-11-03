@@ -26,6 +26,14 @@ if size(coordslct,1)>=0
     curr.gen_crd{2}{5} = [];
 end
 
+% don't start SF if not previously started by user
+if isempty(curr.gen_crd{2}{4})
+    p.proj{p.curr_proj}.VP.curr = curr;
+    h.param = p;
+    guidata(h_fig, h);
+    return
+end
+
 % find spots
 curr = updateSF(avimg, false, curr, h_fig);
 
@@ -34,16 +42,24 @@ spots = [];
 for c = 1:nChan
     spots = cat(1,spots,curr.gen_crd{2}{5}{c});
 end
+curr.res_crd{1} = spots;
 curr.gen_crd{3}{1}{1} = spots(:,[1,2]);
 
 % reset coordinates file to transform
 curr.gen_crd{3}{1}{2} = '';
 
+% set coordinates to plot
+curr.plot{1}(2) = 1;
+
 % save modifications
 p.proj{p.curr_proj}.VP.curr = curr;
 p.proj{p.curr_proj}.VP.prm.gen_crd{2} = curr.gen_crd{2};
+p.proj{p.curr_proj}.VP.prm.res_crd = curr.res_crd;
 h.param = p;
 guidata(h_fig, h);
+
+% bring tab forefront
+h.uitabgroup_VP_plot.SelectedTab = h.uitab_VP_plot_avimg;
 
 % refresh calculations, plot and GUI
 updateFields(h_fig, 'imgAxes');

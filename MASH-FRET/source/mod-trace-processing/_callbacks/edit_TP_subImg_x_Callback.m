@@ -38,6 +38,9 @@ if isequal(p.proj{proj}.coord(mol,2*chan-1),val)
     return
 end
 
+% display process
+setContPan('Modify molecule position...', 'process', h_fig);
+
 p.proj{proj}.coord(mol,2*chan-1) = val;
 coord = p.proj{proj}.coord(mol,(2*chan-1):2*chan);
 aDim = p.proj{proj}.pix_intgr(1);
@@ -45,7 +48,7 @@ nPix = p.proj{proj}.pix_intgr(2);
 nFrames = p.proj{proj}.movie_dat{3};
 fDat{1} = p.proj{proj}.movie_file;
 fDat{2}{1} = p.proj{proj}.movie_dat{1};
-if isFullLengthVideo(h_fig)
+if isFullLengthVideo(p.proj{proj}.movie_file,h_fig)
     fDat{2}{2} = h.movie.movie;
 else
     fDat{2}{2} = [];
@@ -70,3 +73,6 @@ h.param = p;
 guidata(h_fig, h);
 
 updateFields(h_fig, 'ttPr');
+
+% display success
+setContPan('Molecule position was successfully modified!','success',h_fig);

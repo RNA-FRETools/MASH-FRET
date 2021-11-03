@@ -5,13 +5,18 @@ function pushbutton_aveImg_save_Callback(obj, evd, h_fig)
 % h_fig: handle to main figure
 % file_out: {1-by-2} destination folder and file for average image
 
+% default
+defbfname = 'frame_t_0';
+
 % collect parameters
 h = guidata(h_fig);
 p = h.param;
+projfile = p.proj{p.curr_proj}.proj_file;
+projtle = p.proj{p.curr_proj}.exp_parameters{1,2};
 vidfile = p.proj{p.curr_proj}.movie_file;
 viddat = p.proj{p.curr_proj}.movie_dat;
 expT = p.proj{p.curr_proj}.frame_rate;
-curr = p.proj{p.curr_proj}.curr;
+curr = p.proj{p.curr_proj}.VP.curr;
 img_ave = curr.res_plot{2};
 L = viddat{3};
 
@@ -23,8 +28,15 @@ if iscell(obj)
         pname = [pname,filesep];
     end
 else
-    [o,nameMov,o] = fileparts(vidfile);
-    defName = [setCorrectPath('average_images', h_fig) nameMov '_ave'];
+    if ~isempty(projfile)
+        [o,name,o] = fileparts(projfile);
+    else
+        [o,name,o] = fileparts(vidfile);
+    end
+    if strcmp(name,defbfname)
+        name = projtle;
+    end
+    defName = [setCorrectPath('average_images', h_fig) name '_ave'];
     [fname,pname,o] = uiputfile({ ...
         '*.png', 'Portable Network Graphics(*.png)'; ...
         '*.sira', 'SIRA Graphic File Format(*.sira)'; ...
@@ -50,7 +62,7 @@ if strcmp(fext, '.png')
     imwrite(uint16(65535*(img_ave-min(min(img_ave)))/ ...
         (max(max(img_ave))-min(min(img_ave)))), [pname fname], ...
         'png', 'BitDepth', 16, 'Description', ...
-        [num2str(h.movie.cyctime) ' ' num2str(max(max(img_ave)))...
+        [num2str(expT) ' ' num2str(max(max(img_ave)))...
         ' ' num2str(min(min(img_ave)))]);
 
 elseif strcmp(fext, '.tif')
@@ -61,7 +73,7 @@ elseif strcmp(fext, '.tif')
     img_16 = uint16(round(img_ave)+abs(min_img));
     imwrite(img_16, [pname fname], 'tif', 'WriteMode', ...
         'overwrite', 'Description', ...
-        sprintf('%d\t%d', h.movie.cyctime, min_img));
+        sprintf('%d\t%d', expT, min_img));
 
 elseif strcmp(fext, '.sira')
     figname = get(h_fig, 'Name');

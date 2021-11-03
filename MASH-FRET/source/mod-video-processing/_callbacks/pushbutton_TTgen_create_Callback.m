@@ -9,8 +9,9 @@ coordsm = curr.res_crd{4};
 % control single molecule coordinates
 if isempty(coordsm)
     setContPan(['No single molecule coordinates detected. Please ',...
-        'transform spots coordinates or import single molecule ',...
-        'coordinates.'],'error',h_fig);
+        ' import single molecule coordinates in panel "Intensity ',...
+        'integration" or calculate them in panel "Molecule coordinates".'],...
+        'error',h_fig);
     return
 end
 
@@ -18,7 +19,7 @@ end
 prm = curr;
 
 % display process
-setContPan('Calculate single moelcule intensity-time traces...','process',...
+setContPan('Calculate single molecule intensity-time traces...','process',...
     h_fig);
 
 % generate traces and save to project
@@ -27,9 +28,16 @@ if ~TTgenGo(h_fig)
 end
 
 % save modifications
-p.proj{p.proj}.VP.prm = prm;
+h = guidata(h_fig);
+p = h.param;
+
+p.proj{p.curr_proj}.VP.prm = prm;
+
 h.param = p;
 guidata(h_fig,h);
+
+% switch to TP
+switchPan(h.togglebutton_TP,[],h_fig);
 
 % display success
 setContPan(['Single molecule intensity-time traces successfully ',...
