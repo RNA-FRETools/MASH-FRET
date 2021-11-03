@@ -23,21 +23,21 @@ if isfield(h, 'figure_dummy') && ~isempty(h.figure_dummy) && ...
     delete(h.figure_dummy)
 end
 
-param = h.param;
-if ~isempty(param.proj) && isfield(param.ttPr,'defProjPrm')
+p = h.param;
+if ~isempty(p.proj) && isfield(p.ttPr,'defProjPrm')
     % remove background intensities
-    for c = 1:size(param.ttPr.defProjPrm.mol{3}{3},2)
-        for l = 1:size(param.ttPr.defProjPrm.mol{3}{3},1)
-            param.ttPr.defProjPrm.mol{3}{3}{l,c}(3) = 0;
+    for c = 1:size(p.ttPr.defProjPrm.mol{3}{3},2)
+        for l = 1:size(p.ttPr.defProjPrm.mol{3}{3},1)
+            p.ttPr.defProjPrm.mol{3}{3}{l,c}(3) = 0;
         end
     end
 
     % remove discretisation results
-    param.ttPr.defProjPrm.mol{3}{4} = [];
-    h.param.folderRoot = h.param.proj{h.param.curr_proj}.folderRoot;
+    p.ttPr.defProjPrm.mol{3}{4} = [];
+    p.folderRoot = p.proj{p.curr_proj}.folderRoot;
 end
-h.param = rmfield(h.param,{'proj','curr_proj'});
+p = rmfield(p,{'proj','curr_proj'});
 [mfile_path,o,o] = fileparts(which('MASH'));
-save([mfile_path filesep 'default_param.ini'], '-struct', 'param');
+save([mfile_path filesep 'default_param.ini'], '-struct', 'p');
 
 delete(obj);
