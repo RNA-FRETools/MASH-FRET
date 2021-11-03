@@ -16,7 +16,6 @@ end
 if ~(~isempty(proj_new) && ~isequal(proj,proj_new))
     return
 end
-p.proj{p.curr_proj} = proj_new;
 
 % retrieve new project parameters
 labels = proj_new.labels;
@@ -50,33 +49,36 @@ if ~isequal(proj.FRET,proj_new.FRET) || ~isequal(proj.S,proj_new.S)
     end
 end
 
+p.proj{p.curr_proj} = proj_new;
+
 if isModuleOn(p,'TP')
     % resize default TP parameters
     p.ttPr.defProjPrm = setDefPrm_traces(p, p.curr_proj);
-    proj_new.TP.def.mol = adjustVal(proj_new.TP.def.mol, ...
-        p.ttPr.defProjPrm.mol);
+    p.proj{p.curr_proj}.TP.def.mol = adjustVal(...
+        p.proj{p.curr_proj}.TP.def.mol,p.ttPr.defProjPrm.mol);
     
     % resize general TP parameters
-    proj_new.TP.fix = adjustVal(proj_new.TP.fix, ...
+    p.proj{p.curr_proj}.TP.fix = adjustVal(p.proj{p.curr_proj}.TP.fix, ...
         p.ttPr.defProjPrm.general);
 
     % adjust selection in the list of bottom traces in "Plot" panel
     if (nFRET+nS)>0
-        str_bot = getStrPop('plot_botChan',{proj_new.FRET,...
-            proj_new.S,exc,clr,labels});
-        proj_new.TP.fix{2}(3) = numel(str_bot);
+        str_bot = getStrPop('plot_botChan',{p.proj{p.curr_proj}.FRET,...
+            p.proj{p.curr_proj}.S,exc,clr,labels});
+        p.proj{p.curr_proj}.TP.fix{2}(3) = numel(str_bot);
     end
     
     % resize TP's export options
-    proj_new.TP.exp = setExpOpt(proj_new.TP.exp,proj_new);
+    p.proj{p.curr_proj}.TP.exp = setExpOpt(p.proj{p.curr_proj}.TP.exp,...
+        p.proj{p.curr_proj});
     
     % resize TP's processing parameters
     for n = 1:nMol
 %         if n>size(proj_new.TP.prm,2)
 %             proj_new.TP.prm{n} = {};
 %         end
-        proj_new.TP.curr{n} = adjustVal(proj_new.TP.prm{n}, ...
-            proj_new.TP.def.mol);
+        p.proj{p.curr_proj}.TP.curr{n} = adjustVal(...
+            p.proj{p.curr_proj}.TP.prm{n},p.proj{p.curr_proj}.TP.def.mol);
     end
 %     proj_new.TP.prm = proj_new.TP.prm(1:nMol);
 end
