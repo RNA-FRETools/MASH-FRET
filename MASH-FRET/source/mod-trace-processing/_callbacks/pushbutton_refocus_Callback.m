@@ -19,9 +19,16 @@ res_y = p.proj{proj}.movie_dim(2);
 L_ex = size(p.proj{proj}.intensities,1);
 nExc = p.proj{proj}.nb_excitations;
 nPix = p.proj{proj}.pix_intgr(2);
-mov_file = p.proj{proj}.movie_file;
-fCurs = p.proj{proj}.movie_dat{1};
-L = p.proj{proj}.movie_dat{3};
+fDat{1} = p.proj{proj}.movie_file;
+fDat{2}{1} = p.proj{proj}.movie_dat{1};
+if isFullLengthVideo(p.proj{proj}.movie_file,h_fig)
+    fDat{2}{2} = h.movie.movie;
+else
+    fDat{2}{2} = [];
+end
+fDat{3} = [p.proj{proj}.movie_dat{2}(1) p.proj{proj}.movie_dat{2}(2)];
+fDat{4} = p.proj{proj}.movie_dat{3};
+
 exc = p.proj{proj}.TP.fix{1}(1);
 L_adj = nExc*L_ex;
 
@@ -29,7 +36,10 @@ split = round(res_x/nChan)*(1:nChan-1);
 lim_x = [0 split res_x];
 lim.y = [0 res_y];
 
-img = p.proj{proj}.aveImg{exc};
+img = p.proj{proj}.aveImg{exc+1};
+
+% display process
+setContPan('Center molecule positions...', 'process', h_fig);
 
 for c = 1:nChan
     lim.x = [lim_x(c) lim_x(c+1)];
@@ -40,8 +50,8 @@ for c = 1:nChan
 
         p.proj{proj}.coord(mol,(2*c-1):2*c) = new_coord;
 
-        [o,trace] = create_trace(new_coord,itgArea,nPix, ...
-            {mov_file,{fCurs []},[res_y,res_x],L},h.mute_actions);
+        [o,trace] = create_trace(new_coord,itgArea,nPix,fDat,...
+            h.mute_actions);
 
         I = nan(L_ex,1,nExc);
         for i = 1:nExc
@@ -52,8 +62,8 @@ for c = 1:nChan
         p.proj{proj}.intensities(:,((mol-1)*nChan+c),:) = I;
         p.proj{proj}.intensities_bgCorr(:,((mol-1)*nChan+c),:) = NaN;
     else
-        disp(cat(2,'molecule position in channel ',labels{c},...
-            ' is already centered'))
+        setContPan(cat(2,'Molecule position in channel ',labels{c},...
+            ' is already centered...'), 'process', h_fig);
     end
 
     coord(mol,(2*c-1):2*c) = new_coord;
@@ -63,4 +73,8 @@ h.param = p;
 guidata(h_fig, h);
 
 updateFields(h_fig, 'ttPr');
+
+% display success
+setContPan('Molecule positions were successfully centered!','success',...
+    h_fig);
 

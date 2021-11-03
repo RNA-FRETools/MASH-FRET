@@ -1,4 +1,4 @@
-function [p,opt2] = updateIntensities(opt2,m,p)
+function [p,opt2] = updateIntensities(opt2,m,p,h_fig)
 
 proj = p.curr_proj;
 nC = p.proj{proj}.nb_channel;
@@ -24,7 +24,7 @@ p.proj{proj}.TP.prm{m}([1:3,5]) = p.proj{proj}.TP.curr{m}([1:3,5]);
 
 % correct background
 if strcmp(opt2, 'ttBg') || strcmp(opt2, 'ttPr')
-    p = bgCorr(m, p);
+    p = bgCorr(m, p, h_fig);
 end
 
 % correct cross-talks

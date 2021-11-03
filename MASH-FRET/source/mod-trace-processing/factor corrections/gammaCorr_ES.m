@@ -20,7 +20,7 @@ elseif isempty(p_proj.ES{i})
     for n = 1:N
         [p,opt] = resetMol(n, 'ttPr', p);
         p = plotSubImg(n, p, []);
-        [p,~] = updateIntensities(opt, n, p);
+        [p,~] = updateIntensities(opt, n, p, h_fig);
     end
     
     % build ES hist

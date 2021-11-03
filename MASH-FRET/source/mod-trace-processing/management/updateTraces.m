@@ -29,7 +29,7 @@ if strcmp(opt1, 'subImg')
     return
 end
 
-[p,opt2] = updateIntensities(opt2,mol,p);
+[p,opt2] = updateIntensities(opt2,mol,p,h_fig);
 
 if strcmp(opt2, 'gamma') || strcmp(opt2, 'debleach') || ...
         strcmp(opt2, 'denoise') || strcmp(opt2, 'cross') || ...

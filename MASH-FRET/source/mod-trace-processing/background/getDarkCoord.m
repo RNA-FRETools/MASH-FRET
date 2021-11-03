@@ -1,7 +1,7 @@
 function dark_coord = getDarkCoord(exc, mol, c, p, dimImg)
 
 proj = p.curr_proj;
-aveImg = p.proj{proj}.aveImg{exc};
+aveImg = p.proj{proj}.aveImg{exc+1};
 coord = p.proj{proj}.coord(mol,(2*c-1):2*c);
 nChan = p.proj{proj}.nb_channel;
 res_x = p.proj{proj}.movie_dim(1);
