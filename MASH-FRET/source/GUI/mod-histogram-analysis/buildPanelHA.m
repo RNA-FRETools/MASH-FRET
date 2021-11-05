@@ -45,7 +45,7 @@ tabttl0 = 'Histograms';
 tabttl1 = 'Model selection';
 ttstr0 = wrapHtmlTooltipString('<b>Select data</b> to histogram and analyze.');
 ttstr1 = wrapHtmlTooltipString('<b>Select subgroup</b> to histogram and analyze.');
-ttstr2 = wrapHtmlTooltipString('Open options for <b>exporting analysis results</b>.');
+ttstr2 = wrapHtmlTooltipString('<b>Export analysis results</b> to ASCII files.');
 
 % parents
 h_fig = h.figure_MASH;

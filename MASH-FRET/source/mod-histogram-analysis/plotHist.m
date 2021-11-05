@@ -1,4 +1,4 @@
-function plotHist(h_axes, P, lim, start, res, clr, isBIC, boba, intUnits, h_fig)
+function plotHist(h_axes, P, lim, start, res, clr, boba, intUnits, h_fig)
 
 % default
 mksz = 7;
@@ -36,6 +36,7 @@ if numel(h_axes)>2
     if ~isempty(res{3,1})
         L = res{3,1}(:,1);
         Jmax = size(L,1);
+        isBIC = ~start{4}(1);
         
         set(h_axes(3),'visible','on');
         
@@ -61,8 +62,12 @@ if numel(h_axes)>2
                 'linewidth',lw);
             ylim(h_axes(3),'auto');
             if all(penalty>dL)
-                lim = h_axes(3).YLim;
-                h_axes(3).YLim(2) = penalty+min(dL)-h_axes(3).YLim(1);
+                mg = min(dL)-h_axes(3).YLim(1);
+                if mg<(h_axes(3).YLim(2)-h_axes(3).YLim(1))/20
+                    mg = (h_axes(3).YLim(2)-h_axes(3).YLim(1))/20;
+                end
+                h_axes(3).YLim(1) = min(dL)-mg;
+                h_axes(3).YLim(2) = penalty+mg;
             end
             xlim(h_axes(3),[0,Jmax+1]);
             xlabel(h_axes(3),'number of Gaussians');
