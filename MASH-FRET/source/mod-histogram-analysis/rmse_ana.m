@@ -1,4 +1,4 @@
-function res = rmse_ana(h_fig, isBIC, penalty, Jmax, val)
+function res = rmse_ana(h_fig, isBIC, penalty, Jmax, val, likl)
 
 res = cell(1,2);
 
@@ -74,7 +74,7 @@ for J = 1:Jmax
                 end
                 
                 % calculate LogL and BIC
-                [BIC,LogL,I] = calc_L(a, mu, sig, val);
+                [BIC,LogL,I] = calc_L(a, mu, sig, val, likl);
                 
                 % when the GOF is worse, E-M stops
                 if isnan(LogL) || (LogL/sum(val(2,:)))<(LogL_prev/sum(val(2,:)))
@@ -243,7 +243,7 @@ for k = 1:J
 end
 
 
-function [BIC,logL,I] = calc_L(a, mu, sig, val)
+function [BIC,logL,I] = calc_L(a, mu, sig, val, likl)
 
 w = val(2,:);
 
@@ -264,8 +264,12 @@ P = zeros(1,N);
 
 for k = 1:size(p,1)
     I(k,:) = (i==k);
-%     P = P + a(k)*p(k,:); % to calculate incomplete-data likelihood 
-    P(I(k,:)) = P(I(k,:)) + a(k)*p(k,I(k,:)); % to calculate complete-data likelihood 
+    switch likl
+        case 'complete'
+            P(I(k,:)) = P(I(k,:)) + a(k)*p(k,I(k,:)); % to calculate complete-data likelihood 
+        case 'incomplete'
+            P = P + a(k)*p(k,:); % to calculate incomplete-data likelihood 
+    end
 end
 
 logL = sum((w(P>0).*log(P(P>0))));

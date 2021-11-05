@@ -29,7 +29,6 @@ function h = buildPanelTA(h,p)
 % default
 hpop0 = 22;
 hbut0 = 20;
-hcb0 = 20;
 hedit0 = 20;
 htxt0 = 14;
 wedit0 = 40;

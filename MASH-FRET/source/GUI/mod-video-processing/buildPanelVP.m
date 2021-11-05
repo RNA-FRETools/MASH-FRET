@@ -49,13 +49,14 @@ wbut1 = getUItextWidth(str1,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
 htab = pospan(4)-2*p.mg;
 wtab = htab-hedit0-2*p.mg-hsld0-p.mg-htxt0;
 wpan0 = pospan(3)-3*p.mg-wtab;
-hpan0 = p.mgpan+hpop0+p.mg/2;
+hpan0 = p.mgpan+hpop0+p.mg;
 hpan1 = p.mgpan+hpop0+hedit0+p.mg/2+hpop0+p.mg/fact+hedit0+p.mg/2+hedit0+...
-    p.mg/2;
-hpan2a = p.mgpan+hpop0+p.mg/2+hpop0+p.mg/2+hedit0+p.mg/2+hedit0+p.mg;
-hpan2b = p.mgpan+3*hedit0+3*p.mg/2+hedit0+p.mg;
-hpan2 = p.mgpan+hedit0+p.mg/2+hpan2a+p.mg/2+hpan2b+p.mg/2;
-hpan3 = p.mgpan+2*(p.mg/2+hedit0);
+    p.mg;
+hpan2a = p.mgpan+htxt0+hedit0+p.mg;
+hpan2b = p.mgpan+hpop0+p.mg/2+hpop0+p.mg/2+hedit0+p.mg/2+hedit0+p.mg;
+hpan2c = p.mgpan+3*hedit0+3*p.mg/2+hedit0+p.mg;
+hpan2 = p.mgpan+hpan2a+p.mg/2+hpan2b+p.mg/2+hpan2c+p.mg/2;
+hpan3 = p.mgpan+hedit0+p.mg/2+hedit0+p.mg;
 
 % GUI
 x = p.mg;

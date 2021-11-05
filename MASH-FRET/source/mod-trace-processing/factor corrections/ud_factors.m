@@ -1,5 +1,8 @@
 function ud_factors(h_fig)
 
+% defaults
+file_icon0 = 'open_file.png';
+
 % collect interface parameters
 h = guidata(h_fig);
 p = h.param;
@@ -22,6 +25,11 @@ curr_fret = fix{3}(8);
 p_pan = curr{6};
 set(h.popupmenu_gammaFRET,'Value',1,'String',...
     getStrPop('corr_gamma',{FRET labels clr}));
+
+% images
+pname = [fileparts(mfilename('fullpath')),filesep,'..',filesep,'..',...
+    filesep,'GUI',filesep];
+img0 = imread([pname,file_icon0]);
 
 nFRET = size(FRET,1);
 nS = size(S,1);
@@ -54,21 +62,21 @@ set(h.edit_betaCorr,'String',num2str(p_pan{1}(2,curr_fret)));
 
 switch p_pan{2}(curr_fret)
     case 0 % manual
-        set(h.pushbutton_optGamma,'String','Load','tooltipstring',...
+        set(h.pushbutton_optGamma,'cdata',img0,'string','','tooltipstring',...
             cat(2,'<html><b>Import gamma factors</b> from ASCII files.',...
             '</html>'));
 
     case 1 % photobleaching based
         set(h.edit_gammaCorr,'Enable','inactive');
-        set(h.pushbutton_optGamma,'String','Opt.','tooltipstring',...
-            cat(2,'<html><b>Open method settings</b> for factor ',...
-            'estimation via acceptor photobleaching.</html>'));
+        set(h.pushbutton_optGamma,'cdata',[],'String','Opt.',...
+            'tooltipstring',cat(2,'<html><b>Open method settings</b> for ',...
+            'factor estimation via acceptor photobleaching.</html>'));
         
     case 2 % photobleaching based
         set([h.edit_gammaCorr,h.edit_betaCorr],'Enable','inactive');
-        set(h.pushbutton_optGamma,'String','Opt.','tooltipstring',...
-            cat(2,'<html><b>Open method settings</b> for factor ',...
-            'estimation via linear regression.</html>'));
+        set(h.pushbutton_optGamma,'cdata',[],'String','Opt.',...
+            'tooltipstring',cat(2,'<html><b>Open method settings</b> for ',...
+            'factor estimation via linear regression.</html>'));
 
 end
 

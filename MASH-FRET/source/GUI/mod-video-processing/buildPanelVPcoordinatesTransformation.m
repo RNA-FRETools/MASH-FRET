@@ -23,25 +23,26 @@ function h = buildPanelVPcoordinatesTransformation(h,p)
 hedit0 = 20;
 htxt0 = 14;
 fact = 5;
-str0 = 'Coord. to transform:';
-str1 = '...';
+file_icon0 = 'view.png';
+file_icon1 = 'save_file.png';
+file_icon2 = 'open_file.png';
+str0 = 'Spots coordinates:';
 str2 = 'Transform';
-str3 = 'Exp';
 str4 = 'Transformation:';
 str5 = 'Calc.';
-str6 = 'Check';
 str7 = 'Reference coord.:';
 str8 = 'Map';
 str9 = 'Import options...';
 str10 = char(10006);
-ttstr0 = wrapHtmlTooltipString('<b>Save mapped coordinates</b> to a file.');
-ttstr1 = wrapHtmlTooltipString('Open browser and select the <b>reference coordinates file</b> used to calculate channel transformation.');
+ttstr0 = wrapHtmlTooltipString('<b>Export mapped coordinates</b> to a file.');
+ttstr1 = wrapHtmlTooltipString('Import the <b>reference coordinates file</b> used to calculate channel transformation.');
 ttstr3 = wrapHtmlTooltipString('<b>Export transformation</b> to a file.');
-ttstr4 = wrapHtmlTooltipString('Open browser and select the <b>transformation file</b>: source file where channel transformations are taken from.');
-ttstr5 = wrapHtmlTooltipString('Open browser and select the <b>reference image</b> to check the quality of imported transformation.');
+ttstr4 = wrapHtmlTooltipString('Import the <b>transformation file</b>.');
+ttstr5 = wrapHtmlTooltipString('Check the <b>channel transformation quality</b> on a reference image.');
 ttstr6 = wrapHtmlTooltipString('<b>Export transformed coordinates</b> to a file.');
 ttstr7 = wrapHtmlTooltipString('Open <b>import options</b> to configure how coordinates are imported from the reference and spots coordinate files.');
-ttstr8 = wrapHtmlTooltipString('Transform and export coordinates');
+ttstr8 = wrapHtmlTooltipString('<b>Transform</b> coordinates');
+ttstr9 = wrapHtmlTooltipString('Import the <b>coordinates file</b> to be transformed.');
 
 % parents
 h_fig = h.figure_MASH;
@@ -55,12 +56,15 @@ wtxt2 = getUItextWidth(str7,p.fntun,p.fntsz1,'normal',p.tbl);
 wtxt3 = max([wtxt0,wtxt1,wtxt2]);
 wtxt4 = getUItextWidth(str10,p.fntun,p.fntsz1,'normal',p.tbl);
 wbut0 = getUItextWidth(str8,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wbut1 = getUItextWidth(str1,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 wbut2 = getUItextWidth(str5,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wbut3 = getUItextWidth(str6,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 wbut4 = getUItextWidth(str9,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 wbut5 = getUItextWidth(str2,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wbut6 = getUItextWidth(str3,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
+
+% images
+pname = [fileparts(mfilename('fullpath')),filesep,'..',filesep];
+img0 = imread([pname,file_icon0]);
+img1 = imread([pname,file_icon1]);
+img2 = imread([pname,file_icon2]);
 
 % GUI
 x = p.mg;
@@ -82,21 +86,21 @@ y = y-(hedit0-htxt0)/2;
 
 h.pushbutton_impCoord = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wbut1,hedit0],'string',str1,'tooltipstring',ttstr6,'callback',...
+    [x,y,p.wbut1,hedit0],'tooltipstring',ttstr9,'cdata',img2,'callback',...
     {@pushbutton_impCoord_Callback,h_fig});
 
-x = x+wbut1+p.mg/fact;
+x = x+p.wbut1+p.mg/fact;
 
 h.pushbutton_trGo = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wbut5,hedit0],'string',str2,'tooltipstring',ttstr8,'callback',...
     {@pushbutton_trGo_Callback,h_fig});
 
-x = x+wbut5+p.mg/fact;
+x = pospan(3)-p.mg-p.wbut1;
 
 h.pushbutton_expTrsfCoord = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wbut6,hedit0],'string',str3,'tooltipstring',ttstr6,'callback',...
+    [x,y,p.wbut1,hedit0],'tooltipstring',ttstr6,'cdata',img1,'callback',...
     {@pushbutton_expTrsfCoord_Callback,h_fig});
 
 x = p.mg;
@@ -118,10 +122,10 @@ y = y-(hedit0-htxt0)/2;
 
 h.pushbutton_trLoad = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wbut1,hedit0],'string',str1,'tooltipstring',ttstr4,'callback',...
+    [x,y,p.wbut1,hedit0],'tooltipstring',ttstr4,'cdata',img2,'callback',...
     {@pushbutton_trLoad_Callback,h_fig});
 
-x = x+wbut1+p.mg/fact;
+x = x+p.wbut1+p.mg/fact;
 
 h.pushbutton_calcTfr = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
@@ -132,14 +136,14 @@ x = x+wbut2+p.mg/fact;
 
 h.pushbutton_checkTr = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wbut3,hedit0],'string',str6,'tooltipstring',ttstr5,'callback',...
+    [x,y,p.wbut1,hedit0],'tooltipstring',ttstr5,'cdata',img0,'callback',...
     {@pushbutton_checkTr_Callback,h_fig});
 
-x = x+wbut3+p.mg/fact;
+x = pospan(3)-p.mg-p.wbut1;
 
 h.pushbutton_saveTfr = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wbut6,hedit0],'string',str3,'tooltipstring',ttstr3,'callback',...
+    [x,y,p.wbut1,hedit0],'tooltipstring',ttstr3,'cdata',img1,'callback',...
     {@pushbutton_saveTfr_Callback,h_fig});
 
 x = p.mg;
@@ -161,21 +165,21 @@ y = y-(hedit0-htxt0)/2;
 
 h.pushbutton_trLoadRef = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wbut1,hedit0],'string',str1,'tooltipstring',ttstr1,'callback',...
+    [x,y,p.wbut1,hedit0],'tooltipstring',ttstr1,'cdata',img2,'callback',...
     {@pushbutton_trLoadRef_Callback,h_fig});
 
-x = x+wbut1+p.mg/fact;
+x = x+p.wbut1+p.mg/fact;
 
 h.pushbutton_trMap = uicontrol('style','pushbutton','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wbut0,hedit0],'string',str8,'tooltipstring',ttstr0,'callback',...
     {@pushbutton_trMap_Callback,h_fig});
 
-x = x+wbut0+p.mg/fact;
+x = pospan(3)-p.mg-p.wbut1;
 
 h.pushbutton_trSaveRef = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wbut6,hedit0],'string',str3,'tooltipstring',ttstr0,'callback',...
+    [x,y,p.wbut1,hedit0],'tooltipstring',ttstr0,'cdata',img1,'callback',...
     {@pushbutton_trSaveRef_Callback,h_fig});
 
 x = p.mg;

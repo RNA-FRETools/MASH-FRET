@@ -26,6 +26,7 @@ htxt0 = 13;
 hpop0 = 22;
 wedit0 = 40;
 fact = 5;
+file_icon0 = 'view.png';
 str0 = 'data';
 str1 = 'method';
 str2 = 'param';
@@ -35,7 +36,6 @@ str5 = {'Select a method'};
 str6 = 'x-dark';
 str7 = 'y-dark';
 str8 = 'auto.';
-str9 = 'Show';
 str10 = 'Opt.';
 str11 = 'Background:';
 str12 = 'Apply';
@@ -55,15 +55,20 @@ ttstr9 = wrapHtmlTooltipString('Apply current background correction settings to 
 h_fig = h.figure_MASH;
 h_pan = h.uipanel_TP_backgroundCorrection;
 
+% images
+pname = [fileparts(mfilename('fullpath')),filesep,'..',filesep];
+img0 = imread([pname,file_icon0]);
+
 % dimensions
 pospan = get(h_pan,'position');
 wpop0 = (pospan(3)-2*p.mg-3*p.mg/fact-2*wedit0)/2;
 wcb0 = getUItextWidth(str8,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
-wbut0 = getUItextWidth(str9,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 wbut1 = getUItextWidth(str10,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 wtxt0 = getUItextWidth(str11,p.fntun,p.fntsz1,'normal',p.tbl);
 wcb1 = getUItextWidth(str12,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
 wbut2 = getUItextWidth(str13,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
+wedit1 = (pospan(3)-p.mg-2*p.mg/fact-wcb0-p.mg/fact-p.wbut1-p.mg/fact-...
+    wbut1-p.mg)/2;
 
 % GUI
 x = p.mg;
@@ -123,43 +128,43 @@ x = p.mg;
 y = y-p.mg/fact-htxt0;
 
 h.text_xDark = uicontrol('style','text','parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,htxt0],...
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit1,htxt0],...
     'string',str6);
 
 y = y-hedit0;
 
 h.edit_xDark = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,hedit0],...
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit1,hedit0],...
     'callback',{@edit_xDark_Callback,h_fig},'tooltipstring',ttstr2);
 
-x = x+wedit0+p.mg/fact;
+x = x+wedit1+p.mg/fact;
 y = y+hedit0;
 
 h.text_yDark = uicontrol('style','text','parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,htxt0],...
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit1,htxt0],...
     'string',str7);
 
 y = y-hedit0;
 
 h.edit_yDark = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit0,hedit0],...
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit1,hedit0],...
     'callback',{@edit_yDark_Callback,h_fig},'tooltipstring',ttstr3);
 
-x = x+wedit0+p.mg/fact;
+x = x+wedit1+p.mg/fact;
 
 h.checkbox_autoDark = uicontrol('style','checkbox','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wcb0,hedit0],'string',str8,'tooltipstring',ttstr4,'callback',...
     {@checkbox_autoDark_Callback,h_fig});
 
-x = x+wedit0+p.mg/fact;
+x = x+wcb0+p.mg/fact;
 
 h.pushbutton_showDark = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wbut0,hedit0],'string',str9,'tooltipstring',ttstr5,'callback',...
+    [x,y,p.wbut1,hedit0],'tooltipstring',ttstr5,'cdata',img0,'callback',...
     {@pushbutton_showDark_Callback,h_fig});
 
-x = pospan(3)-p.mg-wbut1;
+x = x+p.wbut1+p.mg/fact;
 
 h.pushbutton_optBg = uicontrol('style','pushbutton','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...

@@ -38,7 +38,7 @@ str7 = 'deblurr';
 str8 = {'Thresholds','vbFRET-1D','vbFRET-2D','One state','CPA','STaSI'};
 str9 = {'bottom','top','all'};
 str10 = {'Select a trace'};
-str11 = 'Results (states):';
+str11 = 'Results (19 states):';
 str12 = {'Select a state'};
 str19 = 'state';
 str13 = 'value';
@@ -69,14 +69,17 @@ h_pan = h.uipanel_TP_findStates;
 
 % dimensions
 pospan = get(h_pan,'position');
-wpop0 = getUItextWidth(str11,p.fntun,p.fntsz1,'normal',p.tbl);
+wtxt0 = getUItextWidth(str11,p.fntun,p.fntsz1,'normal',p.tbl);
 wbut0 = getUItextWidth(str18,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
+wpop0 = (pospan(3)-p.mg-p.mg/fact-p.mg)/2;
 wpop1 = 2*wedit0+p.mg/fact;
-wpop2 = pospan(3)-p.mg/2-3*(p.mg/fact+wedit0)-p.mg/2;
+wpop2 = pospan(3)-p.mg-3*(p.mg/fact+wedit0)-p.mg;
+wedit1 = (pospan(3)-p.mg-3*p.mg/fact-p.mg)/4;
 wcb0 = 3*wedit0+2*p.mg/fact;
+wedit2 = (pospan(3)-p.mg-wtxt0-2*p.mg/fact-wbut0-p.mg)/2;
 
 % GUI
-x = p.mg/2;
+x = p.mg;
 y = pospan(4)-p.mgpan-htxt0;
 
 h.text_TP_states_method = uicontrol('style','text','parent',h_pan,'units',...
@@ -87,11 +90,10 @@ x = x+wpop0+p.mg/fact;
 
 h.text_TP_states_applyTo = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wpop1,htxt0],'string',str1);
+    [x,y,wpop0,htxt0],'string',str1);
 
-x = p.mg/2;
+x = p.mg;
 y = y-hpop0;
-
 
 h.popupmenu_TP_states_method = uicontrol('style','popupmenu','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
@@ -102,12 +104,11 @@ x = x+wpop0+p.mg/fact;
 
 h.popupmenu_TP_states_applyTo = uicontrol('style','popupmenu','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
-    'position',[x,y,wpop1,hpop0],'string',str9,'tooltipstring',ttstr1,...
+    'position',[x,y,wpop0,hpop0],'string',str9,'tooltipstring',ttstr1,...
     'callback',{@popupmenu_TP_states_applyTo_Callback,h_fig});
 
-x = p.mg/2;
+x = p.mg;
 y = y-p.mg-htxt0;
-
 
 h.text_TP_states_data = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
@@ -131,7 +132,7 @@ h.text_TP_states_param3 = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wedit0,htxt0],'string',str3);
 
-x = p.mg/2;
+x = p.mg;
 y = y-hpop0;
 
 h.popupmenu_TP_states_data = uicontrol('style','popupmenu','parent',...
@@ -158,7 +159,7 @@ h.edit_TP_states_param3 = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wedit0,hedit0],'callback',{@edit_TP_states_param3_Callback,h_fig});
 
-x = p.mg/2;
+x = p.mg;
 y = y-p.mg-htxt0;
 
 h.text_TP_states_thresholds = uicontrol('style','text','parent',h_pan,...
@@ -214,61 +215,61 @@ h.text_TP_states_highThresh = uicontrol('style','text','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wedit0,htxt0],'string',str16);
 
-x = p.mg/2+wpop2-wedit0;
+x = p.mg;
 y = y-hedit0-(hpop0-hedit0)/2-p.mg-htxt0;
 
 h.text_states_paramTol = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,htxt0],'string',str4);
+    [x,y,wedit1,htxt0],'string',str4);
 
-x = x+wedit0+p.mg/fact;
+x = x+wedit1+p.mg/fact;
 
 h.text_TP_states_paramRefine = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,htxt0],'string',str5);
+    [x,y,wedit1,htxt0],'string',str5);
 
-x = x+wedit0+p.mg/fact;
+x = x+wedit1+p.mg/fact;
 
 h.text_TP_states_paramBin = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,htxt0],'string',str6);
+    [x,y,wedit1,htxt0],'string',str6);
 
-x = x+wedit0+p.mg/fact;
+x = x+wedit1+p.mg/fact;
 
 h.text_TP_states_deblurr = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,htxt0],'string',str7);
+    [x,y,wedit1,htxt0],'string',str7);
 
-x = p.mg/2+wpop2-wedit0;
+x = p.mg;
 y = y-hedit0;
 
 h.edit_TP_states_paramTol = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,hedit0],'tooltipstring',ttstr3,'callback',...
+    [x,y,wedit1,hedit0],'tooltipstring',ttstr3,'callback',...
     {@edit_TP_states_paramTol_Callback,h_fig});
 
-x = x+wedit0+p.mg/fact;
+x = x+wedit1+p.mg/fact;
 
 h.edit_TP_states_paramRefine = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,hedit0],'tooltipstring',ttstr4,'callback',...
+    [x,y,wedit1,hedit0],'tooltipstring',ttstr4,'callback',...
     {@edit_TP_states_paramRefine_Callback,h_fig});
 
-x = x+wedit0+p.mg/fact;
+x = x+wedit1+p.mg/fact;
 
 h.edit_TP_states_paramBin = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,hedit0],'tooltipstring',ttstr5,'callback',...
+    [x,y,wedit1,hedit0],'tooltipstring',ttstr5,'callback',...
     {@edit_TP_states_paramBin_Callback,h_fig});
 
-x = x+wedit0+p.mg/fact;
+x = x+wedit1+p.mg/fact;
 
 h.edit_TP_states_deblurr = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,hedit0],'tooltipstring',ttstr6,'callback',...
+    [x,y,wedit1,hedit0],'tooltipstring',ttstr6,'callback',...
     {@edit_TP_states_deblurr_Callback,h_fig});
 
-x = p.mg/2+wpop2-wedit0;
+x = p.mg;
 y = y-p.mg/fact-hedit0;
 
 h.checkbox_recalcStates = uicontrol('style','checkbox','parent',h_pan,...
@@ -276,42 +277,41 @@ h.checkbox_recalcStates = uicontrol('style','checkbox','parent',h_pan,...
     [x,y,wcb0,hedit0],'string',str17,'tooltipstring',ttstr13,...
     'callback',{@checkbox_recalcStates_Callback,h_fig});
 
-x = p.mg/2;
-y = y-p.mg-hpop0+(hpop0-htxt0)/2;
+x = p.mg;
+y = y-p.mg-htxt0-hpop0+(hpop0-htxt0)/2;
 
 h.text_TP_states_resultsStates = uicontrol('style','text','parent',h_pan,...
-    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontangle',...
-    'italic','position',[x,y,wpop0,htxt0],'string',str11,...
-    'horizontalalignment','left');
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wtxt0,htxt0],'string',str11,'horizontalalignment','left');
 
-x = x+wpop0+p.mg/fact;
+x = x+wtxt0;
 y = y-(hpop0-htxt0)/2;
 
 h.popupmenu_TP_states_index = uicontrol('style','popupmenu','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
-    'position',[x,y,wedit0,hpop0],'string',str12,'tooltipstring',ttstr7,...
+    'position',[x,y,wedit2,hpop0],'string',str12,'tooltipstring',ttstr7,...
     'callback',{@popupmenu_TP_states_index_Callback,h_fig});
 
 y = y+hpop0;
 
 h.text_TP_states_index = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,htxt0],'string',str19);
+    [x,y,wedit2,htxt0],'string',str19);
 
-x = x+wedit0+p.mg/fact;
+x = x+wedit2+p.mg/fact;
 y = y-hpop0+(hpop0-hedit0)/2;
 
 h.edit_TP_states_result = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,hedit0],'tooltipstring',ttstr8);
+    [x,y,wedit2,hedit0],'tooltipstring',ttstr8);
 
 y = y+hedit0;
 
 h.text_TP_states_result = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,htxt0],'string',str13);
+    [x,y,wedit2,htxt0],'string',str13);
 
-x = pospan(3)-p.mg/2-wbut0;
+x = x+wedit2+p.mg/fact;
 y = y-hedit0;
 
 h.pushbutton_applyAll_DTA = uicontrol('style','pushbutton','parent',h_pan,...

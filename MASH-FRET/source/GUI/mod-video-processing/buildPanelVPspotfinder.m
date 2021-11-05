@@ -24,6 +24,7 @@ hedit0 = 20;
 htxt0 = 14;
 hpop0 = 22;
 fact = 5;
+file_icon0 = 'save_file.png';
 str0 = {'Method','"In-series" screening','Houghpeaks','Schmied2012',...
     'Twotone'};
 str2 = 'gauss. fit';
@@ -31,9 +32,8 @@ str3 = 'channel:';
 str4 = 'Select channel';
 str5 = 'results:';
 str6 = 'param.:';
-str7 = 'Start';
+str7 = 'Find';
 str8 = 'excl. rules:';
-str9 = 'Exp';
 ttstr0 = wrapHtmlTooltipString('Select a <b>spot finding algorithm</b> to configure and use on the current image/video.');
 ttstr1 = wrapHtmlTooltipString('<b>Fit spot profiles</b> with 2D Gaussian functions: Gaussian widths and amplitude are then used to sort and select spots (see Exclusion rules).');
 ttstr2 = wrapHtmlTooltipString('<b>Select a video channel</b> to configure the algorithm for (chanels are numbered from left to right).');
@@ -59,10 +59,15 @@ wcb0 = getUItextWidth(str2,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
 wtxt2 = getUItextWidth(str5,p.fntun,p.fntsz1,'normal',p.tbl);
 wtxt4 = getUItextWidth(str8,p.fntun,p.fntsz1,'normal',p.tbl);
 wbut0 = getUItextWidth(str7,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wpop0 = pospan(3)-p.mg-p.mg/fact-wcb0-p.mg/fact-wbut0-p.mg/fact-wbut0-p.mg;
+wpop0 = pospan(3)-p.mg-p.mg/fact-wcb0-p.mg/fact-wbut0-p.mg/fact-p.wbut1-...
+    p.mg;
 wpop1 = (pospan(3)-p.mg-wtxt4-p.mg-wtxt2-p.mg)/2;
 wedit0 = (pospan(3)-p.mg-wtxt4-5*p.mg/fact-p.mg)/5;
 wedit1 = (pospan(3)-p.mg-wtxt4-7*p.mg/fact-p.mg)/7;
+
+% images
+pname = [fileparts(mfilename('fullpath')),filesep,'..',filesep];
+img0 = imread([pname,file_icon0]);
 
 % GUI
 x = p.mg;
@@ -92,7 +97,7 @@ x = x+wbut0+p.mg/fact;
 
 h.pushbutton_SFsave = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wbut0,hedit0],'string',str9,'tooltipstring',ttstr13,'callback',...
+    [x,y,p.wbut1,hedit0],'tooltipstring',ttstr13,'cdata',img0,'callback',...
     {@pushbutton_SFsave_Callback,h_fig});
 
 x = p.mg;

@@ -49,7 +49,7 @@ warea = 2*p.mg+p.mg/2+2*wedit0;
 wpop0 = warea-2*p.mg;
 wcb0 = warea-2*p.mg;
 wedit1 = (warea-2*p.mg-p.mg/fact)/2;
-wpan0 = 2*p.mg+2*p.mg/fact+3*wedit0;
+wpan0 = pospan(3)-warea-p.mg;
 hpan0 = p.mgpan+hpop0+p.mg/2+htxt0+hpop0+p.mg/fact+hedit0+p.mg/2+...
     hedit0+p.mg/2+hedit0+p.mg;
 hpan1 = p.mgpan+htxt0+hpop0+p.mg/2+hedit0+p.mg;

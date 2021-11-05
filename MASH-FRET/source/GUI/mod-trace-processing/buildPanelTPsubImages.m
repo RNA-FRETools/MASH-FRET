@@ -22,8 +22,8 @@ function h = buildPanelTPsubImages(h,p)
 hedit0 = 20;
 htxt0 = 13;
 hpop0 = 22;
-wedit0 = 40;
 fact = 5;
+file_icon0 = 'target.png';
 str0 = 'show laser';
 str1 = 'brightness';
 str2 = 'contrast';
@@ -34,7 +34,6 @@ str6 = 'in channel';
 str7 = 'x';
 str8 = 'y';
 str9 = 'Select a channel';
-str10 = 'recenter all';
 ttstr0 = wrapHtmlTooltipString('Select a <b>laser wavelength</b> to show sub-images from.');
 ttstr1 = wrapHtmlTooltipString('Adjust the <b>brightness</b> in molecule sub-images.');
 ttstr2 = wrapHtmlTooltipString('Adjust the <b>contrast</b> in molecule sub-images.');
@@ -49,10 +48,16 @@ h_pan = h.uipanel_TP_subImages;
 
 % dimensions
 pospan = get(h_pan,'position');
-wbut0 = getUItextWidth(str10,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wpop0 = pospan(3)-2*p.mg-3*p.mg/fact-2*wedit0-wbut0;
-wsld0 = (pospan(3)-3*p.mg-wpop0)/2;
-wtxt0 = pospan(3)-2*p.mg;
+wtxt0a = getUItextWidth(str0,p.fntun,p.fntsz1,'normal',p.tbl);
+wtxt0b = getUItextWidth(str6,p.fntun,p.fntsz1,'normal',p.tbl);
+wtxt0 = max([wtxt0a,wtxt0b]);
+wedit0 = (pospan(3)-p.mg-wtxt0-3*p.mg/fact-p.wbut1-p.mg)/2;
+wsld0 = (pospan(3)-3*p.mg-wtxt0)/2;
+wtxt1 = pospan(3)-2*p.mg;
+
+% images
+pname = [fileparts(mfilename('fullpath')),filesep,'..',filesep];
+img0 = imread([pname,file_icon0]);
 
 % GUI
 x = p.mg;
@@ -60,9 +65,9 @@ y = pospan(4)-p.mgpan-htxt0;
 
 h.text_TP_subImg_exc = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wpop0,htxt0],'string',str0);
+    [x,y,wtxt0,htxt0],'string',str0);
 
-x = x+wpop0+p.mg/2;
+x = x+wtxt0+p.mg/2;
 
 h.text_TP_subImg_brightness = uicontrol('style','text','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
@@ -79,10 +84,10 @@ y = y-hpop0;
 
 h.popupmenu_subImg_exc = uicontrol('style','popupmenu','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wpop0,hpop0],'string',str3,'tooltipstring',ttstr0,'callback',...
+    [x,y,wtxt0,hpop0],'string',str3,'tooltipstring',ttstr0,'callback',...
     {@popupmenu_subImg_exc_Callback,h_fig});
 
-x = x+wpop0+p.mg/2;
+x = x+wtxt0+p.mg/2;
 y = y+(hpop0-htxt0);
 
 h.slider_brightness = uicontrol('style','slider','parent',h_pan,'units',...
@@ -115,16 +120,16 @@ y = y-p.mg/fact-htxt0;
 
 h.text_TP_subImg_coordinates = uicontrol('style','text','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontangle',...
-    'italic','position',[x,y,wtxt0,htxt0],'horizontalalignment','left',...
+    'italic','position',[x,y,wtxt1,htxt0],'horizontalalignment','left',...
     'string',str5);
 
 y = y-p.mg/fact-htxt0;
 
 h.text_TP_subImg_channel = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wpop0,htxt0],'string',str6);
+    [x,y,wtxt0,htxt0],'string',str6);
 
-x = x+wpop0+p.mg/fact;
+x = x+wtxt0+p.mg/fact;
 
 h.text_TP_subImg_x = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
@@ -141,10 +146,10 @@ y = y-hpop0;
 
 h.popupmenu_TP_subImg_channel = uicontrol('style','popupmenu','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
-    'position',[x,y,wpop0,hpop0],'string',str9,'tooltipstring',ttstr3,...
+    'position',[x,y,wtxt0,hpop0],'string',str9,'tooltipstring',ttstr3,...
     'callback',{@popupmenu_TP_subImg_channel_Callback,h_fig});
 
-x = x+wpop0+p.mg/fact;
+x = x+wtxt0+p.mg/fact;
 y = y+(hpop0-hedit0)/2;
 
 h.edit_TP_subImg_x = uicontrol('style','edit','parent',h_pan,'units',...
@@ -164,7 +169,7 @@ x = x+wedit0+p.mg/fact;
 % /!\ PUSHBUTTON /!\
 h.checkbox_refocus = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wbut0,hedit0],'string',str10,'tooltipstring',ttstr6,'callback',...
+    [x,y,p.wbut1,hedit0],'tooltipstring',ttstr6,'cdata',img0,'callback',...
     {@pushbutton_refocus_Callback,h_fig});
 
 

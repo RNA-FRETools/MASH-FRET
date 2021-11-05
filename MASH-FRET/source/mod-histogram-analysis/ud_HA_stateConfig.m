@@ -36,6 +36,7 @@ end
 set([h.edit_thm_penalty h.edit_thm_maxGaussNb h.edit_thm_LogL ...
     h.edit_thm_BIC], 'BackgroundColor', [1 1 1]);
 
+set(h.popupmenu_thm_likelihood, 'Value', rmse_start(4));
 set(h.radiobutton_thm_penalty, 'Value', rmse_start(1));
 set(h.radiobutton_thm_BIC, 'Value', ~rmse_start(1));
 Kmax = rmse_start(3);

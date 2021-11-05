@@ -55,6 +55,9 @@ else
     intUnits = [];
 end
 
+% use current penalty
+isBIC = ~curr.thm_start{4}(1);
+
 % plot histograms and fit if exists
 plotHist([h.axes_hist1,h.axes_hist2,h.axes_thm_BIC], P, x_lim, ...
-    thm_start, thm_res, colList, boba, intUnits, h_fig);
+    thm_start, thm_res, colList, isBIC, boba, intUnits, h_fig);

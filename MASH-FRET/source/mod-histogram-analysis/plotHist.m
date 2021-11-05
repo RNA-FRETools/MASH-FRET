@@ -1,4 +1,8 @@
-function plotHist(h_axes, P, lim, start, res, clr, boba, intUnits, h_fig)
+function plotHist(h_axes, P, lim, start, res, clr, isBIC, boba, intUnits, h_fig)
+
+% default
+mksz = 7;
+lw = 2;
 
 if isempty(P)
     return
@@ -32,19 +36,14 @@ if numel(h_axes)>2
     if ~isempty(res{3,1})
         L = res{3,1}(:,1);
         Jmax = size(L,1);
-        isBIC = ~start{4}(1);
         
         set(h_axes(3),'visible','on');
         
         if isBIC
             BIC = res{3,1}(:,2);
-            bar(h_axes(3), 1:Jmax, BIC');
-            BIC_min = min(BIC(~isinf(BIC)));
-            BIC_mean = mean(BIC(~isinf(BIC)));
-            if BIC_min==BIC_mean
-                BIC_min = BIC_mean-1;
-            end
-            ylim(h_axes(3),[BIC_min BIC_mean]);
+            plot(h_axes(3), 1:Jmax, BIC','+b','markersize',mksz,...
+                'linewidth',lw);
+            ylim(h_axes(3),'auto');
             xlim(h_axes(3),[0 Jmax+1]);
             xlabel(h_axes(3),'number of Gaussians');
             ylabel(h_axes(3),'BIC');
@@ -55,13 +54,19 @@ if numel(h_axes)>2
             for k = 2:Jmax
                 dL(k-1) = 1 + ((L(k)-L(k-1))/abs(L(k-1)));
             end
-            bar(h_axes(3), 2:Jmax, dL);
+            plot(h_axes(3), 2:Jmax, dL,'+b','markersize',mksz,'linewidth',...
+                lw);
             set(h_axes(3),'nextplot','add');
-            plot(h_axes(3), 0:Jmax+1, penalty*ones(1,Jmax+2), '-r');
-            ylim(h_axes(3),[1,2*(penalty-1)+1]);
+            plot(h_axes(3), 0:Jmax+1, penalty*ones(1,Jmax+2), '-r',...
+                'linewidth',lw);
+            ylim(h_axes(3),'auto');
+            if all(penalty>dL)
+                lim = h_axes(3).YLim;
+                h_axes(3).YLim(2) = penalty+min(dL)-h_axes(3).YLim(1);
+            end
             xlim(h_axes(3),[0,Jmax+1]);
             xlabel(h_axes(3),'number of Gaussians');
-            ylabel(h_axes(3),'Penalty');
+            ylabel(h_axes(3),'Improvement factor');
             set(h_axes(3),'nextplot','replacechildren');
         end
     else

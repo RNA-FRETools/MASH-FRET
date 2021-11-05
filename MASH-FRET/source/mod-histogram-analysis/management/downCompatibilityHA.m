@@ -18,6 +18,12 @@ if isfield(prm,'plot') && size(prm.plot,2)==2
     prm.plot = [prm.plot,def.plot{3}];
 end
 
+% 5.11.2021: add likelihood calculation
+if isfield(prm,'thm_start') && size(prm.thm_start,2)>=4 && ...
+        size(prm.thm_start{4},2)==3
+    prm.thm_start{4} = [prm.thm_start{4},def.thm_start{4}(4)];
+end
+
 p_proj.prm{tag,tpe} = prm;
 
 

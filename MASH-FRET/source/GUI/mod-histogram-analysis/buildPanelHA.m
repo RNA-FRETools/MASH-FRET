@@ -30,6 +30,7 @@ hedit0 = 20;
 htxt0 = 14;
 wedit0 = 40;
 fact = 5;
+fntsz2 = 10;
 str0 = 'data';
 str1 = {'Select data'};
 str2 = 'subgroup';
@@ -55,9 +56,10 @@ pospan = get(h_pan,'position');
 wcb0 = getUItextWidth(str5,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
 wtxt0 = getUItextWidth(str6,p.fntun,p.fntsz1,'normal',p.tbl);
 wbut0 = getUItextWidth(str7,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
-hpan0 = p.mgpan+hedit0+p.mg/fact+hedit0+p.mg/2+hedit0+p.mg;
-hpan1 = p.mgpan+hedit0+p.mg/2+hedit0+p.mg/2+hedit0+p.mg/fact+hedit0+p.mg/2+...
-    2*htxt0+p.mg/2+hpop0+p.mg/fact+htxt0+hedit0+p.mg;
+htxt1 = (fntsz2/p.fntsz1)*htxt0;
+hpan0 = p.mgpan+htxt0+hedit0+p.mg/2+hedit0+p.mg;
+hpan1 = p.mgpan+hedit0+p.mg+htxt0+(hpop0-hedit0)/2+hedit0+p.mg/fact+hedit0+p.mg+...
+    htxt1+p.mg/2+htxt0+hpop0+p.mg;
 hpan2_1 = p.mgpan+p.mg+p.mg/2+4*p.mg/fact+6*hedit0;
 hpan2_2 = 2*p.mgpan+2*p.mg+3*p.mg/2+2*p.mg/fact+5*hedit0+hpop0+htxt0;
 hpan2 = p.mgpan+p.mg+p.mg/2+hpan2_1+hpan2_2;

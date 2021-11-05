@@ -25,7 +25,7 @@ hedit0 = 20;
 htxt0 = 14;
 fact = 5;
 wedit1 = 40;
-str0 = '...';
+file_icon0 = 'open_file.png';
 str1 = 'Input coordinates:';
 str2 = 'Import Options...';
 str3 = 'Integrated pixels:';
@@ -43,8 +43,11 @@ h_pan = h.uipanel_VP_intensityIntegration;
 pospan = get(h_pan,'position');
 wtxt0 = getUItextWidth(str1,p.fntun,p.fntsz1,'normal',p.tbl);
 wtxt1 = getUItextWidth(str4,p.fntun,p.fntsz1,'normal',p.tbl);
-wbut0 = getUItextWidth(str0,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 wbut1 = getUItextWidth(str2,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
+
+% images
+pname = [fileparts(mfilename('fullpath')),filesep,'..',filesep];
+img0 = imread([pname,file_icon0]);
 
 % GUI
 x = p.mg;
@@ -66,10 +69,10 @@ y = y-(hedit0-htxt0)/2;
 
 h.pushbutton_TTgen_loadCoord = uicontrol('style','pushbutton','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
-    'position',[x,y,wbut0,hedit0],'string',str0,'tooltipstring',ttstr0,...
+    'position',[x,y,p.wbut1,hedit0],'tooltipstring',ttstr0,'cdata',img0,...
     'callback',{@pushbutton_TTgen_loadCoord_Callback,h_fig});
 
-x = x+wbut0+p.mg/fact;
+x = x+p.wbut1+p.mg/fact;
 
 h.pushbutton_TTgen_loadOpt = uicontrol('style','pushbutton','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
