@@ -38,6 +38,7 @@ str1 = {'Select data'};
 str2 = 'Tag:';
 str3 = {'Select subgroup'};
 str4 = 'diagonal';
+str7 = 'EXPORT...';
 ttl0 = 'Transition density plot';
 ttl1 = 'State configuration';
 ttl2 = 'Dwell time hisotgrams';
@@ -50,6 +51,7 @@ tabttl4 = 'Diagram';
 tabttl5 = 'Simulation';
 ttstr0 = wrapHtmlTooltipString('<b>Select data</b> to histogram in 2D and analyze.');
 ttstr1 = wrapHtmlTooltipString('<b>Select molecule subgroup</b> to histogram in 2D and analyze.');
+ttstr2 = wrapHtmlTooltipString('Open options for <b>exporting analysis results</b>.');
 
 % parents
 h_fig = h.figure_MASH;
@@ -58,6 +60,7 @@ h_pan = h.uipanel_TA;
 % dimensions
 pospan = get(h_pan,'position');
 wcb0 = getUItextWidth(str4,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
+wbut0 = getUItextWidth(str7,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
 wpan0a = p.mg+wcb0+p.mg/fact+wcb0+p.mg;
 wpan0 = p.mg+wedit0+p.mg/2+wedit0+p.mg+wpan0a+p.mg;
 wtab = pospan(3)-2*p.mg-wpan0-p.mg;
@@ -161,5 +164,13 @@ h.uipanel_TA_kineticModel = uipanel('parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
     [x,y,wpan0,hpan3],'title',ttl3);
 h = buildPanelTAkineticModel(h,p);
+
+x = pospan(3)-p.mg-wbut0;
+y = p.mg;
+
+h.pushbutton_TA_export = uicontrol('style','pushbutton','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight',...
+    'bold','position',[x,y,wbut0,hedit0],'string',str7,'tooltipstring',...
+    ttstr2,'callback',{@pushbutton_TA_export_Callback,h_fig});
 
 

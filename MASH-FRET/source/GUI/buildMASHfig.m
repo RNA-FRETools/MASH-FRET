@@ -34,6 +34,8 @@ hlst_norm = 0.1693; % height of project list (normalized units)
 fact = 5;
 htxt0 = 14;
 hedit0 = 20;
+hpop0 = 22;
+wedit0 = 40;
 hbut0 = 30;
 hbut1 = 25;
 wbut1 = 25;
@@ -78,7 +80,8 @@ end
 p = struct('posun',posun,'fntun',fntun,'fntsz0',fntsz0,'fntsz1',fntsz1,...
     'mg',mg,'mgpan',mgpan,'wbrd',wbrd,'wbox',wbox,'warr',warr,'fntclr1',...
     fntclr1,'fntclr2',fntclr2,'fntclr3',fntclr3,'wbuth',wbuth,'fname_boba',...
-    fname_boba,'mgtab',mgtab,'wbut1',wbut1);
+    fname_boba,'mgtab',mgtab,'wbut1',wbut1,'hpop0',hpop0,'wedit0',wedit0,...
+    'hedit0',hedit0,'htxt0',htxt0);
 p.tbl = h.charDimTable; % table listing character pixel dimensions
 
 % dimensions
@@ -107,7 +110,7 @@ img4 = imread([pname,file_icon4]);
 % GUI
 %% main figure
 
-h_fig = figure('units','pixels','numbertitle','off','menubar','none',...
+h_fig = figure('units',posun,'numbertitle','off','menubar','none',...
     'position',[xfig,yfig,wfig,hfig],'visible','on');
 set(h_fig,'closerequestfcn',@figure_MASH_CloseRequestFcn,...
     'sizechangedfcn',@figure_MASH_SizeChangedFcn,'windowbuttonupfcn',...
