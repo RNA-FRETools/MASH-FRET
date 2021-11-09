@@ -43,10 +43,12 @@ setContPan(['Import reference coordinates from file ',pname,fname,' ...'],...
     'process',h_fig);
 
 % import coordinates
-fDat = importdata([pname fname], '\n');
-if isstruct(fDat)
-    fDat = fDat.Sheet1;
+fDat = {};
+f = fopen([pname,fname],'r');
+while ~feof(f)
+    fDat = cat(1,fDat,fgetl(f));
 end
+fclose(f);
 
 % organize coordinate sin a column-wise fashion
 res_x = viddim(1);

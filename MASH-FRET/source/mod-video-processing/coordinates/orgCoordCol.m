@@ -8,13 +8,12 @@ orgCoord = [];
 
 if iscell(dat)
     n = size(dat,1);
-    nCol = size(str2num(dat{end,1}),2);
+    nCol = size(splitStrAtBlank(dat{end,1}),2);
+    datNum = zeros(n,nCol);
     for i = 1:n
-        l = str2num(dat{i,1});
-        if ~isempty(l)
-            datNum(i,1:nCol) = str2num(dat{i,1});
-        else
-            datNum(i,1:nCol) = 0;
+        datcell = splitStrAtBlank(dat{i,1});
+        for col = 1:nCol
+            datNum(i,col) = str2double(datcell{col});
         end
     end
 else
@@ -113,25 +112,27 @@ switch mode
         end
 end
 
-lim = [0 (1:nChan-1)*round(res_x/nChan) res_x];
-orgCoord_i = cell(1,nChan);
-for i = 1:nChan
-    orgCoord_i{i} = orgCoord((orgCoord(:,2*i-1)>lim(i) & ...
-        orgCoord(:,2*i-1)<lim(i+1)),2*i-1:2*i);
-    sz_i = size(orgCoord_i{i},1);
-end
-min_sz = min(sz_i);
-orgCoord = [];
-for i = 1:nChan
-    orgCoord = cat(2,orgCoord,orgCoord_i{i}(1:min_sz,:));
+if ~isempty(res_x)
+    lim = [0 (1:nChan-1)*round(res_x/nChan) res_x];
+    orgCoord_i = cell(1,nChan);
+    for i = 1:nChan
+        orgCoord_i{i} = orgCoord((orgCoord(:,2*i-1)>lim(i) & ...
+            orgCoord(:,2*i-1)<lim(i+1)),2*i-1:2*i);
+        sz_i = size(orgCoord_i{i},1);
+    end
+    min_sz = min(sz_i);
+    orgCoord = [];
+    for i = 1:nChan
+        orgCoord = cat(2,orgCoord,orgCoord_i{i}(1:min_sz,:));
+    end
 end
 
 if isempty(orgCoord)
-    updateActPan(cat(2,'No reference coordinates lay withtin the defined',...
-        ' video dimensions.\n\nYou may modify the reference video ', ...
-        'dimensions in Coordinates transformation >> Options... >> Video ',...
-        'dimensions.'),h_fig, 'error');
-    return;
+    updateActPan(cat(2,'No coordinates lay withtin the defined video ',...
+        'dimensions.\n\nYou may modify the reference video dimensions in ',...
+        'Coordinates transformation >> Options... >> Video dimensions.'),...
+        h_fig, 'error');
+    return
 end
 
 

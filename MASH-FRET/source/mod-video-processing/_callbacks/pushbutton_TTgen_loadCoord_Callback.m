@@ -36,12 +36,16 @@ cd(pname);
 % display process
 setContPan('Import single molecule coordinates...','process',h_fig);
 
-% import coordinates form file
-setContPan('Load coordinates ...','process',h_fig);
-fDat = importdata([pname fname], '\n');
+% import coordinates
+fdat = {};
+f = fopen([pname,fname],'r');
+while ~feof(f)
+    fdat = cat(1,fdat,fgetl_MASH(f));
+end
+fclose(f);
 
 % organize coordinates in a column-wise fashion
-coord = orgCoordCol(fDat, 'cw', impprm, nChan, res_x, h_fig);
+coord = orgCoordCol(fdat, 'cw', impprm, nChan, res_x, h_fig);
 if isempty(coord) || size(coord, 2)~=(2*nChan)
     return
 end
