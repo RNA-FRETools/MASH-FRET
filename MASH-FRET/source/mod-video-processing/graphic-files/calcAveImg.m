@@ -40,12 +40,12 @@ if isMov
     if strcmp(laser,'all')
         % loop uses less memory than "mean"
         for t = 1:vinfo{3}
-            aveimg{1} = aveimg{1}+h.movie.movie(:,:,t)/vinfo{3};
+            aveimg{1} = aveimg{1}+double(h.movie.movie(:,:,t))/vinfo{3};
             for exc = 1:nExc
                 if (exc~=nExc && mod(t,nExc)==exc) || ...
                         (exc==nExc && mod(t,nExc)==0)
                     aveimg{1+exc} = aveimg{1+exc}+....
-                        nExc*h.movie.movie(:,:,t)/vinfo{3};
+                        nExc*double(h.movie.movie(:,:,t))/vinfo{3};
                 end
             end
         end
@@ -53,11 +53,11 @@ if isMov
         % loop uses less memory than "mean"
         if laser==0
             for t = 1:vinfo{3}
-                aveimg = aveimg+h.movie.movie(:,:,t)/vinfo{3};
+                aveimg = aveimg+double(h.movie.movie(:,:,t))/vinfo{3};
             end
         else
             for t = laser:nExc:vinfo{3}
-                aveimg = aveimg+nExc*h.movie.movie(:,:,t)/vinfo{3};
+                aveimg = aveimg+nExc*double(h.movie.movie(:,:,t))/vinfo{3};
             end
         end
     end
