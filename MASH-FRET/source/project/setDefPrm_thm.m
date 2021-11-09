@@ -45,8 +45,8 @@ thm{2} = thresh(2:end-1);
 states = linspace(0,1,K+2);
 thm{3} = [repmat([0 0.1 Inf -Inf],[K,1]) states(2:end-1)' ...
     repmat([Inf 0 0.14 Inf],[K,1]) clr(1:K,:)];
-% thm{4} = [apply penalty, penalty, max. nb. of Gaussian]
-thm{4} = [0 1.2 10];
+% thm{4} = [apply improvement factor, improvement factor, max. nb. of Gaussian, likelihood calculation]
+thm{4} = [0 1.2 10 1];
 prm.thm_start = adjustParam('thm_start', thm, prm_in);
 
 
