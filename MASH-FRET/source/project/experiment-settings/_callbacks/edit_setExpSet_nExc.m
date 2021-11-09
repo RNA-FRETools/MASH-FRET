@@ -53,8 +53,17 @@ cleanRatioCalc(h_fig);
 % refresh plot colors
 ud_plotColors(h_fig);
 
-% refresh laser tab
+% refresh trajectory file import options
+ud_trajImportOpt(h_fig);
+
+% refresh time section in file structure tab
 h = guidata(h_fig);
+if isfield(h,'tab_fstrct') && ishandle(h.tab_fstrct)
+    h = setExpSet_buildIntensityArea(h,proj.excitations);
+    h = setExpSet_buildTimeArea(h,proj.excitations);
+end
+
+% refresh laser tab
 h = setExpSet_buildExcArea(h,nExc,h_fig0);
 guidata(h_fig,h);
 
@@ -64,6 +73,7 @@ ud_expSet_excPlot(h_fig);
 % refresh itnerface
 ud_setExpSet_tabLaser(h_fig);
 ud_setExpSet_tabCalc(h_fig);
+ud_setExpSet_tabFstrct(h_fig);
 ud_setExpSet_tabDiv(h_fig);
 
 

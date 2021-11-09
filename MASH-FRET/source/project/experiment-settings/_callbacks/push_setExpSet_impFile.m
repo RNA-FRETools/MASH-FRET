@@ -3,6 +3,7 @@ function push_setExpSet_impFile(obj,evd,h_fig,h_fig0)
 % default
 vidfmt = {'.sif','.vsi','.ets','.sira','.tif','.gif','.png','.spe','.pma',...
     '.avi'};
+udlasers = false;
 
 % retrieve project data
 proj = h_fig.UserData;
@@ -39,7 +40,6 @@ if ~ok
     return
 end
 h0 = guidata(h_fig0);
-p = h0.param;
 if ~isempty(dat.movie)
     h0.movie.movie = dat.movie;
     h0.movie.file = [pname,fname];
@@ -60,6 +60,7 @@ proj.movie_dim = vinfo{2};
 proj.movie_dat = vinfo;
 proj.frame_rate = dat.cycleTime;
 if isfield(dat,'lasers')
+    udlasers = true;
     proj.excitations = dat.lasers;
     proj.nb_excitations = numel(dat.lasers);
 end
@@ -68,9 +69,12 @@ if dat.cycleTime==1
 else
     proj.spltime_from_video = true;
 end
+if ~isempty(proj.traj_import_opt)
+    proj.traj_import_opt{3}{4} = vinfo{2}(1);
+end
 
 % update laser-related data (including average images)
-if isfield(dat,'lasers')
+if udlasers
     
     % save modifications
     h_fig.UserData = proj;
@@ -98,10 +102,14 @@ else
     h_fig.UserData = proj;
 end
 
+% refresh trajectory import options
+ud_trajImportOpt(h_fig);
+
 % refresh panels
 ud_expSet_chanPlot(h_fig);
 ud_expSet_excPlot(h_fig);
-ud_setExpSet_tabImp(h_fig)
+ud_setExpSet_tabImp(h_fig);
+ud_setExpSet_tabFstrct(h_fig);
 ud_setExpSet_tabDiv(h_fig);
 
 % display success

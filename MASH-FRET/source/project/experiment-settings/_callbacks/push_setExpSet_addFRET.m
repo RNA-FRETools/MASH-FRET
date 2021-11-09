@@ -27,8 +27,12 @@ h_fig.UserData = proj;
 % refresh plot colors
 ud_plotColors(h_fig);
 
+% refresh trajectory file import options
+ud_trajImportOpt(h_fig);
+
 % refresh interface
 ud_setExpSet_tabCalc(h_fig);
+ud_setExpSet_tabFstrct(h_fig);
 ud_setExpSet_tabDiv(h_fig);
 
 

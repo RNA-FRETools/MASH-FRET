@@ -17,8 +17,10 @@ mg = 10;
 mgtab = 10;
 mgpan = 20;
 wbrd = 10;
+wbox = 15;
 wpad = 25;
-fsz = 9;
+warr = 20;
+fsz = 8;
 htxt = 14;
 hedit = 20;
 hpop = 22;
@@ -30,7 +32,8 @@ ttl0 = 'Import';
 ttl1 = 'Channels';
 ttl2 = 'Lasers';
 ttl3 = 'Calculations';
-ttl4 = 'Divers';
+ttl4 = 'File structure';
+ttl5 = 'Divers';
 
 % get table of character pixel widths
 h0 = guidata(h_fig0);
@@ -38,8 +41,8 @@ tbl = h0.charDimTable;
 
 % store defaults in h structure
 h = struct('un',un,'fun',fun,'mg',mg,'mgtab',mgtab,'mgpan',mgpan,'wbrd',...
-    wbrd,'wpad',wpad,'fsz',fsz,'htxt',htxt,'hedit',hedit,'hpop',hpop,...
-    'wedit0',wedit0);
+    wbrd,'wpad',wpad,'wbox',wbox,'fsz',fsz,'htxt',htxt,'hedit',hedit,...
+    'hpop',hpop,'wedit0',wedit0,'warr',warr);
 h.tbl = tbl;
 h.bgclr = bgclr;
 h.fgclr = fgclr;
@@ -68,14 +71,20 @@ if ~strcmp(dat2import,'sim')
         h.tab_exc = uitab('parent',h.tabg,'units',un,'title',ttl2);
     end
     h.tab_calc = uitab('parent',h.tabg,'units',un,'title',ttl3);
+    if strcmp(dat2import,'trajectories')
+        h.tab_fstrct = uitab('parent',h.tabg,'units',un,'title',ttl4);
+    end
 end
-h.tab_div = uitab('parent',h.tabg,'units',un,'title',ttl4);
+h.tab_div = uitab('parent',h.tabg,'units',un,'title',ttl5);
 
 if ~strcmp(dat2import,'sim')
     if ~isempty(dat2import)
-        h = build_setExpSetImport(h,dat2import,h_fig0);
+        h = build_setExpSetTabImport(h,dat2import,h_fig0);
         h = build_setExpSetTabChan(h,proj.nb_channel);
         h = build_setExpSetTabExc(h,proj.nb_excitations,h_fig0);
+    end
+    if strcmp(dat2import,'trajectories')
+        h = build_setExpSetTabFstrct(h,proj.excitations);
     end
     h = build_setExpSetTabCalc(h);
 end

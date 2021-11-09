@@ -30,4 +30,5 @@ end
 h_fig.UserData = proj;
 
 % update panel "Divers"
+ud_setExpSet_tabFstrct(h_fig);
 ud_setExpSet_tabDiv(h_fig);

@@ -62,6 +62,9 @@ p = ud_projLst(p, h.listbox_proj);
 h.param = p;
 guidata(h_fig,h);
 
+% update project-dependant TP interface
+ud_TTprojPrm(h_fig);
+
 % make root folder current directory
 cd(p.proj{p.curr_proj}.folderRoot);
 

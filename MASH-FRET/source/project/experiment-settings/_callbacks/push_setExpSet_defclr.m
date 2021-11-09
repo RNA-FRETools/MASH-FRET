@@ -11,4 +11,5 @@ proj.colours = defclr;
 h_fig.UserData = proj;
 
 % update interface
+ud_setExpSet_tabFstrct(h_fig);
 ud_setExpSet_tabDiv(h_fig);

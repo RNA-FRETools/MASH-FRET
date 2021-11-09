@@ -1,11 +1,11 @@
-function es = setExpSetFromProj(proj)
-% es = setExpSetFromProj(proj)
+function es = setExpSetFromProj(es,proj)
+% es = setExpSetFromProj(es,proj)
 %
 % Gather project's experiment settings and return them organized in one 
 % stucture
 %
-% proj: project's structure
 % es: experiment settings structure
+% proj: project's structure
 
 es.nChan = proj.nb_channel;
 es.chanLabel = proj.labels;
@@ -19,6 +19,6 @@ es.frameRate = proj.frame_rate;
 es.plotClr = proj.colours;
 es.tagNames = proj.molTagNames;
 es.tagClr = proj.molTagClr;
-% if ~isempty(proj.traj_import_opt)
-%     es.impTrajPrm = proj.traj_import_opt;
-% end
+if isfield(proj,'traj_import_opt') && ~isempty(proj.traj_import_opt)
+    es.impTrajPrm = proj.traj_import_opt;
+end

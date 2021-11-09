@@ -1,4 +1,4 @@
-function [dat_proj,ok] = loadProj(pname, fname, type_data, h_fig)
+function [dat_proj,ok] = loadProj(pname, fname, s, h_fig)
 
 dat_proj = {};
 ok = 0;
@@ -30,7 +30,7 @@ h.barData.prev_var = h.barData.curr_var;
 guidata(h_fig, h);
 % ---------------------------------------------------------
 
-if strcmp(fext, '.mash') % MASH project
+if isempty(s) % MASH project
     for i = 1:size(fname,2)
         s = load([pname fname{i}], '-mat');
         s = checkField(s, [pname fname{i}], h_fig);
@@ -44,29 +44,18 @@ if strcmp(fext, '.mash') % MASH project
             updateActPan(['Unable to load data from file: ' fname{i}], ...
                 h_fig, 'error');
         else
-            dat_proj{size(dat_proj,2)+1} = s;
+            dat_proj = cat(2,dat_proj,s);
         end
     end
 
-elseif strcmp(type_data, 'intensities') % ASCII
-    p = h.param.ttPr.impPrm;
-    s = intAscii2mash(pname, fname, p, h_fig);
+else % ASCII trajectories
+    opt = s.traj_import_opt;
+    s = intAscii2mash(pname, fname, s, opt, h_fig);
     if isempty(s)
         return
     else
-        s = checkField(s, s.proj_file, h_fig);
-        dat_proj{size(dat_proj,2)+1} = s;
-    end
-
-% In construction: intAscii2mash is used meanwhile
-elseif strcmp(type_data, 'dwell-times') % ASCII
-    p = h.param.ttPr.impPrm;
-    s = dtAscii2mash(pname, fname, p, h_fig);
-    if isempty(s)
-        return
-    else
-        s = checkField(s, [], h_fig);
-        dat_proj{size(dat_proj,2)+1} = s;
+        s = checkField(s, '', h_fig);
+        dat_proj = s;
     end
 end
 

@@ -2,33 +2,37 @@ function pushbutton_itgOpt_ok_Callback(obj, evd, h_fig, but_obj)
 
 % update 28.3.2019 by MH: Correct parameter saving: if coordinates import option window is called from trace import options, parameters must be saved in figure_trImpOpt's handle instead of figure_MASH's handle.
 
+% retrieve import options
 h = guidata(h_fig);
-p = h.param;
-switch but_obj
-    case h.pushbutton_TTgen_loadOpt
-        nChan = p.proj{p.curr_proj}.nb_channel;
-        impprm = p.proj{p.curr_proj}.VP.curr.gen_int{2}{3};
-    case h.trImpOpt.pushbutton_impCoordOpt
-        m = guidata(h.figure_trImpOpt);
-        nChan = m{1}{1}(7);
-        impprm = m{3}{3};
+if isfield(h,'pushbutton_TTgen_loadOpt') && ...
+        but_obj==h.pushbutton_TTgen_loadOpt
+    proj = h.param.proj{h.param.curr_proj};
+    cio = proj.VP.curr.gen_int{2}{3};
+elseif isfield(h,'push_impCoordOpt') && but_obj==h.push_impCoordOpt
+    proj = h_fig.UserData;
+    cio = proj.traj_import_opt{3}{3};
+else
+    return
 end
 
+% collect options modifications
+nChan = proj.nb_channel;
 for i = 1:nChan
-    impprm{1}(i,1:2) = ...
-        [str2num(get(h.itgOpt.edit_cColX(i), 'String')) ...
-        str2num(get(h.itgOpt.edit_cColY(i), 'String'))];
+    cio{1}(i,1:2) = [str2double(get(h.itgOpt.edit_cColX(i),'String')) ...
+        str2double(get(h.itgOpt.edit_cColY(i),'String'))];
 end
-impprm{2} = str2num(get(h.itgOpt.edit_nHead, 'String'));
+cio{2} = str2double(get(h.itgOpt.edit_nHead,'String'));
 
-switch but_obj
-    case h.pushbutton_TTgen_loadOpt
-        p.proj{p.curr_proj}.VP.curr.gen_int{2}{3} = impprm;
-        h.param = p;
-        guidata(h_fig, h);
-    case h.trImpOpt.pushbutton_impCoordOpt
-        m{3}{3} = impprm;
-        guidata(h.figure_trImpOpt,m);
+% save modifications
+if isfield(h,'pushbutton_TTgen_loadOpt') && ...
+    but_obj==h.pushbutton_TTgen_loadOpt
+    proj.VP.curr.gen_int{2}{3} = cio;
+    h.param.proj{h.param.curr_proj} = proj;
+    guidata(h_fig, h);
+else
+    proj.traj_import_opt{3}{3} = cio;
+    h_fig.UserData = proj;
 end
 
+% close import options window
 close(h.figure_itgOpt);

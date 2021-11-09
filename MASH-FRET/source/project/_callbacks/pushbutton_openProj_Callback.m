@@ -79,7 +79,7 @@ else % from file
     end
 
     % load project data
-    [dat,ok] = loadProj(pname, fname, 'intensities', h_fig);
+    [dat,ok] = loadProj(pname, fname, [], h_fig);
     if ~ok
         return
     end

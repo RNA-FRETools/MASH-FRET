@@ -237,15 +237,49 @@ if isempty(s.exp_parameters) || size(s.exp_parameters,2) ~= 3
     end
 end
 
+%% check trajectroies
+if isempty(s.intensities_bgCorr)
+    s.intensities_bgCorr = nan(L,nMol*nChan,nExc);
+end
+if isempty(s.intensities_crossCorr)
+    s.intensities_crossCorr = nan(L,nMol*nChan,nExc);
+end
+if isempty(s.intensities_denoise)
+    s.intensities_denoise = nan(L,nMol*nChan,nExc);
+end
+if isempty(s.intensities_DTA)
+    s.intensities_DTA = nan(L,nMol*nChan,nExc);
+end
+if nFRET>0
+    if isempty(s.FRET_DTA)
+        s.FRET_DTA = nan(L,nMol*nFRET);
+    end
+    if isempty(s.ES)
+        s.ES = defES;
+    end
+end
+if nS>0
+    if isempty(s.S_DTA)
+        s.S_DTA = nan(L,nMol*nS);
+    end
+end
+if isempty(s.bool_intensities)
+    s.bool_intensities = true(L,nMol);
+end
+
+%% check molecule tags
+if isempty(s.molTag)
+    s.molTag = false(nMol,nTag);
+end
 
 %% check coordinates
+s.is_coord = ~isempty(s.coord);
 if s.is_coord
     if size(s.coord_incl,2) < size(s.coord,1)
         s.coord_incl((size(s.coord_incl,2)+1):size(s.coord,1)) = ...
             true(1,(size(s.coord,1)-size(s.coord_incl,2)));
     end
 end
-
 if isempty(s.coord_incl)
     s.coord_incl = true(1,nMol);
 end
@@ -285,50 +319,48 @@ if ~s.dt_ascii
     s.dt_pname = [];
     s.dt_fname = [];
 end
-
-perSec = s.cnt_p_sec;
-perPix = s.cnt_p_pix;
-
-
 s.dt = cell(nMol, nChan*nExc+nFRET+nS);
 for m = 1:nMol
     incl = s.bool_intensities(:,m);
-    j = 1;
+    j = 0;
     for i_l = 1:s.nb_excitations
         for i_c = 1:s.nb_channel
+            j = j + 1;
+            if isempty(s.intensities_DTA)
+                continue
+            end
             I = s.intensities_DTA(incl,(m-1)*s.nb_channel+i_c,i_l);
-            if perSec
-                I = I/s.frame_rate;
-            end
-            if perPix
-                I = I/s.pix_intgr(2);
-            end
             if sum(double(~isnan(I)))
                 s.dt{m,j} = getDtFromDiscr(I,...
                     s.nb_excitations*s.frame_rate);
             else
                 s.dt{m,j} = [];
             end
-            j = j + 1;
         end
     end
     for i_f = 1:size(s.FRET,1)
+        j = j + 1;
+        if isempty(s.FRET_DTA)
+            continue
+        end
         tr = s.FRET_DTA(incl,(m-1)*nFRET+i_f);
         if sum(double(~isnan(tr)))
             s.dt{m,j} = getDtFromDiscr(tr,s.nb_excitations*s.frame_rate);
         else
             s.dt{m,j} = {};
         end
-        j = j + 1;
     end
     for i_s = 1:size(s.S,1)
+        j = j + 1;
+        if isempty(s.S_DTA)
+            continue
+        end
         tr = s.S_DTA(incl,(m-1)*nS+i_s);
         if sum(double(~isnan(tr)))
             s.dt{m,j} = getDtFromDiscr(tr,s.nb_excitations*s.frame_rate);
         else
             s.dt{m,j} = {};
         end
-        j = j + 1;
     end
 end
 
