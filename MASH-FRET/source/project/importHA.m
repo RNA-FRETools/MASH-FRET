@@ -210,11 +210,7 @@ for i = projs
                 isratio = 1;
             end
             
-            try
-                trace = trace(:,m_incl & m_tag);
-            catch err
-                disp(err)
-            end
+            trace = trace(:,m_incl & m_tag);
             
             p.proj{i}.HA.def{tag,tpe} = setDefPrm_thm([],trace,isratio,...
                 p.thm.colList);
