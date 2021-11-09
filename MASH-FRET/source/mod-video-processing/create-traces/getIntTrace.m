@@ -17,7 +17,10 @@ function trace = getIntTrace(lim, aDim, nPix, fDat, varargin)
 %  fDat{4}: fDat{2}{2}eo length (in frames)
 % mute: (1) to mute actions, (0) otherwise
 
+% defaults
+nbytes = 0;
 trace = [];
+
 movFile = fDat{1};
 fCurs = fDat{2}{1};
 if iscell(fCurs)
@@ -64,8 +67,8 @@ switch fext
 
             if ~mute && round(100*zz/zTot) > prev
                 prev = round(100*zz/zTot);
-                disp(['Generating intensity-time traces: ' ...
-                    num2str(prev) '%']);
+                nbytes = dispProgress(['Generating intensity-time traces: ' ...
+                    num2str(prev) '%%'],nbytes);
             end
         end
         r.close();
@@ -85,7 +88,7 @@ switch fext
             errordlg('Could not open the file.');
             return;
         end
-        tline = fgetl(f);
+        tline = fgetl_MASH(f);
         if ~isequal(tline,'Andor Technology Multi-Channel File')
             fclose(f);
             errordlg('Not an Andor SIF image file.');
@@ -122,8 +125,8 @@ switch fext
 
             if ~mute && round(100*zz/zTot) > prev
                 prev = round(100*zz/zTot);
-                disp(['Generating intensity-time traces: ' ...
-                    num2str(prev) '%']);
+                nbytes = dispProgress(['Generating intensity-time traces: ' ...
+                    num2str(prev) '%%'],nbytes);
             end
         end
         fclose(f);
@@ -179,8 +182,8 @@ switch fext
 
                 if ~mute && round(100*zz/zTot) > prev
                     prev = round(100*zz/zTot);
-                    disp(['Generating intensity-time traces: ' ...
-                        num2str(prev) '%']);
+                    nbytes = dispProgress(['Generating intensity-time ',...
+                        'traces: ',num2str(prev),'%%'],nbytes);
                 end
             end
             if is_os
@@ -216,8 +219,8 @@ switch fext
 
             if ~mute && round(100*zz/zTot) > prev
                 prev = round(100*zz/zTot);
-                disp(['Generating intensity-time traces: ' ...
-                    num2str(prev) '%']);
+                nbytes = dispProgress(['Generating intensity-time traces: ' ...
+                    num2str(prev) '%%'],nbytes);
             end
         end
         
@@ -243,8 +246,8 @@ switch fext
 
             if ~mute && round(100*zz/zTot) > prev
                 prev = round(100*zz/zTot);
-                disp(['Generating intensity-time traces: ' ...
-                    num2str(prev) '%']);
+                nbytes = dispProgress(['Generating intensity-time traces: ' ...
+                    num2str(prev) '%%'],nbytes);
             end
         end
         
@@ -317,8 +320,8 @@ switch fext
                     
                     if ~mute && round(100*zz/zTot) > prev
                         prev = round(100*zz/zTot);
-                        disp(['Generating intensity-time traces: ' ...
-                            num2str(prev) '%']);
+                        nbytes = dispProgress(['Generating intensity-',...
+                            'time traces: ',num2str(prev),'%%'],nbytes);
                     end
                 end
             end
@@ -331,6 +334,9 @@ end
 
 
 function trace = tracesFromMatrix(matrix,zTot,lim,aDim,nPix,mute)
+% defaults
+nbytes = 0;
+
 nCoord = numel(lim.Xinf);
 aDim2 = aDim^2;
 trace = zeros(zTot,nCoord);
@@ -339,8 +345,8 @@ for c = 1:nCoord
     
     if ~mute && round(100*c/nCoord)>prev
         prev = round(100*c/nCoord);
-        disp(cat(2,'Generating intensity-time traces: ',num2str(prev),...
-            '%'));
+        nbytes = dispProgress(['Generating intensity-time traces: ' ...
+            num2str(prev) '%%'],nbytes);
     end
     
     y0 = lim.Yinf(c);

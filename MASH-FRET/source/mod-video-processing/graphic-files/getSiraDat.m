@@ -17,7 +17,9 @@ if f < 0
     return;
 end
 
-tline = fgetl(f);
+tline = fgetl_MASH(f);
+% tline = fgetl(f);
+
 if isempty(strfind(tline,'SIRA exported binary graphic')) && ...
     isempty(strfind(tline,'MASH smFRET exported binary graphic')) && ...
     isempty(strfind(tline,'MASH-FRET exported binary graphic'))

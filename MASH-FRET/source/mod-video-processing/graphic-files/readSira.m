@@ -31,7 +31,7 @@ if isempty(fDat)
     % get MASH-FRET version & reading parameters
     [vers,is_os,is_sgl] = getSiraDat(fullFname,h_fig);
     if isempty(vers)
-        return;
+        return
     end
 
     % get precision of pixel values
@@ -47,7 +47,8 @@ if isempty(fDat)
         ok = 0;
         return;
     end
-    fgetl(f);
+    fgetl_MASH(f);
+%     fgetl(f);
 
     % Get the exposure time
     cycleTime = fread(f,1,'double');

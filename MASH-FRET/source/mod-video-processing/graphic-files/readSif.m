@@ -43,7 +43,7 @@ if isempty(fDat)
 
         % Get frame rate
         for i=1:2
-            fgetl(f); % skip
+            fgetl_MASH(f); % skip
         end
         textscan(f,'%s',1); % skip
         str = textscan(f,'%s',14);
@@ -53,7 +53,7 @@ if isempty(fDat)
         frewind(f);
         m = 0;
         while m < 2 && ~feof(f)
-            str1 = fgetl(f);
+            str1 = fgetl_MASH(f);
             if strfind(str1, 'Pixel number')
                 m = m+1;
             end
@@ -71,7 +71,7 @@ if isempty(fDat)
            return;
         end
         
-        str2 = fgetl(f);
+        str2 = fgetl_MASH(f);
         str = [str1 ' ' str2];
         str = textscan(str, '%s', 17);
         c = str{1};
@@ -118,7 +118,7 @@ if isempty(fDat)
 
         % Move the cursor through the file
         for i = 1:(frameLen+1)
-            fgetl(f);
+            fgetl_MASH(f);
         end
 
         % Get cursor position where graphic data begin
@@ -323,7 +323,7 @@ if f<0
     fclose(f);
     return;
 end
-tline = fgetl(f);
+tline = fgetl_MASH(f);
 if ~isequal(tline,'Andor Technology Multi-Channel File')
     if ~isempty(h_fig)
         updateActPan(['Not an Andor SIF graphic file, no ' ...
@@ -335,7 +335,7 @@ if ~isequal(tline,'Andor Technology Multi-Channel File')
     return;
 end
 
-fgetl(f);
+fgetl_MASH(f);
 str = textscan(f,'%s',1);
 vers = hex2dec(str{1}{1});
 
