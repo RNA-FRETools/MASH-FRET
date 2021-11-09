@@ -54,6 +54,7 @@ plotprm{1} = [2,0]; % colormap,coord to plot
 plotprm{2} = (1:nChan-1)*sub_w; % channel split pixel positions
 def.plot = adjustVal(def.plot,plotprm);
 def.plot{1}(3) = coord2plot;
+def.plot{2} = plotprm{2};
 
 % edit and export video
 editprm{1} = {[1,0],... % filter index,apply to current frame only
