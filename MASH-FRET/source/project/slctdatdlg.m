@@ -14,6 +14,12 @@ img0 = 'logo-simdat.png';
 img1 = 'logo-impvid.png';
 img2 = 'logo-imptraj.png';
 
+% control existing figure
+h = guidata(h_fig0);
+if isfield(h,'figure_datSlc') && ishandle(h.figure_datSlct)
+    return
+end
+
 % dimensions
 wfig = 4*mg+3*wbut;
 hfig = 3*mg+htxt+hbut;
@@ -59,8 +65,20 @@ uicontrol('parent',h_fig,'style','pushbutton','units',un,'position',...
     [x,y,wbut,hbut],'cdata',cdat2,'callback',...
     {@figure_slctdatdlg_CloseRequestFcn,h_fig,h_fig0,3});
 
+% save figure handle
+h.figure_datSlct = h_fig;
+guidata(h_fig0,h);
+
+% wait for figure to close
 uiwait(h_fig);
+
+% return selected data
 dat = h_fig0.UserData;
+
+% reset modifications
+h = guidata(h_fig0);
+h = rmfield(h,'figure_datSlct');
+guidata(h_fig0,h);
 h_fig0.UserData = [];
 
 
