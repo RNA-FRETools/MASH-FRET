@@ -1,4 +1,7 @@
-function p = clusterTDP(p,tag,tpe,h_fig)
+function [p,ok] = clusterTDP(p,tag,tpe,h_fig)
+
+% defaults
+ok = 0;
 
 % collect interface parameters
 proj = p.curr_proj;
@@ -23,7 +26,7 @@ prm.mdl_start = def.mdl_start;
 prm.mdl_res = def.mdl_res;
 
 % abort if TDP is empty
-if ~sum(sum(TDP))
+if any(any(isnan(TDP))) || ~sum(sum(TDP))
     setContPan('TDP is empty, clustering is not availabe.','warning',...
         h_fig);
     return
@@ -108,3 +111,6 @@ curr.mdl_res = prm.mdl_res;
 
 p.proj{proj}.TA.prm{tag,tpe} = prm;
 p.proj{proj}.TA.curr{tag,tpe} = curr;
+
+% return success
+ok = 1;
