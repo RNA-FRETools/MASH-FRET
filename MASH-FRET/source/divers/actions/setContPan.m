@@ -15,6 +15,9 @@ colWhite = [1 1 1];
 h = guidata(h_fig);
 
 if h.mute_actions
+    if strcmp(state,'error')
+        disp(str);
+    end
     return
 end
 

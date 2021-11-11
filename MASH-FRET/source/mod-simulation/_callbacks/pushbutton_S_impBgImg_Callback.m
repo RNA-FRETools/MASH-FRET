@@ -1,7 +1,12 @@
 function pushbutton_S_impBgImg_Callback(obj,evd,h_fig)
 
 if iscell(obj)
-    file2sub = [obj{1},filesep,obj{2}];
+    pname = obj{1};
+    fname = obj{2};
+    if ~strcmp(pname(end),filesep)
+        pname = [pname,filesep];
+    end
+    file2sub = [pname,fname];
     d = getFile2sub('Pick a BG pattern image', h_fig, file2sub);
 else
     d = getFile2sub('Pick a BG pattern image', h_fig);

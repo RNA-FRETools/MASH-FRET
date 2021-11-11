@@ -15,6 +15,12 @@ h = guidata(h_fig);
 % set interface defaults
 setDefault_S(h_fig,p);
 
+% expand panel
+h_but = getHandlePanelExpandButton(h.uipanel_S_molecules,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
+
 % generate state sequences with defaults
 disp(cat(2,prefix,'test generation of state sequences...'));
 pushbutton_startSim_Callback(h.pushbutton_startSim,[],h_fig);
@@ -39,7 +45,7 @@ for c = 1:C
     pushbutton_exportSim_Callback({p.dumpdir,sprintf('mol_coord_%i',c)},[],...
         h_fig);
 end
-pushbutton_simRemCoord_Callback(h.pushbutton_simRemCoord,[],h_fig);
+radiobutton_simCoord_Callback(h.radiobutton_randCoord,[],h_fig);
 
 % test presets import
 disp(cat(2,prefix,'test presets import...'));
@@ -61,7 +67,8 @@ for c = 1:C
     pushbutton_exportSim_Callback({p.dumpdir,sprintf('mol_preset_%i',c)},[],...
         h_fig);
 end
-pushbutton_simRemPrm_Callback(h.pushbutton_simRemPrm,[],h_fig);
+set(h.checkbox_simPrmFile,'value',0);
+checkbox_simPrmFile_Callback(h.checkbox_simPrmFile,[],h_fig);
 
 % set interface defaults
 setDefault_S(h_fig,p);

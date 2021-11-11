@@ -15,6 +15,12 @@ h = guidata(h_fig);
 % set interface defaults
 setDefault_S(h_fig,p);
 
+% expand panel
+h_but = getHandlePanelExpandButton(h.uipanel_S_exportOptions,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
+
 % test file export options
 disp(cat(2,prefix,'test file export options...'));
 defopts = [p.mat p.sira p.avi p.txt p.dt p.log p.coord];

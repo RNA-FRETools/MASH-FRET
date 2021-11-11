@@ -65,7 +65,8 @@ end
 prm.res_plot{1} = img;
 prm.res_plot{2} = [I_don_ic,I_acc_ic];
 p.proj{proj}.sim.prm = prm;
-p.proj{proj}.sim.curr.gen_dat = prm.gen_dat;
+p.proj{proj}.sim.curr.gen_dat{1}{2}{5}(2,6) = prm.gen_dat{1}{2}{5}(2,6);
+p.proj{proj}.sim.curr.gen_dat{6}{3} = prm.gen_dat{6}{3};
 p.proj{proj}.sim.curr.res_plot = prm.res_plot;
 h.param = p;
 guidata(h_fig, h);

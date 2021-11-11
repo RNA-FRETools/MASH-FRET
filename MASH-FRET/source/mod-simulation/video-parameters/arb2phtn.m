@@ -7,5 +7,5 @@ function dat = arb2phtn(dat,offset,K,eta)
 % update: 14th of March 2018 by Richard Börner
 % >> Comments adapted for Boerner et al 2017
 
-dat = (dat - offset)/(K*eta); 
+dat = round((dat - offset)/(K*eta)); 
 

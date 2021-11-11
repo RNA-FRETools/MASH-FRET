@@ -94,7 +94,7 @@ if isfield(presets, 'psf_width')
     curr.gen_dat{6}{3} = cell(1,4);
 end
 
-if isfield(curr,'molNb')
+if isfield(presets,'molNb')
     if curr.gen_dat{1}{1}{1}
         coord = [];
     elseif curr.gen_dt{3}{1} && isfield(curr.gen_dt{3}{2},'coord')
@@ -118,7 +118,7 @@ if isfield(curr,'molNb')
             % present in file but are out of current video dimensions
             curr.gen_dat{1}{1}{1} = 1;
             curr.gen_dat{1}{1}{2} = [];
-            curr.gen_dat{1}{1}{3} = cell(1,4);
+            curr.gen_dat{6}{3} = cell(1,4);
         end
     end
 end

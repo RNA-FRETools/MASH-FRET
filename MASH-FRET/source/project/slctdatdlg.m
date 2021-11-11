@@ -1,4 +1,4 @@
-function dat = slctdatdlg(h_fig0)
+function dat = slctdatdlg(h_fig0,varargin)
 
 % default
 htxt = 20;
@@ -69,8 +69,13 @@ uicontrol('parent',h_fig,'style','pushbutton','units',un,'position',...
 h.figure_datSlct = h_fig;
 guidata(h_fig0,h);
 
-% wait for figure to close
-uiwait(h_fig);
+if ~isempty(varargin)
+    % from routine call
+    figure_slctdatdlg_CloseRequestFcn([],[],h_fig,h_fig0,varargin{1});
+else
+    % wait for figure to close
+    uiwait(h_fig);
+end
 
 % return selected data
 dat = h_fig0.UserData;

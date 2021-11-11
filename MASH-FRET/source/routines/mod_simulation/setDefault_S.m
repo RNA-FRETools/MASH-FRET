@@ -9,10 +9,11 @@ function setDefault_S(h_fig,p)
 h = guidata(h_fig);
 
 % remove imported coordinates
-pushbutton_simRemCoord_Callback(h.pushbutton_simRemCoord,[],h_fig);
+radiobutton_simCoord_Callback(h.radiobutton_randCoord,[],h_fig);
 
 % remove imported presets
-pushbutton_simRemPrm_Callback(h.pushbutton_simRemPrm,[],h_fig);
+set(h.checkbox_simPrmFile,'value',0);
+checkbox_simPrmFile_Callback(h.checkbox_simPrmFile,[],h_fig);
 
 % set defaults in panel Video parameters
 set(h.edit_length,'string',num2str(p.L));
@@ -89,7 +90,4 @@ set_S_fileExport([p.mat p.sira p.avi p.txt p.dt p.log p.coord],h_fig);
 
 set(h.popupmenu_opUnits,'value',p.un_out);
 popupmenu_opUnits_Callback(h.popupmenu_opUnits,[],h_fig);
-
-% update interface
-updateFields(h_fig,'sim');
 

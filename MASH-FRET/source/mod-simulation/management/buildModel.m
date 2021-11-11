@@ -154,7 +154,8 @@ if J>1 && isTrans
                     else
                         stes(state1,curr_l) = stes(state1,curr_l) + dl;
                         l = l + dl;
-                        continue;
+                        state1 = state2;
+                        continue
                     end
                 end
 

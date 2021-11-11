@@ -1,7 +1,19 @@
 function pushbutton_newProj_Callback(obj,evd,h_fig)
+% pushbutton_newProj_Callback([],[],h_fig)
+% pushbutton_newProj_Callback([],act,h_fig)
+%
+% h_but: handle to "New project" pushbutton
+% act: 1 (simulation), 2 (import video), 3 (import trajectories)
+% h_fig: handle to main figure
 
 % open data selector
-act = slctdatdlg(h_fig);
+if isnumeric(evd) % call from test routine
+    act = slctdatdlg(h_fig,evd);
+    fromroutine = true;
+else
+    act = slctdatdlg(h_fig);
+    fromroutine = false;
+end
 % act = 1; % simulate data
 % act = 2; % import video
 % act = 3; % import trajectories

@@ -15,6 +15,12 @@ h = guidata(h_fig);
 % set interface defaults
 setDefault_S(h_fig,p);
 
+% expand panel
+h_but = getHandlePanelExpandButton(h.uipanel_S_videoParameters,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
+
 % generate state sequences with defaults
 disp(cat(2,prefix,'test generation of state sequences...'));
 pushbutton_startSim_Callback(h.pushbutton_startSim,[],h_fig);

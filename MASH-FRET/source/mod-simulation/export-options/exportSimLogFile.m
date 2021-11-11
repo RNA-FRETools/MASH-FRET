@@ -139,7 +139,7 @@ if ~isPresets || (isPresets && ~isfield(presets,'stateVal'))
     end
 end
 if (~isPresets || (isPresets && ~isfield(presets,'kx'))) && J>1
-    fprintf(f, '> transitions rates (sec-1):\n');
+    fprintf(f, '> transitions rates (frame-1):\n');
     str_fmt = '\t%1.3f';
     for l = 2:J
         str_fmt = cat(2,str_fmt,'\t%1.3f');
@@ -186,7 +186,7 @@ if ~isPresets || (isPresets && ~isfield(presets, 'psf_width'))
             num2str(PSFw(1,2)),'\n'));
     end
 end
-if strcmp(inun,'pc')
+if strcmp(inun,'ic')
     bgdon = phtn2ele(bgdon,K,eta);
     bgacc = phtn2ele(bgacc,K,eta);
 end
@@ -202,7 +202,7 @@ if bgtype == 2
     fprintf(f,cat(2,'> TIRF (x,y) widths (pixel): (',num2str(tirfdim(1)),...
         ',',num2str(tirfdim(2)),')\n'));
 elseif bgtype == 3
-    if isfield(p,'bgImg') && ~isempty(bgimg)
+    if ~isempty(bgimg)
         fprintf(f, '> background image file: %s\n',bgfile);
     else
         fprintf(f,'> no background image file loaded\n');

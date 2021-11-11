@@ -3,4 +3,4 @@ function dat = ele2phtn(dat,K,eta)
 
 % Created the 18th of March 2019 by Mélodie Hadzic
 
-dat = dat/(K*eta); 
+dat = round(dat/(K*eta)); 

@@ -12,7 +12,7 @@ switch obj
 
         % clear file data, coordinates and PSF factorization matrix
         curr.gen_dat{1}{1}{2} = [];
-        curr.gen_dat{1}{1}{3} = [];
+        curr.gen_dat{1}{1}{3} = '';
         curr.gen_dat{6}{3} = cell(1,4);
 
         % set default to random coordinates

@@ -26,58 +26,43 @@ proj = p.curr_proj;
 curr = p.proj{proj}.sim.curr;
 prm = p.proj{proj}.sim.prm;
 
-% collect new sample size and video length
-N = curr.gen_dt{1}(1);
-L = curr.gen_dt{1}(2);
-
 % collect simulated state sequences
-if isfield(prm,'res_dt') && ~isempty(prm.res_dt{1})
-    mix = prm.res_dt{1};
-    seq = prm.res_dt{2};
-else
+if ~(isfield(prm,'res_dt') && ~isempty(prm.res_dt{1}))
     setContPan({'Error: State sequences have to be generated first.',...
         'Push the "Generate" button to do so.'},'error',h_fig);
     ok = 0;
     return
 end
 
-% check for a sufficient number of simulated state sequences
-if size(mix,3)<N
-    setContPan({['Error: Not enough state sequences were simulated to ',...
-        'satisfy the sample size N=',num2str(N),'.'],['Push the ',...
-        '"Generate" button to re-simulate state sequences.']},'error',...
-        h_fig);
-    ok = 0;
+% re-generate state sequences to match the current parameter set
+if ~isequal(prm.gen_dt,curr.gen_dt)
+    pushbutton_startSim_Callback(h.pushbutton_startSim,[],h_fig);
     return
 end
-
-% check for a sufficient number of data points in simulated state sequences
-if size(mix,2)<L
-    setContPan({['Error: Simulated state sequences have to few data points',...
-        ' to satisfy the length parameter.'],['Push the "Generate" button',...
-        ' to re-simulate state sequences.']},'error',h_fig);
-    ok = 0;
-    return
-end
-
-% display action
-setContPan('Updating intensity data...', 'process', h_fig);
 
 % apply current parameter set to project
 prm.gen_dat = curr.gen_dat;
 
 % collect simulation parameters
+mix = prm.res_dt{1};
+seq = prm.res_dt{2};
+N = prm.gen_dt{1}(1);
+L = prm.gen_dt{1}(2);
+J = prm.gen_dt{1}(3);
 isPresets = prm.gen_dt{3}{1};
 presets = prm.gen_dt{3}{2};
 res_x = prm.gen_dat{1}{2}{1}(1);
 res_y = prm.gen_dat{1}{2}{1}(2);
 coord = prm.gen_dat{1}{1}{2};
-stateVal = prm.gen_dat{2}(1,:);
-FRETw = prm.gen_dat{2}(2,:);
+stateVal = prm.gen_dat{2}(1,1:J);
+FRETw = prm.gen_dat{2}(2,1:J);
 totInt = prm.gen_dat{3}{1}(1);
 Itot_w = prm.gen_dat{3}{1}(2);
 gamma = prm.gen_dat{4}(1);
 gammaW = prm.gen_dat{4}(2);
+
+% display action
+setContPan('Updating intensity data...', 'process', h_fig);
 
 % initialize results
 genNewCoord = isempty(coord);

@@ -23,6 +23,7 @@ end
 % collect experiment settings and video parameters
 proj = p.curr_proj;
 inSec = p.proj{p.curr_proj}.time_in_sec;
+perSec = p.proj{p.curr_proj}.cnt_p_sec;
 curr = p.proj{proj}.sim.curr;
 isPresets = curr.gen_dt{3}{1};
 presets = curr.gen_dt{3}{2};
