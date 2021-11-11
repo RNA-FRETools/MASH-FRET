@@ -6,6 +6,7 @@ cycleTime = 1; % arbitrary time delay between each frame
 data = [];
 movie = [];
 exc = [];
+nbit = 4; % 1:int8, 2:int16, 4:single, 8:double
 
 h = guidata(h_fig);
 isMov = 0; % no movie variable was defined before (no memory is allocated)
@@ -73,7 +74,7 @@ else
 end
 
 if strcmp(n,'all')
-    if (isMov==0 || isMov==1) && ~memAlloc(pixelX*pixelY*(frameLen+1)*4)
+    if (isMov==0 || isMov==1) && ~memAlloc(pixelX*pixelY*(frameLen+1)*nbit)
         str = cat(2,'Out of memory: MASH is obligated to load the video ',...
             'one frame at a time to function\nThis will slow down all ',...
             'operations requiring video data, including the creation of ',...
@@ -99,10 +100,9 @@ if strcmp(n,'all')
         
         if isMov==0
             % allocate new memory
-            movie = zeros(pixelY,pixelX,frameLen);
+            movie = repmat(uint16(0),pixelY,pixelX,frameLen);
             for i = 1:frameLen
-                movie(:,:,i) = double(imread(fullFname,'Index',i,'Info',...
-                    fCurs))';   
+                movie(:,:,i) = imread(fullFname,'Index',i,'Info',fCurs)';   
                 
                 if loading_bar('update', h_fig)
                     ok = 0;
@@ -114,10 +114,10 @@ if strcmp(n,'all')
             
         else
             % re-use previously allocated memory
-            h.movie.movie = zeros(pixelY,pixelX,frameLen);
+            h.movie.movie = repmat(uint16(0),pixelY,pixelX,frameLen);
 
             for i = 1:frameLen
-                img = double(imread(fullFname,'Index',i,'Info',fCurs));
+                img = imread(fullFname,'Index',i,'Info',fCurs);
                 if size(img,3)>1
                     img = sum(img,3);
                 end
@@ -139,7 +139,7 @@ else
     if isMov==2
         frameCur = h.movie.movie(:,:,n);
     else
-        frameCur = double(imread(fullFname,'Index',lord(n),'Info',fCurs))';
+        frameCur = imread(fullFname,'Index',lord(n),'Info',fCurs)';
         if size(frameCur,3)>1
             frameCur = sum(frameCur,3);
         end
@@ -151,7 +151,7 @@ data = struct('cycleTime', cycleTime, ...
               'pixelY', pixelY, ...
               'pixelX', pixelX, ...
               'frameLen', frameLen, ...
-              'frameCur', frameCur, ...
+              'frameCur', double(frameCur), ...
               'movie', movie);
 data.fCurs = {fCurs,lord};
 if ~isempty(exc)

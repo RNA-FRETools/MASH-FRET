@@ -8,6 +8,7 @@ cycleTime = []; % time delay between each frame
 movie = [];
 ok = 1;
 expT = 0.1;
+nbit = 1; % 1:int8, 2:int16, 4:single, 8:double
 
 h = guidata(h_fig);
 isMov = 0; % no movie variable was defined before (no memory is allocated)
@@ -82,7 +83,7 @@ end
 
 if strcmp(n, 'all')
 
-    if (isMov==0 || isMov==1) && ~memAlloc(frameLen*pixelX*pixelY)
+    if (isMov==0 || isMov==1) && ~memAlloc(frameLen*pixelX*pixelY*nbit)
         str = cat(2,'Out of memory: MASH is obligated to load the video ',...
             'one frame at a time to function\nThis will slow down all ',...
             'operations requiring video data, including the creation of ',...
@@ -109,11 +110,11 @@ if strcmp(n, 'all')
         
         fseek(f,fCurs,-1);
         if isMov==0
-            movie = zeros([pixelY pixelX frameLen]);
+            movie = repmat(uint8(0),[pixelY pixelX frameLen]);
             for i = 1:frameLen
                 fseek(f, 2*i + pixelX*pixelY*(i-1), 0);
                 movie(:,:,i) = reshape(fread(f, pixelX*pixelY, ...
-                    'uint8=>single'), [pixelX pixelY])';
+                    'uint8=>uint8'), [pixelX pixelY])';
 
                 intrupt = loading_bar('update', h_fig);
                 if intrupt
@@ -126,7 +127,7 @@ if strcmp(n, 'all')
             h.movie.movie = zeros(pixelY,pixelX,frameLen,'single');
             for i = 1:frameLen 
                 h.movie.movie(:,:,i) = flip(reshape(...
-                    fread(f,pixelX*pixelY,'uint8=>single'),...
+                    fread(f,pixelX*pixelY,'uint8=>uint8'),...
                     [pixelY,pixelX])',1); 
 
                 intrupt = loading_bar('update', h_fig);
@@ -151,7 +152,7 @@ else
         end
         fseek(f,fCurs,-1);
         fseek(f,2*n+pixelX*pixelY*(n-1),0);
-        frameCur = reshape(fread(f,pixelX*pixelY,'uint8=>single'),...
+        frameCur = reshape(fread(f,pixelX*pixelY,'uint8=>uint8'),...
             [pixelX pixelY])';
     end
 end
@@ -165,6 +166,6 @@ data = struct('cycleTime', cycleTime, ...
               'pixelX', pixelX, ...
               'frameLen', frameLen, ...
               'fCurs', fCurs, ...
-              'frameCur', frameCur, ...
+              'frameCur', double(frameCur), ...
               'movie', movie);
 

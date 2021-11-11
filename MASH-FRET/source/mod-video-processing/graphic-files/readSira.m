@@ -4,10 +4,14 @@ function [data,ok] = readSira(fullFname, n, fDat, h_fig, useMov)
 %
 % Requires external functions: loading_bar, updateActPan, pleaseWait.
 
+% defaults
 data = [];
 ok = 1;
-h = guidata(h_fig);
 isMov = 0; % no movie variable was defined before (no memory is allocated)
+nbit = 4; % 8: double, 4: single
+
+% control video data
+h = guidata(h_fig);
 if ~isempty(h_fig)
     h = guidata(h_fig);
     if isFullLengthVideo(fullFname,h_fig)
@@ -114,7 +118,8 @@ if strcmp(n,'all')
         end
     end
     
-	if (isMov==0 || isMov==1) && ~memAlloc(pixelX*pixelY*(frameLen+1)*4)
+	if (isMov==0 || isMov==1) && ...
+            ~memAlloc(pixelX*pixelY*(frameLen+1)*nbit)
         str = cat(2,'Out of memory: MASH is obligated to load the video ',...
             'one frame at a time to function\nThis will slow down all ',...
             'operations requiring video data, including the creation of ',...
@@ -161,7 +166,7 @@ if strcmp(n,'all')
         if isMov==0
             
             % allocate new memory
-            movie = zeros(pixelY,pixelX,frameLen);
+            movie = repmat(single(0),pixelY,pixelX,frameLen);
             if is_os
                 for l = 1:frameLen
                     movie(:,:,l) = reshape(fread(f,pixelY*pixelX,...
@@ -197,7 +202,7 @@ if strcmp(n,'all')
         else
             
             % re-use previously allocated memory
-            h.movie.movie = zeros(pixelY,pixelX,frameLen);
+            h.movie.movie = repmat(single(0),pixelY,pixelX,frameLen);
             if is_os
                 for l = 1:frameLen
                     h.movie.movie(:,:,l) = reshape(fread(f,pixelY*pixelX,...

@@ -7,6 +7,7 @@ movie = [];
 ok = 1;
 maxI = 1; 
 minI = 0;
+nbit = 1; % 1:int8, 2:int16, 4:single, 8:double
 
 h = guidata(h_fig);
 isMov = 0; % no movie variable was defined before (no memory is allocated)
@@ -62,7 +63,7 @@ else
 end
     
 if strcmp(n, 'all')
-    if (isMov==0 || isMov==1) && ~memAlloc(frameLen*pixelX*pixelY*4)
+    if (isMov==0 || isMov==1) && ~memAlloc(frameLen*pixelX*pixelY*nbit)
         str = cat(2,'Out of memory: MASH is obligated to load the video ',...
             'one frame at a time to function\nThis will slow down all ',...
             'operations requiring video data, including the creation of ',...

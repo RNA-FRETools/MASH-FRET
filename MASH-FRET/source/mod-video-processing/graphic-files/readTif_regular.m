@@ -5,6 +5,7 @@ ok = 1;
 cycleTime = 1; % arbitrary time delay between each frame
 data = [];
 movie = [];
+nbit = 4; % 1:int8, 2:int16, 4:single, 8:double
 
 h = guidata(h_fig);
 isMov = 0; % no movie variable was defined before (no memory is allocated)
@@ -64,7 +65,7 @@ end
 
 if strcmp(n,'all')
     
-    if (isMov==0 || isMov==1) && ~memAlloc(pixelX*pixelY*(frameLen+1)*4)
+    if (isMov==0 || isMov==1) && ~memAlloc(pixelX*pixelY*(frameLen+1)*nbit)
         str = cat(2,'Out of memory: MASH is obligated to load the video ',...
             'one frame at a time to function\nThis will slow down all ',...
             'operations requiring video data, including the creation of ',...
@@ -90,7 +91,7 @@ if strcmp(n,'all')
         
         if isMov==0
             % allocate new memory
-            movie = zeros(pixelY,pixelX,frameLen);
+            movie = repmat(uint16(0),pixelY,pixelX,frameLen);
             for i = 1:frameLen
                 os = 0;
                 if isfield(fCurs(i,1),'ImageDescription')
@@ -99,8 +100,7 @@ if strcmp(n,'all')
                         os = strdat(2); % negative intensity offset
                     end
                 end
-                movie(:,:,i) = double(imread(fullFname,'Index',i,...
-                    'Info',fCurs)) - os;
+                movie(:,:,i) = imread(fullFname,'Index',i,'Info',fCurs)-os;
                 
                 if loading_bar('update', h_fig)
                     ok = 0;
@@ -111,7 +111,7 @@ if strcmp(n,'all')
             
         else
             % re-use previously allocated memory
-            h.movie.movie = zeros(pixelY,pixelX,frameLen);
+            h.movie.movie = repmat(uint16(0),pixelY,pixelX,frameLen);
 
             for i = 1:frameLen
                 os = 0;
@@ -122,7 +122,7 @@ if strcmp(n,'all')
                         os = strdat(2); % negative intensity offset
                     end
                 end
-                img = double(imread(fullFname,'Index',i,'Info',fCurs)) - os;
+                img = imread(fullFname,'Index',i,'Info',fCurs) - os;
                 if size(img,3)>1
                     img = sum(img,3);
                 end
@@ -154,7 +154,7 @@ else
             end
         end
         
-        frameCur = double(imread(fullFname,'Index',n,'Info',fCurs)) + os;
+        frameCur = imread(fullFname,'Index',n,'Info',fCurs) + os;
         if size(frameCur,3)>1
             frameCur = sum(frameCur,3);
         end
@@ -166,7 +166,7 @@ data = struct('cycleTime', cycleTime, ...
               'pixelY', pixelY, ...
               'pixelX', pixelX, ...
               'frameLen', frameLen, ...
-              'frameCur', frameCur, ...
+              'frameCur', double(frameCur), ...
               'movie', movie);
 data.fCurs = fCurs;
         

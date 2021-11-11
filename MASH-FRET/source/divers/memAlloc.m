@@ -10,7 +10,7 @@ else
     maxsz = mem.MaxPossibleArrayBytes;
 end
 
-if arr_size>maxsz
+if arr_size>=maxsz
     ok = 0;
-    return;
+    return
 end

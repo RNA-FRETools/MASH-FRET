@@ -7,6 +7,9 @@ data = [];
 movie = [];
 exc = [];
 isMov = 0; % no movie variable was defined before (no memory is allocated)
+nbit = 4; % 4: single, 8: double
+
+% control video data
 if ~isempty(h_fig)
     h = guidata(h_fig);
     if isFullLengthVideo(fullFname,h_fig)
@@ -100,7 +103,7 @@ end
 
 % get video frames
 if strcmp(n,'all')
-    if (isMov==0 || isMov==1) && ~memAlloc(pixelX*pixelY*(frameLen+1)*4)
+    if (isMov==0 || isMov==1) && ~memAlloc(pixelX*pixelY*(frameLen+1)*nbit)
         str = cat(2,'Out of memory: MASH is obligated to load the video ',...
             'one frame at a time to function\nThis will slow down all ',...
             'operations requiring video data, including the creation of ',...
@@ -130,13 +133,13 @@ if strcmp(n,'all')
         end
         if isMov==0
             % allocate new memory
-            movie = zeros(pixelY,pixelX,frameLen);
+            movie = repmat(single(0),pixelY,pixelX,frameLen);
             for i = 1:frameLen
                 img = bfGetPlane(r, i);
                 if size(img,3)>1
                     img = sum(img,3);
                 end
-                movie(:,:,i) = img';   
+                movie(:,:,i) = single(img');   
                 
                 if loading_bar('update', h_fig)
                     ok = 0;
@@ -147,14 +150,14 @@ if strcmp(n,'all')
             
         else
             % re-use previously allocated memory
-            h.movie.movie = zeros(pixelY,pixelX,frameLen);
+            h.movie.movie = repmat(single(0),pixelY,pixelX,frameLen);
 
             for i = 1:frameLen
                 img = bfGetPlane(r, i);
                 if size(img,3)>1
                     img = sum(img,3);
                 end
-                h.movie.movie(:,:,i) = img';
+                h.movie.movie(:,:,i) = single(img');
                 if loading_bar('update', h_fig)
                     ok = 0;
                     return
