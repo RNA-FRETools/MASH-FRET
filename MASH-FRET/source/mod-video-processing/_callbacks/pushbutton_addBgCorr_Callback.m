@@ -61,8 +61,8 @@ filtstr = h.popupmenu_bgCorr.String;
 filtname = filtstr{meth};
 setContPan(['Adding background filter "',filtname,'"...'],'process',h_fig);
 
-% bring tab forefront
-h.uitabgroup_VP_plot.SelectedTab = h.uitab_VP_plot_vid;
+% bring video plot tab front
+bringPlotTabFront('VPvid',h_fig);
 
 % refresh calculations, plot and set GUI to proper values
 updateFields(h_fig,'imgAxes');

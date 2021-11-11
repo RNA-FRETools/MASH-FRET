@@ -64,8 +64,8 @@ p.proj{p.curr_proj}.VP.prm.res_plot{2} = data.frameCur;
 h.param = p;
 guidata(h_fig, h);
 
-% bring tab forefront
-h.uitabgroup_VP_plot.SelectedTab = h.uitab_VP_plot_avimg;
+% bring average image plot tab front
+bringPlotTabFront('VPave',h_fig);
 
 % refresh calculations, plot and set GUI to proper values
 updateFields(h_fig, 'imgAxes');

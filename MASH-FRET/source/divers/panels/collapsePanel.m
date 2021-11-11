@@ -8,7 +8,6 @@ function collapsePanel(hbut)
 % default
 mgy = 10; % pixel margin between panels' bottoms and tops
 mgx = 1; % pixel margin between expand/collapse and help buttons
-mgpan = 20; % pixel top-margin in parent panel
 hght_cllps = 25; % panel pixel height when collapsed
 clr_cllps = [0.8,0.8,0.8]; % background color of collapsed panels
 

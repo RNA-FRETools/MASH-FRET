@@ -11,6 +11,9 @@ if ~isModuleOn(p,'TA')
     return
 end
 
+% show process
+setContPan('Setting cluster color...','process',h_fig);
+
 proj = p.curr_proj;
 tpe = p.TDP.curr_type(proj);
 tag = p.TDP.curr_tag(proj);
@@ -23,4 +26,11 @@ p.proj{proj}.TA.prm{tag,tpe}.clst_start{3}(k,:) = rgb;
 h.param = p;
 guidata(h_fig, h);
 
+% bring TDP plot tab front
+bringPlotTabFront('TAtdp',h_fig);
+
+% refresh TDP interface
 updateFields(h_fig, 'TDP');
+
+% show process
+setContPan('Cluster color successfully set!','success',h_fig);

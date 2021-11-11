@@ -32,8 +32,10 @@ cla(h.axes_hist2);
 % switch to proper module
 switchPan(eval(['h.togglebutton_',p.curr_mod{p.curr_proj}]),[],h_fig);
 
-% update TDP and plot
-pushbutton_TDPupdatePlot_Callback(h.pushbutton_TDPupdatePlot,[],h_fig);
+% bring project's current plot front
+bringPlotTabFront([p.sim.curr_plot(p.curr_proj),...
+    p.movPr.curr_plot(p.curr_proj),p.ttPr.curr_plot(p.curr_proj),...
+    p.thm.curr_plot(p.curr_proj),p.TDP.curr_plot(p.curr_proj)],h_fig);
 
 % update GUI
 updateFields(h_fig);

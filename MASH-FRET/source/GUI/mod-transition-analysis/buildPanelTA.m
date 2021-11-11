@@ -81,7 +81,8 @@ x = p.mg;
 y = p.mg;
 
 h.uitabgroup_TA_plot = uitabgroup('parent',h_pan,'units',p.posun,...
-    'position',[x,y,wtab,htab]);
+    'position',[x,y,wtab,htab],'selectionchangedfcn',...
+    {@uitabgroup_plot_SelectionChangedFcn,'TA',h_fig});
 h_tabgrp = h.uitabgroup_TA_plot;
 
 h.uitab_TA_plot_TDP = uitab('parent',h_tabgrp,'units',p.posun,'title',...

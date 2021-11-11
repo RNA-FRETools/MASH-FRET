@@ -22,6 +22,9 @@ if isempty(prm.thm_res{3,2})
     return
 end
 
+% show process
+setContPan('Importing state configuration...','process',h_fig);
+
 % Selected configuration
 K = get(h.popupmenu_thm_nTotGauss, 'Value');
 fitprm = prm.thm_res{3,2}{K};
@@ -71,8 +74,13 @@ p.proj{proj}.HA.curr{tag,tpe} = curr;
 h.param = p;
 guidata(h_fig, h);
 
-setContPan(str,'success',h_fig);
+% expand state population panel
+expandPanel(getHandlePanelExpandButton(h.uipanel_HA_statePopulations,...
+    h_fig));
 
 % Update interface
 updateFields(h_fig, 'thm');
+
+% show success
+setContPan(str,'success',h_fig);
 

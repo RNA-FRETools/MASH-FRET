@@ -71,6 +71,12 @@ cd(p.proj{p.curr_proj}.folderRoot);
 % switch to proper module
 switchPan(eval(['h.togglebutton_',p.curr_mod{p.curr_proj}]),[],h_fig);
 
+% bring project's current plot front
+bringPlotTabFront([p.sim.curr_plot(p.curr_proj),...
+    p.movPr.curr_plot(p.curr_proj),p.ttPr.curr_plot(p.curr_proj),...
+    p.thm.curr_plot(p.curr_proj),p.TDP.curr_plot(p.curr_proj)],h_fig);
+
+% refresh interface
 updateFields(h_fig);
 
 % display success

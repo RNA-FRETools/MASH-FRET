@@ -23,8 +23,8 @@ guidata(h_fig, h);
 % display progress
 setContPan(['Removing background filter "',filtname,'"...'],'process',h_fig);
 
-% bring tab forefront
-h.uitabgroup_VP_plot.SelectedTab = h.uitab_VP_plot_vid;
+% bring video plot tab front
+bringPlotTabFront('VPvid',h_fig);
 
 % set GUI to proper values and refresh plot
 updateFields(h_fig, 'imgAxes');

@@ -90,8 +90,8 @@ if ~(isfield(h,'axes_VP_tr') && ishandle(h.axes_VP_tr))
         h.uitabgroup_VP_plot.Units);
 end
 
-% bring tab forefront
-h.uitabgroup_VP_plot.SelectedTab = h.uitab_VP_plot_tr;
+% bring transformed image plot tab front
+bringPlotTabFront('VPtr',h_fig);
 
 % save modifications
 curr.res_plot{3} = imgtrsf;

@@ -83,6 +83,9 @@ p.proj{proj}.HA.curr{tag,tpe} = curr;
 h.param = p;
 guidata(h_fig, h);
 
+% bring histogram plot tab front
+bringPlotTabFront('HAhist',h_fig);
+
 % Update interface
 updateFields(h_fig, 'thm');
 

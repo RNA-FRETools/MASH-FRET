@@ -39,6 +39,9 @@ guidata(h_fig,h);
 % switch to TP
 switchPan(h.togglebutton_TP,[],h_fig);
 
+% bring trajectory plot tab front
+bringPlotTabFront('TPtraj',h_fig);
+
 % display success
 setContPan(['Single molecule intensity-time traces successfully ',...
     'calculated!'],'success',h_fig);

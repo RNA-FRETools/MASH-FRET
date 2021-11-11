@@ -161,6 +161,9 @@ if guessMeth==1 % determine guess from DPH fit & BIC model selection
     end
     states = states(degen);
     prm.mdl_res{6} = {[cmb,BIC_cmb'],[1:Dmax;BIC]'};
+
+    % bring DPH plot tab front
+    bringPlotTabFront('TAdph',h_fig);
     
 else % use guess from panel "Exponential fit"
     % check for state lifetimes
@@ -215,6 +218,9 @@ else % use guess from panel "Exponential fit"
     tp0(~~eye(size(tp0))) = 1-sum(tp0,2); % transition prob
     
     prm.mdl_res{6} = [];
+
+    % bring model plot tab front
+    bringPlotTabFront('TAmdl',h_fig);
 end
 
 % update plot with diagram
@@ -224,7 +230,7 @@ p.proj{proj}.TA.curr{tag,tpe} = prm;
 h.param = p;
 guidata(h_fig,h);
 
-updateTAplots(h_fig,'TDP');
+updateTAplots(h_fig,'mdl');
 drawnow;
 
 % display process
@@ -250,7 +256,10 @@ h.param = p;
 guidata(h_fig,h);
 
 ud_kinMdl(h_fig);
-updateTAplots(h_fig,'TDP');
+updateTAplots(h_fig,'mdl');
+
+% bring simulation plot tab front
+bringPlotTabFront('TAsim',h_fig);
 
 % display process
 setContPan('The kinetic model was successfully inferred!','success',h_fig);

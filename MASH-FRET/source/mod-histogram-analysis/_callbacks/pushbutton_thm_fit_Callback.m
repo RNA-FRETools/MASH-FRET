@@ -6,5 +6,11 @@ if ~isModuleOn(p,'HA')
     return
 end
 
+% perform Gaussian population analysis
 gauss_ana(h_fig);
+
+% bring histogram plot tab front
+bringPlotTabFront('HAhist',h_fig);
+
+% refresh interface
 updateFields(h_fig, 'thm');

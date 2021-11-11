@@ -6,6 +6,15 @@ if ~isModuleOn(p,'TA')
     return
 end
 
+% show process
+setContPan('Refresh TDP...','process',h_fig);
+
 % update plots and GUI
 updateFields(h_fig, 'TDP');
+
+% bring average image plot tab front
+bringPlotTabFront('TAtdp',h_fig);
+
+% show process
+setContPan('TDP successfully refreshed!','process',h_fig);
 

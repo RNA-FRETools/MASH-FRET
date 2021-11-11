@@ -7,6 +7,9 @@ if ~isModuleOn(p,'TA')
     return
 end
 
+% show process
+setContPan('Import state configuration...','process',h_fig);
+
 proj = p.curr_proj;
 tag = p.TDP.curr_tag(proj);
 tpe = p.TDP.curr_type(proj);
@@ -26,7 +29,19 @@ curr = ud_kinPrm(curr,def,curr.lft_start{2}(1));
 
 p.proj{proj}.TA.prm{tag,tpe} = curr;
 p.proj{proj}.TA.curr{tag,tpe} = curr;
+
+h.param = p;
 guidata(h_fig,h);
+
+% bring average image plot tab front
+bringPlotTabFront('TAdt',h_fig);
+
+% expand dwell time histogram panel
+expandPanel(getHandlePanelExpandButton(h.uipanel_TA_dtHistograms,h_fig));
 
 % update plots and GUI
 updateFields(h_fig, 'TDP');
+
+% show success
+setContPan(['State configuration V=',num2str(J),' successfully selected!'],...
+    'success',h_fig);

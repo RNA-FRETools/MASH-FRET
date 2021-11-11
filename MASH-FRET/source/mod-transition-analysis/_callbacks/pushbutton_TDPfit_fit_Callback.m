@@ -20,6 +20,9 @@ curr = p.proj{proj}.TA.curr{tag,tpe};
 
 % get state index
 if obj==h.pushbutton_TA_slFitAll
+    % show process
+    setContPan('Fit all dwell time histograms...','process',h_fig);
+    
     V = size(curr.clst_res{4},2);
     vals = 1:V;
     if loading_bar('init',h_fig,V,'Fitting all dwell time histograms...')
@@ -29,7 +32,11 @@ if obj==h.pushbutton_TA_slFitAll
     h.barData.prev_var = h.barData.curr_var;
     guidata(h_fig, h);
     lb = 0;
+    
 else
+    % show process
+    setContPan('Fit current dwell time histogram...','process',h_fig);
+    
     vals = curr.lft_start{2}(2);
     lb = 2;
 end
@@ -50,5 +57,12 @@ end
 h.param = p;
 guidata(h_fig,h);
 
+% bring average image plot tab front
+bringPlotTabFront('TAdt',h_fig);
+
 % update plots and GUI
 updateFields(h_fig, 'TDP');
+
+% show success
+setContPan('Dwell time histogram fit successfully completed!','process',...
+    h_fig);

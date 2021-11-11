@@ -200,17 +200,19 @@ function p = setParamSim(p_input)
 
 p = p_input;
 
-% projects' current plots
+% projects' current plots and expanded panel
 p.curr_plot = [];
+p.curr_pan = [];
 
 
 function p = setParamVP(p_input)
 
 p = p_input;
 
-% projects' current video frame and plots
+% projects' current video frame, plots and expanded panel
 p.curr_frame = [];
 p.curr_plot = [];
+p.curr_pan = [];
 
 
 function p = setParamTP(p_input)
@@ -220,6 +222,7 @@ p = p_input;
 % projects' current molecules and plots
 p.curr_mol = [];
 p.curr_plot = [];
+p.curr_pan = [];
 
 
 function p = setParamHA(p_input)
@@ -247,10 +250,11 @@ colList = [1 0 0 % red
        
 p = p_input;
 
-% projects' current data types, molecule subgroup tags and plots
+% projects' current data types, molecule subgroup tags, plots and expanded panel
 p.curr_tpe = [];
 p.curr_tag = [];
 p.curr_plot = [];
+p.curr_pan = [];
 
 % interface defaults
 p.colList = colList;
@@ -281,10 +285,11 @@ colList = [1 0 0 % red
        
 p = p_input;
 
-% projects' current data types, molecule subgroup tags and plots
+% projects' current data types, molecule subgroup tags, plots and expanded panel
 p.curr_type = [];
 p.curr_tag = [];
 p.curr_plot = [];
+p.curr_pan = [];
 
 % interface defaults
 p.colList = colList;

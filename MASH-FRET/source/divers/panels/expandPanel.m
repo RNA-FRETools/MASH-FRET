@@ -9,7 +9,6 @@ function expandPanel(hbut)
 % default
 mg = 10; % pixel margin between panels' bottoms and tops
 mgx = 1; % pixel margin between expand/collapse and help buttons
-mgpan = 20; % pixel top-margin in parent panel
 hght_cllps = 25; % panel pixel height when collapsed
 clr_expnd = [0.94,0.94,0.94]; % background color of expanded panel
 clr_cllps = [0.8,0.8,0.8]; % background color of collapsed panels

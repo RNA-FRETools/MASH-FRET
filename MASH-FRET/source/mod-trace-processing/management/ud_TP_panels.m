@@ -5,6 +5,18 @@ function ud_TP_panels(h_fig)
 %
 % h_fig: handle to main figure
 
+% retrieve interface parameters
+h = guidata(h_fig);
+p = h.param;
+
+% expand current panel
+if ~isempty(p.proj)
+    pan = p.ttPr.curr_pan(p.curr_proj);
+    if pan>0
+        expandPanel(getHandlePanelExpandButton({'TP',pan},h_fig));
+    end
+end
+
 ud_trSetTbl(h_fig);
 ud_plot(h_fig);
 ud_subImg(h_fig);

@@ -43,8 +43,8 @@ p.proj{p.curr_proj}.VP.curr.res_plot = prm.res_plot;
 h.param = p;
 guidata(h_fig,h);
 
-% bring tab forefront
-h.uitabgroup_VP_plot.SelectedTab = h.uitab_VP_plot_avimg;
+% bring average image plot tab front
+bringPlotTabFront('VPave',h_fig);
 
 % update calculations, plot and panels
 updateFields(h_fig,'imgAxes');

@@ -63,7 +63,8 @@ x = p.mg;
 y = p.mg;
 
 h.uitabgroup_VP_plot = uitabgroup('parent',h_pan,'units',p.posun,...
-    'position',[x,y,wtab,htab]);
+    'position',[x,y,wtab,htab],'selectionchangedfcn',...
+    {@uitabgroup_plot_SelectionChangedFcn,'VP',h_fig});
 h_tabgrp = h.uitabgroup_VP_plot;
 
 h.uitab_VP_plot_vid = uitab('parent',h_tabgrp,'units',p.posun,'title',...

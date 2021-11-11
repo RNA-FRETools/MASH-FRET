@@ -48,7 +48,7 @@ else % from file
     % check if the project file is not already loaded
     excl_f = false(size(fname));
     str_proj = get(h.listbox_proj,'string');
-    if isfield(p,'proj')
+    if isfield(p,'proj') && ~isempty(p.proj)
         for i = 1:numel(fname)
             for j = 1:numel(p.proj)
                 if strcmp(cat(2,pname,fname{i}),p.proj{j}.proj_file)
@@ -82,6 +82,10 @@ else % from file
     [dat,ok] = loadProj(pname, fname, [], h_fig);
     if ~ok
         return
+    end
+    if ok==2 % video data was loaded
+        h = guidata(h_fig);
+        p = h.param;
     end
 end
 
@@ -135,6 +139,11 @@ ud_TTprojPrm(h_fig);
 
 % switch to proper module
 switchPan(eval(['h.togglebutton_',p.curr_mod{p.curr_proj}]),[],h_fig);
+
+% bring project's current plot front
+bringPlotTabFront([p.sim.curr_plot(p.curr_proj),...
+    p.movPr.curr_plot(p.curr_proj),p.ttPr.curr_plot(p.curr_proj),...
+    p.thm.curr_plot(p.curr_proj),p.TDP.curr_plot(p.curr_proj)],h_fig);
 
 % update plots and GUI
 updateFields(h_fig);

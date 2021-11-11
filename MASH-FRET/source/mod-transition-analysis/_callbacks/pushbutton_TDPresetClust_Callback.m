@@ -7,6 +7,9 @@ if ~isModuleOn(p,'TA')
     return
 end
 
+% show process
+setContPan('Resets cluster results...','process',h_fig);
+
 proj = p.curr_proj;
 tag = p.TDP.curr_tag(proj);
 tpe = p.TDP.curr_type(proj);
@@ -30,3 +33,9 @@ guidata(h_fig, h);
 
 % update plots and GUI
 updateFields(h_fig, 'TDP');
+
+% bring average image plot tab front
+bringPlotTabFront('TAtdp',h_fig);
+
+% show process
+setContPan('Cluster results were successfully reset','process',h_fig);

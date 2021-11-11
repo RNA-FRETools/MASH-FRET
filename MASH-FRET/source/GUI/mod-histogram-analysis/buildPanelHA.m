@@ -76,7 +76,8 @@ x = p.mg;
 y = p.mg;
 
 h.uitabgroup_HA_plot = uitabgroup('parent',h_pan,'units',p.posun,...
-    'position',[x,y,wtab,htab]);
+    'position',[x,y,wtab,htab],'selectionchangedfcn',...
+    {@uitabgroup_plot_SelectionChangedFcn,'HA',h_fig});
 h_tabgrp = h.uitabgroup_HA_plot;
 
 h.uitab_HA_plot_hist = uitab('parent',h_tabgrp,'units',p.posun,'title',...

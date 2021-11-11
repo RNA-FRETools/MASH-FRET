@@ -36,5 +36,8 @@ setContPan([cat(2,'Success: molecule coordinates and sample heterogeneity',...
     'the set, as well as the first frame in the video, have been re-built',...
     ' and re-plot in the respective axes.'),actstr],'success',h_fig);
 
+% bring trajectory plot tab front
+bringPlotTabFront('Straj',h_fig);
+
 % Set GUI to proper values
 updateFields(h_fig, 'sim');

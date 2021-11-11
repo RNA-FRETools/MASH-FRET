@@ -8,12 +8,18 @@ if ~isModuleOn(p,'TA')
     return
 end
 
+% show process
+setContPan('Start TDP clustering...','process',h_fig);
+
 proj = p.curr_proj;
 tpe = p.TDP.curr_type(proj);
 tag = p.TDP.curr_tag(proj);
 
 % TDP
-p = clusterTDP(p,tag,tpe,h_fig);
+[p,ok] = clusterTDP(p,tag,tpe,h_fig);
+if ~ok
+    return
+end
 
 % save results
 h.param = p;
@@ -21,4 +27,10 @@ guidata(h_fig,h);
 
 % update plots and GUI
 updateFields(h_fig, 'TDP');
+
+% bring average image plot tab front
+bringPlotTabFront('TAtdp',h_fig);
+
+% show process
+setContPan('TDP clustering successfully completed!','process',h_fig);
 

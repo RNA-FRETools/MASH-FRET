@@ -51,5 +51,8 @@ setContPan([cat(2,'Success: ',num2str(size(dat,3)),' state sequences ',...
     'the first molecule in the set, as well as the first frame in the ',...
     'video are shown in the respective axes.'),actstr],'success',h_fig);
 
+% bring trajectory plot tab front
+bringPlotTabFront('Straj',h_fig);
+
 % Set GUI to proper values
 updateFields(h_fig, 'sim');

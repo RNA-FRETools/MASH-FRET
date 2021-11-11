@@ -6,6 +6,9 @@ if ~isModuleOn(p,'TA')
     return
 end
 
+% show process
+setContPan('Estimating starting guess...','process',h_fig);
+
 proj = p.curr_proj;
 tpe = p.TDP.curr_type(proj);
 tag = p.TDP.curr_tag(proj);
@@ -23,6 +26,12 @@ p.proj{proj}.TA.curr{tag,tpe} = curr;
 h.param = p;
 guidata(h_fig, h);
 
+% bring TDP plot tab front
+bringPlotTabFront('TAtdp',h_fig);
+
 % update plots and GUI
 updateFields(h_fig, 'TDP');
+
+% show success
+setContPan('Default starting guess successfully applied!','success',h_fig);
 
