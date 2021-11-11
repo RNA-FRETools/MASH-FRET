@@ -46,6 +46,7 @@ h = struct('un',un,'fun',fun,'mg',mg,'mgtab',mgtab,'mgpan',mgpan,'wbrd',...
 h.tbl = tbl;
 h.bgclr = bgclr;
 h.fgclr = fgclr;
+h.figure_MASH = h_fig0;
 
 % dimensions
 wtab = wfig-2*mg;

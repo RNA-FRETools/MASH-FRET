@@ -1,4 +1,4 @@
-function s = checkField(s_in, fname, h_fig)
+function [s,ok] = checkField(s_in, fname, h_fig)
 
 %%
 % update by MH, 11.1.2020: add "ES" field
@@ -7,6 +7,9 @@ function s = checkField(s_in, fname, h_fig)
 % update by MH, 24.4.2019: (1) modify molecule tag names by removing label 'unlabelled', (2) modify molecule tag structure to allow multiple tags per molecule, by using the first dimension for molecule idexes and the second dimension for label indexes, (3) add tag's default colors to project, (4) adjust tags from older projects to new format
 % update by MH, 3.4.2019: if labels are empty (ASCII import), set default labels
 %%
+
+% defaults
+ok = 1;
 
 s = s_in;
 
@@ -68,6 +71,7 @@ s.cnt_p_sec = adjustParam('cnt_p_sec', 0, s_in);
 s.time_in_sec = adjustParam('time_in_sec', 0, s_in);
 
 % intensity-time traces processing
+s.spltime_from_traj = adjustParam('spltime_from_traj',~s.is_movie,s_in);
 s.intensities = adjustParam('intensities', nan(4000, ...
     size(s.coord,1)*s.nb_channel, s.nb_excitations), s_in);
 L = size(s.intensities,1);
@@ -93,6 +97,7 @@ s.FRET_DTA = adjustParam('FRET_DTA', nan(L,nMol*nFRET), s_in);
 s.S_DTA = adjustParam('S_DTA', nan(L,nMol*nS), s_in);
 s.bool_intensities = adjustParam('bool_intensities', true(L,nMol), s_in);
 s.colours = adjustParam('colours', [], s_in); % plot colours
+s.traj_import_opt = adjustParam('traj_import_opt', [], s_in); % trajectory import options
 
 % dwell-times: in construction (fields not used)
 s.dt_ascii = adjustParam('dt_ascii', false, s_in);
@@ -124,14 +129,7 @@ s.molTagClr = adjustParam('molTagClr',p.es.tagClr,s_in);
 if ~isempty(s.movie_file) && istestfile(s.movie_file)
     s.movie_file = which(s.movie_file); % get machine-dependent path for test files
 end
-if ~isempty(s.movie_file) && exist(s.movie_file, 'file')
-    s.is_movie = 1;
-    if size(s.aveImg,2)~=(s.nb_excitations+1)
-        s.aveImg = calcAveImg('all',s.movie_file,s.movie_dat,...
-            s.nb_excitations,s,h_fig);
-    end
-    
-elseif ~isempty(s.movie_file)
+if ~isempty(s.movie_file) && ~exist(s.movie_file, 'file')
     [o,name_proj,ext] = fileparts(fname);
     name_proj = [name_proj ext];
     load_mov = questdlg({['Impossible to find the movie file for ' ...
@@ -147,7 +145,8 @@ elseif ~isempty(s.movie_file)
             '*.*', 'All File Format(*.*)'}, 'Select a graphic file:');
         if ~(~isempty(fname) && sum(fname))
             s = [];
-            return;
+            ok = 0;
+            return
         end
         [data,ok] = getFrames([pname fname], 1, {}, h_fig, false);
         if ok
@@ -164,9 +163,40 @@ elseif ~isempty(s.movie_file)
         s.is_movie = 0;
     else
         s = [];
-        return;
+        ok = 0;
+        return
     end
-else
+end
+if ~isempty(s.movie_file) && exist(s.movie_file, 'file')
+    s.is_movie = 1;
+    % import video data
+    h = guidata(h_fig);
+    h.movie.movie = [];
+    h.movie.file = '';
+    guidata(h_fig,h);
+    [dat,ok] = getFrames(s.movie_file,'all',[],h_fig,true);
+    if ~ok
+        s = [];
+        return
+    end
+    h = guidata(h_fig);
+    if ~isempty(dat.movie)
+        h.movie.movie = dat.movie;
+        h.movie.file = s.movie_file;
+        guidata(h_fig0,h);
+        ok = 2;
+    elseif ~isempty(h.movie.movie)
+        h.movie.file = s.movie_file;
+        guidata(h_fig,h);
+        ok = 2;
+    end
+    if size(s.aveImg,2)~=(s.nb_excitations+1)
+        setContPan('Calculate average images...','process',h_fig);
+        s.aveImg = calcAveImg('all',s.movie_file,s.movie_dat,...
+            s.nb_excitations,h_fig);
+    end
+end
+if isempty(s.movie_file)
     s.is_movie = 0;
     s.movie_dat = [];
 end
@@ -175,7 +205,8 @@ end
 if (isempty(s.movie_dim) || size(s.movie_dim, 2) ~= 2) && s.is_movie
     [data,ok] = getFrames(s.movie_file, 1, {}, h_fig, false);
     if ~ok
-        return;
+        s = [];
+        return
     end
     s.movie_dim = [data.pixelX data.pixelY];
     s.movie_dat = {data.fCurs [data.pixelX data.pixelY] data.frameLen};
@@ -185,7 +216,8 @@ end
 if (isempty(s.movie_dat) || size(s.movie_dat, 2) ~= 3) && s.is_movie
     [data,ok] = getFrames(s.movie_file, 1, {}, h_fig, false);
     if ~ok
-        return;
+        s = [];
+        return
     end
     s.movie_dat = {data.fCurs [data.pixelX data.pixelY] data.frameLen};
 end

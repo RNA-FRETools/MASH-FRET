@@ -42,7 +42,7 @@ if isfield(h,'edit_intExcCol2') && sum(ishandle(h.edit_intExcCol2))
     h = rmfield(h,'edit_intExcCol2');
 end
 if isfield(h,'text_intExcZero') && sum(ishandle(h.text_intExcZero))
-    delete(h.text_timeExcZero);
+    delete(h.text_intExcZero);
     h = rmfield(h,'text_intExcZero');
 end
 

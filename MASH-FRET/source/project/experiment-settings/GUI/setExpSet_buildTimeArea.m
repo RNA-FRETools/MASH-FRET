@@ -1,10 +1,11 @@
-function h = setExpSet_buildTimeArea(h,exc)
-% h = setExpSet_buildTimeArea(h,exc)
+function h = setExpSet_buildTimeArea(h,exc,h_fig0)
+% h = setExpSet_buildTimeArea(h,exc,h_fig0)
 %
 % Creates adjustable control area of tabbed panel "File structure".
 %
 % h: structure containing handles to all figure's children
 % exc: laser wavelengths
+% h_fig0: handle to main figure
 
 % defaults
 str0 = '999nm:';

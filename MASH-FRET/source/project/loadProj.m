@@ -1,7 +1,7 @@
 function [dat_proj,ok] = loadProj(pname, fname, s, h_fig)
 
 dat_proj = {};
-ok = 0;
+ok = 1;
 
 if ~iscell(fname)
     fname = {fname};
@@ -15,28 +15,30 @@ if size(fname,2) > 1
         if ~strcmp(fext_prev, fext)
             updateActPan(['Input files do not have the same ' ...
                 'extension.'], h_fig, 'error');
+            ok = 0;
             return
         end
     end
 end
 
-% loading bar parameters---------------------------------------
-intrupt = loading_bar('init', h_fig, size(fname,2), 'Import traces...');
-if intrupt
-    return
+islb = size(fname,2)>1;
+if islb
+    if loading_bar('init', h_fig, size(fname,2), 'Import traces...')
+        ok = 0;
+        return
+    end
+    h = guidata(h_fig);
+    h.barData.prev_var = h.barData.curr_var;
+    guidata(h_fig, h);
 end
-h = guidata(h_fig);
-h.barData.prev_var = h.barData.curr_var;
-guidata(h_fig, h);
-% ---------------------------------------------------------
 
 if isempty(s) % MASH project
     for i = 1:size(fname,2)
         s = load([pname fname{i}], '-mat');
-        s = checkField(s, [pname fname{i}], h_fig);
+        [s,ok] = checkField(s, [pname fname{i}], h_fig);
 
-        intrupt = loading_bar('update', h_fig);
-        if intrupt
+        if islb && loading_bar('update', h_fig)
+            ok = 0;
             return
         end
         
@@ -52,20 +54,21 @@ else % ASCII trajectories
     opt = s.traj_import_opt;
     s = intAscii2mash(pname, fname, s, opt, h_fig);
     if isempty(s)
+        ok = 0;
         return
     else
-        s = checkField(s, '', h_fig);
+        [s,ok] = checkField(s, '', h_fig);
         dat_proj = s;
     end
 end
 
-if ~intrupt
+if islb
     loading_bar('close', h_fig);
 end
 
 if isempty(dat_proj)
     updateActPan('No data loaded.\nPlease check import options.', ...
         h_fig, 'error');
+    ok = 0;
     return
 end
-ok = 1;

@@ -18,6 +18,11 @@ h_fig = build_figSetExpSetWin(proj,dat2import,h_fig0);
 % display success
 setContPan('Experiment settings window ready!','success',h_fig0);
 
+% control quick figure closing
+if ~ishandle(h_fig)
+    return
+end
+
 uiwait(h_fig);
 
 % recover updated project's structure

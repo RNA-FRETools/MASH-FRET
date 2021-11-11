@@ -48,7 +48,6 @@ elseif ~isempty(h0.movie.movie)
     h0.movie.file = [pname,fname];
     guidata(h_fig0,h0);
 end
-
 vinfo = {dat.fCurs,[dat.pixelX,dat.pixelY],dat.frameLen};
 vfile = [pname,fname];
 
@@ -58,20 +57,17 @@ proj.movie_file = vfile;
 proj.is_movie = true;
 proj.movie_dim = vinfo{2};
 proj.movie_dat = vinfo;
-proj.frame_rate = dat.cycleTime;
 if isfield(dat,'lasers')
     udlasers = true;
     proj.excitations = dat.lasers;
     proj.nb_excitations = numel(dat.lasers);
 end
-if dat.cycleTime==1
-    proj.spltime_from_video = false;
-else
-    proj.spltime_from_video = true;
-end
 if ~isempty(proj.traj_import_opt)
     proj.traj_import_opt{3}{4} = vinfo{2}(1);
 end
+
+% update sampling time
+proj = getExpSetSamplingTime(proj.traj_import_opt,proj,h_fig);
 
 % update laser-related data (including average images)
 if udlasers

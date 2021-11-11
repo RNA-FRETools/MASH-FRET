@@ -47,7 +47,7 @@ dat = exportProject(h_fig);
 if isempty(dat)
     return
 end
-dat = checkField(dat,'',h_fig);
+[dat,~] = checkField(dat,'',h_fig);
 if isempty(dat)
     return
 end

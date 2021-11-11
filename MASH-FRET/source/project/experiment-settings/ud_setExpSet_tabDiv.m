@@ -10,7 +10,7 @@ proj = h_fig.UserData;
 set(h.edit_projName,'string',proj.exp_parameters{1,2});
 
 % refresh video sampling time
-if proj.spltime_from_video
+if proj.spltime_from_video || proj.spltime_from_traj
     set(h.edit_splTime,'enable','off');
 else
     set(h.edit_splTime,'enable','on');

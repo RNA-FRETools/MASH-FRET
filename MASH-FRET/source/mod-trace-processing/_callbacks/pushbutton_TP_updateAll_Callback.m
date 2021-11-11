@@ -83,9 +83,15 @@ catch err
 end
 
 % update project data (dwelltimes in particular)
-dat = checkField(p.proj{proj},'',h_fig);
+h.param = p;
+guidata(h_fig, h);
+[dat,ok] = checkField(p.proj{proj},'',h_fig);
 if isempty(dat)
     return
+end
+if ok==2
+    h = guidata(h_fig);
+    p = h.param;
 end
 p.proj{p.curr_proj} = dat;
 

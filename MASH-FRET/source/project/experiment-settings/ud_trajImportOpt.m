@@ -15,12 +15,18 @@ end
 % collect import options
 icol1 = opt{1}{1}(5);
 icol2 = opt{1}{1}(6);
+rowwise = opt{1}{1}(7);
 fretcol1 = opt{1}{1}(10);
 fretcol2 = opt{1}{1}(11);
 skipfretcol = opt{1}{1}(12);
 tcol = opt{1}{1}(4);
 tcol_exc = opt{1}{2};
 icol_exc = opt{1}{3};
+
+% adjust ALEX import format
+if nExc==1
+    rowwise = 1;
+end
 
 % adjust laser-specific intensity columns
 if size(icol_exc,1)<nExc
@@ -113,18 +119,21 @@ if isfdat
             end
         end
     end
-    
 end
 
 % save modifications
 opt{1}{1}(4) = tcol;
 opt{1}{1}(5) = icol1;
 opt{1}{1}(6) = icol2;
+opt{1}{1}(7) = rowwise;
 opt{1}{1}(10) = fretcol1;
 opt{1}{1}(11) = fretcol2;
 opt{1}{1}(12) = skipfretcol;
 opt{1}{2} = tcol_exc(1:nExc);
 opt{1}{3} = icol_exc(1:nExc,:);
+
+% adjust sampling time
+proj = getExpSetSamplingTime(opt,proj,h_fig);
 
 % save modifications
 proj.traj_import_opt = opt;
