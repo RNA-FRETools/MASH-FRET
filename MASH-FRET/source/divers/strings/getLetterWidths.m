@@ -70,13 +70,6 @@ try
     hndls = [];
     
     for c = 1:C
-        
-        % display progression
-        if fix(100*c/C)>prgrss
-            prgrss = fix(100*c/C);
-            nbytes = dispProgress(['progression: ',num2str(prgrss),'%%\n'],...
-                nbytes);
-        end
 
         % initializes partial font name results
         widths_nm = [];
@@ -164,7 +157,16 @@ try
 
         % store results
         results{3} = cat(3,results{3},widths_nm);
+        
+        % display progression
+        if fix(100*c/C)>prgrss
+            prgrss = fix(100*c/C);
+            nbytes = dispProgress(['progression: ',num2str(prgrss),'%%\n'],...
+                nbytes);
+        end
     end
+    
+    dispProgress('progression: 100%%\n',nbytes);
     
     % close figures
     close(h_fig);

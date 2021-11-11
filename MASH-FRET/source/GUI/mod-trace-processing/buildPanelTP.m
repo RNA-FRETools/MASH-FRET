@@ -76,11 +76,11 @@ wtxt0 = pospan(3)-p.mg-wtab-p.mg-2*wbut0+wedit0-p.mg/2-p.mg;
 hpan0 = p.mgpan+6*p.mg/fact+2*p.mg+hpop0+6*hedit0+2*htxt0;
 hpan1 = p.mgpan+htxt0+hpop0+p.mg/fact+htxt0+hpop0+p.mg+hedit0+p.mg;
 hpan2 = p.mgpan+3*htxt0+p.mg/fact+htxt0+p.mg/fact+htxt0+hpop0+p.mg;
-hpan3 = p.mgpan+p.mg+2*p.mg/fact+2*htxt0+hpop0+2*hedit0;
-hpan4 = p.mgpan+htxt0+hpop0+p.mg/2;
-hpan5 = p.mgpan+p.mg/2+p.mg/fact+hpop0+hedit0;
-hpan6 = p.mgpan+p.mg/2+p.mg/fact+2*hpop0+2*htxt0;
-hpan7 = p.mgpan+htxt0+hpop0+p.mg/fact+htxt0+hedit0+p.mg;
+hpan3 = p.mgpan+p.mg/2+2*p.mg/fact+p.mg+2*htxt0+hpop0+2*hedit0;
+hpan4 = p.mgpan+hpop0+p.mg/2+2*(htxt0+hpop0+p.mg/2)+p.mg/2;
+hpan5 = p.mgpan+p.mg+p.mg/fact+hpop0+hedit0;
+hpan6 = p.mgpan+p.mg+p.mg/fact+2*hpop0+2*htxt0;
+hpan7 = p.mgpan+htxt0+hpop0+p.mg/fact+htxt0+hedit0+p.mg+p.mg/2;
 hpan8 = p.mgpan+3*(htxt0+hpop0+p.mg)+htxt0+hedit0+p.mg/fact+hedit0+p.mg+...
     htxt0+hpop0+p.mg;
 
@@ -89,7 +89,8 @@ x = p.mg;
 y = p.mg;
 
 h.uitabgroup_TP_plot = uitabgroup('parent',h_pan,'units',p.posun,...
-    'position',[x,y,wtab,htab]);
+    'position',[x,y,wtab,htab],'selectionchangedfcn',...
+    {@uitabgroup_plot_SelectionChangedFcn,'TP',h_fig});
 h_tabgrp = h.uitabgroup_TP_plot;
 
 h.uitab_TP_plot_traces = uitab('parent',h_tabgrp,'units',p.posun,'title',...
