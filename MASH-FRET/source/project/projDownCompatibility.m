@@ -23,7 +23,10 @@ for i = projs
 
     if ~isfield(p.proj{i},'TP')
         p.proj{i}.TP = [];
-        if isfield(p.proj{i}, 'fixTT')
+        if isfield(p.proj{i}, 'fix')
+            p.proj{i}.TP.fix = p.proj{i}.fix;
+            p.proj{i} = rmfield(p.proj{i},'fix');
+        elseif isfield(p.proj{i}, 'fixTT')
             p.proj{i}.TP.fix = p.proj{i}.fixTT;
             p.proj{i} = rmfield(p.proj{i},'fixTT');
         end

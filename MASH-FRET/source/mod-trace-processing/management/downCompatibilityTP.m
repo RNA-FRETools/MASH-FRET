@@ -208,4 +208,13 @@ if size(p_proj.TP.prm{n},2)>=4 && size(p_proj.TP.prm{n}{4},2)>=2 && ...
         p_proj.TP.prm{n}{4}{2}(3:end,:,:)];
 end
 
+% added by MH, 11.11.2021: check bottom data plot index
+if size(p_proj.TP.fix,2)>=2 && size(p_proj.TP.fix{2},2)>=3
+    if p_proj.TP.fix{2}(3)>(1+nFRET+nS+double(nFRET>1)+double(nS>1)+...
+            double(nFRET>0 & nS>0))
+        p_proj.TP.fix{2}(3) = 1+nFRET+nS+double(nFRET>1)+double(nS>1)+...
+            double(nFRET>0 & nS>0);
+    end
+end
+
 
