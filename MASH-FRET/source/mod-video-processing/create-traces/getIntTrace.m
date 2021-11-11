@@ -68,7 +68,7 @@ switch fext
             if ~mute && round(100*zz/zTot) > prev
                 prev = round(100*zz/zTot);
                 nbytes = dispProgress(['Generating intensity-time traces: ' ...
-                    num2str(prev) '%%'],nbytes);
+                    num2str(prev) '%%\n'],nbytes);
             end
         end
         r.close();
@@ -126,7 +126,7 @@ switch fext
             if ~mute && round(100*zz/zTot) > prev
                 prev = round(100*zz/zTot);
                 nbytes = dispProgress(['Generating intensity-time traces: ' ...
-                    num2str(prev) '%%'],nbytes);
+                    num2str(prev) '%%\n'],nbytes);
             end
         end
         fclose(f);
@@ -183,7 +183,7 @@ switch fext
                 if ~mute && round(100*zz/zTot) > prev
                     prev = round(100*zz/zTot);
                     nbytes = dispProgress(['Generating intensity-time ',...
-                        'traces: ',num2str(prev),'%%'],nbytes);
+                        'traces: ',num2str(prev),'%%\n'],nbytes);
                 end
             end
             if is_os
@@ -220,7 +220,7 @@ switch fext
             if ~mute && round(100*zz/zTot) > prev
                 prev = round(100*zz/zTot);
                 nbytes = dispProgress(['Generating intensity-time traces: ' ...
-                    num2str(prev) '%%'],nbytes);
+                    num2str(prev) '%%\n'],nbytes);
             end
         end
         
@@ -247,7 +247,7 @@ switch fext
             if ~mute && round(100*zz/zTot) > prev
                 prev = round(100*zz/zTot);
                 nbytes = dispProgress(['Generating intensity-time traces: ' ...
-                    num2str(prev) '%%'],nbytes);
+                    num2str(prev) '%%\n'],nbytes);
             end
         end
         
@@ -321,7 +321,7 @@ switch fext
                     if ~mute && round(100*zz/zTot) > prev
                         prev = round(100*zz/zTot);
                         nbytes = dispProgress(['Generating intensity-',...
-                            'time traces: ',num2str(prev),'%%'],nbytes);
+                            'time traces: ',num2str(prev),'%%\n'],nbytes);
                     end
                 end
             end
@@ -346,7 +346,7 @@ for c = 1:nCoord
     if ~mute && round(100*c/nCoord)>prev
         prev = round(100*c/nCoord);
         nbytes = dispProgress(['Generating intensity-time traces: ' ...
-            num2str(prev) '%%'],nbytes);
+            num2str(prev) '%%\n'],nbytes);
     end
     
     y0 = lim.Yinf(c);

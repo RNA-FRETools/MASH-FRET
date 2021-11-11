@@ -30,8 +30,26 @@ switch method
         end
 
     case 1 % photobleaching-based: photo-bleaching otpions
+
+        % show process
+        setContPan('Opening Gamma factor calculation options...','process',...
+            h_fig);
+        
         gammaOpt(h_fig);
 
+        % show success
+        setContPan('Gamma factor calculation options ready!','success',...
+            h_fig);
+
     case 2 % photobleaching-based: photo-bleaching otpions
+
+        % show process
+        setContPan('Opening Gamma factor calculation options...','process',...
+            h_fig);
+            
         ESlinRegOpt(h_fig);
+
+        % show success
+        setContPan('Gamma factor calculation options ready!','success',...
+            h_fig);
 end

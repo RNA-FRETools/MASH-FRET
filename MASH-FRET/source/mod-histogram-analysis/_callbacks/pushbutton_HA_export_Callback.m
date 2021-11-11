@@ -11,9 +11,15 @@ if ~isModuleOn(p,'HA')
     return
 end
 
+% show process
+setContPan('Opening export options...','process',h_fig);
+
 if iscell(obj)
     export_thm(h_fig,obj);
 else
     export_thm(h_fig);
 end
+
+% show success
+setContPan('Export options ready!!','success',h_fig);
 

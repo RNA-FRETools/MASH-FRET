@@ -31,6 +31,9 @@ if ~h.mute_actions
     end
 end
 
+% show process
+setContPan('Splitting trajectories...','process',h_fig);
+
 % calculate indexes
 mol_id = [1:n,n:N];
 int_id = repmat((mol_id-1)*nC,[nC,1])+repmat((1:nC)',[1,size(mol_id,2)]);
@@ -146,4 +149,8 @@ h.param = p;
 guidata(h_fig,h);
 
 updateFields(h_fig,'ttPr');
+
+% show success
+setContPan(['Trajectories of molecule',num2str(n),' were successfully ',...
+    'split at position ',num2str(cutOff),'!'],'success',h_fig);
 

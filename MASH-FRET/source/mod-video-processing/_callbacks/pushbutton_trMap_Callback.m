@@ -78,6 +78,7 @@ h.param = p;
 guidata(h_fig,h);
 
 % open mapping tool
+setContPan('Opening mapping tool...','process',h_fig);
 lim_x = [0 (1:nChan-1)*round(viddim(1)/nChan) viddim(1)];
 openMapping(img, lim_x, h_fig, fname);
 

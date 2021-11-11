@@ -16,6 +16,10 @@ if ~h.mute_actions
     end
 end
 
+% show process
+setContPan('Applying "Photobleaching" parameters to all molecules...',...
+    'process',h_fig);
+
 for m = 1:nMol
     p.proj{proj}.TP.curr{m}{2} = p.proj{proj}.TP.curr{mol}{2};
 end
@@ -23,3 +27,7 @@ p.proj{proj}.TP.def.mol{2} = p.proj{proj}.TP.curr{mol}{2};
 
 h.param = p;
 guidata(h_fig, h);
+
+% show success
+setContPan(['"Photobleaching" parameters were successfully appllied to ',...
+    'all molecules...'],'success',h_fig);

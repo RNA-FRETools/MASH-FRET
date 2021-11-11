@@ -15,6 +15,11 @@ if ~h.mute_actions
         return
     end
 end
+
+% show process
+setContPan('Applying "Background" parameters to all molecules...',...
+    'process',h_fig);
+
 for m = 1:nMol
     p.proj{proj}.TP.curr{m}{3} = p.proj{proj}.TP.curr{mol}{3};
 end
@@ -22,3 +27,7 @@ p.proj{proj}.TP.def.mol{3} = p.proj{proj}.TP.curr{mol}{3};
 
 h.param = p;
 guidata(h_fig, h);
+
+% show success
+setContPan(['"Background" parameters were successfully appllied to all ',...
+    'molecules...'],'success',h_fig);

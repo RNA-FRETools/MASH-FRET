@@ -92,6 +92,7 @@ else
     str = cat(2,'Molecule ',str,'has ');
 end
 
+% show success
 setContPan(cat(2,str,'been successfully cleared from the project'),...
     'success',h_fig);
 

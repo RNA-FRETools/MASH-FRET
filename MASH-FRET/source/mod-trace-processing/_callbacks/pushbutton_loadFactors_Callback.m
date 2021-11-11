@@ -35,6 +35,9 @@ if ~iscell(fnames)
     fnames = {fnames};
 end
 
+% show process
+setContPan('Importing correction factors from files...','process',h_fig);
+
 str_file = '';
 if numel(fnames)>1
     str_file = cat(2,str_file,'s:\n');
@@ -113,7 +116,9 @@ end
 h.param = p;
 guidata(h_fig, h);
 
-updateActPan(cat(2,'correction factors were successfully imported from ',...
-    'file ',str_file), h_fig, 'success');
-
+% refresh TP calculations and interface
 updateFields(h_fig, 'ttPr'); 
+
+% show success
+setContPan(cat(2,'correction factors were successfully imported from ',...
+    'file ',str_file), 'success', h_fig);

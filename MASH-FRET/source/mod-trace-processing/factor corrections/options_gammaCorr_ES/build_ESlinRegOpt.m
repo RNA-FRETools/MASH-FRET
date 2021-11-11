@@ -81,7 +81,7 @@ x = posfig(1)+(posfig(3)-wfig)/2;
 y = posfig(2)+(posfig(4)-hfig)/2;
 
 h.figure_ESlinRegOpt = figure('units',posun,'numbertitle','off','menubar',...
-    'none','position',[x,y,wfig,hfig],'visible','on','name',ttl0,...
+    'none','position',[x,y,wfig,hfig],'visible','off','name',ttl0,...
     'closerequestfcn',{@figure_ESlinRegOpt_CloseRequestFcn,h_fig});
 h_fig2 = h.figure_ESlinRegOpt;
 
@@ -267,5 +267,8 @@ setProp(h_fig2,'units','normalized');
 % save gui
 guidata(h_fig,h);
 guidata(h_fig2,q);
+
+% make figure visible
+h_fig2.Visible = 'on';
 
 

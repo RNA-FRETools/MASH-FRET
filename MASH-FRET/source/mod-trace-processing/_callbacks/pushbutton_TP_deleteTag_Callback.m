@@ -20,6 +20,9 @@ if ~h.mute_actions
     end
 end
 
+% show process
+setContPan('Untagging molecule...','process',h_fig);
+
 tagId = find(p.proj{proj}.molTag(mol,:));
 p.proj{proj}.molTag(mol,tagId(tag)) = false;
 
@@ -34,3 +37,7 @@ h.param = p;
 guidata(h_fig,h);
 
 ud_trSetTbl(h_fig);
+
+% show success
+setContPan(['Molecule ',num2str(mol),' successfully untagged!'],'success',...
+    h_fig);

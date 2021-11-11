@@ -20,6 +20,10 @@ if ~h.mute_actions
     end
 end
 
+% show process
+setContPan('Applying "Factor corrections" parameters to all molecules...',...
+    'process',h_fig);
+
 for m = 1:nMol
     p.proj{proj}.TP.curr{m}{6} = p.proj{proj}.TP.curr{mol}{6};
 end
@@ -27,3 +31,7 @@ p.proj{proj}.TP.def.mol{6} = p.proj{proj}.TP.curr{mol}{6};
 
 h.param = p;
 guidata(h_fig, h);
+
+% show success
+setContPan(['"Factor corrections" parameters were successfully appllied ',...
+    'to all molecules...'],'success',h_fig);

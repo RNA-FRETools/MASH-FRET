@@ -16,6 +16,10 @@ if ~h.mute_actions
     end
 end
 
+% show process
+setContPan('Applying "Denoising" parameters to all molecules...','process',...
+    h_fig);
+
 for m = 1:nMol
     p.proj{proj}.TP.curr{m}{1} = p.proj{proj}.TP.curr{mol}{1};
 end
@@ -23,3 +27,7 @@ p.proj{proj}.TP.def.mol{1} = p.proj{proj}.TP.curr{mol}{1};
 
 h.param = p;
 guidata(h_fig, h);
+
+% show success
+setContPan(['"Denoising" parameters were successfully appllied to all ',...
+    'molecules...'],'success',h_fig);
