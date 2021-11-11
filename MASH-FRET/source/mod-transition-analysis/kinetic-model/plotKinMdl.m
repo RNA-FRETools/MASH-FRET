@@ -25,13 +25,16 @@ else
     end
 end
 
-% draw state diagram
+% control states
 if isempty(states)
     for ax = 1:numel(h_axes)
         h_axes(ax).Visible = 'off';
     end
     return
 end
+
+% draw state diagram
+h_axes(1).Visible = 'on';
 if isempty(simdat)
     drawDiagram(h_axes(1),states,tp,[],[]);
 else
