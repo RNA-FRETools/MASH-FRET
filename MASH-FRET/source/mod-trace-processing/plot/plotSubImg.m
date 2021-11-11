@@ -9,7 +9,7 @@ proj = p.curr_proj;
 if ~(p.proj{proj}.is_coord && p.proj{proj}.is_movie)
     return
 end
-if isempty(h_axes)
+if ~(~isempty(h_axes) && all(ishandle(h_axes)))
     return
 end
 
