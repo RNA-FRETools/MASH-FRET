@@ -17,6 +17,8 @@ for i = projs
     nChan = p.proj{i}.nb_channel;
     exc = p.proj{i}.excitations;
     chanExc = p.proj{i}.chanExc;
+    
+    % collect trajectory import options
     if isempty(p.proj{i}.traj_import_opt)
         isGamma = false;
         isBeta = false;
