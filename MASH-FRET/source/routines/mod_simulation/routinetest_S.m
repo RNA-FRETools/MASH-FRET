@@ -53,9 +53,9 @@ try
     disp('test new project creation...');
     pushbutton_newProj_Callback([],1,h_fig);
     
-    % test experiment settings for simulation
+    % set default experiment settings for simulation
     disp('test experiment settings...');
-    routinetest_S_setExpSet(h_fig,p,'>> ');
+    setExpSetDefault_S(h_fig,p);
 
     % test root folder
     disp('test root folder...');

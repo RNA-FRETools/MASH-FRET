@@ -1,9 +1,10 @@
-function h = build_setExpSetTabDiv(h,h_fig0)
-% h = build_setExpSetTabDiv(h,h_fig0)
+function h = build_setExpSetTabDiv(h,dat2import,h_fig0)
+% h = build_setExpSetTabDiv(h,dat2import,h_fig0)
 %
 % Builds fifth tabbed panel "Divers" of "Experiment settings" window.
 %
 % h: structure containing handles to all figure's children
+% dat2import: data to import ('sim', 'video', 'trajectories' or 'edit')
 % h_fig0: handle to main figure
 
 % defaults
@@ -46,8 +47,9 @@ h.edit_projName = uicontrol('parent',h_tab,'style','edit','units',h.un,...
 x = h.mg;
 y = y-h.mg-hpan0;
 
-h.panel_expCond = uipanel('parent',h_tab,'units',h.un,'position',...
-    [x,y,wpan,hpan0],'title',ttl0);
+h.panel_expCond = uipanel('parent',h_tab,'units',h.un,'fontunits',h.fun,...
+    'fontsize',h.fsz,'fontweight','bold','position',[x,y,wpan,hpan0],...
+    'title',ttl0);
 h = build_setExpSetPanExpCond(h);
 
 x = x+wpan+h.mg;
@@ -67,8 +69,9 @@ h.edit_splTime = uicontrol('parent',h_tab,'style','edit','units',h.un,...
 x = x-wtxt1;
 y = y-h.mg-hpan1;
 
-h.panel_clr = uipanel('parent',h_tab,'units',h.un,'position',...
-    [x,y,wpan,hpan1],'title',ttl1);
+h.panel_clr = uipanel('parent',h_tab,'units',h.un,'fontunits',h.fun,...
+    'fontsize',h.fsz,'fontweight','bold','position',[x,y,wpan,hpan1],...
+    'title',ttl1);
 h = build_setExpSetPanClr(h);
 
 x = postab(3)-h.mg-wbut;
@@ -76,4 +79,5 @@ y = h.mg;
 
 h.push_save = uicontrol('parent',h_tab,'style','pushbutton','units',h.un,...
     'fontunits',h.fun,'fontsize',h.fsz,'string',str3,'position',...
-    [x,y,wbut,h.hedit],'callback',{@push_setExpSet_save,h_fig,h_fig0});
+    [x,y,wbut,h.hedit],'callback',...
+    {@push_setExpSet_save,dat2import,h_fig,h_fig0});

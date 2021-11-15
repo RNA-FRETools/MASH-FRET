@@ -35,8 +35,15 @@ ttl3 = 'Calculations';
 ttl4 = 'File structure';
 ttl5 = 'Divers';
 
-% get table of character pixel widths
+% get initial guidata
 h0 = guidata(h_fig0);
+
+% control existing figure
+if isfield(h0,'figure_setExpSet') && ishandle(h0.figure_setExpSet)
+    return
+end
+
+% get table of character pixel widths
 tbl = h0.charDimTable;
 
 % store defaults in h structure
@@ -58,8 +65,11 @@ x = pos0(1)+(pos0(3)-wfig)/2;
 y = pos0(2)+(pos0(4)-hfig)/2;
 h_fig = figure('units',un,'numbertitle','off','menubar','none','name',...
     wintitle,'position',[x,y,wfig,hfig],'userdata',proj);
-h_fig.CloseRequestFcn = {@figure_setExpSet_CloseRequestFcn,h_fig,h_fig0,0};
 h.figure = h_fig;
+h0.figure_setExpSet = h_fig;
+guidata(h_fig0,h0);
+h_fig.CloseRequestFcn = ...
+    {@figure_setExpSet_CloseRequestFcn,h_fig,h_fig0,h0,0};
 
 x = mg;
 y = hfig-mg-htab;
@@ -89,7 +99,7 @@ if ~strcmp(dat2import,'sim')
     end
     h = build_setExpSetTabCalc(h);
 end
-h = build_setExpSetTabDiv(h,h_fig0);
+h = build_setExpSetTabDiv(h,dat2import,h_fig0);
 
 guidata(h_fig,h);
 

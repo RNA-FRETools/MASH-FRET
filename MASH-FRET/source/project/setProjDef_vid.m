@@ -1,11 +1,10 @@
-function proj = setProjDef_vid(proj,p,h_fig)
-% proj = setProjDef_vid(proj,p,h_fig)
+function proj = setProjDef_vid(proj,p)
+% proj = setProjDef_vid(proj,p)
 %
 % Import video and set default project parameters 
 %
 % proj: project structure
 % p: interface parameters structure
-% h_fig: handle to main figure
 
 % set default project experiment settings
 proj.nb_channel = p.es.nChan;
@@ -18,12 +17,3 @@ proj.S = p.es.Spairs;
 proj.exp_parameters = p.es.expCond;
 proj.exp_parameters{1,2} = 'video';
 proj.colours = p.es.plotClr;
-
-% ask user for experiment settings & calculate average images
-proj = setExpSetWin(proj,'video',h_fig);
-if isempty(proj)
-    return
-end
-
-% tag project
-proj.VP.from = 'VP';

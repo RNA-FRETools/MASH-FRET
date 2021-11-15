@@ -13,7 +13,8 @@ h = guidata(h_fig);
 setDefault_S(h_fig,p);
 
 disp(cat(2,prefix,'test graph export and zoom reset...'));
-h_axes = [h.axes_example,h.axes_example_mov,h.axes_example_hist];
+h_axes = [h.axes_example,h.axes_S_frettrace,h.axes_example_mov,...
+    h.axes_example_hist,h.axes_S_frethist];
 for a = 1:numel(h_axes)
     set(h_fig,'CurrentAxes',h_axes(a));
     

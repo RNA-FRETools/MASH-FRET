@@ -1,11 +1,11 @@
-function figure_setExpSet_CloseRequestFcn(obj,evd,h_fig,h_fig0,ok)
+function figure_setExpSet_CloseRequestFcn(obj,evd,h_fig,h_fig0,h0,ok)
 
-% reset project structure if process is aborted
-if ~ok
-    h_fig0.UserData = [];
-else
+% save experiment settings as default
+if ok
     h0 = guidata(h_fig0);
-    h0.param.es = setExpSetFromProj(h0.param.es,h_fig0.UserData);
-    guidata(h_fig0,h0);
+    h0.param.es = setExpSetFromProj(h0.param.es,h_fig.UserData);
 end
+h0 = rmfield(h0,'figure_setExpSet');
+guidata(h_fig0,h0);
+
 delete(h_fig);

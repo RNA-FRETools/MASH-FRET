@@ -22,17 +22,3 @@ proj.exp_parameters = p.es.expCond;
 proj.exp_parameters{1,2} = 'trajectories';
 proj.colours = p.es.plotClr;
 proj.traj_import_opt = p.es.impTrajPrm;
-
-% ask user for experiment settings & calculate average images
-proj = setExpSetWin(proj,'trajectories',h_fig);
-if isempty(proj)
-    return
-end
-
-% tag project
-if proj.is_movie
-    proj.VP.from = 'TP';
-end
-proj.TP.from = 'TP';
-proj.HA.from = 'TP';
-proj.TA.from = 'TP';

@@ -24,6 +24,13 @@ if ~exist(p.dumpdir,'dir')
     mkdir(p.dumpdir); % create new dump directory
 end
 
+% defaults for Experiment settings
+p.projttl = 'test_sim';
+p.molname = 'unknown';
+p.expcond = {'param1','0','units1';'param2','value2','units2'};
+p.splt = 0.2;
+p.plotclr = [0.5,0.5,1;1,0.5,0.5;0.5,1,0.5];
+
 % defaults for Video parameters
 p.L = 100; % video length (frames)
 p.rate = 10; % frame acquisition rate (frame/s)

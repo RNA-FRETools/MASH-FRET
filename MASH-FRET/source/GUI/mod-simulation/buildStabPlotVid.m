@@ -36,6 +36,6 @@ pos = getRealPosAxes([x,y,waxes,haxes],get(h_axes,'tightinset'),'traces');
 h.cb_example_mov = colorbar(h_axes,'units',p.posun);
 ylabel(h.cb_example_mov,ylbl);
 pos_cb = get(h.cb_example_mov,'position');
-pos(1) = pos(1) - 3*pos_cb(3);
+pos(3) = pos(3) - 3*pos_cb(3);
 set(h_axes,'position',pos);
 

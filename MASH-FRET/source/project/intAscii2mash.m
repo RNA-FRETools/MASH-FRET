@@ -34,36 +34,71 @@ isdFRET = p{1}{1}(9);
 colseq1 = p{1}{1}(10);
 colseq2 = p{1}{1}(11);
 colseqskip = p{1}{1}(12);
-isGam = sum(p{6}{2}) & ~isempty(p{6}{3});
-isBet = sum(p{6}{5}) & ~isempty(p{6}{6}) ;
+isGam = sum(p{6}{1}) & ~isempty(p{6}{2});
+isBet = sum(p{6}{4}) & ~isempty(p{6}{5}) ;
 
 if rowwise==2
     colI1 = colI_exc(:,1);
     colI2 = colI_exc(:,2);
 end
 
+nFRET = size(FRET,1);
 if isGam
-    gam_folder = p{6}{2};
-    gam_file_1 = p{6}{3};
-    content = importdata(cat(2,gam_folder,gam_file_1{1}));
-    if isstruct(content)
-        pairs = getFRETfromFactorFiles(content.colheaders);
-        if ~isempty(pairs)
-            FRET = pairs;
+    gam_folder = p{6}{1};
+    gam_files = p{6}{2};
+    for f = 1:numel(gam_files)
+        content = importdata(cat(2,gam_folder,gam_files{f}));
+        if isstruct(content)
+            pairs = getFRETfromFactorFiles(content.colheaders);
+            if ~isequal(sortrows(pairs,[1,2]),sortrows(FRET,[1,2]))
+                setContPan(['No gamma factor imported: FRET pairs in the ',...
+                    'gamma factor file ',gam_files{f},' are inconsistent ',...
+                    'with the pairs defined in the import options...'],...
+                    '', h_fig);
+                p{6}{1} = '';
+                p{6}{2} = {};
+                p{6}{3} = [];
+                isGam = false;
+                break
+            end
+            content = content.data;
+        else
+            pairs = FRET;
+        end
+        p{6}{3} = cat(1,p{6}{3},zeros(size(content,1),nFRET));
+        for pair = 1:nFRET
+            col = pairs(:,1)==FRET(pair,1) && pairs(:,2)==FRET(pair,2);
+            p{6}{3}(end-size(content,1)+1:end,pair) = content(:,col);
         end
     end
 end
 
 if isBet
-    bet_folder = p{6}{5};
-    bet_file_1 = p{6}{6};
-    content = importdata(cat(2,bet_folder,bet_file_1{1}));
-    if isstruct(content)
-        pairs = getFRETfromFactorFiles(content.colheaders);
-        if ~isempty(pairs)
-            if isempty(FRET) || (~isempty(FRET) && ~isequal(pairs,FRET))
-                FRET = pairs;
+    bet_folder = p{6}{4};
+    bet_files = p{6}{5};
+    for f = 1:numel(bet_files)
+        content = importdata(cat(2,bet_folder,bet_files{f}));
+        if isstruct(content)
+            pairs = getFRETfromFactorFiles(content.colheaders);
+            if ~isequal(sortrows(pairs,[1,2]),sortrows(FRET,[1,2]))
+                setContPan(['No beta factor imported: FRET pairs in the ',...
+                    'beta factor file ',gam_files{f},' are inconsistent ',...
+                    'with the pairs defined in the import options...'],...
+                    '', h_fig);
+                p{6}{4} = '';
+                p{6}{5} = {};
+                p{6}{6} = [];
+                isBet = false;
+                break
             end
+            content = content.data;
+        else
+            pairs = FRET;
+        end
+        p{6}{6} = cat(1,p{6}{6},zeros(size(content,1),nFRET));
+        for pair = 1:nFRET
+            col = pairs(:,1)==FRET(pair,1) && pairs(:,2)==FRET(pair,2);
+            p{6}{6}(end-size(content,1)+1:end,pair) = content(:,col);
         end
     end
 end
@@ -357,15 +392,32 @@ catch err
     return
 end
 
-if ~isempty(coord) && size(intensities,2)/nChan~=size(coord,1)
-    loading_bar('close', h_fig);
-    updateActPan(['Number of intensity-time traces inconsistent with ',...
-        'number of coordinates'], h_fig, 'error');
-    s = [];
-    return
-end
-
 N = size(intensities,2)/nChan;
+
+if ~isempty(coord) && size(coord,1)~=N
+    setContPan(['No coordinates imported: the number of intensity-time ',...
+        'traces is inconsistent with the number of coordinates...'],...
+        '', h_fig);
+    cip = [];
+    coordfile = '';
+    coord = [];
+end
+if isGam && size(p{6}{3},1)~=N
+    setContPan(['No gamma factor imported: the number of intensity-time ',...
+        'traces is inconsistent with the number of gamma factors...'],...
+        '', h_fig);
+    p{6}{1} = '';
+    p{6}{2} = {};
+    p{6}{3} = [];
+end
+if isBet && size(p{6}{6},1)~=N
+    setContPan(['No beta factor imported: the number of intensity-time ',...
+        'traces is inconsistent with the number of beta factors...'],...
+        '', h_fig);
+    p{6}{4} = '';
+    p{6}{5} = {};
+    p{6}{6} = [];
+end
 
 if exptime~=s.frame_rate
     s.frame_rate = exptime;
@@ -379,6 +431,7 @@ s.coord_imp_param = cip; % coordinates import parameters
 s.coord = coord; % molecule coordinates in all channels
 s.coord_incl = true(1,N);
 
+s.traj_import_opt = p;
 s.bool_intensities = ~~incl;
 s.intensities = intensities;
 s.FRET = FRET;

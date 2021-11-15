@@ -1,9 +1,8 @@
-function proj = setExpSetWin(proj,dat2import,h_fig0)
-% proj = setExpSetWin(proj,h_fig0)
+function setExpSetWin(proj,dat2import,h_fig0)
+% setExpSetWin(proj,h_fig0)
 %
 % Open Experiment settings window and update project structure accordingly.
-% Returns updated project structure upon completion and an empty structure 
-% upon abortion.
+% Store updated project structure in figure's userdata properties.
 %
 % proj: project structure
 % dat2import: data to import from file ('video' or 'trajectories')
@@ -13,18 +12,7 @@ function proj = setExpSetWin(proj,dat2import,h_fig0)
 % display process
 setContPan('Opening experiment settings window...','process',h_fig0);
 
-h_fig = build_figSetExpSetWin(proj,dat2import,h_fig0);
+build_figSetExpSetWin(proj,dat2import,h_fig0);
 
 % display success
 setContPan('Experiment settings window ready!','success',h_fig0);
-
-% control quick figure closing
-if ~ishandle(h_fig)
-    return
-end
-
-uiwait(h_fig);
-
-% recover updated project's structure
-proj = h_fig0.UserData;
-h_fig0.UserData = [];

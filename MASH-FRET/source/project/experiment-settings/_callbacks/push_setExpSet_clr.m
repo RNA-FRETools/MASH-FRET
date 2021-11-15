@@ -1,4 +1,9 @@
 function push_setExpSet_clr(obj,evd,h_fig)
+% push_setExpSet_clr([],[],h_fig)
+% push_setExpSet_clr(clr,[],h_fig)
+%
+% h_fig: handle to "Experimental settings"
+% clr: RGB triplet (using values between 0 and 1)
 
 % retrieve interface content
 h = guidata(h_fig);
@@ -7,9 +12,13 @@ h = guidata(h_fig);
 proj = h_fig.UserData;
 
 % open color picker
-clr = uisetcolor('Set a trace color');
-if numel(clr)==1
-    return
+if ~isempty(obj) 
+    clr = obj; % call by test routine
+else
+    clr = uisetcolor('Set a trace color'); % call by GUI
+    if numel(clr)==1
+        return
+    end
 end
 
 % save color in project parameters
