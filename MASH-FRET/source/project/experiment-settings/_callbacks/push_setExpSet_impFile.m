@@ -8,18 +8,23 @@ udlasers = false;
 % retrieve project data
 proj = h_fig.UserData;
 
-% ask for video file
-str0 = ['*',vidfmt{1}];
-str1 = ['(*',vidfmt{1}];
-for fmt = 2:numel(vidfmt)
-    str0 = cat(2,str0,';*',vidfmt{fmt});
-    str1 = cat(2,str1,',*',vidfmt{fmt});
-end
-str1 = [str1,')'];
-[fname,pname,o] = uigetfile({str0,['Supported Graphic File Format',str1]; ...
-    '*.*','All File Format(*.*)'},'Select a video file',proj.folderRoot);
-if ~sum(pname)
-    return
+if iscell(obj)
+    pname = obj{1};
+    fname = obj{2};
+else
+    % ask for video file
+    str0 = ['*',vidfmt{1}];
+    str1 = ['(*',vidfmt{1}];
+    for fmt = 2:numel(vidfmt)
+        str0 = cat(2,str0,';*',vidfmt{fmt});
+        str1 = cat(2,str1,',*',vidfmt{fmt});
+    end
+    str1 = [str1,')'];
+    [fname,pname,o] = uigetfile({str0,['Supported Graphic File Format',str1]; ...
+        '*.*','All File Format(*.*)'},'Select a video file',proj.folderRoot);
+    if ~sum(pname)
+        return
+    end
 end
 if pname(end)~=filesep
     pname = [pname,filesep];

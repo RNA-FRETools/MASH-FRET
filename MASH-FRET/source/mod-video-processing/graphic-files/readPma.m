@@ -112,7 +112,6 @@ if strcmp(n, 'all')
         if isMov==0
             movie = repmat(uint8(0),[pixelY pixelX frameLen]);
             for i = 1:frameLen
-                fseek(f, 2*i + pixelX*pixelY*(i-1), 0);
                 movie(:,:,i) = reshape(fread(f, pixelX*pixelY, ...
                     'uint8=>uint8'), [pixelX pixelY])';
 
@@ -124,7 +123,7 @@ if strcmp(n, 'all')
             end
             frameCur = movie(:,:,1); % Get image data of the input frame
         else
-            h.movie.movie = zeros(pixelY,pixelX,frameLen,'single');
+            h.movie.movie = zeros(pixelY,pixelX,frameLen,'uint8');
             for i = 1:frameLen 
                 h.movie.movie(:,:,i) = flip(reshape(...
                     fread(f,pixelX*pixelY,'uint8=>uint8'),...
@@ -151,9 +150,8 @@ else
             f = fopen(fullFname,'r');
         end
         fseek(f,fCurs,-1);
-        fseek(f,2*n+pixelX*pixelY*(n-1),0);
-        frameCur = reshape(fread(f,pixelX*pixelY,'uint8=>uint8'),...
-            [pixelX pixelY])';
+        frameCur = flip(reshape(fread(f,pixelX*pixelY,'uint8=>uint8'),...
+            [pixelY,pixelX])',1);
     end
 end
 

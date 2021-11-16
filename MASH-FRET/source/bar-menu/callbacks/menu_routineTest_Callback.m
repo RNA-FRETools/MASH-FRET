@@ -5,6 +5,16 @@ h = guidata(h_fig);
 h_prev = h;
 curr_dir = pwd;
 
+% get current module
+chld = h_fig.Children;
+for c = 1:numel(chld)
+    if strcmp(chld(c).Type,'uicontrol') && ...
+            strcmp(chld(c).Style,'togglebutton') && chld(c).Value==1
+        break
+    end
+end
+h_tb = chld(c);
+
 % set overwirting file option to "always overwrite"
 h.param.OpFiles.overwrite_ask = false;
 h.param.OpFiles.overwrite = true;
@@ -34,5 +44,11 @@ end
 h_prev.mute_actions = false;
 guidata(h_fig,h_prev);
 cd(curr_dir);
+
+h = guidata(h_fig);
+h.param = ud_projLst(h.param, h.listbox_proj);
+guidata(h_fig,h);
+
+switchPan(h_tb,[],h_fig);
 
 updateFields(h_fig,'all');

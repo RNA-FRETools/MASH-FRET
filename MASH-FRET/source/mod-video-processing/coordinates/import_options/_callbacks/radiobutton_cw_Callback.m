@@ -2,6 +2,7 @@ function radiobutton_cw_Callback(obj, evd, h_fig)
 
 % retrieve parameters
 h = guidata(h_fig);
+p = h.param;
 nChan = p.proj{p.curr_proj}.nb_channel;
 
 switch get(obj, 'Value')

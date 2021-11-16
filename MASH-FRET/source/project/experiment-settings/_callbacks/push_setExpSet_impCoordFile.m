@@ -11,11 +11,16 @@ if ~(isfield(proj,'traj_files') && size(proj.traj_files,2)>=2 && ...
     return
 end
 
-% ask for beta files
-[fname,pname,o] = uigetfile({'*.*','All files(*.*)'},...
+% ask for coordinates file
+if iscell(obj)
+    pname = obj{1};
+    fname = obj{2};
+else
+    [fname,pname,o] = uigetfile({'*.*','All files(*.*)'},...
     'Select a coordinates file',proj.folderRoot);
-if ~sum(pname)
-    return
+    if ~sum(pname)
+        return
+    end
 end
 if pname(end)~=filesep
     pname = [pname,filesep];

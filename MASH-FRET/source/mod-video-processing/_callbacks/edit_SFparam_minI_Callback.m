@@ -50,7 +50,11 @@ for c = 1:nChan
     spots = cat(1,spots,curr.gen_crd{2}{5}{c});
 end
 curr.res_crd{1} = spots;
-curr.gen_crd{3}{1}{1} = spots(:,[1,2]);
+if isempty(spots)
+    curr.gen_crd{3}{1}{1} = [];
+else
+    curr.gen_crd{3}{1}{1} = spots(:,[1,2]);
+end
 
 % reset coordinates file to transform
 curr.gen_crd{3}{1}{2} = '';

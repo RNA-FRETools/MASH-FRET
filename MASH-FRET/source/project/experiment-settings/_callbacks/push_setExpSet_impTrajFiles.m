@@ -6,11 +6,16 @@ maxflines = 100;
 % retrieve project data
 proj = h_fig.UserData;
 
-% ask for trajectory files
-[fname,pname,o] = uigetfile({'*.*','All files(*.*)'},...
-    'Select trajectory files',proj.folderRoot,'MultiSelect','on');
-if ~sum(pname)
-    return
+if iscell(obj)
+    pname = obj{1};
+    fname = obj{2};
+else
+    % ask for trajectory files
+    [fname,pname,o] = uigetfile({'*.*','All files(*.*)'},...
+        'Select trajectory files',proj.folderRoot,'MultiSelect','on');
+    if ~sum(pname)
+        return
+    end
 end
 if pname(end)~=filesep
     pname = [pname,filesep];

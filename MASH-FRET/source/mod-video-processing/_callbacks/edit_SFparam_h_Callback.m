@@ -13,7 +13,7 @@ h = guidata(h_fig);
 p = h.param;
 chan = get(h.popupmenu_SFchannel, 'Value');
 
-p.proj{p.curr_proj}.VP.curr.gen_crd{2}{2}(chan,5) = val;
+p.proj{p.curr_proj}.VP.curr.gen_crd{2}{2}(chan,6) = val;
 
 h.param = p;
 guidata(h_fig, h);

@@ -31,7 +31,10 @@ if meth==17 % image subtraction
     if isempty(dat)
         return
     end
-    curr.edit{1}{4} = cat(1,filtlist,{meth,dat});
+    filt = cell(1,nChan+1);
+    filt{1} = meth;
+    filt{2} = dat;
+    curr.edit{1}{4} = cat(1,filtlist,filt);
 
 else
     if sum(meth==[2 5:10]) && exist('FilterArray','file')~=3

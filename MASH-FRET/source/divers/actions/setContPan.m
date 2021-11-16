@@ -16,7 +16,7 @@ h = guidata(h_fig);
 
 if h.mute_actions
     if strcmp(state,'error')
-        disp(str);
+        disp(['GUI ERROR: ',str]);
     end
     return
 end

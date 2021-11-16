@@ -5,6 +5,10 @@ function p = getDefault_S
 %
 % p: structure that contain default parameters
 
+% defaults
+nChan = 2;
+nLas = 1;
+
 % general parameters
 [pname,o,o] = fileparts(mfilename('fullpath'));
 p.annexpth = cat(2,pname,filesep,'assets'); % path to annexed files
@@ -24,12 +28,20 @@ if ~exist(p.dumpdir,'dir')
     mkdir(p.dumpdir); % create new dump directory
 end
 
+% general parameters
+p.nChan = 2;
+p.nL = 1;
+
 % defaults for Experiment settings
-p.projttl = 'test_sim';
-p.molname = 'unknown';
-p.expcond = {'param1','0','units1';'param2','value2','units2'};
-p.splt = 0.2;
-p.plotclr = [0.5,0.5,1;1,0.5,0.5;0.5,1,0.5];
+p.es = cell(p.nChan,p.nL);
+p.es{p.nChan,p.nL}.div.projttl = 'test_sim';
+p.es{p.nChan,p.nL}.div.molname = 'unknown';
+p.es{p.nChan,p.nL}.div.expcond = {'param1','0','units1';'param2','value2','units2'};
+p.es{p.nChan,p.nL}.div.splt = 0.2;
+rande = rand(1);
+randi = rand(nChan,nLas,1);
+p.es{p.nChan,p.nL}.div.plotclr = [rande,1,rande;...
+    ones(nChan,nLas,1),repmat(randi,1,2)];
 
 % defaults for Video parameters
 p.L = 100; % video length (frames)
@@ -88,6 +100,7 @@ p.dt = false; % export .dt dwell time file
 p.log = true; % export .log simulation parameters file
 p.coord = false; % export .coord coordinates file
 p.un_out = 1; % exported intensities units
+p.mash = 'sim.mash';
 
 % default for visulaization area
 p.exp_axes = 'graph_%i.png';

@@ -183,7 +183,7 @@ if ~isempty(s.movie_file) && exist(s.movie_file, 'file')
     if ~isempty(dat.movie)
         h.movie.movie = dat.movie;
         h.movie.file = s.movie_file;
-        guidata(h_fig0,h);
+        guidata(h_fig,h);
         ok = 2;
     elseif ~isempty(h.movie.movie)
         h.movie.file = s.movie_file;

@@ -71,18 +71,17 @@ if ~strcmp(exit_choice, 'Yes')
     return
 end
 
-% save coordinates to file
+% store reference coordinates
 ok = saveMapCoord(h_fig);
+if ~ok
+    return
+end
 
 % close mapping tool
 h = guidata(h_fig);
 delete(h.figure_map);
-h = rmfield(h,'map');
-
-if ~ok
-    guidata(h_fig,h);
-    return
-end
+h = rmfield(h,'figure_map');
+guidata(h_fig,h);
 
 % set GUI to proper values and refresh plot
 updateFields(h_fig,'imgAxes');

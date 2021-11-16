@@ -11,11 +11,16 @@ if ~(isfield(proj,'traj_files') && size(proj.traj_files,2)>=2 && ...
     return
 end
 
-% ask for beta files
-[fname,pname,o] = uigetfile({'*.*','All files(*.*)'},...
-    'Select gamma factor file(s)',proj.folderRoot,'MultiSelect','on');
-if ~sum(pname)
-    return
+if iscell(obj)
+    pname = obj{1};
+    fname = obj{2};
+else
+    % ask for beta files
+    [fname,pname,o] = uigetfile({'*.*','All files(*.*)'},...
+        'Select gamma factor file(s)',proj.folderRoot,'MultiSelect','on');
+    if ~sum(pname)
+        return
+    end
 end
 if pname(end)~=filesep
     pname = [pname,filesep];

@@ -27,8 +27,9 @@ isBgcorr = 0;
 % collect parameters
 h = guidata(h_fig);
 p = h.param;
+n = p.movPr.curr_frame(p.curr_proj);
 curr = p.proj{p.curr_proj}.VP.curr;
-tocurr = curr.edit{1}(2);
+tocurr = curr.edit{1}{1}(2);
 filtlst = curr.edit{1}{4};
 
 % get calculation parameters

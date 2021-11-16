@@ -12,8 +12,6 @@ nChan_def = 2;
 nL_def = 2;
 vers = [2015,2020];
 nVers = size(vers,2);
-deflbl = {'don','acc1','acc2'};
-expT = 0.1;
 
 % general parameters
 [pname,o,o] = fileparts(mfilename('fullpath'));
@@ -33,9 +31,15 @@ end
 if ~exist(p.dumpdir,'dir')
     mkdir(p.dumpdir); % create new dump directory
 end
-p.vers = vers;
+
+% general parameters
+p.nChan_def = nChan_def; % number of channels
+p.nL_def = nL_def; % number of laser
+p.nChan = nChan_def;
+p.nL = nL_def;
 p.nChan_max = nChan_max;
 p.nL_max = nL_max;
+p.vers = vers;
 
 % parameters for visualization area (video length = [20,100])
 p.vid_files = {sprintf('%i.sira',vers(end)),... % .spe missing
@@ -44,55 +48,52 @@ p.vid_files = {sprintf('%i.sira',vers(end)),... % .spe missing
     sprintf('%i.avi',vers(end))...
     sprintf('%i.gif',vers(end)),...
     sprintf('%i.tif',vers(end)),...
-    sprintf('%i.pma',vers(end)),...
-    sprintf('%i_%ichan.coord',vers(end),nChan_def),...
-    sprintf('%i_%ichan.spots',vers(end),nChan_def)}; 
-p.tracecurs_file = 'createTraceCursor.png'; % exported image file from "Create trace" cursor
-p.exp_axes = 'graph.png';
+    sprintf('%i.pma',vers(end))}; 
 
-% parameters for "Plot"
-p.perSec = true; % units per second
-p.cmap = 1; % color map
-
-% parameters for "Experiment settings"
-p.nChan = nChan_def; % number of channels
-p.nL = nL_def; % number of laser
-p.wl = [];
-while isempty(p.wl) || numel(unique(p.wl))~=nL_max
-    p.wl = round(1000*sort(rand(1,nL_max))); % laser wavelength
-end
-p.expT = expT; % exposure time
-p.projOpt = cell(nL_max,nChan_max);
-for nL = 1:nL_max
-    for nChan = 1:nChan_max
-        p.projOpt{nL,nChan}.proj_title = ...
-            sprintf('test_%ichan%iexc',nChan,nL); % project title
-        p.projOpt{nL,nChan}.mol_name = 'none'; % molecule name
-        p.projOpt{nL,nChan}.conc_mg = round(100*rand(1)); % Mg concentration
-        p.projOpt{nL,nChan}.conc_k = round(500*rand(1)); % K concentration
-        p.projOpt{nL,nChan}.laser_pow = round(100*rand(1,nL)); % laser powers
-        p.projOpt{nL,nChan}.prm_extra = {'buffer',1,''};
-        p.projOpt{nL,nChan}.labels = deflbl(1:nChan); % channel labels
-        chanExc = zeros(1,nChan);
-        chanExc(1:min([nChan,nL])) = p.wl(1:min([nChan,nL]));
-        p.projOpt{nL,nChan}.chanExc = chanExc; % channel-specific excitation
+% experiment settings
+p.es = cell(nChan_max,nL_max);
+for nChan = 1:nChan_max
+    for nL = 1:nL_max
+        p.es{nChan,nL}.imp.vfile = '';
+        p.es{nChan,nL}.chan.nchan = nChan;
+        p.es{nChan,nL}.chan.emlbl = ['donem',cellstr(...
+            [repmat('accem',nChan-1,1),num2str((1:(nChan-1))')])'];
+        p.es{nChan,nL}.las.nlas = nL;
+        p.es{nChan,nL}.las.laswl = 100*(1:nL);
+        p.es{nChan,nL}.las.lasem = [1:min([nChan,nL]),...
+            zeros(1,nL-min([nChan,nL]))];
         FRET = [];
         for don = 1:(nChan-1)
-            if chanExc(don)>0
+            if any(p.es{nChan,nL}.las.lasem==don)
                 for acc = (don+1):nChan
                     FRET = cat(1,FRET,[don,acc]);
                 end
             end
         end
-        p.projOpt{nL,nChan}.FRET = FRET; % FRET pairs
+        p.es{nChan,nL}.calc.fret = FRET;
         if ~isempty(FRET)
-            p.projOpt{nL,nChan}.S = ...
-                FRET(chanExc(FRET(:,1))>0 & chanExc(FRET(:,2))>0,:); % stoichiometries
+            p.es{nChan,nL}.calc.s = ...
+                FRET(any(p.es{nChan,nL}.las.lasem==FRET(:,2)),:); 
         else
-            p.projOpt{nL,nChan}.S = [];
+            p.es{nChan,nL}.calc.s = [];
         end
+        p.es{nChan,nL}.div.projttl = '';
+        p.es{nChan,nL}.div.molname = 'chanexc';
+        p.es{nChan,nL}.div.expcond = {'param1','0','units1';'param2',...
+            'value2','units2'};
+        p.es{nChan,nL}.div.splt = 0.2;
+        rands = rand(size(p.es{nChan,nL}.calc.s,1),1);
+        rande = rand(size(p.es{nChan,nL}.calc.fret,1),1);
+        randi = rand(nChan*nL,1);
+        p.es{nChan,nL}.div.plotclr = [...
+            repmat(rands,1,2),ones(size(p.es{nChan,nL}.calc.s,1),1);...
+            rande,ones(size(p.es{nChan,nL}.calc.fret,1),1),rande;...
+            ones(nChan*nL,1),repmat(randi,1,2)];
     end
 end
+
+% parameters for "Plot"
+p.cmap = 17; % color map
 
 % parameters for "Edit and export video"
 p.bg_corr = 18; % image filters
@@ -119,24 +120,20 @@ p.bg_prm = [0 0
 p.bg_file = 'bgimg.png';
 p.vid_start = 2;
 p.vid_end = 7;
-p.exp_vid = 'export';
+p.vid_iv = 2;
 p.exp_fmt = {'.sira','.tif','.gif','.mat','.avi'};
 
 % parameters for "Molecule coordinates"
 p.ave_iv = 2; % frame interval for average image
 p.ave_start = 2; % first frame index for average image
 p.ave_end = 15; % laste frame index for average image
-p.exp_ave = 'ave.png'; % exported average image
 p.sf_meth = 2; % spot finder method
 p.sf_fit = false; % fit spots with Gaussians
-p.sf_all = false; % apply spotfinder to all video frames
 p.sf_prm = [0,0,0,0,0,0,0,0,0,0,0,0 % spot finder parameters
-    10000,5,5,7,7,20,0,1,3,0,1,150
-    10000,5,5,7,7,20,0,1,3,0,1,150
-    1.4,5,5,0,7,20,0,1,3,0,1,150
-    1000,5,5,7,0,20,0,1,3,0,1,150];
-p.exp_spots = {'spots_sf%i.spots','spots_sf%i_fit.spots'}; % exported spots file
-p.exp_tracks = {'tracks_sf%i.spots','tracks_sf%i_fit.spots'}; % exported tracks file
+    1000,5,5,7,7,20,0,1,3,0,1,150
+    1000,5,5,7,7,20,0,1,3,0,1,150
+    1.4,0,5,7,7,20,0,1,3,0,1,150
+    100,5,0,7,7,20,0,1,3,0,1,150];
 
 p.ave_file = cell(1,nChan); % imported reference image files
 p.ref_file = cell(1,nChan); % imported reference coordinates files
@@ -178,7 +175,7 @@ for nChan = 1:nChan_max
     if nChan==1
         continue
     end
-    p.ref_impOpt{nChan,1} = [256,256];
+    p.ref_impOpt{nChan,1} = [];
     p.ref_impOpt{nChan,2} = [1,2];
     p.ref_impOpt{nChan,3} = ...
         [(2:(nChan+1))',nChan*ones(nChan,1),zeros(nChan,1)];
@@ -197,7 +194,6 @@ for nChan = 1:nChan_max
 end
 p.pixDim = 5;
 p.nPix = 8;
-p.pixAve = true;
 p.expFmt = {'all-in-one ASCII','one-by-one ASCII','HaMMy','vbFRET','QUB',...
     'SMART','ebFRET'}; % exported files 
 p.expOpt = false(1,7); % export options

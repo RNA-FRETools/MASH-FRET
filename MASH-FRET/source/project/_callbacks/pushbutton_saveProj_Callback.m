@@ -71,7 +71,7 @@ dat.proj_file = [pname fname_proj];
 p.proj{proj}.proj_file = dat.proj_file;
 p.proj{proj}.date_last_modif = dat.date_last_modif;
 p.proj{proj}.cnt_p_sec = dat.cnt_p_sec;
-p.proj{proj}.cnt_p_pix = dat.cnt_p_pix;
+p.proj{proj}.time_in_sec = dat.time_in_sec;
 
 % save to file
 save([pname fname_proj], '-struct', 'dat');

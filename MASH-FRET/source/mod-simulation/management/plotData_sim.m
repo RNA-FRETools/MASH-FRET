@@ -33,6 +33,11 @@ prm = p.proj{p.curr_proj}.sim.prm;
 
 % check for existing data
 if ~(isfield(prm,'res_plot') && ~isempty(prm.res_plot{1}))
+    cla(h.axes_example);
+    cla(h.axes_S_frettrace);
+    cla(h.axes_example_hist);
+    cla(h.axes_S_frethist);
+    cla(h.axes_example_mov);
     set([h.axes_example,h.axes_S_frettrace,h.axes_example_hist,...
         h.axes_S_frethist,h.axes_example_mov,h.cb_example_mov],'visible',...
         'off');

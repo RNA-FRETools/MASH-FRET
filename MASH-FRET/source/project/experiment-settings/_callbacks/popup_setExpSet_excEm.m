@@ -7,10 +7,10 @@ h = guidata(h_fig);
 proj = h_fig.UserData;
 
 c = get(obj,'value')-1;
-if proj.chanExc(c)==proj.excitations(l)
-    return
-end
 if c>=1
+    if proj.chanExc(c)==proj.excitations(l)
+        return
+    end
     if proj.excitations(l)==0
         helpdlg('The laser wavelength must be a strictly positive value.');
         set(h.edit_excWl(l),'backgroundcolor',redclr);

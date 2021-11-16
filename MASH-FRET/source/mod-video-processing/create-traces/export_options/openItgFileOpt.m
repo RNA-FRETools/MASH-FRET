@@ -1,9 +1,9 @@
 function ok = openItgFileOpt(obj, evd, h_fig)
+% ok = openItgFileOpt([],[],h_fig)
+%
 % Open a window to modify file options for export of raw traces
-% "obj" >> handle of pushbutton from which the function has been called
-% "evd" >> eventdata structure of the pushbutton from which the function
-%          has been called (usually empty)
-% "h" >> main data structure stored in figure_MASH's handle
+%
+% h_fig: handle to main figure
 
 % update 4.2.2019 by MH: created function from scratch
 

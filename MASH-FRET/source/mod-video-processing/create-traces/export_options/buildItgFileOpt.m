@@ -5,7 +5,6 @@ p = h.param;
 expprm = p.proj{p.curr_proj}.VP.curr.gen_int{4};
 
 mg = 10;
-h_txt = 14;
 h_edit = 20;
 h_but = 22;
 

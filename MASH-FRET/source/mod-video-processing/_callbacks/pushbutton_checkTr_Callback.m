@@ -88,6 +88,7 @@ if ~(isfield(h,'axes_VP_tr') && ishandle(h.axes_VP_tr))
     h = buildVPtabPlotTr(h,h.dimprm);
     setProp([h.uitab_VP_plot_tr,h.uitab_VP_plot_tr.Children],'Units',...
         h.uitabgroup_VP_plot.Units);
+    guidata(h_fig,h);
 end
 
 % bring transformed image plot tab front
@@ -102,13 +103,8 @@ guidata(h_fig,h);
 
 % save image if from routine call
 if fromRoutine
-    pname_out = obj{2,1};
-    fname_out = obj{2,2};
-    if ~strcmp(pname_out(end),filesep)
-        pname_out = [pname_out,filesep];
-    end
-    print(h_fig2,[pname_out,fname_out],'-dpng');
-    close(h_fig2);
+    set(h_fig,'currentaxes',h.axes_VP_tr);
+    exportAxes(obj(2,:),[],h_fig);
 end
 
 % refresh plot

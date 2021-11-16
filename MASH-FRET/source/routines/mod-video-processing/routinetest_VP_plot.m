@@ -10,13 +10,13 @@ function routinetest_VP_plot(h_fig,p,prefix)
 % collect interface parameters
 h = guidata(h_fig);
 
-% set defaults
-setDefault_VP(h_fig,p);
+setDefault_VP(h_fig,p,prefix);
 
-% test intensity units
-disp(cat(2,prefix,'test intensity units...'));
-set(h.checkbox_int_ps,'value',~p.perSec);
-checkbox_int_ps_Callback(h.checkbox_int_ps,[],h_fig);
+% expand panel
+h_but = getHandlePanelExpandButton(h.uipanel_VP_plot,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 
 % test different color maps
 disp(cat(2,prefix,'test different color maps...'));

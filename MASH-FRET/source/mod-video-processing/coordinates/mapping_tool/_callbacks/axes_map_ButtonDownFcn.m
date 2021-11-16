@@ -18,7 +18,6 @@ if ~iscell(obj)
     newPnt = get(q.axes_top(chan), 'CurrentPoint');
     disp(newPnt);
     newPnt = fix(newPnt(1,1:2))+0.5;
-    disp(newPnt);
 else
     newPnt = obj{1}; % from routine test
 end
