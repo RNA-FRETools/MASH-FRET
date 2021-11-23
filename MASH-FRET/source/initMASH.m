@@ -72,6 +72,9 @@ h_axes = [h.axes_example_hist,h.axes_example,h.axes_example_mov,...
 set(h_axes,'visible','off');
 
 % recover root folder from default parameters and add to handle structure
+if ~exist(h.param.folderRoot,'dir')
+    [h.param.folderRoot,~,~] = fileparts(mfilename('fullpath'));
+end
 cd(h.param.folderRoot);
 set(h.edit_rootFolder, 'String', h.param.folderRoot);
 

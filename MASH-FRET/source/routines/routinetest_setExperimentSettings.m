@@ -17,16 +17,16 @@ end
 h_fig = h0.figure_setExpSet;
 h = guidata(h_fig);
 
-% test "Import" tab
-if isfield(h,'tab_imp') && ishandle(h.tab_imp)
-    routinetest_setExpSet_import(h_fig0,p,prefix);
-    push_setExpSet_next(h.push_nextImp,[],h_fig,1);
-end
-
 % test "Channels" tab
 if isfield(h,'tab_chan') && ishandle(h.tab_chan)
     routinetest_setExpSet_channels(h_fig0,p);
     push_setExpSet_next(h.push_nextChan,[],h_fig,2);
+end
+
+% test "Import" tab
+if isfield(h,'tab_imp') && ishandle(h.tab_imp)
+    routinetest_setExpSet_import(h_fig0,p,prefix);
+    push_setExpSet_next(h.push_nextImp,[],h_fig,1);
 end
 
 % set "Lasers" tab
@@ -43,7 +43,7 @@ end
 
 % set "File structure" tab
 if isfield(h,'tab_fstrct') && ishandle(h.tab_fstrct)
-    routinetest_setExpSet_fStruct(h_fig0,p);
+    routinetest_setExpSet_fstrct(h_fig0,p);
     push_setExpSet_next(h.push_nextFstrct,[],h_fig,5);
 end
 

@@ -4,7 +4,7 @@ function edit_pbGamma_minCutoff_Callback(obj, ~, h_fig, h_fig2)
 h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
-inSec = p.proj{proj}.time_in_Sec;
+inSec = p.proj{proj}.time_in_sec;
 nExc = p.proj{proj}.nb_excitations;
 len = nExc*size(p.proj{proj}.intensities,1);
 rate = p.proj{proj}.frame_rate;

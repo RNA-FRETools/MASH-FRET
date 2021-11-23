@@ -20,15 +20,17 @@ if isfield(prm,'vfile') && ~isempty(prm.vfile)
 end
 
 % set trajectory files
-if isfield(prm,'trajfiles') && ~isempty(prm.trajfiles)
+if isfield(prm,'tfiles') && ~isempty(prm.tfiles)
     disp([prefix,'test trajectory import...']);
-    push_setExpSet_impTrajFiles({p.annexpth,prm.trajfiles},[],h_fig,h_fig0);
+    push_setExpSet_impTrajFiles({[p.annexpth,filesep,prm.tdir],prm.tfiles},...
+        [],h_fig,h_fig0);
 end
 
 % set coordinates file
 if isfield(prm,'coordfile') && ~isempty(prm.coordfile)
     disp([prefix,'test coordinates import...']);
-    push_setExpSet_impCoordOpt(h.push_impCoordOpt,[],h_fig,h_fig0);
+    prm.coordopt = {[(1:2:2*p.nChan)',(2:2:2*p.nChan)'],1};
+    set_VP_impIntgrOpt(prm.coordopt,h.push_impCoordOpt,h_fig0);
     push_setExpSet_impCoordFile({p.annexpth,prm.coordfile},[],h_fig,h_fig0);
 end
 

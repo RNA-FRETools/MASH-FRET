@@ -269,6 +269,7 @@ try
         % if requested, process molecule data before exporting
         if fromTT && xp.process
             h = guidata(h_fig);
+            muteactions = h.mute_actions;
             h.mute_actions = true;
             guidata(h_fig,h);
 
@@ -276,7 +277,7 @@ try
             p = updateTraces(h_fig, 'ttPr', m, p, []);
             
             h = guidata(h_fig);
-            h.mute_actions = false;
+            h.mute_actions = muteactions;
             guidata(h_fig,h);
 
             % collect processed data

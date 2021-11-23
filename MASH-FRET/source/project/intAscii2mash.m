@@ -46,6 +46,7 @@ nFRET = size(FRET,1);
 if isGam
     gam_folder = p{6}{1};
     gam_files = p{6}{2};
+    p{6}{3} = [];
     for f = 1:numel(gam_files)
         content = importdata(cat(2,gam_folder,gam_files{f}));
         if isstruct(content)
@@ -76,6 +77,7 @@ end
 if isBet
     bet_folder = p{6}{4};
     bet_files = p{6}{5};
+    p{6}{6} = [];
     for f = 1:numel(bet_files)
         content = importdata(cat(2,bet_folder,bet_files{f}));
         if isstruct(content)

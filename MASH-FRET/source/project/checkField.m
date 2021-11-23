@@ -127,6 +127,7 @@ s.molTagClr = adjustParam('molTagClr',p.es.tagClr,s_in);
 %% check video entries
 % check movie file >> set movie dimensions and reading infos
 if ~isempty(s.movie_file) && istestfile(s.movie_file)
+    s.movie_file = strrep(strrep(s.movie_file,'\',filesep),'/',filesep);
     s.movie_file = which(s.movie_file); % get machine-dependent path for test files
 end
 if ~isempty(s.movie_file) && ~exist(s.movie_file, 'file')

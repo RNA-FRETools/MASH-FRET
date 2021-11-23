@@ -20,23 +20,25 @@ proj.spltime_from_traj = false;
 if ~isempty(opt) && opt{1}{1}(3)
     rowwise = opt{1}{1}(7);
     fdat = h.table_fstrct.UserData;
-    nhline = opt{1}{1}(1);
-    if rowwise==1
-        tcol = opt{1}{1}(4);
-        t0 = str2double(fdat{nhline+1,tcol});
-        t1 = str2double(fdat{nhline+2,tcol});
-        splt = t1-t0;
-    else
-        tcol_exc = opt{1}{2};
-        nExc = numel(tcol_exc);
-        t_exc = zeros(1,nExc);
-        for exc = 1:nExc
-            t_exc(exc) = str2double(fdat{nhline+1,tcol_exc(exc)});
+    if ~isempty(fdat)
+        nhline = opt{1}{1}(1);
+        if rowwise==1
+            tcol = opt{1}{1}(4);
+            t0 = str2double(fdat{nhline+1,tcol});
+            t1 = str2double(fdat{nhline+2,tcol});
+            splt = t1-t0;
+        else
+            tcol_exc = opt{1}{2};
+            nExc = numel(tcol_exc);
+            t_exc = zeros(1,nExc);
+            for exc = 1:nExc
+                t_exc(exc) = str2double(fdat{nhline+1,tcol_exc(exc)});
+            end
+            [t_exc,~] = sort(t_exc);
+            splt = t_exc(2)-t_exc(1);
         end
-        [t_exc,~] = sort(t_exc);
-        splt = t_exc(2)-t_exc(1);
+        proj.spltime_from_traj = true;
     end
-    proj.spltime_from_traj = true;
     
 elseif proj.is_movie
     [dat,ok] = getFrames(proj.movie_file,1,[],h_fig0,true);

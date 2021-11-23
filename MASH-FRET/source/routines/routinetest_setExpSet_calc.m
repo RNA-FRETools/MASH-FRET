@@ -37,7 +37,7 @@ end
 % add stoichiometry pairs
 nPair = size(prm.s,1);
 for pair = 1:nPair
-    fret = find(prm.fret(:,1)==prm.s(pair,1) && ...
+    fret = find(prm.fret(:,1)==prm.s(pair,1) & ...
         prm.fret(:,2)==prm.s(pair,2));
     set(h.popup_S,'value',fret);
     push_setExpSet_addS(h.push_addS,[],h_fig);

@@ -32,8 +32,20 @@ set(h_a, 'Position', p_a);
 set(h_f2save, 'ResizeFcn', {@f2save_ResizeFcn, h_a});
 
 if iscell(obj) % from routine
-    file_out = obj{1};
-    print(h_f2save,file_out,'-dpng');
+    fileout = '';
+    if numel(obj)==2
+        pname = obj{1};
+        fname = obj{2};
+        if pname(end)~=filesep
+            pname = [pname,filesep];
+        end
+        fileout = [pname,fname];
+    elseif numel(obj)==1
+        fileout = obj{1};
+    end
+    if ~isempty(fileout)
+        print(h_f2save,fileout,'-dpng');
+    end
     close(h_f2save);
 else
     set(h_f2save,'visible','on');

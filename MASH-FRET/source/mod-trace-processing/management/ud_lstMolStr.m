@@ -47,9 +47,7 @@ for m = 1:N
 end
 currMol = p.ttPr.curr_mol(proj);
 top = get(h_lb,'Listboxtop');
-set(h_lb, 'String', str_lst, 'Value', currMol);
-if top<=numel(str_lst)
-    set(h_lb,'Listboxtop',top);
-else
-    set(h_lb,'Listboxtop',1);
+if top>numel(str_lst)
+    top = numel(str_lst);
 end
+set(h_lb, 'String', str_lst, 'Value', currMol,'Listboxtop',top);

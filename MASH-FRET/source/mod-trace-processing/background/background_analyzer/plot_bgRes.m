@@ -2,7 +2,7 @@ function plot_bgRes(h_fig)
 
 g = guidata(h_fig);
 h = guidata(g.figure_MASH);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 rate = p.proj{proj}.frame_rate;
 nPix = p.proj{proj}.pix_intgr(2);

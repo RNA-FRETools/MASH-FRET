@@ -25,6 +25,13 @@ dt_bin = [];
 ok = 0;
 str = '';
 
+% abort if no transitions are available
+if isempty(p_proj.dt)
+    str = 'Not enough dwell-times to build a TDP.';
+    TDP = NaN;
+    return
+end
+
 % collect project parameters
 dt = p_proj.dt(:,tpe);
 m_incl = p_proj.coord_incl;

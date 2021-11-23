@@ -5,6 +5,8 @@ function ok = istestfile(file)
 % interface testing routines, and ok=0 otherwise
 
 src = fileparts(fileparts(which('MASH.m')));
+file = strrep(file,'\',filesep);
+file = strrep(file,'/',filesep);
 if ~strcmp(file(1),filesep)
     file = [filesep,file];
 end

@@ -10,7 +10,7 @@ for i = 1:proj.nb_channel
         xycol(i,1:2) = xycol(i-1,1:2) + 2;
     end
 end
-proj.traj_import_opt{3}{3}{1} = xycol;
+proj.traj_import_opt{3}{3}{1} = xycol(1:proj.nb_channel,:);
 h_fig.UserData = proj;
 
 % show process

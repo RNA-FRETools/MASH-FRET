@@ -8,7 +8,7 @@ h = guidata(h_fig);
 p = h.param;
 
 if ~prepPanel(h.uipanel_TP_sampleManagement,h)
-    set(h.listbox_molNb,'String',{},'Value',0,'Listboxtop',0);
+    set(h.listbox_molNb,'String',{''},'Value',1,'Listboxtop',1);
     return
 end
 

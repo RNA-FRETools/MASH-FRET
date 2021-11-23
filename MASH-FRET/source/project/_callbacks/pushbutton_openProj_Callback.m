@@ -16,6 +16,10 @@ p = h.param;
 % get project data
 if iscell(evd) % from project merging
     dat = evd{1};
+    [dat,ok] = checkField(dat,'',h_fig);
+    if ~ok
+        return
+    end
     
 else % from file
     if iscell(obj) % called by test routine

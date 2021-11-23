@@ -3,8 +3,8 @@ function edit_TP_subImg_y_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
-mol = p.curr_mol(proj);
-refocus = p.proj{proj}.fix{1}(5);
+mol = p.ttPr.curr_mol(proj);
+refocus = p.proj{proj}.TP.fix{1}(5);
 nC = p.proj{proj}.nb_channel;
 itg_dim = p.proj{proj}.pix_intgr(1);
 res_y = p.proj{proj}.movie_dim(2);
