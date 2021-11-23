@@ -2,7 +2,7 @@ function menu_projMenu_merge_Callback(obj,evd,h_fig)
 
 h = guidata(h_fig);
 p = h.param;
-if ~isModuleOn('TP')
+if ~isModuleOn(p,'TP')
     return
 end
     
@@ -221,7 +221,7 @@ s.bool_intensities = ~~s.bool_intensities;
 s.coord_incl = ~~s.coord_incl;
 
 % add merged project to the list
-pushbutton_addTraces_Callback([],{s},h_fig);
+pushbutton_openProj_Callback([],{s},h_fig);
 
 
 function [ok,errmsg] = projectCompatibility(p_proj)

@@ -71,11 +71,14 @@ for nChan = 1:nChan_max
             end
         end
         p.es{nChan,nL}.calc.fret = FRET;
+        p.es{nChan,nL}.calc.s = [];
         if ~isempty(FRET)
-            p.es{nChan,nL}.calc.s = ...
-                FRET(any(p.es{nChan,nL}.las.lasem==FRET(:,2)),:); 
-        else
-            p.es{nChan,nL}.calc.s = [];
+            for pair = 1:size(FRET,1)
+                if any(p.es{nChan,nL}.las.lasem==FRET(pair,2))
+                    p.es{nChan,nL}.calc.s = cat(1,p.es{nChan,nL}.calc.s,...
+                        FRET(pair,:));
+                end
+            end
         end
         p.es{nChan,nL}.div.projttl = '';
         p.es{nChan,nL}.div.molname = 'chanexc';

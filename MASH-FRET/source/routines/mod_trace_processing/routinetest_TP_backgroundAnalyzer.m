@@ -9,6 +9,12 @@ function routinetest_TP_backgroundAnalyzer(h_fig,p,prefix)
 
 h = guidata(h_fig);
 
+% open default project
+disp(cat(2,prefix,'import file ',p.mash_files{p.nL,p.nChan}));
+pushbutton_openProj_Callback({p.annexpth,p.mash_files{p.nL,p.nChan}},...
+    [],h_fig);
+
+% set default parameters
 setDefault_TP(h_fig,p);
 
 % test Background analyzer
@@ -18,6 +24,10 @@ q = guidata(h.figure_bgopt);
 
 % test sample navigation
 disp(cat(2,prefix,'test sample navigation...'));
+h_but = getHandlePanelExpandButton(h.uipanel_TP_sampleManagement,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 N = numel(get(h.listbox_molNb,'string'));
 n = randsample(2:(N-1),1);
 set(q.edit_curmol,'string',num2str(n));
@@ -144,4 +154,4 @@ for meth = 3:7
 end
 close(h.figure_bgopt);
 
-pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
+pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);

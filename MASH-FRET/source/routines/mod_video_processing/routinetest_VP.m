@@ -117,7 +117,7 @@ try
         routinetest_VP_editAndExportVideo(h_fig,p,subprefix);
     end
 
-    for nChan = 1:p.nChan_def
+    for nChan = 1:p.nChan_max
         p.nChan = nChan;
         p.nL = p.nL_def;
         namechan = [name,'_',num2str(p.nChan),'chan'];

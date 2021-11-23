@@ -10,8 +10,28 @@ function routinetest_TP_traceManager(h_fig,p,prefix)
 % get interface parameters
 h = guidata(h_fig);
 
+% open default project
+disp(cat(2,prefix,'import file ',p.mash_files{p.nL,p.nChan}));
+pushbutton_openProj_Callback({p.annexpth,p.mash_files{p.nL,p.nChan}},...
+    [],h_fig);
+
+% set default parameters
 setDefault_TP(h_fig,p);
 
+% generate all state trajectories
+h_but = getHandlePanelExpandButton(h.uipanel_TP_findStates,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
+fsmeth = 5;
+nDat = numel(get(h.popupmenu_TP_states_data,'string'));
+fsprm = repmat(p.fsPrm,1,1,nDat);
+str_trace = get(h.popupmenu_TP_states_applyTo,'string');
+set_TP_findStates(fsmeth,numel(str_trace),fsprm,[],p.nChan,p.nL,h_fig);
+pushbutton_applyAll_DTA_Callback(h.pushbutton_applyAll_DTA,[],h_fig);
+pushbutton_TP_updateAll_Callback(h.pushbutton_TP_updateAll,[],h_fig);
+
+% open TM
 pushbutton_TM_Callback(h.pushbutton_TM,[],h_fig);
 h = guidata(h_fig);
 q = h.tm;
@@ -254,11 +274,17 @@ for valx = [1,3,10] % test one data set of each sort
             yup = lim_y(1)+(lim_y(2)-lim_y(1))*0.8;
 
             set(q.edit_ylow,'string',num2str(lim_y(1)));
-            edit_ylow_Callback(q.edit_ylow,[],h_fig);
-
-            set(q.edit_yup,'string',num2str(lim_y(2)));
-            edit_yup_Callback(q.edit_yup,[],h_fig);
-
+            if ~edit_ylow_Callback(q.edit_ylow,[],h_fig)
+                set(q.edit_yup,'string',num2str(lim_y(2)));
+                edit_yup_Callback(q.edit_yup,[],h_fig);
+                
+                set(q.edit_ylow,'string',num2str(lim_y(1)));
+                edit_ylow_Callback(q.edit_ylow,[],h_fig);
+            else
+                set(q.edit_yup,'string',num2str(lim_y(2)));
+                edit_yup_Callback(q.edit_yup,[],h_fig);
+            end
+            
             set(q.edit_yniv,'string',num2str(p.tmOpt{3}(1)));
             edit_yniv_Callback(q.edit_yniv,[],h_fig);
 
@@ -369,5 +395,5 @@ end
 
 menu_export_Callback(q.pushbutton_export,[],h_fig);
 
-pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
+pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
 

@@ -7,6 +7,12 @@ function routinetest_TP_fileExport(h_fig,p,prefix)
 % p: structure containing default as set by getDefault_TP
 % prefix: string to add at the beginning of each action string (usually a specific indent)
 
+% open default project
+disp(cat(2,prefix,'import file ',p.mash_files{p.nL,p.nChan}));
+pushbutton_openProj_Callback({p.annexpth,p.mash_files{p.nL,p.nChan}},...
+    [],h_fig);
+
+% set default parameters
 setDefault_TP(h_fig,p);
 
 disp(cat(2,prefix,'test all export...'));
@@ -86,4 +92,4 @@ set_TP_asciiExpOpt(opt,h_fig);
 
 pushbutton_cancel_Callback(q.pushbutton_cancel,[],h_fig);
 
-pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
+pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
