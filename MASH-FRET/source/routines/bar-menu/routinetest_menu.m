@@ -40,13 +40,7 @@ diary(logfile);
 
 try
     % test main working area
-    h_fig = routinetest_general(p.annexpth,h_fig);
-
-    % test history view
-    if strcmp(opt,'all') || strcmp(opt,'view')
-        disp('test menu View...');
-        routinetest_menu_view(h_fig)
-    end
+    h_fig = routinetest_general(h_fig);
 
     % test file overwriting options
     if strcmp(opt,'all') || strcmp(opt,'options')
@@ -58,6 +52,12 @@ try
     if strcmp(opt,'all') || strcmp(opt,'tools')
         disp('test menu Tools...');
         routinetest_menu_tools(h_fig,p,'>> ')
+    end
+
+    % test units
+    if strcmp(opt,'all') || strcmp(opt,'tools')
+        disp('test menu Units...');
+        routinetest_menu_units(h_fig,p,'>> ')
     end
     
 catch err

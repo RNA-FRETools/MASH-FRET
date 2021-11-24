@@ -15,6 +15,7 @@ defprm = {'Movie name' '' ''
        'Molecule name' '' ''
        '[Mg2+]' [] 'mM'
        '[K+]' [] 'mM'};
+labels = {'Cy3','Cy5','Cy7'};
 nMax = 3;
 expT = 0.1;
 
@@ -36,6 +37,8 @@ end
 if ~exist(p.dumpdir,'dir')
     mkdir(p.dumpdir); % create new dump directory
 end
+p.nChan_def = nChan_def;
+p.nL_def = nL_def;
 p.nChan_min = nChan_min;
 p.nChan_max = nChan_max;
 p.nL_max = nL_max;
@@ -48,50 +51,73 @@ while isempty(p.wl) || numel(unique(p.wl))~=nL_max
     p.wl = round(1000*sort(rand(1,nL_max))); % laser wavelengths
 end
 p.mash_file = sprintf('%ichan%iexc.mash',nChan_def,nL_def);
-p.ascii_dir = cell(nL_max,nChan_max);
-p.ascii_files = cell(nL_max,nChan_max);
 p.exp_ascii2mash = cell(nL_max,nChan_max);
-p.asciiOptopt = cell(nChan_max,nL_max);
+p.es = cell(nChan_max,nL_max);
 for nL = 1:nL_max
     defprm_nL = defprm;
     for l = 1:nL
-        defprm_nL{size(defprm_nL,1)+l,1} = ...
-            ['Power(',num2str(p.wl(l)),'nm)'];
-        defprm_nL{size(defprm_nL,1),2} = '';
-        defprm_nL{size(defprm_nL,1),3} = 'mW';
+        defprm_nL{size(defprm,1)+l,1} = ['Power(',num2str(p.wl(l)),'nm)'];
+        defprm_nL{size(defprm,1),2} = '';
+        defprm_nL{size(defprm,1),3} = 'mW';
     end
     for nChan = nChan_min:nChan_max
-        p.ascii_dir{nL,nChan} = sprintf('%ichan%iexc',nChan,nL);
+        p.es{nChan,nL}.imp.vfile = '';
+        p.es{nChan,nL}.imp.tdir = sprintf('%ichan%iexc',nChan,nL);
         dir_content = dir(...
-            [p.annexpth,filesep,p.ascii_dir{nL,nChan},filesep,'*.txt']);
-        p.ascii_files{nL,nChan} = {};
-        for n = 1:size(dir_content,1);
-            p.ascii_files{nL,nChan} = cat(2,p.ascii_files{nL,nChan},...
+            [p.annexpth,filesep,p.es{nChan,nL}.imp.tdir,filesep,'*.txt']);
+        p.es{nChan,nL}.imp.tfiles = {};
+        for n = 1:size(dir_content,1)
+            p.es{nChan,nL}.imp.tfiles = cat(2,p.es{nChan,nL}.imp.tfiles,...
                 dir_content(n,1).name);
         end
+        p.es{nChan,nL}.imp.coordfile = '';
+        p.es{nChan,nL}.imp.coordopt = [];
         
-        p.exp_ascii2mash{nL,nChan} = sprintf('%ichan%iexc_ascii.mash',...
-            nChan,nL);
+        p.es{nChan,nL}.chan.nchan = nChan;
+        p.es{nChan,nL}.chan.emlbl = labels(1:nChan);
         
-        chanExc = zeros(1,nChan);
+        p.es{nChan,nL}.las.nlas = nL;
+        p.es{nChan,nL}.las.laswl = p.wl(1:nL);
+        p.es{nChan,nL}.las.lasem = [1:min([nChan,nL]),...
+            zeros(1,nL-min([nChan,nL]))];
+        
         FRET = [];
-        chanExc(1:min([nChan,nL])) = p.wl(1:min([nChan,nL]));
         for don = 1:(nChan-1)
-            if chanExc(don)>0
+            if any(p.es{nChan,nL}.las.lasem==don)
                 for acc = (don+1):nChan
                     FRET = cat(1,FRET,[don,acc]);
                 end
             end
         end
+        p.es{nChan,nL}.calc.fret = FRET;
+        p.es{nChan,nL}.calc.s = [];
+        if ~isempty(FRET)
+            for pair = 1:size(FRET,1)
+                if any(p.es{nChan,nL}.las.lasem==FRET(pair,2))
+                    p.es{nChan,nL}.calc.s = cat(1,p.es{nChan,nL}.calc.s,...
+                        FRET(pair,:));
+                end
+            end
+        end
         nFRET = size(FRET,1);
         
-        p.asciiOpt{nL,nChan}.intImp = {...
-            [2 0 true 1 2 (2+nChan-1) nChan nL true 3+nChan+1 ...
-            3+nChan+2*nFRET 1],p.wl(1:nL)};
-        p.asciiOpt{nL,nChan}.vidImp = {false ''};
-        p.asciiOpt{nL,nChan}.coordImp = {{false,'',{[1 2],1},256},[false 1]};
-        p.asciiOpt{nL,nChan}.expCond = defprm_nL;
-        p.asciiOpt{nL,nChan}.factImp = {false '' {} false '' {}};
+        p.es{nChan,nL}.fstrct = {[1 1 1 2 nChan+1 1 1 1 3+nChan+1 ...
+            3+nChan+2*nFRET 1],ones(1,nL),zeros(nL,2)};
+        
+        p.es{nChan,nL}.div.projttl = sprintf('test_%ichan%iexc',nChan,nL);
+        p.es{nChan,nL}.div.molname = 'none';
+        p.es{nChan,nL}.div.expcond = defprm_nL;
+        p.es{nChan,nL}.div.splt = 0.2;
+        rands = rand(size(p.es{nChan,nL}.calc.s,1),1);
+        rande = rand(size(p.es{nChan,nL}.calc.fret,1),1);
+        randi = rand(nChan*nL,1);
+        p.es{nChan,nL}.div.plotclr = [...
+            repmat(rands,1,2),ones(size(p.es{nChan,nL}.calc.s,1),1);...
+            rande,ones(size(p.es{nChan,nL}.calc.fret,1),1),rande;...
+            ones(nChan*nL,1),repmat(randi,1,2)];
+
+        p.exp_ascii2mash{nChan,nL} = ...
+            sprintf('ascii_%ichan%iexc.mash',nChan,nL);
     end
 end
 
@@ -144,5 +170,8 @@ p.exp_mdlBIC = 'mdl_BIC.png';
 p.exp_mdlSimdt = 'mdl_dt_%i.png';
 p.exp_mdlPop = 'mdl_pop.png';
 p.exp_mdlTrans = 'mdl_trans.png';
+
+% visualization area
+p.exp_axes = 'axes';
 
 

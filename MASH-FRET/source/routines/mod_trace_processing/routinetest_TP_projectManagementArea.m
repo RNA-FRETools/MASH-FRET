@@ -41,9 +41,6 @@ for nL = 1:p.nL_max
         disp(cat(2,prefix,'>> import data set ',p.es{nChan,nL}.imp.tdir));
         routinetest_TP_createProj(p,h_fig,[prefix,'>> >> ']);
 
-        % set module
-        switchPan(h.togglebutton_TP,[],h_fig);
-
         % save project
         pushbutton_saveProj_Callback({p.dumpdir,p.exp_ascii2mash{nChan,nL}},...
             [],h_fig);

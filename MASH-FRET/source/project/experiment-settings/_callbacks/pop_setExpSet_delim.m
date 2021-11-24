@@ -7,6 +7,9 @@ maxflines = 100;
 proj = get(h_fig,'userdata');
 proj.traj_import_opt{1}{1}(2) = get(obj,'value');
 set(h_fig,'userdata',proj);
+if ~isfield(proj,'traj_files')
+    return
+end
 
 % reset file data
 switch proj.traj_import_opt{1}{1}(2)

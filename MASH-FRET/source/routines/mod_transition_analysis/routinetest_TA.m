@@ -41,15 +41,7 @@ diary(logfile);
 try
 
     % test main working area
-    h_fig = routinetest_general(p.annexpth,h_fig);
-    h = guidata(h_fig);
-
-    % switch to trace processing module
-    switchPan(h.togglebutton_TA,[],h_fig);
-
-    % set interface defaults
-    disp('test main callbacks...');
-    setDefault_TA(h_fig,p);
+    h_fig = routinetest_general(h_fig);
 
     subprefix = '>> ';
 
@@ -82,6 +74,12 @@ try
         disp('test panel kinetic model...');
         routinetest_TA_kineticModel(h_fig,p,subprefix);
     end
+
+    % test visualization area
+    if strcmp(opt,'all') || strcmp(opt,'visualization area')
+        disp('test visualization area...');
+        routinetest_TA_visualizationArea(h_fig,p,subprefix);
+    end
     
 catch err
     % display error and stop logs
@@ -94,6 +92,9 @@ catch err
     if isfield(h,'expTDPopt') && isfield(h.expTDPopt,'figure_expTDPopt') && ...
             ishandle(h.expTDPopt.figure_expTDPopt)
         close(h.expTDPopt.figure_expTDPopt);
+    end
+    if isfield(h,'figure_setExpSet') && ishandle(h.figure_setExpSet)
+        close(h.figure_setExpSet);
     end
     return
 end

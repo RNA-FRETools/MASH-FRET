@@ -15,20 +15,17 @@ prm = p.es{p.nChan,p.nL}.imp;
 
 % set video file
 if isfield(prm,'vfile') && ~isempty(prm.vfile)
-    disp([prefix,'test video import...']);
     push_setExpSet_impFile({p.annexpth,prm.vfile},[],h_fig,h_fig0);
 end
 
 % set trajectory files
 if isfield(prm,'tfiles') && ~isempty(prm.tfiles)
-    disp([prefix,'test trajectory import...']);
     push_setExpSet_impTrajFiles({[p.annexpth,filesep,prm.tdir],prm.tfiles},...
         [],h_fig,h_fig0);
 end
 
 % set coordinates file
 if isfield(prm,'coordfile') && ~isempty(prm.coordfile)
-    disp([prefix,'test coordinates import...']);
     prm.coordopt = {[(1:2:2*p.nChan)',(2:2:2*p.nChan)'],1};
     set_VP_impIntgrOpt(prm.coordopt,h.push_impCoordOpt,h_fig0);
     push_setExpSet_impCoordFile({p.annexpth,prm.coordfile},[],h_fig,h_fig0);
@@ -36,14 +33,12 @@ end
 
 % set gamma factor file
 if isfield(prm,'gammafile') && ~isempty(prm.gammafile)
-    disp([prefix,'test gamma factor import...']);
     push_setExpSet_impGammaFile({p.annexpth,prm.gammafile},[],h_fig,...
         h_fig0);
 end
 
 % set beta factor file
 if isfield(prm,'betafile') && ~isempty(prm.betafile)
-    disp([prefix,'test betaa factor import...']);
     push_setExpSet_impBetaFile({p.annexpth,prm.betafile},[],h_fig,...
         h_fig0);
 end

@@ -103,6 +103,6 @@ p.un_out = 1; % exported intensities units
 p.mash = 'sim.mash';
 
 % default for visulaization area
-p.exp_axes = 'graph_%i.png';
+p.exp_axes = 'axes';
 
 

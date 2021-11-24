@@ -10,9 +10,18 @@ function routinetest_TA_transitionDensityPlot(h_fig,p,prefix)
 % defaults
 opt0 = [true,4,false,3,false,false,false,false,false,false,false,false];
 
+% set TA's defaults
 setDefault_TA(h_fig,p);
 
+% retrieve interface defaults
 h = guidata(h_fig);
+
+% expand panel
+h_but = getHandlePanelExpandButton(h.uipanel_TA_transitionDensityPlot,...
+    h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 
 % test different data
 disp(cat(2,prefix,'test data list...'));
@@ -37,7 +46,7 @@ tdpPrm(4) = ~tdpPrm(4);
 set_TA_TDP(p.tdpDat,1,tdpPrm,h_fig);
 pushbutton_TDPupdatePlot_Callback(h.pushbutton_TDPupdatePlot,[],h_fig);
 
-pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig)
+pushbutton_TA_export_Callback(h.pushbutton_TA_export,[],h_fig)
 set_TA_expOpt(opt0,h_fig);
 pushbutton_expTDPopt_next_Callback({p.dumpdir,[p.exp_tdp,'_stat.tdp']},[],...
     h_fig);
@@ -49,7 +58,7 @@ tdpPrm(5) = ~tdpPrm(5);
 set_TA_TDP(p.tdpDat,1,tdpPrm,h_fig);
 pushbutton_TDPupdatePlot_Callback(h.pushbutton_TDPupdatePlot,[],h_fig);
 
-pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig)
+pushbutton_TA_export_Callback(h.pushbutton_TA_export,[],h_fig)
 set_TA_expOpt(opt0,h_fig);
 pushbutton_expTDPopt_next_Callback({p.dumpdir,[p.exp_tdp,'_single.tdp']},...
     [],h_fig);
@@ -61,7 +70,7 @@ tdpPrm(6) = ~tdpPrm(6);
 set_TA_TDP(p.tdpDat,1,tdpPrm,h_fig);
 pushbutton_TDPupdatePlot_Callback(h.pushbutton_TDPupdatePlot,[],h_fig);
 
-pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig)
+pushbutton_TA_export_Callback(h.pushbutton_TA_export,[],h_fig)
 set_TA_expOpt(opt0,h_fig);
 pushbutton_expTDPopt_next_Callback({p.dumpdir,[p.exp_tdp,'_rearr.tdp']},[],...
     h_fig);
@@ -73,7 +82,7 @@ tdpPrm(7) = ~tdpPrm(7);
 set_TA_TDP(p.tdpDat,1,tdpPrm,h_fig);
 pushbutton_TDPupdatePlot_Callback(h.pushbutton_TDPupdatePlot,[],h_fig);
 
-pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig);
+pushbutton_TA_export_Callback(h.pushbutton_TA_export,[],h_fig);
 opt = opt0;
 opt(1) = false;
 opt(3) = true;
@@ -89,4 +98,4 @@ tdpPrm(8) = ~tdpPrm(8);
 set_TA_TDP(p.tdpDat,1,tdpPrm,h_fig);
 pushbutton_TDPupdatePlot_Callback(h.pushbutton_TDPupdatePlot,[],h_fig);
 
-pushbutton_TDPremProj_Callback(h.pushbutton_TDPremProj,[],h_fig);
+pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);

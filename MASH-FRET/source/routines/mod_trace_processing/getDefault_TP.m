@@ -256,11 +256,7 @@ p.fsThresh = [-Inf,0,0.6 % state values and thresholds
     0.7,1,Inf];
 
 % parameters for visualization area
-p.exp_axesBot = 'axes_top.png';
-p.exp_axesBotRight = 'axes_topRight.png';
-p.exp_axesTop = 'axes_bottom.png';
-p.exp_axesTopRight = 'axes_bottomRight.png';
-p.exp_axesImg = 'axes_subImg_%i.png';
+p.exp_axes = 'axes';
 p.exp_figpreview = 'figure_preview';
 
 % parameters for file export

@@ -17,13 +17,7 @@ slider_img_Callback(h.slider_img,[],h_fig);
 
 % test graph export and zoom reset
 disp(cat(2,prefix,'test graph export and zoom reset...'));
-chld = h.uipanel_VP.Children;
-h_axes = [];
-for c = 1:numel(chld)
-    if strcmp(chld(c).Type,'axes')
-        h_axes = cat(2,h_axes,chld(c));
-    end
-end
+h_axes = getHandleWithPropVal(h.uipanel_VP,'Type','axes');
 for ax = 1:numel(h_axes)
     set(h_fig,'CurrentAxes',h_axes(ax));
     exportAxes({[p.dumpdir,filesep,p.exp_axes,'_',num2str(ax)]},[],h_fig);

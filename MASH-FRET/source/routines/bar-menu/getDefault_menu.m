@@ -23,6 +23,8 @@ if ~exist(p.dumpdir,'dir')
     mkdir(p.dumpdir); % create new dump directory
 end
 
+p.mash_file = '2chan2exc.mash';
+
 p.dataset_restruct = {'dataset_2chan2exc','dataset_3chan2exc'};
 p.wl = {[532,532,532,532],[532,532,638,638]};
 p.expT = [0.5,1,2];

@@ -181,6 +181,12 @@ catch err
     disp(' ');
     dispMatlabErr(err)
     diary off;
+    
+    h = guidata(h_fig);
+    if isfield(h,'figure_setExpSet') && ishandle(h.figure_setExpSet)
+        close(h.figure_setExpSet);
+    end
+    
     return
 end
 

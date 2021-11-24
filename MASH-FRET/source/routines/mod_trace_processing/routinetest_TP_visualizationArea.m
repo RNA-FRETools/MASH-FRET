@@ -17,26 +17,13 @@ setDefault_TP(h_fig,p);
 
 h = guidata(h_fig);
 
-% test graph export
+% test graph export and zoom reset
 disp(cat(2,prefix,'test graph export and zoom reset...'));
-set(h_fig,'CurrentAxes',h.axes_bottom);
-exportAxes({[p.dumpdir,filesep,p.exp_axesBot]},[],h_fig);
-
-set(h_fig,'CurrentAxes',h.axes_bottomRight);
-exportAxes({[p.dumpdir,filesep,p.exp_axesBotRight]},[],h_fig);
-
-set(h_fig,'CurrentAxes',h.axes_top);
-exportAxes({[p.dumpdir,filesep,p.exp_axesTop]},[],h_fig);
-
-set(h_fig,'CurrentAxes',h.axes_topRight);
-exportAxes({[p.dumpdir,filesep,p.exp_axesTopRight]},[],h_fig);
-
-for chan = 1:numel(h.axes_subImg)
-    set(h_fig,'CurrentAxes',h.axes_subImg(chan));
-    exportAxes({[p.dumpdir,filesep,sprintf(p.exp_axesImg,chan)]},[],h_fig);
+h_axes = getHandleWithPropVal(h.uipanel_TP,'Type','axes');
+for ax = 1:numel(h_axes)
+    set(h_fig,'CurrentAxes',h_axes(ax));
+    exportAxes({[p.dumpdir,filesep,p.exp_axes,'_',num2str(ax)]},[],h_fig);
+    ud_zoom([],[],'reset',h_fig);
 end
-
-% test zoom reset
-ud_zoom([],[],'reset',h_fig);
 
 pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);

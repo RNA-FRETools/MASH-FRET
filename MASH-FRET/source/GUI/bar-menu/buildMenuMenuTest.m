@@ -10,9 +10,9 @@ function h = buildMenuMenuTest(h)
 
 % default
 lbl0 = 'All menus';
-lbl1 = 'menu "View"';
 lbl2 = 'menu "Options"';
 lbl3 = 'menu "Tools"';
+lbl4 = 'menu "Units"';
 
 % parents
 h_fig = h.figure_MASH;
@@ -22,11 +22,11 @@ h_men = h.menu_menuTest;
 h.menu_menu_allTest = uimenu(h_men,'label',lbl0,'callback',...
     {@menu_routineTest_Callback,'menu','all',h_fig});
 
-h.menu_menu_viewTest = uimenu(h_men,'label',lbl1,'callback',...
-    {@menu_routineTest_Callback,'menu','view',h_fig});
-
 h.menu_menu_optionsTest = uimenu(h_men,'label',lbl2,'callback',...
     {@menu_routineTest_Callback,'menu','options',h_fig});
 
 h.menu_menu_toolsTest = uimenu(h_men,'label',lbl3,'callback',...
     {@menu_routineTest_Callback,'menu','tools',h_fig});
+
+h.menu_menu_unitsTest = uimenu(h_men,'label',lbl4,'callback',...
+    {@menu_routineTest_Callback,'menu','units',h_fig});

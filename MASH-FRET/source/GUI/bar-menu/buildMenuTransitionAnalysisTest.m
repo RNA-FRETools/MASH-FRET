@@ -15,6 +15,7 @@ lbl2 = 'panel "Transition density plot"';
 lbl3 = 'panel "State configuration"';
 lbl4 = 'panel "State lifetimes"';
 lbl5 = 'panel "Kinetic model"';
+lbl6 = 'visualization area';
 
 % parents
 h_fig = h.figure_MASH;
@@ -38,3 +39,6 @@ h.menu_TA_stateTranditionRatesTest = uimenu(h_men,'label',lbl4,'callback',...
 
 h.menu_TA_kineticModelTest = uimenu(h_men,'label',lbl5,'callback',...
     {@menu_routineTest_Callback,'ta','kinetic model',h_fig});
+
+h.menu_TA_visualizationAreaTest = uimenu(h_men,'label',lbl6,'callback',...
+    {@menu_routineTest_Callback,'ta','visualization area',h_fig});

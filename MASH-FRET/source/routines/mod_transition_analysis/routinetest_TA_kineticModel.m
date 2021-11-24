@@ -1,7 +1,7 @@
 function routinetest_TA_kineticModel(h_fig,p,prefix)
 % routinetest_TA_kineticModel(h_fig,p,prefix)
 %
-% Tests DPH fit, calculation of rate coefficients, axes export and zoom reset
+% Tests DPH fit, calculation of rate coefficients
 %
 % h_fig: handle to main figure
 % p: structure containing default as set by getDefault_TA
@@ -10,9 +10,17 @@ function routinetest_TA_kineticModel(h_fig,p,prefix)
 % defaults
 opt0 = [false,4,false,3,false,false,false,false,false,true,true,true];
 
+% set TA's defaults
 setDefault_TA(h_fig,p);
 
+% retrieve interface defaults
 h = guidata(h_fig);
+
+% expand panel
+h_but = getHandlePanelExpandButton(h.uipanel_TA_kineticModel,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 
 % start clustering
 pushbutton_TDPupdateClust_Callback(h.pushbutton_TDPupdateClust,[],h_fig);
@@ -34,11 +42,11 @@ set_TA_mdl(2,p.Dmax,p.mdlRestart,h_fig);
 pushbutton_TA_refreshModel_Callback(h.pushbutton_TA_refreshModel,[],h_fig);
 
 % save project
-pushbutton_TDPsaveProj_Callback({p.dumpdir,[p.exp_mdl,'_fromExpfit.mash']},...
+pushbutton_saveProj_Callback({p.dumpdir,[p.exp_mdl,'_fromExpfit.mash']},...
     [],h_fig);
 
 % export model
-pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig)
+pushbutton_TA_export_Callback(h.pushbutton_TA_export,[],h_fig)
 set_TA_expOpt(opt0,h_fig);
 pushbutton_expTDPopt_next_Callback(...
     {p.dumpdir,[p.exp_mdl,'_fromExpfit.mdl']},[],h_fig);
@@ -51,11 +59,11 @@ set_TA_mdl(1,p.Dmax,p.mdlRestart,h_fig);
 pushbutton_TA_refreshModel_Callback(h.pushbutton_TA_refreshModel,[],h_fig);
 
 % save project
-pushbutton_TDPsaveProj_Callback({p.dumpdir,[p.exp_mdl,'_fromDPHfit.mash']},...
+pushbutton_saveProj_Callback({p.dumpdir,[p.exp_mdl,'_fromDPHfit.mash']},...
     [],h_fig);
 
 % export model
-pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig)
+pushbutton_TA_export_Callback(h.pushbutton_TA_export,[],h_fig)
 set_TA_expOpt(opt0,h_fig);
 pushbutton_expTDPopt_next_Callback(...
     {p.dumpdir,[p.exp_mdl,'_fromDPHfit.mdl']},[],h_fig);
@@ -85,5 +93,5 @@ exportAxes({[p.dumpdir,filesep,p.exp_mdlTrans]},[],h_fig);
 ud_zoom([],[],'reset',h_fig); % test zoom reset
 
 % remove project from list
-pushbutton_TDPremProj_Callback(h.pushbutton_TDPremProj,[],h_fig);
+pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
 
