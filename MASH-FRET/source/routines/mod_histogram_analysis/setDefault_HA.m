@@ -10,21 +10,30 @@ function setDefault_HA(h_fig,p)
 h = guidata(h_fig);
 
 % empty project list
-nProj = numel(get(h.listbox_thm_projLst,'string'));
-proj = nProj;
-while proj>0
-    set(h.listbox_thm_projLst,'value',proj);
-    listbox_thm_projLst_Callback(h.listbox_thm_projLst,[],h_fig);
-    pushbutton_thm_rmProj_Callback(h.pushbutton_thm_rmProj,[],h_fig);
-    proj = proj-1;
+nProj = numel(h.listbox_proj.String);
+for proj = nProj:-1:1
+    set(h.listbox_proj,'value',proj);
+    listbox_projLst_Callback(h.listbox_proj,[],h_fig);
+    pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig,true);
 end
 
 % import default project
-pushbutton_thm_addProj_Callback({p.annexpth,p.mash_file},[],h_fig);
+pushbutton_openProj_Callback({p.annexpth,p.mash_file},[],h_fig);
+
+% switch to HA's module
+switchPan(h.togglebutton_HA,[],h_fig);
 
 % set default histogram and plot parameters
+h_but = getHandlePanelExpandButton(h.uipanel_HA_histogramAndPlot,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 set_HA_histplot(p.histDat,p.histTag,p.histPrm,h_fig);
 
 % set default state configuration parameters
+h_but = getHandlePanelExpandButton(h.uipanel_HA_stateConfiguration,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 set_HA_stateConfig(p.cnfgPrm,h_fig);
 

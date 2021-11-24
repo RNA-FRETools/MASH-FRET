@@ -7,9 +7,17 @@ function routinetest_HA_statePopulations(h_fig,p,prefix)
 % p: structure containing default as set by getDefault_HA
 % prefix: string to add at the beginning of each action string (usually a apecific indent)
 
+% set HA's defaults
 setDefault_HA(h_fig,p);
 
+% retrieve interface defaults
 h = guidata(h_fig);
+
+% expand panel
+h_but = getHandlePanelExpandButton(h.uipanel_HA_statePopulations,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 
 % test Gaussian fitting
 disp(cat(2,prefix,'test simple Gaussian fitting...'));
@@ -31,9 +39,9 @@ set(h_fig,'currentaxes',h.axes_hist1);
 exportAxes({[p.dumpdir,filesep,p.exp_pop,'_1_gauss.png']},[],h_fig);
 set(h_fig,'currentaxes',h.axes_hist2);
 exportAxes({[p.dumpdir,filesep,p.exp_pop,'_2_gauss.png']},[],h_fig);
-pushbutton_thm_export_Callback({p.dumpdir,[p.exp_pop,'_gauss.txt']},[],...
+pushbutton_HA_export_Callback({p.dumpdir,[p.exp_pop,'_gauss.txt']},[],...
     h_fig);
-pushbutton_thm_saveProj_Callback({p.dumpdir,[p.exp_pop,'_gauss.mash']},[],...
+pushbutton_saveProj_Callback({p.dumpdir,[p.exp_pop,'_gauss.mash']},[],...
     h_fig);
 
 disp(cat(2,prefix,'test bootstrap Gaussian fitting...'));
@@ -59,10 +67,10 @@ set(h_fig,'currentaxes',h.axes_hist1);
 exportAxes({[p.dumpdir,filesep,p.exp_pop,'_1_gauss_wboba.png']},[],h_fig);
 set(h_fig,'currentaxes',h.axes_hist2);
 exportAxes({[p.dumpdir,filesep,p.exp_pop,'_2_gauss_wboba.png']},[],h_fig);
-pushbutton_thm_export_Callback({p.dumpdir,[p.exp_pop,'_gauss_wboba.txt']},...
+pushbutton_HA_export_Callback({p.dumpdir,[p.exp_pop,'_gauss_wboba.txt']},...
     [],h_fig);
-pushbutton_thm_saveProj_Callback(...
-    {p.dumpdir,[p.exp_pop,'_gauss_wboba.mash']},[],h_fig);
+pushbutton_saveProj_Callback({p.dumpdir,[p.exp_pop,'_gauss_wboba.mash']},...
+    [],h_fig);
 
 % test bootstrap Gaussian fitting without weighing
 disp(cat(2,prefix,'>> without weighing...'));
@@ -85,10 +93,10 @@ set(h_fig,'currentaxes',h.axes_hist1);
 exportAxes({[p.dumpdir,filesep,p.exp_pop,'_1_gauss_boba.png']},[],h_fig);
 set(h_fig,'currentaxes',h.axes_hist2);
 exportAxes({[p.dumpdir,filesep,p.exp_pop,'_2_gauss_boba.png']},[],h_fig);
-pushbutton_thm_export_Callback({p.dumpdir,[p.exp_pop,'_gauss_boba.txt']},...
+pushbutton_HA_export_Callback({p.dumpdir,[p.exp_pop,'_gauss_boba.txt']},...
     [],h_fig);
-pushbutton_thm_saveProj_Callback(...
-    {p.dumpdir,[p.exp_pop,'_gauss_boba.mash']},[],h_fig);
+pushbutton_saveProj_Callback({p.dumpdir,[p.exp_pop,'_gauss_boba.mash']},[],...
+    h_fig);
 
 % test thresholding
 disp(cat(2,prefix,'test simple thresholding...'));
@@ -110,9 +118,9 @@ set(h_fig,'currentaxes',h.axes_hist1);
 exportAxes({[p.dumpdir,filesep,p.exp_pop,'_1_thresh.png']},[],h_fig);
 set(h_fig,'currentaxes',h.axes_hist2);
 exportAxes({[p.dumpdir,filesep,p.exp_pop,'_2_thresh.png']},[],h_fig);
-pushbutton_thm_export_Callback({p.dumpdir,[p.exp_pop,'_thresh.txt']},[],...
+pushbutton_HA_export_Callback({p.dumpdir,[p.exp_pop,'_thresh.txt']},[],...
     h_fig);
-pushbutton_thm_saveProj_Callback({p.dumpdir,[p.exp_pop,'_thresh.mash']},[],...
+pushbutton_saveProj_Callback({p.dumpdir,[p.exp_pop,'_thresh.mash']},[],...
     h_fig);
 
 disp(cat(2,prefix,'test bootstrap thresholding...'));
@@ -138,9 +146,9 @@ set(h_fig,'currentaxes',h.axes_hist1);
 exportAxes({[p.dumpdir,filesep,p.exp_pop,'_1_thresh_wboba.png']},[],h_fig);
 set(h_fig,'currentaxes',h.axes_hist2);
 exportAxes({[p.dumpdir,filesep,p.exp_pop,'_2_thresh_wboba.png']},[],h_fig);
-pushbutton_thm_export_Callback({p.dumpdir,[p.exp_pop,'_thresh_wboba.txt']},...
+pushbutton_HA_export_Callback({p.dumpdir,[p.exp_pop,'_thresh_wboba.txt']},...
     [],h_fig);
-pushbutton_thm_saveProj_Callback(...
+pushbutton_saveProj_Callback(...
     {p.dumpdir,[p.exp_pop,'_thresh_wboba.mash']},[],h_fig);
 
 % test bootstrap thresholding without weighing
@@ -164,10 +172,10 @@ set(h_fig,'currentaxes',h.axes_hist1);
 exportAxes({[p.dumpdir,filesep,p.exp_pop,'_1_thresh_boba.png']},[],h_fig);
 set(h_fig,'currentaxes',h.axes_hist2);
 exportAxes({[p.dumpdir,filesep,p.exp_pop,'_2_thresh_boba.png']},[],h_fig);
-pushbutton_thm_export_Callback({p.dumpdir,[p.exp_pop,'_thresh_boba.txt']},...
+pushbutton_HA_export_Callback({p.dumpdir,[p.exp_pop,'_thresh_boba.txt']},...
     [],h_fig);
-pushbutton_thm_saveProj_Callback(...
+pushbutton_saveProj_Callback(...
     {p.dumpdir,[p.exp_pop,'_thresh_boba.mash']},[],h_fig);
 
 % close project
-pushbutton_thm_rmProj_Callback(h.pushbutton_thm_rmProj,[],h_fig);
+pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);

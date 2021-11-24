@@ -6,9 +6,6 @@ function p = getDefault_HA
 % p: structure that contain default parameters
 
 % defaults
-nChan_min = 2;
-nChan_max = 3;
-nL_max = 3;
 nChan_def = 2;
 nL_def = 2;
 nPop = 4;
@@ -31,36 +28,18 @@ end
 if ~exist(p.dumpdir,'dir')
     mkdir(p.dumpdir); % create new dump directory
 end
-p.nChan_min = nChan_min;
-p.nChan_max = nChan_max;
-p.nL_max = nL_max;
 
 % parameters for project management area
 p.nChan = nChan_def;
 p.nL = nL_def;
 p.wl = [];
-while isempty(p.wl) || numel(unique(p.wl))~=nL_max
-    p.wl = round(1000*sort(rand(1,nL_max))); % laser wavelengths
+while isempty(p.wl) || numel(unique(p.wl))~=nL_def
+    p.wl = round(1000*sort(rand(1,nL_def))); % laser wavelengths
 end
 p.mash_file = sprintf('%ichan%iexc.mash',nChan_def,nL_def);
-for nL = 1:nL_max
-    for nChan = nChan_min:nChan_max 
-        chanExc = zeros(1,nChan);
-        FRET = [];
-        chanExc(1:min([nChan,nL])) = p.wl(1:min([nChan,nL]));
-        for don = 1:(nChan-1)
-            if chanExc(don)>0
-                for acc = (don+1):nChan
-                    FRET = cat(1,FRET,[don,acc]);
-                end
-            end
-        end
-        nFRET = size(FRET,1);
-        if nChan==nChan_def && nL==nL_def
-            nDE = sum(chanExc~=0);
-        end
-    end
-end
+chanExc = zeros(1,nChan_def);
+chanExc(1:min([nChan_def,nL_def])) = p.wl(1:min([nChan_def,nL_def]));
+nDE = sum(chanExc~=0);
 
 
 % parameters for panel Histogram and plot
@@ -70,7 +49,7 @@ p.histPrm = [0,0.01,1,0]; % low, bin, up, overflow
 p.exp_overflow = 'histOverflow';
 
 % parameters for panel State configuration
-p.cnfgPrm = [5,2,1.2]; % Jmax, (1 or 2) penalty or BIC, penalty
+p.cnfgPrm = [5,2,1.2,1]; % Jmax, (1 or 2) penalty or BIC, penalty, (1 or 2) likelihood calculations
 p.exp_BICplot = 'GOFplot';
 p.exp_BIC = 'config_BIC.txt';
 p.exp_penalty = 'config_penalty.txt';

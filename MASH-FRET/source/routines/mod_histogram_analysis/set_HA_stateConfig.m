@@ -26,3 +26,6 @@ switch prm(2)
         set(h.radiobutton_thm_BIC,'value',1);
         radiobutton_thm_BIC_Callback(h.radiobutton_thm_BIC,[],h_fig);
 end
+
+set(h.popupmenu_thm_likelihood,'value',prm(4));
+popupmenu_thm_likelihood_Callback(h.popupmenu_thm_likelihood,[],h_fig);

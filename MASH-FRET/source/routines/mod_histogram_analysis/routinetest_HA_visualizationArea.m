@@ -11,16 +11,17 @@ setDefault_HA(h_fig,p);
 
 h = guidata(h_fig);
 
-% test axes export
-disp(cat(2,prefix,'test axes export...'));
-set(h_fig,'currentaxes',h.axes_hist1);
-exportAxes({[p.dumpdir,filesep,p.exp_axes,'_1.png']},[],h_fig);
-set(h_fig,'currentaxes',h.axes_hist2);
-exportAxes({[p.dumpdir,filesep,p.exp_axes,'_2.png']},[],h_fig);
-
-% test zoom reset
-disp(cat(2,prefix,'test zoom reset...'));
-set(h_fig,'currentaxes',h.axes_hist1);
-ud_zoom([],[],'reset',h_fig);
-set(h_fig,'currentaxes',h.axes_hist2);
-ud_zoom([],[],'reset',h_fig);
+% test graph export and zoom reset
+disp(cat(2,prefix,'test graph export and zoom reset...'));
+chld = h.uipanel_HA.Children;
+h_axes = [];
+for c = 1:numel(chld)
+    if strcmp(chld(c).Type,'axes')
+        h_axes = cat(2,h_axes,chld(c));
+    end
+end
+for ax = 1:numel(h_axes)
+    set(h_fig,'CurrentAxes',h_axes(ax));
+    exportAxes({[p.dumpdir,filesep,p.exp_axes,'_',num2str(ax)]},[],h_fig);
+    ud_zoom([],[],'reset',h_fig);
+end

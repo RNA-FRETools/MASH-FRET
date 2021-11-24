@@ -29,6 +29,9 @@ for nL = 1:p.nL_max
         disp(cat(2,prefix,'>> import file ',p.mash_files{nChan,nL}));
         pushbutton_openProj_Callback({p.annexpth,p.mash_files{nChan,nL}},...
             [],h_fig);
+
+        % set module
+        switchPan(h.togglebutton_TP,[],h_fig);
         
         % save project
         pushbutton_saveProj_Callback({p.dumpdir,p.mash_files{nChan,nL}},[],...
@@ -37,6 +40,9 @@ for nL = 1:p.nL_max
         % test ASCII files import 
         disp(cat(2,prefix,'>> import data set ',p.es{nChan,nL}.imp.tdir));
         routinetest_TP_createProj(p,h_fig,[prefix,'>> >> ']);
+
+        % set module
+        switchPan(h.togglebutton_TP,[],h_fig);
 
         % save project
         pushbutton_saveProj_Callback({p.dumpdir,p.exp_ascii2mash{nChan,nL}},...
