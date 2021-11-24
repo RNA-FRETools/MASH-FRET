@@ -141,23 +141,27 @@ switch meth
                 
                 if boba && numel(h_axes)>1
                     smpl = res{2,2};
-                    A_min = min(smpl(:,k*4-3));
-                    o_min = min(smpl(:,k*4-1))/(2*sqrt(2*log(2)));
-                    A_max = max(smpl(:,k*4-3));
-                    o_max = max(smpl(:,k*4-1))/(2*sqrt(2*log(2)));
+                    A_inf = mean(smpl(:,k*4-3))-3*std(smpl(:,k*4-3));
+                    A_inf(A_inf<0) = 0;
+                    o_inf = mean(smpl(:,k*4-1))/(2*sqrt(2*log(2)))-...
+                        3*std(smpl(:,k*4-1))/(2*sqrt(2*log(2)));
+                    o_inf(o_inf<0) = 0;
+                    A_sup = mean(smpl(:,k*4-3))+3*std(smpl(:,k*4-3));
+                    o_sup = mean(smpl(:,k*4-1))/(2*sqrt(2*log(2)))+...
+                        3*std(smpl(:,k*4-1))/(2*sqrt(2*log(2)));
                     if isInt
                         if perSec
-                            o_min = o_min/expT;
-                            o_max = o_max/expT;
+                            o_inf = o_inf/expT;
+                            o_sup = o_sup/expT;
                         end
                     end
-                    y_min = A_min*exp(-((P(:,1)-fitprm(k,3)).^2)/ ...
-                        (2*(o_min^2)));                    
-                    y_max = A_max*exp(-((P(:,1)-fitprm(k,3)).^2)/ ...
-                        (2*(o_max^2)));
-                    plot(h_axes(1), P(:,1), y_min, 'LineStyle', '--', ...
+                    y_inf = A_inf*exp(-((P(:,1)-fitprm(k,3)).^2)/ ...
+                        (2*(o_inf^2)));                    
+                    y_sup = A_sup*exp(-((P(:,1)-fitprm(k,3)).^2)/ ...
+                        (2*(o_sup^2)));
+                    plot(h_axes(1), P(:,1), y_inf, 'LineStyle', '--', ...
                         'Color', clr(k,:), 'LineWidth', 1);
-                    plot(h_axes(1), P(:,1), y_max, 'LineStyle', '--', ...
+                    plot(h_axes(1), P(:,1), y_sup, 'LineStyle', '--', ...
                         'Color', clr(k,:), 'LineWidth', 1);
                 end
             end
