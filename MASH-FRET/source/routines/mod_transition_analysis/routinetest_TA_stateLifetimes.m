@@ -17,17 +17,19 @@ setDefault_TA(h_fig,p);
 % retrieve interface defaults
 h = guidata(h_fig);
 
-% expand panel
-h_but = getHandlePanelExpandButton(h.uipanel_TA_dtHistograms,h_fig);
+% start clustering
+h_but = getHandlePanelExpandButton(h.uipanel_TA_stateConfiguration,h_fig);
 if strcmp(h_but.String,char(9660))
     pushbutton_panelCollapse_Callback(h_but,[],h_fig);
 end
-
-% start clustering
 pushbutton_TDPupdateClust_Callback(h.pushbutton_TDPupdateClust,[],h_fig);
 V = numel(get(h.popupmenu_TA_slStates,'string'));
 
 % test dwell time formatting
+h_but = getHandlePanelExpandButton(h.uipanel_TA_dtHistograms,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 disp(cat(2,prefix,'test dwell time formatting...'));
 set(h.edit_TA_slBin,'string',num2str(p.stateBin));
 edit_TA_slBin_Callback(h.edit_TA_slBin,[],h_fig);
