@@ -3,13 +3,13 @@ function p = getDef_kinana(pname,fnames)
 % defaults
 nChan_def = 2;
 nL_def = 1;
-defprm = {'Movie name' '' ''
-       'Molecule name' '' ''
-       '[Mg2+]' [] 'mM'
-       '[K+]' [] 'mM'};
 deflbl = {'don','acc1'};
 nMax = 3; % maximum number of exponential to fit
+Vmax = 5; % maximum number of observable states to fit
 T = 5; % number of restart in model optimization
+Nhl = 0; % number of header lines in trajectory files
+colT = 1; % time column in trajectory files
+colInt = [2,3]; % donor and aceptor intensity columns in trajectory files
 
 % general
 p.dumpdir = cat(2,pname,'MASH-FRET-analysis');
@@ -24,49 +24,43 @@ p.wl = [];
 while isempty(p.wl) || numel(unique(p.wl))~=p.nL
     p.wl = round(1000*sort(rand(1,p.nL))); % laser wavelengths
 end
-p.ascii_dir = pname;
-p.ascii_files = fnames;
-for l = 1:p.nL
-    defprm{size(defprm,1)+l,1} = ['Power(',num2str(p.wl(l)),'nm)'];
-    defprm{size(defprm,1),2} = '';
-    defprm{size(defprm,1),3} = 'mW';
-end
-p.asciiOpt.intImp = {[2 0 true 1 2 (2+p.nChan-1) p.nChan p.nL false 5 5 0],...
-    p.wl(1:p.nL)};
-p.asciiOpt.vidImp = {false ''};
-p.asciiOpt.coordImp = {{false,'',{[1 2],1},256},[false 1]};
-p.asciiOpt.expCond = defprm;
-p.asciiOpt.factImp = {false '' {} false '' {}};
 
-% project options
-p.projOpt.proj_title = 'project'; % project title
-p.projOpt.mol_name = ''; % molecule name
-p.projOpt.conc_mg = []; % Mg concentration
-p.projOpt.conc_k = []; % K concentration
-p.projOpt.laser_pow = []; % laser powers
-p.projOpt.prm_extra = [];
-p.projOpt.labels = deflbl(1:p.nChan); % channel labels
-chanExc = zeros(1,p.nChan);
-chanExc(1:min([p.nChan,p.nL])) = p.wl(1:min([p.nChan,p.nL]));
-p.projOpt.chanExc = chanExc; % channel-specific excitation
+[~,projname,~] = fileparts(pname);
+
+% set experiment settings
+p.es = cell(p.nChan,p.nL);
+p.es{p.nChan,p.nL}.imp.tdir = pname;
+p.es{p.nChan,p.nL}.imp.tfiles = fnames;
+p.es{p.nChan,p.nL}.chan.nchan = p.nChan;
+p.es{p.nChan,p.nL}.chan.emlbl = deflbl(1:p.nChan);
+p.es{p.nChan,p.nL}.las.nlas = p.nL;
+p.es{p.nChan,p.nL}.las.laswl = p.wl(1:p.nL);
+p.es{p.nChan,p.nL}.las.lasem = [1:min([p.nChan,p.nL]),...
+    zeros(1,p.nL-min([p.nChan,p.nL]))];
 FRET = [];
 for don = 1:(p.nChan-1)
-    if chanExc(don)>0
+    if any(p.es{p.nChan,p.nL}.las.lasem==don)
         for acc = (don+1):p.nChan
             FRET = cat(1,FRET,[don,acc]);
         end
     end
 end
-p.projOpt.FRET = FRET; % FRET pairs
+p.es{p.nChan,p.nL}.calc.fret = FRET;
+p.es{p.nChan,p.nL}.calc.s = [];
 if ~isempty(FRET)
-    p.projOpt.S = FRET(chanExc(FRET(:,1))>0 & chanExc(FRET(:,2))>0,:); % stoichiometries
-else
-    p.projOpt.S = [];
+    for pair = 1:size(FRET,1)
+        if any(p.es{p.nChan,p.nL}.las.lasem==FRET(pair,2))
+            p.es{p.nChan,p.nL}.calc.s = cat(1,p.es{p.nChan,p.nL}.calc.s,...
+                FRET(pair,:));
+        end
+    end
 end
+p.es{p.nChan,p.nL}.fstrct = {[Nhl 1 colT colInt 1 1 0 0 0 0],ones(1,p.nL),...
+    zeros(p.nL,2)};
+p.es{p.nChan,p.nL}.div.projttl = projname;
 
 % axis units
 p.perSec = true;
-p.perPix = true;
 p.inSec = false;
 p.fixX0 = false;
 p.x0 = 1;
@@ -118,7 +112,8 @@ p.factPrm{3} = [-0.2,50,1.2
     1,50,5];
 
 % default find states parameters
-nDat = p.nChan*p.nL+size(p.projOpt.FRET,1)+size(p.projOpt.S,1);
+nDat = p.nChan*p.nL+size(p.es{p.nChan,p.nL}.calc.fret,1)+...
+    size(p.es{p.nChan,p.nL}.calc.s,1);
 p.fsMeth = 6; % threshold, vbFRET, 2D-vbFRET, one state, CPA, STaSI
 p.fsDat = 1; % bottom, top , all
 p.fsPrm = [2  0  0 1 0 0 0 0
@@ -136,14 +131,14 @@ p.fsThresh = repmat(p.fsThresh,[1,1,nDat]);
 p.tdpPrm = [-0.2,0.01,1.2,1,0,0,1,1];
 
 % default state configuration
-Jmax = 10;
 p.clstMeth = 2; % clustering method
-p.clstMethPrm = [Jmax,50,false,100];
+p.clstMethPrm = [Vmax,50,false,100];
 p.clstConfig = [1,1,1,1]; % constraint, diagonal clusters, likelihood, shape
-p.clstStart = [linspace(0,1,Jmax)',repmat(0.1,[Jmax,1])];
+p.clstStart = [linspace(0,1,Vmax)',repmat(0.1,[Vmax,1])];
 
 % default export options
-p.tdp_expOpt = [false,4,false,3,false,false,false,false];
+p.tdp_expOpt = [false,4,false,3,false,false,false,false,false,false,false,...
+    false];
 
 % default parameters for model optimization
 p.nMax = nMax;

@@ -9,6 +9,10 @@ function setDefault_S(h_fig,p)
 h = guidata(h_fig);
 
 % remove imported coordinates
+h_but = getHandlePanelExpandButton(h.uipanel_S_molecules,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 radiobutton_simCoord_Callback(h.radiobutton_randCoord,[],h_fig);
 
 % remove imported presets
@@ -16,6 +20,11 @@ set(h.checkbox_simPrmFile,'value',0);
 checkbox_simPrmFile_Callback(h.checkbox_simPrmFile,[],h_fig);
 
 % set defaults in panel Video parameters
+h_but = getHandlePanelExpandButton(h.uipanel_S_videoParameters,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
+
 set(h.edit_length,'string',num2str(p.L));
 edit_length_Callback(h.edit_length,[],h_fig);
 
@@ -37,6 +46,11 @@ edit_simMov_h_Callback(h.edit_simMov_h,[],h_fig);
 set_S_camNoise(p.camnoise,p.camprm,h_fig);
 
 % set defaults in panel Molecules
+h_but = getHandlePanelExpandButton(h.uipanel_S_molecules,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
+
 set(h.edit_nbMol,'string',num2str(p.N));
 edit_nbMol_Callback(h.edit_nbMol,[],h_fig);
 
@@ -77,6 +91,11 @@ edit_simBtA_Callback(h.edit_simBtA,[],h_fig);
 set_S_photobleaching(p.bleach,p.t_bleach,h_fig);
 
 % set defaults in panel Experimental setup
+h_but = getHandlePanelExpandButton(h.uipanel_S_experimentalSetup,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
+
 set_S_psf(p.psf,p.psfW,h_fig);
 
 set_S_defocus(p.defocus,p.defocus_prm,h_fig);
@@ -86,6 +105,10 @@ set_S_spatialBG(p.bg,p.bgI,p.bgW,p.annexpth,p.bgImg,h_fig);
 set_S_dynamicBG(p.bgDec,p.bgDec_prm,h_fig);
 
 % set defaults in panel Export options
+h_but = getHandlePanelExpandButton(h.uipanel_S_exportOptions,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 set_S_fileExport([p.mat p.sira p.avi p.txt p.dt p.log p.coord],h_fig);
 
 set(h.popupmenu_opUnits,'value',p.un_out);

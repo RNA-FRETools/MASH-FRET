@@ -24,6 +24,7 @@ if size(p{1}{1},2)==8
     p{1}{1}(12) = 0;
 end
 
+delim = p{1}{1}(2);
 rowwise = p{1}{1}(7);
 isTime = p{1}{1}(3);
 row1 = p{1}{1}(1)+1;
@@ -122,43 +123,76 @@ try
     if isTime
         times = [];
     end
+    switch delim
+        case 1
+            delimchar = {sprintf('\t'),' '};
+        case 2
+            delimchar = sprintf('\t');
+        case 3
+            delimchar = ',';
+        case 4
+            delimchar = ';';
+        case 5
+            delimchar = ' ';
+        otherwise
+            delimchar = sprintf('\t');
+    end
     for i = 1:size(fname,2)
         intNum = [];
         dfretNum = [];
         
         % read file
+        fdat = {};
         f = fopen([pname fname{i}], 'r');
-        fdat = textscan(f, '%s', 'delimiter', '\n');
+        while ~feof(f)
+            rowdat = split(fgetl(f),delimchar)';
+            excl = false(1,numel(rowdat));
+            for col = 1:numel(rowdat)
+                chars = unique(rowdat{col});
+                if numel(chars)==0 || (numel(chars)==1 && chars==' ')
+                    excl(col) = true;
+                end
+            end
+            rowdat(excl) = [];
+            if ~isempty(fdat) && size(rowdat,2)~=size(fdat,2)
+                if size(rowdat,2)<size(fdat,2)
+                    rowdat = cat(2,rowdat,...
+                        cell(1,size(fdat,2)-size(rowdat,2)));
+                else
+                    fdat = cat(2,fdat,...
+                        cell(size(fdat,1),size(rowdat,2)-size(fdat,2)));
+                end
+            end
+            fdat = cat(1,fdat,rowdat);
+        end
         fclose(f);
-        fdat = fdat{1};
         
         % collect import parameters
         r_end = size(fdat,1);
         if colI2 == 0
-            c_end = size(splitStrAtBlank(fdat{row1,1}),2);
+            c_end = size(fdat,2);
         else
             c_end = colI2;
         end
         
         % format intensity and discretized data
         for r = row1:r_end
-            dat = splitStrAtBlank(fdat{r,1});
+            dat = cellfun(@str2double,fdat(r,:));
             if ~isempty(dat)
                 if isTime && i==1
-                    times = cat(1,times,str2double(dat(1,colt)));
+                    times = cat(1,times,dat(1,colt));
                 end
                 if isdFRET
                     dfretNum_col = [];
                     for col = colseq1:(colseqskip+1):colseq2
-                        dfretNum_col = cat(2,dfretNum_col,...
-                            str2double(dat(1,col)));
+                        dfretNum_col = cat(2,dfretNum_col,dat(1,col));
                     end
                     dfretNum = cat(1,dfretNum,dfretNum_col);
                 end
                 intNum_col = [];
                 for lay = 1:numel(colI1)
                     for col = colI1(lay):c_end(lay)
-                        intNum_col = cat(2,intNum_col,str2double(dat(1,col)));
+                        intNum_col = cat(2,intNum_col,dat(1,col));
                     end
                 end
                 intNum = cat(1,intNum,intNum_col);
@@ -213,8 +247,7 @@ try
                 s = [];
                 return
             elseif isempty(FRET) && row1>1
-                FREThead = eval(cat(2,'{''',...
-                    strrep(fdat{row1-1,1},char(9),''','''),'''}'));
+                FREThead = fdat(row1-1,:);
                 FRET = getFRETfromFactorFiles(...
                     FREThead(colseq1:(colseqskip+1):colseq2));
             end
@@ -347,9 +380,7 @@ try
         % import molecule coordinates from file's header
         coord_n = [];
         if coordintrace
-            str_coord = fdat{row_coord,1};
-            coordTxt = textscan(str_coord, '%s', 'delimiter', '\t');
-            coordTxt = coordTxt{1};
+            coordTxt = fdat(row_coord,:);
             coord_raw = [];
             for j = 1:size(coordTxt,1)
                 c = str2double(coordTxt{j,1});

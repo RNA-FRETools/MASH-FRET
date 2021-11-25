@@ -50,8 +50,8 @@ p = getDef_kinana(pname,[]);
 disp(cat(2,'>>>> import ',fname_mashIn,' in Trace processing...'));
 
 % set options for ASCII file import
+pushbutton_openProj_Callback({p.dumpdir,fname_mashIn},[],h_fig);
 switchPan(h.togglebutton_TP,[],h_fig);
-pushbutton_addTraces_Callback({p.dumpdir,fname_mashIn},[],h_fig);
 
 disp(['>>>> process single FRET traces with ',str_meth,'...']);
 
@@ -70,6 +70,10 @@ for Jmax = Js
         p.fsPrm(meth,1,:) = Jmax;
     end
     p.fsPrm(meth,7,:) = deblurr;
+    h_but = getHandlePanelExpandButton(h.uipanel_TP_findStates,h_fig);
+    if strcmp(h_but.String,char(9660))
+        pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+    end
     set_TP_findStates(meth,trace,p.fsPrm,p.fsThresh,p.nChan,p.nL,h_fig);
     pushbutton_applyAll_DTA_Callback(h.pushbutton_applyAll_DTA,[],h_fig);
 
@@ -81,26 +85,25 @@ for Jmax = Js
         num2str(Jmax));
     
     % save modifications to mash file
-    p.projOpt.proj_title = [fname,'_vbFRET_',num2str(Jmax),'states'];
-    set_VP_projOpt(p.projOpt,p.wl(1:p.nL),h.pushbutton_editParam,h_fig);
-    pushbutton_expProj_Callback(...
+    pushbutton_editProj_Callback(h.pushbutton_editProj,[],h_fig);
+    p.es{p.nChan,p.nL}.div.projttl = [fname,'_vbFRET_',num2str(Jmax),'states'];
+    routinetest_setExperimentSettings(h_fig,p,'edit','>>>>>>>> ');
+    pushbutton_saveProj_Callback(...
         {p.dumpdir,sprintf(fname_mashOut,num2str(Jmax))},[],h_fig);
 end
-pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
 
 switchPan(h.togglebutton_TA,[],h_fig);
 p.tdp_expOpt(5) = true;
 for Jmax = Js
-    fprintf(cat(2,'>>>> import file ',fname_mashOut,...
-        ' in Transition analysis...\n'),num2str(Jmax));
-
-    % import project in TA
-    pushbutton_TDPaddProj_Callback(...
-        {p.dumpdir,sprintf(fname_mashOut,num2str(Jmax))},[],h_fig);
 
     disp('>>>> build TDP...');
 
     % set TDP settings and update plot
+    h_but = getHandlePanelExpandButton(h.uipanel_TA_transitionDensityPlot,...
+        h_fig);
+    if strcmp(h_but.String,char(9660))
+        pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+    end
     set_TA_TDP(tdp_dat,tdp_tag,p.tdpPrm,h_fig);
     pushbutton_TDPupdatePlot_Callback(h.pushbutton_TDPupdatePlot,[],h_fig);
     pushbutton_TDPresetClust_Callback(h.pushbutton_TDPresetClust,[],h_fig)
@@ -118,17 +121,21 @@ for Jmax = Js
     % set clustering settings and cluster transitions
     p.clstMethPrm(1) = Jmax;
     p.clstConfig(4) = shape;
+    h_but = getHandlePanelExpandButton(h.uipanel_TA_stateConfiguration,...
+        h_fig);
+    if strcmp(h_but.String,char(9660))
+        pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+    end
     set_TA_stateConfig(p.clstMeth,p.clstMethPrm,p.clstConfig,p.clstStart,...
         h_fig);
     pushbutton_TDPupdateClust_Callback(h.pushbutton_TDPupdateClust,[],h_fig);
     
     % recover results
     h = guidata(h_fig);
-    q = h.param.TDP;
-    proj = q.curr_proj;
-    tpe = q.curr_type(proj);
-    tag = q.curr_tag(proj);
-    prm = q.proj{proj}.prm{tag,tpe};
+    proj = h.param.proj{h.param.curr_proj};
+    tpe = h.param.TDP.curr_type(h.param.curr_proj);
+    tag = h.param.TDP.curr_tag(h.param.curr_proj);
+    prm = proj.TA.prm{tag,tpe};
     res = prm.clst_res{1};
     mu = res.mu{Jmax};
     bin = prm.lft_start{2}(3);
@@ -151,17 +158,18 @@ for Jmax = Js
     
     fprintf(...
         cat(2,'>>>> export gaussian parameters to file ',fname_clst,' and',...
-        'clusters screenshot to file ',fname_clstImg,'\n'),num2str(Jmax));
+        ' clusters screenshot to file ',fname_clstImg,'\n'),num2str(Jmax),...
+        num2str(Jmax));
     
     % export gaussian mixture to .clst files
     str_states = get(h.popupmenu_tdp_model,'string');
-    popval = find(~cellfun('isempty',strfind(str_states,num2str(Jmax))));
+    popval = find(contains(str_states,num2str(Jmax)));
     set(h.popupmenu_tdp_model,'value',popval);
     popupmenu_tdp_model_Callback(h.popupmenu_tdp_model,[],h_fig);
 
     pushbutton_tdp_impModel_Callback(h.pushbutton_tdp_impModel,[],h_fig);
 
-    pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig);
+    pushbutton_TA_export_Callback(h.pushbutton_TA_export,[],h_fig);
     set_TA_expOpt(p.tdp_expOpt,h_fig);
     pushbutton_expTDPopt_next_Callback(...
         {p.dumpdir,sprintf(fname_clst,num2str(Jmax))},[],h_fig);
@@ -174,12 +182,12 @@ for Jmax = Js
     fprintf(...
         cat(2,'>>>> save modificiations to file ',fname_mashOut,'...\n'),...
         num2str(Jmax));
-    pushbutton_TDPsaveProj_Callback(...
+    pushbutton_saveProj_Callback(...
         {p.dumpdir,sprintf(fname_mashOut,num2str(Jmax))},[],h_fig);
     
     
-    set(h.listbox_TDPprojList,'value',1);
-    listbox_TDPprojList_Callback(h.listbox_TDPprojList,[],h_fig);
-    pushbutton_TDPremProj_Callback(h.pushbutton_TDPremProj,[],h_fig);
+    set(h.listbox_proj,'value',1);
+    listbox_projLst_Callback(h.listbox_proj,[],h_fig);
+    pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
 end
 

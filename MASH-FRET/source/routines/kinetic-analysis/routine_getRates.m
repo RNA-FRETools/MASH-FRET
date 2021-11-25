@@ -46,17 +46,23 @@ p = getDef_kinana(pname,[]);
 nMax = p.nMax; % maximum number of degenerated levels
 T = p.restartNb; % number of restart
 
-switchPan(h.togglebutton_TA,[],h_fig);
 p.tdp_expOpt([7,8]) = true;
 for V = 1:nV
     fprintf(cat(2,'>>>> import file ',fname_mashIn,...
     ' in Transition analysis...\n'),num2str(Vs(V)));
 
     % import project in TA
-    pushbutton_TDPaddProj_Callback(...
+    pushbutton_openProj_Callback(...
         {p.dumpdir,sprintf(fname_mashIn,num2str(Vs(V)))},[],h_fig);
     
+    switchPan(h.togglebutton_TA,[],h_fig);
+    
     % set TDP settings and update plot
+    h_but = getHandlePanelExpandButton(h.uipanel_TA_transitionDensityPlot,...
+        h_fig);
+    if strcmp(h_but.String,char(9660))
+        pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+    end
     set_TA_TDP(tdp_dat,tdp_tag,p.tdpPrm,h_fig);
     pushbutton_TDPupdatePlot_Callback(h.pushbutton_TDPupdatePlot,[],h_fig);
     
@@ -65,12 +71,20 @@ for V = 1:nV
     end
     
     % set dwell time histogram settings
+    h_but = getHandlePanelExpandButton(h.uipanel_TA_dtHistograms,h_fig);
+    if strcmp(h_but.String,char(9660))
+        pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+    end
     set(h.checkbox_TA_slExcl,'value',excl);
     checkbox_TA_slExcl_Callback(h.checkbox_TA_slExcl,[],h_fig);
     set(h.checkbox_tdp_rearrSeq,'value',rearr);
     checkbox_tdp_rearrSeq_Callback(h.checkbox_tdp_rearrSeq,[],h_fig);
 
     % set kinetic model inferrence settings
+    h_but = getHandlePanelExpandButton(h.uipanel_TA_kineticModel,h_fig);
+    if strcmp(h_but.String,char(9660))
+        pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+    end
     set(h.popupmenu_TA_mdlMeth,'value',1);
     popupmenu_TA_mdlMeth_Callback(h.popupmenu_TA_mdlMeth,[],h_fig);
     set(h.edit_TA_mdlJmax,'string',num2str(nMax));
@@ -85,17 +99,16 @@ for V = 1:nV
     % save project
     fprintf(cat(2,'>>>> save modificiations to file ',fname_mashOut,...
         '...\n'),num2str(Vs(V)));
-    pushbutton_TDPsaveProj_Callback(...
+    pushbutton_saveProj_Callback(...
         {p.dumpdir,sprintf(fname_mashOut,num2str(Vs(V)))},[],h_fig);
     
     % collect results
     h = guidata(h_fig);
-    pTA = h.param.TDP;
-    proj = pTA.curr_proj;
-    tpe = pTA.curr_type(proj);
-    tag = pTA.curr_tag(proj);
-    expT = pTA.proj{proj}.frame_rate;
-    prm = pTA.proj{proj}.prm{tag,tpe};
+    proj = h.param.proj{h.param.curr_proj};
+    tpe = h.param.TDP.curr_type(h.param.curr_proj);
+    tag = h.param.TDP.curr_tag(h.param.curr_proj);
+    expT = proj.frame_rate;
+    prm = proj.TA.prm{tag,tpe};
     mu = prm.clst_res{1}.mu{Vs(V)};
     bin = prm.lft_start{2}(3);
     nTrs = getClusterNb(Vs(V),p.clstConfig(1),p.clstConfig(2));
@@ -138,9 +151,9 @@ for V = 1:nV
     tau{V} = cat(1,states_id,tau{V});
     
     % close project
-    set(h.listbox_TDPprojList,'value',proj);
-    listbox_TDPprojList_Callback(h.listbox_TDPprojList,[],h_fig);
-    pushbutton_TDPremProj_Callback(h.pushbutton_TDPremProj,[],h_fig);
+    set(h.listbox_proj,'value',h.param.curr_proj);
+    listbox_projLst_Callback(h.listbox_proj,[],h_fig);
+    pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
 end
 
 

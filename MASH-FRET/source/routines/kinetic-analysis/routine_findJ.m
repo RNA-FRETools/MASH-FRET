@@ -55,17 +55,13 @@ fname_clstImg = getCorrName([fname,'_STaSI_clust_%sstates.png'],pname,...
 
 disp('>>>> import .dat files in Trace processing...');
 
-% set options for ASCII file import 
-switchPan(h.togglebutton_TP,[],h_fig);
-set_TP_asciiImpOpt(p.asciiOpt,h_fig);
-pushbutton_addTraces_Callback({pname,fnames},[],h_fig);
-
-% set project options
-p.projOpt.proj_title = [fname,'_STaSI'];
-set_VP_projOpt(p.projOpt,p.wl(1:p.nL),h.pushbutton_editParam,h_fig);
+% set options for ASCII file import
+pushbutton_newProj_Callback([],3,h_fig);
+p.es{p.nChan,p.nL}.div.projttl = [fname,'_STaSI'];
+routinetest_setExperimentSettings(h_fig,p,'trajectories','>>>>>> ');
 
 % save project
-pushbutton_expProj_Callback({p.dumpdir,fname_mash},[],h_fig);
+pushbutton_saveProj_Callback({p.dumpdir,fname_mash},[],h_fig);
 
 if ~isnan(V)
     fprintf('>> results: J = %i\n',V);
@@ -81,6 +77,10 @@ setDef_kinana_TP(p,h_fig);
 % configure state finding algorithm to STaSI
 p.fsPrm(meth,1,:) = Jmax;
 p.fsPrm(meth,7,:) = deblurr;
+h_but = getHandlePanelExpandButton(h.uipanel_TP_findStates,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 set_TP_findStates(meth,trace,p.fsPrm,p.fsThresh,p.nChan,p.nL,h_fig);
 pushbutton_applyAll_DTA_Callback(h.pushbutton_applyAll_DTA,[],h_fig);
 
@@ -90,18 +90,19 @@ pushbutton_TP_updateAll_Callback(h.pushbutton_TP_updateAll,[],h_fig);
 disp(cat(2,'>>>> save modificiations in file ',fname_mash,'...'));
 
 % save project
-pushbutton_expProj_Callback({p.dumpdir,fname_mash},[],h_fig);
-pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
-
-disp(cat(2,'>>>> import file ',fname_mash,' in Transition analysis...'));
+pushbutton_saveProj_Callback({p.dumpdir,fname_mash},[],h_fig);
 
 % import project in TA
 switchPan(h.togglebutton_TA,[],h_fig);
-pushbutton_TDPaddProj_Callback({p.dumpdir,fname_mash},[],h_fig);
 
 disp('>>>> build TDP...');
 
 % set TDP settings and update plot
+h_but = getHandlePanelExpandButton(h.uipanel_TA_transitionDensityPlot,...
+    h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 set_TA_TDP(tdp_dat,tdp_tag,p.tdpPrm,h_fig);
 pushbutton_TDPupdatePlot_Callback(h.pushbutton_TDPupdatePlot,[],h_fig);
 
@@ -115,17 +116,20 @@ disp('>>>> cluster transitions with Gaussian mixtures...');
 
 % set clustering settings and cluster transitions
 p.clstConfig(4) = shape;
+h_but = getHandlePanelExpandButton(h.uipanel_TA_stateConfiguration,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 set_TA_stateConfig(p.clstMeth,p.clstMethPrm,p.clstConfig,p.clstStart,...
     h_fig);
 pushbutton_TDPupdateClust_Callback(h.pushbutton_TDPupdateClust,[],h_fig);
 
 % recover results
 h = guidata(h_fig);
-q = h.param.TDP;
-proj = q.curr_proj;
-tpe = q.curr_type(proj);
-tag = q.curr_tag(proj);
-prm = q.proj{proj}.prm{tag,tpe};
+proj = h.param.proj{h.param.curr_proj};
+tpe = h.param.TDP.curr_type(h.param.curr_proj);
+tag = h.param.TDP.curr_tag(h.param.curr_proj);
+prm = proj.TA.prm{tag,tpe};
 res = prm.clst_res{1};
 [~,Jopt] = min(res.BIC);
 Js = Jopt;
@@ -159,8 +163,14 @@ for J = Js
     popupmenu_tdp_model_Callback(h.popupmenu_tdp_model,[],h_fig);
 
     pushbutton_tdp_impModel_Callback(h.pushbutton_tdp_impModel,[],h_fig);
+
+    h_but = getHandlePanelExpandButton(h.uipanel_TA_stateConfiguration,...
+        h_fig);
+    if strcmp(h_but.String,char(9660))
+        pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+    end
     
-    pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig);
+    pushbutton_TA_export_Callback(h.pushbutton_TA_export,[],h_fig);
     set_TA_expOpt(p.tdp_expOpt,h_fig);
     pushbutton_expTDPopt_next_Callback({p.dumpdir,...
         sprintf(fname_clst,num2str(J))},[],h_fig);
@@ -174,8 +184,8 @@ end
 disp(cat(2,'>>>> save modificiations to file ',fname_mash,'...'));
 
 % save modifications to mash file
-pushbutton_TDPsaveProj_Callback({p.dumpdir,fname_mash},[],h_fig);
-pushbutton_TDPremProj_Callback(h.pushbutton_TDPremProj,[],h_fig);
+pushbutton_saveProj_Callback({p.dumpdir,fname_mash},[],h_fig);
+pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
 
 str_J = repmat('%i, ',[1,numel(Js)]);
 str_J = str_J(1:end-2);

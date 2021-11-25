@@ -9,7 +9,7 @@ function h = build_setExpSetTabFstrct(h,exc)
 % defaults
 str0 = 'Header lines:';
 str1 = 'Column delimiter:';
-str2 = {'tab',',',';','space'};
+str2 = {'blanks (tab,spaces)','tab',',',';','space'};
 str3 = 'ALEX data:';
 str4 = {'row-wise','column-wise'};
 str5 = 'Intensity columns:';

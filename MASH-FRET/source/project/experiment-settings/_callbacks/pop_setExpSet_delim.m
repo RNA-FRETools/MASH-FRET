@@ -14,12 +14,14 @@ end
 % reset file data
 switch proj.traj_import_opt{1}{1}(2)
     case 1
-        delimchar = sprintf('\t');
+        delimchar = {sprintf('\t'),' '};
     case 2
-        delimchar = ',';
+        delimchar = sprintf('\t');
     case 3
-        delimchar = ';';
+        delimchar = ',';
     case 4
+        delimchar = ';';
+    case 5
         delimchar = ' ';
     otherwise
         delimchar = sprintf('\t');
@@ -33,6 +35,14 @@ fname = proj.traj_files{2};
 f = fopen([pname,fname{1}],'r');
 while fline<maxflines && ~feof(f)
     rowdat = split(fgetl(f),delimchar)';
+    excl = false(1,numel(rowdat));
+    for col = 1:numel(rowdat)
+        chars = unique(rowdat{col});
+        if numel(chars)==0 || (numel(chars)==1 && chars==' ')
+            excl(col) = true;
+        end
+    end
+    rowdat(excl) = [];
     if ~isempty(fdat) && size(rowdat,2)~=size(fdat,2)
         if size(rowdat,2)<size(fdat,2)
             rowdat = cat(2,rowdat,...
