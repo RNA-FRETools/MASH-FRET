@@ -21,7 +21,11 @@ p.proj_file = '';
 p.module = '';
 
 % experiment settings
-p.folderRoot = pwd;
+folderRoot = h.param.folderRoot;
+if ~exist(folderRoot,'dir')
+    folderRoot = userpath;
+end
+p.folderRoot = folderRoot;
 p.nb_channel = 0;
 p.labels = {};
 p.nb_excitations = 0;
