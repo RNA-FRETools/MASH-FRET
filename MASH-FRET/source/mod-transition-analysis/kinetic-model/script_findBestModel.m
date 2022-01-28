@@ -44,7 +44,7 @@ end
 
 % calculate BIC for all possible combinations of DPHs
 Nv = mdl{1}.N;
-N = sum(Nv);
+% N = sum(Nv);
 cmb = getCombinations(1:J_deg_max,1:V);
 
 % remove combinations with multiple degenerated levels if state is a trap
@@ -69,7 +69,7 @@ nCmb = size(cmb,1);
 J = sum(cmb,2);
 [J,id] = sort(J,'ascend');
 cmb = cmb(id,:);
-% % df = (J.*(J+1))'; % J initial prob, J^2 trans prob
+% % % df = (J.*(J+1))'; % J initial prob, J^2 trans prob
 % df = ((J.^2)-1)'; % (J-1) initial prob, J*(J-1) trans prob
 % BIC_cmb = -Inf(1,nCmb);
 BIC_cmb = zeros(1,nCmb);
@@ -95,12 +95,15 @@ fprintf(['Most sufficient state configuration:\n[%0.2f',...
 
 % infer "true" DPH parameters
 disp('Optimize DPH distributions on authentic dwell time histograms...')
-mdl = script_inferPH(dt,states,expT,1,degen,plotIt);
+mdl = script_inferPH(dt,states,expT,1,degen,false);
+
+% save computation time
+mdl.t_dphtest = toc(t_comp);
 
 fprintf('Most sufficient model complexity found in %0.0f seconds\n',...
     toc(t_comp));
 
-% for DPH test: store computation time
+% for DPH test: store initial time
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 hfig = gcf;
 h = guidata(hfig);

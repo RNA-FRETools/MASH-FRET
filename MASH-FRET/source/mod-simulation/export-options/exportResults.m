@@ -39,9 +39,13 @@ if fromRoutine
     pname = varargin{1};
     fname = varargin{2};
 else
+    defpname = setCorrectPath('simulations',h_fig);
+    if defpname(end)~=filesep
+        defpname = [defpname,filesep];
+    end
+    deffname = p.proj{proj}.exp_parameters{1,2};
     [fname,pname] = uiputfile({'*.*','All files (*.*)'}, ...
-        'Define a root name for file export', ...
-        setCorrectPath('simulations',h_fig));
+        'Define a root name for file export',[defpname,deffname]);
 end
 if ~(~isempty(fname) && sum(fname))
     return
@@ -73,21 +77,18 @@ isCrd = prm.exp{1}(7); % export coordinates (0/1)
 outun = prm.exp{2};
 
 % collect simulated state sequences and coordinates
-dat = prm.res_dat;
-Idon = permute(dat{1}(:,1,:),[1,3,2]);
-Iacc = permute(dat{1}(:,2,:),[1,3,2]);
-Idon_id = permute(dat{1}(:,3,:),[1,3,2]);
-Iacc_id = permute(dat{1}(:,4,:),[1,3,2]);
-discr_blurr = permute(dat{2}(:,1,:),[1,3,2]);
-discr = permute(dat{2}(:,2,:),[1,3,2]);
-discr_seq = permute(dat{2}(:,3,:),[1,3,2]);
+Idon = permute(prm.res_dat{1}(:,1,:),[1,3,2]);
+Iacc = permute(prm.res_dat{1}(:,2,:),[1,3,2]);
+Idon_id = permute(prm.res_dat{1}(:,3,:),[1,3,2]);
+Iacc_id = permute(prm.res_dat{1}(:,4,:),[1,3,2]);
+discr_blurr = permute(prm.res_dat{2}(:,1,:),[1,3,2]);
+discr = permute(prm.res_dat{2}(:,2,:),[1,3,2]);
+discr_seq = permute(prm.res_dat{2}(:,3,:),[1,3,2]);
 
-% abort if no export options are defined
-if ~(isPrm || isAvi || isMov || isMatTr || isAsciiTr || isCrd || isDt)
-    setContPan('Error: No saving option is defined for exporting data.',...
-        'error',h_fig);
-    return
-end
+L = size(Idon,1);
+dat = p.proj{proj};
+dat.FRET_DTA = discr;
+dat.intensities = NaN(L,2*N);
 
  % check for file overwriting (one file exported per format)
 if isMov
@@ -142,18 +143,15 @@ if isDt
     pname_dt = setCorrectPath(cat(2,pname,'dwell-times'), h_fig);
 end
 
-L = size(Idon,1);
-if isMov || isAvi || isMatTr || isAsciiTr
-    % display action
-    setContPan('Create background image ...', 'process', h_fig);
-    
-    % get background image
-    [img_bg,err] = getBackgroundImage(prm);
-    if isempty(img_bg)
-        % abort if background image can not be created
-        updateActPan(err, h_fig, 'error');
-        return
-    end
+% display action
+setContPan('Create background image ...', 'process', h_fig);
+
+% get background image
+[img_bg,err] = getBackgroundImage(prm);
+if isempty(img_bg)
+    % abort if background image can not be created
+    updateActPan(err, h_fig, 'error');
+    return
 end
 
 % export SMV
@@ -241,136 +239,135 @@ end
 
 % export traces and dwell times
 if isMatTr || isAsciiTr || isDt
-    
     % display action
     setContPan('Write trace data to files ...', 'process', h_fig);
+end
     
-    % get frame and time axis for trace export
-    frameAxis = (1:L)';
-    timeAxis = frameAxis/rate;
-    
-    % initialize trace matrix for MATLAB file export
-    if isMatTr
-        Trace_all = [frameAxis,timeAxis];
+% get frame and time axis for trace export
+frameAxis = (1:L)';
+timeAxis = frameAxis/rate;
+
+% initialize trace matrix for MATLAB file export
+if isMatTr
+    Trace_all = [frameAxis,timeAxis];
+end
+
+% get intensity units for trace file export
+if isMatTr || isAsciiTr
+    % output intensity units
+    if strcmp(outun,'photon')
+        units = 'photons';
+    else
+        units = 'a.u.';
     end
-    
-    % get intensity units for trace file export
-    if isMatTr || isAsciiTr
-        % output intensity units
-        if strcmp(outun,'photon')
-            units = 'photons';
-        else
-            units = 'a.u.';
-        end
+end
+
+% get state configuration for dwell times export
+if isDt
+    if ~(isPresets && isfield(presets,'stateVal'))
+        states = FRETval;
+        J = numel(states);
+    else
+        J = size(presets.stateVal,2);
     end
-    
-    % get state configuration for dwell times export
-    if isDt
-        if ~(isPresets && isfield(presets,'stateVal'))
-            states = FRETval;
-            J = numel(states);
-        else
-            J = size(presets.stateVal,2);
-        end
+end
+
+for n = 1:N
+
+    % create donor-acceptor intensity-time traces
+    [Idon_out,Iacc_out,err] = createIntensityTraces(Idon(:,n),...
+        Iacc(:,n),coord(n,:),img_bg,prm,outun);
+    if isempty(Idon_out) || isempty(Iacc_out)
+        % abort if traces can not be created
+        updateActPan(err, h_fig, 'error');
+        return
     end
 
-    for n = 1:N
-        
-        if isMatTr || isAsciiTr
-            % create donor-acceptor intensity-time traces
-            [Idon_out,Iacc_out,err] = createIntensityTraces(Idon(:,n),...
-                Iacc(:,n),coord(n,:),img_bg,prm,outun);
-            if isempty(Idon_out) || isempty(Iacc_out)
-                % abort if traces can not be created
-                updateActPan(err, h_fig, 'error');
-                return
-            end
-        end
-        
-        % update trace matrix for MATLAB file export
-        if isMatTr
-            Trace_all = cat(2,Trace_all,Idon_out,Iacc_out);
-        end
-        
-        % export molecule traces to ASCII file
-        if isAsciiTr
-            % check for file overwriting (one file exported per molecule)
-            fname_proc = cat(2,pname_proc,fname,'_mol',num2str(n),'of',...
-                num2str(N),'.txt');
-            fname_proc = overwriteIt(fname_proc,pname_proc,h_fig);
-            if isempty(fname_proc)
-                setContPan('Process interrupted.','error',h_fig);
-                return
-            end
-            
-            % format data
-            FRET = Iacc_out./(Iacc_out+Idon_out);
-            output = [timeAxis,frameAxis,Idon_out,Iacc_out,Idon_id(:,n),...
-                Iacc_id(:,n),FRET,discr_blurr(:,n),discr(:,n),...
-                discr_seq(:,n)];
-            output = output(discr(:,n)>=0,:);
-            fmt_coord = cat(2,'coordinates ',repmat('\t%0.2f',[1,4]),'\n');
-            str_head = cat(2,'time(s)\tframe\tIdon(',units,...
-                ')\tIacc(',units,')\tIdon ideal(',units,')\t',...
-                'Iacc ideal(',units,')\tFRET\tFRET ideal (blurr)\t',...
-                'FRET ideal\tstate sequence\n'); 
-            str_output = repmat('%d\t',[1,size(output,2)]);
-            str_output(end) = 'n';
-            
-            % write data to file
-            f = fopen(fname_proc,'Wt');
-            fprintf(f,fmt_coord,coord(n,:));
-            fprintf(f,str_head);
-            fprintf(f,str_output,output');
-            fclose(f);
-        end
-        
-        % export molecule dwell times to ASCII file
-        if isDt
-            fname_dt = cat(2,pname_dt,fname,'_mol',num2str(n),'of',...
-                num2str(N),'_FRET1to2.dt');
-            fname_dt = overwriteIt(fname_dt,pname_dt,h_fig);
-            if isempty(fname_dt)
-                setContPan('Process interrupted.','error',h_fig);
-                return;
-            end
-            
-            dt = prm.res_dt{3}{n};
-            dt(:,1) = dt(:,1)/rate;
-            if isPresets && isfield(presets,'stateVal')
-                states = presets.stateVal(n,:);
-            end
-            for j = 1:J
-                dt(dt(:,2)==j,2) = states(j);
-                dt(dt(:,3)==j,3) = states(j);
-            end
-            
-            f = fopen(fname_dt,'Wt');
-            fprintf(f,cat(2,'dwell-time (second)\tstate\tstate after ',...
-                'transition\n'));
-            fprintf(f,'%d\t%d\t%d\n',dt');
-            fclose(f);
-        end
-    end
-    
-    % append action string
-    if isAsciiTr
-        str_action = cat(2,str_action,['Traces written to files in folder',...
-            ': ',pname_proc]);
-    end
-    if isDt
-        str_action = cat(2,str_action,['Dwell times written to files in ',...
-            'folder: ',pname_dt]);
-    end
-    
-    % export traces to MATLAB file
+    % update trace matrix for MATLAB file export
     if isMatTr
-        save([pname fname_mat],'coord','Trace_all','units');
-        
-        % append action string
-        str_action = cat(2,str_action,['Traces written to Matlab file: ',...
-            fname_mat,' in folder: ',pname]);
+        Trace_all = cat(2,Trace_all,Idon_out,Iacc_out);
     end
+
+    % export molecule traces to ASCII file
+    if isAsciiTr
+        % check for file overwriting (one file exported per molecule)
+        fname_proc = cat(2,pname_proc,fname,'_mol',num2str(n),'of',...
+            num2str(N),'.txt');
+        fname_proc = overwriteIt(fname_proc,pname_proc,h_fig);
+        if isempty(fname_proc)
+            setContPan('Process interrupted.','error',h_fig);
+            return
+        end
+
+        % format data
+        FRET = Iacc_out./(Iacc_out+Idon_out);
+        output = [timeAxis,frameAxis,Idon_out,Iacc_out,Idon_id(:,n),...
+            Iacc_id(:,n),FRET,discr_blurr(:,n),dat.FRET_DTA(:,n),...
+            discr_seq(:,n)];
+        output = output(dat.FRET_DTA(:,n)>=0,:);
+        fmt_coord = cat(2,'coordinates ',repmat('\t%0.2f',[1,4]),'\n');
+        str_head = cat(2,'time(s)\tframe\tIdon(',units,...
+            ')\tIacc(',units,')\tIdon ideal(',units,')\t',...
+            'Iacc ideal(',units,')\tFRET\tFRET ideal (blurr)\t',...
+            'FRET ideal\tstate sequence\n'); 
+        str_output = repmat('%d\t',[1,size(output,2)]);
+        str_output(end) = 'n';
+
+        % write data to file
+        f = fopen(fname_proc,'Wt');
+        fprintf(f,fmt_coord,coord(n,:));
+        fprintf(f,str_head);
+        fprintf(f,str_output,output');
+        fclose(f);
+    end
+
+    % export molecule dwell times to ASCII file
+    if isDt
+        fname_dt = cat(2,pname_dt,fname,'_mol',num2str(n),'of',...
+            num2str(N),'_FRET1to2.dt');
+        fname_dt = overwriteIt(fname_dt,pname_dt,h_fig);
+        if isempty(fname_dt)
+            setContPan('Process interrupted.','error',h_fig);
+            return;
+        end
+
+        dt = prm.res_dt{3}{n};
+        dt(:,1) = dt(:,1)/rate;
+        if isPresets && isfield(presets,'stateVal')
+            states = presets.stateVal(n,:);
+        end
+        for j = 1:J
+            dt(dt(:,2)==j,2) = states(j);
+            dt(dt(:,3)==j,3) = states(j);
+        end
+
+        f = fopen(fname_dt,'Wt');
+        fprintf(f,cat(2,'dwell-time (second)\tstate\tstate after ',...
+            'transition\n'));
+        fprintf(f,'%d\t%d\t%d\n',dt');
+        fclose(f);
+    end
+    
+    dat.intensities(:,[2*(n-1)+1,2*n]) = [Idon_out,Iacc_out];
+end
+
+% append action string
+if isAsciiTr
+    str_action = cat(2,str_action,['Traces written to files in folder',...
+        ': ',pname_proc]);
+end
+if isDt
+    str_action = cat(2,str_action,['Dwell times written to files in ',...
+        'folder: ',pname_dt]);
+end
+
+% export traces to MATLAB file
+if isMatTr
+    save([pname fname_mat],'coord','Trace_all','units');
+
+    % append action string
+    str_action = cat(2,str_action,['Traces written to Matlab file: ',...
+        fname_mat,' in folder: ',pname]);
 end
 
 % export coordinates
@@ -397,10 +394,53 @@ if isPrm
         ': ',fname_log,' in folder: ',pname]);
 end
 
+dat.date_last_modif = datestr(now);
+dat.coord_file = []; % coordinates path/file
+dat.coord_imp_param = []; % coordinates import parameters
+dat.coord = []; % molecule coordinates in all channels
+dat.coord_incl = true(1,N);
+dat.is_coord = 0;
+
+dat.frame_rate = 1/rate;
+dat.pix_intgr = [1 1]; % intgr. area dim. + nb of intgr pix
+
+dat.intensities_bgCorr = nan(L,2*N);
+dat.intensities_crossCorr = nan(L,2*N);
+dat.intensities_denoise = nan(L,2*N);
+dat.ES = {};
+dat.intensities_DTA = nan(L,2*N);
+dat.S_DTA = [];
+dat.bool_intensities = true(L,N);
+
+dat.molTag = false(N,numel(dat.molTagNames));
+
+[dat,~] = checkField(dat,'',h_fig);
+if isempty(dat)
+    return
+end
+p.proj{proj} = dat;
+
+% tag project
+p.proj{proj}.TP.from = p.proj{proj}.sim.from;
+p.proj{proj}.HA.from = p.proj{proj}.sim.from;
+p.proj{proj}.TA.from = p.proj{proj}.sim.from;
+
+% set default TP, HA and TA parameters
+p = importTP(p,proj);
+p = importHA(p,proj);
+p = importTA(p,proj);
+
 % save modifications
+h = guidata(h_fig); % recover file overwrite options
 p.proj{proj}.sim.prm = prm;
 h.param = p;
 guidata(h_fig,h);
+
+% update project-dependant interface
+ud_TTprojPrm(h_fig);
+
+% update plots and GUI
+updateFields(h_fig);
 
 % return success
 ok = 1;

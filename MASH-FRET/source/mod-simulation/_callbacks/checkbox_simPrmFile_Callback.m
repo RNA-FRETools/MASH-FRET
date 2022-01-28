@@ -8,7 +8,10 @@ switch obj.Value
     case 1
         % ask user for presets file
         h = guidata(h_fig);
-        pushbutton_simImpPrm_Callback(h.pushbutton_simImpPrm,[],h_fig);
+        if ~iscell(evd)
+            evd = h.pushbutton_simImpPrm;
+        end
+        pushbutton_simImpPrm_Callback(evd,[],h_fig);
         
     otherwise
         disp('checkbox_simPrmFile_Callback: unknown object value.');

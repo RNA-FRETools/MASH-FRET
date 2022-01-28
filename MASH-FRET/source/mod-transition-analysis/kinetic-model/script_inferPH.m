@@ -145,6 +145,12 @@ for v = 1:V
                 P_fit{v}(1,l) = a_fit*expm(T_fit*x{v}(l))*v_e;
             end
         end
+        
+        % export hitstogram and DPH fit curve
+%         dat = [x{v}',P{v}',P_fit{v}'];
+%         pname = '~/Documents/GitHub/dph-article/figures/data/figure4';
+%         fname = sprintf('state%0.1f_D%i_dphplot',states(v),J_deg(v));
+%         save([pname,filesep,fname],'dat','-ascii')
     end
 
     % get parameters from trained PH model
@@ -221,9 +227,9 @@ if plotIt
         plot(ha2,expT_bin*x{v},sum(P{v})*P_fit{v},'color','blue',...
             'linewidth',1);
         if max(P{v})==1
-            ha2.YLim = [1,2];
+            ha2.YLim = [0.5,2];
         else
-            ha2.YLim = [1,max(P{v})];
+            ha2.YLim = [0.5,max(P{v})];
         end
 
         str_mat = 'w:\n';

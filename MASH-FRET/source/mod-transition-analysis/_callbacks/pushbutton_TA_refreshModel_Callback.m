@@ -10,6 +10,12 @@ if ~isModuleOn(p,'TA')
     return
 end
 
+if islogical(evd)
+    norate = evd;
+else
+    norate = false;
+end
+
 proj = p.curr_proj;
 tag = p.TDP.curr_tag(proj);
 tpe = p.TDP.curr_type(proj);
@@ -139,6 +145,20 @@ if guessMeth==1 % determine guess from DPH fit & BIC model selection
 
     [D,mdl,cmb,BIC_cmb,BIC] = ...
         script_findBestModel(dat(:,[1,4,7,8]),Dmax,states,nL*expT,dt_bin);
+    h = guidata(h_fig); % computation time of tph test stored in h.t_dphtest
+    
+    % export DPH fit parameters and computation time
+%     pname = p.proj{proj}.folderRoot;
+%     if pname(end)~=filesep
+%         pname = [pname,filesep];
+%     end
+%     pname = [pname,'kinetic model',filesep];
+%     if ~exist(pname,'dir')
+%         mkdir(pname)
+%     end
+%     fname = [p.proj{proj}.exp_parameters{1,2},'_mldphfitres.mat'];
+%     save([pname,fname],'mdl','-mat')
+    
     J = sum(D);
     tp0 = zeros(J);
     j1 = 0;
@@ -232,6 +252,13 @@ guidata(h_fig,h);
 
 updateTAplots(h_fig,'mdl');
 drawnow;
+
+if norate
+    % display success
+    setContPan('State degeneracy was successfully determined!','success',...
+        h_fig);
+    return
+end
 
 % display process
 setContPan(['Infer transition rate constants (refer to MATLAB''s command ',...
