@@ -19,6 +19,8 @@ if ~(~isempty(folderRoot) && sum(folderRoot))
     return
 end
 
+cd(folderRoot)
+
 p = h.param;
 if ~isempty(p.proj)
     proj = p.curr_proj;
