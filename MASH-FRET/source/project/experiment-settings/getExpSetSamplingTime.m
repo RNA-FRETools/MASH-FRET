@@ -37,7 +37,11 @@ if ~isempty(opt) && opt{1}{1}(3)
             [t_exc,~] = sort(t_exc);
             splt = t_exc(2)-t_exc(1);
         end
-        proj.spltime_from_traj = true;
+        if ~isnan(splt)
+            proj.spltime_from_traj = true;
+        else
+            splt = 1;
+        end
     end
     
 elseif proj.is_movie

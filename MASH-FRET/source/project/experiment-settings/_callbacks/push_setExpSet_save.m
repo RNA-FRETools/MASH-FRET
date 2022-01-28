@@ -4,7 +4,7 @@ function push_setExpSet_save(obj,evd,dat2import,h_fig,h_fig0)
 proj = h_fig.UserData;
 
 if strcmp(dat2import,'sim')
-    proj.S.from = 'S'; % tag project
+    proj.sim.from = 'S'; % tag project
     
     mod = 'S';
 end
