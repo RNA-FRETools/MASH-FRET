@@ -32,5 +32,5 @@ updateFields(h_fig, 'TDP');
 bringPlotTabFront('TAtdp',h_fig);
 
 % show process
-setContPan('TDP clustering successfully completed!','process',h_fig);
+setContPan('TDP clustering successfully completed!','success',h_fig);
 
