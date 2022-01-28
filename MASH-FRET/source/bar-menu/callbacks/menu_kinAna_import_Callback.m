@@ -11,9 +11,9 @@ dat = load([pname,fname]);
 h = guidata(h_fig);
 
 if isfield(dat, 'h_kinsoft_res')
-    h.kinana_res = dat.kinsoft_res;
+    h.kinana_res = dat.h_kinsoft_res;
 elseif isfield(dat, 'h_kinana_res')
-     h.kinana_res = dat.kinana_res;
+     h.kinana_res = dat.h_kinana_res;
 else
     disp('The file is corrupted: previous analysis results were not found.');
     return
