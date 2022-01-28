@@ -30,7 +30,7 @@ initMASH(h_fig);
 set(h_fig,'visible','on');
 
 if nargout==1
-    varargout = h_fig;
+    varargout = {h_fig};
 end
 
 disp('MASH-FRET is ready !')
