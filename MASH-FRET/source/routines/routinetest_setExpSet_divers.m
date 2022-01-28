@@ -10,6 +10,10 @@ h0 = guidata(h_fig0);
 h_fig = h0.figure_setExpSet;
 h = guidata(h_fig);
 
+if ~isfield(p.es{p.nChan,p.nL},'div')
+    return
+end
+
 prm = p.es{p.nChan,p.nL}.div;
 
 % set project title
