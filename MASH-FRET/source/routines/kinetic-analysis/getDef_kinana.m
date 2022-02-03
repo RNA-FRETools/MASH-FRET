@@ -4,12 +4,14 @@ function p = getDef_kinana(pname,fnames)
 nChan_def = 2;
 nL_def = 1;
 deflbl = {'don','acc1'};
-nMax = 3; % maximum number of exponential to fit
+dtbin = 10; % dwell time histogram bin size (in time steps)
+Dmax = 4; % maximum number of exponential to fit
+Tdph = 5; % number of ML-DPH restart
 Vmax = 5; % maximum number of observable states to fit
-T = 5; % number of restart in model optimization
-Nhl = 0; % number of header lines in trajectory files
+Tbw = 5; % number of BW restart 
+Nhl = 3; % number of header lines in trajectory files
 colT = 1; % time column in trajectory files
-colInt = [2,3]; % donor and aceptor intensity columns in trajectory files
+colInt = [5,6]; % donor and aceptor intensity columns in trajectory files
 
 % general
 p.dumpdir = cat(2,pname,'MASH-FRET-analysis');
@@ -141,8 +143,10 @@ p.tdp_expOpt = [false,4,false,3,false,false,false,false,false,false,false,...
     false];
 
 % default parameters for model optimization
-p.nMax = nMax;
-p.restartNb = T;
+p.nMax = Dmax;
+p.dtbin = dtbin;
+p.dphRestart = Tdph;
+p.restartNb = Tbw;
 
 % defaults for simulation
 p.L = 100; % video length (frames)

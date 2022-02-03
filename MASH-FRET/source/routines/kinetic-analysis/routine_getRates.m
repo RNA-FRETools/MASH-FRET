@@ -44,7 +44,9 @@ disp('>> start determination of rates and associated deviations...');
 % get default interface settings
 p = getDef_kinana(pname,[]);
 nMax = p.nMax; % maximum number of degenerated levels
-T = p.restartNb; % number of restart
+dtbin = p.dtbin; % dwell time histogram bin size (in time steps)
+Tdph = p.dphRestart; % number of DPH restart
+Tbw = p.restartNb; % number of BW restart
 
 p.tdp_expOpt([7,8]) = true;
 for V = 1:nV
@@ -85,14 +87,12 @@ for V = 1:nV
     if strcmp(h_but.String,char(9660))
         pushbutton_panelCollapse_Callback(h_but,[],h_fig);
     end
-    set(h.popupmenu_TA_mdlMeth,'value',1);
-    popupmenu_TA_mdlMeth_Callback(h.popupmenu_TA_mdlMeth,[],h_fig);
-    set(h.edit_TA_mdlJmax,'string',num2str(nMax));
-    edit_TA_mdlJmax_Callback(h.edit_TA_mdlJmax,[],h_fig);
-    set(h.edit_TA_mdlRestartNb,'string',num2str(T));
-    edit_TA_mdlRestartNb_Callback(h.edit_TA_mdlRestartNb,[],h_fig);
+    set_TA_mdl(1,dtbin,nMax,Tdph,Tbw,h_fig);
     
-    % start model inference
+    % start ML-DPH inference
+    pushbutton_TA_fitMLDPH_Callback(h.pushbutton_TA_fitMLDPH,[],h_fig);
+    
+    % start BW inference
     pushbutton_TA_refreshModel_Callback(h.pushbutton_TA_refreshModel,[],...
         h_fig);
     

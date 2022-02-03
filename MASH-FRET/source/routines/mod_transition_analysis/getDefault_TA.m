@@ -16,7 +16,7 @@ defprm = {'Movie name' '' ''
        '[Mg2+]' [] 'mM'
        '[K+]' [] 'mM'};
 labels = {'Cy3','Cy5','Cy7'};
-nMax = 3;
+Dmax = 3;
 expT = 0.1;
 
 % general parameters
@@ -142,18 +142,18 @@ p.exp_mouseSlct = 'clstStartMouse_%i_%i';
 p.exp_defSlct = 'clstStartDef_%i_%i';
 
 % default exponential fit settings
-p.nMax = nMax;
+p.nMax = Dmax;
 p.stateBin = 0.03; % state binning
 p.dtExcl = true; % exclude first and last dwell times in sequences
 p.dtRearr = true; % re-arrange state sequences
 p.expPrm = [1,0,1,0,0,100]; % auto, stretched, decay nb., boba, weight, sample nb.
 amp = permute(...
-    [zeros(nMax,1),flip(logspace(-2,0,nMax),2)',Inf(nMax,1)],...
+    [zeros(Dmax,1),flip(logspace(-2,0,Dmax),2)',Inf(Dmax,1)],...
     [3,2,1]);
 dec = permute(...
-    [zeros(nMax,1),flip(logspace(2,log10(expT),nMax),2)',Inf(nMax,1)],...
+    [zeros(Dmax,1),flip(logspace(2,log10(expT),Dmax),2)',Inf(Dmax,1)],...
     [3,2,1]);
-beta = permute([zeros(nMax,1),0.5*ones(nMax,1),2*ones(nMax,1)],[3,2,1]);
+beta = permute([zeros(Dmax,1),0.5*ones(Dmax,1),2*ones(Dmax,1)],[3,2,1]);
 p.fitPrm = cat(1,amp,dec,beta);
 p.fitPrm(2,2,2) = 5;
 p.fitPrm(2,2,3) = 10;
@@ -164,6 +164,8 @@ p.exp_linScale = 'dthist_lin.png';
 % default kinetic model
 p.mdlMeth = 1; % starting guess (1:from DPH fit + BIC, 2:from lifetime panel)
 p.Dmax = 3; % max. degeneracy for DPH fit
+p.dtbin = 10; % dwell time histogram bin size
+p.dphRestart = 5; % nb. of ML-DPH restarts
 p.mdlRestart = 5; % nb. of Baum-Welch restarts
 p.exp_mdl = 'mdl';
 p.exp_mdlBIC = 'mdl_BIC.png';

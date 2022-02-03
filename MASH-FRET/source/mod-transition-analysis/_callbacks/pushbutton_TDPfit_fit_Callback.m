@@ -64,5 +64,5 @@ bringPlotTabFront('TAdt',h_fig);
 updateFields(h_fig, 'TDP');
 
 % show success
-setContPan('Dwell time histogram fit successfully completed!','process',...
+setContPan('Dwell time histogram fit successfully completed!','success',...
     h_fig);

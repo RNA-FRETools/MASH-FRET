@@ -20,7 +20,7 @@ if ~(numel(val)==1 && ~isnan(val) && val>0)
     return
 end
 
-curr.mdl_start(3) = val;
+curr.mdl_start{1}(3) = val;
 
 p.proj{proj}.TA.curr{tag,tpe} = curr;
 h.param = p;

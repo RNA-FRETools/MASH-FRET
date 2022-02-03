@@ -1,4 +1,4 @@
-function edit_TA_mdlRestartNb_Callback(obj,evd,h_fig)
+function edit_TA_mdlDPHrestart_Callback(obj,evd,h_fig)
 
 h = guidata(h_fig);
 p = h.param;
@@ -19,7 +19,7 @@ if ~(numel(val)==1 && ~isnan(val) && val>0)
     return
 end
 
-p.proj{proj}.TA.curr{tag,tpe}.mdl_start{2} = val;
+p.proj{proj}.TA.curr{tag,tpe}.mdl_start{1}(4) = val;
 
 h.param = p;
 guidata(h_fig, h);

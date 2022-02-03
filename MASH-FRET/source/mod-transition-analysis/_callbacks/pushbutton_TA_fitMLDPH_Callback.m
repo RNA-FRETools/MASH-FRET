@@ -1,4 +1,4 @@
-function pushbutton_TA_refreshModel_Callback(obj,evd,h_fig)
+function pushbutton_TA_fitMLDPH_Callback(obj,evd,h_fig)
 
 % get interface parameters
 h = guidata(h_fig);
@@ -35,26 +35,25 @@ dat = prm.clst_res{1}.clusters{J};
 excl = prm.lft_start{2}(4);
 rearr = prm.lft_start{2}(5);
 
-guessMeth = prm.mdl_start{1}(1);
-T_bw = curr.mdl_start{2};
-states = prm.mdl_res{5};
+guessMeth = curr.mdl_start{1}(1);
+dt_bin = curr.mdl_start{1}(2);
+Dmax = curr.mdl_start{1}(3);
+T_mldph = curr.mdl_start{1}(4);
 
-% save starting parameters
-prm.mdl_start{2} = curr.mdl_start{2};
+% save start parameters
+prm.mdl_start{1} = curr.mdl_start{1};
 
 % reset results
-prm.mdl_res(1:4) = def.mdl_res(1:4);
+prm.mdl_res = def.mdl_res;
 
 % display process
-setContPan(['Infer transition rate constants (refer to MATLAB''s command ',...
-    'window for more details about the process'' progress)...'],'process',...
-    h_fig);
+setContPan('Infer a kinetic model...','process',h_fig);
 
 % bin states
 nTrs = getClusterNb(J,mat,clstDiag);
 [j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
-[vals,js] = binStateValues(mu,bin,[j1,j2]);
-V = numel(vals);
+[states,js] = binStateValues(mu,bin,[j1,j2]);
+V = numel(states);
 dat_new = dat;
 for val = 1:V
     for j = 1:numel(js{val})
@@ -118,47 +117,40 @@ for m = 1:nMol
     dat_new = cat(1,dat_new,dat_m);
 end
 dat = dat_new;
-seq(exclmols) = [];
-
-% get relative number of transitions
-clstPop = zeros(V);
-for v1 = 1:V
-    for v2 = 1:V
-        if v1==v2
-            continue
-        end
-        clstPop(v1,v2) = size(dat(dat(:,7)==v1 & dat(:,8)==v2,:),1);
-    end
-end
-clstPop = clstPop/sum(sum(clstPop));
 
 if guessMeth==1 % determine guess from DPH fit & BIC model selection
 
-    mdl = prm.mdl_res{6}{3};
-    BIC = prm.mdl_res{6}{2};
-    D = zeros(1,V);
-    for v = 1:V
-        [~,ind] = min(BIC(:,v+1));
-        D(v) = BIC(ind,1);
-    end
-    J = sum(D);
-    tp0 = zeros(J);
-    j1 = 0;
+    % display process
+    setContPan(['Determine state degeneracies (refer to MATLAB''s command',...
+        ' window for more details about the process'' progress)...'],...
+        'process',h_fig);
+
+    [D,mdl,cmb,BIC_cmb,BIC] = ...
+        script_findBestModel(dat(:,[1,4,7,8]),Dmax,states,nL*expT,dt_bin,...
+        T_mldph);
+    h = guidata(h_fig); % computation time of tph test stored in h.t_dphtest
+    
+    % export DPH fit parameters and computation time
+%     pname = p.proj{proj}.folderRoot;
+%     if pname(end)~=filesep
+%         pname = [pname,filesep];
+%     end
+%     pname = [pname,'kinetic model',filesep];
+%     if ~exist(pname,'dir')
+%         mkdir(pname)
+%     end
+%     fname = [p.proj{proj}.exp_parameters{1,2},'_mldphfitres.mat'];
+%     save([pname,fname],'mdl','-mat')
+
+    degen = [];
     for v1 = 1:V
-        tp0((j1+1):(j1+D(v1)),(j1+1):(j1+D(v1))) = ...
-            mdl.tp_fit{v1}(:,1:end-1);
-        p_exit = mdl.tp_fit{v1}(:,end);
-        j2 = 0;
-        for v2 = 1:V
-            if v1~=v2
-                tp0((j1+1):(j1+D(v1)),(j2+1):(j2+D(v2))) = ...
-                    repmat(p_exit,[1,D(v2)]).*...
-                    repmat(clstPop(v1,v2),[D(v1),D(v2)])/D(v2);
-            end
-            j2 = j2+D(v2);
-        end
-        j1 = j1+D(v1);
+        degen = cat(2,degen,repmat(v1,[1,D(v1)]));
     end
+    states = states(degen);
+    prm.mdl_res{6} = {[cmb,BIC_cmb'],[1:Dmax;BIC]',mdl};
+
+    % bring DPH plot tab front
+    bringPlotTabFront('TAdph',h_fig);
     
 else % use guess from panel "Exponential fit"
     % check for state lifetimes
@@ -182,57 +174,30 @@ else % use guess from panel "Exponential fit"
             % get restricted rate coefficients
             if boba
                 dec = prm.lft_res{v1,1}(:,3,1)';
-                pop = prm.lft_res{v1,1}(:,1,2:end)./repmat(dec',[1,1,V-1]);
-                pop = pop(:)';
             else
                 dec = prm.lft_res{v1,2}(:,2,1)';
-                pop = prm.lft_res{v1,2}(:,2,2:end)./repmat(dec',[1,1,V-1]);
-                pop = pop(:)';
             end
-            r = cat(2,r,1./dec);
-            A = cat(2,A,pop/sum(pop));
             degen = cat(2,degen,repmat(v1,[1,numel(dec)]));
-
         end
     end
+    states = states(degen);
 
-    % get starting transition probabilities based on number of transitions
-    J_deg = numel(states);
-    tp0 = zeros(J_deg);
-    for j_deg1 = 1:J_deg
-        for j_deg2 = 1:J_deg
-            if j_deg1==j_deg2
-                continue
-            end
-            tp0(j_deg1,j_deg2) = ...
-                A(j_deg1)*A(j_deg2)*clstPop(degen(j_deg1),degen(j_deg2));
-        end
-    end
-    tp0 = repmat(nL*expT*r',[1,J_deg]).*tp0./repmat(sum(tp0,2),[1,J_deg]); % transition prob
-    tp0(~~eye(size(tp0))) = 1-sum(tp0,2); % transition prob
+    % bring model plot tab front
+    bringPlotTabFront('TAmdl',h_fig);
 end
-expPrm.expT = nL*expT;
-expPrm.Ls = sum(p.proj{proj}.bool_intensities,1);
-expPrm.dt = dat(:,[1,4,end-1,end]);
-expPrm.excl = excl;
-expPrm.seq = seq;
+prm.mdl_res{5} = states;
 
-[tp,err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T_bw); % transition prob
-
-prm.mdl_res(1:4) = {tp,err,ip,simdat};
-
-% save modifications
+% save modfications
 p.proj{proj}.TA.prm{tag,tpe} = prm;
-p.proj{proj}.TA.curr{tag,tpe}.mdl_res(1:4) = prm.mdl_res(1:4);
-
+p.proj{proj}.TA.curr{tag,tpe}.mdl_res{5} = prm.mdl_res{5};
+p.proj{proj}.TA.curr{tag,tpe}.mdl_res{6} = prm.mdl_res{6};
 h.param = p;
 guidata(h_fig,h);
 
-ud_kinMdl(h_fig);
 updateTAplots(h_fig,'mdl');
+ud_kinMdl(h_fig);
 
-% bring simulation plot tab front
-bringPlotTabFront('TAsim',h_fig);
+% display success
+setContPan('State degeneracy was successfully determined!','success',...
+    h_fig);
 
-% display process
-setContPan('The kinetic model was successfully inferred!','success',h_fig);

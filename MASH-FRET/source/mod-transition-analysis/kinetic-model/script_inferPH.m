@@ -1,5 +1,5 @@
-function mdl = script_inferPH(dt,states,expT,dt_bin,J_deg,plotIt)
-% mdl = script_inferPH(allSchemes,dt,expT,dt_bin,J_deg,plotIt)
+function mdl = script_inferPH(dt,states,expT,dt_bin,n_rs,J_deg,plotIt)
+% mdl = script_inferPH(allSchemes,dt,expT,dt_bin,n_rs,J_deg,plotIt)
 %
 % Trains DPH distributions of specific complexities (in terms of number of degenerated levels) on experimental dwell time histograms (one histogram per state value).
 % Returns best fit parameters
@@ -8,6 +8,7 @@ function mdl = script_inferPH(dt,states,expT,dt_bin,J_deg,plotIt)
 % states: [1-by-V] state values in dt
 % expT: bin time (s)
 % dt_bin: binning factor for dwell times prior building histogram
+% n_rs: number of restarts
 % J_deg: [1-by-V] number of degenerated levels
 % plotIt: (1) to plot fit, (0) otherwise
 % mdl: structure containing fit DPH parameters
@@ -21,7 +22,6 @@ mdl = struct;
 
 % defaults
 PH_type = 1;% 1 for discrete, 2 for continuous
-n_rs = 5; % number of EM restarts
 
 expT_bin = dt_bin*expT;
 n = 0;

@@ -35,8 +35,10 @@ excl = true;
 rearr_lft = false;
 auto_lft = true;
 bin_lft = 0.01;
-niter_mdl = 5;
+niter_mldph = 5;
+niter_bw = 5;
 Dmax = 4;
+dtbin = 10;
 
 % collect project parameters
 colList = p.TDP.colList;
@@ -185,8 +187,11 @@ for tpe = 1:nTpe
         def{tag,tpe}.lft_res{5} = [];
         
         %% Kinetic model start parameters
-        % starting guess, number of restart
-        def{tag,tpe}.mdl_start = [1,niter_mdl,Dmax];
+        % degeneracy method, dwelltime bin size (in time steps), maximum degeneracy, number of MLDPH restart
+        def{tag,tpe}.mdl_start{1} = [1,dtbin,Dmax,niter_mldph];
+        
+        % number of BW restart
+        def{tag,tpe}.mdl_start{2} = niter_bw;
         
         %% Kinetic model results
         % transition probabilities
@@ -204,7 +209,7 @@ for tpe = 1:nTpe
         % final state values (incl. degenerated levels)
         def{tag,tpe}.mdl_res{5} = []; 
         
-        % [Dmax^V-by-V+1] nb. of degenerated states, BIC combinations, BIC
+        % BIC combinations, BIC, optimum DPH fit param
         def{tag,tpe}.mdl_res{6} = []; 
         
     end

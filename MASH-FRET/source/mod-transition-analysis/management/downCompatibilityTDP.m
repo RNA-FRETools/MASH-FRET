@@ -294,6 +294,25 @@ if isfield(prm,'plot') && numel(prm.plot{4})>1
     prm.plot{4} = def.plot{4};
 end
 
+% 02.02.2022: separate ML-DPH and BW parameters
+if isfield(prm,'mdl_start') && ~iscell(prm.mdl_start)
+    mdl_start = cell(1,2);
+    mdl_start{1} = [prm.mdl_start(1),10,prm.mdl_start(3),5];
+    mdl_start{2} = prm.mdl_start(2);
+    prm.mdl_start = mdl_start;
+end
+
+% 02.02.2022: reset ML-DPH results if optimum fit parameters are absent
+if isfield(prm,'mdl_res') && size(prm.mdl_res,2)>=6 && ...
+        ~isempty(prm.mdl_res{6}) && size(prm.mdl_res{6},2)<3
+    fprintf(['ML-DPH analysis in the project is outdated: fitting',...
+        ' results have been reset.\nTo access the old ML-DPH analysis',...
+        ' results, please use MASH-FRET 1.3.1 (prev. commit: e47bae6) or ',...
+        'older (available at: https://github.com/RNA-FRETools/MASH-FRET/',...
+        'releases).\n']);
+    prm.mdl_res = def.mdl_res;
+end
+
 p_TA.prm{tag,tpe} = prm;
 
 

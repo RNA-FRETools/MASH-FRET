@@ -10,7 +10,7 @@ proj = p.curr_proj;
 tpe = p.TDP.curr_type(proj);
 tag = p.TDP.curr_tag(proj);
 
-p.proj{proj}.TA.curr{tag,tpe}.mdl_start(1) = get(obj,'value');
+p.proj{proj}.TA.curr{tag,tpe}.mdl_start{1}(1) = get(obj,'value');
 
 h.param = p;
 guidata(h_fig, h);

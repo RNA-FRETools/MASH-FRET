@@ -1,6 +1,6 @@
 function [degen,mdl,cmb,BIC_cmb,BIC] = script_findBestModel(dt,J_deg_max,...
-    states,expT,dt_bin)
-% [degen,mdl,cmb,BIC_cmb,BIC] = script_findBestModel(dt,J_deg_max,states,expT,dt_bin)
+    states,expT,dt_bin,T)
+% [degen,mdl,cmb,BIC_cmb,BIC] = script_findBestModel(dt,J_deg_max,states,expT,dt_bin,T)
 %
 % Import dwell times from .clst file
 % Find and return most sufficient model complexities (in terms of number of degenerated levels) for each state value
@@ -11,6 +11,7 @@ function [degen,mdl,cmb,BIC_cmb,BIC] = script_findBestModel(dt,J_deg_max,...
 % states: [1-by-V] state values in dt
 % expT: bin time (s)
 % dt_bin: binning factor for dwell times prior building histogram
+% T: number of restart
 % degen: [1-by-V] most sufficient model complexity (number of degenerated levels per state value)
 % mdl: structures containing best DPH fit parameters for the most sufficient model
 %   mdl.pi_fit: {1-by-V} starting probabilities
@@ -33,8 +34,8 @@ mdl = cell(1,J_deg_max);
 logL = Inf(V,J_deg_max);
 for J_deg = 1:J_deg_max
     fprintf('for %i degenerated states:\n',J_deg);
-    mdl{J_deg} = script_inferPH(dt,states,expT,dt_bin,repmat(J_deg,[1,V]),...
-        plotIt);
+    mdl{J_deg} = script_inferPH(dt,states,expT,dt_bin,T,...
+        repmat(J_deg,[1,V]),plotIt);
     LogL_v = [];
     for v = 1:V
         LogL_v = cat(1,LogL_v,mdl{J_deg}.logL(v));
@@ -95,7 +96,7 @@ fprintf(['Most sufficient state configuration:\n[%0.2f',...
 
 % infer "true" DPH parameters
 disp('Optimize DPH distributions on authentic dwell time histograms...')
-mdl = script_inferPH(dt,states,expT,1,degen,false);
+mdl = script_inferPH(dt,states,expT,1,T,degen,false);
 
 % save computation time
 mdl.t_dphtest = toc(t_comp);

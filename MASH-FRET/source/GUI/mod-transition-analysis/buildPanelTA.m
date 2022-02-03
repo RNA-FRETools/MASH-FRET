@@ -41,7 +41,7 @@ str4 = 'diagonal';
 str7 = 'EXPORT...';
 ttl0 = 'Transition density plot';
 ttl1 = 'State configuration';
-ttl2 = 'Dwell time hisotgrams';
+ttl2 = 'Dwell time histograms';
 ttl3 = 'Kinetic model';
 tabttl0 = 'TDP';
 tabttl1 = 'BIC (ML-GMM)';
@@ -74,7 +74,10 @@ hpan1 = p.mgpan+hpan1a+p.mg+hpan1b+p.mg;
 hpan2a = p.mgpan+htxt0+hpop0+p.mg/2+htxt0+hpop0+p.mg;
 hpan2 = p.mgpan+htxt0+hedit0+hedit0/2+p.mg/2+htxt0+hpop0+p.mg/2+hbut0+...
     p.mg/2+hpan2a+p.mg;
-hpan3 = p.mgpan+htxt0+hpop0+p.mg/2+hbut0+p.mg;
+hpan3a = p.mgpan+htxt0+hpop0+p.mg/2+hbut0+p.mg+htxt0+hpop0+p.mg/2+htxt0+...
+    hpop0+p.mg/2+htxt0+hpop0+p.mg;
+hpan3b = p.mgpan+htxt0+hedit0+(hbut0-hedit0)/2+p.mg;
+hpan3 = p.mgpan+hpan3a+p.mg/2+hpan3b+p.mg;
 
 % GUI
 x = p.mg;
