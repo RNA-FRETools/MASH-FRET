@@ -6,6 +6,7 @@ function s = intAscii2mash(pname, fname, s, p, h_fig)
 
 % defaults
 coordintrace = false;
+bufferSz = 1e3;
 
 % collect project parameters
 exptime = s.frame_rate;
@@ -126,6 +127,7 @@ try
     switch delim
         case 1
             delimchar = {sprintf('\t'),' '};
+%             delimchar = ' ';
         case 2
             delimchar = sprintf('\t');
         case 3
@@ -142,60 +144,66 @@ try
         dfretNum = [];
         
         % read file
-        fdat = {};
+        dat = [];
         f = fopen([pname fname{i}], 'r');
-        while ~feof(f)
-            rowdat = split(fgetl(f),delimchar)';
-            excl = false(1,numel(rowdat));
-            for col = 1:numel(rowdat)
-                chars = unique(rowdat{col});
+        if i==1
+            for line = 1:(row1-1)
+                fgetl(f);
+            end
+            str = split(fgetl(f),delimchar)';
+            excl = false(1,numel(str));
+            for col = 1:numel(str)
+                chars = unique(str{col});
                 if numel(chars)==0 || (numel(chars)==1 && chars==' ')
                     excl(col) = true;
                 end
             end
-            rowdat(excl) = [];
-            if ~isempty(fdat) && size(rowdat,2)~=size(fdat,2)
-                if size(rowdat,2)<size(fdat,2)
-                    rowdat = cat(2,rowdat,...
-                        cell(1,size(fdat,2)-size(rowdat,2)));
+            str(excl) = [];
+            nCol = numel(str);
+            frewind(f);
+        end
+        for line = 1:(row1-1)
+            fgetl(f);
+        end
+        scdat = reshape(fscanf(f,...
+            ['%f',repmat(' %f',[1,nCol-1]),'\n'],nCol*bufferSz),nCol,...
+            [])' ;
+        while ~isempty(scdat)
+            if ~isempty(dat) && size(scdat,2)~=size(dat,2)
+                if size(scdat,2)<size(dat,2)
+                    scdat = cat(2,scdat,...
+                        cell(1,size(dat,2)-size(scdat,2)));
                 else
-                    fdat = cat(2,fdat,...
-                        cell(size(fdat,1),size(rowdat,2)-size(fdat,2)));
+                    dat = cat(2,dat,...
+                        cell(size(dat,1),size(scdat,2)-size(dat,2)));
                 end
             end
-            fdat = cat(1,fdat,rowdat);
+            dat = cat(1,dat,scdat);
+            scdat = reshape(fscanf(f,...
+                ['%f',repmat(' %f',[1,nCol-1]),'\n'],nCol*bufferSz),...
+                nCol,[])' ;
         end
         fclose(f);
         
         % collect import parameters
-        r_end = size(fdat,1);
         if colI2 == 0
-            c_end = size(fdat,2);
+            c_end = size(dat,2);
         else
             c_end = colI2;
         end
         
         % format intensity and discretized data
-        for r = row1:r_end
-            dat = cellfun(@str2double,fdat(r,:));
-            if ~isempty(dat)
-                if isTime && i==1
-                    times = cat(1,times,dat(1,colt));
-                end
-                if isdFRET
-                    dfretNum_col = [];
-                    for col = colseq1:(colseqskip+1):colseq2
-                        dfretNum_col = cat(2,dfretNum_col,dat(1,col));
-                    end
-                    dfretNum = cat(1,dfretNum,dfretNum_col);
-                end
-                intNum_col = [];
-                for lay = 1:numel(colI1)
-                    for col = colI1(lay):c_end(lay)
-                        intNum_col = cat(2,intNum_col,dat(1,col));
-                    end
-                end
-                intNum = cat(1,intNum,intNum_col);
+        if isTime && i==1
+            times = dat(:,colt);
+        end
+        if isdFRET
+            for col = colseq1:(colseqskip+1):colseq2
+                dfretNum = cat(2,dfretNum,dat(:,col));
+            end
+        end
+        for lay = 1:numel(colI1)
+            for col = colI1(lay):c_end(lay)
+                intNum = cat(2,intNum,dat(:,col));
             end
         end
         
@@ -247,7 +255,7 @@ try
                 s = [];
                 return
             elseif isempty(FRET) && row1>1
-                FREThead = fdat(row1-1,:);
+                FREThead = dat(row1-1,:);
                 FRET = getFRETfromFactorFiles(...
                     FREThead(colseq1:(colseqskip+1):colseq2));
             end
@@ -380,7 +388,7 @@ try
         % import molecule coordinates from file's header
         coord_n = [];
         if coordintrace
-            coordTxt = fdat(row_coord,:);
+            coordTxt = dat(row_coord,:);
             coord_raw = [];
             for j = 1:size(coordTxt,1)
                 c = str2double(coordTxt{j,1});
