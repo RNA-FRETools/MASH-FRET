@@ -34,30 +34,42 @@ end
 % identify function call from script routine
 fromRoutine = size(varargin,2)==2;
 
-% get file name and destination for export
-if fromRoutine
-    pname = varargin{1};
-    fname = varargin{2};
-else
-    defpname = setCorrectPath('simulations',h_fig);
-    if defpname(end)~=filesep
-        defpname = [defpname,filesep];
-    end
-    deffname = p.proj{proj}.exp_parameters{1,2};
-    [fname,pname] = uiputfile({'*.*','All files (*.*)'}, ...
-        'Define a root name for file export',[defpname,deffname]);
-end
-if ~(~isempty(fname) && sum(fname))
-    return
-end
-cd(pname);
-[~,fname,~] = fileparts(fname);
-
 % apply current export options to project
 prm.exp = p.proj{proj}.sim.curr.exp;
 p.proj{proj}.sim.prm = prm;
 h.param = p;
 guidata(h_fig,h);
+
+% collect export options
+isPrm = prm.exp{1}(1); % export simulation parameters (0/1)
+isAsciiTr = prm.exp{1}(2); % export ASCII traces (0/1)
+isMatTr = prm.exp{1}(3); % export Matlab traces (0/1)
+isDt = prm.exp{1}(4); % export dwell-times (0/1)
+isMov = prm.exp{1}(5); % export movie (0/1)
+isAvi = prm.exp{1}(6); % export movie (0/1)
+isCrd = prm.exp{1}(7); % export coordinates (0/1)
+isFile = isPrm | isAsciiTr | isMatTr | isDt | isMov | isAvi | isCrd;
+
+% get file name and destination for export
+if isFile
+    if fromRoutine
+        pname = varargin{1};
+        fname = varargin{2};
+    else
+        defpname = setCorrectPath('simulations',h_fig);
+        if defpname(end)~=filesep
+            defpname = [defpname,filesep];
+        end
+        deffname = p.proj{proj}.exp_parameters{1,2};
+        [fname,pname] = uiputfile({'*.*','All files (*.*)'}, ...
+            'Define a root name for file export',[defpname,deffname]);
+    end
+    if ~(~isempty(fname) && sum(fname))
+        return
+    end
+    cd(pname);
+    [~,fname,~] = fileparts(fname);
+end
 
 % collect simulation parameters
 N = prm.gen_dt{1}(1);
@@ -67,13 +79,6 @@ presets = prm.gen_dt{3}{2};
 coord =  prm.gen_dat{1}{1}{2};
 viddim = prm.gen_dat{1}{2}{1};
 FRETval = prm.gen_dat{2}(1,:);
-isPrm = prm.exp{1}(1); % export simulation parameters (0/1)
-isAsciiTr = prm.exp{1}(2); % export ASCII traces (0/1)
-isMatTr = prm.exp{1}(3); % export Matlab traces (0/1)
-isDt = prm.exp{1}(4); % export dwell-times (0/1)
-isMov = prm.exp{1}(5); % export movie (0/1)
-isAvi = prm.exp{1}(6); % export movie (0/1)
-isCrd = prm.exp{1}(7); % export coordinates (0/1)
 outun = prm.exp{2};
 
 % collect simulated state sequences and coordinates
