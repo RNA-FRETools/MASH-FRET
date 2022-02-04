@@ -59,6 +59,7 @@ gen_dt{2} = cat(3,kx,wx); % transition rate constants,transition prob.
 gen_dt{3} = {false,[],''}; % is presets,presets file, presets
 def.gen_dt = adjustVal(def.gen_dt,gen_dt);
 def.gen_dt{3} = gen_dt{3}; % reset presets
+J = def.gen_dt{1}(3);
 
 % parameters to calculate coordinates,intensities,FRET and video frame
 gen_dat{1} = {{true,[],[]},... % rand. coord, coord, coord file
