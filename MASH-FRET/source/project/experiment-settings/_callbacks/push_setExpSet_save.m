@@ -87,6 +87,8 @@ if strcmp(dat2import,'sim') || strcmp(dat2import,'video') || ...
 elseif strcmp(dat2import,'edit')
 
     % retrieve new project parameters
+    nChan = proj.nb_channel;
+    nExc = proj.nb_excitations;
     labels = proj.labels;
     clr = proj.colours;
     exc = proj.excitations;
@@ -147,6 +149,11 @@ elseif strcmp(dat2import,'edit')
                 p.proj{p.curr_proj}.TP.def.mol);
         end
     end
+    if isModuleOn(p,'TA')
+        if p.TDP.curr_type(p.curr_proj)>(nChan*nExc+nFRET+nS)
+            p.TDP.curr_type(p.curr_proj) = nChan*nExc+nFRET+nS;
+        end
+    end
 
     % update project list
     p = ud_projLst(p, h.listbox_proj);
@@ -157,6 +164,9 @@ elseif strcmp(dat2import,'edit')
 
     % update TP interface according to new parameters
     ud_TTprojPrm(h_fig0);
+
+    % refresh interface
+    updateFields(h_fig0);
 
     % display success
     setContPan('Experiment settings successfully modified!','success',...

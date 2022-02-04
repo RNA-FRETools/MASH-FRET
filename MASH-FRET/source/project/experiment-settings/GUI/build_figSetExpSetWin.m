@@ -76,7 +76,7 @@ y = hfig-mg-htab;
 
 h.tabg = uitabgroup('parent',h_fig,'units',un,'position',[x,y,wtab,htab]);
 if ~strcmp(dat2import,'sim')
-    if ~isempty(dat2import)
+    if ~isempty(dat2import) && ~strcmp(dat2import,'edit')
         h.tab_imp = uitab('parent',h.tabg,'units',un,'title',ttl0);
         h.tab_chan = uitab('parent',h.tabg,'units',un,'title',ttl1);
         h.tab_exc = uitab('parent',h.tabg,'units',un,'title',ttl2);
@@ -89,7 +89,7 @@ end
 h.tab_div = uitab('parent',h.tabg,'units',un,'title',ttl5);
 
 if ~strcmp(dat2import,'sim')
-    if ~isempty(dat2import)
+    if ~isempty(dat2import) && ~strcmp(dat2import,'edit')
         h = build_setExpSetTabImport(h,dat2import,h_fig0);
         h = build_setExpSetTabChan(h,proj.nb_channel);
         h = build_setExpSetTabExc(h,proj.nb_excitations,h_fig0);
