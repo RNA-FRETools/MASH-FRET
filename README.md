@@ -27,7 +27,7 @@ For information about the different modules of MASH-FRET and step-by-step tutori
 
 ## Getting involved
 
-MASH-FRET was developed by Mélodie Hadzic and Danny Kowerko in the group of Prof. Roland Sigel at the University of Zurich and is currently maintained by Fabio Steffen and Richard Börner.
+MASH-FRET was developed by Mélodie Hadzic and Danny Kowerko in the group of Prof. Roland Sigel at the University of Zurich and is currently maintained by Mélodie Hadzic, Fabio Steffen and Richard Börner.
 
 Please report any **bugs** or **feature requests** through the [issue tracker](https://github.com/RNA-FRETools/MASH-FRET/issues) on Github.
 
