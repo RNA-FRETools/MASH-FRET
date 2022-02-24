@@ -45,7 +45,7 @@ if ~isempty(opt) && opt{1}{1}(3)
     end
     
 elseif proj.is_movie
-    [dat,ok] = getFrames(proj.movie_file,1,[],h_fig0,true);
+    [dat,ok] = getFrames(proj.movie_file{1},1,[],h_fig0,true);
     if ok && dat.cycleTime~=1
         splt = dat.cycleTime;
         proj.spltime_from_video = true;

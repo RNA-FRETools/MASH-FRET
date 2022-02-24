@@ -16,19 +16,27 @@ end
 
 % plot average image
 set(h.axes_chan,'visible','on');
-imagesc(h.axes_chan,'xdata',[0,proj.movie_dim(1)],'ydata',...
-    [0,proj.movie_dim(2)],'cdata',proj.aveImg{1});
+for c = 1:proj.nb_channel
+    if h.radio_impFileMulti.Value==1
+        splitpos1 = (c-1)*round(proj.movie_dim{1}(1)/proj.nb_channel);
+        splitpos2 = c*round(proj.movie_dim{1}(1)/proj.nb_channel);
+        img = proj.aveImg{1}(:,(splitpos1+1):splitpos2);
+        imagesc(h.axes_chan(c),'xdata',[splitpos1,splitpos2],'ydata',...
+            [0,proj.movie_dim{1}(2)],'cdata',img);
 
-h.axes_chan.NextPlot = 'add';
+        h.axes_chan(c).XLim = [splitpos1,splitpos2];
+        h.axes_chan(c).YLim = [0,proj.movie_dim{1}(2)];
+    else
+        if isempty(proj.movie_dim{c})
+            continue
+        end
+        splitpos1 = 1;
+        splitpos2 = proj.movie_dim{c}(1);
+        img = proj.aveImg{c,1}(:,splitpos1:splitpos2);
+        imagesc(h.axes_chan(c),'xdata',[splitpos1,splitpos2],'ydata',...
+            [0,proj.movie_dim{c}(2)],'cdata',img);
 
-% plot channel borders
-for c = 1:(proj.nb_channel-1)
-    splitpos = c*round(proj.movie_dim(1)/proj.nb_channel);
-    plot(h.axes_chan,[splitpos,splitpos],[0,proj.movie_dim(2)],'--w',...
-        'linewidth',2);
+        h.axes_chan(c).XLim = [splitpos1,splitpos2];
+        h.axes_chan(c).YLim = [0,proj.movie_dim{c}(2)];
+    end
 end
-
-h.axes_chan.NextPlot = 'replacechildren';
-
-h.axes_chan.XLim = [0,proj.movie_dim(1)];
-h.axes_chan.YLim = [0,proj.movie_dim(2)];

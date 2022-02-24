@@ -19,6 +19,11 @@ proj = h.figure.UserData;
 
 % set number of channels
 set(h.edit_nChan,'string',num2str(proj.nb_channel));
+if h.radio_impFileSingle.Value
+    set(h.edit_nChan,'enable','off');
+else
+    set(h.edit_nChan,'enable','on');
+end
 
 % set emitter names
 for c = 1:proj.nb_channel

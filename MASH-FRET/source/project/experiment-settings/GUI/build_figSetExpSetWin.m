@@ -90,8 +90,8 @@ h.tab_div = uitab('parent',h.tabg,'units',un,'title',ttl5);
 
 if ~strcmp(dat2import,'sim')
     if ~isempty(dat2import) && ~strcmp(dat2import,'edit')
-        h = build_setExpSetTabImport(h,dat2import,h_fig0);
-        h = build_setExpSetTabChan(h,proj.nb_channel);
+        h = build_setExpSetTabImport(h,dat2import,proj.nb_channel,h_fig0);
+        h = build_setExpSetTabChan(h,proj.nb_channel,h_fig0);
         h = build_setExpSetTabExc(h,proj.nb_excitations,h_fig0);
     end
     if strcmp(dat2import,'trajectories')
@@ -105,5 +105,12 @@ guidata(h_fig,h);
 
 setProp([h_fig,h_fig.Children],'units','normalized');
 
+% update project's video parameters
+proj = updateProjVideoParam(proj,h.radio_impFileMulti.Value);
+h_fig.UserData = proj;
+
 ud_expSetWin(h_fig);
+
+% set colormap
+colormap(h_fig,'turbo');
 

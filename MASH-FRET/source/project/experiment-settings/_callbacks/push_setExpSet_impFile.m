@@ -1,9 +1,16 @@
-function push_setExpSet_impFile(obj,evd,h_fig,h_fig0)
+function push_setExpSet_impFile(obj,evd,h_fig,h_fig0,varargin)
 
 % default
 vidfmt = {'.sif','.vsi','.ets','.sira','.tif','.gif','.png','.spe','.pma',...
     '.avi'};
 udlasers = false;
+
+% get import mode
+if ~isempty(varargin)
+    chan = varargin{1};
+else
+    chan = 1;
+end
 
 % retrieve project data
 proj = h_fig.UserData;
@@ -40,7 +47,7 @@ h0 = guidata(h_fig0);
 h0.movie.movie = [];
 h0.movie.file = '';
 guidata(h_fig0,h0);
-[dat,ok] = getFrames([pname,fname],'all',[],h_fig0,true);
+[dat,ok] = getFrames([pname,fname],1,[],h_fig0,true);
 if ~ok
     return
 end
@@ -58,10 +65,10 @@ vfile = [pname,fname];
 
 % set project video infos
 proj.folderRoot = pname;
-proj.movie_file = vfile;
+proj.movie_file{chan} = vfile;
 proj.is_movie = true;
-proj.movie_dim = vinfo{2};
-proj.movie_dat = vinfo;
+proj.movie_dim{chan} = vinfo{2};
+proj.movie_dat{chan} = vinfo;
 if isfield(dat,'lasers')
     udlasers = true;
     proj.excitations = dat.lasers;
@@ -95,9 +102,9 @@ else
     setContPan('Calculate average images...','process',h_fig0);
 
     % calculate average images
-    aveimg = calcAveImg('all',vfile,vinfo,proj.nb_excitations,h_fig0);
+    aveimg = calcAveImg('all',vfile,vinfo,proj.nb_excitations,h_fig0,1:100);
 
-    proj.aveImg = aveimg;
+    proj.aveImg(chan,:) = aveimg;
     
     % save modifications
     h_fig.UserData = proj;

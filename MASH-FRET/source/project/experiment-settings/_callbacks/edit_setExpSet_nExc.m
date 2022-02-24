@@ -3,14 +3,13 @@ function edit_setExpSet_nExc(obj,evd,h_fig,h_fig0)
 % retrieve project data
 proj = h_fig.UserData;
 
-
 % adjust number of lasers
 nExc = str2double(get(obj,'string'));
 if isempty(nExc)
-    nExc = 0;
+    nExc = 1;
 end
-if nExc<0
-    nExc = 0;
+if nExc<1
+    nExc = 1;
 end
 if nExc>10
     nExc = 10;
@@ -35,11 +34,19 @@ for c = 1:proj.nb_channel
 end
 proj.chanExc(excl) = 0;
 
+% update video param
+h = guidata(h_fig);
+proj = updateProjVideoParam(proj,h.radio_impFileMulti.Value);
+
 % recalculate average images
 if proj.is_movie
     setContPan('Recalculate average images...','process',h_fig0);
-    proj.aveImg = calcAveImg('all',proj.movie_file,proj.movie_dat,...
-        proj.nb_excitations,h_fig0);
+    nMov = numel(proj.movie_file);
+    proj.aveImg = cell(nMov,proj.nb_excitations+1);
+    for c = 1:nMov
+        proj.aveImg(c,:) = calcAveImg('all',proj.movie_file{c},...
+            proj.movie_dat{c},proj.nb_excitations,h_fig0,1:100);
+    end
     setContPan('Average images successfully recalculated!','success',...
         h_fig0);
 end

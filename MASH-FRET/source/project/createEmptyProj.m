@@ -39,10 +39,10 @@ p.colours = {};
 p.traj_import_opt = [];
 
 % video
-p.movie_file = '';
+p.movie_file = {[]};
 p.is_movie = false;
-p.movie_dim = [];
-p.movie_dat = [];
+p.movie_dim = {[]};
+p.movie_dat = {[]};
 p.spltime_from_video = false;
 p.aveImg = [];
 p.is_coord = false;
