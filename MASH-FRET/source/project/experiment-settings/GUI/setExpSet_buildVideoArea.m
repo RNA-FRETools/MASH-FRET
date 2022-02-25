@@ -37,22 +37,8 @@ img0 = imread([pname,file_icon0]);
 img1 = imread([pname,file_icon1]);
 
 % delete previous controls
-if isfield(h,'push_addChan') && sum(ishandle(h.push_addChan))
-    delete(h.push_addChan);
-    h = rmfield(h,'push_addChan');
-end
-if isfield(h,'push_remChan') && sum(ishandle(h.push_remChan))
-    delete(h.push_remChan);
-    h = rmfield(h,'push_remChan');
-end
-if isfield(h,'edit_impFileSingle') && sum(ishandle(h.edit_impFileSingle))
-    delete(h.edit_impFileSingle);
-    h = rmfield(h,'edit_impFileSingle');
-end
-if isfield(h,'push_impFileSingle') && sum(ishandle(h.push_impFileSingle))
-    delete(h.push_impFileSingle);
-    h = rmfield(h,'push_impFileSingle');
-end
+h = delControlIfHandle(h,{'push_addChan','push_remChan',...
+    'edit_impFileSingle','push_impFileSingle'});
 
 x = h.mg;
 y = h.edit_impFileMulti.Position(2);

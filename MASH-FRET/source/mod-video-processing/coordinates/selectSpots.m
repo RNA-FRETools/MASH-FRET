@@ -4,8 +4,8 @@ function spots = selectSpots(spots, w, h, prm)
 % Select coordinates corresponding to the selection criteria (minimum intensity, spot size, spot assymetry, inter-spot distance, distance from image edge, maximum number of spots)
 %
 % spots: {1-by-nChan} cell array containing spots parameters (x and y coordinates, intensity, spot width and height, assymetry) for each channel
-% w: image dimension in the x-direction (in pixels)
-% h: image dimension in the y-direction (in pixels)
+% w: [1-by-nMov] image dimension in the x-direction (in pixels)
+% h: [1-by-nMov] image dimension in the y-direction (in pixels)
 % prm: processing parameters
 
 % Last update: 5th of February 2014 by Mélodie C.A.S Hadzic
@@ -14,13 +14,23 @@ function spots = selectSpots(spots, w, h, prm)
 gaussFit = prm.gen_crd{2}{1}(2);
 slctprm = prm.gen_crd{2}{3};
 
+% get number of videos
+nMov = numel(w);
+
 % get channel limits
 nChan = size(slctprm,1);
-sub_w = floor(w/nChan);
-limX = [0 (1:nChan)*sub_w w];
-limY = [1 h];
 
 for i = 1:nChan
+    
+    if nMov==1
+        sub_w = floor(w/nChan);
+        limX = [((i-1)*sub_w+1),i*sub_w];
+        limY = [1 h];
+    else
+        limX = [0 w(i)];
+        limY = [1 h(i)];
+    end
+    
     minDspot = slctprm(i,6);
     minDedge = slctprm(i,7);
 
@@ -55,7 +65,7 @@ for i = 1:nChan
     % check the distance spot-edges
     if ~isempty(spots{i})
         ok = select_spots_distfromedge(spots{i}(:,1:2), minDedge, ...
-            [limX(i)+1 limX(i+1); limY]);
+            [limX; limY]);
         spots{i} = spots{i}(ok,:);
     end
     

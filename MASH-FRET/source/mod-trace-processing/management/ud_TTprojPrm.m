@@ -9,7 +9,16 @@ function ud_TTprojPrm(h_fig)
 h = guidata(h_fig);
 p = h.param;
 
-% setProp(get(h.uipanel_TP, 'Children'), 'Visible', 'on');
+% update VP's plot tabs
+nMov = numel(p.proj{p.curr_proj}.movie_file);
+if nMov>1
+    tabttl = p.proj{p.curr_proj}.labels;
+else
+    tabttl = 'multi-channel';
+end
+
+h = buildVPtabgroupPlotVid(h,h.dimprm,nMov,tabttl);
+h = buildVPtabgroupPlotAvimg(h,h.dimprm,nMov,tabttl);
 
 % set default tag name list invisible and update corresponding button 
 % appearance

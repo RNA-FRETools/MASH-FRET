@@ -19,7 +19,7 @@ if meth<=1
 end
 
 % no result: run spotfinder
-if size(sfcoord,1)<1
+if all(cellfun('isempty',sfcoord))
     [spots,ok] = determineSpots(img, lb, prm, h_fig);
     if ~ok
         return
@@ -32,16 +32,16 @@ else
 end
 
 % apply selection rules
-[imgY,imgX] = size(img);
+[imgY,imgX] = cellfun(@size,img);
 prm.gen_crd{2}{5} = selectSpots(spots,imgX,imgY,prm);
 
 
-function [spots,ok] = determineSpots(img, lb, prm, h_fig)
-% [spots,ok] = determineSpots(img, lb, p, h_fig)
+function [spots,ok] = determineSpots(cellimg, lb, prm, h_fig)
+% [spots,ok] = determineSpots(cellimg, lb, p, h_fig)
 %
 % Target bright spots in the image and return their coordinates.
 %
-% img: input image
+% cellimg: {1-by-nMov} input image
 % lb: 1 if a loading bar is already opened, 0 otherwise
 % prm: processing parameters
 % h_fig: handle to main figure
@@ -57,16 +57,11 @@ meth = prm.gen_crd{2}{1}(1);
 gaussfit = prm.gen_crd{2}{1}(2);
 sfprm = prm.gen_crd{2}{2};
 nChan = size(sfprm,1);
+multichanvid = numel(cellimg)==1;
 
 % initialize output
 ok = 1;
 spots = cell(1,nChan);
-
-[imgY,imgX] = size(img);
-peaksNb = imgX*imgY;
-
-sub_w = floor(imgX/nChan);
-lim = [0 (1:nChan-1)*sub_w imgX];
 
 warning('on', 'verbose');
 warning('off', 'stats:nlinfit:IterationLimitExceeded');
@@ -76,9 +71,22 @@ warning('off', 'MATLAB:nearlySingularMatrix');
 warning('off', 'MATLAB:rankDeficientMatrix');
 warning('off', 'MATLAB:singularMatrix');
 
-
 for i = 1:nChan
-    int = img(:, lim(i)+1:lim(i+1));
+    
+    if multichanvid
+        img = cellimg{1};
+        [imgY,imgX] = size(img);
+        peaksNb = imgX*imgY;
+        sub_w = floor(imgX/nChan);
+        int = img(:,((c-1)*sub_w+1):c*sub_w);
+    else
+        img = cellimg{c};
+        [imgY,imgX] = size(img);
+        peaksNb = imgX*imgY;
+        sub_w = 0;
+        int = img;
+    end
+
     minInt = sfprm(i,1);
     ratioInt = sfprm(i,2);
     darkArea = sfprm(i,[3,4]);

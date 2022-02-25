@@ -23,22 +23,8 @@ haxe = postab(4)-h.mgtab-h.hedit-h.mg-h.htxt-h.mg-h.htxt-h.hedit-h.mg-...
 waxe = (postab(3)-2*h.mg-(nChan-1)*2*h.mg)/nChan;
 
 % delete previous controls
-if isfield(h,'text_chan') && sum(ishandle(h.text_chan))
-    delete(h.text_chan);
-    h = rmfield(h,'text_chan');
-end
-if isfield(h,'text_chanEm') && sum(ishandle(h.text_chanEm))
-    delete(h.text_chanEm);
-    h = rmfield(h,'text_chanEm');
-end
-if isfield(h,'edit_chanLbl') && sum(ishandle(h.edit_chanLbl))
-    delete(h.edit_chanLbl);
-    h = rmfield(h,'edit_chanLbl');
-end
-if isfield(h,'axes_chan') && sum(ishandle(h.axes_chan))
-    delete(h.axes_chan);
-    h = rmfield(h,'axes_chan');
-end
+h = delControlIfHandle(h,{'text_chan','text_chanEm','edit_chanLbl',...
+    'axes_chan'});
 
 x = h.mg;
 y = h.edit_nChan.Position(2)-h.mg-h.htxt-h.mg-h.htxt-h.hedit;

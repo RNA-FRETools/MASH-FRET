@@ -33,34 +33,8 @@ wedit1 = (wtxt0-h.mg)/2;
 wpop0 = wedit1;
 
 % delete previous controls
-if isfield(h,'text_exc') && sum(ishandle(h.text_exc))
-    delete(h.text_exc);
-    h = rmfield(h,'text_exc');
-end
-if isfield(h,'text_excWl') && sum(ishandle(h.text_excWl))
-    delete(h.text_excWl);
-    h = rmfield(h,'text_excWl');
-end
-if isfield(h,'text_excEm') && sum(ishandle(h.text_excEm))
-    delete(h.text_excEm);
-    h = rmfield(h,'text_excEm');
-end
-if isfield(h,'edit_excWl') && sum(ishandle(h.edit_excWl))
-    delete(h.edit_excWl);
-    h = rmfield(h,'edit_excWl');
-end
-if isfield(h,'popup_excEm') && sum(ishandle(h.popup_excEm))
-    delete(h.popup_excEm);
-    h = rmfield(h,'popup_excEm');
-end
-if isfield(h,'axes_exc') && sum(ishandle(h.axes_exc))
-    delete(h.axes_exc);
-    h = rmfield(h,'axes_exc');
-end
-if isfield(h,'text_excLgd') && sum(ishandle(h.text_excLgd))
-    delete(h.text_excLgd);
-    h = rmfield(h,'text_excLgd');
-end
+h = delControlIfHandle(h,{'text_exc','text_excWl','text_excEm',...
+    'edit_excWl','popup_excEm','axes_exc','text_excLgd'});
 
 x = h.mg;
 y = h.mg+h.hedit+h.mg;

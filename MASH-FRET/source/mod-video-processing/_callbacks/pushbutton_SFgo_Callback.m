@@ -10,7 +10,7 @@ meth = curr.gen_crd{2}{1}(1);
 bgfilt = curr.edit{1}{4};
 
 % control average image
-if isempty(avimg)
+if ~all(~cellfun('isempty',avimg))
     setContPan(['No average image detected. Please calculate or load the ',...
         'average image first.'],'error',h_fig);
     return
@@ -27,7 +27,7 @@ setContPan('Start a spotfinder procedure...','process',h_fig);
 % reset results
 curr.gen_crd{2}{4} = []; % uncharted
 curr.gen_crd{2}{5} = []; % final sorted
-curr.res_crd{1} = []; % sm coordinates
+curr.res_crd{1} = []; % spots coordinates
 
 % plot SF coordinates
 curr.plot{1}(2) = 1;
@@ -37,22 +37,22 @@ isBgCorr = ~isempty(bgfilt);
 
 % filter image
 if isBgCorr
-     avimg = updateBgCorr(avimg, p, h_fig);
+    for c = 1:numel(aveimg)
+        avimg{c} = updateBgCorr(avimg{c}, p, h_fig);
+    end
 end
 
 % find spots
 curr = updateSF(avimg, false, curr, h_fig);
 
 % set coordinates to transform
-spots = [];
+spots = cell(1,nChan);
 for c = 1:nChan
-    spots = cat(1,spots,curr.gen_crd{2}{5}{c});
+    if ~isempty(curr.gen_crd{2}{5}{c})
+        spots{c} = curr.gen_crd{2}{5}{c}(:,[1,2]);
+    end
 end
-if isempty(spots)
-    curr.res_crd{1} = [];
-else
-    curr.res_crd{1} = spots(:,[1,2]);
-end
+curr.res_crd{1} = spots;
 
 % reset coordinates file to transform
 curr.gen_crd{3}{1}{2} = '';

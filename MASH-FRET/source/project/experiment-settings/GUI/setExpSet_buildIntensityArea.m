@@ -25,26 +25,8 @@ wtxt1 = getUItextWidth(str1,h.fun,h.fsz,'normal',h.tbl);
 wtxt2 = getUItextWidth(str2,h.fun,h.fsz,'normal',h.tbl);
 
 % delete previous controls
-if isfield(h,'text_intExcCol') && sum(ishandle(h.text_intExcCol))
-    delete(h.text_intExcCol);
-    h = rmfield(h,'text_intExcCol');
-end
-if isfield(h,'edit_intExcCol1') && sum(ishandle(h.edit_intExcCol1))
-    delete(h.edit_intExcCol1);
-    h = rmfield(h,'edit_intExcCol1');
-end
-if isfield(h,'text_intExcTo') && sum(ishandle(h.text_intExcTo))
-    delete(h.text_intExcTo);
-    h = rmfield(h,'text_intExcTo');
-end
-if isfield(h,'edit_intExcCol2') && sum(ishandle(h.edit_intExcCol2))
-    delete(h.edit_intExcCol2);
-    h = rmfield(h,'edit_intExcCol2');
-end
-if isfield(h,'text_intExcZero') && sum(ishandle(h.text_intExcZero))
-    delete(h.text_intExcZero);
-    h = rmfield(h,'text_intExcZero');
-end
+h = delControlIfHandle(h,{'text_intExcCol','edit_intExcCol1',...
+    'text_intExcTo','edit_intExcCol2','text_intExcZero'});
 
 % GUI
 x = postxt(1)+postxt(3);

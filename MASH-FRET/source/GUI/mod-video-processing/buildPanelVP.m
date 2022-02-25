@@ -46,9 +46,11 @@ h_pan = h.uipanel_VP;
 pospan = get(h_pan,'position');
 wbut0 = getUItextWidth(str0,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
 wbut1 = getUItextWidth(str1,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
-htab = pospan(4)-2*p.mg;
-wtab = htab-hedit0-2*p.mg-hsld0-p.mg-htxt0;
-wpan0 = pospan(3)-3*p.mg-wtab;
+htab0 = pospan(4)-2*p.mg;
+wtab0 = htab0-hedit0-2*p.mg-hsld0-p.mg-htxt0;
+htab1 = htab0-p.mgtab-p.mg;
+wtab1 = wtab0-2*p.mg;
+wpan0 = pospan(3)-3*p.mg-wtab0;
 hpan0 = p.mgpan+hpop0+p.mg;
 hpan1 = p.mgpan+hpop0+hedit0+p.mg/2+hpop0+p.mg/fact+hedit0+p.mg/2+hedit0+...
     p.mg;
@@ -63,19 +65,22 @@ x = p.mg;
 y = p.mg;
 
 h.uitabgroup_VP_plot = uitabgroup('parent',h_pan,'units',p.posun,...
-    'position',[x,y,wtab,htab],'selectionchangedfcn',...
+    'position',[x,y,wtab0,htab0],'selectionchangedfcn',...
     {@uitabgroup_plot_SelectionChangedFcn,'VP',h_fig});
 h_tabgrp = h.uitabgroup_VP_plot;
 
 h.uitab_VP_plot_vid = uitab('parent',h_tabgrp,'units',p.posun,'title',...
     tabttl0);
+
 h = buildVPtabPlotVid(h,p);
 
 h.uitab_VP_plot_avimg = uitab('parent',h_tabgrp,'units',p.posun,'title',...
     tabttl1);
-h = buildVPtabPlotAvimg(h,p);
 
-x = x+wtab+p.mg;
+h.uitabgroup_VP_plot_avimg = uitabgroup('parent',h.uitab_VP_plot_avimg,...
+    'units',p.posun,'position',[x,y,wtab1,htab1],'tablocation','bottom');
+
+x = x+wtab0+p.mg;
 y = pospan(4)-p.mg-hpan0;
 
 h.uipanel_VP_plot = uipanel('parent',h_pan,'units',p.posun,'fontunits',...
