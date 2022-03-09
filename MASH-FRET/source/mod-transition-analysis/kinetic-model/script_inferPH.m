@@ -1,5 +1,5 @@
-function mdl = script_inferPH(dt,states,expT,dt_bin,n_rs,J_deg,plotIt)
-% mdl = script_inferPH(allSchemes,dt,expT,dt_bin,n_rs,J_deg,plotIt)
+function mdl = script_inferPH(dt,states,expT,dt_bin,n_rs,J_deg,plotIt,sumexp,savecurve)
+% mdl = script_inferPH(allSchemes,dt,expT,dt_bin,n_rs,J_deg,plotIt,sumexp,savecurve)
 %
 % Trains DPH distributions of specific complexities (in terms of number of degenerated levels) on experimental dwell time histograms (one histogram per state value).
 % Returns best fit parameters
@@ -11,6 +11,8 @@ function mdl = script_inferPH(dt,states,expT,dt_bin,n_rs,J_deg,plotIt)
 % n_rs: number of restarts
 % J_deg: [1-by-V] number of degenerated levels
 % plotIt: (1) to plot fit, (0) otherwise
+% sumexp: (1) to fit a sume of exponential (0) to fit PH
+% savecurve: empty or destination folder to save best fit curves
 % mdl: structure containing fit DPH parameters
 %   mdl.pi_fit: {1-by-V} starting probabilities
 %   mdl.tp_fit: {1-by-V} transition probabilities among degenerated states of a same state value
@@ -22,6 +24,17 @@ mdl = struct;
 
 % defaults
 PH_type = 1;% 1 for discrete, 2 for continuous
+
+saveit = ~isempty(savecurve);
+if saveit
+    pname = savecurve;
+    if ~strcmp(pname(end),filesep)
+        pname = [pname,filesep];
+    end
+    if ~exist(pname,'dir')
+        mkdir(pname)
+    end
+end
 
 expT_bin = dt_bin*expT;
 n = 0;
@@ -54,7 +67,7 @@ pi_fit = cell(1,V);
 tp_fit = pi_fit;
 logL = -Inf(1,V);
 nDat = zeros(1,V);
-if plotIt
+if plotIt || saveit
     P_fit = pi_fit;
     w_fit = pi_fit;
     tau_fit = pi_fit;
@@ -71,7 +84,7 @@ for v = 1:V
 
     pi_fit{v} = NaN(1,J_deg(v));
     tp_fit{v} = NaN(J_deg(v),J_deg(v)+1);
-    if plotIt
+    if plotIt || saveit
         L = numel(x{v});
         P_fit{v} = zeros(1,L);
         tau_fit{v} = NaN(J_deg(v),1);
@@ -106,6 +119,11 @@ for v = 1:V
 
         if PH_type==1 % discrete PH
             tp0 = rand(J_deg(v),J_deg(v)+1);
+            if sumexp
+                for j = 1:J_deg(v)
+                    tp0(j,1:J_deg(v)) = 0;
+                end
+            end
             tp0(~~eye(size(tp0))) = 10;
             tp0 = tp0./repmat(sum(tp0,2),[1,J_deg(v)+1]);
 
@@ -128,13 +146,13 @@ for v = 1:V
         end
     end
     if isempty(a_fit) || isempty(T_fit)
-        if plotIt
+        if plotIt || saveit
             P_fit{v}(1,:) = 0;
         end
         continue
     end
     
-    if plotIt
+    if plotIt || saveit
         if PH_type==1 % discrete PH
             t = v_e-T_fit*v_e;
         end
@@ -145,12 +163,18 @@ for v = 1:V
                 P_fit{v}(1,l) = a_fit*expm(T_fit*x{v}(l))*v_e;
             end
         end
-        
+    end
+    if saveit
         % export hitstogram and DPH fit curve
-%         dat = [x{v}',P{v}',P_fit{v}'];
-%         pname = '~/Documents/GitHub/dph-article/figures/data/figure4';
-%         fname = sprintf('state%0.1f_D%i_dphplot',states(v),J_deg(v));
-%         save([pname,filesep,fname],'dat','-ascii')
+        dat = [x{v}',P{v}',P_fit{v}'];
+        rname = sprintf('state%0.1f_D%i',states(v),J_deg(v));
+        nf = 1;
+        ffile = [pname,rname,'_dphplot'];
+        while exist(ffile,'file')
+            nf = nf+1;
+            ffile = [pname,rname,'(',num2str(nf),')_dphplot'];
+        end
+        save(ffile,'dat','-ascii')
     end
 
     % get parameters from trained PH model
