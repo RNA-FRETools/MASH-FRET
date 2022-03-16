@@ -47,7 +47,9 @@ x = p.mg;
 y = postab(4)-p.mgtab-htg;
 
 h.uitabgroup_VP_plot_vid = uitabgroup('parent',h_tab,...
-    'units',p.posun,'position',[x,y,wtg,htg],'tablocation','bottom');
+    'units',p.posun,'position',[x,y,wtg,htg],'tablocation','bottom',...
+    'selectionchangedfcn',...
+    {@uitabgroup_chanPlot_SelectionChangedFcn,h_fig});
 
 y = y-p.mg-hedit0;
 

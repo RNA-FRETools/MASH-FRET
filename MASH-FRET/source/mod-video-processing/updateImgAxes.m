@@ -68,11 +68,23 @@ for c = 1:numel(vidfiles)
     % filter image
     avimg = curr.res_plot{2}{c};
     if isBgCorr
-         avimg = updateBgCorr(avimg, p, h_fig);
+        if multichanvid
+            avimg = updateBgCorr(avimg, p, h_fig);
+        else
+            avimg = updateBgCorr(avimg, p, h_fig, c);
+        end
         if ~tocurr
-            img = updateBgCorr(img, p, h_fig);
+            if multichanvid
+                img = updateBgCorr(img, p, h_fig);
+            else
+                img = updateBgCorr(img, p, h_fig, c);
+            end
         elseif tocurr==n
-            img = updateBgCorr(img, p, h_fig);
+            if multichanvid
+                img = updateBgCorr(img, p, h_fig);
+            else
+                img = updateBgCorr(img, p, h_fig, c);
+            end
         end
     end
 
