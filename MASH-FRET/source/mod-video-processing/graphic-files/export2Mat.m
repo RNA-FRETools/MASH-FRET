@@ -14,9 +14,11 @@ ok = 0;
 % collect video processing parameters
 h = guidata(h_fig);
 p = h.param;
+expT = p.proj{p.curr_proj}.frame_rate;
 vidfile = p.proj{p.curr_proj}.movie_file;
 viddim = p.proj{p.curr_proj}.movie_dim;
 viddat = p.proj{p.curr_proj}.movie_dat;
+labels = p.proj{p.curr_proj}.labels;
 curr = p.proj{p.curr_proj}.VP.curr;
 filtlst = curr.edit{1}{4};
 start = curr.edit{2}(1);
@@ -24,65 +26,90 @@ stop = curr.edit{2}(2);
 iv =  curr.edit{2}(3);
 tocurr = curr.edit{1}{1}(2);
 
-% control full-length video
-isMov = isFullLengthVideo([pname,fname],h_fig);
+nMov = numel(vidfile);
+multichanvid = nMov==1;
 
 % control image filters
 isBgCorr = ~isempty(filtlst);
 
-% abort if the file being written is the one being accessed for reading data
-if ~isMov && isequal(vidfile,[pname fname])
-    setContPan(cat(2,'The exported file must be different from the ',...
-        'original one.'),'error',h_fig);
-    return
-end
+% get video frame indexes
+frameRange = start:iv:stop;
+L = numel(frameRange);
+
+[~,rootname,~] = fileparts(fname);
 
 % initialize loading bar
-L = numel(start:iv:stop);
-if loading_bar('init', h_fig, L, 'Export to a *.mat file...')
+if loading_bar('init', h_fig, nMov*L, 'Export to *.mat format...')
     return
 end
 h = guidata(h_fig);
 h.barData.prev_var = h.barData.curr_var;
 guidata(h_fig, h);
 
-% process video frames
-img = zeros([viddim,viddat{3}]);
-for i = start:iv:stop
-    
-    % get video frame
-    if isMov
-        img(:,:,i) = h.movie.movie(:,:,i);
+for mov = 1:nMov
+    if nMov>1
+        substr = ['_',labels{mov}];
     else
-        [data,succ] = getFrames(vidfile, i, viddat, h_fig, true);
-        if ~succ
-            return
-        end
-        img(:,:,i) = data.frameCur;
+        substr = '';
     end
+    fname = [rootname,substr,'.mat'];
     
-    % apply background corrections if any
-    if isBgCorr
-        if ~tocurr
-            img = updateBgCorr(img, p, h_fig);
-        else % Apply only if the bg-corrected frame is displayed
-            if tocurr==i
-                img = updateBgCorr(img, p, h_fig);
+    % control full-length video
+    isMov = isFullLengthVideo(vidfile{mov},h_fig);
+
+    % abort if the file being written is the one being accessed for reading data
+    if ~isMov && isequal(vidfile{mov},[pname fname])
+        setContPan(cat(2,'The exported file must be different from the ',...
+            'original one.'),'error',h_fig);
+        return
+    end
+
+    % process video frames
+    img = zeros([viddim{mov},viddat{mov}{3}]);
+    for i = frameRange
+
+        % get video frame
+        if isMov
+            img = h.movie.movie(:,:,i);
+        else
+            [data,succ] = getFrames(vidfile{mov},i,viddat{mov},h_fig,true);
+            if ~succ
+                return
             end
+            img = data.frameCur;
+        end
+
+        % apply background corrections if any
+        if isBgCorr
+            if ~tocurr
+                if multichanvid
+                    img = updateBgCorr(img, p, h_fig);
+                else
+                    img = updateBgCorr(img, p, h_fig, mov);
+                end
+            else % Apply only if the bg-corrected frame is displayed
+                if tocurr==i
+                    if multichanvid
+                        img = updateBgCorr(img, p, h_fig);
+                    else
+                        img = updateBgCorr(img, p, h_fig, mov);
+                    end
+                end
+            end
+        end
+
+        % increment loading bar
+        if loading_bar('update', h_fig)
+            return
         end
     end
 
-    % increment loading bar
-    if loading_bar('update', h_fig)
-        return
-    end
+    % save data to file
+    save([pname fname], 'img', '-mat');
 end
 
 % close loading bar
 loading_bar('close', h_fig);
-
-% save data to file
-save([pname fname], 'img', '-mat');
 
 % return success
 ok = 1;

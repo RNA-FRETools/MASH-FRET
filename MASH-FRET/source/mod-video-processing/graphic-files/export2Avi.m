@@ -12,7 +12,6 @@ function ok = export2Avi(h_fig, fname, pname)
 % update 5.12.2019 by MH: use external function writeAviFile.m to create and write pixel data in avi file (this allows the use of the same script from both modules Video processing and Simulation)
 
 % defaults
-iv = 1;
 ok = 0;
 
 % collect video processing parameters
@@ -21,6 +20,7 @@ p = h.param;
 expT = p.proj{p.curr_proj}.frame_rate;
 vidfile = p.proj{p.curr_proj}.movie_file;
 viddat = p.proj{p.curr_proj}.movie_dat;
+labels = p.proj{p.curr_proj}.labels;
 curr = p.proj{p.curr_proj}.VP.curr;
 filtlst = curr.edit{1}{4};
 start = curr.edit{2}(1);
@@ -28,69 +28,95 @@ stop = curr.edit{2}(2);
 iv =  curr.edit{2}(3);
 tocurr = curr.edit{1}{1}(2);
 
-% control full-length video
-isMov = isFullLengthVideo([pname,fname],h_fig);
+nMov = numel(vidfile);
+multichanvid = nMov==1;
 
 % control image filters
 isBgCorr = ~isempty(filtlst);
 
-% abort if the file being written is the one being accessed for reading data
-if ~isMov && isequal(vidfile,[pname fname])
-    setContPan(cat(2,'The exported file must be different from the ',...
-        'original one.'),'error',h_fig);
-    return
-end
+% get video frame indexes
+frameRange = start:iv:stop;
+L = numel(frameRange);
+
+[~,rootname,~] = fileparts(fname);
 
 % initialize loading bar
-L = numel(start:iv:stop);
-if loading_bar('init',h_fig,L,'Export to an *.avi file...')
+if loading_bar('init', h_fig, nMov*L, 'Export to *.avi format...')
     return
 end
 h = guidata(h_fig);
 h.barData.prev_var = h.barData.curr_var;
 guidata(h_fig, h);
 
-% open blank avi file
-v = writeAviFile('init',cat(2,pname,fname),expT);
-
-% process and write frames
-frameRange = start:iv:stop;
-for i = frameRange
-    
-    % get video frame
-    if isMov
-        img = h.movie.movie(:,:,i);
+for mov = 1:nMov
+    if ~multichanvid
+        substr = ['_',labels{mov}];
     else
-        [data,succ] = getFrames(vidfile, i, viddat, h_fig, true);
-        if ~succ
-            return
-        end
-        img = data.frameCur;
+        substr = '';
     end
-
-    % apply background corrections if any
-    if isBgCorr
-        if ~tocurr
-            img = updateBgCorr(img, p, h_fig);
-        else % Apply only if the bg-corrected frame is displayed
-            if tocurr==i
-                img = updateBgCorr(img, p, h_fig);
-            end
-        end
-    end
+    fname = [rootname,substr,'.avi'];
     
-    % write pixel data to avi file
-    v = writeAviFile('append',v,img);
+    % control full-length video
+    isMov = isFullLengthVideo(vidfile{mov},h_fig);
 
-    % increment loading bar
-    if loading_bar('update', h_fig)
-        close(v);
+    % abort if the file being written is the one being accessed for reading data
+    if ~isMov && isequal(vidfile{mov},[pname fname])
+        setContPan(cat(2,'The exported file must be different from the ',...
+            'original one.'),'error',h_fig);
         return
     end
+
+    % open blank avi file
+    v = writeAviFile('init',cat(2,pname,fname),expT);
+
+    % process and write frames
+    for i = frameRange
+
+        % get video frame
+        if isMov
+            img = h.movie.movie(:,:,i);
+        else
+            [data,succ] = getFrames(vidfile{mov},i,viddat{mov},h_fig,true);
+            if ~succ
+                return
+            end
+            img = data.frameCur;
+        end
+
+        % apply background corrections if any
+        if isBgCorr
+            if ~tocurr
+                if multichanvid
+                    img = updateBgCorr(img, p, h_fig);
+                else
+                    img = updateBgCorr(img, p, h_fig, mov);
+                end
+            else % Apply only if the bg-corrected frame is displayed
+                if tocurr==i
+                    if multichanvid
+                        img = updateBgCorr(img, p, h_fig);
+                    else
+                        img = updateBgCorr(img, p, h_fig, mov);
+                    end
+                end
+            end
+        end
+
+        % write pixel data to avi file
+        v = writeAviFile('append',v,img);
+
+        % increment loading bar
+        if loading_bar('update', h_fig)
+            close(v);
+            return
+        end
+    end
+
+    % close file
+    close(v);
 end
 
-% close file and loading bar
-close(v);
+% close loading bar
 loading_bar('close', h_fig);
 
 % return success
