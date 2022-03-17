@@ -16,6 +16,8 @@ start = curr.gen_crd{1}(1);
 stop = curr.gen_crd{1}(2);
 iv = curr.gen_crd{1}(3);
 
+nMov = numel(vidfile);
+
 % apply current parameters to project
 prm.gen_crd{1} = curr.gen_crd{1};
 
@@ -26,11 +28,14 @@ setContPan('Start average image calculation...','process',h_fig);
 param.start = start;
 param.stop = stop;
 param.iv = iv;
-param.file = vidfile;
-param.extra = viddat;
-[img_ave,ok] = createAveIm(param,true,true,h_fig);
-if ~ok
-    return
+img_ave = cell(1,nMov);
+for mov = 1:nMov
+    param.file = vidfile{mov};
+    param.extra = viddat{mov};
+    [img_ave{mov},ok] = createAveIm(param,true,true,h_fig);
+    if ~ok
+        return
+    end
 end
 
 % save average image

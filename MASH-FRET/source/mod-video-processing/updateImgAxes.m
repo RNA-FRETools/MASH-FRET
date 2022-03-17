@@ -14,9 +14,9 @@ p = h.param;
 
 if ~isModuleOn(p,'VP')
     if isfield(h,'axes_VP_vid') && sum(ishandle(h.axes_VP_vid))
-        for c = 1:numel(h.axes_VP_vid)
-            cla(h.axes_VP_vid(c));
-            cla(h.axes_VP_avimg(c));
+        for mov = 1:numel(h.axes_VP_vid)
+            cla(h.axes_VP_vid(mov));
+            cla(h.axes_VP_avimg(mov));
         end
         set([h.axes_VP_vid,h.cb_VP_vid,h.axes_VP_avimg,h.cb_VP_avimg],...
             'visible','off');
@@ -52,38 +52,38 @@ multichanvid = numel(vidfiles)==1;
 
 h.imageMov = [];
 
-for c = 1:numel(vidfiles)
+for mov = 1:numel(vidfiles)
     % get current video frame
-    if isFullLengthVideo(vidfiles{c},h_fig)
+    if isFullLengthVideo(vidfiles{mov},h_fig)
         img = double(h.movie.movie(:,:,n));
     else
-        [dat,ok] = getFrames(vidfiles{c},n,viddat{c},h_fig,true);
+        [dat,ok] = getFrames(vidfiles{mov},n,viddat{mov},h_fig,true);
         if ~ok
             return
         end
         img =  double(dat.frameCur);
     end
-    curr.res_plot{1}{c} = img;
+    curr.res_plot{1}{mov} = img;
 
     % filter image
-    avimg = curr.res_plot{2}{c};
+    avimg = curr.res_plot{2}{mov};
     if isBgCorr
         if multichanvid
             avimg = updateBgCorr(avimg, p, h_fig);
         else
-            avimg = updateBgCorr(avimg, p, h_fig, c);
+            avimg = updateBgCorr(avimg, p, h_fig, mov);
         end
         if ~tocurr
             if multichanvid
                 img = updateBgCorr(img, p, h_fig);
             else
-                img = updateBgCorr(img, p, h_fig, c);
+                img = updateBgCorr(img, p, h_fig, mov);
             end
         elseif tocurr==n
             if multichanvid
                 img = updateBgCorr(img, p, h_fig);
             else
-                img = updateBgCorr(img, p, h_fig, c);
+                img = updateBgCorr(img, p, h_fig, mov);
             end
         end
     end
@@ -98,26 +98,26 @@ for c = 1:numel(vidfiles)
     if multichanvid
         chan = 0;
     else
-        chan = c;
+        chan = mov;
     end
     coord = get_VP_coord2plot(curr,nChan,chan);
 
     % plot video frame
-    h_axes = [h.axes_VP_vid(c),h.axes_VP_avimg(c)];
+    h_axes = [h.axes_VP_vid(mov),h.axes_VP_avimg(mov)];
     if isfield(h,'axes_VP_tr') && all(ishandle(h.axes_VP_tr))
-        h_axes = cat(2,h_axes,h.axes_VP_tr(c));
+        h_axes = cat(2,h_axes,h.axes_VP_tr(mov));
     end
-    h.imageMov(c) = plot_VP_videoFrame(h_axes,...
-        [h.cb_VP_vid(c),h.cb_VP_avimg(c)],cat(3,img,avimg),imgtrsf,coord,...
-        chsplit,persec,multichanvid);
+    h.imageMov(mov) = plot_VP_videoFrame(h_axes,...
+        [h.cb_VP_vid(mov),h.cb_VP_avimg(mov)],cat(3,img,avimg),imgtrsf,...
+        coord,chsplit,persec,multichanvid);
     
     
     if h.togglebutton_target.Value==1
-        set(h.axes_VP_vid(c), 'ButtonDownFcn', {@pointITT, h_fig});
-        set(h.imageMov(c), 'ButtonDownFcn', {@pointITT, h_fig});
+        set(h.axes_VP_vid(mov), 'ButtonDownFcn', {@pointITT, h_fig});
+        set(h.imageMov(mov), 'ButtonDownFcn', {@pointITT, h_fig});
     else
-        set(h.imageMov(c), 'ButtonDownFcn', {});
-        set(h.axes_VP_vid(c), 'ButtonDownFcn', {});
+        set(h.imageMov(mov), 'ButtonDownFcn', {});
+        set(h.axes_VP_vid(mov), 'ButtonDownFcn', {});
     end
 end
 
