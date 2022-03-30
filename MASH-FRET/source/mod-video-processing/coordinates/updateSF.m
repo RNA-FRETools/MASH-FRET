@@ -71,7 +71,7 @@ warning('off', 'MATLAB:nearlySingularMatrix');
 warning('off', 'MATLAB:rankDeficientMatrix');
 warning('off', 'MATLAB:singularMatrix');
 
-for i = 1:nChan
+for c = 1:nChan
     
     if multichanvid
         img = cellimg{1};
@@ -87,16 +87,16 @@ for i = 1:nChan
         int = img;
     end
 
-    minInt = sfprm(i,1);
-    ratioInt = sfprm(i,2);
-    darkArea = sfprm(i,[3,4]);
-    spotSize = sfprm(i,[5,6]);
+    minInt = sfprm(c,1);
+    ratioInt = sfprm(c,2);
+    darkArea = sfprm(c,[3,4]);
+    spotSize = sfprm(c,[5,6]);
     
     switch meth
         case 2 % in-serie screening
-            spots{i} = isScreen(int, peaksNb, minInt, darkArea);
-            if ~isempty(spots{i})
-                spots{i}(:,1) = spots{i}(:,1) + (i-1)*sub_w;
+            spots{c} = isScreen(int, peaksNb, minInt, darkArea);
+            if ~isempty(spots{c})
+                spots{c}(:,1) = spots{c}(:,1) + (c-1)*sub_w;
             end
 
         case 3 % houghpeaks
@@ -107,10 +107,10 @@ for i = 1:nChan
                 for j = 1:size(peaks,1)
                     I(j,1) = int(peaks(j,1), peaks(j,2));
                 end
-                spots{i} = [peaks(:,2)-0.5 peaks(:,1)-0.5 I];
-                spots{i}(:,1) = spots{i}(:,1) + (i-1)*sub_w;
+                spots{c} = [peaks(:,2)-0.5 peaks(:,1)-0.5 I];
+                spots{c}(:,1) = spots{c}(:,1) + (c-1)*sub_w;
             else
-                spots{i} = [];
+                spots{c} = [];
             end
 
         case 4 % Schmied2012
@@ -135,10 +135,10 @@ for i = 1:nChan
                 for j = 1:size(peaks,1)
                     I(j,1) = int(ceil(peaks(j,2)), ceil(peaks(j,1)));
                 end
-                spots{i} = [peaks(:,1)-0.5 peaks(:,2)-0.5 I];
-                spots{i}(:,1) = spots{i}(:,1) + (i-1)*sub_w;
+                spots{c} = [peaks(:,1)-0.5 peaks(:,2)-0.5 I];
+                spots{c}(:,1) = spots{c}(:,1) + (c-1)*sub_w;
             else
-                spots{i} = [];
+                spots{c} = [];
             end
 
         case 5 % Twotone
@@ -149,10 +149,10 @@ for i = 1:nChan
                 for j = 1:size(peaks,1)
                     I(j,1) = int(ceil(peaks(j,2)), ceil(peaks(j,1)));
                 end
-                spots{i} = [peaks(:,1)-0.5 peaks(:,2)-0.5 I];
-                spots{i}(:,1) = spots{i}(:,1) + (i-1)*sub_w;
+                spots{c} = [peaks(:,1)-0.5 peaks(:,2)-0.5 I];
+                spots{c}(:,1) = spots{c}(:,1) + (c-1)*sub_w;
             else
-                spots{i} = [];
+                spots{c} = [];
             end
         
     end
@@ -164,10 +164,10 @@ for i = 1:nChan
     % cancelled by MH, 9.2.2020
 %     spots = selectSpots(spots, imgX, imgY);
 
-    N = size(spots{i},1);
+    N = size(spots{c},1);
     if ~lb
         if loading_bar('init',h_fig,N,...
-                sprintf('Fitting peaks in channel %i',i))
+                sprintf('Fitting peaks in channel %i',c))
             ok = 0;
             return
         end
@@ -176,7 +176,7 @@ for i = 1:nChan
         guidata(h_fig, h);
     end
 
-    [spots{i},intrupt] = spotGaussFit(spots{i}, img, spotSize, lb, h_fig);
+    [spots{c},intrupt] = spotGaussFit(spots{c}, img, spotSize, lb, h_fig);
     
     if intrupt
         ok = 0;

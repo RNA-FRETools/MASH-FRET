@@ -9,11 +9,12 @@ function pushbutton_SFsave_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 p = h.param;
 curr = p.proj{p.curr_proj}.VP.curr;
+def = p.proj{p.curr_proj}.VP.def;
 meth = curr.gen_crd{2}{1}(1);
 coordsf = curr.gen_crd{2}{5};
 
 % control SF coordinates
-if isempty(coordsf)
+if isequal(coordsf,def.gen_crd{2}{5})
     setContPan('Start a "spotfinder" procedure first.','error',h_fig);
     return
 end

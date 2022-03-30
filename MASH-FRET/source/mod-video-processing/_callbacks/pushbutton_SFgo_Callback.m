@@ -5,6 +5,7 @@ h = guidata(h_fig);
 p = h.param;
 nChan = p.proj{p.curr_proj}.nb_channel;
 curr = p.proj{p.curr_proj}.VP.curr;
+def = p.proj{p.curr_proj}.VP.def;
 avimg = curr.res_plot{2};
 meth = curr.gen_crd{2}{1}(1);
 bgfilt = curr.edit{1}{4};
@@ -25,9 +26,9 @@ end
 setContPan('Start a spotfinder procedure...','process',h_fig);
 
 % reset results
-curr.gen_crd{2}{4} = []; % uncharted
-curr.gen_crd{2}{5} = []; % final sorted
-curr.res_crd{1} = []; % spots coordinates
+curr.gen_crd{2}{4} = def.gen_crd{2}{4}; % uncharted
+curr.gen_crd{2}{5} = def.gen_crd{2}{5}; % final sorted
+curr.res_crd{1} = def.res_crd{1}; % spots coordinates
 
 % plot SF coordinates
 curr.plot{1}(2) = 1;

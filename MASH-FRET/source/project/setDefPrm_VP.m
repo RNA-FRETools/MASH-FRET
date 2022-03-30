@@ -71,8 +71,8 @@ gen_crd{1} = [1,min([L,100]),1]; % start,end and frame interval for average imag
 gen_crd{2} = {[1,0],... % SF method, gaussian fit
     repmat([0,1.4,7,7,9,9,0],[nChan,1]),... % SF parameters (int threshold,ratio threshold,spot's width and height(px),fitting area width and height(px),apply to all frames)
     repmat([200,0,0,5,150,0,3],[nChan,1]),... % section rules (max. nb. of spots,min. intensity,min. and max. spot's width(px),max. assymetry,min. interspot distance,min. spot-edge distance)
-    [],... % {1-by-nChan}[Nsf-by-8] SF coord,intensities,assymetries,dimensions,orientation angle,offset
-    []}; % {1-by-nChan}[Nslct-by-8] selected coord
+    cell(1,nChan),... % {1-by-nChan}[Nsf-by-8] SF coord,intensities,assymetries,dimensions,orientation angle,offset
+    cell(1,nChan)}; % {1-by-nChan}[Nslct-by-8] selected coord
 gen_crd{3} = {{[],'',[1,2]},... % coord to transform,imported file,imported x- and -y columns
     {[],'','rw',... % reference coord, imported file, import mode
         {[((1:nChan)'+1),nChan*ones(nChan,1),zeros(nChan,1)],[1,2]},... % ref. coord file row-wise import options
