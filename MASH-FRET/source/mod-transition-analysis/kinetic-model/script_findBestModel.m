@@ -64,7 +64,7 @@ for J_deg = 1:J_deg_max
     if sumexp
         df = 2*J_deg-1; % (J-1) initial prob, J trans prob
     else
-        df = ((J_deg^2)-1); % (J-1) initial prob, J*(J-1) trans prob
+        df = J_deg*(J_deg+1)-1; % (J-1) initial prob, J^2 trans prob
     end
     for v = 1:V
         BIC(v,J_deg) = df*log(Nv(v))-2*logL(v,J_deg);
