@@ -47,6 +47,10 @@ end
 if ~iscell(fname) && ~sum(fname)
     return
 end
+if ~iscell(fname)
+    fname = {fname};
+end
+cd(pname);
 if ~multichanvid
     if numel(fname)~=nMov
         setContPan(['The number of image files must be equal to the ',...
@@ -78,13 +82,12 @@ if ~multichanvid
     end
     fname = fname(idfle);
 end
-cd(pname);
 
 % display progress
 if multichanvid
-    strfle = ['file: ',pname,fname];
+    strfle = ['image from file: ',pname,fname{1}];
 else
-    strfle = 'files: ';
+    strfle = 'images from files: ';
     for mov = 1:nMov
         if mov==nMov
             strfle = cat(2,strfle,' and ',pname,fname{mov});
@@ -95,7 +98,7 @@ else
         end
     end
 end
-setContPan(['Import average image from ',strfle,' ...'],'process',h_fig);
+setContPan(['Import average ',strfle,' ...'],'process',h_fig);
 
 avimg = cell(1,nMov);
 for mov = 1:nMov
