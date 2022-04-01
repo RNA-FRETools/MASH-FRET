@@ -36,6 +36,7 @@ str9 = 'Import options...';
 str10 = char(10006);
 ttstr0 = wrapHtmlTooltipString('<b>Export mapped coordinates</b> to a file.');
 ttstr1 = wrapHtmlTooltipString('Import the <b>reference coordinates file</b> used to calculate channel transformation.');
+ttstr2 = wrapHtmlTooltipString('<b>Calculate transformation</b> from reference coordinates.');
 ttstr3 = wrapHtmlTooltipString('<b>Export transformation</b> to a file.');
 ttstr4 = wrapHtmlTooltipString('Import the <b>transformation file</b>.');
 ttstr5 = wrapHtmlTooltipString('Check the <b>channel transformation quality</b> on a reference image.');
@@ -129,7 +130,7 @@ x = x+p.wbut1+p.mg/fact;
 
 h.pushbutton_calcTfr = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wbut2,hedit0],'string',str5,'tooltipstring',ttstr3,'callback',...
+    [x,y,wbut2,hedit0],'string',str5,'tooltipstring',ttstr2,'callback',...
     {@pushbutton_calcTfr_Callback,h_fig});
 
 x = x+wbut2+p.mg/fact;

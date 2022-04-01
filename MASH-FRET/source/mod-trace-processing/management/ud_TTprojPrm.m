@@ -8,6 +8,9 @@ function ud_TTprojPrm(h_fig)
 
 h = guidata(h_fig);
 p = h.param;
+if isempty(p.proj)
+    return
+end
 
 % update VP's plot tabs
 nMov = numel(p.proj{p.curr_proj}.movie_file);
@@ -19,6 +22,7 @@ end
 
 h = buildVPtabgroupPlotVid(h,h.dimprm,nMov,tabttl);
 h = buildVPtabgroupPlotAvimg(h,h.dimprm,nMov,tabttl);
+h = buildVPtabgroupPlotTr(h,h.dimprm,nMov,tabttl);
 
 % set default tag name list invisible and update corresponding button 
 % appearance

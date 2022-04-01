@@ -77,7 +77,7 @@ gen_crd{3} = {{[],'',[1,2]},... % coord to transform,imported file,imported x- a
     {[],'','rw',... % reference coord, imported file, import mode
         {[((1:nChan)'+1),nChan*ones(nChan,1),zeros(nChan,1)],[1,2]},... % ref. coord file row-wise import options
         {reshape((1:2*nChan),[nChan 2]) 1},... % ref. coord file column-wise import options
-        ''},... % reference image file
+        cell(1,nMov)},... % reference image file
     {[],4,''},... % transformation,transformation type,imported file
     []}; % transformed coordinates
 def.gen_crd = adjustVal(def.gen_crd,gen_crd);
@@ -105,4 +105,4 @@ def.res_crd{4} = coordsm; % single moelcule coordinates
 %   res_plot{3}{2}: transformed image
 def.res_plot{1} = cell(1,nMov);
 def.res_plot{2} = avimg;
-def.res_plot{3} = [];
+def.res_plot{3} = cell(1,nMov);

@@ -16,8 +16,12 @@ tabttl = 'Transformed image';
 h = guidata(h_fig);
 p = h.param;
 nChan = p.proj{p.curr_proj}.nb_channel;
+lbl = p.proj{p.curr_proj}.labels;
+viddim = p.proj{p.curr_proj}.movie_dim;
 curr = p.proj{p.curr_proj}.VP.curr;
 tr = curr.res_crd{2};
+nMov = numel(p.proj{p.curr_proj}.movie_file);
+multichanvid = nMov==1;
 
 % control number of channels
 if nChan<=1 || nChan>3
@@ -51,25 +55,93 @@ else
         str1 = cat(2,str1,',*',vidfmt{fmt});
     end
     str1 = [str1,')'];
+    if multichanvid
+        mltslct = 'off';
+    else
+        mltslct = 'on';
+    end
     [fname,pname,o] = uigetfile({str0,...
         ['Supported Graphic File Format',str1]; ...
-        '*.*','All File Format(*.*)'},'Select an image to transform');
+        '*.*','All File Format(*.*)'},'Select an image to transform',...
+        'multiselect',mltslct);
     fromRoutine = false;
 end
-if ~sum(fname)
+if ~iscell(fname) && ~sum(fname)
     return
+end
+if ~iscell(fname)
+    fname = {fname};
 end
 cd(pname);
+if ~multichanvid
+    if numel(fname)~=nMov
+        setContPan(['The number of image files must be equal to the ',...
+            'number of single-channel videos.'],'error',h_fig);
+        return
+    end
+    
+    suffx = cell(1,nMov);
+    for mov = 1:nMov
+        [~,rname,~] = fileparts(fname{mov});
+        strprt = split(rname,'_');
+        if numel(strprt)==1
+            suffx{mov} = '';
+        else
+            suffx{mov} = strprt{end};
+        end
+    end
+    idfle = [];
+    for chan = 1:nMov
+        id = find(contains(suffx,lbl{chan}));
+        if isempty(id)
+            setContPan([lbl{chan},'-channel average image file name must ',...
+                'be appended with the suffixe "_',lbl{chan},'".'],'error',...
+                h_fig);
+            return
+        else
+            idfle = cat(2,idfle,id);
+        end
+    end
+    fname = fname(idfle);
+end
 
 % display progress
-setContPan(['Import image from file: ',pname,fname],'process',h_fig);
+if multichanvid
+    strfle = ['image from file: ',pname,fname{1}];
+else
+    strfle = 'images from files: ';
+    for mov = 1:nMov
+        if mov==nMov
+            strfle = cat(2,strfle,' and ',pname,fname{mov});
+        elseif mov>1
+            strfle = cat(2,strfle,', ',pname,fname{mov});
+        elseif mov==1
+            strfle = cat(2,strfle,pname,fname{mov});
+        end
+    end
+end
+setContPan(['Import ',strfle,' ...'],'process',h_fig);
 
 % get image data
-[data,ok] = getFrames([pname,fname], 1, [], h_fig, true);
-if ~ok
-    return
+img = cell(1,nMov);
+for mov = 1:nMov
+    % get image data
+    [data,ok] = getFrames([pname,fname{mov}], 1, [], h_fig, true);
+    if ~ok
+        return
+    end
+
+    % control image size
+    if ~isequal(viddim{mov},[data.pixelX,data.pixelY])
+        setActPan(['Image dimensions (',num2str(data.pixelX),',',...
+            num2str(data.pixelY),') are inconsistent with video ',...
+            'dimensions (',num2str(viddim{mov}(1)),',',...
+            num2str(viddim{mov}(2)),').'],'error',h_fig);
+        return
+    end
+    
+    img{mov} = data.frameCur;
 end
-img = data.frameCur;
 
 
 % display progress
@@ -77,18 +149,8 @@ setContPan('Transform image...','process',h_fig);
 
 % transform image
 [imgtrsf,ok] = constrTrafoImage(tr,img,h_fig);
-if ~ok || isempty(imgtrsf)
+if ~ok
     return
-end
-
-% show transformed image
-if ~(isfield(h,'axes_VP_tr') && ishandle(h.axes_VP_tr))
-    h.uitab_VP_plot_tr = uitab('parent',h.uitabgroup_VP_plot,'units',...
-        h.dimprm.posun,'title',tabttl);
-    h = buildVPtabPlotTr(h,h.dimprm);
-    setProp([h.uitab_VP_plot_tr,h.uitab_VP_plot_tr.Children],'Units',...
-        h.uitabgroup_VP_plot.Units);
-    guidata(h_fig,h);
 end
 
 % bring transformed image plot tab front

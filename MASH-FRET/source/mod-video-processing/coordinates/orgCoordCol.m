@@ -113,12 +113,21 @@ switch mode
 end
 
 if ~isempty(res_x)
-    lim = [0 (1:nChan-1)*round(res_x/nChan) res_x];
     orgCoord_i = cell(1,nChan);
-    for i = 1:nChan
-        orgCoord_i{i} = orgCoord((orgCoord(:,2*i-1)>lim(i) & ...
-            orgCoord(:,2*i-1)<lim(i+1)),2*i-1:2*i);
-        sz_i = size(orgCoord_i{i},1);
+    sz_i = Inf(1,nChan);
+    if numel(res_x)>1
+        for i = 1:nChan
+            orgCoord_i{i} = orgCoord((orgCoord(:,2*i-1)>0 & ...
+                orgCoord(:,2*i-1)<res_x(i)),2*i-1:2*i);
+            sz_i(i) = size(orgCoord_i{i},1);
+        end
+    else
+        lim = [0 (1:nChan-1)*round(res_x/nChan) res_x];
+        for i = 1:nChan
+            orgCoord_i{i} = orgCoord((orgCoord(:,2*i-1)>lim(i) & ...
+                orgCoord(:,2*i-1)<lim(i+1)),2*i-1:2*i);
+            sz_i(i) = size(orgCoord_i{i},1);
+        end
     end
     min_sz = min(sz_i);
     orgCoord = [];

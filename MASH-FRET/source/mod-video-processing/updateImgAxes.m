@@ -108,8 +108,8 @@ for mov = 1:numel(vidfiles)
         h_axes = cat(2,h_axes,h.axes_VP_tr(mov));
     end
     h.imageMov(mov) = plot_VP_videoFrame(h_axes,...
-        [h.cb_VP_vid(mov),h.cb_VP_avimg(mov)],cat(3,img,avimg),imgtrsf,...
-        coord,chsplit,persec,multichanvid);
+        [h.cb_VP_vid(mov),h.cb_VP_avimg(mov)],cat(3,img,avimg),...
+        imgtrsf{mov},coord,chsplit,persec,multichanvid);
     
     
     if h.togglebutton_target.Value==1
