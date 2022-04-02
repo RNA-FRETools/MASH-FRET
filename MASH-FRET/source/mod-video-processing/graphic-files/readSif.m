@@ -241,6 +241,7 @@ if strcmp(n, 'all')
             if ~exist('f','var')
                 f = fopen(fullFname,'r');
             end
+            fseek(f,fCurs,-1);
             for l = 1:frameLen
                 movie(:,:,l) = reshape(fread(f,pixelX*pixelY,...
                     'single=>single'),[pixelX,pixelY])';
@@ -262,6 +263,7 @@ if strcmp(n, 'all')
             if ~exist('f','var')
                 f = fopen(fullFname,'r');
             end
+            fseek(f,fCurs,-1);
             for l = 1:frameLen
                 h.movie.movie(:,:,l) = reshape(fread(f,pixelX*pixelY,...
                     'single=>single'),[pixelX,pixelY])';
