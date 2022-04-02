@@ -76,7 +76,7 @@ end
 spots = cell(1,nChan);
 for c = 1:nChan
     if multichanvid
-        spots{c} = coord(coord(:,1)>=chansplit{c}(1) && ...
+        spots{c} = coord(coord(:,1)>=chansplit{c}(1) & ...
             coord(:,1)<chansplit{c}(2),[1,2]);
     else
         spots{c} = coord(coord(:,3)==c,[1,2]);

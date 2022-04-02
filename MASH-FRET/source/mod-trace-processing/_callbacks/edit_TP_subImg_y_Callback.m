@@ -7,7 +7,11 @@ mol = p.ttPr.curr_mol(proj);
 refocus = p.proj{proj}.TP.fix{1}(5);
 nC = p.proj{proj}.nb_channel;
 itg_dim = p.proj{proj}.pix_intgr(1);
-res_y = p.proj{proj}.movie_dim(2);
+viddat = p.proj{proj}.movie_dat;
+vidfile = p.proj{proj}.movie_file;
+viddim = p.proj{proj}.movie_dim;
+
+multichanvid = numel(viddim)==1;
 
 if refocus
     updateActPan('Impossible to modify coordinates in "recenter" mode', ...
@@ -15,9 +19,16 @@ if refocus
     return
 end
 
-val = str2num(get(obj,'string'));
 chan = get(h.popupmenu_TP_subImg_channel,'value');
-lim = [0 res_y];
+
+if multichanvid
+    mov = 1;
+else
+    mov = chan;
+end
+lim = [0,viddim{mov}(1)];
+
+val = str2num(get(obj,'string'));
 if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
         (ceil(val) - floor(itg_dim/2)) > lim(1) && ...
         (ceil(val) + floor(itg_dim/2)) < lim(2))
@@ -42,15 +53,15 @@ p.proj{proj}.coord(mol,2*chan) = val;
 coord = p.proj{proj}.coord(mol,(2*chan-1):2*chan);
 aDim = p.proj{proj}.pix_intgr(1);
 nPix = p.proj{proj}.pix_intgr(2);
-nFrames = p.proj{proj}.movie_dat{3};
-fDat{1} = p.proj{proj}.movie_file;
-fDat{2}{1} = p.proj{proj}.movie_dat{1};
-if isFullLengthVideo(p.proj{proj}.movie_file,h_fig)
+nFrames = viddat{mov}{3};
+fDat{1} = vidfile{mov};
+fDat{2}{1} = viddat{mov}{1};
+if isFullLengthVideo(vidfile{mov},h_fig)
     fDat{2}{2} = h.movie.movie;
 else
     fDat{2}{2} = [];
 end
-fDat{3} = [p.proj{proj}.movie_dat{2}(1) p.proj{proj}.movie_dat{2}(2)];
+fDat{3} = viddat{mov}{2};
 fDat{4} = nFrames;
 
 [coord,trace] = create_trace(coord,aDim,nPix,fDat);

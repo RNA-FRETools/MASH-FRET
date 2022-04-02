@@ -11,7 +11,7 @@ function pushbutton_TTgen_loadCoord_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 p = h.param;
 nChan = p.proj{p.curr_proj}.nb_channel;
-res_x = p.proj{p.curr_proj}.movie_dim(1);
+viddim = p.proj{p.curr_proj}.movie_dim;
 curr = p.proj{p.curr_proj}.VP.curr;
 impprm = curr.gen_int{2}{3};
 
@@ -45,6 +45,11 @@ end
 fclose(f);
 
 % organize coordinates in a column-wise fashion
+nMov = numel(viddim);
+res_x = zeros(1,nMov);
+for mov = 1:nMov
+    res_x(mov) = viddim{mov}(1);
+end
 coord = orgCoordCol(fdat, 'cw', impprm, nChan, res_x, h_fig);
 if isempty(coord) || size(coord, 2)~=(2*nChan)
     return

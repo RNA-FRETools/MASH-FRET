@@ -50,9 +50,9 @@ s.MASH_version = figname(b:end);
 s.module = p.proj{slct(1)}.module;
 s.folderRoot = p.proj{slct(1)}.folderRoot;
 
-s.movie_file = '';
 s.is_movie = false;
-s.movie_dim = [];
+s.movie_file = {};
+s.movie_dim = {};
 s.movie_dat = {};
 s.spltime_from_video = p.proj{slct(1)}.spltime_from_video;
 

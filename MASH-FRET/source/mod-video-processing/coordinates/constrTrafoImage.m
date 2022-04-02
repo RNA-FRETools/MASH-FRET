@@ -62,10 +62,10 @@ end
 % mormalize pixel values in each channel
 for i = 1:nChan
     if multichanvid
-        img(:,lim(i)+1:lim(i+1)) = (img(:,lim(i)+1:lim(i+1)) - ...
-            min(min(img(:,lim(i)+1:lim(i+1)))))/ ...
-            (max(max(img(:,lim(i)+1:lim(i+1))))-...
-            min(min(img(:,lim(i)+1:lim(i+1)))));
+        img{1}(:,lim(i)+1:lim(i+1)) = (img{1}(:,lim(i)+1:lim(i+1)) - ...
+            min(min(img{1}(:,lim(i)+1:lim(i+1)))))/ ...
+            (max(max(img{1}(:,lim(i)+1:lim(i+1))))-...
+            min(min(img{1}(:,lim(i)+1:lim(i+1)))));
     else
         img{i} = (img{i}-min(min(img{i})))/...
             (max(max(img{i}))-min(min(img{i})));
@@ -90,18 +90,36 @@ for i = 1:nChan
                 img_final{i}(y,x,j) = img{j}(y_0,x_0);
             end
         end
-        
-        isblack{i} = isblack{i} & ...
-            img_final{i}(:,:,j)<median(img_final{i}(:,:,j))*(1+bgtol);
+        if ~multichanvid
+            isblack{i} = isblack{i} & ...
+                img_final{i}(:,:,j)<median(img_final{i}(:,:,j))*(1+bgtol);
+        else
+            isblack{1}(:,lim(i)+1:lim(i+1)) = ...
+                isblack{1}(:,lim(i)+1:lim(i+1)) & ...
+                img_final{1}(:,lim(i)+1:lim(i+1),j) < ...
+                median(img_final{1}(:,lim(i)+1:lim(i+1),j))*(1+bgtol);
+        end
     end
     
     % erase background and increase brightness
     for j = 1:3
-        pxj = img_final{i}(:,:,j);
-        pxj(isblack{i}) = 0;
-        pxj(~isblack{i}) = pxj(~isblack{i})*bghtfact;
+        if ~multichanvid
+            pxj = img_final{i}(:,:,j);
+            pxj(isblack{i}) = 0;
+            pxj(~isblack{i}) = pxj(~isblack{i})*bghtfact;
+        else
+            pxj = img_final{1}(:,:,j);
+            pxj(isblack{1}) = 0;
+            pxj(~isblack{1}) = pxj(~isblack{1})*bghtfact;
+        end
+        
         pxj(pxj>1) = 1;
-        img_final{i}(:,:,j) = pxj;
+        
+        if ~multichanvid
+            img_final{i}(:,:,j) = pxj;
+        else
+            img_final{1}(:,:,j) = pxj;
+        end
     end
 end
 

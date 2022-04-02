@@ -51,9 +51,11 @@ for mov = 1:nMov
             h.movie.movie = dat.movie;
             h.movie.file = vidfile{mov};
             guidata(h_fig,h);
+            h = guidata(h_fig);
         elseif ~isempty(h.movie.movie)
             h.movie.file = vidfile{mov};
             guidata(h_fig,h);
+            h = guidata(h_fig);
         end
     end
 

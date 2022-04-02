@@ -13,17 +13,14 @@ h = guidata(h_fig);
 p = h.param;
 
 if ~isModuleOn(p,'VP')
-    if isfield(h,'axes_VP_vid') && sum(ishandle(h.axes_VP_vid))
+    if isfield(h,'axes_VP_vid') && any(ishandle(h.axes_VP_vid))
         for mov = 1:numel(h.axes_VP_vid)
             cla(h.axes_VP_vid(mov));
             cla(h.axes_VP_avimg(mov));
+            cla(h.axes_VP_tr(mov));
         end
-        set([h.axes_VP_vid,h.cb_VP_vid,h.axes_VP_avimg,h.cb_VP_avimg],...
-            'visible','off');
-    end
-    if isfield(h,'axes_VP_tr') && ishandle(h.axes_VP_tr)
-        cla(h.axes_VP_tr);
-        set(h.axes_VP_tr,'visible','off');
+        set([h.axes_VP_vid,h.cb_VP_vid,h.axes_VP_avimg,h.cb_VP_avimg,...
+            h.axes_VP_tr],'visible','off');
     end
     return
 end
