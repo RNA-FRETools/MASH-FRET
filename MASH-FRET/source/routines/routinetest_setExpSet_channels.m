@@ -14,7 +14,7 @@ prm = p.es{p.nChan,p.nL}.chan;
 
 % set number of channels
 set(h.edit_nChan,'string',num2str(p.nChan));
-edit_setExpSet_nChan(h.edit_nChan,[],h_fig);
+edit_setExpSet_nChan(h.edit_nChan,[],h_fig,h_fig0);
 
 % set emitter labels
 h = guidata(h_fig);

@@ -75,7 +75,8 @@ try
         [~,smcoordfile,~] = fileparts(p.coord_file{p.nChan});
         h = guidata(h_fig);
         proj = h.param.proj{h.param.curr_proj};
-        smcoordfile = [smcoordfile,'_',num2str(proj.movie_dim(1)),'.coord'];
+        smcoordfile = ...
+            [smcoordfile,'_',num2str(proj.movie_dim{1}(1)),'.coord'];
         pushbutton_TTgen_loadCoord_Callback({p.annexpth,smcoordfile},[],...
             h_fig);
         pushbutton_TTgen_create_Callback(h.pushbutton_TTgen_create,[],...

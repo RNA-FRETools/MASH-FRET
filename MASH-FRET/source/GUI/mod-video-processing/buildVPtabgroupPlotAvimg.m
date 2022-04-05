@@ -31,6 +31,7 @@ setProp([h_fig,(h_fig.Children')],'units','pixels');
 % delete existing controls
 h = delControlIfHandle(h,{'cb_VP_avimg','axes_VP_avimg',...
     'uitab_VP_plot_avimgChan'});
+delete(h_tg.Children);
 
 % GUI
 x = p.mg;

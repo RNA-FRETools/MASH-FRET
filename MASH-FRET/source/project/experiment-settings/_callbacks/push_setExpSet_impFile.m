@@ -102,7 +102,8 @@ else
     setContPan('Calculate average images...','process',h_fig0);
 
     % calculate average images
-    aveimg = calcAveImg('all',vfile,vinfo,proj.nb_excitations,h_fig0,1:100);
+    aveimg = calcAveImg('all',vfile,vinfo,proj.nb_excitations,h_fig0,...
+        1:min([dat.frameLen,100]));
 
     proj.aveImg(chan,:) = aveimg;
     

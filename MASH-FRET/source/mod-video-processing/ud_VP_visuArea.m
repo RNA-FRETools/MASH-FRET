@@ -49,7 +49,7 @@ end
 set(h.text_split, 'String', txt_split);
 
 % set video file
-set(h.edit_movFile, 'String', vidFile);
+set(h.edit_movFile(vid), 'String', vidFile);
 
 % Update slider properties & position     
 if L<=1
@@ -71,7 +71,7 @@ else
 end
 set(h.text_frameEnd, 'String', num2str(L));
 set(h.text_frameCurr, 'String', num2str(l));
-set(h.text_movW, 'String', num2str(resX));
-set(h.text_movH, 'String', num2str(resY));
+set(h.text_movW(vid), 'String', num2str(resX));
+set(h.text_movH(vid), 'String', num2str(resY));
 
 

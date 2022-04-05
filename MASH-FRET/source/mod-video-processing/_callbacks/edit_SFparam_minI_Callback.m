@@ -48,7 +48,7 @@ isBgCorr = ~isempty(bgfilt);
 
 % filter image
 if isBgCorr
-    for c = 1:numel(aveimg)
+    for c = 1:numel(avimg)
         avimg{c} = updateBgCorr(avimg{c}, p, h_fig);
     end
 end

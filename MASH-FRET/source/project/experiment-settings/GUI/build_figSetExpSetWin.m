@@ -106,8 +106,10 @@ guidata(h_fig,h);
 setProp([h_fig,h_fig.Children],'units','normalized');
 
 % update project's video parameters
-proj = updateProjVideoParam(proj,h.radio_impFileMulti.Value);
-h_fig.UserData = proj;
+if isfield(h,'radio_impFileMulti') && ishandle(h.radio_impFileMulti)
+    proj = updateProjVideoParam(proj,h.radio_impFileMulti.Value);
+    h_fig.UserData = proj;
+end
 
 ud_expSetWin(h_fig);
 

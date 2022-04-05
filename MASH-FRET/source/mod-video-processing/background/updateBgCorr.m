@@ -67,7 +67,7 @@ for i = channels
     else
         resX = p_proj.movie_dat{1}{2}(1);
         resY = p_proj.movie_dat{1}{2}(2);
-        aveImg = p_proj.aveImg{1}{1};
+        aveImg = p_proj.aveImg{1,1};
         sub_w = floor(resX/nChan);
         lim = [(i-1)*sub_w+1 i*sub_w];
     end

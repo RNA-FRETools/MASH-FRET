@@ -85,7 +85,7 @@ def.gen_crd{1}(2) = L;
 
 % intensity integration
 gen_int{1} = {''}; % used video file
-gen_int{2} = {coordsm,'',{reshape(1:2*nChan,2,nChan)' 1}}; % used coord., coord file, import options
+gen_int{2} = {coordsm,{''},{reshape(1:2*nChan,2,nChan)' 1}}; % used coord., coord file, import options
 gen_int{3} = [5,8]; % area dimensions,nb. of brightest pixels
 gen_int{4} = [1 1 0 0 0 0 0 0]; % export file options
 def.gen_int = adjustVal(def.gen_int,gen_int);

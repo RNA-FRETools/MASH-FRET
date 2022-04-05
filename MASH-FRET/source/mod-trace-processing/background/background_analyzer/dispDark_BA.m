@@ -10,24 +10,33 @@ h = guidata(g.figure_MASH);
 p = h.param;
 
 proj = p.curr_proj;
-res_y = p.proj{proj}.movie_dim(2);
-res_x = p.proj{proj}.movie_dim(1);
 aDim = p.proj{proj}.pix_intgr(1);
 nExc = p.proj{proj}.nb_excitations;
 nPix = p.proj{proj}.pix_intgr(2);
-fDat{1} = p.proj{proj}.movie_file;
-fDat{2}{1} = p.proj{proj}.movie_dat{1};
-fDat{2}{2} = [];
-fDat{3} = [res_y res_x];
-fDat{4} = p.proj{proj}.movie_dat{3};
-nFrames = size(p.proj{proj}.intensities,1)*p.proj{proj}.nb_excitations;
 perSec = p.proj{proj}.cnt_p_sec;
 inSec = p.proj{proj}.time_in_sec;
 rate = p.proj{proj}.frame_rate;
 
+nFrames = size(p.proj{proj}.intensities,1)*p.proj{proj}.nb_excitations;
+
 m = g.curr_m;
 l = g.curr_l;
 c = g.curr_c;
+
+multichanvid = numel(p.proj{proj}.movie_file)==1;
+if multichanvid
+    mov = 1;
+else
+    mov = c;
+end
+res_y = p.proj{proj}.movie_dim{mov}(2);
+res_x = p.proj{proj}.movie_dim{mov}(1);
+fDat{1} = p.proj{proj}.movie_file{mov};
+fDat{2}{1} = p.proj{proj}.movie_dat{mov}{1};
+fDat{2}{2} = [];
+fDat{3} = [res_y res_x];
+fDat{4} = p.proj{proj}.movie_dat{mov}{3};
+
 meth = g.param{1}{m}(l,c,1);
 if meth == 6
     autoDark = g.param{1}{m}(l,c,6);

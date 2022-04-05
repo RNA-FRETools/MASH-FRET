@@ -33,9 +33,15 @@ s.proj_file = fname;
 
 % movie
 s.movie_file = adjustParam('movie_file', {[]}, s_in); % movie path/file
-s.is_movie = adjustParam('is_movie', ~isempty(s.movie_file), s_in);
 s.movie_dim = adjustParam('movie_dim', {[]}, s_in);
 s.movie_dat = adjustParam('movie_dat', {[]}, s_in);
+if ~iscell(s.movie_file)
+    s.movie_file = {s.movie_file};
+    s.movie_dim = {s.movie_dim};
+    s.movie_dat = {s.movie_dat};
+end
+s.is_movie = adjustParam('is_movie', ~any(cellfun('isempty',s.movie_file)),...
+    s_in);
 s.spltime_from_video = adjustParam('spltime_from_video',s.is_movie,s_in);
 s.aveImg = adjustParam('aveImg',cell(numel(s.movie_file),s.nb_excitations),...
     s_in);
@@ -128,13 +134,6 @@ s.molTagClr = adjustParam('molTagClr',p.es.tagClr,s_in);
 
 
 %% check video entries
-% convert old project format (multi-channel video to single- or multi-channel)
-if ~iscell(s.movie_file)
-    s.movie_file = {s.movie_file};
-    s.movie_dim = {s.movie_dim};
-    s.movie_dat = {s.movie_dat};
-end
-
 % check machine-dependent path for test video files
 if all(~cellfun('isempty',s.movie_file)) && ...
         all(cellfun(@istestfile,s.movie_file))
@@ -250,8 +249,8 @@ if all(~cellfun('isempty',s.movie_file)) && ...
         end
     end
 end
-if ~all(~cellfun('isempty',s.movie_file))
-    s.is_movie = 0;
+if any(cellfun('isempty',s.movie_file))
+    s.is_movie = false;
 end
 
 % set movie dimensions and reading infos

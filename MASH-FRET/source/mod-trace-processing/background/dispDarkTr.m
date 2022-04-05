@@ -42,9 +42,9 @@ end
 
 % get video index
 if multichanvid
-    mov = c;
-else
     mov = 1;
+else
+    mov = c;
 end
 
 % control method

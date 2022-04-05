@@ -170,10 +170,20 @@ if saveAsAscii
         end
     end
     
+    vidfile = s.movie_file;
+    nMov = numel(vidfile);
+    if nMov>1
+        str_vidfile = 'video files:';
+    else
+        str_vidfile = 'video file:';
+    end
+    for mov = 1:nMov
+        str_vidfile = cat(2,str_vidfile,' ',vidfile{mov});
+    end
+    
     str_prm = cat(2,'creation date: %s\n', ...
         'MASH-FRET version: ',num2str(s.MASH_version),'\n',... 
-        'movie file: %s\n',... 
-        'coordinates file: %s\n',... 
+        '%s\n',... 
         'number of channels: ',sprintf('%i',nChan),'\n',... 
         'excitation wavelengths: ',str_wl,... 
         'frame rate: ',sprintf('%d',1/expT),' fps \n',... 
@@ -204,7 +214,7 @@ if saveAsAscii
         
         % write data to file
         f = fopen(cat(2,pname_all,fname_all),'Wt');
-        fprintf(f, str_prm,s.date_creation,s.movie_file,s.coord_file);
+        fprintf(f, str_prm,s.date_creation,str_vidfile);
         fprintf(f, str_hd_coord,s.coord');
         fprintf(f, str_col_names);
         fprintf(f, str_dat,[expT*(1:L)',(1:L)',I_all]');
@@ -238,7 +248,7 @@ if saveAsAscii
             
             % write data to file
             f = fopen([pname_one fname_one], 'Wt');
-            fprintf(f, str_prm,s.date_creation,s.movie_file,s.coord_file);
+            fprintf(f, str_prm,s.date_creation,str_vidfile);
             fprintf(f, str_hd_coord, s.coord(n,:)');
             fprintf(f, str_col_names);
             fprintf(f, str_dat, [expT*(1:L)', ...

@@ -85,15 +85,17 @@ disp(cat(2,prefix,'>> import reference image ',p.ave_file{nChan},'...'));
 pushbutton_trMap_Callback({p.annexpth,p.ave_file{nChan}},[],h_fig);
 h = guidata(h_fig);
 proj = h.param.proj{h.param.curr_proj};
+viddim = proj.movie_dim;
+mov = 1;
 
 disp(cat(2,prefix,'>> map reference coordinates...'));
 coord = rand(nPnt,2);
-coord(:,1) = ceil(coord(:,1)*proj.movie_dim(1)/nChan);
-coord(:,2) = ceil(coord(:,2)*proj.movie_dim(2));
-coord(coord(:,1)>=(fix(proj.movie_dim(1)/nChan)-3),1) = ...
-    fix(proj.movie_dim(1)/nChan)-3;
+coord(:,1) = ceil(coord(:,1)*viddim{mov}(1)/nChan);
+coord(:,2) = ceil(coord(:,2)*viddim{mov}(2));
+coord(coord(:,1)>=(fix(viddim{mov}(1)/nChan)-3),1) = ...
+    fix(viddim{mov}(1)/nChan)-3;
 coord(coord(:,1)<=3,1) = 3;
-coord(coord(:,2)>=(proj.movie_dim(2)-3),2) = proj.movie_dim(2)-3;
+coord(coord(:,2)>=(viddim{mov}(2)-3),2) = viddim{mov}(2)-3;
 coord(coord(:,2)<=3,1) = 3;
 coord = coord-0.5;
 for pnt = 1:nPnt

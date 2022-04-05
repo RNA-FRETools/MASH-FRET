@@ -14,8 +14,6 @@ nChan = p.proj{proj}.nb_channel;
 coord = p.proj{proj}.coord;
 labels = p.proj{proj}.labels;
 itgArea = p.proj{proj}.pix_intgr(1);
-res_x = p.proj{proj}.movie_dim(1);
-res_y = p.proj{proj}.movie_dim(2);
 L_ex = size(p.proj{proj}.intensities,1);
 nExc = p.proj{proj}.nb_excitations;
 nPix = p.proj{proj}.pix_intgr(2);
@@ -29,6 +27,8 @@ multichanvid = nMov==1;
 L_adj = nExc*L_ex;
 
 if multichanvid
+    res_x = p.proj{proj}.movie_dim{1}(1);
+    res_y = p.proj{proj}.movie_dim{1}(2);
     img = p.proj{proj}.aveImg{exc+1};
     split = round(res_x/nChan)*(1:nChan-1);
     lim_x = [0 split res_x];
@@ -54,8 +54,8 @@ for c = 1:nChan
         fDat{4} = viddat{1}{3};
         
     else
-        lim.x = [0 viddat{1}{2}(1)];
-        lim.y = [0 viddat{1}{2}(2)];
+        lim.x = [0 viddat{c}{2}(1)];
+        lim.y = [0 viddat{c}{2}(2)];
         img = p.proj{proj}.aveImg{c,exc+1};
         
         fDat{1} = vidfile{c};

@@ -45,7 +45,8 @@ if proj.is_movie
     proj.aveImg = cell(nMov,proj.nb_excitations+1);
     for c = 1:nMov
         proj.aveImg(c,:) = calcAveImg('all',proj.movie_file{c},...
-            proj.movie_dat{c},proj.nb_excitations,h_fig0,1:100);
+            proj.movie_dat{c},proj.nb_excitations,h_fig0,...
+            1:min([proj.movie_dat{c}{3},100]));
     end
     setContPan('Average images successfully recalculated!','success',...
         h_fig0);

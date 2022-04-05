@@ -51,9 +51,9 @@ s.module = p.proj{slct(1)}.module;
 s.folderRoot = p.proj{slct(1)}.folderRoot;
 
 s.is_movie = false;
-s.movie_file = {};
-s.movie_dim = {};
-s.movie_dat = {};
+s.movie_file = {[]};
+s.movie_dim = {[]};
+s.movie_dat = {[]};
 s.spltime_from_video = p.proj{slct(1)}.spltime_from_video;
 
 s.nb_channel = p.proj{slct(1)}.nb_channel;
@@ -219,6 +219,10 @@ for proj = 1:nProj
 end
 s.bool_intensities = ~~s.bool_intensities;
 s.coord_incl = ~~s.coord_incl;
+
+% remove VP and/or sim parameters
+s.sim = [];
+s.VP = [];
 
 % add merged project to the list
 pushbutton_openProj_Callback([],{s},h_fig);

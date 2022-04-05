@@ -42,6 +42,7 @@ wtxt9 = getUItextWidth(str8,p.fntun,p.fntsz1,'normal',p.tbl);
 h = delControlIfHandle(h,{'text_movH','text_VP_x','text_movW',...
     'text_VP_size','edit_movFile','text_VP_file','cb_VP_vid',...
     'axes_VP_vid','uitab_VP_plot_vidChan'});
+delete(h_tg.Children);
 
 % GUI
 for mov = 1:nMov
