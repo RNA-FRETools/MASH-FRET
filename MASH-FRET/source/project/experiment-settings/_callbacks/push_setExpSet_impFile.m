@@ -18,6 +18,9 @@ proj = h_fig.UserData;
 if iscell(obj)
     pname = obj{1};
     fname = obj{2};
+    if iscell(fname)
+        fname = fname{1};
+    end
 else
     % ask for video file
     str0 = ['*',vidfmt{1}];

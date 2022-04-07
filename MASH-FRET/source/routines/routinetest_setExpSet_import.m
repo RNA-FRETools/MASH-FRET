@@ -14,8 +14,31 @@ h = guidata(h_fig);
 prm = p.es{p.nChan,p.nL}.imp;
 
 % set video file
-if isfield(prm,'vfile') && ~isempty(prm.vfile)
-    push_setExpSet_impFile({p.annexpth,prm.vfile},[],h_fig,h_fig0);
+if isfield(prm,'vfile') && ~any(cellfun('isempty',prm.vfile))
+    nMov = numel(prm.vfile);
+    if nMov>1
+        set(h.radio_impFileSingle,'value',1);
+        radio_setExpSet_impFile(h.radio_impFileSingle,[],h_fig);
+        nBut = numel(h.push_impFileSingle);
+        if nBut>nMov
+            for but = 1:(nBut-nMov)
+                push_setExpSet_remChan(h.push_remChan,[],h_fig,h_fig0);
+            end
+        elseif nBut<nMov
+            for but = 1:(nMov-nBut)
+                push_setExpSet_addchan(h.push_addChan,[],h_fig,h_fig0);
+            end
+        end
+        h = guidata(h_fig);
+        for mov = 1:nMov
+            push_setExpSet_impFile({p.annexpth,prm.vfile{mov}},[],h_fig,...
+                h_fig0,mov);
+        end
+    else
+        set(h.radio_impFileMulti,'value',1);
+        radio_setExpSet_impFile(h.radio_impFileMulti,[],h_fig);
+        push_setExpSet_impFile({p.annexpth,prm.vfile{1}},[],h_fig,h_fig0);
+    end
 end
 
 % set trajectory files

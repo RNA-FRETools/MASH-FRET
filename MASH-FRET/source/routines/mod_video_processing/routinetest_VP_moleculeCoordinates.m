@@ -17,6 +17,9 @@ nChan = p.nChan;
 % collect interface parameters
 h = guidata(h_fig);
 
+nMov = numel(p.es{nChan,p.nL}.imp.vfile);
+multichanvid = nMov==1;
+
 setDefault_VP(h_fig,p,prefix);
 
 % expand panel
@@ -29,7 +32,17 @@ end
 disp(cat(2,prefix,'test average image...'));
 pushbutton_aveImg_go_Callback(h.pushbutton_aveImg_go,[],h_fig);
 pushbutton_aveImg_save_Callback({p.dumpdir,p.exp_ave},[],h_fig);
-pushbutton_aveImg_load_Callback({p.annexpth,p.ave_file{nChan}},[],h_fig);
+if multichanvid
+    pushbutton_aveImg_load_Callback({p.annexpth,p.ave_file{nChan}},[],...
+        h_fig);
+else
+    avefiles = cell(1,nMov);
+    [~,name,ext] = fileparts(p.ave_file{nChan});
+    for mov = 1:nMov
+        avefiles{mov} = [name,'_',p.es{nChan,p.nL}.chan.emlbl{mov},ext];
+    end
+    pushbutton_aveImg_load_Callback({p.annexpth,avefiles},[],h_fig);
+end
 
 setDefault_VP(h_fig,p,prefix);
 
