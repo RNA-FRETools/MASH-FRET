@@ -30,26 +30,32 @@ if ~p.proj{proj}.is_movie
     return
 end
 
-% retrieve current video display
-vid = find(h.uitabgroup_VP_plot_vid.Children==...
-    h.uitabgroup_VP_plot_vid.SelectedTab);
-L = p.proj{proj}.movie_dat{vid}{3};
-resX = p.proj{proj}.movie_dat{vid}{2}(1);
-resY = p.proj{proj}.movie_dat{vid}{2}(2);
-vidFile = p.proj{proj}.movie_file{vid};
+nVid = numel(p.proj{proj}.movie_file);
+for vid = 1:nVid
+    
+    % retrieve current video display
+    L = p.proj{proj}.movie_dat{vid}{3};
+    resX = p.proj{proj}.movie_dat{vid}{2}(1);
+    resY = p.proj{proj}.movie_dat{vid}{2}(2);
+    vidFile = p.proj{proj}.movie_file{vid};
+
+    % set video file
+    set(h.edit_movFile(vid), 'String', vidFile);
+
+    % set video dimensions
+    set(h.text_movW(vid), 'String', num2str(resX));
+    set(h.text_movH(vid), 'String', num2str(resY));
+end
 
 % adjust channel splitting
 txt_split = '';
-if numel(p.proj{proj}.movie_file)==1
+if nVid==1
     for i = 1:size(chansplit,2)
         txt_split = cat(2,txt_split,' ',num2str(chansplit(i)));
     end
     txt_split = ['Channel splitting: ' txt_split];
 end
 set(h.text_split, 'String', txt_split);
-
-% set video file
-set(h.edit_movFile(vid), 'String', vidFile);
 
 % Update slider properties & position     
 if L<=1
@@ -71,7 +77,5 @@ else
 end
 set(h.text_frameEnd, 'String', num2str(L));
 set(h.text_frameCurr, 'String', num2str(l));
-set(h.text_movW(vid), 'String', num2str(resX));
-set(h.text_movH(vid), 'String', num2str(resY));
 
 

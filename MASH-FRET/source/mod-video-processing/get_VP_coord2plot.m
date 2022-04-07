@@ -38,7 +38,7 @@ switch toplot
                     coord = cat(1, coord, coordref(:,(2*c-1):(2*c)));
                 end
             end
-        else
+        elseif size(coordref,2)>=(2*chan)
             coord = coordref(:,(2*chan-1):(2*chan));
         end
         
@@ -60,7 +60,7 @@ switch toplot
                     coord = cat(1, coord, coordsm(:,(2*c-1):(2*c)));
                 end
             end
-        else
+        elseif size(coordsm,2)>=(2*chan)
             coord = coordsm(:,(2*chan-1):(2*chan));
         end
         
@@ -71,7 +71,7 @@ switch toplot
                     coord = cat(1, coord, coordsm(:,(2*c-1):(2*c)));
                 end
             end
-        else
+        elseif size(coordsm,2)>=(2*chan)
             coord = coordsm(:,(2*chan-1):(2*chan));
         end
 end

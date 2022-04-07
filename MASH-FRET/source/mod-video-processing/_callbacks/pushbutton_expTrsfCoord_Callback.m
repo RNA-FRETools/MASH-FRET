@@ -16,9 +16,12 @@ p = h.param;
 nChan = p.proj{p.curr_proj}.nb_channel;
 projfile = p.proj{p.curr_proj}.proj_file;
 projtle = p.proj{p.curr_proj}.exp_parameters{1,2};
+lbl = p.proj{p.curr_proj}.labels;
 vidfile = p.proj{p.curr_proj}.movie_file;
 coordtr = p.proj{p.curr_proj}.VP.curr.res_crd{4};
 coordfile = p.proj{p.curr_proj}.VP.curr.gen_crd{3}{1}{2};
+nMov = numel(vidfile);
+multichanvid = nMov==1;
 
 % control transformed coordinates
 if isempty(coordtr)
@@ -40,7 +43,7 @@ else
     elseif ~isempty(projfile)
         [o,name,o] = fileparts(projfile);
     else
-        [o,name,o] = fileparts(vidfile);
+        [o,name,o] = fileparts(vidfile{1});
         if strcmp(name,defbfname)
             name = projtle;
         end
@@ -54,14 +57,12 @@ if ~sum(fname)
     return
 end
 cd(pname);
-[o,fname,o] = fileparts(fname);
-fname = getCorrName([fname '.coord'], pname, h_fig);
-if ~sum(fname)
-    return
-end
+
+fname = getCorrName(fname, pname, h_fig);
 
 % display progress
-setContPan('Write transformed coordinates to file...','process',h_fig);
+setContPan('Write transformed coordinates to file...','process',...
+    h_fig);
 
 % save coordinates to file
 str_hd = [];

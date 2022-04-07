@@ -61,7 +61,7 @@ try
 
         p.es{p.nChan,p.nL}.div.projttl = ...
             sprintf(name,'_%ichan%iexc',p.nChan,p.nL);
-        p.es{p.nChan,p.nL}.imp.vfile = p.vid_files{f};
+        p.es{p.nChan,p.nL}.imp.vfile = p.vid_files(f);
         routinetest_VP_createProj(p,h_fig,subprefix);
         
         if strcmp(fmt,'.png') || strcmp(fmt,'.avi') || strcmp(fmt,'.coord')
@@ -92,79 +92,135 @@ try
             disp('>> test visualization area...');
             routinetest_VP_visualizationArea(h_fig,p,subprefix);
         end
+        
+        % close project
+        pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig,...
+            true);
     end
-
-    name = strrep(p.vid_files{1},'.','_');
-    p.exp_vid = [name,'_videxport'];
     
-    % prepare interface
-    if strcmp(opt,'all') || strcmp(opt,'plot') || ...
-            strcmp(opt,'edit and export video')
-        p.es{p.nChan,p.nL}.div.projttl = ...
-            sprintf(name,'_%ichan%iexc',p.nChan,p.nL);
-        p.es{p.nChan,p.nL}.imp.vfile = p.vid_files{1};
-        routinetest_VP_createProj(p,h_fig,subprefix);
-    end
-
-    % test panel Plot
-    if strcmp(opt,'all') || strcmp(opt,'plot')
-        disp('>> test panel Plot...');
-        routinetest_VP_plot(h_fig,p,subprefix);
-    end
-
-    % test panel Edit and export video
-    if strcmp(opt,'all') || strcmp(opt,'edit and export video')
-        disp('>> test panel Edit and export video...');
-        routinetest_VP_editAndExportVideo(h_fig,p,subprefix);
-    end
-
-    for nChan = 1:p.nChan_max
-        p.nChan = nChan;
-        p.nL = p.nL_def;
-        namechan = [name,'_',num2str(p.nChan),'chan'];
-        p.exp_ave = [namechan,'_ave.png'];
-        p.exp_spots = {[namechan,'_%i.spots'],...
-            [namechan,'_%i_fit.spots']}; % exported spots file
+    vids = {p.vid_files{1},p.vid_files{1}};
+    
+    % test multi- and single-channel videos
+    for v = 1:numel(vids)
+        if v ==1
+            disp('>> test multi-chanel video...');
+        else
+            disp('>> test single-chanel videos...');
+        end
+        name = strrep(vids{v},'.','_');
+        p.exp_vid = [name,'_videxport'];
 
         % prepare interface
-        if strcmp(opt,'all') || ...
-                strcmp(opt,'molecule coordinates') || ...
-                strcmp(opt,'intensity integration')
+        if strcmp(opt,'all') || strcmp(opt,'plot') || ...
+                strcmp(opt,'edit and export video')
             p.es{p.nChan,p.nL}.div.projttl = ...
                 sprintf(name,'_%ichan%iexc',p.nChan,p.nL);
-            p.es{p.nChan,p.nL}.imp.vfile = p.vid_files{1};
-            routinetest_VP_createProj(p,h_fig,subprefix);
+            if v==2
+                p.es{p.nChan,p.nL}.imp.vfile = repmat(vids(v),1,p.nChan);
+            else
+                p.es{p.nChan,p.nL}.imp.vfile = vids(v);
+            end
+            routinetest_VP_createProj(p,h_fig,[subprefix,'>> ']);
         end
 
-        % test panel Molecule coordinates
-        if strcmp(opt,'all') || strcmp(opt,'molecule coordinates')
-            disp(['>> test panel Molecule coordinates for ',...
-                num2str(nChan),' channels...']);
-            routinetest_VP_moleculeCoordinates(h_fig,p,subprefix);
+        % test panel Plot
+        if strcmp(opt,'all') || strcmp(opt,'plot')
+            disp('>> >> test panel Plot...');
+            routinetest_VP_plot(h_fig,p,[subprefix,'>> ']);
         end
 
-        for nL = 1:p.nL_max
-            p.nL = nL;
-            
-            p.exp_traceFile{p.nL,p.nChan} = ...
-                [namechan,num2str(p.nL),'exc.mash'];
+        % test panel Edit and export video
+        if strcmp(opt,'all') || strcmp(opt,'edit and export video')
+            disp('>> >> test panel Edit and export video...');
+            routinetest_VP_editAndExportVideo(h_fig,p,[subprefix,'>> ']);
+        end
+
+        % close project
+        if strcmp(opt,'all') || strcmp(opt,'plot') || ...
+                strcmp(opt,'edit and export video')
+            pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig,...
+                true);
+        end
+    end
+    
+    % test multi- and single-channel videos
+    for v = 1:numel(vids)
+        if v ==1
+            disp('>> test multi-chanel video...');
+        else
+            disp('>> test single-chanel videos...');
+        end
+        for nChan = 1:p.nChan_max
+            p.nChan = nChan;
+            p.nL = p.nL_def;
+            namechan = [name,'_',num2str(p.nChan),'chan'];
+
+            % test panel Molecule coordinates
+            if strcmp(opt,'all') || ...
+                    strcmp(opt,'molecule coordinates')
+                disp(['>> >> test panel Molecule coordinates for ',...
+                    num2str(nChan),' channels...']);
+
+                p.es{p.nChan,p.nL}.div.projttl = ...
+                    sprintf(name,'_%ichan%',p.nChan);
+                if v==2
+                    p.es{p.nChan,p.nL}.imp.vfile = repmat(vids(v),1,...
+                        p.nChan);
+                else
+                    p.es{p.nChan,p.nL}.imp.vfile = vids(v);
+                end
+                routinetest_VP_createProj(p,h_fig,[subprefix,'>> ']);
+
+                p.exp_ave = [namechan,'_ave.png'];
+                p.exp_spots = {[namechan,'_%i.spots'],...
+                    [namechan,'_%i_fit.spots']}; % exported spots file
+                routinetest_VP_moleculeCoordinates(h_fig,p,...
+                    [subprefix,'>> ']);
+
+                pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],...
+                    h_fig,true);
+            end
 
             % test panel Intensity integration
             if strcmp(opt,'all') || strcmp(opt,'intensity integration')
-                disp(['>> test panel Intensity integration for ',...
-                    num2str(nChan),' channels and ',num2str(nL),...
-                    ' lasers...']);
-                p.es{p.nChan,p.nL}.div.projttl = ...
-                    sprintf(name,'_%ichan%iexc',p.nChan,p.nL);
-                p.es{p.nChan,p.nL}.imp.vfile = p.vid_files{1};
-                routinetest_VP_createProj(p,h_fig,subprefix);
-                routinetest_VP_intensityIntegration(h_fig,p,subprefix);
+                for nL = 1:p.nL_max
+                    p.nL = nL;
+
+                    p.exp_traceFile{p.nL,p.nChan} = ...
+                        [namechan,num2str(p.nL),'exc.mash'];
+
+                    disp(['>> >> test panel Intensity integration for ',...
+                        num2str(nChan),' channels and ',num2str(nL),...
+                        ' lasers...']);
+                    p.es{p.nChan,p.nL}.div.projttl = ...
+                        sprintf(name,'_%ichan%iexc',p.nChan,p.nL);
+                    if v==2
+                        p.es{p.nChan,p.nL}.imp.vfile = repmat(vids(v),1,...
+                            p.nChan);
+                    else
+                        p.es{p.nChan,p.nL}.imp.vfile = vids(v);
+                    end
+                    routinetest_VP_createProj(p,h_fig,[subprefix,'>> ']);
+
+                    routinetest_VP_intensityIntegration(h_fig,p,...
+                        [subprefix,'>> ']);
+
+                    % test project saving
+                    disp('>> >> test project saving...');
+                    if v==1
+                        trce_file = p.exp_traceFile{p.nL,p.nChan};
+                    else
+                        [~,nametrc,ext] = ...
+                            fileparts(p.exp_traceFile{p.nL,p.nChan});
+                        trce_file = [nametrc,'_sglchan',ext];
+                    end
+                    pushbutton_saveProj_Callback({p.dumpdir,trce_file},[],...
+                        h_fig);
+
+                    pushbutton_closeProj_Callback(h.pushbutton_closeProj,...
+                        [],h_fig,true);
+                end
             end
-        
-            % test project saving
-            disp('>> test project saving...');
-            pushbutton_saveProj_Callback({p.dumpdir,...
-                p.exp_traceFile{p.nL,p.nChan}},[],h_fig);
         end
     end
 

@@ -37,7 +37,7 @@ else
     elseif ~isempty(projfile)
         [o,name,o] = fileparts(projfile);
     else
-        [o,name,o] = fileparts(vidfile);
+        [o,name,o] = fileparts(vidfile{1});
     end
     if strcmp(name,defbfname)
         name = projtle;

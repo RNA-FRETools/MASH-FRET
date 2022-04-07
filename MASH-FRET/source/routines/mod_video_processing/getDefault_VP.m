@@ -48,13 +48,13 @@ p.vid_files = {sprintf('%i.sira',vers(end)),... % .spe missing
     sprintf('%i.avi',vers(end))...
     sprintf('%i.gif',vers(end)),...
     sprintf('%i.tif',vers(end)),...
-    sprintf('%i.pma',vers(end))}; 
+    sprintf('%i.pma',vers(end))};
 
 % experiment settings
 p.es = cell(nChan_max,nL_max);
 for nChan = 1:nChan_max
     for nL = 1:nL_max
-        p.es{nChan,nL}.imp.vfile = '';
+        p.es{nChan,nL}.imp.vfile = {''};
         p.es{nChan,nL}.chan.nchan = nChan;
         p.es{nChan,nL}.chan.emlbl = ['donem',cellstr(...
             [repmat('accem',nChan-1,1),num2str((1:(nChan-1))')])'];
