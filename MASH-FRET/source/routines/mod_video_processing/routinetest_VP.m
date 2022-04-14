@@ -194,6 +194,7 @@ try
                         ' lasers...']);
                     p.es{p.nChan,p.nL}.div.projttl = ...
                         sprintf(name,'_%ichan%iexc',p.nChan,p.nL);
+
                     if v==2
                         p.es{p.nChan,p.nL}.imp.vfile = repmat(vids(v),1,...
                             p.nChan);
