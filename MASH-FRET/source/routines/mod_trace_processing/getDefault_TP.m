@@ -59,7 +59,7 @@ for nL = 1:nL_max
         defprm_nL{size(defprm,1),3} = 'mW';
     end
     for nChan = 1:nChan_max
-        p.es{nChan,nL}.imp.vfile = '';
+        p.es{nChan,nL}.imp.vfile = {''};
         p.es{nChan,nL}.imp.tdir = sprintf('%ichan%iexc',nChan,nL);
         dir_content = dir(...
             [p.annexpth,filesep,p.es{nChan,nL}.imp.tdir,filesep,'*.txt']);
