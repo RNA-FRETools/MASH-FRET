@@ -6,7 +6,7 @@ if isempty(p.proj)
     return
 end
 val = get(obj, 'Value');
-if ~(numel(val)==1 && val~=p.curr_proj)
+if numel(val)>1 || (numel(val)==1 && val==p.curr_proj)
     return
 end
 
