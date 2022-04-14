@@ -1,54 +1,55 @@
 function updatePanel_VV(h_fig)
 
-% defaults
-fntS = 10.666666;
-w_cb = 200;
-w_edit = 60;
-w_txt = w_cb - w_edit;
-h_cb = 20;
-mg = 10;
-
 h = guidata(h_fig);
-tagNames = h.tm.molTagNames;
-nTag = numel(tagNames);
+q = h.tm;
+
+% defaults
+str0 = 'show';
 
 % reset old controls
-if isfield(h.tm, 'checkbox_VV_tag')
-    for t = 1:size(h.tm.checkbox_VV_tag,2)
-        if ishandle(h.tm.checkbox_VV_tag(t))
-            delete([h.tm.checkbox_VV_tag(t),h.tm.edit_VV_tag(t)]);
-        end
-    end
-    h.tm = rmfield(h.tm,{'checkbox_VV_tag','edit_VV_tag'});
-end
+q = delControlIfHandle(q,{'checkbox_VV_tag','edit_VV_tag'});
 
-edit_units = get(h.tm.edit_VV_tag0,'units');
-set(h.tm.edit_VV_tag0,'units','pixels');
-pos_edit = get(h.tm.edit_VV_tag0,'position');
-set(h.tm.edit_VV_tag0,'units',edit_units);
+% parents
+h_pan = q.uipanel_videoView;
 
-xNext = 2*mg;
-yNext = pos_edit(2) - mg - h_cb;
+% pixel positions
+pos_cb = getPixPos(q.checkbox_VV_tag0);
+wcb = pos_cb(3);
+hcb = pos_cb(4);
+pos_edit = getPixPos(q.edit_VV_tag0);
+wed = pos_edit(3);
+mg = pos_edit(1)-(pos_cb(1)+wcb);
 
+% font
+fsz = q.checkbox_VV_tag0.FontSize;
+fun = q.checkbox_VV_tag0.FontUnits;
+
+% tags
+tagNames = q.molTagNames;
+nTag = numel(tagNames);
 str_tag = colorTagNames(h_fig);
+
+x = 2*mg;
+y = pos_edit(2) - mg - hcb;
+
 for t = 1:nTag
-    h.tm.checkbox_VV_tag(t) = uicontrol('style','checkbox','parent',...
-        h.tm.uipanel_videoView,'units','pixels','fontunits','pixels',...
-        'fontsize',fntS,'position',[xNext,yNext,w_edit,h_cb],'string',...
-        'show','callback',{@checkbox_VV_tag_Callback,h_fig,t});
+    q.checkbox_VV_tag(t) = uicontrol('style','checkbox','parent',h_pan,...
+        'units','pixels','fontunits',fun,'fontsize',fsz,'position',...
+        [x,y,wcb,hcb],'string',str0,'callback',...
+        {@checkbox_VV_tag_Callback,h_fig,t});
     
-    xNext = xNext + w_edit + mg;
+    x = x + wcb + mg;
     
-    h.tm.edit_VV_tag(t) = uicontrol('style','edit','parent',...
-        h.tm.uipanel_videoView,'units','pixels','fontunits','pixels',...
-        'fontsize',fntS,'position',[xNext,yNext,w_txt,h_cb],'string',...
-        removeHtml(str_tag{t+1}),'enable','off');
+    q.edit_VV_tag(t) = uicontrol('style','edit','parent',h_pan,'units',...
+        'pixels','fontunits',fun,'fontsize',fsz,'position',[x,y,wed,hcb],...
+        'string',removeHtml(str_tag{t+1}),'enable','off');
     
-    xNext = 2*mg;
-    yNext = yNext - mg - h_cb;
+    x = 2*mg;
+    y = y - mg - hcb;
 end
 
-setProp(get(h.tm.uipanel_videoView, 'children'),'units','normalized');
+setProp(get(h_pan,'children'),'units','normalized');
 
+h.tm = q;
 guidata(h_fig,h);
 

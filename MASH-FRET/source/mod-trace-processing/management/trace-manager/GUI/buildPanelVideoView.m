@@ -31,9 +31,9 @@ h_pan = q.uipanel_videoView;
 
 % dimensions
 pospan = get(h_pan,'position');
-waxes = pospan(3) - p.wcb - 3*p.mg;
-haxes = pospan(4) - p.hpop - 5*p.mg;
-wedit2 = p.wcb-p.wcb2;
+wtg = pospan(3) - 2*p.mg - p.wcb - 3*p.mg;
+htg = pospan(4) - 3*p.mg;
+wedit2 = p.wcb - p.mg - p.wcb2;
 
 % list strings
 h = guidata(h_fig);
@@ -43,6 +43,15 @@ if numel(str_pop)>1
     str_pop = [str_pop 'all'];
 end
 
+% identify single/multi-channel videos
+nMov = numel(p_proj.movie_file);
+if nMov==1
+    tabttl = {'multi-channel'};
+else
+    tabttl = p_proj.labels;
+end
+
+% GUI
 x = 2*p.mg;
 y = pospan(4) - 2*p.mg - p.hpop + (p.hpop-p.htxt)/2;
 
@@ -51,7 +60,7 @@ q.text_exc = uicontrol('style','text','parent',h_pan,'units',p.posun,...
     p.fntsz,'string',str0,'fontweight','bold','horizontalalignment',...
     'left');
 
-x = x + 0.7*p.wcb + p.mg;
+x = x + 0.7*p.wcb;
 y = y - (p.hpop-p.htxt)/2;
 
 q.popupmenu_VV_exc = uicontrol('style','popup','parent',h_pan,'units',...
@@ -66,7 +75,7 @@ q.text_VV_mol = uicontrol('style','text','parent',h_pan,'units',p.posun,...
     p.fntsz,'string',str1,'fontweight','bold','horizontalalignment',...
     'left');
 
-x = x + 0.5*p.wcb + p.mg;
+x = x + 0.5*p.wcb;
 y = y - (p.hpop-p.htxt)/2;
 
 q.popupmenu_VV_mol = uicontrol('style','popup','parent',h_pan,'units',...
@@ -86,19 +95,31 @@ q.edit_VV_tag0 = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz,'position',[x,y,wedit2,p.hcb],...
     'string',str4,'enable','off');
 
-x = p.wcb + 3*p.mg;
-y = pospan(4) - p.hpop - p.mg - haxes;
+x = 2*p.mg + p.wcb + p.mg;
+y = 2*p.mg;
 
-q.axes_videoView = axes('parent',h_pan,'units',...
-    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz,'activepositionproperty',...
-    'outerposition','gridlineStyle',':','nextPlot','replace');
-ylim(q.axes_videoView,limy);
-ylabel(q.axes_videoView,xlbl);
-xlabel(q.axes_videoView,ylbl);
-title(q.axes_videoView,axttl);
-pos = getRealPosAxes([x,y,waxes,haxes],...
-    get(q.axes_videoView,'tightinset'),'traces'); 
-pos(3) = pos(3) - p.fntsz;
-pos(1) = pos(1) + p.fntsz;
-set(q.axes_videoView,'Position',pos);
+q.tg_videoView = uitabgroup('parent',h_pan,'units',p.posun,'position',...
+    [x,y,wtg,htg],'tablocation','bottom');
+
+for mov = 1:nMov
+    q.tab_videoView(mov) = uitab('parent',q.tg_videoView,'units',p.posun,...
+        'title',tabttl{mov});
+    
+    postab = q.tab_videoView(mov).Position;
+    dimaxes = min([postab(4)-p.mgtab-p.mg,postab(3)-2*p.mg]);
+
+    q.axes_videoView(mov) = axes('parent',q.tab_videoView(mov),'units',...
+        p.posun,'fontunits',p.fntun,'fontsize',p.fntsz,...
+        'activepositionproperty','outerposition','gridlineStyle',':',...
+        'nextPlot','replace');
+    ylim(q.axes_videoView(mov),limy);
+    ylabel(q.axes_videoView(mov),xlbl);
+    xlabel(q.axes_videoView(mov),ylbl);
+    title(q.axes_videoView(mov),axttl);
+    pos = getRealPosAxes([p.mg,p.mg,dimaxes,dimaxes],...
+        get(q.axes_videoView(mov),'tightinset'),'traces'); 
+    pos(3) = pos(3) - p.fntsz;
+    pos(1) = pos(1) + p.fntsz;
+    set(q.axes_videoView(mov),'Position',pos);
+end
 

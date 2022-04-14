@@ -1,28 +1,12 @@
 function h_fig2 = buildTraceManager(h_fig)
 % Build Trace manage figure
 
-% Last update by MH, 24.8.2019
-% >> solve issue in "View of video": video was shown upside down.
-%
-% update by MH, 24.4.2019
-% >> add toolbar and empty tools "Auto sorting" and "View of video"
-% >> rename "Overview" panel in "Molecule selection"
-%
-% update: by FS, 24.4.2018
-% >> add debugging mode where all other windows are not deactivated
-% >> add edit box to define a molecule tag
-% >> add popup menu to select molecule tag
-% >> add popup menu to select molecule tag
-%
-% update: by RB, 5.1.2018
-% >> new pushbutton to inverse the selection of individual molecules
-% >> add "to do" section: include y-axes control for FRET-S-Histogram
-%
-% update: by RB, 3.1.2018
-% >> adapt width of popupmenu for FRET-S-Histogram 
-%
-% update: by RB, 15.12.2017
-% >> update popupmenu_axes1 and popupmenu_axes2 string
+% 24.8.2019, update by MH: solve issue in "View of video": video was shown upside down.
+% 24.4.2019: update by MH: (1) add toolbar and empty tools "Auto sorting" and "View of video", (2) rename "Overview" panel in "Molecule selection"
+% 24.4.2018: update by FS: (1) add debugging mode where all other windows are not deactivated, (2) add edit box to define a molecule tag, (3) add popup menu to select molecule tag, (4) add popup menu to select molecule tag
+% 5.1.2018: update by RB: (1) new pushbutton to inverse the selection of individual molecules, (2) add "to do" section: include y-axes control for FRET-S-Histogram
+% 3.1.2018: update by RB: adapt width of popupmenu for FRET-S-Histogram 
+% 15.12.2017: update by RB: update popupmenu_axes1 and popupmenu_axes2 string
 
 % defaults
 fact = 5;
@@ -35,6 +19,7 @@ wfig = 900;
 hfig = 800; % figure dimensions
 mg = 10; % margin
 mgbig = 20;
+mgtab = 15; % top margin inside a tabbed panel (includes header)
 fntsz = 10.6666666; % font size
 fntsz2 = 12; % font size
 hbut2 = 30; 
@@ -59,11 +44,11 @@ ttl0 = 'Trace manager - ';
 ttl1 = 'Overall plots';
 ttl2 = 'Molecule selection';
 
-prm = struct('mg',mg,'mgbig',mgbig,'posun',posun,'fntun',fntun,'fntsz',...
-    fntsz,'hpop',hpop,'hbut',hbut,'hbut2',hbut2,'hcb',hcb,'hedit',hedit,...
-    'htxt',htxt,'wedit',wedit,'wcb',wcb,'wcb2',wcb2,'wtxt1',wtxt1,'wtxt2',...
-    wtxt2,'wtxt3',wtxt3,'wbut2',wbut2,'defNperPage',defNperPage,'wbrd',...
-    wbrd,'warr',warr);
+prm = struct('mg',mg,'mgbig',mgbig,'mgtab',mgtab,'posun',posun,'fntun',...
+    fntun,'fntsz',fntsz,'hpop',hpop,'hbut',hbut,'hbut2',hbut2,'hcb',hcb,...
+    'hedit',hedit,'htxt',htxt,'wedit',wedit,'wcb',wcb,'wcb2',wcb2,'wtxt1',...
+    wtxt1,'wtxt2',wtxt2,'wtxt3',wtxt3,'wbut2',wbut2,'defNperPage',...
+    defNperPage,'wbrd',wbrd,'warr',warr);
 
 % get reference table lisitng character widths 
 h = guidata(h_fig);
