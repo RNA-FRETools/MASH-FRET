@@ -1,6 +1,6 @@
 function [degen,mdl,cmb,BIC_cmb,BIC] = script_findBestModel(dt,J_deg_max,...
-    states,expT,dt_bin,T)
-% [degen,mdl,cmb,BIC_cmb,BIC] = script_findBestModel(dt,J_deg_max,states,expT,dt_bin,T)
+    states,expT,dt_bin,T,sumexp,savecurve)
+% [degen,mdl,cmb,BIC_cmb,BIC] = script_findBestModel(dt,J_deg_max,states,expT,dt_bin,T,sumexp)
 %
 % Import dwell times from .clst file
 % Find and return most sufficient model complexities (in terms of number of degenerated levels) for each state value
@@ -12,6 +12,8 @@ function [degen,mdl,cmb,BIC_cmb,BIC] = script_findBestModel(dt,J_deg_max,...
 % expT: bin time (s)
 % dt_bin: binning factor for dwell times prior building histogram
 % T: number of restart
+% sumexp: (1) to fit a sume of exponential (0) to fit DPH
+% savecurve: empty or destination folder to save best fit curves
 % degen: [1-by-V] most sufficient model complexity (number of degenerated levels per state value)
 % mdl: structures containing best DPH fit parameters for the most sufficient model
 %   mdl.pi_fit: {1-by-V} starting probabilities
@@ -35,7 +37,7 @@ logL = Inf(V,J_deg_max);
 for J_deg = 1:J_deg_max
     fprintf('for %i degenerated states:\n',J_deg);
     mdl{J_deg} = script_inferPH(dt,states,expT,dt_bin,T,...
-        repmat(J_deg,[1,V]),plotIt);
+        repmat(J_deg,[1,V]),plotIt,sumexp,'');
     LogL_v = [];
     for v = 1:V
         LogL_v = cat(1,LogL_v,mdl{J_deg}.logL(v));
@@ -59,8 +61,11 @@ end
 % calculate BIC for each DPH
 BIC = -Inf(V,J_deg_max);
 for J_deg = 1:J_deg_max
-%     df = (J_deg*(J_deg+1));
-    df = ((J_deg^2)-1);
+    if sumexp
+        df = 2*J_deg-1; % (J-1) initial prob, J trans prob
+    else
+        df = J_deg*(J_deg+1)-1; % (J-1) initial prob, J^2 trans prob
+    end
     for v = 1:V
         BIC(v,J_deg) = df*log(Nv(v))-2*logL(v,J_deg);
     end
@@ -70,7 +75,6 @@ nCmb = size(cmb,1);
 J = sum(cmb,2);
 [J,id] = sort(J,'ascend');
 cmb = cmb(id,:);
-% % % df = (J.*(J+1))'; % J initial prob, J^2 trans prob
 % df = ((J.^2)-1)'; % (J-1) initial prob, J*(J-1) trans prob
 % BIC_cmb = -Inf(1,nCmb);
 BIC_cmb = zeros(1,nCmb);
@@ -96,7 +100,7 @@ fprintf(['Most sufficient state configuration:\n[%0.2f',...
 
 % infer "true" DPH parameters
 disp('Optimize DPH distributions on authentic dwell time histograms...')
-mdl = script_inferPH(dt,states,expT,1,T,degen,false);
+mdl = script_inferPH(dt,states,expT,1,T,degen,false,sumexp,savecurve);
 
 % save computation time
 mdl.t_dphtest = toc(t_comp);

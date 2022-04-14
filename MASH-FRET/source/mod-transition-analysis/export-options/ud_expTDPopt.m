@@ -52,19 +52,22 @@ if ~(isfield(prm,'lft_res') && size(prm.lft_res,2)>=5 && ...
 end
 
 % check presence of kinetic model 
-isMdlSlct = true;
 isMdl = true;
-if ~(isfield(prm,'mdl_res') && size(prm.mdl_res,2)>=5 && ...
-        sum(~cellfun('isempty',prm.mdl_res(1,:))))
+if ~(isfield(prm,'mdl_res') && size(prm.mdl_res,2)>=1 && ...
+        ~isempty(prm.mdl_res{1}))
     isMdl = false;
-    isMdlSlct = false;
-    opt{4}(1:3) = false;
-    % check presence of model selection
-elseif ~(isfield(prm,'mdl_start') && size(prm.mdl_start,2)>=3 && ...
-        prm.mdl_start(1)==1)
+    opt{4}(2:3) = false;
+end
+
+% check presence of model selection
+isMdlSlct = true;
+if ~(isfield(prm,'mdl_res') && size(prm.mdl_res,2)>=6 && ...
+        ~isempty(prm.mdl_res{6}))
     isMdlSlct = false;
     opt{4}(1) = false;
 end
+
+guidata(q.figure_expTDPopt,opt);
 
 TDPascii = opt{2}(1);
 TDPimg = opt{2}(2);
@@ -126,9 +129,9 @@ if ~isBobaFit
     set([q.checkbox_kinBOBA q.checkbox_figBOBA],'Enable','off');
 end
 if ~isMdl
-    set([q.checkbox_mdlSlct q.checkbox_mdlOpt q.checkbox_mdlSim],'Enable',...
-        'off');
-elseif ~isMdlSlct
+    set([q.checkbox_mdlOpt q.checkbox_mdlSim],'Enable','off');
+end
+if ~isMdlSlct
     set(q.checkbox_mdlSlct,'Enable','off');
 end
 

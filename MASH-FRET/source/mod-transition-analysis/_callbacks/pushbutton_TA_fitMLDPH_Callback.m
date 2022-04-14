@@ -1,4 +1,10 @@
 function pushbutton_TA_fitMLDPH_Callback(obj,evd,h_fig)
+% pushbutton_TA_fitMLDPH_Callback([],[],h_fig)
+% pushbutton_TA_fitMLDPH_Callback({sumexp,saveit},[],h_fig)
+%
+% h_fig: handle to main figure
+% sumexp: (1) to fit sum of exponential, (0) for DPH
+% saveit: (1) to save fit curves and parameters to files, (0) otherwise
 
 % get interface parameters
 h = guidata(h_fig);
@@ -7,7 +13,14 @@ if ~isModuleOn(p,'TA')
     return
 end
 
-proj = p.curr_proj;
+sumexp = false;
+saveit = false;
+if iscell(obj)
+    sumexp = obj{1};
+    saveit = obj{2};
+end
+
+ proj = p.curr_proj;
 tag = p.TDP.curr_tag(proj);
 tpe = p.TDP.curr_type(proj);
 prm = p.proj{proj}.TA.prm{tag,tpe};
@@ -124,23 +137,30 @@ if guessMeth==1 % determine guess from DPH fit & BIC model selection
     setContPan(['Determine state degeneracies (refer to MATLAB''s command',...
         ' window for more details about the process'' progress)...'],...
         'process',h_fig);
+    
+    if saveit
+        pname = p.proj{proj}.folderRoot;
+        if pname(end)~=filesep
+            pname = [pname,filesep];
+        end
+        pname = [pname,'kinetic model',filesep];
+        if ~exist(pname,'dir')
+            mkdir(pname);
+        end
+    else
+        pname = '';
+    end
 
     [D,mdl,cmb,BIC_cmb,BIC] = ...
         script_findBestModel(dat(:,[1,4,7,8]),Dmax,states,nL*expT,dt_bin,...
-        T_mldph);
+        T_mldph,sumexp,pname);
     h = guidata(h_fig); % computation time of tph test stored in h.t_dphtest
     
     % export DPH fit parameters and computation time
-%     pname = p.proj{proj}.folderRoot;
-%     if pname(end)~=filesep
-%         pname = [pname,filesep];
-%     end
-%     pname = [pname,'kinetic model',filesep];
-%     if ~exist(pname,'dir')
-%         mkdir(pname)
-%     end
-%     fname = [p.proj{proj}.exp_parameters{1,2},'_mldphfitres.mat'];
-%     save([pname,fname],'mdl','-mat')
+    if saveit
+        fname = [p.proj{proj}.exp_parameters{1,2},'_mldphfitres.mat'];
+        save([pname,fname],'mdl','-mat');
+    end
 
     degen = [];
     for v1 = 1:V

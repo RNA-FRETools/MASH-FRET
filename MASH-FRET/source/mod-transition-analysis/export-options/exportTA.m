@@ -74,13 +74,13 @@ if ~(isfield(prm,'lft_res') && size(prm.lft_res,2)>=5 && ...
 end
 
 % check presence of kinetic model
-if ~(isfield(prm,'mdl_res') && size(prm.mdl_res,2)>=5 && ...
-        sum(~cellfun('isempty',prm.mdl_res(1,:))))
-    mdlSlct = false;
+if ~(isfield(prm,'mdl_res') && size(prm.mdl_res,2)>=1 && ...
+        ~isempty(prm.mdl_res{1}))
     mdlOpt = false;
     mdlSim = false;
-elseif ~(isfield(prm,'mdl_start') && size(prm.mdl_start,2)>=3 && ...
-        prm.mdl_start(1)==1)
+end
+if ~(isfield(prm,'mdl_res') && size(prm.mdl_res,2)>=6 && ...
+        ~isempty(prm.mdl_res{6}))
     mdlSlct = false;
 end
 
