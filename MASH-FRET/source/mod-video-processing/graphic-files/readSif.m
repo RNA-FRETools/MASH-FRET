@@ -29,6 +29,9 @@ if ~useMov
     isMov = 0;
 end
 
+% identify already-opened loading bar
+islb = isfield(h,'barData');
+
 % initializes potentially undefined video data
 cycleTime = [];
 movie = [];
@@ -225,14 +228,17 @@ if strcmp(n, 'all')
         
     else
         
-        intrupt = loading_bar('init',h_fig,100,'Import SIF video...');
-        if intrupt
-            ok = 0;
-            return;
+        if ~islb 
+            if loading_bar('init',h_fig,100,'Import SIF video...')
+                ok = 0;
+                return
+            end
+            h = guidata(h_fig);
+            h.barData.prev_var = h.barData.curr_var;
+            guidata(h_fig, h);
+        else
+            setContPan('Import SIF video...','',h_fig);
         end
-        h = guidata(h_fig);
-        h.barData.prev_var = h.barData.curr_var;
-        guidata(h_fig, h);
         prevCount = 0;
 
         % get video pixel data
@@ -247,10 +253,9 @@ if strcmp(n, 'all')
                     'single=>single'),[pixelX,pixelY])';
                 
                 if l/frameLen>prevCount
-                    intrupt = loading_bar('update', h_fig);
-                    if intrupt
+                    if ~islb && loading_bar('update', h_fig)
                         ok = 0;
-                        return;
+                        return
                     end
                     prevCount = prevCount+1/100;
                 end
@@ -269,10 +274,9 @@ if strcmp(n, 'all')
                     'single=>single'),[pixelX,pixelY])';
                 
                 if l/frameLen>prevCount
-                    intrupt = loading_bar('update', h_fig);
-                    if intrupt
+                    if ~islb && loading_bar('update', h_fig)
                         ok = 0;
-                        return;
+                        return
                     end
                     prevCount = prevCount+1/100;
                 end
@@ -282,7 +286,9 @@ if strcmp(n, 'all')
             guidata(h_fig,h);
         end
 
-        loading_bar('close', h_fig);
+        if ~islb 
+            loading_bar('close', h_fig);
+        end
     end
     
 else

@@ -22,6 +22,9 @@ if ~useMov
     isMov = 0;
 end
 
+% identify already-opened loading bar
+islb = isfield(h,'barData');
+
 if isempty(fDat)
     % get video infos
     fCurs = imfinfo(fullFname); % information array of .tif file
@@ -80,14 +83,17 @@ if strcmp(n,'all')
         frameCur = data.frameCur;
 
     else
-        if loading_bar('init',h_fig, frameLen,...
-                'Import movie frames from file...');
-            ok = 0;
-            return;
+        if ~islb
+            if loading_bar('init',h_fig, frameLen,'Import TIF video...')
+                ok = 0;
+                return
+            end
+            h = guidata(h_fig);
+            h.barData.prev_var = h.barData.curr_var;
+            guidata(h_fig, h);
+        else
+            setContPan('Import TIF video...','',h_fig);
         end
-        h = guidata(h_fig);
-        h.barData.prev_var = h.barData.curr_var;
-        guidata(h_fig, h);
         
         if isMov==0
             % allocate new memory
@@ -102,7 +108,7 @@ if strcmp(n,'all')
                 end
                 movie(:,:,i) = imread(fullFname,'Index',i,'Info',fCurs)-os;
                 
-                if loading_bar('update', h_fig)
+                if ~islb && loading_bar('update', h_fig)
                     ok = 0;
                     return
                 end
@@ -127,7 +133,7 @@ if strcmp(n,'all')
                     img = sum(img,3);
                 end
                 h.movie.movie(:,:,i) = img;
-                if loading_bar('update', h_fig)
+                if ~islb && loading_bar('update', h_fig)
                     ok = 0;
                     return
                 end
@@ -136,7 +142,7 @@ if strcmp(n,'all')
             frameCur = h.movie.movie(:,:,1);
         end
 
-        if ~isempty(h_fig)
+        if ~isempty(h_fig) && ~islb
             loading_bar('close', h_fig);
         end
     end

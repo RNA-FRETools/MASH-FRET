@@ -23,6 +23,9 @@ if ~useMov
     isMov = 0;
 end
 
+% identify already-opened loading bar
+islb = isfield(h,'barData');
+
 if isempty(fDat)
     % get video dimensions
     bfInitLogging();
@@ -118,14 +121,18 @@ if strcmp(n,'all')
         frameCur = data.frameCur;
 
     else
-        if loading_bar('init',h_fig, frameLen,...
-                'Import movie frames from file...')
-            ok = 0;
-            return
+        if ~islb 
+            if loading_bar('init',h_fig, frameLen,...
+                'Import BF video...')
+                ok = 0;
+                return
+            end
+            h = guidata(h_fig);
+            h.barData.prev_var = h.barData.curr_var;
+            guidata(h_fig, h);
+        else
+            setContPan('Import BF video...','',h_fig);
         end
-        h = guidata(h_fig);
-        h.barData.prev_var = h.barData.curr_var;
-        guidata(h_fig, h);
         
         if ~exist('r','var')
             bfInitLogging();
@@ -141,7 +148,7 @@ if strcmp(n,'all')
                 end
                 movie(:,:,i) = single(img');   
                 
-                if loading_bar('update', h_fig)
+                if ~islb && loading_bar('update', h_fig)
                     ok = 0;
                     return
                 end
@@ -158,7 +165,7 @@ if strcmp(n,'all')
                     img = sum(img,3);
                 end
                 h.movie.movie(:,:,i) = single(img');
-                if loading_bar('update', h_fig)
+                if ~islb && loading_bar('update', h_fig)
                     ok = 0;
                     return
                 end
@@ -166,7 +173,7 @@ if strcmp(n,'all')
             guidata(h_fig,h);
             frameCur = h.movie.movie(:,:,1);
         end
-        if ~isempty(h_fig)
+        if ~islb && ~isempty(h_fig)
             loading_bar('close', h_fig);
         end
     end
