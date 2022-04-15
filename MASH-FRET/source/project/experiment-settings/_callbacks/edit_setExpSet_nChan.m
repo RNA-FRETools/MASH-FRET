@@ -48,8 +48,9 @@ h = setExpSet_buildChanArea(h,nChan);
 h = setExpSet_buildVideoArea(h,nChan,h_fig0);
 guidata(h_fig,h);
 
-% refresh channel plot
+% refresh channel and laser plot
 ud_expSet_chanPlot(h_fig);
+ud_expSet_excPlot(h_fig);
 
 % refresh interface
 ud_setExpSet_tabImp(h_fig);
