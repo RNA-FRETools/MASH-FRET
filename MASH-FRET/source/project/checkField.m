@@ -217,7 +217,7 @@ if all(~cellfun('isempty',s.movie_file)) && ...
     s.is_movie = 1;
     
     % import video data
-    if numel(s.movie_file)==1
+    if numel(s.movie_file)==1 && ~isFullLengthVideo(s.movie_file{1},h_fig)
         h = guidata(h_fig);
         h.movie.movie = [];
         h.movie.file = '';
