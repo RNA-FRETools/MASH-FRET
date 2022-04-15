@@ -81,7 +81,7 @@ gen_crd{3} = {{[],'',[1,2]},... % coord to transform,imported file,imported x- a
     {[],4,''},... % transformation,transformation type,imported file
     []}; % transformed coordinates
 def.gen_crd = adjustVal(def.gen_crd,gen_crd);
-def.gen_crd{1}(2) = L;
+def.gen_crd{1}(2) = min([L,100]);
 
 % intensity integration
 gen_int{1} = {''}; % used video file
