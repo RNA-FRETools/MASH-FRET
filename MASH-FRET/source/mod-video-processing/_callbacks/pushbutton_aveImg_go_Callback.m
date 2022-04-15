@@ -38,6 +38,9 @@ for mov = 1:nMov
     end
 end
 
+% recover possible full-length video data
+h = guidata(h_fig);
+
 % save average image
 prm.res_plot{2} = img_ave;
 

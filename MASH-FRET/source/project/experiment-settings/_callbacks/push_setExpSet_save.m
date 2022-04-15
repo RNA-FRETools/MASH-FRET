@@ -41,6 +41,29 @@ end
 h = guidata(h_fig0);
 p = h.param;
 
+% load full-length video data in memory if possible
+if proj.is_movie && numel(proj.movie_file)==1 && ...
+        ~isFullLengthVideo(proj.movie_file{1},h_fig)
+    h.movie.movie = [];
+    h.movie.file = '';
+    guidata(h_fig,h);
+    [dat,ok] = getFrames(proj.movie_file{1},'all',proj.movie_dat{1},h_fig,...
+        true);
+    if ~ok
+        return
+    end
+    h = guidata(h_fig);
+    if ~isempty(dat.movie)
+        h.movie.movie = dat.movie;
+        h.movie.file = proj.movie_file{1};
+        guidata(h_fig,h);
+        
+    elseif ~isempty(h.movie.movie)
+        h.movie.file = proj.movie_file{1};
+        guidata(h_fig,h);
+    end
+end
+
 if strcmp(dat2import,'sim') || strcmp(dat2import,'video') || ...
         strcmp(dat2import,'trajectories')
     % add project to list and initialize list indexes

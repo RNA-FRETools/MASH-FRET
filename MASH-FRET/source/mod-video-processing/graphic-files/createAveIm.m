@@ -21,7 +21,6 @@ function [img_ave,ok] = createAveIm(param,corr,useMov,h_fig)
 
 % defaults
 ok = 1;
-isMov = 0;
 isBgcorr = 0;
 
 % collect parameters
@@ -46,10 +45,29 @@ L0 = numel(start:iv:stop);
 % initialize output
 img_ave = zeros(resY,resX);
 
-% control full-length video
-if useMov && isFullLengthVideo(fullname,h_fig)
-    isMov = 1;
+% load full-length video data in memory if possible
+if useMov && ~isFullLengthVideo(fullname,h_fig)
+    h.movie.movie = [];
+    h.movie.file = '';
+    guidata(h_fig,h);
+    [dat,ok] = getFrames(fullname,'all',fDat,h_fig,true);
+    if ~ok
+        return
+    end
+    h = guidata(h_fig);
+    if ~isempty(dat.movie)
+        h.movie.movie = dat.movie;
+        h.movie.file = fullname;
+        guidata(h_fig,h);
+        
+    elseif ~isempty(h.movie.movie)
+        h.movie.file = fullname;
+        guidata(h_fig,h);
+    end
 end
+
+% control full-length video
+isMov = useMov & isFullLengthVideo(fullname,h_fig);
 
 % control filter correction
 if corr && ~isempty(filtlst)
