@@ -163,7 +163,7 @@ for nChan = 2:p.nChan_max
         h_fig);
     
     % import transformation and transorm coordinates
-    for tr = 1:size(p.vers,2)
+    for tr = 1:(size(p.vers,2)-1)
         % import transformation
         disp(cat(2,prefix,'>> >> import transformation ',...
             p.trsf_file{nChan,tr},'...'));

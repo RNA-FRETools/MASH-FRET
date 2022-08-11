@@ -10,7 +10,7 @@ nChan_max = 3;
 nL_max = 3;
 nChan_def = 2;
 nL_def = 2;
-vers = [2015,2020];
+vers = [2015,2020,2022];
 nVers = size(vers,2);
 deflbl = {'don','acc1','acc2'};
 expT = 0.1;
@@ -38,15 +38,16 @@ p.nChan_max = nChan_max;
 p.nL_max = nL_max;
 
 % parameters for visualization area (video length = [20,100])
-p.vid_files = {sprintf('%i.sira',vers(end)),... % .spe missing
+p.vid_files = {sprintf('%i.sira',vers(end-1)),... % .spe missing
     sprintf('%i.sif',vers(1))...
-    sprintf('%i.png',vers(end))...
-    sprintf('%i.avi',vers(end))...
-    sprintf('%i.gif',vers(end)),...
-    sprintf('%i.tif',vers(end)),...
+    sprintf('%i.png',vers(end-1))...
+    sprintf('%i.avi',vers(end-1))...
+    sprintf('%i.gif',vers(end-1)),...
+    sprintf('%i.tif',vers(end-1)),...
+    sprintf('%i.pma',vers(end-1)),...
     sprintf('%i.pma',vers(end)),...
-    sprintf('%i_%ichan.coord',vers(end),nChan_def),...
-    sprintf('%i_%ichan.spots',vers(end),nChan_def)}; 
+    sprintf('%i_%ichan.coord',vers(end-1),nChan_def),...
+    sprintf('%i_%ichan.spots',vers(end-1),nChan_def)}; 
 p.tracecurs_file = 'createTraceCursor.png'; % exported image file from "Create trace" cursor
 p.exp_axes = 'graph.png';
 
@@ -152,13 +153,13 @@ for nChan = 1:nChan_max
         p.exp_ref{nChan} = '';
         p.exp_trsf{nChan} = '';
     else
-        p.ave_file{nChan} = sprintf('%i_%ichan_ref.png',vers(end),nChan);
-        p.ref_file{nChan} = sprintf('%i_%ichan_ref.map',vers(end),nChan);
+        p.ave_file{nChan} = sprintf('%i_%ichan_ref.png',vers(end-1),nChan);
+        p.ref_file{nChan} = sprintf('%i_%ichan_ref.map',vers(end-1),nChan);
         p.exp_ref{nChan} = sprintf('%ichan.map',nChan);
         p.exp_trsf{nChan} = sprintf('%ichan_trsf.mat',nChan);
     end
-    p.spots_file{nChan} = sprintf('%i_%ichan.spots',vers(end),nChan);
-    for v = 1:nVers
+    p.spots_file{nChan} = sprintf('%i_%ichan.spots',vers(end-1),nChan);
+    for v = 1:(nVers-1)
         if nChan==1
             p.trsf_file{nChan,v} = '';
             p.exp_coord{nChan,v} = '';
