@@ -128,8 +128,8 @@ if strcmp(n, 'all')
                     case 'old'
                         fseek(f,pixelX*pixelY*(i-1),0);
                 end
-                movie(:,:,i) = reshape(fread(f, pixelX*pixelY, ...
-                    'uint8=>single',skpbt), [pixelX pixelY])';
+                movie(:,:,i) = reshape(fread(f,pixelX*pixelY,...
+                    'uint8=>single',skpbt),[pixelX pixelY])';
                 
                 intrupt = loading_bar('update', h_fig);
                 if intrupt
@@ -147,9 +147,8 @@ if strcmp(n, 'all')
                     case 'old'
                         fseek(f,pixelX*pixelY*(i-1),0);
                 end
-                h.movie.movie(:,:,i) = flip(reshape(...
-                    fread(f,pixelX*pixelY,'uint8=>single'),...
-                    [pixelY,pixelX])',skpbt);
+                h.movie.movie(:,:,i) = reshape(fread(f,pixelX*pixelY,...
+                    'uint8=>single',skpbt),[pixelX pixelY])';
 
                 intrupt = loading_bar('update', h_fig);
                 if intrupt
