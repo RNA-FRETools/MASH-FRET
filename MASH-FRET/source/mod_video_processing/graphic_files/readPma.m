@@ -120,16 +120,16 @@ if strcmp(n, 'all')
         
         fseek(f,fCurs,-1);
         if isMov==0
-            movie = zeros([pixelY pixelX frameLen]);
+            movie = zeros(pixelY,pixelX,frameLen,'single');
             for i = 1:frameLen
-                switch fmt
-                    case 'new'
-                        fseek(f,(skpiv*(2*i-1) + 2*pixelX*pixelY*(i-1)),0);
-                    case 'old'
-                        fseek(f,pixelX*pixelY*(i-1),0);
+                if strcmp(fmt,'new')
+                    fseek(f,skpiv,0);
                 end
                 movie(:,:,i) = reshape(fread(f,pixelX*pixelY,...
                     'uint8=>single',skpbt),[pixelX pixelY])';
+                if strcmp(fmt,'new')
+                    fseek(f,skpiv,0);
+                end
                 
                 intrupt = loading_bar('update', h_fig);
                 if intrupt
@@ -141,14 +141,14 @@ if strcmp(n, 'all')
         else
             h.movie.movie = zeros(pixelY,pixelX,frameLen,'single');
             for i = 1:frameLen
-                switch fmt
-                    case 'new'
-                        fseek(f,(skpiv*(2*i-1) + 2*pixelX*pixelY*(i-1)),0);
-                    case 'old'
-                        fseek(f,pixelX*pixelY*(i-1),0);
+                if strcmp(fmt,'new')
+                    fseek(f,skpiv,0);
                 end
                 h.movie.movie(:,:,i) = reshape(fread(f,pixelX*pixelY,...
                     'uint8=>single',skpbt),[pixelX pixelY])';
+                if strcmp(fmt,'new')
+                    fseek(f,skpiv,0);
+                end
 
                 intrupt = loading_bar('update', h_fig);
                 if intrupt
