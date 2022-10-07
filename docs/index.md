@@ -14,7 +14,7 @@ First visit? Learn how to use MASH-FRET with
 [Getting started](Getting_started.html).
 
 
-## Download
+## Installation
 
 Clone MASH-FRET into a directory of your choice:
 ```
