@@ -2,7 +2,7 @@
 layout: default
 title: Validate results
 parent: Tutorials
-nav_order: 2
+nav_order: 3
 has_children: true
 has_toc: false
 permalink: /tutorials/validate-results.html

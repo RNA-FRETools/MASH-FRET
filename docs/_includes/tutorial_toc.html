@@ -5,16 +5,16 @@
 		{% if node.parent == page.parent %}
 			<li>
 			{% if node.url == page.url %}
-				<strong>Step {{ node.nav_order }}: {{ node.subtitle }}</strong>
+				<strong>{{ node.title }}: {{ node.subtitle }}</strong>
 			{% else %}
-				<a href="{{ node.url | absolute_url}}">Step {{ node.nav_order }}: {{ node.subtitle }}</a>
+				<a href="{{ node.url | absolute_url}}">{{ node.title }}: {{ node.subtitle }}</a>
 			{% endif %}
 			</li>
 		{% endif %}
 		
 	{% else %}
 		{% if node.parent == page.title %}
-			<li><a href="{{ node.url | absolute_url}}">Step {{ node.nav_order }}: {{ node.subtitle }}</a></li>
+			<li><a href="{{ node.url | absolute_url}}">{{ node.title }}: {{ node.subtitle }}</a></li>
 		{% endif %}
 	{% endif %}
 {% endfor %}

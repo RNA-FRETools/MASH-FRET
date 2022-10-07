@@ -25,17 +25,17 @@ To run MASH-FRET, the software
 For more information about system requirements, please refer to the documentation section 
 [System requirements](System_requirements.html).
 
-**Note:** *MASH-FRET is tested to run under Matlab version R2011a and above*
-
 
 ---
 
 ## Installation
-Clone or [download](https://github.com/RNA-FRETools/MASH-FRET/archive/master.zip) MASH-FRET into a directory of your choice.
+Clone MASH-FRET into a directory of your choice:
 
 ```
 git clone https://github.com/RNA-FRETools/MASH-FRET.git
 ```
+
+or [download](https://github.com/RNA-FRETools/MASH-FRET/archive/master.zip) the source code.
 
 Within MATLAB, add MASH-FRET to your search path by going to `Home → Set Path → Add with Subfolders`
 {: .pb-3 }
@@ -45,25 +45,40 @@ Start MASH-FRET by typing `MASH` at the MATLAB command prompt.
 
 ---
 
-## Interface
+## First steps
 
-When you start MASH-FRET the **main user interface** and **action history** open simultaneously.
+### Interface
+{: .no_toc }
+
+When you start MASH-FRET the **main user interface** opens.
 
 <a href="assets/images/gui/interface-default.png"><img src="assets/images/gui/interface-default.png" /></a>
 
 The main user interface appears in its default layout and includes:
-* a **tool bar** that allows the access the different <u>modules</u> (default: Video Processing) and to set the default <u>root folder</u> where files will be exported,
-* a **main area** that contains the selected module,
-* a **menu bar** that allows to modify the action history <u>view</u>, execute program <u>routines</u> (*advanced use*), set <u>file overwriting</u> options and access external tools 
+* a **menu bar** that allows the execution of program <u>routines</u>, the setting of <u>file overwriting</u> options and <u>time/intensity units</u>, as well as the access to <u>external tools</u> 
 [Restructure files](trace-processing/functionalities/merge-projects.html#restructure-alex-data), 
 [Bin time axis](trace-processing/functionalities/bin-trajectories.html#bin-traces-and-export-ascii-files) and 
 [Check toolbox dependencies](System_requirements.html).
+* a **project management area** for managing the opened projects,
+* a **tool bar** for accessing the different <u>modules</u>,
+* a **log history** that streams information about running processes and failures (to keep track, logs are automatically written in a 
+[daily log file](output-files/log-daily-logs.html)),
+* a **main area** that contains the selected module.
 
-The action history lists the main events occurring in the program.
-To keep track, logs are automatically written in a 
-[daily log file](output-files/log-daily-logs.html).
+### Create a new project
+{: .no_toc }
 
-**Note:** *Keep the action history or the command window of MATLAB visible when using MASH-FRET: information about running processes and failures are streaming in live.*
+To create a new MASH project, press ![New project](assets/images/gui/interface-but-newproj.png "New project") in the project management area; a window pops up:
+
+ <a href="assets/images/gui/newproj-interface.png"><img src="assets/images/gui/newproj-interface.png" /></a>
+ 
+You can start a project in three different ways:
+
+* [`Simulate data`](tutorials/set-experiment-settings/simulate-data.html): from scratch, by creating a single moelcule video and/or trajectories, 
+* [`Import video`](tutorials/set-experiment-settings/import-video.html): from an existing single moelcule video file, 
+* [`Import trajectories`](tutorials/set-experiment-settings/import-trajectories.html): from an existing set of trajectories written in files.
+
+Select the appropriate option and follow the instructions given in the corresponding section to continue with the experiment settings.
 
 
 ---
