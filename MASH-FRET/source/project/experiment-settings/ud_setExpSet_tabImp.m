@@ -85,7 +85,8 @@ end
 
 % set coordinates file
 if ~isempty(coordfile)
-    set(h.edit_impCoordFile,'string',coordfile,'enable','on');
+    [~,coordfname,coordfext] = fileparts(coordfile);
+    set(h.edit_impCoordFile,'string',[coordfname,coordfext],'enable','on');
 else
     set(h.edit_impCoordFile,'string','','enable','off');
 end
