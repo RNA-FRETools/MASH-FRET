@@ -1,4 +1,4 @@
-# <a class="plain" href="https://rna-fretools.github.io/MASH-FRET/"><img src="https://rna-fretools.github.io/MASH-FRET/assets/images/logos/logo-MASH-75x65.png"></a> MASH-FRET
+# <a class="plain" href="https://rna-fretools.github.io/MASH-FRET/"><img src="https://rna-fretools.github.io/MASH-FRET/assets/images/logos/logo-MASH-trans-75x65.png"></a> MASH-FRET
 
 ## What is MASH-FRET?
 MASH-FRET is a **Matlab**-based software package for the analysis of **single-molecule FRET videos and trajectories**.
