@@ -16,11 +16,13 @@ First visit? Learn how to use MASH-FRET with
 
 ## Download
 
-Clone or
-[download](https://github.com/RNA-FRETools/MASH-FRET/archive/master.zip) MASH-FRET into a directory of your choice.
+Clone MASH-FRET into a directory of your choice:
 ```
 git clone https://github.com/RNA-FRETools/MASH-FRET.git
 ```
+
+Or 
+[download](https://github.com/RNA-FRETools/MASH-FRET/archive/master.zip) the source code.
 
 For more information about system requirements, please refer to
 [System requirements](System_requirements.html).
