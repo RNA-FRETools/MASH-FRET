@@ -5,8 +5,11 @@ function s = intAscii2mash(pname, fname, s, p, h_fig)
 % update 28.3.2019 by MH: (1) Display all function and code line when an error occurs (2) Fix error when importing coordinates from file (3) Manage error when importing a number of coordinates from file different from number of intensity-time traces
 
 % defaults
-coordintrace = false;
+% coordintrace = false;
 bufferSz = 1e3;
+
+% check loading bar
+islb = size(fname,2)>1;
 
 % collect project parameters
 exptime = s.frame_rate;
@@ -17,34 +20,32 @@ coordfile = s.coord_file;
 coord = s.coord;
 FRET = s.FRET;
 
-% add discr. FRET import options if none
-if size(p{1}{1},2)==8
-    p{1}{1}(9) = 0;
-    p{1}{1}(10) = 5;
-    p{1}{1}(11) = 5;
-    p{1}{1}(12) = 0;
-end
-
-delim = p{1}{1}(2);
-rowwise = p{1}{1}(7);
-isTime = p{1}{1}(3);
 row1 = p{1}{1}(1)+1;
-colI1 = p{1}{1}(5);
-colI2 = p{1}{1}(6);
-colI_exc = p{1}{3};
-isdFRET = p{1}{1}(9);
-colseq1 = p{1}{1}(10);
-colseq2 = p{1}{1}(11);
-colseqskip = p{1}{1}(12);
+delim = p{1}{1}(2);
+isTime = p{1}{1}(3);
+rowwise = p{1}{1}(5);
+isdFRET = p{1}{1}(6);
+onemol = p{1}{1}(7);
+icol = p{1}{3};
+icol_exc = p{1}{4};
+fretcol = p{1}{5};
 isGam = sum(p{6}{1}) & ~isempty(p{6}{2});
-isBet = sum(p{6}{4}) & ~isempty(p{6}{5}) ;
+isBet = sum(p{6}{4}) & ~isempty(p{6}{5});
+
+colI1 = icol(:,1);
+colI2 = icol(:,2);
+colIiv = icol(:,3)+1;
+colseq1 = fretcol(:,1);
+colseq2 = fretcol(:,2);
+colseqiv = fretcol(:,3)+1;
 
 if rowwise==2
-    colI1 = colI_exc(:,1);
-    colI2 = colI_exc(:,2);
+    colI1 = icol_exc(:,1,:);
+    colI2 = icol_exc(:,2,:);
+    colIiv = icol_exc(:,3,:)+1;
 end
 
-nFRET = size(FRET,1);
+nPair = size(FRET,1);
 if isGam
     gam_folder = p{6}{1};
     gam_files = p{6}{2};
@@ -68,10 +69,10 @@ if isGam
         else
             pairs = FRET;
         end
-        p{6}{3} = cat(1,p{6}{3},zeros(size(content,1),nFRET));
-        for pair = 1:nFRET
-            col = pairs(:,1)==FRET(pair,1) && pairs(:,2)==FRET(pair,2);
-            p{6}{3}(end-size(content,1)+1:end,pair) = content(:,col);
+        p{6}{3} = cat(1,p{6}{3},zeros(size(content,1),nPair));
+        for pair = 1:nPair
+            col = pairs(:,1)==FRET(pair,1) & pairs(:,2)==FRET(pair,2);
+            p{6}{3}(end-size(content,1)+1:end,pair) = content(:,col');
         end
     end
 end
@@ -99,10 +100,10 @@ if isBet
         else
             pairs = FRET;
         end
-        p{6}{6} = cat(1,p{6}{6},zeros(size(content,1),nFRET));
-        for pair = 1:nFRET
-            col = pairs(:,1)==FRET(pair,1) && pairs(:,2)==FRET(pair,2);
-            p{6}{6}(end-size(content,1)+1:end,pair) = content(:,col);
+        p{6}{6} = cat(1,p{6}{6},zeros(size(content,1),nPair));
+        for pair = 1:nPair
+            col = pairs(:,1)==FRET(pair,1) & pairs(:,2)==FRET(pair,2);
+            p{6}{6}(end-size(content,1)+1:end,pair) = content(:,col');
         end
     end
 end
@@ -127,7 +128,6 @@ try
     switch delim
         case 1
             delimchar = {sprintf('\t'),' '};
-%             delimchar = ' ';
         case 2
             delimchar = sprintf('\t');
         case 3
@@ -140,8 +140,6 @@ try
             delimchar = sprintf('\t');
     end
     for i = 1:size(fname,2)
-        intNum = [];
-        dfretNum = [];
         
         % read file
         dat = [];
@@ -186,46 +184,17 @@ try
         fclose(f);
         
         % collect import parameters
-        if colI2 == 0
-            c_end = size(dat,2);
-        else
-            c_end = colI2;
-        end
+        nCol = size(dat,2);
+        colI1(colI1==0) = nCol;
+        colI2(colI2==0) = nCol;
+        colseq1(colseq1==0) = nCol;
+        colseq2(colseq2==0) = nCol;
         
-        % format intensity and discretized data
+        % get time information from first file
         if isTime && i==1
             times = dat(:,colt);
-        end
-        if isdFRET
-            for col = colseq1:(colseqskip+1):colseq2
-                dfretNum = cat(2,dfretNum,dat(:,col));
-            end
-        end
-        for lay = 1:numel(colI1)
-            for col = colI1(lay):c_end(lay)
-                intNum = cat(2,intNum,dat(:,col));
-            end
-        end
         
-        if isempty(intNum)
-            loading_bar('close', h_fig);
-            updateActPan(['Unable to load intensity data from file: ' ...
-                fname{i} '\nPlease check import options.'], h_fig, ...
-                'error');
-            s = [];
-            return
-        end
-
-        if isdFRET && isempty(dfretNum)
-            updateActPan(['Unable to load discretized FRET from file: ' ...
-                fname{i} '\nPlease check import options.'], h_fig, ...
-                'error');
-            s = [];
-            return
-        end
-        
-        % get exposure time and laser order
-        if isTime && i==1
+            % get exposure time and laser order
             if rowwise
                 exptime = abs(times(2)-times(1));
                 lasord = 1:nExc;
@@ -235,101 +204,153 @@ try
             end
         end
         
-        % get data dimensions
-        L_n = size(intNum,1);
-        if rowwise==1
-            N_n = floor(size(intNum,2)/(nChan));
-            frmPerExc = floor(L_n/nExc);
-        else
-            N_n = floor(size(intNum,2)/(nExc*nChan));
-            frmPerExc = L_n;
-        end
-
+        % get FRET state sequences from file
+        dfretNum = [];
         if isdFRET
-            nFRET = size(dfretNum,2);
-            if ~isempty(FRET) && nFRET~=size(FRET,1)
-                updateActPan(['Unable to load discretized FRET from file: ' ...
-                    fname{i} '\nThe number of FRET pairs is not ',...
-                    'consistent with the correction factor files.'], h_fig, ...
-                    'error');
+            if onemol
+                colseq = colseq1(:,1)';
+            else
+                colseq = [];
+                for pair = 1:nPair
+                    colseqrange = ...
+                        colseq1(pair):colseqiv(pair):colseq2(pair);
+                    if ~isempty(colseq) && ...
+                            numel(colseqrange)~=size(colseq,2)
+                        setContPan(['Unable to load FRET state sequences ',...
+                            'from file: ' fname{i} '\nThe numbers of ',...
+                            'sequences for each FRET pair are different ',...
+                            'when they should all be equal to the number ',...
+                            'of molecules in the file.\nPlease correct ',...
+                            'the import options and try again.'],'error',...
+                            h_fig);
+                        s = [];
+                        return
+                    end
+                    colseq = cat(1,colseq,colseqrange);
+                end
+                colseq = reshape(colseq,1,[]);
+            end
+            dfretNum = dat(:,colseq);
+        end
+        if isdFRET && isempty(dfretNum)
+            setContPan(['Unable to load discretized FRET from file: ' ...
+                fname{i} '\nPlease check import options.'],'error', h_fig);
+            s = [];
+            return
+        end
+        
+        % get intensity trajectories from file
+        intNum = [];
+        for l = 1:size(colI1,3)
+            if onemol
+                colIl = colI1(:,1,l);
+            else
+                colIl = [];
+                for c = 1:size(colI1,1)
+                    colIrange = colI1(c,1,l):colIiv(c,1,l):colI2(c,1,l);
+                    if ~isempty(colIl) && numel(colIrange)~=size(colIl,2)
+                        setContPan(['Unable to load intensity trajectories ',...
+                            'from file: ' fname{i} '\nThe numbers of ',...
+                            'trajectories for each channel are different ',...
+                            'when they should all be equal to the number ',...
+                            'of molecules in the file.\nPlease correct ',...
+                            'the import options and try again.'],'error',...
+                            h_fig);
+                        s = [];
+                        return
+                    end
+                    colIl = cat(1,colIl,colIrange);
+                end
+            end
+            colIl = reshape(colIl,1,[]);
+            if ~isempty(intNum) && size(intNum,2)~=size(colIl,2)
+                setContPan(['Unable to load intensity trajectories ',...
+                    'from file: ' fname{i} '\nThe numbers of trajectories',...
+                    ' for each laser illumination are different ',...
+                    'when they should all be equal to the number ',...
+                    'of molecules in the file.\nPlease correct ',...
+                    'the import options and try again.'],'error',...
+                    h_fig);
                 s = [];
                 return
-            elseif isempty(FRET) && row1>1
-                FREThead = dat(row1-1,:);
-                FRET = getFRETfromFactorFiles(...
-                    FREThead(colseq1:(colseqskip+1):colseq2));
             end
-            if isempty(FRET) || sum(sum(isnan(FRET)))
-                FRET = [];
-                for don = 1:nChan
-                    for acc = (don+1):nChan
-                        FRET = cat(1,FRET,[don,acc]);
-                    end
-                end
-                FRET = FRET(1:nFRET,:);
-            end
+            intNum = cat(3,intNum,dat(:,colIl));
+        end
+        if isempty(intNum)
+            loading_bar('close', h_fig);
+            setContPan(['Unable to load intensity data from file: ' ...
+                fname{i} '\nPlease check import options.'],'error', h_fig);
+            s = [];
+            return
         end
         
-        % get differences in intensity-time traces length in current file
-        % with previously imported and concatenated data
-        if i==1
-            frmPerExc_max = frmPerExc;
+        % format intensities in file to a L-by-N*nChan-by-nExc matrix
+        % with correct lasre order
+        L_fle = size(intNum,1);
+        N_fle = floor(size(intNum,2)/nChan);
+        if rowwise==1
+            frmPerExc = floor(L_fle/nExc);
         else
-            frmPerExc_max = max([frmPerExc frmPerExc_max]);
+            frmPerExc = L_fle;
         end
-        
-        % format intensity data to a L-by-nMol*nChan-by-nExc matrix
-        I = NaN(frmPerExc, nChan*N_n, nExc);
+        I = NaN(frmPerExc,nChan*N_fle,nExc);
         for exc = 1:nExc
             if rowwise==1
                 I(1:frmPerExc,:,exc) = intNum(exc:nExc:end,:);
             else
-                id_exc = reshape(1:size(intNum,2),[nChan,nExc*N_n]);
-                id_exc = id_exc(:,lasord(exc):nExc:end);
-                I(1:frmPerExc,:,exc) = intNum(:,id_exc(:)');
+                I(1:frmPerExc,:,exc) = intNum(:,:,lasord(exc));
             end
         end
         
-        % extend missing length and fill with NaN
-        I = cat(1,I,NaN(frmPerExc_max-frmPerExc,size(I,2),size(I,3)));
-        
-        
+        % format FRET state sequences in file to a L-by-N*nFRET matrix
         if isdFRET
             if rowwise==1
-                datdfret = NaN(frmPerExc, N_n*nFRET, nExc);
-                exc = zeros(1,nFRET);
+                datdfret = NaN(frmPerExc, N_fle*nPair, nExc);
+                exc = zeros(1,nPair);
                 for l = 1:nExc
                     datdfret(1:frmPerExc,:,l) = dfretNum(l:nExc:end,:);
-                    for j = 1:nFRET
-                        if ~all(isnan(datdfret(:,j:nFRET:end,l)))
+                    for j = 1:nPair
+                        if ~all(isnan(datdfret(:,j:nPair:end,l)))
                             exc(j) = l;
                         end
                     end
                 end
-                dFRET = NaN(frmPerExc, N_n*nFRET);
-                for j = 1:nFRET
-                    dFRET(:,j:nFRET:end) = datdfret(:,j:nFRET:end,exc(j));
+                dFRET = NaN(frmPerExc, N_fle*nPair);
+                for j = 1:nPair
+                    dFRET(:,j:nPair:end) = datdfret(:,j:nPair:end,exc(j));
                 end
             else
                 dFRET = dfretNum;
             end
         end
+
+        % correct differences in trace length with previous files
+        if i==1
+            frmPerExc_max = frmPerExc;
+        else
+            frmPerExc_max = max([frmPerExc frmPerExc_max]);
+        end
+        I = cat(1,I,NaN(frmPerExc_max-frmPerExc,size(I,2),size(I,3)));
+        if isdFRET
+            dFRET = cat(1,dFRET,NaN(frmPerExc_max-frmPerExc,size(dFRET,2)));
+        end
         
         if i==1
             % initialize boolean data (exclude data from first NaN encounter)
-            for n = 1:N_n
+            for n = 1:N_fle
                 incl = cat(2,incl,...
                     ~isnan(sum(sum(I(:,nChan*(n-1)+1:nChan*n),3),2)));
             end
+            old_incl = incl;
             
             % initialize concatenated data
             intensities = I;
-            if isdFRET
-                fret_DTA = dFRET;
-            end
-            old_incl = incl;
             old_i = intensities;
             
+            if isdFRET
+                fret_DTA = dFRET;
+                old_dFRET = fret_DTA;
+            end
         else
             
             % extend existing missing boolean data with NaN
@@ -338,7 +359,7 @@ try
 
             % calculate boolean data from alread-extended file's 
             % intensities and add to existing boolean data
-            for n = 1:N_n
+            for n = 1:N_fle
                 incl = cat(2,incl,...
                     ~isnan(sum(sum(I(:,nChan*(n-1)+1:nChan*n),3),2)));
             end
@@ -359,11 +380,11 @@ try
             % extend existing missing discretized FRETs and add file's
             % already-extended discretized FRETs
             if isdFRET
-                old_dFRET = fret_DTA;
                 fret_DTA = NaN(frmPerExc_max,size(old_dFRET,2)+size(dFRET,2));
                 fret_DTA(1:size(old_dFRET,1),1:size(old_dFRET,2)) = ...
                     old_dFRET;
                 fret_DTA(1:size(dFRET,1),(end-size(dFRET,2)+1):end) = dFRET;
+                old_dFRET = fret_DTA;
             end
         end
 
@@ -385,41 +406,41 @@ try
             return
         end
         
-        % import molecule coordinates from file's header
-        coord_n = [];
-        if coordintrace
-            coordTxt = dat(row_coord,:);
-            coord_raw = [];
-            for j = 1:size(coordTxt,1)
-                c = str2double(coordTxt{j,1});
-                if ~isempty(c) && size(c,2)==2
-                    coord_raw = cat(1,coord_raw,c);
-                end
-            end
-            for chan = 1:nChan
-                coord_n(:,(2*chan-1):2*chan) = coord_raw(chan:nChan:end,:);
-            end
-            if isempty(coord_n)
-                loading_bar('close', h_fig);
-                updateActPan(['Molecule coordinates not found in file: ' ...
-                    fname{i}], h_fig, 'error');
-                s = [];
-                return
-            end
-            
-            if size(I,2)/nChan ~= size(coord_n,1)
-                loading_bar('close', h_fig);
-                updateActPan(['Number of intensity-time traces inconsistent ' ...
-                    'with number of coordinates'], h_fig, 'error');
-                s = [];
-                return
-            end
-        end
-        
-        % add file's coordinates to existing coordinates
-        coord = cat(1,coord,coord_n);
+%         % import molecule coordinates from file's header
+%         coord_n = [];
+%         if coordintrace
+%             coordTxt = dat(row_coord,:);
+%             coord_raw = [];
+%             for j = 1:size(coordTxt,1)
+%                 c = str2double(coordTxt{j,1});
+%                 if ~isempty(c) && size(c,2)==2
+%                     coord_raw = cat(1,coord_raw,c);
+%                 end
+%             end
+%             for chan = 1:nChan
+%                 coord_n(:,(2*chan-1):2*chan) = coord_raw(chan:nChan:end,:);
+%             end
+%             if isempty(coord_n)
+%                 loading_bar('close', h_fig);
+%                 updateActPan(['Molecule coordinates not found in file: ' ...
+%                     fname{i}], h_fig, 'error');
+%                 s = [];
+%                 return
+%             end
+%             
+%             if size(I,2)/nChan ~= size(coord_n,1)
+%                 loading_bar('close', h_fig);
+%                 updateActPan(['Number of intensity-time traces inconsistent ' ...
+%                     'with number of coordinates'], h_fig, 'error');
+%                 s = [];
+%                 return
+%             end
+%         end
+%         
+%         % add file's coordinates to existing coordinates
+%         coord = cat(1,coord,coord_n);
 
-        if loading_bar('update', h_fig)
+        if islb && loading_bar('update', h_fig)
             return
         end
     end

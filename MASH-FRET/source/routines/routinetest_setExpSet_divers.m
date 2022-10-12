@@ -54,7 +54,7 @@ if isfield(prm,'plotclr')
     for chan = 1:size(prm.plotclr,1)
         set(h.popup_chanClr,'value',chan);
         popup_setExpSet_chanClr(h.popup_chanClr,[],h_fig);
-        push_setExpSet_clr(prm.plotclr(chan,:),[],h_fig);
+        push_setExpSet_clr([],prm.plotclr(chan,:),h_fig);
     end
 else
     push_setExpSet_defclr([],[],h_fig);

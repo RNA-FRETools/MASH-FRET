@@ -79,4 +79,26 @@ for i = projs
             p.proj{i}.TA.from = 'TP';
         end
     end
+    
+    % adapt trajectory file structure parameters to new format
+    if  isfield(p.proj{i},'traj_import_opt') && ...
+            ~isempty(p.proj{i}.traj_import_opt) && ...
+            numel(p.proj{i}.traj_import_opt)>=1 && ...
+            numel(p.proj{i}.traj_import_opt{1})~=5
+        opt = p.proj{i}.traj_import_opt{1};
+        newopt = cell(1,5);
+        newopt{1} = [opt{1}([1:4,7,9]),1]; % add onemol
+        newopt{2} = opt{1}{2};
+        newopt{3} = [repmat((opt{1}{1}(5):opt{1}{1}(6))',[1,2]),...
+            zeros(p.proj{i}.nb_channel,0)]; % add skip
+        for l = 1:size(opt{1}{3},1)
+            newopt{4} = cat(3,newopt{4},...
+                [repmat((opt{1}{3}(l,1):opt{1}{3}(l,2))',[1,2]),...
+                zeros(p.proj{i}.nb_channel,0)]); % add skip
+        end
+        newopt{5} = [...
+            repmat((opt{1}{1}(10):opt{1}{1}(12):opt{1}{1}(11))',[1,2]),...
+            zeros(size(p.proj{i}.FRET,1),0)];
+        p.proj{i}.traj_import_opt{1} = newopt;
+    end
 end
