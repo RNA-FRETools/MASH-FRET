@@ -20,54 +20,80 @@ edit_setExpSet_hLines(h.edit_hLines,[],h_fig);
 set(h.pop_delim,'value',prm{1}(2));
 pop_setExpSet_delim(h.pop_delim,[],h_fig);
 
+% set sample
+switch prm{1}(7)
+    case 1
+        set(h.pop_oneMol,'value',1);
+        pop_setExpSet_oneMol(h.pop_oneMol,[],h_fig);
+    case 2
+        set(h.pop_oneMol,'value',2);
+        pop_setExpSet_oneMol(h.pop_oneMol,[],h_fig);
+end
+
 % set ALEX data structure
-set(h.pop_alexDat,'value',prm{1}(3));
+set(h.pop_alexDat,'value',prm{1}(5));
 pop_setExpSet_alexDat(h.pop_alexDat,[],h_fig);
 
-% set intensity columns
-if p.nL==1 || (p.nL>1 && prm{1}(3)==1)
-    set(h.edit_intFrom,'string',num2str(prm{1}(4)));
-    edit_setExpSet_intFrom(h.edit_intFrom,[],h_fig);
-
-    set(h.edit_intTo,'string',num2str(prm{1}(5)));
-    edit_setExpSet_intTo(h.edit_intTo,[],h_fig);
-elseif p.nL>1 && prm{1}(3)==2
-    for l = 1:p.nL
-        set(h.edit_intExcCol1(l),'string',num2str(prm{3}(l,1)));
-        edit_setExpSet_intExcCol1(h.edit_intExcCol1(l),[],l,h_fig);
-
-        set(h.edit_intExcCol2(l),'string',num2str(prm{3}(l,2)));
-        edit_setExpSet_intExcCol2(h.edit_intExcCol2(l),[],l,h_fig);
+% set time columns
+set(h.check_timeDat,'value',prm{1}(3));
+check_setExpSet_timeDat(h.check_timeDat,[],h_fig);
+if prm{1}(3)
+    if p.nL==1 || (p.nL>1 && prm{1}(5)==1)
+        set(h.edit_timeCol,'string',num2str(prm{1}(4)));
+        edit_setExpSet_timeCol(h.edit_timeCol,[],h_fig);
+    elseif p.nL>1 && prm{1}(5)==2
+        for l = 1:p.nL
+            set(h.edit_timeExcCol(l),'string',num2str(prm{2}(l)));
+            edit_setExpSet_timeExcCol(h.edit_timeExcCol(l),[],l,h_fig);
+        end
     end
 end
 
-% set time columns
-set(h.check_timeDat,'value',prm{1}(6));
-check_setExpSet_timeDat(h.check_timeDat,[],h_fig);
-
-if p.nL==1 || (p.nL>1 && prm{1}(3)==1)
-    set(h.edit_timeCol,'string',num2str(prm{1}(7)));
-    edit_setExpSet_timeCol(h.edit_timeCol,[],h_fig);
-elseif p.nL>1 && prm{1}(3)==2
-    for l = 1:p.nL
-        set(h.edit_timeExcCol(l),'string',num2str(prm{2}(l)));
-        edit_setExpSet_timeExcCol(h.edit_timeExcCol(l),[],l,h_fig);
+% set intensity columns
+if p.nL==1 || (p.nL>1 && prm{1}(5)==1)
+    for c = 1:size(prm{3},1)
+        for n = 1:size(prm{3},2)
+            evd.EditData = num2str(prm{3}(c,n));
+            evd.Indices = [c,n+1];
+            tbl_intCol_CellEdit(h.tbl_intCol,evd,h_fig);
+            if prm{1}(7) && n==1
+                break
+            end
+        end
+    end
+elseif p.nL>1 && prm{1}(5)==2
+    r = 0;
+    for l = 1:size(prm{4},3)
+        for c = 1:size(prm{4},1)
+            r = r+1;
+            for n = 1:size(prm{4},2)
+                evd.EditData = num2str(prm{4}(c,n,l));
+                evd.Indices = [r,n+1];
+                tbl_intCol_CellEdit(h.tbl_intCol,evd,h_fig);
+                if prm{1}(7) && n==1
+                    break
+                end
+            end
+        end
     end
 end
 
 % set state trajectory columns
 if size(p.es{p.nChan,p.nL}.calc.fret,1)>0
-    set(h.check_FRETseq,'value',prm{1}(8));
+    set(h.check_FRETseq,'value',prm{1}(6));
     check_setExpSet_FRETseq(h.check_FRETseq,[],h_fig);
-
-    set(h.edit_FRETseqCol1,'string',num2str(prm{1}(9)));
-    edit_setExpSet_FRETseqCol1(h.edit_FRETseqCol1,[],h_fig);
-
-    set(h.edit_FRETseqCol2,'string',num2str(prm{1}(10)));
-    edit_setExpSet_FRETseqCol2(h.edit_FRETseqCol2,[],h_fig);
-
-    set(h.edit_FRETseqSkip,'string',num2str(prm{1}(11)));
-    edit_setExpSet_FRETseqSkip(h.edit_FRETseqSkip,[],h_fig);
+    if prm{1}(6)
+        for pair = 1:size(prm{5},1)
+            for n = 1:size(prm{5},2)
+                evd.EditData = num2str(prm{5}(pair,n));
+                evd.Indices = [pair,n+1];
+                tbl_seqCol_CellEdit(h.tbl_seqCol,evd,h_fig);
+                if prm{1}(7) && n==1
+                    break
+                end
+            end
+        end
+    end
 end
 
 

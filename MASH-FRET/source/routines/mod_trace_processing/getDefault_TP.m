@@ -98,15 +98,16 @@ for nL = 1:nL_max
             end
         end
         
-        p.es{nChan,nL}.fstrct = {[2 1 1 2 nChan+1 1 1 0 0 0 0],ones(1,nL),...
-            zeros(nL,2)};
+        p.es{nChan,nL}.fstrct = {[2 2 1 1 1 0 1],ones(1,nL),...
+            [1+(1:nChan)',1+(1:nChan)',zeros(nChan,1)],...
+            ones(nChan,3,nL),ones(size(FRET,1),3)};
         
         p.es{nChan,nL}.div.projttl = sprintf('test_%ichan%iexc',nChan,nL);
         p.es{nChan,nL}.div.molname = 'none';
         p.es{nChan,nL}.div.expcond = defprm_nL;
         p.es{nChan,nL}.div.splt = 0.2;
         rands = rand(size(p.es{nChan,nL}.calc.s,1),1);
-        rande = rand(size(p.es{nChan,nL}.calc.fret,1),1);
+        rande = rand(size(FRET,1),1);
         randi = rand(nChan*nL,1);
         p.es{nChan,nL}.div.plotclr = [...
             repmat(rands,1,2),ones(size(p.es{nChan,nL}.calc.s,1),1);...

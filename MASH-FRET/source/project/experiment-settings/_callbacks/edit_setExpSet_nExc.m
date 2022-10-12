@@ -64,10 +64,10 @@ ud_plotColors(h_fig);
 % refresh trajectory file import options
 ud_trajImportOpt(h_fig);
 
-% refresh time section in file structure tab
+% refresh time, intensity and state sequence sections in file structure tab
 h = guidata(h_fig);
+proj = h_fig.UserData;
 if isfield(h,'tab_fstrct') && ishandle(h.tab_fstrct)
-    h = setExpSet_buildIntensityArea(h,proj.excitations);
     h = setExpSet_buildTimeArea(h,proj.excitations);
 end
 

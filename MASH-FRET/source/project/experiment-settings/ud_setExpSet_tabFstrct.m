@@ -2,6 +2,7 @@ function ud_setExpSet_tabFstrct(h_fig)
 
 % defaults
 grayfnt = round([0.75,0.75,0.75]*256);
+colname = {'data','from','to','skip'};
 
 % retrieve interface content
 h = guidata(h_fig);
@@ -12,30 +13,30 @@ end
 
 % retrieve project parameters
 proj = h_fig.UserData;
-% nChan = proj.nb_channel;
+nChan = proj.nb_channel;
 exc = proj.excitations;
-% clr = proj.colours;
-FRET = proj.FRET;
+lbl = proj.labels;
+clr = proj.colours;
+pairs = proj.FRET;
 opt = proj.traj_import_opt;
 isfiles = ~isempty(h.table_fstrct.UserData);
 
 nExc = numel(exc);
 isalex = nExc>1;
-nPair = size(FRET,1);
+nPair = size(pairs,1);
 ispair = nPair>0;
+
 hline = opt{1}{1}(1); % old first intensity line
 delim = opt{1}{1}(2); % old last intensity line
 istdat = opt{1}{1}(3);
 tcol = opt{1}{1}(4);
-icol1 = opt{1}{1}(5);
-icol2 = opt{1}{1}(6);
-rowwise = opt{1}{1}(7); % old nb. of channels
-tcol_exc = opt{1}{2}; % old laser wavelength
-icolexc = opt{1}{3};
-isfretdat = opt{1}{1}(9);
-fretcol1 = opt{1}{1}(10);
-fretcol2 = opt{1}{1}(11);
-skipfretcol = opt{1}{1}(12);
+rowwise = opt{1}{1}(5); 
+isfretdat = opt{1}{1}(6);
+onemol = opt{1}{1}(7); % old nb. of channels
+tcol_exc = opt{1}{2};
+icol = opt{1}{3};
+icolexc = opt{1}{4};
+fretcol = opt{1}{5};
 
 % set header lines
 set(h.edit_hLines,'string',num2str(hline));
@@ -43,31 +44,20 @@ set(h.edit_hLines,'string',num2str(hline));
 % set column delimiter
 set(h.pop_delim,'value',delim);
 
-% set ALEX file structure
-if isalex
-    set([h.text_alexDat,h.pop_alexDat],'visible','on');
-    set(h.pop_alexDat,'value',rowwise);
-else
-    set([h.text_alexDat,h.pop_alexDat],'visible','off');
+% set sample
+switch onemol
+    case 1
+        set(h.pop_oneMol,'value',1);
+    case 0
+        set(h.pop_oneMol,'value',2);
 end
 
-% set intensity data
-if rowwise==1 || ~isalex
-    set([h.text_intFrom,h.edit_intFrom,h.text_intTo,h.edit_intTo,...
-        h.text_intZero],'visible','on');
-    set([h.text_intExcCol,h.edit_intExcCol1,h.text_intExcTo,...
-        h.edit_intExcCol2,h.text_intExcZero],'visible','off');
-    set(h.edit_intFrom,'string',num2str(icol1));
-    set(h.edit_intTo,'string',num2str(icol2));
+% set ALEX file structure
+if isalex
+    set([h.text_alexDat,h.pop_alexDat],'enable','on');
+    set(h.pop_alexDat,'value',rowwise);
 else
-    set([h.text_intFrom,h.edit_intFrom,h.text_intTo,h.edit_intTo,...
-        h.text_intZero],'visible','off');
-    set([h.text_intExcCol,h.edit_intExcCol1,h.text_intExcTo,...
-        h.edit_intExcCol2,h.text_intExcZero],'visible','on');
-    for l = 1:nExc
-        set(h.edit_intExcCol1(l),'string',num2str(icolexc(l,1)));
-        set(h.edit_intExcCol2(l),'string',num2str(icolexc(l,2)));
-    end
+    set([h.text_alexDat,h.pop_alexDat],'enable','off');
 end
 
 % set time data
@@ -98,28 +88,104 @@ else
     end
 end
 
-% set FRET sequence data
-if ispair
-    set([h.check_FRETseq,h.text_FRETseqFrom,h.edit_FRETseqCol1,...
-        h.text_FRETseqTo,h.edit_FRETseqCol2,h.text_FRETseqZero,...
-        h.text_FRETseqSkip,h.edit_FRETseqSkip],'visible','on');
-    set(h.check_FRETseq,'value',isfretdat);
-    set(h.edit_FRETseqCol1,'string',num2str(fretcol1));
-    set(h.edit_FRETseqCol2,'string',num2str(fretcol2));
-    set(h.edit_FRETseqSkip,'string',num2str(skipfretcol));
-    if isfretdat
-        set([h.text_FRETseqFrom,h.edit_FRETseqCol1,h.text_FRETseqTo,...
-            h.edit_FRETseqCol2,h.text_FRETseqZero,h.text_FRETseqSkip,...
-            h.edit_FRETseqSkip],'enable','on');
-    else
-        set([h.text_FRETseqFrom,h.edit_FRETseqCol1,h.text_FRETseqTo,...
-            h.edit_FRETseqCol2,h.text_FRETseqZero,h.text_FRETseqSkip,...
-            h.edit_FRETseqSkip],'enable','off');
+% set intensity data
+wdata = getUItextWidth(colname{1},h.fun,h.fsz,'normal',h.tbl); % get minimum width of "data" column
+
+if rowwise==1 || ~isalex
+    int_dat = reshape(cellstr(num2str(icol(:))),[nChan,3]);
+    
+    % color cells of 1st column
+    [~,l_min] = min(exc); % get greenest laser index
+    int_lbl = cell(nChan,1);
+    wlbl = wdata;
+    for c = 1:nChan
+        int_lbl{c} = getHtmlColorStr(lbl{c},clr{1}{l_min,c},'bold');
+        wlbl = max([wlbl,getUItextWidth(lbl{c},h.fun,h.fsz,'bold',h.tbl)]);
+    end
+    int_dat = cat(2,int_lbl,int_dat);
+    
+elseif rowwise==2
+    int_dat = {};
+    int_lbl = cell(nChan*nExc,1);
+    ind = 0;
+    wlbl = wdata;
+    for l = 1:nExc
+        int_dat = cat(1,int_dat,reshape(cellstr(num2str(reshape(...
+            icolexc(:,:,l),[],1))),[nChan,3]));
+        for c = 1:nChan
+            ind = ind+1;
+            int_lbl{ind} = [lbl{c},',',num2str(exc(l)),'nm'];
+            wlbl = max([wlbl,...
+                getUItextWidth(int_lbl{ind},h.fun,h.fsz,'bold',h.tbl)]);
+        end
+    end
+    
+    % color cells of 1st column
+    for l = 1:nExc
+        for c = 1:nChan
+            int_lbl{nChan*(l-1)+c} = ...
+                getHtmlColorStr(int_lbl{nChan*(l-1)+c},clr{1}{l,c},'bold');
+        end
+    end
+    int_dat = cat(2,int_lbl,int_dat);
+end
+
+% adjust enability of "to" and "skip" columns
+R = size(int_dat,1);
+if onemol
+    set(h.tbl_intCol,'columneditable',[false,true,false,false]);
+    for r = 1:R
+        for c = 3:4
+            int_dat{r,c} = getHtmlColorStr(int_dat{r,c},grayfnt,'normal');
+        end
     end
 else
-    set([h.check_FRETseq,h.text_FRETseqFrom,h.edit_FRETseqCol1,...
-        h.text_FRETseqTo,h.edit_FRETseqCol2,h.text_FRETseqZero,...
-        h.text_FRETseqSkip,h.edit_FRETseqSkip],'visible','off');
+    set(h.tbl_intCol,'columneditable',[false,true,true,true]);
+end
+
+% update intensity table
+set(h.tbl_intCol,'data',int_dat,'columnname',colname,'rowname',[],...
+    'columnwidth',[wlbl,h.tbl_intCol.ColumnWidth(2:end)]);
+
+% set FRET sequence data
+if ~ispair
+    set([h.check_FRETseq,h.tbl_seqCol],'enable','off','visible','off');
+else
+    set([h.check_FRETseq,h.tbl_seqCol],'enable','on','visible','on');
+    seq_dat = reshape(cellstr(num2str(fretcol(:))),[nPair,3]);
+    seq_lbl = cell(nPair,1);
+    wlbl = wdata;
+    for pair = 1:nPair
+        pair_lbl = ['FRET',num2str(pairs(pair,1)),...
+            num2str(pairs(pair,2))];
+        seq_lbl{pair} = getHtmlColorStr(pair_lbl,clr{2}(pair,:),'bold');
+        wlbl = max([wlbl,...
+            getUItextWidth(pair_lbl,h.fun,h.fsz,'bold',h.tbl)]);
+    end
+    seq_dat = cat(2,seq_lbl,seq_dat);
+    wcol = [wlbl,h.tbl_seqCol.ColumnWidth{2:end}];
+
+    % adjust enability of "to" and "skip" columns
+    R = size(seq_dat,1);
+    if onemol
+        set(h.tbl_seqCol,'columneditable',[false,true,false,false]);
+        for r = 1:R
+            for c = 3:4
+                seq_dat{r,c} = ...
+                    getHtmlColorStr(seq_dat{r,c},grayfnt,'normal');
+            end
+        end
+    else
+        set(h.tbl_seqCol,'columneditable',[false,true,true,true]);
+    end
+    
+    % update table
+    set(h.tbl_seqCol,'data',seq_dat,'columnname',colname,'rowname',[],...
+        'columnwidth',num2cell(wcol));
+    
+    if ~isfretdat
+        set(h.tbl_seqCol,'enable','off');
+    end
 end
 
 % set preview table
@@ -140,42 +206,41 @@ if isfiles
     % color intensity columns
     switch rowwise
         case 1
-            if icol1>0 && icol2==0
-                icol2 = C;
-            end
-        %     l = 0;
-            for r = (hline+1):R
-        %         l = l+1;
-        %         if l>nExc
-        %             l = 1;
-        %         end
-        %         chan = 0;
-                for c = icol1:icol2
-        %             chan = chan+1;
-        %             if chan>nChan
-        %                 chan = 1;
-        %             end
-        %             tbldat{r,c} = getHtmlColorStr(fdat{r,c},clr{1}{l,chan},'bold');
-                    if c==0
-                        continue
+            icol(icol(:,1)==0,1) = C;
+            icol(icol(:,2)==0,2) = C;
+            for chan = 1:nChan
+                icol_chan = icol(chan,1):(icol(chan,3)+1):icol(chan,2);
+                if onemol
+                    icol_chan = icol_chan(1);
+                end
+                for c = icol_chan
+                    l = 0;
+                    for r = (hline+1):R
+                        l = l+1;
+                        if l>nExc
+                            l = 1;
+                        end
+                        tbldat{r,c} = getHtmlColorStr(fdat{r,c},...
+                            clr{1}{l,chan},'bold');
                     end
-                    tbldat{r,c} = getHtmlColorStr(fdat{r,c},...
-                        h.text_intDat.ForegroundColor,'bold');
                 end
             end
             
         case 2
             for l = 1:nExc
-                if icolexc(l,1)>0 && icolexc(l,2)==0
-                    icolexc(l,2) = C;
-                end
-                for r = (hline+1):R
-                    for c = icolexc(l,1):icolexc(l,2)
-                        if c==0
-                            continue
+                icolexc(icolexc(:,1,l)==0,1,l) = C;
+                icolexc(icolexc(:,2,l)==0,2,l) = C;
+                for chan = 1:nChan
+                    icol_chan = icolexc(chan,1,l):(icolexc(chan,3,l)+1):...
+                        icolexc(chan,2,l);
+                    if onemol
+                        icol_chan = icol_chan(1);
+                    end
+                    for c = icol_chan
+                        for r = (hline+1):R
+                            tbldat{r,c} = getHtmlColorStr(fdat{r,c},...
+                                clr{1}{l,chan},'bold');
                         end
-                        tbldat{r,c} = getHtmlColorStr(fdat{r,c},...
-                            h.text_intDat.ForegroundColor,'bold');
                     end
                 end
             end
@@ -208,28 +273,26 @@ if isfiles
     
     % color FRET sequence columns
     if ispair && isfretdat
-        if fretcol1>0 && fretcol2==0
-            fretcol2 = C;
-        end
-        for r = (hline+1):R
-%             pair = 0;
-            for c = fretcol1:(skipfretcol+1):fretcol2
-                if c==0
-                    continue
+        fretcol(fretcol(:,1)==0,1) = C;
+        fretcol(fretcol(:,2)==0,2) = C;
+        for pair = 1:nPair
+            icol_pair = fretcol(pair,1):(fretcol(pair,3)+1):fretcol(pair,2);
+            if onemol
+                icol_pair = icol_pair(1);
+            end
+            for c = icol_pair
+                for r = (hline+1):R
+                    tbldat{r,c} = getHtmlColorStr(fdat{r,c},clr{2}(pair,:),...
+                        'bold');
                 end
-%                 pair = pair+1;
-%                 if pair>nPair
-%                     pair = 1;
-%                 end
-%                 tbldat{r,c} = getHtmlColorStr(fdat{r,c},clr{2}(pair,:),'bold');
-                tbldat{r,c} = getHtmlColorStr(fdat{r,c},...
-                    h.check_FRETseq.ForegroundColor,'bold');
             end
         end
     end
     
     set(h.table_fstrct,'data',tbldat);
 end
+
+setExpSet_adjTblPos(h_fig);
 
 % set button
 set(h.push_nextFstrct,'enable','on');
