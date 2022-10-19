@@ -152,6 +152,7 @@ if ~ispair
     set([h.check_FRETseq,h.tbl_seqCol],'enable','off','visible','off');
 else
     set([h.check_FRETseq,h.tbl_seqCol],'enable','on','visible','on');
+    set(h.check_FRETseq,'value',isfretdat);
     seq_dat = reshape(cellstr(num2str(fretcol(:))),[nPair,3]);
     seq_lbl = cell(nPair,1);
     wlbl = wdata;
