@@ -50,10 +50,12 @@ end
 % set folder root
 if ~isempty(p.proj)
     set(h.edit_rootFolder,'string',p.proj{proj}.folderRoot);
-    set([h.pushbutton_rootFolder,h.edit_rootFolder],'enable','on');
+    set([h.pushbutton_rootFolder,h.edit_rootFolder],'enable','on',...
+        'horizontalalignment','right');
 else
     set(h.edit_rootFolder,'string','');
-    set([h.pushbutton_rootFolder,h.edit_rootFolder],'enable','off');
+    set([h.pushbutton_rootFolder,h.edit_rootFolder],'enable','off',...
+        'horizontalalignment','right');
 end
 
 % tool bar
