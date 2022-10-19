@@ -59,11 +59,12 @@ The main user interface appears in its default layout and includes:
 [Restructure files](trace-processing/functionalities/merge-projects.html#restructure-alex-data), 
 [Bin time axis](trace-processing/functionalities/bin-trajectories.html#bin-traces-and-export-ascii-files) and 
 [Check toolbox dependencies](System_requirements.html).
-* a **project management area** for managing the opened projects,
+* a [**Project management area**](#project-management-area) for managing the opened projects,
 * a **tool bar** for accessing the different <u>modules</u>,
 * a **log history** that streams information about running processes and failures (to keep track, logs are automatically written in a 
 [daily log file](output-files/log-daily-logs.html)),
 * a **main area** that contains the selected module.
+
 
 ### Create a new project
 {: .no_toc }
@@ -74,11 +75,30 @@ To create a new MASH project, press ![New project](assets/images/gui/interface-b
  
 You can start a project in three different ways:
 
-* [`Simulate data`](tutorials/set-experiment-settings/simulate-data.html): from scratch, by creating a single moelcule video and/or trajectories, 
-* [`Import video`](tutorials/set-experiment-settings/import-video.html): from an existing single moelcule video file, 
-* [`Import trajectories`](tutorials/set-experiment-settings/import-trajectories.html): from an existing set of trajectories written in files.
+* [`Simulate data`](tutorials/set-experiment-settings/simulate-data.html#tutorials_steps): from scratch, by creating a single molecule video and/or trajectories, 
+* [`Import video`](tutorials/set-experiment-settings/import-video.html#tutorials_steps): from an existing single molecule video file, 
+* [`Import trajectories`](tutorials/set-experiment-settings/import-trajectories.html#tutorials_steps): from an existing set of trajectories written in files.
 
-Select the appropriate option and follow the instructions given in the corresponding section to continue with the experiment settings.
+Select the appropriate option and follow the instructions given in the corresponding section to inform MASH about your experiment settings.
+
+After completing your experiment settings, the new project is created and appears in the project list of the 
+[project management area](#project-management-area). 
+You can now proceed with your data analysis by using the different 
+[Modules](#modules-and-tutorials). 
+
+
+### Project management area
+{: .no_toc }
+
+<a href="assets/images/gui/interface-projarea.png"><img src="assets/images/gui/interface-projarea.png" /></a>
+
+This area allows to navigate through your open projects via the project list **(a)**, and to perform the following actions:
+* to create a **new project** by pressing ![New project](assets/images/gui/interface-but-newproj.png "New project")
+* to **open** existing projects by pressing ![Open project](assets/images/gui/interface-but-openproj.png "Open project")
+* to **close** opened projects by pressing ![Close project](assets/images/gui/interface-but-closeproj.png "Close project")
+* to **save** project modifications by pressing ![Save project](assets/images/gui/interface-but-saveproj.png "Save project")
+* to **edit** some experimental settings of an opened project by pressing ![Edit project](assets/images/gui/interface-but-editproj.png "Edit project")
+* to set the project's **root folder** in **(b)** by pressing ![...](assets/images/gui/interface-but-dotdotdot.png "..."); the root folder is the default destination where all files will be exported. 
 
 
 ---
@@ -99,7 +119,6 @@ The program offers five modules to work with:
 Learn about module's individual functionalities in the respective documentation sections, or follow the 
 [Tutorials](tutorials.html) to perform common tasks listed below:
 
+* [Set experiment settings](tutorials/set-experiment-settings.html)
 * [Analyze experimental data](tutorials/analyze-data.html)
-* [Validate analysis results](tutorials/validate-results.html)
-* [Test algorithms](tutorials/test-algorithms.html)
 

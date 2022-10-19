@@ -380,7 +380,7 @@ with
 Apparent FRET 
 [*E*<sup>\*</sup><sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } of a donor-acceptor pair 
 [*D*](){: .math_var }-[*A*](){: .math_var } is calculated according to 
-[FRET calculations](../video-processing/functionalities/set-project-options.html#fret-calculations) and is 
+[FRET calculations](../tutorials/set-experiment-settings/import-video.html#fret-calculations) and is 
 [*&#947;*](){: .math_var }-corrected into 
 [*E*<sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } such as:
 
@@ -390,7 +390,7 @@ Apparent FRET
 Apparent stoichiometry 
 [*S*<sup>\*</sup><sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } of a donor-acceptor pair 
 [*D*](){: .math_var }-[*A*](){: .math_var } is calculated according to 
-[Stoichiometry calculations](../video-processing/functionalities/set-project-options.html#stoichiometry-calculations) and is 
+[Stoichiometry calculations](../tutorials/set-experiment-settings/import-video.html#stoichiometry-calculations) and is 
 [*&#947;*](){: .math_var }- and 
 [*&#946;*](){: .math_var }-corrected into 
 [*S*<sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } such as:

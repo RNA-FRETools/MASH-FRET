@@ -14,6 +14,6 @@ Use this module to obtain single molecule intensity-time traces from a single mo
 
 Video processing framework is limited to <u>surface-immobilized</u> molecules.
 
-Video processing supports the following video formats: *.<u>sif</u>, *.<u>spe</u>, *.<u>pma</u>, *.<u>avi</u>, *.<u>tif</u>, *.<u>gif</u> and 
+Video processing supports the following video formats: *.<u>sif</u>, *.<u>spe</u>, *.<u>pma</u>, *.<u>avi</u>, *.<u>tif</u>, *.<u>gif</u>, *.<u>ets</u> (associated with a *.<u>vsi</u> file) and 
 *.[<u>sira</u>](output-files/sira-mash-video.html); see 
 [Import video/image](video-processing/panels/area-visualization.html#load-videoimage-file) for more information.
