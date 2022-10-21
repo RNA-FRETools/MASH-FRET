@@ -12,7 +12,7 @@ nav_order: 2
 {: .no_toc }
 
 For more practicability, the matrix of
-[Transition rates](../panels/panel-molecules.html#transition-rates) in module Simulation is limited to a five-state system.
+[Transition rates](../components/panel-molecules.html#transition-rates) in module Simulation is limited to a five-state system.
 The simulation of larger systems requires to import FRET states and transition rates from an external pre-set parameter file.
 
 To create and import simulation parameters for a large state system, follow the procedure described below.
@@ -89,9 +89,9 @@ To build and export the pre-set parameter file:
 To use the pre-set state configuration and transition rates, the pre-set file must be imported in module Simulation.
 
 After successful import, the fields used to edit the 
-[Number of molecules](../panels/panel-molecules.html#number-of-molecules), the number of states in 
-[State configuration](../panels/panel-molecules.html#state-configuration) and the 
-[Transition rates](../panels/panel-molecules.html#transition-rates) will be locked.
+[Number of molecules](../components/panel-molecules.html#number-of-molecules), the number of states in 
+[State configuration](../components/panel-molecules.html#state-configuration) and the 
+[Transition rates](../components/panel-molecules.html#transition-rates) will be locked.
 Fields will be rendered editable when removing the pre-set file.
 
 To import pre-sets fro simulation:
@@ -99,5 +99,5 @@ To import pre-sets fro simulation:
 {: .procedure }
 1. Load the pre-sets by pressing 
 ![...](../../assets/images/gui/sim-but-3p.png "...") in 
-[Pre-set parameters](../panels/panel-molecules.html#pre-set-parameters) and selecting the corresponding file
+[Pre-set parameters](../components/panel-molecules.html#pre-set-parameters) and selecting the corresponding file
 

@@ -12,8 +12,7 @@ nav_order: 2
 
 In this section you will learn how to create synthetic single molecule videos and trajectories. 
 Exported data can be used for 
-[result validation](../tutorials/validate-results.html), 
-[algorithm testing](../tutorials/test-algorithms.html) or external illustration.
+result validation, algorithm testing or external illustration.
 
 The procedure includes three steps:
 
@@ -120,14 +119,14 @@ To generate FRET state sequences:
 {: .procedure }
 1. Set parameters:  
      
-   [Video length](panels/panel-video-parameters.html#video-length)  
-   [Frame rate](panels/panel-video-parameters.html#frame-rate)  
-   [Number of molecules](panels/panel-molecules.html#number-of-molecules)  
-   [State configuration](panels/panel-molecules.html#state-configuration); see 
+   [Video length](components/panel-video-parameters.html#video-length)  
+   [Frame rate](components/panel-video-parameters.html#frame-rate)  
+   [Number of molecules](components/panel-molecules.html#number-of-molecules)  
+   [State configuration](components/panel-molecules.html#state-configuration); see 
    [Remarks](#remarks) for more details  
-   [Transition rates](panels/panel-molecules.html#transition-rates); see 
+   [Transition rates](components/panel-molecules.html#transition-rates); see 
    [Remarks](#remarks) for more details  
-   [Photobleaching](panels/panel-molecules.html#photobleaching)  
+   [Photobleaching](components/panel-molecules.html#photobleaching)  
      
 1. Press 
 ![Generate](../assets/images/gui/sim-but-generate.png "Generate") to generate random FRET state sequences,  
@@ -153,7 +152,7 @@ Imperfect experimental setup is simulated by adding channel-specific bleedthroug
 
 Final camera-detected intensity-time traces are obtained by adding channel-specific background and uniform camera noise.
 If the chosen noise model does not include shot noise of photon emission, intensities are distributed following a Poisson distribution prior adding the camera contribution; see 
-[Camera SNR characteristics](panels/panel-video-parameters.html#camera-snr-characteristics) for more information.
+[Camera SNR characteristics](components/panel-video-parameters.html#camera-snr-characteristics) for more information.
 
 <a class="plain" href="../assets/images/figures/sim-workflow-scheme-convert-to-image-count.png">![Conversion to image counts](../assets/images/figures/sim-workflow-scheme-convert-to-image-count.png "Convert fluorescence intensities to image counts")</a>
 
@@ -174,15 +173,15 @@ To create intensity trajectories and images:
 {: .procedure }
 1. Set parameters:  
      
-   [Video dimensions](panels/panel-video-parameters.html#video-dimensions)  
-   [Pixel size](panels/panel-video-parameters.html#pixel-size)  
-   [Bit rate](panels/panel-video-parameters.html#bit-rate)  
-   [Camera SNR characteristics](panels/panel-video-parameters.html#camera-snr-characteristics)  
-   [Molecule coordinates](panels/panel-molecules.html#molecule-coordinates)  
-   [Donor emission](panels/panel-molecules.html#donor-emission)  
-   [Cross-talks](panels/panel-molecules.html#cross-talks)  
-   [Point spread functions](panels/panel-experimental-setup.html#point-spread-functions)  
-   [Background](panels/panel-experimental-setup.html#background)  
+   [Video dimensions](components/panel-video-parameters.html#video-dimensions)  
+   [Pixel size](components/panel-video-parameters.html#pixel-size)  
+   [Bit rate](components/panel-video-parameters.html#bit-rate)  
+   [Camera SNR characteristics](components/panel-video-parameters.html#camera-snr-characteristics)  
+   [Molecule coordinates](components/panel-molecules.html#molecule-coordinates)  
+   [Donor emission](components/panel-molecules.html#donor-emission)  
+   [Cross-talks](components/panel-molecules.html#cross-talks)  
+   [Point spread functions](components/panel-experimental-setup.html#point-spread-functions)  
+   [Background](components/panel-experimental-setup.html#background)  
      
 1. Press 
 ![Update](../assets/images/gui/sim-but-update.png "Update") to convert FRET state sequences into camera-detected intensity trajectories and images. The execution time can be long; see 
@@ -204,8 +203,8 @@ To export data to files:
 {: .procedure }
 1. Set parameters:
      
-   [File options](panels/panel-export-options.html#file-options)  
-   [Intensity units](panels/panel-export-options.html#intensity-units)
+   [File options](components/panel-export-options.html#file-options)  
+   [Intensity units](components/panel-export-options.html#intensity-units)
      
 1. Press 
 ![Export files](../assets/images/gui/sim-but-export.png "Export files") to start writing data in files. The execution time can be long; see 
@@ -218,8 +217,8 @@ To export data to files:
 {: .no_toc }
 
 To bypass the limitations of the user interface and (1), work with more than five states, (2), set pre-defined initial state probabilities and/or transition repartition factors, or (3), set parameters for individual molecules, simulation parameters can be loaded from external files; see 
-[Pre-set parameters](panels/panel-molecules.html#pre-set-parameters) for more information.
+[Pre-set parameters](components/panel-molecules.html#pre-set-parameters) for more information.
 
 Updating intensity data and writing SMVs to files can be relatively time consuming depending on which camera characteristics are chosen; see 
-[Camera SNR characteristics](panels/panel-video-parameters.html#camera-snr-characteristics) for more information.
+[Camera SNR characteristics](components/panel-video-parameters.html#camera-snr-characteristics) for more information.
 

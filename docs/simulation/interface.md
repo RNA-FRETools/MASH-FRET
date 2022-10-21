@@ -14,13 +14,12 @@ Simulation is the first module of MASH-FRET and is accessed by pressing
 ![Simulation](../assets/images/gui/sim-but-simulation.png "Simulation") in the main 
 [tool bar](../Getting_started.html#interface).
 
-The interface is divided into three subunits that respectively allow to:
-* <u>generate</u> data
+The interface is divided into two units that respectively allow to:
+* <u>generate</u> and <u>export</u> data
 * <u>visualize</u> generated data
-* <u>export</u> generated data
 
 <a class="plain" href="../assets/images/gui/interface-simulation.png"><img src="../assets/images/gui/interface-simulation.png" /></a>
 
 Learn about individual components of the interface in the 
-[Panels](panels.html) section.
+[Components](components.html) section.
 
