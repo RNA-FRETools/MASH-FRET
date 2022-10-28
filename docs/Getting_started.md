@@ -83,7 +83,8 @@ Select the appropriate option and follow the instructions given in the correspon
 
 After completing your experiment settings, the new project is created and appears in the project list of the 
 [project management area](#project-management-area). 
-You can now proceed with your data analysis by using the different 
+Set the default file export destination, *i.e.* the root folder, in the 
+[project management area](#project-management area) and proceed with your data analysis by using the different 
 [Modules](#modules-and-tutorials). 
 
 
