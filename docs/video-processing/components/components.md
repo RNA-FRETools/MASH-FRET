@@ -2,7 +2,7 @@
 layout: default
 title: Components
 parent: Video processing
-nav_order: 4
+nav_order: 3
 has_children: true
 numbered_toc: true
 permalink: /video-processing/components.html
@@ -13,8 +13,8 @@ permalink: /video-processing/components.html
 # Components
 {: .no_toc }
 
-Video processing is composed of five panels **(2-6)**, a control area **(7)** and one visualization area **(8)** and .
+Video processing is composed of four panels **(1-4)**, a control area **(5)** and one visualization area **(6)**.
 
 To learn about individual components, please refer to the corresponding content:
 
-<a class="plain" href="../assets/images/gui/panel-video-processing.png"><img src="../assets/images/gui/panel-video-processing.png"  width="65%" style="float:right; margin-left: 15px; margin-top: 50px;"/></a>
+<a class="plain" href="../assets/images/gui/VP-components.png"><img src="../assets/images/gui/VP-components.png"  width="65%" style="float:right; margin-left: 15px; margin-top: 50px;"/></a>

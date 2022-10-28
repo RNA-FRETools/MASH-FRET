@@ -3,7 +3,7 @@ layout: default
 title: Molecule coordinates
 parent: Components
 grand_parent: Video processing
-nav_order: 5
+nav_order: 3
 ---
 
 <img src="../../assets/images/logos/logo-video-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
@@ -11,15 +11,15 @@ nav_order: 5
 # Molecule coordinates
 {: .no_toc }
 
-Molecule coordinates is the fourth panel of module Video processing. 
+Molecule coordinates is the third panel of module Video processing. 
 Access the panel content by pressing 
 ![Bottom arrow](../../assets/images/gui/interface-but-bottomarrow.png). 
 The panel closes automatically after other panels open or after pressing 
 ![Top arrow](../../assets/images/gui/interface-but-toparrow.png). 
 
-Use this panel to target single molecules in the video and obtain single molecule coordinates.
+Use this panel to localize bright spots in the video and obtain single molecule coordinates.
 
-<a class="plain" href="../../assets/images/gui/VP-panel-molcoord.png"><img src="../../assets/images/gui/VP-panel-molcoord.png" style="max-width: 562px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-molcoord.png"><img src="../../assets/images/gui/VP-panel-molcoord.png" style="max-width: 316px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -31,22 +31,26 @@ Use this panel to target single molecules in the video and obtain single molecul
 
 ## Average image
 
-Use this interface to import or export an average image of the video.
+Use this interface to calculate an average image of the video.
 
-<a class="plain" href="../../assets/images/gui/VP-panel-molcoord-aveim.png"><img src="../../assets/images/gui/VP-panel-molcoord-aveim.png" style="max-width: 232px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-molcoord-aveim.png"><img src="../../assets/images/gui/VP-panel-molcoord-aveim.png" style="max-width: 295px;"/></a>
 
-The average image is calculated over a frame range defined by the starting frame index, set in **(a)**, the frame interval, set in **(b)**, and the ending frame index, set in **(c)**.
+By default, the average image over the full frame range of the video is already calculated and used for 
+[Spot detection](#spotfinder). 
+If needed, the average image can be calculated over an alternative frame range (*e. g.* the first 100 frames, frames upon a particular laser illumination in an ALEX scheme, etc.) defined by the starting frame index, set in **(a)**, the frame interval, set in **(b)**, and the ending frame index, set in **(c)**.
 
 Press 
-![Go](../../assets/images/gui/VP-but-go.png "Go") to calculate and export the average image.
+![Calc.](../../assets/images/gui/VP-but-calcdot.png "Calc.") to refresh calculations of the average image.
 
+Press 
+![Save](../../assets/images/gui/VP-but-save.png "Save") to export the average image to a file. 
 Supported file formats are:
 * [MASH video format](../../output-files/sira-mash-video.html) (<u>.sira</u>)
 * Tagged Image File format (<u>.tif</u>)
 * Portable Network Graphics (<u>.png</u>)
 
-To rapidly access the average image folder and load an average image file, press 
-![...](../../assets/images/gui/VP-but-3p.png "...").
+To rapidly access the average image folder and import an already-existing average image file, press 
+![Open](../../assets/images/gui/VP-but-open.png "...") and select the corresponding file.
 
 
 ---
@@ -55,7 +59,7 @@ To rapidly access the average image folder and load an average image file, press
 
 Use this panel to find bright spots in the average image or video and export coordinates.
 
-<a class="plain" href="../../assets/images/gui/VP-panel-molcoord-sf.png"><img src="../../assets/images/gui/VP-panel-molcoord-sf.png" style="max-width: 241px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-molcoord-sf.png"><img src="../../assets/images/gui/VP-panel-molcoord-sf.png" style="max-width: 295px;"/></a>
 
 Spotfinder is limited to the detection of bright spots in video frames and does not include tracking.
 
@@ -74,16 +78,18 @@ Bright spot intensity profiles can be fitted with 2D-Gaussians to extract shape 
 
 Start spot detection and subsequent Gaussian fitting by pressing 
 ![Find](../../assets/images/gui/VP-but-find.png "Find").
-Detected spots are automatically shown on the 
-[Visualization area](area-visualization.html#video-visualization) with red circles.
 
-Spots are then sorted according to user-defined criteria on the number, position, intensity and shape of spots; see 
+Spots are subsequently sorted according to user-defined criteria, like the number, position, intensity and shape of spots; see 
 [Exclusion rules](#exclusion-rules) for more details.
-The number of spots found after applying the exclusion rules is displayed in **(q)**.
+The number of spots found after applying the exclusion rules is displayed in **(p)**.
 
-The final set of spot coordinates can be exported to a 
-[.spots file](../../output-files/spots-spots-coordinates) by pressing 
-![Save...](../../assets/images/gui/VP-but-save3p.png "Save...").
+The final set of spot coordinates is immedialtely made available for 
+[Coordinates transformation](#coordinates-transformation) and highlighted in the 
+[Video plot](area-visualization.html#video-visualization) and 
+[Average image plot](area-visualization.html#average-image) with red circles. 
+Spots coordinates can be exported to a 
+[.spots file](../../output-files/spots-spots-coordinates) in 
+[Coordinates transformation](#coordinates-transformation).
 
 
 ### Gaussian fitting
@@ -117,17 +123,17 @@ with
 ### Exclusion rules
 {: .no_toc }
 
-Exclusion rules are set in **(j-p)** and are described in details in the table below.
+Exclusion rules are set in **(i)**-**(o)** and are described in details in the table below.
 
 | field   | description                                                                                                                                                                                                                                               | default |
 | :-----: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-----: |
-| **(j)** | Maximum number of spots allowed. The brightest spots a preserved.                                                                                                                                                                                         | 200     |
-| **(k)** | Minimum spot intensity allowed. Without Gaussian fitting, Intensities are single pixel values. With Gaussian fitting, intensities are the sums of pixel values in the fitting area reduced by the Gaussian offset.                                        | 0 ic    |
-| **(l)** | Minimum distance allowed between spots (in pixel).                                                                                                                                                                                                        | 0 px    |
-| **(m)** | Minimum distance allowed between spots and image edges (in pixel).                                                                                                                                                                                        | 3 px    |
-| **(n)** | *(only with Gaussian fitting)* Minimum Gaussian standard deviation allowed (in pixel).                                                                                                                                                                    | 0 px    |
-| **(o)** | *(only with Gaussian fitting)* Maximum Gaussian standard deviation allowed (in pixel).                                                                                                                                                                    | 5 px    |
-| **(p)** | *(only with Gaussian fitting)* Maximum Gaussian asymmetry allowed (in percent). The minimum value is 100% for a perfectly spherical Gaussian. An asymmetry of 200% represents a Gaussian twice larger in the x- (or y-) than in the y- (or x-) direction. | 150%    |
+| **(i)** | Maximum number of spots allowed. The brightest spots a preserved.                                                                                                                                                                                         | 200     |
+| **(j)** | Minimum spot intensity allowed. Without Gaussian fitting, Intensities are single pixel values. With Gaussian fitting, intensities are the sums of pixel values in the fitting area reduced by the Gaussian offset.                                        | 0 ic    |
+| **(k)** | Minimum distance allowed between spots (in pixel).                                                                                                                                                                                                        | 0 px    |
+| **(l)** | Minimum distance allowed between spots and image edges (in pixel).                                                                                                                                                                                        | 3 px    |
+| **(m)** | *(only with Gaussian fitting)* Minimum Gaussian standard deviation allowed (in pixel).                                                                                                                                                                    | 0 px    |
+| **(n)** | *(only with Gaussian fitting)* Maximum Gaussian standard deviation allowed (in pixel).                                                                                                                                                                    | 5 px    |
+| **(o)** | *(only with Gaussian fitting)* Maximum Gaussian asymmetry allowed (in percent). The minimum value is 100% for a perfectly spherical Gaussian. An asymmetry of 200% represents a Gaussian twice larger in the x- (or y-) than in the y- (or x-) direction. | 150%    |
 
 
 ### in series-screening
@@ -136,7 +142,8 @@ Exclusion rules are set in **(j-p)** and are described in details in the table b
 It is a home-made algorithm adapted from 
 [houghpeaks](#houghpeaks) but faster. It processes as described below:
 
-1. searches for the brightest pixel in the image considering a minimum pixel intensity set in **(d)** 
+1. searches for the brightest pixel in the image considering a minimum pixel intensity set in **(d)**; intensity units are given by the menu `Units` of the 
+[Menu bar](../../Getting_started#interface)
 1. sets an area of **(g)**-by-**(h)** pixels centered on the brightest pixel to zero
 1. repeats steps 1 and 2 until no pixel with intensity higher than **(d)** is found.
 
@@ -183,7 +190,8 @@ It is an algorithm originally designed to localize single molecules in TIRF-FRET
 It processes as described below:
 1. applies the Twotone image filter to the average image or video frame with a kernel size set in **(d)**; see 
    [Filters](panel-edit-video.html#filters) for more information
-1. searches in the filtered image for pixels brighter than the intensity threshold set in **(g)**
+1. searches in the filtered image for pixels brighter than the intensity threshold set in **(g)**; intensity units are given by the menu `Units` of the 
+[Menu bar](../../Getting_started#interface)
 1. selects pixels that are local maxima in the 3-by-3 pixel area around them.
 
 
@@ -199,68 +207,72 @@ It processes as described below:
 
 Use this panel to transform spots coordinates into other video channels and obtain single molecule coordinates.
 
-<a class="plain" href="../../assets/images/gui/VP-panel-molcoord-transf.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf.png" style="max-width: 289px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-molcoord-transf.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf.png" style="max-width: 295px;"/></a>
 
-Spots coordinates are translated in other channels after applying a group of specific symmetry operations, called the spatial transformation.
-Transformed coordinates are called single molecule coordinates and are exported to a 
-[.coord file](../../output-files/coord-transformed-coordinates) by pressing 
-![Transform](../../assets/images/gui/VP-but-transform.png "Transform").
-Before transforming spots coordinates, make sure the spots coordinates and the spatial transformation are imported as described below.
+Spots coordinates are translated in other channels after applying specific symmetry operations called "spatial transformation".
+Coordinates transformation requires both the spots coordinates and the spatial transformation to be available. 
+The availability of these data are indicated by the icons located in **(a)** and **(b)**, respectively, that display the symbol <span style="color:rgb(0, 127, 0);">&#10004;</span> if data is available and <span style="color:rgb(255, 0, 0);">&#10006;</span> if data must still be calculated or imported.
 
-Spots coordinates written in ASCII files can be imported in **(d)**:
-* either automatically, after saving spots coordinates with Spotfinder; see 
-[Spotfinder](#spotfinder) for more information
-* or by pressing 
-![...](../../assets/images/gui/VP-but-3p.png "...") and selecting the previously exported spots coordinates file; coordinates are imported according to the 
-[Import options](#import-options).
+In case both data are available, transform spots coordinates by pressing 
+![Transform](../../assets/images/gui/VP-but-transform.png "Transform"). 
+Transformed coordinates are immedialtely made available for the creation of intensity-time traces in panel 
+[Intensity integration](panel-intensity-integration.html) and highlighted in the 
+[Video plot](area-visualization.html#video-visualization) and 
+[Average image plot](area-visualization.html#average-image) with red circles. 
+They can be exported to a 
+[.coord file](../../output-files/coord-transformed-coordinates.html) in panel 
+[Intensity integration](panel-intensity-integration.html).
 
-The spatial transformation stored in a 
-[.mat file](../../output-files/mat-transformation.html) can be imported in **(c)**:
-* either automatically, after calculation from a set of reference coordinates, according to the transformation type selected in **(b)**, and by pressing 
-![Calculate](../../assets/images/gui/VP-but-calculate.png "Calculate"); see 
-[Transformation types](#transformation-types) for more details about the available types
-* or by pressing 
-![...](../../assets/images/gui/VP-but-3p.png "...") and selecting the previously exported transformation 
-[.mat file](../../output-files/mat-transformation.html).
+In case spots coordinates are unavailable (<span style="color:rgb(255, 0, 0);">&#10006;</span> in **(a)**):
+* Start a spot finding procedure with the [Spotfinder](#spotfinder) tool; spots coordinates can be exported to a 
+[.spots file](../../output-files/spots-spots-coordinates.html) by pressing 
+![Save](../../assets/images/gui/VP-but-save.png "Save") on line **(a)**.
+* Or, import spots coordinates from an external file by pressing 
+![Open](../../assets/images/gui/VP-but-open.png "Open") on line **(a)** and selecting the corresponding file; coordinates are read according to the 
+[Import options](#import-options) that can be accessed by pressing 
+![Import options](../../assets/images/gui/VP-but-impopt.png).
 
-Reference coordinates written in ASCII files can be imported in **(a)**:
-* either automatically after mapping coordinates on a reference image with the mapping tool that can be accessed by pressing 
-![Map](../../assets/images/gui/VP-but-map.png "Map"); see 
-[Use the mapping tool](../functionalities/use-the-mapping-tool.html) to use the mapping tool
-* or by pressing 
-![...](../../assets/images/gui/VP-but-3p.png "...") and selecting the previously exported reference coordinates file; coordinates are imported according to the 
-[Import options](#import-options).
+After spot detection or import, spots coordinates are highlighted in the 
+[Video plot](area-visualization.html#video-visualization) and 
+[Average image plot](area-visualization.html#average-image) with red circles.
 
-Before transforming any set of coordinates, it is recommended to test the validity of the transformation on a benchmark image (usually the average image of a single bead video recorded parallel to the experiment).
-This is done by overlaying the original benchmark image (colored in red) with the transformed one (colored in green).
-Perfect transformation will result in a perfect overlay of images and thus, in a yellow image.
+In case the spatial transformation is unavailable (<span style="color:rgb(255, 0, 0);">&#10006;</span> in **(b)**):
+* Calculate it from a set of reference coordinates by pressing 
+![Calc.](../../assets/images/gui/VP-but-calcdot.png "Calc."); the availability of reference coordinates is indicated by the icon located in **(c)** that displays <span style="color:rgb(0, 127, 0);">&#10004;</span> if data is available and <span style="color:rgb(255, 0, 0);">&#10006;</span> if data must still be imported. 
+Transformation can be exported to a 
+[.mat file](../../output-files/mat-transformation.html) for future use by pressing 
+![Save](../../assets/images/gui/VP-but-save.png "Save") on line **(b)**.
+* Or, import it from an external 
+[.mat file](../../output-files/mat-transformation.html) file by pressing 
+![Open](../../assets/images/gui/VP-but-open.png "Open") on line **(b)** and selecting the corresponding file.
+
+If reference coordinates are unavailable (<span style="color:rgb(255, 0, 0);">&#10006;</span> in **(c)**): 
+* Map coordinates on a reference image where emitters appear in all video channels at once (usually the average image of a fluorescent beads video recorded just before the experiment) with the 
+[mapping tool](../functionalities/use-mapping-tool.html) by pressing 
+![Map](../../assets/images/gui/VP-but-map.png "Map").  
+Reference coordinates can be exported to a 
+[.map file](../../output-files/map-mapped-coordinates.html) by pressing 
+![Save](../../assets/images/gui/VP-but-save.png "Save") on line **(c)**
+* Or, import them from an external file by pressing 
+![Open](../../assets/images/gui/VP-but-open.png "Open") on line **(c)** and selecting the corresponding file; coordinates are imported according to the 
+[Import options](#import-options) that can be accessed by pressing 
+![Import options](../../assets/images/gui/VP-but-impopt.png).
+
+After mapping or import, reference coordinates are highlighted in the 
+[Video plot](area-visualization.html#video-visualization) and 
+[Average image plot](area-visualization.html#average-image) with red circles.
+
+Before transforming any set of coordinates, it is recommended to test the validity of the transformation on a benchmark image (usually the average image of a fluorescent beads video recorded just before the experiment). 
+This is done by overlaying the original benchmark image, colored in red, with the transformed ones, colored in green for two channels and in green and blue for three channels. 
+Perfect transformation will result in a perfect overlay of images and thus, in a yellow image for two channels, and in a white one for three channels. 
 When the original and transformed images are shifted, a new transformation needs to be calculated from a new set of reference coordinates.
 
 <img src="../../assets/images/figures/VP-transformation-quality.png" />
 
 Transformation quality can be checked by pressing 
-![Check quality...](../../assets/images/gui/VP-but-check-quality.png "Check quality...") and selecting the benchmark image file.
+![View](../../assets/images/gui/VP-but-view.png "View") and selecting the benchmark image file.
 
-
-### Transformation types
-{: .no_toc }
-
-Transformation types are groups of symmetry operations.
-All transformation types are given in MATLAB and are explained in details in 
-[MATLAB's documentation](https://fr.mathworks.com/help/images/ref/cp2tform.html#f1-283651-transformtype) or in the table below.
-Each type necessitates a minimum number of reference coordinates, which is indicated in the last column.
-
-| type                        | symmetry operations                                                                                                    | min. ref |
-| :-------------------------: | ---------------------------------------------------------------------------------------------------------------------- | :------: |
-| `Non reflective similarity` | translation, rotation, uniform scaling                                                                                 | 2        |
-| `Similarity`                | translation, rotation, uniform scaling, reflection                                                                     | 3        |
-| `Affine`                    | translation, rotation, uniform scaling, reflection, uniaxial linear distortion                                         | 3        |
-| `Projective`                | translation, rotation, uniform scaling, reflection, biaxial linear distortion                                          | 4        |
-| `Plynomial ord2`            | translation, rotation, uniform scaling, reflection, curvilinear distortion by applying a 2nd order polynomial function | 6        |
-| `Plynomial ord3`            | translation, rotation, uniform scaling, reflection, curvilinear distortion by applying a 3rd order polynomial function | 10       |
-| `Plynomial ord4`            | translation, rotation, uniform scaling, reflection, curvilinear distortion by applying a 4th order polynomial function | 15       |
-| `Piecewise linear`          | scaling specific to different parts of the image                                                                       | 4        |
-| `Local mean weight`         | locally specific scaling                                                                                               | 12       |
+***Note:** The calculation of spatial transformations is limited to two and three video channels. This will be extended to an unlimited number of channels in the future.*
 
 
 ### Import options

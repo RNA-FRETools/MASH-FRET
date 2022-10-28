@@ -11,14 +11,14 @@ nav_order: 4
 # Set export options
 {: .no_toc }
 
-Export options define the particular files to export after completion of time trace calculations in module Video processing.
+Export options define the file formats in which time trace calculated in module Video processing will be written.
 
 The window is accessed by pressing 
-![Create & Export...](../../assets/images/gui/VP-but-export.png "Create & Export...") in
-[Intensity integration](../panels/panel-intensity-integration.html).
+![EXPORT...](../../assets/images/gui/VP-but-export3p.png "EXPORT...") in the 
+[Control area](../components/area-control.html).
 
 Press 
-![Next >>](../../assets/images/gui/TP-but-next-supsup.png "Next >>") to start calculating time traces and export files.
+![Next >>](../../assets/images/gui/TP-but-next-supsup.png "Next >>") to close the window and start writing files.
 
 <a class="plain" href="../../assets/images/gui/VP-panel-integration-expopt.png"><img src="../../assets/images/gui/VP-panel-integration-expopt.png" style="max-width: 286px;"/></a>
 
@@ -34,19 +34,17 @@ Press
 
 ## ASCII traces
 
-Export processing parameters and intensity-time traces to one or multiple ASCII files.
+Writes processing parameters and intensity-time traces to one or multiple ASCII files.
 
-<a class="plain" href="../../assets/images/gui/VP-panel-integration-expopt-ascii.png"><img src="../../assets/images/gui/VP-panel-integration-expopt-ascii.png" style="max-width: 144px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-integration-expopt-ascii.png"><img src="../../assets/images/gui/VP-panel-integration-expopt-ascii.png" style="max-width: 246px;"/></a>
 
-Export single molecule data to one common ASCII file, by activating the option in **(a)**, and/or to individual ASCII files, by checking the box in **(b)**.
+Export single molecule data to one common ASCII file, by activating the option in **(a)**, and/or to individual ASCII files by activating **(b)**.
 
 Exported single molecule data comprise: 
 * experiment settings
 * parameters and files used for intensity integration 
 * single molecule coordinates
 * single molecule intensity-time traces
-
-Data can be imported in Trace processing module for further analysis.
 
 See 
 [Trace files from video](../../output-files/txt-traces-from-video.html) for more information.
@@ -56,7 +54,7 @@ See
 
 ## HaMMy-compatible
 
-Export single molecule intensity-time traces to one common ASCII file importable in the external software HaMMy (available 
+Writes single molecule intensity-time traces to one common ASCII file importable in the external software HaMMy (available 
 [here](http://ha.med.jhmi.edu/resources/#1464200861600-0fad9996-bfd4)).
 
 See 
@@ -67,7 +65,7 @@ See
 
 ## vbFRET-compatible
 
-Export single molecule intensity-time traces to one common MATLAB binary file importable to the external software vbFRET (available 
+Writes single molecule intensity-time traces to one common MATLAB binary file importable to the external software vbFRET (available 
 [here](http://vbfret.sourceforge.net/)).
 
 See 
@@ -78,7 +76,7 @@ See
 
 ## QUB-compatible
 
-Export single molecule intensity-time traces to one common ASCII file importable to the external software QUB (available 
+Writes single molecule intensity-time traces to one common ASCII file importable to the external software QUB (available 
 [here](https://qub.mandelics.com/)).
 
 See 
@@ -89,7 +87,7 @@ See
 
 ## SMART-compatible
 
-Export single molecule data to one common MATLAB binary file importable to the external software SMART (available 
+Writes single molecule data to one common MATLAB binary file importable to the external software SMART (available 
 [here](https://simtk.org/projects/smart)).
 
 Exported single molecule data comprise: 
@@ -104,7 +102,7 @@ See
 
 ## ebFRET-compatible
 
-Export single molecule intensity-time traces to one common ASCII file importable to the external software ebFRET (available 
+Writes single molecule intensity-time traces to one common ASCII file importable to the external software ebFRET (available 
 [here](http://ebfret.github.io/)).
 
 See 

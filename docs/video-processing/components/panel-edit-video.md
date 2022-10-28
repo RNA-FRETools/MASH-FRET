@@ -3,7 +3,7 @@ layout: default
 title: Edit video
 parent: Components
 grand_parent: Video processing
-nav_order: 4
+nav_order: 2
 ---
 
 <img src="../../assets/images/logos/logo-video-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
@@ -11,7 +11,7 @@ nav_order: 4
 # Edit video
 {: .no_toc }
 
-Edit video is the third panel of module Video processing. 
+Edit video is the second panel of module Video processing. 
 Access the panel content by pressing 
 ![Bottom arrow](../../assets/images/gui/interface-but-bottomarrow.png). 
 The panel closes automatically after other panels open or after pressing 
@@ -19,7 +19,7 @@ The panel closes automatically after other panels open or after pressing
 
 Use this panel to apply image filters or correct the single molecule video and to export the video to various file formats.
 
-<a class="plain" href="../../assets/images/gui/VP-panel-videdit.png"><img src="../../assets/images/gui/VP-panel-videdit.png" style="max-width: 562px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-videdit.png"><img src="../../assets/images/gui/VP-panel-videdit.png" style="max-width: 316px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -29,26 +29,26 @@ Use this panel to apply image filters or correct the single molecule video and t
 
 ---
 
-## Filter settings
+## Image filters
 
 Use this interface to apply one or several image filters to the loaded video or image.
 
-<a class="plain" href="../../assets/images/gui/VP-panel-videdit-filterprm.png"><img src="../../assets/images/gui/VP-panel-videdit-filterprm.png" style="max-width: 231px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-videdit-filterprm.png"><img src="../../assets/images/gui/VP-panel-videdit-filterprm.png" style="max-width: 295px;"/></a>
 
 Image filters treat video channels separately and uses zero to two parameters.
-To configure a filter, select first the channel in list **(c)**, then the image filter in list **(a)** and set filter parameters in **(c)** and **(d)**. 
+To configure a filter, select first the channel in list **(c)**, then the image filter in list **(a)** and set filter parameters in **(d)** and **(e)**. 
 
 A detailed description of each filter is given in 
 [Filters](#filters) and references to the scientific literature are given in 
 [References](#references).
 
-Filters can be applied to the current video frame only or to all video frames by deactivating or activating the option in **(e)**. 
+Filters can be applied to the current video frame only or to all video frames by deactivating or activating the option in **(b)**. 
 
 After configuration, the filter can be applied to the loaded video or image by pressing 
 ![Add](../../assets/images/gui/VP-but-add.png "Add"). 
 
 All filters used on the video or image are listed in the 
-[Filter list](#filter-list) and can be removed by pressing 
+[Filter list](#filter-list) **(f)** and can be removed by pressing 
 ![Remove filter](../../assets/images/gui/VP-but-remove-filter.png "Remove filter").
 
 
@@ -90,6 +90,15 @@ If the error persists, please inform us via the
 [issue tracker](https://github.com/RNA-FRETools/MASH-FRET/issues) on Github.
 
 
+### Filter list
+{: .no_toc }
+
+Use this list to visualize or cancel filters applied to the current frame, with the top-filter being applied first.
+
+To cancel a filter, select the corresponding name in the list and press 
+![Remove filter](../../assets/images/gui/VP-but-remove-filter.png "Remove filter").
+
+
 ### References
 {: .no_toc }
 
@@ -100,23 +109,30 @@ If the error persists, please inform us via the
 
 ---
 
-## Filter list
+## Export video
 
-Use this list to visualize or cancel filters applied to the current frame, with the top-filter being applied first.
+Use this area to export a particular frame range of the filtered video to a file.
 
-To cancel a filter, select the corresponding name in the list and press 
-![Remove filter](../../assets/images/gui/VP-but-remove-filter.png "Remove filter").
+<a class="plain" href="../../assets/images/gui/VP-panel-videdit-framerange.png"><img src="../../assets/images/gui/VP-panel-videdit-framerange.png" style="max-width: 295px;"/></a>
 
+Even though background correction is more accurate when performed in module 
+[Trace processing](../../trace-processing.html), some image filters can be used as background correction in Video processing; see 
+[Filters](#filters) for more information. 
+To do so, the background-corrected video must be exported to a file and the current project abadonned. 
+A new video-based project must be created using the new video file in order to generate background-corrected intensity-time traces. 
+In this specific case, background correction must be deactivated later in module 
+[Trace processing](../../trace-processing.html); see
+[Background correction](../../trace-processing/components/panel-background-correction.html) for more information. 
 
----
+In any case, it is recommended to export the videos (filtered or not) in the 
+[MASH video format](../../output-files/sira-mash-video.html) prior analysis as processes and calculations will eventually be quickened. 
 
-## Export video to file
-
-Press
-![Export...](../../assets/images/gui/VP-but-export3p.png "Export...") to export the video or image to a file.
+Moreover, sometimes, the frame range of a video needs to be re-adjusted, because of partial failure in recording, or simply to export light animated GIF files for illustration. 
+To do so, set the starting frame index in **(a)** , the ending frame index in **(b)** and the frame interval in **(c)** and press
+![Export...](../../assets/images/gui/VP-but-exportdotdotdot.png "Export...") to export the video or image to a file. 
 
 The exported image/video will be truncated according to the 
-[Frame range](#frame-range) and modified according to the filters in the 
+frame range and modified according to the filters in the 
 [Filter list](#filter-list).
 
 Supported file formats are:
@@ -127,9 +143,6 @@ Supported file formats are:
 * Audio Video Interleave (<u>.avi</u>)
 * Portable Network Graphics (<u>.png</u>)
 
-For further use with MASH-FRET, it is recommended to export modified or original videos in the 
-[MASH video format](../../output-files/sira-mash-video.html): processes and calculations will be less time consuming.
-
 File formats <u>.avi</u> and <u>.gif</u> can be used to export animated illustration but not for further analysis as the data accuracy and coherence between frames are lost during the writing process.
 
 To programmatically add new video formats, update the following function in the source code:
@@ -138,15 +151,5 @@ To programmatically add new video formats, update the following function in the 
 MASH-FRET/source/mod_video_processing/graphic_files/exportMovie.m
 ```
 
----
 
-## Frame range
 
-Defines the range of video frames to export.
-
-<a class="plain" href="../../assets/images/gui/VP-panel-videdit-framerange.png"><img src="../../assets/images/gui/VP-panel-videdit-framerange.png" style="max-width: 106px;"/></a>
-
-Sometimes, the frame range of a video needs to be re-adjusted, because of partial failure in recording, or simply to export light animated GIF files for illustration.
-
-To do so, set the starting frame index in **(a)** and the ending frame index in **(b)** prior exporting the video in 
-[Export video to file](#export-video-to-file).
