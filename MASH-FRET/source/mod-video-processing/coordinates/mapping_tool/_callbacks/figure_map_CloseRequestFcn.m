@@ -28,10 +28,6 @@ if minN > 0
     end
 end
 
-% save points
-h.map = q;
-guidata(h_fig,h);
-
 nb_points = size(q.pnt,1);
 if nb_points >= 4 || nb_points == 0
     exit_choice = 'Yes';
@@ -59,9 +55,16 @@ if ~strcmp(exit_choice, 'Yes')
 end
 
 % store reference coordinates
-ok = saveMapCoord(h_fig);
-if ~ok
-    return
+if nb_points>0
+
+    % save points
+    h.map = q;
+    guidata(h_fig,h);
+    
+    ok = saveMapCoord(h_fig);
+    if ~ok
+        return
+    end
 end
 
 % close mapping tool
