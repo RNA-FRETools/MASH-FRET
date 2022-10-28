@@ -84,8 +84,8 @@ Optional parameters solely act as project "tags" saved with the
 
 The video sampling time used for data simulation is shown in seconds in **(3)**.
 This property is read-only in the experimental settings but can be modified later under the 
-[Frame rate](../../simulation/panels/panel-video-parameters.html#frame-rate) property in the 
-[Video parameters](../../simulation/panels/panel-video-parameters.html) panel of the 
+[Frame rate](../../simulation/components/panel-video-parameters.html#frame-rate) property in the 
+[Video parameters](../../simulation/components/panel-video-parameters.html) panel of the 
 [Simulation](../../simulation.html) module.
 
 <u>default</u>: 1 second

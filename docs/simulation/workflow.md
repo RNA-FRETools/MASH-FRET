@@ -2,7 +2,7 @@
 layout: default
 title: Workflow
 parent: Simulation
-nav_order: 2
+nav_order: 1
 ---
 
 <img src="../assets/images/logos/logo-simulation_400px.png" width="170" style="float:right; margin-left: 15px;"/>
@@ -18,6 +18,35 @@ The procedure includes three steps:
 
 1. TOC
 {:toc}
+
+
+---
+
+## Create a simulation-based project
+
+The first step in simulating data is to create a new simulation-based project. 
+
+After the project creation is completed, it is recommended to save it to a 
+[.mash file](../output-files/mash-mash-project.html) that should regularly be overwritten as the analysis progresses.
+
+To create a new simulation-based project:
+
+{: .procedure }
+1. Open the experiment settings window by pressing 
+   ![New project](../assets/images/gui/interface-but-newproj.png "New project") in the 
+   [project management area](../Getting_started#project-management-area) and selecting `simulate data`.  
+     
+1. Name your project and define the plot colors by configuring tab 
+   [Divers](../tutorials/set-experiment-settings/simulate-data.html#divers). 
+   If necessary, modify settings any time after project creation.  
+     
+1. Finalize the creation of your project by pressing 
+   ![Save](../assets/images/gui/newproj-but-save.png); the experiment settings window now closes and the interface switches to module Simulation.  
+     
+1. Save modifications to a 
+   [.mash file](../output-files/mash-mash-project.html) by pressing 
+   ![Save project](../assets/images/gui/interface-but-saveproj.png "Save project") in the 
+   [project management area](../Getting_started#project-management-area).
 
 
 ---
@@ -192,23 +221,31 @@ To create intensity trajectories and images:
 
 ---
 
-## Export trajectories and video to files
+## Validate and export data
 
-Simulated data and simulation parameters can be exported to various file formats.
-Intensities can be converted into photon counts or image counts before writing in files.
-When exporting the SMV, video frames are successively written in files until the video length is reached.
+Simulated data and simulation parameters can be exported to various file formats. 
+Intensities can be converted into photon counts or image counts before being written to files. 
+When exporting the SMV, video frames are successively written in files until the video length is reached. 
 
-To export data to files:
+After export, even if no file was exported, simulated intensity-time traces and FRET state sequences are made immediately available in modules 
+[Trace processing](../trace-processing.html), 
+[Histogram analysis](../histogram-analysis.html) and 
+[Transition analysis](../transition-analysis.html).
+
+To validate and export data to files:
 
 {: .procedure }
 1. Set parameters:
      
    [File options](components/panel-export-options.html#file-options)  
-   [Intensity units](components/panel-export-options.html#intensity-units)
+   [Intensity units](components/panel-export-options.html#intensity-units)  
      
 1. Press 
-![Export files](../assets/images/gui/sim-but-export.png "Export files") to start writing data in files. The execution time can be long; see 
-[Remarks](#remarks) for details.
+   ![Export files](../assets/images/gui/sim-but-export.png "Export files") to start writing files and refresh data in modules 
+   [Trace processing](../trace-processing.html), 
+   [Histogram analysis](../histogram-analysis.html) and 
+   [Transition analysis](../transition-analysis.html). The execution time can be long; see 
+   [Remarks](#remarks) for details.
 
 
 ---

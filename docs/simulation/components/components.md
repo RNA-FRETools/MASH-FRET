@@ -2,7 +2,7 @@
 layout: default
 title: Components
 parent: Simulation
-nav_order: 4
+nav_order: 3
 has_children: true
 numbered_toc: true
 permalink: /simulation/components.html
