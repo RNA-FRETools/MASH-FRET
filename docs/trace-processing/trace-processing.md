@@ -10,10 +10,18 @@ permalink: /trace-processing.html
 
 # Trace processing
 
-Use this module to sort single molecules and obtain state trajectories from intensity-time traces.
+Trace processing is the third module of MASH-FRET and is accessed by pressing 
+![Trace processing](assets/images/gui/TP-but-trace-processing.png "Trace processing") in the main 
+[tool bar](Getting_started.html#interface).
 
-Trace processing framework is limited to <u>intensity</u>-time traces and to calculated <u>FRET</u>- and <u>stoichiometry</u>-time traces.
+Use this module to sort single molecules and obtain state trajectories from intensity-time traces. 
+Trace processing recieves as input 
+[Simulation](simulation.html)'s output trajectories, 
+[Video processing](video-processing.html)'s output trajectories, or trajectories read from ASCII files. 
+See 
+[Create a new project](Getting_started.html#create-a-new-project) to get started. 
 
-Trace processing supports the following trace formats: ASCII and 
-*.[<u>mash</u>](output-files/mash-mash-project.html); see 
-[Import single molecule data](trace-processing/workflow.html#import-single-molecule-data) for more information.
+Learn about the main trace processing procedure in the 
+[Workflow](trace-processing/workflow.html) section, special functionalities in 
+[Functionalities](trace-processing/functionalities.html) and individual interface components in 
+[Components](trace-processing/components.html).

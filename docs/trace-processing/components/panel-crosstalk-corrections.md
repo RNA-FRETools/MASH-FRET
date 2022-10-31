@@ -3,7 +3,7 @@ layout: default
 title: Cross-talk corrections
 parent: Components
 grand_parent: Trace processing
-nav_order: 6
+nav_order: 5
 ---
 
 <img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
@@ -17,10 +17,15 @@ Access the panel content by pressing
 The panel closes automatically after other panels open or after pressing 
 ![Top arrow](../../assets/images/gui/interface-but-toparrow.png). 
 
+Cross-talks settings apply to the whole set of molecules.
+Corrections will be applied only after processing data by pressing 
+![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL"); see 
+[Process all molecules data](area-control.html#process-all-molecules-data) for more information.
+
 Use this panel to configure global bleedthrough and direct excitation coefficients used in 
 [Cross-talk correction](../workflow.html#cross-talk-correction).
 
-<a class="plain" href="../../assets/images/gui/TP-panel-crosstalks.png"><img src="../../assets/images/gui/TP-panel-crosstalks.png" style="max-width: 301px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-crosstalks.png"><img src="../../assets/images/gui/TP-panel-crosstalks.png" style="max-width: 258px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -37,7 +42,7 @@ Use this list to select the emitter to configure or show the cross-talks for.
 
 Corresponding bleedthrough and direct excitation coefficient are shown in 
 [Bleedthrough coefficients](#bleedthrough-coefficients) and 
-[Direct excitation correction](#direct-excitation-coefficients) respectively
+[Direct excitation correction](#direct-excitation-coefficients), respectively.
 
 Cross-talks are global correction coefficients, which means that only one set of coefficients is applied for the entire project.
 
@@ -49,7 +54,7 @@ Cross-talks are global correction coefficients, which means that only one set of
 
 Use this interface to define the bleedthrough coefficients.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-crosstalks-bt.png"><img src="../../assets/images/gui/TP-panel-crosstalks-bt.png" style="max-width: 106px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-crosstalks-bt.png"><img src="../../assets/images/gui/TP-panel-crosstalks-bt.png" style="max-width: 236px;"/></a>
 
 The fluorescence of each emitter used in the experiment has the propensity to "bleed" through unspecific detection channels. 
 The ratio of fluorescence signal detected in the unspecific channel over the signal detected in the specific channel is called the bleedthrough coefficient.
@@ -67,7 +72,7 @@ For more information about how to obtain the bleedthrough coefficient and how co
 
 Use this interface to define the direct excitation coefficients.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-crosstalks-de.png"><img src="../../assets/images/gui/TP-panel-crosstalks-de.png" style="max-width: 106px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-crosstalks-de.png"><img src="../../assets/images/gui/TP-panel-crosstalks-de.png" style="max-width: 236px;"/></a>
 
 Each emitter used in the experiment has the propensity to be excited by unspecific lasers.
 The ratio of fluorescence signal detected upon unspecific illumination over the signal detected upon specific illumination is called the direct excitation coefficient.

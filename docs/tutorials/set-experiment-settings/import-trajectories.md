@@ -184,7 +184,7 @@ Gamma factors are used in FRET and stoichiometry calculations, whereas beta fact
 [Correct ratio values](../../trace-processing/workflow.html#correct-ratio-values) for more information.
 
 Correction factors are usually calculated or set in panel 
-[Factor corrections](../../trace-processing/panels/panel-factor-corrections), but can also be imported from one or several files along with the trajectories.
+[Factor corrections](../../trace-processing/components/panel-factor-corrections), but can also be imported from one or several files along with the trajectories.
 
 <a href="../../assets/images/gui/newproj-traj-expset1-factors.png"><img src="../../assets/images/gui/newproj-traj-expset1-factors.png" /></a>
 
@@ -590,8 +590,11 @@ Data in the
 [Plot colors](#plot-colors) to ensure a proper reading of FRET state columns. 
 
 ***Note**: After import, the first molecule in the sample is automatically processed in module 
-[Trace processing](../../trace-processing.html) and state sequences are overwritten by the newly calculated one; this will be corrected in later versions. For now, exclude this molecule from the analysis using the 
-[Molecule status](../../trace-processing/panels/panel-sample-management.html#molecule-status) and proceed with transition or histogram analysis*
+[Trace processing](../../trace-processing.html) and state sequences are overwritten by the newly calculated ones; this will be corrected in later versions. 
+However, the state sequences used in 
+[Transition analysis](../../histogram-analysis.html) and 
+[Histogram analysis](../../transition-analysis.html) are not affected as long as all molecule data are not processed at once in Trace processing; see 
+[Process all molecules data](../../trace-processing/components/panel-sample-management.html#process-all-molecules-data).*
 
 
 ### File preview

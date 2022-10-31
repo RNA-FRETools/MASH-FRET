@@ -3,7 +3,7 @@ layout: default
 title: Find states
 parent: Components
 grand_parent: Trace processing
-nav_order: 10
+nav_order: 9
 ---
 
 <img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
@@ -17,9 +17,16 @@ Access the panel content by pressing
 The panel closes automatically after other panels open or after pressing 
 ![Top arrow](../../assets/images/gui/interface-but-toparrow.png). 
 
+Find states settings are specific to each molecule. 
+Press 
+![all](../../assets/images/gui/TP-but-all.png "all") to apply current settings to all molecules. 
+Corrections will be applied only after processing data by pressing 
+![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL"); see 
+[Process all molecules data](area-control.html#process-all-molecules-data) for more information.
+
 Use this panel to obtain state trajectories.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-findstates.png"><img src="../../assets/images/gui/TP-panel-findstates.png"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-findstates.png"><img src="../../assets/images/gui/TP-panel-findstates.png" style="max-width: 258px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -72,6 +79,9 @@ The operation is repeated until every point in the time trace is assigned to a s
 More representative results are obtained when the threshold method is combined with post-processing methods 
 [State refinement](#state-refinement) and 
 [Adjust states to data](#adjust-states-to-data).
+
+In case of intensity-time traces, the threshold is given in counts or counts per second according to intensity units defined in menu `Units` of the 
+[menu bar](Getting_started.html#interface).
 
 
 ### vbFRET
@@ -173,7 +183,7 @@ In the case of a `top` discretization, the post-processing method
 
 Use this interface to define settings of the [Discretization method](#discretization-method).
 
-<a class="plain" href="../../assets/images/gui/TP-panel-findstates-param.png"><img src="../../assets/images/gui/TP-panel-findstates-param.png" style="max-width: 289px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-findstates-param.png"><img src="../../assets/images/gui/TP-panel-findstates-param.png" style="max-width: 236px;"/></a>
 
 Parameters are specific to each time-trace.
 Select the time trace in menu **(a)** to configure the method for and set parameters in **(b-h)** as described in the table below.
@@ -193,7 +203,7 @@ Select the time trace in menu **(a)** to configure the method for and set parame
 
 Use this interface to define state trajectory processing methods.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-findstates-postparam.png"><img src="../../assets/images/gui/TP-panel-findstates-postparam.png" style="max-width: 184px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-findstates-postparam.png"><img src="../../assets/images/gui/TP-panel-findstates-postparam.png" style="max-width: 236px;"/></a>
 
 Post-processing methods are algorithms that applies to state trajectories inferred by 
 the [Discretization method](#discretization-method). 
@@ -267,23 +277,8 @@ This method is useful to obtain more representative states when using predefined
 
 Use this interface to look at states present in final state trajectories.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-findstates-results.png"><img src="../../assets/images/gui/TP-panel-findstates-results.png" style="max-width: 217px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-findstates-results.png"><img src="../../assets/images/gui/TP-panel-findstates-results.png" style="max-width: 204px;"/></a>
 
 States found after discretizattion and post processing are displayed in **(b)** after selecting the state index in menu **(a)**.
-
-
----
-
-## Apply settings to all molecules
-
-Press 
-![all](../../assets/images/gui/TP-but-all.png "all") to apply the 
-[Discretization method](#discretization-method),
-[Method parameters](#method-parameters) and 
-[Post-processing methods](#post-processing-methods) to all molecules.
-
-Corrections are applied to other molecules only when the corresponding data is processed, *i.e.*, when pressing 
-![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL"); see 
-[Process all molecules data](panel-sample-management.html#process-all-molecules-data) for more information.
 
 

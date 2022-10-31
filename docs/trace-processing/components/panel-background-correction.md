@@ -3,7 +3,7 @@ layout: default
 title: Background correction
 parent: Components
 grand_parent: Trace processing
-nav_order: 5
+nav_order: 4
 ---
 
 <img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
@@ -17,9 +17,16 @@ Access the panel content by pressing
 The panel closes automatically after other panels open or after pressing 
 ![Top arrow](../../assets/images/gui/interface-but-toparrow.png). 
 
+Background correction settings are specific to each molecule. 
+Press 
+![all](../../assets/images/gui/TP-but-all.png "all") to apply current settings to all molecules. 
+Corrections will be applied only after processing data by pressing 
+![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL"); see 
+[Process all molecules data](area-control.html#process-all-molecules-data) for more information.
+
 Use this panel to estimate and subtract background intensities to intensity-time traces.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-bg.png"><img src="../../assets/images/gui/TP-panel-bg.png" style="max-width: 290px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-bg.png"><img src="../../assets/images/gui/TP-panel-bg.png" style="max-width: 258px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -34,11 +41,11 @@ Use this panel to estimate and subtract background intensities to intensity-time
 
 Use this interface to define the background correction method.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-bg-param.png"><img src="../../assets/images/gui/TP-panel-bg-param.png" style="max-width: 278px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-bg-param.png"><img src="../../assets/images/gui/TP-panel-bg-param.png" style="max-width: 237px;"/></a>
 
 Background estimation methods are configured for individual intensity-time traces that can be selected in menu **(a)**.
 
-MASH includes six background estimation methods that can be selected in menu **(b)**.
+MASH includes seven background estimation methods that can be selected in menu **(b)**.
 To configure a method, set parameters **(c - g)** according to the detailed description given in the table below.
 
 | filter                                            | description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | default parameters                                                        |
@@ -55,15 +62,11 @@ For method `Dark trace`, the dark pixel coordinates are shown by a green cross m
 [Sub-images](area-visualization.html#single-molecule-images).
 
 The smoothed background intensity-time trace can be shown by pressing 
-![Show](../../assets/images/gui/TP-but-show.png "Show"). 
-In this case, an additional window appears with the dark trace plot in intensity units defined by 
-[Intensity units](panel-plot.html#intensity-units).
+![View](../../assets/images/gui/TP-but-view.png "View"). 
+In this case, an additional window appears with the dark trace plot in intensity units defined by menu `Units` of the 
+[menu bar](../../Getting_started.html#interface).
 
 ![Dark trace](../../assets/images/gui/TP-panel-bg-darktrace.png "Dark trace")
-
-After method configuration, the same settings can be applied to all molecules by pressing 
-![all](../../assets/images/gui/TP-but-all.png "all"); see 
-[Apply settings to all molecules](#apply-settings-to-all-molecules).
 
 
 ---
@@ -90,8 +93,8 @@ For method `Manual`, the background intensity to subtract must be set here.
 
 As the method `Dark tarce` calculates a background trajectory and not an intensity, the mean value of the dark trace is displayed here.
 
-The background intensity is given in image counts per pixel and/or per second according to intensity units defined in 
-[Intensity units](panel-plot.html#intensity-units).
+The background intensity is given in image counts or in counts per second according to intensity units defined in menu `Units` of the 
+[menu bar](Getiing_started.html#interface).
 
 
 ---
@@ -103,17 +106,5 @@ Activate this option to subtract the background from the intensity-time trace se
 
 For more information about how background correction is performed, see 
 [Background correction](../workflow.html#background-correction) in Trace processing workflow.
-
----
-
-## Apply settings to all molecules
-
-Press 
-![all](../../assets/images/gui/TP-but-all.png "all") to apply trace-specific 
-[Background correction settings](#background-correction-settings) to all molecules.
-
-Corrections are applied to other molecules only when the corresponding data is processed, *e. g.* when pressing 
-![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL"); see 
-[Process all molecules data](panel-sample-management.html#process-all-molecules-data) for more information.
 
 

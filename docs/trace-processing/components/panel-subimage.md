@@ -3,7 +3,7 @@ layout: default
 title: Sub-images
 parent: Components
 grand_parent: Trace processing
-nav_order: 4
+nav_order: 3
 ---
 
 <img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
@@ -20,7 +20,7 @@ The panel closes automatically after other panels open or after pressing
 Use this panel to adjust the appearance of 
 [Single molecule images](area-visualization.html#single-molecule-images) and adjust molecule positions.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-subimages.png"><img src="../../assets/images/gui/TP-panel-subimages.png" style="max-width: 292px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-subimages.png"><img src="../../assets/images/gui/TP-panel-subimages.png" style="max-width: 258px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -35,7 +35,7 @@ Use this panel to adjust the appearance of
 
 Use this interface to set the appearance of single molecule images.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-subimages-images.png"><img src="../../assets/images/gui/TP-panel-subimages-images.png" style="max-width: 265px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-subimages-images.png"><img src="../../assets/images/gui/TP-panel-subimages-images.png" style="max-width: 236px;"/></a>
 
 Single molecule sub-images are clipped out of the average video frame with dimensions set in 
 [Background correction settings](panel-background-correction.html#background-correction-settings).
@@ -52,12 +52,12 @@ These functionalities show useful when the single molecule is too bright or the 
 
 Use this interface to adjust single molecule positions.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-subimages-coord.png"><img src="../../assets/images/gui/TP-panel-subimages-coord.png" style="max-width: 267px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-subimages-coord.png"><img src="../../assets/images/gui/TP-panel-subimages-coord.png" style="max-width: 237px;"/></a>
 
 X- and y- pixel coordinates of the current single molecule in video channel selected in list **(a)** can be modified manually in **(b)** and **(c)** respectively. 
 
 Molecule positions can also be automatically recentered on the nearest brightest pixels by pressing 
-![recenter all](../../assets/images/gui/TP-but-recenter-all.png "recenter all").
+![recenter](../../assets/images/gui/TP-but-recenter.png "recenter").
 In that case, the algorithm iteratively looks for the brightest pixel in a 3-by-3 pixel area around the initial positions in each detection channel, and stop after a maximum of three iterations.
 
 After recentering, new intensity-time traces are calculated and initial shifted positions are lost.

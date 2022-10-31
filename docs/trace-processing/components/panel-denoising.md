@@ -3,7 +3,7 @@ layout: default
 title: Denoising
 parent: Components
 grand_parent: Trace processing
-nav_order: 7
+nav_order: 6
 ---
 
 <img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
@@ -17,9 +17,16 @@ Access the panel content by pressing
 The panel closes automatically after other panels open or after pressing 
 ![Top arrow](../../assets/images/gui/interface-but-toparrow.png). 
 
+Denoising settings are specific to each molecule. 
+Press 
+![all](../../assets/images/gui/TP-but-all.png "all") to apply current settings to all molecules. 
+Corrections will be applied only after processing data by pressing 
+![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL"); see 
+[Process all molecules data](area-control.html#process-all-molecules-data) for more information.
+
 Use this panel to reduce artificially the noise amplitude in time traces.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-denoise.png"><img src="../../assets/images/gui/TP-panel-denoise.png" style="max-width: 290px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-denoise.png"><img src="../../assets/images/gui/TP-panel-denoise.png" style="max-width: 258px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -34,7 +41,7 @@ Use this panel to reduce artificially the noise amplitude in time traces.
 
 Use this interface to define a denoising method.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-denoise-param.png"><img src="../../assets/images/gui/TP-panel-denoise-param.png" style="max-width: 273px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-denoise-param.png"><img src="../../assets/images/gui/TP-panel-denoise-param.png" style="max-width: 236px;"/></a>
 
 Denoising applies to intensity-time traces. 
 Intensity ratio-time traces are recalculated from smoothed intensity trajectories.
@@ -160,16 +167,4 @@ Activate or deactivate this option to smooth or visualize the original intensity
 For more information about the use of denoising in smFRET data analysis, see 
 [Smooth trajectories](../workflow.html#smooth-trajectories) in Trace processing workflow.
 
-
----
-
-## Apply settings to all molecules
-
-Press 
-![all](../../assets/images/gui/TP-but-all.png "all") to apply 
-[Denoising settings](#denoising-settings) to all molecules.
-
-Corrections are applied to other molecules only when the corresponding data is processed, *e. g.* when pressing 
-![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL"); see 
-[Process all molecules data](panel-sample-management.html#process-all-molecules-data) for more information.
 

@@ -3,7 +3,7 @@ layout: default
 title: Factor corrections
 parent: Components
 grand_parent: Trace processing
-nav_order: 9
+nav_order: 8
 ---
 
 <img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
@@ -17,10 +17,17 @@ Access the panel content by pressing
 The panel closes automatically after other panels open or after pressing 
 ![Top arrow](../../assets/images/gui/interface-but-toparrow.png). 
 
+Factor correction settings are specific to each molecule. 
+Press 
+![all](../../assets/images/gui/TP-but-all.png "all") to apply current settings to all molecules. 
+Corrections will be applied only after processing data by pressing 
+![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL"); see 
+[Process all molecules data](area-control.html#process-all-molecules-data) for more information.
+
 Use this panel to configure gamma and beta factors used in 
 [Correct ratio values](../workflow.html#correct-ratio-values).
 
-<a class="plain" href="../../assets/images/gui/TP-panel-factors.png"><img src="../../assets/images/gui/TP-panel-factors.png" style="max-width: 301px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-factors.png"><img src="../../assets/images/gui/TP-panel-factors.png" style="max-width: 258px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -103,12 +110,13 @@ Acceptor photobleaching is detected in the acceptor intensity-time trace using t
 Any acceptor-time trace listed in menu **(b)** can be used for photobleaching detection.
 
 Acceptor photobleaching is detected when the corresponding intensity-time trace drops below a certain intensity threshold defined in **(d)** providing a minimum cutoff value set in **(f)**.
-To ensure detection at the very beginning of acceptor photobleaching, the detected cutoff position can be shifted downwards by a certain number of frames set in **(e)**.
-
-Photobleaching cutoff is displayed in **(c)** in seconds or frame according to time-axis units defined in 
-[Time axis](panel-plot.html#time-axis) and is shown in the plot with a blue cursor.
+To ensure detection at the very beginning of acceptor photobleaching, the detected cutoff position can be shifted downwards by a certain number of frames set in **(e)**. 
+Photobleaching cutoff is shown in **(c)** and is indicated on the plot with a blue cursor.
 
 The tolerance window defined around the photobleaching cutoff and used in the gamma factor calculation is set in **(g)** and is shown in the plot by a transparent blue zone around the cursor.
+
+Parameters **(c)**, **(e)** and **(f)** are given in frame number or in second according to time units defined in menu `Units` of the 
+[menu bar](Getting_started.html#interface), whereas the intensity threshold **(d)** is given in counts or counts per seconds according to the intensity units defined in the same menu.
 
 When photobleaching was successfully detected and when donor and acceptor intensity states are different before and after photobleaching, the resulting gamma factor is shown in **(h)** and the icon 
 ![valid](../../assets/images/gui/TP-panel-factors-gamma-opt-valid.png "Valid") appears, otherwise the icon 
@@ -204,20 +212,4 @@ If the
 [Factor estimation method](#factor-estimation-method) is set to `Manual`, or `From acceptor photobleaching` the beta factor is set here manually.
 Otherwise, the beta factor is automatically calculated and can only be displayed.
 
----
-
-
-## Apply settings to all molecules
-
-Press 
-![all](../../assets/images/gui/TP-but-all.png "all") to apply FRET pair-specific 
-[Factor estimation method](#factor-estimation-method) to all molecules.
-
-Corrections are applied to other molecules only when the corresponding data is processed, *e. g.* when pressing 
-![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL"); see 
-[Process all molecules data](panel-sample-management.html#process-all-molecules-data) for more information.
-
-**Warning:** *Applying settings to all molecules will overwrite gamma factors imported from file with the factors defined for the current molecule. 
-To recover the gamma factors from file, the gamma factor file must be re-imported; see 
-[Factor estimation method](#factor-estimation-method) for help.*
 
