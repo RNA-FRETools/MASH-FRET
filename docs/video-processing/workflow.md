@@ -30,7 +30,7 @@ This implies to import the video file and register the associated experiment set
 Informing MASH about the particular experiment settings is crucial to adapt the software functionalities to your own experiment setup.
 
 After the project creation is completed, it is recommended to save it to a 
-[.mash file](../output-files/mash-mash-project.html) that should regularly be overwritten as the analysis progresses.
+[.mash file](../output-files/mash-mash-project.html) that should regularly be overwritten in order to keep traceability and access to the results.
 
 In theory, the software is compatible with:
 
