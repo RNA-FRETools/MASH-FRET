@@ -14,7 +14,7 @@ In this section you will learn how to create synthetic single molecule videos an
 Exported data can be used for 
 result validation, algorithm testing or external illustration.
 
-The procedure includes three steps:
+The procedure includes four steps:
 
 1. TOC
 {:toc}
@@ -27,7 +27,7 @@ The procedure includes three steps:
 The first step in simulating data is to create a new simulation-based project. 
 
 After the project creation is completed, it is recommended to save it to a 
-[.mash file](../output-files/mash-mash-project.html) that should regularly be overwritten as the analysis progresses.
+[.mash file](../output-files/mash-mash-project.html) that should regularly be overwritten in order to keep traceability and access to the results.
 
 To create a new simulation-based project:
 
