@@ -61,5 +61,7 @@ end
 % p.proj{proj}.def.mol = p.proj{proj}.prm{mol};
 % p.proj{proj}.curr{mol} = p.proj{proj}.prm{mol};
 
-setContPan('Traces are up to date!','success',h_fig);
+if strcmp(p.curr_mod(proj),'TP')
+    setContPan('Traces are up to date!','success',h_fig);
+end
 
