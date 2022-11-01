@@ -19,7 +19,7 @@ The panel closes automatically after other panels open or after pressing
 
 Use this panel to determine the optimum number of histogram peaks.
 
-<a class="plain" href="../../assets/images/gui/HA-panel-state-configuration.png"><img src="../../assets/images/gui/HA-panel-state-configuration.png" style="max-width: 166px;"/></a>
+<a class="plain" href="../../assets/images/gui/HA-panel-state-configuration.png"><img src="../../assets/images/gui/HA-panel-state-configuration.png" style="max-width: 365px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -49,25 +49,32 @@ Press
 
 Use this interface to define model overfitting penalty.
 
-<img src="../../assets/images/gui/HA-panel-state-configuration-penalty.png" style="max-width: 160px;"/>
+<a class="plain" href="../../assets/images/gui/HA-panel-state-configuration-penalty.png"><img src="../../assets/images/gui/HA-panel-state-configuration-penalty.png" style="max-width: 344px;"/></a>
+
+The goodness of the gaussian mixture fit is evaluated by the likelihood of the model. 
+The likelihood can be calculated in two manners listed in **(a)**:
+
+* `complete data` where each bin is associated to one and only Gaussian,
+* `incomplete data` where bins have a non-null probability to belong to each Gaussian (subject to overestimation of model complexity).'
+
+In both cases, the likelihood inevitably increases with the fit model compexity. 
+To prevent overfitting, the likelihood can be penalized in two ways:
+
+* [Minimum improvement in likelihood](#minimum-improvement-in-likelihood), by activating the option in **(b)** 
+* [Bayesian information criterion](#bayesian-information-criterion) (BIC), by activating the option in **(c)**
 
 The overfitting penalty can be modified before or after inferring the different models, *i.e.*, before or after pressing 
 ![Start analysis](../../assets/images/gui/HA-but-start-analysis.png).
-
-Model overfitting can be penalized in two ways:
-
-* Minimum improvement in likelihood, by activating the option in **(a)** 
-* using the Bayesian information criterion (BIC), by activating the option in **(c)**
 
 
 ### Minimum improvement in likelihood
 {: .no_toc }
 
 With this penalty, a certain improvement in the model <u>log</u>-likelihood is expected when adding a new component to the model. 
-The improvement is expressed as a multiplication factor that can be set in **(b)**.
+The improvement is expressed as a multiplication factor that can be set in **(d)**.
 For instance, set a penalty of 1.2 for an improvement of 20% in the <u>log</u>-likelihood, or of 10<sup>0.2</sup> in the likelihood.
 
-The most sufficient model is the least complex model for which adding a component does not fulfil this requirement.
+The most sufficient model is the least complex model for which adding a component does not fulfill this requirement.
 
 
 ### Bayesian information criterion
@@ -102,13 +109,13 @@ The number of parameters necessary to describe the model includes the number of 
 
 Use this interface to visualize the results of state configuration analysis.
 
-<img src="../../assets/images/gui/HA-panel-state-configuration-models.png" style="max-width: 150px;"/>
+<a class="plain" href="../../assets/images/gui/HA-panel-state-configuration-penalty.png"><img src="../../assets/images/gui/HA-panel-state-configuration-models.png" style="max-width: 344px;"/></a>
 
 The number of components in the most sufficient model according to the 
-[Model penalty](#model-penalty) is displayed in **(a)**.
+[Model penalty](#model-penalty) is shown in **(a)** and the corresponding gaussian mixture can be visualized in the 
+[Top axes](area-visualization.html#inferred-state-configuration).
 
-Other inferred models can be visualized in the 
-[Top axes](area-visualization.html#top-axes) by selecting the corresponding number of components in the list **(b)**. 
+Other inferred models can be visualized by selecting the corresponding number of components in the list **(b)**. 
 In this case, the log-likelihood and BIC of the selected model are respectively displayed in **(c)** and **(d)**.
 
 The parameters of any model can be imported in 
@@ -116,9 +123,3 @@ The parameters of any model can be imported in
 [Gaussian fitting](panel-state-populations#gaussian-fitting) as starting guess for state population analysis, by pressing 
 ![>>](../../assets/images/gui/HA-but-supsup.png ">>").
 
-Analysis results are summarized in a bar plot where the BIC or the increase in log-likelihood is presented in function of the number of components, depending on the chosen 
-[Model penalty](#model-penalty).
-
-<img src="../../assets/images/gui/HA-panel-state-configuration-bic.png" style="max-width: 294px;"/>
-
-Any graphics in MASH can be exported to an image file by right-clicking on the axes and selecting `Export graph`.

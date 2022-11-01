@@ -12,32 +12,13 @@ nav_order: 2
 
 In this section you will learn how to determine the most sufficient state configuration from histograms, to obtain the relative state populations and to estimate the associated cross-sample variability. 
 
-Histogram analysis results are saved in the 
-[mash project](../output-files/mash-mash-project.html) and/or exported to ASCII files for traceability.
+Initial data are the trajectories from 
+[Trace processing](../trace-processing.html)'s output.
 
-The procedure includes five steps:
+The procedure includes four steps:
 
 1. TOC
 {:toc}
-
-
----
-
-## Import single molecule data
-
-Single molecules are imported from a 
-[.mash file](../output-files/mash-mash-project.html), which ideally contains time traces that were processed in module Trace processing.
-
-After successful import, the list of available data in the project (*e.g.*, intensities, FRET or stoichiometry) is shown in the 
-[Data list](panels/panel-histogram-and-plot.html#data-list), and the overall normalized and cumulative normalized histograms are displayed in the 
-[Visualization area](panels/area-visualization.html) for the first data of the list - intensities collected in the left-most video channel upon first laser illumination.
-
-To import single molecule data:
-
-{: .procedure }
-1. Add the project to the list by pressing 
-   ![Add](../assets/images/gui/HA-but-add.png "Add") and selecting the corresponding 
-   [.mash file](../output-files/mash-mash-project.html)  
 
 
 ---
@@ -59,20 +40,17 @@ The histogram limits and bin size have to be carefully chosen in order to enhanc
 To build the histogram:
 
 {: .procedure }
-1. Select the data to work with in the 
-   [Data list](panels/panel-histogram-and-plot.html#data-list)  
-     
-1. Select the subgroup of molecules to work with in the 
-   [Molecule subgroup list](panels/panel-histogram-and-plot.html#molecule-subgroup-list)  
+1. Select the data and molecule subgroup to export in the 
+   [Data list](components/area-data-selection.html#data-list) and 
+   [Molecule subgroup list](components/area-data-selection.html#molecule-subgroup-list), respectively  
      
 1. Set parameters:  
      
-   [Histogram bounds](panels/panel-histogram-and-plot.html#histogram-bounds)  
-   [Histogram bin size](panels/panel-histogram-and-plot.html#histogram-bin-size)  
-   [Overflow bins](panels/panel-histogram-and-plot.html#overflow-bins)  
+   [Histogram binning](components/panel-histogram-and-plot.html#histogram-binning)  
+   [Overflow bins](components/panel-histogram-and-plot.html#overflow-bins)  
      
    The histogram is instantly built with the new parameters and displayed in the 
-   [Visualization area](panels/area-visualization.html)
+   [Visualization area](components/area-visualization.html#histograms)
 
 
 ---
@@ -104,13 +82,14 @@ In the second case, the BIC is used to rank models according to their sufficienc
 To determine the most sufficient state configuration:
 
 {: .procedure }
-1. If not already done, select the data to work with in the 
-   [Data list](panels/panel-histogram-and-plot.html#data-list)  
+1. If not already done, select the data and molecule subgroup to export in the 
+   [Data list](components/area-data-selection.html#data-list) and 
+   [Molecule subgroup list](components/area-data-selection.html#molecule-subgroup-list), respectively  
      
 1. Set parameters:  
      
-   [Maximum number of Gaussians](panels/panel-state-configuration.html#maximum-number-of-gaussians)  
-   [Model penalty](panels/panel-state-configuration.html#model-penalty)  
+   [Maximum number of Gaussians](components/panel-state-configuration.html#maximum-number-of-gaussians)  
+   [Model penalty](components/panel-state-configuration.html#model-penalty)  
      
 1. Start inference of state configurations by pressing 
    ![Start analysis](../assets/images/gui/HA-but-start-analysis.png "Start analysis"); after completion, the display is instantly updated with the most sufficient Gaussian mixture
@@ -151,19 +130,20 @@ BOBA-FRET applies to both threshold and Gaussian-fitting methods, and infers the
 To calculate relative state populations:
 
 {: .procedure }
-1. If not already done, select the data to work with in the 
-   [Data list](panels/panel-histogram-and-plot.html#data-list)  
+1. If not already done, select the data and molecule subgroup to export in the 
+   [Data list](components/area-data-selection.html#data-list) and 
+   [Molecule subgroup list](components/area-data-selection.html#molecule-subgroup-list), respectively  
      
 1. Set parameters in 
-   [Method settings](panels/panel-state-populations.html#method-settings)  
+   [Method settings](components/panel-state-populations.html#method-settings)  
      
 1. Import parameters of one of the inferred state configurations by selecting the configuration in 
-   [Inferred models](panels/panel-state-configuration.html#inferred-models) and pressing 
+   [Inferred models](components/panel-state-configuration.html#inferred-models) and pressing 
    ![>>](../assets/images/gui/HA-but-supsup.png ">>")  
      
 1. Adjust parameters in 
-   [Thresholding](panels/panel-state-populations.html#thresholding) or 
-   [Gaussian fitting](panels/panel-state-populations.html#gaussian-fitting) and respectively press 
+   [Thresholding](components/panel-state-populations.html#thresholding) or 
+   [Gaussian fitting](components/panel-state-populations.html#gaussian-fitting) and respectively press 
    ![Start](../assets/images/gui/HA-but-start.png "Start") or 
    ![Fit](../assets/images/gui/HA-but-fit.png "Fit") to calculate state relative populations
 
@@ -172,28 +152,18 @@ To calculate relative state populations:
 
 ## Export data
 
-Project modifications must be saved in order to keep traceability and access to the results.
-Additionally, histograms, analysis results and analysis parameters can be exported to ASCII files and PDF figures; see 
-[Remarks](#remarks) for more information.
-
-To save project modifications:
-
-{: .procedure }
-1. Save modifications to the 
-   [.mash file](../output-files/mash-mash-project.html) by pressing 
-   ![Save](../assets/images/gui/HA-but-save.png "Save") and overwriting existing file.  
+Histograms, analysis results and analysis parameters can be exported to ASCII files and PDF figures; see 
+[Remarks](#remarks) for more information. 
 
 To export data to files:
 
 {: .procedure }
-1. Select the data to export in the 
-   [Data list](panels/panel-histogram-and-plot.html#data-list)  
-     
-1. Select the molecule subgroup to export in the 
-   [Molecule subgroup list](panels/panel-histogram-and-plot.html#molecule-subgroup-list)  
+1. If not already done, select the data and molecule subgroup to export in the 
+   [Data list](components/area-data-selection.html#data-list) and 
+   [Molecule subgroup list](components/area-data-selection.html#molecule-subgroup-list), respectively  
      
 1. Press
-   ![Export...](../../assets/images/gui/HA-but-export3p.png "Export...") and browse the desired destination; files will be automatically created in the destination folder.
+   ![EXPORT...](../../assets/images/gui/HA-but-exportdotdotdot.png "EXPORT...") and select the desired destination to start writing files.
 
 
 ---
@@ -202,6 +172,6 @@ To export data to files:
 {: .no_toc }
 
 The type of exported files depends on which analysis was carried on; see 
-[Export analysis results](panels/area-management.html#export-analysis-results) for more information.
+[Export analysis results](components/area-control.html#export-data) for more information.
 
 

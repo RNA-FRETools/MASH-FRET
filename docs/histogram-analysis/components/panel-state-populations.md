@@ -19,7 +19,7 @@ The panel closes automatically after other panels open or after pressing
 
 Use this panel to estimate state relative populations and associated cross-sample variability.
 
-<a class="plain" href="../../assets/images/gui/HA-panel-state-populations.png"><img src="../../assets/images/gui/HA-panel-state-populations.png" style="max-width: 388px;"/></a>
+<a class="plain" href="../../assets/images/gui/HA-panel-state-populations.png"><img src="../../assets/images/gui/HA-panel-state-populations.png" style="max-width: 365px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -34,7 +34,7 @@ Use this panel to estimate state relative populations and associated cross-sampl
 
 Use this interface to define a method to calculate state populations.
 
-<img src="../../assets/images/gui/HA-panel-state-populations-method.png" style="max-width: 156px;"/>
+<img src="../../assets/images/gui/HA-panel-state-populations-method.png" style="max-width: 151px;"/>
 
 State relative population are calculated as the surface of the corresponding histogram peak normalized by the total histogram surface.
 
@@ -56,7 +56,7 @@ This is done by activating the option in **(f)**.
 
 Use this interface to define settings to calculate state populations with the Thresholding method.
 
-<img src="../../assets/images/gui/HA-panel-state-populations-thresholding.png" style="max-width: 215px;"/>
+<img src="../../assets/images/gui/HA-panel-state-populations-thresholding.png" style="max-width: 204px;"/>
 
 With the thresholding method, histogram peaks are separated by fixed thresholds, histogram counts are summed up between thresholds and resulting integrals are normalized by the sum of all integrals to obtain the state relative populations as described in the
 [State population](../workflow.html#estimate-state-populations-and-associated-cross-sample-variability) section of Histogram analyiss worklfow.
@@ -76,7 +76,8 @@ If the
 
 <img src="../../assets/images/gui/HA-panel-state-populations-threshold-loadingbar.png" style="max-width:389px;">
 
-After completion, relative population of the histogram peak selected in menu **(d)** and corresponding to the color **(g)**, is displayed in **(e)**.
+After completion, relative population of the histogram peak selected in menu **(d)** and corresponding to the color **(g)** in the 
+[Top axes](area-visualization.html#after-thresholding) is displayed in **(e)**.
 
 When using BOBA-FRET, the bootstrap mean and standard deviation of the state relative population are respectively displayed in **(e)** and **(f)**.
 
@@ -87,7 +88,7 @@ When using BOBA-FRET, the bootstrap mean and standard deviation of the state rel
 
 Use this interface to define settings to calculate state populations with the Gaussian fitting method.
 
-<img src="../../assets/images/gui/HA-panel-state-populations-gaussian-fitting.png" style="max-width: 365px;"/>
+<img src="../../assets/images/gui/HA-panel-state-populations-gaussian-fitting.png" style="max-width: 344px;"/>
 
 With the Gaussian fitting method, the histogram is fitted with a mixture of Gaussian functions with each Gaussian defined as:
 
@@ -125,7 +126,8 @@ If the
 
 <img src="../../assets/images/gui/HA-panel-state-populations-gaussian-fitting-loadingbar.png" style="max-width:389px;">
 
-After completion, relative population of the Gaussian selected in menu **(b)** and corresponding to the color **(c)**, is displayed in row **(j)** and column **(k)**.
+After completion, relative population calculated for the Gaussian selected in menu **(b)** and corresponding to the color **(c)** in the 
+[Top axes](area-visualization.html#after-gaussian-fitting) is shown in row **(j)** and column **(k)**.
 
 When using BOBA-FRET, the bootstrap mean and standard deviation of the state relative population are respectively displayed in column **(k)** and **(l)**.
 Similarly, the bootstrap mean and standard deviation of fit parameters 

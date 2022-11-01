@@ -10,9 +10,17 @@ permalink: /histogram-analysis.html
 
 # Histogram analysis
 
-Use this module to identify the most probable state configuration and quantify state relative populations.
+Histogram analysis is the fourth module of MASH-FRET and is accessed by pressing 
+![Histogram analysis](assets/images/gui/HA-but-histogram analysis.png "Histogram analysis") in the main 
+[tool bar](Getting_started.html#interface).
 
-Histogram analysis framework is limited to <u>intensity</u> histograms and to calculated <u>FRET</u> and <u>stoichiometry</u> histograms.
+Use this module to identify the most probable state configuration and quantify state relative populations. 
+Histogram analysis recieves as input 
+[Trace processing](trace-processing.html)'s output trajectories and state sequences. 
+See 
+[Create a new project](Getting_started.html#create-a-new-project) to get started. 
 
-Histogram analysis supports only the *.[<u>mash</u>](output-files/mash-mash-project.html) format; see 
-[Import single molecule data](histogram-analysis/workflow.html#import-single-molecule-data) for more information.
+Learn about the main trace processing procedure in the 
+[Workflow](histogram-analysis/workflow.html) section, special functionalities in 
+[Functionalities](histogram-analysis/functionalities.html) and individual interface components in 
+[Components](histogram-analysis/components.html).
