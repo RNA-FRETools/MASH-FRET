@@ -9,6 +9,7 @@ function q = build_BA_panelMethodSettings(q,p,h_fig)
 % h_fig: handle to main figure
 
 % defaults
+file_icon0 = 'view.png';
 str0 = 'data';
 str1 = 'method';
 str2 = 'param.';
@@ -18,7 +19,7 @@ str5 = 'y-dark';
 str6 = 'XXXXX at 999nm';
 str7 = 'Most frequent value';
 str8 = 'auto';
-str9 = 'Show';
+str9 = 'Opt.';
 str10 = 'current molecule';
 str11 = 'BG value';
 str12 = char(9668);
@@ -41,6 +42,10 @@ ttstr12 = 'Apply current settings to all intensities in the list';
 
 % parent
 h_pan = q.uipanel_determine_bg;
+
+% images
+pname = [fileparts(mfilename('fullpath')),filesep,'..',filesep,'..',filesep,'..',filesep,'..',filesep,'GUI',filesep];
+img0 = imread([pname,file_icon0]);
 
 % dimensions
 pospan = get(h_pan,'position');
@@ -157,7 +162,7 @@ y = y-(p.hbut-p.hcb)/2;
 
 q.pushbutton_show = uicontrol('style','pushbutton','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz,'position',...
-    [x,y,wbut0,p.hbut],'string',str9,'tooltipstring',ttstr6,'callback',...
+    [x,y,wbut0,p.hbut],'cdata',img0,'tooltipstring',ttstr6,'callback',...
     {@pushbutton_BA_show_Callback,h_fig});
 
 x = p.mg;
