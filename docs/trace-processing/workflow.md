@@ -13,8 +13,8 @@ nav_order: 2
 In this section you will learn how to correct single molecule intensity-time traces from experimental bias and obtain state trajectories. 
 
 Each time molecule data are processed by pressing 
-![UPDATE](../assets/images/gui/TP-but-update.png "UPDATE") or 
-![UPDATE ALL](../assets/images/gui/TP-but-update-all.png "UPDATE ALL"), data in modules 
+![UPDATE](../assets/images/gui/TP-but-update.png "UPDATE"), 
+![UPDATE ALL](../assets/images/gui/TP-but-update-all.png "UPDATE ALL"), or by navigating through molecules, data in modules 
 [Histogram analysis](../histogram-analysis.html) and 
 [Transition analysis](../transition-analysis.html) are automatically refreshed.
 
@@ -37,7 +37,7 @@ In the two first cases, you can skip this step and go directly to the next one.
 In the latter case, a new trajectory-based project must be created. 
 This implies to import the trajectory files, register the associated experiment settings and define the data structure in the files.
 After the project creation is completed, it is recommended to save it to a 
-[.mash file](../output-files/mash-mash-project.html) that should regularly be overwritten as the analysis progresses.
+[.mash file](../output-files/mash-mash-project.html) that should regularly be overwritten in order to keep traceability and access to the results.
 
 Informing MASH about the particular experiment settings is crucial to adapt the software functionalities to your own experiment setup.
 In theory, the software is compatible with:
@@ -503,7 +503,7 @@ To merge projects:
 1. Press 
    ![Yes](../assets/images/gui/TP-but-yes.png "Yes") to start the merging process  
      
-   ***Note:** *The merging process induces a loss of single molecule videos that were used in individual projects. 
+   ***Note:** The merging process induces a loss of single molecule videos that were used in individual projects. 
    Therefore, it is recommended to perform all adjustments of molecule positions and background corrections prior merging; see 
    [Remarks](@remarks) for more information.*
 
@@ -525,3 +525,4 @@ Molecules can be given several tags and/or deselected from the set while browsin
 [Molecule status](components/panel-sample-management.html#molecule-status) for more information.
 
 To merge multiple projects into one, experiment setups must be the same, *i.e.*, the frame rate, the number of channels and laser excitations, the laser wavelengths, the emitter labels, the FRET pairs and the stoichiometry calculations must be identical. 
+
