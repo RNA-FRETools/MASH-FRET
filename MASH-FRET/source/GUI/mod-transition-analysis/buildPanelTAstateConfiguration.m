@@ -153,7 +153,7 @@ h = buildPanelTAselectTool(h,p);
 posbut = get(h.tooglebutton_TDPmanStart,'position');
 pospan1 = get(h.uipanel_TA_clusters,'position');
 pospan2 = get(h.uipanel_TA_selectTool,'position');
-pospan2(1) = pospan1(1)+posbut(1)+posbut(3);
-pospan2(2) = pospan1(2)+posbut(2)-(pospan2(4)-posbut(4))/2;
+pospan2(1) = pospan1(1)+posbut(1)+(posbut(3)-pospan2(3))/2;
+pospan2(2) = pospan1(2)+posbut(2)-pospan2(4);
 set(h.uipanel_TA_selectTool,'position',pospan2);
 
