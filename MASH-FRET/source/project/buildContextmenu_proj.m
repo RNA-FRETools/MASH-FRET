@@ -4,8 +4,7 @@ function h = buildContextmenu_proj(h)
 lbl0 = 'Edit...';
 lbl1 = 'Close';
 lbl2 = 'Save As...';
-lbl3 = 'Export ASCII files...';
-lbl4 = 'Merge projects';
+lbl3 = 'Merge projects';
 
 h_fig = h.figure_MASH;
 
@@ -18,9 +17,7 @@ h.projMenu_close = uimenu('parent',h_cm,'label',lbl1,'callback',...
     {@pushbutton_closeProj_Callback,h_fig});
 h.projMenu_save = uimenu('parent',h_cm,'label',lbl2,'callback',...
     {@pushbutton_saveProj_Callback,h_fig});
-h.projMenu_export= uimenu('parent',h_cm,'label',lbl3,'callback',...
-    {@menu_projMenu_export_Callback,h_fig});
-h.projMenu_merge = uimenu('parent',h_cm,'label',lbl4,'callback',...
+h.projMenu_merge = uimenu('parent',h_cm,'label',lbl3,'callback',...
     {@menu_projMenu_merge_Callback,h_fig});
 
 set(h.listbox_proj,'uicontextmenu',h_cm);
