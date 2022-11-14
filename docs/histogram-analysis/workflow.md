@@ -40,7 +40,7 @@ The histogram limits and bin size have to be carefully chosen in order to enhanc
 To build the histogram:
 
 {: .procedure }
-1. Select the data and molecule subgroup to export in the 
+1. Select the data and molecule subgroup to analyze in the 
    [Data list](components/area-data-selection.html#data-list) and 
    [Molecule subgroup list](components/area-data-selection.html#molecule-subgroup-list), respectively  
      
@@ -82,7 +82,7 @@ In the second case, the BIC is used to rank models according to their sufficienc
 To determine the most sufficient state configuration:
 
 {: .procedure }
-1. If not already done, select the data and molecule subgroup to export in the 
+1. If not already done, select the data and molecule subgroup to analyze in the 
    [Data list](components/area-data-selection.html#data-list) and 
    [Molecule subgroup list](components/area-data-selection.html#molecule-subgroup-list), respectively  
      
@@ -130,7 +130,7 @@ BOBA-FRET applies to both threshold and Gaussian-fitting methods, and infers the
 To calculate relative state populations:
 
 {: .procedure }
-1. If not already done, select the data and molecule subgroup to export in the 
+1. If not already done, select the data and molecule subgroup to analyze in the 
    [Data list](components/area-data-selection.html#data-list) and 
    [Molecule subgroup list](components/area-data-selection.html#molecule-subgroup-list), respectively  
      
