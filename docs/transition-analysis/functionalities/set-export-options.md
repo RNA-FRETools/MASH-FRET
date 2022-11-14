@@ -19,7 +19,7 @@ The window is accessed by pressing
 Press 
 ![Next >>](../../assets/images/gui/TA-but-next-supsup.png "Next >>") to start file export.
 
-<a href="../../assets/images/gui/TA-area-project-management-export.png"><img src="../../assets/images/gui/TA-area-project-management-export.png" style="max-width: 466px;"/></a>
+<a href="../../assets/images/gui/TA-area-project-management-export.png"><img src="../../assets/images/gui/TA-area-project-management-export.png" style="max-width: 550px;"/></a>
 
 ## Window components
 {: .no_toc .text-delta }
@@ -34,7 +34,7 @@ Press
 
 Use this panel to export the TDP and clustering results.
 
-<img src="../../assets/images/gui/TA-area-project-management-export-tdp.png" style="max-width: 219px;"/>
+<img src="../../assets/images/gui/TA-area-project-management-export-tdp.png" style="max-width: 309px;"/>
 
 The TDP can be exported to ASCII files by activating the option in **(a)**.
 In this case, the TDP can be exported in the different format listed in **(b)**:
@@ -52,7 +52,10 @@ The TDP matrix can also be exported to a PNG image file by activating the option
 * `Gaussian-convoluted`: shows Gaussian-filtered counts
 * `all`: export both images
 
-**Note:** *Transition densities written in files are counted as defined in 
+TDP clustering results can be exported to a 
+[Transition density clusters file](../../output-files/clst-transition-density-clusters.html) by activating the option **(e)**.
+
+***Note:** Transition densities written in TDP ASCII files and images are counted as defined in 
 [Transition count](../panels/panel-transition-density-plot.html#transition-count)*
 
 
@@ -62,7 +65,7 @@ The TDP matrix can also be exported to a PNG image file by activating the option
 
 Use this panel to export dwell time histograms and fitting results.
 
-<img src="../../assets/images/gui/TA-area-project-management-export-kin.png" style="max-width: 210px;"/>
+<img src="../../assets/images/gui/TA-area-project-management-export-kin.png" style="max-width: 309px;"/>
 
 Dwell time histograms can be exported to ASCII 
 [.hdt files](../../output-files/hdt-dwelltime-histogram.html) by activating the options in **(a)**.
@@ -75,13 +78,14 @@ If the
 * the [.fit file](../../output-files/fit-dwelltime-fit.html) can be appended with bootstrapping parameters and results by activating the option in **(c)**
 * plots of bootstrap histogram samples and associated fit can be exported to a multi-pages [.pdf file](../../output-files/pdf-transition-analysis-bootstrap-plots.html) by activating the option in **(d)**
 
+
 ---
 
 ## Kinetic model
 
 Use this panel to export results of model selection on DPHs, the kinetic model parameters and simulated data.
 
-<img src="../../assets/images/gui/TA-area-project-management-export-model.png" style="max-width: 201px;"/>
+<img src="../../assets/images/gui/TA-area-project-management-export-model.png" style="max-width: 231px;"/>
 
 If state degeneracy was determined with model selection on DPHs, the BIC values obtained for all state degeneracy can be summarize in ASCII 
 [.txt files](../../output-files/txt-dph-model-select.html) by activating the options in **(a)**.
@@ -90,10 +94,6 @@ The inferred kinetic model including state values, lifetimes, initial probabilit
 [.txt files](../../output-files/txt-kinetic-model.html) by activating the options in **(b)**.
 
 The synthetic dwell time set created with the kinetic model parameters can be exported to ASCII 
-[.dt files](../../output-files/dt-dwelltimes.html) by activating the options in **c)**.
-
-
-
-
+[.dt files](../../output-files/dt-dwelltimes.html) by activating the options in **(c)**.
 
 

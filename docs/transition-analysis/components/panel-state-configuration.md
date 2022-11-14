@@ -19,7 +19,7 @@ The panel closes automatically after other panels open or after pressing
 
 Use this panel to determine the optimum number of transition clusters and associated cross-sample variability.
 
-<a class="plain" href="../../assets/images/gui/TA-panel-state-configuration.png"><img src="../../assets/images/gui/TA-panel-state-configuration.png" style="max-width:437px;"></a>
+<a class="plain" href="../../assets/images/gui/TA-panel-state-configuration.png"><img src="../../assets/images/gui/TA-panel-state-configuration.png" style="max-width:294px;"></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -34,7 +34,7 @@ Use this panel to determine the optimum number of transition clusters and associ
 
 Use this interface to define a method to cluster transitions.
 
-<img src="../../assets/images/gui/TA-panel-state-configuration-method.png" style="max-width:105px;">
+<img src="../../assets/images/gui/TA-panel-state-configuration-method.png" style="max-width:104px;">
 
 TDP clustering consists in partitioning the state transitions into groups. 
 Clustering can be done in an iterative fashion to search for the optimum cluster configuration, or in a non-iterative fashion by simply imposing a starting configuration.
@@ -162,7 +162,7 @@ Cluster positions and dimensions are defined in
 
 Use this panel to define the cluster configuration.
 
-<img src="../../assets/images/gui/TA-panel-state-configuration-clusters.png" style="max-width:167px;">
+<a class="plain" href="../../assets/images/gui/TA-panel-state-configuration-clusters.png"><img src="../../assets/images/gui/TA-panel-state-configuration-clusters.png" style="max-width:167px;"></a>
 
 Cluster centers are constrained according to one of the three types of configuration listed in **(a)**:
 
@@ -183,7 +183,7 @@ To remove diagonal clusters from the `matrix` configuration, deactivate the opti
 The different cluster configurations for a complexity 
 [*V*](){: .math_var } = 4 are shown below:
 
-<img src="../../assets/images/figures/TA-panel-state-configuration-clusters-config.png">
+<a class="plain" href="../../assets/images/figures/TA-panel-state-configuration-clusters-config.png"><img src="../../assets/images/figures/TA-panel-state-configuration-clusters-config.png"></a>
 
 The interface **(c)** defines the shape and coordinates of clusters and depends on the clustering method:
 1. [Clusters for GM clustering](#clusters-for-gm-clustering) 
@@ -206,7 +206,7 @@ After completion, the interface
 
 Use this interface to set the cluster shape and likelihood calculations.
 
-<img src="../../assets/images/gui/TA-panel-state-configuration-clusters-gm.png" style="max-width:145px;">
+<a class="plain" href="../../assets/images/gui/TA-panel-state-configuration-clusters-gm.png"><img src="../../assets/images/gui/TA-panel-state-configuration-clusters-gm.png" style="max-width:157px;"></a>
 
 Likelihood calculation is selected in list **(a)** and can be performed in two ways:
 - `complete-data` likelihood (*recommended*): associates each transition to one and cluster only 
@@ -227,7 +227,7 @@ Gaussian clusters can have four different shapes, each being selected by pressin
 
 Use this interface to set the cluster shape and center coordinates.
 
-<img src="../../assets/images/gui/TA-panel-state-configuration-clusters-kmean.png" style="max-width:261px;">
+<a class="plain" href="../../assets/images/gui/TA-panel-state-configuration-clusters-kmean.png"><img src="../../assets/images/gui/TA-panel-state-configuration-clusters-kmean.png" style="max-width:159px;"></a>
 
 A k-mean or simple cluster is defined by the (x,y) coordinates of its center, its shape and its dimensions.
 
@@ -237,7 +237,7 @@ Clusters can be of three different shapes, each being selected by pressing the c
 - straight ellipse by pressing ![straight ellipse](../../assets/images/gui/TA-but-straight.png "straight ellipse")
 - diagonal ellipse by pressing ![diagonal ellipse](../../assets/images/gui/TA-but-diagonal.png "diagonal ellipse")
 
-Cluster centers and dimensions are set:
+The center and dimensions of the cluster selected in **(a)** are set:
 * by typing the corresponding x- and/or y-value in **(b)** and/or **(d)** respectively and the x- and/or y- radius in **(c)** and/or **(e)**
 * with the <u>mouse selection tool</u> by pressing **(f)** to open the selection panel **(g)**, and by selecting ![+](../../assets/images/gui/TA-but-crosshair.png "mouse selection tool")
 * <u>automatically</u> by pressing 
@@ -245,7 +245,7 @@ Cluster centers and dimensions are set:
 
 To quit the <u>mouse selection tool</u>, select ![z](../../assets/images/gui/TA-but-zoom.png "zoom tool") in panel **(h)**.  
 To reset mouse-selected clusters, select ![x](../../assets/images/gui/TA-but-cross-delete.png "reset selection") in panel **(h)**.  
-Panel **(h)** closes after selecting one of the above or by pressing ![<](../../assets/images/gui/TA-but-left-arrow.png "close selection panel").
+Panel **(h)** closes after selecting one of the above or by pressing ![^](../../assets/images/gui/TA-but-uparrow.png "close selection panel").
 
 Coordinates and radii in the y-direction are not adjustable when using `matrix` the configuration.
 
@@ -255,7 +255,7 @@ Coordinates and radii in the y-direction are not adjustable when using `matrix` 
 
 Use this interface to visualize results of a state configuration analysis.
 
-<img src="../../assets/images/gui/TA-panel-state-configuration-results.png" style="max-width:153px;">
+<a class="plain" href="../../assets/images/gui/TA-panel-state-configuration-results.png"><img src="../../assets/images/gui/TA-panel-state-configuration-results.png" style="max-width:272px;"></a>
 
 After transition clustering, GM-clustering results are summarized in a bar plot where the BIC is presented in function of the number of components.
 
@@ -269,50 +269,8 @@ The associated BIC value is shown in **(e)**.
 
 Transition clusters of any model can be imported in 
 [State transition rates](panel-state-transition-rates.html) for dwell time analysis, by pressing 
-![>>](../../assets/images/gui/TA-but-supsup.png ">>").
+![Use this config.](../../assets/images/gui/TA-but-use-this-config.png "Use this config.").
 
 Press
-![reset](../../assets/images/gui/TA-but-reset.png "reset") to reset TDP clustering. 
-
-
----
-
-## Visualization area
-
-Use this interface to visualize the TDP and analysis results or to modify cluster color code.
-
-The axes display two types of plots depending on which stage the transition analysis is at.
-
-Any graphics in MASH can be exported to an image file by right-clicking on the axes and selecting `Export graph`.
-
-
-### Transition density plot
-{: .no_toc }
-
-When opening a new project in Transition analysis and providing that the data selected in the
-[Data list](panel-transition-density-plot.html#data-list) exists in the project, the TDP is built as defined in 
-[Transition density plot](panel-transition-density-plot.html) and plotted in the axes.
-
-<img src="../../assets/images/gui/TA-panel-state-configuration-plot-tdp.png" style="max-width:448px;">
-
-The transition density is color-coded according to the color scale located on the right hand side of the axes and according to the 
-[Color map](panel-transition-density-plot.html#color-map).
-
-When hoovering the axes with the mouse selection tool activated, mouse coordinates are shown in **(a)**.
-
-
-### Clusters
-{: .no_toc }
-
-After completing TDP clustering, clustered transition are indicated by cross markers that are colored according to the cluster they belong to.
-
-Cluster colors can be modified by selecting the cluster index in list **(b)** prior opening the color picker by pressing 
-![Set color](../../assets/images/gui/TA-but-set-color.png "Set color").
-
-When the 
-[Method settings](#method-settings) include the use of GM clustering, the contour of each Gaussian-shaped cluster is plotted as a white solid line.
-
-<img src="../../assets/images/gui/TA-panel-state-configuration-plot-clusters.png" style="max-width:451px;">
-
-When hoovering the axes with the mouse selection tool activated, mouse coordinates are shown in **(a)**.
+![Reset results](../../assets/images/gui/TA-but-reset-results.png "Reset results") to reset TDP clustering.
 
