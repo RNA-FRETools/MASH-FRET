@@ -1,13 +1,16 @@
-function drawDiagram(h_axes,states,tp,tpmin,pop)
+function drawDiagram(h_axes,states,ntrs,pop,lt)
 
 % default
-r0_min = 0.05; % min circle radius
+r0_min = 0.02; % min circle radius
 r0_max = 0.25; % max circle radius
 r0_def = 0.1; % default circle radius
+fclr = [1,1,1]; % circle fill color
+eclr = [0,0,0]; % circle line color
 mg = 0.15; % padding in axes
-lw_max = 12; % maximum arrow line witdh
-lw_min = 0.01*lw_max; % minimum arrow line witdh (to be normalized by the number of states)
+lw_max = 20; % maximum arrow line witdh
+lw_min = 1; % minimum arrow line witdh
 hw_min = 2; % minimum arrow head witdh
+lstl = '-'; % arrow line style style
 step = 0.03; % arrow shift (normalized units)
 corr = 0; % y-offset correction
 
@@ -19,7 +22,6 @@ h_axes.YLimMode = 'manual';
 h_axes.XLim = [0,1];
 h_axes.YLim = [0,1];
 J = numel(states);
-lw_min = lw_min/J;
 h_pan = h_axes.Parent;
 x0 = diff(h_axes.XLim)/2;
 y0 = diff(h_axes.YLim)/2;
@@ -38,21 +40,26 @@ for j = 1:J
     y = y0+Rv*sin((j-1)*theta)-r0(j);
     posrect(j,:) = [x y 2*r0(j) 2*r0(j)];
     
-    rectangle(h_axes,'Position',posrect(j,:),'Curvature',[1 1]);
-    text(h_axes,posrect(j,1)+r0(j),posrect(j,2)+r0(j),...
+    rectangle(h_axes,'Position',posrect(j,:),'Curvature',[1 1],'FaceColor',...
+        fclr,'EdgeColor',eclr);
+    ht = text(h_axes,posrect(j,1)+r0(j),posrect(j,2)+r0(j),...
         sprintf('%0.2f',states(j)),'horizontalalignment','center',...
         'fontweight','bold','color','red');
+    if ~isempty(lt)
+        x = posrect(j,1)+r0(j);
+        y = posrect(j,2)+r0(j)-ht.Extent(4);
+        text(h_axes,x,y,['(',char(964),'=',sprintf('%0.0f',lt(j)),')'],...
+            'horizontalalignment','center','fontweight','bold','color',...
+            'blue');
+    end
 end
-if isempty(tp)
+if isempty(ntrs)
     return
 end
 
 % draw transitions (arrows)
-tp(tp<tpmin) = 0;
-k = tp;
-k(~~eye(J)) = 0;
-k = k/sum(sum(k));
-lw = lw_max*k;
+ntrs = ntrs/max(max(ntrs));
+lw = lw_min+(lw_max-lw_min)*ntrs;
 hw = lw*3;
 hw(hw<hw_min) = hw_min;
 h_arr = [];
@@ -62,16 +69,11 @@ for j1 = 1:J
     for j2 = (j1+1):J
         xy_1 = posrect(j1,[1,2])+r0(j1);
         xy_2 = posrect(j2,[1,2])+r0(j2);
-        if k(j1,j2)>0
-            if lw(j1,j2)>lw_min
-                lstl = '-';
-            else
-                lstl = ':';
-            end
+        if ntrs(j1,j2)>0
             x_arr = [xy_1(1),xy_2(1)];
             y_arr = [xy_1(2),xy_2(2)];
             [x_arr,y_arr] = shortenArrow(x_arr,y_arr,r0_corr([j1,j2])+0.02);
-            if k(j2,j1)>0
+            if ntrs(j2,j1)>0
                 [x_arr,y_arr] = shiftArrow(x_arr,y_arr,step);
             end
             xyarr1 = posAxesToFig([x_arr(1),y_arr(1)],h_pan,h_axes,'normalized');
@@ -81,16 +83,11 @@ for j1 = 1:J
                 [xyarr1(2)+corr,xyarr2(2)+corr],'linewidth',lw(j1,j2),...
                 'headwidth',hw(j1,j2),'linestyle',lstl));
         end
-        if k(j2,j1)>0
-            if lw(j2,j1)>lw_min
-                lstl = '-';
-            else
-                lstl = ':';
-            end
+        if ntrs(j2,j1)>0
             x_arr = [xy_2(1),xy_1(1)];
             y_arr = [xy_2(2),xy_1(2)];
             [x_arr,y_arr] = shortenArrow(x_arr,y_arr,r0_corr([j2,j1])+0.02);
-            if k(j1,j2)>0
+            if ntrs(j1,j2)>0
                 [x_arr,y_arr] = shiftArrow(x_arr,y_arr,-step);
             end
             xyarr1 = posAxesToFig([x_arr(1),y_arr(1)],h_pan,h_axes,'normalized');

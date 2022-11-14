@@ -36,16 +36,52 @@ end
 % draw state diagram
 h_axes(1).Visible = 'on';
 if isempty(simdat)
-    drawDiagram(h_axes(1),states,tp,[],[]);
+    drawDiagram(h_axes(1),states,[],[],[]);
 else
     % calculate exp. state rel. pop
     J = numel(states);
-    pop = zeros(1,J);
+    pop0 = zeros(1,J);
     dtSum = sum(simdat.dt(:,1));
     for j = 1:J
-        pop(j) = sum(simdat.dt(simdat.dt(:,3)==j,1))/dtSum;
+        pop0(j) = sum(simdat.dt(simdat.dt(:,3)==j,1))/dtSum;
     end
-    drawDiagram(h_axes(1),states,tp,simdat.tpmin,pop);
+    ntrs0 = zeros(J);
+    for j1 = 1:J
+        for j2 = 1:J
+            if j1==j2
+                continue
+            end
+            ntrs0(j1,j2) = sum(simdat.dt(:,3)==j1 & simdat.dt(:,4)==j2);
+        end
+    end
+    ntrs0(tp<simdat.tpmin) = 0;
+    
+    % order states by value and lifetime
+    stateval = sort(unique(states));
+    tp = prm.mdl_res{1};
+    V = numel(stateval);
+    id_j = 1:J;
+    lt = 1/(1-tp(~~eye(J)));
+    for v = 1:V
+        j_v = find(states==stateval(v));
+        D_v = numel(j_v);
+        lt_v = zeros(1,D_v);
+        for d = 1:D_v
+            lt_v(d) = 1/(1-tp(j_v(d),j_v(d)));
+        end
+        [~,id_v] = sort(lt_v);
+        id_j(j_v) = j_v(id_v);
+        lt(j_v) = lt_v(id_v);
+    end
+    pop = pop0(id_j);
+    ntrs = zeros(J);
+    for j1 = 1:J
+        for j2 = 1:J
+            ntrs(j1,j2) = ntrs0(id_j(j1),id_j(j2));
+        end
+    end
+    
+    drawDiagram(h_axes(1),states,ntrs,pop,lt);
 end
 
 
