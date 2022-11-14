@@ -1,5 +1,8 @@
 function backgroundAnalyser(h_fig)
 
+% display action
+setContPan('Opening Background analyzer...','process',h_fig);
+
 % build backgorund analyzer GUI
 h_fig2 = buildBackgroundAnalyzer(h_fig);
 
@@ -30,3 +33,6 @@ guidata(h_fig,h);
 ud_BAfields(h_fig2);
 
 set(h_fig2,'visible','on');
+
+% display action
+setContPan('Background analyzer is now open!','success',h_fig);

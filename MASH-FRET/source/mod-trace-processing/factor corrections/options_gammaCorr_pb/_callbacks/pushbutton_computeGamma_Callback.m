@@ -1,6 +1,9 @@
 % compute the gamma factor; added by FS, 26.4.2018
 function pushbutton_computeGamma_Callback(~, ~, h_fig, h_fig2)
 
+% display action
+setContPan('Saving gamma factor calculations...','process',h_fig);
+
 h = guidata(h_fig);
 q = guidata(h_fig2);
 
@@ -19,5 +22,9 @@ guidata(h_fig,h);
 close(h_fig2);
 
 ud_factors(h_fig);
+
+% display action
+setContPan('Calculated gamma factor werw successfully exported','success',...
+    h_fig);
 
 
