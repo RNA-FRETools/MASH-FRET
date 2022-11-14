@@ -15,7 +15,7 @@ permalink: /tutorials/analyze-data.html
 
 Follow this procedure to process your single molecule videos (SMVs) or trajectories and characterize the molecule dynamics in your sample.
 
-**Note:** *Skip step 1 if already in possession of intensity-time traces files (ASCII or 
+**Note:** *Skip step 1 if already in possession of intensity-time traces (ASCII files or in a 
 [mash project](../../output-files/mash-mash-project)).*
 
 {% include tutorial_toc.html %}

@@ -16,7 +16,7 @@ nav_exclude: true
 
 Follow this procedure to process your single molecule videos (SMVs) or trajectories and characterize the molecule dynamics in your sample.
 
-**Note:** *Skip step 1 if already in possession of intensity-time traces files (ASCII or 
+**Note:** *Skip step 1 if already in possession of intensity-time traces (ASCII files or in a 
 [mash project](../../output-files/mash-mash-project)).*
 
 {% include tutorial_toc.html %}
@@ -44,37 +44,41 @@ To prepare the working area for analysis:
 {: .procedure }
 1. Create a root folder and name it after your video file for instance  
      
-1. Set the root folder by pressing 
-   ![...](../../assets/images/gui/VP-but-3p.png "...") in the main 
-   [tool bar](../../Getting_started.html#interface) and selecting your root folder  
+1. Move your video file into this folder.
+
+
+---
+
+## Create a video-based project
+
+In MASH, your analysis data and parameters are saved in a file called the "project" file. 
+To process and single molecule video, a video-based project must be created. 
+
+As the functionalities of MASH-FRET adapts automatically to the number of video channels, alternating lasers and FRET pairs, you must inform the software about your particular experiment settings.
+
+{: .procedure }
+1. Press 
+   ![New project](../../assets/images/gui/interface-but-newproj.png) in the 
+   [project management area](../../Getting_started.html#poject-management-area); a window pops up:  
+     
+   ![Create a new project](../../assets/images/gui/newproj-interface.png)  
+     
+1. Select `import video` to open the experiment settings window and fill in the description of your experiment setup; please refer to 
+   [Set experiment settings](../set-experiment-settings/import-video.html#option-2-video-based-project) for help
+     
+1. Set the default export destination by pressing 
+   ![...](../../assets/images/gui/interface-but-dotdotdot.png "...") in the 
+   [project management area](../../Getting_started.html#poject-management-area) and selecting your root folder  
+     
+1. Save modifications to a 
+   [.mash file](../../output-files/mash-mash-project.html) by pressing 
+   ![Save project](../../assets/images/gui/interface-but-saveproj.png "Save project") in the 
+   [project management area](../../Getting_started#project-management-area).
      
 1. Select module 
    [Video processing](../../video-processing.html) by pressing 
    ![Video processing](../../assets/images/gui/VP-but-video-processing.png "Video processing") in the main 
    [tool bar](../../Getting_started.html#interface)
-
-
----
-
-## Fill in experiment settings
-
-MASH-FRET is compatible with various experiment settings. 
-The functionalities adapts automatically to the number of channels, number of alternating lasers and fluorophore properties.
-
-To inform the software about your experiment settings, in panel 
-[Experiment Settings](../../video-processing/panels/panel-experiment-settings.html):
-
-{: .procedure }
-1. Set parameters:
-     
-   [Number of alternated lasers](../../video-processing/panels/panel-experiment-settings.html#number-of-alternated-lasers)  
-   [Laser wavelengths](../../video-processing/panels/panel-experiment-settings.html#number-of-alternated-lasers)  
-   [Number of video channels](../../video-processing/panels/panel-experiment-settings.html#number-of-alternated-lasers)  
-   [Exposure time](../../video-processing/panels/panel-experiment-settings.html#number-of-alternated-lasers)  
-     
-1. Press 
-   ![Options...](../../assets/images/gui/VP-but-options3p.png "Options...") to open and set project options; please refer to 
-   [Set project options](../../video-processing/functionalities/set-project-options.html) for help
 
 
 ---
@@ -91,45 +95,33 @@ The mapping is done on a **reference image**, where reference emitters (usually 
 The transformation is specific to your setup. 
 Create a new transformation file solely when your setup gets realigned.
 
-To obtain the reference image from a reference video:
-
-{: .procedure }
-1. Press 
-   ![Load...](../../assets/images/gui/VP-but-load.png "Load...") in the 
-   [Visualization area](../../video-processing/panels/area-visualization.html) and select the reference video file  
-      
-1. Press 
-   ![Go](../../assets/images/gui/VP-but-go.png "Go") to export a full-range average image, *i.e.*, from frame 1 to ending frame with a frame interval of 1, in 
-   [Average image](../../video-processing/panels/panel-molecule-coordinates.html#average-image)
-
 To map reference coordinates in 
-[Coordinates transformation](../../video-processing/panels/panel-molecule-coordinates.html#coordinates-transformation):
+[Coordinates transformation](../../video-processing/components/panel-molecule-coordinates.html#coordinates-transformation):
 
 {: .procedure }
 1. Press 
-   ![Map](../../assets/images/gui/VP-but-map.png "Map") and select the reference image to open the mapping tool
+   ![Map](../../assets/images/gui/VP-but-map.png "Map") and select the reference video or image file
      
-1. Map at least 15 emitters in each channel and close the tool to export reference coordinates to a 
-   [.map file](../../output-files/map-mapped-coordinates.html); please refer to 
+1. Map at least 4 emitters in each channel and close the tool to save reference coordinates; please refer to 
    [Use the mapping tool](../../video-processing/functionalities/use-the-mapping-tool.html) for help
 
 
 To create the transformation file in 
-[Coordinates transformation](../../video-processing/panels/panel-molecule-coordinates.html#coordinates-transformation):
+[Coordinates transformation](../../video-processing/components/panel-molecule-coordinates.html#coordinates-transformation):
 
 {: .procedure }
-1. Set parameter 
-   [Transformation type](../../video-processing/panels/panel-molecule-coordinates.html#transformation-types):  
-      
-   <u>default</u>: `Projective`  
+1. Press 
+   ![Calc.](../../assets/images/gui/VP-but-calcdot.png "Calc.") to calculate the transformation 
      
 1. Press 
-   ![Calculate](../../assets/images/gui/VP-but-calculate.png "Calculate") to calculate the transformation and save it to a 
-   [.mat file](../../output-files/mat-transformation.html)  
+   ![View](../../assets/images/gui/VP-but-view.png "View") and select the reference image or video file to check the quality of transformation; the superposition of the base image with the transformed images is shown in the 
+   [Transformed image](/video-processing/components/area-visualization.html#transformed-image) visualization tab.  
+     
+   If the transformed images (green for 2 channels, or green and blue for 3 channels) are shifted from the base image (in red), try to map a larger number of reference coordinates and repeat these three steps.  
      
 1. Press 
-   ![Check quality...](../../assets/images/gui/VP-but-check-quality.png "Check quality...") and select the reference image file to check the quality of transformation; if the green image is shifted from the red, go back to step 1 and use a more complex transformation type.
-   If the shift persists, try mapping reference coordinates with more accuracy and repeat these three steps.
+   ![Save](../../assets/images/gui/VP-but-save.png) to save the transformation to a 
+   [.mat file](../../output-files/mat-transformation.html) for later use
 
 
 ---
@@ -139,44 +131,31 @@ To create the transformation file in
 Bright spot coordinates are the positions of emitters not yet co-localized in other detection channels.
 They are determined by spot finding algorithms on the average frame of a **single molecule video** to minimize competitive background noise and prevent the variation of single molecule brightness in time.
 
-To obtain the average SMV frame:
+To localize spots coordinates:
 
 {: .procedure }
-1. Press 
-   ![Load...](../../assets/images/gui/VP-but-load.png "Load...") in the 
-   [Visualization area](../../video-processing/panels/area-visualization.html) and select the SMV file  
-      
-1. Press 
-   ![Go](../../assets/images/gui/VP-but-go.png "Go") to export a full-range average image, *i.e.*, from frame 1 to ending frame with a frame interval of 1, in 
-   [Average image](../../video-processing/panels/panel-molecule-coordinates.html#average-image)
-
-To localize and export bright spot coordinates:
-
-{: .procedure }
-1. Press
-   ![...](../../assets/images/gui/VP-but-3p.png "...") in 
-   [Average image](../../video-processing/panels/panel-molecule-coordinates.html#average-image) and select the average video frame file
+1. Select tab `Average image` in the 
+   [Visualization area](../../video-processing/components/area-visualization.html) and use it to determine background values in each channel
      
-1. Press 
-   ![+](../../assets/images/gui/VP-but-plus.png "+") in the 
-   [Visualization area](../../video-processing/panels/area-visualization.html) to activate the 
-   [Create trace tool](../../video-processing/panels/area-visualization.html#create-trace-tool) and use it to determine background values in each channel
-     
-1. Set parameters in [Spotfinder](../../video-processing/panels/panel-molecule-coordinates.html#spotfinder) for each channel selected in menu **(a)**:
+1. Set parameters in [Spotfinder](../../video-processing/components/panel-molecule-coordinates.html#spotfinder) for each channel selected in menu **(a)**:   
      
    <u>default</u>: method `in-series screening`  
+   <u>default</u>: parameters **(e)** and **(f)** to 9 pixels  
    <u>default</u>: parameters **(g)** and **(h)** to 7 pixels  
    <u>default</u>: parameters **(d)** to background intensity  
-   <u>default</u>: options **(b)** and **(i)** deactivated  
-     
-     
-1. Press 
-   ![Find](../../assets/images/gui/VP-but-find.png "Find") to start spot finding; if the spot density is too high, increase the background intensities in **(k)**
-   [Exclusion rules](../../video-processing/panels/panel-molecule-coordinates.html#exclusion-rules) until a satisfying density is reached
+   <u>default</u>: options **(b)** activated  
      
 1. Press 
-   ![Save...](../../assets/images/gui/VP-but-save3p.png "Save...") to export coordinates to a 
-   [.spots file](../../output-files/spots-spots-coordinates.html)
+   ![Find](../../assets/images/gui/VP-but-find.png "Find") to start spot finding and gaussian fitting:  
+     
+   ![Fitting peaks...](../../assets/images/gui/VP-panel-molcoord-sf-lb.png "Fitting peaks...")
+     
+1. If the spot density is too high, tune the [Exclusion rules](../../video-processing/components/panel-molecule-coordinates.html#exclusion-rules) until a satisfying density is reached:  
+     
+   increase the background intensities in **(j)**  
+   increase minimum distance between spots in **(k)**  
+   increase minimum spot width in **(m)**  
+   decrease maximum spot width in **(n)**  
 
    
 ---
@@ -186,23 +165,18 @@ To localize and export bright spot coordinates:
 If processing a video with only one video channel, skip this step by going directly to 
 [Create and export intensity-time traces](#create-and-export-intensity-time-traces).
 
-To obtain single molecule coordinates, spot coordinates must be transposed from one video channel to all others, or in other words, must be co-localized. 
-Coordinates transformation is done by applying operations stored in a **transformation file** to spot coordinates.
+To obtain single molecule coordinates, spot coordinates must be transposed from one video channel to all others, or in other words, the spot must be co-localized in all video channels. 
+Coordinates transformation is done by applying a combination of symmetrical operations specific to your setup to spot coordinates. 
 
-To transform spot coordinates and export single molecule coordinates:
+To transform spot coordinates:
 
 {: .procedure }
-1. If not already done, import the transformation file in 
-   [Coordinates transformation](../../video-processing/panels/panel-molecule-coordinates.html#coordinates-transformation) by pressing 
-   ![...](../../assets/images/gui/VP-but-3p.png "...")
-     
-1. (optional) Press 
-   ![Check quality...](../../assets/images/gui/VP-but-check-quality.png "Check quality...") and select the reference image recorded in parallel of the experiment; if the green image is shifted from the red, your setup alignment was modified and a new transformation file must be created; please refer to 
-   [Create the transformation file](#create-the-transformation-file) for help  
+1. If step 3 was skipped, import the transformation file in 
+   [Coordinates transformation](../../video-processing/components/panel-molecule-coordinates.html#coordinates-transformation) by pressing the corresponding 
+   ![Open](../../assets/images/gui/VP-but-open.png "Open") button and selecting the transformation file  
      
 1. Press 
-   ![Transform](../../assets/images/gui/VP-but-transform.png "Transform") to transform and export coordinates to a 
-   [.coord file](../../output-files/coord-transformed-coordinates.html)
+   ![Transform](../../assets/images/gui/VP-but-transform.png "Transform") to transform spots coordinates into the final single molecule coordinates.
 
 
 ---
@@ -212,30 +186,24 @@ To transform spot coordinates and export single molecule coordinates:
 Intensity-time traces are created from the **single molecule video** using the co-localized single molecule coordinates.
 
 To create and export intensity-time traces in panel 
-[Intensity integration](../../video-processing/panels/panel-intensity-integration.html):
+[Intensity integration](../../video-processing/components/panel-intensity-integration.html):
 
 {: .procedure }
-1. Press 
-   ![...](../../assets/images/gui/VP-but-3p.png "...") in 
-   [Input video](../../video-processing/panels/panel-intensity-integration.html#input-video) and select the video file  
-     
-1. Press 
-   ![...](../../assets/images/gui/VP-but-3p.png "...") in 
-   [Input coordinates](../../video-processing/panels/panel-intensity-integration.html#input-coordinates) and select the coordinates file  
-     
 1. Set
-   [Integration parameters](../../video-processing/panels/panel-intensity-integration.html#integration-parameters):  
+   [Integration parameters](../../video-processing/components/panel-intensity-integration.html#integration-parameters):  
      
    <u>default</u>: parameter **(a)** to 5 pixels  
    <u>default</u>: parameter **(b)** to 8  
      
 1. Press 
-   ![Create & Export...](../../assets/images/gui/VP-but-export.png "Create & Export...") to open and set export options; please refer to 
-   [Set export options](../../trace-processing/functionalities/set-export-options.html) for help
+   ![CALCULATE TRACES](../../assets/images/gui/VP-but-calculatetraces.png "CALCULATE TRACES") to start calculating time traces and making them available in modules 
+   [Trace processing](../../trace-processing.html) and 
+   [Histogram analysis](../../histogram-analysis.html).  
      
-1. Press 
-   ![Next >>](../../assets/images/gui/TP-but-next-supsup.png "Next >>") to start calculating time traces and export files; a 
-   [mash project](../../output-files/mash-mash-project.html) file is automatically exported in the SMV folder
+1. Save modifications to the 
+   [.mash file](../../output-files/mash-mash-project.html) by pressing 
+   ![Save project](../../assets/images/gui/interface-but-saveproj.png "Save project") in the 
+   [project management area](../../Getting_started#project-management-area).
 
 
 ---
