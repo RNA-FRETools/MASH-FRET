@@ -56,7 +56,6 @@ When you start MASH-FRET the **main user interface** opens.
 
 The main user interface appears in its default layout and includes:
 * a **menu bar** that allows the execution of program <u>routines</u>, the setting of <u>file overwriting</u> options and <u>time/intensity units</u>, as well as the access to <u>external tools</u> 
-[Restructure files](trace-processing/functionalities/merge-projects.html#restructure-alex-data), 
 [Bin time axis](trace-processing/functionalities/bin-trajectories.html#bin-traces-and-export-ascii-files) and 
 [Check toolbox dependencies](System_requirements.html).
 * a [**Project management area**](#project-management-area) for managing the opened projects,
@@ -99,6 +98,7 @@ This area allows to navigate through your open projects via the project list **(
 * to **close** opened projects by pressing ![Close project](assets/images/gui/interface-but-closeproj.png "Close project")
 * to **save** project modifications by pressing ![Save project](assets/images/gui/interface-but-saveproj.png "Save project")
 * to **edit** some experimental settings of an opened project by pressing ![Edit project](assets/images/gui/interface-but-editproj.png "Edit project")
+* to **merge** selected projects into one by right-clicking on **(a)** and selecting `Merge projects`
 * to set the project's **root folder** in **(b)** by pressing ![...](assets/images/gui/interface-but-dotdotdot.png "..."); the root folder is the default destination where all files will be exported. 
 
 
