@@ -64,7 +64,7 @@ for i = 1:nChan
         % new transformation file (>2016a)
         elseif isa(tr{j,2},'projective2d') || isa(tr{j,2},'affine2d')
             cin = tr{j,1}(1);
-            if cin == i
+            if cin == i && ~isempty(xy{i})
                 cout = tr{j,1}(2);
                 [xy_tr{cout}{i}(:,1),xy_tr{cout}{i}(:,2)] = ...
                     transformPointsForward(tr_ij,xy{i}(:,1),xy{i}(:,2));
