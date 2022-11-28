@@ -132,7 +132,7 @@ disp(cat(2,prefix,'>> import spots coordinates ',p.spots_file{nChan},...
 pushbutton_impCoord_Callback({p.annexpth,p.spots_file{nChan}},[],...
     h_fig);
 
-for tr = 1:size(p.vers,2)
+for tr = 1:(size(p.vers,2)-1)
     disp(cat(2,prefix,'>> >> import transformation ',p.trsf_file{nChan,tr},...
         '...'));
     pushbutton_trLoad_Callback({p.annexpth,p.trsf_file{nChan,tr}},[],...
@@ -144,7 +144,7 @@ for tr = 1:size(p.vers,2)
 
     disp(cat(2,prefix,'>> >> transform coordinates...'));
     pushbutton_trGo_Callback(h.pushbutton_trGo,[],h_fig);
-    
+
     disp(cat(2,prefix,'>> >> export transformed coordinates...'));
     pushbutton_trSave_Callback({p.dumpdir,p.exp_coord{nChan,tr}},[],h_fig);
 end

@@ -9,6 +9,9 @@ movie = [];
 ok = 1;
 expT = 0.1;
 nbit = 1; % 1:int8, 2:int16, 4:single, 8:double
+fmt = 'old';
+skpiv = 2;
+skpbt = 0;
 
 h = guidata(h_fig);
 isMov = 0; % no movie variable was defined before (no memory is allocated)
@@ -33,25 +36,33 @@ if f<0
     return;
 end
 
+if isempty(fDat)
+    pixelX = fread(f,1,'uint16');
+    pixelY = fread(f,1,'uint16');
+else
+    pixelX = fDat{2}(1);
+    pixelY = fDat{2}(2);
+end
+
+% Figure out how many frames are in this pma, based on the file size:
+fileinfo = dir(fullFname);
+totbytes = fileinfo.bytes-4;
+frameLen = totbytes/(pixelX*pixelY);
+if round(frameLen)~=frameLen
+    fmt = 'new';
+    skpbt = 1;
+    skpiv = 1;
+    frameLen = totbytes/(2*(pixelX*pixelY+skpiv));
+end
+
 % first read
 if isempty(fDat) 
     % Get the movie dimensions
     cycleTime = expT;
-    
-    pixelX = fread(f,1,'uint16');
-    pixelY = fread(f,1,'uint16');
 
     % Get cursor position where graphic data begin
     fCurs = ftell(f);
     
-    % Figure out how many frames are in this pma, based on the file size:
-    fileinfo = dir(fullFname);
-    if round(fileinfo.bytes/2)==fileinfo.bytes/2
-        totbytes = fileinfo.bytes-4;
-    else
-        totbytes = fileinfo.bytes-5;
-    end
-    frameLen = totbytes/(pixelX*pixelY);
     clear totbytes fileinfo
     
     if round(frameLen)~=frameLen
@@ -112,9 +123,15 @@ if strcmp(n, 'all')
         if isMov==0
             movie = repmat(uint8(0),[pixelY pixelX frameLen]);
             for i = 1:frameLen
+                switch fmt
+                    case 'new'
+                        fseek(f,(skpiv*(2*i-1) + 2*pixelX*pixelY*(i-1)),0);
+                    case 'old'
+                        fseek(f,pixelX*pixelY*(i-1),0);
+                end
                 movie(:,:,i) = reshape(fread(f, pixelX*pixelY, ...
-                    'uint8=>uint8'), [pixelX pixelY])';
-
+                    'uint8=>single',skpbt), [pixelX pixelY])';
+                
                 intrupt = loading_bar('update', h_fig);
                 if intrupt
                     ok = 0;
@@ -123,11 +140,17 @@ if strcmp(n, 'all')
             end
             frameCur = movie(:,:,1); % Get image data of the input frame
         else
-            h.movie.movie = zeros(pixelY,pixelX,frameLen,'uint8');
-            for i = 1:frameLen 
+            h.movie.movie = zeros(pixelY,pixelX,frameLen,'single');
+            for i = 1:frameLen
+                switch fmt
+                    case 'new'
+                        fseek(f,(skpiv*(2*i-1) + 2*pixelX*pixelY*(i-1)),0);
+                    case 'old'
+                        fseek(f,pixelX*pixelY*(i-1),0);
+                end
                 h.movie.movie(:,:,i) = flip(reshape(...
-                    fread(f,pixelX*pixelY,'uint8=>uint8'),...
-                    [pixelY,pixelX])',1); 
+                    fread(f,pixelX*pixelY,'uint8=>single'),...
+                    [pixelY,pixelX])',skpbt);
 
                 intrupt = loading_bar('update', h_fig);
                 if intrupt
@@ -150,8 +173,14 @@ else
             f = fopen(fullFname,'r');
         end
         fseek(f,fCurs,-1);
-        frameCur = flip(reshape(fread(f,pixelX*pixelY,'uint8=>uint8'),...
-            [pixelY,pixelX])',1);
+        switch fmt
+            case 'new'
+                fseek(f,(skpiv*(2*n-1) + 2*pixelX*pixelY*(n-1)),0);
+            case 'old'
+                fseek(f,pixelX*pixelY*(n-1),0);
+        end
+        frameCur = reshape(fread(f,pixelX*pixelY,'uint8=>single',skpbt),...
+            [pixelX pixelY])';
     end
 end
 
