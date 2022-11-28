@@ -8,6 +8,7 @@ cycleTime = []; % time delay between each frame
 movie = [];
 ok = 1;
 expT = 0.1;
+nbit = 1;
 fmt = 'old';
 skpiv = 2;
 skpbt = 0;
