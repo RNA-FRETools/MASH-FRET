@@ -54,7 +54,7 @@ if isfield(prm,'clst_res') && ~isempty(prm.clst_res{1}) && ...
     end
 
     prm.clst_res{1} = model;
-    prm.clst_res{2} = prm.clst_res{3}.boba_k;
+    prm.clst_res{2} = prm.clst_res{3}.boba_K;
     prm.clst_res{3} = Jopt;
 end
 
@@ -150,7 +150,7 @@ if isfield(prm,'clst_start') && size(prm.clst_start,2)>=2 && ...
                 wght = newkinstart{k,1}(4)*newkinstart{k,1}(1);
                 excl = newkinstart{k,1}(8);
                 mols = unique(clst(:,4));
-                newclstres{k} = getDtHist(clst, [j1(k),j2(k)], mols, excl, ...
+                newclstres{k} = getDtHist(clst,j1(k),j2(k),mols,excl, ...
                     wght);
             end
 

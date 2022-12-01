@@ -32,6 +32,11 @@ if size(p_proj.TP.prm{n},2)>=5 && size(p_proj.TP.prm{n}{5},2)>=2 && ...
         newBtPrm(c,:) = sum(bts,1);
     end
     p_proj.TP.prm{n}{5}{1} = newBtPrm;
+    
+    % adjust current Bt channel index
+    if p_proj.TP.fix{3}(3)>size(newBtPrm,2)
+        p_proj.TP.fix{3}(3) = size(newBtPrm,2);
+    end
 end
 
 % added by MH, 29.3.2019
@@ -63,6 +68,11 @@ if size(p_proj.TP.prm{n},2)>=5 && size(p_proj.TP.prm{n}{5},2)>=2 && ...
         end
     end
     p_proj.TP.prm{n}{5}{2} = newDePrm;
+    
+    % adjust current DE laser index
+    if p_proj.TP.fix{3}(1)>size(newDePrm,1)
+        p_proj.TP.fix{3}(1) = size(newDePrm,1);
+    end
 end
 
 % added by MH, 4.4.2020
