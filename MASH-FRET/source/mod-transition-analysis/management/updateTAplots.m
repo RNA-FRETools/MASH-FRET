@@ -51,6 +51,9 @@ def = p.proj{proj}.TA.def{tag,tpe};
 
 v_lft = curr.lft_start{2}(2);
 v_mdl = get(h.popupmenu_TA_mdlDtState,'Value');
+if v_mdl>numel(h.popupmenu_TA_mdlDtState.String)
+    v_mdl = numel(h.popupmenu_TA_mdlDtState.String);
+end
 k = get(h.popupmenu_TA_slTrans,'value');
 
 if strcmp(opt,'all') || strcmp(opt,'tdp')
