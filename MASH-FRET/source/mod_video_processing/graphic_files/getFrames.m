@@ -6,58 +6,66 @@ function [data,ok] = getFrames(fullFname, n, param, h_fig, useMov)
     if strcmp(fext,'.coord') || strcmp(fext,'.spots')
         fext = '.crd';
     end
+    if strcmp(fext,'.vsi') || strcmp(fext,'.ets')
+        fext = '.bf';
+    end
     
     switch lower(fext)
+        case '.bf'
+            % Create a structure containing data
+            [data,ok] = readBf(fullFname, n, param, h_fig, useMov);
+            return
+            
         case '.sira'
             % Create a structure containing data
             [data,ok] = readSira(fullFname, n, param, h_fig, useMov);
-            return;
+            return
             
         case '.sif'
             % Create a structure containing data
             [data,ok] = readSif(fullFname, n, param, h_fig, useMov);
-            return;
+            return
             
         case '.tif'
             % Create a structure containing data
             [data,ok] = readTif(fullFname, n, param, h_fig, useMov);
-            return;
+            return
             
         case '.gif'
             % Create a structure containing data
             [data,ok] = readGif(fullFname, n, h_fig, useMov);
-            return;
+            return
           
         case '.png'
             % Create a structure containing data
             [data,ok] = readPng(fullFname, n, param, h_fig);
-            return;
+            return
             
         case '.pma'
             % Create a structure containing data
             [data,ok] = readPma(fullFname, n, param, h_fig, useMov);
-            return;
+            return
             
         case '.spe'
             % Create a structure containing data
             [data,ok] = readSpe(fullFname, n, h_fig, useMov);
-            return;
+            return
             
         case '.crd'
             % Create a structure containing data
             [data,ok] = readCrd(fullFname, h_fig);
-            return;
+            return
             
         case '.avi'
             % Create a structure containing data
             [data,ok] = readAvi(fullFname, n, h_fig);
-             return;
+             return
             
         otherwise
             updateActPan('File format not recognized.',h_fig,'error');
             ok = 0;
             data = [];
-            return;
+            return
     end
 end
 

@@ -73,8 +73,15 @@ for c = 1:size(chansplit,2)
 end
 
 % set axes limits
+if min(min(img))==max(max(img))
+    img_min = 0;
+    img_max = 1;
+else
+    img_min = min(min(img));
+    img_max = max(max(img));
+end
 set(h_axes,'nextPlot','replacechildren','xlim',[0,w],'ylim',[0,h],'clim',...
-    [min(min(img)),max(max(img))]);
+    [img_min,img_max]);
 
 % set colorbar label
 if p.perSec

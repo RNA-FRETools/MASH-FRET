@@ -1,7 +1,12 @@
 ---
 layout: default
 title: (*.traces) SMART traces
+<<<<<<< HEAD
+parent: /output-files.html
+nav_order: 28
+=======
 parent: Output files
+>>>>>>> MASH-FRET-1.3.2-doc
 nav_exclude: 1
 nav_order: 28
 ---

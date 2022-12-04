@@ -1,7 +1,12 @@
 ---
 layout: default
 title: (*.txt) QUB traces
+<<<<<<< HEAD
+parent: /output-files.html
+nav_order: 34
+=======
 parent: Output files
+>>>>>>> MASH-FRET-1.3.2-doc
 nav_exclude: 1
 nav_order: 36
 ---
