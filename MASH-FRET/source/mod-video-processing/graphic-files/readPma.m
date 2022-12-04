@@ -8,7 +8,7 @@ cycleTime = []; % time delay between each frame
 movie = [];
 ok = 1;
 expT = 0.1;
-nbit = 1;
+nbit = 1; % 1:int8, 2:int16, 4:single, 8:double
 fmt = 'old';
 skpiv = 2;
 skpbt = 0;
@@ -16,14 +16,14 @@ skpbt = 0;
 h = guidata(h_fig);
 isMov = 0; % no movie variable was defined before (no memory is allocated)
 if ~isempty(h_fig)
-    h = guidata(h_fig);
-    if isFullLengthVideo(fullFname,h_fig)
-        isMov = 2; % the movie variable exist and contain the video file data
-    elseif isfield(h,'movie') && isfield(h.movie,'movie') && ...
-            isempty(h.movie.movie)
+    if isfield(h,'movie') && isfield(h.movie,'movie')
         isMov = 1; % the movie variable exist and is free (free memory already allocated)
+        if ~isempty(h.movie.movie)
+            isMov = 2; % the movie variable exist and contain the video data
+        end
     end
 end
+
 if ~useMov
     isMov = 0;
 end
@@ -97,7 +97,7 @@ end
 
 if strcmp(n, 'all')
 
-    if (isMov==0 || isMov==1) && ~memAlloc(frameLen*pixelX*pixelY*nbit)
+    if (isMov==0 || isMov==1) && ~memAlloc(frameLen*pixelX*pixelY)
         str = cat(2,'Out of memory: MASH is obligated to load the video ',...
             'one frame at a time to function\nThis will slow down all ',...
             'operations requiring video data, including the creation of ',...
@@ -127,16 +127,16 @@ if strcmp(n, 'all')
         
         fseek(f,fCurs,-1);
         if isMov==0
-            movie = repmat(uint8(0),[pixelY pixelX frameLen]);
+            movie = zeros(pixelY,pixelX,frameLen,'single');
             for i = 1:frameLen
-                switch fmt
-                    case 'new'
-                        fseek(f,(skpiv*(2*i-1) + 2*pixelX*pixelY*(i-1)),0);
-                    case 'old'
-                        fseek(f,pixelX*pixelY*(i-1),0);
+                if strcmp(fmt,'new')
+                    fseek(f,skpiv,0);
                 end
-                movie(:,:,i) = reshape(fread(f, pixelX*pixelY, ...
-                    'uint8=>single',skpbt), [pixelX pixelY])';
+                movie(:,:,i) = reshape(fread(f,pixelX*pixelY,...
+                    'uint8=>single',skpbt),[pixelX pixelY])';
+                if strcmp(fmt,'new')
+                    fseek(f,skpiv,0);
+                end
                 
                 intrupt = loading_bar('update', h_fig);
                 if intrupt
@@ -148,15 +148,14 @@ if strcmp(n, 'all')
         else
             h.movie.movie = zeros(pixelY,pixelX,frameLen,'single');
             for i = 1:frameLen
-                switch fmt
-                    case 'new'
-                        fseek(f,(skpiv*(2*i-1) + 2*pixelX*pixelY*(i-1)),0);
-                    case 'old'
-                        fseek(f,pixelX*pixelY*(i-1),0);
+                if strcmp(fmt,'new')
+                    fseek(f,skpiv,0);
                 end
-                h.movie.movie(:,:,i) = flip(reshape(...
-                    fread(f,pixelX*pixelY,'uint8=>single'),...
-                    [pixelY,pixelX])',skpbt);
+                h.movie.movie(:,:,i) = reshape(fread(f,pixelX*pixelY,...
+                    'uint8=>single',skpbt),[pixelX pixelY])';
+                if strcmp(fmt,'new')
+                    fseek(f,skpiv,0);
+                end
 
                 if ~islb && loading_bar('update', h_fig)
                     ok = 0;
@@ -200,6 +199,5 @@ data = struct('cycleTime', cycleTime, ...
               'pixelX', pixelX, ...
               'frameLen', frameLen, ...
               'fCurs', fCurs, ...
-              'frameCur', double(frameCur), ...
+              'frameCur', frameCur, ...
               'movie', movie);
-
