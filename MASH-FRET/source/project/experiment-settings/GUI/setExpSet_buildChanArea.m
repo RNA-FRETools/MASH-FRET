@@ -18,20 +18,13 @@ prevun = h_tab.Units;
 setProp([h_fig,h_fig.Children],'units','pixels');
 postab = h_tab.Position;
 wtxt0 = (postab(3)-2*h.mg-(nChan-1)*2*h.mg)/nChan;
+haxe = postab(4)-h.mgtab-h.hedit-h.mg-h.htxt-h.mg-h.htxt-h.hedit-h.mg-...
+    h.htxt-h.mg-h.hedit-h.mg;
+waxe = (postab(3)-2*h.mg-(nChan-1)*2*h.mg)/nChan;
 
 % delete previous controls
-if isfield(h,'text_chan') && sum(ishandle(h.text_chan))
-    delete(h.text_chan);
-    h = rmfield(h,'text_chan');
-end
-if isfield(h,'text_chanEm') && sum(ishandle(h.text_chanEm))
-    delete(h.text_chanEm);
-    h = rmfield(h,'text_chanEm');
-end
-if isfield(h,'edit_chanLbl') && sum(ishandle(h.edit_chanLbl))
-    delete(h.edit_chanLbl);
-    h = rmfield(h,'edit_chanLbl');
-end
+h = delControlIfHandle(h,{'text_chan','text_chanEm','edit_chanLbl',...
+    'axes_chan'});
 
 x = h.mg;
 y = h.edit_nChan.Position(2)-h.mg-h.htxt-h.mg-h.htxt-h.hedit;
@@ -56,7 +49,14 @@ for c = 1:nChan
         h.un,'position',[x,y,wtxt0,h.hedit],'callback',...
         {@edit_setExpSet_chanLbl,h_fig,c});
     
+    y = y-haxe;
+
+    h.axes_chan(c) = axes('parent',h_tab,'units',h.un,'fontunits',h.fun,...
+        'fontsize',h.fsz,'position',[x,y,waxe,haxe],'xtick',[],'ytick',[],...
+        'nextplot','replacechildren');
+    
     x = x+wtxt0+2*h.mg;
+    y = y+haxe;
 end
 
 setProp([h_fig,h_fig.Children],'units',prevun);

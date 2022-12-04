@@ -16,13 +16,11 @@ setDefault_TA(h_fig,p);
 % retrieve interface defaults
 h = guidata(h_fig);
 
-% expand panel
-h_but = getHandlePanelExpandButton(h.uipanel_TA_kineticModel,h_fig);
+% start clustering
+h_but = getHandlePanelExpandButton(h.uipanel_TA_stateConfiguration,h_fig);
 if strcmp(h_but.String,char(9660))
     pushbutton_panelCollapse_Callback(h_but,[],h_fig);
 end
-
-% start clustering
 pushbutton_TDPupdateClust_Callback(h.pushbutton_TDPupdateClust,[],h_fig);
 V = numel(get(h.popupmenu_TA_slStates,'string'));
 
@@ -30,6 +28,14 @@ fprintf(cat(2,prefix,'test model inferrence starting with a guess from ',...
     'exponential fit ...\n'));
 
 % automated fit on all histograms
+h_but = getHandlePanelExpandButton(h.uipanel_TA_dtHistograms,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
+set(h.checkbox_TA_slExcl,'value',p.dtExcl);
+checkbox_TA_slExcl_Callback(h.checkbox_TA_slExcl,[],h_fig);
+set(h.checkbox_tdp_rearrSeq,'value',p.dtRearr);
+checkbox_tdp_rearrSeq_Callback(h.checkbox_tdp_rearrSeq,[],h_fig);
 expPrm = p.expPrm;
 expPrm(1) = 1;
 for v = 1:V
@@ -38,6 +44,10 @@ end
 pushbutton_TDPfit_fit_Callback(h.pushbutton_TA_slFitAll,[],h_fig);
 
 % import state degeneracy
+h_but = getHandlePanelExpandButton(h.uipanel_TA_kineticModel,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 set_TA_mdl(2,[],[],[],p.mdlRestart,h_fig);
 pushbutton_TA_fitMLDPH_Callback(h.pushbutton_TA_fitMLDPH,[],h_fig);
 

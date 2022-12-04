@@ -19,10 +19,12 @@ inSec = p.proj{proj}.time_in_sec;
 selected_chan = p.proj{proj}.TP.fix{3}(6);
 methods = p.proj{proj}.TP.curr{mol}{3}{2};
 bgprm = p.proj{proj}.TP.curr{mol}{3}{3};
-res_y = p.proj{proj}.movie_dim(2);
-res_x = p.proj{proj}.movie_dim(1);
+viddim = p.proj{proj}.movie_dim;
 vidfile = p.proj{proj}.movie_file;
 viddat = p.proj{proj}.movie_dat;
+
+nMov = numel(vidfile);
+multichanvid = nMov==1;
 
 % get channel and laser corresponding to selected data
 chan = 0;
@@ -38,6 +40,13 @@ for l = 1:nExc
     end
 end
 
+% get video index
+if multichanvid
+    mov = 1;
+else
+    mov = c;
+end
+
 % control method
 method = methods(l,c);
 if method~=6
@@ -47,6 +56,8 @@ end
 % control dark coordinates
 coord_dark = bgprm{l,c}(method,4:5);
 min_xy = aDim/2;
+res_y = viddim{mov}(2);
+res_x = viddim{mov}(1);
 max_y = res_y - aDim/2;
 max_x = res_x - aDim/2;
 coord_dark(coord_dark(:,1:2)<=min_xy)=min_xy+1;
@@ -60,19 +71,19 @@ h.param = p;
 guidata(h_fig, h);
 
 % build background intensity-time trace
-fDat{1} = vidfile;
-fDat{2}{1} = viddat{1};
-if isFullLengthVideo(p.proj{proj}.movie_file,h_fig)
+fDat{1} = vidfile{mov};
+fDat{2}{1} = viddat{mov}{1};
+if isFullLengthVideo(vidfile{mov},h_fig)
     fDat{2}{2} = h.movie.movie;
 else
     fDat{2}{2} = [];
 end
 fDat{3} = [res_y res_x];
-fDat{4} = viddat{3};
+fDat{4} = viddat{mov}{3};
+nFrames = viddat{mov}{3};
 
 [o,I_bg] = create_trace(coord_dark, aDim, nPix, fDat, h.mute_actions);
 
-nFrames = viddat{3};
 fact = bgprm{l,c}(method,1);
 I_bg = slideAve(I_bg(l:nExc:nFrames,:), fact);
 

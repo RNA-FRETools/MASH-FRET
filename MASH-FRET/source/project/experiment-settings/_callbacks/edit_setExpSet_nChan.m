@@ -1,14 +1,14 @@
-function edit_setExpSet_nChan(obj,evd,h_fig)
+function edit_setExpSet_nChan(obj,evd,h_fig,h_fig0)
 
 % retrieve project data
 proj = h_fig.UserData;
 
 nChan = str2double(get(obj,'string'));
 if isempty(nChan)
-    nChan = 0;
+    nChan = 1;
 end
-if nChan<0
-    nChan = 0;
+if nChan<1
+    nChan = 1;
 end
 if nChan>10
     nChan = 10;
@@ -26,6 +26,10 @@ end
 proj.labels = proj.labels(1:nChan);
 proj.chanExc = proj.chanExc(1:nChan);
 
+% update video param
+h = guidata(h_fig);
+proj = updateProjVideoParam(proj,h.radio_impFileMulti.Value);
+
 % update project data
 h_fig.UserData = proj;
 
@@ -38,15 +42,18 @@ ud_plotColors(h_fig);
 % refresh trajectory file import options
 ud_trajImportOpt(h_fig);
 
-% refresh channel tab
+% rebuild channel and video area
 h = guidata(h_fig);
 h = setExpSet_buildChanArea(h,nChan);
+h = setExpSet_buildVideoArea(h,nChan,h_fig0);
 guidata(h_fig,h);
 
-% refresh channel plot
+% refresh channel and laser plot
 ud_expSet_chanPlot(h_fig);
+ud_expSet_excPlot(h_fig);
 
 % refresh interface
+ud_setExpSet_tabImp(h_fig);
 ud_setExpSet_tabChan(h_fig);
 ud_setExpSet_tabLaser(h_fig);
 ud_setExpSet_tabCalc(h_fig);

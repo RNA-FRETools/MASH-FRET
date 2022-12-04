@@ -113,7 +113,8 @@ expCond = {'Title','new project','';...
     '[K+]',[],'mM'};
 tagNames = {'static','dynamic','D-only','A-only'};
 tagClr = {'#4298B5','#FFFFCC','#33CC33','#FF6666','#E19D29'};
-impTrajPrm = {{[1 1 1 1 2 0 1 0 0 5 5 0],1:nExc,reshape(1:(2*nExc),2,nExc)'} ... % trajectory file structure
+impTrajPrm = {{[1 1 1 1 1 0 1],ones(1,nExc),repmat([1,1,0],nChan,1),...
+    repmat([1,1,0],nChan,1,nExc),[]} ... % trajectory file structure
     {0,''} ... % video file
     {0,'',{reshape(1:2*nChan,2,nChan)',1},256} ... % coordinates file, file structure, video width
     [0,1] ... % coordinates in trajectory file
@@ -193,7 +194,22 @@ if numel(p.tagClr)~=numel(p.tagNames)
 end
 
 % trajectory import options
-p.impTrajPrm = adjustParam('impIprm', impTrajPrm, p_input);
+p.impTrajPrm = adjustParam('impTrajPrm', impTrajPrm, p_input);
+if numel(p.impTrajPrm{1}{2})~=p.nExc % ALEX time columns
+    p.impTrajPrm{1}{2} = ones(1,p.nExc);
+end
+if ~isequal(size(p.impTrajPrm{1}{3}),[p.nChan,3]) % intensity columns
+    p.impTrajPrm{1}{4} = repmat([1,1,0],p.nChan,1);
+end
+if ~isequal(size(p.impTrajPrm{1}{4}),[p.nChan,3,p.nExc]) % ALEX intensity columns
+    p.impTrajPrm{1}{4} = repmat([1,1,0],p.nChan,1,p.nExc);
+end
+if ~isequal(size(p.impTrajPrm{1}{5}),[size(p.FRETpairs,1),3]) % FRET states columns
+    p.impTrajPrm{1}{5} = repmat([1,1,0],size(p.FRETpairs,1),1);
+end
+if size(p.impTrajPrm{3}{3}{1},1)~=p.nChan % coordinates file structure
+    p.impTrajPrm{3}{3}{1} = reshape(1:(2*p.nChan),2,p.nChan)';
+end
 
 
 function p = setParamSim(p_input)

@@ -11,7 +11,7 @@ p = h.param;
 vidfile = p.proj{p.curr_proj}.movie_file;
 
 % set current directory to video file location
-[pname,~,~] = fileparts(vidfile);
+[pname,~,~] = fileparts(vidfile{1});
 cd(pname);
 
 if iscell(obj)

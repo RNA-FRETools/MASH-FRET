@@ -1,17 +1,28 @@
 function dark_coord = getDarkCoord(exc, mol, c, p, dimImg)
 
 proj = p.curr_proj;
-aveImg = p.proj{proj}.aveImg{exc+1};
+
+viddim = p.proj{proj}.movie_dim;
 coord = p.proj{proj}.coord(mol,(2*c-1):2*c);
 nChan = p.proj{proj}.nb_channel;
-res_x = p.proj{proj}.movie_dim(1);
-res_y = p.proj{proj}.movie_dim(2);
 aDim = p.proj{proj}.pix_intgr(1);
+multichanvid = numel(viddim)==1;
 
-split = round(res_x/nChan)*(1:nChan-1);
-split_x = [0 split res_x];
-lim_x = [split_x(c) split_x(c+1)];
-lim_y = [0 res_y];
+if multichanvid
+    aveImg = p.proj{proj}.aveImg{exc+1};
+    res_x = viddim{1}(1);
+    res_y = viddim{1}(2);
+    split = round(res_x/nChan)*(1:nChan-1);
+    split_x = [0 split res_x];
+    lim_x = [split_x(c) split_x(c+1)];
+    lim_y = [0 res_y];
+else
+    aveImg = p.proj{proj}.aveImg{c,exc+1};
+    res_x = viddim{c}(1);
+    res_y = viddim{c}(2);
+    lim_x = [0 res_x];
+    lim_y = [0 res_y];
+end
 
 lim = getSubimgLim(coord, dimImg, [lim_x;lim_y]);
 lim_img_x = lim(1,:);

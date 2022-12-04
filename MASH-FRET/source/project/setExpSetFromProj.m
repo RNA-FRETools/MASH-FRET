@@ -20,5 +20,5 @@ es.plotClr = proj.colours;
 es.tagNames = proj.molTagNames;
 es.tagClr = proj.molTagClr;
 if isfield(proj,'traj_import_opt') && ~isempty(proj.traj_import_opt)
-    es.impTrajPrm = proj.traj_import_opt;
+    es.impTrajPrm{1} = proj.traj_import_opt{1};
 end

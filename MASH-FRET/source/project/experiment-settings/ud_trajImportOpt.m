@@ -3,7 +3,7 @@ function ud_trajImportOpt(h_fig)
 proj = h_fig.UserData;
 nChan = proj.nb_channel;
 nExc = proj.nb_excitations;
-FRET = proj.FRET;
+nPair = size(proj.FRET,1);
 opt = proj.traj_import_opt;
 
 % control trajectory import
@@ -13,25 +13,16 @@ if ~(isfield(h,'tab_fstrct') && ishandle(h.tab_fstrct))
 end
 
 % collect import options
-icol1 = opt{1}{1}(5);
-icol2 = opt{1}{1}(6);
-rowwise = opt{1}{1}(7);
-fretcol1 = opt{1}{1}(10);
-fretcol2 = opt{1}{1}(11);
-skipfretcol = opt{1}{1}(12);
 tcol = opt{1}{1}(4);
+rowwise = opt{1}{1}(5); 
 tcol_exc = opt{1}{2};
-icol_exc = opt{1}{3};
+icol = opt{1}{3};
+icol_exc = opt{1}{4};
+fretcol = opt{1}{5};
 
 % adjust ALEX import format
 if nExc==1
     rowwise = 1;
-end
-
-% adjust laser-specific intensity columns
-if size(icol_exc,1)<nExc
-    icol_exc = cat(1,icol_exc,...
-        repmat(icol_exc(end,:),[nExc-size(icol_exc,1),1]));
 end
 
 % adjust laser-specific time columns
@@ -40,97 +31,61 @@ if numel(tcol_exc)<nExc
         repmat(tcol_exc(end),[1,nExc-numel(tcol_exc)]));
 end
 
+% adjust intensity columns
+if size(icol,1)<nChan
+    icol = cat(1,icol,repmat(icol(end,:),[nChan-size(icol,1),1]));
+end
+
+% adjust laser-specific intensity columns
+if size(icol_exc,1)<nChan
+    icol_exc = cat(1,icol_exc,...
+        repmat(icol_exc(end,:,:),[nChan-size(icol_exc,1),1,1]));
+end
+if size(icol_exc,3)<nExc
+    icol_exc = cat(3,icol_exc,...
+        repmat(icol_exc(:,:,end),[1,1,nExc-size(icol_exc,3)]));
+end
+
+% adjust FRET states columns
+if size(fretcol,1)==0
+    fretcol = [1,1,0];
+end
+if size(fretcol,1)<nPair
+    fretcol = cat(1,fretcol,...
+        repmat(fretcol(end,:),[nPair-size(fretcol,1),1]));
+end
+
 % adjust columns nb to last file size
 fdat = h.table_fstrct.UserData;
 isfdat = ~isempty(fdat);
 if isfdat
     C = size(fdat,2);
-    icol2(icol2==0) = C;
-    fretcol2(fretcol2==0) = C;
-    tcol(tcol==0) = C;
-    tcol_exc(tcol_exc==0) = C;
-    icol_exc(icol_exc(:,2)==0,2) = C;
-    
-    icol1(icol1==0) = 1;
-    fretcol1(fretcol1==0) = 1;
-    icol_exc(icol_exc(:,1)==0,1) = 1;
-    
-    icol1(icol1>C) = C;
-    icol2(icol2>C) = C;
-    fretcol1(fretcol1>C) = C;
-    fretcol2(fretcol2>C) = C;
-    tcol(tcol>C) = C;
-    tcol_exc(tcol_exc>C) = C;
-    icol_exc(icol_exc>C) = C;
-    
-    % adjust intensity columns to number of channels
-    if C<nChan
-        icol1 = 0;
-        icol2 = 0;
-        icol_exc(:,1) = 0;
-        icol_exc(:,2) = 0;
-    else
-        if icol1>icol2
-            icol2 = icol1+nChan-1;
-        end
-        irange = icol1:icol2;
-        if mod(numel(irange),nChan)>0
-            icol2 = icol1+nChan-1;
-            if icol2>C
-                icol2 = C;
-                icol1 = icol2-nChan+1;
-            end
-        end
-        for l = 1:nExc
-            if icol_exc(l,1)>icol_exc(l,2)
-                icol_exc(l,2) = icol_exc(l,1)+nChan-1;
-            end
-            irange = icol_exc(l,1):icol_exc(l,2);
-            if mod(numel(irange),nChan)>0
-                icol_exc(l,2) = icol_exc(l,1)+nChan-1;
-                if icol_exc(l,2)>C
-                    icol_exc(l,2) = C;
-                    icol_exc(l,1) = icol_exc(l,2)-nChan+1;
-                end
-            end
-        end
+    icol(icol(:,1)==0 | icol(:,1)>C,1) = C;
+    icol(icol(:,2)==0 | icol(:,2)>C,2) = C;
+    fretcol(fretcol(:,1)==0 | fretcol(:,1)>C,1) = C;
+    fretcol(fretcol(:,2)==0 | fretcol(:,2)>C,2) = C;
+    tcol(tcol==0 | tcol>C) = C;
+    tcol_exc(tcol_exc==0 | tcol_exc>C) = C;
+    for l = 1:nExc
+        icol_exc(icol_exc(:,1,l)==0 | icol_exc(:,1,l)>C,1,l) = C;
+        icol_exc(icol_exc(:,2,l)==0 | icol_exc(:,2,l)>C,2,l) = C;
     end
-
-    % adjust FRET state columns
-    nPair = size(FRET,1);
-    if C<nPair
-        fretcol1 = 0;
-        fretcol2 = 0;
-        skipfretcol= 0;
-    else
-        if fretcol1>fretcol2
-            fretcol2 = fretcol1+(nPair-1)*(skipfretcol+1);
-        end
-        fretrange = fretcol1:(skipfretcol+1):fretcol2;
-        if numel(fretrange)>C
-            skipfretcol = 0;
-            fretrange = fretcol1:fretcol2;
-        end
-        if mod(numel(fretrange),nPair)>0
-            fretcol2 = fretcol1+(nPair-1)*(skipfretcol+1);
-            if fretcol2>C
-                fretcol2 = C;
-                fretcol1 = fretcol2-(nPair-1)*(skipfretcol+1);
-            end
-        end
-    end
+end
+icol(icol(:,1)>icol(:,2),2) = icol(icol(:,1)>icol(:,2),1);
+fretcol(fretcol(:,1)>fretcol(:,2),2) = ...
+    fretcol(fretcol(:,1)>fretcol(:,2),1);
+for l = 1:nExc
+    icol_exc(icol_exc(:,1,l)>icol_exc(:,2,l),2,l) = ...
+        icol_exc(icol_exc(:,1,l)>icol_exc(:,2,l),1,l);
 end
 
 % save modifications
 opt{1}{1}(4) = tcol;
-opt{1}{1}(5) = icol1;
-opt{1}{1}(6) = icol2;
-opt{1}{1}(7) = rowwise;
-opt{1}{1}(10) = fretcol1;
-opt{1}{1}(11) = fretcol2;
-opt{1}{1}(12) = skipfretcol;
+opt{1}{1}(5) = rowwise; 
 opt{1}{2} = tcol_exc(1:nExc);
-opt{1}{3} = icol_exc(1:nExc,:);
+opt{1}{3} = icol(1:nChan,:);
+opt{1}{4} = icol_exc(1:nChan,:,1:nExc);
+opt{1}{5} = fretcol(1:nPair,:);
 
 % adjust sampling time
 proj = getExpSetSamplingTime(opt,proj,h_fig);

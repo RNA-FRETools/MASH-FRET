@@ -25,19 +25,29 @@ for nL = 1:p.nL_max
     for nChan = 1:p.nChan_max
         p.nChan = nChan;
         
-        % test .mash file import 
+        % test multi-channel video-based .mash file import 
         disp(cat(2,prefix,'>> import file ',p.mash_files{nChan,nL}));
         pushbutton_openProj_Callback({p.annexpth,p.mash_files{nChan,nL}},...
             [],h_fig);
 
-        % set module
         switchPan(h.togglebutton_TP,[],h_fig);
-        
-        % save project
+
         pushbutton_saveProj_Callback({p.dumpdir,p.mash_files{nChan,nL}},[],...
             h_fig);
         
-        % test ASCII files import 
+        % test single-channel video-based .mash file import
+        if nChan>1
+            [~,name,ext] = fileparts(p.mash_files{nChan,nL});
+            mash_file = [name,'_sgl',ext];
+            disp(cat(2,prefix,'>> import file ',mash_file));
+            pushbutton_openProj_Callback({p.annexpth,mash_file},[],h_fig);
+
+            switchPan(h.togglebutton_TP,[],h_fig);
+
+            pushbutton_saveProj_Callback({p.dumpdir,mash_file},[],h_fig);
+        end
+        
+        % test video-free ASCII files import 
         disp(cat(2,prefix,'>> import data set ',p.es{nChan,nL}.imp.tdir));
         routinetest_TP_createProj(p,h_fig,[prefix,'>> >> ']);
 
@@ -73,8 +83,9 @@ p.es{p.nChan,p.nL}.imp.coordfile = '';
 p.es{p.nChan,p.nL}.imp.coordopt = [];
 
 % test video import from file
-disp(cat(2,prefix,'test import of video from external file...'));
-p.es{p.nChan,p.nL}.imp.vfile = p.vid_file;
+disp(cat(2,prefix,...
+    'test import of multi-channel video from external file...'));
+p.es{p.nChan,p.nL}.imp.vfile = {p.vid_file};
 
 routinetest_TP_createProj(p,h_fig,[prefix,'>> ']);
 
@@ -83,7 +94,20 @@ setDefault_TP(h_fig,p);
 pushbutton_saveProj_Callback({p.dumpdir,p.exp_vid},[],h_fig);
 pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
 
-p.es{p.nChan,p.nL}.imp.vfile = '';
+disp(cat(2,prefix,...
+    'test import of single-channel video from external file...'));
+p.es{p.nChan,p.nL}.imp.vfile = repmat({p.vid_file},1,p.nChan);
+
+routinetest_TP_createProj(p,h_fig,[prefix,'>> ']);
+
+setDefault_TP(h_fig,p);
+
+[~,name,ext] = fileparts(p.exp_vid);
+exp_vid = [name,'_sgl',ext];
+pushbutton_saveProj_Callback({p.dumpdir,exp_vid},[],h_fig);
+pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
+
+p.es{p.nChan,p.nL}.imp.vfile = {''};
 
 % test gamma factor import from files
 disp(cat(2,prefix,'test import of gamma factors from external files...'));

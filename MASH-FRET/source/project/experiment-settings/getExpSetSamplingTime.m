@@ -18,7 +18,7 @@ h_fig0 = h.figure_MASH;
 proj.spltime_from_video = false;
 proj.spltime_from_traj = false;
 if ~isempty(opt) && opt{1}{1}(3)
-    rowwise = opt{1}{1}(7);
+    rowwise = opt{1}{1}(5);
     fdat = h.table_fstrct.UserData;
     if ~isempty(fdat)
         nhline = opt{1}{1}(1);
@@ -32,10 +32,19 @@ if ~isempty(opt) && opt{1}{1}(3)
             nExc = numel(tcol_exc);
             t_exc = zeros(1,nExc);
             for exc = 1:nExc
-                t_exc(exc) = str2double(fdat{nhline+1,tcol_exc(exc)});
+                t = str2double(fdat{nhline+1,tcol_exc(exc)});
+                if isempty(t)
+                    break
+                else
+                    t_exc(exc) = t;
+                end
             end
-            [t_exc,~] = sort(t_exc);
-            splt = t_exc(2)-t_exc(1);
+            if ~all(t_exc==0)
+                [t_exc,~] = sort(t_exc);
+                splt = t_exc(2)-t_exc(1);
+            else
+                splt = NaN;
+            end
         end
         if ~isnan(splt)
             proj.spltime_from_traj = true;
@@ -45,7 +54,7 @@ if ~isempty(opt) && opt{1}{1}(3)
     end
     
 elseif proj.is_movie
-    [dat,ok] = getFrames(proj.movie_file,1,[],h_fig0,true);
+    [dat,ok] = getFrames(proj.movie_file{1},1,[],h_fig0,true);
     if ok && dat.cycleTime~=1
         splt = dat.cycleTime;
         proj.spltime_from_video = true;

@@ -20,13 +20,44 @@ proj = h_fig.UserData;
 imptraj = isfield(h,'text_impTrajFiles') && ishandle(h.text_impTrajFiles);
 
 % set video file
-if proj.is_movie
-    set(h.edit_impFile,'string',proj.movie_file,'enable','on');
-    set(h.push_nextImp,'enable','on');
+if h.radio_impFileMulti.Value==1
+    set([h.edit_impFileMulti,h.push_impFileMulti],'visible','on');
+    set([h.push_addChan,h.push_remChan],'visible','off');
+    set([h.edit_impFileSingle,h.push_impFileSingle],'visible','off');
+    if ~isempty(proj.movie_file{1})
+        [~,fname,fext] = fileparts(proj.movie_file{1});
+        set(h.edit_impFileMulti,'string',[fname,fext]);
+    else
+        set(h.edit_impFileMulti,'string','');
+    end
 else
-    set(h.edit_impFile,'string','','enable','off');
+    set([h.edit_impFileMulti,h.push_impFileMulti],'visible','off');
+    set([h.push_addChan,h.push_remChan],'visible','on');
+    set([h.edit_impFileSingle,h.push_impFileSingle],'visible','on');
+    for c = 1:proj.nb_channel
+        if ~isempty(proj.movie_file{c})
+            [~,fname,fext] = fileparts(proj.movie_file{c});
+            set(h.edit_impFileSingle(c),'string',[fname,fext]);
+        else
+            set(h.edit_impFileSingle(c),'string','');
+        end
+    end
+end
+if proj.is_movie
+    set(h.push_nextImp,'enable','on');
+    if h.radio_impFileMulti.Value==1
+        set(h.edit_impFileMulti,'enable','on');
+    else
+        set(h.edit_impFileSingle,'enable','on');
+    end
+else
     if ~imptraj
         set(h.push_nextImp,'enable','off');
+    end
+    if h.radio_impFileMulti.Value==1
+        set(h.edit_impFileMulti,'enable','off');
+    else
+        set(h.edit_impFileSingle,'enable','off');
     end
 end
 
@@ -54,7 +85,8 @@ end
 
 % set coordinates file
 if ~isempty(coordfile)
-    set(h.edit_impCoordFile,'string',coordfile,'enable','on');
+    [~,coordfname,coordfext] = fileparts(coordfile);
+    set(h.edit_impCoordFile,'string',[coordfname,coordfext],'enable','on');
 else
     set(h.edit_impCoordFile,'string','','enable','off');
 end

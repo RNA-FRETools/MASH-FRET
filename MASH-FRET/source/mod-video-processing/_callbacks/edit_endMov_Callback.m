@@ -3,7 +3,7 @@ function edit_endMov_Callback(obj, evd, h_fig)
 % get VP parameters
 h = guidata(h_fig);
 p = h.param;
-L = p.proj{p.curr_proj}.movie_dat{3};
+L = p.proj{p.curr_proj}.movie_dat{1}{3};
 curr = p.proj{p.curr_proj}.VP.curr;
 start = curr.edit{2}(1);
 

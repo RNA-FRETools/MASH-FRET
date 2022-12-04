@@ -15,7 +15,6 @@ h_fig.UserData = proj;
 % refresh time section in file structure tab
 h = guidata(h_fig);
 if isfield(h,'tab_fstrct') && ishandle(h.tab_fstrct)
-    h = setExpSet_buildIntensityArea(h,proj.excitations);
     h = setExpSet_buildTimeArea(h,proj.excitations);
     guidata(h_fig,h);
 end

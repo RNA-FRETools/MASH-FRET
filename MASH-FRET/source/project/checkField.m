@@ -10,6 +10,8 @@ function [s,ok] = checkField(s_in, fname, h_fig)
 
 % defaults
 ok = 1;
+vidfmt = {'.sif','.vsi','.ets','.sira','.tif','.gif','.png','.spe','.pma',...
+    '.avi'};
 
 s = s_in;
 
@@ -30,12 +32,19 @@ s.proj_file = fname;
 % s.uptodate = adjustParam('uptodate', initUptodateArr, s_in);
 
 % movie
-s.movie_file = adjustParam('movie_file', [], s_in); % movie path/file
-s.is_movie = adjustParam('is_movie', ~isempty(s.movie_file), s_in);
-s.movie_dim = adjustParam('movie_dim', [], s_in);
-s.movie_dat = adjustParam('movie_dat', [], s_in);
+s.movie_file = adjustParam('movie_file', {[]}, s_in); % movie path/file
+s.movie_dim = adjustParam('movie_dim', {[]}, s_in);
+s.movie_dat = adjustParam('movie_dat', {[]}, s_in);
+if ~iscell(s.movie_file)
+    s.movie_file = {s.movie_file};
+    s.movie_dim = {s.movie_dim};
+    s.movie_dat = {s.movie_dat};
+end
+s.is_movie = adjustParam('is_movie', ~any(cellfun('isempty',s.movie_file)),...
+    s_in);
 s.spltime_from_video = adjustParam('spltime_from_video',s.is_movie,s_in);
-s.aveImg = adjustParam('aveImg',[],s_in);
+s.aveImg = adjustParam('aveImg',cell(numel(s.movie_file),s.nb_excitations),...
+    s_in);
 
 s.frame_rate = adjustParam('frame_rate', 1, s_in);
 s.frame_rate(s.frame_rate<=0) = 1;
@@ -125,103 +134,142 @@ s.molTagClr = adjustParam('molTagClr',p.es.tagClr,s_in);
 
 
 %% check video entries
-% check movie file >> set movie dimensions and reading infos
-if ~isempty(s.movie_file) && istestfile(s.movie_file)
-    s.movie_file = strrep(strrep(s.movie_file,'\',filesep),'/',filesep);
-    s.movie_file = which(s.movie_file); % get machine-dependent path for test files
+% check machine-dependent path for test video files
+if all(~cellfun('isempty',s.movie_file)) && ...
+        all(cellfun(@istestfile,s.movie_file))
+    for c = 1:numel(s.movie_file)
+        s.movie_file{c} = strrep(strrep(s.movie_file{c},'\',filesep),'/',...
+            filesep);
+        s.movie_file{c} = which(s.movie_file{c}); 
+    end
 end
-if ~isempty(s.movie_file) && ~exist(s.movie_file, 'file')
+
+% check existence of video file
+str0 = ['*',vidfmt{1}];
+str1 = ['(*',vidfmt{1}];
+for fmt = 2:numel(vidfmt)
+    str0 = cat(2,str0,';*',vidfmt{fmt});
+    str1 = cat(2,str1,',*',vidfmt{fmt});
+end
+str1 = [str1,')'];
+if all(~cellfun('isempty',s.movie_file)) && ...
+        ~all(cellfun(@(C) exist(C,'file'),s.movie_file))
     [o,name_proj,ext] = fileparts(fname);
     name_proj = [name_proj ext];
-    load_mov = questdlg({['Impossible to find the movie file for ' ...
-        'project "' name_proj '".'] 'Load the movie manually?'}, ...
-        'Unkown movie file', 'Browse', 'Continue without movie', ...
-        'Browse');
-    disp(['No movie file for project: ' name_proj]);
-    if strcmp(load_mov, 'Browse')
-        [fname,pname,o] = uigetfile({ ...
-            '*.sif;*.sira;*.tif;*.gif;*.png;*.spe;*.pma', ...
-            ['Supported Graphic File Format' ...
-            '(*.sif,*.sira,*.tif,*.gif,*.png,*.spe,*.pma)']; ...
-            '*.*', 'All File Format(*.*)'}, 'Select a graphic file:');
-        if ~(~isempty(fname) && sum(fname))
+    if numel(s.movie_file)>1
+        chanstr = 'channel %i of ';
+    else
+        chanstr = '';
+    end
+    for c = 1:numel(s.movie_file)
+        if exist(s.movie_file{c},'file')
+            continue
+        end
+        load_mov = questdlg({['Impossible to find the video file(s) for ',...
+            chanstr,'project "',name_proj,'".'],...
+            'Load the video manually?'},'Unkown video file','Browse',...
+            'Continue without video','Browse');
+        disp(['No video file for project: ',name_proj]);
+        
+        if strcmp(load_mov, 'Browse')
+            [fname,pname,o] = uigetfile({...
+                str0,['Supported Graphic File Format',str1]; ...
+                '*.*','All File Format(*.*)'},'Select a video file');
+            if ~(~isempty(fname) && sum(fname))
+                s = [];
+                ok = 0;
+                return
+            end
+            [data,ok] = getFrames([pname fname], 1, {}, h_fig, false);
+            if ~ok
+                s = [];
+                ok = 0;
+                return
+            end
+            s.movie_file{c} = {[pname fname]};
+            s.movie_dim{c} = [data.pixelX data.pixelY];
+            s.movie_dat{c} = {data.fCurs [data.pixelX data.pixelY] ...
+                data.frameLen};
+            disp(['Loading movie: ' fname 'from path: ' pname]);
+
+        elseif strcmp(load_mov, 'Continue without movie')
+            s.movie_file{c} = [];
+            s.movie_dim{c} = [];
+            s.movie_dat{c} = [];
+            break
+        else
             s = [];
             ok = 0;
             return
         end
-        [data,ok] = getFrames([pname fname], 1, {}, h_fig, false);
-        if ok
-            s.movie_file = [pname fname];
-            s.is_movie = 1;
-            s.movie_dim = [data.pixelX data.pixelY];
-            s.movie_dat = {data.fCurs [data.pixelX data.pixelY] ...
-                data.frameLen};
-            disp(['Loading movie: ' fname 'from path: ' pname]);
-        end
-        
-    elseif strcmp(load_mov, 'Continue without movie')
-        s.movie_file = [];
-        s.is_movie = 0;
-    else
-        s = [];
-        ok = 0;
-        return
+    end
+    s.is_movie = all(~cellfun('isempty',s.movie_file));
+    if ~s.is_movie
+        s.movie_file = {[]};
+        s.movie_dim = {[]};
+        s.movie_dat = {[]};
     end
 end
-if ~isempty(s.movie_file) && exist(s.movie_file, 'file')
+
+% import full-length video data and calculate average images
+if all(~cellfun('isempty',s.movie_file)) && ...
+        all(cellfun(@(C) exist(C,'file'),s.movie_file))
     s.is_movie = 1;
+    
     % import video data
-    h = guidata(h_fig);
-    h.movie.movie = [];
-    h.movie.file = '';
-    guidata(h_fig,h);
-    [dat,ok] = getFrames(s.movie_file,'all',[],h_fig,true);
-    if ~ok
-        s = [];
-        return
-    end
-    h = guidata(h_fig);
-    if ~isempty(dat.movie)
-        h.movie.movie = dat.movie;
-        h.movie.file = s.movie_file;
+    if numel(s.movie_file)==1 && ~isFullLengthVideo(s.movie_file{1},h_fig)
+        h = guidata(h_fig);
+        h.movie.movie = [];
+        h.movie.file = '';
         guidata(h_fig,h);
-        ok = 2;
-    elseif ~isempty(h.movie.movie)
-        h.movie.file = s.movie_file;
-        guidata(h_fig,h);
-        ok = 2;
+        [dat,ok] = getFrames(s.movie_file{1},'all',[],h_fig,true);
+        if ~ok
+            s = [];
+            return
+        end
+        h = guidata(h_fig);
+        if ~isempty(dat.movie)
+            h.movie.movie = dat.movie;
+            h.movie.file = s.movie_file{1};
+            guidata(h_fig,h);
+            ok = 2;
+        elseif ~isempty(h.movie.movie)
+            h.movie.file = s.movie_file{1};
+            guidata(h_fig,h);
+            ok = 2;
+        end
     end
-    if size(s.aveImg,2)~=(s.nb_excitations+1)
+    if size(s.aveImg,2)~=(s.nb_excitations+1) || ...
+            size(s.aveImg,1)~=numel(s.movie_file)
         setContPan('Calculate average images...','process',h_fig);
-        s.aveImg = calcAveImg('all',s.movie_file,s.movie_dat,...
-            s.nb_excitations,h_fig);
+        s.aveImg = cell(numel(s.movie_file),s.nb_excitations+1);
+        for c = 1:numel(s.movie_file)
+            s.aveImg(c,:) = calcAveImg('all',s.movie_file{c},...
+                s.movie_dat{c},s.nb_excitations,h_fig);
+        end
     end
 end
-if isempty(s.movie_file)
-    s.is_movie = 0;
-    s.movie_dat = [];
+if any(cellfun('isempty',s.movie_file))
+    s.is_movie = false;
 end
 
-% set movie dimensions if movie exists >> set movie reading infos
-if (isempty(s.movie_dim) || size(s.movie_dim, 2) ~= 2) && s.is_movie
-    [data,ok] = getFrames(s.movie_file, 1, {}, h_fig, false);
-    if ~ok
-        s = [];
-        return
+% set movie dimensions and reading infos
+if s.is_movie 
+    for c = 1:numel(s.movie_file)
+        if isempty(s.movie_dim{c}) || size(s.movie_dim{c},2)~=2 || ...
+                isempty(s.movie_dat{c}) || size(s.movie_dat{c},2)~=3
+            [data,ok] = getFrames(s.movie_file{c}, 1, {}, h_fig, false);
+            if ~ok
+                s = [];
+                return
+            end
+            s.movie_dim{c} = [data.pixelX data.pixelY];
+            s.movie_dat{c} = {data.fCurs [data.pixelX data.pixelY] ...
+                data.frameLen};
+        end
     end
-    s.movie_dim = [data.pixelX data.pixelY];
-    s.movie_dat = {data.fCurs [data.pixelX data.pixelY] data.frameLen};
 end
 
-% set movie reading infos if movie exists
-if (isempty(s.movie_dat) || size(s.movie_dat, 2) ~= 3) && s.is_movie
-    [data,ok] = getFrames(s.movie_file, 1, {}, h_fig, false);
-    if ~ok
-        s = [];
-        return
-    end
-    s.movie_dat = {data.fCurs [data.pixelX data.pixelY] data.frameLen};
-end
 
 %% check emitter label entries
 if isempty(s.labels) || size(s.labels,2) < s.nb_channel
@@ -429,26 +477,5 @@ if numel(s.molTagClr)<nTag
     end
     
 end
-
-% check uptodate's keys
-% utd_ref = initUptodateArr;
-% K1 = size(utd_ref,1);
-% for k1 = 1:K1
-%     key1 = utd_ref{k1,1};
-%     val1 = utd_ref{k1,2};
-%     if isempty(findKey(s.uptodate,key1))
-%         s.uptodate = setKey(s.uptodate,key1,val1);
-%     end
-%     K2 = size(utd_ref{k1,2},1);
-%     for k2 = 1:K2
-%         key2 = utd_ref{k1,2}{k2,1};
-%         val2 = utd_ref{k1,2}{k2,2};
-%         if isempty(findKey(s.uptodate{findKey(s.uptodate,key1),2},key2))
-%             s.uptodate = setKey(s.uptodate,key2,val2);
-%         end
-%     end
-% end
-
-
 
 

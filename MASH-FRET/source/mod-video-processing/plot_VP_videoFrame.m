@@ -1,14 +1,16 @@
-function h_img = plot_VP_videoFrame(h_axes, h_cb, img, chansplit, prm, persec)
-% h_img = plot_VP_videoFrame(h_axes, h_cb, img, chansplit, prm, persec)
+function h_img = plot_VP_videoFrame(h_axes, h_cb, img, imgtrsf, coord, chansplit, persec, multichanvid)
+% h_img = plot_VP_videoFrame(h_axes, h_cb, img, imgtrsf, coord, chansplit, persec, multichanvid)
 %
 % Plot current video frame after image filtering and spots coordinates after transformation or spot finfing
 %
 % h_axes: handle to axes 
 % h_cb: handle to color bar
 % img: current video frame
+% imgtrsf: transformed image
+% coord: spots coordinates to plot
 % chansplit: positions on x-axis of channel splitting
-% prm: processing parameters
 % persec: (1) if intensity units are in IC/second, (0) if they are in IC
+% multichanvid: 1 for multi-channel video, 0 for single-channel videos
 % h_img: handle to image plot
 
 % defaults
@@ -16,49 +18,6 @@ mkstl = 'or';
 mksz = 10;
 chanstl = '--w';
 chanlw = 2;
-
-% collect processing parameters
-toplot = prm.plot{1}(2);
-coordsf = prm.res_crd{1};
-coordref = prm.res_crd{3};
-coord2tr = prm.res_crd{1};
-coordtr = prm.res_crd{4};
-coordsm = prm.res_crd{4};
-imgtrsf = prm.res_plot{3};
-
-% get spots coordinates
-nChan = numel(chansplit)+1;
-spots = [];
-switch toplot
-    case 1 % spotfinder
-        if ~isempty(coordsf)
-            spots = prm.res_crd{1};
-        end
-    case 2 % reference coordinates
-        for c = 1:nChan
-            if size(coordref)>=(2*c)
-                spots = cat(1, spots, coordref(:,(2*c-1):(2*c)));
-            end
-        end
-    case 3 % coordinates to tranform
-        for c = 1:nChan
-            if size(coord2tr)>=(2*c)
-                spots = cat(1, spots, coord2tr(:,(2*c-1):(2*c)));
-            end
-        end
-    case 4 % transformed coordinates
-        for c = 1:nChan
-            if size(coordtr)>=(2*c)
-                spots = cat(1, spots, coordtr(:,(2*c-1):(2*c)));
-            end
-        end
-    case 5 % coordinates for intensity integration
-        for c = 1:nChan
-            if size(coordsm)>=(2*c)
-                spots = cat(1, spots, coordsm(:,(2*c-1):(2*c)));
-            end
-        end
-end
 
 % set axes visible
 set([h_axes,h_cb],'visible','on');
@@ -77,22 +36,25 @@ end
 
 % plot spots coordinates
 set(h_axes,'nextplot','add');
-if ~isempty(spots)
-    plot(h_axes(1),spots(:,1),spots(:,2),mkstl,'markersize',mksz,'hittest',...
+if ~isempty(coord)
+    plot(h_axes(1),coord(:,1),coord(:,2),mkstl,'markersize',mksz,'hittest',...
         'off','pickableparts','none');
-    plot(h_axes(2),spots(:,1),spots(:,2),mkstl,'markersize',mksz,'hittest',...
+    plot(h_axes(2),coord(:,1),coord(:,2),mkstl,'markersize',mksz,'hittest',...
         'off','pickableparts','none');
 end
 
 % plot channel separation
-for c = 1:size(chansplit,2)
-    plot(h_axes(1), [chansplit(c),chansplit(c)],[0 h],chanstl,'LineWidth', ...
-        chanlw,'hittest','off','pickableparts','none');
-    plot(h_axes(2), [chansplit(c),chansplit(c)],[0 h],chanstl,'LineWidth', ...
-        chanlw,'hittest','off','pickableparts','none');
-    if numel(h_axes)>=3
-        plot(h_axes(3), [chansplit(c),chansplit(c)],[0 h],chanstl,...
-            'LineWidth', chanlw,'hittest','off','pickableparts','none');
+if multichanvid
+    for c = 1:size(chansplit,2)
+        plot(h_axes(1), [chansplit(c),chansplit(c)],[0 h],chanstl,...
+            'LineWidth',chanlw,'hittest','off','pickableparts','none');
+        plot(h_axes(2), [chansplit(c),chansplit(c)],[0 h],chanstl,...
+            'LineWidth',chanlw,'hittest','off','pickableparts','none');
+        if numel(h_axes)>=3
+            plot(h_axes(3), [chansplit(c),chansplit(c)],[0 h],chanstl,...
+                'LineWidth', chanlw,'hittest','off','pickableparts',...
+                'none');
+        end
     end
 end
 
@@ -113,9 +75,16 @@ if numel(h_axes)>=3
 end
 
 % align axes positions
-h_axes(2).Position = h_axes(1).Position;
+posaxes1 = getPixPos(h_axes(1));
+postab1 = getPixPos(h_axes(1).Parent);
+dy = postab1(4)-posaxes1(2);
+postab2 = getPixPos(h_axes(2).Parent);
+y2 = postab2(4)-dy;
+setPixPos(h_axes(2),[posaxes1(1),y2,posaxes1([3,4])]);
 if numel(h_axes)>=3
-    h_axes(3).Position = h_axes(1).Position;
+    postab3 = getPixPos(h_axes(3).Parent);
+    y3 = postab3(4)-dy;
+    setPixPos(h_axes(3),[posaxes1(1),y3,posaxes1([3,4])]);
 end
 
 % set colorbar label

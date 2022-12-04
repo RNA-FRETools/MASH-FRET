@@ -51,7 +51,16 @@ end
 fclose(f);
 
 % organize coordinate sin a column-wise fashion
-res_x = viddim(1);
+nMov = numel(viddim);
+multichanvid = nMov==1;
+if multichanvid
+    res_x = viddim{1}(1);
+else
+    res_x = zeros(1,nMov);
+    for mov = 1:nMov
+        res_x(mov) = viddim{mov}(1);
+    end
+end
 mode = impprm{3};
 switch mode
     case 'rw'

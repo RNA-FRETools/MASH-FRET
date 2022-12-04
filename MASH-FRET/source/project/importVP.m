@@ -23,7 +23,8 @@ for i = projs
     if ~isfield(p.proj{i}.VP, 'prm')
         p.proj{i}.VP.prm = {}; % empty param
     end
-    p.proj{i}.VP.prm = initDefPrmFields_VP(p.proj{i}.VP.prm);
+    p.proj{i}.VP.prm = initDefPrmFields_VP(p.proj{i}.VP.prm,...
+        p.proj{i}.VP.def);
     
     % correct down-compatibility issues
     p.proj{i} = downCompatibilityVP(p.proj{i});

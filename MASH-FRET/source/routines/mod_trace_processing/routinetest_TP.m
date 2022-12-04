@@ -52,21 +52,20 @@ try
     end
 
     % test panel sample management
-    if strcmp(opt,'all') || strcmp(opt,'sample management')
+    if strcmp(opt,'all') || strcmp(opt,'sample management') || ...
+            strcmp(opt,'file export') || strcmp(opt,'trace manager')
         disp('test panel sample management...');
         routinetest_TP_sampleManagement(h_fig,p,subprefix);
-    end
-    
-    % test file export (panel sample management)
-    if strcmp(opt,'file export')
-        disp('test file export...');
-        routinetest_TP_fileExport(h_fig,p,subprefix);
-    end
-    
-    % test trace manager (panel sample management)
-    if strcmp(opt,'trace manager')
-        disp('test trace manager...');
-        routinetest_TP_traceManager(h_fig,p,subprefix);
+        
+        if ~strcmp(opt,'trace manager')
+            disp('>> test file export...');
+            routinetest_TP_fileExport(h_fig,p,[subprefix,'>> ']);
+        end
+        
+        if ~strcmp(opt,'file export')
+            disp('>> test trace manager...');
+            routinetest_TP_traceManager(h_fig,p,[subprefix,'>> ']);
+        end
     end
 
     % test panel plot
@@ -82,21 +81,23 @@ try
     end
 
     % test panel background
-    if strcmp(opt,'all') || strcmp(opt,'background')
+    if strcmp(opt,'all') || strcmp(opt,'background') || ...
+            strcmp(opt,'background corrections') || ...
+            strcmp(opt,'background analyzer')
         disp('test panel background...');
-        routinetest_TP_background(h_fig,p,subprefix);
-    end
-    
-    % test panel background corrections
-    if strcmp(opt,'background corrections')
-        disp('test background corrections...');
-        routinetest_TP_backgroundCorrections(h_fig,p,subprefix);
-    end
-    
-    % test panel background analyzer
-    if strcmp(opt,'background analyzer')
-        disp('test background analyzer...');
-        routinetest_TP_backgroundAnalyzer(h_fig,p,subprefix);
+        
+        % test panel background corrections
+        if ~strcmp(opt,'background analyzer')
+            disp('>> test background corrections...');
+            routinetest_TP_backgroundCorrections(h_fig,p,...
+                [subprefix,'>> ']);
+        end
+        
+        % test panel background analyzer
+        if ~strcmp(opt,'background corrections')
+            disp('>> test background analyzer...');
+            routinetest_TP_backgroundAnalyzer(h_fig,p,[subprefix,'>> ']);
+        end
     end
 
     % test panel cross-talks

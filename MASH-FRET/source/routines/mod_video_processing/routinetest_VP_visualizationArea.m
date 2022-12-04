@@ -31,7 +31,9 @@ switchMovTool(h.togglebutton_target, [], h_fig);
 h = guidata(h_fig);
 proj = h.param.proj{h.param.curr_proj};
 pixDim = proj.VP.curr.gen_int{3}(1);
-x = pixDim+ceil(rand(1)*(proj.movie_dim(1)-2*pixDim))-0.5;
-y = pixDim+ceil(rand(1)*(proj.movie_dim(2)-2*pixDim))-0.5;
+vid = 1;
+set(h_fig,'CurrentAxes',h.axes_VP_vid(vid));
+x = pixDim+ceil(rand(1)*(proj.movie_dim{vid}(1)-2*pixDim))-0.5;
+y = pixDim+ceil(rand(1)*(proj.movie_dim{vid}(2)-2*pixDim))-0.5;
 pointITT({[x,y],[p.dumpdir,filesep,p.tracecurs_file]}, [], h_fig);
 

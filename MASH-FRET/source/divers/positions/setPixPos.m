@@ -3,7 +3,7 @@ function setPixPos(obj,pos)
 
 un = get(obj,'units');
 set(obj,'units','pixels');
-if obj>0
+if obj~=0
     set(obj,'position',pos);
 end
 set(obj,'units',un);

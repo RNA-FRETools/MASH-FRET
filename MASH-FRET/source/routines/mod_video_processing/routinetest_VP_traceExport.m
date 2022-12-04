@@ -14,7 +14,9 @@ expopt = false(1,7);
 disp(cat(2,prefix,'test export options...'));
 
 % set defaults
-setDefault_VP(h_fig,p,prefix)
+setDefault_VP(h_fig,p,prefix);
+
+nVid = numel(p.es{p.nChan,p.nL}.imp.vfile);
     
 for n = 1:size(expopt,2)
     disp(cat(2,prefix,'>> export ',p.expFmt{n},'file...'));
@@ -24,7 +26,13 @@ for n = 1:size(expopt,2)
     opt(n) = true;
     set_VP_expOpt(opt,h_fig);
     
+    if nVid==1
+        tr_file = p.exp_traceFile{p.nL,p.nChan};
+    else
+        [~,name,ext] = fileparts(p.exp_traceFile{p.nL,p.nChan});
+        tr_file = [name,'_sglchan',ext];
+    end
+    
     % save file
-    pushbutton_itgFileOpt_ok_Callback(...
-        {p.dumpdir,p.exp_traceFile{p.nL,p.nChan}},[],h_fig);
+    pushbutton_itgFileOpt_ok_Callback({p.dumpdir,tr_file},[],h_fig);
 end

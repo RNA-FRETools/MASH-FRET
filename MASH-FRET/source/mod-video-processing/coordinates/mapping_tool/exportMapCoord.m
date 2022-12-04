@@ -15,14 +15,22 @@ h = guidata(h_fig);
 q = h.map;
 
 % collect mapping
-nChan = size(q.lim_x,2) - 1;
+if ~isempty(q.lim_x)
+    nChan = size(q.lim_x,2) - 1;
+else
+    nChan = numel(q.refimgfile);
+end
 minN = size(pntCoord{1},1);
 for i = 2:nChan
     minN = min([minN size(pntCoord{i},1)]);
 end
 if minN > 0
     for i = 1:nChan
-        q.pnt(1:minN,2*i-1) = pntCoord{i}(1:minN,1) + q.lim_x(i);
+        if ~isempty(q.lim_x)
+            q.pnt(1:minN,2*i-1) = pntCoord{i}(1:minN,1) + q.lim_x(i);
+        else
+            q.pnt(1:minN,2*i-1) = pntCoord{i}(1:minN,1);
+        end
         q.pnt(1:minN,2*i) = pntCoord{i}(1:minN,2);
     end
 end

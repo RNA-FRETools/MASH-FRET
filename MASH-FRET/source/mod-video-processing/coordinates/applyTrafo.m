@@ -23,23 +23,10 @@ res_y = q.res_y;
 nChan = q.nChan;
 spotDmin = q.spotDmin;
 edgeDmin = q.edgeDmin;
+nMov = numel(res_x);
+multichanvid = nMov==1;
 
-lim = [0 (1:(nChan-1))*round(res_x/nChan) res_x];
-coord_i = cell(1,nChan);
-nocoord = true;
-for i = 1:nChan
-    coord_i{i} = coord((coord(:,1)>lim(i) & coord(:,1)<lim(i+1)) & ...
-        (coord(:,2)>0 & coord(:,2)<res_y),:);
-    nocoord = nocoord & isempty(coord_i{i});
-end
-
-if nocoord
-    updateActPan(['Unconsistent coordinates.'...
-        '\nPlease check the import options.'], h_fig, 'error');
-    return
-end
-
-[coord_tr_i,ok] = transformPoints(tr,coord_i,nChan,h_fig);
+[coord_tr_i,ok] = transformPoints(tr,coord,nChan,h_fig);
 if ~ok
     return
 end
@@ -52,11 +39,12 @@ for i = 1:nChan
             '\n\nPlease check the number of channels in the reference',...
             ' image used in the creation of the transformation file.'],...
             h_fig,'error');
-        return;
+        return
     end
     for j = 1:nChan
         if ~isempty(coord_tr_i{i}{j})
-            coordTrsf_i{i} = cat(1,coordTrsf_i{i},coord_tr_i{i}{j}(:,[1,2]));
+            coordTrsf_i{i} = ...
+                cat(1,coordTrsf_i{i},coord_tr_i{i}{j}(:,[1,2]));
         end
     end
 end
@@ -66,13 +54,22 @@ for i = 1:nChan
     coordtr = cat(2,coordtr,coordTrsf_i{i});
 end
 
+if multichanvid
+    lim = [0 (1:(nChan-1))*round(res_x/nChan) res_x];
+end
+
 ok = exclude_doublecoord(3, coordtr);
 coordtr = coordtr(ok',:);
 if ~isempty(coordtr)
     for i = 1:nChan
         if ~isempty(coordtr)
-            ok = select_spots_distfromedge(coordtr(:,2*i-1:2*i), ...
-                edgeDmin(i), [lim(i) lim(i+1);0 res_y]);
+            if multichanvid
+                ok = select_spots_distfromedge(coordtr(:,2*i-1:2*i), ...
+                    edgeDmin(i), [lim(i) lim(i+1);0 res_y(1)]);
+            else
+                ok = select_spots_distfromedge(coordtr(:,2*i-1:2*i), ...
+                    edgeDmin(i), [0 res_x(i);0 res_y(i)]);
+            end
             coordtr = coordtr(ok,:);
         end
     end

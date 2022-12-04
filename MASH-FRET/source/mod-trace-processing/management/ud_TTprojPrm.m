@@ -8,8 +8,21 @@ function ud_TTprojPrm(h_fig)
 
 h = guidata(h_fig);
 p = h.param;
+if isempty(p.proj)
+    return
+end
 
-% setProp(get(h.uipanel_TP, 'Children'), 'Visible', 'on');
+% update VP's plot tabs
+nMov = numel(p.proj{p.curr_proj}.movie_file);
+if nMov>1
+    tabttl = p.proj{p.curr_proj}.labels;
+else
+    tabttl = 'multi-channel';
+end
+
+h = buildVPtabgroupPlotVid(h,h.dimprm,nMov,tabttl);
+h = buildVPtabgroupPlotAvimg(h,h.dimprm,nMov,tabttl);
+h = buildVPtabgroupPlotTr(h,h.dimprm,nMov,tabttl);
 
 % set default tag name list invisible and update corresponding button 
 % appearance
@@ -223,9 +236,15 @@ if isModuleOn(p,'TP')
         
         % calculate laser-specific average images
         if ~(isfield(p.proj{proj}, 'aveImg') && ...
+                size(p.proj{proj}.aveImg,1)==nMov && ...
                 size(p.proj{proj}.aveImg,2)==(nExc+1))
-            p.proj{proj}.aveImg = calcAveImg('all',p.proj{proj}.movie_file,...
-                p.proj{proj}.movie_dat,p.proj{proj}.nb_excitations,h_fig);
+            p.proj{proj}.aveImg = cell(nMov,nExc+1);
+            for mov = 1:nMov
+                p.proj{proj}.aveImg(mov,:) = calcAveImg('all',...
+                    p.proj{proj}.movie_file{mov},...
+                    p.proj{proj}.movie_dat{mov},...
+                    p.proj{proj}.nb_excitations,h_fig);
+            end
             h.param = p;
         end
     end

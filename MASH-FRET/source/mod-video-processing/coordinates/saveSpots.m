@@ -26,15 +26,13 @@ vidfile = p.proj{p.curr_proj}.movie_file;
 expT = p.proj{p.curr_proj}.frame_rate;
 persec = p.proj{p.curr_proj}.cnt_p_sec;
 curr = p.proj{p.curr_proj}.VP.curr;
+def = p.proj{p.curr_proj}.VP.def;
 coordsf = curr.gen_crd{2}{5};
 
 % control SF coordinates
-if isempty(coordsf)
+if isequal(coordsf,def.gen_crd{2}{5})
     return
 end
-
-% apply current parameters to project
-curr.gen_crd{2} = curr.gen_crd{2};
 
 % get destination file name
 if ~isempty(varargin)
@@ -44,7 +42,7 @@ else
     if ~isempty(projfile)
         [o,name,o] = fileparts(projfile);
     else
-        [o,name,o] = fileparts(vidfile);
+        [o,name,o] = fileparts(vidfile{1});
     end
     if strcmp(name,defbfname)
         name = projtle;
@@ -73,7 +71,7 @@ setContPan('Write spots coordinates to file...','process',h_fig);
 % get spots coordinates
 spots = [];
 for c = 1:nChan
-    spots = cat(1,spots,coordsf{c});
+    spots = cat(1,spots,[coordsf{c},repmat(c,[size(coordsf{c},1),1])]);
 end
 
 % convert intensities to proper units
@@ -89,12 +87,12 @@ end
 
 % export spots
 if size(spots,2)<=4 % no gaussian fit
-    str_header = 'x\ty\tI';
-    str_fmt = '%d\t%d\t%d';
+    str_header = 'x\ty\tI\tchannel';
+    str_fmt = '%d\t%d\t%d\t%i';
 else % gaussian fit
     str_header = ['x\ty\tI',un,'\tasymmetry\twidth\theight\ttheta\t',...
-        'z-offset',un];
-    str_fmt = '%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d';
+        'z-offset',un,'\tchannel'];
+    str_fmt = '%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%i';
 end
 str_header = cat(2,str_header, '\n');
 str_fmt = cat(2,str_fmt, '\n');

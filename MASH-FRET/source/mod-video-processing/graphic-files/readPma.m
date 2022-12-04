@@ -28,6 +28,9 @@ if ~useMov
     isMov = 0;
 end
 
+% identify already-opened loading bar
+islb = isfield(h,'barData');
+
 f = fopen(fullFname, 'r');
 if f<0
     disp('Invalid identifier.');
@@ -106,14 +109,17 @@ if strcmp(n, 'all')
 
     else
 
-        intrupt = loading_bar('init',h_fig,frameLen,'Import PMA video...');
-        if intrupt
-            ok = 0;
-            return;
+        if ~islb
+            if loading_bar('init',h_fig,frameLen,'Import PMA video...')
+                ok = 0;
+                return
+            end
+            h = guidata(h_fig);
+            h.barData.prev_var = h.barData.curr_var;
+            guidata(h_fig, h);
+        else
+            setContPan('Import PMA video...','',h_fig);
         end
-        h = guidata(h_fig);
-        h.barData.prev_var = h.barData.curr_var;
-        guidata(h_fig, h);
         
         if ~exist('f','var')
             f = fopen(fullFname,'r');
@@ -135,7 +141,7 @@ if strcmp(n, 'all')
                 intrupt = loading_bar('update', h_fig);
                 if intrupt
                     ok = 0;
-                    return;
+                    return
                 end
             end
             frameCur = movie(:,:,1); % Get image data of the input frame
@@ -151,8 +157,7 @@ if strcmp(n, 'all')
                     fseek(f,skpiv,0);
                 end
 
-                intrupt = loading_bar('update', h_fig);
-                if intrupt
+                if ~islb && loading_bar('update', h_fig)
                     ok = 0;
                     return
                 end
@@ -161,7 +166,9 @@ if strcmp(n, 'all')
             frameCur = h.movie.movie(:,:,1); % Get image data of the input frame
         end
         
-        loading_bar('close', h_fig);
+        if ~islb
+            loading_bar('close', h_fig);
+        end
     end
 
 else

@@ -14,21 +14,32 @@ if ~(~isempty(h_axes) && all(ishandle(h_axes)))
 end
 
 nChan = p.proj{proj}.nb_channel;
+viddim = p.proj{proj}.movie_dim;
 exc = p.proj{proj}.TP.fix{1}(1);
-res_x = p.proj{proj}.movie_dim(1);
-res_y = p.proj{proj}.movie_dim(2);
-split = round(res_x/nChan)*(1:nChan-1);
-img = p.proj{proj}.aveImg{exc+1};
-lim_x = [0 split res_x];
-q.lim.y = [0 res_y];
 q.brght = p.proj{proj}.TP.fix{1}(3); % [-1:1]
 q.ctrst = p.proj{proj}.TP.fix{1}(4); % [-1:1]
 q.itgArea = p.proj{proj}.pix_intgr(1);
+multichanvid = numel(viddim)==1;
 
 p_bg = p.proj{proj}.TP.curr{mol}{3};
-
+if multichanvid
+    img = p.proj{proj}.aveImg{exc+1};
+    res_x = viddim{1}(1);
+    res_y = viddim{1}(2);
+    split = round(res_x/nChan)*(1:nChan-1);
+    lim_x = [0 split res_x];
+    q.lim.y = [0 res_y];
+end
 for c = 1:nChan
-    q.lim.x = [lim_x(c) lim_x(c+1)];
+    if multichanvid
+        q.lim.x = [lim_x(c) lim_x(c+1)];
+    else
+        img = p.proj{proj}.aveImg{c,exc+1};
+        res_x = viddim{c}(1);
+        res_y = viddim{c}(2);
+        q.lim.y = [0 res_y];
+        q.lim.x = [0,res_x];
+    end
     q.img = img(:,q.lim.x(1)+1:q.lim.x(2));
     meth = p_bg{2}(exc,c);
     q.dimImg = p_bg{3}{exc,c}(meth,2);

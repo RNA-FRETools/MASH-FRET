@@ -23,7 +23,7 @@ if ~prepPanel(h.uipanel_VP_coordinatesTransformation,h)
     return
 end
 
-if ~isempty(coord2tr)
+if ~all(cellfun('isempty',coord2tr))
     h.text_VP_checkCoord2tr.String = str_yes;
     h.text_VP_checkCoord2tr.ForegroundColor = clr_yes;
 else

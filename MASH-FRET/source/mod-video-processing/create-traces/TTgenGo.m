@@ -16,32 +16,6 @@ function ok = TTgenGo(h_fig,varargin)
 % default
 ok = 0;
 
-% get parameters
-h = guidata(h_fig);
-p = h.param;
-vidfile = p.proj{p.curr_proj}.movie_file;
-viddat = p.proj{p.curr_proj}.movie_dat;
-
-% control video data
-if ~isFullLengthVideo(vidfile,h_fig)
-    h.movie.movie = [];
-    h.movie.file = '';
-    guidata(h_fig,h);
-    [dat,ok] = getFrames(vidfile,'all',viddat,h_fig,true);
-    if ~ok
-        return
-    end
-    h = guidata(h_fig);
-    if ~isempty(dat.movie)
-        h.movie.movie = dat.movie;
-        h.movie.file = vidfile;
-        guidata(h_fig,h);
-    elseif ~isempty(h.movie.movie)
-        h.movie.file = vidfile;
-        guidata(h_fig,h);
-    end
-end
-
 % calculate intensities and set project's fields
 dat = exportProject(h_fig);
 if isempty(dat)
@@ -51,6 +25,8 @@ end
 if isempty(dat)
     return
 end
+h = guidata(h_fig);
+p = h.param;
 p.proj{p.curr_proj} = dat;
 
 % tag project

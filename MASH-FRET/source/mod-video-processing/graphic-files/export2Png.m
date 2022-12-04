@@ -17,43 +17,74 @@ p = h.param;
 expT = p.proj{p.curr_proj}.frame_rate;
 vidfile = p.proj{p.curr_proj}.movie_file;
 viddat = p.proj{p.curr_proj}.movie_dat;
+labels = p.proj{p.curr_proj}.labels;
 curr = p.proj{p.curr_proj}.VP.curr;
 filtlst = curr.edit{1}{4};
 start = curr.edit{2}(1);
+tocurr = curr.edit{1}{1}(2);
 
-% control full-length video
-isMov = isFullLengthVideo([pname,fname],h_fig);
+nMov = numel(vidfile);
+multichanvid = nMov==1;
 
 % control image filters
 isBgCorr = ~isempty(filtlst);
 
-% abort if the file being written is the one being accessed for reading data
-if ~isMov && isequal(vidfile,[pname fname])
-    setContPan(cat(2,'The exported file must be different from the ',...
-        'original one.'),'error',h_fig);
-    return
-end
+[~,rootname,~] = fileparts(fname);
 
-% get video frame
-if isMov
-    img = h.movie.movie(:,:,start);
-else
-    [data,succ] = getFrames(vidfile, start, viddat, h_fig, true);
-    if ~succ
+for mov = 1:nMov
+    if nMov>1
+        substr = ['_',labels{mov}];
+    else
+        substr = '';
+    end
+    fname = [rootname,substr,'.png'];
+    
+    % control full-length video
+    isMov = isFullLengthVideo(vidfile{mov},h_fig);
+
+    % abort if the file being written is the one being accessed for reading data
+    if ~isMov && isequal(vidfile{mov},[pname fname])
+        setContPan(cat(2,'The exported file must be different from the ',...
+            'original one.'),'error',h_fig);
         return
     end
-    img = data.frameCur;
-end
 
-% apply background corrections if any
-if isBgCorr
-    img = updateBgCorr(img, p, h_fig);
-end
+    % get video frame
+    if isMov
+        img = h.movie.movie(:,:,start);
+    else
+        [data,succ] = getFrames(vidfile{mov},start,viddat{mov},h_fig,true);
+        if ~succ
+            return
+        end
+        img = data.frameCur;
+    end
 
-% write image to file
-imwrite(uint16(65535*(img-min(min(img)))/(max(max(img))-min(min(img)))), ...
-    [pname fname],'png','BitDepth',16,'Description',[num2str(expT) ' ' ...
-    num2str(max(max(img))) ' ' num2str(min(min(img)))]);
+    % apply background corrections if any
+    if isBgCorr
+        if ~tocurr
+            if multichanvid
+                img = updateBgCorr(img, p, h_fig);
+            else
+                img = updateBgCorr(img, p, h_fig, mov);
+            end
+        else % Apply only if the bg-corrected frame is displayed
+            if tocurr==start
+                if multichanvid
+                    img = updateBgCorr(img, p, h_fig);
+                else
+                    img = updateBgCorr(img, p, h_fig, mov);
+                end
+            end
+        end
+    end
+
+    % write image to file
+    imwrite(...
+        uint16(65535*(img-min(min(img)))/(max(max(img))-min(min(img)))), ...
+        [pname fname],'png','BitDepth',16,'Description',[num2str(expT),' ',...
+        num2str(max(max(img))),' ',num2str(min(min(img)))]);
+end
 
 % return success
 ok = 1;

@@ -24,18 +24,8 @@ wtxt0 = getUItextWidth(str0,h.fun,h.fsz,'normal',h.tbl);
 wtxt1 = getUItextWidth(str1,h.fun,h.fsz,'normal',h.tbl);
 
 % delete previous controls
-if isfield(h,'text_timeExcCol') && sum(ishandle(h.text_timeExcCol))
-    delete(h.text_timeExcCol);
-    h = rmfield(h,'text_timeExcCol');
-end
-if isfield(h,'edit_timeExcCol') && sum(ishandle(h.edit_timeExcCol))
-    delete(h.edit_timeExcCol);
-    h = rmfield(h,'edit_timeExcCol');
-end
-if isfield(h,'text_timeExcZero') && sum(ishandle(h.text_timeExcZero))
-    delete(h.text_timeExcZero);
-    h = rmfield(h,'text_timeExcZero');
-end
+h = delControlIfHandle(h,{'text_timeExcCol','edit_timeExcCol',...
+    'text_timeExcZero'});
 
 % GUI
 x = poscb(1)+poscb(3);

@@ -15,41 +15,43 @@ function pointITT(obj, evd, h_fig)
 h = guidata(h_fig);
 p = h.param;
 
+h_axes0 = gca;
+
 if iscell(obj)
     newPnt = obj{1};
     file_out = obj{2};
     fromRoutine = true;
 else
-    newPnt = floor(get(h.axes_VP_vid, 'CurrentPoint'))+0.5;
+    newPnt = floor(get(h_axes0, 'CurrentPoint'))+0.5;
     newPnt = newPnt(1,[1 2]);
     fromRoutine = false;
 end
 
 nExc = p.proj{p.curr_proj}.nb_excitations;
-vidfile = p.proj{p.curr_proj}.movie_file;
-viddat = p.proj{p.curr_proj}.movie_dat;
 expT = p.proj{p.curr_proj}.frame_rate;
 persec = p.proj{p.curr_proj}.cnt_p_sec;
+vidfile = p.proj{p.curr_proj}.movie_file;
+viddat = p.proj{p.curr_proj}.movie_dat;
 curr = p.proj{p.curr_proj}.VP.curr;
 pxdim = curr.gen_int{3}(1);
 npix = curr.gen_int{3}(2);
 
-if nExc>viddat{3}
-    nExc = viddat{3};
-end
-
 % display process
 setContPan('Generating intensity-time traces...','process',h_fig);
 
-fDat{1} = vidfile;
-fDat{2}{1} = viddat{1};
-if isFullLengthVideo(vidfile,h_fig)
+h_tab = h_axes0.Parent;
+h_tg = h_tab.Parent;
+mov = find(h_tg.Children==h_tab);
+
+fDat{1} = vidfile{mov};
+fDat{2}{1} = viddat{mov}{1};
+if isFullLengthVideo(vidfile{mov},h_fig)
     fDat{2}{2} = h.movie.movie;
 else
     fDat{2}{2} = [];
 end
-fDat{3} = viddat{2};
-fDat{4} = viddat{3};
+fDat{3} = viddat{mov}{2};
+fDat{4} = viddat{mov}{3};
 [o,data] = create_trace(newPnt,pxdim,npix,fDat);
 
 str_sec = [];

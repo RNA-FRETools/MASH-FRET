@@ -6,9 +6,9 @@ proj = p.curr_proj;
 mol = p.ttPr.curr_mol(proj);
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
-res_x = p.proj{proj}.movie_dim(1);
 itgDim = p.proj{proj}.pix_intgr(1);
 selected_chan = p.proj{proj}.TP.fix{3}(6);
+multichanvid = numel(p.proj{proj}.movie_file);
 
 % get channel and laser corresponding to selected data
 chan = 0;
@@ -28,9 +28,16 @@ if method~=6 % dark trace
     return
 end
 
-lim = [0 round(res_x/nChan)*(1:(nChan-1)) res_x];
-valMin = lim(chan) + itgDim/2;
-valMax = lim(chan+1) - itgDim/2;
+if multichanvid
+    res_x = p.proj{proj}.movie_dim{1}(1);
+    lim = [0 round(res_x/nChan)*(1:(nChan-1)) res_x];
+    valMin = lim(chan) + itgDim/2;
+    valMax = lim(chan+1) - itgDim/2;
+else
+    res_x = p.proj{proj}.movie_dim{c}(1);
+    valMin = itgDim/2;
+    valMax = res_x - itgDim/2;
+end
 val = str2num(get(obj, 'String'));
 if ~(numel(val) == 1 && ~isnan(val) && val > valMin && val < valMax)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);

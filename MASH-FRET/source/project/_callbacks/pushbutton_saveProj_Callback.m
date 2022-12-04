@@ -52,10 +52,6 @@ setContPan(['Save project "',projtitle,'" to file ...'],'process',h_fig);
 
 % update processing parameters and export settings
 dat = p.proj{proj};
-if ~isempty(p.proj{proj}.TP)
-    dat.cnt_p_sec = p.proj{proj}.TP.fix{2}(4);
-    dat.cnt_p_pix = p.proj{proj}.TP.fix{2}(5);
-end
 
 % udpdate MASH version and modification date
 figname = get(h_fig, 'Name');

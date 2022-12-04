@@ -61,7 +61,7 @@ for nL = 1:nL_max
         defprm_nL{size(defprm,1),3} = 'mW';
     end
     for nChan = nChan_min:nChan_max
-        p.es{nChan,nL}.imp.vfile = '';
+        p.es{nChan,nL}.imp.vfile = {''};
         p.es{nChan,nL}.imp.tdir = sprintf('%ichan%iexc',nChan,nL);
         dir_content = dir(...
             [p.annexpth,filesep,p.es{nChan,nL}.imp.tdir,filesep,'*.txt']);
@@ -101,8 +101,10 @@ for nL = 1:nL_max
         end
         nFRET = size(FRET,1);
         
-        p.es{nChan,nL}.fstrct = {[1 1 1 2 nChan+1 1 1 1 3+nChan+1 ...
-            3+nChan+2*nFRET 1],ones(1,nL),zeros(nL,2)};
+        p.es{nChan,nL}.fstrct = {[1 1 1 1 1 1 1],ones(1,nL),...
+            [2+(1:nChan)',2+(1:nChan)',zeros(nChan,1)],...
+            zeros(nChan,3,nL),[2+nChan+(1:2:2*nFRET)',...
+            2+nChan+(1:2:2*nFRET)',zeros(nFRET,1)]};
         
         p.es{nChan,nL}.div.projttl = sprintf('test_%ichan%iexc',nChan,nL);
         p.es{nChan,nL}.div.molname = 'none';
@@ -144,8 +146,8 @@ p.exp_defSlct = 'clstStartDef_%i_%i';
 % default exponential fit settings
 p.nMax = Dmax;
 p.stateBin = 0.03; % state binning
-p.dtExcl = true; % exclude first and last dwell times in sequences
-p.dtRearr = true; % re-arrange state sequences
+p.dtExcl = false; % exclude first and last dwell times in sequences
+p.dtRearr = false; % re-arrange state sequences
 p.expPrm = [1,0,1,0,0,100]; % auto, stretched, decay nb., boba, weight, sample nb.
 amp = permute(...
     [zeros(Dmax,1),flip(logspace(-2,0,Dmax),2)',Inf(Dmax,1)],...

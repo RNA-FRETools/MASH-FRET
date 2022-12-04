@@ -14,6 +14,9 @@ h = guidata(h_fig);
 p = h.param;
 viddim = p.proj{p.curr_proj}.movie_dim;
 nChan = p.proj{p.curr_proj}.nb_channel;
+nMov = numel(p.proj{p.curr_proj}.movie_file);
+multichanvid = nMov==1;
+lbl = p.proj{p.curr_proj}.labels;
 
 % get image file to map
 if ~iscell(obj)
@@ -26,9 +29,15 @@ if ~iscell(obj)
         str1 = cat(2,str1,',*',vidfmt{fmt});
     end
     str1 = [str1,')'];
-    [fname,pname,o] = uigetfile({str0,...
-        ['Supported Graphic File Format',str1]; ...
-        '*.*','All File Format(*.*)'},'Select a reference video file');
+    if multichanvid
+        mltslct = 'off';
+    else
+        mltslct = 'on';
+    end
+    [fname,pname,o] = uigetfile({...
+        str0,['Supported Graphic File Format',str1]; ...
+        '*.*','All File Format(*.*)'},'Select a reference video file',...
+        'multiselect',mltslct);
 else
     pname = obj{1}; % ex: C:\Users\MASH\Documents\MATLAB\
     fname = obj{2}; % ex: movie.sif
@@ -36,50 +45,109 @@ else
         pname = [pname,filesep];
     end
 end
-if ~sum(fname)
+if ~iscell(fname) && ~sum(fname)
     return
+end
+if ~multichanvid
+    if numel(fname)~=nMov
+        setContPan(['The number of image files must be equal to the ',...
+            'number of single-channel videos.'],'error',h_fig);
+        return
+    end
+    
+    suffx = cell(1,nMov);
+    for mov = 1:nMov
+        [~,rname,~] = fileparts(fname{mov});
+        strprt = split(rname,'_');
+        if numel(strprt)==1
+            suffx{mov} = '';
+        else
+            suffx{mov} = strprt{end};
+        end
+    end
+    idfle = [];
+    for chan = 1:nMov
+        id = find(contains(suffx,lbl{chan}));
+        if isempty(id)
+            setContPan([lbl{chan},'-channel reference image file name ',...
+                'must be appended with the suffixe "_',lbl{chan},'".'],...
+                'error',h_fig);
+            return
+        else
+            idfle = cat(2,idfle,id);
+        end
+    end
+    fname = fname(idfle);
+end
+if ~iscell(fname)
+    fname = {fname};
 end
 cd(pname);
 
 % display progress
-setContPan(['Import reference image from file: ',pname,fname,' ...'],...
-    'process',h_fig);
-
-% get image data
-[data,ok] = getFrames([pname,fname], 1, [], h_fig, false);
-if ~ok
-    return
-end
-
-% control image size
-if ~isequal(viddim,[data.pixelX,data.pixelY])
-    setContPan(['Image dimensions (',num2str(data.pixelX),',',...
-        num2str(data.pixelY),') are inconsistent with video dimensions (',...
-        num2str(viddim(1)),',',num2str(viddim(2)),').'],'error',h_fig);
-    return
-end
-
-if data.frameLen>1
-    % display progress
-    setContPan(['Calculate average image ',pname,fname],'process',h_fig);
-
-    % calculate average image if necessary
-    img = calcAveImg(0,[pname,fname],{data.fCurs,viddim,data.frameLen},1,...
-        h_fig);
+if multichanvid
+    strfle = ['image from file: ',pname,fname{1}];
 else
-    img = data.frameCur;
+    strfle = 'images from files: ';
+    for mov = 1:nMov
+        if mov==nMov
+            strfle = cat(2,strfle,' and ',pname,fname{mov});
+        elseif mov>1
+            strfle = cat(2,strfle,', ',pname,fname{mov});
+        elseif mov==1
+            strfle = cat(2,strfle,pname,fname{mov});
+        end
+    end
+end
+setContPan(['Import reference ',strfle,' ...'],'process',h_fig);
+
+img = cell(1,nMov);
+fles = cell(1,nMov);
+for mov = 1:nMov
+    % get image data
+    [data,ok] = getFrames([pname,fname{mov}], 1, [], h_fig, true);
+    if ~ok
+        return
+    end
+
+    % control image size
+    if ~isequal(viddim{mov},[data.pixelX,data.pixelY])
+        setActPan(['Image dimensions (',num2str(data.pixelX),',',...
+            num2str(data.pixelY),') are inconsistent with video ',...
+            'dimensions (',num2str(viddim{mov}(1)),',',...
+            num2str(viddim{mov}(2)),').'],'error',h_fig);
+        return
+    end
+
+    if data.frameLen>1
+        % display progress
+        setContPan(['Calculate average image ',pname,fname{mov}],'process',...
+            h_fig);
+
+        % calculate average image if necessary
+        img{mov} = calcAveImg(0,[pname,fname{mov}],...
+            {data.fCurs,viddim{mov},data.frameLen},1,h_fig);
+    else
+        img{mov} = data.frameCur;
+    end
+    
+    fles{mov} = [pname,fname{mov}];
 end
 
-% store reference image file
-p.proj{p.curr_proj}.VP.curr.gen_crd{3}{2}{6} = [pname,fname];
+% store reference image files
+p.proj{p.curr_proj}.VP.curr.gen_crd{3}{2}{6} = fles;
 
 % save modifications
 h.param = p;
 guidata(h_fig,h);
 
 % open mapping tool
+if multichanvid
+    lim_x = [0 (1:nChan-1)*round(viddim{1}(1)/nChan) viddim{1}(1)];
+else
+    lim_x = [];
+end
 setContPan('Opening mapping tool...','process',h_fig);
-lim_x = [0 (1:nChan-1)*round(viddim(1)/nChan) viddim(1)];
 openMapping(img, lim_x, h_fig, fname);
 
 % display success

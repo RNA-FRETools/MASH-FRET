@@ -19,7 +19,7 @@ if meth<=1
 end
 
 % no result: run spotfinder
-if size(sfcoord,1)<1
+if all(cellfun('isempty',sfcoord))
     [spots,ok] = determineSpots(img, lb, prm, h_fig);
     if ~ok
         return
@@ -32,16 +32,16 @@ else
 end
 
 % apply selection rules
-[imgY,imgX] = size(img);
+[imgY,imgX] = cellfun(@size,img);
 prm.gen_crd{2}{5} = selectSpots(spots,imgX,imgY,prm);
 
 
-function [spots,ok] = determineSpots(img, lb, prm, h_fig)
-% [spots,ok] = determineSpots(img, lb, p, h_fig)
+function [spots,ok] = determineSpots(cellimg, lb, prm, h_fig)
+% [spots,ok] = determineSpots(cellimg, lb, p, h_fig)
 %
 % Target bright spots in the image and return their coordinates.
 %
-% img: input image
+% cellimg: {1-by-nMov} input image
 % lb: 1 if a loading bar is already opened, 0 otherwise
 % prm: processing parameters
 % h_fig: handle to main figure
@@ -57,16 +57,11 @@ meth = prm.gen_crd{2}{1}(1);
 gaussfit = prm.gen_crd{2}{1}(2);
 sfprm = prm.gen_crd{2}{2};
 nChan = size(sfprm,1);
+multichanvid = numel(cellimg)==1;
 
 % initialize output
 ok = 1;
 spots = cell(1,nChan);
-
-[imgY,imgX] = size(img);
-peaksNb = imgX*imgY;
-
-sub_w = floor(imgX/nChan);
-lim = [0 (1:nChan-1)*sub_w imgX];
 
 warning('on', 'verbose');
 warning('off', 'stats:nlinfit:IterationLimitExceeded');
@@ -76,19 +71,32 @@ warning('off', 'MATLAB:nearlySingularMatrix');
 warning('off', 'MATLAB:rankDeficientMatrix');
 warning('off', 'MATLAB:singularMatrix');
 
+for c = 1:nChan
+    
+    if multichanvid
+        img = cellimg{1};
+        [imgY,imgX] = size(img);
+        peaksNb = imgX*imgY;
+        sub_w = floor(imgX/nChan);
+        int = img(:,((c-1)*sub_w+1):c*sub_w);
+    else
+        img = cellimg{c};
+        [imgY,imgX] = size(img);
+        peaksNb = imgX*imgY;
+        sub_w = 0;
+        int = img;
+    end
 
-for i = 1:nChan
-    int = img(:, lim(i)+1:lim(i+1));
-    minInt = sfprm(i,1);
-    ratioInt = sfprm(i,2);
-    darkArea = sfprm(i,[3,4]);
-    spotSize = sfprm(i,[5,6]);
+    minInt = sfprm(c,1);
+    ratioInt = sfprm(c,2);
+    darkArea = sfprm(c,[3,4]);
+    spotSize = sfprm(c,[5,6]);
     
     switch meth
         case 2 % in-serie screening
-            spots{i} = isScreen(int, peaksNb, minInt, darkArea);
-            if ~isempty(spots{i})
-                spots{i}(:,1) = spots{i}(:,1) + (i-1)*sub_w;
+            spots{c} = isScreen(int, peaksNb, minInt, darkArea);
+            if ~isempty(spots{c})
+                spots{c}(:,1) = spots{c}(:,1) + (c-1)*sub_w;
             end
 
         case 3 % houghpeaks
@@ -99,10 +107,10 @@ for i = 1:nChan
                 for j = 1:size(peaks,1)
                     I(j,1) = int(peaks(j,1), peaks(j,2));
                 end
-                spots{i} = [peaks(:,2)-0.5 peaks(:,1)-0.5 I];
-                spots{i}(:,1) = spots{i}(:,1) + (i-1)*sub_w;
+                spots{c} = [peaks(:,2)-0.5 peaks(:,1)-0.5 I];
+                spots{c}(:,1) = spots{c}(:,1) + (c-1)*sub_w;
             else
-                spots{i} = [];
+                spots{c} = [];
             end
 
         case 4 % Schmied2012
@@ -127,10 +135,10 @@ for i = 1:nChan
                 for j = 1:size(peaks,1)
                     I(j,1) = int(ceil(peaks(j,2)), ceil(peaks(j,1)));
                 end
-                spots{i} = [peaks(:,1)-0.5 peaks(:,2)-0.5 I];
-                spots{i}(:,1) = spots{i}(:,1) + (i-1)*sub_w;
+                spots{c} = [peaks(:,1)-0.5 peaks(:,2)-0.5 I];
+                spots{c}(:,1) = spots{c}(:,1) + (c-1)*sub_w;
             else
-                spots{i} = [];
+                spots{c} = [];
             end
 
         case 5 % Twotone
@@ -141,10 +149,10 @@ for i = 1:nChan
                 for j = 1:size(peaks,1)
                     I(j,1) = int(ceil(peaks(j,2)), ceil(peaks(j,1)));
                 end
-                spots{i} = [peaks(:,1)-0.5 peaks(:,2)-0.5 I];
-                spots{i}(:,1) = spots{i}(:,1) + (i-1)*sub_w;
+                spots{c} = [peaks(:,1)-0.5 peaks(:,2)-0.5 I];
+                spots{c}(:,1) = spots{c}(:,1) + (c-1)*sub_w;
             else
-                spots{i} = [];
+                spots{c} = [];
             end
         
     end
@@ -156,10 +164,10 @@ for i = 1:nChan
     % cancelled by MH, 9.2.2020
 %     spots = selectSpots(spots, imgX, imgY);
 
-    N = size(spots{i},1);
+    N = size(spots{c},1);
     if ~lb
         if loading_bar('init',h_fig,N,...
-                sprintf('Fitting peaks in channel %i',i))
+                sprintf('Fitting peaks in channel %i',c))
             ok = 0;
             return
         end
@@ -168,7 +176,7 @@ for i = 1:nChan
         guidata(h_fig, h);
     end
 
-    [spots{i},intrupt] = spotGaussFit(spots{i}, img, spotSize, lb, h_fig);
+    [spots{c},intrupt] = spotGaussFit(spots{c}, img, spotSize, lb, h_fig);
     
     if intrupt
         ok = 0;

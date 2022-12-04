@@ -13,6 +13,7 @@ defbfname = 'frame_t_0';
 % retrieve parameters
 h = guidata(h_fig);
 p = h.param;
+nChan = p.proj{p.curr_proj}.nb_channel;
 projfile = p.proj{p.curr_proj}.proj_file;
 projtle = p.proj{p.curr_proj}.exp_parameters{1,2};
 vidfile = p.proj{p.curr_proj}.movie_file;
@@ -35,11 +36,11 @@ if iscell(obj)
     end
 else
     if ~isempty(imgfile)
-        [o,name,o] = fileparts(imgfile);
+        [o,name,o] = fileparts(imgfile{1});
     elseif ~isempty(projfile)
         [o,name,o] = fileparts(projfile);
     else
-        [o,name,o] = fileparts(vidfile);
+        [o,name,o] = fileparts(vidfile{1});
     end
     if strcmp(name,defbfname)
         name = projtle;
@@ -60,6 +61,17 @@ end
 
 % display process
 setContPan('Write reference coordinates to file...','process',h_fig);
+
+% organize coordinates in a row-wise manner
+coord = zeros([numel(coordref)/2 2]);
+if ~isempty(coordref)
+    for i = 1:nChan
+        coord(i:nChan:end,:) = coordref(:,2*i-1:2*i);
+    end
+end
+if isempty(coord)
+    return
+end
 
 % save coordinates to file
 f = fopen([pname fname], 'Wt');

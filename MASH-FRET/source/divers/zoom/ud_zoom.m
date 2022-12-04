@@ -6,12 +6,12 @@ curr_axes = get(h_fig, 'CurrentAxes');
 switch action
     
     case 'reset'
-        if sum(double(curr_axes == ...
-                [h.axes_VP_vid, h.axes_VP_avimg, h.axes_example_mov]))
+        if any(curr_axes == ...
+                [h.axes_VP_vid, h.axes_VP_avimg, h.axes_example_mov])
             axis(curr_axes, 'image');
             
-        elseif isfield(h,'axes_VP_tr') && ishandle(h.axes_VP_tr) && ...
-                curr_axes == h.axes_VP_tr
+        elseif isfield(h,'axes_VP_tr') && all(ishandle(h.axes_VP_tr)) && ...
+                any(curr_axes==h.axes_VP_tr)
             axis(curr_axes, 'image');
 
         elseif sum(double(curr_axes == [h.axes_top h.axes_topRight ...

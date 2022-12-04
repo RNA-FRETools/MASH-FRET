@@ -21,10 +21,14 @@ h = guidata(h_fig);
 p = h.param;
 projfile = p.proj{p.curr_proj}.proj_file;
 vidfile = p.proj{p.curr_proj}.movie_file;
+projtle = p.proj{p.curr_proj}.exp_parameters{1,2};
+lbl = p.proj{p.curr_proj}.labels;
 curr = p.proj{p.curr_proj}.VP.curr;
 start = curr.edit{2}(1);
 stop = curr.edit{2}(2);
 filtlst = curr.edit{1}{4};
+nMov = numel(vidfile);
+multichanvid = nMov==1;
 
 % get destination file
 if ~isempty(varargin)
@@ -46,7 +50,7 @@ else
     if ~isempty(projfile)
         [o,name,o] = fileparts(projfile);
     else
-        [o,name,o] = fileparts(vidfile);
+        [o,name,o] = fileparts(vidfile{1});
     end
     if strcmp(name,defbfname)
         name = projtle;
@@ -99,10 +103,24 @@ if ~isempty(filtlst)
         str_bg = cat(2,str_bg,'"',bgCorr{i},'", ');
     end
 end
+if multichanvid
+    str_fle = ['file: ',pname,fname];
+else
+    str_fle = 'files: ';
+    [~,rname,fext] = fileparts(fname);
+    for mov = 1:nMov
+        str_fle = cat(2,str_fle,pname,rname,'_',lbl{mov},fext);
+        if mov<(nMov-1)
+            str_fle = cat(2,str_fle,', ');
+        elseif mov==(nMov-1)
+            str_fle =  cat(2,str_fle,' and ');
+        end
+    end
+end
 
 % display success
-setContPan([grType str_bg 'has been successfully exported to file: ' ...
-    pname fname], 'success', h_fig);
+setContPan([grType,str_bg,'has been successfully exported to ',str_fle],...
+    'success',h_fig);
 
 ok = 1;
 

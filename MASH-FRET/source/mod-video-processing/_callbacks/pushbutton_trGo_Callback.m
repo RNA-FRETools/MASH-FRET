@@ -9,8 +9,10 @@ p = h.param;
 viddim = p.proj{p.curr_proj}.movie_dim;
 nChan = p.proj{p.curr_proj}.nb_channel;
 curr = p.proj{p.curr_proj}.VP.curr;
+def = p.proj{p.curr_proj}.VP.def;
 coord2tr = curr.res_crd{1};
 tr = curr.res_crd{2};
+nMov = numel(viddim);
 
 % control number of channels
 if nChan<=1 || nChan>3
@@ -20,7 +22,7 @@ if nChan<=1 || nChan>3
 end
 
 % control coordinates
-if isempty(coord2tr)
+if isequal(coord2tr,def.res_crd{1})
     setContPan(['No coordinates detected. Please start a Spot Finder ',...
         'procedure or or import spots coordinates.'],'error',h_fig);
     return
@@ -37,8 +39,12 @@ end
 setContPan('Transform coordinates...','process',h_fig);
 
 % transform coordinates
-q.res_x = viddim(1);
-q.res_y = viddim(2);
+q.res_x = zeros(1,nMov);
+q.res_y = zeros(1,nMov);
+for mov = 1:nMov
+    q.res_x(mov) = viddim{mov}(1);
+    q.res_y(mov) = viddim{mov}(2);
+end
 q.nChan = nChan;
 q.spotDmin = ones(1,nChan);
 q.edgeDmin = ones(1,nChan);

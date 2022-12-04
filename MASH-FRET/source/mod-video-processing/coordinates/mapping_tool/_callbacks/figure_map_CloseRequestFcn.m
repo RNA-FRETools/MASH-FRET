@@ -8,14 +8,22 @@ q = h.map;
 mute = h.mute_actions;
 
 % collect mapping
-nChan = size(q.lim_x,2) - 1;
+if ~isempty(q.lim_x)
+    nChan = size(q.lim_x,2) - 1;
+else
+    nChan = numel(q.refimgfile);
+end
 minN = size(pntCoord{1},1);
 for i = 2:nChan
     minN = min([minN size(pntCoord{i},1)]);
 end
 if minN > 0
     for i = 1:nChan
-        q.pnt(1:minN,2*i-1) = pntCoord{i}(1:minN,1) + q.lim_x(i);
+        if ~isempty(q.lim_x)
+            q.pnt(1:minN,2*i-1) = pntCoord{i}(1:minN,1) + q.lim_x(i);
+        else
+            q.pnt(1:minN,2*i-1) = pntCoord{i}(1:minN,1);
+        end
         q.pnt(1:minN,2*i) = pntCoord{i}(1:minN,2);
     end
 end
@@ -25,35 +33,14 @@ h.map = q;
 guidata(h_fig,h);
 
 nb_points = size(q.pnt,1);
-if nb_points >= 15 || nb_points == 0
+if nb_points >= 4 || nb_points == 0
     exit_choice = 'Yes';
 else
     msgStr = {[num2str(nb_points) ' reference coordinates have been ',...
         'selected.']};
-    if nb_points < 2
-        msgStr = cat(2,msgStr,['No spatial transformation can be ' ...
-            'calculated.']);
-    else
-        msgStr = cat(2,msgStr,['You are able to perform following ' ...
-            'spatial transformations:']);
-        if nb_points >= 2
-            msgStr = cat(2,msgStr,'- Nonrefective similarity');
-        end
-        if nb_points >= 3
-            msgStr = cat(2,msgStr,'- Similarity','- Affine');
-        end
-        if nb_points >= 4
-            msgStr = cat(2,msgStr,'- Projective','- Piecewise linear');
-        end
-        if nb_points >= 6
-            msgStr = cat(2,msgStr,'- Polynomial order 2');
-        end
-        if nb_points >= 10
-            msgStr = cat(2,msgStr,'- Polynomial order 3');
-        end
-        if nb_points >= 12
-            msgStr = cat(2,msgStr,'- Local weighted mean');
-        end
+    if nb_points < 4
+        msgStr = cat(2,msgStr,['No transformation can be calculated: at ',...
+            'least 4 pairs of coordinates need to be mapped.']);
     end
 
     if ~mute

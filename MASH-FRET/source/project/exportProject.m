@@ -14,27 +14,98 @@ p = h.param;
 proj = p.proj{p.curr_proj};
 nChan = proj.nb_channel;
 nExc = proj.nb_excitations;
-L = proj.movie_dat{3};
+vidfile = proj.movie_file;
+viddat = proj.movie_dat;
+viddim = proj.movie_dim;
 curr = proj.VP.curr;
-coordsm = curr.res_crd{4};
+coordsm0 = curr.res_crd{4};
 pxdim = curr.gen_int{3}(1);
 npix = curr.gen_int{3}(2);
 coordfile = curr.gen_int{2}{2};
 impprm = curr.gen_int{2}{3};
 
-% collect video file parameters
-fDat{1} = proj.movie_file;
-fDat{2}{1} = proj.movie_dat{1};
-if isFullLengthVideo(proj.movie_file,h_fig)
-    fDat{2}{2} = h.movie.movie;
-else
-    fDat{2}{2} = [];
-end
-fDat{3} = proj.movie_dim;
-fDat{4} = L;
+L = viddat{1}{3};
 
-% build traces
-[coordsm,traces] = create_trace(coordsm,pxdim,npix,fDat);
+nMov = numel(vidfile);
+multichanvid = nMov==1;
+
+if ~multichanvid
+    idcoord = cell(1,nMov);
+    coordsm_mv = cell(1,nMov);
+    traces_mv = cell(1,nMov);
+    excl = false(1,size(coordsm0,1));
+end
+for mov = 1:nMov
+
+    % load full-length video data in memory if possible
+    if ~isFullLengthVideo(vidfile{mov},h_fig)
+        h.movie.movie = [];
+        h.movie.file = '';
+        guidata(h_fig,h);
+        [dat,ok] = getFrames(vidfile{mov},'all',viddat{mov},h_fig,true);
+        if ~ok
+            return
+        end
+        h = guidata(h_fig);
+        if ~isempty(dat.movie)
+            h.movie.movie = dat.movie;
+            h.movie.file = vidfile{mov};
+            guidata(h_fig,h);
+            h = guidata(h_fig);
+        elseif ~isempty(h.movie.movie)
+            h.movie.file = vidfile{mov};
+            guidata(h_fig,h);
+            h = guidata(h_fig);
+        end
+    end
+
+    % collect video file parameters
+    fDat{1} = vidfile{mov};
+    fDat{2}{1} = viddat{mov}{1};
+    if isFullLengthVideo(vidfile{mov},h_fig)
+        fDat{2}{2} = h.movie.movie;
+    else
+        fDat{2}{2} = [];
+    end
+    fDat{3} = viddim{mov};
+    fDat{4} = viddat{mov}{3};
+
+    % build traces
+    if multichanvid
+        [coordsm,traces] = create_trace(coordsm0,pxdim,npix,fDat);
+    else
+        [coordsm_mv{mov},traces_mv{mov}] = create_trace(...
+            coordsm0(:,2*mov-1:2*mov),pxdim,npix,fDat);
+        ncoord = size(coordsm_mv{mov},1);
+        idcoord{mov} = zeros(1,ncoord);
+        for c = 1:ncoord
+            idcoord{mov}(c) = find(...
+                coordsm0(:,2*mov-1)==coordsm_mv{mov}(c,1) & ...
+                coordsm0(:,2*mov)==coordsm_mv{mov}(c,2));
+        end
+        for c = 1:size(coordsm0,1)
+            excl(c) = excl(c) | ~any(idcoord{mov}==c);
+        end
+    end
+end
+if ~multichanvid
+    traces = [];
+    for mov = 1:nMov
+        excl_mv = false(1,size(coordsm_mv{mov},1));
+        for c = 1:size(coordsm0,1)
+           if excl(c) && any(idcoord{mov}==c)
+               excl_mv(idcoord{mov}==c) = true;
+           end
+        end
+        coordsm_mv{mov}(excl_mv,:) = [];
+        traces_mv{mov}(:,excl_mv) = [];
+        traces = cat(3,traces,traces_mv{mov});
+    end
+    traces = permute(traces,[1,3,2]);
+    traces = ...
+        reshape(traces,[size(traces,1),size(traces,2)*size(traces,3)]);
+    coordsm = coordsm0(~excl,:);
+end
 
 % get dimensions
 nCoord = size(coordsm,1);

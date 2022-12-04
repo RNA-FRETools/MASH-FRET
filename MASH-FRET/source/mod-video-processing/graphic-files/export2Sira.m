@@ -20,6 +20,7 @@ expT = p.proj{p.curr_proj}.frame_rate;
 vidfile = p.proj{p.curr_proj}.movie_file;
 viddim = p.proj{p.curr_proj}.movie_dim;
 viddat = p.proj{p.curr_proj}.movie_dat;
+labels = p.proj{p.curr_proj}.labels;
 curr = p.proj{p.curr_proj}.VP.curr;
 filtlst = curr.edit{1}{4};
 start = curr.edit{2}(1);
@@ -27,18 +28,11 @@ stop = curr.edit{2}(2);
 iv =  curr.edit{2}(3);
 tocurr = curr.edit{1}{1}(2);
 
-% control full-length video
-isMov = isFullLengthVideo([pname,fname],h_fig);
+nMov = numel(vidfile);
+multichanvid = nMov==1;
 
 % control image filters
 isBgCorr = ~isempty(filtlst);
-
-% abort if the file being written is the one being accessed for reading data
-if ~isMov && isequal(vidfile,[pname fname])
-    setContPan(cat(2,'The exported file must be different from the ',...
-        'original one.'),'error',h_fig);
-    return
-end
 
 % get video frame indexes
 frameRange = start:iv:stop;
@@ -48,60 +42,90 @@ L = numel(frameRange);
 figname = get(h_fig, 'Name');
 vers = figname(length('MASH-FRET ')+1:end);
 
-% write sira file headers
-f = writeSiraFile('init',[pname fname],vers,[expT,viddim,L]);
-if f == -1
-    setContPan(['Enable to open file ' fname],'error',h_fig);
-    return
-end
+[~,rootname,~] = fileparts(fname);
 
 % initialize loading bar
-if loading_bar('init', h_fig, L, 'Export to a *.sira file...')
-    fclose(f);
+if loading_bar('init', h_fig, nMov*L, 'Export to *.sira format...')
     return
 end
 h = guidata(h_fig);
 h.barData.prev_var = h.barData.curr_var;
 guidata(h_fig, h);
 
-% process and write video frames to file
-nPix = prod(viddim);
-for i = frameRange
-    
-    % get video frame
-    if isMov
-        img = h.movie.movie(:,:,i);
+for mov = 1:nMov
+    if nMov>1
+        substr = ['_',labels{mov}];
     else
-        [data,succ] = getFrames(vidfile, i, viddat, h_fig, true);
-        if ~succ
-            return
-        end
-        img = data.frameCur;
+        substr = '';
     end
-
-    % apply background corrections if any
-    if isBgCorr
-        if ~tocurr
-            img = updateBgCorr(img, p, h_fig);
-        else % Apply only if the bg-corrected frame is displayed
-            if tocurr==i
-                img = updateBgCorr(img, p, h_fig);
-            end
-        end
-    end
+    fname = [rootname,substr,'.sira'];
     
-    % write pixel data to sira file
-    writeSiraFile('append',f,img,nPix);
+    % control full-length video
+    isMov = isFullLengthVideo(vidfile{mov},h_fig);
 
-    % increment loading bar
-    if loading_bar('update', h_fig)
-        fclose(f);
+    % abort if the file being written is the one being accessed for reading data
+    if ~isMov && isequal(vidfile{mov},[pname fname])
+        setContPan(cat(2,'The exported file must be different from the ',...
+            'original one.'),'error',h_fig);
         return
     end
+    
+    % process and write video frames to file
+    nPix = prod(viddim{mov});
+
+    % write sira file headers
+    f = writeSiraFile('init',[pname fname],vers,[expT,viddim{mov},L]);
+    if f == -1
+        setContPan(['Enable to open file ' fname],'error',h_fig);
+        return
+    end
+    
+    for i = frameRange
+
+        % get video frame
+        if isMov
+            img = h.movie.movie(:,:,i);
+        else
+            [data,succ] = getFrames(vidfile{mov},i,viddat{mov},h_fig,true);
+            if ~succ
+                return
+            end
+            img = data.frameCur;
+        end
+
+        % apply background corrections if any
+        if isBgCorr
+            if ~tocurr
+                if multichanvid
+                    img = updateBgCorr(img, p, h_fig);
+                else
+                    img = updateBgCorr(img, p, h_fig, mov);
+                end
+            else % Apply only if the bg-corrected frame is displayed
+                if tocurr==i
+                    if multichanvid
+                        img = updateBgCorr(img, p, h_fig);
+                    else
+                        img = updateBgCorr(img, p, h_fig, mov);
+                    end
+                end
+            end
+        end
+
+        % write pixel data to sira file
+        writeSiraFile('append',f,img,nPix);
+
+        % increment loading bar
+        if loading_bar('update', h_fig)
+            return
+        end
+    end
+    
+    % close file
+    fclose(f);
 end
 
-% close file and loading bar
-fclose(f);
+% close loading bar
 loading_bar('close', h_fig);
 
 % return success

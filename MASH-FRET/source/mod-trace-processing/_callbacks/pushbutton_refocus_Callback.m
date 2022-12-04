@@ -14,35 +14,61 @@ nChan = p.proj{proj}.nb_channel;
 coord = p.proj{proj}.coord;
 labels = p.proj{proj}.labels;
 itgArea = p.proj{proj}.pix_intgr(1);
-res_x = p.proj{proj}.movie_dim(1);
-res_y = p.proj{proj}.movie_dim(2);
 L_ex = size(p.proj{proj}.intensities,1);
 nExc = p.proj{proj}.nb_excitations;
 nPix = p.proj{proj}.pix_intgr(2);
-fDat{1} = p.proj{proj}.movie_file;
-fDat{2}{1} = p.proj{proj}.movie_dat{1};
-if isFullLengthVideo(p.proj{proj}.movie_file,h_fig)
-    fDat{2}{2} = h.movie.movie;
-else
-    fDat{2}{2} = [];
-end
-fDat{3} = [p.proj{proj}.movie_dat{2}(1) p.proj{proj}.movie_dat{2}(2)];
-fDat{4} = p.proj{proj}.movie_dat{3};
-
+vidfile = p.proj{proj}.movie_file;
+viddat = p.proj{proj}.movie_dat;
 exc = p.proj{proj}.TP.fix{1}(1);
+
+nMov = numel(vidfile);
+multichanvid = nMov==1;
+
 L_adj = nExc*L_ex;
 
-split = round(res_x/nChan)*(1:nChan-1);
-lim_x = [0 split res_x];
-lim.y = [0 res_y];
+if multichanvid
+    res_x = p.proj{proj}.movie_dim{1}(1);
+    res_y = p.proj{proj}.movie_dim{1}(2);
+    img = p.proj{proj}.aveImg{exc+1};
+    split = round(res_x/nChan)*(1:nChan-1);
+    lim_x = [0 split res_x];
+    lim.y = [0 res_y];
+end
 
-img = p.proj{proj}.aveImg{exc+1};
 
 % display process
 setContPan('Center molecule positions...', 'process', h_fig);
 
 for c = 1:nChan
-    lim.x = [lim_x(c) lim_x(c+1)];
+    if multichanvid
+        lim.x = [lim_x(c) lim_x(c+1)];
+        
+        fDat{1} = vidfile{1};
+        fDat{2}{1} = viddat{1}{1};
+        if isFullLengthVideo(vidfile{1},h_fig)
+            fDat{2}{2} = h.movie.movie;
+        else
+            fDat{2}{2} = [];
+        end
+        fDat{3} = viddat{1}{2};
+        fDat{4} = viddat{1}{3};
+        
+    else
+        lim.x = [0 viddat{c}{2}(1)];
+        lim.y = [0 viddat{c}{2}(2)];
+        img = p.proj{proj}.aveImg{c,exc+1};
+        
+        fDat{1} = vidfile{c};
+        fDat{2}{1} = viddat{c}{1};
+        if isFullLengthVideo(vidfile{c},h_fig)
+            fDat{2}{2} = h.movie.movie;
+        else
+            fDat{2}{2} = [];
+        end
+        fDat{3} = viddat{c}{2};
+        fDat{4} = viddat{c}{3};
+    end
+    
     new_coord = recenterSpot(img,coord(mol,2*c-1:2*c),itgArea,lim);
 
     if ~isequal(new_coord, coord(mol,(2*c-1):2*c))

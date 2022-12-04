@@ -59,7 +59,7 @@ p.exp_axes = 'graph.png';
 p.es = cell(nChan_max,nL_max);
 for nChan = 1:nChan_max
     for nL = 1:nL_max
-        p.es{nChan,nL}.imp.vfile = '';
+        p.es{nChan,nL}.imp.vfile = {''};
         p.es{nChan,nL}.chan.nchan = nChan;
         p.es{nChan,nL}.chan.emlbl = ['donem',cellstr(...
             [repmat('accem',nChan-1,1),num2str((1:(nChan-1))')])'];

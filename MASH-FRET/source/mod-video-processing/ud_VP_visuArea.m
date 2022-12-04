@@ -10,8 +10,10 @@ h = guidata(h_fig);
 p = h.param;
 
 if ~prepPanel(h.uitabgroup_VP_plot,h)
-    set([h.axes_VP_vid,h.cb_VP_vid,h.axes_VP_avimg,h.cb_VP_avimg],...
-        'visible','off');
+    if isfield(h,'axes_VP_vid') && sum(ishandle(h.axes_VP_vid))
+        set([h.axes_VP_vid,h.cb_VP_vid,h.axes_VP_avimg,h.cb_VP_avimg],...
+            'visible','off');
+    end
     return
 end
 
@@ -19,10 +21,6 @@ end
 proj = p.curr_proj;
 curr = p.proj{proj}.VP.curr;
 l = p.movPr.curr_frame(proj);
-L = p.proj{proj}.movie_dat{3};
-resX = p.proj{proj}.movie_dat{2}(1);
-resY = p.proj{proj}.movie_dat{2}(2);
-vidFile = p.proj{proj}.movie_file;
 inSec = p.proj{proj}.time_in_sec;
 expT = p.proj{proj}.frame_rate;
 chansplit = curr.plot{2};
@@ -32,15 +30,32 @@ if ~p.proj{proj}.is_movie
     return
 end
 
-% adjust channel splitting
-txt_split = [];
-for i = 1:size(chansplit,2)
-    txt_split = cat(2,txt_split,' ',num2str(chansplit(i)));
-end
-set(h.text_split, 'String', ['Channel splitting: ' txt_split]);
+nVid = numel(p.proj{proj}.movie_file);
+for vid = 1:nVid
+    
+    % retrieve current video display
+    L = p.proj{proj}.movie_dat{vid}{3};
+    resX = p.proj{proj}.movie_dat{vid}{2}(1);
+    resY = p.proj{proj}.movie_dat{vid}{2}(2);
+    vidFile = p.proj{proj}.movie_file{vid};
 
-% set video file
-set(h.edit_movFile, 'String', vidFile);
+    % set video file
+    set(h.edit_movFile(vid), 'String', vidFile);
+
+    % set video dimensions
+    set(h.text_movW(vid), 'String', num2str(resX));
+    set(h.text_movH(vid), 'String', num2str(resY));
+end
+
+% adjust channel splitting
+txt_split = '';
+if nVid==1
+    for i = 1:size(chansplit,2)
+        txt_split = cat(2,txt_split,' ',num2str(chansplit(i)));
+    end
+    txt_split = ['Channel splitting: ' txt_split];
+end
+set(h.text_split, 'String', txt_split);
 
 % Update slider properties & position     
 if L<=1
@@ -62,7 +77,5 @@ else
 end
 set(h.text_frameEnd, 'String', num2str(L));
 set(h.text_frameCurr, 'String', num2str(l));
-set(h.text_movW, 'String', num2str(resX));
-set(h.text_movH, 'String', num2str(resY));
 
 

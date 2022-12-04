@@ -9,8 +9,23 @@ function pushbutton_impCoord_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 p = h.param;
 nChan = p.proj{p.curr_proj}.nb_channel;
+vidfile = p.proj{p.curr_proj}.movie_file;
+viddim = p.proj{p.curr_proj}.movie_dim;
 curr = p.proj{p.curr_proj}.VP.curr;
 impprm = curr.gen_crd{3}{1}{3};
+multichanvid = numel(vidfile)==1;
+
+chansplit = cell(1,nChan);
+if multichanvid
+    resx = viddim{1}(1);
+    for c = 1:nChan
+        chansplit{c} = ((c-1):c)*round(resx/nChan);
+    end
+else
+    for c = 1:nChan
+        chansplit{c} = [0,viddim{c}(1)];
+    end
+end
 
 % control number of channels
 if nChan<=1 || nChan>3
@@ -50,7 +65,7 @@ coord = [];
 for i = 1:nCoord
     fline = str2num(fData{i,1});
     if ~isempty(fline) && ~(numel(fline)==1 && isnan(fline))
-        coord = cat(1,coord,fline(1,[col_x col_y]));
+        coord = cat(1,coord,fline(1,[col_x,col_y,end]));
     end
 end
 if isempty(coord)
@@ -58,9 +73,18 @@ if isempty(coord)
         'options.'),'error',h_fig);
     return
 end
+spots = cell(1,nChan);
+for c = 1:nChan
+    if multichanvid
+        spots{c} = coord(coord(:,1)>=chansplit{c}(1) & ...
+            coord(:,1)<chansplit{c}(2),[1,2]);
+    else
+        spots{c} = coord(coord(:,3)==c,[1,2]);
+    end
+end
 
 % save coordiantes and file
-curr.res_crd{1} = coord;
+curr.res_crd{1} = spots;
 curr.gen_crd{3}{1}{2} = fname;
 curr.plot{1}(2) = 3;
 
