@@ -8,6 +8,9 @@ function p = importVP(p,projs)
 
 % define molecule processing parameters applied (prm) and to apply (curr)
 for i = projs
+    if ~p.proj{i}.is_movie
+        p.proj{i}.VP = [];
+    end
     if isempty(p.proj{i}.VP)
         continue
     end
