@@ -106,13 +106,13 @@ nChan = 2;
 nExc = 1;
 excWl = 532;
 chanExc = [532,0];
-chanLabel = {'Cy3','Cy5'};
+chanLabel = {'chan1','chan2'};
 expCond = {'Title','new project','';...
     'Molecule','','';...
     '[Mg2+]',[],'mM';...
     '[K+]',[],'mM'};
-tagNames = {'static','dynamic','D-only','A-only'};
-tagClr = {'#4298B5','#FFFFCC','#33CC33','#FF6666','#E19D29'};
+tagNames = {'D','A','static','dynamic'};
+tagClr = {'#3CB371','#FFA500','#0000FF','#EE82EE'};
 impTrajPrm = {{[1 1 1 1 1 0 1],ones(1,nExc),repmat([1,1,0],nChan,1),...
     repmat([1,1,0],nChan,1,nExc),[]} ... % trajectory file structure
     {0,''} ... % video file

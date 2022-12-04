@@ -16,7 +16,7 @@ tpe = p.TDP.curr_type(proj); % current channel type
 tag = p.TDP.curr_tag(proj); % current channel type
 
 [p,ok,str] = buildTDP(p,tag,tpe);
-if ~ok
+if ~ok && strcmp(p.curr_mod{proj},'TA')
     setContPan(str, 'warning', h_fig);
 end
 

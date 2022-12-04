@@ -45,7 +45,7 @@ ttstr1 = wrapHtmlTooltipString('<b>Infer state configurations:</b> Gaussian mixt
 ttstr2 = wrapHtmlTooltipString('<b>Model selection:</b> overfitting is penalized using a <b>minimum improvement</b> in likelihood (the model is selected if further increase in complexity does not sufficiently improve the likelihood).');
 ttstr3 = wrapHtmlTooltipString('<b>Improvement factor:</b> multiplication factor that expresses the minimum improvement in likelihood (example: 1.2 set a minimum improvement of 20%).');
 ttstr4 = wrapHtmlTooltipString('<b>Model selection:</b> overfitting is penalized using the <b>BIC</b> (the selected model minimizes the BIC).');
-ttstr4b = wrapHtmlTooltipString('<b>Likelihood calculation:</b> <u>complete data:</u> each transition is associated to one and only Gaussian; <u>incomplete data:</u> transitions have a non-null probability to belong to each Gaussian (subject to overestimation of model complexity).');
+ttstr4b = wrapHtmlTooltipString('<b>Likelihood calculation:</b> <u>complete data:</u> each bin is associated to one and only Gaussian; <u>incomplete data:</u> bins have a non-null probability to belong to each Gaussian (subject to overestimation of model complexity).');
 ttstr5 = wrapHtmlTooltipString('Select an inferred <b>state configuration</b> to show on the histogram plot: configurations are labelled with the corresponding number of Gaussians.');
 ttstr6 = wrapHtmlTooltipString('<b>Export Gaussian parameters</b> of the selected state configuration to panel "State populations" as starting guesses for state population analysis.');
 

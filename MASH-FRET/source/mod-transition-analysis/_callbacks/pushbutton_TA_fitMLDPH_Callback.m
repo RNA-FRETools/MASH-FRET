@@ -131,6 +131,12 @@ for m = 1:nMol
 end
 dat = dat_new;
 
+if isempty(dat)
+    setContPan(['ML-DPH can not proceed: no dwell times are left after ',...
+        'exclusion of static trajectories.'],'error',h_fig);
+    return
+end
+
 if guessMeth==1 % determine guess from DPH fit & BIC model selection
 
     % display process

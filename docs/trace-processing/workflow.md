@@ -11,9 +11,12 @@ nav_order: 2
 {: .no_toc }
 
 In this section you will learn how to correct single molecule intensity-time traces from experimental bias and obtain state trajectories. 
-Exported data, in particular the 
-[mash project](../output-files/mash-mash-project.html) file, can further be used in modules Histogram analysis and Transition analysis for 
-[data analysis](../tutorials/analyze-data.html).
+
+Each time molecule data are processed by pressing 
+![UPDATE](../assets/images/gui/TP-but-update.png "UPDATE"), 
+![UPDATE ALL](../assets/images/gui/TP-but-update-all.png "UPDATE ALL"), or by navigating through molecules, data in modules 
+[Histogram analysis](../histogram-analysis.html) and 
+[Transition analysis](../transition-analysis.html) are automatically refreshed.
 
 The procedure includes nine steps:
 
@@ -23,98 +26,103 @@ The procedure includes nine steps:
 
 ---
 
-## Import single molecule data
+## Import trajectories
 
-Single molecule data can be imported from a 
-[.mash file](../output-files/mash-mash-project.html), previously created in Video processing, or from a set of ASCII files.
-If data are imported from ASCII files, MASH must be informed about the particular file structure and about your experiment settings in order to adapt the software functionalities. 
-In that case, data must be exported to a new 
-[.mash file](../output-files/mash-mash-project.html) after import in order to use the processed data for further analysis.
+Initial trajectories come from 
+[Simulation](../simulation.html)'s output in a simulation-based project, 
+[Video processing](../video-processing.html)'s output in a video-based project, or from external ASCII files.
 
-After successful import, channel-specific images and trajectories of the first single molecule in the project are displayed in the 
-[Visualization area](panels/area-visualization.html).
+In the two first cases, you can skip this step and go directly to the next one.
 
-To import single molecule data from a 
-[.mash file](../output-files/mash-mash-project.html):
+In the latter case, a new trajectory-based project must be created. 
+This implies to import the trajectory files, register the associated experiment settings and define the data structure in the files.
+After the project creation is completed, it is recommended to save it to a 
+[.mash file](../output-files/mash-mash-project.html) that should regularly be overwritten in order to keep traceability and access to the results.
 
-{: .procedure }
-1. Add the project to the list by pressing 
-   ![Add](../assets/images/gui/TP-but-add.png "Add") and selecting the corresponding 
-   [.mash file](../output-files/mash-mash-project.html)  
-     
-1. If not already done in Video processing, set the project options by selecting the project in the project list and pressing 
-   ![Edit...](../assets/images/gui/TP-but-edit-3p.png "Edit..."); see 
-   [Set project options](../video-processing/functionalities/set-project-options.html) for more information. 
-   Save modifications to your project file by pressing 
-   ![Save](../assets/images/gui/TP-but-save.png "Save") and overwriting the corresponding 
-   [.mash file](../output-files/mash-mash-project.html).
+Informing MASH about the particular experiment settings is crucial to adapt the software functionalities to your own experiment setup.
+In theory, the software is compatible with:
 
-To import single molecule data from ASCII files:
+* an unlimited number of video channels,
+* an unlimited number of alternated lasers,
+* FRET calculations for an unlimited number of FRET pairs.
+
+To create a new trajectory-based project:
 
 {: .procedure }
-1. Restructure ALEX data files if necessary; see 
-   [Restructure ALEX files](functionalities/restructure-alex-files.html) for more information  
+1. Open the experiment settings window by pressing 
+   ![New project](../assets/images/gui/interface-but-newproj.png "New project") in the 
+   [project management area](../Getting_started#project-management-area) and selecting `import trajectories`.  
      
-1. Set the import settings by pressing 
-   ![ASCII options ...](../assets/images/gui/TP-but-ascii-options-3p.png "ASCII options ..."); see 
-   [Set import options](functionalities/set-import-options.html) for help  
+1. Import a set of trajectory files and define your experiment setup by configuring tabs:  
      
-1. Import data by pressing 
-   ![Add](../assets/images/gui/TP-but-add.png "Add") and selecting the corresponding ASCII files; this will add a new project to the project list  
+   [Import](../tutorials/set-experiment-settings/import-trajectories.html#import)  
+   [Channels](../tutorials/set-experiment-settings/import-trajectories.html#channels)  
+   [Lasers](../tutorials/set-experiment-settings/import-trajectories.html#lasers)  
+   [Calculations](../tutorials/set-experiment-settings/import-trajectories.html#calculations)  
+   [Divers](../tutorials/set-experiment-settings/import-trajectories.html#divers)  
      
-1. Set the project options by selecting the new project in the project list and pressing 
-   ![Edit...](../assets/images/gui/TP-but-edit-3p.png "Edit..."); see 
-   [Set project options](../video-processing/functionalities/set-project-options.html) for more information.
+   If necessary, modify settings in 
+   [Calculations](../tutorials/set-experiment-settings/import-trajectories.html#calculations) and 
+   [Divers](../tutorials/set-experiment-settings/import-trajectories.html#divers) any time after project creation.  
      
-1. Save the new project to a 
+1. Define how data are structured in the files by configuring tab 
+   [File structure](../tutorials/set-experiment-settings/import-trajectories.html#file-structure).  
+     
+1. Finalize the creation of your project by pressing 
+   ![Save](../assets/images/gui/newproj-but-save.png); the experiment settings window now closes and the interface switches to module Trace processing.  
+     
+1. Save modifications to a 
    [.mash file](../output-files/mash-mash-project.html) by pressing 
-   ![Save](../assets/images/gui/TP-but-save.png "Save").
+   ![Save project](../assets/images/gui/interface-but-saveproj.png "Save project") in the 
+   [project management area](../Getting_started#project-management-area).
 
 
 ---
 
 ## Adjust single molecule position
 
-Single molecule image in each channel and upon a specific laser shine are shown in the 
-[Visualization area](panels/area-visualization.html#single-molecule-images).
+Single molecule image in each channel and upon illumination by a specific laser are shown in the 
+[Visualization area](components/area-visualization.html#single-molecule-images).
 Single molecule positions are marked with straight crosses and the dimensions of the pixel area used to integrate intensities are delimited by red solid lines.
-To be obtain the most accurate intensities, single molecule positions must be centered on the brightest pixel of the integration zone and the area of two neighbouring molecules must not overlap.
+To obtain the most accurate intensities, single molecule positions must be centered on the brightest pixel of the integration zone and the area of two neighbouring molecules must not overlap.
 
 ![Adjusting molecule positions](../assets/images/figures/TP-workflow-scheme-sub-images.png "Adjusting molecule positions")
 
-Because of imperfect coordinates transformation, it can happen that positions are shifted one or two pixels away from the brightest pixel.
+Because of imperfect coordinates transformation, it can happen that positions are shifted by one or two pixels away from the brightest pixel.
 In that case, the positions must be recentered on the brightest pixel.
 
 MASH offers the possibility to automatically recenter single molecule positions; see 
 [Remarks](#remarks) for more details.
 
-To automatically recenter single molecule positions:
+To recenter single molecule positions:
 
 {: .procedure }
 1. Select the molecule index in the 
-   [Molecule list](panels/panel-sample-management.html#molecule-list).  
+   [Molecule list](components/panel-sample-management.html#molecule-list).  
      
 1. If necessary, adjust the brightness and contrast in 
-   [Single molecule images](panels/panel-subimage.html#single-molecule-images) to render the molecule profile the most apparent.  
+   [Single molecule images](components/panel-subimage.html#single-molecule-images) to render the molecule profile the most apparent.  
      
 1. Press 
-   ![recenter all](../assets/images/gui/TP-but-recenter-all.png "recenter all") in 
-   [Single molecule images](panels/panel-subimage.html#single-molecule-images) to adjust molecule positions in all detection channels; intensity-time traces will automatically be recalculated after re-centering.  
+   ![recenter](../assets/images/gui/TP-but-recenter.png "recenter") in 
+   [Single molecule images](components/panel-subimage.html#single-molecule-images) to adjust molecule positions in all detection channels; intensity-time traces will automatically be recalculated after re-centering.  
+
+***Note:** If no video or molecule coordinates are available, single molecule images can not be shown and molecule positions can not be adjusted.*
 
 
 ---
 
 ## Correct intensities
 
-Raw intensities obtained after integration include the contribution of signals that must be subtracted to calculate reliable FRET and stoichiometry values.
+Recorded intensities include the contribution of signals that must be subtracted to calculate reliable FRET and stoichiometry values. 
 These unwanted signals are the background intensity and the cross-talks.
 
 ### Background correction
 {: .no_toc }
 
-The background intensity is channel- and illumination-specific.
+The background intensity is channel- and laser-specific.
 It consists mainly of the dark count of the detector and background light, like chamber auto-fluorescence for instance.
-The background signal is usually spatially distributed over the single molecule image and is therefore more accurately estimated in single molecule local environments.
+The background signal is usually distributed over the single molecule image and is therefore more accurately estimated in the local environments of single molecules. 
 MASH offers a set of local background estimators that can be used for such purpose.
 
 The intensity 
@@ -135,18 +143,20 @@ To correct intensities from background:
 
 {: .procedure }
 1. If not already done, select the molecule index in the 
-   [Molecule list](panels/panel-sample-management.html#molecule-list).  
+   [Molecule list](components/panel-sample-management.html#molecule-list).  
      
 1. For each intensity-time trace, set parameters:  
      
-   [Background correction settings](panels/panel-background-correction.html#background-correction-settings)  
-   [Apply background correction](panels/panel-background-correction.html#apply-background-correction)  
+   [Background correction settings](components/panel-background-correction.html#background-correction-settings)  
+   [Apply background correction](components/panel-background-correction.html#apply-background-correction)  
      
 1. Update data correction and display by pressing 
-   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE").
+   ![UPDATE](../assets/images/gui/TP-but-update.png "UPDATE") in the 
+   [Control area](components/area-control.html)  
      
 1. If desired, apply the same parameter settings to all molecules by pressing 
-   ![all](../../assets/images/gui/TP-but-all.png "all")   
+   ![all](../assets/images/gui/TP-but-all.png "all") in panel 
+   [Background correction](components/panel-background-correction.html)
 
 
 ---
@@ -202,13 +212,14 @@ To correct intensities from cross-talks:
 
 {: .procedure }
 1. For each emitter in the 
-   [Emitter list](panels/panel-crosstalk-corrections.html#emitter-list), set parameters: 
+   [Emitter list](components/panel-crosstalk-corrections.html#emitter-list), set parameters: 
      
-   [Bleedthrough coefficients](panels/panel-crosstalk-corrections.html#bleedthrough-coefficients)  
-   [Direct excitation coefficients](panels/panel-crosstalk-corrections.html#direct-excitation-coefficients)  
+   [Bleedthrough coefficients](components/panel-crosstalk-corrections.html#bleedthrough-coefficients)  
+   [Direct excitation coefficients](components/panel-crosstalk-corrections.html#direct-excitation-coefficients)  
      
 1. Update data correction and display by pressing 
-   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE").
+   ![UPDATE](../assets/images/gui/TP-but-update.png "UPDATE") in the 
+   [Control area](components/area-control.html)
 
 
 ---
@@ -224,7 +235,7 @@ Beside, it is important to identify and exclude incoherent intensity-time traces
 
 <a href="../assets/images/figures/TP-workflow-scheme-sorting.png">![Molecule sorting](../assets/images/figures/TP-workflow-scheme-sorting.png "Molecule sorting")</a>
 
-MASH offers a tool called Trace manager that can be used to perform such task.
+MASH offers a tool called Trace manager that can be used to perform such task. 
 Otherwise, molecules can be sorted manually in the Trace processing interface; see 
 [Remarks](#remarks) for more details.
 
@@ -235,13 +246,12 @@ To sort molecules and save a particular subgroup:
    ![TM](../assets/images/gui/TP-but-tm.png "TM").  
      
 1. Sort single molecule data into subgroups by referring to  
-   [Use Trace manager](functionalities/tm-overview.html); 
-   it is recommended to save the sorting by pressing 
+   [Use Trace manager](functionalities/tm-overview.html); it is recommended to save the sorting by pressing 
    ![Save](../assets/images/gui/TP-but-save.png "Save") and overwriting the project file.  
      
-1. Clear unselected molecules form the 
-   [Molecule list](panels/panel-sample-management.html#molecule-list) and from the project by pressing 
-   ![Clear](../assets/images/gui/TP-but-clear.png "Clear").
+1. Clear out unselected molecules form the 
+   [Molecule list](components/panel-sample-management.html#molecule-list) and from the project by pressing 
+   ![Clear](../assets/images/gui/TP-but-clear.png "Clear").  
      
 1. Save selected molecules to a new 
    [.mash file](../output-files/mash-mash-project.html) by pressing 
@@ -252,31 +262,31 @@ To sort molecules and save a particular subgroup:
 
 ## Correct for photobleaching and blinking
 
-It can happen that emitters get photochemically destroyed after absorbing a certain amount of photons.
-This phenomenon is called photobleaching and results in the permanent loss of signal in the dye-specific emission channel that translates into a drop of the corresponding intensity-time trace to zero.
+It can happen that emitters get photochemically destroyed after absorbing a certain amount of photons. 
+This phenomenon is called photobleaching and results in the permanent loss of signal in the dye-specific emission channel, which in turn translates into a drop of the corresponding intensity-time trace to zero.
 
 ![Effect of photobleaching of intensity ratio](../assets/images/figures/TP-workflow-scheme-photobleaching.png "Effect of photobleaching of intensity ratio")
 
-On the other hand, reversible changes in the structure or environment of the emitters can induce temporary interruption of dye emission, which results in short-lived drops of intensity-time traces to zero.
+On the other hand, reversible changes in the structure or environment of the emitters can induce temporary interruption of dye emission, which results in short-lived drops of intensity-time traces to zero. 
 
-These zero-intensity portions of the time trace may bias the following histogram and transition analysis by creating irrelevantly fluctuating FRET data.
-To prevent such bias, it is necessary to detect intensity interruptions and delete zero-intensity data by truncating intensity-time traces.
+These zero-intensity portions of the time trace may bias the following histogram and transition analysis by creating irrelevantly fluctuating FRET data. 
+To prevent such bias, it is necessary to detect and ignore intensity interruptions by truncating the time traces.
 
-To correct photobleaching, the end of the trajectory is simply truncated.
+Photobleaching is corrected by simply truncating the end of the trajectory.
 
-To correct temporary intensity interruptions, zero-intensity portions can not be simply excised from the trace, because the continuity of the time sequence is disrupted and what happens in terms of state transition during this time in unknown. 
-Therefore, intensity interruptions are corrected by dividing the trajectory in two separate traces at the time when the intensity interruption ends, and by truncating the end of the left-trajectory by applying photobleaching correction.
+For temporary intensity interruptions, simply excising zero-intensity portions from the trace would cause the continuity of the time sequence to be disrupted, and thus, would falsify state lifetimes and state transition rates. 
+Therefore, intensity interruptions are corrected by dividing the trajectory in two separate traces at the time when the intensity interruption ends, and by subsequently truncating the end of the left-trajectory by applying photobleaching correction.
 
 To truncate temporary intensity interruptions:
 
 {: .procedure }
 1. Set parameters  
      
-   [Photobleaching detection method](panels/panel-photobleaching.html#photobleaching-detection-method) (to `Manual`)  
-   [Photobleaching cutoff](panels/panel-photobleaching.html#photobleaching-cutoff) (to the ending of intensity interruption)  
+   [Photobleaching detection method](components/panel-photobleaching.html#photobleaching-detection-method) (to `Manual`)  
+   [Photobleaching cutoff](components/panel-photobleaching.html#photobleaching-cutoff) (to the ending of intensity interruption)  
      
 1. Split traces in two by pressing 
-   ![Split](../../assets/images/gui/TP-but-split.png "Split").
+   ![Split](../assets/images/gui/TP-but-split.png "Split").
      
 1. Correct the original molecule for photobleaching (as described below)
 
@@ -284,19 +294,21 @@ To detect and truncate photobleached data:
 
 {: .procedure }
 1. If not already done, select the molecule index in the 
-   [Molecule list](panels/panel-sample-management.html#molecule-list).  
+   [Molecule list](components/panel-sample-management.html#molecule-list)  
      
 1. Set parameters  
      
-   [Photobleaching detection method](panels/panel-photobleaching.html#photobleaching-detection-method)  
-   [Method parameters](panels/panel-photobleaching.html#method-parameters)  
-   [Truncate trajectories](panels/panel-photobleaching.html#truncate-trajectories)  
+   [Photobleaching detection method](components/panel-photobleaching.html#photobleaching-detection-method)  
+   [Method parameters](components/panel-photobleaching.html#method-parameters)  
+   [Truncate trajectories](components/panel-photobleaching.html#truncate-trajectories)  
      
 1. Update data correction and display by pressing 
-   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE").
+   ![UPDATE](../assets/images/gui/TP-but-update.png "UPDATE") in the 
+   [Control area](components/area-control.html)  
      
 1. If desired, apply the same parameter settings to all molecules by pressing 
-   ![all](../../assets/images/gui/TP-but-all.png "all")   
+   ![all](../assets/images/gui/TP-but-all.png "all") in panel  
+   [Photobleaching](components/panel-photobleaching.html) 
 
 
 ---
@@ -328,18 +340,20 @@ To smooth trajectories:
 
 {: .procedure }
 1. If not already done, select the molecule index in the 
-   [Molecule list](panels/panel-sample-management.html#molecule-list).  
+   [Molecule list](components/panel-sample-management.html#molecule-list).  
      
 1. Set parameters  
      
-   [Denoising settings](panels/panel-denoising.html#denoising-settings)  
-   [Apply denoising](panels/panel-denoising.html#apply-denoising)  
+   [Denoising settings](components/panel-denoising.html#denoising-settings)  
+   [Apply denoising](components/panel-denoising.html#apply-denoising)  
      
 1. Update correction and display by pressing 
-   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE").
+   ![UPDATE](../assets/images/gui/TP-but-update.png "UPDATE") in the 
+   [Control area](components/area-control.html)  
      
 1. If desired, apply the same parameter settings to all molecules by pressing 
-   ![all](../../assets/images/gui/TP-but-all.png "all")   
+   ![all](../assets/images/gui/TP-but-all.png "all") in panel 
+   [Denoising](components/panel-denoising.html)
 
 **Note:** *Smoothing is not recommended when determining state trajectories as it induces a modification in data distribution, while most state finding algorithms rely on a naturally distributed noise to identify states and detect state transitions.*
 
@@ -380,7 +394,7 @@ with
 Apparent FRET 
 [*E*<sup>\*</sup><sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } of a donor-acceptor pair 
 [*D*](){: .math_var }-[*A*](){: .math_var } is calculated according to 
-[FRET calculations](../video-processing/functionalities/set-project-options.html#fret-calculations) and is 
+[FRET calculations](../tutorials/set-experiment-settings/import-trajectories.html#fret-calculations) and is 
 [*&#947;*](){: .math_var }-corrected into 
 [*E*<sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } such as:
 
@@ -390,7 +404,7 @@ Apparent FRET
 Apparent stoichiometry 
 [*S*<sup>\*</sup><sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } of a donor-acceptor pair 
 [*D*](){: .math_var }-[*A*](){: .math_var } is calculated according to 
-[Stoichiometry calculations](../video-processing/functionalities/set-project-options.html#stoichiometry-calculations) and is 
+[Stoichiometry calculations](../tutorials/set-experiment-settings/import-trajectories.html#stoichiometry-calculations) and is 
 [*&#947;*](){: .math_var }- and 
 [*&#946;*](){: .math_var }-corrected into 
 [*S*<sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } such as:
@@ -404,20 +418,21 @@ To correct apparent FRET- and stoichiometry-time traces with
 
 {: .procedure }
 1. If not already done, select the molecule index in the 
-   [Molecule list](panels/panel-sample-management.html#molecule-list).  
+   [Molecule list](components/panel-sample-management.html#molecule-list).  
      
 1. For each donor-acceptor FRET pair in the 
-   [FRET pair list](panels/panel-factor-corrections.html#fret-pair-list), set parameters: 
+   [FRET pair list](components/panel-factor-corrections.html#fret-pair-list), set parameters: 
      
-   [Factor estimation method](panels/panel-factor-corrections.html#factor-estimation-method)  
-   [Gamma factor](panels/panel-factor-corrections.html#gamma-factor)  
-   [Beta factor](panels/panel-factor-corrections.html#beta-factor)  
+   [Factor estimation method](components/panel-factor-corrections.html#factor-estimation-method)  
+   [Gamma factor](components/panel-factor-corrections.html#gamma-factor)  
+   [Beta factor](components/panel-factor-corrections.html#beta-factor)  
      
 1. Update data correction and display by pressing 
-   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE").
+   ![UPDATE](../assets/images/gui/TP-but-update.png "UPDATE") in the 
+   [Control area](components/area-control.html)  
      
 1. If desired, apply the same parameter settings to all molecules by pressing 
-   ![all](../../assets/images/gui/TP-but-all.png "all")   
+   ![all](../assets/images/gui/TP-but-all.png "all")   
 
 
 --- 
@@ -427,80 +442,70 @@ To correct apparent FRET- and stoichiometry-time traces with
 The main goal of module Trace processing is to obtain a reliable set of single molecule intensity- and FRET-time traces in order to infer reliable state trajectories.
 
 State trajectories are idealized time traces, *i.e.*, without noise. 
-In other words, state trajectories are a succession of discrete values, and are here called, discretized time traces.
+In other words, state trajectories are a succession of discrete values, and are here called "discretized" time traces.
 
-Discretized time traces allow to characterize the conformational states visited by the molecule during the observation time and to quantify the times the molecule dwells in each state. 
+Discretized time traces allow to characterize the conformational states visited by the molecule during the observation time and to quantify the duration the molecule dwells in each state. 
 
 ![FRET state configuration in trajectory](../assets/images/figures/TP-workflow-scheme-state-sequence.png "FRET state configuration in trajectory")
 
-After further analysis with the module Transition analysis, one can obtain the most probable state configuration of single molecules and the rate coefficients that govern transitions between those states.
+Further analysis with the module 
+[Transition analysis](../transition-analysis.html) yields the most probable state configuration of single molecules and the rate coefficients that govern transitions between those states.
 
 To infer state trajectories:
 
 {: .procedure }
 1. If not already done, select the molecule index in the 
-   [Molecule list](panels/panel-sample-management.html#molecule-list).  
+   [Molecule list](components/panel-sample-management.html#molecule-list).  
      
 1. Set parameters  
      
-   [Discretization method](panels/panel-find-states.html#discretization-method)  
-   [Data to discretize](panels/panel-find-states.html#data-to-discretize)  
-   [Method parameters](panels/panel-find-states.html#method-parameters)  
-   [Post-processing parameters](panels/panel-find-states.html#post-processing-parameters)  
+   [Discretization method](components/panel-find-states.html#discretization-method)  
+   [Data to discretize](components/panel-find-states.html#data-to-discretize)  
+   [Method parameters](components/panel-find-states.html#method-parameters)  
+   [Post-processing parameters](components/panel-find-states.html#post-processing-parameters)  
      
 1. Update calculations and display by pressing 
-   ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE").
+   ![UPDATE](../assets/images/gui/TP-but-update.png "UPDATE") in the 
+   [Control area](components/area-control.html)  
      
 1. If desired, apply the same parameter settings to all molecules by pressing 
-   ![all](../../assets/images/gui/TP-but-all.png "all")   
+   ![all](../assets/images/gui/TP-but-all.png "all")   
 
 
 ---
 
-## Save project and export data
+## Process all data and merge projects
 
-Data correction and discretization must be saved in the project for further histogram and transition analysis.
+Instead of processing one molecule at a time, a general configuration can be applied to all molecules by using the 
+![all](../assets/images/gui/TP-but-all.png "all") buttons and all data can be processed at once using the 
+![UPDATE ALL](../assets/images/gui/TP-but-update-all.png "UPDATE ALL") button. 
 
-Additionally, processed data and processing parameters can be exported to various file formats, including ASCII files compatible with other software.
+Finally, to constitute a more representative sample of molecules to be analyzed in  
+[Transition analysis](../transition-analysis.html) and 
+[Histogram analysis](../histogram-analysis.html), molecules from different projects with identical experiment settings can be merged into one big data set.
 
-Finally, samples from different projects with identical experiment settings can be merged into one big data set. 
-This prevents to repeat further data analysis on multiple mash files and allows to constitute a more representative sample of molecules.
-
-To save project modifications:
+To process all molecules at once:
 
 {: .procedure }
 1. Update all data corrections and calculations by pressing 
-   ![UPDATE ALL](../assets/images/gui/TP-but-update-all.png "UPDATE ALL")  
-     
-1. Save modifications to the 
-   [.mash file](../output-files/mash-mash-project.html) by pressing 
-   ![Save](../assets/images/gui/TP-but-save.png "Save") and overwriting existing file.  
-
-To export data to files:
-
-{: .procedure }
-1. Open export options by pressing 
-   ![Export ASCII...](../assets/images/gui/TP-but-export-ascii-3p.png "Export ASCII...") and set the options as desired; please refer to 
-   [Set export options](functionalities/set-export-options.html) for help.
-     
-1. Press 
-   ![Next >>](../assets/images/gui/TP-but-next-supsup.png "Next >>") to start writing processed molecule data in files.
+   ![UPDATE ALL](../assets/images/gui/TP-but-update-all.png "UPDATE ALL") in the 
+   [Control area](components/area-control.html)  
 
 To merge projects:
 
 {: .procedure }
 1. Select the multiple projects to merge in the 
-   [Project list](panels/area-project-management.html#project-list)  
+   [Project list](Getting_started.html#project-management-area)  
      
 1. Right-click in the 
-   [Project list](panels/area-project-management.html#project-list), choose the option `Merge projects`  
+   [Project list](Getting_started.html#project-management-area) and choose the option `Merge projects`  
    
 1. Press 
    ![Yes](../assets/images/gui/TP-but-yes.png "Yes") to start the merging process  
      
-   **Note:** *The merging process induces a loss of single molecule videos that were used in individual projects. 
+   ***Note:** The merging process induces a loss of single molecule videos that were used in individual projects. 
    Therefore, it is recommended to perform all adjustments of molecule positions and background corrections prior merging; see 
-   [Remarks](@remarks) for more information.
+   [Remarks](@remarks) for more information.*
 
 
 ---
@@ -510,13 +515,14 @@ To merge projects:
 
 If the initial single molecule position is shifted more than 3 pixels from the brightest pixel, spots coordinates are considered as ill-defined and the automatic recentering option will not function.
 In this case, it is recommended to review the spot detection and/or transformation procedure to obtain a more decent set of single molecule coordinates; see 
-[Spotfinder](../video-processing/panels/panel-molecule-coordinates.html#spotfinder) and 
-[Coordinates transformation](../video-processing/panels/panel-molecule-coordinates.html#coordinates-transformation) for more information. 
+[Spotfinder](../video-processing/components/panel-molecule-coordinates.html#spotfinder) and 
+[Coordinates transformation](../video-processing/components/panel-molecule-coordinates.html#coordinates-transformation) for more information. 
 However, if desired, molecule x- and y-coordinates must be modified manually; see 
-[Single molecule coordinates](panels/panel-subimage.html#single-molecule-coordinates) for more information.
+[Single molecule coordinates](components/panel-subimage.html#single-molecule-coordinates) for more information.
 
 Molecules can be given several tags and/or deselected from the set while browsing the 
-[Molecule list](panels/panel-sample-management.html#molecule-list) in the Trace processing interface; see 
-[Molecule status](panels/panel-sample-management.html#molecule-status) for more information.
+[Molecule list](components/panel-sample-management.html#molecule-list) in the Trace processing interface; see 
+[Molecule status](components/panel-sample-management.html#molecule-status) for more information.
 
 To merge multiple projects into one, experiment setups must be the same, *i.e.*, the frame rate, the number of channels and laser excitations, the laser wavelengths, the emitter labels, the FRET pairs and the stoichiometry calculations must be identical. 
+

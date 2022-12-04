@@ -50,7 +50,7 @@ p.sim.defProjPrm = initDefPrmFields_sim(p.sim.defProjPrm);
 def = p.sim.defProjPrm;
 
 % parameters for plot
-plotprm{1} = 1;
+plotprm{1} = 2;
 def.plot = adjustVal(def.plot,plotprm);
 
 % parameters for dwell time generation

@@ -10,10 +10,17 @@ permalink: /transition-analysis.html
 
 # Transition analysis
 
-Use this module to identify the most probable state configuration and quantify state transition rates.
+Transition analysis is the fourth module of MASH-FRET and is accessed by pressing 
+![Transition analysis](assets/images/gui/TA-but-transition-analysis.png "Transition analysis") in the main 
+[tool bar](Getting_started.html#interface).
 
-Transition analysis framework is limited to <u>intensity</u>, <u>FRET</u> and <u>stoichiometry</u> state trajectories.
+Use this module to identify the most probable state configuration and quantify state transition rates. 
+Transition analysis recieves as input 
+[Trace processing](trace-processing.html)'s output state sequences or state sequences read from ASCII files. 
+See 
+[Create a new project](Getting_started.html#create-a-new-project) to get started. 
 
-Transition analysis supports the following trace formats: ASCII and 
-*.[<u>mash</u>](output-files/mash-mash-project.html); see 
-[Import single molecule data](transition-analysis/workflow.html#import-single-molecule-data) for more information.
+Learn about the main transition analysis procedure in the 
+[Workflow](transition-analysis/workflow.html) section, special functionalities in 
+[Functionalities](transition-analysis/functionalities.html) and individual interface components in 
+[Components](transition-analysis/components.html).

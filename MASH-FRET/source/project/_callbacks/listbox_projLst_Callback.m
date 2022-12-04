@@ -15,11 +15,8 @@ h.param = p;
 guidata(h_fig, h);
 
 proj_name = get(obj,'string');
-str_proj = cat(2,'Project selected: "',proj_name{val},'"');
-if ~isempty(p.proj{val}.proj_file)
-    str_proj = cat(2,str_proj,'(',p.proj{val}.proj_file,')');
-end
-setContPan(str_proj,'none',h_fig);
+str_proj = cat(2,'"',proj_name{val},'"');
+setContPan(['Switching to project: ',str_proj,' ...'],'process',h_fig);
 
 % update TP project parameters and molecule list
 ud_TTprojPrm(h_fig);
@@ -39,3 +36,6 @@ bringPlotTabFront([p.sim.curr_plot(p.curr_proj),...
 
 % update GUI
 updateFields(h_fig);
+
+% display action
+setContPan(['Project: ',str_proj,' selected!'],'success',h_fig);

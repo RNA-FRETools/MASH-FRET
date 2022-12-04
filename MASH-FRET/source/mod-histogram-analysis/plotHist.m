@@ -74,6 +74,7 @@ if numel(h_axes)>2
             ylabel(h_axes(3),'Improvement factor');
             set(h_axes(3),'nextplot','replacechildren');
         end
+        set(h_axes(3),'xtick',1:Jmax);
     else
         cla(h_axes(3));
         set(h_axes(3),'visible','off');
@@ -167,7 +168,7 @@ switch meth
             end
             plot(h_axes(1), P(:,1), y_all, 'Color', [0.5 0.5 0.5], ...
                 'LineWidth', 2);
-            set(h_axes, 'NextPlot', 'replacechildren');
+            set(h_axes(1), 'NextPlot', 'replacechildren');
         
         % plot most probable configuration
         elseif ~isempty(res{3,1})
@@ -226,7 +227,7 @@ switch meth
             plot(h_axes(1), [thresh(k) thresh(k)], y_lim, '-k', ...
                 'LineWidth', 2);
         end
-        set(h_axes(1),'NextPlot','replace');
+        set(h_axes(1),'NextPlot','replacechildren');
         
         if numel(h_axes)>1
             plot(h_axes(2), P(:,1), P(:,3), '+k');
@@ -236,7 +237,7 @@ switch meth
                 plot(h_axes(2), [thresh(k) thresh(k)], y_cumlim, '-k', ...
                     'LineWidth', 2);
             end
-            set(h_axes(2),'NextPlot','replace');
+            set(h_axes(2),'NextPlot','replacechildren');
         end
 end
 

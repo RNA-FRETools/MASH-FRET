@@ -14,10 +14,9 @@ nav_order: 9
 Binning trajectories in time can be used to merge projects with different recording rates or to artificially change experimental conditions.
 
 The binning process is performed on ASCII trace files.
-In the future, the functionality will be available for projects listed in the 
-[Project list](../panels/area-project-management.html).
 
 To bin trajectories, follow the procedure described below.
+
 
 ## Procedure
 {: .no_toc .text-delta }
@@ -25,7 +24,10 @@ To bin trajectories, follow the procedure described below.
 1. TOC
 {:toc}
 
-**Note:** *As binned trajectories are not synchronized with the initial single molecule video, video data gets lost after completing the binning procedure.
+***Notes:***
+* *In the future, the functionality will be available for projects listed in the 
+[Project list](../../Getting_started.html#project-management-area).*
+* *As binned trajectories are not synchronized with the initial single molecule video, video data gets lost after completing the binning procedure.
 Therefore, it is recommended to perform all adjustments of molecule positions and background corrections prior binning.*
 
 
@@ -34,7 +36,7 @@ Therefore, it is recommended to perform all adjustments of molecule positions an
 ## Export traces to ASCII files
 
 The binning process is performed on ASCII traces.
-Therefore, intensity-time traces in the project must be exported to ASCII files.
+Therefore, intensity-time traces in the project must be exported as such.
 
 To export traces to ASCII files:
 
@@ -47,7 +49,7 @@ To export traces to ASCII files:
    [mash file](../../output-files/mash-mash-project.html)  
      
 1. Open export options by pressing 
-   ![Export ASCII...](../../assets/images/gui/TP-but-export-ascii-3p.png "Export ASCII...") and set the options as desired; please refer to 
+   ![EXPORT...](../../assets/images/gui/TP-but-exportdotdotdot.png "EXPORT...") and set the options as desired; please refer to 
    [Set export options](set-export-options.html) for help.
      
 1. Press 
@@ -83,32 +85,38 @@ To bin trace files:
 
 ---
 
-## Create a new MASH project
+## Create a trajectory-based project
 
-To create a project out of binned traces, the ASCII files need to be imported together in module Trace processing and saved to a new common 
-[.mash file](../../output-files/mash-mash-project.html).
-To correctly import data, MASH must be informed about the particular structure of the files.
-
-Once the new project is created, project parameters including FRET and stoichiometry calculations, must be re-defined.
+Binned trace files need now to be imported all together in a new trajectory-based project. 
+To correctly import data, the experiment setup and FRET and stoichiometry calculations must be configured again in the experiment settings, and the data structure in the imported files must be defined.
 
 To create the project out of binned traces:
 
 {: .procedure }
-1. Select module Trace processing in MASH's 
-   [tool bar](../../Getting_started.html#interface)  
+1. Open the experiment settings window by pressing 
+   ![New project](../../assets/images/gui/interface-but-newproj.png "New project") in the 
+   [project management area](../../Getting_started#project-management-area) and selecting `import trajectories`.  
      
-1. Set the import settings by pressing 
-   ![ASCII options ...](../../assets/images/gui/TP-but-ascii-options-3p.png "ASCII options ..."); see 
-   [Set project import options](set-import-options.html) for help  
+1. Import a the binned trajectory files and define your experiment setup by configuring tabs:  
      
-1. Import data by pressing 
-   ![Add](../../assets/images/gui/TP-but-add.png "Add") and selecting the ASCII files; this will add a new project to the project list  
+   [Import](../../tutorials/set-experiment-settings/import-trajectories.html#import)  
+   [Channels](../../tutorials/set-experiment-settings/import-trajectories.html#channels)  
+   [Lasers](../../tutorials/set-experiment-settings/import-trajectories.html#lasers)  
+   [Calculations](../../tutorials/set-experiment-settings/import-trajectories.html#calculations)  
+   [Divers](../../tutorials/set-experiment-settings/import-trajectories.html#divers)  
      
-1. Set the project parameters by selecting the new project in the project list and pressing 
-   ![Edit...](../../assets/images/gui/TP-but-edit-3p.png "Edit..."); see 
-   [Set project options](../../video-processing/functionalities/set-project-options.html) for more information.
+   If necessary, modify settings in 
+   [Calculations](../../tutorials/set-experiment-settings/import-trajectories.html#calculations) and 
+   [Divers](../../tutorials/set-experiment-settings/import-trajectories.html#divers) any time after project creation.  
      
-1. Save the new project to a 
-   [.mash file](../output-files/mash-mash-project.html) by pressing 
-   ![Save](../../assets/images/gui/TP-but-save.png "Save").
+1. Define how data are structured in the files by configuring tab 
+   [File structure](../../tutorials/set-experiment-settings/import-trajectories.html#file-structure)  
+     
+1. Finalize the creation of your project by pressing 
+   ![Save](../../assets/images/gui/newproj-but-save.png); the experiment settings window now closes and the interface switches to module Trace processing.  
+     
+1. Save modifications to a 
+   [.mash file](../../output-files/mash-mash-project.html) by pressing 
+   ![Save project](../../assets/images/gui/interface-but-saveproj.png "Save project") in the 
+   [project management area](../../Getting_started#project-management-area).
 

@@ -53,7 +53,7 @@ Sample heterogeneity can be introduced in FRET states
 
 Parameters are pre-defined for individual molecules in a pre-set parameter file containing the respective variables `FRET`, `trans_rates`, `tot_intensity`, `gamma` and/or `psf_width`. 
 For more information about the structure and use of pre-set parameter file, please refer to 
-[Pre-set parameters](../panels/panel-molecules.html#pre-set-parameters).
+[Pre-set parameters](../components/panel-molecules.html#pre-set-parameters).
 
 As an example, the script below creates two distinct molecule sub-populations of equal size, with one population allowing step-wise and reversible state transitions, and one allowing reversible transitions from state 1 only:
 
@@ -95,7 +95,7 @@ To build and export the pre-set parameter file:
      
 1. load the pre-sets by pressing 
 ![...](../../assets/images/gui/sim-but-3p.png "...") in 
-[Pre-set parameters](../panels/panel-molecules.html#pre-set-parameters) and selecting the corresponding file
+[Pre-set parameters](../components/panel-molecules.html#pre-set-parameters) and selecting the corresponding file
 
 <!--
 ---
@@ -104,7 +104,7 @@ To build and export the pre-set parameter file:
 
 This method can be used to introduce sample heterogeneity in state transition rates 
 [*k*<sub>*jj'*</sub>](){: .math_var } and consists in defining closed transition networks within the same 
-[Transition rates matrix](../panels/panel-molecules.html#transition-rates).
+[Transition rates matrix](../components/panel-molecules.html#transition-rates).
 As each state has a certain probability to be drawn to start a state trajectory, simulated trajectories can follow only one of the state networks defined in the transition rates matrix.
 
 This method produces a discontinuous sample heterogeneity, *i.e.*, it creates sub-populations of molecules with distinguishable characteristics as opposed to a broadening of molecule characteristics.

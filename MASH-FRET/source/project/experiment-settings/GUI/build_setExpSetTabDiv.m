@@ -11,7 +11,7 @@ function h = build_setExpSetTabDiv(h,dat2import,h_fig0)
 str0 = 'Project name:';
 str1 = 'Video sampling time (s):';
 str3 = 'Save';
-ttl0 = 'Experimental conditions';
+ttl0 = 'Optional parameters';
 ttl1 = 'Plot colors';
 
 % parents

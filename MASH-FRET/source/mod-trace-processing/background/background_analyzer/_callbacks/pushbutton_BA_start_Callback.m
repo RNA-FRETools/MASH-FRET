@@ -1,5 +1,8 @@
 function pushbutton_BA_start_Callback(obj, evd, h_fig)
 
+% display action
+setContPan('Calculating background...','process',h_fig);
+
 h = guidata(h_fig);
 g = guidata(h.bga.figure_bgopt);
 
@@ -82,3 +85,5 @@ ud_BAfields(g.figure_bgopt);
 plot_bgRes(g.figure_bgopt);
 
 
+% display action
+setContPan('Background successfully calculated!','success',h_fig);

@@ -1,12 +1,7 @@
 ---
 layout: default
 title: (*.spots) Spotfinder coordinates
-<<<<<<< HEAD
-parent: /output-files.html
-nav_order: 25
-=======
 parent: Output files
->>>>>>> MASH-FRET-1.3.2-doc
 nav_exclude: 1
 nav_order: 25
 ---

@@ -20,7 +20,7 @@ The trace manager gives an overview of all single molecules in the project and a
 
 It is accessed by pressing 
 ![TM](../../assets/images/gui/TP-but-tm.png "TM") in the 
-[Sample management](../panels/panel-sample-management.html#trace-manager) panel of module Trace processing.
+[Sample management](../components/panel-sample-management.html#trace-manager) panel of module Trace processing.
 
 Trace manager is used to sort molecules into sub-groups and/or exclude irrelevant traces from the set.
 It is composed of three modules:

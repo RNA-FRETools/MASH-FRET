@@ -123,15 +123,10 @@ s.intensities_denoise = [];
 s.bool_intensities = [];
 s.intensities_DTA = [];
 s.FRET_DTA = [];
+s.FRET_DTA_import = [];
 s.S_DTA = [];
 s.molTag = [];
 s.prmTT = {};
-if nFRET==0
-    s.FRET_DTA = [];
-end
-if nS==0
-    s.S_DTA = [];
-end
 for proj = 1:nProj
     % coordinates
     s.coord = cat(1,s.coord,p.proj{proj}.coord);
@@ -188,10 +183,15 @@ for proj = 1:nProj
     s.intensities_DTA = cat(2,s.intensities_DTA,I_DTA(:,:,laserOrder));
     
     if nFRET>0
-        FRET_DTA = extendTrace(p.proj{proj}.FRET_DTA,L,NaN);
         fret_id = repmat(fretOrder',[1,N]);
         fret_id = reshape((mols-1)*nFRET+fret_id,[1,nFRET*N]);
+        
+        FRET_DTA = extendTrace(p.proj{proj}.FRET_DTA,L,NaN);
         s.FRET_DTA = cat(2,s.FRET_DTA,FRET_DTA(:,fret_id));
+        
+        FRET_DTA_import = extendTrace(p.proj{proj}.FRET_DTA_import,L,NaN);
+        s.FRET_DTA_import = ...
+            cat(2,s.FRET_DTA_import,FRET_DTA_import(:,fret_id));
     end
     
     if nS>0

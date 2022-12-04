@@ -117,6 +117,9 @@ for n = 1:N
             [MDL,dat] = discr_stasi(traces(n,incl(n,:)),maxN,mute_action);
             [o,idx] = min(MDL);
             d_traces(n,incl(n,:)) = dat(idx,:)';
+            
+        case 7 % imported
+            d_traces(n,incl(n,:)) = traces(n,incl(n,:));
     end
     
     if is2D

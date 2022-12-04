@@ -47,7 +47,7 @@ set(h.popupmenu_trBgCorr, 'Value', method);
 set(h.popupmenu_trBgCorr_data, 'String', getStrPop('bg_corr', ...
     {labels exc clr}));
 
-if isMov && isCoord
+if ~(isMov && isCoord)
     set(h.pushbutton_optBg, 'Enable', 'off');
 end
 

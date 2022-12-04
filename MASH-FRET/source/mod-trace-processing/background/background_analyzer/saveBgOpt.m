@@ -36,6 +36,9 @@ if ~sum(fname)
 end
 [o,fname,o] = fileparts(fname);
 
+% display action
+setContPan('Saving background analyzer results...','process',h_fig);
+
 for l = 1:nExc
     for c = 1:nChan
         dat = [];
@@ -84,3 +87,7 @@ for l = 1:nExc
         fclose(f);
     end
 end
+
+% display action
+setContPan('Background analyzer results successfully saved!','success',...
+    h_fig);

@@ -23,7 +23,7 @@ function [tp_iter,tp_err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T)
 %   simdat.tp_exp transition matrix
 
 % default
-tpmin = 1E-5; % minimum transition probability
+% tpmin = 1E-5; % minimum transition probability
 plotIt = false;
 
 % create figure for plot
@@ -57,6 +57,9 @@ B0 = zeros(V,J);
 for v = 1:V
     B0(v,degen{v}') = 1;
 end
+
+% minimum transition probability possible
+tpmin = 1/sum(expPrm.Ls);
 
 disp('infer kinetic model...');
 

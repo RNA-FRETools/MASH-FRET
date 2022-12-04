@@ -186,13 +186,13 @@ if all(~cellfun('isempty',s.movie_file)) && ...
                 ok = 0;
                 return
             end
-            s.movie_file{c} = {[pname fname]};
+            s.movie_file{c} = [pname fname];
             s.movie_dim{c} = [data.pixelX data.pixelY];
             s.movie_dat{c} = {data.fCurs [data.pixelX data.pixelY] ...
                 data.frameLen};
             disp(['Loading movie: ' fname 'from path: ' pname]);
 
-        elseif strcmp(load_mov, 'Continue without movie')
+        elseif strcmp(load_mov, 'Continue without video')
             s.movie_file{c} = [];
             s.movie_dim{c} = [];
             s.movie_dat{c} = [];

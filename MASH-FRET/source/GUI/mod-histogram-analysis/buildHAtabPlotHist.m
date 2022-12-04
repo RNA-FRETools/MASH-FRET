@@ -34,7 +34,7 @@ ylim(h_axes,ylim0);
 ylabel(h_axes,ylbl0);
 tiaxes = get(h_axes,'tightinset');
 posaxes = getRealPosAxes([x,y,waxes0,haxes0],tiaxes,'traces');
-set(h_axes,'position',posaxes);
+set(h_axes,'position',posaxes,'nextplot','replacechildren');
 
 if ~isempty(p.fname_boba)
     x = posaxes(1)+posaxes(3)-waxes1;
@@ -47,7 +47,8 @@ if ~isempty(p.fname_boba)
     ico_boba = repmat(ico_boba, [1,1,3]);
     image(ico_boba,'parent',h.axes_hist_BOBA);
     axis(h.axes_hist_BOBA,'image');
-    set(h.axes_hist_BOBA,'xtick',[],'ytick',[]);
+    set(h.axes_hist_BOBA,'xtick',[],'ytick',[],'nextplot',...
+        'replacechildren');
 end
 
 x = p.mg;
@@ -62,5 +63,5 @@ xlabel(h_axes,xlbl0);
 ylabel(h_axes,ylbl1);
 tiaxes = get(h_axes,'tightinset');
 posaxes = getRealPosAxes([x,y,waxes0,haxes0],tiaxes,'traces');
-set(h_axes,'position',posaxes);
+set(h_axes,'position',posaxes,'nextplot','replacechildren');
 

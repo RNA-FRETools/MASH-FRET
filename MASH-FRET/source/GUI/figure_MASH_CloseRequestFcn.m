@@ -23,6 +23,9 @@ if isfield(h, 'figure_dummy') && ~isempty(h.figure_dummy) && ...
     delete(h.figure_dummy)
 end
 
+setContPan('save interface parameters in default_param.ini file ...',...
+    'process',obj);
+
 p = h.param;
 if ~isempty(p.proj) && isfield(p.ttPr,'defProjPrm')
     % remove background intensities
@@ -39,5 +42,7 @@ end
 p = rmfield(p,{'proj','curr_proj'});
 [mfile_path,o,o] = fileparts(which('MASH'));
 save([mfile_path filesep 'default_param.ini'], '-struct', 'p');
+
+setContPan('closing MASH-FRET ...','process',obj);
 
 delete(obj);

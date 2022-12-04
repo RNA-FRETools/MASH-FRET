@@ -19,7 +19,7 @@ The trace manager gives an overview of all single molecules in the project and a
 
 It is accessed by pressing 
 ![TM](../../assets/images/gui/TP-but-tm.png "TM") in the 
-[Sample management](../panels/panel-sample-management.html#trace-manager) panel of module Trace processing.
+[Sample management](../components/panel-sample-management.html#trace-manager) panel of module Trace processing.
 
 Trace manager is used to sort molecules into sub-groups and/or exclude irrelevant traces from the set.
 It is composed of three modules:
@@ -118,7 +118,7 @@ Use this interface to assemble or review the molecule selection.
 <a class="plain" href="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection.png"><img src="../../assets/images/gui/TP-panel-sample-tm-overview-moleculeselection.png"/></a>
 
 Panel Molecule selection shows individual data plots defined by 
-[Plot](../panels/panel-plot.html) for individual molecules that can be browsed using the sliding bar in **(m)**. 
+[Plot](../components/panel-plot.html) for individual molecules that can be browsed using the sliding bar in **(m)**. 
 
 The interface can be optimized by adjusting the number of molecules per page in **(f)**, and hiding the panel 
 [Overall plot](#overall-plot) by pressing 

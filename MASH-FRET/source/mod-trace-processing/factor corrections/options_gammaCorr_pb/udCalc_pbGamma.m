@@ -1,5 +1,9 @@
 function udCalc_pbGamma(h_fig,h_fig2)
 
+% display action
+setContPan(['Detecting acceptor photobleaching and calculating gamma ...',
+    'factor...'],'process',h_fig);
+
 h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
@@ -32,6 +36,11 @@ q.prm{1} = round(gamma,2);
 % save curr parameters
 guidata(h_fig2,q);
 
+if ok
+    % display action
+    setContPan('Gamma factor was successfully calculated!','success',...
+        h_fig);
+end
 
 % draws a checkmark or a cross depending if a cutoff is found within the
 % trace (i.e intensity of the donor prior to and after the presumed cutoff 

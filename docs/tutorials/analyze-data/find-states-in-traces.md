@@ -16,7 +16,7 @@ nav_exclude: true
 
 Follow this procedure to process your single molecule videos (SMVs) or trajectories and characterize the molecule dynamics in your sample.
 
-**Note:** *Skip step 1 if already in possession of intensity-time traces files (ASCII or 
+**Note:** *Skip step 1 if already in possession of intensity-time traces (ASCII files or in a 
 [mash project](../../output-files/mash-mash-project)).*
 
 {% include tutorial_toc.html %}
@@ -34,31 +34,40 @@ In this step, single molecules are sorted, intensity-time traces are corrected f
 
 ---
 
-## Setup working area
+## Import trajectories
 
-Intensity-time trace correction, sorting and discretization is done with module Trace processing.
-Traces can be imported from the **.mash project file** created in 
+Intensity-time trace correction, sorting and discretization is done with module 
+[Trace processing](../../assets/images/gui/trace-processing.html).
+Traces can be read from a **MASH project** created in 
 [Step 1](create-traces.html#steps) or from a **set of ASCII files**.
 
-To prepare the working area for processing:
+In the first case, you can skip this step and go to step 2.
+
+To import trajectories from ASCII files:
 
 {: .procedure }
+1. Press 
+   ![New project](../../assets/images/gui/interface-but-newproj.png) in the 
+   [project management area](../../Getting_started.html#poject-management-area); a window pops up:  
+     
+   ![Create a new project](../../assets/images/gui/newproj-interface.png)  
+     
+1. Select `import trajectories` to open the experiment settings window and fill in the description of your experiment setup and the structure of your trajectory files; please refer to 
+   [Set experiment settings](../set-experiment-settings/import-trajectories.html#option-2-trajectory-based-project) for help
+     
+1. Set the default export destination by pressing 
+   ![...](../../assets/images/gui/interface-dotdotdot.png "...") in the 
+   [project management area](../../Getting_started.html#poject-management-area) and selecting your root folder  
+     
+1. Save modifications to a 
+   [.mash file](../../output-files/mash-mash-project.html) by pressing 
+   ![Save project](../../assets/images/gui/interface-but-saveproj.png "Save project") in the 
+   [project management area](../../Getting_started#project-management-area).
+     
 1. Select module 
    [Trace processing](../../trace-processing.html) by pressing 
    ![Trace processing](../../assets/images/gui/TP-but-trace-processing.png "Trace processing") in the main 
-   [tool bar](../../Getting_started.html#interface)  
-     
-1. Press 
-   ![Add](../../assets/images/gui/TP-but-add.png "Add") in 
-   [Project management](../../trace-processing/panels/area-project-management.html) and select the 
-   [mash project](../../output-files/mash-mash-project) file exported in 
-   [Step 1](create-traces.html#steps); to import traces from ASCII files, please refer to 
-   [Import single molecule data](../../trace-processing/workflow.html#import-single-molecule-data)  
-     
-1. If not already done in 
-   [Step 1](create-traces.html#steps), open and set project options by pressing 
-   ![Edit...](../../assets/images/gui/TP-but-edit-3p.png "Edit...") in 
-   [Project management](../../trace-processing/panels/area-project-management.html)
+   [tool bar](../../Getting_started.html#interface)
 
 
 ---
@@ -70,19 +79,19 @@ Intensity-time traces must be corrected from experimental bias to obtain state t
 Experimental bias include shifts in molecule positions, background light and cross-talks between wavelength ranges used for emitter detection (bleedthrough) and excitation (direct excitation).
 
 To adjust single molecule positions in panel 
-[Sub-images](../../trace-processing/panels/panel-subimage.html):
+[Sub-images](../../trace-processing/components/panel-subimage.html):
 
 {: .procedure }
 1. Select the shifted molecule in the 
-   [Molecule list](../../trace-processing/panels/panel-sample-management.html#molecule-list) of 
-   [Sample management](../../trace-processing/panels/panel-sample-management.html)  
+   [Molecule list](../../trace-processing/components/panel-sample-management.html#molecule-list) of 
+   [Sample management](../../trace-processing/components/panel-sample-management.html)  
      
 1. Select donor excitation in menu **(a)** of 
-   [Single molecule images](../../trace-processing/panels/panel-subimage.html#single-molecule-images)  
+   [Single molecule images](../../trace-processing/components/panel-subimage.html#single-molecule-images)  
      
 1. Press 
-   ![recenter all](../../assets/images/gui/TP-but-recenter-all.png) in 
-   [Single molecule coordinates](../../trace-processing/panels/panel-subimage.html#single-molecule-coordinates)  
+   ![Recenter](../../assets/images/gui/TP-but-recenter.png) in 
+   [Single molecule coordinates](../../trace-processing/components/panel-subimage.html#single-molecule-coordinates)  
      
 1. Go back to step 1 until all shifted molecules are recentered
 
@@ -90,14 +99,14 @@ To correct intensities from background light:
 
 {: .procedure }
 1. Define 
-   [Background correction settings](../../trace-processing/panels/panel-background-correction.html#background-correction-settings) for each trace selected in menu **(a)**:  
+   [Background correction settings](../../trace-processing/components/panel-background-correction.html#background-correction-settings) for each trace selected in menu **(a)**:  
      
    <u>default</u>: method `<N median values>`  
    <u>default</u>: parameter **(d)** to 20 pixels  
      
-1. Check that option 
-   [Apply background correction](../../trace-processing/panels/panel-background-correction.html#apply-background-correction) is activated for each trace selected in menu **(a)** of 
-   [Background correction settings](../../trace-processing/panels/panel-background-correction.html#background-correction-settings)  
+1. Activate option 
+   [Apply background correction](../../trace-processing/components/panel-background-correction.html#apply-background-correction) for each trace selected in menu **(a)** of 
+   [Background correction settings](../../trace-processing/components/panel-background-correction.html#background-correction-settings) if not already done.  
      
 1. Press 
    ![all](../../assets/images/gui/TP-but-all.png "all") to apply the same settings to all molecules
@@ -106,11 +115,12 @@ To correct intensities from cross-talks (if you are working with single detectio
 
 {: .procedure }
 1. Set for each emitter selected in the 
-    [Emitter list](../../trace-processing/panels/panel-crosstalk-corrections.html#emitter-list):  
+    [Emitter list](../../trace-processing/components/panel-crosstalk-corrections.html#emitter-list):  
 	  
-   <u>default</u>: [Bleedthrough coefficients](../../trace-processing/panels/panel-crosstalk-corrections.html#bleedthrough-coefficients) set to 0  
-   <u>default</u>: [Direct excitation coefficients](../../trace-processing/panels/panel-crosstalk-corrections.html#direct-excitation-coefficients) set to 0
-   
+   <u>default</u>: [Bleedthrough coefficients](../../trace-processing/components/panel-crosstalk-corrections.html#bleedthrough-coefficients) set to 0  
+   <u>default</u>: [Direct excitation coefficients](../../trace-processing/components/panel-crosstalk-corrections.html#direct-excitation-coefficients) set to 0
+
+
 ---
 
 ## Sort time traces
@@ -124,8 +134,8 @@ To tag species missing emitter label `[E]`:
 
 {: .procedure }
 1. Press 
-   ![TM](../../assets/images/gui/TP-but-tm.png "TM") in 
-   [Sample management](../../trace-processing/panels/panel-sample-management.html) to open the Trace manager  
+   ![Trace manager](../../assets/images/gui/TP-but-tm.png "Trace manager") in 
+   [Sample management](../../trace-processing/components/panel-sample-management.html) to open the Trace manager  
      
 1. Select tool 
    [Overview](../../trace-processing/functionalities/tm-overview.html)  
@@ -181,13 +191,8 @@ To clear species missing emitter `[E]` from the project:
    [Overall plots](../../trace-processing/functionalities/tm-overview.html#overall-plots) to close Trace manager and export the current selection to Trace processing  
      
 1. Press 
-   ![Clear](../../assets/images/gui/TP-but-clear.png "Clear") in 
-   [Sample management](../../trace-processing/panels/panel-sample-management.html) to delete deselected molecules from the project  
-     
-1. Press 
-   ![Save](../../assets/images/gui/TP-but-save.png "Save") in 
-   [Project management](../../trace-processing/panels/area-project-management.html) to export the data set to a new 
-   [mash project](../../output-files/mash-mash-project) file or to save modifications by overwriting the existing project file
+   ![Clear selection](../../assets/images/gui/TP-but-clear.png "Clear selection") in 
+   [Sample management](../../trace-processing/components/panel-sample-management.html) to delete deselected molecules from the project  
 
 ---
 
@@ -200,11 +205,11 @@ To split trajectories at intensity interruptions:
 
 {: .procedure }
 1. Define in 
-   [Photobleaching](../../trace-processing/panels/panel-photobleaching.html):  
+   [Photobleaching](../../trace-processing/components/panel-photobleaching.html):  
      
    <u>default</u>: method `Manual`  
    <u>default</u>: parameter 
-   [Photobleaching cutoff](../../trace-processing/panels/panel-photobleaching.html#photobleaching-cutoff) to the ending position of the interruption    
+   [Photobleaching cutoff](../../trace-processing/components/panel-photobleaching.html#photobleaching-cutoff) to the ending position of the interruption    
    <u>default</u>: option `Cut` deactivated  
        
 1. Press 
@@ -214,12 +219,12 @@ To truncate trajectories at photobleaching:
 
 {: .procedure }
 1. Define in 
-   [Photobleaching](../../trace-processing/panels/panel-photobleaching.html):  
+   [Photobleaching](../../trace-processing/components/panel-photobleaching.html):  
      
    <u>default</u>: method `Threshold`  
    <u>default</u>: data `all intensities`  
    <u>default</u>: parameters in
-   [Automatic detection settings](../../trace-processing/panels/panel-photobleaching.html#automatic-detection-settings) **(b)** to 0, **(c)** to 2 frames and **(d)** to 10 frames  
+   [Automatic detection settings](../../trace-processing/components/panel-photobleaching.html#automatic-detection-settings) **(b)** to 0, **(c)** to 2 frames and **(d)** to 10 frames  
    <u>default</u>: option `Cut` activated  
        
 1. Press 
@@ -227,18 +232,18 @@ To truncate trajectories at photobleaching:
      
 1. Press 
    ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL") in 
-   [Sample management](../../trace-processing/panels/panel-sample-management.html) to process all molecules in the project and visualize truncated trajectories
+   [Sample management](../../trace-processing/components/panel-sample-management.html) to process all molecules in the project and visualize truncated trajectories
    
 To automatically calculate gamma and beta factors (if you are working without FRET calculations, ignore this step):
 
 {: .procedure }
 1. For each FRET pair listed in the 
-   [FRET pair list](../../trace-processing/panels/panel-factor-corrections.html#fret-pair-list) in 
-   [Factor corrections](../../trace-processing/panels/panel-factor-corrections.html), define:  
+   [FRET pair list](../../trace-processing/components/panel-factor-corrections.html#fret-pair-list) in 
+   [Factor corrections](../../trace-processing/components/panel-factor-corrections.html), define:  
      
    <u>default</u>: method `ES linear regression` (if you are working without stoichiometry calculations, use any other method)   
    <u>default</u>: in 
-   [ES linear regression](../../trace-processing/panels/panel-factor-corrections.html#es-linear-regression), **(b)** to `All molecules`, **(c)** to -0.2, **(d)** to 50, **(e)** to 1.2, **(f)** to 1, **(g)** to 50, **(h)** to 3
+   [ES linear regression](../../trace-processing/components/panel-factor-corrections.html#es-linear-regression), **(b)** to `All molecules`, **(c)** to -0.2, **(d)** to 50, **(e)** to 1.2, **(f)** to 1, **(g)** to 50, **(h)** to 3
      
     and press 
    ![refresh calculations](../../assets/images/gui/TP-but-refresh-calculations.png "refresh calculations") to calculate the ES histogram and perform linear regression, and 
@@ -248,28 +253,28 @@ To automatically calculate gamma and beta factors (if you are working without FR
    ![all](../../assets/images/gui/TP-but-all.png "all") to apply the same settings to all molecules  
      
 1. Press 
-   ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL") in 
-   [Sample management](../../trace-processing/panels/panel-sample-management.html) to process all molecules in the project
+   ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL") in the 
+   [Control area](../../trace-processing/components/area-control.html) to process all molecules in the project
    
 To obtain state trajectories:
 
 {: .procedure }
 1. Define in 
-   [Find states](../../trace-processing/panels/panel-find-states.html):  
+   [Find states](../../trace-processing/components/panel-find-states.html):  
      
    <u>default</u>: method `STaSI`  
    <u>default</u>: apply to `all`  
    <u>default</u>:
-   [Method parameters](../../trace-processing/panels/panel-find-states.html#method-parameters) **(b)** to 5 for each trace selected in menu **(a)**  
+   [Method parameters](../../trace-processing/components/panel-find-states.html#method-parameters) **(b)** to 5 for each trace selected in menu **(a)**  
    <u>default</u>: no
-   [Post-processing methods](../../trace-processing/panels/panel-find-states.html#post-processing-methods) with **(b)** an **(c)** set to 0
+   [Post-processing methods](../../trace-processing/components/panel-find-states.html#post-processing-methods) with **(b)** an **(c)** set to 0
        
 1. Press 
    ![all](../../assets/images/gui/TP-but-all.png "all") to apply the same settings to all molecules  
      
 1. Press 
-   ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL") in 
-   [Sample management](../../trace-processing/panels/panel-sample-management.html) to process all molecules in the project
+   ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL") in the 
+   [Control area](../../trace-processing/components/area-control.html) to process all molecules in the project
 
 
 ---
@@ -286,18 +291,20 @@ To save project modifications:
 
 {: .procedure }
 1. Press 
-   ![Save](../../assets/images/gui/TP-but-save.png "Save") and overwrite the current 
-   [.mash file]() or create another project file to keep a backup of unprocessed data
+   ![Save project](../../assets/images/gui/interface-but-saveproj.png "Save project") in the 
+   [project management area](../../Getting_started.html#project-management-area) and overwrite the current 
+   [.mash file](../../output-files/mash-mash-project.html) or create another project file to keep a backup of unprocessed data
 
 To export processed data to ASCII and image files:
 
 {: .procedure }
 1. Press 
-   ![Export ASCII...](../../assets/images/gui/TP-but-export-ascii-3p.png "Export ASCII...") to open and set export options; please refer to 
+   ![Export...](../../assets/images/gui/TP-but-exportdotdotdot.png "Export...") in the 
+   [Control area](../../trace-processing/area-control.html) to open and set export options; please refer to 
    [Set export options](../../trace-processing/functionalities/set-export-options.html) for help  
      
 1. Press 
-   ![Next >>](../../assets/images/gui/TP-but-next-supsup.png "Next >>") to start file export
+   ![Next >>](../../assets/images/gui/TP-but-next-supsup.png "Next >>") to start file export.
 
 
 ---
@@ -311,14 +318,14 @@ To merge projects:
 
 {: .procedure }
 1. Select the multiple projects to merge in the 
-   [Project list](../../trace-processing/panels/area-project-management.html#project-list)  
+   [Project list](../../Getting_started.html#project-list)  
      
 1. Right-click in the 
-   [Project list](), choose the option `Merge projects` and press 
+   [Project list](../../Getting_started.html#project-list), choose the option `Merge projects` and press 
    ![Yes](../../assets/images/gui/TP-but-yes.png "Yes") to start the merging process  
       
-   **Note:** *The merging process induces a loss of single molecule videos that were used in individual projects. 
-   Make sure to perform all adjustments of molecule positions and background corrections prior merging.
+   ***Note:** The merging process induces a loss of single molecule videos that were used in individual projects. 
+   Make sure to perform all adjustments of molecule positions and background corrections prior merging*.
 
 
 ---

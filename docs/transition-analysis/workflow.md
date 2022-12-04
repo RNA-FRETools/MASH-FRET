@@ -12,9 +12,6 @@ nav_order: 2
 
 In this section you will learn how to determine the most sufficient state configuration from state trajectories, to obtain state transition rates and to estimate the associated cross-sample variability. 
 
-Transition analysis results are saved in the 
-[mash project](../output-files/mash-mash-project.html) and/or exported to ASCII files for traceability.
-
 The procedure include five steps:
 
 1. TOC
@@ -23,41 +20,55 @@ The procedure include five steps:
 
 ---
 
-## Import single molecule data
+## Import state sequences
 
-Single molecule data can be imported from a 
-[.mash file](../output-files/mash-mash-project.html), which ideally contains state trajectories obtained in module Trace processing, or from a set of traces written in ASCII files; see 
-[Remarks](#remarks) for more details about ASCII import.
+Initial state sequences come from 
+[Trace processing](../trace-processing.html)'s output or from external ASCII files.
 
-If data are imported from ASCII files, MASH must be informed about the particular file structure. 
-In that case, it is recommended to export the imported data set to a new 
-[.mash file](../output-files/mash-mash-project.html) in order to save analysis results and allow further review.
+In the first case, you can skip this step and go directly to the next one.
 
-After successful import, the list of available data in the project (*e.g.*, intensities, FRET or stoichiometry) is shown in the 
-[Data list](panels/panel-transition-density-plot.html#data-list), and the transition density plot is displayed in the 
-[Visualization area](panels/area-visualization.html) for the first data in the list - intensities collected in the left-most video channel upon first laser illumination - providing that the corresponding state trajectories exist in the project; see 
-[Determine state trajectories](../trace-processing/workflow.html#determine-state-trajectories) for more information about how to obtain state trajectories.
+In the second case, a new trajectory-based project must be created. 
+This implies to import the trajectory files, register the associated experiment settings and define the data structure in the files.
+After the project creation is completed, it is recommended to save it to a 
+[.mash file](../output-files/mash-mash-project.html) that should regularly be overwritten in order to keep traceability and access to the results.
 
-To import single molecule data:
+Informing MASH about the particular experiment settings is crucial to adapt the software functionalities to your own experiment setup.
+In theory, the software is compatible with:
 
-{: .procedure }
-1. Add the project to the list by pressing 
-   ![Add](../assets/images/gui/TA-but-add.png "Add") and selecting the corresponding 
-   [.mash file](../output-files/mash-mash-project.html)  
+* an unlimited number of video channels,
+* an unlimited number of alternated lasers,
+* FRET calculations for an unlimited number of FRET pairs.
 
-To import single molecule data from ASCII files:
+To create a new trajectory-based project:
 
 {: .procedure }
-1. Set the import settings by pressing 
-   ![ASCII Import](../assets/images/gui/TA-but-ascii-import.png "ASCII Import"); see 
-   [Set project import options](../trace-processing/functionalities/set-project-import-options.html) for help  
+1. Open the experiment settings window by pressing 
+   ![New project](../assets/images/gui/interface-but-newproj.png "New project") in the 
+   [project management area](../Getting_started#project-management-area) and selecting `import trajectories`.  
      
-1. Import data by pressing 
-   ![Add](../assets/images/gui/TA-but-add.png "Add") and selecting the corresponding ASCII files; this will add a new project to the project list  
+1. Import a set of trajectory files and define your experiment setup by configuring tabs:  
      
-1. Save the new project to a 
+   [Import](../tutorials/set-experiment-settings/import-trajectories.html#import)  
+   [Channels](../tutorials/set-experiment-settings/import-trajectories.html#channels)  
+   [Lasers](../tutorials/set-experiment-settings/import-trajectories.html#lasers)  
+   [Calculations](../tutorials/set-experiment-settings/import-trajectories.html#calculations)  
+   [Divers](../tutorials/set-experiment-settings/import-trajectories.html#divers)  
+     
+   If necessary, modify settings in 
+   [Calculations](../tutorials/set-experiment-settings/import-trajectories.html#calculations) and 
+   [Divers](../tutorials/set-experiment-settings/import-trajectories.html#divers) any time after project creation.  
+     
+1. Define how data are structured in the files by configuring tab 
+   [File structure](../tutorials/set-experiment-settings/import-trajectories.html#file-structure); in particular, activate and configure the import of 
+   [FRET state sequences](/tutorials/set-experiment-settings/import-trajectories.html#fret-state-sequence-data).  
+     
+1. Finalize the creation of your project by pressing 
+   ![Save](../assets/images/gui/newproj-but-save.png); the experiment settings window now closes and the interface switches to module Transition analysis.  
+     
+1. Save modifications to a 
    [.mash file](../output-files/mash-mash-project.html) by pressing 
-   ![Save](../assets/images/gui/TA-but-save.png "Save").
+   ![Save project](../assets/images/gui/interface-but-saveproj.png "Save project") in the 
+   [project management area](../Getting_started#project-management-area).
 
    
 ---
@@ -109,19 +120,17 @@ Static state sequences, and more generally last states of each sequence, can be 
 To build the TDP:
 
 {: .procedure }
-1. Select a data type in the 
-   [Data list](panels/panel-transition-density-plot.html#data-list)
-     
-1. Select a data type in the 
-   [Molecule subgroup list](panels/panel-transition-density-plot.html#molecule-subgroup-list)
+1. Select the data and molecule subgroup to analyze in the 
+   [Data list](components/area-data-selection.html#data-list) and 
+   [Tag list](components/area-data-selection.html#tag-list), respectively  
      
 1. Set parameters:
      
-   [Bounds and bin size](panels/panel-transition-density-plot.html#bounds-and-bin-size)  
-   [Transition count](panels/panel-transition-density-plot.html#transition-count)  
-   [Re-arrange sequences](panels/panel-transition-density-plot.html#re-arrange-sequences)  
-   [Gaussian filter](panels/panel-transition-density-plot.html#gaussian-filter)  
-   [Include last states](panels/panel-transition-density-plot.html#include-last-states)  
+   [Bounds and bin size](components/panel-transition-density-plot.html#bounds-and-bin-size)  
+   [Include static molecules](components/panel-transition-density-plot.html#include-static-molecules)  
+   [Single count per molecule](components/panel-transition-density-plot.html#single-count-per-molecule)  
+   [Re-arrange sequences](components/panel-transition-density-plot.html#re-arrange-sequences)  
+   [Gaussian filter](components/panel-transition-density-plot.html#gaussian-filter)  
      
 1. Update the TDP and display by pressing 
    ![Update](../assets/images/gui/TA-but-update.png "Update").
@@ -193,16 +202,15 @@ This method is similar to the bootstrap-based analysis applied to histograms and
 To determine the most sufficient state configuration:
 
 {: .procedure }
-1. If not already done, select a data type in the 
-   [Data list](panels/panel-transition-density-plot.html#data-list)  
      
-1. Set parameters:  
+1. Set all parameters in:  
      
-   [Method settings](panels/panel-state-configuration.html#method-settings)  
-   [Clusters](panels/panel-state-configuration.html#clusters)  
+   [Method settings](components/panel-state-configuration.html#method-settings)  
+   [Clusters](components/panel-state-configuration.html#clusters)  
      
 1. Start inference of state configurations by pressing 
-   ![cluster](../assets/images/gui/TA-but-cluster.png "cluster"); after completion, the display is instantly updated with the most sufficient Gaussian mixture
+   ![cluster](../assets/images/gui/TA-but-cluster.png "cluster"); after completion, the 
+   [display](components/area-visualization.html#after-clustering) is instantly updated with the most sufficient Gaussian mixture
 
 
 ---
@@ -280,12 +288,12 @@ Where
 To estimate state degeneracy via phase-type distributions:
 
 {: .procedure }
-1. Select method `Find most sufficient model complexity (recommended)` and set the associated parameters in 
-   [Model inferrence](panels/panel-kinetic-model.html#model-inferrence)  
+1. In 
+   [State degeneracy](components/panel-kinetic-model.html#state-degeneracy), select method `ML-DPH` and set all associated parameters.  
      
-1. Start DPH analysis and subsequent model optimization by pressing 
-   ![Start](../assets/images/gui/TA-but-start.png); after completion, BIC values are plotted against state degeneracy in the 
-   [Visualization area](panels/panel-kinetic-model.html#bic)
+1. Start DPH analysis and subsequent model selection by pressing 
+   ![Start ML-DPH](../assets/images/gui/TA-but-start-mldph.png); after completion, BIC values are plotted against state degeneracy in the 
+   [display](components/area-visualization.html#bic-ml-dph).
    
 
 ### Exponential fit
@@ -338,21 +346,21 @@ To estimate state degeneracy via hyper-exponential distribution:
 
 {: .procedure }
 1. Set 
-   [Fit settings](panels/panel-dwell-time-histograms.html#fit-settings) to `auto` for each state  
+   [Fit settings](components/panel-dwell-time-histograms.html#fit-settings) to `auto` for each state  
      
 1. Start exponential fit by pressing 
    ![Fit all](../assets/images/gui/TA-but-fit-all.png); after completion, the 
-   [State lifetimes](panels/panel-dwell-time-histograms.html#state-lifetimes) are instantly updated with fitting results  
+   [Fit results](components/panel-dwell-time-histograms.html#fit-results) are instantly updated  
 
 To estimate state degeneracy via stretched exponential fit:
 
 {: .procedure }
 1. Set 
-   [Fit settings](panels/panel-dwell-time-histograms.html#fit-settings) to `manual` and `stretched` for each state  
+   [Fit settings](components/panel-dwell-time-histograms.html#fit-settings) to `manual` and `stretched` for each state  
      
 1. Start exponential fit by pressing 
    ![Fit all](../assets/images/gui/TA-but-fit-all.png); after completion, the beta coefficients are instantly updated in the 
-   [Fit settings](panels/panel-dwell-time-histograms.html#fit-settings) window.
+   [Fit settings](components/panel-dwell-time-histograms.html#fit-settings) window.
 
 
 ---
@@ -411,25 +419,26 @@ Special attention is given to the shape of each dwell time hisotgram, the popula
 To estimate transition rate coefficients via transition probabilities:
 
 {: .procedure }
-1. Set inferrence parameters in 
-   [Model inferrence](panels/panel-kinetic-model.html#model-inferrence)  
+1. Set the number of matrix initializations in 
+   [Transition rate constants](components/panel-kinetic-model.html#transition-rate-constants)  
      
 1. Start the Baum-Welch algorithm by pressing 
-   ![Start](../assets/images/gui/TA-but-start.png) (see 
-   [Remarks](#remarks) for more information); after completion, the maximum likelihood estimator of the kinetic model is shown as a treillis diagram in 
-   [Model inference](panels/panel-kinetic-model.html#model-inferrence) and experimental data are plotted next to simulation in the 
-   [Visualization area](panels/panel-kinetic-model.html#visualization-area) for comparison.
+   ![Estimate rate constants](../assets/images/gui/TA-but-estimate-rate-constants.png) (see 
+   [Remarks](#remarks) for more information); after completion, the maximum likelihood estimator of the kinetic model is drawn in the 
+   [Diagram](components/area-visualization.html#diagram) visualization tab and experimental data are plotted next to simulation in the 
+   [Simulation](components/area-visualization.html#simulation) visualization tab for comparison.
 
 
 ### Via state lifetimes
 {: .no_toc }
 
 The rate coefficient 
-[*k<sub>jj'</sub>*] that governs transitions from state 
+[*k<sub>jj'</sub>*](){: .math_var } that governs transitions from state 
 [*j*](){: .math_var } to state 
 [*j'*](){: .math_var } depends on the lifetime of state
 [*j*](){: .math_var } as well as on the count of transitions 
-[*j*](){: .math_var }-to-[*j'*](){: .math_var } among all transitions from 
+[*j*](){: .math_var }-to-
+[*j'*](){: .math_var } among all transitions from 
 [*j*](){: .math_var }.
 
 In homogenous systems (no state degeneracy), states 
@@ -468,18 +477,19 @@ where
 [*&sigma;<sub>&tau;,j</sub>*](){: .math_var } is the bootstrap standard deviation of parameter 
 [*&tau;<sub>j</sub>*](){: .math_var }.
 
-95% confidence intervals are given by [*k<sub>jj'</sub>* &#177; 2&Delta;*k<sub>jj'</sub>*](){: .math_var }.
+95% confidence intervals are given by 
+[*k<sub>jj'</sub>* &#177; 2&Delta;*k<sub>jj'</sub>*](){: .math_var }.
 
 
 To estimate transition rate coefficients via exponential fit:
 
 {: .procedure }
 1. Set 
-   [Fit settings](panels/panel-dwell-time-histograms.html#fit-settings) to `manual` and `nb. of decays` to 1 for each state  
+   [Fit settings](components/panel-dwell-time-histograms.html#fit-settings) to `manual` and `nb. of decays` to 1 for each state  
      
 1. Start exponential fit by pressing 
-   ![Fit all](../assets/images/gui/TA-but-fit-all.png); after completion, the 
-   [State lifetimes](panels/panel-dwell-time-histograms.html#state-lifetimes) are instantly updated with fitting results  
+   ![Fit all](../assets/images/gui/TA-but-fit-all.png); after completion, the state lifetimes are instantly updated in the 
+   [Fit results](components/panel-dwell-time-histograms.html#fit-results)  
      
 1. Collect the populations of transition clusters from the 
    [Transition density cluster file](../../output-files/clst-transition-density-clusters.html) and calculate the rate coefficients accordingly.
@@ -489,28 +499,18 @@ To estimate transition rate coefficients via exponential fit:
 
 ## Export data
 
-Project modifications must be saved in order to keep traceability and access to the results.
-Additionally, TDP, dwell time histograms, analysis results and analysis parameters can be exported to ASCII files and PNG images.
-
-To save project modifications:
-
-{: .procedure }
-1. Save modifications to the 
-   [.mash file](../output-files/mash-mash-project.html) by pressing 
-   ![Save](../assets/images/gui/TA-but-save.png "Save") and overwriting existing file.  
+TDP, dwell time histograms, analysis results and analysis parameters can be exported to ASCII files and PNG images.
 
 To export data to files:
 
 {: .procedure }
-1. Select the data to export in the 
-   [Data list](panels/panel-transition-density-plot.html#data-list)  
-     
-1. Select the molecule subgroup to export in the 
-   [Molecule subgroup list](panels/panel-transition-density-plot.html#molecule-subgroup-list)  
+1. Select the data and molecule subgroup to export in the 
+   [Data list](components/area-data-selection.html#data-list) and 
+   [Tag list](components/area-data-selection.html#tag-list), respectively  
      
 1. Open export options by pressing 
-   ![Export](../assets/images/gui/TA-but-export.png "Export") and set the options as desired; please refer to 
-   [Set export options](functionalities/set-export-options.html) for help.
+   ![EXPORT...](../assets/images/gui/TA-but-exportdotdotdot.png "EXPORT...") and set the options as desired; please refer to 
+   [Set export options](functionalities/set-export-options.html) for help.  
      
 1. Press 
    ![Next >>](../assets/images/gui/TA-but-next-supsup.png "Next >>") to start writing processed molecule data in files. 
@@ -522,7 +522,7 @@ To export data to files:
 {: .no_toc }
 
 For the moment only FRET state trajectories can be imported.
-Additionally, imported state trajectories are only available in module Histogram analysis and Transition analysis: if the project is loaded and saved in module Trace processing, state trajectories will be overwritten by newly calculated ones. 
+Additionally, if  imported state trajectories will be overwritten by newly calculated ones. 
 This compatibility problem will be managed in the future.
 
 The inferrence time varies from seconds to days depending on (1) the size of the data set, (2) the model complexity (number of states) and (3) the number of model initializations.

@@ -25,8 +25,7 @@ x = p.mg;
 y = postab(4)-p.mgtab-haxes0;
 
 h.axes_thm_BIC = axes('parent',h_tab,'units',p.posun,'fontunits',p.fntun,...
-    'fontsize',p.fntsz0,'position',[x,y,waxes0,haxes0],'xticklabelmode',...
-    'manual');
+    'fontsize',p.fntsz1,'position',[x,y,waxes0,haxes0]);
 h_axes = h.axes_thm_BIC;
 xlim(h_axes,xlim0);
 ylim(h_axes,ylim0);
@@ -34,5 +33,5 @@ ylabel(h_axes,ylbl0);
 xlabel(h_axes,xlbl0);
 tiaxes = get(h_axes,'tightinset');
 posaxes = getRealPosAxes([x,y,waxes0,haxes0],tiaxes,'traces');
-set(h_axes,'position',posaxes);
+set(h_axes,'position',posaxes,'nextplot','replacechildren');
 

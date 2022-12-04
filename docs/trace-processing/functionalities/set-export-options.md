@@ -14,10 +14,11 @@ nav_order: 2
 Export options define the particular files to export from module Trace processing.
 
 The window is accessed by pressing 
-![Export ASCII...](../../assets/images/gui/TP-but-export-ascii-3p.png "Export ASCII...") in the project management area of module Trace processing.
+![EXPORT...](../../assets/images/gui/TP-but-exportdotdotdot.png "EXPORT") in the 
+[Control area](../components/area-control.html) of module Trace processing.
 
 After modification, press 
-![Next >>](../../assets/images/gui/TP-but-next-supsup.png "Next >>") to start file export.
+![Next >>](../../assets/images/gui/TP-but-next-supsup.png "Next >>") to start writing files.
 
 <a class="plain" href="../../assets/images/gui/TP-panel-sample-export.png"><img src="../../assets/images/gui/TP-panel-sample-export.png" style="max-width: 516px;"/></a>
 
@@ -127,7 +128,7 @@ Use this panel to export figure files.
 <a class="plain" href="../../assets/images/gui/TP-panel-sample-export-figures.png"><img src="../../assets/images/gui/TP-panel-sample-export-figures.png" style="max-width: 245px;"/></a>
 
 Figure files contain graphics representing individual time traces, histograms, and/or single molecule images as shown in the 
-[Visualization area](../panels/area-visualization.html) of Trace processing.
+[Visualization area](../components/area-visualization.html) of Trace processing.
 
 Export figures by activating the option in **(a)**, otherwise activate the option in **(b)**.
 
@@ -166,7 +167,7 @@ Defines the status of the molecule sample to export.
 <a class="plain" href="../../assets/images/gui/TP-panel-sample-export-mol.png"><img src="../../assets/images/gui/TP-panel-sample-export-mol.png" style="max-width: 270px;"/></a>
 
 To only export the molecules that are selected in the 
-[Molecule list](../panels/panel-sample-management.html#molecule-list), activate the box in **(a)**.
+[Molecule list](../components/panel-sample-management.html#molecule-list), activate the box in **(a)**.
 
 To export a sub-group of molecules, select the proper tag in list **(b)**, otherwise, select `All molecules` to export all molecules.
 

@@ -16,5 +16,5 @@ updateFields(h_fig, 'TDP');
 bringPlotTabFront('TAtdp',h_fig);
 
 % show process
-setContPan('TDP successfully refreshed!','process',h_fig);
+setContPan('TDP successfully refreshed!','success',h_fig);
 

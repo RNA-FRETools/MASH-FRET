@@ -86,6 +86,12 @@ for n = nMax:-1:1
     
     % preliminary fit
     ref_res = mmexpfit_mod(hist_ref(:,1),hist_ref(:,end),p_fit,n,false);
+    if isempty(ref_res)
+        setContPan(...
+            ['Preliminary fit with ',num2str(n),' components failed.'],...
+            'error',h_fig)
+        continue
+    end
 
     p_fit.start = reshape(ref_res.cf',[1,numel(ref_res.cf)]);
     

@@ -81,7 +81,7 @@ for i = projs
     end
     
     % adapt trajectory file structure parameters to new format
-    if  isfield(p.proj{i},'traj_import_opt') && ...
+    if isfield(p.proj{i},'traj_import_opt') && ...
             ~isempty(p.proj{i}.traj_import_opt) && ...
             numel(p.proj{i}.traj_import_opt)>=1 && ...
             numel(p.proj{i}.traj_import_opt{1})~=5
@@ -100,5 +100,10 @@ for i = projs
             repmat((opt{1}{1}(10):opt{1}{1}(12):opt{1}{1}(11))',[1,2]),...
             zeros(size(p.proj{i}.FRET,1),0)];
         p.proj{i}.traj_import_opt{1} = newopt;
+    end
+    
+    % 2.12.2022: add field "FRET_DTA_import"
+    if ~isfield(p.proj{i},'FRET_DTA_import')
+        p.proj{i}.FRET_DTA_import = [];
     end
 end

@@ -11,16 +11,17 @@ nav_order: 3
 # Set coordinates import options
 {: .no_toc }
 
-Import options are the settings used to import spots and reference coordinates from ASCII files. 
-
-They are accessed from panel 
-[Coordinates transformation](../panels/panel-molecule-coordinates.html#coordinates-transformation) by pressing 
-![Options...](../../assets/images/gui/VP-but-options3p.png "Options...").
+Import options are the settings used to import spots and reference coordinates from ASCII files for 
+[Coordinates transformation](../components/panel-molecule-coordinates.html#coordinates-transformation). 
+They are accessed by pressing 
+![Import Options](../../assets/images/gui/VP-but-impopt.png "Import options") in panel 
+[Molecule coordinates](../components/panel-molecule-coordinates.html).
 
 Press 
-![Ok](../../assets/images/gui/VP-but-ok.png "Ok") to save modifications.
+![Ok](../../assets/images/gui/VP-but-ok.png "Ok") to save modifications and 
+![Cancel](../../assets/images/gui/VP-but-cancel.png "Cancel") to abandon.
 
-<a class="plain" href="../../assets/images/gui/VP-panel-molcoord-transf-impopt.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf-impopt.png" style="max-width: 310px;"/></a>
+<a class="plain" href="../../assets/images/gui/VP-panel-molcoord-transf-impopt.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf-impopt.png" style="max-width: 296px;"/></a>
 
 
 ## Window components
@@ -78,17 +79,4 @@ Modify these settings according to the structure of the file containing the spot
 <a class="plain" href="../../assets/images/gui/VP-panel-molcoord-transf-impopt-spotscoord.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf-impopt-spotscoord.png" style="max-width: 274px;"/></a>
 
 Give in **(a)** and **(b)** the file column indexes where x- and y- coordinates are written.
-
-
----
-
-## Reference image dimensions
-
-Update these settings to the dimensions of the reference image used to calculate the transformation file.
-
-<a class="plain" href="../../assets/images/gui/VP-panel-molcoord-transf-impopt-viddim.png"><img src="../../assets/images/gui/VP-panel-molcoord-transf-impopt-viddim.png" style="max-width: 197px;"/></a>
-
-They are the dimensions in the x-, set in **(a)**, and y-, set in **(b)**, direction of the reference image used to calculate the transformation.
-
-These dimensions are used to exclude out-of-range spots coordinates prior transformation.
 

@@ -23,7 +23,7 @@ fact = 5;
 file_icon1 = 'icon_zoom.png';
 file_icon2 = 'icon_crosshair.png';
 file_icon3 = 'icon_clear.png';
-str0 = char(9668);
+str0 = char(9650);
 ttstr0 = wrapHtmlTooltipString('Switch to <b>cluster selection</b> mode');
 ttstr1 = wrapHtmlTooltipString('<b>Clear</b> current selection');
 ttstr2 = wrapHtmlTooltipString('Switch to <b>zoom</b> mode');
@@ -35,9 +35,9 @@ h_pan = h.uipanel_TA_selectTool;
 
 % dimensions
 pospan = get(h_pan,'position');
-hpan = p.mg/2+hedit0+p.mg/2;
+hpan = p.mg/2+3*hedit0+2*p.mg/fact+p.mg/2+hedit0+p.mg/2;
 wbut0 = getUItextWidth(str0,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wpan = p.mg/2+3*hedit0+2*p.mg/fact+p.mg/2+wbut0+p.mg/2;
+wpan = p.mg/2+wbut0+p.mg/2;
 
 % set panel dimensions
 set(h_pan,'position',[pospan(1:2),wpan,hpan]);
@@ -48,29 +48,30 @@ img2 = imread(file_icon2);
 img3 = imread(file_icon3);
 
 % GUI
-x = p.mg/2;
-y = p.mg/2;
+x = p.mg/2+(wbut0-hedit0)/2;
+y = hpan-p.mg/2-hedit0;
 
 h.tooglebutton_TDPselectZoom = uicontrol('style','togglebutton','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
     'position',[x,y,hedit0,hedit0],'tooltipstring',ttstr2,'callback',...
     {@tooglebutton_TDPselect_Callback,h_fig,1},'cdata',img1);
 
-x = x+hedit0+p.mg/fact;
+y = y-hedit0-p.mg/fact;
 
 h.tooglebutton_TDPselectCross = uicontrol('style','togglebutton','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
     'position',[x,y,hedit0,hedit0],'tooltipstring',ttstr0,'callback',...
     {@tooglebutton_TDPselect_Callback,h_fig,2},'cdata',img2);
 
-x = x+hedit0+p.mg/fact;
+y = y-hedit0-p.mg/fact;
 
 h.pushbutton_TDPselectClear = uicontrol('style','pushbutton','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
     'position',[x,y,hedit0,hedit0],'tooltipstring',ttstr1,'callback',...
     {@tooglebutton_TDPselect_Callback,h_fig,3},'cdata',img3);
 
-x = x+hedit0+p.mg/2;
+x = x-(wbut0-hedit0)/2;
+y = y-hedit0-p.mg/2;
 
 h.pushbutton_TDPmanStart = uicontrol('style','pushbutton','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...

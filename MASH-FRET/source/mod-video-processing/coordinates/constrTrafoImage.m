@@ -16,8 +16,8 @@ function [img_final,ok] = constrTrafoImage(tr, img, h_fig)
 %    transformPointsInverse functions
 
 % defaults
-bgtol = 1;
-bghtfact = 3;
+bgtol = 0;
+bghtfact = 1;
 
 nMov = numel(img);
 multichanvid = nMov==1;

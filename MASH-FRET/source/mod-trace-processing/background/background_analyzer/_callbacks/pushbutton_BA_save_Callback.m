@@ -18,5 +18,3 @@ if iscell(obj)
 else
     saveBgOpt(g.figure_bgopt);
 end
-
-

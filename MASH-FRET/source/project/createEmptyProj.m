@@ -69,6 +69,7 @@ p.bool_intensities = [];
 p.ES = [];
 p.intensities_DTA = [];
 p.FRET_DTA = [];
+p.FRET_DTA_import = [];
 p.S_DTA = [];
 p.dt = [];
 
