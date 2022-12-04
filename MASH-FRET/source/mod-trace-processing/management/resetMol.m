@@ -5,8 +5,8 @@ nC = p.proj{proj}.nb_channel;
 nF = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
 
-curr = p.proj{proj}.curr{m};
-prm = p.proj{proj}.prm{m};
+curr = p.proj{proj}.TP.curr{m};
+prm = p.proj{proj}.TP.prm{m};
 
 if strcmp(opt1,'cross')
     opt = 'cross';

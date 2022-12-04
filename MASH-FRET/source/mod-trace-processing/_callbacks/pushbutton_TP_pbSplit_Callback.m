@@ -1,20 +1,16 @@
 function pushbutton_TP_pbSplit_Callback(obj,evd,h_fig)
 
 h = guidata(h_fig);
-p = h.param.ttPr;
-if isempty(p.proj)
-    return
-end
-
+p = h.param;
 proj = p.curr_proj;
-n = p.curr_mol(proj);
+n = p.ttPr.curr_mol(proj);
 N = numel(p.proj{proj}.coord_incl);
 nC = p.proj{proj}.nb_channel;
 nL = p.proj{proj}.nb_excitations;
 nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
-meth = p.proj{proj}.curr{n}{2}{1}(2);
-cutOff = p.proj{proj}.curr{n}{2}{1}(4+meth)/nL;
+meth = p.proj{proj}.TP.curr{n}{2}{1}(2);
+cutOff = p.proj{proj}.TP.curr{n}{2}{1}(4+meth)/nL;
 L = sum(p.proj{proj}.bool_intensities(:,n));
 if cutOff>=L
     return
@@ -34,6 +30,9 @@ if ~h.mute_actions
         return
     end
 end
+
+% show process
+setContPan('Splitting trajectories...','process',h_fig);
 
 % calculate indexes
 mol_id = [1:n,n:N];
@@ -128,11 +127,11 @@ if ~isempty(p.proj{proj}.S_DTA)
 end
 
 % update processing parameters
-p.proj{proj}.prm = p.proj{proj}.prm(mol_id);
-p.proj{proj}.curr = p.proj{proj}.curr(mol_id);
-p.proj{proj}.curr{n+1}{2}{1}(4) =  1;
-p.proj{proj}.curr{n+1}{2}{1}(4+meth) = L_right*nL;
-p.proj{proj}.curr{n}{2}{1}(1) = true;
+p.proj{proj}.TP.prm = p.proj{proj}.TP.prm(mol_id);
+p.proj{proj}.TP.curr = p.proj{proj}.TP.curr(mol_id);
+p.proj{proj}.TP.curr{n+1}{2}{1}(4) =  1;
+p.proj{proj}.TP.curr{n+1}{2}{1}(4+meth) = L_right*nL;
+p.proj{proj}.TP.curr{n}{2}{1}(1) = true;
 
 % add tag
 if ~sum(~cellfun('isempty',strfind(p.proj{proj}.molTagNames,'split')))
@@ -146,8 +145,12 @@ p.proj{proj}.molTag([n,n+1],...
 
 set(h.text_molTot, 'String', ['total: ' num2str(N+1) ' molecules']);
 
-h.param.ttPr = p;
+h.param = p;
 guidata(h_fig,h);
 
 updateFields(h_fig,'ttPr');
+
+% show success
+setContPan(['Trajectories of molecule',num2str(n),' were successfully ',...
+    'split at position ',num2str(cutOff),'!'],'success',h_fig);
 

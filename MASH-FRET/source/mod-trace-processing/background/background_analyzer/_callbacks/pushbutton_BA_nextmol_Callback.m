@@ -3,7 +3,7 @@ function pushbutton_BA_nextmol_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 g = guidata(h.bga.figure_bgopt);
 
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
 nMol = size(p.proj{proj}.intensities,2)/nChan;

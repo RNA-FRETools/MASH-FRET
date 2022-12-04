@@ -25,9 +25,6 @@ end
 set(h.checkbox_SFgaussFit,'value',false);
 checkbox_SFgaussFit_Callback(h.checkbox_SFgaussFit,[],h_fig);
 
-set(h.checkbox_SFall,'value',sfall);
-checkbox_SFall_Callback(h.checkbox_SFall,[],h_fig);
-
 for c = 1:nChan
     % set channel
     set(h.popupmenu_SFchannel,'value',c);

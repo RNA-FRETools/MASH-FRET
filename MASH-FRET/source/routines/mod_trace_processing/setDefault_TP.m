@@ -8,25 +8,29 @@ function setDefault_TP(h_fig,p)
 
 % get interface parameters
 h = guidata(h_fig);
+proj = h.param.proj{h.param.curr_proj};
 
-% empty project list
-nProj = numel(get(h.listbox_traceSet,'string'));
-proj = nProj;
-while proj>0
-    set(h.listbox_traceSet,'value',proj);
-    listbox_traceSet_Callback(h.listbox_traceSet,[],h_fig);
-    pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
-    proj = proj-1;
+% set module
+switchPan(h.togglebutton_TP,[],h_fig);
+
+% set units
+if p.inSec
+    menu_units_Callback(h.menu_inSec,[],h_fig);
+else
+    menu_units_Callback(h.menu_inFrame,[],h_fig);
+end
+if p.perSec && strcmp(h.menu_perSec.Checked,'off')
+    menu_units_Callback(h.menu_perSec,[],h_fig);
+elseif ~p.perSec && strcmp(h.menu_perSec.Checked,'on')
+    menu_units_Callback(h.menu_perSec,[],h_fig);
 end
 
-% import default project
-pushbutton_addTraces_Callback({p.annexpth,p.mash_files{p.nL,p.nChan}},[],...
-    h_fig);
-
-% set default sample management parameters
-
-
 % set default plot parameters
+h_but = getHandlePanelExpandButton(h.uipanel_TP_plot,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
+
 nExc_top = numel(get(h.popupmenu_ttPlotExc,'string'));
 set(h.popupmenu_ttPlotExc,'value',nExc_top);
 popupmenu_ttPlotExc_Callback(h.popupmenu_ttPlotExc,[],h_fig);
@@ -39,12 +43,20 @@ nDat_bot = numel(get(h.popupmenu_plotBottom,'string'));
 set(h.popupmenu_plotBottom,'value',nDat_bot);
 popupmenu_plotBottom_Callback(h.popupmenu_plotBottom,[],h_fig);
 
-set_TP_xyAxis(p.perSec,p.perPix,p.inSec,p.fixX0,p.x0,h_fig);
+set_TP_xyAxis(p.fixX0,p.x0,h_fig);
 
 % set default sub-images parameters
+h_but = getHandlePanelExpandButton(h.uipanel_TP_subImages,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 set_TP_subImg(p.contrast,p.brightness,h_fig);
 
 % set default background parameters
+h_but = getHandlePanelExpandButton(h.uipanel_TP_backgroundCorrection,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 nDat = numel(get(h.popupmenu_trBgCorr_data,'string'));
 for dat = 1:nDat
     set(h.popupmenu_trBgCorr_data,'value',dat);
@@ -54,18 +66,37 @@ end
 pushbutton_applyAll_ttBg_Callback(h.pushbutton_applyAll_ttBg,[],h_fig);
 
 % set default cross-talks parameters
-set_TP_crossTalks(p.bt,p.de,p.projOpt{p.nL,p.nChan}.chanExc,p.wl(1:p.nL),...
-    h_fig);
+h_but = getHandlePanelExpandButton(h.uipanel_TP_crossTalks,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
+set_TP_crossTalks(p.bt,p.de,proj.chanExc,proj.excitations,h_fig);
 
 % set default denoising parameters
+h_but = getHandlePanelExpandButton(h.uipanel_TP_denoising,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 set_TP_denoising(p.denMeth,p.denPrm,p.denApply,h_fig);
 pushbutton_applyAll_den_Callback(h.pushbutton_applyAll_den,[],h_fig);
 
 % set default photobleaching parameters
+h_but = getHandlePanelExpandButton(h.uipanel_TP_photobleaching,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 pushbutton_applyAll_debl_Callback(h.pushbutton_applyAll_debl,[],h_fig);
 
 % set default factor corrections parameters
+h_but = getHandlePanelExpandButton(h.uipanel_TP_factorCorrections,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 pushbutton_applyAll_corr_Callback(h.pushbutton_applyAll_corr,[],h_fig);
 
 % set default find states parameters
+h_but = getHandlePanelExpandButton(h.uipanel_TP_findStates,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 pushbutton_applyAll_DTA_Callback(h.pushbutton_applyAll_DTA,[],h_fig);

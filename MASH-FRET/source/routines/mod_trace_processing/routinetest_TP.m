@@ -41,15 +41,7 @@ diary(logfile);
 try
 
     % test main working area
-    h_fig = routinetest_general(p.annexpth,h_fig);
-    h = guidata(h_fig);
-
-    % switch to trace processing module
-    switchPan(h.togglebutton_TP,[],h_fig);
-
-    % set interface defaults
-    disp('test main callbacks...');
-    setDefault_TP(h_fig,p);
+    h_fig = routinetest_general(h_fig);
 
     subprefix = '>> ';
 
@@ -110,7 +102,7 @@ try
     % test panel cross-talks
     if strcmp(opt,'all') || strcmp(opt,'cross-talks')
         disp('test panel cross-talks...');
-        routinetest_TP_crossTalks(h_fig,p);
+        routinetest_TP_crossTalks(h_fig,p,subprefix);
     end
 
     % test panel denoising
@@ -131,7 +123,7 @@ try
         routinetest_TP_factorCorrections(h_fig,p,subprefix);
     end
 
-    % test panel finde states
+    % test panel find states
     if strcmp(opt,'all') || strcmp(opt,'find states')
         disp('test panel find states...');
         routinetest_TP_findStates(h_fig,p,subprefix);
@@ -159,7 +151,7 @@ catch err
         close(h.tm.figure_traceMngr);
     end
     if isfield(h,'optExpTr') && isfield(h.optExpTr,'figure_optExpTr') && ...
-            ishande(h.optExpTr.figure_optExpTr);
+            ishande(h.optExpTr.figure_optExpTr)
         close(h.optExpTr.figure_optExpTr);
     end
     if isfield(h,'figure_itgExpOpt') && ishandle(h.figure_itgExpOpt)
@@ -170,6 +162,9 @@ catch err
     end
     if isfield(h,'figure_ESlinRegOpt') && ishandle(h.figure_ESlinRegOpt)
         close(h.figure_ESlinRegOpt);
+    end
+    if isfield(h,'figure_setExpSet') && ishandle(h.figure_setExpSet)
+        close(h.figure_setExpSet);
     end
     return
 end

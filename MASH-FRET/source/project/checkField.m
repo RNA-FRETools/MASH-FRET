@@ -1,4 +1,4 @@
-function s = checkField(s_in, fname, h_fig)
+function [s,ok] = checkField(s_in, fname, h_fig)
 
 %%
 % update by MH, 11.1.2020: add "ES" field
@@ -8,11 +8,14 @@ function s = checkField(s_in, fname, h_fig)
 % update by MH, 3.4.2019: if labels are empty (ASCII import), set default labels
 %%
 
+% defaults
+ok = 1;
+
 s = s_in;
 
 % added by MH, 25.4.2019
 h = guidata(h_fig);
-pMov = h.param.movPr;
+p = h.param;
 
 %% load data
 
@@ -24,12 +27,15 @@ a = strfind(figname, 'MASH-FRET ');
 b = a + numel('MASH-FRET ');
 s.MASH_version = adjustParam('MASH_version', figname(b:end), s_in);
 s.proj_file = fname;
+% s.uptodate = adjustParam('uptodate', initUptodateArr, s_in);
 
 % movie
 s.movie_file = adjustParam('movie_file', [], s_in); % movie path/file
 s.is_movie = adjustParam('is_movie', ~isempty(s.movie_file), s_in);
 s.movie_dim = adjustParam('movie_dim', [], s_in);
 s.movie_dat = adjustParam('movie_dat', [], s_in);
+s.spltime_from_video = adjustParam('spltime_from_video',s.is_movie,s_in);
+s.aveImg = adjustParam('aveImg',[],s_in);
 
 s.frame_rate = adjustParam('frame_rate', 1, s_in);
 s.frame_rate(s.frame_rate<=0) = 1;
@@ -59,10 +65,13 @@ s.coord_incl = adjustParam('coord_incl', [], s_in);
 
 % intensity integration
 s.pix_intgr = adjustParam('pix_intgr', [1 1], s_in);
-s.cnt_p_pix = adjustParam('cnt_p_pix', 1, s_in);
+
+% units
 s.cnt_p_sec = adjustParam('cnt_p_sec', 0, s_in);
+s.time_in_sec = adjustParam('time_in_sec', 0, s_in);
 
 % intensity-time traces processing
+s.spltime_from_traj = adjustParam('spltime_from_traj',~s.is_movie,s_in);
 s.intensities = adjustParam('intensities', nan(4000, ...
     size(s.coord,1)*s.nb_channel, s.nb_excitations), s_in);
 L = size(s.intensities,1);
@@ -88,6 +97,7 @@ s.FRET_DTA = adjustParam('FRET_DTA', nan(L,nMol*nFRET), s_in);
 s.S_DTA = adjustParam('S_DTA', nan(L,nMol*nS), s_in);
 s.bool_intensities = adjustParam('bool_intensities', true(L,nMol), s_in);
 s.colours = adjustParam('colours', [], s_in); % plot colours
+s.traj_import_opt = adjustParam('traj_import_opt', [], s_in); % trajectory import options
 
 % dwell-times: in construction (fields not used)
 s.dt_ascii = adjustParam('dt_ascii', false, s_in);
@@ -102,7 +112,7 @@ s.dt = adjustParam('dt', {}, s_in);
 % s.molTagNames = adjustParam('molTagNames', {'unlabeled', 'static', 'dynamic'}, s_in);
 % modified by MH, 25.4.2019: fetch tag names in interface's defaults
 % s.molTagNames = adjustParam('molTagNames', {'static', 'dynamic'}, s_in);
-s.molTagNames = adjustParam('molTagNames',pMov.defTagNames,s_in);
+s.molTagNames = adjustParam('molTagNames',p.es.tagNames,s_in);
 
 nTag = numel(s.molTagNames);
 s.molTag = adjustParam('molTag', false(nMol,nTag), s_in);
@@ -111,18 +121,16 @@ s.molTag = adjustParam('molTag', false(nMol,nTag), s_in);
 % modified by MH, 25.4.2019: fetch tag colors in interface's defaults
 % s.molTagClr = adjustParam('molTagClr', ...
 %     {'#4298B5','#DD5F32','#92B06A','#ADC4CC','#E19D29'}, s_in);
-s.molTagClr = adjustParam('molTagClr',pMov.defTagClr,s_in);
+s.molTagClr = adjustParam('molTagClr',p.es.tagClr,s_in);
 
 
 %% check video entries
 % check movie file >> set movie dimensions and reading infos
 if ~isempty(s.movie_file) && istestfile(s.movie_file)
+    s.movie_file = strrep(strrep(s.movie_file,'\',filesep),'/',filesep);
     s.movie_file = which(s.movie_file); % get machine-dependent path for test files
 end
-if ~isempty(s.movie_file) && exist(s.movie_file, 'file')
-    s.is_movie = 1;
-    
-elseif ~isempty(s.movie_file)
+if ~isempty(s.movie_file) && ~exist(s.movie_file, 'file')
     [o,name_proj,ext] = fileparts(fname);
     name_proj = [name_proj ext];
     load_mov = questdlg({['Impossible to find the movie file for ' ...
@@ -138,7 +146,8 @@ elseif ~isempty(s.movie_file)
             '*.*', 'All File Format(*.*)'}, 'Select a graphic file:');
         if ~(~isempty(fname) && sum(fname))
             s = [];
-            return;
+            ok = 0;
+            return
         end
         [data,ok] = getFrames([pname fname], 1, {}, h_fig, false);
         if ok
@@ -155,9 +164,40 @@ elseif ~isempty(s.movie_file)
         s.is_movie = 0;
     else
         s = [];
-        return;
+        ok = 0;
+        return
     end
-else
+end
+if ~isempty(s.movie_file) && exist(s.movie_file, 'file')
+    s.is_movie = 1;
+    % import video data
+    h = guidata(h_fig);
+    h.movie.movie = [];
+    h.movie.file = '';
+    guidata(h_fig,h);
+    [dat,ok] = getFrames(s.movie_file,'all',[],h_fig,true);
+    if ~ok
+        s = [];
+        return
+    end
+    h = guidata(h_fig);
+    if ~isempty(dat.movie)
+        h.movie.movie = dat.movie;
+        h.movie.file = s.movie_file;
+        guidata(h_fig,h);
+        ok = 2;
+    elseif ~isempty(h.movie.movie)
+        h.movie.file = s.movie_file;
+        guidata(h_fig,h);
+        ok = 2;
+    end
+    if size(s.aveImg,2)~=(s.nb_excitations+1)
+        setContPan('Calculate average images...','process',h_fig);
+        s.aveImg = calcAveImg('all',s.movie_file,s.movie_dat,...
+            s.nb_excitations,h_fig);
+    end
+end
+if isempty(s.movie_file)
     s.is_movie = 0;
     s.movie_dat = [];
 end
@@ -166,7 +206,8 @@ end
 if (isempty(s.movie_dim) || size(s.movie_dim, 2) ~= 2) && s.is_movie
     [data,ok] = getFrames(s.movie_file, 1, {}, h_fig, false);
     if ~ok
-        return;
+        s = [];
+        return
     end
     s.movie_dim = [data.pixelX data.pixelY];
     s.movie_dat = {data.fCurs [data.pixelX data.pixelY] data.frameLen};
@@ -176,7 +217,8 @@ end
 if (isempty(s.movie_dat) || size(s.movie_dat, 2) ~= 3) && s.is_movie
     [data,ok] = getFrames(s.movie_file, 1, {}, h_fig, false);
     if ~ok
-        return;
+        s = [];
+        return
     end
     s.movie_dat = {data.fCurs [data.pixelX data.pixelY] data.frameLen};
 end
@@ -228,15 +270,49 @@ if isempty(s.exp_parameters) || size(s.exp_parameters,2) ~= 3
     end
 end
 
+%% check trajectroies
+if isempty(s.intensities_bgCorr)
+    s.intensities_bgCorr = nan(L,nMol*nChan,nExc);
+end
+if isempty(s.intensities_crossCorr)
+    s.intensities_crossCorr = nan(L,nMol*nChan,nExc);
+end
+if isempty(s.intensities_denoise)
+    s.intensities_denoise = nan(L,nMol*nChan,nExc);
+end
+if isempty(s.intensities_DTA)
+    s.intensities_DTA = nan(L,nMol*nChan,nExc);
+end
+if nFRET>0
+    if isempty(s.FRET_DTA)
+        s.FRET_DTA = nan(L,nMol*nFRET);
+    end
+    if isempty(s.ES)
+        s.ES = defES;
+    end
+end
+if nS>0
+    if isempty(s.S_DTA)
+        s.S_DTA = nan(L,nMol*nS);
+    end
+end
+if isempty(s.bool_intensities)
+    s.bool_intensities = true(L,nMol);
+end
+
+%% check molecule tags
+if isempty(s.molTag)
+    s.molTag = false(nMol,nTag);
+end
 
 %% check coordinates
+s.is_coord = ~isempty(s.coord);
 if s.is_coord
     if size(s.coord_incl,2) < size(s.coord,1)
         s.coord_incl((size(s.coord_incl,2)+1):size(s.coord,1)) = ...
             true(1,(size(s.coord,1)-size(s.coord_incl,2)));
     end
 end
-
 if isempty(s.coord_incl)
     s.coord_incl = true(1,nMol);
 end
@@ -272,54 +348,52 @@ end
 
 
 %% check dwell-times entries
-if ~s.dt_ascii;
+if ~s.dt_ascii
     s.dt_pname = [];
     s.dt_fname = [];
 end
-
-perSec = s.cnt_p_sec;
-perPix = s.cnt_p_pix;
-
-
 s.dt = cell(nMol, nChan*nExc+nFRET+nS);
 for m = 1:nMol
     incl = s.bool_intensities(:,m);
-    j = 1;
+    j = 0;
     for i_l = 1:s.nb_excitations
         for i_c = 1:s.nb_channel
+            j = j + 1;
+            if isempty(s.intensities_DTA)
+                continue
+            end
             I = s.intensities_DTA(incl,(m-1)*s.nb_channel+i_c,i_l);
-            if perSec
-                I = I/s.frame_rate;
-            end
-            if perPix
-                I = I/s.pix_intgr(2);
-            end
             if sum(double(~isnan(I)))
                 s.dt{m,j} = getDtFromDiscr(I,...
                     s.nb_excitations*s.frame_rate);
             else
                 s.dt{m,j} = [];
             end
-            j = j + 1;
         end
     end
     for i_f = 1:size(s.FRET,1)
+        j = j + 1;
+        if isempty(s.FRET_DTA)
+            continue
+        end
         tr = s.FRET_DTA(incl,(m-1)*nFRET+i_f);
         if sum(double(~isnan(tr)))
             s.dt{m,j} = getDtFromDiscr(tr,s.nb_excitations*s.frame_rate);
         else
             s.dt{m,j} = {};
         end
-        j = j + 1;
     end
     for i_s = 1:size(s.S,1)
+        j = j + 1;
+        if isempty(s.S_DTA)
+            continue
+        end
         tr = s.S_DTA(incl,(m-1)*nS+i_s);
         if sum(double(~isnan(tr)))
             s.dt{m,j} = getDtFromDiscr(tr,s.nb_excitations*s.frame_rate);
         else
             s.dt{m,j} = {};
         end
-        j = j + 1;
     end
 end
 
@@ -344,8 +418,8 @@ if numel(s.molTagClr)<nTag
 %     s.molTagClr = [s.molTagClr cat(2,'#',num2str(dec2hex(clr(1))),...
 %         num2str(dec2hex(clr(2))),num2str(dec2hex(clr(3))))];
     for t = (numel(s.molTagClr)+1):nTag
-        if t<=numel(pMov.defTagClr)
-            clr_str = pMov.defTagClr{t};
+        if t<=numel(p.es.tagClr)
+            clr_str = p.es.defTagClr{t};
         else
             clr = round(255*rand(1,3));
             clr_str = cat(2,'#',num2str(dec2hex(clr(1))),...
@@ -355,6 +429,26 @@ if numel(s.molTagClr)<nTag
     end
     
 end
+
+% check uptodate's keys
+% utd_ref = initUptodateArr;
+% K1 = size(utd_ref,1);
+% for k1 = 1:K1
+%     key1 = utd_ref{k1,1};
+%     val1 = utd_ref{k1,2};
+%     if isempty(findKey(s.uptodate,key1))
+%         s.uptodate = setKey(s.uptodate,key1,val1);
+%     end
+%     K2 = size(utd_ref{k1,2},1);
+%     for k2 = 1:K2
+%         key2 = utd_ref{k1,2}{k2,1};
+%         val2 = utd_ref{k1,2}{k2,2};
+%         if isempty(findKey(s.uptodate{findKey(s.uptodate,key1),2},key2))
+%             s.uptodate = setKey(s.uptodate,key2,val2);
+%         end
+%     end
+% end
+
 
 
 

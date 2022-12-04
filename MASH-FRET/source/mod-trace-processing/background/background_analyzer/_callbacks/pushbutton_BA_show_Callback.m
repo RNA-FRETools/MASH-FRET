@@ -8,7 +8,7 @@ function pushbutton_BA_show_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 g = guidata(h.bga.figure_bgopt);
 
-p = h.param.ttPr;
+p = h.param;
 if ~isempty(p.proj)
     if iscell(obj)
         coord = dispDark_BA(g.figure_bgopt,obj{1});

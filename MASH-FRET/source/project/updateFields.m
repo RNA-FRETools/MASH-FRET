@@ -22,66 +22,85 @@ else
 end
 
 h = guidata(h_fig);
+p = h.param;
+proj = p.curr_proj;
 
-% reset action window color
-h_pan = guidata(h.figure_actPan);
-set(h_pan.text_actions, 'BackgroundColor', [1 1 1]);
+% menu bar
+if isempty(p.proj)
+    set(h.menu_units,'enable','off');
+else
+    yes = {'off','on'};
+    set(h.menu_units,'enable','on');
+    inSec = p.proj{proj}.time_in_sec;
+    perSec = p.proj{proj}.cnt_p_sec;
+    set(h.menu_inSec,'checked',yes{inSec+1});
+    set(h.menu_inFrame,'checked',yes{~inSec+1});
+    set(h.menu_perSec,'checked',yes{perSec+1});
+end
+
+% set project list
+if isempty(p.proj)
+    set([h.pushbutton_closeProj,h.pushbutton_editProj,...
+        h.pushbutton_saveProj,h.listbox_proj],'enable','off');
+else
+    set([h.pushbutton_closeProj,h.pushbutton_editProj,...
+        h.pushbutton_saveProj,h.listbox_proj],'enable','on');
+end
 
 % set folder root
-set(h.edit_rootFolder,'string',h.folderRoot);
+if ~isempty(p.proj)
+    set(h.edit_rootFolder,'string',p.proj{proj}.folderRoot);
+    set([h.pushbutton_rootFolder,h.edit_rootFolder],'enable','on');
+else
+    set(h.edit_rootFolder,'string','');
+    set([h.pushbutton_rootFolder,h.edit_rootFolder],'enable','off');
+end
 
-%% Simulation fields
-
-if strcmp(opt, 'sim') || strcmp(opt, 'all')
-    
-    % update Simulation panels
-    ud_S_vidParamPan(h_fig);
-    ud_S_moleculesPan(h_fig);
-    ud_S_expSetupPan(h_fig);
-    ud_S_expOptPan(h_fig);
-    
+% tool bar
+h_tb = [h.togglebutton_S,h.togglebutton_VP,h.togglebutton_TP,...
+    h.togglebutton_HA,h.togglebutton_TA];
+if isempty(p.proj)
+    isOn = false(size(h_tb));
+else
+    isOn = [~isempty(p.proj{proj}.sim),~isempty(p.proj{proj}.VP),...
+        ~isempty(p.proj{proj}.TP),~isempty(p.proj{proj}.HA),...
+        ~isempty(p.proj{proj}.TA)];
+end
+set(h_tb(isOn),'enable','on');
+set(h_tb(~isOn),'enable','off','value',0);
+if all(~isOn)
+    switchPan(0,[],h_fig);
     h = guidata(h_fig);
 end
 
-%% Movie processing fields
+% Simulation module
+if strcmp(opt, 'sim') || strcmp(opt, 'all')
+    ud_S_panels(h_fig);
+    plotData_sim(h_fig);
+    h = guidata(h_fig);
+end
 
+% Movie processing module
 if strcmp(opt,'imgAxes') || strcmp(opt, 'movPr') || strcmp(opt, 'all')
     
-    % refresh video processing and plot
-    if (strcmp(opt, 'all') || strcmp(opt, 'imgAxes')) && ...
-            isfield(h, 'movie')
+    % refresh data processing and plot
+    if (strcmp(opt, 'all') || strcmp(opt, 'imgAxes'))
         updateImgAxes(h_fig);
     end
     
-    % update Video processing panels
-    ud_VP_plotPan(h_fig);
-    ud_VP_expSetPan(h_fig);
-    ud_VP_edExpVidPan(h_fig);
-    ud_VP_molCoordPan(h_fig);
-    ud_VP_intIntegrPan(h_fig);
-    
+    ud_VP_panels(h_fig);
     h = guidata(h_fig);
 end
 
-%% Traces processing fields
-
+% Trace processing module
 if strcmp(opt, 'ttPr') || strcmp(opt, 'subImg') || strcmp(opt, 'cross') || ...
         strcmp(opt, 'all')
-    p = h.param.ttPr;
     
-    if ~isempty(p.proj)
-        
-        % update moleule list; moved by MH, 24.4.2019
-        ud_trSetTbl(h_fig);
-        
+    p = h.param;
+    if isModuleOn(p,'TP')
+        % refresh data processing and plot
         proj = p.curr_proj;
-        mol = p.curr_mol(proj);
-
-        set(h.edit_currMol, 'String', num2str(mol), 'BackgroundColor', ...
-            [1 1 1]);
-        set(h.listbox_molNb, 'Value', mol);
-        set(h.listbox_traceSet, 'Max', 2, 'Min', 0);
-
+        mol = p.ttPr.curr_mol(proj);
         axes.axes_traceTop = h.axes_top;
         axes.axes_histTop = h.axes_topRight;
         axes.axes_traceBottom = h.axes_bottom;
@@ -89,94 +108,31 @@ if strcmp(opt, 'ttPr') || strcmp(opt, 'subImg') || strcmp(opt, 'cross') || ...
         if p.proj{proj}.is_movie && p.proj{proj}.is_coord
             axes.axes_molImg = h.axes_subImg;
         end
-        
         p = updateTraces(h_fig, opt, mol, p, axes);
-        
-        h.param.ttPr = p;
+        h.param = p;
         guidata(h_fig, h);
-
-        % update parameters
-        % cancelled by MH, 24.4.2019
-%         ud_trSetTbl(h_fig);
-        ud_subImg(h_fig);
-        ud_denoising(h_fig);
-        ud_bleach(h_fig);
-        ud_ttBg(h_fig);
-        ud_DTA(h_fig);
-        ud_cross(h_fig);
-        ud_factors(h_fig)
-        ud_plot(h_fig);
-        
-        h = guidata(h_fig);
-        
-    else
-        ud_TTprojPrm(h_fig);
-        h = guidata(h_fig);
-    end
-end
-
-%% Thermodynamics fields
-
-if strcmp(opt, 'thm') || strcmp(opt, 'all')
-    p = h.param.thm;
-    set(h.edit_thmContPan, 'Enable', 'inactive');
-    if ~isempty(p.proj)
-        set([h.listbox_thm_projLst h.pushbutton_thm_rmProj ...
-            h.pushbutton_thm_saveProj h.pushbutton_thm_export], ...
-            'Enable', 'on');
-        set([h.axes_hist1,h.axes_hist2,h.axes_thm_BIC], 'Visible', 'on');
-        set(h.listbox_thm_projLst, 'Max', 2, 'Min', 0);
-        ud_thmPlot(h_fig);
-        ud_thmHistAna(h_fig);
-        h = guidata(h_fig);
-
-    else
-        set([h.radiobutton_thm_gaussFit h.radiobutton_thm_thresh], ...
-            'Value', 0, 'FontWeight', 'normal');
-        setProp(get(h.uipanel_HA, 'Children'), 'Enable', 'off');
-        
-        % cancelled by MH, 12.12.2019
-%         cla(h.axes_hist_BOBA);
-
-        cla(h.axes_hist1); cla(h.axes_hist2); cla(h.axes_thm_BIC);
-
-        set([h.axes_hist1,h.axes_hist2,h.axes_thm_BIC], 'Visible','off');
-        set([h.pushbutton_help h.pushbutton_thm_impASCII ...
-            h.pushbutton_thm_addProj],'Enable', 'on');
-    end
-end
-
-
-%% TDP analysis fields
-
-if strcmp(opt, 'TDP') || strcmp(opt, 'all')
-    set(h.edit_TDPcontPan, 'Enable', 'inactive');
-
-    p = h.param.TDP;
-    if ~isempty(p.proj)
-        set([h.listbox_TDPprojList h.pushbutton_TDPremProj ...
-            h.pushbutton_TDPsaveProj h.pushbutton_TDPexport],'Enable',...
-            'on');
-        set(h.listbox_TDPprojList, 'Max', 2, 'Min', 0);
-        
-        ud_TDPplot(h_fig);
-        ud_TDPmdlSlct(h_fig);
-        ud_kinFit(h_fig);
-        ud_kinMdl(h_fig)
-        
-        h = guidata(h_fig);
-
-    else
-        setProp(get(h.uipanel_TA, 'Children'), 'Enable', 'off');
-        set([h.pushbutton_help h.pushbutton_TDPimpOpt ...
-            h.pushbutton_TDPaddProj], 'Enable', 'on');
-        set(h.popupmenu_TA_slStates, 'String', {'Select a state value'}, ...
-            'Value', 1);
-        set([h.axes_TDPplot1 h.colorbar_TA h.axes_TDPplot2 h.axes_TDPcmap ...
-            h.axes_tdp_BIC], 'Visible', 'off');
     end
     
+    ud_TP_panels(h_fig);
+    h = guidata(h_fig);
+end
+
+% Histogram analysis module
+if strcmp(opt, 'thm') || strcmp(opt, 'all')
+    ud_HA_histDat(h_fig);
+    ud_HA_panels(h_fig);
+    update_HA_plots(h_fig);
+    
+    h = guidata(h_fig);
+end
+
+% Transition analysis module
+if strcmp(opt, 'TDP') || strcmp(opt, 'all')
+    ud_TDPdata(h_fig);
+    ud_TA_panels(h_fig);
     updateTAplots(h_fig);
+    
+    h = guidata(h_fig);
 end
 
 guidata(h_fig, h);

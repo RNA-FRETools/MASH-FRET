@@ -9,172 +9,124 @@ function routinetest_TP_projectManagementArea(h_fig,p,prefix)
 
 h = guidata(h_fig);
 
-setDefault_TP(h_fig,p);
-
 % empty project list
-disp(cat(2,prefix,'test project list...'));
-nProj = numel(get(h.listbox_traceSet,'string'));
-proj = nProj;
-while proj>0
-    set(h.listbox_traceSet,'value',proj);
-    listbox_traceSet_Callback(h.listbox_traceSet,[],h_fig);
-    pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
-    proj = proj-1;
+nProj = numel(h.listbox_proj.String);
+for proj = nProj:-1:1
+    set(h.listbox_proj,'value',proj);
+    listbox_projLst_Callback(h.listbox_proj,[],h_fig);
+    pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig,true);
 end
 
 % test intensity import for different number of channels and lasers
 disp(cat(2,prefix,'test trace import for different number of channels ',...
     'and lasers...'));
 for nL = 1:p.nL_max
+    p.nL = nL;
     for nChan = 1:p.nChan_max
-        % test .mash file import 
-        disp(cat(2,prefix,'>> import file ',p.mash_files{nL,nChan}));
-        pushbutton_addTraces_Callback({p.annexpth,p.mash_files{nL,nChan}},...
-            [],h_fig);
+        p.nChan = nChan;
         
-        % set project options
-        set_VP_projOpt(p.projOpt{nL,nChan},p.wl(1:nL),...
-            h.pushbutton_editParam,h_fig);
+        % test .mash file import 
+        disp(cat(2,prefix,'>> import file ',p.mash_files{nChan,nL}));
+        pushbutton_openProj_Callback({p.annexpth,p.mash_files{nChan,nL}},...
+            [],h_fig);
+
+        % set module
+        switchPan(h.togglebutton_TP,[],h_fig);
         
         % save project
-        pushbutton_expProj_Callback({p.dumpdir,p.mash_files{nL,nChan}},[],...
+        pushbutton_saveProj_Callback({p.dumpdir,p.mash_files{nChan,nL}},[],...
             h_fig);
         
         % test ASCII files import 
-        disp(cat(2,prefix,'>> import data set ',p.ascii_dir{nL,nChan}));
-        set_TP_asciiImpOpt(p.asciiOpt{nL,nChan},h_fig);
-        pushbutton_addTraces_Callback({...
-            [p.annexpth,filesep,p.ascii_dir{nL,nChan}],...
-            p.ascii_files{nL,nChan}},[],h_fig);
-        
-        % set project options
-        set_VP_projOpt(p.projOpt{nL,nChan},p.wl(1:nL),...
-            h.pushbutton_editParam,h_fig);
-        
+        disp(cat(2,prefix,'>> import data set ',p.es{nChan,nL}.imp.tdir));
+        routinetest_TP_createProj(p,h_fig,[prefix,'>> >> ']);
+
         % save project
-        pushbutton_expProj_Callback({p.dumpdir,p.exp_ascii2mash{nL,nChan}},...
+        pushbutton_saveProj_Callback({p.dumpdir,p.exp_ascii2mash{nChan,nL}},...
             [],h_fig);
     end
 end
+p.nChan = p.nChan_def;
+p.nL = p.nL_def;
 
 % empty project list
-disp(cat(2,prefix,'test project list...'));
-nProj = numel(get(h.listbox_traceSet,'string'));
-proj = nProj;
-while proj>0
-    set(h.listbox_traceSet,'value',proj);
-    listbox_traceSet_Callback(h.listbox_traceSet,[],h_fig);
-    pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
-    proj = proj-1;
+nProj = numel(h.listbox_proj.String);
+for proj = nProj:-1:1
+    set(h.listbox_proj,'value',proj);
+    listbox_projLst_Callback(h.listbox_proj,[],h_fig);
+    pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig,true);
 end
 
 % test coordinates import from external file
 disp(cat(2,prefix,'test import of coordinates from external file...'));
-opt = p.asciiOpt{p.nL,p.nChan};
-opt.coordImp{1}{1} = true;
-opt.coordImp{1}{2} = {p.annexpth,p.coord_file};
-opt.coordImp{1}{4} = p.vid_width;
-set_TP_asciiImpOpt(opt,h_fig);
+p.es{p.nChan,p.nL}.imp.coordfile = p.coord_file;
+p.es{p.nChan,p.nL}.imp.coordopt = {reshape(1:2*p.nChan,2,p.nChan)',1};
 
-pushbutton_addTraces_Callback({...
-    [p.annexpth,filesep,p.ascii_dir{p.nL,p.nChan}],...
-    p.ascii_files{p.nL,p.nChan}},[],h_fig);
+routinetest_TP_createProj(p,h_fig,[prefix,'>> ']);
 
-set_VP_projOpt(p.projOpt{p.nL,p.nChan},p.wl(1:p.nL),h.pushbutton_editParam,...
-    h_fig);
+setDefault_TP(h_fig,p);
 
-pushbutton_expProj_Callback({p.dumpdir,p.exp_coord1},[],h_fig);
-pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
+pushbutton_saveProj_Callback({p.dumpdir,p.exp_coord1},[],h_fig);
+pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
 
-% test coordinates import from trace file header
-disp(cat(2,prefix,'test import of coordinates from trace file headers',...
-    '...'));
-opt = p.asciiOpt{p.nL,p.nChan};
-opt.coordImp{2}(1) = true;
-opt.coordImp{2}(2) = p.coord_fline;
-set_TP_asciiImpOpt(opt,h_fig);
-
-pushbutton_addTraces_Callback({...
-    [p.annexpth,filesep,p.ascii_dir{p.nL,p.nChan}],...
-    p.ascii_files{p.nL,p.nChan}},[],h_fig);
-
-set_VP_projOpt(p.projOpt{p.nL,p.nChan},p.wl(1:p.nL),h.pushbutton_editParam,...
-    h_fig);
-
-pushbutton_expProj_Callback({p.dumpdir,p.exp_coord2},[],h_fig);
-pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
+p.es{p.nChan,p.nL}.imp.coordfile = '';
+p.es{p.nChan,p.nL}.imp.coordopt = [];
 
 % test video import from file
 disp(cat(2,prefix,'test import of video from external file...'));
-opt = p.asciiOpt{p.nL,p.nChan};
-opt.vidImp{1} = true;
-opt.vidImp{2} = {p.annexpth,p.vid_file};
-set_TP_asciiImpOpt(opt,h_fig);
+p.es{p.nChan,p.nL}.imp.vfile = p.vid_file;
 
-pushbutton_addTraces_Callback({...
-    [p.annexpth,filesep,p.ascii_dir{p.nL,p.nChan}],...
-    p.ascii_files{p.nL,p.nChan}},[],h_fig);
+routinetest_TP_createProj(p,h_fig,[prefix,'>> ']);
 
-set_VP_projOpt(p.projOpt{p.nL,p.nChan},p.wl(1:p.nL),h.pushbutton_editParam,...
-    h_fig);
+setDefault_TP(h_fig,p);
 
-pushbutton_expProj_Callback({p.dumpdir,p.exp_vid},[],h_fig);
-pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
+pushbutton_saveProj_Callback({p.dumpdir,p.exp_vid},[],h_fig);
+pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
+
+p.es{p.nChan,p.nL}.imp.vfile = '';
 
 % test gamma factor import from files
 disp(cat(2,prefix,'test import of gamma factors from external files...'));
-opt = p.asciiOpt{p.nL,p.nChan};
-opt.factImp{1} = true;
-opt.factImp{2} = p.annexpth;
-opt.factImp{3} = p.gamma_files;
-set_TP_asciiImpOpt(opt,h_fig);
+p.es{p.nChan,p.nL}.imp.gammafile = p.gamma_files;
 
-pushbutton_addTraces_Callback({...
-    [p.annexpth,filesep,p.ascii_dir{p.nL,p.nChan}],...
-    p.ascii_files{p.nL,p.nChan}},[],h_fig);
+routinetest_TP_createProj(p,h_fig,[prefix,'>> ']);
 
-set_VP_projOpt(p.projOpt{p.nL,p.nChan},p.wl(1:p.nL),h.pushbutton_editParam,...
-    h_fig);
+setDefault_TP(h_fig,p);
 
-pushbutton_expProj_Callback({p.dumpdir,p.exp_gam},[],h_fig);
-pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
+pushbutton_saveProj_Callback({p.dumpdir,p.exp_gam},[],h_fig);
+pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
+
+p.es{p.nChan,p.nL}.imp.gammafile = '';
 
 % test beta factor import from files
 disp(cat(2,prefix,'test import of beta factors from external files...'));
-opt = p.asciiOpt{p.nL,p.nChan};
-opt.factImp{4} = true;
-opt.factImp{5} = p.annexpth;
-opt.factImp{6} = p.beta_files;
-set_TP_asciiImpOpt(opt,h_fig);
+p.es{p.nChan,p.nL}.imp.betafile = p.beta_files;
 
-pushbutton_addTraces_Callback({...
-    [p.annexpth,filesep,p.ascii_dir{p.nL,p.nChan}],...
-    p.ascii_files{p.nL,p.nChan}},[],h_fig);
+routinetest_TP_createProj(p,h_fig,[prefix,'>> ']);
 
-set_VP_projOpt(p.projOpt{p.nL,p.nChan},p.wl(1:p.nL),h.pushbutton_editParam,...
-    h_fig);
+setDefault_TP(h_fig,p);
 
-pushbutton_expProj_Callback({p.dumpdir,p.exp_bet},[],h_fig);
+pushbutton_saveProj_Callback({p.dumpdir,p.exp_bet},[],h_fig);
+
+p.es{p.nChan,p.nL}.imp.betafile = '';
 
 % test project merging
 disp(cat(2,prefix,'test project merging...'));
 
-pushbutton_addTraces_Callback({p.annexpth,p.mash_files{p.nL,p.nChan}},[],...
+pushbutton_openProj_Callback({p.annexpth,p.mash_files{p.nL,p.nChan}},[],...
     h_fig);
 
-set_VP_projOpt(p.projOpt{p.nL,p.nChan},p.wl(1:p.nL),h.pushbutton_editParam,...
-    h_fig);
-
-set(h.listbox_traceSet,'value',[1,2]);
+set(h.listbox_proj,'value',[1,2]);
 menu_projMenu_merge_Callback([],[],h_fig);
 
-pushbutton_expProj_Callback({p.dumpdir,p.exp_merged},[],h_fig);
+setDefault_TP(h_fig,p);
 
-nProj = numel(get(h.listbox_traceSet,'string'));
-proj = nProj;
-while proj>0
-    set(h.listbox_traceSet,'value',proj);
-    listbox_traceSet_Callback(h.listbox_traceSet,[],h_fig);
-    pushbutton_remTraces_Callback(h.pushbutton_remTraces,[],h_fig);
-    proj = proj-1;
+pushbutton_saveProj_Callback({p.dumpdir,p.exp_merged},[],h_fig);
+
+% empty project list
+nProj = numel(h.listbox_proj.String);
+for proj = nProj:-1:1
+    set(h.listbox_proj,'value',proj);
+    listbox_projLst_Callback(h.listbox_proj,[],h_fig);
+    pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig,true);
 end

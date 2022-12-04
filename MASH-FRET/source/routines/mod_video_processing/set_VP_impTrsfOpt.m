@@ -52,9 +52,5 @@ end
 set(q.edit_molXcol,'string',num2str(prm(1)));
 set(q.edit_molYcol,'string',num2str(prm(2)));
 
-% set video dimensions
-set(q.edit_movW,'string',num2str(prm_ref{1}(1)));
-set(q.edit_movH,'string',num2str(prm_ref{1}(2)));
-
 % save options and close window
 pushbutton_trsfOpt_ok_Callback(q.pushbutton_trsfOpt_ok,[],h_fig);

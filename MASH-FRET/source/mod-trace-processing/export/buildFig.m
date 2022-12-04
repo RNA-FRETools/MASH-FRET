@@ -38,21 +38,21 @@ topChan = p_fig.topChan;
 isBot = p_fig.isBot;
 botChan = p_fig.botChan;
 
-if ~isfield(p_mol.proj{p_mol.curr_proj},'fix')
-    p_mol.proj{p_mol.curr_proj}.fix = cell(1,2);
-    p_mol.proj{p_mol.curr_proj}.fix{2} = zeros(1,7);
-    p_mol.proj{p_mol.curr_proj}.fix{2}(4) = 0; % perSec
-    p_mol.proj{p_mol.curr_proj}.fix{2}(5) = 1; % perPix
-    p_mol.proj{p_mol.curr_proj}.fix{2}(7) = 0; % x_inSec
+if ~isfield(p_mol.proj{p_mol.curr_proj}.TP,'fix')
+    p_mol.proj{p_mol.curr_proj}.TP.fix = cell(1,2);
+    p_mol.proj{p_mol.curr_proj}.TP.fix{2} = zeros(1,7);
+    p_mol.proj{p_mol.curr_proj}.TP.fix{2}(4) = 0; % perSec
+    p_mol.proj{p_mol.curr_proj}.TP.fix{2}(5) = 1; % perPix
+    p_mol.proj{p_mol.curr_proj}.TP.fix{2}(7) = 0; % x_inSec
 end
-p_mol.proj{p_mol.curr_proj}.fix{2}(1) = topExc;
-p_mol.proj{p_mol.curr_proj}.fix{2}(2) = topChan;
-p_mol.proj{p_mol.curr_proj}.fix{2}(3) = botChan;
+p_mol.proj{p_mol.curr_proj}.TP.fix{2}(1) = topExc;
+p_mol.proj{p_mol.curr_proj}.TP.fix{2}(2) = topChan;
+p_mol.proj{p_mol.curr_proj}.TP.fix{2}(3) = botChan;
 
-if ~isfield(p_mol.proj{p_mol.curr_proj}, 'curr')
+if ~isfield(p_mol.proj{p_mol.curr_proj}.TP, 'curr')
     prm =  [];
 else
-    prm = p_mol.proj{p_mol.curr_proj}.curr{m};
+    prm = p_mol.proj{p_mol.curr_proj}.TP.curr{m};
 end
 
 nAxes = isBot + isTop;

@@ -5,11 +5,8 @@ function success = saveActPan(actions, h_fig)
 
 % Requires external function: updateActPan.
 %
-% Last update: by MH, 4.5.2019
-% --> save logs in MASH-FRET/log
-%
-% update: 19th of February 2019 by Mélodie C.A.S Hadzic
-% --> manage error invalid root folder
+% update 4.5.2019 by MH: save logs in MASH-FRET/log
+% update 19.2.2019 by MH: manage error invalid root folder
 
 success = 1;
 
@@ -29,9 +26,9 @@ try
     end
     
 catch err
-    disp(sprintf(cat(2,'Failure in accessing root folder. Please check for ',...
+    fprintf(cat(2,'Failure in accessing root folder. Please check for ',...
         ' writing permissions or unusual characters in folder name or ',...
-        'directory path\nError:',err.message)));
+        'directory path\nError:',err.message));
     success = 0;
     return
 end

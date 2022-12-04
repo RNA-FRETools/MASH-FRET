@@ -1,7 +1,7 @@
 function p = recalcStates(p)
 
 proj = p.curr_proj;
-mol = p.curr_mol(proj);
+mol = p.ttPr.curr_mol(proj);
 FRET = p.proj{proj}.FRET;
 nFRET = size(FRET,1);
 S = p.proj{proj}.S;
@@ -26,7 +26,7 @@ for n = 1:nFRET
     
     discrVal = (sort(unique(discr), 'descend'))';
     n_state = numel(discrVal);
-    p.proj{proj}.prm{mol}{4}{3}(n,1:n_state) = discrVal;
+    p.proj{proj}.TP.prm{mol}{4}{3}(n,1:n_state) = discrVal;
 end
 
 for n = 1:nS
@@ -41,7 +41,7 @@ for n = 1:nS
     
     discrVal = (sort(unique(discr), 'descend'))';
     n_state = numel(discrVal);
-    p.proj{proj}.prm{mol}{4}{3}(n+nFRET,1:n_state) = discrVal;
+    p.proj{proj}.TP.prm{mol}{4}{3}(n+nFRET,1:n_state) = discrVal;
 end
 
 for l = 1:nExc
@@ -54,12 +54,12 @@ for l = 1:nExc
        
         discrVal = (sort(unique(discr), 'descend'))';
         n_state = numel(discrVal);
-        p.proj{proj}.prm{mol}{4}{3}( ...
+        p.proj{proj}.TP.prm{mol}{4}{3}( ...
             (nFRET+nS+(l-1)*nChan+c),1:n_state) = discrVal;
     end
 end
 
-h.param.ttPr = p;
+h.param = p;
 guidata(h_fig, h);
 
 

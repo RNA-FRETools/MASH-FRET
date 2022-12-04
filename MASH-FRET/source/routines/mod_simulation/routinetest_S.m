@@ -38,12 +38,33 @@ if exist(logfile,'file')
 end
 diary(logfile);
 
+% create root folder if none
+pname_root = p.annexpth;
+if ~exist(pname_root,'dir')
+    mkdir(pname_root);
+end
+
 try
     % test main working area
-    h_fig = routinetest_general(p.annexpth,h_fig);
+    h_fig = routinetest_general(h_fig);
     h = guidata(h_fig);
+    
+    % create new project
+    disp('test new project creation...');
+    pushbutton_newProj_Callback([],1,h_fig);
 
-    % switch to simulation module
+    subprefix = '>> ';
+    
+    % set default experiment settings for simulation
+    disp('test experiment settings...');
+    routinetest_setExperimentSettings(h_fig,p,'sim',subprefix);
+
+    % test root folder
+    disp('test root folder...');
+    pushbutton_rootFolder_Callback({pname_root},[],h_fig);
+
+    % test access to module
+    disp('test module access...');
     switchPan(h.togglebutton_S,[],h_fig);
 
     % set interface defaults
@@ -61,8 +82,6 @@ try
     % export data with defaults
     disp('test simulation export...');
     pushbutton_exportSim_Callback({p.dumpdir,'default'}, [], h_fig);
-
-    subprefix = '>> ';
 
     % test panel Video parameters
     if strcmp(opt,'all') || strcmp(opt,'video parameters')
@@ -92,6 +111,19 @@ try
     if strcmp(opt,'all') || strcmp(opt,'visualization area')
         disp('test visualization area...');
         routinetest_S_visualizationArea(h_fig,p,subprefix);
+    end
+        
+    % test project saving
+    disp('>> test project saving...');
+    pushbutton_saveProj_Callback({p.dumpdir,p.mash},[],h_fig);
+    
+    % empty project list
+    nProj = numel(h.listbox_proj.String);
+    for proj = nProj:-1:1
+        set(h.listbox_proj,'value',proj);
+        listbox_projLst_Callback(h.listbox_proj,[],h_fig);
+        pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig,...
+            true);
     end
     
 catch err

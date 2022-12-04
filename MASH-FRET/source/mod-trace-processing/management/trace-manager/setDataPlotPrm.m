@@ -6,7 +6,7 @@ def_niv = 50;
 
 % get project parameters
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
@@ -16,9 +16,8 @@ nI0 = sum(chanExc>0);
 nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
 clr = p.proj{proj}.colours;
-perSec = p.proj{proj}.fix{2}(4);
-perPix = p.proj{proj}.fix{2}(5);
-inSec = p.proj{proj}.fix{2}(7);
+perSec = p.proj{proj}.cnt_p_sec;
+inSec = p.proj{proj}.time_in_sec;
 
 % get existing plot data
 dat1 = get(h.tm.axes_ovrAll_1,'UserData');
@@ -46,9 +45,6 @@ end
 str_extra = [];
 if perSec
     str_extra = [str_extra ' per s.'];
-end
-if perPix
-    str_extra = [str_extra ' per pix.'];
 end
 
 % set plot colors and axis labels

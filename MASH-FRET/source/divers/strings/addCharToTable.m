@@ -18,6 +18,7 @@ fname = 'charDimTable.mat';
 fieldname = 'tbl';
 def_fntun = 'points';
 def_fntsz = [8,9];
+def_fntnm = 'Helvetica';
 
 % collect data from already existing reference file
 [folder0,o,o] = fileparts(which(mainFcn));
@@ -28,22 +29,23 @@ else
     dat = struct();
 end
 if isfield(dat,fieldname)
-    tbl = getfield(load(fullfile),fieldname);
+    tbl = dat.(fieldname);
 else
     tbl = cell(1,3);
     tbl{1} = '';
-    tbl{2} = {def_fntun,def_fntsz};
+    tbl{2} = {def_fntun,def_fntsz,def_fntnm};
     tbl{3} = {[],[]};
 end
-fntun = tbl{1,2}{1,1};
-fntsz = tbl{1,2}{1,2};
+fntun = tbl{2}{1};
+fntsz = tbl{2}{2};
+fntnm = tbl{2}{3};
 
 % calculate widths
 disp('calculates character widths for normal-weighted font...')
-w_normal = getLetterWidths(letters,fntun,fntsz,'normal');
+w_normal = getLetterWidths(letters,fntun,fntsz,fntnm,'normal');
 
 disp('calculates character widths for bold-weighted font...')
-w_bold = getLetterWidths(letters,fntun,fntsz,'bold');
+w_bold = getLetterWidths(letters,fntun,fntsz,fntnm,'bold');
 
 % add new characters to reference table
 tbl{1} = cat(2,tbl{1},letters);

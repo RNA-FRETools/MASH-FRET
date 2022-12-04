@@ -9,6 +9,8 @@ if isempty(p.proj)
     return
 end
 
+setContPan('Process current traces...','process',h_fig);
+
 % update images
 if ~(~isempty(axes) && isfield(axes, 'axes_molImg'))
     axes_molImg = [];
@@ -23,11 +25,11 @@ p = plotSubImg(mol, p, axes_molImg);
 
 if strcmp(opt1, 'subImg')
     h = guidata(h_fig);
-    h.param.ttPr = p;
+    h.param = p;
     return
 end
 
-[p,opt2] = updateIntensities(opt2,mol,p);
+[p,opt2] = updateIntensities(opt2,mol,p,h_fig);
 
 if strcmp(opt2, 'gamma') || strcmp(opt2, 'debleach') || ...
         strcmp(opt2, 'denoise') || strcmp(opt2, 'cross') || ...
@@ -46,7 +48,7 @@ p = updateStateSequences(h_fig, mol, p);
 
 % modified by MH, 12.1.2020
 if ~isempty(axes)
-    plotData(mol, p, axes, p.proj{proj}.prm{mol}, 1);
+    plotData(mol, p, axes, p.proj{proj}.TP.prm{mol}, 1);
 end
 % if (strcmp(opt2, 'plot') || strcmp(opt2, 'gamma') || ...
 %         strcmp(opt2, 'DTA') || strcmp(opt2, 'debleach') || ...
@@ -59,6 +61,5 @@ end
 % p.proj{proj}.def.mol = p.proj{proj}.prm{mol};
 % p.proj{proj}.curr{mol} = p.proj{proj}.prm{mol};
 
-
-
+setContPan('Traces are up to date!','success',h_fig);
 

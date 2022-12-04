@@ -1,4 +1,4 @@
-function buildTraceManager(h_fig)
+function h_fig2 = buildTraceManager(h_fig)
 % Build Trace manage figure
 
 % Last update by MH, 24.8.2019
@@ -93,7 +93,7 @@ x = posfig(1) + (posfig(3) - wfig)/2;
 y = min([hfig posscr(4)]) - hfig;
 
 % create TM figure
-h.tm.figure_traceMngr = figure('Visible','on','Units',posun,'Position',...
+h.tm.figure_traceMngr = figure('Visible','off','Units',posun,'Position',...
     [x y wfig hfig],'Color',bgcol,'NumberTitle','off','MenuBar','none',...
     'CloseRequestFcn',{@figure_traceMngr_CloseRequestFcn,h_fig},'Name',...
     [ttl0,get(h_fig,'Name')],'WindowButtonUpFcn',...
@@ -130,7 +130,7 @@ h.tm.togglebutton_videoView = uicontrol('style','togglebutton','parent',...
 
 guidata(h_fig,h);
 h.tm.pushbutton_help = setInfoIcons(h.tm.togglebutton_videoView,h_fig,...
-    h.param.movPr.infos_icon_file);
+    h.param.infos_icon_file);
 
 
 %% build main panels
@@ -216,9 +216,6 @@ pb.enterFcn = [];
 pb.traverseFcn = @axes_histSort_traverseFcn;
 pb.exitFcn = @axes_histSort_exitFcn;
 iptSetPointerBehavior(h.tm.axes_histSort,pb);
-
-% make figure visible
-set(h_fig2, 'Visible', 'on');
 
 % set jet colormap
 colormap(h_fig2,'jet');

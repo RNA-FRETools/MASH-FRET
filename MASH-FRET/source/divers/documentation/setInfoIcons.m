@@ -15,7 +15,6 @@ function hBut = setInfoIcons(obj,h_fig,image_file,tbl)
 % tbl: reference table listing pixel dimensions of characters for different
 %      font sizes and weights
 
-
 % initialized output
 hBut = [];
 
@@ -72,6 +71,10 @@ cdata = imread(image_file);
 O = numel(obj);
 for o = 1:O
     switch obj(o)
+        case h.pushbutton_saveProj
+            hBut = cat(2,hBut,mkbutton(cdata,...
+                getDocLink('tp project management'),obj(o),[2,1]));
+            
         case h.uipanel_S_videoParameters
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('video parameters'),obj(o),tbl));
@@ -88,18 +91,18 @@ for o = 1:O
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('sim visualization'),obj(o),[-2,-2]));
             
-        case h.pushbutton_loadMov
-            hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('vp visualization'),obj(o),[-1,1]));
-        case h.uipanel_VP_plot
-            hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('vp plot'),obj(o),tbl));
-        case h.uipanel_VP_experimentSettings
-            hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('experiment settings'),obj(o),tbl));
+%         case h.pushbutton_loadMov
+%             hBut = cat(2,hBut,mkbutton(cdata,...
+%                 getDocLink('vp visualization'),obj(o),[-1,1]));
+%         case h.uipanel_VP_experimentSettings
+%             hBut = cat(2,hBut,mkbutton(cdata,...
+%                 getDocLink('experiment settings'),obj(o),tbl));
         case h_pushbutton_itgExpOpt_cancel
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('project options'),obj(o),[-1,1]));
+        case h.uipanel_VP_plot
+            hBut = cat(2,hBut,mkbutton(cdata,...
+                getDocLink('vp plot'),obj(o),tbl));
         case h.uipanel_VP_editAndExportVideo
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('edit video'),obj(o),tbl));
@@ -119,9 +122,6 @@ for o = 1:O
         case h_pushbutton_trImpOpt_cancel
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('tp import options'),obj(o),[-1,1]));
-        case h.pushbutton_traceImpOpt
-            hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('tp project management'),obj(o),[-1,1]));
         case h.uipanel_TP_sampleManagement
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('sample management'),obj(o),tbl));
@@ -162,9 +162,6 @@ for o = 1:O
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('tp visualization'),obj(o),[-2,-2]));
             
-        case h.pushbutton_thm_impASCII
-            hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('ha project management'),obj(o),[-1,1]));
         case h.uipanel_HA_histogramAndPlot
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('ha plot'),obj(o),tbl));
@@ -178,9 +175,6 @@ for o = 1:O
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('ha visualization'),obj(o),[-2,-2]));
 
-        case h.pushbutton_TDPimpOpt
-            hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('ta project management'),obj(o),[-1,1]));
         case h_pushbutton_expTDPopt_cancel
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('ta export options'),obj(o),[-1,1]));
@@ -228,30 +222,15 @@ function hBut = mkbutton(cdat,link,obj,varargin)
 %          | 1,-1|        |-2,-1|
 
 % defaults
-w_but = 22;
-h_but = 20;
-h_txt = 14;
+w_but = 25;
+h_but = 25;
 mg = 5;
-mgShift = 5;
 
 posObj = getPixPos(obj);
 
-if strcmp(get(obj,'type'),'uipanel')
-    fntUn = get(obj,'fontunits');
-    fntSz = get(obj,'fontsize');
-    fntWght = get(obj,'fontweight');
-    txt = get(obj,'title');
-    tbl = varargin{1};
-    
-    [wtitle,o] = getUItextWidth(txt,fntUn,fntSz,fntWght,tbl);
-
-    extra_x = wtitle + mgShift;
-    extra_y = -h_txt-(h_but-h_txt)/2;
-    
-    data{3} = [0,1];
-    
-    x = posObj(1) + extra_x;
-    y = posObj(2) + posObj(4) + extra_y;
+if strcmp(obj.Type,'uipanel')
+    x = posObj(1) + posObj(3) - 2*w_but - mg;
+    y = posObj(2) + posObj(4) - h_but;
     
 else
     posShift = varargin{1};
@@ -279,31 +258,24 @@ else
     end
     
     if abs(posShift(1))==1
-        data{3}(1) = 0; % origin = left border
         x = posObj(1) + extra_x;
     else
-        data{3}(1) = 1; % origin = right border
         x = posObj(1) + posObj(3) + extra_x;
     end
     if abs(posShift(2))==1
-        data{3}(2) = 0; % origin = bottom border
         y = posObj(2) + extra_y;
     else
-        data{3}(2) = 1; % origin = top border
         y = posObj(2) + posObj(4) + extra_y;
     end
 end
 
 pos = [x,y,w_but,h_but];
 
-data{1} = obj;
-data{2} = [extra_x,extra_y,w_but,h_but];
-
 h_parent = get(obj,'parent');
 
 hBut = uicontrol('style','pushbutton','parent',h_parent,'units','pixels',...
     'position',pos,'cdata',cdat,'tooltipstring','Help','callback',...
-    {@pushbutton_help_Callback,link},'userdata',data);
+    {@pushbutton_help_Callback,link});
 
 un = get(h_parent,'units');
 set(hBut,'units',un);

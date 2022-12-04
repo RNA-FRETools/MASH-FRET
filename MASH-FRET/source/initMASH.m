@@ -18,7 +18,6 @@ function initMASH(h_fig)
 % update, 22.5.2014 by MH
 
 % default
-ohfig = 0.75; % figures' outer height (normalized units)
 def_ask = true; % ask user before overwriting files
 
 % initialization of parameters
@@ -29,49 +28,55 @@ end
 
 % add help buttons (parameters must be initialized)
 h = guidata(h_fig);
-h_mainPan = [h.uipanel_TA_transitionDensityPlot,...
-    h.uipanel_TA_stateConfiguration,h.uipanel_TA_dtHistograms,...
-    h.uipanel_TA_kineticModel,h.uipanel_HA_histogramAndPlot,...
-    h.uipanel_HA_stateConfiguration,h.uipanel_HA_statePopulations,...
-    h.uipanel_TP_denoising,h.uipanel_TP_photobleaching,...
-    h.uipanel_TP_subImages,h.uipanel_TP_plot ...
-    h.uipanel_TP_backgroundCorrection,h.uipanel_TP_crossTalks ...
-    h.uipanel_TP_findStates,h.uipanel_TP_factorCorrections,...
-    h.uipanel_TP_sampleManagement,h.uipanel_VP_plot,...
-    h.uipanel_VP_experimentSettings,h.uipanel_VP_editAndExportVideo,...
-    h.uipanel_VP_moleculeCoordinates,h.uipanel_VP_intensityIntegration,...
-    h.uipanel_S_videoParameters,h.uipanel_S_molecules,...
+h_Span = [h.uipanel_S_videoParameters,h.uipanel_S_molecules,...
     h.uipanel_S_experimentalSetup,h.uipanel_S_exportOptions];
+h_VPpan = [h.uipanel_VP_plot,h.uipanel_VP_editAndExportVideo,...
+    h.uipanel_VP_moleculeCoordinates,h.uipanel_VP_intensityIntegration];
+h_TPpan = [h.uipanel_TP_sampleManagement,...
+    h.uipanel_TP_plot,h.uipanel_TP_subImages,...
+    h.uipanel_TP_backgroundCorrection,h.uipanel_TP_crossTalks,...
+    h.uipanel_TP_denoising,h.uipanel_TP_photobleaching,...
+    h.uipanel_TP_factorCorrections,h.uipanel_TP_findStates];
+h_HApan = [h.uipanel_HA_histogramAndPlot,h.uipanel_HA_stateConfiguration,...
+    h.uipanel_HA_statePopulations];
+h_TApan = [h.uipanel_TA_transitionDensityPlot,...
+    h.uipanel_TA_stateConfiguration,h.uipanel_TA_dtHistograms,...
+    h.uipanel_TA_kineticModel];
+h_mainPan = [h_Span,h_VPpan,h_TPpan,h_HApan,h_TApan];
 h.pushbutton_help = setInfoIcons([h_mainPan,h.axes_example_hist,...
-    h.pushbutton_loadMov,h.pushbutton_traceImpOpt,h.axes_topRight,...
-    h.pushbutton_thm_impASCII,h.axes_hist1,h.pushbutton_TDPimpOpt],...
-    h_fig,h.param.movPr.infos_icon_file,h.charDimTable);
+    h.pushbutton_saveProj,h.axes_topRight,h.axes_hist1],h_fig,...
+    h.param.infos_icon_file,h.charDimTable);
 
 % normalize units of all controls (help buttons must be created)
 setProp([h_fig; get(h_fig, 'Children')], 'Units', 'normalized');
 
-% position MASH figure
-opos = get(h_fig,'outerposition');
-owfig = opos(3)*ohfig/opos(4);
-oxfig = (1-owfig)/2;
-oyfig = 1-ohfig;
-set(h_fig,'OuterPosition',[oxfig,oyfig,owfig,ohfig]);
-
-% build and add control panel figure (the main figure must be positionned)
-h.figure_actPan = actionPanel(h_fig);
+% add panel collapse/expand buttons and collapse all expendanble panels (after units normalization)
+h_butS = setPanCllpsButtons(h_Span,h_fig);
+h_butVP = setPanCllpsButtons(h_VPpan,h_fig);
+h_butTP = setPanCllpsButtons(h_TPpan,h_fig);
+h_butHA = setPanCllpsButtons(h_HApan,h_fig);
+h_butTA = setPanCllpsButtons(h_TApan,h_fig);
+collapsePanel(h_butS);
+collapsePanel(h_butVP);
+collapsePanel(h_butTP);
+collapsePanel(h_butHA);
+collapsePanel(h_butTA);
+h.pushbutton_panelCollapse = [h_butS,h_butVP,h_butTP,h_butHA,h_butTA];
 
 % set all axes invisible
 h_axes = [h.axes_example_hist,h.axes_example,h.axes_example_mov,...
-    h.cb_example_mov,h.axes_movie,h.colorbar,h.axes_top,h.axes_topRight,...
-    h.axes_bottom,h.axes_bottomRight,h.axes_hist1,h.axes_hist2,...
-    h.axes_thm_BIC,h.axes_TDPplot1,h.colorbar_TA,h.axes_tdp_BIC,...
-    h.axes_TDPplot2];
+    h.cb_example_mov,h.axes_VP_vid,h.cb_VP_vid,h.axes_VP_avimg,...
+    h.cb_VP_avimg,h.axes_top,h.axes_topRight,h.axes_bottom,...
+    h.axes_bottomRight,h.axes_hist1,h.axes_hist2,h.axes_thm_BIC,...
+    h.axes_TDPplot1,h.colorbar_TA,h.axes_tdp_BIC,h.axes_TDPplot2];
 set(h_axes,'visible','off');
 
 % recover root folder from default parameters and add to handle structure
-h.folderRoot = h.param.movPr.folderRoot;
-cd(h.folderRoot);
-set(h.edit_rootFolder, 'String', h.folderRoot);
+if ~exist(h.param.folderRoot,'dir')
+    [h.param.folderRoot,~,~] = fileparts(mfilename('fullpath'));
+end
+cd(h.param.folderRoot);
+set(h.edit_rootFolder, 'String', h.param.folderRoot);
 
 % add default overwriting settings
 h.param.OpFiles.overwrite_ask = def_ask;
@@ -99,12 +104,3 @@ iptSetPointerBehavior(h.axes_TDPplot1,pb);
 % actualize control properties
 updateFields(h_fig);
 
-% show module Video processing
-h = guidata(h_fig);
-mute_prev = h.mute_actions;
-h.mute_actions = true;
-guidata(h_fig, h);
-switchPan(h.togglebutton_VP, [], h_fig);
-h = guidata(h_fig);
-h.mute_actions = mute_prev;
-guidata(h_fig, h);

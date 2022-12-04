@@ -2,14 +2,6 @@ function figure_MASH_CloseRequestFcn(obj, evd)
 
 h = guidata(obj);
 
-if isfield(h, 'figure_actPan') && ishandle(h.figure_actPan)
-    h_pan = guidata(h.figure_actPan);
-    success = saveActPan(get(h_pan.text_actions, 'String'), h.figure_MASH);
-    if ~success
-        return
-    end
-    delete(h.figure_actPan);
-end
 if isfield(h, 'wait') && isfield(h.wait, 'figWait') && ...
         ishandle(h.wait.figWait)
     delete(h.wait.figWait);
@@ -31,19 +23,21 @@ if isfield(h, 'figure_dummy') && ~isempty(h.figure_dummy) && ...
     delete(h.figure_dummy)
 end
 
-param = h.param;
-if ~isempty(param.ttPr.proj)
+p = h.param;
+if ~isempty(p.proj) && isfield(p.ttPr,'defProjPrm')
     % remove background intensities
-    for c = 1:size(param.ttPr.defProjPrm.mol{3}{3},2)
-        for l = 1:size(param.ttPr.defProjPrm.mol{3}{3},1)
-            param.ttPr.defProjPrm.mol{3}{3}{l,c}(3) = 0;
+    for c = 1:size(p.ttPr.defProjPrm.mol{3}{3},2)
+        for l = 1:size(p.ttPr.defProjPrm.mol{3}{3},1)
+            p.ttPr.defProjPrm.mol{3}{3}{l,c}(3) = 0;
         end
     end
 
     % remove discretisation results
-    param.ttPr.defProjPrm.mol{3}{4} = [];
+    p.ttPr.defProjPrm.mol{3}{4} = [];
+    p.folderRoot = p.proj{p.curr_proj}.folderRoot;
 end
+p = rmfield(p,{'proj','curr_proj'});
 [mfile_path,o,o] = fileparts(which('MASH'));
-save([mfile_path filesep 'default_param.ini'], '-struct', 'param');
+save([mfile_path filesep 'default_param.ini'], '-struct', 'p');
 
 delete(obj);

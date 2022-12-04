@@ -8,10 +8,10 @@ function axes_ovrAll_1_ButtonDownFcn(obj,evd,h_fig)
 h = guidata(h_fig);
 
 % get project parameters
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 nExc = p.proj{proj}.nb_excitations;
-inSec = p.proj{proj}.fix{2}(7);
+inSec = p.proj{proj}.time_in_sec;
 expT = p.proj{proj}.frame_rate; % this is truely the exposure time
 incl = p.proj{proj}.bool_intensities;
 

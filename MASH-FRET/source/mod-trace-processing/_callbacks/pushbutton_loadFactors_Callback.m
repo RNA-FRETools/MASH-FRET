@@ -10,8 +10,11 @@ function pushbutton_loadFactors_Callback(obj, ~, h_fig)
 % update by MH, 3.4.2019: (1) moved pushbutton_loadGamma_Callback from gammaOpt.m to separate file to allow calling from multiple sources (2) adapt import for multiple FRET data and manage actions
 
 h = guidata(h_fig);
-p = h.param.ttPr;
-defPth = h.folderRoot;
+p = h.param;
+proj = p.curr_proj;
+defPth = p.proj{proj}.folderRoot;
+nMol = numel(p.proj{proj}.coord_incl);
+FRET = p.proj{proj}.FRET;
 
 % load gamma factor file if it exists
 if iscell(obj)
@@ -31,6 +34,9 @@ end
 if ~iscell(fnames)
     fnames = {fnames};
 end
+
+% show process
+setContPan('Importing correction factors from files...','process',h_fig);
 
 str_file = '';
 if numel(fnames)>1
@@ -66,8 +72,6 @@ gamFact = cell2mat(factCell(isGam)');
 betFact = cell2mat(factCell(~isGam)');
 
 % check if number of molecules is the same in the project and the .gam file
-proj = p.curr_proj;
-nMol = numel(p.proj{proj}.coord_incl);
 if ~isempty(gamFact) && size(gamFact,1)~=nMol
     updateActPan(cat(2,'The number of gamma factors does not match ',...
         'the number of molecules: import aborted.'), h_fig, 'error');
@@ -79,7 +83,7 @@ if ~isempty(betFact) && size(betFact,1)~=nMol
     return
 end
 
-nFRET = size(p.proj{proj}.FRET,1);
+nFRET = size(FRET,1);
 nG = size(gamFact,2);
 szG = min([nFRET,nG]);
 nB = size(betFact,2);
@@ -91,30 +95,30 @@ idG = 1:nFRET;
 idB = idG;
 if ~isempty(pairs)
     for i = 1:szG
-        j = find(p.proj{proj}.FRET(:,1)==pairs(i,1) & ...
-            p.proj{proj}.FRET(:,2)==pairs(i,2),1);
+        j = find(FRET(:,1)==pairs(i,1) & FRET(:,2)==pairs(i,2),1);
         if ~isempty(j)
             idG(i) = j;
         end
     end
     for i = 1:szB
-        j = find(p.proj{proj}.FRET(:,1)==pairs(i,1) & ...
-            p.proj{proj}.FRET(:,2)==pairs(i,2),1);
+        j = find(FRET(:,1)==pairs(i,1) & FRET(:,2)==pairs(i,2),1);
         if ~isempty(j)
             idB(i) = j;
         end
     end
 end
 for n = 1:nMol
-    p.proj{proj}.curr{n}{6}{1}(1,idG(1:szG)) = gamFact(n,1:szG);
-    p.proj{proj}.curr{n}{6}{1}(2,idB(1:szB)) = betFact(n,1:szB);
+    p.proj{proj}.TP.curr{n}{6}{1}(1,idG(1:szG)) = gamFact(n,1:szG);
+    p.proj{proj}.TP.curr{n}{6}{1}(2,idB(1:szB)) = betFact(n,1:szB);
 end
 
 % update the parameters
-h.param.ttPr = p;
+h.param = p;
 guidata(h_fig, h);
 
-updateActPan(cat(2,'correction factors were successfully imported from ',...
-    'file ',str_file), h_fig, 'success');
-
+% refresh TP calculations and interface
 updateFields(h_fig, 'ttPr'); 
+
+% show success
+setContPan(cat(2,'correction factors were successfully imported from ',...
+    'file ',str_file), 'success', h_fig);

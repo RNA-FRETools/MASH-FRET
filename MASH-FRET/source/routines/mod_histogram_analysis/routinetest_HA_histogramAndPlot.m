@@ -7,9 +7,17 @@ function routinetest_HA_histogramAndPlot(h_fig,p,prefix)
 % p: structure containing default as set by getDefault_HA
 % prefix: string to add at the beginning of each action string (usually a apecific indent)
 
+% set HA's defaults
 setDefault_HA(h_fig,p);
 
+% retrieve interface defaults
 h = guidata(h_fig);
+
+% expand panel
+h_but = getHandlePanelExpandButton(h.uipanel_HA_histogramAndPlot,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 
 % test different data
 disp(cat(2,prefix,'test data list...'));
@@ -40,4 +48,4 @@ set_HA_histplot(p.histDat,p.histTag,histPrm,h_fig);
 set(h_fig,'currentaxes',h.axes_hist1);
 exportAxes({[p.dumpdir,filesep,p.exp_overflow,'_1.png']},[],h_fig);
 
-pushbutton_thm_rmProj_Callback(h.pushbutton_thm_rmProj,[],h_fig);
+pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);

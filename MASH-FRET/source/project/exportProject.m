@@ -1,51 +1,45 @@
-function s = exportProject(p,fname,h_fig)
-
-%% Last update by MH, 24.4.2019
-% >> fetch default tag names and colors in interface's defaults
-%    (default_param.ini)
+function proj = exportProject(h_fig)
+% proj = exportProject(h_fig)
 %
-% update by MH, 24.4.2019
-% >> modify molecule tag names by removing label 'unlabelled'
-% >> modify molecule tag structure to allow multiple tags per molecule, by 
-%    using the first dimension for molecule idexes and the second dimension 
-%    for label indexes 
-% >> add tag's default colors to project
-%%
+% Builds project's structure using data generated in VP
+%
+% h_fig: handle to main figure
+% proj: project's structure
+
+% update by MH, 24.4.2019: fetch default tag names and colors in interface's defaults (default_param.ini)
+% update by MH, 24.4.2019: (1) modify molecule tag names by removing label 'unlabelled' (2) modify molecule tag structure to allow multiple tags per molecule, by using the first dimension for molecule idexes and the second dimension for label indexes (3) add tag's default colors to project
 
 h = guidata(h_fig);
-
-% initializes project stucture
-s = [];
+p = h.param;
+proj = p.proj{p.curr_proj};
+nChan = proj.nb_channel;
+nExc = proj.nb_excitations;
+L = proj.movie_dat{3};
+curr = proj.VP.curr;
+coordsm = curr.res_crd{4};
+pxdim = curr.gen_int{3}(1);
+npix = curr.gen_int{3}(2);
+coordfile = curr.gen_int{2}{2};
+impprm = curr.gen_int{2}{3};
 
 % collect video file parameters
-fDat{1} = p.itg_movFullPth;
-fDat{2}{1} = h.movie.speCursor;
-if isfield(h, 'movie') && ~isempty(h.movie.movie)
+fDat{1} = proj.movie_file;
+fDat{2}{1} = proj.movie_dat{1};
+if isFullLengthVideo(proj.movie_file,h_fig)
     fDat{2}{2} = h.movie.movie;
 else
     fDat{2}{2} = [];
 end
-fDat{3} = [h.movie.pixelY,h.movie.pixelX];
-fDat{4} = h.movie.framesTot;
+fDat{3} = proj.movie_dim;
+fDat{4} = L;
 
 % build traces
-[p.coordItg,traces] = create_trace(p.coordItg,p.itg_dim,p.itg_n,fDat);
+[coordsm,traces] = create_trace(coordsm,pxdim,npix,fDat);
 
-nChan = p.nChan;
-nExc = p.itg_nLasers;
-nCoord = size(p.coordItg,1);
-L = h.movie.framesTot;
-
-% correct ill-defined project parameters
-if nChan==1
-    p.itg_expFRET = [];
-    p.itg_expS = [];
-end
-if nExc==1
-    p.itg_expS = [];
-end
-nFRET = size(p.itg_expFRET,1);
-nS = size(p.itg_expS,1);
+% get dimensions
+nCoord = size(coordsm,1);
+nFRET = size(proj.FRET,1);
+nS = size(proj.S,1);
 
 % initializes intensity matrix
 L_min = floor(L/nExc);
@@ -61,63 +55,33 @@ else
 end
 
 if ~isempty(I)
-    s.date_creation = datestr(now);
-    s.date_last_modif = s.date_creation;
+    proj.date_last_modif = datestr(now);
+    proj.coord_file = coordfile; % coordinates path/file
+    proj.coord_imp_param = impprm; % coordinates import parameters
+    proj.coord = coordsm; % molecule coordinates in all channels
+    proj.coord_incl = true(1,size(I,2)/nChan);
+    proj.is_coord = 1;
     
-    figname = get(h_fig, 'Name');
-    a = strfind(figname, 'MASH-FRET ');
-    b = a + numel('MASH-FRET ');
-    vers = figname(b:end);
-    s.MASH_version = vers;
-    
-    s.movie_file = p.itg_movFullPth; % movie path/file
-    s.is_movie = 1;
-    s.movie_dim = [h.movie.pixelX h.movie.pixelY];
-    s.movie_dat = {h.movie.speCursor,[h.movie.pixelX h.movie.pixelY],L};
+    proj.proj_file = ''; % project file
 
-    s.coord_file = p.itg_coordFullPth; % coordinates path/file
-    s.coord_imp_param = p.itg_impMolPrm; % coordinates import parameters
-    s.coord = p.coordItg; % molecule coordinates in all channels
-    s.coord_incl = true(1,size(I,2)/nChan);
-    s.is_coord = 1;
-    
-    s.proj_file = fname; % project file
-    
-    s.nb_channel = nChan; % nb of channel
-    s.frame_rate = p.rate;
-    s.exp_parameters = p.itg_expMolPrm; % user-defined parameters
-    s.pix_intgr = [p.itg_dim p.itg_n]; % intgr. area dim. + nb of intgr pix
-    s.cnt_p_sec = p.perSec; % intensities in counts per second
-    s.cnt_p_pix = p.itg_ave; % intensities in counts per pixels
-    s.excitations = p.itg_wl(1:nExc); % laser wavelengths (chron. order)
-    s.nb_excitations = nExc;
-    s.FRET = p.itg_expFRET;
-    s.S = p.itg_expS;
-    s.chanExc = p.chanExc;
-    s.labels = p.labels;
-    
-    s.intensities = I;
-    s.intensities_bgCorr = nan(size(I));
-    s.intensities_crossCorr = nan(size(I));
-    s.intensities_denoise = nan(size(I));
-    s.ES = defES;
-    s.intensities_DTA = nan(size(I));
-    s.FRET_DTA = nan(size(I,1), nCoord*nFRET);
-    s.S_DTA = nan(size(I,1), nCoord*nS);
-    s.bool_intensities = true(size(I,1), size(I,2)/nChan);
-    
-    s.colours = p.itg_clr; % plot colours
+    proj.pix_intgr = [pxdim npix]; % intgr. area dim. + nb of intgr pix
+  
+    proj.intensities = I;
+    proj.intensities_bgCorr = nan(size(I));
+    proj.intensities_crossCorr = nan(size(I));
+    proj.intensities_denoise = nan(size(I));
+    proj.ES = defES;
+    proj.intensities_DTA = nan(size(I));
+    proj.FRET_DTA = nan(size(I,1), nCoord*nFRET);
+    proj.S_DTA = nan(size(I,1), nCoord*nS);
+    proj.bool_intensities = true(size(I,1), size(I,2)/nChan);
     
     % added by FS, 24.4.2018
     % modified by MH, 24.4.2019: remove label 'unlabelled', use second 
     % dimension for label indexes and first dimension for molecule idexes
 %     s.molTag = ones(1,size(I,2)/nChan);
 %     s.molTagNames = {'unlabeled', 'static', 'dynamic'};
-    s.molTagNames = p.defTagNames;
-    s.molTag = false((size(I,2)/nChan),numel(s.molTagNames));
+    proj.molTag = false((size(I,2)/nChan),numel(proj.molTagNames));
     
-    % added by MH, 24.4.2019
-    s.molTagClr = p.defTagClr;
-
 end
 

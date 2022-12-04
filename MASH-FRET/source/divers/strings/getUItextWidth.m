@@ -1,14 +1,16 @@
-function [w_txt,h_txt] = getUItextWidth(str,fntun_out,fntsz_out,fntwt,tbl)
+function [w_txt,h_txt] = getUItextWidth(str,fntun_out,fntsz_out,fntwt,tbl,varargin)
 % Returns the pixel dimensions of a text uicontrol containing a string
 % formatted with specific font size and weight.
 %
 % getUItextWidth(str,fntun_out,fntsz_out,fntwt,tbl)
+% getUItextWidth(str,fntun_out,fntsz_out,fntwt,tbl,fntnm_out)
 %
 % Takes input parameters:
 % "str": string contained in text uicontrol
 % "fntun_out": font units ('points','pixels','inches' or 'centimeters')
 % "fntsz_out": font sizes given in font units
 % "fntwt": font weight ('normal' or 'bold')
+% "fntnm_out": font name
 % "tbl": reference table listing pixel widths of ASCII characters at different font sizes and weights
 
 % default
@@ -18,8 +20,9 @@ mg_y = 5/21; % top and bottom padding in relative units
 
 % collect data from reference table
 letters_0 = tbl{1};
-fntun_0 = tbl{2}{1,1};
-fntsz_0 = tbl{2}{1,2};
+fntun_0 = tbl{2}{1};
+fntsz_0 = tbl{2}{2};
+fntnm_0 = tbl{2}{3};
 switch fntwt
     case 'normal'
         ind = 1;
@@ -30,17 +33,34 @@ switch fntwt
         return
 end
 
+% define font name
+if ~isempty(varargin)
+    fntnm = get(groot,'defaultuicontrolfontname');
+else
+    fntnm = fntnm_0{1};
+end
+
 % convert font size to table font units
 fntsz = convFntun(fntsz_out,fntun_out,fntun_0);
 
 % get reference widths at requested font weight and size
-w_0 = tbl{3}{1,ind}(fntsz_0==fntsz,:,:);
-if isempty(w_0)
+w_0sz = tbl{3}{1,ind}(fntsz_0==fntsz,:,:,contains(fntnm_0,fntnm));
+if isempty(w_0sz)
     fprintf(cat(2,'FAILURE: font size %i %s (%i %s) was not found in ',...
         'reference table.\nConsider updating the reference table with new',...
         ' font sizes using the command addFntszToTable (type help ',...
-        'addFntszToTable for more information).'),fntsz,fntun_0,fntsz_out,...
+        'addFntszToTable for more information).\n'),fntsz,fntun_0,fntsz_out,...
         fntun_out);
+    return
+end
+
+% get reference widths at requested font name
+w_0 = w_0sz(:,:,:,contains(fntnm_0,fntnm));
+if isempty(w_0)
+    fprintf(cat(2,'FAILURE: font name %s was not found in reference ',...
+        'table.\nConsider updating the reference table with new font ',...
+        'names using the command addFntnmToTable (type help ',...
+        'addFntnmToTable for more information).\n'),fntnm);
     return
 end
 

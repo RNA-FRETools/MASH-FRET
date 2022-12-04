@@ -16,7 +16,7 @@ else
     tr_max = trace; tr_max(isnan(tr_max)) = -Inf;
     minVal = min(min(tr_min)); maxVal = max(max(tr_max));
     bin = (maxVal-minVal)/150;
-    minVal = (minVal-2*bin);
+    minVal = 0;
     maxVal = (maxVal+2*bin);
 end
 xy_axis = [bin minVal maxVal];
@@ -29,13 +29,10 @@ end
 plotPrm{1} = [xy_axis 0];
 % plotPrm{2} = [interval, probability, cumulative probability]
 plotPrm{2} = [];
+% plotPrm{3} = total number of data points
+plotPrm{3} = 0;
 
 prm.plot = adjustParam('plot', plotPrm, prm_in);
-
-if size(prm.plot,2)>2
-    prm.plot = prm.plot(1:2);
-end
-
 
 %% strating parameters for thermodynamic analysis
 % thm{1} = [method, apply BOBA, repl. nb., sample nb., weighting]
@@ -48,8 +45,8 @@ thm{2} = thresh(2:end-1);
 states = linspace(0,1,K+2);
 thm{3} = [repmat([0 0.1 Inf -Inf],[K,1]) states(2:end-1)' ...
     repmat([Inf 0 0.14 Inf],[K,1]) clr(1:K,:)];
-% thm{4} = [apply penalty, penalty, max. nb. of Gaussian]
-thm{4} = [0 1.2 10];
+% thm{4} = [apply improvement factor, improvement factor, max. nb. of Gaussian, likelihood calculation]
+thm{4} = [0 1.2 10 1];
 prm.thm_start = adjustParam('thm_start', thm, prm_in);
 
 
@@ -57,11 +54,13 @@ prm.thm_start = adjustParam('thm_start', thm, prm_in);
 % res{1,1} = [relative pop., sigma]
 % res{1,2} = bootstrap populations
 % res{1,3} = sampled histograms
+
 % res{2,1} = [amp. fit, amp. sigma, center fit, center sigma, FWHM fit, 
 %           FWHM sigma, rel. occ. fit, rel. occ. sigma]
 % res{2,2} = [bootstrap amp., bootstrap center, bootstrap FWHM, bootstrap 
 %           rel. occ.]
 % res{2,3} = sampled histograms
+
 % res{3,1} = [logL BIC AIC]
 % res{3,2}{K} = [best amp., best center, best FWHM]
 % res{3,3} = []

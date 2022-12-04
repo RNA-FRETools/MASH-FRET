@@ -41,23 +41,9 @@ diary(logfile);
 try
 
     % test main working area
-    h_fig = routinetest_general(p.annexpth,h_fig);
-    h = guidata(h_fig);
-
-    % switch to trace processing module
-    switchPan(h.togglebutton_HA,[],h_fig);
-
-    % set interface defaults
-    disp('test main callbacks...');
-    setDefault_HA(h_fig,p);
+    h_fig = routinetest_general(h_fig);
 
     subprefix = '>> ';
-
-    % test project management area
-    if strcmp(opt,'all') || strcmp(opt,'project management')
-        disp('test project management area...');
-        routinetest_HA_projectManagementArea(h_fig,p,subprefix);
-    end
 
     % test panel transition density plot
     if strcmp(opt,'all') || strcmp(opt,'histogram and plot')
@@ -88,6 +74,11 @@ catch err
     disp(' ');
     dispMatlabErr(err)
     diary off;
+    
+    h = guidata(h_fig);
+    if isfield(h,'figure_setExpSet') && ishandle(h.figure_setExpSet)
+        close(h.figure_setExpSet);
+    end
     return
 end
 

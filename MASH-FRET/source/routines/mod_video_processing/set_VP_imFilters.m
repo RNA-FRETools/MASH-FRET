@@ -26,7 +26,7 @@ while n>0
 end
 
 % add filters
-for n = 2:size(corr,2);
+for n = 1:size(corr,2)
     set(h.popupmenu_bgCorr,'value',corr(n));
     popupmenu_bgCorr_Callback(h.popupmenu_bgCorr,[],h_fig);
     

@@ -11,9 +11,17 @@ function routinetest_TA_stateConfiguration(h_fig,p,prefix)
 nShapes = [3,4,3];
 opt0 = [false,4,false,3,true,false,false,false,false,false,false,false];
 
+% set TA's defaults
 setDefault_TA(h_fig,p);
 
+% retrieve interface defaults
 h = guidata(h_fig);
+
+% expand panel
+h_but = getHandlePanelExpandButton(h.uipanel_TA_stateConfiguration,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 
 % test regular clustering
 disp(cat(2,prefix,'test regular clustering...'));
@@ -133,12 +141,12 @@ for meth = 1:nMeth
                 end
 
                 % save project
-                pushbutton_TDPsaveProj_Callback({p.dumpdir,...
+                pushbutton_saveProj_Callback({p.dumpdir,...
                     [sprintf(p.exp_clst,meth,cnfg),'_nodiag.mash']},[],...
                     h_fig);
                 
                 % export ASCII
-                pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],...
+                pushbutton_TA_export_Callback(h.pushbutton_TA_export,[],...
                     h_fig)
                 set_TA_expOpt(opt0,h_fig);
                 pushbutton_expTDPopt_next_Callback({p.dumpdir,...
@@ -232,12 +240,12 @@ for meth = 1:nMeth
             end
 
             % save project
-            pushbutton_TDPsaveProj_Callback(...
+            pushbutton_saveProj_Callback(...
                 {p.dumpdir,[sprintf(p.exp_clst,meth,cnfg),'.mash']},[],...
                 h_fig);
             
             % export ASCII
-            pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig)
+            pushbutton_TA_export_Callback(h.pushbutton_TA_export,[],h_fig)
             set_TA_expOpt(opt0,h_fig);
             pushbutton_expTDPopt_next_Callback({p.dumpdir,...
                 [sprintf(p.exp_clst,meth,cnfg),'.clst']},[],h_fig);
@@ -275,12 +283,12 @@ for meth = 1:nMeth
                     h.pushbutton_TDPupdateClust,[],h_fig);
 
                 % save project
-                pushbutton_TDPsaveProj_Callback({p.dumpdir,...
+                pushbutton_saveProj_Callback({p.dumpdir,...
                     [sprintf(p.exp_clst,meth,cnfg),'_nodiag_boba.mash']},...
                     [],h_fig);
                 
                 % export ASCII
-                pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],...
+                pushbutton_TA_export_Callback(h.pushbutton_TA_export,[],...
                     h_fig)
                 set_TA_expOpt(opt0,h_fig);
                 pushbutton_expTDPopt_next_Callback({p.dumpdir,...
@@ -297,12 +305,12 @@ for meth = 1:nMeth
                 [],h_fig);
 
             % save project
-            pushbutton_TDPsaveProj_Callback(...
+            pushbutton_saveProj_Callback(...
                 {p.dumpdir,[sprintf(p.exp_clst,meth,cnfg),'_boba.mash']},...
                 [],h_fig);
             
             % export ASCII
-            pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig)
+            pushbutton_TA_export_Callback(h.pushbutton_TA_export,[],h_fig)
             set_TA_expOpt(opt0,h_fig);
             pushbutton_expTDPopt_next_Callback({p.dumpdir,...
                 [sprintf(p.exp_clst,meth,cnfg),'_boba.clst']},[],h_fig);
@@ -327,6 +335,10 @@ for meth = 1:nMeth
 
             pushbutton_tdp_impModel_Callback(h.pushbutton_tdp_impModel,[],...
                 h_fig);
+            
+            if strcmp(h_but.String,char(9660))
+                pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+            end
         end
 
         pushbutton_TDPresetClust_Callback(h.pushbutton_TDPresetClust,[],...
@@ -334,4 +346,4 @@ for meth = 1:nMeth
     end
 end
 
-pushbutton_TDPremProj_Callback(h.pushbutton_TDPremProj,[],h_fig);
+pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);

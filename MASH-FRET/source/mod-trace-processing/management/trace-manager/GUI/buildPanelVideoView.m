@@ -37,7 +37,7 @@ wedit2 = p.wcb-p.wcb2;
 
 % list strings
 h = guidata(h_fig);
-p_proj = h.param.ttPr.proj{h.param.ttPr.curr_proj};
+p_proj = h.param.proj{h.param.curr_proj};
 str_pop = getStrPop('exc',p_proj.excitations);
 if numel(str_pop)>1
     str_pop = [str_pop 'all'];

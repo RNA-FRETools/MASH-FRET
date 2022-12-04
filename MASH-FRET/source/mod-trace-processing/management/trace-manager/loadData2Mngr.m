@@ -1,7 +1,7 @@
 function ok = loadData2Mngr(h_fig)
 
 % build GUI
-buildTraceManager(h_fig);
+h_fig_tm = buildTraceManager(h_fig);
 
 % load data from MASH
 ok = loadDataFromMASH(h_fig);
@@ -27,4 +27,7 @@ plotData_autoSort(h_fig);
 
 % plot data in panel "Video view"
 plotData_videoView(h_fig);
+
+% make figure visible
+set(h_fig_tm,'visible','on');
     

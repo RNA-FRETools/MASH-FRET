@@ -11,6 +11,9 @@ function set_TP_background(meth,prm,apply,h_fig)
 % collect interface parameters
 h = guidata(h_fig);
 
+if meth>numel(h.popupmenu_trBgCorr.String)
+    meth = numel(h.popupmenu_trBgCorr.String);
+end
 set(h.popupmenu_trBgCorr,'value',meth);
 popupmenu_trBgCorr_Callback(h.popupmenu_trBgCorr,[],h_fig);
 

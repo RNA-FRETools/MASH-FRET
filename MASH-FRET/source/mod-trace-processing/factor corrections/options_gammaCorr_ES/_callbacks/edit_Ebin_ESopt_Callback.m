@@ -9,9 +9,9 @@ end
 
 q = guidata(h_fig2);
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
-fret = p.proj{proj}.fix{3}(8);
+fret = p.proj{proj}.TP.fix{3}(8);
 
 if val==q.prm{2}(fret,4)
     return

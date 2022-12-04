@@ -3,16 +3,16 @@ function ud_ESlinRegOpt(h_fig,h_fig2)
 h = guidata(h_fig);
 q = guidata(h_fig2);
 
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
-mol = p.curr_mol(proj);
-fact = p.proj{proj}.curr{mol}{6}{1};
+mol = p.ttPr.curr_mol(proj);
+fact = p.proj{proj}.TP.curr{mol}{6}{1};
 prm = q.prm{2};
 gamma = q.prm{1}(1,1);
 beta = q.prm{1}(2,1);
 
 % get current FRET pair
-fret = p.proj{proj}.fix{3}(8);
+fret = p.proj{proj}.TP.fix{3}(8);
 
 % set subgroup list
 str_tag = getStrPopTags(p.proj{proj}.molTagNames,p.proj{proj}.molTagClr);

@@ -3,7 +3,7 @@ function pushbutton_BA_allChan_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 g = guidata(h.bga.figure_bgopt);
 
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;

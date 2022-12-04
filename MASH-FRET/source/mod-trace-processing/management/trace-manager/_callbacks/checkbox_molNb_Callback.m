@@ -9,7 +9,7 @@ function checkbox_molNb_Callback(obj, evd, h_fig)
 %
 
 h = guidata(h_fig);
-p = h.param.ttPr;
+p = h.param;
 proj = p.curr_proj;
 nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);

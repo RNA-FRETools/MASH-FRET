@@ -12,14 +12,11 @@ h = guidata(h_fig);
 % set interface defaults
 setDefault_S(h_fig,p);
 
+% test graph export and zoom reset
 disp(cat(2,prefix,'test graph export and zoom reset...'));
-h_axes = [h.axes_example,h.axes_example_mov,h.axes_example_hist];
-for a = 1:numel(h_axes)
-    set(h_fig,'CurrentAxes',h_axes(a));
-    
-    % test graph export
-    exportAxes({[p.dumpdir,filesep,sprintf(p.exp_axes,a)]},[],h_fig);
-    
-    % test zoom reset
+h_axes = getHandleWithPropVal(h.uipanel_S,'Type','axes');
+for ax = 1:numel(h_axes)
+    set(h_fig,'CurrentAxes',h_axes(ax));
+    exportAxes({[p.dumpdir,filesep,p.exp_axes,'_',num2str(ax)]},[],h_fig);
     ud_zoom([],[],'reset',h_fig);
 end

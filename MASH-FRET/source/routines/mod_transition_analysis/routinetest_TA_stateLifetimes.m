@@ -11,21 +11,31 @@ function routinetest_TA_stateLifetimes(h_fig,p,prefix)
 opt0 = [false,4,false,3,false,false,false,false,false,false,false,false];
 nSpl = 5;
 
+% set TA's defaults
 setDefault_TA(h_fig,p);
 
+% retrieve interface defaults
 h = guidata(h_fig);
 
 % start clustering
+h_but = getHandlePanelExpandButton(h.uipanel_TA_stateConfiguration,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 pushbutton_TDPupdateClust_Callback(h.pushbutton_TDPupdateClust,[],h_fig);
 V = numel(get(h.popupmenu_TA_slStates,'string'));
 
 % test dwell time formatting
+h_but = getHandlePanelExpandButton(h.uipanel_TA_dtHistograms,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 disp(cat(2,prefix,'test dwell time formatting...'));
 set(h.edit_TA_slBin,'string',num2str(p.stateBin));
 edit_TA_slBin_Callback(h.edit_TA_slBin,[],h_fig);
 
 % export dwell time histograms
-pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig)
+pushbutton_TA_export_Callback(h.pushbutton_TA_export,[],h_fig)
 opt = opt0;
 opt(6) = true;
 set_TA_expOpt(opt,h_fig);
@@ -74,12 +84,12 @@ for excl = [1,0]
         test_TA_stateTransitionRates_resultDisplay(h_fig);
 
         % save project
-        pushbutton_TDPsaveProj_Callback({p.dumpdir,...
+        pushbutton_saveProj_Callback({p.dumpdir,...
             [p.exp_dt,sprintf('_dec%s.mash',[str_excl,str_rearr])]},[],...
             h_fig);
 
         % export fitting results
-        pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig)
+        pushbutton_TA_export_Callback(h.pushbutton_TA_export,[],h_fig)
         opt = opt0;
         opt(7) = true;
         set_TA_expOpt(opt,h_fig);
@@ -99,12 +109,12 @@ for excl = [1,0]
         test_TA_stateTransitionRates_resultDisplay(h_fig);
 
         % save project
-        pushbutton_TDPsaveProj_Callback({p.dumpdir,...
+        pushbutton_saveProj_Callback({p.dumpdir,...
             [p.exp_dt,sprintf('_beta%s.mash',[str_excl,str_rearr])]},[],...
             h_fig);
 
         % export fitting results
-        pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig)
+        pushbutton_TA_export_Callback(h.pushbutton_TA_export,[],h_fig)
         opt = opt0;
         opt(7) = true;
         set_TA_expOpt(opt,h_fig);
@@ -132,12 +142,12 @@ for excl = [1,0]
         test_TA_stateTransitionRates_resultDisplay(h_fig);
 
         % save project
-        pushbutton_TDPsaveProj_Callback({p.dumpdir,...
+        pushbutton_saveProj_Callback({p.dumpdir,...
             [p.exp_dt,sprintf('_dec_wboba%s.mash',[str_excl,str_rearr])]},...
             [],h_fig);
 
         % export boba fitting results
-        pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig)
+        pushbutton_TA_export_Callback(h.pushbutton_TA_export,[],h_fig)
         opt = opt0;
         opt(7) = true;
         opt(8) = true;
@@ -159,12 +169,12 @@ for excl = [1,0]
         test_TA_stateTransitionRates_resultDisplay(h_fig);
 
         % save project
-        pushbutton_TDPsaveProj_Callback({p.dumpdir,...
+        pushbutton_saveProj_Callback({p.dumpdir,...
             [p.exp_dt,sprintf('_beta_wboba%s.mash',[str_excl,str_rearr])]},...
             [],h_fig);
 
         % export fitting results
-        pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig)
+        pushbutton_TA_export_Callback(h.pushbutton_TA_export,[],h_fig)
         opt = opt0;
         opt(7) = true;
         opt(8) = true;
@@ -194,12 +204,12 @@ for excl = [1,0]
         test_TA_stateTransitionRates_resultDisplay(h_fig);
 
         % save project
-        pushbutton_TDPsaveProj_Callback({p.dumpdir,...
+        pushbutton_saveProj_Callback({p.dumpdir,...
             [p.exp_dt,sprintf('_dec_boba%s.mash',[str_excl,str_rearr])]},...
             [],h_fig);
 
         % export fitting results
-        pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig)
+        pushbutton_TA_export_Callback(h.pushbutton_TA_export,[],h_fig)
         opt = opt0;
         opt(7) = true;
         opt(8) = true;
@@ -221,12 +231,12 @@ for excl = [1,0]
         test_TA_stateTransitionRates_resultDisplay(h_fig);
 
         % save project
-        pushbutton_TDPsaveProj_Callback({p.dumpdir,...
+        pushbutton_saveProj_Callback({p.dumpdir,...
             [p.exp_dt,sprintf('_beta_boba%s.mash',[str_excl,str_rearr])]},...
             [],h_fig);
 
         % export fitting results
-        pushbutton_TDPexport_Callback(h.pushbutton_TDPexport,[],h_fig)
+        pushbutton_TA_export_Callback(h.pushbutton_TA_export,[],h_fig)
         opt = opt0;
         opt(7) = true;
         opt(8) = true;
@@ -251,7 +261,7 @@ exportAxes({[p.dumpdir,filesep,p.exp_linScale]},[],h_fig);
 % test zoom reset
 ud_zoom([],[],'reset',h_fig);
 
-pushbutton_TDPremProj_Callback(h.pushbutton_TDPremProj,[],h_fig);
+pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
 
 
 function test_TA_stateTransitionRates_resultDisplay(h_fig)

@@ -17,7 +17,7 @@ incl = ~isnan(sum(sum(I_corr,3),2));
 I_corr = I_corr(incl,:,:);
 I_den = I_corr;
 
-prm = p.proj{proj}.prm{m}{1};
+prm = p.proj{proj}.TP.prm{m}{1};
 apply = prm{1}(2);
 
 if apply

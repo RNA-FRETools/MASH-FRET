@@ -12,7 +12,7 @@ grad_size = 100;
 clr = cell(1,3);
 clr{1} = cell(nExc,nChan);
 
-grad_size = 2*round(grad_size/2);
+% grad_size = 2*round(grad_size/2);
 
 rgb_min = [0,1,0];
 rgb_med = [1,0.5,0];
@@ -28,7 +28,7 @@ rgb_grad = cat(2,rgb_grad,...
     linspace(rgb_med(3),rgb_max(3),grad_size/2)]);
 
 if nChan>1
-    iv = (grad_size/(nChan-1))-1;
+    iv = round((grad_size/(nChan-1))-1);
 else
     iv = 0;
 end

@@ -1,9 +1,12 @@
 function def = setDefPrm_traces(p, proj)
-% Set default parameters for one molecule regarding project parameters.
-% "p" >> structure containing TTanalysis panel parameters
-% "proj" >> project number in the list
-% "def" >> 1-by-n cell array containing molecule parameters for each of ...
-%          the n panels
+% def = setDefPrm_traces(p, proj)
+%
+% Adjust default TP processing parameters according to project's experiment 
+% settings.
+%
+% p: interface parameters structure
+% proj: project index in list
+% def: adjusted default TP processing parameters
 
 % Last update 23.12.2020 by MH: add method vbFRET 2D
 % update 15.01.2020 by MH: add parameter tolerance in photobleaching-based gamma calculation parameters
@@ -14,17 +17,17 @@ function def = setDefPrm_traces(p, proj)
 % update 29.03.2019 by MH: (1) change bleedthrough coefficient (mol{5}{1}) structure: coefficients are independant of laser (2) change direct excitation coefficient (mol{5}{2}) structure: direct excitation possible by every laser but emitter-specific illumination (nExc-1) and is calculated only based on emitter intensities at emitter-specific laser (possibility to choose another laser was removed)
 % update 28.04.2014 by MH
 
-if ~isfield(p, 'defProjPrm')
-    p.defProjPrm = [];
+if ~isfield(p.ttPr, 'defProjPrm')
+    p.ttPr.defProjPrm = [];
 end
-if ~isfield(p.defProjPrm, 'general')
-    p.defProjPrm.general = cell(1,3);
+if ~isfield(p.ttPr.defProjPrm, 'general')
+    p.ttPr.defProjPrm.general = cell(1,3);
 end
-if ~isfield(p.defProjPrm, 'mol')
-    p.defProjPrm.mol = cell(1,6);
+if ~isfield(p.ttPr.defProjPrm, 'mol')
+    p.ttPr.defProjPrm.mol = cell(1,6);
 end
 
-def = p.defProjPrm;
+def = p.ttPr.defProjPrm;
 
 nChan = p.proj{proj}.nb_channel;
 exc = p.proj{proj}.excitations;
@@ -78,10 +81,10 @@ else
     gen{2}(3) = 1;
 end
 
-gen{2}(4) = p.proj{proj}.cnt_p_sec; % plot in intensity units per second
-gen{2}(5) = p.proj{proj}.cnt_p_pix; % plot in intensity units per pixels
+gen{2}(4) = 0; % nothing (prev: intensity units per second)
+gen{2}(5) = 0; % nothing (prev: intensity units per pixel)
 gen{2}(6) = 0; % fix first frame for all molecules
-gen{2}(7) = 1; % x-axis in second
+gen{2}(7) = 0; % nothing (prev: time units in second)
 
 % Main popupmenu values
 gen{3}(1) = 1; % laser for direct excitation
@@ -319,9 +322,13 @@ if def.mol{2}{1}(2) <= 0
     def.mol{2}{1}(2) = mol{2}{1}(2);
 end
 
-% apply discretisation to top traces only if no bottom traces
+% apply discretisation to top traces only and forbid 2D-vbFRET if no bottom 
+% traces
 if (nFRET + nS) == 0
     def.mol{4}{1}(2) = 0;
+    if def.mol{4}{1}(1)==3 % 2D-vbFRET
+        def.mol{4}{1}(1) = 6; % STaSI
+    end
 end
 
 % adjust the cutoff frame if higher than the total number of frames

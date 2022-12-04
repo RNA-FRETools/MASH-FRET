@@ -13,8 +13,14 @@ function pth = setCorrectPath(folder, h_fig)
 % --> modify "thermodynamic" folder request in "histogram_analysis" and
 %     "tdp_analysis" to "transition_analysis" to be consistent with the GUI
 
-pth = [];
 h = guidata(h_fig);
+p = h.param;
+if isempty(p.proj)
+    folderRoot = p.folderRoot;
+else
+    proj = p.curr_proj;
+    folderRoot = p.proj{proj}.folderRoot;
+end
 
 % --> modify "movie_processing" folder request into "video_processing"
 if strcmp(folder, 'movie_processing')
@@ -34,7 +40,7 @@ if (strcmp(folder, 'simulations') || ...
         strcmp(folder, 'traces_processing') || ...
         strcmp(folder, 'transition_analysis') || ...
         strcmp(folder, 'histogram_analysis'))
-    pth = [h.folderRoot filesep folder];
+    pth = [folderRoot filesep folder];
 
 elseif (strcmp(folder, 'average_images') || ...
        strcmp(folder, 'coordinates') || ...

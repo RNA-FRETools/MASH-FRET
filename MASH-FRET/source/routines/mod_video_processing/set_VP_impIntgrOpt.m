@@ -1,5 +1,5 @@
-function set_VP_impIntgrOpt(prm,h_but,h_fig)
-% set_VP_impIntgrOpt(prm,h_fig)
+function set_VP_impIntgrOpt(prm,h_but,h_fig0)
+% set_VP_impIntgrOpt(prm,h_but,h_fig)
 %
 % Set transformed coordinates import options to proper values and update interface parameters
 %
@@ -10,11 +10,28 @@ function set_VP_impIntgrOpt(prm,h_but,h_fig)
 % h_fig: handle to main figure
 
 % open import option window
-openItgOpt(h_but,[],h_fig)
+h0 = guidata(h_fig0);
+if isfield(h0,'pushbutton_TTgen_loadOpt') && ...
+        h_but==h0.pushbutton_TTgen_loadOpt
+    pushbutton_TTgen_loadOpt_Callback(h0.pushbutton_TTgen_loadOpt,[],...
+        h_fig0);
+    
+    % recover modified interface parameters
+    h0 = guidata(h_fig0);
+    q = h0.itgOpt;
+    
+elseif isfield(h0,'figure_setExpSet') && ishandle(h0.figure_setExpSet)
+    h_fig = h0.figure_setExpSet;
+    h = guidata(h_fig);
+    push_setExpSet_impCoordOpt(h.push_impCoordOpt,[],h_fig,h_fig0);
 
-% recover modified interface parameters
-h = guidata(h_fig);
-q = h.itgOpt;
+    % recover modified interface parameters
+    h = guidata(h_fig);
+    q = h.itgOpt;
+else
+    disp('set_VP_impIntgrOpt: invalid button handle.')
+    return
+end
 
 % set file columns
 for c = 1:size(prm{1},1)
@@ -26,4 +43,10 @@ end
 set(q.edit_nHead,'string',num2str(prm{2}));
 
 % save settings and close window
-pushbutton_itgOpt_ok_Callback(q.pushbutton_itgOpt_ok,[],h_fig,h_but);
+
+if isfield(h0,'pushbutton_TTgen_loadOpt') && ...
+        h_but==h0.pushbutton_TTgen_loadOpt
+    pushbutton_itgOpt_ok_Callback(q.pushbutton_itgOpt_ok,[],h_fig0,h_but);
+else
+    pushbutton_itgOpt_ok_Callback(q.pushbutton_itgOpt_ok,[],h_fig,h_but);
+end

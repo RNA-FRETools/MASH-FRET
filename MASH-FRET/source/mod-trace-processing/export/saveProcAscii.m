@@ -21,23 +21,34 @@ h = guidata(h_fig);
 
 % saveProcAscii is/isn't called from trace processing export window
 % (openExpTtpr.m)--> can be called in a routine:
-fromTT = isequalwithequalnans(p, h.param.ttPr);
+fromTT = isequalwithequalnans(p, h.param);
 
 %% collect project parameters
 
 proj = p.curr_proj;
 nC = p.proj{proj}.nb_channel;
-nMol = size(p.proj{proj}.intensities,2)/nC;
 coord = p.proj{proj}.coord;
+molTagNames = p.proj{proj}.molTagNames;
+molTag = p.proj{proj}.molTag;
+exc = p.proj{proj}.excitations;
+chanExc = p.proj{proj}.chanExc;
+expT = p.proj{proj}.frame_rate; % MH: this is the EXPOSURE TIME
+FRET = p.proj{proj}.FRET;
+S = p.proj{proj}.S;
+FRET_DTA = p.proj{proj}.FRET_DTA;
+S_DTA = p.proj{proj}.S_DTA;
+intensities = p.proj{proj}.intensities_denoise;
+intensities_DTA = p.proj{proj}.intensities_DTA;
+nMol = size(intensities,2)/nC;
 if fromTT && xp.mol_valid
     mol_incl = p.proj{proj}.coord_incl;
 else
     mol_incl = true(1,nMol);
 end
+mol_TagVal = p.proj{proj}.TP.exp.mol_TagVal;
 
 % added by FS, 24.4.2018
-mol_TagVal = h.param.ttPr.proj{h.param.ttPr.curr_proj}.exp.mol_TagVal;
-if mol_TagVal > numel(p.proj{proj}.molTagNames)
+if mol_TagVal > numel(molTagNames)
     
     % modified by MH, 24.4.2019
 %     mol_incl_tag = mol_incl;
@@ -47,36 +58,25 @@ else
     
     % modified by MH, 24.4.2019
 %     mol_incl_tag = p.proj{proj}.molTag == mol_TagVal;
-    mol_incl_tag = p.proj{proj}.molTag(:,mol_TagVal)';
+    mol_incl_tag = molTag(:,mol_TagVal)';
     
 end
 
-exc = p.proj{proj}.excitations;
-chanExc = p.proj{proj}.chanExc;
-expT = p.proj{proj}.frame_rate; % MH: this is the EXPOSURE TIME
 
-FRET = p.proj{proj}.FRET;
-S = p.proj{proj}.S;
 %N = numel(find(mol_incl));
 N = numel(find(mol_incl & mol_incl_tag)); % added by FS, 24.4. 2018
 nFRET = size(FRET,1);
 nS = size(S,1);
 nExc = numel(exc);
 
-intensities = p.proj{proj}.intensities_denoise;
-if fromTT
-    intensities_DTA = p.proj{proj}.intensities_DTA;
-else
+if ~fromTT
     intensities_DTA = p.proj{proj}.adj.intensities_DTA;
 end
 
 % export intensity in counts per frame (fixed units)
 iunits = 'counts';
 
-if fromTT
-    FRET_DTA = p.proj{proj}.FRET_DTA;
-    S_DTA = p.proj{proj}.S_DTA;
-else
+if ~fromTT
     FRET_DTA = p.proj{proj}.adj.FRET_DTA;
     S_DTA = p.proj{proj}.adj.S_DTA;
 end
@@ -268,9 +268,17 @@ try
 
         % if requested, process molecule data before exporting
         if fromTT && xp.process
+            h = guidata(h_fig);
+            muteactions = h.mute_actions;
+            h.mute_actions = true;
+            guidata(h_fig,h);
 
             % process data
             p = updateTraces(h_fig, 'ttPr', m, p, []);
+            
+            h = guidata(h_fig);
+            h.mute_actions = muteactions;
+            guidata(h_fig,h);
 
             % collect processed data
             intensities = p.proj{proj}.intensities_denoise;
@@ -290,8 +298,8 @@ try
 
         % intensity traces are/aren't discretized
         if fromTT
-            discrInt = ~p.proj{proj}.prm{m}{4}{1}(2) || ...
-                p.proj{proj}.prm{m}{4}{1}(2)==2;
+            discrInt = ~p.proj{proj}.TP.prm{m}{4}{1}(2) || ...
+                p.proj{proj}.TP.prm{m}{4}{1}(2)==2;
         else
             discrInt = 1;
         end
@@ -309,8 +317,8 @@ try
         end
         
         if fromTT
-            gamma = p.proj{proj}.prm{m}{6}{1}(1,:);
-            beta = p.proj{proj}.prm{m}{6}{1}(2,:);
+            gamma = p.proj{proj}.TP.prm{m}{6}{1}(1,:);
+            beta = p.proj{proj}.TP.prm{m}{6}{1}(2,:);
         else
             gamma = ones(1,nFRET);
             beta = ones(1,nFRET);
@@ -457,8 +465,8 @@ try
         if saveTr && saveFact
             for i = 1:nFRET
                 if fromTT
-                    gammaAll(m,i) = p.proj{proj}.prm{m}{6}{1}(1,i);
-                    betaAll(m,i) = p.proj{proj}.prm{m}{6}{1}(2,i);
+                    gammaAll(m,i) = p.proj{proj}.TP.prm{m}{6}{1}(1,i);
+                    betaAll(m,i) = p.proj{proj}.TP.prm{m}{6}{1}(2,i);
                 else
                     gammaAll(m,i) = 1;
                     betaAll(m,i) = 1;
@@ -803,7 +811,7 @@ try
             p2 = p;
             if ~fromTT
                 if isfield(p.proj{proj},'prmTT')
-                    p2.proj{proj}.prm = p.proj{proj}.prmTT;
+                    p2.proj{proj}.TP.prm = p.proj{proj}.prmTT;
                 end
                 p2.proj{proj}.intensities_DTA = ...
                     p2.proj{proj}.adj.intensities_DTA;
@@ -880,10 +888,10 @@ catch err
     end
     h = guidata(h_fig);
     if fromTT
-        h.param.ttPr = p;
+        h.param = p;
         guidata(h_fig, h);
     end
-    return;
+    return
 end
 
 
@@ -1166,12 +1174,12 @@ loading_bar('close', h_fig);
 
 if fromTT
     h = guidata(h_fig);
-    h.param.ttPr = p;
+    h.param = p;
     guidata(h_fig, h);
 end
 
 str = str(1:end-2); % remove last '\n'
-setContPan(cat(2,'Export completed:\n',str),'process',h_fig);
+setContPan(cat(2,'Export completed:\n',str),'success',h_fig);
 
 
 function upgradeKinFile(fname_kin,fname_dt,kinDat)

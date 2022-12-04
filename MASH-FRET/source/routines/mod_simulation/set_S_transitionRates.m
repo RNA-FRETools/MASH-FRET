@@ -15,6 +15,9 @@ for j = 1:J
             continue
         end
         h_edit = eval(cat(2,'h.edit',num2str(j),num2str(j2)));
+        if strcmp(h_edit.Enable,'off')
+            continue
+        end
         set(h_edit,'string',num2str(k(j,j2)));
         edit_kinCst_Callback(h_edit,[],h_fig);
     end

@@ -5,6 +5,10 @@ function p = getDefault_S
 %
 % p: structure that contain default parameters
 
+% defaults
+nChan = 2;
+nLas = 1;
+
 % general parameters
 [pname,o,o] = fileparts(mfilename('fullpath'));
 p.annexpth = cat(2,pname,filesep,'assets'); % path to annexed files
@@ -23,6 +27,21 @@ end
 if ~exist(p.dumpdir,'dir')
     mkdir(p.dumpdir); % create new dump directory
 end
+
+% general parameters
+p.nChan = 2;
+p.nL = 1;
+
+% defaults for Experiment settings
+p.es = cell(p.nChan,p.nL);
+p.es{p.nChan,p.nL}.div.projttl = 'test_sim';
+p.es{p.nChan,p.nL}.div.molname = 'unknown';
+p.es{p.nChan,p.nL}.div.expcond = {'param1','0','units1';'param2','value2','units2'};
+p.es{p.nChan,p.nL}.div.splt = 0.2;
+rande = rand(1);
+randi = rand(nChan,nLas,1);
+p.es{p.nChan,p.nL}.div.plotclr = [rande,1,rande;...
+    ones(nChan,nLas,1),repmat(randi,1,2)];
 
 % defaults for Video parameters
 p.L = 100; % video length (frames)
@@ -67,7 +86,7 @@ p.defocus = false; % apply defocusing
 p.defocus_prm = [0,0]; % defocusing exponential time constant and defocusing initial amplitude
 p.bg = 1; % background spatial distribution
 p.bgI = [0,0]; % background intensities
-p.bgW = [127,256]; % backgoround Gaussian widths
+p.bgW = [127,256]; % background Gaussian widths
 p.bgImg = 'bgimg.png';
 p.bgDec = true; % apply dynamic background
 p.bgDec_prm = [p.L/(2*p.rate),1]; % background decay constant and multiplication factor for initial backgroudn amplitude
@@ -81,8 +100,9 @@ p.dt = false; % export .dt dwell time file
 p.log = true; % export .log simulation parameters file
 p.coord = false; % export .coord coordinates file
 p.un_out = 1; % exported intensities units
+p.mash = 'sim.mash';
 
 % default for visulaization area
-p.exp_axes = 'graph_%i.png';
+p.exp_axes = 'axes';
 
 

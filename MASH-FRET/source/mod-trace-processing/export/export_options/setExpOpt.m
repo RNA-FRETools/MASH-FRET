@@ -10,6 +10,7 @@ function def = setExpOpt(opt, p_proj)
 nChan = p_proj.nb_channel;
 nFRET = size(p_proj.FRET,1);
 nS = size(p_proj.S,1);
+fix = p_proj.TP.fix;
 
 def.process = 1;
 def.mol_valid = 1;
@@ -86,9 +87,9 @@ def.fig{1}(4) = 1; % include subimages
 def.fig{1}(5) = 1; % include histograms
 def.fig{1}(6) = 1; % include discretised traces
 % include top axes & exc & channel (current plot)
-def.fig{2}{1} = [1 p_proj.fix{2}(1:2)]; 
+def.fig{2}{1} = [1 fix{2}(1:2)]; 
 % include bottom axes & channel (current plot)
-def.fig{2}{2} = [double(nFRET>0 | nS>0) p_proj.fix{2}(3)]; 
+def.fig{2}{2} = [double(nFRET>0 | nS>0) fix{2}(3)]; 
 
 opt.fig = adjustVal(opt.fig, def.fig);
 

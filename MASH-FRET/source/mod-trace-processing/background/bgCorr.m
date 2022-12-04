@@ -1,4 +1,4 @@
-function p = bgCorr(mol, p)
+function p = bgCorr(mol, p, h_fig)
 proj = p.curr_proj;
 nC = p.proj{proj}.nb_channel;
 
@@ -22,16 +22,16 @@ if ~isBgCorr
     else
         for c = 1:size(I,2)
             for l = 1:size(I,3)
-                p.proj{proj}.prm{mol}{3}{2}(l,c) = 1; % method manual
+                p.proj{proj}.TP.prm{mol}{3}{2}(l,c) = 1; % method manual
             end
         end
     end
 
     for c = 1:size(I,2)
         for l = 1:size(I,3)
-            method = p.proj{proj}.prm{mol}{3}{2}(l,c);
-            prm = p.proj{proj}.prm{mol}{3}{3}{l,c}(method,:);
-            apply = p.proj{proj}.prm{mol}{3}{1}(l,c);
+            method = p.proj{proj}.TP.prm{mol}{3}{2}(l,c);
+            prm = p.proj{proj}.TP.prm{mol}{3}{3}{l,c}(method,:);
+            apply = p.proj{proj}.TP.prm{mol}{3}{1}(l,c);
             
             img = [];
 
@@ -59,7 +59,7 @@ if ~isBgCorr
                 end
                 lim_img_y = ceil(lim_img_y);
                 lim_img_x = ceil(lim_img_x);
-                img = p.proj{proj}.aveImg{l}(lim_img_y(1):lim_img_y(2), ...
+                img = p.proj{proj}.aveImg{l+1}(lim_img_y(1):lim_img_y(2), ...
                     lim_img_x(1):lim_img_x(2));
             end
 
@@ -94,9 +94,14 @@ if ~isBgCorr
                     res_x = p.proj{proj}.movie_dim(1);
                     fDat{1} = p.proj{proj}.movie_file;
                     fDat{2}{1} = p.proj{proj}.movie_dat{1};
-                    fDat{2}{2} = [];
+                    if isFullLengthVideo(p.proj{proj}.movie_file,h_fig)
+                        h = guidata(h_fig);
+                        fDat{2}{2} = h.movie.movie;
+                    else
+                        fDat{2}{2} = [];
+                    end
                     fDat{3} = [res_y res_x];
-                    fDat{4} = p.proj{proj}.movie_dat{end};
+                    fDat{4} = p.proj{proj}.movie_dat{3};
                     if autoDark
                         coord_dark = getDarkCoord(l,mol,c,p,sub_w);
                     else
@@ -109,9 +114,10 @@ if ~isBgCorr
                         coord_dark(coord_dark(:,1)>=max_x)=max_x-1;
                         coord_dark(coord_dark(:,2)>=max_y)=max_y-1;
                     end
-                    p.proj{proj}.prm{mol}{3}{3}{l,c}(6,4:5) = coord_dark;
+                    p.proj{proj}.TP.prm{mol}{3}{3}{l,c}(6,4:5) = ...
+                        coord_dark;
                     [o,I_bg] = create_trace(coord_dark,aDim,nPix,fDat,...
-                        true);
+                        false);
                     I_bg = slideAve(I_bg(l:size(I,3):end,:), prm(1));
                     bg = I_bg(1:size(I,1));
                     
@@ -120,7 +126,7 @@ if ~isBgCorr
                     bg = nPix*bg;
             end
 
-            p.proj{proj}.prm{mol}{3}{3}{l,c}(method,3) = mean(bg);
+            p.proj{proj}.TP.prm{mol}{3}{3}{l,c}(method,3) = mean(bg);
             if apply
                 I_bgCorr(:,c,l) = I(:,c,l) - bg;
             end

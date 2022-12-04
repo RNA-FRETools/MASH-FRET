@@ -7,21 +7,38 @@ function routinetest_HA_stateConfiguration(h_fig,p,prefix)
 % p: structure containing default as set by getDefault_HA
 % prefix: string to add at the beginning of each action string (usually a apecific indent)
 
+% set HA's defaults
 setDefault_HA(h_fig,p);
 
+% retrieve interface defaults
 h = guidata(h_fig);
+
+% expand panel
+h_but = getHandlePanelExpandButton(h.uipanel_HA_stateConfiguration,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
 
 % test model selection
 disp(cat(2,prefix,'test GM model selection...'));
 pushbutton_thm_RMSE_Callback(h.pushbutton_thm_RMSE,[],h_fig);
 
-% test BIC-based selection
+% test likelihood
 cnfgPrm = p.cnfgPrm;
+if p.cnfgPrm(4)==1
+    cnfgPrm(4) = 2;
+else
+    cnfgPrm(4) = 1;
+end
+set_HA_stateConfig(cnfgPrm,h_fig);
+pushbutton_thm_RMSE_Callback(h.pushbutton_thm_RMSE,[],h_fig);
+
+% test BIC-based selection
 cnfgPrm(2) = 2;
 set_HA_stateConfig(cnfgPrm,h_fig);
 set(h_fig,'currentaxes',h.axes_thm_BIC);
 exportAxes({[p.dumpdir,filesep,p.exp_BICplot,'_BIC.png']},[],h_fig);
-pushbutton_thm_export_Callback({p.dumpdir,p.exp_BIC},[],h_fig);
+pushbutton_HA_export_Callback({p.dumpdir,p.exp_BIC},[],h_fig);
 
 % test penalty-based selection
 cnfgPrm(2) = 1;
@@ -29,7 +46,7 @@ cnfgPrm(3) = 1.2;
 set_HA_stateConfig(cnfgPrm,h_fig);
 set(h_fig,'currentaxes',h.axes_thm_BIC);
 exportAxes({[p.dumpdir,filesep,p.exp_BICplot,'_penalty.png']},[],h_fig);
-pushbutton_thm_export_Callback({p.dumpdir,p.exp_penalty},[],h_fig);
+pushbutton_HA_export_Callback({p.dumpdir,p.exp_penalty},[],h_fig);
 
 % test model export
 disp(cat(2,prefix,'test model export...'));
@@ -42,7 +59,7 @@ for mdl = 1:nMdl
 end
 
 % save project
-pushbutton_thm_saveProj_Callback({p.dumpdir,p.exp_config},[],h_fig);
+pushbutton_saveProj_Callback({p.dumpdir,p.exp_config},[],h_fig);
 
 % close project
-pushbutton_thm_rmProj_Callback(h.pushbutton_thm_rmProj,[],h_fig);
+pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);

@@ -1,7 +1,10 @@
-function edit_yup_Callback(obj,evd,h_fig)
+function ok = edit_yup_Callback(obj,evd,h_fig)
 
 % Last update: by MH, 21.1.2020
 % >> calculate histogram at plot & adapt to new data format
+
+% defaults
+ok = 0;
 
 h = guidata(h_fig);
 
@@ -42,3 +45,5 @@ set(h.tm.axes_ovrAll_1, 'UserData', dat1);
 set(h.tm.axes_histSort, 'UserData', dat3);
 
 plotData_autoSort(h_fig);
+
+ok = 1;

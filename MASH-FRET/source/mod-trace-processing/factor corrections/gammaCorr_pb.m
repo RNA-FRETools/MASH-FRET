@@ -37,12 +37,12 @@ if is2D
     prm_dta = permute(prm_dta{2}(method_dta,:,i),[3,2,1]);
     thresh_dta = [];
 else
+    thresh = prm_dta{4}(:,:,nFRET+nS+1:end);
+    thresh_dta = thresh(:,:,[id_don,id_acc]);
+    
     I_tr = I_den(:,[don,acc],ldon)';
     prm_dta = permute(prm_dta{2}(method_dta,:,nFRET+nS+1:end),[3,2,1]);
     prm_dta = prm_dta([id_don,id_acc],:);
-    
-    thresh = prm_dta{4}(:,:,nFRET+nS+1:end);
-    thresh_dta = thresh(:,:,[id_don,id_acc]);
 end
 
 discr = getDiscr(method_dta, I_tr, [], prm_dta, thresh_dta, calc, ...

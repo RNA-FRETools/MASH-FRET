@@ -4,15 +4,7 @@ function openExpTtpr(h_fig)
 % update, 10.4.2019 by MH: (1) link the "infos" button to online documentation (2) improve trace section (change "ASCII(*.txt)" trace file format to "customed format(*.txt)" and "VbFRET" to "vbFRET", improve informative text about the number of trace file per molecules and which traces are exported) (3) improve figure section (add informative text about the number of pages exported in one figure file depending on the chosen format, correct panel title's font weight to bold, correct extra space in GUI)
 % update, 24.4.2018 by FS: add popup for exporting tagged molecules individually
 
-h = guidata(h_fig);
-p = h.param.ttPr;
-proj = p.curr_proj;
-FRET = p.proj{proj}.FRET;
-S = p.proj{proj}.S;
-exc = p.proj{proj}.excitations;
-tagNames = p.proj{proj}.molTagNames;
-tagClr = p.proj{proj}.molTagClr;
-
+% defaults
 str_trFmt = {'customed format(*.txt)', 'HaMMy-compatible(*.dat)', ...
     'vbFRET-compatible(*.mat)', 'SMART-compatible(*.traces)', ...
     'QUB-compatible(*.txt)', 'ebFRET-compatible(*.dat)', 'All formats'};
@@ -31,15 +23,25 @@ str_figFmt = {'Portable document format(*.pdf)', ...
     'Joint Photographic Experts Group(*.jpeg)'};
 
 % added by MH, 10.4.2019
-str_figInfos = {'All pages in on file.', ...
-    'One file per page.', ...
+str_figInfos = {'All pages in on file.', 'One file per page.', ...
     'One file per page.'};
 
+h = guidata(h_fig);
+p = h.param;
+proj = p.curr_proj;
+FRET = p.proj{proj}.FRET;
+S = p.proj{proj}.S;
+exc = p.proj{proj}.excitations;
+tagNames = p.proj{proj}.molTagNames;
+tagClr = p.proj{proj}.molTagClr;
+labels = p.proj{proj}.labels;
+clr = p.proj{proj}.colours;
+perSec = p.proj{p.curr_proj}.cnt_p_sec;
+plotchan = p.proj{proj}.TP.fix{1}(1);
+
 str_figTopExc = getStrPop('plot_exc', exc);
-str_figTopChan = getStrPop('plot_topChan', ...
-    {p.proj{proj}.labels p.proj{proj}.fix{1}(1) p.proj{proj}.colours{1}});
-str_figBotChan = getStrPop('plot_botChan', ...
-    {FRET S exc p.proj{proj}.colours p.proj{proj}.labels});
+str_figTopChan = getStrPop('plot_topChan',{labels plotchan clr{1}});
+str_figBotChan = getStrPop('plot_botChan',{FRET S exc clr labels});
 
 wPan = 235;
 mg = 10;
@@ -256,14 +258,9 @@ h.optExpTr.checkbox_histI = uicontrol('Style', 'checkbox', 'Units', ...
 
 xNext = xNext + w_med_big;
 
-perSec = h.param.ttPr.proj{h.param.ttPr.curr_proj}.fix{2}(4);
-perPix = h.param.ttPr.proj{h.param.ttPr.curr_proj}.fix{2}(5);
 tooltip = 'counts';
 if perSec
     tooltip = [tooltip ' per sec'];
-end
-if perPix
-    tooltip = [tooltip ' per pixel'];
 end
 
 h.optExpTr.edit_minI = uicontrol('Style', 'edit', 'Units', 'pixels', ...
@@ -604,7 +601,7 @@ h.optExpTr.pushbutton_cancel = uicontrol('Style', 'pushbutton', ...
 
 guidata(h_fig,h);
 h.optExpTr.pushbutton_help = setInfoIcons(h.optExpTr.pushbutton_cancel,...
-    h_fig,h.param.movPr.infos_icon_file);
+    h_fig,h.param.infos_icon_file);
 
 xNext = xNext + w_but + mg;
 

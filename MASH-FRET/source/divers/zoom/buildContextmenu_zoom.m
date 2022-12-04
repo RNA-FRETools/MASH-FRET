@@ -30,8 +30,12 @@ set(h.TTzoom,'actionpostcallback',{@ud_axesLim,h_fig},'rightclickaction',...
     'postcontextmenu','uicontextmenu',h_cm,'enable','on');
 
 % set context menu to all axes
-set([h.axes_example_mov,h.axes_example_hist,h.axes_example,h.axes_movie,...
-    h.axes_bottom,h.axes_bottomRight,h.axes_top,h.axes_topRight,...
-    h.axes_thm_BIC,h.axes_hist1,h.axes_hist2,h.axes_tdp_BIC,...
-    h.axes_TDPplot1,h.axes_TDPplot2],'uicontextmenu',h_cm);
+chld = h_fig.Children;
+h_axes = [];
+for h_c = chld'
+    if isprop(h_c,'Type') && strcmp(h_c.Type,'axes')
+        h_axes = cat(2,h_axes,h_c);
+    end
+end
+set(h_axes,'uicontextmenu',h_cm);
 
