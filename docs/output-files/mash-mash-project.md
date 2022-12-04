@@ -121,26 +121,28 @@ MASH-FRET project files consist in data structures with the following fields:
 ### FRET- and stoichiometry- fields
 {: .no_toc }
 
-| `FRET`     | a number `nF` of different FRET pair channel indexes for FRET calculations                              | `nF`-by-2 double     | FRET from channel 1 to 2: `[1,2]` |
-| `FRET_DTA` | discretized FRET trajectories                                                                           | `L`-by-`nF*M` double |                                   |
-| `S`        | a number `nS` of different channel indexes for stoichiometry calculations                               | 1-by-`nS` double     | S of channel 1: `[1]`             |
-| `S_DTA`    | discretized stoichiometry trajectories                                                                  | `L`-by-`nS*M` double |                                   |
-| `ES`       | 2D histograms of FRET-inverse of associated stoichiometry used for estimation of gamma and beta factors | 1-by-`nF` cell       |                                   |
+| `FRET` | a number `nF` of different FRET pair (don, acc) channel indexes for FRET calculations | `nF`-by-2 double | FRET from channel 1 to 2: `[1,2]` |
+| `FRET_DTA` | discretized FRET trajectories | `L`-by-`nF*M` double |  |
+| `FRET_DTA_import` | discretized FRET trajectories imported from ASCII files for trajectory-based projects, or form module Simulation for simulation-based projects | `L`-by-`nF*M` double |  |
+| `S` | a number `nS` of different FRET pair (don, acc) channel indexes for stoichiometry calculations | `nS`-by-2 double | S of FRET pair from channel 1 to 2: `[1,2]` |
+| `S_DTA` | discretized stoichiometry trajectories | `L`-by-`nS*M` double |                                   |
+| `ES` | 2D histograms of FRET-inverse of associated stoichiometry used for estimation of gamma and beta factors | 1-by-`nF` cell |  |
 
 
 ### Analysis settings
 {: .no_toc }
 
-| `prmTT`  | parameter settings of module Trace processing                                             | 1-by-`M` cell  |  |
-| `expTT`  | export settings in Trace processing                                                       | struct         |  |
-| `prmThm` | parameter settings of module Histogram analysis treating a number `nH` of different data  | 1-by-`nH` cell |  |
-| `expThm` | export settings of module Histogram analysis                                              | empty          |  |
-| `prmTDP` | parameter settings of module Transition analysis treating a number `nT` of different data | 1-by-`nT` cell |  |
-| `expTDP` | export settings of module Transition analysis                                             | 1-by-3 cell    |  |
+| `sim` | parameter settings and simulation results of module Simulation | struct |  |
+| `VP` | parameter settings and processing outcome of module Video processing | struct |  |
+| `TP` | parameter settings and processing outcome of module Trace processing | struct |  |
+| `HA` | parameter settings and analysis results of module Histogram analysis | struct |  |
+| `TA` | parameter settings and analysis results of module Transition analysis | struct |  |
 
 For more information about how the analysis settings fields are structured, please refer to the respective function in the source code:
 
 ```
+MASH-FRET/source/project/setDefPrm_sim.m
+MASH-FRET/source/project/setDefPrm_VP.m
 MASH-FRET/source/project/setDefPrm_traces.m
 MASH-FRET/source/project/setDefPrm_thm.m
 MASH-FRET/source/project/setDefPrm_TDP.m
