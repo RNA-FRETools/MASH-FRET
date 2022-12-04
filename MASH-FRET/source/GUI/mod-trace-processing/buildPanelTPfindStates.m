@@ -35,7 +35,8 @@ str4 = 'tol';
 str5 = 'refine';
 str6 = 'binning';
 str7 = 'deblurr';
-str8 = {'Thresholds','vbFRET-1D','vbFRET-2D','One state','CPA','STaSI'};
+str8 = {'Thresholds','vbFRET-1D','vbFRET-2D','One state','CPA','STaSI',...
+    'Imported'};
 str9 = {'bottom','top','all'};
 str10 = {'Select a trace'};
 str11 = 'Results (19 states):';

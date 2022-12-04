@@ -16,6 +16,8 @@ exc = p.proj{proj}.excitations;
 chanExc = p.proj{proj}.chanExc;
 FRET = p.proj{proj}.FRET;   nF = size(FRET,1);
 S = p.proj{proj}.S;         nS = size(S,1);
+isfretimp = isfield(p.proj{proj},'FRET_DTA_import') & ...
+    ~isempty(p.proj{proj}.FRET_DTA_import);
 
 % check for already-discretized top traces
 isDiscrTop = ~isempty(p.proj{proj}.intensities_DTA) && ~all(all(all(isnan(...
@@ -44,6 +46,11 @@ if nF>0
         beta = p.proj{proj}.TP.prm{m}{6}{1}(2,:);
     end
 end
+if isfretimp
+    fret_DTA_imp = p.proj{proj}.FRET_DTA_import(:,((m-1)*nF+1):m*nF)';
+else
+    fret_DTA_imp = NaN(size(p.proj{proj}.FRET_DTA(((m-1)*nF+1):m*nF)))';
+end
     
 if ~((toBottom && ~isDiscrBot) || ((~toBottom || toBottom==2) && ...
         ~isDiscrTop))
@@ -61,90 +68,113 @@ states = nan(nF+nS+nExc*nC,6);
 
 % discretize bottom traces
 if toBottom
-
-    % calculate FRET-time traces
-    FRET_tr = [];
-    if nF > 0
-        FRET_tr = calcFRET(nC, nExc, exc, chanExc, FRET, I_den, gamma);
-    end
-    FRET_tr = FRET_tr';
-
-    % calculate stoichiometry-time traces
-    S_tr = [];
-    if nS>0
-        S_tr = calcS(exc, chanExc, S, FRET, I_den, gamma, beta);
-    end
-    S_tr = S_tr';
-
-    % ignore ratio data out-of-range
-    incl_fret = FRET_tr>=-0.2 & FRET_tr<=1.2;
-    incl_s = S_tr>=-0.2 & S_tr<=1.2;
-%         incl_fret = true(size(FRET_tr));
-%         incl_s = true(size(S_tr));
-    incl_bot = [incl_fret;incl_s];
-
-    % discretize traces
-    prm = permute(prm_DTA{2}(method,:,1:nF+nS),[3,2,1]); % [m-by-6] matrix
-    thresh = prm_DTA{4}(:,:,1:nF+nS); % [3-by-t-by-m] matrix
     if mute
         actstr = 0;
     else
         actstr = 'Discretisation of bottom traces...';
     end
-    
-    if is2D % vbFRET 2D
-        I_tr = cell(1,nF);
-        for n = 1:nF
-            % identify donor and acceptor discretized intensity-time 
-            % traces
-            don = FRET(n,1); acc = FRET(n,2);
-            [o,l_f,o] = find(exc==chanExc(FRET(n,1)));
-            I_tr{n} = [I_den(:,don,l_f)';I_den(:,acc,l_f)'];
-            for chan = size(I_tr{n},1)
-                I_tr{n}(chan,:) = (I_tr{n}(chan,:)-mean(I_tr{n}(chan,:)))/...
-                    std(I_tr{n}(chan,:));
-            end
+    if method~=7
+        % calculate FRET-time traces
+        FRET_tr = [];
+        if nF > 0
+            FRET_tr = calcFRET(nC, nExc, exc, chanExc, FRET, I_den, gamma);
         end
-        for n = 1:nS
-            % identify donor and acceptor discretized intensity-time 
-            % traces
-            [o,ldon,o] = find(exc==chanExc(S(n,1)));
-            [o,lacc,o] = find(exc==chanExc(S(n,2)));
-            don0 = sum(I_den(:,:,ldon),2);
-            acc0 = sum(I_den(:,:,lacc),2);
-            I_tr{nF+n} = [don0';acc0'];
-            for chan = size(I_tr{n},1)
-                I_tr{nF+n}(chan,:) = (I_tr{nF+n}(chan,:)-...
-                    mean(I_tr{nF+n}(chan,:)))/std(I_tr{nF+n}(chan,:));
-            end
+        FRET_tr = FRET_tr';
+
+        % calculate stoichiometry-time traces
+        S_tr = [];
+        if nS>0
+            S_tr = calcS(exc, chanExc, S, FRET, I_den, gamma, beta);
         end
-        res2d = (getDiscr(method, I_tr, [], prm, thresh, calc, actstr, ...
-            h_fig));
+        S_tr = S_tr';
+
+        % ignore ratio data out-of-range
+        incl_fret = FRET_tr>=-0.2 & FRET_tr<=1.2;
+        incl_s = S_tr>=-0.2 & S_tr<=1.2;
+    %         incl_fret = true(size(FRET_tr));
+    %         incl_s = true(size(S_tr));
+        incl_bot = [incl_fret;incl_s];
+
+        % discretize traces
+        prm = permute(prm_DTA{2}(method,:,1:nF+nS),[3,2,1]); % [m-by-6] matrix
+        thresh = prm_DTA{4}(:,:,1:nF+nS); % [3-by-t-by-m] matrix
+
+        if is2D % vbFRET 2D
+            I_tr = cell(1,nF);
+            for n = 1:nF
+                % identify donor and acceptor discretized intensity-time 
+                % traces
+                don = FRET(n,1); acc = FRET(n,2);
+                [o,l_f,o] = find(exc==chanExc(FRET(n,1)));
+                I_tr{n} = [I_den(:,don,l_f)';I_den(:,acc,l_f)'];
+                for chan = size(I_tr{n},1)
+                    I_tr{n}(chan,:) = (I_tr{n}(chan,:)-mean(I_tr{n}(chan,:)))/...
+                        std(I_tr{n}(chan,:));
+                end
+            end
+            for n = 1:nS
+                % identify donor and acceptor discretized intensity-time 
+                % traces
+                [o,ldon,o] = find(exc==chanExc(S(n,1)));
+                [o,lacc,o] = find(exc==chanExc(S(n,2)));
+                don0 = sum(I_den(:,:,ldon),2);
+                acc0 = sum(I_den(:,:,lacc),2);
+                I_tr{nF+n} = [don0';acc0'];
+                for chan = size(I_tr{n},1)
+                    I_tr{nF+n}(chan,:) = (I_tr{nF+n}(chan,:)-...
+                        mean(I_tr{nF+n}(chan,:)))/std(I_tr{nF+n}(chan,:));
+                end
+            end
+            res2d = (getDiscr(method, I_tr, [], prm, thresh, calc, actstr, ...
+                h_fig));
+
+            bot_DTA = zeros(numel(res2d{numel(res2d)}(1,:)),nF+nS);
+            for n = 1:nF
+                stateVals = unique(res2d{n}(1,:));
+                FRET_st = zeros(size(res2d{n}(1,:)));
+                for val = stateVals
+                    FRET_st(res2d{n}(1,:)==val) = ...
+                        mean(FRET_tr(incl_fret & res2d{n}(1,:)==val));
+                end
+                bot_DTA(:,n) = FRET_st';
+            end
+            for n = 1:nS
+                stateVals = unique(res2d{nF+n}(1,:));
+                S_st = zeros(size(res2d{nF+n}(1,:)));
+
+                for val = stateVals
+                    S_st(res2d{nF+n}(1,:)==val) = ...
+                        mean(S_tr(incl_s & res2d{nF+n}(1,:)==val));
+                end
+                bot_DTA(:,nF+n) = S_st';
+            end
+        else
+            bot_DTA = (getDiscr(method, [FRET_tr; S_tr], incl_bot, prm, thresh, ...
+                calc, actstr, h_fig))';
+        end
         
-        bot_DTA = zeros(numel(res2d{numel(res2d)}(1,:)),nF+nS);
-        for n = 1:nF
-            stateVals = unique(res2d{n}(1,:));
-            FRET_st = zeros(size(res2d{n}(1,:)));
-            for val = stateVals
-                FRET_st(res2d{n}(1,:)==val) = ...
-                    mean(FRET_tr(incl_fret & res2d{n}(1,:)==val));
-            end
-            bot_DTA(:,n) = FRET_st';
-        end
-        for n = 1:nS
-            stateVals = unique(res2d{nF+n}(1,:));
-            S_st = zeros(size(res2d{nF+n}(1,:)));
-            
-            for val = stateVals
-                S_st(res2d{nF+n}(1,:)==val) = ...
-                    mean(S_tr(incl_s & res2d{nF+n}(1,:)==val));
-            end
-            bot_DTA(:,nF+n) = S_st';
-        end
+    else % imported
+        incl_bot = true(size(fret_DTA_imp));
+        prm = permute(prm_DTA{2}(method,:,1:nF),[3,2,1]);
+        fret_DTA = (getDiscr(method,fret_DTA_imp,incl_bot,prm,[],calc,...
+            actstr,h_fig))';
+        bot_DTA = fret_DTA;
         
-    else
-        bot_DTA = (getDiscr(method, [FRET_tr; S_tr], incl_bot, prm, thresh, ...
-            calc, actstr, h_fig))';
+        if nS>0
+            S_tr = calcS(exc, chanExc, S, FRET, I_den, gamma, beta);
+            for n = 1:nS
+                pair = FRET(:,1)==S(s,1) & FRET(:,2)==S(s,2);
+                stateVals = unique(fret_DTA(pair,:));
+                S_st = zeros(size(fret_DTA(pair,:)));
+
+                for val = stateVals
+                    S_st(fret_DTA(pair,:)==val) = ...
+                        mean(S_tr(fret_DTA(pair,:)==val));
+                end
+                bot_DTA = cat(2,bot_DTA,S_st');
+            end
+        end
+        bot_DTA = bot_DTA(incl,:);
     end
     % identify and sort resulting states
     for n = 1:(nF+nS)

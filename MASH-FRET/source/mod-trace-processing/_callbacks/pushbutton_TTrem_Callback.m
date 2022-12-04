@@ -50,6 +50,11 @@ p.proj{proj}.intensities_DTA = p.proj{proj}.intensities_DTA(:,incl_c,:);
 if nFRET > 0
     incl_f = reshape(repmat(incl, [nFRET,1]),1,nFRET*numel(incl));
     p.proj{proj}.FRET_DTA = p.proj{proj}.FRET_DTA(:,incl_f);
+    if isfield(p.proj{proj},'FRET_DTA_import') && ...
+            ~isempty(p.proj{proj}.FRET_DTA_import)
+        p.proj{proj}.FRET_DTA_import = ...
+            p.proj{proj}.FRET_DTA_import(:,incl_f);
+    end
 end
 
 if nS > 0

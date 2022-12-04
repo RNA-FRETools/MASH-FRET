@@ -174,12 +174,13 @@ end
 for i = 1:nFRET
 
     mol{4}{2}(:,:,i) = ...
-        [2  0  0 2 0 0 0 %   Thresholds	J,none,none,tol ,refine,bin, blurr
-         1  2  5 2 0 0 1 %   vbFRET-1D	minJ,maxJ,prm1,tol ,refine,bin, blurr
-         1  2  5 2 0 0 1 %   vbFRET-2D	minJ,maxJ,prm1,tol ,refine,bin, blurr
-         1  0  0 0 0 0 0 %   One state  none,none,none,none,none  ,none,none
-         50 90 2 2 0 0 0 %   CPA        prm1,prm2,prm3,tol ,refine,bin, blurr
-         2  0  0 2 0 0 0]; % STaSI      maxJ,none,none,tol ,refine,bin, blurr
+        [2  0  0 2 0 0 0 %   Thresholds	J,   none,none,tol, refine,bin, blurr
+         1  2  5 2 0 0 1 %   vbFRET-1D	minJ,maxJ,prm1,tol, refine,bin, blurr
+         1  2  5 2 0 0 1 %   vbFRET-2D	minJ,maxJ,prm1,tol, refine,bin, blurr
+         1  0  0 0 0 0 0 %   One state  none,none,none,none,none,  none,none
+         50 90 2 2 0 0 0 %   CPA        prm1,prm2,prm3,tol, refine,bin, blurr
+         10 0  0 2 0 0 0 %   STaSI      maxJ,none,none,tol, refine,bin, blurr
+         0  0  0 0 0 0 0]; % imported   none,none,none,none,refine,bin, blurr
 
     mol{4}{4}(:,:,i) = ...
         [1    0.8  0.6  0.4  0.2   0   
@@ -190,12 +191,13 @@ end
 for i = 1:nS
     
     mol{4}{2}(:,:,nFRET+i) = ...
-        [2  0  0 2 0 0 0 %   Thresholds J,none,none,tol ,refine,bin, blurr
-         1  2  5 2 0 0 1 %   vbFRET-1D	minJ,maxJ,prm1,tol ,refine,bin, blurr
-         1  2  5 2 0 0 1 %   vbFRET-2D	minJ,maxJ,prm1,tol ,refine,bin, blurr
-         1  0  0 0 0 0 0 %   One state  none,none,none,none,none  ,none,none
-         50 90 2 2 0 0 0 %   CPA        prm1,prm2,prm3,tol ,refine,bin, blurr
-         2  0  0 2 0 0 0]; % STaSI      maxJ,none,none,tol ,refine,bin, blurr
+        [2  0  0 2 0 0 0 %   Thresholds J,   none,none,tol, refine,bin, blurr
+         1  2  5 2 0 0 1 %   vbFRET-1D	minJ,maxJ,prm1,tol, refine,bin, blurr
+         1  2  5 2 0 0 1 %   vbFRET-2D	minJ,maxJ,prm1,tol, refine,bin, blurr
+         1  0  0 0 0 0 0 %   One state  none,none,none,none,none,  none,none
+         50 90 2 2 0 0 0 %   CPA        prm1,prm2,prm3,tol, refine,bin, blurr
+         10 0  0 2 0 0 0 %   STaSI      maxJ,none,none,tol, refine,bin, blurr
+         0  0  0 0 0 0 0]; % imported   none,none,none,none,refine,bin, blurr
 
     mol{4}{4}(:,:,nFRET+i) = ...
         [1    0.8  0.6  0.4  0.2   0   
@@ -213,7 +215,8 @@ for j = 1:nExc
              1  2  5 2 0 0 1 %   vbFRET-2D	minJ,maxJ,prm1,tol ,refine,bin, blurr
              1  0  0 0 0 0 0 %   One state  none,none,none,none,none  ,none,none
              50 90 2 2 0 0 0 %   CPA        prm1,prm2,prm3,tol ,refine,bin, blurr
-             2  0  0 2 0 0 0]; % STaSI      maxJ,none,none,tol ,refine,bin, blurr
+             2  0  0 2 0 0 0 %   STaSI      maxJ,none,none,tol ,refine,bin, blurr
+             0  0  0 0 0 0 0]; % imported   none,none,none,none,refine,bin, blurr
 
         mol{4}{4}(:,:,nFRET+nS+(j-1)*nChan+i) = ...
             round(meanI*[1    0.8  0.6  0.4  0.2   0   
@@ -369,9 +372,18 @@ if size(def.mol{3},2)>=4
     def.mol{3}(4) = [];
 end
 
-% prevent ES linear regression by default (time consuming)
+% prevents ES linear regression by default (time consuming)
 def.mol{6}{2}(def.mol{6}{2}==2) = 0;
 
-
+% prevents use of "Imported" method when no discr. FRET are imported
+if def.mol{4}{1}(1)==7 && ~(isfield(p.proj{proj},'FRET_DTA_import') && ...
+        ~isempty(p.proj{proj}.FRET_DTA_import))
+    def.mol{4}{1}(1) = 6; % STaSI
+end
+if isfield(p.proj{proj},'FRET_DTA_import') && ...
+        ~isempty(p.proj{proj}.FRET_DTA_import)
+    def.mol{4}{1}(1) = 7;
+    def.mol{4}{1}(2) = 1;
+end
 
 

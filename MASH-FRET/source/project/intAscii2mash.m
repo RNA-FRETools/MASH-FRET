@@ -498,5 +498,6 @@ s.bool_intensities = ~~incl;
 s.intensities = intensities;
 s.FRET = FRET;
 s.FRET_DTA = fret_DTA;
+s.FRET_DTA_import = fret_DTA;
 
 loading_bar('close', h_fig);

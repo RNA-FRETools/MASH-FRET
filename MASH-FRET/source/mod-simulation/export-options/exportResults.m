@@ -19,8 +19,6 @@ str_action = {};
 h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
-inSec = p.proj{proj}.time_in_sec;
-perSec = p.proj{proj}.cnt_p_sec;
 prm = p.proj{proj}.sim.prm;
 
 % check simulated state sequences
@@ -93,6 +91,7 @@ discr_seq = permute(prm.res_dat{2}(:,3,:),[1,3,2]);
 L = size(Idon,1);
 dat = p.proj{proj};
 dat.FRET_DTA = discr;
+dat.FRET_DTA_import = discr;
 dat.intensities = NaN(L,2*N);
 
  % check for file overwriting (one file exported per format)
@@ -341,15 +340,16 @@ for n = 1:N
         if isPresets && isfield(presets,'stateVal')
             states = presets.stateVal(n,:);
         end
+        statevals = dt(:,[2,3]);
         for j = 1:J
-            dt(dt(:,2)==j,2) = states(j);
-            dt(dt(:,3)==j,3) = states(j);
+            statevals(dt(:,2)==j,1) = states(j);
+            statevals(dt(:,3)==j,2) = states(j);
         end
 
         f = fopen(fname_dt,'Wt');
-        fprintf(f,cat(2,'dwell-time (second)\tstate\tstate after ',...
-            'transition\n'));
-        fprintf(f,'%d\t%d\t%d\n',dt');
+        fprintf(f,cat(2,'dwell-time (second)\tstate\t',...
+            'state after transition\tFRET\tFRET after transition\n'));
+        fprintf(f,'%d\t%d\t%d\t%d\t%d\n',[dt,statevals]');
         fclose(f);
     end
     
@@ -415,7 +415,7 @@ dat.intensities_denoise = nan(L,2*N);
 dat.ES = {};
 dat.intensities_DTA = nan(L,2*N);
 dat.S_DTA = [];
-dat.bool_intensities = true(L,N);
+dat.bool_intensities = discr>0;
 
 dat.molTag = false(N,numel(dat.molTagNames));
 
@@ -434,6 +434,19 @@ p.proj{proj}.TA.from = p.proj{proj}.sim.from;
 p = importTP(p,proj);
 p = importHA(p,proj);
 p = importTA(p,proj);
+
+% set photobleaching cutoff
+for m = 1:numel(p.proj{proj}.TP.curr)
+    id = find(discr(:,m)>0);
+    if isempty(id)
+        cutoff = 1;
+    else 
+        cutoff = id(end);
+    end
+    p.proj{proj}.TP.curr{m}{2}{1}(1) = 1; % apply cutoff
+    p.proj{proj}.TP.curr{m}{2}{1}(2) = 1; % manual method
+    p.proj{proj}.TP.curr{m}{2}{1}(5) = cutoff; % cutoff frames
+end
 
 % save modifications
 h = guidata(h_fig); % recover file overwrite options
