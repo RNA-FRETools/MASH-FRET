@@ -19,9 +19,6 @@ impprm = curr.gen_int{2}{3};
 if iscell(obj)
     pname = obj{1};
     fname = obj{2};
-    if ~strcmp(pname(end),filesep)
-        pname = [pname,filesep];
-    end
 else
     [fname,pname,o] = uigetfile({...
         '*.coord;*.spots;*.map','Coordinates File(*.coord;*.spots;*.map)'; ...
@@ -31,6 +28,9 @@ end
 if ~sum(fname)
     return
 end
+if ~strcmp(pname(end),filesep)
+    pname = [pname,filesep];
+end
 cd(pname);
 
 % display process
@@ -39,6 +39,9 @@ setContPan('Import single molecule coordinates...','process',h_fig);
 % import coordinates
 fdat = {};
 f = fopen([pname,fname],'r');
+if f==-1
+    pouet = 0;
+end
 while ~feof(f)
     fdat = cat(1,fdat,fgetl_MASH(f));
 end

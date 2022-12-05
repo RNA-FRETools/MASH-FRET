@@ -166,7 +166,7 @@ disp(cat(2,prefix,'>> import spots coordinates ',spot_file,'...'));
 pushbutton_impCoord_Callback({p.annexpth,spot_file},[],...
     h_fig);
 
-for tr = 1:size(p.vers,2)
+for tr = 1:size(p.vers,2)-1
 
     if multichanvid
         tr_file = p.trsf_file{nChan,tr};

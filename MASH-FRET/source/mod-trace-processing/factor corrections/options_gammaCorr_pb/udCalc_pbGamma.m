@@ -1,7 +1,7 @@
 function udCalc_pbGamma(h_fig,h_fig2)
 
 % display action
-setContPan(['Detecting acceptor photobleaching and calculating gamma ...',
+setContPan(['Detecting acceptor photobleaching and calculating gamma ...', ...
     'factor...'],'process',h_fig);
 
 h = guidata(h_fig);

@@ -162,16 +162,16 @@ if toBottom
         
         if nS>0
             S_tr = calcS(exc, chanExc, S, FRET, I_den, gamma, beta);
-            for n = 1:nS
+            for s = 1:nS
                 pair = FRET(:,1)==S(s,1) & FRET(:,2)==S(s,2);
-                stateVals = unique(fret_DTA(pair,:));
-                S_st = zeros(size(fret_DTA(pair,:)));
+                stateVals = unique(fret_DTA(:,pair)');
+                S_st = zeros(size(fret_DTA(:,pair)));
 
                 for val = stateVals
-                    S_st(fret_DTA(pair,:)==val) = ...
-                        mean(S_tr(fret_DTA(pair,:)==val));
+                    S_st(fret_DTA(:,pair)==val,1) = ...
+                        mean(S_tr(fret_DTA(:,pair)'==val));
                 end
-                bot_DTA = cat(2,bot_DTA,S_st');
+                bot_DTA = cat(2,bot_DTA,S_st);
             end
         end
         bot_DTA = bot_DTA(incl,:);

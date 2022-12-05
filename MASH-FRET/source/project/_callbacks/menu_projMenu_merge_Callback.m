@@ -189,7 +189,11 @@ for proj = 1:nProj
         FRET_DTA = extendTrace(p.proj{proj}.FRET_DTA,L,NaN);
         s.FRET_DTA = cat(2,s.FRET_DTA,FRET_DTA(:,fret_id));
         
-        FRET_DTA_import = extendTrace(p.proj{proj}.FRET_DTA_import,L,NaN);
+        FRET_DTA_import = p.proj{proj}.FRET_DTA_import;
+        if isempty(FRET_DTA_import)
+            FRET_DTA_import = NaN(size(p.proj{proj}.FRET_DTA));
+        end
+        FRET_DTA_import = extendTrace(FRET_DTA_import,L,NaN);
         s.FRET_DTA_import = ...
             cat(2,s.FRET_DTA_import,FRET_DTA_import(:,fret_id));
     end

@@ -37,7 +37,7 @@ end
 [o,fname,o] = fileparts(fname);
 
 % display action
-setContPan('Saving background analyzer results...','process',h_fig);
+setContPan('Saving background analyzer results...','process',g.figure_MASH);
 
 for l = 1:nExc
     for c = 1:nChan
@@ -90,4 +90,4 @@ end
 
 % display action
 setContPan('Background analyzer results successfully saved!','success',...
-    h_fig);
+    g.figure_MASH);

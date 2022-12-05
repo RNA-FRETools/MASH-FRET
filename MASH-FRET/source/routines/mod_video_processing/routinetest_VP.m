@@ -77,10 +77,16 @@ try
         proj = h.param.proj{h.param.curr_proj};
         smcoordfile = ...
             [smcoordfile,'_',num2str(proj.movie_dim{1}(1)),'.coord'];
-        pushbutton_TTgen_loadCoord_Callback({p.annexpth,smcoordfile},[],...
-            h_fig);
-        pushbutton_TTgen_create_Callback(h.pushbutton_TTgen_create,[],...
-            h_fig);
+        smcoordfld = p.annexpth;
+        if smcoordfld(end)~=filesep
+            smcoordfld = [smcoordfld,filesep];
+        end
+        if exist([smcoordfld,smcoordfile],'file')
+            pushbutton_TTgen_loadCoord_Callback({p.annexpth,smcoordfile},...
+                [],h_fig);
+            pushbutton_TTgen_create_Callback(h.pushbutton_TTgen_create,[],...
+                h_fig);
+        end
         
         % test project saving
         disp('>> test project saving...');
