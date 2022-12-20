@@ -73,13 +73,15 @@ if toBottom
     else
         actstr = 'Discretisation of bottom traces...';
     end
+    
+    % calculate FRET-time traces
+    FRET_tr = [];
+    if nF > 0
+        FRET_tr = calcFRET(nC, nExc, exc, chanExc, FRET, I_den, gamma);
+    end
+    FRET_tr = FRET_tr';
+    
     if method~=7
-        % calculate FRET-time traces
-        FRET_tr = [];
-        if nF > 0
-            FRET_tr = calcFRET(nC, nExc, exc, chanExc, FRET, I_den, gamma);
-        end
-        FRET_tr = FRET_tr';
 
         % calculate stoichiometry-time traces
         S_tr = [];
@@ -154,10 +156,11 @@ if toBottom
         end
         
     else % imported
-        incl_bot = true(size(fret_DTA_imp));
+        incl_bot = false(size(fret_DTA_imp));
+        incl_bot(1:size(FRET_tr,2)) = true;
         prm = permute(prm_DTA{2}(method,:,1:nF),[3,2,1]);
-        fret_DTA = (getDiscr(method,fret_DTA_imp,incl_bot,prm,[],calc,...
-            actstr,h_fig))';
+        fret_DTA = (getDiscr(method,cat(3,FRET_tr,fret_DTA_imp(incl_bot)),...
+            true(size(FRET_tr)),prm,[],calc,actstr,h_fig))';
         bot_DTA = fret_DTA;
         
         if nS>0
@@ -174,7 +177,6 @@ if toBottom
                 bot_DTA = cat(2,bot_DTA,S_st);
             end
         end
-        bot_DTA = bot_DTA(incl,:);
     end
     % identify and sort resulting states
     for n = 1:(nF+nS)
