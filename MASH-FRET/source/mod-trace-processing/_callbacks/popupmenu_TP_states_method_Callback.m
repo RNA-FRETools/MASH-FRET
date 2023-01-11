@@ -30,6 +30,11 @@ elseif meth==7 % Imported
         popupmenu_TP_states_applyTo_Callback(h.popupmenu_TP_states_applyTo,...
             [],h_fig)
     end
+else
+    p.proj{proj}.TP.curr{mol}{4}{1}(1) = meth;
+    h.param = p;
+    guidata(h_fig, h);
+    
 end
 
 ud_DTA(h_fig);

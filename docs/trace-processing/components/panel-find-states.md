@@ -52,6 +52,7 @@ Six state finding algorithms are available and are described in the following se
 * [`One state`](#one-state)
 * [`CPA`](#cpa) [<sup>2</sup>](#references)
 * [`STaSI`](#stasi) [<sup>3</sup>](#references)
+* [`Imported`](#imported)
 
 After selecting an algorithm, set the corresponding parameters in 
 [Method parameters](#method-parameters).
@@ -153,6 +154,17 @@ The STaSI
 The method uses the uniform noise distribution in each state to detect state transitions with the Student's t-test and groups the resulting segments into the state configuration that minimizes the minimum description length.
 
 
+### Imported
+{: .no_toc }
+
+This method is available in the two following cases:
+1. for [simulation-based](../../tutorials/set-experiment-settings/simulate-data.html#tutorials_steps) projects,
+2. for [trajectory-based](../../tutorials/set-experiment-settings/import-trajectories.html#tutorials_steps) projects in which [FRET state trajectories](../../tutorials/set-experiment-settings/import-trajectories.html#fret-state-sequence-data) were imported from trajetcory files.
+
+It simply uses the simulated/imported original FRET state sequences as a basis for 
+[post-processing methods](#post-processing-methods).
+
+
 ### References
 {: .no_toc }
 
@@ -188,13 +200,14 @@ Use this interface to define settings of the [Discretization method](#discretiza
 Parameters are specific to each time-trace.
 Select the time trace in menu **(a)** to configure the method for and set parameters in **(b-h)** as described in the table below.
 
-| method                                               | parametrization                                                                                                                                                                                                     | default parameters                |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
-| `Threshold`                                          | **(b)**: maximum number of states, **(e)**: state, **(f)**: state's lower threshold, **(g)**: state's value, **(h)**: state's higher threshold                                                                      | **(f)**=3, **(g)**=3, **(h)**=3   |
-| `vbFRET` and `vbFRET-2D` [<sup>1</sup>](#references) | **(b)**: minimum number of states , **(c)**: maximum number of states, **(d)**: number of process iterations                                                                                                        | **(b)**=1, **(c)**=2, **(d)**=5   |
-| `One state`                                          | no parameter to be set                                                                                                                                                                                              |                                   |
-| `CPA` [<sup>2</sup>](#references)                    | **(b)**: number of bootstrap samples, **(c)**: confidence level to identify a transition (%), **(d)**: change point localization by (1) maximum jump amplitude, or (2) minimum RMSE before and after change point   | **(b)**=50, **(c)**=90, **(d)**=2 |
-| `STaSI` [<sup>3</sup>](#references)                  | **(b)**: maximum number of states                                                                                                                                                                                   | **(b)**=2                         |
+| method | parametrization | default parameters |
+| ------ | --------------- | ------------------ |
+| `Threshold` | **(b)**: maximum number of states, **(e)**: state, **(f)**: state's lower threshold, **(g)**: state's value, **(h)**: state's higher threshold | **(f)**=3, **(g)**=3, **(h)**=3   |
+| `vbFRET` and `vbFRET-2D` [<sup>1</sup>](#references) | **(b)**: minimum number of states , **(c)**: maximum number of states, **(d)**: number of process iterations | **(b)**=1, **(c)**=2, **(d)**=5 |
+| `One state` | no parameter to be set | |
+| `CPA` [<sup>2</sup>](#references) | **(b)**: number of bootstrap samples, **(c)**: confidence level to identify a transition (%), **(d)**: change point localization by (1) maximum jump amplitude, or (2) minimum RMSE before and after change point | **(b)**=50, **(c)**=90, **(d)**=2 |
+| `STaSI` [<sup>3</sup>](#references) | **(b)**: maximum number of states | **(b)**=2 |
+| `Imported` | no parameter to be set | |
 
 
 ---

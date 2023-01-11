@@ -24,9 +24,9 @@ if iscell(traces)
     end
 else
     if sum(incl)<2
-        incl = true(size(traces));
+        incl = true(size(traces,1),size(traces,2));
     end
-    d_traces = nan(size(traces));
+    d_traces = nan(size(traces,1),size(traces,2));
     N = size(d_traces,1);
 end
 
@@ -119,16 +119,19 @@ for n = 1:N
             d_traces(n,incl(n,:)) = dat(idx,:)';
             
         case 7 % imported
-            d_traces(n,incl(n,:)) = traces(n,incl(n,:));
+            d_traces(n,incl(n,:)) = traces(n,incl(n,:),2);
     end
     
     if is2D
         for m = 1:size(d_traces{n},1)
             for l = 1:size(d_traces{n},2)
-                if l>1 && isnan(d_traces{n}(m,l)) && ~isnan(d_traces{n}(m,l-1))
+                if l>1 && isnan(d_traces{n}(m,l)) && ...
+                        ~isnan(d_traces{n}(m,l-1))
                     d_traces{n}(m,l) = d_traces{n}(m,l-1);
-                elseif l>1 && ~isnan(d_traces{n}(m,l)) && isnan(d_traces{n}(m,l-1))
-                    d_traces{n}(m,isnan(d_traces{n}(m,1:l))) = d_traces{n}(m,l);
+                elseif l>1 && ~isnan(d_traces{n}(m,l)) && ...
+                        isnan(d_traces{n}(m,l-1))
+                    d_traces{n}(m,isnan(d_traces{n}(m,1:l))) = ...
+                        d_traces{n}(m,l);
                 end
             end
             d_traces{n}(m,isnan(d_traces{n}(m,:))) = 0;
@@ -137,9 +140,11 @@ for n = 1:N
                 d_traces{n}(m,:) = deblurrSeq(d_traces{n}(m,:));
             end
             d_traces{n}(m,:) = binDiscrVal(prm(n,6), d_traces{n}(m,:));
-            d_traces{n}(m,:) = refineDiscr(prm(n,5), d_traces{n}(m,:), traces{n}(m,:));
+            d_traces{n}(m,:) = refineDiscr(prm(n,5), d_traces{n}(m,:), ...
+                traces{n}(m,:));
             if calc
-                d_traces{n}(m,:) = aveStates(traces{n}(m,:), d_traces{n}(m,:));
+                d_traces{n}(m,:) = aveStates(traces{n}(m,:), ...
+                    d_traces{n}(m,:));
             end
         end
     else
@@ -156,9 +161,10 @@ for n = 1:N
             d_traces(n,:) = deblurrSeq(d_traces(n,:));
         end
         d_traces(n,:) = binDiscrVal(prm(n,6), d_traces(n,:));
-        d_traces(n,:) = refineDiscr(prm(n,5), d_traces(n,:), traces(n,:));
+        d_traces(n,:) = refineDiscr(prm(n,5), d_traces(n,:), ...
+            traces(n,:,1));
         if calc
-            d_traces(n,:) = aveStates(traces(n,:), d_traces(n,:));
+            d_traces(n,:) = aveStates(traces(n,:,1), d_traces(n,:));
         end
     end
 

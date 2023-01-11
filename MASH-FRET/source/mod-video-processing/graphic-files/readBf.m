@@ -48,6 +48,10 @@ if isempty(fDat)
         exc_str = props(contains(props(:,1),...
             regexpPattern('^(Channel name #)[0-9]*$')),2);
         
+        tid = contains(u_str,regexpPattern('^(10\^-)[0-9](s\^1)$'));
+        t_str = t_str(tid,:);
+        u_str = u_str(tid,:);
+        
         t = NaN(frameLen,1);
         for l = 1:frameLen
             s_fact = getSecondsFromString(u_str{l,1});

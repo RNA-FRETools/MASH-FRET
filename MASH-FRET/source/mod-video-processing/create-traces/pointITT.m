@@ -53,6 +53,9 @@ end
 fDat{3} = viddat{mov}{2};
 fDat{4} = viddat{mov}{3};
 [o,data] = create_trace(newPnt,pxdim,npix,fDat);
+if isempty(data)
+    return
+end
 
 str_sec = [];
 if persec

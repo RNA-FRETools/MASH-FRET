@@ -330,6 +330,11 @@ switch fext
         
         trace = getNpixFromVect(trace_vect, nPix);
         return
+        
+    otherwise
+        disp(['Video format ',fext,...
+            ' is not supported for intensity integration.'])
+        return
 end
 
 

@@ -16,10 +16,12 @@ end
 
 % plot average image
 set(h.axes_chan,'visible','on');
+chanlim = ...
+    [0,fix(proj.movie_dim{1}(1)*(1:proj.nb_channel)/proj.nb_channel)];
 for c = 1:proj.nb_channel
     if h.radio_impFileMulti.Value==1
-        splitpos1 = (c-1)*round(proj.movie_dim{1}(1)/proj.nb_channel);
-        splitpos2 = c*round(proj.movie_dim{1}(1)/proj.nb_channel);
+        splitpos1 = chanlim(c);
+        splitpos2 = chanlim(c+1);
         img = proj.aveImg{1}(:,(splitpos1+1):splitpos2);
         imagesc(h.axes_chan(c),'xdata',[splitpos1,splitpos2],'ydata',...
             [0,proj.movie_dim{1}(2)],'cdata',img);

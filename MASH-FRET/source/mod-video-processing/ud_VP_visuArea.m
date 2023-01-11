@@ -57,12 +57,13 @@ if nVid==1
 end
 set(h.text_split, 'String', txt_split);
 
-% Update slider properties & position     
-if L<=1
-    set(h.slider_img,'Visible','off');
-else
+% Update slider properties & position 
+if L>0
     set(h.slider_img, 'SliderStep',[1/L max(1/L,0.1)],'Min',1,'Max',L,...
         'Value',l,'Visible','on');
+end
+if L<=1
+    set(h.slider_img,'Visible','off');
 end
 
 % set video descriptions
