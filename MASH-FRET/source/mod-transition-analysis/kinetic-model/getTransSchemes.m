@@ -1,22 +1,29 @@
-function trans_mat = getTransSchemes(J)
-% Determines all possible transition schemes between J states
-% Returns transition matrix filled with 0 (no transition) and 1 (transition occurs)
-
-N_nod_max = J-1;
+function trans_mat = getTransSchemes(D)
+% trans_mat = getTransSchemes(D)
+%
+% Returns all possible transition schemes between D states.
+% Transition schemes consist of matrices filled with 0 (no transition) and 
+% 1 (transition occurs).
+%
+% D: number of states
+% Ntr_max: maximum number of transitions allowed
+% trans_mat: [D-by-D-by-S] possible transition schemes
 
 % get all possible combinations of number of transitions
-trs = getConnexionComb(N_nod_max,J);
-trs_sort = trs;
+cxcmb = getConnexionComb(D-1,D);
 
-% select valid and unique combinations
-trs_sum = sum(trs,2);
-Sums = unique(trs_sum)';
+% sort connexion number combinations by total sums
+cxcmb = sortrows([cxcmb,sum(cxcmb,2)],D+1);
+Ntr_cnx = cxcmb(:,end);
+cxcmb = cxcmb(:,1:(end-1));
+
+% select valid and unique combinations of number of transitions
 cmb_all = [];
-for Sum = Sums
-    rows = find(trs_sum==Sum);
+for Ntr = unique(Ntr_cnx)'
+    rows = find(Ntr_cnx==Ntr);
     for r_to = rows'
         for r_from = rows'
-            cmb = [trs_sort(r_to,:);trs(r_from,:)];
+            cmb = cxcmb([r_to,r_from],:);
             if ~isValidScheme(cmb)
                 continue
             end
@@ -41,18 +48,22 @@ for Sum = Sums
 end
 
 % find corresponding transition matrices
-n_cmb = size(cmb_all,3);
-ok = false(1,n_cmb);
-trans_mat = NaN(J,J,n_cmb);
-for c = 1:n_cmb
+C = size(cmb_all,3);
+ok = false(1,C);
+trans_mat = NaN(D,D,C);
+for c = 1:C
+    
+    % include no-transition matrix
     if all(all(cmb_all(:,:,c)==0))
-        trans_mat(:,:,c) = false(J,J);
+        trans_mat(:,:,c) = false(D,D);
         ok(c) = true;
         continue
     end
+    
+    %
     scheme = cmb_all(:,:,c);
-    pth = false(J,J);
-    for j1 = 1:J
+    pth = false(D,D);
+    for j1 = 1:D
         if ~isempty(scheme) && all(all(scheme==0))
             break
         end
@@ -74,56 +85,73 @@ for c = 1:n_cmb
 end
 
 
-function vects = getConnexionComb(Max,J)
-% get all possible networks having J nods that can make a maximum number
-% Max of connexions with other nods
+function vects = getConnexionComb(nCxd_max,D)
+% vects = getConnexionComb(nCxd_max,D)
+%
+% Returns all possible combinations of numbers of connexions between D 
+% states that can make no more than a maximum number of connexions with 
+% other states.
+%
+% nCxd_max: maximum number of connexion from a single state
+% D: number of states
+% vects: [nCmb-by-D] possible combinations of number of connexions
 
 vects = [];
-if J<0
+if D<0
     return
 end
 
-for n = 0:Max
-    vect = zeros(1,J);
-    vect(1) = n;
-    if (J-1)>0
-        cmb = getConnexionComb(Max,J-1);
-        vect = [repmat(n,size(cmb,1),1),cmb];
+for nCxj = 0:nCxd_max
+    vect = zeros(1,D);
+    vect(1) = nCxj;
+    if (D-1)>0
+        cmb = getConnexionComb(nCxd_max,D-1);
+        vect = [repmat(nCxj,size(cmb,1),1),cmb];
     end
     vects = cat(1,vects,vect);
 end
 
 
 function ok = isValidScheme(scheme0)
+% ok = isValidScheme(scheme0)
+%
+% Determine if a combination of number of state connexions is valid or not.
+%
+% scheme0: [2-by-D] numbers of connexions between states 1 (1st row) and 
+%  states 2 (2nd row)
+% ok: 0 (invalid scheme) or 1 (valid scheme)
 
 ok = true;
-J = size(scheme0,2);
+D = size(scheme0,2);
 
 scheme = scheme0;
-for j1 = 1:J
-    j2s = circshift(1:J,[0,(j1-1)]); % with circular shift
-    j2s(j2s==j1) = [];
-    j2 = 0;
-    while scheme(1,j1)>0 && j2<numel(j2s)
-        j2 = j2+1;
-        if scheme(2,j2s(j2))>=1
-            scheme(2,j2s(j2)) = scheme(2,j2s(j2))-1;
-            scheme(1,j1) = scheme(1,j1)-1;
+for d1 = 1:D
+    % select all possible states 2
+    d2s = circshift(1:D,[0,d1-1]); % with circular shift
+    d2s(d2s==d1) = [];
+    
+    % subtract state 1's connexions to states 2's
+    i2 = 0;
+    while scheme(1,d1)>0 && i2<(D-1)
+        i2 = i2+1;
+        if scheme(2,d2s(i2))>=1
+            scheme(2,d2s(i2)) = scheme(2,d2s(i2))-1;
+            scheme(1,d1) = scheme(1,d1)-1;
         end
     end
 end
 
 if ~all(all(scheme==0))
     scheme = scheme0;
-    for j1 = 1:J
-        j2s = 1:J;
-        j2s(j2s==j1) = []; % without circular shift
-        j2 = 0;
-        while scheme(1,j1)>0 && j2<numel(j2s)
-            j2 = j2+1;
-            if scheme(2,j2s(j2))>=1
-                scheme(2,j2s(j2)) = scheme(2,j2s(j2))-1;
-                scheme(1,j1) = scheme(1,j1)-1;
+    for d1 = 1:D
+        d2s = 1:D;
+        d2s(d2s==d1) = []; % without circular shift
+        i2 = 0;
+        while scheme(1,d1)>0 && i2<numel(d2s)
+            i2 = i2+1;
+            if scheme(2,d2s(i2))>=1
+                scheme(2,d2s(i2)) = scheme(2,d2s(i2))-1;
+                scheme(1,d1) = scheme(1,d1)-1;
             end
         end
     end
