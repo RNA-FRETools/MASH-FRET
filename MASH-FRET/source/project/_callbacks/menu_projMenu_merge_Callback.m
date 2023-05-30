@@ -101,8 +101,8 @@ for proj = 1:nProj
     
     % concatenate molecule tag names and colors
     for tag = 1:numel(p.proj{proj}.molTagNames)
-        if ~sum(~cellfun('isempty',...
-                strfind(s.molTagNames,p.proj{proj}.molTagNames{tag})))
+        if ~any(cellfun(@(x) isequal(x,p.proj{proj}.molTagNames{tag}),...
+                s.molTagNames))
             s.molTagNames = ...
                 cat(2,s.molTagNames,p.proj{proj}.molTagNames{tag});
             s.molTagClr = cat(2,s.molTagClr,p.proj{proj}.molTagClr{tag});
@@ -313,7 +313,7 @@ nTag_ref = numel(namesRef);
 nTag = numel(names);
 molTag_ext = false(size(molTag,1),nTag_ref);
 for tag = 1:nTag
-    molTag_ext(:,~cellfun('isempty',strfind(namesRef,names{tag}))) = ...
+    molTag_ext(:,cellfun(@(x) isequal(x,names{tag}),namesRef)) = ...
         molTag(:,tag);
 end
 
