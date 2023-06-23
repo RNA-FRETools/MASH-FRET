@@ -11,7 +11,7 @@ slct = get(h.listbox_proj, 'Value');
 nProj = numel(slct);
 
 % check project compatibility
-[comp,errmsg] = projectCompatibility(p.proj(slct));
+[comp,errmsg,expT] = projectCompatibility(p.proj(slct));
 if ~comp
     if h.mute_actions
         disp(cat(2,'Merging is impossible: ',errmsg));
@@ -73,7 +73,7 @@ s.coord_file = '';
 s.coord_imp_param = {[1 2] 1};
 s.is_coord = false;
 
-s.frame_rate = p.proj{slct(1)}.frame_rate;
+s.frame_rate = expT;
 s.pix_intgr = p.proj{slct(1)}.pix_intgr;
 s.cnt_p_sec = p.proj{slct(1)}.cnt_p_sec;
 s.time_in_sec = p.proj{slct(1)}.time_in_sec;
@@ -232,7 +232,7 @@ s.VP = [];
 pushbutton_openProj_Callback([],{s},h_fig);
 
 
-function [ok,errmsg] = projectCompatibility(p_proj)
+function [ok,errmsg,expT] = projectCompatibility(p_proj)
 
 ok = false;
 errmsg = '';
@@ -243,7 +243,6 @@ if nProj<=1
     return
 end
 
-expT = p_proj{1}.frame_rate;
 nChan = p_proj{1}.nb_channel;
 nL = p_proj{1}.nb_excitations;
 exc = p_proj{1}.excitations;
@@ -252,11 +251,12 @@ FRET = p_proj{1}.FRET;
 S = p_proj{1}.S;
 lbls = p_proj{1}.labels;
 pixPrm = p_proj{1}.pix_intgr;
+[ok,expT] = checkvidframerate(p_proj);
+if ~ok
+    errmsg = 'Projects have different frame rates.';
+    return
+end
 for proj = 2:nProj
-    if p_proj{proj}.frame_rate~=expT
-        errmsg = 'Projects have different frame rate.';
-        return
-    end
     if p_proj{proj}.nb_channel~=nChan
         errmsg = 'Projects have different number of channels.';
         return
@@ -289,6 +289,40 @@ for proj = 2:nProj
 end
 
 ok = true;
+
+
+function [ok,splt] = checkvidframerate(proj)
+nProj = numel(proj);
+allsplt = zeros(1,nProj);
+splt = allsplt(1);
+ok = 1;
+for n = 1:nProj
+    allsplt(n) = proj{n}.frame_rate;
+end
+if ~all(allsplt==allsplt(1))
+    strsplt = [];
+    for n = 1:nProj
+        if n==nProj-1
+            strsplt = cat(2,strsplt,num2str(allsplt(n)),' and ');
+        else
+            strsplt = cat(2,strsplt,num2str(allsplt(n)),', ');
+        end
+    end
+    strsplt = ['(',strsplt(1:end-2),' seconds)'];
+    prompt = {['Projects have different video sampling times ',strsplt,'.',...
+        'Please enter a common sampling time (in seconds) or abort the ',...
+        'merging process:']};
+    opts.Interpreter = 'tex';
+    dlgtitle = 'Video sampling time';
+    dims = 1;
+    definput = {''};
+    answ = inputdlg(prompt,dlgtitle,dims,definput,opts);
+    if isempty(answ) || isempty(str2num(answ{1}))
+        ok = 0;
+    else
+        splt = str2num(answ{1});
+    end
+end
 
 
 function trace = extendTrace(trace,L,val)
