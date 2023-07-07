@@ -316,7 +316,7 @@ try
             str_xp = '';
         end
         
-        if fromTT
+        if fromTT && nFRET>0
             gamma = p.proj{proj}.TP.prm{m}{6}{1}(1,:);
             beta = p.proj{proj}.TP.prm{m}{6}{1}(2,:);
         else
