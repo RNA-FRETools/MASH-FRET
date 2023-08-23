@@ -88,7 +88,7 @@ end
 if isMov && ~isBgcorr
     img_ave = zeros(resY,resX);
     for l = start:iv:stop
-        img_ave = img_ave+h.movie.movie(:,:,l)/L0;
+        img_ave = img_ave+double(h.movie.movie(:,:,l))/L0;
     end
     return
 end
