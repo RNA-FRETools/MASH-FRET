@@ -234,3 +234,9 @@ if size(p_proj.TP.prm{n},2)>=4 && size(p_proj.TP.prm{n}{4},2)>=2 && ...
         repmat([0,0,0,0,0,0,0],[1,1,size(p_proj.TP.prm{n}{4}{2},3)])];
 end
 
+% added by MH, 22.8.2023: add background correction option "dynamic"
+if size(p_proj.TP.prm{n},2)>=3 && size(p_proj.TP.prm{n}{3},2)>=1 && ...
+        size(p_proj.TP.prm{n}{3}{1},3)<2
+    p_proj.TP.prm{n}{3}{1} = cat(3,p_proj.TP.prm{n}{3}{1},...
+        zeros(size(p_proj.TP.prm{n}{3}{1})));
+end

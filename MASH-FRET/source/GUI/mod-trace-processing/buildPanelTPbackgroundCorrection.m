@@ -37,9 +37,10 @@ str6 = 'x-dark';
 str7 = 'y-dark';
 str8 = 'auto.';
 str10 = 'Opt.';
-str11 = 'Background:';
-str12 = 'Apply';
-str13 = 'all';
+str11 = 'mean BG:';
+str12 = 'dynamic';
+str13 = 'Apply';
+str14 = 'all';
 ttstr0 = wrapHtmlTooltipString('Select an <b>intensity-time trace</b> to configure the background correction for.');
 ttstr1 = wrapHtmlTooltipString('Select a background <b>estimation method</b> for the selected time-trace.');
 ttstr2 = wrapHtmlTooltipString('<b>Background position:</b> x-coordinate of the background in the corresponding sub-image.');
@@ -48,8 +49,9 @@ ttstr4 = wrapHtmlTooltipString('<b>Background position:</b> determine automatica
 ttstr5 = wrapHtmlTooltipString('Show the <b>background intensity-time trace</b>.');
 ttstr6 = wrapHtmlTooltipString('Open the <b>Background analyzer</b>: this tool allows to screen method parameters (useful to test background correction algorithms).');
 ttstr7 = wrapHtmlTooltipString('Calculated <b>(mean) background intensity</b> for the selected intensity-time trace.');
-ttstr8 = wrapHtmlTooltipString('<b>Subtract background</b> intensity or trace to the selected intensity-time trace.');
-ttstr9 = wrapHtmlTooltipString('Apply current background correction settings to all molecules.');
+ttstr8 = wrapHtmlTooltipString('Calculates a <b>dynamic background</b> (background trajectory) for the selected intensity-time trace.');
+ttstr9 = wrapHtmlTooltipString('<b>Subtract background</b> intensity or trace to the selected intensity-time trace.');
+ttstr10 = wrapHtmlTooltipString('Apply current background correction settings to all molecules.');
 
 % parents
 h_fig = h.figure_MASH;
@@ -66,9 +68,10 @@ wcb0 = getUItextWidth(str8,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
 wbut1 = getUItextWidth(str10,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 wtxt0 = getUItextWidth(str11,p.fntun,p.fntsz1,'normal',p.tbl);
 wcb1 = getUItextWidth(str12,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
-wbut2 = getUItextWidth(str13,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
-wedit1 = (pospan(3)-p.mg-2*p.mg/fact-wcb0-p.mg/fact-p.wbut1-p.mg/fact-...
-    wbut1-p.mg)/2;
+wcb2 = getUItextWidth(str13,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
+wbut2 = getUItextWidth(str14,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
+wedit1 = (pospan(3)-p.mg-2*p.mg/fact-wcb0-p.mg/fact-wbut1-p.mg)/2;
+wedit2 = pospan(3)-p.mg-wtxt0-p.mg/2-wcb2-p.mg/2-wbut2-p.mg;
 
 % GUI
 x = p.mg;
@@ -125,7 +128,7 @@ h.edit_subImg_dim = uicontrol('style','edit','parent',h_pan,'units',...
     [x,y,wedit0,hedit0],'callback',{@edit_subImg_dim_Callback,h_fig});
 
 x = p.mg;
-y = y-p.mg/fact-htxt0;
+y = y-p.mg/fact-(hpop0-hedit0)/2-htxt0;
 
 h.text_xDark = uicontrol('style','text','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wedit1,htxt0],...
@@ -157,14 +160,7 @@ h.checkbox_autoDark = uicontrol('style','checkbox','parent',h_pan,'units',...
     [x,y,wcb0,hedit0],'string',str8,'tooltipstring',ttstr4,'callback',...
     {@checkbox_autoDark_Callback,h_fig});
 
-x = x+wcb0+p.mg/fact;
-
-h.pushbutton_showDark = uicontrol('style','pushbutton','parent',h_pan,...
-    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,p.wbut1,hedit0],'tooltipstring',ttstr5,'cdata',img0,'callback',...
-    {@pushbutton_showDark_Callback,h_fig});
-
-x = x+p.wbut1+p.mg/fact;
+x = pospan(3)-p.mg-wbut1;
 
 h.pushbutton_optBg = uicontrol('style','pushbutton','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
@@ -172,33 +168,48 @@ h.pushbutton_optBg = uicontrol('style','pushbutton','parent',h_pan,'units',...
     {@pushbutton_optBg_Callback,h_fig});
 
 x = p.mg;
-y = p.mg+(hedit0-htxt0)/2;
+y = y-p.mg/fact-hedit0;
+
+h.checkbox_TP_bgdyn = uicontrol('style','checkbox','parent',h_pan,'units',...
+    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wcb1,hedit0],'string',str12,'tooltipstring',ttstr8,'callback',...
+    {@checkbox_TP_dynbg_Callback,h_fig});
+
+x = x+wcb1+p.mg/fact;
+
+h.pushbutton_showDark = uicontrol('style','pushbutton','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,p.wbut1,hedit0],'tooltipstring',ttstr5,'cdata',img0,'callback',...
+    {@pushbutton_showDark_Callback,h_fig});
+
+x = p.mg;
+y = y-p.mg/fact-hedit0+(hedit0-htxt0)/2;
 
 h.text_trBgCorr_bgInt = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wtxt0,htxt0],'string',str11);
 
-x = x+wtxt0+p.mg/fact;
+x = x+wtxt0;
 y = y-(hedit0-htxt0)/2;
 
 h.edit_trBgCorr_bgInt = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,hedit0],'callback',{@edit_trBgCorr_bgInt_Callback,h_fig},...
+    [x,y,wedit2,hedit0],'callback',{@edit_trBgCorr_bgInt_Callback,h_fig},...
     'tooltipstring',ttstr7);
 
-x = x+wedit0+p.mg/fact;
+x = x+wedit2+p.mg/2;
 
 h.checkbox_trBgCorr = uicontrol('style','checkbox','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wcb1,hedit0],'string',str12,'tooltipstring',ttstr8,'callback',...
+    [x,y,wcb2,hedit0],'string',str13,'tooltipstring',ttstr9,'callback',...
     {@checkbox_trBgCorr_Callback,h_fig});
 
 x = pospan(3)-p.mg-wbut2;
 
 h.pushbutton_applyAll_ttBg = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight',...
-    'bold','position',[x,y,wbut2,hedit0],'string',str13,'callback',...
-    {@pushbutton_applyAll_ttBg_Callback,h_fig},'tooltipstring',ttstr9,...
+    'bold','position',[x,y,wbut2,hedit0],'string',str14,'callback',...
+    {@pushbutton_applyAll_ttBg_Callback,h_fig},'tooltipstring',ttstr10,...
     'foregroundcolor',p.fntclr2);
 
 

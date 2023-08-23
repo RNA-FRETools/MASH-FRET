@@ -142,9 +142,11 @@ else
 end
 
 % Background correction
+mol{3}{1} = ones(nExc,nChan); % apply correction
+mol{3}{1} = cat(3,mol{3}{1},zeros(nExc,nChan)); % dynamic background
+mol{3}{3} = cell(nExc,nChan);
 for c = 1:nChan
     for l = 1:nExc
-        mol{3}{1}(l,c) = 1; % apply correction
         if isCoord && isMov
             mol{3}{2}(l,c) = 2; % method
             mol{3}{3}{l,c} = [0   20 0  0  0 0  % Manual
@@ -152,17 +154,16 @@ for c = 1:nChan
                               0   20 0  0  0 0  % Mean value
                               100 20 0  0  0 0  % Most frequent value
                               0.5 20 0  0  0 0  % Histotresh
-                              10  20 0  1  1 1  % Dark trace
+                              10  20 0  1  1 1  % Dark coordinates
                               2   20 0  0  0 0];% Median
                           
         else
             mol{3}{2}(l,c) = 1; % method
-            mol{3}{3}{l,c} = zeros(1,6);  % Manual
+            mol{3}{3}{l,c} = zeros(1,7);  % Manual
             mol{3}{3}{l,c}(3) = 20;
         end
     end
 end
-% mol{3}{4} = 20; % window dimensions
 
 % DTA
 if nFRET > 0 || nS > 0

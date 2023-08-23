@@ -1,4 +1,4 @@
-function checkbox_trBgCorr_Callback(obj, evd, h_fig)
+function checkbox_TP_dynbg_Callback(obj, evd, h_fig)
 h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
@@ -21,9 +21,13 @@ for l = 1:nExc
     end
 end
 
-p.proj{proj}.TP.curr{mol}{3}{1}(l,c,1)= get(obj, 'Value');
+if p.proj{proj}.TP.curr{mol}{3}{2}(l,c)==1 % user-defined ("manual") bg
+    return
+end
+
+p.proj{proj}.TP.curr{mol}{3}{1}(l,c,2)= get(obj, 'Value');
 
 h.param = p;
 guidata(h_fig, h);
 
-updateFields(h_fig, 'ttPr');
+ud_ttBg(h_fig);

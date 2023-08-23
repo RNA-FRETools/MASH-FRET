@@ -54,7 +54,7 @@ for c = 1:nChan
     
     set(h_axes(c), 'NextPlot', 'add');
     if p_bg{3}{exc,c}(6,6) % auto dark
-        coord_dark = getDarkCoord(exc,mol,c,p,q.dimImg);
+        coord_dark = getDarkCoord(exc,mol,c,p.proj{proj},q.dimImg);
         p.proj{proj}.TP.curr{mol}{3}{3}{exc,c}(6,4:5) = coord_dark;
     else
         coord_dark = p_bg{3}{exc,c}(6,4:5)+0.5;
