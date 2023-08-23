@@ -69,6 +69,7 @@ for m = 1:nMol
             def{1}{m}(l,c,6) = prm(6); % [nExc-by-nChan] auto dark
                                           % coord.
             def{1}{m}(l,c,7) = prm(3); % [nExc-by-nChan] BG intensities
+            def{1}{m}(l,c,8) = p_BG{1}(l,c,2); % [nExc-by-nChan] dynamic/static
             if m == 1
                 def{2}{1}(l,c,:) = 100:-10:10; % [nExc-by-nChan-by-10] param 1
                 def{2}{2}(l,c,:) = zeros(1,1,10); % [nExc-by-nChan-by-10] param 2

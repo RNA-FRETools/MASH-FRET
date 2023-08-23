@@ -21,6 +21,7 @@ xdark = g.param{1}{m}(l,c,4);
 ydark = g.param{1}{m}(l,c,5);
 auto = g.param{1}{m}(l,c,6);
 bgVal = g.param{1}{m}(l,c,7);
+dynbg = g.param{1}{m}(l,c,8);
 mlt_param1 = squeeze(g.param{2}{1}(l,c,:))';
 mlt_subdim = squeeze(g.param{2}{2}(l,c,:))';
 fix_param1 = g.param{3}(1);
@@ -52,26 +53,39 @@ set([edit_param1 edit_subimdim g.edit_xdark g.edit_ydark ...
 set([g.text_data g.popupmenu_data g.text_meth g.popupmenu_meth ...
     g.text_bgval g.text_curmol g.edit_curmol g.checkbox_allmol ...
     g.pushbutton_start g.pushbutton_save], 'Enable', 'on');
+if meth==1
+    dynbg = 0;
+end
+set(g.checkbox_dyn,'value',dynbg);
+if meth==1
+    set(g.checkbox_dyn,'enable','off');
+else
+    set(g.checkbox_dyn,'enable','on');
+end
+if dynbg
+    set(g.pushbutton_show,'enable','on');
+else
+    set(g.pushbutton_show,'enable','off');
+end
 
 if meth==1 % Manual
     set([g.text_param1 edit_param1 g.text_subimdim edit_subimdim ...
         g.text_xdark g.edit_xdark g.text_ydark g.edit_ydark ...
-        g.checkbox_auto g.pushbutton_show ...
-        g.radiobutton_fix_subimdim g.radiobutton_fix_param1], ...
-        'Enable', 'off');
+        g.checkbox_auto g.radiobutton_fix_subimdim ...
+        g.radiobutton_fix_param1],'Enable', 'off');
     set(g.edit_chan, 'Enable', 'on');
 
 elseif meth==2 % 20 darkest, Mean value
     set([g.text_param1 edit_param1 g.text_xdark g.edit_xdark ...
         g.text_ydark g.edit_ydark g.checkbox_auto ...
-        g.pushbutton_show g.radiobutton_fix_param1], 'Enable', 'off');
+        g.radiobutton_fix_param1], 'Enable', 'off');
     set(g.edit_chan, 'Enable', 'inactive');
     set([g.text_subimdim edit_subimdim g.radiobutton_fix_subimdim], ...
         'Enable', 'on');
 
 elseif meth==3 % Mean value
     set([g.text_xdark g.edit_xdark g.text_ydark g.edit_ydark ...
-        g.checkbox_auto g.pushbutton_show], 'Enable', 'off');
+        g.checkbox_auto], 'Enable', 'off');
     set(g.edit_chan, 'Enable', 'inactive');
     set([g.text_param1 edit_param1 g.text_subimdim edit_subimdim ...
         g.radiobutton_fix_subimdim g.radiobutton_fix_param1], ...
@@ -80,7 +94,7 @@ elseif meth==3 % Mean value
 
 elseif meth==4 % Most frequent value, Histothresh 50% value
     set([g.text_xdark g.edit_xdark g.text_ydark g.edit_ydark ...
-        g.checkbox_auto g.pushbutton_show], 'Enable', 'off');
+        g.checkbox_auto], 'Enable', 'off');
     set(g.edit_chan, 'Enable', 'inactive');
     set([g.text_param1 edit_param1 g.text_subimdim edit_subimdim ...
         g.radiobutton_fix_subimdim g.radiobutton_fix_param1], ...
@@ -89,7 +103,7 @@ elseif meth==4 % Most frequent value, Histothresh 50% value
 
 elseif meth==5 % Histothresh
     set([g.text_xdark g.edit_xdark g.text_ydark g.edit_ydark ...
-        g.checkbox_auto g.pushbutton_show], 'Enable', 'off');
+        g.checkbox_auto], 'Enable', 'off');
     set(g.edit_chan, 'Enable', 'inactive');
     set([g.text_param1 edit_param1 g.text_subimdim edit_subimdim ...
         g.radiobutton_fix_subimdim g.radiobutton_fix_param1], ...
@@ -98,21 +112,27 @@ elseif meth==5 % Histothresh
         'Cumulative probability threshold');
 
 elseif meth==6 % Dark trace
-    set([g.text_param1 edit_param1 g.text_subimdim edit_subimdim ...
-        g.text_xdark g.text_ydark g.checkbox_auto g.pushbutton_show ...
-        g.radiobutton_fix_subimdim g.radiobutton_fix_param1], ...
-        'Enable', 'on');
+    set([g.text_param1 g.text_subimdim edit_subimdim g.text_xdark ...
+        g.text_ydark g.checkbox_auto g.radiobutton_fix_subimdim],'Enable',...
+        'on');
     if ~auto
         set([g.edit_xdark g.edit_ydark], 'Enable', 'on');
     else
        set([g.edit_xdark g.edit_ydark], 'Enable', 'inactive');
     end
     set(g.edit_chan, 'Enable', 'inactive');
-    set(edit_param1, 'TooltipString', 'Running average window size');
+    if dynbg
+        set(g.radiobutton_fix_param1,'enable','on');
+        set(edit_param1,'TooltipString','Running average window size',...
+            'enable','on');
+    else
+        set(g.radiobutton_fix_param1,'enable','off');
+        set(edit_param1,'enable','off');
+    end
 
 elseif meth==7 % Median value
     set([g.text_xdark g.edit_xdark g.text_ydark g.edit_ydark ...
-        g.checkbox_auto g.pushbutton_show], 'Enable', 'off');
+        g.checkbox_auto], 'Enable', 'off');
     set(g.edit_chan, 'Enable', 'inactive');
     set([g.text_param1 edit_param1 g.text_subimdim edit_subimdim ...
         g.radiobutton_fix_subimdim g.radiobutton_fix_param1], ...
