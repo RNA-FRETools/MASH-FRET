@@ -1,10 +1,11 @@
-function set_TP_background(meth,prm,apply,h_fig)
-% set_TP_background(meth,prm,apply,h_fig)
+function set_TP_background(meth,prm,dynbg,apply,h_fig)
+% set_TP_background(meth,prm,dynbg,apply,h_fig)
 %
 % Set background estimator to proper settings
 %
 % meth: index of background estimation method in list
 % prm: [nMeth-by-6] method parameters as set in getDefault_TP
+% dynbg: (1) dynamic background, (0) single value
 % apply: (1) subtract background, (0) otherwise
 % h_fig: handle to main figure
 
@@ -41,6 +42,9 @@ if meth==6
         edit_yDark_Callback(h.edit_yDark,[],h_fig);
     end
 end
+
+set(h.checkbox_TP_bgdyn,'value',dynbg);
+checkbox_TP_dynbg_Callback(h.checkbox_TP_bgdyn,[],h_fig);
 
 set(h.checkbox_trBgCorr,'value',apply);
 checkbox_trBgCorr_Callback(h.checkbox_trBgCorr,[],h_fig);

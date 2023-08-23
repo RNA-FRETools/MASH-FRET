@@ -174,10 +174,12 @@ p.bgPrm = [... % param1, param2, bg intensity, x-dark, y-dark, auto dark
 	0.5 20 0   0  0  0 % Histotresh
 	10  20 0   55 10 1 % Dark trace
 	2   20 0   0  0  0];% Median
+p.bgDyn = false;
 p.bgApply = true;
-p.exp_bgTrace1 = 'darkTrace_auto.png';
-p.exp_bgTrace2 = 'darkTrace_man.png';
-simgw = (5*(1:nScreenPrm))';
+p.exp_bgTrace0 = 'darkTrace_%s.png';
+p.exp_bgTrace1 = 'darkTrace_%s_auto.png';
+p.exp_bgTrace2 = 'darkTrace_%s_man.png';
+subimgw = (5*(1:nScreenPrm))';
 p.bgPrm_screen = [];
 for meth = 1:size(p.bgPrm,1)
     switch meth
@@ -195,7 +197,7 @@ for meth = 1:size(p.bgPrm,1)
         otherwise
             prm1screen = zeros(nScreenPrm,1);
     end
-    p.bgPrm_screen = cat(3,p.bgPrm_screen,[simgw,prm1screen]);
+    p.bgPrm_screen = cat(3,p.bgPrm_screen,[subimgw,prm1screen]);
 end
 p.exp_bgTrace_0D1 = 'darkTrace_0D_auto.png';
 p.exp_bgTrace_0D2 = 'darkTrace_0D_man.png';

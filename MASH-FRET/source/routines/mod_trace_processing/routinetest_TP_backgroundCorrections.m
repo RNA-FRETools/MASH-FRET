@@ -15,6 +15,9 @@ vid_type = {'multi-channel', 'single-channel'};
 [~,name,ext] = fileparts(p.mash_files{p.nL,p.nChan});
 mash_files = {p.mash_files{p.nL,p.nChan},[name,'_sgl',ext]};
 
+[~,name,ext] = fileparts(p.exp_bgTrace0);
+exp_bgTrace0 = {p.exp_bgTrace0,[name,'_sgl',ext]};
+
 [~,name,ext] = fileparts(p.exp_bgTrace1);
 exp_bgTrace1 = {p.exp_bgTrace1,[name,'_sgl',ext]};
 
@@ -43,34 +46,53 @@ for f = 1:numel(mash_files)
     str_meth = get(h.popupmenu_trBgCorr,'string');
     nMeth = numel(str_meth);
     nDat = numel(get(h.popupmenu_trBgCorr_data,'string'));
-    for meth = 1:nMeth
-        if meth==p.bgMeth
-            continue
-        end
-        disp(cat(2,prefix,'>> test ',str_meth{meth},'...'));
-        dat = meth;
-        if dat>nDat
-            dat = meth-ceil(meth/nDat-1)*nDat;
-        end
-        set(h.popupmenu_trBgCorr_data,'value',dat);
-        popupmenu_trBgCorr_data_Callback(h.popupmenu_trBgCorr_data,[],...
-            h_fig);
+    for dynbg = [0,1]
+        for meth = 1:nMeth
+            if meth==p.bgMeth
+                continue
+            end
+            if meth==1 && dynbg==1
+                continue
+            end
+            methstr = lower(strrep(str_meth{meth},' ',''));
+            if dynbg==1
+                disp(cat(2,prefix,'>> test dynamic ',str_meth{meth},'...'));
+            else
+                disp(cat(2,prefix,'>> test static ',str_meth{meth},'...'));
+            end
+            dat = meth;
+            if dat>nDat
+                dat = meth-ceil(meth/nDat-1)*nDat;
+            end
+            set(h.popupmenu_trBgCorr_data,'value',dat);
+            popupmenu_trBgCorr_data_Callback(h.popupmenu_trBgCorr_data,[],...
+                h_fig);
 
-        if meth==6
-            p.bgPrm(meth,6) = true;
-            set_TP_background(meth,p.bgPrm(meth,:),true,h_fig);
-            pushbutton_showDark_Callback(...
-                {[p.dumpdir,filesep,exp_bgTrace1{f}]},[],h_fig);
-            pushbutton_ttGo_Callback(h.pushbutton_ttGo,[],h_fig);
+            if meth==6
+                p.bgPrm(meth,6) = true;
+                set_TP_background(meth,p.bgPrm(meth,:),dynbg,true,h_fig);
+                if dynbg
+                    pushbutton_showDark_Callback({[p.dumpdir,filesep,...
+                        sprintf(exp_bgTrace1{f},methstr)]},[],h_fig);
+                end
+                pushbutton_ttGo_Callback(h.pushbutton_ttGo,[],h_fig);
 
-            p.bgPrm(meth,6) = false;
-            set_TP_background(meth,p.bgPrm(meth,:),true,h_fig);
-            pushbutton_showDark_Callback(...
-                {[p.dumpdir,filesep,exp_bgTrace2{f}]},[],h_fig);
-            pushbutton_ttGo_Callback(h.pushbutton_ttGo,[],h_fig);
-        else
-            set_TP_background(meth,p.bgPrm(meth,:),true,h_fig);
-            pushbutton_ttGo_Callback(h.pushbutton_ttGo,[],h_fig);
+                p.bgPrm(meth,6) = false;
+                set_TP_background(meth,p.bgPrm(meth,:),dynbg,true,h_fig);
+                if dynbg
+                    pushbutton_showDark_Callback({[p.dumpdir,filesep,...
+                        sprintf(exp_bgTrace2{f},methstr)]},[],h_fig);
+                end
+                pushbutton_ttGo_Callback(h.pushbutton_ttGo,[],h_fig);
+
+            else
+                set_TP_background(meth,p.bgPrm(meth,:),dynbg,true,h_fig);
+                if dynbg
+                    pushbutton_showDark_Callback({[p.dumpdir,filesep,...
+                        sprintf(exp_bgTrace0{f},methstr)]},[],h_fig);
+                end
+                pushbutton_ttGo_Callback(h.pushbutton_ttGo,[],h_fig);
+            end
         end
     end
     pushbutton_applyAll_ttBg_Callback(h.pushbutton_applyAll_ttBg,[],h_fig);

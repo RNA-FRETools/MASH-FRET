@@ -123,8 +123,6 @@ for f = 1:numel(mash_files)
             p.bgPrm(meth,6) = true;
             set_TP_BA(meth,p.bgPrm(meth,:),p.bgPrm_screen(:,:,meth),true,...
                 false,h_fig);
-            pushbutton_BA_show_Callback(...
-                {[p.dumpdir,filesep,exp_bgTrace_1D1{f}]},[],h_fig);
             pushbutton_BA_allChan_Callback(q.pushbutton_allChan,[],h_fig);
             pushbutton_BA_allMol_Callback(q.pushbutton_allMol,[],h_fig);
             pushbutton_BA_start_Callback(q.pushbutton_start,[],h_fig);
@@ -134,8 +132,6 @@ for f = 1:numel(mash_files)
             p.bgPrm(meth,6) = false;
             set_TP_BA(meth,p.bgPrm(meth,:),p.bgPrm_screen(:,:,meth),true,...
                 false,h_fig);
-            pushbutton_BA_show_Callback(...
-                {[p.dumpdir,filesep,exp_bgTrace_1D2{f}]},[],h_fig);
             pushbutton_BA_allChan_Callback(q.pushbutton_allChan,[],h_fig);
             pushbutton_BA_allMol_Callback(q.pushbutton_allMol,[],h_fig);
             pushbutton_BA_start_Callback(q.pushbutton_start,[],h_fig);
@@ -153,39 +149,15 @@ for f = 1:numel(mash_files)
     end
 
     disp(cat(2,prefix,'test 2D parameter screening...'));
-    for meth = 3:7
+    for meth = [3:5,7]
         disp(cat(2,prefix,'>> test ',str_meth{meth},'...'));
-        if meth==6
-            p.bgPrm(meth,6) = true;
-            set_TP_BA(meth,p.bgPrm(meth,:),p.bgPrm_screen(:,:,meth),false,...
-                false,h_fig);
-            pushbutton_BA_show_Callback(...
-                {[p.dumpdir,filesep,exp_bgTrace_2D1{f}]},[],h_fig);
-            pushbutton_BA_allChan_Callback(q.pushbutton_allChan,[],h_fig);
-            pushbutton_BA_allMol_Callback(q.pushbutton_allMol,[],h_fig);
-            pushbutton_BA_start_Callback(q.pushbutton_start,[],h_fig);
-            pushbutton_BA_save_Callback(...
-                {p.dumpdir,sprintf(exp_bga{f,3},meth)},[],h_fig);
-
-            p.bgPrm(meth,6) = false;
-            set_TP_BA(meth,p.bgPrm(meth,:),p.bgPrm_screen(:,:,meth),false,...
-                false,h_fig);
-            pushbutton_BA_show_Callback(...
-                {[p.dumpdir,filesep,exp_bgTrace_2D2{f}]},[],h_fig);
-            pushbutton_BA_allChan_Callback(q.pushbutton_allChan,[],h_fig);
-            pushbutton_BA_allMol_Callback(q.pushbutton_allMol,[],h_fig);
-            pushbutton_BA_start_Callback(q.pushbutton_start,[],h_fig);
-            pushbutton_BA_save_Callback(...
-                {p.dumpdir,sprintf(exp_bga{f,3},meth)},[],h_fig);
-        else
-            set_TP_BA(meth,p.bgPrm(meth,:),p.bgPrm_screen(:,:,meth),false,...
-                false,h_fig);
-            pushbutton_BA_allChan_Callback(q.pushbutton_allChan,[],h_fig);
-            pushbutton_BA_allMol_Callback(q.pushbutton_allMol,[],h_fig);
-            pushbutton_BA_start_Callback(q.pushbutton_start,[],h_fig);
-            pushbutton_BA_save_Callback(...
-                {p.dumpdir,sprintf(exp_bga{f,3},meth)},[],h_fig);
-        end
+        set_TP_BA(meth,p.bgPrm(meth,:),p.bgPrm_screen(:,:,meth),false,...
+            false,h_fig);
+        pushbutton_BA_allChan_Callback(q.pushbutton_allChan,[],h_fig);
+        pushbutton_BA_allMol_Callback(q.pushbutton_allMol,[],h_fig);
+        pushbutton_BA_start_Callback(q.pushbutton_start,[],h_fig);
+        pushbutton_BA_save_Callback(...
+            {p.dumpdir,sprintf(exp_bga{f,3},meth)},[],h_fig);
     end
     close(h.figure_bgopt);
 
