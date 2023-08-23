@@ -86,9 +86,9 @@ switch method
         bgStd = (bgI-sig)*sqrt(2*log(2)); % HWHM
         
     case 14 % N most probable
-        vals = sort(img,1);
-        bgI = mean(vals(round(size(vals,1)/2),:));
-        bgStd = std(vals(round(size(vals,1)/2),:));
+        vals = median(img,1);
+        bgI = mean(vals);
+        bgStd = std(vals);
         
     case 15 % median value
         switch p(1)
