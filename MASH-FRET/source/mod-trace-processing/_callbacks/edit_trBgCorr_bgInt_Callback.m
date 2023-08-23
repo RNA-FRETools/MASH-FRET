@@ -25,6 +25,7 @@ for l = 1:nExc
 end
 method = p.proj{proj}.TP.curr{mol}{3}{2}(l,c);
 if method~=1
+    ud_ttBg(h_fig);
     return
 end
 

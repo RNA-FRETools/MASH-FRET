@@ -9,7 +9,12 @@ if isempty(p.proj)
     return
 end
 
-setContPan('Process current traces...','process',h_fig);
+% display process
+if strcmp(opt1, 'subImg')
+    setContPan('Process current sub-images...','process',h_fig);
+else
+    setContPan('Process current traces...','process',h_fig);
+end
 
 % update images
 if ~(~isempty(axes) && isfield(axes, 'axes_molImg'))
@@ -26,6 +31,10 @@ p = plotSubImg(mol, p, axes_molImg);
 if strcmp(opt1, 'subImg')
     h = guidata(h_fig);
     h.param = p;
+    
+    % display success
+    setContPan('Sub-images are up to date!','success',h_fig);
+    
     return
 end
 
