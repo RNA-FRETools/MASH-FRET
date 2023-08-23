@@ -46,6 +46,9 @@ switch method
         
         img = reshape(img,1,N);
         img = sort(img);
+        [P,pixval] = histcounts(img,[0:max(img)+1]);
+        cumP = cumsum(P);
+        cumP = cumP/max(cumP);
         
 %         cumP = (1:N)/N;
 %         [img,id,o] = unique(img);
@@ -61,15 +64,17 @@ switch method
 %         cumP_length = cumP(i) - cumP(i-1);
 %         bgI = img(i-1) + (img(i)-img(i-1))*cumP_lower/cumP_length;
 
-        cumP = 1/(N*2):(1/N):1; % DK
+%         cumP = 1/(N*2):(1/N):1; % DK
         
         if sum(cumP==thresh)==1 % DK
-           bgI = img(cumP==thresh); % DK
+%            bgI = img(cumP==thresh); % DK
+           bgI = pixval(cumP==thresh); % DK
 
         else
             i = find(diff(cumP>thresh)==1); % DK
             perc = (thresh-cumP(i))/(cumP(i+1)-cumP(i)); % DK
-            bgI = (1-perc)*img(i)+(perc)*img(i+1); % DK
+%             bgI = (1-perc)*img(i)+(perc)*img(i+1); % DK
+            bgI = (1-perc)*pixval(i)+(perc)*pixval(i+1); % DK
         end
         
         [o,j,o] = find(cumP>=(thresh*(1-0.6827))); % thresh - 1 sigma
@@ -80,8 +85,10 @@ switch method
         
         cumP30_lower = thresh*(1-0.6827) - cumP(j-1);
         cumP30_length = cumP(j) - cumP(j-1);
-        sig = img(j-1) + ...
-            (img(j)-img(j-1))*cumP30_lower/cumP30_length;
+%         sig = img(j-1) + ...
+%             (img(j)-img(j-1))*cumP30_lower/cumP30_length;
+        sig = pixval(j-1) + ...
+            (pixval(j)-pixval(j-1))*cumP30_lower/cumP30_length;
 %         bgStd = (bgI-sig)*2.3548/2;
         bgStd = (bgI-sig)*sqrt(2*log(2)); % HWHM
         
