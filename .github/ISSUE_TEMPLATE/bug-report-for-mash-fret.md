@@ -3,7 +3,7 @@ name: Bug report for MASH-FRET
 about: Create a bug report to help us improve MASH-FRET
 title: MASH-FRET bug report
 labels: bug
-assignees: fdsteffen, mca-sh
+assignees: mca-sh
 
 ---
 
@@ -25,6 +25,9 @@ A clear and concise description of what you expected to happen.
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
+
+**Project file(s)**
+If applicable, attatch the `.mash` files concerned by the bug.
 
 **Desktop (please complete the following information):**
  - OS [e.g. Windows 10]
