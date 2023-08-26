@@ -1,6 +1,6 @@
 ---
 name: Bug report for MASH-FRET
-about: Create a bug report to help us improve MASH-FRET
+about: Report a MATLAB error occurring when using MASH-FRET
 title: MASH-FRET bug report
 labels: bug
 assignees: mca-sh
