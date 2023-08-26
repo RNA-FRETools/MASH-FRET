@@ -1,33 +1,30 @@
 ---
-name: Bug report for MASH-FRET
-about: Create a bug report to help us improve MASH-FRET
-title: MASH-FRET bug report
-labels: bug
+name: Question about MASH-FRET
+about: Ask your question about data analysis with MASH-FRET
+title: Question about analysis with MASH-FRET
+labels: question
 assignees: mca-sh
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Ask your question**
+A clear description of what your concern is.
 
 **To Reproduce**
-Steps to reproduce the behavior:
+If applicable, enumerate the steps to reproduce the behavior:
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
-4. See error
-
-**Error Code**
-Copy and Paste the full error code in Matlabs command history.
+4. See question
 
 **Expected behavior**
-A clear and concise description of what you expected to happen.
+If applicable, a clear description of what you expected to happen.
 
 **Screenshots**
-If applicable, add screenshots to help explain your problem.
+If applicable, add screenshots to help explain your concern.
 
 **Project file(s)**
-If applicable, attatch the `.mash` files concerned by the bug.
+If applicable, attatch the `.mash` files concerned by the question.
 
 **Desktop (please complete the following information):**
  - OS [e.g. Windows 10]
@@ -35,7 +32,7 @@ If applicable, attatch the `.mash` files concerned by the bug.
  - MASH-FRET Version [1.1.2]
 
 **Additional context**
-Add any other context about the problem here.
+Add any other context about the question here.
 
 **Your contact**
 Leave your email address.
