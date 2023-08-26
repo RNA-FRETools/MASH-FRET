@@ -8,20 +8,15 @@ assignees: mca-sh
 ---
 
 **Ask your question**
-A clear description of what your concern is.
+Ask your question here.
 
-**To Reproduce**
-If applicable, enumerate the steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See question
-
-**Expected behavior**
-If applicable, a clear description of what you expected to happen.
+**Interface location**
+Indicates the part of MASH-FRET which is involved in your question:
+module: choose [Simulation, Video processing, Trace processing, Histogram analysis or Transition analysis]
+panel: [panel's title]
 
 **Screenshots**
-If applicable, add screenshots to help explain your concern.
+If applicable, add screenshots to help explain your question.
 
 **Project file(s)**
 If applicable, attatch the `.mash` files concerned by the question.
