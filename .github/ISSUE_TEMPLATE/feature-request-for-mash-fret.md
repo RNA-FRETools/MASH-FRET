@@ -1,8 +1,8 @@
 ---
 name: Feature request for MASH-FRET
 about: Suggest an idea for this project
-title: I have a great idea I need to share with you developer guys
-labels: enhancement
+title: Feature request for MASH-FRET
+labels: feature request
 assignees: mca-sh, pflanzenhueter
 
 ---
