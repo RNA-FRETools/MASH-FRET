@@ -12,8 +12,9 @@ Ask your question here.
 
 **Interface location**
 Indicates the part of MASH-FRET which is involved in your question:
-module: choose [Simulation, Video processing, Trace processing, Histogram analysis or Transition analysis]
-panel: [panel's title]
+
+- module: choose [Simulation, Video processing, Trace processing, Histogram analysis or Transition analysis]
+- panel: [panel's title]
 
 **Screenshots**
 If applicable, add screenshots to help explain your question.
