@@ -1,6 +1,6 @@
 function ok = exclude_doublecoord(tol, coord)
-% Return a boolean vector regarding weather the input coordinates are in
-% double
+% Return a boolean vector regarding weather the input coordinates are
+% doublons
 % "coord" >> [n-by-2*m] array, contains the (x,y) coordinates in the m
 % channels
 % "tol" >> minimum spot-spot distance

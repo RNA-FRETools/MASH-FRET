@@ -58,7 +58,7 @@ if multichanvid
     lim = [0 (1:(nChan-1))*round(res_x/nChan) res_x];
 end
 
-ok = exclude_doublecoord(3, coordtr);
+ok = exclude_doublecoord(1,coordtr);
 coordtr = coordtr(ok',:);
 if ~isempty(coordtr)
     for i = 1:nChan
