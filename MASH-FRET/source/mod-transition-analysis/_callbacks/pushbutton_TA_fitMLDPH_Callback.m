@@ -155,12 +155,39 @@ if guessMeth==1 % determine guess from DPH fit & BIC model selection
         end
     else
         pname = '';
-    end
+    end    
 
-    [D,mdl,cmb,BIC_cmb,BIC] = ...
-        script_findBestModel(dat(:,[1,4,7,8]),Dmax,states,nL*expT,dt_bin,...
-        T_mldph,sumexp,pname);
+    [D,mdl,allmdl,~] = script_findBestModel(dat(:,[1,4,7,8]),Dmax,states,...
+        nL*expT,dt_bin,T_mldph,sumexp,pname);
+    
+    % collect minimum BIC values for each degeneracy tested
+    BIC = Inf(V,Dmax);
+    for v = 1:V
+        S = numel(allmdl{v});
+        for s = 1:S
+            Dv = numel(allmdl{v}(s).pi_fit);
+            if ~allmdl{v}(s).cvg
+                continue
+            end
+            BIC(v,Dv) = min([BIC(v,Dv),allmdl{v}(s).BIC]);
+        end
+    end
+    
+    % order BIC values for different degeneracy combinations
+    cmb = getCombinations(1:Dmax,1:V);
+    J = sum(cmb,2);
+    [~,id] = sort(J,'ascend');
+    cmb = cmb(id,:);
+    nCmb = size(cmb,1);
+    BIC_cmb = zeros(1,nCmb);
+    for c = 1:nCmb
+        for v = 1:V
+            BIC_cmb(c) = BIC_cmb(c) + BIC(v,cmb(c,v));
+        end
+    end
+    
     h = guidata(h_fig); % computation time of tph test stored in h.t_dphtest
+    h.t_dphtest = mdl.t_dphtest;
     
     % export DPH fit parameters and computation time
     if saveit
@@ -180,9 +207,7 @@ if guessMeth==1 % determine guess from DPH fit & BIC model selection
     
 else % use guess from panel "Exponential fit"
     % check for state lifetimes
-    r = [];
     degen = [];
-    A = [];
     if ~(isfield(prm,'lft_res') && ~isempty(prm.lft_res) && ...
             size(prm.lft_res,1)>=V && size(prm.lft_res,2)>=2)
         setContPan('State lifetime analysis must first be performed.',...

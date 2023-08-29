@@ -1,179 +1,127 @@
-function [degen,mdl,cmb,BIC_cmb,BIC] = script_findBestModel(dt,J_deg_max,...
-    states,expT,dt_bin,T,sumexp,savecurve)
-% [degen,mdl,cmb,BIC_cmb,BIC] = script_findBestModel(dt,J_deg_max,states,expT,dt_bin,T,sumexp)
+function [D,mdlopt,mdl,dthist] = script_findBestModel(dt,Dmax,states,...
+    expT,bin,T,sumexp,savecurve)
+% [D,mdlopt,mdl,dthist] = script_findBestModel(dt,Dmax,states,expT,bin,T,sumexp,savecurve)
 %
 % Import dwell times from .clst file
 % Find and return most sufficient model complexities (in terms of number of degenerated levels) for each state value
 % Plot PH fits and BIC results
 %
 % dt: [nDt-by-3] dwell times (s), molecule indexes, state values
-% J_deg_max: maximum number of degenerated levels
+% Dmax: maximum number of degenerated levels
 % states: [1-by-V] state values in dt
 % expT: bin time (s)
-% dt_bin: binning factor for dwell times prior building histogram
+% bin: binning factor for dwell times prior building histogram
 % T: number of restart
 % sumexp: (1) to fit a sume of exponential (0) to fit DPH
 % savecurve: empty or destination folder to save best fit curves
-% degen: [1-by-V] most sufficient model complexity (number of degenerated levels per state value)
-% mdl: structures containing best DPH fit parameters for the most sufficient model
-%   mdl.pi_fit: {1-by-V} starting probabilities
-%   mdl.tp_fit: {1-by-V} transition probabilities among degenerated states of a same state value
-%   mdl.logL: {1-by-V} log likelihoods for best fits
-%   mdl.N: [1-by-V] number of data
-% cmb: [nCmb-by-V] all possible combinations of model complexities
-% BIC_cmb: [1-by-nCmb] BIC for all complexity combinations
-% BIC: [V-by-J_deg_max] BIC for all complexities
-
-t_comp = tic;
+% D: [1-by-V] most sufficient model complexity (number of degenerated 
+%  levels per state value)
+% mdlopt: [V-by-1] structure array containing best DPH fit parameters for 
+%  the most sufficient model
+%   mdlopt.pi_fit: {1-by-V} starting probabilities
+%   mdlopt.tp_fit: {1-by-V} transition probabilities among degenerated 
+%    states of a same state value
+%   mdlopt.logL: {1-by-V} log likelihoods for best fits
+%   mdlopt.N: [1-by-V] number of data
+%   mdlopt.schm: {1-by-V} transition schemes
+% mdl: {V-by-1}[S-by-1] structure array containing DPH fit parameters 
+%  for model qualifications
+% dthist: {1-by-V} dwell time histograms
 
 % default
-plotIt = false;
+reffle = 'ref-table-schemes.mat'; % source file containing all transition schemes
 
-% Get optimum DPHs for each model complexity
-disp('Train DPH distributions on binned dwelltime histograms...')
+% load already found possible transitions schemes
+src = fileparts(mfilename('fullpath'));
+reffle = [src,filesep,reffle];
+schmD = {};
+schm_tp = {};
+ref.schmD = schmD;
+ref.schm_tp = schm_tp;
+if exist(reffle,'file')
+    ref = load(reffle);
+    schmD = ref.schmD;
+    schm_tp = ref.schm_tp;
+end
+
+% initialize computation time
+t_comp = tic;
+
+% get dwell time histograms
 V = numel(states);
-mdl = cell(1,J_deg_max);
-logL = Inf(V,J_deg_max);
-for J_deg = 1:J_deg_max
-    fprintf('for %i degenerated states:\n',J_deg);
-    mdl{J_deg} = script_inferPH(dt,states,expT,dt_bin,T,...
-        repmat(J_deg,[1,V]),plotIt,sumexp,'');
-    LogL_v = [];
-    for v = 1:V
-        LogL_v = cat(1,LogL_v,mdl{J_deg}.logL(v));
-    end
-    logL(:,J_deg) = LogL_v;
-end
-
-% calculate BIC for all possible combinations of DPHs
-Nv = mdl{1}.N;
-% N = sum(Nv);
-cmb = getCombinations(1:J_deg_max,1:V);
-
-% remove combinations with multiple degenerated levels if state is a trap
+dthist = cell(1,V);
+dthist_bin = cell(1,V);
 for v = 1:V
-    if Nv(v)==0
-        cmb = cmb(cmb(:,v)==1,:);
-        logL(v,1) = 0;
+    dt_v = dt(dt(:,3)==v,1);
+    if isempty(dt_v)
+        continue
     end
+    dt_v(:,1) = dt_v(:,1)/expT;
+    
+    % original dwell time histogram
+    edg = 0.5:(max(dt_v)+0.5);
+    x = mean([edg(2:end);edg(1:end-1)],1);
+    P = histcounts(dt_v,edg);
+    dthist{v} = [x',P'];
+    
+    % binned dwell time histogram
+    dt_bin = bin*round(dt_v/bin); 
+    edg = (bin/2):(max(dt_bin)+bin/2);
+    x = mean([edg(2:end);edg(1:end-1)],1);
+    P = histcounts(dt_bin,edg);
+    dthist_bin{v} = [x',P'];
 end
 
-% calculate BIC for each DPH
-BIC = -Inf(V,J_deg_max);
-for J_deg = 1:J_deg_max
-    if sumexp
-        df = 2*J_deg-1; % (J-1) initial prob, J trans prob
-    else
-        df = J_deg*(J_deg+1)-1; % (J-1) initial prob, J^2 trans prob
-    end
-    for v = 1:V
-        BIC(v,J_deg) = df*log(Nv(v))-2*logL(v,J_deg);
-    end
+% Perorm ML-DPH
+dispProgress('Perform ML-DPH on binned dwelltime histograms...\n',0);
+mdl = cell(1,V);
+schm_opt = cell(1,V);
+for v = 1:V
+    fprintf('for state %i/%i:\n',v,V);
+    [schm_opt{v},mdl{v}] = MLDPH(dthist_bin{v},T,sumexp,Dmax);
 end
 
-nCmb = size(cmb,1);
-J = sum(cmb,2);
-[J,id] = sort(J,'ascend');
-cmb = cmb(id,:);
-% df = ((J.^2)-1)'; % (J-1) initial prob, J*(J-1) trans prob
-% BIC_cmb = -Inf(1,nCmb);
-BIC_cmb = zeros(1,nCmb);
-for c = 1:nCmb
-%     logL_c = 0;
-    for v = 1:V
-%         logL_c = logL_c + logL(v,cmb(c,v));
-        BIC_cmb(c) = BIC_cmb(c) + BIC(v,cmb(c,v));
-    end
-%     BIC_cmb(c) = df(c)*log(N)-2*logL_c;
+% append reference file
+if ~isequal(schmD,ref.schmD) || ~isequal(schm_tp,ref.schm_tp)
+    save(reffle,'schmD','schm_tp','-mat');
 end
 
-% [~,cmb_opt] = min(BIC_cmb);
-% degen = cmb(cmb_opt,:);
+% show most sufficient state configuration
 id = [];
-degen = zeros(1,V);
+D = zeros(1,V);
 for v = 1:V
-    [~,degen(v)] = min(BIC(v,:));
-    id = cat(2,id,repmat(v,[1,degen(v)]));
+    D(v) = size(schm_opt{v},1)-2;
+    id = cat(2,id,repmat(v,[1,D(v)]));
 end
 fprintf(['Most sufficient state configuration:\n[%0.2f',...
     repmat(',%0.2f',[1,numel(states(id))-1]),']\n'],states(id));
 
 % infer "true" DPH parameters
-disp('Optimize DPH distributions on authentic dwell time histograms...')
-mdl = script_inferPH(dt,states,expT,1,T,degen,false,sumexp,savecurve);
+fprintf('ML-optimization of DPH on authentic dwell time histograms...\n');
+mdlopt.pi_fit = cell(1,V);
+mdlopt.tp_fit = cell(1,V);
+mdlopt.schm = cell(1,V);
+mdlopt.logL = zeros(1,V);
+mdlopt.N = zeros(1,V);
+mdlopt.BIC = zeros(1,V);
+for v = 1:V
+    if ~isempty(savecurve)
+        ffile = [savecurve,sprintf('_dph_state%iD%i_dphplot',v,D(v))];
+    else
+        ffile = [];
+    end
+    mdl_v = script_inferPH(dthist{v},T,schm_opt{v},ffile);
+    mdlopt.pi_fit{v} = mdl_v.pi_fit;
+    mdlopt.tp_fit{v} = mdl_v.tp_fit;
+    mdlopt.schm{v} = mdl_v.schm;
+    mdlopt.logL(v) = mdl_v.logL;
+    mdlopt.N(v) = mdl_v.N;
+    nfp = sum(sum(mdl_v.schm))-1;
+    mdlopt.BIC(v) = nfp*log(mdl_v.N)-2*mdl_v.logL;
+end
 
 % save computation time
-mdl.t_dphtest = toc(t_comp);
+mdlopt.t_dphtest = toc(t_comp);
 
 fprintf('Most sufficient model complexity found in %0.0f seconds\n',...
     toc(t_comp));
-
-% for DPH test: store initial time
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-hfig = gcf;
-h = guidata(hfig);
-h.t_dphtest = t_comp;
-guidata(hfig,h);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-if ~plotIt
-    return
-end
-
-% plot results
-hfig1 = figure('color','white');
-hfig1.Position = ...
-    [hfig1.Position([1,2]),2*V*hfig1.Position(3)/2,hfig1.Position(4)];
-
-% plot BIC for each dwell time histogram
-incl = ~isinf(BIC);
-J_degs = 1:J_deg_max;
-for v = 1:V
-    ha = subplot(1,2*V,v);
-    xlabel(sprintf('Model complexity for state %i',v));
-    plot(ha,J_degs(incl(v,:)),(BIC(v,incl(v,:))-min(BIC(v,incl(v,:))))/...
-        (max(BIC(v,incl(v,:)))-min(BIC(v,incl(v,:)))),'+b',...
-        'linewidth',2);
-    ha.YLim = [0,1];
-    ha.XLim = [0.5,J_deg_max+0.5];
-    if v==1
-        ylabel('normalized BIC');
-    end
-end
-
-% plot BIC for each combination of dwell time histograms
-incl = ~isinf(BIC_cmb);
-cmbs = 1:nCmb;
-ha = subplot(1,2,2);
-xlabel('Model complexity');
-plot(ha,cmbs(incl),BIC_cmb(incl),'+b','linewidth',2);
-if min(BIC_cmb(incl))==max(BIC_cmb(incl))
-    ha.YLim = min(BIC_cmb(incl)) + [-1,1];
-else
-    ha.YLim = [min(BIC_cmb(incl)),max(BIC_cmb(incl))];
-end
-ha.XLim = [0.5,nCmb+0.5];
-ha.XTick = cmbs;
-ha.XTickLabel = compose(repmat('%i',1,V),cmb)';
-if v==1
-    ylabel('normalized BIC');
-end
-
-drawnow;
-
-
-function cmb = getCombinations(js,vs)
-
-cmb = [];
-for v = 1:numel(vs)
-    if v>1
-        cmb_add = [];
-        for j = 1:numel(js)
-            cmb_add = cat(1,cmb_add,cat(2,cmb,repmat(js(j),size(cmb,1),1)));
-        end
-        cmb = cmb_add;
-    else
-        cmb = js';
-    end
-end
-
