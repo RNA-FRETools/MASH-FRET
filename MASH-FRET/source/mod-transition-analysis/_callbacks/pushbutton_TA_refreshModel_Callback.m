@@ -217,7 +217,16 @@ expPrm.dt = dat(:,[1,4,end-1,end]);
 expPrm.excl = excl;
 expPrm.seq = seq;
 
-[tp,err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T_bw); % transition prob
+% eps = minpercent*nMol/sum(expPrm.Ls);
+eps = 1/(sum(expPrm.Ls)-2*numel(expPrm.Ls));
+schm = true(J);
+tp = ones(J);
+iter = 1;
+while iter==1 || any(tp(schm)<eps)
+    schm = schm & tp>=eps;
+    [tp,err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T_bw,schm); % transition prob
+    iter = iter+1;
+end
 
 prm.mdl_res(1:4) = {tp,err,ip,simdat};
 
