@@ -28,6 +28,9 @@ p_panel = curr{4};
 chan = fix{3}(4);
 method = p_panel{1}(1);
 toBot = p_panel{1}(2);
+recalc = p_panel{1}(3);
+
+set(h.checkbox_recalcStates,'value',recalc);
 
 data_str = getStrPop('DTA_chan',{labels FRET S exc clr});
 nFRET = size(FRET,1);
@@ -162,6 +165,10 @@ else
             set(h_param([2,3]),'Enable','off','string','');
             set(h_param_txt([2,3]),'Enable','off');
             set(h_param(1),'TooltipString','Maximum number of states');
+
+        case 7 % imported
+            set(h_param(1:3),'Enable','off','string','');
+            set(h_param_txt(1:3),'Enable','off');
     end
 end
 

@@ -9,6 +9,7 @@ p = h.param;
 viddim = p.proj{p.curr_proj}.movie_dim;
 nChan = p.proj{p.curr_proj}.nb_channel;
 curr = p.proj{p.curr_proj}.VP.curr;
+prm = p.proj{p.curr_proj}.VP.prm;
 def = p.proj{p.curr_proj}.VP.def;
 coord2tr = curr.res_crd{1};
 tr = curr.res_crd{2};
@@ -46,8 +47,8 @@ for mov = 1:nMov
     q.res_y(mov) = viddim{mov}(2);
 end
 q.nChan = nChan;
-q.spotDmin = ones(1,nChan);
-q.edgeDmin = ones(1,nChan);
+q.spotDmin = prm.gen_crd{2}{3}(:,6)';
+q.edgeDmin = prm.gen_crd{2}{3}(:,7)';
 coordtr = applyTrafo(tr,coord2tr,q,h_fig);
 if isempty(coordtr)
     return
