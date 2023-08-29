@@ -70,7 +70,6 @@ for i = 1:numel(dat_val)
               % cancelled by MH, 2.4.2019
 %               mu_ref = mu;
 %         end
-
         dat(dat==mu) = randsample(x, numel(dat(dat==mu)), true, P);
         
     else

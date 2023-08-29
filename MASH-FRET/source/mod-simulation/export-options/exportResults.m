@@ -88,6 +88,10 @@ discr_blurr = permute(prm.res_dat{2}(:,1,:),[1,3,2]);
 discr = permute(prm.res_dat{2}(:,2,:),[1,3,2]);
 discr_seq = permute(prm.res_dat{2}(:,3,:),[1,3,2]);
 
+% correct for negative detection
+Idon(Idon<0) = 0;
+Iacc(Iacc<0) = 0;
+
 L = size(Idon,1);
 dat = p.proj{proj};
 dat.FRET_DTA = discr;
