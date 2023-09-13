@@ -24,7 +24,6 @@ function h = buildPanelTPfactorCorrections(h,p)
 hedit0 = 20;
 htxt0 = 13;
 hpop0 = 22;
-wedit0 = 40;
 fact = 5;
 str0 = 'data';
 str1 = 'method';
@@ -51,6 +50,7 @@ wbut0 = getUItextWidth(str3,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 wtxt0 = getUItextWidth(str4,p.fntun,p.fntsz1,'normal',p.tbl);
 wpop0 = (pospan(3)-p.mg-2*p.mg/fact-wbut0-p.mg)/2;
 wbut1 = getUItextWidth(str8,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
+wedit0 = getUItextWidth(str6,p.fntun,p.fntsz1,'normal',p.tbl);
 
 x = p.mg;
 y = pospan(4)-p.mgpan-htxt0;

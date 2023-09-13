@@ -61,7 +61,8 @@ nDat = numel(get(h.popupmenu_trBgCorr_data,'string'));
 for dat = 1:nDat
     set(h.popupmenu_trBgCorr_data,'value',dat);
     popupmenu_trBgCorr_data_Callback(h.popupmenu_trBgCorr_data,[],h_fig);
-    set_TP_background(p.bgMeth,p.bgPrm(p.bgMeth,:),p.bgApply,h_fig);
+    set_TP_background(p.bgMeth,p.bgPrm(p.bgMeth,:),p.bgDyn,p.bgApply,...
+        h_fig);
 end
 pushbutton_applyAll_ttBg_Callback(h.pushbutton_applyAll_ttBg,[],h_fig);
 

@@ -27,7 +27,7 @@ else
     [o,defname,o] = fileparts(p.proj{proj}.proj_file);
     defname = [setCorrectPath('traces_processing', g.figure_MASH) ...
         'optimisation' filesep defname];
-    [pname,fname,o] = uiputfile({'*.bga', ...
+    [fname,pname,o] = uiputfile({'*.bga', ...
         'Background analyzer results(*.bga)'; '*.*', 'All files(*.*)'}, ...
         'Export BG optimisation', defname);
 end
@@ -45,6 +45,7 @@ for l = 1:nExc
         for m = 1:nMol
             if m==1
                 meth = g.param{1}{m}(l,c,1);
+                dynbg = g.param{1}{m}(l,c,8);
                 dat = g.res{m,l,c}(:,2:end);
             end
             if meth~=g.param{1}{m}(l,c,1)
@@ -69,21 +70,21 @@ for l = 1:nExc
             prm = [];
             fprintf(f, ['mean_value' str_un '\tstd_value' str_un '\t' ...
                 repmat(['mol_%i' str_un '\t'], [1,nMol]) '\n'], (1:nMol)');
-        elseif sum(meth==(3:7)) % sub image, param 1
+        elseif sum(meth==([3:5,7])) || meth==6 && dynbg==1 % sub image, param 1
             prm = [1 2];
             fprintf(f, ['param_1\tsubimage_size(pix)\t' ...
                 'mean_value' str_un '\tstd_value' str_un '\t' ...
                 repmat(['mol_%i' str_un '\t'],[1,nMol]) '\n'], (1:nMol)');
         else % sub image
-            prm = 1;
+            prm = 2;
             fprintf(f, ['subimage_size(pix)\tmean_value' str_un ...
                 '\tstd_value' str_un '\t' repmat(['mol_%i' str_un ...
                 '\t'],[1,nMol]) '\n'], (1:nMol)');
         end
         means = mean(dat(:,(numel(prm)+1):end),2);
         stds = std(dat(:,(numel(prm)+1):end),0,2);
-        fprintf(f, [repmat('%d\t', [1,(size(dat,2)-3)+numel(prm)+2]) ...
-            '\n'], [dat(:,prm) means stds dat(:,4:end)]');
+        fprintf(f, [repmat('%d\t',[1,size(dat,2)+numel(prm)]),'\n'],...
+            [dat(:,prm) means stds dat(:,3:end)]');
         fclose(f);
     end
 end

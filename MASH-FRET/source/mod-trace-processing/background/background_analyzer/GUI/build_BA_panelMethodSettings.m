@@ -20,12 +20,13 @@ str6 = 'XXXXX at 999nm';
 str7 = 'Most frequent value';
 str8 = 'auto';
 str9 = 'Opt.';
-str10 = 'current molecule';
-str11 = 'BG value';
-str12 = char(9668);
-str13 = char(9658);
-str14 = 'Set for all molecules';
-str15 = 'Set for all channels';
+str10 = 'dynamic';
+str11 = 'current molecule';
+str12 = 'background value';
+str13 = char(9668);
+str14 = char(9658);
+str15 = 'Set for all molecules';
+str16 = 'Set for all channels';
 ttstr0 = 'Channel';
 ttstr1 = 'Background correction method';
 ttstr2 = 'Sub-image dimensions';
@@ -33,12 +34,13 @@ ttstr3 = 'x-coordinates for dark trace';
 ttstr4 = 'y-coordinates for dark trace';
 ttstr5 = 'Determine automatically dark coordinates';
 ttstr6 = 'Show background intensity-time trace';
-ttstr7 = 'Go to previous molecule in the list';
-ttstr8 = 'Current molecule index';
-ttstr9 = 'Go to next molecule in the list';
-ttstr10 = 'Background intensity';
-ttstr11 = 'Apply current settings to all molecules';
-ttstr12 = 'Apply current settings to all intensities in the list';
+ttstr7 = 'Subtract background intensity-time trace';
+ttstr8 = 'Go to previous molecule in the list';
+ttstr9 = 'Current molecule index';
+ttstr10 = 'Go to next molecule in the list';
+ttstr11 = 'Background intensity';
+ttstr12 = 'Apply current settings to all molecules';
+ttstr13 = 'Apply current settings to all intensities in the list';
 
 % parent
 h_pan = q.uipanel_determine_bg;
@@ -53,11 +55,12 @@ wpop0 = getUItextWidth(str6,p.fntun,p.fntsz,'normal',p.tbl) + p.warr;
 wpop1 = getUItextWidth(str7,p.fntun,p.fntsz,'normal',p.tbl) + p.warr;
 wcb0 = getUItextWidth(str8,p.fntun,p.fntsz,'normal',p.tbl) + p.wbox;
 wbut0 = getUItextWidth(str9,p.fntun,p.fntsz,'normal',p.tbl) + p.wbrd;
-wbut1 = getUItextWidth(str12,p.fntun,p.fntsz,'normal',p.tbl) + p.wbrd;
-wtxt0 = 2*wbut1 + 2*p.mg/2;
-wtxt1 = getUItextWidth(str11,p.fntun,p.fntsz,'normal',p.tbl);
-wbut2 = getUItextWidth(str14,p.fntun,p.fntsz,'normal',p.tbl) + p.wbrd;
-wbut3 = getUItextWidth(str15,p.fntun,p.fntsz,'normal',p.tbl) + p.wbrd;
+wcb1 = getUItextWidth(str10,p.fntun,p.fntsz,'normal',p.tbl) + p.wbox;
+wbut1 = getUItextWidth(str13,p.fntun,p.fntsz,'normal',p.tbl) + p.wbrd;
+wtxt0 = getUItextWidth(str11,p.fntun,p.fntsz,'normal',p.tbl);
+wtxt1 = getUItextWidth(str12,p.fntun,p.fntsz,'normal',p.tbl);
+wbut2 = getUItextWidth(str15,p.fntun,p.fntsz,'normal',p.tbl) + p.wbrd;
+wbut3 = getUItextWidth(str16,p.fntun,p.fntsz,'normal',p.tbl) + p.wbrd;
 
 % collect inetrface parameters
 h = guidata(h_fig);
@@ -165,40 +168,48 @@ q.pushbutton_show = uicontrol('style','pushbutton','parent',h_pan,'units',...
     [x,y,wbut0,p.hbut],'cdata',img0,'tooltipstring',ttstr6,'callback',...
     {@pushbutton_BA_show_Callback,h_fig});
 
-x = p.mg;
+x = p.mg+wpop0+p.mg;
+y = y-p.hcb;
+
+q.checkbox_dyn = uicontrol('style','checkbox','parent',h_pan,'units',...
+    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz,'position',...
+    [x,y,wcb1,p.hcb],'string',str10,'tooltipstring',ttstr7,'callback',...
+    {@checkbox_BA_dyn_Callback,h_fig});
+
+x = p.mg+wbut1+p.mg/2;
 y = y-p.mg-p.htxt;
 
 q.text_curmol = uicontrol('style','text','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz,'position',[x,y,wtxt0,p.htxt],...
-    'string',str10);
+    'string',str11);
 
-x = x+wtxt0+p.mg;
+x = x+wtxt0+p.mg/2+wbut1+p.mg;
 
 q.text_bgval = uicontrol('style','text','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz,'position',[x,y,wtxt1,p.htxt],...
-    'string',str11);
+    'string',str12);
 
 x = p.mg;
 y = y-p.hpop;
 
 q.pushbutton_prevmol = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz,'position',...
-    [x,y,wbut1,p.hbut],'string',str12,'tooltipstring',ttstr7,'callback',...
+    [x,y,wbut1,p.hbut],'string',str13,'tooltipstring',ttstr8,'callback',...
     {@pushbutton_BA_prevmol_Callback,h_fig});
 
 x = x+wbut1+p.mg/2;
 y = y+(p.hpop-p.hedit)/2;
 
 q.edit_curmol = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz,'position',[x,y,p.wedit,p.hedit],...
-    'tooltipstring',ttstr8,'callback',{@edit_BA_curmol_Callback,h_fig});
+    'fontunits',p.fntun,'fontsize',p.fntsz,'position',[x,y,wtxt0,p.hedit],...
+    'tooltipstring',ttstr9,'callback',{@edit_BA_curmol_Callback,h_fig});
 
-x = x+p.wedit+p.mg/2;
+x = x+wtxt0+p.mg/2;
 y = y-(p.hpop-p.hedit)/2;
 
 q.pushbutton_nextmol = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz,'position',...
-    [x,y,wbut1,p.hbut],'string',str13,'tooltipstring',ttstr9,'callback',...
+    [x,y,wbut1,p.hbut],'string',str14,'tooltipstring',ttstr10,'callback',...
     {@pushbutton_BA_nextmol_Callback,h_fig});
 
 x = x+wbut1+p.mg;
@@ -206,21 +217,21 @@ y = y+(p.hpop-p.hedit)/2;
 
 q.edit_chan = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz,'position',[x,y,wtxt1,p.hedit],...
-    'tooltipstring',ttstr10,'callback',{@edit_BA_chan_Callback,h_fig});
+    'tooltipstring',ttstr11,'callback',{@edit_BA_chan_Callback,h_fig});
 
 x = pospan(3)-p.mg-wbut3;
 y = y-(p.hpop-p.hedit)/2;
 
 q.pushbutton_allChan = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz,'position',...
-    [x,y,wbut3,p.hbut],'string',str15,'tooltipstring',ttstr12,'callback',...
+    [x,y,wbut3,p.hbut],'string',str16,'tooltipstring',ttstr13,'callback',...
     {@pushbutton_BA_allChan_Callback,h_fig},'foregroundcolor',p.fntclr2);
 
 x = x-p.mg-wbut2;
 
 q.pushbutton_allMol = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz,'position',...
-    [x,y,wbut2,p.hbut],'string',str14,'tooltipstring',ttstr11,'callback',...
+    [x,y,wbut2,p.hbut],'string',str15,'tooltipstring',ttstr12,'callback',...
     {@pushbutton_BA_allMol_Callback,h_fig},'foregroundcolor',p.fntclr2);
 
 

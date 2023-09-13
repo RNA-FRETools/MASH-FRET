@@ -11,15 +11,10 @@ g = guidata(h.bga.figure_bgopt);
 p = h.param;
 if ~isempty(p.proj)
     if iscell(obj)
-        coord = dispDark_BA(g.figure_bgopt,obj{1});
+        dispDark_BA(g.figure_bgopt,obj{1});
     else
-        coord = dispDark_BA(g.figure_bgopt);
+        dispDark_BA(g.figure_bgopt);
     end
-    m = g.curr_m;
-    l = g.curr_l;
-    c = g.curr_c;
-    g.param{1}{m}(l,c,4) = coord(1);
-    g.param{1}{m}(l,c,5) = coord(2);
 end
 guidata(g.figure_bgopt, g);
 ud_BAfields(g.figure_bgopt);

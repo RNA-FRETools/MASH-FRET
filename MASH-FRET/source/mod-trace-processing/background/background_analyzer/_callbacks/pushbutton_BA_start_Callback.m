@@ -44,7 +44,7 @@ for m = mols
     isprm1 = sum([sum(sum(g.param{1}{m}(:,:,1)==3)) ...
         sum(sum(g.param{1}{m}(:,:,1)==4)) ...
         sum(sum(g.param{1}{m}(:,:,1)==5)) ...
-        sum(sum(g.param{1}{m}(:,:,1)==6)) ...
+        sum(sum(g.param{1}{m}(:,:,1)==6 & g.param{1}{m}(:,:,8)==1)) ...
         sum(sum(g.param{1}{m}(:,:,1)==7))]) ;
     if g.param{3}(1) || ~isprm1 % fix param 1
         p1 = g.param{1}{m}(:,:,2);
@@ -55,9 +55,13 @@ for m = mols
     end
     for i1 = 1:size(p1,3)
         for i2 = 1:size(subdim,3)
-            bg = calcBg_BA(m, p1(:,:,i1), subdim(:,:,i2), g.figure_bgopt);
+            [bg,coord_dark] = calcBg_BA(m,p1(:,:,i1),subdim(:,:,i2),...
+                g.figure_bgopt);
             for l = 1:nExc
                 for c = 1:nChan
+                    if g.param{1}{m}(l,c,1)==6
+                        g.param{1}{m}(l,c,4:5) = coord_dark{l,c};
+                    end
                     if i1==1 && i2==1
                         g.param{1}{m}(l,c,7) = bg(l,c);
                     end

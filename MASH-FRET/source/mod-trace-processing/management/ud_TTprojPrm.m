@@ -108,7 +108,7 @@ if isModuleOn(p,'TP')
             'enable','on');
         set(h.popupmenu_trBgCorr, 'Value', 1, 'String', {'Manual', ...
             '<N median values>', 'Mean value', 'Most frequent value', ...
-            'Histothresh', 'Dark trace', 'Median value'});
+            'Histothresh', 'Dark coordinates', 'Median value'});
     end
     
     % manage control visibility for gamma correction

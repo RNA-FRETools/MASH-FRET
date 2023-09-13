@@ -41,12 +41,16 @@ Use this panel to estimate and subtract background intensities to intensity-time
 
 Use this interface to define the background correction method.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-bg-param.png"><img src="../../assets/images/gui/TP-panel-bg-param.png" style="max-width: 237px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-bg-param.png"><img src="../../assets/images/gui/TP-panel-bg-param.png" style="max-width: 240px;"/></a>
 
 Background estimation methods are configured for individual intensity-time traces that can be selected in menu **(a)**.
 
 MASH includes seven background estimation methods that can be selected in menu **(b)**.
 To configure a method, set parameters **(c - g)** according to the detailed description given in the table below.
+
+Each of these methods (except `Manual`) can be used to calculate a **single background value** or a **background trajectory**.
+The second yields a more accurate correction, especially when the background is varying in time (*e. g.* in the case of a bleaching fluorescent background or a loss of focus).
+The type of correction is selected by deactivating or activating the option **(h)**, respectively.
 
 | filter                                            | description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | default parameters                                                        |
 | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
@@ -55,15 +59,17 @@ To configure a method, set parameters **(c - g)** according to the detailed desc
 | `Median value`                                    | The background intensity is estimated in the sub image of dimension **(d)**-by-**(d)**, either as the median of median pixels in the row dimension if **(c)** = 1, or as an average between the medians of median pixels in the row dimension and in the column dimension if **(c)** = 2                                                                                                                                                                                                                                      | **(c)** = 2, **(d)** = 20                                                 |
 | `Histothresh`                                     | The background intensity is estimated as the intensity corresponding to a probability **(c)** in the cumulative distribution of intensities in the sub-image of dimensions **(d)**-by-**(d)** pixels.                                                                                                                                                                                                                                                                                                                         | **(c)** = 0.5, **(d)** = 20                                               |
 | `<N median values>`                               | The background intensity is estimated as the average of median pixels in each columns of the sub-image of dimensions **(d)**-by-**(d)** pixels                                                                                                                                                                                                                                                                                                                                                                                | **(d)** = 20                                                              |
-| `Dark trace`                                      | The background trace is calculated from a dark pixel located at position x=**(f)** and y=**(g)** that can be detected automatically in a **(d)**-by-**(d)** sub-image if **(h)** is activated. The trace is smoothed with the denoising method [Sliding average](panel-denoising.html#sliding-average) and an sliding window size of **(c)** frames prior being subtracted                                                                                                                                                    |  **(c)** = 10, **(d)** = 20, **(e)** = 0, **(f)** = 0, **(g)** activated  |
-| `Manual`                                          | The background intensity in estimated by the user and set in [Background intensity](#background-intensity)                                                                                                                                                                                                                                                                                                                                                                                                                    |                                                                           |
+| `Dark coordinates`                                | The background is calculated from a dark pixel located at position x=**(f)** and y=**(g)** that can be automatically found in a **(d)**-by-**(d)** sub-image if **(h)** is activated. When used to calculate a background trajectory, the background trace is smoothed with the denoising method [Sliding average](panel-denoising.html#sliding-average) and an sliding window size of **(c)** frames prior being subtracted                                                                                                                                                    |  **(c)** = 10, **(d)** = 20, **(e)** = 0, **(f)** = 0, **(g)** activated  |
+| `Manual`                                          | The background intensity is estimated by the user and set in [Background intensity](#background-intensity)                                                                                                                                                                                                                                                                                                                                                                                                                    |                                                                           |
 
-For method `Dark trace`, the dark pixel coordinates are shown by a green cross mark on the corresponding 
+
+
+For method `Dark coordinates`, the dark pixel coordinates are shown by a green cross mark on the corresponding 
 [Sub-images](area-visualization.html#single-molecule-images).
 
-The smoothed background intensity-time trace can be shown by pressing 
+Background intensity-time trace are shown after pressing 
 ![View](../../assets/images/gui/TP-but-view.png "View"). 
-In this case, an additional window appears with the dark trace plot in intensity units defined by menu `Units` of the 
+In this case, an additional window appears and shows the dark trace plot in intensity units defined by menu `Units` of the 
 [menu bar](../../Getting_started.html#interface).
 
 ![Dark trace](../../assets/images/gui/TP-panel-bg-darktrace.png "Dark trace")
@@ -91,7 +97,7 @@ Displays the background intensity estimated by the method  and for the intensity
 
 For method `Manual`, the background intensity to subtract must be set here.
 
-As the method `Dark tarce` calculates a background trajectory and not an intensity, the mean value of the dark trace is displayed here.
+When background trajectories are calculated, the mean value of the dark trace is displayed here.
 
 The background intensity is given in image counts or in counts per second according to intensity units defined in menu `Units` of the 
 [menu bar](Getiing_started.html#interface).

@@ -44,7 +44,11 @@ Select the molecule by using
 ![>](../../assets/images/gui/TP-but-sup.png ">"), or by setting the molecule index in **(a)**, and the intensity time trace in list **(b)**.
 
 MASH includes seven background estimation methods that can be selected in list **(b)**.
-After selecting a method, set parameters **(d - i)** according to the detailed description given in the table below.
+After selecting a method, set parameters **(d - j)** according to the detailed description given in the table below.
+
+Each of these methods (except `Manual`) can be used to calculate a **single background value** or a **background trajectory**.
+The second yields a more accurate correction, especially when the background is varying in time (*e. g.* in the case of a bleaching fluorescent background or a loss of focus).
+The type of correction is selected by deactivating or activating the option **(i)**, respectively.
 
 | filter |description | default parameters |
 | ------ | -----------| ------------------ |
@@ -53,17 +57,24 @@ After selecting a method, set parameters **(d - i)** according to the detailed d
 | `Median value` | The background intensity is estimated in the sub image of dimension **(e)**-by-**(e)**, either as the median of median pixels in the row dimension if **(d)** = 1, or as an average between the medians of median pixels in the row dimension and in the column dimension if **(d)** = 2 | **(d)** = 2, **(e)** = 20 |
 | `Histothresh` | The background intensity is estimated as the intensity corresponding to a probability **(d)** in the cumulative distribution of intensities in the sub-image of dimensions **(e)**-by-**(e)** pixels. | **(d)** = 0.5, **(e)** = 20 |
 | `<N median values>` | The background intensity is estimated as the average of median pixels in each columns of the sub-image of dimensions **(e)**-by-**(e)** pixels | **(e)** = 20 |
-| `Dark trace` | The background trace is calculated from a dark pixel located at position x=**(f)** and y=**(g)** that can be detected automatically in a **(e)**-by-**(e)** sub-image if **(h)** is activated. The trace is smoothed with an average window size of **(d)** frames prior being subtracted. The smoothed background intensity-time trace can be viewed by pressing ![View](../../assets/images/gui/TP-but-view.png "View"). |  **(d)** = 10, **(e)** = 20, **(f)** = 0, **(g)** = 0, **(h)** activated  |
-| `Manual` | The background intensity in estimated by the user and set in **(i)** | **(i)** = 0 |
+| `Dark coordinates` | The background intensity is calculated from a dark pixel located at position x=**(f)** and y=**(g)** that can be automatically found in a **(e)**-by-**(e)** sub-image if **(h)** is activated. When used to calculate a background trajectory, the background trace is smoothed with an average window size of **(d)** frames prior being subtracted. |  **(d)** = 10, **(e)** = 20, **(f)** = 0, **(g)** = 0, **(h)** activated  |
+| `Manual` | The background intensity is estimated by the user and set in **(j)** | **(j)** = 0 |
 
 After method configuration, the same settings can be applied to all intensity-time traces of the current molecule by pressing 
 ![Set for all channels](../../assets/images/gui/TP-but-set-for-all-channels.png "Set for all channels"), and to all molecules by pressing 
 ![Set for all molecules](../../assets/images/gui/TP-but-set-for-all-molecules.png "Set for all molecules").
 
-The calculated background intensity is given in **(i)** in image counts or counts per second according to intensity units defined in menu `Units` of the 
+Background intensity-time trace are shown after pressing 
+![View](../../assets/images/gui/TP-but-view.png "View"). 
+In this case, an additional window appears and shows the dark trace plot in intensity units defined by menu `Units` of the 
+[menu bar](../../Getting_started.html#interface).
+
+![Dark trace](../../assets/images/gui/TP-panel-bg-darktrace.png "Dark trace")
+
+The calculated background intensity is given in **(j)** in image counts or counts per second according to intensity units defined in menu `Units` of the 
 [menu bar](../../Getiing_started.html#interface).
 
-**Note:** *As the method `Dark trace` calculates a background trajectory and not an intensity, the mean value of the dark trace is taken for point estimate of the background intensity*
+**Note:** *When background trajectories are calculated, the mean value of the dark trace is taken for point estimate of the background intensity*
 
 
 ---

@@ -12,14 +12,11 @@ mol = p.ttPr.curr_mol(proj);
 nExc = p.proj{proj}.nb_excitations;
 nChan = p.proj{proj}.nb_channel;
 expT = p.proj{proj}.frame_rate;
-aDim = p.proj{proj}.pix_intgr(1);
-nPix = p.proj{proj}.pix_intgr(2);
 perSec = p.proj{proj}.cnt_p_sec;
 inSec = p.proj{proj}.time_in_sec;
+clr = p.proj{proj}.colours;
 selected_chan = p.proj{proj}.TP.fix{3}(6);
-methods = p.proj{proj}.TP.curr{mol}{3}{2};
-bgprm = p.proj{proj}.TP.curr{mol}{3}{3};
-viddim = p.proj{proj}.movie_dim;
+dynbg = p.proj{proj}.TP.curr{mol}{3}{1}(:,:,2);
 vidfile = p.proj{proj}.movie_file;
 viddat = p.proj{proj}.movie_dat;
 
@@ -48,44 +45,15 @@ else
 end
 
 % control method
-method = methods(l,c);
-if method~=6
+if ~dynbg(l,c)
     return
 end
 
-% control dark coordinates
-coord_dark = bgprm{l,c}(method,4:5);
-min_xy = aDim/2;
-res_y = viddim{mov}(2);
-res_x = viddim{mov}(1);
-max_y = res_y - aDim/2;
-max_x = res_x - aDim/2;
-coord_dark(coord_dark(:,1:2)<=min_xy)=min_xy+1;
-coord_dark(coord_dark(:,1)>=max_x)=max_x-1;
-coord_dark(coord_dark(:,2)>=max_y)=max_y-1;
-
-% save modifications
-p.proj{proj}.TP.curr{mol}{3}{3}{l,c}(method,4:5) = coord_dark;
-
-h.param = p;
-guidata(h_fig, h);
-
 % build background intensity-time trace
-fDat{1} = vidfile{mov};
-fDat{2}{1} = viddat{mov}{1};
-if isFullLengthVideo(vidfile{mov},h_fig)
-    fDat{2}{2} = h.movie.movie;
-else
-    fDat{2}{2} = [];
-end
-fDat{3} = [res_y res_x];
-fDat{4} = viddat{mov}{3};
-nFrames = viddat{mov}{3};
-
-[o,I_bg] = create_trace(coord_dark, aDim, nPix, fDat, h.mute_actions);
-
-fact = bgprm{l,c}(method,1);
-I_bg = slideAve(I_bg(l:nExc:nFrames,:), fact);
+dynbg = p.proj{proj}.TP.curr{mol}{3}{1}(l,c,2);
+meth = p.proj{proj}.TP.curr{mol}{3}{2}(l,c);
+methprm = p.proj{proj}.TP.curr{mol}{3}{3}{l,c}(meth,:);
+[I_bg,~] = calcbgint(mol,l,c,dynbg,meth,methprm,p.proj{proj},h_fig);
 
 % plot trace
 y_lab = 'counts';
@@ -93,6 +61,8 @@ if perSec
     I_bg = I_bg/expT;
     y_lab = [y_lab 'per s.'];
 end
+
+nFrames = viddat{mov}{3};
 x_axis = l:nExc:nFrames;
 if inSec
     x_axis = x_axis*expT;
@@ -100,8 +70,7 @@ if inSec
 else
     x_lab = 'frames';
 end
-h_fig2 = figure('Name', ['Dark trace: (' num2str(coord_dark(1)) ...
-    ',' num2str(coord_dark(2)) ')'], 'Visible', 'off', 'Color', ...
+h_fig2 = figure('Name', 'Background trajectory', 'Visible', 'off', 'Color', ...
     [1 1 1], 'Units', 'pixels');
 units = get(h.axes_top, 'Units');
 set(h.axes_top, 'Units', 'pixels');
@@ -112,7 +81,7 @@ set(h_fig2, 'Position', [pos_fig(1:2) pos_top(3:4)]);
 h_axes = axes('Parent', h_fig2, 'Units', 'pixels', ...
     'OuterPosition', [0,0,pos_top(3:4)]);
 set(h_axes, 'Units', 'normalized');
-plot(h_axes, x_axis, I_bg, '-k');
+plot(h_axes, x_axis, I_bg, 'color',clr{1}{l,c});
 xlim(h_axes, get(h.axes_top, 'XLim'));
 ylim(h_axes, 'auto');
 ylabel(h_axes, y_lab);
