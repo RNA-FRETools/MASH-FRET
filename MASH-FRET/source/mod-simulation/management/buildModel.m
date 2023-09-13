@@ -36,26 +36,40 @@ J = prm.gen_dt{1}(3);
 isblch = prm.gen_dt{1}(5);
 blch_cst = prm.gen_dt{1}(6);
 kx = prm.gen_dt{2}(:,:,1);
-wx = prm.gen_dt{2}(:,:,2);
+% wx = prm.gen_dt{2}(:,:,2);
 isPresets = prm.gen_dt{3}{1};
 presets = prm.gen_dt{3}{2};
 
 % get proper transition rate constants
-imp_kx = isPresets & isfield(presets, 'kx');
-if imp_kx % transition rate coefficients from presets
+kx_all = [];
+if isPresets && isfield(presets, 'kx') % transition rate coefficients from presets
     kx_all = presets.kx;
-else % transition rate coefficients from interface
+elseif ~(isPresets && isfield(presets, 'wx')) % transition rate coefficients from interface
     kx_all  = repmat(kx,[1,1,N]);
 end
-kx_all = kx_all(1:J,1:J,:);
+
+% get proper transition partition factors and state lifetimes
+if isempty(kx_all) % from presets
+    wx_all = presets.wx./sum(presets.wx,2);
+    wx_all(isnan(wx_all)) = 0;
+    tau_all = presets.tau;
+else % from transition rates
+    kx_all = kx_all(1:J,1:J,:);
+    for n = 1:size(kx_all,3)
+        kn = kx_all(:,:,n);
+        kn(~~eye(J)) = 0;
+        kx_all(:,:,n) = kn;
+    end
+    wx_all =  kx_all./repmat(sum(kx_all,2),[1,J]);
+    wx_all(isnan(wx_all)) = 0;
+    tau_all = 1./permute(sum(kx_all,2),[1,3,2]);
+end
 
 % get proper starting probabilities
-imp_ip = isPresets & isfield(presets, 'p0');
-tau_all = 1./permute(sum(kx_all,2),[3,1,2]);
-if imp_ip % initial state prob. from presets
+if isPresets && isfield(presets, 'p0') % initial state prob. from presets
     ip_all = presets.p0;
 else % initial prob. calculated from state lifetimes
-    ip_all = tau_all./repmat(sum(tau_all,2),[1,J,1]);
+    ip_all = tau_all./repmat(sum(tau_all,1),[J,1,1]);
 end
 
 % initializes results
@@ -68,12 +82,9 @@ isTrans = prod(double(sum(sum(~~kx_all(1:J,1:J,1:N),1),2)),3);
 if J>1 && isTrans
     n = 1;
     while n <= N
-        kx = kx_all(:,:,n);
-        kx(~~eye(J)) = 0;
-        wx = kx./repmat(sum(kx,2),[1,J]);
-        wx(isnan(wx)) = 0;
-        ip = ip_all(n,:);
-        tau = tau_all(n,:);
+        wx = wx_all(:,:,n);
+        ip = ip_all(:,n)';
+        tau = tau_all(:,n)';
 
 %         % MH 19.12.2019: identify zero sums in rate matrix
 %         if sum(sum(kx,1)>0)~=J || sum(sum(kx,2)>0)~=J
@@ -190,7 +201,7 @@ if J>1 && isTrans
     
 else
     for n = 1:N
-        ip = ip_all(n,:);
+        ip = ip_all(n,:)';
         if J > 1
             if sum(sum(kx,1)>0)~=J || sum(sum(kx,2)>0)~=J
                 % MH 19.12.2019: identify zero sums in rate matrix
@@ -207,7 +218,7 @@ else
             end
             
             % pick a "first state" randomly
-            state1 = randsample(1:J, 1, true, sum(ip,1));
+            state1 = randsample(1:J, 1, true, sum(ip));
         else
             state1 = 1;
         end
