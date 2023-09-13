@@ -27,5 +27,5 @@ p.TDP.curr_tag(proj) = val;
 h.param = p;
 guidata(h_fig, h);
 
-% update TDP and plot
-pushbutton_TDPupdatePlot_Callback(obj, evd, h_fig);
+% update plots and GUI
+updateFields(h_fig, 'TDP');

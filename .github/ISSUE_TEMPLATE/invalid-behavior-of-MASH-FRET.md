@@ -1,24 +1,21 @@
 ---
-name: Bug report for MASH-FRET
-about: Report a MATLAB error occurring when using MASH-FRET
-title: MASH-FRET bug report
-labels: bug
+name: Invalid behavior of MASH-FRET
+about: Report an unexpected behavior of MASH-FRET
+title: Invalid behavior of MASH-FRET
+labels: invalid
 assignees: mca-sh
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Describe the unexpected behavior**
+A clear and concise description of what the concern is.
 
 **To Reproduce**
 Steps to reproduce the behavior:
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
-4. See error
-
-**Error Code**
-Copy and Paste the full error code in Matlabs command history.
+4. See concern
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
@@ -27,7 +24,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Project file(s)**
-If applicable, attatch the `.mash` files concerned by the bug.
+If applicable, attatch the `.mash` files concerned by the problem.
 
 **Desktop (please complete the following information):**
  - OS [e.g. Windows 10]
