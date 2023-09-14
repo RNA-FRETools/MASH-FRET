@@ -60,31 +60,35 @@ FRET = repmat([0.2,0;0.7,0;0.2,0;0.7,0],1,1,N);
 
 %%%%% EDIT HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-trans_rates = [	0       0.05	0       0
-                0.02	0       0       0
-                0.001	0       0       0.5
-                0       0       0.2     0];
+trans_rates = [	0.95       0.05	0       0
+                0.02	0.98       0       0
+                0.001	0       0.499   0.5
+                0       0       0.2     0.8];
 trans_rates = repmat(trans_rates,1,1,N);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-%% %% TRANSITION REPARTITION PROBABILITY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% trans_prob = [J-by-J-by-N] matrix containing transition repartition 
-% probbailities  from state j to j' in trans_rates(j,j')
-% Diagonal terms must be null.
+%% %% TRANSITION PARTITION FACTORS AND STATE LFIETIMES %%%%%%%%%%%%%%%%%%%%
+% trans_part = [J-by-J-by-N] matrix containing transition partition factors
+% from state j to j' in trans_part(j,j'). Each row must sum to 1. Diagonal 
+% terms must be null.
+% lifetimes = [J-by-N] state lifetimes in interval numbers.
 
-% example: 4-state matrix
+% example: 3-state matrix
 %
-% trans_prob = [0 1 0
+% trans_part = [0 1 0
 %     0.1 0 0.9
 %     0.5 0.5 0];
+% trans_part = repmat(trans_part,[1,1,N]);
 %
-% trans_prob = repmat(trans_prob,[1,1,N]);
+% lifetimes = [10; 100; 150];
+% lifetimes = repmat(lifetimes,1,N);
 
 %%%%% EDIT HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-trans_prob = [];
+trans_part = [];
+lifetimes = [];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -194,7 +198,7 @@ else
     file = cat(2,pname,fname);
 end
 
-save(file,'FRET','trans_rates','trans_prob','ini_prob','gamma',...
+save(file,'FRET','trans_rates','trans_part','lifetimes','ini_prob','gamma',...
     'tot_intensity','coordinates','psf_width','-mat');
 
 disp(cat(2,'Preset parameters were successfully written in file: ',file));
