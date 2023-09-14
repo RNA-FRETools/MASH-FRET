@@ -69,7 +69,8 @@ end
 if isPresets && isfield(presets, 'p0') % initial state prob. from presets
     ip_all = presets.p0;
 else % initial prob. calculated from state lifetimes
-    ip_all = tau_all./repmat(sum(tau_all,1),[J,1,1])'; % [J-by-N]
+    ip_all = tau_all./repmat(sum(tau_all,1),[J,1,1]); % [J-by-N]
+    ip_all = ip_all';
 end
 
 % initializes results
