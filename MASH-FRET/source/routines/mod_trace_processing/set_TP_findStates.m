@@ -59,6 +59,9 @@ for dat = datlist
     J = numel(get(h.popupmenu_TP_states_indexThresh,'string'));
     for state = 1:J
         setIfEnabled(h.popupmenu_TP_states_indexThresh,'value',state,1);
+        if size(thresh,1)<state
+            continue
+        end
         setIfEnabled(h.edit_TP_states_lowThresh,'string',...
             num2str(thresh(state,1,dat)),1);
         setIfEnabled(h.edit_TP_states_state,'string',...
