@@ -33,10 +33,16 @@ for i = 1:size(p.proj{proj}.ES,2)
     end
 end
 
+% reset HA and TA
+p = importHA(p,p.curr_proj);
+p = importTA(p,p.curr_proj);
+
 h.param = p;
 guidata(h_fig,h);
 
 ud_trSetTbl(h_fig);
+ud_HA_histDat(h_fig);
+ud_TDPdata(h_fig);
 
 % show success
 setContPan(['Molecule ',num2str(mol),' successfully untagged!'],'success',...
