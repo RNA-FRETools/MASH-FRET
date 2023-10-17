@@ -93,7 +93,7 @@ L = -Inf;
 s.traj_import_opt = [];
 s.molTagNames = {};
 s.molTagClr = {};
-for proj = 1:nProj
+for proj = slct
     % get maximum length
     if size(p.proj{proj}.intensities,1)>L
         L = size(p.proj{proj}.intensities,1);
@@ -127,7 +127,7 @@ s.FRET_DTA_import = [];
 s.S_DTA = [];
 s.molTag = [];
 s.prmTT = {};
-for proj = 1:nProj
+for proj = slct
     % coordinates
     s.coord = cat(1,s.coord,p.proj{proj}.coord);
     N = size(p.proj{proj}.coord_incl,2);
@@ -231,6 +231,9 @@ s.VP = [];
 % add merged project to the list
 pushbutton_openProj_Callback([],{s},h_fig);
 
+% show action
+setContPan('Projects successfully merged!','success',h_fig);
+
 
 function [ok,errmsg,expT] = projectCompatibility(p_proj)
 
@@ -250,7 +253,6 @@ chanExc = p_proj{1}.chanExc;
 FRET = p_proj{1}.FRET;
 S = p_proj{1}.S;
 lbls = p_proj{1}.labels;
-pixPrm = p_proj{1}.pix_intgr;
 [ok,expT] = checkvidframerate(p_proj);
 if ~ok
     errmsg = 'Projects have different frame rates.';
