@@ -62,10 +62,10 @@ end
 
 if (is2D && sum(jx==[0,1]) && sum(jy==[0,1])) || ...
         (~is2D && sum(jx==[0,1])) % frame-wise data
-    molIncl = molsWithConf(trace,'trace',prm,incl);
+    molIncl = molsWithConf(trace(:,1:2:end),'trace',prm,incl);
 elseif (is2D && sum(jx==(2:8)) && sum(jy==(2:8))) || ...
         (~is2D && sum(jx==(2:8))) % molecule-wise
-    molIncl = molsWithConf(trace,'value',prm);
+    molIncl = molsWithConf(trace(:,1:2:end),'value',prm);
 elseif (is2D && sum(jx==[9,10]) && sum(jy==[9,10])) || ...
         (~is2D && sum(jx==[9,10])) % state-wise
     molIncl = molsWithConf(trace,'state',prm);

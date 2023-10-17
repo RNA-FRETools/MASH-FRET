@@ -20,16 +20,20 @@ str7 = 'y-value';
 str8 = 'y min';
 str9 = 'y max';
 str10 = 'nbins';
-ttstr0 = 'Select the data to represent on the x-axis of the histogram';
-ttstr1 = 'Select the value to histogram on the x-axis of the histogram';
-ttstr2 = 'Lower bound of x-axis';
-ttstr3 = 'Upper bound of x-axis';
-ttstr4 = 'Number of binning intervals in x-axis';
-ttstr5 = 'Select the data to represent on the y-axis of the 2D-histogram';
-ttstr6 = 'Select the value to histogram on the y-axis of the 2D-histogram';
-ttstr7 = 'Lower bound of y-axis';
-ttstr8 = 'Upper bound of y-axis';
-ttstr9 = 'Number of binning intervals in y-axis';
+str11 = 'gauss.';
+str12 = 'single count';
+ttstr0 = wrapHtmlTooltipString('Select the <b>data</b> to represent on <b>the x-axis</b> of the histogram');
+ttstr1 = wrapHtmlTooltipString('Select the <b>value</b> to histogram on the <b>x-axis</b> of the histogram');
+ttstr2 = wrapHtmlTooltipString('<b>Lower</b> bound of <b>x-axis</b>');
+ttstr3 = wrapHtmlTooltipString('<b>Upper</b> bound of <b>x-axis</b>');
+ttstr4 = wrapHtmlTooltipString('<b>Number of binning</b> intervals in <b>x-axis</b>');
+ttstr5 = wrapHtmlTooltipString('Select the <b>data</b> to represent on the <b>y-axis</b> of the 2D-histogram');
+ttstr6 = wrapHtmlTooltipString('Select the <b>value</b> to histogram on the <b>y-axis</b> of the 2D-histogram');
+ttstr7 = wrapHtmlTooltipString('<b>Lower</b> bound of <b>y-axis</b>');
+ttstr8 = wrapHtmlTooltipString('<b>Upper</b> bound of <b>y-axis</b>');
+ttstr9 = wrapHtmlTooltipString('<b>Number of binning</b> intervals in <b>y-axis</b>');
+ttstr10 = wrapHtmlTooltipString('<b>Data count:</b> when activated, data values appearing multiple times in the same trajectories are counted once, otherwise it is counted as many times as it appear in each trajectory; single data count allows to scale equally the rapid and slow state interconversions in the TDP.');
+ttstr11 = wrapHtmlTooltipString('<b>Gaussian filter:</b> when activated, the TDP is convoluted with a 2D Gaussian; Gaussian convolution eases the identification of transition clusters.');
 
 % parent
 h_pan = q.uipanel_data;
@@ -38,6 +42,8 @@ h_pan = q.uipanel_data;
 pospan = get(h_pan,'position');
 wpop2 = (pospan(3)-2*p.mg-p.mg/fact)/2;
 wedit2 = (pospan(3)-2*p.mg-2*p.mg/fact)/3;
+wcb0 = getUItextWidth(str11,p.fntun,p.fntsz,'normal',p.tbl)+p.wbox;
+wcb1 = pospan(3)-wcb0-2*p.mg;
 
 % list strings
 str_pop = getStrPlot_overall(h_fig);
@@ -181,5 +187,20 @@ q.edit_yniv = uicontrol('style','edit','parent',h_pan,'units',p.posun,...
     'string','','tooltipstring',ttstr9,'position',[x,y,wedit2,p.hedit],...
     'fontunits',p.fntun,'fontsize',p.fntsz,'enable','off','callback',...
     {@edit_yniv_Callback,h_fig});
+
+x = p.mg;
+y = y-p.mg/2-p.hcb;
+
+q.checkbox_AS_gauss = uicontrol('style','checkbox','parent',h_pan,'units',...
+    p.posun,'string',str11,'tooltipstring',ttstr10,'position',...
+    [x,y,wcb0,p.hcb],'fontunits',p.fntun,'fontsize',p.fntsz,'enable','off',...
+    'callback',{@checkbox_AS_gauss_Callback,h_fig});
+
+x = x+wcb0;
+
+q.checkbox_AS_datcnt = uicontrol('style','checkbox','parent',h_pan,'units',...
+    p.posun,'string',str12,'tooltipstring',ttstr11,'position',...
+    [x,y,wcb1,p.hcb],'fontunits',p.fntun,'fontsize',p.fntsz,'enable','off',...
+    'callback',{@checkbox_AS_datcnt_Callback,h_fig});
 
 

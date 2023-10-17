@@ -52,4 +52,4 @@ elseif ind<=(nChan*nExc+nI0+nFRET+nS) % stoichiometries
     str = 'bottom';
 end
 
-isdiscr = ~all(isnan(sum(sum(discr,3),2)));
+isdiscr = ~any(all(isnan(discr)));

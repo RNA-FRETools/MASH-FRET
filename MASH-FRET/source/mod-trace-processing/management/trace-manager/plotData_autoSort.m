@@ -20,15 +20,11 @@ isTDP = (indx==indy & jx==9 & jy==9);
 
 if ~is2D % 1D histograms
     if jx==0
-        trace_x = dat1.trace{indx};
+        trace_x = dat1.trace{indx}(:,1);
         limx = dat1.lim(indx,:);
         nivx = dat1.niv(indx);
     else
-        if sum(jx==[9,10]) % state-wise
-            trace_x = dat3.val{indx,jx}(:,1);
-        else
-            trace_x = dat3.val{indx,jx};
-        end
+        trace_x = dat3.val{indx,jx}(:,1);
         limx = dat3.lim(indx,:,jx);
         nivx = dat3.niv(jx,indx);
     end
@@ -61,52 +57,75 @@ if ~is2D % 1D histograms
     
     str_d = '1D';
     
-else % E-S histograms
+else % 2D histograms
     
     % control coherence of x- and y-data
     if ~checkXYdataCoherence(indx,indy,jx,jy)
         return
     end
-    
     if isTDP % TDP
-        trace_x = dat3.val{indx,jx}(:,1);
-        trace_y = [dat3.val{indy,jy}(2:end,1);dat3.val{indy,jy}(end,1)];
+        trace_x = [];
+        trace_y = [];
+        mols = [];
+        for m = unique(dat3.val{indx,jx}(:,2))'
+            val_m = dat3.val{indx,jx}(dat3.val{indx,jx}(:,2)==m,:);
+            trace_x = cat(1,trace_x,val_m(:,1));
+            trace_y = cat(1,trace_y,[val_m(2:end,1);val_m(end,1)]);
+            mols = cat(1,mols,val_m(:,2));
+        end
         nivx = dat1.niv(indx);
         limx = dat1.lim(indx,:);
         nivy = nivx;
         limy = limx;
     else
         if jx==0 
-            trace_x = dat1.trace{indx};
+            trace_x = dat1.trace{indx}(:,1);
+            mols = dat1.trace{indx}(:,2);
             nivx = dat1.niv(indx);
             limx = dat1.lim(indx,:);
         else
-            if sum(jx==(9:10)) % state-wise (2nd column = molecule index)
-                trace_x = dat3.val{indx,jx}(:,1);
+            trace_x = dat3.val{indx,jx}(:,1);
+            if size(dat3.val{indx,jx},2)>=2
+                mols = dat3.val{indx,jx}(:,2);
             else
-                trace_x = dat3.val{indx,jx};
+                mols = (1:size(dat3.val{indx,jx},1))';
             end
             nivx = dat3.niv(jx,indx);
             limx = dat3.lim(indx,:,jx);
         end
         if jy==0 
-            trace_y = dat1.trace{indy};
+            trace_y = dat1.trace{indy}(:,1);
             nivy = dat1.niv(indy);
             limy = dat1.lim(indy,:);
         else
-            if sum(jx==(9:10)) % state-wise (2nd column = molecule index)
-                trace_y = dat3.val{indy,jy}(:,1);
-            else
-                trace_y = dat3.val{indy,jy};
-            end
+            trace_y = dat3.val{indy,jy}(:,1);
             nivy = dat3.niv(jy,indy);
             limy = dat3.lim(indy,:,jy);
         end
     end
+    if h.tm.checkbox_AS_datcnt.Value
+        P2D = [];
+        for m = unique(mols)'
+            id = (mols==m)';
+            [P2D_m,iv] = getHistTM([trace_x(id,:),trace_y(id,:)],...
+                [limx;limy],[nivx,nivy]);
+            if isempty(P2D)
+                P2D = double(~~P2D_m);
+            else
+                P2D = P2D+double(~~P2D_m);
+            end
+        end
+        ivx = iv{1};
+        ivy = iv{2};
+    else
+        [P2D,iv] = getHistTM([trace_x,trace_y],[limx;limy],[nivx,nivy]);
+        ivx = iv{1};
+        ivy = iv{2};
+    end
     
-    [P2D,iv] = getHistTM([trace_x,trace_y],[limx;limy],[nivx,nivy]);
-    ivx = iv{1};
-    ivy = iv{2};
+    if h.tm.checkbox_AS_gauss.Value
+        P2D = gconvTDP(P2D,[-0.2,1.2],0.01);
+    end
 
     if isempty(P2D)
         setContPan(cat(2,'No calculated data available: start calculation',...
@@ -157,6 +176,12 @@ else
     set([h.tm.edit_ylow,h.tm.edit_yup,h.tm.edit_yniv],'string','');
     set([h.tm.text_ylow,h.tm.edit_ylow,h.tm.text_yup,h.tm.edit_yup,...
         h.tm.text_yniv,h.tm.edit_yniv],'enable','off');
+end
+if is2D
+    set([h.tm.checkbox_AS_gauss,h.tm.checkbox_AS_datcnt],'enable','on');
+else
+    set([h.tm.checkbox_AS_gauss,h.tm.checkbox_AS_datcnt],'enable','off',...
+        'value',0);
 end
 
 title(h.tm.axes_histSort,cat(2,str_d,...

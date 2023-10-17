@@ -52,12 +52,12 @@ if ind<=(nChan*nExc+nI0+nFRET+nS) % single channel/FRET/S
     if inSec
         x_axis = x_axis*expT;
     end
-    plot(h_axes,x_axis,dat1.trace{ind},'buttondownfcn',fcn,...
+    plot(h_axes,x_axis,dat1.trace{ind}(:,1),'buttondownfcn',fcn,...
         'color',dat1.color{ind});
     xlim(h_axes, [x_axis(1) x_axis(end)]);
     if ind<=(nChan*nExc+nI0) % intensity
-        ylim(h_axes, [min([min(dat1.trace{ind}),0]) ...
-            max(dat1.trace{ind})]);
+        ylim(h_axes, [min([min(dat1.trace{ind}(:,1)),0]) ...
+            max(dat1.trace{ind}(:,1))]);
     else % ratio
         ylim(h_axes, [-0.2 1.2]);
     end
@@ -72,14 +72,14 @@ elseif ind==(nChan*nExc+nI0+nFRET+nS+1) && (nChan>1 || nExc>1)% all intensities
         for c = 1:nChan
             %ind = (l-1)+c; % RB 2018-01-03: indizes/colour bug solved
             i = nChan*(l-1)+c;
-            x_axis = l:nExc:nExc*size(dat1.trace{i},1);
+            x_axis = l:nExc:nExc*size(dat1.trace{i}(:,1),1);
             if inSec
                 x_axis = x_axis*expT;
             end
-            plot(h_axes,x_axis,dat1.trace{i},'color',dat1.color{i},...
+            plot(h_axes,x_axis,dat1.trace{i}(:,1),'color',dat1.color{i},...
                 'buttondownfcn',fcn);
-            min_y = min([min_y min(dat1.trace{i})]);
-            max_y = max([max_y max(dat1.trace{i})]);
+            min_y = min([min_y min(dat1.trace{i}(:,1))]);
+            max_y = max([max_y max(dat1.trace{i}(:,1))]);
 
             % added by MH, 24.4.2019
             if l==1 && c==1
@@ -104,14 +104,14 @@ elseif ind==(nChan*nExc+nI0+nFRET+nS+(nChan>1 || nExc>1)+1) && nI0>1 % all total
         j = j+1;
         i = nChan*nExc+j;
         l = find(exc==chanExc(c));
-        x_axis = l:nExc:nExc*size(dat1.trace{i},1);
+        x_axis = l:nExc:nExc*size(dat1.trace{i}(:,1),1);
         if inSec
             x_axis = x_axis*expT;
         end
-        plot(h_axes,x_axis,dat1.trace{i},'color',dat1.color{i},...
+        plot(h_axes,x_axis,dat1.trace{i}(:,1),'color',dat1.color{i},...
             'buttondownfcn',fcn);
-        min_y = min([min_y min(dat1.trace{i})]);
-        max_y = max([max_y max(dat1.trace{i})]);
+        min_y = min([min_y min(dat1.trace{i}(:,1))]);
+        max_y = max([max_y max(dat1.trace{i}(:,1))]);
 
         % added by MH, 24.4.2019
         if j==1
@@ -129,11 +129,11 @@ elseif ind==(nChan*nExc+nI0+nFRET+nS+(nChan>1 || nExc>1)+(nI0>1)+1) && ...
     for n = 1:nFRET
         i = nChan*nExc+nI0+n;
         ldon = find(exc==chanExc(FRET(n,1)));
-        x_axis = ldon:nExc:nExc*size(dat1.trace{i},1);
+        x_axis = ldon:nExc:nExc*size(dat1.trace{i}(:,1),1);
         if inSec
             x_axis = x_axis*expT;
         end
-        plot(h_axes,x_axis,dat1.trace{i},'color',dat1.color{i},...
+        plot(h_axes,x_axis,dat1.trace{i}(:,1),'color',dat1.color{i},...
             'buttondownfcn',fcn);
         % added by MH, 24.4.2019
         if n==1
@@ -151,11 +151,11 @@ elseif ind==(nChan*nExc+nI0+nFRET+nS+(nChan>1 || nExc>1)+(nI0>1)+...
     for n = 1:nS
         i = nChan*nExc+nI0+nFRET+n;
         ldon = find(exc==chanExc(S(n,1)));
-        x_axis = ldon:nExc:nExc*size(dat1.trace{i},1);
+        x_axis = ldon:nExc:nExc*size(dat1.trace{i}(:,1),1);
         if inSec
             x_axis = x_axis*expT;
         end
-        plot(h_axes,x_axis,dat1.trace{i},'color',dat1.color{i},...
+        plot(h_axes,x_axis,dat1.trace{i}(:,1),'color',dat1.color{i},...
             'buttondownfcn',fcn);
         if n==1
             set(h_axes,'nextplot','add');
@@ -176,11 +176,11 @@ elseif ind==(nChan*nExc+nI0+nFRET+nS+(nChan>1 || nExc>1)+(nI0>1)+(nFRET>1)+...
         else
             ldon = find(exc==chanExc(S(n-nFRET,1)));
         end
-        x_axis = ldon:nExc:nExc*size(dat1.trace{i},1);
+        x_axis = ldon:nExc:nExc*size(dat1.trace{i}(:,1),1);
         if inSec
             x_axis = x_axis*expT;
         end
-        plot(h_axes,x_axis,dat1.trace{i},'color',dat1.color{i},...
+        plot(h_axes,x_axis,dat1.trace{i}(:,1),'color',dat1.color{i},...
             'buttondownfcn',fcn);
         if n==1
             set(h_axes,'nextplot','add');
