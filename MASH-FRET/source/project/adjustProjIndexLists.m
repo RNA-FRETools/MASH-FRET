@@ -22,6 +22,7 @@ for x = 1:numel(xn)
         else
             p.curr_mod = [p.curr_mod,mod{x}];
         end
+        p.proj{xn(x)}.module = p.curr_mod(end);
         p.sim.curr_plot = [p.sim.curr_plot,1];
         p.sim.curr_pan = [p.sim.curr_pan,0];
         p.movPr.curr_frame = [p.movPr.curr_frame,1];
