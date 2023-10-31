@@ -315,6 +315,8 @@ if ~(isCoord && isMov)
     for c = 1:nChan
         for l = 1:nExc
             def.mol{3}{2}(l,c) = 1;
+            def.mol{3}{3}{l,c} = zeros(1,7);
+            def.mol{3}{3}{l,c}(3) = 20;
         end
     end
 end
@@ -337,13 +339,11 @@ if (nFRET + nS) == 0
     end
 end
 
-% adjust the cutoff frame if higher than the total number of frames
-if def.mol{2}{1}(5) > nFrames
-    def.mol{2}{1}(5) = nFrames;
-end
-if def.mol{2}{1}(6) > nFrames
-    def.mol{2}{1}(6) = nFrames;
-end
+% reset trace truncations
+def.mol{2}{1}(1) = 0; % apply cutoff
+def.mol{2}{1}(2) = 1; % method
+def.mol{2}{1}(4) = 1; % starting frame
+def.mol{2}{1}(5:6) = [nFrames nFrames]; % cutoff frames
 
 % if photobleaching threshold is calculated a channel larger than the
 % number of channel
