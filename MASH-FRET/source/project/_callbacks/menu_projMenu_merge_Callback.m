@@ -366,6 +366,8 @@ if ~all(allsplt==allsplt(1))
     else
         splt = str2num(answ{1});
     end
+else
+    splt = allsplt(1);
 end
 
 
@@ -398,6 +400,8 @@ if ~all(all(allwl==repmat(allwl(1,:),nProj,1)))
     if ok
         wl = allwl(id,:);
     end
+else
+    wl = allwl(1,:);
 end
 
 
@@ -432,6 +436,8 @@ if ~isequal(alllbl,repmat(alllbl(1,:),nProj,1))
     if ok
         lbl = alllbl(id,:);
     end
+else
+    lbl = alllbl(1,:);
 end
 
 

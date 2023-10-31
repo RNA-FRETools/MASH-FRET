@@ -18,7 +18,7 @@ if ~(numel(maxI)==1 && ~isnan(maxI))
     setContPan('Upper intensity must be a number.','error',h_fig);
     return
     
-elseif maxI<=mixI
+elseif maxI<=minI
     setContPan(['Upper intensity can not be smaller than the lower limit ',...
         '(',num2str(minI),').'],'warning',h_fig);
     maxI = minI+10;
