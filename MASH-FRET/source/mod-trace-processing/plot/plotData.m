@@ -17,7 +17,7 @@ int_den = p.proj{proj}.intensities_denoise;
 int_dta = p.proj{proj}.intensities_DTA;
 FRET_dta = p.proj{proj}.FRET_DTA;
 S_dta = p.proj{proj}.S_DTA;
-rate = p.proj{proj}.frame_rate;
+expT = p.proj{proj}.frame_rate;
 perSec = p.proj{proj}.cnt_p_sec;
 inSec = p.proj{proj}.time_in_sec;
 clr = p.proj{proj}.colours;
@@ -38,6 +38,14 @@ if plotDscr
 end
 frames = find(incl);
 x_lim = [((frames(1)-1)*nExc+1) frames(end)*nExc];
+if fix{2}(7)
+    Ilim = fix{2}([4,5]);
+    if perSec
+        Ilim = Ilim/expT;
+    end
+else
+    Ilim = [];
+end
 FRETlim = [-0.2 1.2];
 
 curr_exc = fix{2}(1);
@@ -61,9 +69,9 @@ elseif is_all && curr_chan_bottom==(nFRET+nS+is_allfret+is_alls+is_all) % all
 end
 
 if perSec
-    I = I/rate;
+    I = I/expT;
     if plotDscr
-        discrI = discrI/rate;
+        discrI = discrI/expT;
     end
 end
 
@@ -78,8 +86,8 @@ end
 
 x_axis = x_lim(1):x_lim(2);
 if inSec
-    cutOff = cutOff*rate;
-    x_axis = x_axis*rate;
+    cutOff = cutOff*expT;
+    x_axis = x_axis*expT;
 end
 
 if isfield(axes, 'axes_traceTop')
@@ -127,7 +135,11 @@ if curr_chan_top > 0
     
     if isfield(axes, 'axes_traceTop')
         xlim(axes.axes_traceTop, [x_axis(1) x_axis(end)]);
-        ylim(axes.axes_traceTop, 'auto');
+        if ~isempty(Ilim)
+            ylim(axes.axes_traceTop, Ilim);
+        else
+            ylim(axes.axes_traceTop, 'auto');
+        end
     end
 
     yLab =  'counts';

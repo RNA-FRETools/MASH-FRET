@@ -80,11 +80,13 @@ elseif nFRET>0 || nS>0
 else
     gen{2}(3) = 1;
 end
-
-gen{2}(4) = 0; % nothing (prev: intensity units per second)
-gen{2}(5) = 0; % nothing (prev: intensity units per pixel)
+Inan = isnan(p.proj{proj}.intensities(:));
+Imean = mean(p.proj{proj}.intensities(~Inan));
+Isig = std(p.proj{proj}.intensities(~Inan));
+gen{2}(4) = Imean-Isig; % lower intensity (prev: intensity units per second)
+gen{2}(5) = Imean+3*Isig; % upper intensity (prev: intensity units per pixel)
 gen{2}(6) = 0; % fix first frame for all molecules
-gen{2}(7) = 0; % nothing (prev: time units in second)
+gen{2}(7) = 0; % fix intensity scale (prev: time units in second)
 
 % Main popupmenu values
 gen{3}(1) = 1; % laser for direct excitation
@@ -112,7 +114,7 @@ def.general = adjustVal(def.general, gen);
 if def.general{1}(1) > nExc
     def.general{1}(1) = 1;
 end
-def.general{2}(1:3) = gen{2}(1:3);
+def.general{2}([1:5,7]) = gen{2}([1:5,7]);
 def.general{3} = gen{3};
 
 %% Molecule parameters

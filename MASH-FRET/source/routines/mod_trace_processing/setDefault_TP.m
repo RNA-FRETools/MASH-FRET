@@ -43,7 +43,7 @@ nDat_bot = numel(get(h.popupmenu_plotBottom,'string'));
 set(h.popupmenu_plotBottom,'value',nDat_bot);
 popupmenu_plotBottom_Callback(h.popupmenu_plotBottom,[],h_fig);
 
-set_TP_xyAxis(p.fixX0,p.x0,h_fig);
+set_TP_xyAxis(p.fixX0,p.x0,false,[],h_fig);
 
 % set default sub-images parameters
 h_but = getHandlePanelExpandButton(h.uipanel_TP_subImages,h_fig);

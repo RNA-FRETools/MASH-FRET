@@ -29,12 +29,18 @@ str2 = {'Select a laser'};
 str3 = {'Select a channel'};
 str4 = 'bottom data';
 str5 = {'Select a trace'};
+str6 = 'hold scale';
+str7 = 'min';
+str8 = 'max';
 str9 = 'x-axis:';
 str10 = 'hold start';
 ttstr0 = wrapHtmlTooltipString('Select a <b>laser wavelength</b> to show intensity-time traces from, in the top plot.');
 ttstr1 = wrapHtmlTooltipString('Select an <b>emission channel</b> to show ntensity-time traces from, in the top plot.');
 ttstr2 = wrapHtmlTooltipString('Select the <b>ratio-time traces</b> to show in the bottom plot.');
-ttstr5 = wrapHtmlTooltipString('<b>Clip</b> traces of <b>all molecules</b> to the defined starting point: data points below this frame will be ignored.');
+ttstr3 = wrapHtmlTooltipString('<b>Hold</b> limits of intensity axis for <b>all molecules</b> to the defined intensities.');
+ttstr4 = wrapHtmlTooltipString('<b>Lower limit</b> of intensity axis.');
+ttstr5 = wrapHtmlTooltipString('<b>Upper limit</b> of intensity axis.');
+ttstr6 = wrapHtmlTooltipString('<b>Clip</b> time axis of traces for <b>all molecules</b> to the defined starting point: data points prior this time point will be ignored.');
 ttstr7 = wrapHtmlTooltipString('<b>Starting point</b> in time traces: data points below this frame will be ignored.');
 
 % parents
@@ -46,8 +52,10 @@ pospan = get(h_pan,'position');
 wtxt0 = (pospan(3)-2*p.mg-p.mg/fact)/2;
 wtxt1 = pospan(3)-2*p.mg;
 wtxt3 = getUItextWidth(str9,p.fntun,p.fntsz1,'bold',p.tbl);
-wcb2 = getUItextWidth(str10,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
-wedit0 = pospan(3)-2*p.mg-2*p.mg/fact-wcb2-wtxt3;
+wcb0 = getUItextWidth(str6,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
+wedit0 = (pospan(3)-2*p.mg-2*p.mg/fact-wcb0)/2;
+wcb1 = getUItextWidth(str10,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
+wedit1 = pospan(3)-2*p.mg-2*p.mg/fact-wcb1-wtxt3;
 
 % GUI
 x = p.mg;
@@ -79,7 +87,42 @@ h.popupmenu_plotTop = uicontrol('style','popupmenu','parent',h_pan,...
     {@popupmenu_plotTop_Callback,h_fig});
 
 x = p.mg;
-y = y-p.mg/fact-htxt0;
+y = y-p.mg/fact-htxt0-hedit0;
+
+h.checkbox_plot_holdint = uicontrol('style','checkbox','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wcb0,hedit0],'string',str6,'tooltipstring',ttstr3,'callback',...
+    {@checkbox_plot_holdint_Callback,h_fig});
+
+x = x+wcb0+p.mg/fact;
+
+h.edit_plot_minint = uicontrol('style','edit','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wedit0,hedit0],'tooltipstring',ttstr4,'callback',...
+    {@edit_plot_minint_Callback,h_fig});
+
+y = y+hedit0;
+
+h.text_plot_minint = uicontrol('style','text','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wedit0,htxt0],'string',str7);
+
+x = x+wedit0+p.mg/fact;
+y = y-hedit0;
+
+h.edit_plot_maxint = uicontrol('style','edit','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wedit0,hedit0],'tooltipstring',ttstr5,'callback',...
+    {@edit_plot_maxint_Callback,h_fig});
+
+y = y+hedit0;
+
+h.text_plot_maxint = uicontrol('style','text','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wedit0,htxt0],'string',str8);
+
+x = p.mg;
+y = y-hedit0-p.mg/fact-htxt0;
 
 h.text_plotBottom = uicontrol('style','text','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wtxt1,htxt0],...
@@ -104,13 +147,13 @@ y = y-(hedit0-htxt0)/2;
 
 h.checkbox_photobl_fixStart = uicontrol('style','checkbox','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wcb2,hedit0],'string',str10,'tooltipstring',ttstr5,'callback',...
+    [x,y,wcb1,hedit0],'string',str10,'tooltipstring',ttstr6,'callback',...
     {@checkbox_photobl_fixStart_Callback,h_fig});
 
-x = x+wcb2+p.mg/fact;
+x = x+wcb1+p.mg/fact;
 
 h.edit_photobl_start = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,hedit0],'callback',{@edit_photobl_start_Callback,h_fig},...
+    [x,y,wedit1,hedit0],'callback',{@edit_photobl_start_Callback,h_fig},...
     'tooltipstring',ttstr7);
 

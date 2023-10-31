@@ -240,3 +240,9 @@ if size(p_proj.TP.prm{n},2)>=3 && size(p_proj.TP.prm{n}{3},2)>=1 && ...
     p_proj.TP.prm{n}{3}{1} = cat(3,p_proj.TP.prm{n}{3}{1},...
         zeros(size(p_proj.TP.prm{n}{3}{1})));
 end
+
+% added by MH, 31.10.2023: add intensity axis scale
+if size(p_proj.TP.fix,2)>=2 && numel(p_proj.TP.fix{2})==7 && ...
+        p_proj.TP.fix{2}(4)==p_proj.TP.fix{2}(5)
+    p_proj.TP.fix{2}([4,5,7]) = p_proj.TP.def.general{2}([4,5,7]);
+end
