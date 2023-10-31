@@ -17,20 +17,22 @@ p = h.param;
 prnt = get(h_pan,'parent');
 while prnt~=h.figure_MASH
     if ~any([h.uipanel_S,h.uipanel_VP,h.uipanel_TP,h.uipanel_HA,...
-            h.uipanel_TA]==prnt)
+            h.uipanel_TA,h.uipanel_S_scroll,h.uipanel_VP_scroll,...
+            h.uipanel_TP_scroll,h.uipanel_HA_scroll,...
+            h.uipanel_TA_scroll]==prnt)
         prnt = get(prnt,'parent');
         continue
     end
     switch prnt
-        case h.uipanel_S
+        case {h.uipanel_S_scroll,h.uipanel_S}
             mod = 'sim';
-        case h.uipanel_VP
+        case {h.uipanel_VP_scroll,h.uipanel_VP}
             mod = 'VP';
-        case h.uipanel_TP
+        case {h.uipanel_TP_scroll,h.uipanel_TP}
             mod = 'TP';
-        case h.uipanel_HA
+        case {h.uipanel_HA_scroll,h.uipanel_HA}
             mod = 'HA';
-        case h.uipanel_TA
+        case {h.uipanel_TA_scroll,h.uipanel_TA}
             mod = 'TA';
     end
     if ~isModuleOn(p,mod)

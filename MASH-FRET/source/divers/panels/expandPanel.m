@@ -19,12 +19,20 @@ hght_pan = hbut.UserData{2};
 
 % get parent and corresponding height (normalized)
 hprnt = hpan.Parent;
-hght_prnt = hprnt.Position(4);
-
+% hght_prnt = hprnt.Position(4);
+% 
 % convert normalized to pixel heights
-hfig = hprnt.Parent;
-posfig = getPixPos(hfig);
-hght_prnt = hght_prnt*posfig(4);
+% hfig = hprnt.Parent;
+% lvl = 1;
+% while ~strcmp(hfig.Type,'figure')
+%     hfig = hprnt.Parent;
+%     lvl = lvl+1;
+% end
+% posfig = getPixPos(hfig);
+% hght_prnt = hght_prnt*posfig(4);
+% hght_pan = hght_pan*hght_prnt;
+posprnt = getPixPos(hprnt);
+hght_prnt = posprnt(4);
 hght_pan = hght_pan*hght_prnt;
 
 % get handles to all children panels and collapse/expand buttons
@@ -94,6 +102,15 @@ for c = 1:nChld
         set(hpan,'bordertype','etchedin','backgroundcolor',clr_expnd);
         hght = hght_pan;
         hcbut(c).String = char(9650);
+        if c>1 && (hcpan(c-1).Position(2)-mg-hght)<0
+            yoffset = hght+mg-hcpan(c-1).Position(2);
+            for cprev = 1:(c-1)
+                hcpan(cprev).Position(2) = ...
+                    hcpan(cprev).Position(2)+yoffset;
+                hcbut(cprev).Position(2) = hcpan(cprev).Position(2);
+                hchlp(cprev).Position(2) = hcpan(cprev).Position(2);
+            end
+        end
     else
         set(hcpan(c),'bordertype','none','backgroundcolor',clr_cllps);
         hght = hght_cllps;
@@ -102,7 +119,7 @@ for c = 1:nChld
     
     % set panel position relative to top panels
     if c==1 % toppest panel
-        y = hcpan(c).Position(2)+hcpan(c).Position(4)-hght;
+        y = hght_prnt-mg/2-hght;
     else
         y = hcpan(c-1).Position(2)-mg-hght;
     end

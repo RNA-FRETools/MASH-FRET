@@ -28,7 +28,6 @@ function h = buildPanelTA(h,p)
 
 % default
 hpop0 = 22;
-hbut0 = 20;
 hedit0 = 20;
 htxt0 = 14;
 wedit0 = 40;
@@ -39,10 +38,6 @@ str2 = 'Tag:';
 str3 = {'Select subgroup'};
 str4 = 'diagonal';
 str7 = 'EXPORT...';
-ttl0 = 'Transition density plot';
-ttl1 = 'State configuration';
-ttl2 = 'Dwell time histograms';
-ttl3 = 'Kinetic model';
 tabttl0 = 'TDP';
 tabttl1 = 'BIC (ML-GMM)';
 tabttl2 = 'Dwell times';
@@ -66,18 +61,7 @@ wpan0 = p.mg+wedit0+p.mg/2+wedit0+p.mg+wpan0a+p.mg;
 wtab = pospan(3)-2*p.mg-wpan0-p.mg;
 htab = pospan(4)-2*p.mg;
 wpop0 = (wpan0-p.mg/fact)/2;
-hpan0 = p.mgpan+htxt0+hedit0+p.mg/2+5*hedit0+p.mg/2+hpop0+p.mg/2;
-hpan1a = p.mgpan+hpop0+p.mg/2+htxt0+hpop0+p.mg/fact+hedit0+p.mg/2+...
-    hedit0+p.mg/2+hedit0+p.mg;
-hpan1b = p.mgpan+htxt0+hpop0+p.mg/2+hbut0+p.mg;
-hpan1 = p.mgpan+hpan1a+p.mg+hpan1b+p.mg;
-hpan2a = p.mgpan+htxt0+hpop0+p.mg/2+htxt0+hpop0+p.mg;
-hpan2 = p.mgpan+htxt0+hedit0+hedit0/2+p.mg/2+htxt0+hpop0+p.mg/2+hbut0+...
-    p.mg/2+hpan2a+p.mg;
-hpan3a = p.mgpan+htxt0+hpop0+p.mg/2+hbut0+p.mg+htxt0+hpop0+p.mg/2+htxt0+...
-    hpop0+p.mg/2+htxt0+hpop0+p.mg;
-hpan3b = p.mgpan+htxt0+hedit0+(hbut0-hedit0)/2+p.mg;
-hpan3 = p.mgpan+hpan3a+p.mg/2+hpan3b+p.mg;
+hpan0 = pospan(4)-p.mgpan-htxt0-hpop0-2*p.mg-hedit0-p.mg;
 
 % GUI
 x = p.mg;
@@ -143,31 +127,9 @@ h.popupmenu_TDPtag = uicontrol('style','popupmenu','parent',h_pan,...
 x = p.mg+wtab+p.mg;
 y = y-p.mg-hpan0;
 
-h.uipanel_TA_transitionDensityPlot = uipanel('parent',h_pan,'units',...
-    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold',...
-    'position',[x,y,wpan0,hpan0],'title',ttl0);
-h = buildPanelTAtransitionDensityPlot(h,p);
-
-y = y-p.mg-hpan1;
-
-h.uipanel_TA_stateConfiguration = uipanel('parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan0,hpan1],'title',ttl1);
-h = buildPanelTAstateConfiguration(h,p);
-
-y = y-p.mg-hpan2;
-
-h.uipanel_TA_dtHistograms = uipanel('parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan0,hpan2],'title',ttl2);
-h = buildPanelTAdtHistograms(h,p);
-
-y = y-p.mg-hpan3;
-
-h.uipanel_TA_kineticModel = uipanel('parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan0,hpan3],'title',ttl3);
-h = buildPanelTAkineticModel(h,p);
+h.uipanel_TA_scroll = uipanel('parent',h_pan,'units',p.posun,'fontunits',...
+    p.fntun,'fontsize',p.fntsz1,'position',[x,y,wpan0,hpan0],'title',[]);
+h = buildPanelScrollTA(h,p);
 
 x = pospan(3)-p.mg-wbut0;
 y = p.mg;

@@ -19,10 +19,12 @@ end
 
 % get parent and corresponding pixel height
 hprnt = hpans(1).Parent;
-hght_prnt = hprnt.Position(4);
-hfig = hprnt.Parent;
-posfig = getPixPos(hfig);
-hght_prnt = hght_prnt*posfig(4);
+% hght_prnt = hprnt.Position(4);
+% hfig = hprnt.Parent;
+% posfig = getPixPos(hfig);
+% hght_prnt = hght_prnt*posfig(4);
+posprnt = getPixPos(hprnt);
+hght_prnt = posprnt(4);
 
 % get handles to all children panels and collapse/expand buttons
 hchld = hprnt.Children;
@@ -97,7 +99,7 @@ for c = 1:nChld
     
     % set panel position relative to top panels
     if c==1 % toppest panel
-        y = hcpan(c).Position(2)+hcpan(c).Position(4)-hght;
+        y = hght_prnt-mgy/2-hght;
     else
         y = hcpan(c-1).Position(2)-mgy-hght;
     end

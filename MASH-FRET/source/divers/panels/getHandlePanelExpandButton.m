@@ -18,8 +18,8 @@ modnames = {'S','VP','TP','HA','TA'};
 h = guidata(h_fig);
 
 % gather module main panels
-h_modpan = [h.uipanel_S,h.uipanel_VP,h.uipanel_TP,h.uipanel_HA,...
-    h.uipanel_TA];
+h_modpan = [h.uipanel_S_scroll,h.uipanel_VP_scroll,h.uipanel_TP_scroll,...
+    h.uipanel_HA_scroll,h.uipanel_TA_scroll];
 
 if ~iscell(opt)
     % control parent panel
