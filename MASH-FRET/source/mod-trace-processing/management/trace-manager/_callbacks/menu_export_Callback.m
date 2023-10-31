@@ -51,6 +51,10 @@ if tmchanged
     p = importTA(p,p.curr_proj);
 end
 
+% save tag names and colors as defaults
+p.es.tagNames = p.proj{proj}.molTagNames;
+p.es.tagClr = p.proj{proj}.molTagClr;
+
 h.param = p;
 h.tm.ud = true;
 guidata(h_fig,h);
