@@ -77,16 +77,16 @@ for o = 1:O
             
         case h.uipanel_S_videoParameters
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('video parameters'),obj(o),tbl));
+                getDocLink('video parameters'),obj(o)));
         case h.uipanel_S_molecules
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('molecules'),obj(o),tbl));
+                getDocLink('molecules'),obj(o)));
         case h.uipanel_S_experimentalSetup
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('experimental setup'),obj(o),tbl));
+                getDocLink('experimental setup'),obj(o)));
         case h.uipanel_S_exportOptions
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('sim export options'),obj(o),tbl));
+                getDocLink('sim export options'),obj(o)));
         case h.axes_example_hist
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('sim visualization'),obj(o),[-2,-2]));
@@ -102,19 +102,19 @@ for o = 1:O
                 getDocLink('project options'),obj(o),[-1,1]));
         case h.uipanel_VP_plot
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('vp plot'),obj(o),tbl));
+                getDocLink('vp plot'),obj(o)));
         case h.uipanel_VP_editAndExportVideo
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('edit video'),obj(o),tbl));
+                getDocLink('edit video'),obj(o)));
         case h.uipanel_VP_moleculeCoordinates
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('molecule coordinates'),obj(o),tbl));
+                getDocLink('molecule coordinates'),obj(o)));
         case h_pushbutton_trsfOpt_cancel
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('vp import options'),obj(o),[2,1]));
         case h.uipanel_VP_intensityIntegration
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('intensity integration'),obj(o),tbl));
+                getDocLink('intensity integration'),obj(o)));
         case h_pushbutton_itgFileOpt_cancel
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('vp export options'),obj(o),[-1,1]));
@@ -124,7 +124,7 @@ for o = 1:O
                 getDocLink('tp import options'),obj(o),[-1,1]));
         case h.uipanel_TP_sampleManagement
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('sample management'),obj(o),tbl));
+                getDocLink('sample management'),obj(o),1));
         case h_pushbutton_optExpTr_cancel
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('tp export options'),obj(o),[-1,1]));
@@ -133,44 +133,44 @@ for o = 1:O
                 getDocLink('trace manager'),obj(o),[2,1]));
         case h.uipanel_TP_plot
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('tp plot'),obj(o),tbl));
+                getDocLink('tp plot'),obj(o)));
         case h.uipanel_TP_subImages
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('sub-images'),obj(o),tbl));
+                getDocLink('sub-images'),obj(o)));
         case h.uipanel_TP_backgroundCorrection
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('background correction'),obj(o),tbl));
+                getDocLink('background correction'),obj(o)));
         case h_pushbutton_bga_save
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('background analyzer'),obj(o),[2,1]));
         case h.uipanel_TP_crossTalks
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('cross-talks'),obj(o),tbl));
+                getDocLink('cross-talks'),obj(o)));
         case h.uipanel_TP_denoising
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('denoising'),obj(o),tbl));
+                getDocLink('denoising'),obj(o)));
         case h.uipanel_TP_photobleaching
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('photobleaching'),obj(o),tbl));
+                getDocLink('photobleaching'),obj(o)));
         case h.uipanel_TP_factorCorrections
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('factor corrections'),obj(o),tbl));
+                getDocLink('factor corrections'),obj(o)));
         case h.uipanel_TP_findStates
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('find states'),obj(o),tbl));
+                getDocLink('find states'),obj(o)));
         case h.axes_topRight
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('tp visualization'),obj(o),[-2,-2]));
             
         case h.uipanel_HA_histogramAndPlot
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('ha plot'),obj(o),tbl));
+                getDocLink('ha plot'),obj(o)));
         case h.uipanel_HA_stateConfiguration
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('ha state configuration'),obj(o),tbl));
+                getDocLink('ha state configuration'),obj(o)));
         case h.uipanel_HA_statePopulations
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('state populations'),obj(o),tbl));
+                getDocLink('state populations'),obj(o)));
         case h.axes_hist1
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('ha visualization'),obj(o),[-2,-2]));
@@ -180,16 +180,16 @@ for o = 1:O
                 getDocLink('ta export options'),obj(o),[-1,1]));
         case h.uipanel_TA_transitionDensityPlot
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('ta plot'),obj(o),tbl));
+                getDocLink('ta plot'),obj(o)));
         case h.uipanel_TA_stateConfiguration
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('ta state configuration'),obj(o),tbl));
+                getDocLink('ta state configuration'),obj(o)));
         case h.uipanel_TA_dtHistograms
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('dt histograms'),obj(o),tbl));
+                getDocLink('dt histograms'),obj(o)));
         case h.uipanel_TA_kineticModel
             hBut = cat(2,hBut,mkbutton(cdata,...
-                getDocLink('kinetic model'),obj(o),tbl));
+                getDocLink('kinetic model'),obj(o)));
     end
 end
 
@@ -210,14 +210,14 @@ function hBut = mkbutton(cdat,link,obj,varargin)
 %     Positionning respects the following margins:
 %           _____          _____
 %          | 1, 2|        |-2, 2|
-%   _____   ____________________   _____
-%  |-1,-2| |  _____      _____  | | 2,-2|
-%          | | 1,-2|    |-2,-2| |
+%    _____  ____________________  _____
+%   |-1,-2|| 1,-2|        |-2,-2|| 2,-2|
+%          |                    |
 %          |                    |
 %          |  REFERENCE OBJECT  |
-%          |  _____      _____  |
-%   _____  | | 1, 1|    |-2, 1| |  _____
-%  |-1, 1| |____________________| | 2, 1|
+%          |                    |
+%    _____ |_____          _____| _____
+%   |-1, 1|| 1, 1|________|-2, 1|| 2, 1|
 %           _____          _____
 %          | 1,-1|        |-2,-1|
 
@@ -229,7 +229,12 @@ mg = 5;
 posObj = getPixPos(obj);
 
 if strcmp(obj.Type,'uipanel')
-    x = posObj(1) + posObj(3) - 2*w_but - mg;
+    if ~isempty(varargin)
+        fact = varargin{1}; % regular panel
+    else
+        fact = 2; % collapsable panel (next to collapse button)
+    end
+    x = posObj(1) + posObj(3) - fact*w_but - mg;
     y = posObj(2) + posObj(4) - h_but;
     
 else
