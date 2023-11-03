@@ -3,7 +3,7 @@ layout: default
 title: Find states
 parent: Components
 grand_parent: Trace processing
-nav_order: 9
+nav_order: 8
 ---
 
 <img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>

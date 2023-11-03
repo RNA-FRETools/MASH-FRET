@@ -3,7 +3,7 @@ layout: default
 title: Background correction
 parent: Components
 grand_parent: Trace processing
-nav_order: 4
+nav_order: 3
 ---
 
 <img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
