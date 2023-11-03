@@ -68,6 +68,10 @@ For 1D-sorting, menu **(f)** must be set to `none`.
 
 Data are sorted into bins defined by **(c)** (lowest limit), **(d)** (highest limit) and **(e)** (bin size) for the x-axis, and by **(h)**, **(i)** and **(j)** for the y-axis.
 
+Data can be counted as one count per molecule in the 2D-histogram by activation option **(l)**.
+
+2D-histograms can be displayed with Gaussian filtering by activating option **(k)**.
+
 Molecule sorting can be performed on full-length data-time traces or state trajectories, but also on different descriptive statistics or state data.
 The type of data sets can be selected in menu **(b)** (x-axis) and **(g)** (y-axis) and include:
 * `original time traces (frame-wise)` for full-length data-time traces
