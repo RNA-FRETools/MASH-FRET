@@ -20,7 +20,7 @@ The panel closes automatically after other panels open or after pressing
 Use this panel to define which time traces to plot in the 
 [Visualization area](area-visualization.html).
 
-<a class="plain" href="../../assets/images/gui/TP-panel-plot.png"><img src="../../assets/images/gui/TP-panel-plot.png" style="max-width: 258px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-plot.png"><img src="../../assets/images/gui/TP-panel-plot.png" style="max-width: 238px;"/></a>
 
 
 ## Panel components
@@ -37,11 +37,14 @@ Use this panel to define which time traces to plot in the
 Use these menus to define the intensity data to plot in 
 [Intensity-time traces and histograms](area-visualization.html#intensity-time-traces-and-histograms).
 
-<a class="plain" href="../../assets/images/gui/TP-panel-plot-top.png"><img src="../../assets/images/gui/TP-panel-plot-top.png" style="max-width: 236px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-plot-top.png"><img src="../../assets/images/gui/TP-panel-plot-top.png" style="max-width: 228px;"/></a>
 
 To plot intensity data upon illumination of a particular laser, select the corresponding wavelength in menu **(a)**, or select the option `all` to plot intensities upon all laser illuminations.
 
 To plot intensity data of a particular emitter, select the corresponding detection channel in menu **(b)**, or select the option `all` to plot all emitter intensities.
+
+The upper and lower limits of the intensity axis can be set to constant values by activating the option in **(c)** and setting the limits in **(d)** and **(e)**. Intensity units are defined in menu `Units`>`intensities` of the 
+[menu bar](../../Getting_started.html#interface).
 
 
 ---
