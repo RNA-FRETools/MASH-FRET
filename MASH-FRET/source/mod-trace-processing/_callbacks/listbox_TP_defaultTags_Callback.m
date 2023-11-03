@@ -20,6 +20,10 @@ for i = 1:size(p.proj{proj}.ES,2)
     end
 end
 
+% reset HA and TA
+p = importHA(p,p.curr_proj);
+p = importTA(p,p.curr_proj);
+
 h.param = p;
 guidata(h_fig,h);
 
@@ -28,3 +32,5 @@ set(h.togglebutton_TP_addTag,'value',0,'backgroundColor',grey);
 set(obj,'visible','off');
 
 ud_trSetTbl(h_fig);
+ud_HA_histDat(h_fig);
+ud_TDPdata(h_fig);

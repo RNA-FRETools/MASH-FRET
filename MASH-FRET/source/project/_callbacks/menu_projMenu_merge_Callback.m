@@ -8,10 +8,10 @@ end
     
 % collect selected projects
 slct = get(h.listbox_proj, 'Value');
-nProj = numel(slct);
 
 % check project compatibility
-[comp,errmsg,expT] = projectCompatibility(p.proj(slct));
+[comp,errmsg,expT,wl,lbl] = projectCompatibility(p.proj(slct),...
+    [h.figure_dummy,h.text_dummy]);
 if ~comp
     if h.mute_actions
         disp(cat(2,'Merging is impossible: ',errmsg));
@@ -22,18 +22,31 @@ if ~comp
 end
 
 % build confirmation message box
+diffcrosstalks = false;
 if h.mute_actions
     del = 'Yes';
 else
     str_proj = p.proj{slct(1)}.exp_parameters{1,2};
-    del = questdlg({cat(2,'WARNING 1: The merging process induces a loss ',...
-        'of single molecule videos that were used in individual projects.',...
+    prompt = {'WARNING 1: The merging process induces a loss of single ',...
+        'molecule videos that were used in individual projects.',...
         ' It is therefore recommended to perform all adjustments of ',...
-        'molecule positions and background corrections prior merging.'),...
-        ' ',cat(2,'WARNING 2: Cross-talk coefficients used in the merged ',...
-        'project will be taken from the project "',str_proj,'" only.'),...
-        ' ','Do you wish to continue?'},'Merge projects','Yes','Cancel',...
-        'Yes');
+        'molecule positions and background corrections prior merging.'};
+    
+    for i = slct
+        if ~(isequal(p.proj{slct(1)}.TP.fix{4}{1},p.proj{i}.TP.fix{4}{1}) ...
+                && isequal(p.proj{slct(1)}.TP.fix{4}{2},...
+                p.proj{i}.TP.fix{4}{2}))
+            diffcrosstalks = true;
+            break
+        end
+    end
+    if diffcrosstalks
+        prompt = [prompt,' ',['WARNING 2: Cross-talk coefficients used in',...
+            ' the merged project will be taken from the project "',...
+            str_proj,'" only.']];
+    end
+    del = questdlg([prompt,' ','Do you wish to continue?'],...
+        'Merge projects','Yes','Cancel','Yes');
 end
 
 if ~strcmp(del, 'Yes')
@@ -58,7 +71,8 @@ s.spltime_from_video = p.proj{slct(1)}.spltime_from_video;
 
 s.nb_channel = p.proj{slct(1)}.nb_channel;
 s.nb_excitations = p.proj{slct(1)}.nb_excitations;
-s.excitations = p.proj{slct(1)}.excitations;
+[~,lasid] = sort(p.proj{slct(1)}.excitations);
+s.excitations = wl(lasid);
 s.chanExc = p.proj{slct(1)}.chanExc;
 s.FRET = p.proj{slct(1)}.FRET;
 s.S = p.proj{slct(1)}.S;
@@ -66,7 +80,7 @@ nFRET = size(s.FRET,1);
 nS = size(s.S,1);
 s.exp_parameters = p.proj{slct(1)}.exp_parameters;
 s.exp_parameters{1,2} = 'merged';
-s.labels = p.proj{slct(1)}.labels;
+s.labels = lbl;
 s.colours = p.proj{slct(1)}.colours;
 
 s.coord_file = '';
@@ -93,7 +107,7 @@ L = -Inf;
 s.traj_import_opt = [];
 s.molTagNames = {};
 s.molTagClr = {};
-for proj = 1:nProj
+for proj = slct
     % get maximum length
     if size(p.proj{proj}.intensities,1)>L
         L = size(p.proj{proj}.intensities,1);
@@ -127,7 +141,7 @@ s.FRET_DTA_import = [];
 s.S_DTA = [];
 s.molTag = [];
 s.prmTT = {};
-for proj = 1:nProj
+for proj = slct
     % coordinates
     s.coord = cat(1,s.coord,p.proj{proj}.coord);
     N = size(p.proj{proj}.coord_incl,2);
@@ -138,6 +152,8 @@ for proj = 1:nProj
     
     % laser order
     laserOrder = [];
+    [~,lasid] = sort(p.proj{proj}.excitations);
+    p.proj{proj}.excitations = wl(lasid);
     for l = 1:s.nb_excitations
         id = find(p.proj{proj}.excitations==s.excitations(l));
         laserOrder = cat(2,laserOrder,id);
@@ -231,8 +247,16 @@ s.VP = [];
 % add merged project to the list
 pushbutton_openProj_Callback([],{s},h_fig);
 
+% update processing with comon cross talks
+if diffcrosstalks
+    pushbutton_TP_updateAll_Callback('cross',[],h_fig);
+end
 
-function [ok,errmsg,expT] = projectCompatibility(p_proj)
+% show action
+setContPan('Projects successfully merged!','success',h_fig);
+
+
+function [ok,errmsg,expT,wl,lbl] = projectCompatibility(p_proj,hdl)
 
 ok = false;
 errmsg = '';
@@ -249,13 +273,14 @@ exc = p_proj{1}.excitations;
 chanExc = p_proj{1}.chanExc;
 FRET = p_proj{1}.FRET;
 S = p_proj{1}.S;
-lbls = p_proj{1}.labels;
-pixPrm = p_proj{1}.pix_intgr;
+
 [ok,expT] = checkvidframerate(p_proj);
 if ~ok
     errmsg = 'Projects have different frame rates.';
     return
 end
+
+ok = false;
 for proj = 2:nProj
     if p_proj{proj}.nb_channel~=nChan
         errmsg = 'Projects have different number of channels.';
@@ -265,9 +290,28 @@ for proj = 2:nProj
         errmsg = 'Projects have different number of lasers.';
         return
     end
-    if ~isequal(sort(p_proj{proj}.excitations),sort(exc))
-        errmsg = 'Projects have different laser wavelength.';
-        return
+end
+
+[ok,wl] = checklaserwavelength(p_proj,hdl);
+if ~ok
+    errmsg = 'Projects have different laser wavelengths.';
+    return
+end
+[~,lasid] = sort(exc);
+for c = 1:numel(chanExc)
+    if chanExc(c)>0
+        chanExc(c) = wl(lasid(exc==chanExc(c)));
+    end
+end
+
+ok = false;
+for proj = 2:nProj
+    [~,lasid] = sort(p_proj{proj}.excitations);
+    for c = 1:numel(p_proj{proj}.chanExc)
+        if p_proj{proj}.chanExc(c)>0
+            p_proj{proj}.chanExc(c) = wl(lasid(p_proj{proj}.excitations==...
+                p_proj{proj}.chanExc(c)));
+        end
     end
     if ~isequal(p_proj{proj}.chanExc,chanExc)
         errmsg = cat(2,'Projects have different emitter-specific ',...
@@ -282,13 +326,13 @@ for proj = 2:nProj
         errmsg = 'Projects have different stochiometry calculations.';
         return
     end
-    if ~isequal(p_proj{proj}.labels,lbls)
-        errmsg = 'Projects have different emitter labels.';
-        return
-    end
 end
 
-ok = true;
+[ok,lbl] = checkemitterlbl(p_proj,hdl);
+if ~ok
+    errmsg = 'Projects have different emitter labels.';
+    return
+end
 
 
 function [ok,splt] = checkvidframerate(proj)
@@ -322,6 +366,78 @@ if ~all(allsplt==allsplt(1))
     else
         splt = str2num(answ{1});
     end
+else
+    splt = allsplt(1);
+end
+
+
+function [ok,wl] = checklaserwavelength(proj,hdl)
+
+% defaults
+w = 350;
+h = 100;
+
+nProj = numel(proj);
+nExc = proj{1}.nb_excitations;
+allwl = zeros(nProj,nExc);
+wl = sort(allwl(1,:));
+ok = 1;
+for n = 1:nProj
+    allwl(n,:) = sort(proj{n}.excitations);
+end
+if ~all(all(allwl==repmat(allwl(1,:),nProj,1)))
+    strwl = cell(1,nProj);
+    for n = 1:nProj
+        strwl{n} = num2str(allwl(n,:));
+    end
+    prompt = ['Projects have different laser ',...
+        'wavelengths. Please select a common set of wavelengths (in nm) ',...
+        'or abort the merging process:'];
+    [prompt,~] = wrapStrToWidth(prompt,'points',10,'normal',w,'gui',...
+        hdl);
+    [id,ok] = listdlg('PromptString',prompt,'ListString',strwl,...
+        'SelectionMode','single','ListSize',[w,h]);
+    if ok
+        wl = allwl(id,:);
+    end
+else
+    wl = allwl(1,:);
+end
+
+
+function [ok,lbl] = checkemitterlbl(proj,hdl)
+
+% defaults
+w = 350;
+h = 100;
+
+nProj = numel(proj);
+nChan = proj{1}.nb_channel;
+alllbl = cell(nProj,nChan);
+ok = 1;
+lbl = alllbl(1,:);
+for n = 1:nProj
+    alllbl(n,:) = proj{n}.labels;
+end
+if ~isequal(alllbl,repmat(alllbl(1,:),nProj,1))
+    strlbl = cell(1,nProj);
+    for n = 1:nProj
+        for c = 1:nChan
+            strlbl{n} = [strlbl{n},alllbl{n,c},' '];
+        end
+        strlbl{n} = strlbl{n}(1:end-1);
+    end
+    prompt = ['Projects have different emitter labels. Please select a ',...
+        'common set of labels or abort the merging process:'];
+    [prompt,~] = wrapStrToWidth(prompt,'points',10,'normal',w,'gui',...
+        hdl);
+    [id,ok] = listdlg('PromptString',prompt,'ListString',strlbl,...
+        'SelectionMode','single','ListSize',[w,h]);
+    if ok
+        lbl = alllbl(id,:);
+    end
+else
+    lbl = alllbl(1,:);
 end
 
 

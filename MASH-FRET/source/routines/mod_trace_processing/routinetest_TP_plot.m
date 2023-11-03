@@ -35,16 +35,15 @@ for dat = 1:nDat_top
         popupmenu_plotTop_Callback(h.popupmenu_plotTop,[],h_fig);
     end
 end
-
-% tes axis settings
-disp(cat(2,prefix,'test axis settings'));
 nDat_bot = numel(get(h.popupmenu_plotBottom,'string'));
 for dat = 1:nDat_bot
     set(h.popupmenu_plotBottom,'value',dat);
     popupmenu_plotBottom_Callback(h.popupmenu_plotBottom,[],h_fig);
 end
 
-set_TP_xyAxis(~p.fixX0,p.x0,h_fig);
+% test axis settings
+disp(cat(2,prefix,'test axis settings'));
+set_TP_xyAxis(~p.fixX0,p.x0,true,p.intlim,h_fig);
 
 pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
 

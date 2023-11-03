@@ -25,7 +25,7 @@ else % 2D histogram
     if sum(sum(isnan(trace)))
         P = [];
         iv = [];
-        return;
+        return
     end
     prm = [lim(1,:),niv(1);lim(2,:),niv(2)];
     [P,iv{1},iv{2}] = hist2D(trace,prm); % RB: hist2D by tudima at zahoo dot com, inlcuded in \traces\processing\management

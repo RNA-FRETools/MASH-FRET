@@ -48,6 +48,7 @@ viddat = p.proj{proj}.movie_dat;
 multichanvid = numel(vidfiles)==1;
 
 h.imageMov = [];
+h.aveImage = [];
 
 for mov = 1:numel(vidfiles)
     % get current video frame
@@ -104,21 +105,23 @@ for mov = 1:numel(vidfiles)
     if isfield(h,'axes_VP_tr') && all(ishandle(h.axes_VP_tr))
         h_axes = cat(2,h_axes,h.axes_VP_tr(mov));
     end
-    h.imageMov(mov) = plot_VP_videoFrame(h_axes,...
+    [h.imageMov(mov),h.aveImage(mov)] = plot_VP_videoFrame(h_axes,...
         [h.cb_VP_vid(mov),h.cb_VP_avimg(mov)],cat(3,img,avimg),...
         imgtrsf{mov},coord,chsplit,persec,multichanvid);
     
     
     if h.togglebutton_target.Value==1
-        set(h.axes_VP_vid(mov), 'ButtonDownFcn', {@pointITT, h_fig});
-        set(h.imageMov(mov), 'ButtonDownFcn', {@pointITT, h_fig});
+        set([h.axes_VP_vid(mov),h.axes_VP_avimg(mov)],'ButtonDownFcn',...
+            {@pointITT, h_fig});
+        set([h.imageMov(mov),h.aveImage(mov)],'ButtonDownFcn',...
+            {@pointITT, h_fig});
     else
-        set(h.imageMov(mov), 'ButtonDownFcn', {});
-        set(h.axes_VP_vid(mov), 'ButtonDownFcn', {});
+        set([h.imageMov(mov),h.aveImage(mov)],'ButtonDownFcn',{});
+        set([h.axes_VP_vid(mov),h.axes_VP_avimg(mov)],'ButtonDownFcn',{});
     end
 end
 
-% set tool
+% sets zoom
 if h.togglebutton_target.Value==1
     set(0, 'CurrentFigure', h_fig);
     zoom off

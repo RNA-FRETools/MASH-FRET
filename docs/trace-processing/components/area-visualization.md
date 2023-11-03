@@ -61,7 +61,9 @@ When using the `Dark trace` background correction method, dark coordinates are s
 
 Trace axes show the current single molecule intensity-time traces selected in 
 [Plot in top axes](panel-plot.html#plot-in-top-axes), using intensity and time units defined in menu `Units` of the 
-[menu bar](../../Getting_started.html#interface), and histogram axes show the corresponding intensity histograms built by sorting intensities in 100 bins between the minimum and maximum intensities.
+[menu bar](../../Getting_started.html#interface) as well as intensity limits defined in 
+[Plot in top axes](panel-plot.html#plot-in-top-axes).
+Histogram axes show the corresponding intensity histograms built by sorting intensities in 100 bins between the minimum and maximum intensities.
 
 ![Intensity-time traces](../../assets/images/gui/TP-area-visu-traces-top.png "Intensity-time traces")
 

@@ -17,6 +17,8 @@ It consists in three tabs, each showing different video-related data.
 Use this area to visualize single molecule video data. 
 Any graphics in MASH-FRET can be exported to an image file by right-clicking on the axes and selecting `Export graph`.
 
+<a class="plain" href="../../assets/images/gui/VP-area-visu.png"><img src="../../assets/images/gui/VP-panel-videdit.png" style="max-width: 507px;"/></a>
+
 
 ## Area components
 {: .no_toc .text-delta }
@@ -27,11 +29,14 @@ Any graphics in MASH-FRET can be exported to an image file by right-clicking on 
 
 ---
 
-## Single molecule video
+## Images
+
+### Single molecule video
+{: .no_toc }
 
 Use this tab to navigate throught the video frames.
 
-<a class="plain" href="../../assets/images/gui/VP-area-visu-vid.png"><img src="../../assets/images/gui/VP-area-visu-vid.png" style="max-width:537px"></a>
+<a class="plain" href="../../assets/images/gui/VP-area-visu-vid.png"><img src="../../assets/images/gui/VP-area-visu-vid.png" style="max-width:488px"></a>
 
 * **(1)** [Video information](#video-information)
 * **(2)** [Video visualization](#video-visualization)
@@ -41,7 +46,7 @@ Use this tab to navigate throught the video frames.
 * **(6)** [Zoom tool](#zoom-tool)
 
 
-### Video information
+#### Video information
 {: .no_toc }
 
 <a class="plain" href="../../assets/images/gui/VP-area-visu-vid-vidfile.png"><img src="../../assets/images/gui/VP-area-visu-vid-vidfile.png" style="max-width:488px"></a>
@@ -51,7 +56,7 @@ The video file name and location is shown in **(a)** and video pixel dimensions 
 These properties are read-only.
 
 
-### Video visualization
+#### Video visualization
 {: .no_toc }
 
 Shows the current video frame and corresponding spots or molecule positions.
@@ -78,7 +83,7 @@ It is possible to zoom in the display and create intensity-time traces at specif
 [Create trace tool](#create-trace-tool) respectively.
 
 
-### Navigation
+#### Navigation
 {: .no_toc }
 
 Use this sliding bar to navigate throught the video frames.
@@ -89,7 +94,7 @@ When spots are detected with the tool Spotfinder, the corresponding coordinates 
 [Spotfinder](panel-molecule-coordinates.html#spotfinder) for more information.
 
 
-### Frame information
+#### Frame information
 {: .no_toc }
 
 Shows information about the current frame index and channel splitting positions.
@@ -99,39 +104,8 @@ Shows information about the current frame index and channel splitting positions.
 The current frame index is shown in **(a)**, the video length in **(b)** and channel splitting positions (in pixels) in **(c)** considering equal channel widths.
 
 
-### Create trace tool
+### Average image
 {: .no_toc }
-
-Press 
-![+](../../assets/images/gui/VP-but-plus.png "+") to activate the "Create trace" cursor.
-
-The "Create trace" cursor allows to generate and plot laser-specific intensity-time traces by simply clicking on a specific pixel in the 
-[Video visualization](#video-visualization).
-
-Intensity data can be exported to MATLAB's workspace by pressing 
-![Yes](../../assets/images/gui/VP-but-yes.png "Yes") in the dialogue box; otherwise press 
-![No](../../assets/images/gui/VP-but-no.png "No").
-
-<a class="plain" href="../../assets/images/gui/VP-area-visu-traces.png"><img src="../../assets/images/gui/VP-area-visu-traces.png" /></a>
-
-Intensities are calculated as described in 
-[Integration parameters](panel-intensity-integration.html#integration-parameters) and given in units defined in menu `Units` of the 
-[Menu bar](../../Getting_started.html#interface).
-
-
-### Zoom tool
-{: .no_toc }
-
-Press 
-![Z](../../assets/images/gui/VP-but-z.png "Z") to activate the zoom cursor.
-
-The zoom cursor allows to zoom in and out the 
-[Video visualization](#video-visualization) like on regular MATLAB axes.
-
-
----
-
-## Average image
 
 Use this tab to visualize the average image.
 
@@ -155,9 +129,8 @@ It is possible to zoom in the display by using the
 [Zoom tool](#zoom-tool).
 
 
----
-
-## Transformed image
+### Transformed image
+{: .no_toc }
 
 Use this tab to check the quality of channel transformation.
 
@@ -171,4 +144,43 @@ Dotted white lines are plotted at channel splitting positions given in
 
 It is possible to zoom in the display by using the
 [Zoom tool](#zoom-tool).
+
+
+---
+
+
+## Create trace tool
+
+Press 
+![+](../../assets/images/gui/VP-but-plus.png "+") to activate the "Create trace" cursor.
+
+The "Create trace" cursor allows to generate and plot laser-specific intensity-time traces by simply clicking on a specific pixel of the 
+[Video visualization](#video-visualization) or of the 
+[Average image](#average-image).
+
+Intensity data can be exported to MATLAB's workspace by pressing 
+![Yes](../../assets/images/gui/VP-but-yes.png "Yes") in the dialogue box; otherwise press 
+![No](../../assets/images/gui/VP-but-no.png "No").
+
+<a class="plain" href="../../assets/images/gui/VP-area-visu-traces.png"><img src="../../assets/images/gui/VP-area-visu-traces.png" /></a>
+
+Intensities are calculated as described in 
+[Integration parameters](panel-intensity-integration.html#integration-parameters) and given in units defined in menu `Units` of the 
+[Menu bar](../../Getting_started.html#interface).
+
+
+---
+
+
+## Zoom tool
+
+Press 
+![Z](../../assets/images/gui/VP-but-z.png "Z") to activate the zoom cursor and deactivate the 
+[Create trace tool](#create-trace-tool).
+
+The zoom cursor allows to zoom in and out the 
+[Image](#image) area like on regular MATLAB axes.
+
+
+---
 

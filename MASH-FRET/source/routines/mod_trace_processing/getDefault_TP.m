@@ -159,6 +159,7 @@ p.perSec = true;
 p.inSec = false;
 p.fixX0 = false;
 p.x0 = 10;
+p.intlim = [-1000,1E5];
 
 % parameters for panel Sub-images
 p.contrast = 90;

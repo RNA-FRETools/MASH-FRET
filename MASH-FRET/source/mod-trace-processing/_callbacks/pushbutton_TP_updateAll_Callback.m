@@ -1,4 +1,11 @@
 function pushbutton_TP_updateAll_Callback(obj, evd, h_fig)
+% pushbutton_TP_updateAll_Callback([],[],h_fig)
+% pushbutton_TP_updateAll_Callback(opt0,[],h_fig)
+%
+% h_fig: handle to main figure
+% opt0: string indicating the most advanced stage to which the analysis 
+%       must start.
+
 
 % Last update by MH, 14.1.2020: separate trace update into 3 successive processes (1) update all intensity correction (2) calculate gamma factors (3) discretize traces; this allows stable ES histogram for linear regression
 

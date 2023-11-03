@@ -34,7 +34,7 @@ pospan = get(h_pan,'position');
 posfig = get(q.figure_traceMngr,'position');
 wpop = 3*p.wedit+2*p.mg/2;
 wpan = 0.5*wpop + 2*p.wedit + p.wtxt3 + 2.5*p.mg;
-hpan1 = p.mgbig+2*(p.htxt+p.hpop+p.mg/2+p.htxt+p.hedit+p.mg);
+hpan1 = p.mgbig+2*(p.htxt+p.hpop+p.mg/2+p.htxt+p.hedit+p.mg)+p.mg/2+p.hcb;
 hpan2 = p.mgbig+p.htxt+p.hedit+p.mg+p.htxt+p.mg/2+p.hpop+p.mg/2+p.hpop+...
     p.mg/2+p.htxt+p.mgbig+p.htxt+p.mg+p.hbut+p.mg;
 hpan3 = pospan(4)-2*p.mg-hpan1-p.mg-hpan2-p.mg-2*p.mg;

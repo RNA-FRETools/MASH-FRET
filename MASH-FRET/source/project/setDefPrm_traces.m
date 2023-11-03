@@ -80,11 +80,13 @@ elseif nFRET>0 || nS>0
 else
     gen{2}(3) = 1;
 end
-
-gen{2}(4) = 0; % nothing (prev: intensity units per second)
-gen{2}(5) = 0; % nothing (prev: intensity units per pixel)
+Inan = isnan(p.proj{proj}.intensities(:));
+Imean = mean(p.proj{proj}.intensities(~Inan));
+Isig = std(p.proj{proj}.intensities(~Inan));
+gen{2}(4) = Imean-Isig; % lower intensity (prev: intensity units per second)
+gen{2}(5) = Imean+3*Isig; % upper intensity (prev: intensity units per pixel)
 gen{2}(6) = 0; % fix first frame for all molecules
-gen{2}(7) = 0; % nothing (prev: time units in second)
+gen{2}(7) = 0; % fix intensity scale (prev: time units in second)
 
 % Main popupmenu values
 gen{3}(1) = 1; % laser for direct excitation
@@ -112,7 +114,7 @@ def.general = adjustVal(def.general, gen);
 if def.general{1}(1) > nExc
     def.general{1}(1) = 1;
 end
-def.general{2}(1:3) = gen{2}(1:3);
+def.general{2}([1:5,7]) = gen{2}([1:5,7]);
 def.general{3} = gen{3};
 
 %% Molecule parameters
@@ -313,6 +315,8 @@ if ~(isCoord && isMov)
     for c = 1:nChan
         for l = 1:nExc
             def.mol{3}{2}(l,c) = 1;
+            def.mol{3}{3}{l,c} = zeros(1,7);
+            def.mol{3}{3}{l,c}(3) = 20;
         end
     end
 end
@@ -335,13 +339,11 @@ if (nFRET + nS) == 0
     end
 end
 
-% adjust the cutoff frame if higher than the total number of frames
-if def.mol{2}{1}(5) > nFrames
-    def.mol{2}{1}(5) = nFrames;
-end
-if def.mol{2}{1}(6) > nFrames
-    def.mol{2}{1}(6) = nFrames;
-end
+% reset trace truncations
+def.mol{2}{1}(1) = 0; % apply cutoff
+def.mol{2}{1}(2) = 1; % method
+def.mol{2}{1}(4) = 1; % starting frame
+def.mol{2}{1}(5:6) = [nFrames nFrames]; % cutoff frames
 
 % if photobleaching threshold is calculated a channel larger than the
 % number of channel

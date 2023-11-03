@@ -14,6 +14,12 @@ for i = 1:size(p.proj{proj}.ES,2)
     end
 end
 
+% reset HA and TA
+p = importHA(p,p.curr_proj);
+p = importTA(p,p.curr_proj);
+
 h.param = p;
 guidata(h_fig, h);
 updateFields(h_fig, 'ttPr');
+ud_HA_histDat(h_fig);
+ud_TDPdata(h_fig);

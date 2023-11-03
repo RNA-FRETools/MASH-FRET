@@ -7,10 +7,14 @@ function ud_trSetTbl(h_fig)
 h = guidata(h_fig);
 p = h.param;
 
-if ~prepPanel(h.uipanel_TP_sampleManagement,h)
+% propups panel
+if ~isModuleOn(p,'TP')
     set(h.listbox_molNb,'String',{''},'Value',1,'Listboxtop',1);
     return
 end
+setProp(get(h.uipanel_TP_sampleManagement,'children'),'enable','on');
+setProp(get(h.uipanel_TP_sampleManagement,'children'),'backgroundcolor',...
+    [1,1,1],'style','edit');
 
 % collect experiment settings
 proj = p.curr_proj;

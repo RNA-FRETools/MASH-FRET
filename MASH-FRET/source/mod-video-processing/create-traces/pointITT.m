@@ -33,8 +33,8 @@ persec = p.proj{p.curr_proj}.cnt_p_sec;
 vidfile = p.proj{p.curr_proj}.movie_file;
 viddat = p.proj{p.curr_proj}.movie_dat;
 curr = p.proj{p.curr_proj}.VP.curr;
-pxdim = curr.gen_int{3}(1);
-npix = curr.gen_int{3}(2);
+pxdim = 1;
+npix = 1;
 
 % display process
 setContPan('Generating intensity-time traces...','process',h_fig);
@@ -43,18 +43,28 @@ h_tab = h_axes0.Parent;
 h_tg = h_tab.Parent;
 mov = find(h_tg.Children==h_tab);
 
-fDat{1} = vidfile{mov};
-fDat{2}{1} = viddat{mov}{1};
-if isFullLengthVideo(vidfile{mov},h_fig)
-    fDat{2}{2} = h.movie.movie;
-else
-    fDat{2}{2} = [];
-end
-fDat{3} = viddat{mov}{2};
-fDat{4} = viddat{mov}{3};
-[o,data] = create_trace(newPnt,pxdim,npix,fDat);
-if isempty(data)
-    return
+if h_axes0==h.axes_VP_vid(mov)
+    fDat{1} = vidfile{mov};
+    fDat{2}{1} = viddat{mov}{1};
+    if isFullLengthVideo(vidfile{mov},h_fig)
+        fDat{2}{2} = h.movie.movie;
+    else
+        fDat{2}{2} = [];
+    end
+    fDat{3} = viddat{mov}{2};
+    fDat{4} = viddat{mov}{3};
+    [o,data] = create_trace(newPnt,pxdim,npix,fDat);
+    if isempty(data)
+        return
+    end
+    
+elseif h_axes0==h.axes_VP_avimg(mov)
+    extr = floor(pxdim/2);
+    lim_inf = ceil(newPnt)-extr;
+    lim.Xinf = lim_inf(1,1);
+    lim.Yinf = lim_inf(1,2);
+    data = tracesFromMatrix(curr.res_plot{2}{mov},1,lim,pxdim,npix,false);
+    nExc = 1;
 end
 
 str_sec = [];
@@ -83,6 +93,7 @@ clr = [0 0 1
     1 0 0
     0 1 0
     0 0 0];
+
 leg_str = {};
 for i = 1:nExc
     leg_str = cat(2,leg_str,cat(2,'laser ',num2str(i)));
@@ -105,8 +116,10 @@ end
 
 ylim(h_axes, 'auto');
 xlabel(h_axes, 'time (s)');
-ylabel(h_axes, ['intensity (counts' str_sec ')']);
-legend(h_axes, leg_str);
+ylabel(h_axes, {'intensity',['(counts' str_sec ')']});
+if nExc>1
+    legend(h_axes, leg_str);
+end
 grid on;
 
 guidata(h_fig, h);

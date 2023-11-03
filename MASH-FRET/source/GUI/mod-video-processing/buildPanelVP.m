@@ -24,20 +24,21 @@ function h = buildPanelVP(h,p)
 % default
 hedit0 = 20;
 htxt0 = 14;
-hpop0 = 22;
 hsld0 = 20;
 fact = 5;
-ttl0 = 'Plot';
-ttl1 = 'Edit and export video';
-ttl2 = 'Molecule coordinates';
-ttl3 = 'Intensity integration';
-str0 = 'EXPORT...';
-str1 = 'CALCULATE TRACES';
+gray = [0.93,0.93,0.93];
+str1 = '+';
+str2 = 'Z';
+str3 = 'Tool:';
+str4 = 'EXPORT...';
+str5 = 'CALCULATE TRACES';
 tabttl0 = 'Video';
 tabttl1 = 'Average image';
 tabttl2 = 'Transformed image';
-ttstr0 = wrapHtmlTooltipString('<b>Export intensity-time traces:</b> opens export options.');
-ttstr1 = wrapHtmlTooltipString('<b>Create intensity-time traces</b> using the transformed coordinates.');
+ttstr0 = wrapHtmlTooltipString('Activate <b>"create trace" cursor:</b> clicking on one pixel of the video will create intensity-time traces from this position.');
+ttstr1 = wrapHtmlTooltipString('Activate <b>zoom cursor:</b> regular MATLAB zoom tool.');
+ttstr2 = wrapHtmlTooltipString('<b>Export intensity-time traces:</b> opens export options.');
+ttstr3 = wrapHtmlTooltipString('<b>Create intensity-time traces</b> using the transformed coordinates.');
 
 % parents
 h_fig = h.figure_MASH;
@@ -45,25 +46,21 @@ h_pan = h.uipanel_VP;
 
 % dimensions
 pospan = get(h_pan,'position');
-wbut0 = getUItextWidth(str0,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
-wbut1 = getUItextWidth(str1,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
-htab0 = pospan(4)-2*p.mg;
+wbut0 = max([getUItextWidth(str1,p.fntun,p.fntsz1,'bold',p.tbl),...
+    getUItextWidth(str2,p.fntun,p.fntsz1,'bold',p.tbl)])+p.wbrd;
+wbut1 = getUItextWidth(str4,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
+wbut2 = getUItextWidth(str5,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
+wtxt0 = getUItextWidth(str3,p.fntun,p.fntsz1,'normal',p.tbl);
+htab0 = pospan(4)-3*p.mg-hedit0;
 wtab0 = htab0-hedit0-2*p.mg-hsld0-p.mg-htxt0;
 htab1 = htab0-p.mgtab-p.mg;
 wtab1 = wtab0-2*p.mg;
 wpan0 = pospan(3)-3*p.mg-wtab0;
-hpan0 = p.mgpan+hpop0+p.mg;
-hpan1 = p.mgpan+hpop0+hedit0+p.mg/2+hpop0+p.mg/fact+hedit0+p.mg/2+hedit0+...
-    p.mg;
-hpan2a = p.mgpan+htxt0+hedit0+p.mg;
-hpan2b = p.mgpan+hpop0+p.mg/2+hpop0+p.mg/2+hedit0+p.mg/2+hedit0+p.mg;
-hpan2c = p.mgpan+3*hedit0+3*p.mg/2+hedit0+p.mg;
-hpan2 = p.mgpan+hpan2a+p.mg/2+hpan2b+p.mg/2+hpan2c+p.mg/2;
-hpan3 = p.mgpan+hedit0+p.mg/2+hedit0+p.mg;
+hpan0 = pospan(4)-2*p.mg-hedit0-p.mg/2;
 
 % GUI
 x = p.mg;
-y = p.mg;
+y = pospan(4)-p.mg-htab0;
 
 h.uitabgroup_VP_plot = uitabgroup('parent',h_pan,'units',p.posun,...
     'position',[x,y,wtab0,htab0],'selectionchangedfcn',...
@@ -78,6 +75,8 @@ h = buildVPtabPlotVid(h,p);
 h.uitab_VP_plot_avimg = uitab('parent',h_tabgrp,'units',p.posun,'title',...
     tabttl1);
 
+y = h.uitab_VP_plot_avimg.Position(4)-p.mg-htab1;
+
 h.uitabgroup_VP_plot_avimg = uitabgroup('parent',h.uitab_VP_plot_avimg,...
     'units',p.posun,'position',[x,y,wtab1,htab1],'tablocation','bottom',...
     'selectionchangedfcn',...
@@ -86,54 +85,58 @@ h.uitabgroup_VP_plot_avimg = uitabgroup('parent',h.uitab_VP_plot_avimg,...
 h.uitab_VP_plot_tr = uitab('parent',h_tabgrp,'units',p.posun,'title',...
     tabttl2);
 
+y = h.uitab_VP_plot_tr.Position(4)-p.mg-htab1;
+
 h.uitabgroup_VP_plot_tr = uitabgroup('parent',h.uitab_VP_plot_tr,...
     'units',p.posun,'position',[x,y,wtab1,htab1],'tablocation','bottom',...
     'selectionchangedfcn',...
     {@uitabgroup_chanPlot_SelectionChangedFcn,h_fig});
 
-x = x+wtab0+p.mg;
+x = p.mg+wtab0-p.mg-wbut0;
+y = p.mg;
+
+h.togglebutton_zoom = uicontrol('style','togglebutton','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight',...
+    'bold','position',[x,y,wbut0,hedit0],'string',str2,'callback',...
+    {@switchMovTool,h_fig},'value',1,'tooltipstring',ttstr1,...
+    'backgroundcolor',gray);
+
+x = x-p.mg/fact-wbut0;
+
+h.togglebutton_target = uicontrol('style','togglebutton','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight',...
+    'bold','position',[x,y,wbut0,hedit0],'string',str1,'callback',...
+    {@switchMovTool,h_fig},'value',0,'tooltipstring',ttstr0,...
+    'backgroundcolor',gray);
+
+x = x-p.mg/fact-wtxt0;
+y = y+(hedit0-htxt0)/2;
+
+h.text_tool = uicontrol('style','text','parent',h_pan,'units',p.posun,...
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'position',[x,y,wtxt0,htxt0],...
+    'string',str3);
+
+x = p.mg+wtab0+p.mg;
 y = pospan(4)-p.mg-hpan0;
 
-h.uipanel_VP_plot = uipanel('parent',h_pan,'units',p.posun,'fontunits',...
-    p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan0,hpan0],'title',ttl0);
-h = buildPanelVPplot(h,p);
+h.uipanel_VP_scroll = uipanel('parent',h_pan,'units',p.posun,'fontunits',...
+    p.fntun,'fontsize',p.fntsz1,'position',[x,y,wpan0,hpan0],'title',[]);
+h = buildPanelScrollVP(h,p);
 
-y = y-p.mg/2-hpan1;
-
-h.uipanel_VP_editAndExportVideo = uipanel('parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan0,hpan1],'title',ttl1);
-h = buildPanelVPeditAndExportVideo(h,p);
-
-y = y-p.mg/2-hpan2;
-
-h.uipanel_VP_moleculeCoordinates = uipanel('parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan0,hpan2],'title',ttl2);
-h = buildPanelVPmoleculeCoordinates(h,p);
-
-y = y-p.mg/2-hpan3;
-
-h.uipanel_VP_intensityIntegration = uipanel('parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan0,hpan3],'title',ttl3);
-h = buildPanelVPintensityIntegration(h,p);
-
-x = pospan(3)-p.mg-wbut0-p.mg-wbut1;
+x = pospan(3)-p.mg-wbut1-p.mg-wbut2;
 y = p.mg/2;
 
 h.pushbutton_TTgen_create = uicontrol('style','pushbutton','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
-    'fontweight','bold','position',[x,y,wbut1,hedit0],'string',str1,...
-    'tooltipstring',ttstr1,'callback',...
+    'fontweight','bold','position',[x,y,wbut2,hedit0],'string',str5,...
+    'tooltipstring',ttstr3,'callback',...
     {@pushbutton_TTgen_create_Callback,h_fig});
 
-x = x+wbut1+p.mg;
+x = x+wbut2+p.mg;
 
 h.pushbutton_TTgen_fileOpt = uicontrol('style','pushbutton','parent',...
     h_pan,'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,...
-    'fontweight','bold','position',[x,y,wbut0,hedit0],'string',str0,...
-    'tooltipstring',ttstr0,'callback',...
+    'fontweight','bold','position',[x,y,wbut1,hedit0],'string',str4,...
+    'tooltipstring',ttstr2,'callback',...
     {@pushbutton_TTgen_fileOpt_Callback,h_fig});
 

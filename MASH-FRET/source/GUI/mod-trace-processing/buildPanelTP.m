@@ -41,14 +41,6 @@ str4 = 'UPDATE';
 str5 = 'UPDATE ALL';
 str6 = 'EXPORT...';
 ttl0 = 'Sample management';
-ttl1 = 'Plot';
-ttl2 = 'Sub-images';
-ttl3 = 'Background correction';
-ttl4 = 'Cross-talks';
-ttl5 = 'Factor corrections';
-ttl6 = 'Denoising';
-ttl7 = 'Photobleaching';
-ttl8 = 'Find states';
 tabttl0 = 'Traces';
 ttstr0 = wrapHtmlTooltipString('Go to <b>previous molecule</b> in the list.');
 ttstr1 = wrapHtmlTooltipString('<b>Current molecule</b> index in the list.');
@@ -69,21 +61,12 @@ wbut2 = getUItextWidth(str5,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
 wbut3 = getUItextWidth(str6,p.fntun,p.fntsz1,'bold',p.tbl)+p.wbrd;
 wbut5 = getUItextWidth(str1,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 wbut6 = getUItextWidth(str2,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wpan1 = 2*p.mg+4*p.mg/fact+2*wedit0+wcb2+wbut5+wbut6;
-wtab = pospan(3)-3*p.mg-wpan1;
+wpan0 = 2*p.mg+4*p.mg/fact+2*wedit0+wcb2+wbut5+wbut6;
+wtab = pospan(3)-3*p.mg-wpan0;
 htab = pospan(4)-2*p.mg;
 wtxt0 = pospan(3)-p.mg-wtab-p.mg-2*wbut0+wedit0-p.mg/2-p.mg;
-hpan0 = p.mgpan+6*p.mg/fact+2*p.mg+hpop0+6*hedit0+2*htxt0;
-hpan1 = p.mgpan+htxt0+hpop0+p.mg/fact+htxt0+hpop0+p.mg+hedit0+p.mg;
-hpan2 = p.mgpan+3*htxt0+p.mg/fact+htxt0+p.mg/fact+htxt0+hpop0+p.mg;
-hpan3 = p.mgpan+htxt0+hpop0+p.mg/fact+htxt0+hedit0+p.mg/fact+hedit0+...
-    p.mg/fact+hedit0+p.mg;
-hpan4 = p.mgpan+hpop0+p.mg/2+2*(htxt0+hpop0+p.mg/2)+p.mg/2;
-hpan5 = p.mgpan+p.mg+p.mg/fact+hpop0+hedit0;
-hpan6 = p.mgpan+p.mg+p.mg/fact+2*hpop0+2*htxt0;
-hpan7 = p.mgpan+htxt0+hpop0+p.mg/fact+htxt0+hedit0+p.mg+p.mg/2;
-hpan8 = p.mgpan+3*(htxt0+hpop0+p.mg)+htxt0+hedit0+p.mg/fact+hedit0+p.mg+...
-    htxt0+hpop0+p.mg;
+hpan1 = p.mgpan+6*p.mg/fact+2*p.mg+hpop0+6*hedit0+2*htxt0;
+hpan0 = pospan(4)-p.mg-hedit0-p.mg/2-hedit0-p.mg-hpan1-2*p.mg;
 
 % GUI
 x = p.mg;
@@ -98,72 +81,21 @@ h.uitab_TP_plot_traces = uitab('parent',h_tabgrp,'units',p.posun,'title',...
     tabttl0);
 h = buildTPtabPlotTraces(h,p);
 
-x = x+wtab+p.mg;
+x = x+p.mg+wtab;
 y = pospan(4)-p.mg-hpan0;
 
-h.uipanel_TP_sampleManagement = uipanel('parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan1,hpan0],'title',ttl0);
-h = buildPanelTPsampleManagement(h,p);
+h.uipanel_TP_scroll = uipanel('parent',h_pan,'units',p.posun,'fontunits',...
+    p.fntun,'fontsize',p.fntsz1,'position',[x,y,wpan0,hpan0],'title',[]);
+h = buildPanelScrollTP(h,p);
 
 y = y-p.mg-hpan1;
 
-h.uipanel_TP_plot = uipanel('parent',h_pan,'units',p.posun,...
+h.uipanel_TP_sampleManagement = uipanel('parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan1,hpan1],'title',ttl1);
-h = buildPanelTPplot(h,p);
+    [x,y,wpan0,hpan1],'title',ttl0);
+h = buildPanelTPsampleManagement(h,p);
 
-y = y-p.mg-hpan2;
-
-h.uipanel_TP_subImages = uipanel('parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan1,hpan2],'title',ttl2);
-h = buildPanelTPsubImages(h,p);
-
-y = y-p.mg-hpan3;
-
-h.uipanel_TP_backgroundCorrection = uipanel('parent',h_pan,'units',...
-    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold',...
-    'position',[x,y,wpan1,hpan3],'title',ttl3);
-h = buildPanelTPbackgroundCorrection(h,p);
-
-y = y-p.mg-hpan4;
-
-h.uipanel_TP_crossTalks = uipanel('parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan1,hpan4],'title',ttl4);
-h = buildPanelTPcrossTalks(h,p);
-
-y = y-p.mg-hpan5;
-
-h.uipanel_TP_denoising = uipanel('parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan1,hpan5],'title',ttl6);
-h = buildPanelTPdenoising(h,p);
-
-y = y-p.mg-hpan6;
-
-h.uipanel_TP_photobleaching = uipanel('parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan1,hpan6],'title',ttl7);
-h = buildPanelTPphotobleaching(h,p);
-
-y = y-p.mg-hpan7;
-
-h.uipanel_TP_factorCorrections = uipanel('parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan1,hpan7],'title',ttl5);
-h = buildPanelTPfactorCorrections(h,p);
-
-y = y-p.mg-hpan8;
-
-h.uipanel_TP_findStates = uipanel('parent',h_pan,'units',p.posun,...
-    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan1,hpan8],'title',ttl8);
-h = buildPanelTPfindStates(h,p);
-
-x = p.mg+wtab+p.mg;
-y = p.mg+hedit0+p.mg/2;
+y = p.mg+hedit0+p.mg;
 
 h.pushbutton_molPrev = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'position',[x,y,wbut0,hedit0],'tooltipstring',ttstr0,...

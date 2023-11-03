@@ -29,13 +29,6 @@ for f = 1:numel(mash_files)
     % set default parameters
     setDefault_TP(h_fig,p);
 
-    % expand panel
-    h_but = getHandlePanelExpandButton(h.uipanel_TP_sampleManagement,...
-        h_fig);
-    if strcmp(h_but.String,char(9660))
-        pushbutton_panelCollapse_Callback(h_but,[],h_fig);
-    end
-
     % test sample navigation
     disp(cat(2,prefix,'>> test sample navigation...'));
     pushbutton_molNext_Callback(h.pushbutton_molNext,[],h_fig);

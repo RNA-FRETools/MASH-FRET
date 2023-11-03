@@ -37,6 +37,7 @@ wtxt2 = 105; % large text x-dimension
 wtxt3 = 32; % small text x-dimension
 wbrd = 4;
 warr = 20;
+wbox = 15; % box width in checkboxes
 str0 = 'Overview';
 str1 = 'Auto sorting';
 str2 = 'View on video';
@@ -48,7 +49,7 @@ prm = struct('mg',mg,'mgbig',mgbig,'mgtab',mgtab,'posun',posun,'fntun',...
     fntun,'fntsz',fntsz,'hpop',hpop,'hbut',hbut,'hbut2',hbut2,'hcb',hcb,...
     'hedit',hedit,'htxt',htxt,'wedit',wedit,'wcb',wcb,'wcb2',wcb2,'wtxt1',...
     wtxt1,'wtxt2',wtxt2,'wtxt3',wtxt3,'wbut2',wbut2,'defNperPage',...
-    defNperPage,'wbrd',wbrd,'warr',warr);
+    defNperPage,'wbrd',wbrd,'warr',warr,'wbox',wbox);
 
 % get reference table lisitng character widths 
 h = guidata(h_fig);

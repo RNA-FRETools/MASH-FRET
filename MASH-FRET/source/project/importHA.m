@@ -51,15 +51,7 @@ for i = projs
     end
 
     if nTpe>size(p.proj{i}.HA.prm,2)
-        if size(p.proj{i}.HA.prm,2)==(nTpe-2*nDE)
-            prm_new = cell(1,nTpe);
-            prm_new([1:(2*nChan*nExc),(2*nChan*nExc+2*nDE+1):end]) = ...
-                p.proj{i}.HA.prm;
-            p.proj{i}.HA.prm = prm_new;
-            clear prm_new;
-        else
-            p.proj{i}.HA.prm = cell(nTag+1,nTpe);
-        end
+        p.proj{i}.HA.prm = cell(nTag+1,nTpe);
     end
 
     % if the number of data changed, reset results and resize

@@ -106,10 +106,12 @@ for i = 1:nMol
                 end
 
                 % concatenate traces
-                dat1.trace{ind} = [dat1.trace{ind};I]; % intensits-time trace
+                dat1.trace{ind} = ...
+                    [dat1.trace{ind};I,repmat(i,size(I,1),1)]; % intensity-time trace
+                dat3.val{ind,1} = ...
+                    [dat3.val{ind,1};I_DTA,repmat(i,size(I_DTA,1),1)]; % state trajectories
 
                 % concatenate mean, max, min, median and states
-                dat3.val{ind,1} = [dat3.val{ind,1};I_DTA]; % state trajectories
                 dat3.val{ind,2} = [dat3.val{ind,2};mean(I)]; % mean intensity
                 dat3.val{ind,3} = [dat3.val{ind,3};min(I)]; % minimum intensity
                 dat3.val{ind,4} = [dat3.val{ind,4};max(I)]; % maximum intensity
@@ -143,10 +145,12 @@ for i = 1:nMol
                 end
 
                 % concatenate traces
-                dat1.trace{ind} = [dat1.trace{ind};I0]; % intensits-time trace
+                dat1.trace{ind} = ...
+                    [dat1.trace{ind};I0,repmat(i,size(I0,1),1)]; % intensits-time trace
+                dat3.val{ind,1} = ...
+                    [dat3.val{ind,1};I0_DTA,repmat(i,size(I0_DTA,1),1)]; % state trajectories
 
                 % concatenate mean, max, min, median and states
-                dat3.val{ind,1} = [dat3.val{ind,1};I0_DTA]; % state trajectories
                 dat3.val{ind,2} = [dat3.val{ind,2};mean(I0)]; % mean intensity
                 dat3.val{ind,3} = [dat3.val{ind,3};min(I0)]; % minimum intensity
                 dat3.val{ind,4} = [dat3.val{ind,4};max(I0)]; % maximum intensity
@@ -179,10 +183,12 @@ for i = 1:nMol
             nTrs = size(dt,1);
 
             % concatenate traces
-            dat1.trace{ind} = [dat1.trace{ind};FRET_tr];
+            dat1.trace{ind} = ...
+                [dat1.trace{ind};FRET_tr,repmat(i,[size(FRET_tr,1),1])];
+            dat3.val{ind,1} = ...
+                [dat3.val{ind,1};fret_DTA,repmat(i,[size(fret_DTA,1),1])];
 
             % concatenate mean, max, min, median and states
-            dat3.val{ind,1} = [dat3.val{ind,1};fret_DTA];
             dat3.val{ind,2} = [dat3.val{ind,2};mean(FRET_tr)];
             dat3.val{ind,3} = [dat3.val{ind,3};min(FRET_tr)];
             dat3.val{ind,4} = [dat3.val{ind,4};max(FRET_tr)];
@@ -209,10 +215,12 @@ for i = 1:nMol
             nTrs = size(dt,1);
 
             % concatenate traces
-            dat1.trace{ind} = [dat1.trace{ind};S_tr];
+            dat1.trace{ind} = ...
+                [dat1.trace{ind};S_tr,repmat(i,[size(S_tr,1),1])];
+            dat3.val{ind,1} = ...
+                [dat3.val{ind,1};s_DTA,repmat(i,[size(s_DTA,1),1])];
 
            % concatenate mean, max, min, median and states
-            dat3.val{ind,1} = [dat3.val{ind,1};s_DTA];
             dat3.val{ind,2} = [dat3.val{ind,2};mean(S_tr)];
             dat3.val{ind,3} = [dat3.val{ind,3};min(S_tr)];
             dat3.val{ind,4} = [dat3.val{ind,4};max(S_tr)];
@@ -273,8 +281,8 @@ guidata(h_fig, h);
 for ind = 1:(nChan*nExc+nI0+nFRET+nS)
 
     if ind<=(nChan*nExc+nI0) % intensity
-        minI = min([min(dat1.trace{ind}),0]);
-        maxI = max(dat1.trace{ind});
+        minI = min([min(dat1.trace{ind}(:,1)),0]);
+        maxI = max(dat1.trace{ind}(:,1));
         if minI==maxI
             minI = minI-1;
             maxI = maxI+1;
@@ -285,19 +293,11 @@ for ind = 1:(nChan*nExc+nI0+nFRET+nS)
     end
     
     for j = 1:nCalc
-        if j==9 || j==10 % state-wise data
-            minval = min(min(dat3.val{ind,j}(:,1)));
-            maxval = max(max(dat3.val{ind,j}(:,1)));
-            if minval==maxval
-                minval = minval-1;
-                maxval = maxval+1;
-            end
-            dat3.lim(ind,:,j) = [minval,maxval];
-        elseif ind>(nChan*nExc) && j<=5 % FRET/S values
+        if ind>(nChan*nExc+nI0) && j<=5 % FRET/S values
             dat3.lim(ind,:,j) = [defMin defMax];
         else
-            minval = min(dat3.val{ind,j});
-            maxval = max(dat3.val{ind,j});
+            minval = min(dat3.val{ind,j}(:,1));
+            maxval = max(dat3.val{ind,j}(:,1));
             if minval==maxval
                 minval = minval-1;
                 maxval = maxval+1;
