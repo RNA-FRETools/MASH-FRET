@@ -123,12 +123,12 @@ if toBottom
             % converts to 1D discr. traces and post-processes
             bot_DTA = zeros(numel(res2d{numel(res2d)}(1,:)),nF+nS);
             bot_tr = [f_tr; s_tr];
-            incl_bot = [repmat(incl_fret,nF,1);repmat(incl_s,nS,1)];
+            incl_bot = [incl_fret;incl_s];
             for n = 1:nF+nS
-                bot_DTA(:,n) = trajkernel(bot_tr(:,n),incl_bot(n,:),...
+                bot_DTA(:,n) = trajkernel(bot_tr(n,:)',incl_bot(n,:),...
                     res2d{n}(1,:));
                 bot_DTA(:,n) = postprocessdiscrtraj(bot_DTA(:,n),...
-                    [prm(n,[7,6,5]),calc],bot_tr(:,n));
+                    [prm(n,[7,6,5]),calc],bot_tr(n,:)');
             end
             
         else
