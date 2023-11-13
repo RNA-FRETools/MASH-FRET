@@ -1,8 +1,13 @@
 function p = discrTraces(h_fig, m, p)
-
-% Last update 23.12.2020 by MH: add vbFRET 2D
-% update by MH, 3.4.2019: correct source parameter for tolerance window used to identify common transitions in top traces
-% update by MH, 30.3.2019: comment and reorganize code (no modification)
+% p = discrTraces(h_fig, m, p)
+%
+% Calculates state trajectories.
+%
+% h_fig: handle to main figure
+% m: molecule index
+% p: structure containing interface parameters with fields:
+%   p.curr_proj: index of current project
+%   p.proj: {1-by-nProj} project parameters
 
 % collect interface parameters
 h = guidata(h_fig);
@@ -33,10 +38,10 @@ end
 
 % collect processing parameters
 prm_DTA = p.proj{proj}.TP.prm{m}{4};
-method = prm_DTA{1}(1);
+meth = prm_DTA{1}(1);
 toBottom = prm_DTA{1}(2); % discretize bottom(1)/top->bottom(0)/top+bottom(2)
 calc = prm_DTA{1}(3);
-is2D = method==3;
+is2D = meth==3;
 if is2D
     toBottom = 1;
 end
@@ -59,12 +64,25 @@ end
     
 % collect corrected,smoothed and cut intensity-time traces
 incl = p.proj{proj}.bool_intensities(:,m);
+L = size(incl,1);
 I_den = p.proj{proj}.intensities_denoise(incl,((m-1)*nC+1):m*nC,:);
 
 % initialize results
 top_DTA = nan(size(I_den));
 bot_DTA = nan(size(I_den,1),nF+nS);
 states = nan(nF+nS+nExc*nC,6);
+    
+% calculates FRET- and stoichiometry-time traces
+f_tr = [];
+if nF > 0
+    f_tr = calcFRET([],[],exc,chanExc,FRET,I_den,gamma);
+    f_tr = f_tr';
+end
+s_tr = [];
+if nS>0
+    s_tr = calcS(exc, chanExc, S, FRET, I_den, gamma, beta);
+    s_tr = s_tr';
+end
 
 % discretize bottom traces
 if toBottom
@@ -74,110 +92,51 @@ if toBottom
         actstr = 'Discretisation of bottom traces...';
     end
     
-    % calculate FRET-time traces
-    FRET_tr = [];
-    if nF > 0
-        FRET_tr = calcFRET(nC, nExc, exc, chanExc, FRET, I_den, gamma);
-    end
-    FRET_tr = FRET_tr';
-    
-    if method~=7
-
-        % calculate stoichiometry-time traces
-        S_tr = [];
-        if nS>0
-            S_tr = calcS(exc, chanExc, S, FRET, I_den, gamma, beta);
+    if meth==7 % import FRET discr and calculates S discr
+        incl_imp = false(size(fret_DTA_imp));
+        incl_imp(1:L) = true;
+        prm = permute(prm_DTA{2}(meth,:,1:nF),[3,2,1]);
+        fret_DTA = (getDiscr(meth,cat(3,f_tr,fret_DTA_imp(incl_imp)),...
+            true(nF,L),prm,[],calc,actstr,h_fig))';
+        bot_DTA = fret_DTA;
+        for s = 1:nS
+            pair = FRET(:,1)==S(s,1) & FRET(:,2)==S(s,2);
+            bot_DTA = cat(2,bot_DTA,...
+                trajkernel(s_tr(s,:)',incl_imp,fret_DTA(:,pair)'));
         end
-        S_tr = S_tr';
 
+    else
         % ignore ratio data out-of-range
-        incl_fret = FRET_tr>=-0.2 & FRET_tr<=1.2;
-        incl_s = S_tr>=-0.2 & S_tr<=1.2;
-    %         incl_fret = true(size(FRET_tr));
-    %         incl_s = true(size(S_tr));
+        incl_fret = f_tr>=-0.2 & f_tr<=1.2;
+        incl_s = s_tr>=-0.2 & s_tr<=1.2;
         incl_bot = [incl_fret;incl_s];
 
-        % discretize traces
-        prm = permute(prm_DTA{2}(method,:,1:nF+nS),[3,2,1]); % [m-by-6] matrix
+        % collects processing parameters
+        prm = permute(prm_DTA{2}(meth,:,1:nF+nS),[3,2,1]); % [m-by-6] matrix
         thresh = prm_DTA{4}(:,:,1:nF+nS); % [3-by-t-by-m] matrix
 
         if is2D % vbFRET 2D
-            I_tr = cell(1,nF);
-            for n = 1:nF
-                % identify donor and acceptor discretized intensity-time 
-                % traces
-                don = FRET(n,1); acc = FRET(n,2);
-                [o,l_f,o] = find(exc==chanExc(FRET(n,1)));
-                I_tr{n} = [I_den(:,don,l_f)';I_den(:,acc,l_f)'];
-                for chan = size(I_tr{n},1)
-                    I_tr{n}(chan,:) = (I_tr{n}(chan,:)-mean(I_tr{n}(chan,:)))/...
-                        std(I_tr{n}(chan,:));
-                end
-            end
-            for n = 1:nS
-                % identify donor and acceptor discretized intensity-time 
-                % traces
-                [o,ldon,o] = find(exc==chanExc(S(n,1)));
-                [o,lacc,o] = find(exc==chanExc(S(n,2)));
-                don0 = sum(I_den(:,:,ldon),2);
-                acc0 = sum(I_den(:,:,lacc),2);
-                I_tr{nF+n} = [don0';acc0'];
-                for chan = size(I_tr{n},1)
-                    I_tr{nF+n}(chan,:) = (I_tr{nF+n}(chan,:)-...
-                        mean(I_tr{nF+n}(chan,:)))/std(I_tr{nF+n}(chan,:));
-                end
-            end
-            res2d = (getDiscr(method, I_tr, [], prm, thresh, calc, actstr, ...
-                h_fig));
+            % 2D-discretization
+            I_tr = collectintfor2Ddiscr(FRET,S,exc,chanExc,I_den);
+            res2d = (getDiscr(meth,I_tr,[],prm,thresh,calc,actstr,h_fig));
 
+            % converts to 1D discr. traces and post-processes
             bot_DTA = zeros(numel(res2d{numel(res2d)}(1,:)),nF+nS);
-            for n = 1:nF
-                stateVals = unique(res2d{n}(1,:));
-                FRET_st = zeros(size(res2d{n}(1,:)));
-                for val = stateVals
-                    FRET_st(res2d{n}(1,:)==val) = ...
-                        mean(FRET_tr(incl_fret & res2d{n}(1,:)==val));
-                end
-                bot_DTA(:,n) = FRET_st';
+            bot_tr = [f_tr; s_tr];
+            incl_bot = [incl_fret;incl_s];
+            for n = 1:nF+nS
+                bot_DTA(:,n) = trajkernel(bot_tr(n,:)',incl_bot(n,:),...
+                    res2d{n}(1,:));
+                bot_DTA(:,n) = postprocessdiscrtraj(bot_DTA(:,n),...
+                    [prm(n,[7,6,5]),calc],bot_tr(n,:)');
             end
-            for n = 1:nS
-                stateVals = unique(res2d{nF+n}(1,:));
-                S_st = zeros(size(res2d{nF+n}(1,:)));
-
-                for val = stateVals
-                    S_st(res2d{nF+n}(1,:)==val) = ...
-                        mean(S_tr(incl_s & res2d{nF+n}(1,:)==val));
-                end
-                bot_DTA(:,nF+n) = S_st';
-            end
+            
         else
-            bot_DTA = (getDiscr(method, [FRET_tr; S_tr], incl_bot, prm, thresh, ...
-                calc, actstr, h_fig))';
-        end
-        
-    else % imported
-        incl_bot = false(size(fret_DTA_imp));
-        incl_bot(1:size(FRET_tr,2)) = true;
-        prm = permute(prm_DTA{2}(method,:,1:nF),[3,2,1]);
-        fret_DTA = (getDiscr(method,cat(3,FRET_tr,fret_DTA_imp(incl_bot)),...
-            true(size(FRET_tr)),prm,[],calc,actstr,h_fig))';
-        bot_DTA = fret_DTA;
-        
-        if nS>0
-            S_tr = calcS(exc, chanExc, S, FRET, I_den, gamma, beta);
-            for s = 1:nS
-                pair = FRET(:,1)==S(s,1) & FRET(:,2)==S(s,2);
-                stateVals = unique(fret_DTA(:,pair)');
-                S_st = zeros(size(fret_DTA(:,pair)));
-
-                for val = stateVals
-                    S_st(fret_DTA(:,pair)==val,1) = ...
-                        mean(S_tr(fret_DTA(:,pair)'==val));
-                end
-                bot_DTA = cat(2,bot_DTA,S_st);
-            end
+            bot_DTA = (getDiscr(meth,[f_tr; s_tr],incl_bot,prm,thresh, ...
+                calc,actstr,h_fig))';
         end
     end
+    
     % identify and sort resulting states
     for n = 1:(nF+nS)
         states_i = (sort(unique(bot_DTA(:,n)), 'descend'))';
@@ -198,14 +157,14 @@ if toBottom==2 || ~toBottom
     end
 
     % discretize intensity-time traces
-    prm = permute(prm_DTA{2}(method,:,nF+nS+1:end),[3,2,1]);
+    prm = permute(prm_DTA{2}(meth,:,nF+nS+1:end),[3,2,1]);
     thresh = prm_DTA{4}(:,:,nF+nS+1:end);
     if mute
         actstr = 0;
     else
         actstr = 'Discretisation of top traces...';
     end
-    top = (getDiscr(method, I_tr, [], prm, thresh, calc, actstr, h_fig))';
+    top = (getDiscr(meth, I_tr, [], prm, thresh, calc, actstr, h_fig))';
 
     % format resulting discretized traces
     for l = 1:nExc
@@ -222,77 +181,43 @@ if toBottom==2 || ~toBottom
     end
 end
 
-% build bottom discretized traces
+% derives bottom discr from common change points in intensity discr
 if ~toBottom
-    if nF > 0
-        % calculate FRET-time traces
-        f_tr = calcFRET(nC,nExc,exc,chanExc,FRET,I_den,gamma);
+    
+    % collects bottom traj and calculates bottom discr
+    bot_tr = [];
+    bot_st = [];
+    if nF>0
+        % props up FRET-time traces
+        f_tr = f_tr';
+        bot_tr = cat(2,bot_tr,f_tr);
 
-        % calculate discretized FRET-time traces from discretized
-        % intensity-time traces
+        % calculates discretized FRET from discretized intensities
         f_st = calcFRET(nC,nExc,exc,chanExc,FRET,top_DTA,gamma);
+        bot_st = cat(2,bot_st,f_st);
     end
-
-    % build discretized FRET-time traces
-    for n = 1:nF
-
-        % identify donor and acceptor discretized intensity-time 
-        % traces
-        don = FRET(n,1); acc = FRET(n,2);
-        [o,l_f,o] = find(exc==chanExc(FRET(n,1)));
-        Idon = top_DTA(:,don,l_f);
-        Iacc = top_DTA(:,acc,l_f);
-
-        % get changing points common to both discretized intensity-
-        % time traces
-
-        % corrected by MH, 3.4.2019
-        tol = prm_DTA{2}(method,4,n);
-
-        cp = get_cpFromDiscr([Idon Iacc]);
-        cp = correl_cp(cp, tol);
-
-        % modify discretized FRET-time trace preserving only those 
-        % common changing points
-        FRET_tr = f_tr(:,n);
-        FRET_st{1} = f_st(:,n);
-        bot_DTA(:,n) = get_discrFromCp(cp, FRET_tr, FRET_st);
-
-        % identify and sort resulting states
-        states_i = (sort(unique(bot_DTA(:,n)), 'descend'))';
-        J = numel(states_i);
-        states(n,1:J) = states_i;
-    end
-
     if nS>0
-        % calculate S-time traces
-        s_tr = calcS(exc,chanExc,S,FRET,I_den,gamma,beta);
+        % props up S-time traces
+        s_tr = s_tr';
+        bot_tr = cat(2,bot_tr,s_tr);
 
-        % calculate discretized S-time traces from discretized
-        % intensity-time traces
+        % calculates discretized S from discretized intensities
         s_st = calcS(exc,chanExc,S,FRET,top_DTA,gamma,beta);
+        bot_st = cat(2,bot_st,s_st);
     end
+    
+    % collects top discr corresponding to each bottom data
+    I2D = collectintfor2Ddiscr(FRET,S,exc,chanExc,top_DTA);
+    
+    % cleans bottom discr from disparat change points
+    for n = 1:nF+nS
+        % finds common changing points in top discr
+        tol = prm_DTA{2}(meth,4,n);
+        cp = get_cpFromDiscr(I2D{n}');
+        cp = correl_cp(cp,tol);
 
-    % build discretized stoichiometry-time traces
-    for n = (nF+1):(nF+nS)
-
-        % calculate summed intensity-time traces at emitter-
-        % specific illumination (num) and all illuminations (den)
-        [o,ldon,o] = find(exc==chanExc(S(n-nF,1)));
-        [o,lacc,o] = find(exc==chanExc(S(n-nF,2)));
-        exc_num = sum(top_DTA(:,:,ldon),2);
-        exc_den = sum(sum(top_DTA(:,:,[ldon,lacc]),2),3);
-
-        % get changing points common to both discretized intensity-
-        % time traces
-        cp = get_cpFromDiscr([exc_num exc_den]);
-        cp = correl_cp(cp, tol);
-
-        % modify discretized stoichiometry-time trace preserving 
-        % only  those common changing points
-        S_tr = s_tr(:,n-nF);
-        S_st{1} = s_st(:,n-nF);
-        bot_DTA(:,n) = get_discrFromCp(cp, S_tr, S_st);
+        % ignore disparat changing points in bottom discr
+        bot_DTA(:,n) = get_discrFromCp(cp,bot_tr(:,n),{bot_st(:,n)});
 
         % identify and sort resulting states
         states_i = (sort(unique(bot_DTA(:,n)), 'descend'))';

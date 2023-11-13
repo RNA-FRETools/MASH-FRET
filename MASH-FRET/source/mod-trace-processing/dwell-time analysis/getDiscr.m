@@ -135,18 +135,8 @@ for n = 1:N
                 end
             end
             d_traces{n}(m,isnan(d_traces{n}(m,:))) = 0;
-
-            if prm(n,7)
-                d_traces{n}(m,:) = deblurrSeq(d_traces{n}(m,:));
-            end
-            d_traces{n}(m,:) = binDiscrVal(prm(n,6), d_traces{n}(m,:));
-            d_traces{n}(m,:) = refineDiscr(prm(n,5), d_traces{n}(m,:), ...
-                traces{n}(m,:));
-            if calc
-                d_traces{n}(m,:) = aveStates(traces{n}(m,:), ...
-                    d_traces{n}(m,:));
-            end
         end
+        
     else
         for l = 1:size(d_traces,2)
             if l>1 && isnan(d_traces(n,l)) && ~isnan(d_traces(n,l-1))
@@ -156,16 +146,9 @@ for n = 1:N
             end
         end
         d_traces(n,isnan(d_traces(n,:))) = 0;
-
-        if prm(n,7)
-            d_traces(n,:) = deblurrSeq(d_traces(n,:));
-        end
-        d_traces(n,:) = binDiscrVal(prm(n,6), d_traces(n,:));
-        d_traces(n,:) = refineDiscr(prm(n,5), d_traces(n,:), ...
-            traces(n,:,1));
-        if calc
-            d_traces(n,:) = aveStates(traces(n,:,1), d_traces(n,:));
-        end
+        
+        d_traces(n,:) = postprocessdiscrtraj(d_traces(n,:),...
+            [prm(n,[7,6,5]),calc],traces(n,:,1));
     end
 
     if lb && method==5
@@ -180,14 +163,6 @@ warning('on', 'stats:kmeans:EmptyCluster');
 
 if lb && sum(method == [2,3,5])
     loading_bar('close', h_fig);
-end
-
-function discr_ave = aveStates(tr, discr)
-val = unique(discr);
-discr_ave = nan(size(discr));
-for i = 1:size(val,2)
-    discr_ave(1,(discr(1,:) == val(i))) = ...
-        mean(tr(1,(discr(1,:) == val(i))));
 end
 
 
