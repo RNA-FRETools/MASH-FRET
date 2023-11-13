@@ -1,4 +1,4 @@
-function fret_tr = calcFRET(nChan, nExc, exc, chanExc, FRET, I, g)
+function fret_tr = calcFRET(~,~,exc,chanExc,FRET,I,g)
 
 nFRET = size(FRET,1);
 L = size(I,1);

@@ -3,7 +3,7 @@ if aveCycle > 0
     
     rev = 0;
     if size(tr_raw,2) > size(tr_raw,1)
-        re = 1;
+        rev = 1;
         tr_raw = tr_raw';
         tr = tr';
     end
