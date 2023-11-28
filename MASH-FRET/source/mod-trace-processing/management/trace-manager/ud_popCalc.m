@@ -35,8 +35,18 @@ slct = dat3.slct;
 incl =  p.proj{proj}.bool_intensities(:,slct);
 
 if isTDP
-    trace_x = dat3.val{datax,jx};
-    trace_y = [dat3.val{datax,jx}(2:end,:);dat3.val{datax,jx}(end,:)];
+    trace_x = [];
+    trace_y = [];
+    for m = unique(dat3.val{datax,jx}(:,2))'
+        val_m = dat3.val{datax,jx}(dat3.val{datax,jx}(:,2)==m,:);
+        if size(val_m,1)==1
+            trace_x = cat(1,trace_x,val_m(1,:));
+            trace_y = cat(1,trace_y,val_m(1,:));
+        else
+            trace_x = cat(1,trace_x,val_m(1:end-1,:));
+            trace_y = cat(1,trace_y,val_m(2:end,:));
+        end
+    end
     trace = [trace_x,trace_y];
 else
     if jx==0 % original time traces
@@ -66,8 +76,8 @@ if (is2D && sum(jx==[0,1]) && sum(jy==[0,1])) || ...
 elseif (is2D && sum(jx==(2:8)) && sum(jy==(2:8))) || ...
         (~is2D && sum(jx==(2:8))) % molecule-wise
     molIncl = molsWithConf(trace(:,1:2:end),'value',prm);
-elseif (is2D && sum(jx==[9,10]) && sum(jy==[9,10])) || ...
-        (~is2D && sum(jx==[9,10])) % state-wise
+elseif (is2D && sum(jx==(9:11)) && sum(jy==(9:11))) || ...
+        (~is2D && sum(jx==(9:11))) % state-wise
     molIncl = molsWithConf(trace,'state',prm);
 end
     

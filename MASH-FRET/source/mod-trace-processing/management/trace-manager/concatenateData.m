@@ -41,7 +41,7 @@ nFRET = size(FRET,1);
 S = p.proj{proj}.S;
 nS = size(S,1);
 perSec = p.proj{proj}.cnt_p_sec;
-rate = p.proj{proj}.frame_rate;
+expt = p.proj{proj}.frame_rate;
 
 % get time traces
 intensities = p.proj{proj}.intensities_denoise;
@@ -98,11 +98,12 @@ for i = 1:nMol
                 incl = p.proj{proj}.bool_intensities(:,i);
                 I = intensities(incl,nChan*(i-1)+c,l);
                 I_DTA = intensities_DTA(incl,nChan*(i-1)+c,l);
-                dt = getDtFromDiscr(I_DTA,nExc*rate);
+                dt = getDtFromDiscr(I_DTA,nExc*expt);
+                lt = calcStateLifetimes(dt,nExc*expt);
                 nTrs = size(dt,1);
                 if perSec
-                    I = I/rate;
-                    I_DTA = I_DTA/rate;
+                    I = I/expt;
+                    I_DTA = I_DTA/expt;
                 end
 
                 % concatenate traces
@@ -123,6 +124,8 @@ for i = 1:nMol
                     dt(:,2),repmat(i,nTrs,1)]; % state values
                 dat3.val{ind,10} = [dat3.val{ind,10};...
                     dt(:,1),repmat(i,nTrs,1)]; % state dwell times
+                dat3.val{ind,11} = [dat3.val{ind,11};...
+                    lt(:,1),repmat(i,nTrs,1)]; % state lifetimes
             end
         end
         
@@ -137,11 +140,12 @@ for i = 1:nMol
                 I0 = sum(intensities(incl,(nChan*(i-1)+1):nChan*i,l),2);
                 I0_DTA = sum(...
                     intensities_DTA(incl,(nChan*(i-1)+1):nChan*i,l),2);
-                dt = getDtFromDiscr(I0_DTA,nExc*rate);
+                dt = getDtFromDiscr(I0_DTA,nExc*expt);
+                lt = calcStateLifetimes(dt,nExc*expt);
                 nTrs = size(dt,1);
                 if perSec
-                    I0 = I0/rate;
-                    I0_DTA = I0_DTA/rate;
+                    I0 = I0/expt;
+                    I0_DTA = I0_DTA/expt;
                 end
 
                 % concatenate traces
@@ -162,6 +166,8 @@ for i = 1:nMol
                     dt(:,2),repmat(i,nTrs,1)]; % state values
                 dat3.val{ind,10} = [dat3.val{ind,10};...
                     dt(:,1),repmat(i,nTrs,1)]; % state dwell times
+                dat3.val{ind,11} = [dat3.val{ind,11};...
+                    lt(:,1),repmat(i,nTrs,1)]; % state lifetimes
             end
         end
         
@@ -179,7 +185,8 @@ for i = 1:nMol
             FRET_tr(FRET_tr == -Inf) = -1000000;
             
             fret_DTA =  FRET_DTA(incl,nFRET*(i-1)+n);
-            dt = getDtFromDiscr(fret_DTA,nExc*rate);
+            dt = getDtFromDiscr(fret_DTA,nExc*expt);
+            lt = calcStateLifetimes(dt,nExc*expt);
             nTrs = size(dt,1);
 
             % concatenate traces
@@ -198,7 +205,7 @@ for i = 1:nMol
             dat3.val{ind,8} = [dat3.val{ind,8};mean(dt(:,1))]; % mean state lifetime
             dat3.val{ind,9} = [dat3.val{ind,9};dt(:,2),repmat(i,nTrs,1)]; % state values
             dat3.val{ind,10} = [dat3.val{ind,10};dt(:,1),repmat(i,nTrs,1)]; % state dwell times
-            
+            dat3.val{ind,11} = [dat3.val{ind,11};lt(:,1),repmat(i,nTrs,1)]; % state lifetimes
         end
         if nS==0
             continue
@@ -211,7 +218,8 @@ for i = 1:nMol
             S_tr(S_tr == Inf) = 1000000; % prevent for Inf
             S_tr(S_tr == -Inf) = -1000000; % prevent for Inf
             s_DTA = S_DTA(incl,nS*(i-1)+n);
-            dt = getDtFromDiscr(s_DTA,nExc*rate);
+            dt = getDtFromDiscr(s_DTA,nExc*expt);
+            lt = calcStateLifetimes(dt,nExc*expt);
             nTrs = size(dt,1);
 
             % concatenate traces
@@ -230,6 +238,7 @@ for i = 1:nMol
             dat3.val{ind,8} = [dat3.val{ind,8};mean(dt(:,1))]; % mean state lifetime
             dat3.val{ind,9} = [dat3.val{ind,9};dt(:,2),repmat(i,nTrs,1)]; % state values
             dat3.val{ind,10} = [dat3.val{ind,10};dt(:,1),repmat(i,nTrs,1)]; % state dwell times
+            dat3.val{ind,11} = [dat3.val{ind,11};lt(:,1),repmat(i,nTrs,1)]; % state lifetimes
         end
     end
 

@@ -71,22 +71,23 @@ iv = lim(1):bin(1):lim(2);
 
 trans = []; id_m  = [];
 for m = mols
-    if isempty(dt{m,1})
+    ndt = size(dt{m,1},1);
+    if ndt==0
         continue
     end
         
     % add molecule number in column 4 and columns 5,6 to add coordinates in TDP
-    dat_m = [dt{m,1} ones(size(dt{m,1},1),1)*m zeros(size(dt{m,1},1),2)];
+    dat_m = [dt{m,1} ones(ndt,1)*m zeros(ndt,2)];
 
     % assign TDP x-coordinates in column 5
-    [vals_x,o,id_x] = unique(dat_m(:,2));
-    [o,id,o] = find(vals_x'>lim(1) & vals_x'<lim(2));
+    [vals_x,~,id_x] = unique(dat_m(:,2));
+    [~,id,~] = find(vals_x'>lim(1) & vals_x'<lim(2));
     vals_x(id,2) = id;
     dat_m(:,5) = vals_x(id_x',2);
 
     % assign TDP y-coordinates in column 6
-    [vals_y,o,id_y] = unique(dat_m(:,3));
-    [o,id,o] = find(vals_y'>lim(1) & vals_y'<lim(2));
+    [vals_y,~,id_y] = unique(dat_m(:,3));
+    [~,id,~] = find(vals_y'>lim(1) & vals_y'<lim(2));
     vals_y(id,2) = id;
     dat_m(:,6) = vals_y(id_y',2);
 
@@ -107,7 +108,7 @@ for m = mols
 
     % get unique state transitions and their indexes in 
     % concatenated table
-    [trans_m,o,ids] = unique(dat_m(:,2:3), 'rows');
+    [trans_m,~,ids] = unique(dat_m(:,2:3), 'rows');
     id_m = cat(2,id_m,ids'+size(trans,1));
     trans = cat(1,trans,trans_m);
 
@@ -124,13 +125,16 @@ end
 % count and store transition occurences in TDP matrix
 try
     if oneval
-        [TDP,o,o,coord] = hist2(trans(:,[1 2]),iv,iv);
-        dt_bin(:,[5 6]) = coord(id_m,:);
+        [TDP,~,~,y,x] = histcounts2(trans(:,2),trans(:,1),iv,iv);
+        dt_bin(:,[5 6]) = [x(id_m,1),y(id_m,1)];
+%         [TDP,o,o,coord] = hist2(trans(:,[1 2]),iv,iv);
+%         dt_bin(:,[5 6]) = coord(id_m,:);
     else
-        [TDP,o,o,coord] = hist2(dt_bin(:,[2 3]),iv,iv);
-        dt_bin(:,[5 6]) = coord;
+        [TDP,~,~,y,x] = histcounts2(dt_bin(:,3),dt_bin(:,2),iv,iv);
+        dt_bin(:,[5 6]) = [x,y];
+%         [TDP,o,o,coord] = hist2(dt_bin(:,[2 3]),iv,iv);
+%         dt_bin(:,[5 6]) = coord;
     end
-%     TDP(~~eye(size(TDP))) = 0;
     
 catch err
     str = cat(2,'Impossible to create TDP: ',err.message,'\nIncreasing ',...
