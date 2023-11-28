@@ -26,18 +26,19 @@ end
 nL = p.proj{proj}.nb_excitations;
 expT = p.proj{proj}.frame_rate;
 
-J = prm.lft_start{2}(1);
+V = prm.lft_start{2}(1);
 mat = prm.clst_start{1}(4);
 clstDiag = prm.clst_start{1}(9);
-mu = prm.clst_res{1}.mu{J};
+mu = prm.clst_res{1}.mu{V};
 bin = prm.lft_start{2}(3);
-dat = prm.clst_res{1}.clusters{J};
+dat = prm.clst_res{1}.clusters{V};
 excl = prm.lft_start{2}(4);
 rearr = prm.lft_start{2}(5);
 
 guessMeth = prm.mdl_start{1}(1);
 T_bw = curr.mdl_start{2};
 states = prm.mdl_res{5};
+J = numel(states);
 
 % save starting parameters
 prm.mdl_start{2} = curr.mdl_start{2};
@@ -51,8 +52,8 @@ setContPan(['Infer transition rate constants (refer to MATLAB''s command ',...
     h_fig);
 
 % bin states
-nTrs = getClusterNb(J,mat,clstDiag);
-[j1,j2] = getStatesFromTransIndexes(1:nTrs,J,mat,clstDiag);
+nTrs = getClusterNb(V,mat,clstDiag);
+[j1,j2] = getStatesFromTransIndexes(1:nTrs,V,mat,clstDiag);
 [vals,js] = binStateValues(mu,bin,[j1,j2]);
 V = numel(vals);
 dat_new = dat;
@@ -76,6 +77,24 @@ for m = 1:nMol
         exclmols(m) = true;
         continue
     end
+    
+    % re-arrange dwell times by cancelling transitions belonging to diagonal clusters
+    if rearr
+        dat_m = adjustDt(dat_m);
+        if size(dat_m,1)<=0
+            exclmols(m) = true;
+            continue
+        end
+    end
+    
+    % remove first and last dwell times
+    if excl
+        dat_m([1,end],:) = [];
+        if size(dat_m,1)<=0
+            exclmols(m) = true;
+            continue
+        end
+    end
 
     % get state sequences
     seq{m} = getDiscrFromDt(dat_m(:,[1,7,8]),nL*expT);
@@ -98,23 +117,6 @@ for m = 1:nMol
         end
     end
     
-    % re-arrange dwell times by cancelling transitions belonging to diagonal clusters
-    if rearr
-        dat_m = adjustDt(dat_m);
-        if size(dat_m,1)<=0
-            exclmols(m) = true;
-            continue
-        end
-    end
-    
-    % remove first and last dwell times
-    if excl
-        dat_m([1,end],:) = [];
-        if size(dat_m,1)<=0
-            exclmols(m) = true;
-            continue
-        end
-    end
     dat_new = cat(1,dat_new,dat_m);
 end
 dat = dat_new;
