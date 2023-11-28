@@ -16,7 +16,7 @@ isTDP = (indx==indy & jx==9 & jy==9);
 if jx==0 || isTDP
     xlim_sup = dat1.lim(indx,2);
 else
-    xlim_sup = dat3.lim(indx,2);
+    xlim_sup = dat3.lim(indx,2,jx);
 end
 
 xlim_low = str2num(get(obj,'String'));

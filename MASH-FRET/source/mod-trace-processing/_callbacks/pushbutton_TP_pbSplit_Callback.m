@@ -10,7 +10,7 @@ nL = p.proj{proj}.nb_excitations;
 nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
 meth = p.proj{proj}.TP.curr{n}{2}{1}(2);
-cutOff = p.proj{proj}.TP.curr{n}{2}{1}(4+meth)/nL;
+cutOff = round(p.proj{proj}.TP.curr{n}{2}{1}(4+meth)/nL);
 L = sum(p.proj{proj}.bool_intensities(:,n));
 if cutOff>=L
     return

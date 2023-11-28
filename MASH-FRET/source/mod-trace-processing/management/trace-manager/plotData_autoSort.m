@@ -1,5 +1,9 @@
 function plotData_autoSort(h_fig)
 
+% default
+xlogbin = false;
+ylogbin = false;
+
 h = guidata(h_fig);
 
 cla(h.tm.axes_histSort);
@@ -28,7 +32,7 @@ if ~is2D % 1D histograms
         limx = dat3.lim(indx,:,jx);
         nivx = dat3.niv(jx,indx);
     end
-    [P,iv] = getHistTM(trace_x,limx,nivx);
+    [P,iv] = getHistTM(trace_x,limx,nivx,xlogbin);
     
     if isempty(P)
         setContPan(cat(2,'No calculated data available: start calculation',...
@@ -36,8 +40,17 @@ if ~is2D % 1D histograms
     end
     
     % plot histogram
-    bar(h.tm.axes_histSort,iv,P,'edgecolor',dat1.color{indx},'facecolor',...
-        dat1.color{indx},'hittest','off','pickableparts','none');
+    histogram(h.tm.axes_histSort,'binedges',iv,'bincounts',P,'edgecolor',...
+        dat1.color{indx},'facecolor',dat1.color{indx},'hittest','off',...
+        'pickableparts','none');
+    
+    % set axis scales
+    if xlogbin
+        h.tm.axes_histSort.XScale = 'log';
+    else
+        h.tm.axes_histSort.XScale = 'linear';
+    end
+    h.tm.axes_histSort.YScale = 'linear';
     
     % set axis labels as in overall plot
     if jx==0
@@ -69,9 +82,15 @@ else % 2D histograms
         mols = [];
         for m = unique(dat3.val{indx,jx}(:,2))'
             val_m = dat3.val{indx,jx}(dat3.val{indx,jx}(:,2)==m,:);
-            trace_x = cat(1,trace_x,val_m(:,1));
-            trace_y = cat(1,trace_y,[val_m(2:end,1);val_m(end,1)]);
-            mols = cat(1,mols,val_m(:,2));
+            if size(val_m,1)==1
+                trace_x = cat(1,trace_x,val_m(1,1));
+                trace_y = cat(1,trace_y,val_m(1,1));
+                mols = cat(1,mols,val_m(1,2));
+            else
+                trace_x = cat(1,trace_x,val_m(1:end-1,1));
+                trace_y = cat(1,trace_y,val_m(2:end,1));
+                mols = cat(1,mols,val_m(1:end-1,2));
+            end
         end
         nivx = dat1.niv(indx);
         limx = dat1.lim(indx,:);
@@ -108,7 +127,7 @@ else % 2D histograms
         for m = unique(mols)'
             id = (mols==m)';
             [P2D_m,iv] = getHistTM([trace_x(id,:),trace_y(id,:)],...
-                [limx;limy],[nivx,nivy]);
+                [limx;limy],[nivx,nivy],[xlogbin,ylogbin]);
             if isempty(P2D)
                 P2D = double(~~P2D_m);
             else
@@ -118,7 +137,8 @@ else % 2D histograms
         ivx = iv{1};
         ivy = iv{2};
     else
-        [P2D,iv] = getHistTM([trace_x,trace_y],[limx;limy],[nivx,nivy]);
+        [P2D,iv] = getHistTM([trace_x,trace_y],[limx;limy],[nivx,nivy],...
+            [xlogbin,ylogbin]);
         ivx = iv{1};
         ivy = iv{2};
     end
@@ -131,18 +151,30 @@ else % 2D histograms
         setContPan(cat(2,'No calculated data available: start calculation',...
             ' or select another type of calculation.'),'error',h_fig);
     end
-       
-    imagesc([ivx(1),ivx(end)],[ivy(1),ivy(end)],P2D,'parent',...
-        h.tm.axes_histSort,'hittest','off','pickableparts','none');
+    
+    histogram2(h.tm.axes_histSort,'xbinedges',ivx,'ybinedges',...
+        ivy,'bincounts',P2D','DisplayStyle','tile');
+    
+    % set axis scales
+    if xlogbin
+        h.tm.axes_histSort.XScale = 'log';
+    else
+        h.tm.axes_histSort.XScale = 'linear';
+    end
+    if ylogbin
+        h.tm.axes_histSort.YScale = 'log';
+    else
+        h.tm.axes_histSort.YScale = 'linear';
+    end
     
     % plot range
     drawMask(h_fig,limx,limy,2);
     
-    if sum(sum(P2D))
-        set(h.tm.axes_histSort,'CLim',[0,max(max(P2D))]);
-    else
-        set(h.tm.axes_histSort,'CLim',[0,1]);
-    end
+%     if sum(sum(P2D))
+%         set(h.tm.axes_histSort,'CLim',[0,max(max(P2D))]);
+%     else
+%         set(h.tm.axes_histSort,'CLim',[0,1]);
+%     end
 
     if jx==0
         xlabel(h.tm.axes_histSort,dat1.ylabel{indx});

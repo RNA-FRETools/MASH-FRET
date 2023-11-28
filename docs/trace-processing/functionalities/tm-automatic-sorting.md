@@ -9,6 +9,7 @@ nav_order: 3
 subnav_order: 2
 nav_exclude: true
 toc_exclude: true
+mathjax: true
 ---
 
 <img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
@@ -85,6 +86,7 @@ The type of data sets can be selected in menu **(b)** (x-axis) and **(g)** (y-ax
 * `mean dwell time (molecule-wise)` for the average state dwell times of the state trajectories
 * `state values (state-wise)` for the individual state values in the state trajectories
 * `state dwell times (state-wise)` for the individual state dwell times in the state trajectories
+* `state lifetimes (state-wise)` for the individual state lifetimes $$\tau$$ estimated from transition numbers $$N_{ij}$$ and trajectory length $$L$$ with: $$\tau_i=\frac{L}{\sum_{j \neq \i} N_{ij}}$$
 
 For 2D-sorting, x-axis and y-axis data sets must occur on the same scale (`frame-wise`, `molecule-wise` or `state-wise`).
 
@@ -97,9 +99,6 @@ To perform 2D-sorting on the transition density plot, x-axis and y-axis data mus
 
 Resulting 1D- or 2D-data histogram is plotted in 
 [Histogram plot](#histogram-plot).
-
-2D-histograms are built with the MATLAB script `hist2` developed by Tudor Dima that can be found in the 
-[MATLAB exchange platform](https://www.mathworks.com/matlabcentral/fileexchange/18386-2d-histogram-exact-and-fast-binning-crop-and-stretch-grid-adjustment?s_tid=prof_contriblnk).
 
 
 ---

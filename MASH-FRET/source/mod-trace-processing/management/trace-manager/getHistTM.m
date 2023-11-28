@@ -1,4 +1,4 @@
-function [P,iv] = getHistTM(trace,lim,niv)
+function [P,iv] = getHistTM(trace,lim,niv,logbin)
 % Build and return 1D or 2D histogram depending on the second dimension of
 % input data
 
@@ -17,9 +17,12 @@ if sum(sum(isnan(trace),2),1)
 end
 
 if size(trace,2)==1 % 1D histogram
-    bin = (lim(2)-lim(1))/niv;
-    iv = (lim(1)-bin):bin:(lim(2)+bin);
-    [P,iv] = hist(trace,iv); % RB: HISTOGRAM replaces hist since 2015! 
+    if logbin(1)
+        ivx = logspace(log10(lim(1,1)),log10(lim(1,2)),niv(1)+1);
+    else
+        ivx = linspace(lim(1,1),lim(1,2),niv(1)+1);
+    end
+    [P,iv] = histcounts(trace,ivx);
 
 else % 2D histogram
     if sum(sum(isnan(trace)))
@@ -27,6 +30,15 @@ else % 2D histogram
         iv = [];
         return
     end
-    prm = [lim(1,:),niv(1);lim(2,:),niv(2)];
-    [P,iv{1},iv{2}] = hist2D(trace,prm); % RB: hist2D by tudima at zahoo dot com, inlcuded in \traces\processing\management
+    if logbin(1)
+        ivx = logspace(log10(lim(1,1)),log10(lim(1,2)),niv(1)+1);
+    else
+        ivx = linspace(lim(1,1),lim(1,2),niv(1)+1);
+    end
+    if logbin(2)
+        ivy = logspace(log10(lim(2,1)),log10(lim(2,2)),niv(2)+1);
+    else
+        ivy = linspace(lim(2,1),lim(2,2),niv(2)+1);
+    end
+    [P,iv{2},iv{1}] = histcounts2(trace(:,2),trace(:,1),ivy,ivx);
 end

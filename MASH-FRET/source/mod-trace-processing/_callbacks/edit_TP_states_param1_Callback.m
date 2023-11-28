@@ -20,7 +20,7 @@ if toFRET==1 && (nFRET+nS)>0
     end
 end
 
-if ~sum(double(method == [1,2,5,6]))
+if ~sum(double(method == [1,2,5,6,7]))
     return
 end
 val = round(str2num(get(obj, 'String')));
@@ -54,6 +54,10 @@ if ~(~isempty(val) && numel(val)==1 && ~isnan(val) && val>0 && val<maxVal)
         case 6 % STaSI
             updateActPan('Maximum number of states must be > 0',h_fig,...
                 'error');
+
+        case 7 % STaSI+VbFRET-1D
+            updateActPan(cat(2,'Minimum number of states must be > 0 and ',...
+                '< ',num2str(maxVal)),h_fig,'error');
     end
     return
 end

@@ -85,18 +85,19 @@ for i = 1:numel(h_param)
     set(h_param(i), 'String', num2str(prm(i)), 'BackgroundColor', [1 1 1]);
 end
 
-data = get(h.popupmenu_TP_states_index,'value');
-J = sum(~isnan(states));
+states = states(~isnan(states));
+J = numel(states);
+j = get(h.popupmenu_TP_states_index,'value');
+if j>J
+    j = 1;
+    set(h.popupmenu_TP_states_index,'value',j);
+end
 set(h.text_TP_states_resultsStates,'string',cat(2,'Results (',...
     num2str(J),' states):'));
 if J>0
     set(h.edit_TP_states_result,'enable','inactive');
-    if data>J
-        data = 1;
-        set(h.popupmenu_TP_states_index,'value',data);
-    end
     set(h.popupmenu_TP_states_index,'string',cellstr(num2str((1:J)')));
-    set(h.edit_TP_states_result,'string',num2str(states(data)));
+    set(h.edit_TP_states_result,'string',num2str(states(j)));
 
 else
     set(h.edit_TP_states_result,'string','');
@@ -118,17 +119,17 @@ if method==1 % Thresholding
     set([h.edit_TP_states_lowThresh,h.edit_TP_states_state,...
         h.edit_TP_states_highThresh],'BackgroundColor', [1 1 1]);
 
-    data = get(h.popupmenu_TP_states_indexThresh,'value');
-    if data>prm(1)
-        data = 1;
-        set(h.popupmenu_TP_states_indexThresh,'value',data);
+    j = get(h.popupmenu_TP_states_indexThresh,'value');
+    if j>prm(1)
+        j = 1;
+        set(h.popupmenu_TP_states_indexThresh,'value',j);
     end
     set(h.popupmenu_TP_states_indexThresh,'string',...
         cellstr(num2str((1:prm(1))')));
 
-    set(h.edit_TP_states_lowThresh,'string',num2str(thresh(2,data)));
-    set(h.edit_TP_states_state,'string',num2str(thresh(1,data)));
-    set(h.edit_TP_states_highThresh,'string',num2str(thresh(3,data)));
+    set(h.edit_TP_states_lowThresh,'string',num2str(thresh(2,j)));
+    set(h.edit_TP_states_state,'string',num2str(thresh(1,j)));
+    set(h.edit_TP_states_highThresh,'string',num2str(thresh(3,j)));
 
 else
     set([h.text_TP_states_thresholds h.popupmenu_TP_states_indexThresh ...
@@ -166,7 +167,12 @@ else
             set(h_param_txt([2,3]),'Enable','off');
             set(h_param(1),'TooltipString','Maximum number of states');
 
-        case 7 % imported
+        case 7 % STaST+vbFRET1D
+            set(h_param(1),'TooltipString','Minimum number of states');
+            set(h_param(2),'TooltipString','Maximum number of states');
+            set(h_param(3),'TooltipString','Iteration number');
+
+        case 8 % imported
             set(h_param(1:3),'Enable','off','string','');
             set(h_param_txt(1:3),'Enable','off');
     end

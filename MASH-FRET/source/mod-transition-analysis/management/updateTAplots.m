@@ -42,6 +42,8 @@ if ~isModuleOn(p,'TA')
     return
 end
 
+ud_TA_visuArea(h_fig);
+
 proj = p.curr_proj;
 tag = p.TDP.curr_tag(proj);
 tpe = p.TDP.curr_type(proj);
@@ -67,5 +69,3 @@ if strcmp(opt,'all') || strcmp(opt,'mdl')
     plotKinMdl([h.axes_TDPplot3,h.axes_TA_mdlPop,h.axes_TA_mdlTrans,...
         h.axes_TA_mdlDt,h.axes_TA_mdlBIC],prm,def,v_mdl);
 end
-
- ud_TA_visuArea(h_fig);

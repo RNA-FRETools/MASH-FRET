@@ -16,6 +16,10 @@ function plotData_overall(h_fig)
 %
 %
 
+% default
+xlogbin = false;
+ylogbin = false;
+
 warning('off','MATLAB:hg:EraseModeIgnored');
 
 h = guidata(h_fig);
@@ -46,10 +50,10 @@ drawMask_slct(h_fig);
 if ~is2D
     
     [P,iv] = getHistTM(dat1.trace{plot2x}(:,1),dat1.lim(plot2x,:),...
-        dat1.niv(plot2x));
+        dat1.niv(plot2x),xlogbin);
     
-    bar(h.tm.axes_ovrAll_2,iv,P,'facecolor',dat1.color{plot2x},...
-        'edgecolor', dat1.color{plot2x});
+    histogram(h.tm.axes_ovrAll_2,'binedges',iv,'bincounts',P,'facecolor',...
+        dat1.color{plot2x},'edgecolor', dat1.color{plot2x});
 
     xlabel(h.tm.axes_ovrAll_2, dat1.ylabel{plot2x});
     ylabel(h.tm.axes_ovrAll_2, 'freq. count');
@@ -61,14 +65,10 @@ if ~is2D
 else  % draw FRET-S histogram
     [P_2D,iv_2D] = getHistTM([dat1.trace{plot2x}(:,1),...
         dat1.trace{plot2y}(:,1)],[dat1.lim(plot2x,:);dat1.lim(plot2y,:)],...
-        [dat1.niv(plot2x),dat1.niv(plot2y)]);
+        [dat1.niv(plot2x),dat1.niv(plot2y)],[xlogbin,ylogbin]);
     
-    imagesc(iv_2D{1},iv_2D{2},P_2D,'parent', h.tm.axes_ovrAll_2);
-    if sum(sum(P_2D))
-        set(h.tm.axes_ovrAll_2,'clim',[min(min(P_2D)) max(max(P_2D))]);
-    else
-        set(h.tm.axes_ovrAll_2,'clim',[0 1]);
-    end
+    histogram2(h.tm.axes_ovrAll_2,'xbinedges',iv_2D{2},'ybinedges',...
+        iv_2D{1},'bincounts',P_2D,'DisplayStyle','tile');
 
     xlabel(h.tm.axes_ovrAll_2, dat1.ylabel{plot2x});
     ylabel(h.tm.axes_ovrAll_2, dat1.ylabel{plot2y});

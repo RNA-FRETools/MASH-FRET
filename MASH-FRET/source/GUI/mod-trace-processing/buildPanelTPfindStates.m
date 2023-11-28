@@ -36,7 +36,7 @@ str5 = 'refine';
 str6 = 'binning';
 str7 = 'deblurr';
 str8 = {'Thresholds','vbFRET-1D','vbFRET-2D','One state','CPA','STaSI',...
-    'Imported'};
+    'STaSI+vbFRET-1D','Imported'};
 str9 = {'bottom','top','all'};
 str10 = {'Select a trace'};
 str11 = 'Results (19 states):';

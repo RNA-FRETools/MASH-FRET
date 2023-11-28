@@ -258,8 +258,12 @@ setContPan('Projects successfully merged!','success',h_fig);
 
 function [ok,errmsg,expT,wl,lbl] = projectCompatibility(p_proj,hdl)
 
+% initializes output
 ok = false;
 errmsg = '';
+expT = [];
+wl = [];
+lbl = [];
 
 nProj = numel(p_proj);
 if nProj<=1

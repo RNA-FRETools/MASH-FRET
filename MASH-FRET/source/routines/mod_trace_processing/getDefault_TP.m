@@ -250,12 +250,14 @@ p.factPrm{3} = [1,-0.2,50,1.2,1,50,5,1]; % settings of ES linear regression calc
 % set default find states parameters
 p.fsMeth = 6; % index in list of state finding method
 p.fsDat = 1; % find states in (1) bottom traces, (2) top traces, (3) all traces
-p.fsPrm = [2  0  0 1 0 0 0 0 % state finding method settings
-    1  2  1 1 0 0 0 0
-    1  2  1 1 0 0 0 0
-    0  0  0 0 0 0 0 0
-    50 90 2 1 0 0 0 0
-    2  0  0 1 0 0 0 0]; 
+p.fsPrm = [2  0  0 2 0 0 0 0 %   Thresholds	J,   none,none,tol, refine,bin, blurr
+	1  3  5 2 0 0 1 0 %   vbFRET-1D	minJ,maxJ,prm1,tol, refine,bin, blurr
+	1  3  5 2 0 0 1 0 %   vbFRET-2D	minJ,maxJ,prm1,tol, refine,bin, blurr
+	1  0  0 0 0 0 0 0 %   One state  none,none,none,none,none,  none,none
+	50 90 2 2 0 0 0 0 %   CPA        prm1,prm2,prm3,tol, refine,bin, blurr
+	10 0  0 2 0 0 0 0 %   STaSI      maxJ,none,none,tol, refine,bin, blurr
+	1  10 5 2 0 0 0 0 %   STaSI+vbFRET-1D  minJ,maxJ,prm1,tol, refine,bin, blurr
+	0  0  0 0 0 0 0 0]; % imported   none,none,none,none,refine,bin, blurr
 p.fsThresh = [-Inf,0,0.6 % state values and thresholds
     0.7,1,Inf];
 

@@ -1,4 +1,4 @@
-function [ES,ok,str] = getES(i,p_proj,prm,fact,h_fig)
+function [ES,ok,str] = getES(pair,p_proj,prm,fact,h_fig)
 
 % collect FRET dimensions
 FRET = p_proj.FRET;
@@ -15,20 +15,20 @@ m_i = p_proj.coord_incl;
 N = size(m_i,2);
 insubgroup = true(nF,N);
 
-s = find(S(:,1)==FRET(i,1) & S(:,2)==FRET(i,2),1);
+s = find(S(:,1)==FRET(pair,1) & S(:,2)==FRET(pair,2),1);
 if isempty(s)
-    insubgroup(i,:) = false;
+    insubgroup(pair,:) = false;
 else
-    tag = prm(i,1)-1;
+    tag = prm(pair,1)-1;
     if tag>0
-        insubgroup(i,:) = m_i & p_proj.molTag(:,tag)';
-        if ~sum(insubgroup(i,:))
+        insubgroup(pair,:) = m_i & p_proj.molTag(:,tag)';
+        if ~sum(insubgroup(pair,:))
             str = cat(2,'ES histograms could not be built (no molecule in',...
                 ' subgroup)');
             return
         end
     else
-        insubgroup(i,:) = m_i;
+        insubgroup(pair,:) = m_i;
     end
 end
 
@@ -38,17 +38,9 @@ nC = p_proj.nb_channel;
 exc = p_proj.excitations;
 nExc = p_proj.nb_excitations;
 chanExc = p_proj.chanExc;
-l_i = p_proj.bool_intensities;
-
-% sample dimensions
-N = size(m_i,2);
-mls = 1:N;
-mls = mls(m_i & sum(insubgroup,1)); % reduce the number of molecules to process to a minimum
+incl = p_proj.bool_intensities;
 
 % build FRET and stoichiometry traces
-E_AD = [];
-S_AD = [];
-id_m = [];
 if ~isempty(fact)
     gamma = fact(1,:);
     beta = fact(2,:);
@@ -57,52 +49,26 @@ else
     beta = ones(1,nF);
 end
 
-lb = 0;
-h = guidata(h_fig);
-if ~isfield(h, 'barData')
-    loading_bar('init',h_fig,numel(mls)+1,'Build ES histograms ...');
-    h = guidata(h_fig);
-    h.barData.prev_var = h.barData.curr_var;
-    guidata(h_fig, h);
-    lb = 1;
+Icat = [];
+incl = reshape(incl(:,insubgroup(pair,:)),[],1);
+for c = 1:nC
+    Ic = I_den(:,c:nC:end,:);
+    Ic = reshape(Ic(:,insubgroup(pair,:),:),[],1,nExc);
+    Icat = cat(2,Icat,Ic(incl,1,:));
 end
+E_AD = calcFRET(nC,nExc,exc,chanExc,FRET,Icat,gamma);
+S_AD = calcS(exc,chanExc,S,FRET,Icat,gamma,beta);
 
-for m = mls
-    E_AD = cat(1,E_AD,calcFRET(nC,nExc,exc,chanExc,FRET,...
-        I_den(l_i(:,m),((m-1)*nC+1):m*nC,:),gamma));
-    S_AD = cat(1,S_AD,calcS(exc,chanExc,S,FRET,...
-        I_den(l_i(:,m),((m-1)*nC+1):m*nC,:),gamma,beta));
-    id_m = cat(2,id_m,repmat(insubgroup(:,m),1,sum(l_i(:,m))));
-    
-    if lb
-        err = loading_bar('update', h_fig);
-        if err
-            str = 'ES histograms could not be built (process interruption)';
-            return
-        end
-    end
-end
-
-s = find(S(:,1)==FRET(i,1) & S(:,2)==FRET(i,2));
+s = find(S(:,1)==FRET(pair,1) & S(:,2)==FRET(pair,2));
 if isempty(s)
     ES = NaN;
 else
-    E = E_AD(~~id_m(i,:),i);
-    St = S_AD(~~id_m(i,:),s);
-
-    [ES,~,~,~] = hist2D([E(:),1./St(:)],[prm(i,2:4);prm(i,5:7)],'fast');
-
-    if lb
-        err = loading_bar('update', h_fig);
-        if err
-            str = 'ES histograms could not be built (process interruption)';
-            return
-        end
-    end
-end
-
-if lb
-    loading_bar('close', h_fig);
+    E = E_AD(:,pair);
+    St = S_AD(:,s);
+    
+    ivE = linspace(prm(pair,2),prm(pair,3),prm(pair,4));
+    ivS = linspace(prm(pair,5),prm(pair,6),prm(pair,7));
+    [ES,~,~] = histcounts2(1./St(:),E(:),ivS,ivE);
 end
 
 ok = true;

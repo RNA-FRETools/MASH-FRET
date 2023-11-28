@@ -83,6 +83,12 @@ if nS>0
     s_tr = calcS(exc, chanExc, S, FRET, I_den, gamma, beta);
     s_tr = s_tr';
 end
+bot_tr = [f_tr; s_tr];
+            
+% ignore ratio data out-of-range
+incl_fret = f_tr>=-0.2 & f_tr<=1.2;
+incl_s = s_tr>=-0.2 & s_tr<=1.2;
+incl_bot = [incl_fret;incl_s];
 
 % discretize bottom traces
 if toBottom
@@ -92,24 +98,21 @@ if toBottom
         actstr = 'Discretisation of bottom traces...';
     end
     
-    if meth==7 % import FRET discr and calculates S discr
-        incl_imp = false(size(fret_DTA_imp));
-        incl_imp(1:L) = true;
+    if meth==8 % import FRET discr and calculates S discr
+%         incl_imp = false(size(fret_DTA_imp));
+%         incl_imp(1:L) = true;
+        incl_imp = incl;
         prm = permute(prm_DTA{2}(meth,:,1:nF),[3,2,1]);
         fret_DTA = (getDiscr(meth,cat(3,f_tr,fret_DTA_imp(incl_imp)),...
-            true(nF,L),prm,[],calc,actstr,h_fig))';
+            true(nF,sum(incl_imp)),prm,[],calc,actstr,h_fig))';
         bot_DTA = fret_DTA;
         for s = 1:nS
             pair = FRET(:,1)==S(s,1) & FRET(:,2)==S(s,2);
-            bot_DTA = cat(2,bot_DTA,...
-                trajkernel(s_tr(s,:)',incl_imp,fret_DTA(:,pair)'));
+            bot_DTA = cat(2,bot_DTA,trajkernel(s_tr(s,:)',...
+                true(1,size(fret_DTA,1)),fret_DTA(:,pair)'));
         end
 
     else
-        % ignore ratio data out-of-range
-        incl_fret = f_tr>=-0.2 & f_tr<=1.2;
-        incl_s = s_tr>=-0.2 & s_tr<=1.2;
-        incl_bot = [incl_fret;incl_s];
 
         % collects processing parameters
         prm = permute(prm_DTA{2}(meth,:,1:nF+nS),[3,2,1]); % [m-by-6] matrix
@@ -122,8 +125,6 @@ if toBottom
 
             % converts to 1D discr. traces and post-processes
             bot_DTA = zeros(numel(res2d{numel(res2d)}(1,:)),nF+nS);
-            bot_tr = [f_tr; s_tr];
-            incl_bot = [incl_fret;incl_s];
             for n = 1:nF+nS
                 bot_DTA(:,n) = trajkernel(bot_tr(n,:)',incl_bot(n,:),...
                     res2d{n}(1,:));
@@ -185,39 +186,54 @@ end
 if ~toBottom
     
     % collects bottom traj and calculates bottom discr
-    bot_tr = [];
-    bot_st = [];
-    if nF>0
-        % props up FRET-time traces
-        f_tr = f_tr';
-        bot_tr = cat(2,bot_tr,f_tr);
-
-        % calculates discretized FRET from discretized intensities
-        f_st = calcFRET(nC,nExc,exc,chanExc,FRET,top_DTA,gamma);
-        bot_st = cat(2,bot_st,f_st);
-    end
-    if nS>0
-        % props up S-time traces
-        s_tr = s_tr';
-        bot_tr = cat(2,bot_tr,s_tr);
-
-        % calculates discretized S from discretized intensities
-        s_st = calcS(exc,chanExc,S,FRET,top_DTA,gamma,beta);
-        bot_st = cat(2,bot_st,s_st);
-    end
+    bot_DTA = [];
     
     % collects top discr corresponding to each bottom data
-    I2D = collectintfor2Ddiscr(FRET,S,exc,chanExc,top_DTA);
+    [I2D,id] = collectintfor2Ddiscr(FRET,S,exc,chanExc,top_DTA);
     
     % cleans bottom discr from disparat change points
-    for n = 1:nF+nS
+    for n = 1:nF
         % finds common changing points in top discr
         tol = prm_DTA{2}(meth,4,n);
         cp = get_cpFromDiscr(I2D{n}');
         cp = correl_cp(cp,tol);
 
         % ignore disparat changing points in bottom discr
-        bot_DTA(:,n) = get_discrFromCp(cp,bot_tr(:,n),{bot_st(:,n)});
+        I_st = top_DTA;
+        for i = 1:size(id{n},1)
+            I_st(:,id{n}(i,1),id{n}(i,2)) = get_discrFromCp(cp,...
+                I_tr((nC*(id{n}(i,2)-1)+id{n}(i,1)),:)',...
+                {top_DTA(:,id{n}(i,1),id{n}(i,2))});
+        end
+        
+        % calculates discretized FRET from discretized intensities
+        f_st = calcFRET(nC,nExc,exc,chanExc,FRET,I_st,gamma);
+        bot_DTA = cat(2,bot_DTA,f_st);
+
+        % identify and sort resulting states
+        states_i = (sort(unique(bot_DTA(:,n)), 'descend'))';
+        J = numel(states_i);
+        states(n,1:J) = states_i;
+    end
+    
+    % cleans bottom discr from disparat change points
+    for n = (nF+1):(nF+nS)
+        % finds common changing points in top discr
+        tol = prm_DTA{2}(meth,4,n);
+        cp = get_cpFromDiscr(I2D{n}');
+        cp = correl_cp(cp,tol);
+
+        % ignore disparat changing points in bottom discr
+        I_st = top_DTA;
+        for i = 1:size(id{n},1)
+            I_st(:,id{n}(i,1),id{n}(i,2)) = get_discrFromCp(cp,...
+                I_tr((nC*(id{n}(i,2)-1)+id{n}(i,1)),:)',...
+                {top_DTA(:,id{n}(i,1),id{n}(i,2))});
+        end
+
+        % calculates discretized S from discretized intensities
+        s_st = calcS(exc,chanExc,S,FRET,I_st,gamma,beta);
+        bot_DTA = cat(2,bot_DTA,s_st);
 
         % identify and sort resulting states
         states_i = (sort(unique(bot_DTA(:,n)), 'descend'))';

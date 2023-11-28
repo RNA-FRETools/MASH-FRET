@@ -195,11 +195,11 @@ try
             times = dat(:,colt);
         
             % get exposure time and laser order
-            if rowwise
+            if rowwise==1
                 exptime = abs(times(2)-times(1));
                 lasord = 1:nExc;
             else
-                [lasord,tfirstexc] = sort(times(1,:));
+                [tfirstexc,lasord] = sort(times(1,:));
                 exptime = abs(tfirstexc(2)-tfirstexc(1));
             end
         end

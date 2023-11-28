@@ -5,9 +5,9 @@ function d_traces = getDiscr(method, traces, incl, prm, thresh, calc, ...
 % update by MH, 29.5.2019: handle error better for ratio data: if less than 2 data points remains because of out-of-range [-0.2;1.2] data, include all data point back and discretize out-of-range data.
 % update by MH, 30.3.2019: fix error for ratio data: if all data points were excluded because out-of-range [-0.2;1.2], include all data point back and discretize out-of-range data.
 
-mute_action = false;
+mute = false;
 if numel(str_discr)==1 && str_discr==0
-    mute_action = true;
+    mute = true;
 end
 
 is2D = false;
@@ -30,13 +30,13 @@ else
     N = size(d_traces,1);
 end
 
-if method==2 || method==3 % VbFRET
+if any(method==[2,3,6]) % VbFRET
     nSlopes = 0;
     for n = 1:N
-        minN = prm(n,1);
-        maxN = prm(n,2);
+        minK = prm(n,1);
+        maxK = prm(n,2);
         n_iter = prm(n,3);
-        nSlopes = nSlopes + (maxN-minN+1)*n_iter;
+        nSlopes = nSlopes + (maxK-minK+1)*n_iter + 1;
     end
 else
     nSlopes = N;
@@ -44,17 +44,14 @@ end
 
 h = guidata(h_fig);
 lb = 0;
-if ~isfield(h, 'barData') && sum(method == [2,3,5])
-    % loading bar parameters-----------------------------------------------
-    intrupt = loading_bar('init', h_fig, nSlopes, str_discr);
-    if intrupt
-        return;
+if ~isfield(h, 'barData') && sum(method == [2,3,5,6])
+    if loading_bar('init', h_fig, nSlopes, str_discr)
+        return
     end
     h = guidata(h_fig);
     h.barData.prev_var = h.barData.curr_var;
     guidata(h_fig, h);
     lb = 1;
-    % ---------------------------------------------------------------------
 end
 
 warning('verbose', 'on');
@@ -80,24 +77,24 @@ for n = 1:N
                 discrVal, low, up, nbStates);
 
         case 2 % 1D-VbFRET
-            minN = prm(n,1);
-            maxN = prm(n,2);
+            minK = prm(n,1);
+            maxK = prm(n,2);
             n_iter = prm(n,3);
             data = cell(1,1);
             data{1} = traces(n,incl(n,:));
-            [vbres,o] = discr_vbFRET(minN,maxN,n_iter,data,h_fig,lb,...
-                mute_action,1);
+            [vbres,o] = discr_vbFRET(minK,maxK,n_iter,data,h_fig,lb,...
+                mute,1);
             d_traces(n,incl(n,:)) = vbres{1};
 
             
         case 3 % 2D-VbFRET
-            minN = prm(n,1);
-            maxN = prm(n,2);
+            minK = prm(n,1);
+            maxK = prm(n,2);
             n_iter = prm(n,3);
             data = cell(1,1);
             data{1} = traces{n};
-            [vbres,o] = discr_vbFRET(minN,maxN,n_iter,data,h_fig,lb,...
-                mute_action,2);
+            [vbres,o] = discr_vbFRET(minK,maxK,n_iter,data,h_fig,lb,...
+                mute,2);
             d_traces{n}(:,incl{n}) = vbres{1}';
 
         case 4 % One state
@@ -105,20 +102,46 @@ for n = 1:N
                 mean(traces(n,incl(n,:)));
 
         case 5 % CPA
-            maxN = 0; % not used
+            maxK = 0; % not used
             n_bss = prm(n,1);
             lvl = prm(n,2);
             ana_type = prm(n,3);
             d_traces(n,incl(n,:)) = discr_cpa(traces(n,incl(n,:)),...
-                mute_action,n_bss,lvl,ana_type, maxN);
+                mute,n_bss,lvl,ana_type, maxK);
             
         case 6 % STaSI
-            maxN = prm(n,1);
-            [MDL,dat] = discr_stasi(traces(n,incl(n,:)),maxN,mute_action);
-            [o,idx] = min(MDL);
+            maxK = prm(n,1);
+            [MDL,dat] = discr_stasi(traces(n,incl(n,:)),maxK,mute);
+            [~,idx] = min(MDL);
             d_traces(n,incl(n,:)) = dat(idx,:)';
             
-        case 7 % imported
+        case 7 % STaSI+vbFRET-1D
+            minK = prm(n,1);
+            maxK = prm(n,2);
+            n_iter = prm(n,3);
+            [MDL,dat] = discr_stasi(traces(n,incl(n,:)),maxK,mute);
+            maxK = numel(MDL);
+            K = find(MDL==min(MDL(min([minK,maxK]):maxK)));
+            
+            data = cell(1,1);
+            data{1} = prepdatforvbfret(traces(n,incl(n,:)));
+            
+            gmmprm0 = cell(1,K);
+            gmmprm0{K}.states = unique(dat(K,:));
+            gmmprm0{K}.pop = zeros(1,K);
+            gmmprm0{K}.stdev = zeros(1,K);
+            for k = 1:K
+                isstatek = dat(K,:)==gmmprm0{K}.states(k);
+                gmmprm0{K}.pop(k) = sum(isstatek);
+                gmmprm0{K}.stdev(k) = std(data{1}(incl(n,isstatek)));
+            end
+            gmmprm0{K}.pop= gmmprm0{K}.pop/sum(gmmprm0{K}.pop);
+            [vbres,~] = discr_vbFRET(K,K,n_iter,data,h_fig,lb,mute,1,...
+                gmmprm0);
+            d_traces(n,incl(n,:)) = trajkernel(traces(n,incl(n,:)),...
+                true(size(data{1})),vbres{1}');
+            
+        case 8 % imported
             d_traces(n,incl(n,:)) = traces(n,incl(n,:),2);
     end
     
@@ -151,9 +174,8 @@ for n = 1:N
             [prm(n,[7,6,5]),calc],traces(n,:,1));
     end
 
-    if lb && method==5
-        intrpt = loading_bar('update', h_fig);
-        if intrpt
+    if lb && any(method == [2,3,5,6])
+        if loading_bar('update', h_fig)
             return
         end
     end
@@ -161,8 +183,15 @@ end
 
 warning('on', 'stats:kmeans:EmptyCluster');
 
-if lb && sum(method == [2,3,5])
+if lb && any(method == [2,3,5,6])
     loading_bar('close', h_fig);
 end
+
+
+function [dat,prm0] = prepdatforvbfret(dat,prm0)
+L = size(dat,2);
+meandat = mean(dat,2);
+stddat = std(dat,0,2);
+dat = (dat-repmat(meandat,1,L))./repmat(stddat,1,L);
 
 

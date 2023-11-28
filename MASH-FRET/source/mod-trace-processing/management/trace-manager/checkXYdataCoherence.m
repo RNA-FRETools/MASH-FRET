@@ -26,8 +26,8 @@ if sum(j1==(2:8)) % molecule-wise
         return
     end
 end
-if sum(j1==(9:10)) % state-wise
-    if ~sum(j2==(9:10))
+if sum(j1==(9:11)) % state-wise
+    if ~sum(j2==(9:11))
         return
     end
     if ind1~=ind2

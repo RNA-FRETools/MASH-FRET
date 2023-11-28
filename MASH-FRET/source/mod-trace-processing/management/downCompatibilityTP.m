@@ -230,8 +230,8 @@ end
 % added by MH, 2.12.2022: add state finding method "Imported"
 if size(p_proj.TP.prm{n},2)>=4 && size(p_proj.TP.prm{n}{4},2)>=2 && ...
         size(p_proj.TP.prm{n}{4}{2},1)<7
-    p_proj.TP.prm{n}{4}{2} = [p_proj.TP.prm{n}{4}{2};...
-        repmat([0,0,0,0,0,0,0],[1,1,size(p_proj.TP.prm{n}{4}{2},3)])];
+    p_proj.TP.prm{n}{4}{2} = cat(1,p_proj.TP.prm{n}{4}{2},...
+        repmat([0,0,0,0,0,0,0],[1,1,size(p_proj.TP.prm{n}{4}{2},3)]));
 end
 
 % added by MH, 22.8.2023: add background correction option "dynamic"
@@ -245,4 +245,12 @@ end
 if size(p_proj.TP.fix,2)>=2 && numel(p_proj.TP.fix{2})==7 && ...
         p_proj.TP.fix{2}(4)==p_proj.TP.fix{2}(5)
     p_proj.TP.fix{2}([4,5,7]) = p_proj.TP.def.general{2}([4,5,7]);
+end
+
+% added by MH, 16.11.2023: add state finding method "STaSI+vbFRET-1D"
+if size(p_proj.TP.prm{n},2)>=4 && size(p_proj.TP.prm{n}{4},2)>=2 && ...
+        size(p_proj.TP.prm{n}{4}{2},1)<8
+    p_proj.TP.prm{n}{4}{2} = cat(1,p_proj.TP.prm{n}{4}{2}(1:6,:,:),...
+        repmat([1,10,5,2,0,0,0],[1,1,size(p_proj.TP.prm{n}{4}{2},3)]),...
+        p_proj.TP.prm{n}{4}{2}(7,:,:));
 end

@@ -1,16 +1,11 @@
 function ud_trajImportOpt(h_fig)
 
+h = guidata(h_fig);
 proj = h_fig.UserData;
 nChan = proj.nb_channel;
 nExc = proj.nb_excitations;
 nPair = size(proj.FRET,1);
 opt = proj.traj_import_opt;
-
-% control trajectory import
-h = guidata(h_fig);
-if ~(isfield(h,'tab_fstrct') && ishandle(h.tab_fstrct))
-    return
-end
 
 % collect import options
 tcol = opt{1}{1}(4);
@@ -56,7 +51,10 @@ if size(fretcol,1)<nPair
 end
 
 % adjust columns nb to last file size
-fdat = h.table_fstrct.UserData;
+fdat = [];
+if isfield(h,'tab_fstrct') && ishandle(h.tab_fstrct)
+    fdat = h.table_fstrct.UserData;
+end
 isfdat = ~isempty(fdat);
 if isfdat
     C = size(fdat,2);
