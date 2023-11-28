@@ -220,7 +220,7 @@ for f = 1:numel(mash_files)
         set(q.popupmenu_selectXdata,'value',datx);
         popupmenu_selectData_Callback(q.popupmenu_selectXdata,[],h_fig);
 
-        for valx = [1,3,10] % test one data set of each sort
+        for valx = [randsample(1:2,1),randsample(3:9,1),randsample(10:12,1)] % test one data set of each sort
             set(q.popupmenu_selectXval,'value',valx);
             popupmenu_selectData_Callback(q.popupmenu_selectXval,[],h_fig);
 
@@ -274,7 +274,7 @@ for f = 1:numel(mash_files)
                 elseif sum(valx==(3:9)) % molecule-wise
                     valsy = 3:9;
                 else % state-wise
-                    valsy = [10,11];
+                    valsy = 10:12;
                 end
                 for valy = valsy
                     disp(cat(2,prefix,'>> 2D: ',strDat{datx},'-',...
@@ -417,4 +417,3 @@ for f = 1:numel(mash_files)
 
     pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
 end
-

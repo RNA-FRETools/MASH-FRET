@@ -21,6 +21,7 @@ nBot = nTraces-nTop;
 set(h.popupmenu_TP_states_method,'value',meth);
 popupmenu_TP_states_method_Callback(h.popupmenu_TP_states_method,[],h_fig);
 if meth ~= h.popupmenu_TP_states_method.Value
+    disp('state-finding method not applicable.')
     return
 end
 
