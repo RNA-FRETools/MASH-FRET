@@ -9,7 +9,7 @@ nav_order: 3
 subnav_order: 2
 nav_exclude: true
 toc_exclude: true
-mathjax: true
+math: mathjax3
 ---
 
 <img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
@@ -86,7 +86,7 @@ The type of data sets can be selected in menu **(b)** (x-axis) and **(g)** (y-ax
 * `mean dwell time (molecule-wise)` for the average state dwell times of the state trajectories
 * `state values (state-wise)` for the individual state values in the state trajectories
 * `state dwell times (state-wise)` for the individual state dwell times in the state trajectories
-* `state lifetimes (state-wise)` for the individual state lifetimes $$\tau$$ estimated from transition numbers $$N_{ij}$$ and trajectory length $$L$$ with: $$\tau_i=\frac{L}{\sum_{j \neq \i} N_{ij}}$$
+* `state lifetimes (state-wise)` for the individual state lifetimes $$\tau$$ estimated from transition numbers $$N_{ij}$$ and trajectory length $$L$$ with: $$\tau_i=\frac{L}{\sum_{j \neq i} N_{ij}}$$
 
 For 2D-sorting, x-axis and y-axis data sets must occur on the same scale (`frame-wise`, `molecule-wise` or `state-wise`).
 
