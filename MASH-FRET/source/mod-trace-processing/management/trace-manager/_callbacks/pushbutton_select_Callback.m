@@ -20,11 +20,11 @@ switch meth
     case 4 % inverse
         h.tm.molValid = ~h.tm.molValid;
     case 5 % add tagged
-        h.tm.molValid(h.tm.molTag(:,tag)') = true;
+        h.tm.molValid(~~h.tm.molTag(:,tag)') = true;
     case 6 % add not tagged
         h.tm.molValid(~h.tm.molTag(:,tag)') = true;
     case 7 % remove tagged
-        h.tm.molValid(h.tm.molTag(:,tag)') = false;
+        h.tm.molValid(~~h.tm.molTag(:,tag)') = false;
     case 8 % remove not tagged
         h.tm.molValid(~h.tm.molTag(:,tag)') = false;
 end
