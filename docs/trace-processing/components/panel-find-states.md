@@ -52,6 +52,7 @@ Six state finding algorithms are available and are described in the following se
 * [`One state`](#one-state)
 * [`CPA`](#cpa) [<sup>2</sup>](#references)
 * [`STaSI`](#stasi) [<sup>3</sup>](#references)
+* [`STaSI+vbFRET`](#stasi-vbfret) [<sup>2,3</sup>](#references)
 * [`Imported`](#imported)
 
 After selecting an algorithm, set the corresponding parameters in 
@@ -154,6 +155,17 @@ The STaSI
 The method uses the uniform noise distribution in each state to detect state transitions with the Student's t-test and groups the resulting segments into the state configuration that minimizes the minimum description length.
 
 
+### STaSI+vbFRET
+{: .no_toc }
+
+The optimum state configuration found by 
+[STaSI](#stasi) is input to 
+[vbfret](#vbfret) as a starting guess to infer most probable kinetic parameters and state sequences. 
+
+This combination complements the strengths of both method and minimizes their respective weaknesses as demonstrated by Hazic *et. al.*
+[<sup>4</sup>](#references).
+
+
 ### Imported
 {: .no_toc }
 
@@ -171,6 +183,7 @@ It simply uses the simulated/imported original FRET state sequences as a basis f
 1. J.E. Bronson, J. Fei, J.M. Hofman, R.L. Gonzalez Jr., C.H. Wiggins, *Learning Rates and States from Biophysical Time Series: A Bayesian Approach to Model Selection and Single-Molecule FRET Data*, *Biophysical J.* **2009**, DOI: [10.1016/j.bpj.2009.09.031](https://doi.org/10.1016/j.bpj.2009.09.031)
 1. W.A. Taylor, *Change-Point Analysis: A Powerful New Tool For Detecting Changes*, *Taylor enterprises* **2000**, web: [https://variation.com/change-point-analysis-a-powerful-new-tool-for-detecting-changes](https://variation.com/change-point-analysis-a-powerful-new-tool-for-detecting-changes/)
 1. B. Shuang, D. Cooper, J.N. Taylor, L. Kisley, J. Chen, W. Wang, C.B. Li, T. Komatsuzaki, C.F. Landes, *Fast Step Transition and State Identification (STaSI) for Discrete Single-Molecule Data Analysis*, *J. Phys. Chem. Lett.* **2014**, DOI: [10.1021/jz501435p](https://dx.doi.org/10.1021%2Fjz501435p)
+1. M.C.A.-S. Hadzic, R. Börner, S.L.B. König, D. Kowerko, R.K.O. Sigel, *Reliable State Identification and State Transition Detection in Fluorescence Intensity-Based Single-Molecule Förster Resonance Energy-Transfer Data*, *J. Phys. Chem. B* **2018**, DOI: [10.1021/acs.jpcb.7b12483](https://dx.doi.org/10.1021/acs.jpcb.7b12483)
 
 
 ---
@@ -203,10 +216,11 @@ Select the time trace in menu **(a)** to configure the method for and set parame
 | method | parametrization | default parameters |
 | ------ | --------------- | ------------------ |
 | `Threshold` | **(b)**: maximum number of states, **(e)**: state, **(f)**: state's lower threshold, **(g)**: state's value, **(h)**: state's higher threshold | **(f)**=3, **(g)**=3, **(h)**=3   |
-| `vbFRET` and `vbFRET-2D` [<sup>1</sup>](#references) | **(b)**: minimum number of states , **(c)**: maximum number of states, **(d)**: number of process iterations | **(b)**=1, **(c)**=2, **(d)**=5 |
+| `vbFRET` and `vbFRET-2D` [<sup>1</sup>](#references) | **(b)**: minimum number of states , **(c)**: maximum number of states, **(d)**: number of process iterations | **(b)**=1, **(c)**=3, **(d)**=5 |
 | `One state` | no parameter to be set | |
 | `CPA` [<sup>2</sup>](#references) | **(b)**: number of bootstrap samples, **(c)**: confidence level to identify a transition (%), **(d)**: change point localization by (1) maximum jump amplitude, or (2) minimum RMSE before and after change point | **(b)**=50, **(c)**=90, **(d)**=2 |
-| `STaSI` [<sup>3</sup>](#references) | **(b)**: maximum number of states | **(b)**=2 |
+| `STaSI` [<sup>3</sup>](#references) | **(b)**: maximum number of states | **(b)**=10 |
+| `STaSI+vbFRET` [<sup>2,3</sup>](#references) | **(b)**: minimum number of states , **(c)**: maximum number of states, **(d)**: number of process iterations | **(b)**=1, **(c)**=10, **(d)**=5 |
 | `Imported` | no parameter to be set | |
 
 
