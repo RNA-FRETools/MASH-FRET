@@ -78,7 +78,7 @@ for n = 1:niters
   [post, act] = gmmpost(mix, x);
   
   % Calculate error value if needed
-  if (display | store | test)
+  if (display || store || test)
     prob = act*(mix.priors)';
 
     % Error value is negative log likelihood of data
@@ -90,7 +90,7 @@ for n = 1:niters
       fprintf(1, 'Cycle %4d  Error %11.6f\n', n, e);
     end
     if test
-      if (n > 1 & abs(e - eold) < options(3))
+      if (n > 1 && abs(e - eold) < options(3))
         options(8) = e;
         return;
       else

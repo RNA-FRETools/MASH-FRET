@@ -20,7 +20,7 @@ if toFRET==1 && (nFRET+nS)>0
     end
 end
 
-if ~sum(double(method == [2,3,5]))
+if ~sum(double(method == [2,3,5,7]))
     return
 end
 
@@ -44,6 +44,10 @@ if isempty(val) || numel(val)~=1 || isnan(val) || ...
             updateActPan(cat(2,'Method for change localisation ',...
                 'must be 1 or 2 ("max." or "MSE")'),h_fig,...
                 'error');
+
+        case 7 % STaSI+VbFRET-1D
+            updateActPan('Number of iterations must be > 0',...
+                h_fig,'error');
     end
     return
 end

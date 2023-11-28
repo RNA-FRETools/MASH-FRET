@@ -47,7 +47,7 @@ function [out] = vbFRET_VBEM(x, mix, PriorPar, options)
 % http://vbfret.sourceforge.net
 
 % initialize variables
-[D T] = size(x);
+[D,T] = size(x);
 K = mix.ncentres;
 Fold = -Inf;
 logLambdaTilde = zeros(1,K);
@@ -57,6 +57,7 @@ Fa = zeros(1,options.maxIter);
 Fpi = zeros(1,options.maxIter);
 Fgw = zeros(1,options.maxIter);
 F = zeros(1,options.maxIter); 
+fixcenters = options.fixcenters;
 
 % hyperparameter priors
 % prior over initial hidden state - MJB 3.6/3.54 (CB 10.39)
@@ -96,7 +97,7 @@ W = zeros(D,D,K);
 for k = 1:K
     mult1 = beta0.*Nk(k)/(beta0 + Nk(k));
     diff3 = xbar(:,k) - m0;
-    W(:,:,k) = inv(W0inv + Nk(k)*S(:,:,k) + mult1*diff3*diff3');
+    W(:,:,k) = inv(W0inv + Nk(k)*S(:,:,k) + mult1*diff3*(diff3)');
 end
 % We will assume the probablity of the trace starting in state k should be
 % proportional to the numer of data points in state k. % It only has 1
@@ -140,18 +141,18 @@ for iter = 1:options.maxIter
     %%%% % <[(xn-muk)^T*lambda*(xn-muk)]> wrt. mu and lambda, equn 10.62
     %%%% % on p.478 of bishop.
     %%%% for t = 1:T
-    %%%% for k=1:K
-    %%%% diff = x{n}(:,t) - m(:,k);
-    %%%% Eold{n}(t,k) = D/beta(k) + v(k)*diff'*W(:,:,k)*diff;
-    %%%% end
+    %%%%    for k=1:K
+    %%%%        diff = x{n}(:,t) - m(:,k);
+    %%%%        Eold{n}(t,k) = D/beta(k) + v(k)*diff'*W(:,:,k)*diff;
+    %%%%    end
     %%%% end
     % THE NEW HOTNESS (at least 10x faster)
     % logic: in general we expect D<K<<T
-    % a T*K matrix:
+    % a [T-by-K] matrix:
     xWx=zeros(T,K);
-    % a T*k matrix:
+    % a [T-by-K] matrix:
     xWm=zeros(T,K);
-    % a vector of length K:
+    % a [1-by-K] vector:
     mWm=zeros(1,K);
     for d1=1:D
         m1=m(d1,:);
@@ -170,11 +171,13 @@ for iter = 1:options.maxIter
   
     % calculate <ln(P(Xn|Zn))>. TxK matrix - JKC 45, related to CB 10.67 
     % pXgivenZtilde = (pi^(-D/2))*exp ( repmat(0.5*logLambdaTilde, T,1) - 0.5*E ); 
-    pXgivenZtilde = ((2*pi)^(-D/2))*exp ( 0.5*(logLambdaTilde(ones(1,T),:) - E) );
+    pXgivenZtilde = ((2*pi)^(-D/2))*...
+        exp ( 0.5*(logLambdaTilde(ones(1,T),:) - E) );
 
     % Forward-back algorithm
     % Probablities can be sub-normalized   
-    [wa wpi xbar S Nk lnZ(iter) ] = forwbackFRET(astar,pXgivenZtilde,pistar,x);  
+    [wa,wpi,xbar,S,Nk,lnZ(iter)] = ...
+        forwbackFRET(astar,pXgivenZtilde,pistar,x);  
     
     % Compute F, straight after E Step.
 

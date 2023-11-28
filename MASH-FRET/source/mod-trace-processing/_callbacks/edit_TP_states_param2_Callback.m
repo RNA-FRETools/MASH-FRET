@@ -20,7 +20,7 @@ if toFRET==1 && (nFRET+nS)>0
     end
 end
 
-if ~sum(double(method == [2,3,5]))
+if ~sum(double(method == [2,3,5,7]))
     return
 end
 
@@ -51,6 +51,10 @@ if ~(~isempty(val) && numel(val)==1 && ~isnan(val) && val>=minVal ...
         case 5 % CPA
             updateActPan('Confidence level must be >= 0 and <= 100', ...
                 h_fig, 'error');
+
+        case 7 % STaSI+VbFRET-1D
+            updateActPan(cat(2,'Maximum number of states must be ',...
+                '>= ',num2str(minVal)),h_fig,'error');
     end
     return
 end

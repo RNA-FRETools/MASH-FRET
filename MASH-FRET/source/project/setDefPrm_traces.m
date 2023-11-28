@@ -8,15 +8,6 @@ function def = setDefPrm_traces(p, proj)
 % proj: project index in list
 % def: adjusted default TP processing parameters
 
-% Last update 23.12.2020 by MH: add method vbFRET 2D
-% update 15.01.2020 by MH: add parameter tolerance in photobleaching-based gamma calculation parameters
-% update 14.01.2020 by MH: (1) make parameters for gamma/beta factor calculations dependent on the FRET pair (necessary for ES histograms)
-% update 13.01.2020 by MH: (1) add beta factors (2) move bleethrough and direct excitation coefficients from molecule to general parameters
-% update 10.01.2020 by MH: (1) separate parameters for factor corrections from cross-talks: store parameters for factor corrections in 6th cell
-% update 03.04.2019 by MH: (1) correct default value for bottom axes plot (2) change default state finding algorithm to STaSI
-% update 29.03.2019 by MH: (1) change bleedthrough coefficient (mol{5}{1}) structure: coefficients are independant of laser (2) change direct excitation coefficient (mol{5}{2}) structure: direct excitation possible by every laser but emitter-specific illumination (nExc-1) and is calculated only based on emitter intensities at emitter-specific laser (possibility to choose another laser was removed)
-% update 28.04.2014 by MH
-
 if ~isfield(p.ttPr, 'defProjPrm')
     p.ttPr.defProjPrm = [];
 end
@@ -40,7 +31,7 @@ nFrames = size(p.proj{proj}.intensities,1)*nExc;
 isCoord = p.proj{proj}.is_coord;
 isMov = p.proj{proj}.is_movie;
 
-%% General parameters
+% General parameters
 
 % subimages calculation and plot
 gen{1}(1) = 1; % excitation
@@ -117,7 +108,8 @@ end
 def.general{2}([1:5,7]) = gen{2}([1:5,7]);
 def.general{3} = gen{3};
 
-%% Molecule parameters
+
+% Molecule parameters
 
 % Denoising
 mol{1}{1}(1) = 2; % denoising method
@@ -144,9 +136,14 @@ else
 end
 
 % Background correction
-mol{3}{1} = ones(nExc,nChan); % apply correction
-mol{3}{1} = cat(3,mol{3}{1},zeros(nExc,nChan)); % dynamic background
-mol{3}{3} = cell(nExc,nChan);
+if isCoord && isMov
+    % apply correction and dynamic background
+    mol{3}{1} = ones(nExc,nChan,2); 
+else
+    % do not apply correction nor dynamic background
+    mol{3}{1} = zeros(nExc,nChan,2);
+end
+mol{3}{3} = cell(nExc,nChan); % parameters
 for c = 1:nChan
     for l = 1:nExc
         if isCoord && isMov
@@ -160,16 +157,15 @@ for c = 1:nChan
                               2   20 0  0  0 0];% Median
                           
         else
-            mol{3}{2}(l,c) = 1; % method
-            mol{3}{3}{l,c} = zeros(1,7);  % Manual
-            mol{3}{3}{l,c}(3) = 20;
+            mol{3}{2}(l,c) = 1; % method Manual
+            mol{3}{3}{l,c} = [0   20 0  0  0 0];
         end
     end
 end
 
 % DTA
-if nFRET > 0 || nS > 0
-    mol{4}{1} = [6 1 0]; % method/apply to FRET/recalc states;
+if (nFRET+nS) > 0
+    mol{4}{1} = [6 1 0]; % method/apply to bottom traces/recalc states;
 else
     mol{4}{1} = [6 0 0];
 end
@@ -178,11 +174,12 @@ for i = 1:nFRET
 
     mol{4}{2}(:,:,i) = ...
         [2  0  0 2 0 0 0 %   Thresholds	J,   none,none,tol, refine,bin, blurr
-         1  2  5 2 0 0 1 %   vbFRET-1D	minJ,maxJ,prm1,tol, refine,bin, blurr
-         1  2  5 2 0 0 1 %   vbFRET-2D	minJ,maxJ,prm1,tol, refine,bin, blurr
+         1  3  5 2 0 0 1 %   vbFRET-1D	minJ,maxJ,prm1,tol, refine,bin, blurr
+         1  3  5 2 0 0 1 %   vbFRET-2D	minJ,maxJ,prm1,tol, refine,bin, blurr
          1  0  0 0 0 0 0 %   One state  none,none,none,none,none,  none,none
          50 90 2 2 0 0 0 %   CPA        prm1,prm2,prm3,tol, refine,bin, blurr
          10 0  0 2 0 0 0 %   STaSI      maxJ,none,none,tol, refine,bin, blurr
+         1  10 5 2 0 0 0 %   STaSI+vbFRET-1D  minJ,maxJ,prm1,tol, refine,bin, blurr
          0  0  0 0 0 0 0]; % imported   none,none,none,none,refine,bin, blurr
 
     mol{4}{4}(:,:,i) = ...
@@ -195,11 +192,12 @@ for i = 1:nS
     
     mol{4}{2}(:,:,nFRET+i) = ...
         [2  0  0 2 0 0 0 %   Thresholds J,   none,none,tol, refine,bin, blurr
-         1  2  5 2 0 0 1 %   vbFRET-1D	minJ,maxJ,prm1,tol, refine,bin, blurr
-         1  2  5 2 0 0 1 %   vbFRET-2D	minJ,maxJ,prm1,tol, refine,bin, blurr
+         1  3  5 2 0 0 1 %   vbFRET-1D	minJ,maxJ,prm1,tol, refine,bin, blurr
+         1  3  5 2 0 0 1 %   vbFRET-2D	minJ,maxJ,prm1,tol, refine,bin, blurr
          1  0  0 0 0 0 0 %   One state  none,none,none,none,none,  none,none
          50 90 2 2 0 0 0 %   CPA        prm1,prm2,prm3,tol, refine,bin, blurr
          10 0  0 2 0 0 0 %   STaSI      maxJ,none,none,tol, refine,bin, blurr
+         1  10 5 2 0 0 0 %   STaSI+vbFRET-1D  minJ,maxJ,prm1,tol, refine,bin, blurr
          0  0  0 0 0 0 0]; % imported   none,none,none,none,refine,bin, blurr
 
     mol{4}{4}(:,:,nFRET+i) = ...
@@ -214,11 +212,12 @@ for j = 1:nExc
     for i = 1:nChan
         mol{4}{2}(:,:,nFRET+nS+(j-1)*nChan+i) = ...
             [2  0  0 2 0 0 0 %   Thresholds J   ,none,none,tol ,refine,bin, blurr
-             1  2  5 2 0 0 1 %   vbFRET-1D	minJ,maxJ,prm1,tol ,refine,bin, blurr
-             1  2  5 2 0 0 1 %   vbFRET-2D	minJ,maxJ,prm1,tol ,refine,bin, blurr
+             1  3  5 2 0 0 1 %   vbFRET-1D	minJ,maxJ,prm1,tol ,refine,bin, blurr
+             1  3  5 2 0 0 1 %   vbFRET-2D	minJ,maxJ,prm1,tol ,refine,bin, blurr
              1  0  0 0 0 0 0 %   One state  none,none,none,none,none  ,none,none
              50 90 2 2 0 0 0 %   CPA        prm1,prm2,prm3,tol ,refine,bin, blurr
              2  0  0 2 0 0 0 %   STaSI      maxJ,none,none,tol ,refine,bin, blurr
+             1  10 5 2 0 0 0 %   STaSI+vbFRET-1D  minJ,maxJ,prm1,tol, refine,bin, blurr
              0  0  0 0 0 0 0]; % imported   none,none,none,none,refine,bin, blurr
 
         mol{4}{4}(:,:,nFRET+nS+(j-1)*nChan+i) = ...
@@ -312,11 +311,11 @@ end
 
 % if no movie, set BG corrections to manual
 if ~(isCoord && isMov)
+    def.mol{3}{1} = zeros(nExc,nChan,2);
     for c = 1:nChan
         for l = 1:nExc
             def.mol{3}{2}(l,c) = 1;
-            def.mol{3}{3}{l,c} = zeros(1,7);
-            def.mol{3}{3}{l,c}(3) = 20;
+            def.mol{3}{3}{l,c} = [0,20,0,0,0,0,0];
         end
     end
 end
