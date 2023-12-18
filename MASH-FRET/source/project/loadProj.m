@@ -7,7 +7,7 @@ if ~iscell(fname)
     fname = {fname};
 end
     
-[o,o,fext] = fileparts(fname{1});
+[~,~,fext] = fileparts(fname{1});
 fext_prev = fext;
 if size(fname,2) > 1
     for i = 2:size(fname,2)
@@ -50,16 +50,21 @@ if isempty(s) % MASH project
         end
     end
 
-else % ASCII trajectories
-    opt = s.traj_import_opt;
-    s = intAscii2mash(pname, fname, s, opt, h_fig);
+else % ASCII files
+    ishist = isfield(s,'hist_file') && ~isempty(s.hist_file);
+    if ishist
+        opt = s.hist_import_opt;
+        s = histAscii2mash(pname, fname{1}, s, opt, h_fig);
+    else
+        opt = s.traj_import_opt;
+        s = intAscii2mash(pname, fname, s, opt, h_fig);
+    end
     if isempty(s)
         ok = 0;
         return
-    else
-        [s,ok] = checkField(s, '', h_fig);
-        dat_proj = s;
     end
+    [s,ok] = checkField(s, '', h_fig);
+    dat_proj = s;
 end
 
 if islb

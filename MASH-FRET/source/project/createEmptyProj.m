@@ -37,6 +37,7 @@ p.exp_parameters = es.expCond;
 p.frame_rate = 1;
 p.colours = {};
 p.traj_import_opt = [];
+p.hist_import_opt = [];
 
 % video
 p.movie_file = {[]};

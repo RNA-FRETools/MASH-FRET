@@ -12,7 +12,7 @@ if isnumeric(evd) % call from test routine
 else
     act = slctdatdlg(h_fig);
 end
-if ~any(act==[1,2,3])
+if ~any(act==(1:4))
     return
 end
 
@@ -42,5 +42,12 @@ switch act
 
         % ask user for experiment settings, import trajectories
         setExpSetWin(proj,'trajectories',h_fig); % /!\ guidata is modified here
+
+    case 4
+        % ask user for histogram files and import data
+        proj = setProjDef_hist(proj,h0.param); 
+
+        % ask user for experiment settings, import trajectories
+        setExpSetWin(proj,'histogram',h_fig);
 end
 

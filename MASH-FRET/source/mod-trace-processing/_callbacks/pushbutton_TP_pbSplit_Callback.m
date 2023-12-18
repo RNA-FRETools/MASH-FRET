@@ -104,12 +104,12 @@ p.proj{proj}.bool_intensities(1:L_right,n+1) = true;
 if ~isempty(p.proj{proj}.FRET_DTA)
     p.proj{proj}.FRET_DTA(:,fret_id_dup,:) = NaN;
     p.proj{proj}.FRET_DTA(1:L_right,fret_id_dup,:) = ...
-    	p.proj{proj}.FRET_DTA((cutOff+1):end,fret_id_n,:);
+    	p.proj{proj}.FRET_DTA((cutOff+1):(cutOff+L_right),fret_id_n,:);
 end
 if ~isempty(p.proj{proj}.S_DTA)
     p.proj{proj}.S_DTA(:,s_id_dup,:) = NaN;
     p.proj{proj}.S_DTA(1:L_right,s_id_dup,:) = ...
-        p.proj{proj}.S_DTA((cutOff+1):end,s_id_n,:);
+        p.proj{proj}.S_DTA((cutOff+1):(cutOff+L_right),s_id_n,:);
 end
 
 % set right side of the original trace to NaN

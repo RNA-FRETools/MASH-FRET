@@ -75,31 +75,57 @@ x = mg;
 y = hfig-mg-htab;
 
 h.tabg = uitabgroup('parent',h_fig,'units',un,'position',[x,y,wtab,htab]);
-if ~strcmp(dat2import,'sim')
-    if ~isempty(dat2import) && ~strcmp(dat2import,'edit')
+switch dat2import
+    case 'sim'
+        h.tab_div = uitab('parent',h.tabg,'units',un,'title',ttl5);
+        h = build_setExpSetTabDiv(h,dat2import,h_fig0);
+        
+    case 'edit'
+        h.tab_calc = uitab('parent',h.tabg,'units',un,'title',ttl3);
+        h.tab_div = uitab('parent',h.tabg,'units',un,'title',ttl5);
+        h = build_setExpSetTabCalc(h);
+        h = build_setExpSetTabDiv(h,dat2import,h_fig0);
+        
+    case 'trajectories'
         h.tab_imp = uitab('parent',h.tabg,'units',un,'title',ttl0);
         h.tab_chan = uitab('parent',h.tabg,'units',un,'title',ttl1);
         h.tab_exc = uitab('parent',h.tabg,'units',un,'title',ttl2);
-    end
-    h.tab_calc = uitab('parent',h.tabg,'units',un,'title',ttl3);
-    if strcmp(dat2import,'trajectories')
+        h.tab_calc = uitab('parent',h.tabg,'units',un,'title',ttl3);
         h.tab_fstrct = uitab('parent',h.tabg,'units',un,'title',ttl4);
-    end
-end
-h.tab_div = uitab('parent',h.tabg,'units',un,'title',ttl5);
-
-if ~strcmp(dat2import,'sim')
-    if ~isempty(dat2import) && ~strcmp(dat2import,'edit')
+        h.tab_div = uitab('parent',h.tabg,'units',un,'title',ttl5);
         h = build_setExpSetTabImport(h,dat2import,proj.nb_channel,h_fig0);
         h = build_setExpSetTabChan(h,proj.nb_channel,h_fig0);
         h = build_setExpSetTabExc(h,proj.nb_excitations,h_fig0);
-    end
-    if strcmp(dat2import,'trajectories')
-        h = build_setExpSetTabFstrct(h,proj.excitations);
-    end
-    h = build_setExpSetTabCalc(h);
+        h = build_setExpSetTabCalc(h);
+        h = build_setExpSetTabFstrct(h,dat2import,proj.excitations);
+        h = build_setExpSetTabDiv(h,dat2import,h_fig0);
+        
+    case 'video'
+        h.tab_imp = uitab('parent',h.tabg,'units',un,'title',ttl0);
+        h.tab_chan = uitab('parent',h.tabg,'units',un,'title',ttl1);
+        h.tab_exc = uitab('parent',h.tabg,'units',un,'title',ttl2);
+        h.tab_calc = uitab('parent',h.tabg,'units',un,'title',ttl3);
+        h.tab_div = uitab('parent',h.tabg,'units',un,'title',ttl5);
+        h = build_setExpSetTabImport(h,dat2import,proj.nb_channel,h_fig0);
+        h = build_setExpSetTabChan(h,proj.nb_channel,h_fig0);
+        h = build_setExpSetTabExc(h,proj.nb_excitations,h_fig0);
+        h = build_setExpSetTabCalc(h);
+        h = build_setExpSetTabDiv(h,dat2import,h_fig0);
+        
+    case 'histogram'
+        h.tab_imp = uitab('parent',h.tabg,'units',un,'title',ttl0);
+        h.tab_fstrct = uitab('parent',h.tabg,'units',un,'title',ttl4);
+        h.tab_div = uitab('parent',h.tabg,'units',un,'title',ttl5);
+        h = build_setExpSetTabImport(h,dat2import,proj.nb_channel,h_fig0);
+        h = build_setExpSetTabFstrct(h,dat2import,proj.excitations);
+        h = build_setExpSetTabDiv(h,dat2import,h_fig0);
+        
+    otherwise % empty
+        h.tab_calc = uitab('parent',h.tabg,'units',un,'title',ttl3);
+        h.tab_div = uitab('parent',h.tabg,'units',un,'title',ttl5);
+        h = build_setExpSetTabCalc(h);
+        h = build_setExpSetTabDiv(h,dat2import,h_fig0);
 end
-h = build_setExpSetTabDiv(h,dat2import,h_fig0);
 
 guidata(h_fig,h);
 

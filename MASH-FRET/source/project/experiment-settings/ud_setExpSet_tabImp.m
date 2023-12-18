@@ -20,26 +20,28 @@ proj = h_fig.UserData;
 imptraj = isfield(h,'text_impTrajFiles') && ishandle(h.text_impTrajFiles);
 
 % set video file
-if h.radio_impFileMulti.Value==1
-    set([h.edit_impFileMulti,h.push_impFileMulti],'visible','on');
-    set([h.push_addChan,h.push_remChan],'visible','off');
-    set([h.edit_impFileSingle,h.push_impFileSingle],'visible','off');
-    if ~isempty(proj.movie_file{1})
-        [~,fname,fext] = fileparts(proj.movie_file{1});
-        set(h.edit_impFileMulti,'string',[fname,fext]);
-    else
-        set(h.edit_impFileMulti,'string','');
-    end
-else
-    set([h.edit_impFileMulti,h.push_impFileMulti],'visible','off');
-    set([h.push_addChan,h.push_remChan],'visible','on');
-    set([h.edit_impFileSingle,h.push_impFileSingle],'visible','on');
-    for c = 1:proj.nb_channel
-        if ~isempty(proj.movie_file{c})
-            [~,fname,fext] = fileparts(proj.movie_file{c});
-            set(h.edit_impFileSingle(c),'string',[fname,fext]);
+if imptraj
+    if h.radio_impFileMulti.Value==1
+        set([h.edit_impFileMulti,h.push_impFileMulti],'visible','on');
+        set([h.push_addChan,h.push_remChan],'visible','off');
+        set([h.edit_impFileSingle,h.push_impFileSingle],'visible','off');
+        if ~isempty(proj.movie_file{1})
+            [~,fname,fext] = fileparts(proj.movie_file{1});
+            set(h.edit_impFileMulti,'string',[fname,fext]);
         else
-            set(h.edit_impFileSingle(c),'string','');
+            set(h.edit_impFileMulti,'string','');
+        end
+    else
+        set([h.edit_impFileMulti,h.push_impFileMulti],'visible','off');
+        set([h.push_addChan,h.push_remChan],'visible','on');
+        set([h.edit_impFileSingle,h.push_impFileSingle],'visible','on');
+        for c = 1:proj.nb_channel
+            if ~isempty(proj.movie_file{c})
+                [~,fname,fext] = fileparts(proj.movie_file{c});
+                set(h.edit_impFileSingle(c),'string',[fname,fext]);
+            else
+                set(h.edit_impFileSingle(c),'string','');
+            end
         end
     end
 end
@@ -53,16 +55,25 @@ if proj.is_movie
 else
     if ~imptraj
         set(h.push_nextImp,'enable','off');
-    end
-    if h.radio_impFileMulti.Value==1
-        set(h.edit_impFileMulti,'enable','off');
     else
-        set(h.edit_impFileSingle,'enable','off');
+        if h.radio_impFileMulti.Value==1
+            set(h.edit_impFileMulti,'enable','off');
+        else
+            set(h.edit_impFileSingle,'enable','off');
+        end
     end
 end
 
 % control trajectory import
 if ~imptraj
+    ishistfile = isfield(proj,'hist_file') && ~isempty(proj.hist_file);
+    if ishistfile
+        set(h.list_impHistFiles,'string',proj.hist_file{2},'enable','on');
+        set(h.push_nextImp,'enable','on');
+    else
+        set(h.list_impHistFiles,'string',{''},'enable','off');
+        set(h.push_nextImp,'enable','off');
+    end
     return
 end
 

@@ -12,12 +12,19 @@ function h = build_setExpSetTabImport(h,dat2import,nChan,h_fig0)
 blue = [0,0,1];
 str0a = 'a multi-channel video file';
 str0b = 'single-channel video files';
-if strcmp(dat2import,'video')
+isvid =  strcmp(dat2import,'video');
+istraj =  strcmp(dat2import,'trajectories');
+ishist = strcmp(dat2import,'histogram');
+if isvid
     str0c = 'Select:';
 else
     str0c = '(optional) Select:';
 end
-str1 = 'Select trajectory files:';
+if ishist
+    str1b = 'Select one histogram file:';
+else
+    str1a = 'Select trajectory files:';
+end
 str2 = '...';
 str3 = 'Import options';
 str4 = '(optional) Select a single molecule coordinates file:';
@@ -32,7 +39,11 @@ h_tab = h.tab_imp;
 % dimensions
 postab = h_tab.Position;
 wrb0a = getUItextWidth(str0a,h.fun,h.fsz,'normal',h.tbl)+h.wbox;
-wtxt0b = getUItextWidth(str1,h.fun,h.fsz,'normal',h.tbl);
+if ishist
+    wtxt0b = getUItextWidth(str1b,h.fun,h.fsz,'normal',h.tbl);
+else
+    wtxt0b = getUItextWidth(str1a,h.fun,h.fsz,'normal',h.tbl);
+end
 wtxt0c = getUItextWidth(str0c,h.fun,h.fsz,'normal',h.tbl);
 wbut0 = getUItextWidth(str2,h.fun,h.fsz,'normal',h.tbl)+h.wbrd;
 wbut1 = getUItextWidth(str3,h.fun,h.fsz,'normal',h.tbl)+h.wbrd;
@@ -49,13 +60,12 @@ wedit2 =  postab(3)-h.mg-h.mg/2-wbut1-h.mg/2-wbut0-h.mg;
 
 y = postab(4)-h.mgtab;
 
-if strcmp(dat2import,'trajectories')
-    
+if istraj
     x = h.mg;
     y = y-h.hedit+(h.hedit-h.htxt)/2;
 
     h.text_impTrajFiles = uicontrol('parent',h_tab,'style','text','units',...
-        h.un,'fontunits',h.fun,'fontsize',h.fsz,'string',str1,...
+        h.un,'fontunits',h.fun,'fontsize',h.fsz,'string',str1a,...
         'horizontalalignment','left','position',[x,y,wtxt0b,h.htxt]);
     
     x = x+wtxt0b+h.mg/2;
@@ -74,48 +84,76 @@ if strcmp(dat2import,'trajectories')
         blue,'horizontalalignment','right','position',[x,y,wlst,hlst]);
     
     y = y-h.mg;
+    
+elseif ishist
+    x = h.mg;
+    y = y-h.hedit+(h.hedit-h.htxt)/2;
+
+    h.text_impHistFiles = uicontrol('parent',h_tab,'style','text','units',...
+        h.un,'fontunits',h.fun,'fontsize',h.fsz,'string',str1b,...
+        'horizontalalignment','left','position',[x,y,wtxt0b,h.htxt]);
+    
+    x = x+wtxt0b+h.mg/2;
+    y = y-(h.hedit-h.htxt)/2;
+
+    h.push_impHistFiles = uicontrol('parent',h_tab,'style','pushbutton',...
+        'units',h.un,'fontunits',h.fun,'fontsize',h.fsz,'string',str2,...
+        'position',[x,y,wbut0,h.hedit],'callback',...
+        {@push_setExpSet_impHistFiles,h_fig,h_fig0});
+    
+    x = h.mg;
+    y = y-h.mg/2-hlst;
+    
+    h.list_impHistFiles = uicontrol('parent',h_tab,'style','listbox',...
+        'units',h.un,'fontunits',h.fun,'fontsize',h.fsz,'foregroundcolor',...
+        blue,'horizontalalignment','right','position',[x,y,wlst,hlst]);
+    
+    y = y-h.mg;
+    
 end
 
-x = h.mg;
-y = y-h.hedit+(h.hedit-h.htxt)/2;
+if ~ishist
+    x = h.mg;
+    y = y-h.hedit+(h.hedit-h.htxt)/2;
 
-h.text_impOptional = uicontrol('parent',h_tab,'style','text','units',...
-    h.un,'fontunits',h.fun,'fontsize',h.fsz,'string',str0c,...
-    'horizontalalignment','left','position',[x,y,wtxt0c,h.htxt]);
+    h.text_impOptional = uicontrol('parent',h_tab,'style','text','units',...
+        h.un,'fontunits',h.fun,'fontsize',h.fsz,'string',str0c,...
+        'horizontalalignment','left','position',[x,y,wtxt0c,h.htxt]);
 
-x = x+wtxt0c+h.mg;
-y = y-(h.hedit-h.htxt)/2;
+    x = x+wtxt0c+h.mg;
+    y = y-(h.hedit-h.htxt)/2;
 
-h.radio_impFileMulti = uicontrol('parent',h_tab,'style','radiobutton',...
-    'units',h.un,'fontunits',h.fun,'fontsize',h.fsz,'string',str0a,...
-    'position',[x,y,wrb0a,h.hedit],'value',1,'callback',...
-    {@radio_setExpSet_impFile,h_fig});
+    h.radio_impFileMulti = uicontrol('parent',h_tab,'style','radiobutton',...
+        'units',h.un,'fontunits',h.fun,'fontsize',h.fsz,'string',str0a,...
+        'position',[x,y,wrb0a,h.hedit],'value',1,'callback',...
+        {@radio_setExpSet_impFile,h_fig});
 
-x = x+wrb0a+h.mg/2;
+    x = x+wrb0a+h.mg/2;
 
-h.radio_impFileSingle = uicontrol('parent',h_tab,'style','radiobutton',...
-    'units',h.un,'fontunits',h.fun,'fontsize',h.fsz,'string',str0b,...
-    'position',[x,y,wrb0b,h.hedit],'value',0,'callback',...
-    {@radio_setExpSet_impFile,h_fig});
+    h.radio_impFileSingle = uicontrol('parent',h_tab,'style','radiobutton',...
+        'units',h.un,'fontunits',h.fun,'fontsize',h.fsz,'string',str0b,...
+        'position',[x,y,wrb0b,h.hedit],'value',0,'callback',...
+        {@radio_setExpSet_impFile,h_fig});
 
-x = h.mg;
-y = y-h.mg/2-h.hedit;
+    x = h.mg;
+    y = y-h.mg/2-h.hedit;
 
-h.edit_impFileMulti = uicontrol('parent',h_tab,'style','edit','units',h.un,...
-    'fontunits',h.fun,'fontsize',h.fsz,'foregroundcolor',blue,...
-    'horizontalalignment','right','position',[x,y,wedit0,h.hedit],...
-    'callback',{@edit_setExpSet_impFile,h_fig});
+    h.edit_impFileMulti = uicontrol('parent',h_tab,'style','edit','units',...
+        h.un,'fontunits',h.fun,'fontsize',h.fsz,'foregroundcolor',blue,...
+        'horizontalalignment','right','position',[x,y,wedit0,h.hedit],...
+        'callback',{@edit_setExpSet_impFile,h_fig});
 
-x = x+wedit0+h.mg/2;
+    x = x+wedit0+h.mg/2;
 
-h.push_impFileMulti = uicontrol('parent',h_tab,'style','pushbutton',...
-    'units',h.un,'fontunits',h.fun,'fontsize',h.fsz,'string',str2,...
-    'position',[x,y,wbut0,h.hedit],'callback',...
-    {@push_setExpSet_impFile,h_fig,h_fig0});
+    h.push_impFileMulti = uicontrol('parent',h_tab,'style','pushbutton',...
+        'units',h.un,'fontunits',h.fun,'fontsize',h.fsz,'string',str2,...
+        'position',[x,y,wbut0,h.hedit],'callback',...
+        {@push_setExpSet_impFile,h_fig,h_fig0});
 
-h = setExpSet_buildVideoArea(h,nChan,h_fig0);
+    h = setExpSet_buildVideoArea(h,nChan,h_fig0);
+end
 
-if strcmp(dat2import,'trajectories')
+if istraj
 %     h.push_impOpt = uicontrol('parent',h_tab,'style','pushbutton','units',...
 %         h.un,'fontunits',h.fun,'fontsize',h.fsz,'string',str2,'position',...
 %         [x,y,wbut1,h.hedit],'callback',...

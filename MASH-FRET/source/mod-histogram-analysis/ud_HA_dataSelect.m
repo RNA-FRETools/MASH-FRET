@@ -23,6 +23,10 @@ chanExc = p.proj{proj}.chanExc;
 tagNames = p.proj{proj}.molTagNames;
 colorlist = p.proj{proj}.molTagClr;
 
+% determines if histogram is imported from files
+fromfile = isfield(p.proj{proj},'histdat') & ...
+    ~isempty(p.proj{proj}.histdat);
+
 % get number of total intensities
 nExc = numel(exc);
 em0 = find(chanExc~=0);
@@ -42,33 +46,40 @@ for l = 1:nExc
         str_pop = [str_pop [labels{c} ' at ' num2str(exc(l)) 'nm']];
     end
 end
-for l = 1:nExc
-    for c = 1:nChan
-        str_pop = [str_pop ['discr. ' labels{c} ' at ' num2str(exc(l)) 'nm']];
+if ~fromfile
+    for l = 1:nExc
+        for c = 1:nChan
+            str_pop = [str_pop ['discr. ' labels{c} ' at ' num2str(exc(l)) ...
+                'nm']];
+        end
     end
-end
-for em = em0
-    exc0 = chanExc(em);
-    str_pop = [str_pop ['total ' labels{em} ' at ' num2str(exc0) 'nm']];
-end
-for em = em0
-    exc0 = chanExc(em);
-    str_pop = [str_pop ['discr. total ' labels{em} ' at ' num2str(exc0) ...
-        'nm']];
-end
-nFRET = size(FRET,1);
-for n = 1:nFRET
-    str_pop = [str_pop ['FRET ' labels{FRET(n,1)} '>' labels{FRET(n,2)}]];
-end
-for n = 1:nFRET
-    str_pop = [str_pop ['discr. FRET ' labels{FRET(n,1)} '>' labels{FRET(n,2)}]];
-end
-nS = size(S,1);
-for n = 1:nS
-    str_pop = [str_pop ['S ' labels{S(n,1)} '>' labels{S(n,2)}]];
-end
-for n = 1:nS
-    str_pop = [str_pop ['discr. S ' labels{S(n,1)} '>' labels{S(n,2)}]];
+    for em = em0
+        exc0 = chanExc(em);
+        str_pop = [str_pop ['total ' labels{em} ' at ' num2str(exc0) ...
+            'nm']];
+    end
+    for em = em0
+        exc0 = chanExc(em);
+        str_pop = [str_pop ['discr. total ' labels{em} ' at ' num2str(exc0) ...
+            'nm']];
+    end
+    nFRET = size(FRET,1);
+    for n = 1:nFRET
+        str_pop = [str_pop ['FRET ' labels{FRET(n,1)} '>' ...
+            labels{FRET(n,2)}]];
+    end
+    for n = 1:nFRET
+        str_pop = [str_pop ['discr. FRET ' labels{FRET(n,1)} '>' ...
+            labels{FRET(n,2)}]];
+    end
+    nS = size(S,1);
+    for n = 1:nS
+        str_pop = [str_pop ['S ' labels{S(n,1)} '>' labels{S(n,2)}]];
+    end
+    for n = 1:nS
+        str_pop = [str_pop ['discr. S ' labels{S(n,1)} '>' ...
+            labels{S(n,2)}]];
+    end
 end
 set(h.popupmenu_thm_tpe, 'String', str_pop, 'Value', tpe);
 

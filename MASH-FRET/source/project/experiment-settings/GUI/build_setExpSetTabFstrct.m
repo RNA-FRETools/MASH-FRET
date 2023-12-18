@@ -1,5 +1,5 @@
-function h = build_setExpSetTabFstrct(h,exc)
-% h = build_setExpSetTabFstrct(h,exc)
+function h = build_setExpSetTabFstrct(h,dat2import,exc)
+% h = build_setExpSetTabFstrct(h,dat2import,exc)
 %
 % Builds tab "File structure" of "Experiment settings" window.
 %
@@ -16,7 +16,13 @@ str5 = 'ALEX data';
 str6 = {'row-wise','column-wise'};
 str7 = 'Time column:';
 str8 = '(0=end)';
-str9 = 'Intensity columns:';
+istraj = strcmp(dat2import,'trajectories');
+if istraj
+    str9 = 'Intensity columns:';
+else
+    str9a = 'Histogram bins column:';
+    str9b = 'Histogram counts column:';
+end
 str10 = 'FRET state columns:';
 str11 = ['Next ',char(9658)];
 str12 = 'data';
@@ -25,6 +31,7 @@ str14 = 'to';
 str15 = 'skip';
 str16 = 'File preview:';
 pink = [212,0,187]/255;
+black = [0,0,0];
 
 % parents
 h_fig = h.figure;
@@ -38,7 +45,12 @@ wtxt3 = getUItextWidth(str4{2},h.fun,h.fsz,'normal',h.tbl)+h.warr;
 wtxt4 = getUItextWidth(str6{2},h.fun,h.fsz,'bold',h.tbl)+h.warr;
 wcb0 = getUItextWidth(str7,h.fun,h.fsz,'bold',h.tbl)+h.wbox;
 wtxt5 = getUItextWidth(str8,h.fun,h.fsz,'bold',h.tbl);
-wtxt6 = getUItextWidth(str9,h.fun,h.fsz,'bold',h.tbl);
+if istraj
+    wtxt6 = getUItextWidth(str9,h.fun,h.fsz,'bold',h.tbl);
+else
+    wtxt6a = getUItextWidth(str9a,h.fun,h.fsz,'bold',h.tbl);
+    wtxt6b = getUItextWidth(str9b,h.fun,h.fsz,'bold',h.tbl);
+end
 wtxt7 = getUItextWidth(str16,h.fun,h.fsz,'normal',h.tbl);
 wcb1 = getUItextWidth(str10,h.fun,h.fsz,'bold',h.tbl)+h.wbox;
 wtbl0 = (postab(3)-3*h.mg)/2;
@@ -54,6 +66,7 @@ wbut0 = getUItextWidth(str11,h.fun,h.fsz,'normal',h.tbl)+h.wbrd;
 
 % font colors
 tclr = pink;
+pclr = black;
 
 % GUI
 x = h.mg;
@@ -69,17 +82,19 @@ h.text_delim = uicontrol('parent',h_tab,'style','text','units',h.un,...
     'fontunits',h.fun,'fontsize',h.fsz,'fontweight','bold','string',str1,...
     'horizontalalignment','center','position',[x,y,wtxt2,h.htxt]);
 
-x = x+wtxt2+h.mg;
+if istraj
+    x = x+wtxt2+h.mg;
 
-h.text_oneMol = uicontrol('parent',h_tab,'style','text','units',h.un,...
-    'fontunits',h.fun,'fontsize',h.fsz,'fontweight','bold','string',...
-    str3,'horizontalalignment','center','position',[x,y,wtxt3,h.htxt]);
+    h.text_oneMol = uicontrol('parent',h_tab,'style','text','units',h.un,...
+        'fontunits',h.fun,'fontsize',h.fsz,'fontweight','bold','string',...
+        str3,'horizontalalignment','center','position',[x,y,wtxt3,h.htxt]);
 
-x = x+wtxt3+h.mg;
+    x = x+wtxt3+h.mg;
 
-h.text_alexDat = uicontrol('parent',h_tab,'style','text','units',h.un,...
-    'fontunits',h.fun,'fontsize',h.fsz,'fontweight','bold','string',...
-    str5,'horizontalalignment','center','position',[x,y,wtxt4,h.htxt]);
+    h.text_alexDat = uicontrol('parent',h_tab,'style','text','units',h.un,...
+        'fontunits',h.fun,'fontsize',h.fsz,'fontweight','bold','string',...
+        str5,'horizontalalignment','center','position',[x,y,wtxt4,h.htxt]);
+end
 
 x = h.mg;
 y = y-h.hpop+(h.hpop-h.hedit)/2;
@@ -95,70 +110,103 @@ h.pop_delim = uicontrol('parent',h_tab,'style','popupmenu','units',h.un,...
     'fontunits',h.fun,'fontsize',h.fsz,'position',[x,y,wtxt2,h.hpop],...
     'callback',{@pop_setExpSet_delim,h_fig},'string',str2);
 
-x = x+wtxt2+h.mg;
+if istraj
+    x = x+wtxt2+h.mg;
 
-h.pop_oneMol = uicontrol('parent',h_tab,'style','popupmenu','units',...
-    h.un,'fontunits',h.fun,'fontsize',h.fsz,'position',[x,y,wtxt3,h.hpop],...
-    'string',str4,'callback',{@pop_setExpSet_oneMol,h_fig});
+    h.pop_oneMol = uicontrol('parent',h_tab,'style','popupmenu','units',...
+        h.un,'fontunits',h.fun,'fontsize',h.fsz,'position',[x,y,wtxt3,...
+        h.hpop],'string',str4,'callback',{@pop_setExpSet_oneMol,h_fig});
 
-x = x+wtxt3+h.mg;
+    x = x+wtxt3+h.mg;
 
-h.pop_alexDat = uicontrol('parent',h_tab,'style','popupmenu','units',...
-    h.un,'fontunits',h.fun,'fontsize',h.fsz,'position',[x,y,wtxt4,h.hpop],...
-    'string',str6,'callback',{@pop_setExpSet_alexDat,h_fig});
+    h.pop_alexDat = uicontrol('parent',h_tab,'style','popupmenu','units',...
+        h.un,'fontunits',h.fun,'fontsize',h.fsz,'position',[x,y,wtxt4,...
+        h.hpop],'string',str6,'callback',{@pop_setExpSet_alexDat,h_fig});
 
-x = h.mg;
-y = y-h.mg-h.hedit;
+    x = h.mg;
+    y = y-h.mg-h.hedit;
 
-h.check_timeDat = uicontrol('parent',h_tab,'style','checkbox','units',h.un,...
-    'fontunits',h.fun,'fontsize',h.fsz,'fontweight','bold','string',str7,...
-    'foregroundcolor',pink,'position',[x,y,wcb0,h.hedit],'callback',...
-    {@check_setExpSet_timeDat,h_fig},'foregroundcolor',tclr);
+    h.check_timeDat = uicontrol('parent',h_tab,'style','checkbox','units',...
+        h.un,'fontunits',h.fun,'fontsize',h.fsz,'fontweight','bold',...
+        'string',str7,'foregroundcolor',pink,'position',[x,y,wcb0,h.hedit],...
+        'callback',{@check_setExpSet_timeDat,h_fig},'foregroundcolor',...
+        tclr);
 
-x = x+wcb0;
+    x = x+wcb0;
 
-h.edit_timeCol = uicontrol('parent',h_tab,'style','edit','units',h.un,...
-    'fontunits',h.fun,'fontsize',h.fsz,'position',[x,y,h.wedit0,h.hedit],...
-    'callback',{@edit_setExpSet_timeCol,h_fig},'foregroundcolor',...
-    tclr,'fontweight','bold');
+    h.edit_timeCol = uicontrol('parent',h_tab,'style','edit','units',h.un,...
+        'fontunits',h.fun,'fontsize',h.fsz,'position',[x,y,h.wedit0,...
+        h.hedit],'callback',{@edit_setExpSet_timeCol,h_fig},...
+        'foregroundcolor',tclr,'fontweight','bold');
 
-x = x+h.wedit0;
-y = y+(h.hedit-h.htxt)/2;
+    x = x+h.wedit0;
+    y = y+(h.hedit-h.htxt)/2;
 
-h.text_timeZero = uicontrol('parent',h_tab,'style','text','units',h.un,...
-    'fontunits',h.fun,'fontsize',h.fsz,'string',str8,'position',...
-    [x,y,wtxt5,h.htxt]);
+    h.text_timeZero = uicontrol('parent',h_tab,'style','text','units',h.un,...
+        'fontunits',h.fun,'fontsize',h.fsz,'string',str8,'position',...
+        [x,y,wtxt5,h.htxt]);
 
-h = setExpSet_buildTimeArea(h,exc);
+    h = setExpSet_buildTimeArea(h,exc);
 
-x = h.mg;
-y = y-(h.hedit-h.htxt)/2-h.mg-h.hedit+(h.hedit-h.htxt)/2;
+    x = h.mg;
+    y = y-(h.hedit-h.htxt)/2-h.mg-h.hedit+(h.hedit-h.htxt)/2;
 
-h.text_intDat = uicontrol('parent',h_tab,'style','text','units',h.un,...
-    'fontunits',h.fun,'fontsize',h.fsz,'fontweight','bold','string',str9,...
-    'horizontalalignment','left','position',[x,y,wtxt6,h.htxt]);
+    h.text_intDat = uicontrol('parent',h_tab,'style','text','units',h.un,...
+        'fontunits',h.fun,'fontsize',h.fsz,'fontweight','bold','string',...
+        str9,'horizontalalignment','left','position',[x,y,wtxt6,h.htxt]);
 
-y = y-(h.hedit-h.htxt)/2-h.mg/2-htbl0;
+    y = y-(h.hedit-h.htxt)/2-h.mg/2-htbl0;
 
-h.tbl_intCol = uitable('parent',h_tab,'units',h.un,'fontunits',h.fun,...
-    'fontsize',h.fsz,'position',[x,y,wtbl0,htbl0],'rowstriping','off',...
-    'rowname',[],'columnwidth',wcol,'celleditcallback',...
-    {@tbl_intCol_CellEdit,h_fig},'userdata',htbl0);
+    h.tbl_intCol = uitable('parent',h_tab,'units',h.un,'fontunits',h.fun,...
+        'fontsize',h.fsz,'position',[x,y,wtbl0,htbl0],'rowstriping','off',...
+        'rowname',[],'columnwidth',wcol,'celleditcallback',...
+        {@tbl_intCol_CellEdit,h_fig},'userdata',htbl0);
 
-x = x+wtbl0+h.mg;
-y = y+htbl0+h.mg/2;
+    x = x+wtbl0+h.mg;
+    y = y+htbl0+h.mg/2;
 
-h.check_FRETseq = uicontrol('parent',h_tab,'style','checkbox','units',h.un,...
-    'fontunits',h.fun,'fontsize',h.fsz,'fontweight','bold','string',str10,...
-    'position',[x,y,wcb1,h.hedit],'callback',...
-    {@check_setExpSet_FRETseq,h_fig});
+    h.check_FRETseq = uicontrol('parent',h_tab,'style','checkbox','units',...
+        h.un,'fontunits',h.fun,'fontsize',h.fsz,'fontweight','bold',...
+        'string',str10,'position',[x,y,wcb1,h.hedit],'callback',...
+        {@check_setExpSet_FRETseq,h_fig});
 
-y = y-h.mg/2-htbl0;
+    y = y-h.mg/2-htbl0;
 
-h.tbl_seqCol = uitable('parent',h_tab,'units',h.un,'fontunits',h.fun,...
-    'fontsize',h.fsz,'position',[x,y,wtbl0,htbl0],'rowstriping','off',...
-    'rowname',[],'columnwidth',wcol,'celleditcallback',...
-    {@tbl_seqCol_CellEdit,h_fig},'userdata',htbl0);
+    h.tbl_seqCol = uitable('parent',h_tab,'units',h.un,'fontunits',h.fun,...
+        'fontsize',h.fsz,'position',[x,y,wtbl0,htbl0],'rowstriping','off',...
+        'rowname',[],'columnwidth',wcol,'celleditcallback',...
+        {@tbl_seqCol_CellEdit,h_fig},'userdata',htbl0);
+else
+    x = h.mg;
+    y = y-h.mg-h.hedit;
+    
+    h.text_xval = uicontrol('parent',h_tab,'style','text','units',h.un,...
+        'fontunits',h.fun,'fontsize',h.fsz,'fontweight','bold','string',...
+        str9a,'position',[x,y,wtxt6a,h.htxt]);
+    
+    x = x+wtxt6a;
+    y = y-(h.hedit-h.htxt)/2;
+    
+    h.edit_xval = uicontrol('parent',h_tab,'style','edit','units',h.un,...
+        'fontunits',h.fun,'fontsize',h.fsz,'position',[x,y,h.wedit0,...
+        h.hedit],'callback',{@edit_setExpSet_xval,h_fig},...
+        'foregroundcolor',tclr,'fontweight','bold');
+    
+    x = x+h.wedit0+h.mg;
+    y = y+(h.hedit-h.htxt)/2;
+    
+    h.text_countval = uicontrol('parent',h_tab,'style','text','units',h.un,...
+        'fontunits',h.fun,'fontsize',h.fsz,'fontweight','bold','string',...
+        str9b,'position',[x,y,wtxt6b,h.htxt]);
+    
+    x = x+wtxt6b;
+    y = y-(h.hedit-h.htxt)/2;
+    
+    h.edit_countval = uicontrol('parent',h_tab,'style','edit','units',h.un,...
+        'fontunits',h.fun,'fontsize',h.fsz,'position',[x,y,h.wedit0,...
+        h.hedit],'callback',{@edit_setExpSet_countval,h_fig},...
+        'foregroundcolor',pclr,'fontweight','bold');
+end
 
 x = h.mg;
 y = y-h.mg-h.htxt;

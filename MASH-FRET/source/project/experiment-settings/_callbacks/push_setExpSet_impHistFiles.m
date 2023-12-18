@@ -1,28 +1,36 @@
-function pop_setExpSet_delim(obj,evd,h_fig)
+function push_setExpSet_impHistFiles(obj,evd,h_fig,h_fig0)
 
 % default
 maxflines = 100;
 
-% determine data to structure
-h = guidata(h_fig);
-istraj = isfield(h,'text_impTrajFiles') && ishandle(h.text_impTrajFiles);
+% retrieve project data
+proj = h_fig.UserData;
 
-% update delimiter
-proj = get(h_fig,'userdata');
-if istraj
-    proj.traj_import_opt{1}{1}(2) = get(obj,'value');
+if iscell(obj)
+    pname = obj{1};
+    fname = obj{2};
 else
-    proj.hist_import_opt(2) = get(obj,'value');
+    % ask for trajectory files
+    [fname,pname,~] = uigetfile({'*.*','All files(*.*)'},...
+        'Select one histogram file',proj.folderRoot,'MultiSelect','off');
+    if ~sum(pname)
+        return
+    end
 end
-set(h_fig,'userdata',proj);
-if ~isfield(proj,'traj_files')
-    return
+if pname(end)~=filesep
+    pname = [pname,filesep];
 end
+cd(pname);
 
-% reset file data
-switch proj.traj_import_opt{1}{1}(2)
+% display process
+setContPan(['Import histogram from folder: ',pname,' ...'],'process',...
+    h_fig0);
+
+proj.hist_file = {pname,fname};
+
+switch proj.hist_import_opt(2)
     case 1
-        delimchar = {sprintf('\t'),' '};
+        delimchar = {sprintf('\t'),' ',' '};
     case 2
         delimchar = sprintf('\t');
     case 3
@@ -30,7 +38,7 @@ switch proj.traj_import_opt{1}{1}(2)
     case 4
         delimchar = ';';
     case 5
-        delimchar = ' ';
+        delimchar = {' ',' '};
     otherwise
         delimchar = sprintf('\t');
 end
@@ -38,14 +46,7 @@ end
 % read first 100 file lines
 fdat = {};
 fline = 0;
-if istraj
-    pname = proj.traj_files{1};
-    fname = proj.traj_files{2};
-else
-    pname = proj.hist_file{1};
-    fname = proj.hist_file{2};
-end
-f = fopen([pname,fname{1}],'r');
+f = fopen([pname,fname],'r');
 while fline<maxflines && ~feof(f)
     rowdat = split(fgetl(f),delimchar)';
     excl = false(1,numel(rowdat));
@@ -71,13 +72,15 @@ end
 fclose(f);
 
 % store file content
+h = guidata(h_fig);
 set(h.table_fstrct,'userdata',fdat);
 
-if istraj
-    % refresh trajectory import options
-    ud_trajImportOpt(h_fig);
-end
+% save modifications
+h_fig.UserData = proj;
 
-% refresh panel
+ud_setExpSet_tabImp(h_fig);
 ud_setExpSet_tabFstrct(h_fig);
 ud_setExpSet_tabDiv(h_fig);
+
+% display success
+setContPan('Histogram successfully imported!','success',h_fig0);
