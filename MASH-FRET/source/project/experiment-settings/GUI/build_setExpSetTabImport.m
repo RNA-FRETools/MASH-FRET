@@ -87,29 +87,25 @@ if istraj
     
 elseif ishist
     x = h.mg;
-    y = y-h.hedit+(h.hedit-h.htxt)/2;
+    y = y-h.htxt;
 
     h.text_impHistFiles = uicontrol('parent',h_tab,'style','text','units',...
         h.un,'fontunits',h.fun,'fontsize',h.fsz,'string',str1b,...
         'horizontalalignment','left','position',[x,y,wtxt0b,h.htxt]);
     
-    x = x+wtxt0b+h.mg/2;
-    y = y-(h.hedit-h.htxt)/2;
+    y = y-h.mg-h.hedit;
+    
+    h.edit_impHistFiles = uicontrol('parent',h_tab,'style','edit','units',...
+        h.un,'fontunits',h.fun,'fontsize',h.fsz,'foregroundcolor',blue,...
+        'horizontalalignment','right','position',[x,y,wedit0,h.hedit],...
+        'callback',{@edit_setExpSet_impFile,h_fig});
+    
+    x = x+wedit0+h.mg/2;
 
     h.push_impHistFiles = uicontrol('parent',h_tab,'style','pushbutton',...
         'units',h.un,'fontunits',h.fun,'fontsize',h.fsz,'string',str2,...
         'position',[x,y,wbut0,h.hedit],'callback',...
         {@push_setExpSet_impHistFiles,h_fig,h_fig0});
-    
-    x = h.mg;
-    y = y-h.mg/2-hlst;
-    
-    h.list_impHistFiles = uicontrol('parent',h_tab,'style','listbox',...
-        'units',h.un,'fontunits',h.fun,'fontsize',h.fsz,'foregroundcolor',...
-        blue,'horizontalalignment','right','position',[x,y,wlst,hlst]);
-    
-    y = y-h.mg;
-    
 end
 
 if ~ishist

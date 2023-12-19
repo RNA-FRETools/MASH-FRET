@@ -259,7 +259,7 @@ end
 ylim(h_axes(1), 'auto'); 
 ylabel(h_axes(1), 'normalized occurence');
 if numel(h_axes)>1
-    xlabel(h_axes(2), str_tpe{tpe});
+    xlabel(h_axes(2), removeHtml(str_tpe{tpe}));
     ylim(h_axes(2), [0 1]); 
     if meth==1 && size(res,1)>=2 && size(res,2)>=2 && ~isempty(res{2,2})
         ylabel(h_axes(2), 'relative population');

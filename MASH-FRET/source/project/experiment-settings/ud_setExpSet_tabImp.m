@@ -68,10 +68,10 @@ end
 if ~imptraj
     ishistfile = isfield(proj,'hist_file') && ~isempty(proj.hist_file);
     if ishistfile
-        set(h.list_impHistFiles,'string',proj.hist_file{2},'enable','on');
+        set(h.edit_impHistFiles,'string',proj.hist_file{2},'enable','on');
         set(h.push_nextImp,'enable','on');
     else
-        set(h.list_impHistFiles,'string',{''},'enable','off');
+        set(h.edit_impHistFiles,'string','','enable','off');
         set(h.push_nextImp,'enable','off');
     end
     return
