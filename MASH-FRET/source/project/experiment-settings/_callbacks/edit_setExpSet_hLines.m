@@ -15,9 +15,11 @@ else
 end
 set(h_fig,'userdata',proj);
 
+% adjust import options
 if istraj
-    % refresh trajectory import options
     ud_trajImportOpt(h_fig);
+else
+    ud_histImportOpt(h_fig)
 end
 
 % refresh panel

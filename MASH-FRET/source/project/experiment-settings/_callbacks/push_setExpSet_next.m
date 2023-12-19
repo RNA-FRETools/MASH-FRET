@@ -3,7 +3,11 @@ function push_setExpSet_next(obj,evd,h_fig,n)
 h = guidata(h_fig);
 switch n
     case 1
-        h.tabg.SelectedTab = h.tab_chan;
+        if isfield(h,'tab_chan') && ishandle(h.tab_chan)
+            h.tabg.SelectedTab = h.tab_chan;
+        else
+            h.tabg.SelectedTab = h.tab_fstrct;
+        end
     case 2
         h.tabg.SelectedTab = h.tab_exc;
     case 3

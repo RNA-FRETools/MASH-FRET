@@ -21,7 +21,7 @@ proj.FRET = [];
 proj.S = [];
 proj.exp_parameters = p.es.expCond;
 proj.exp_parameters{1,2} = projttl;
-proj.colours = p.es.plotClr(1,1);
+proj.colours = p.es.plotClr;
 proj.traj_import_opt = p.es.impTrajPrm;
 proj.hist_import_opt = p.es.impHistPrm;
 

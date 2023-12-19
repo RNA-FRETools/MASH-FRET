@@ -9,20 +9,8 @@ xcol = p(3);
 pcol = p(4);
 
 try
-    switch delim
-        case 1
-            delimchar = {sprintf('\t'),' ',' '};
-        case 2
-            delimchar = sprintf('\t');
-        case 3
-            delimchar = ',';
-        case 4
-            delimchar = ';';
-        case 5
-            delimchar = {' ',' '};
-        otherwise
-            delimchar = sprintf('\t');
-    end
+    % collects column-delimitation characters
+    delimchar = collectsdelimchar(delim);
         
     % read file
     dat = [];

@@ -28,7 +28,7 @@ if ~(isfield(prm,'plot') && size(prm.plot,2>=2) && ~isempty(prm.plot{2}))
 end
 
 % determine whether histogram is imported from files
-fromfile = isfield(p.proj{proj},'histdat') & ...
+fromfile = isfield(p.proj{proj},'histdat') && ...
     ~isempty(p.proj{proj}.histdat);
 
 nChan = p.proj{proj}.nb_channel;

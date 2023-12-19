@@ -1,4 +1,4 @@
-function [traj,isratio] = collecttrajforhist(tpe,tag)
+function [traj,isratio] = collecttrajforhist(proj,tpe,tag)
 % [traj,isratio] = collecttrajforhist(tpe,tag)
 %
 % Collect/calculate trajectories of specified data type and for specified 
@@ -38,6 +38,17 @@ if tag==1
 else
     m_tag = m_incl & proj.molTag(:,tag-1)';
 end
+
+% calculates number of total intensities
+em0 = find(chanExc~=0);
+inclem = true(1,numel(em0));
+for em = 1:numel(em0)
+    if ~sum(chanExc(em)==allExc)
+        inclem(em) = false;
+    end
+end
+em0 = em0(inclem);
+nDE = numel(em0);
 
 % calculate data trajectory
 if tpe<=nChan*nExc % intensity

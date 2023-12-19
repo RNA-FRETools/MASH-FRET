@@ -34,11 +34,10 @@ for i = projs
     nDE = numel(em0);
     if ~fromfile
         nTpe = 2*nChan*nExc + 2*nDE + 2*nFRET + 2*nS;
-        nTag = numel(p.proj{i}.molTagNames);
     else
         nTpe = 1;
-        nTag = 1;
     end
+    nTag = numel(p.proj{i}.molTagNames);
 
     % initializes applied parameters
     if ~isfield(p.proj{i}.HA,'prm')
@@ -69,7 +68,7 @@ for i = projs
     for tpe = 1:nTpe
         for tag = 1:(nTag+1)
             if ~fromfile
-                [trace,isratio] = collecttrajforhist(tpe,tag);
+                [trace,isratio] = collecttrajforhist(p.proj{i},tpe,tag);
                 dat = {1,trace};
             else
                 dat = {2,p.proj{i}.histdat};
