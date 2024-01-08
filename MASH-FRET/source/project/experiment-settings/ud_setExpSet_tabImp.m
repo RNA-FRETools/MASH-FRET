@@ -18,9 +18,10 @@ proj = h_fig.UserData;
 
 % determine data to import
 imptraj = isfield(h,'text_impTrajFiles') && ishandle(h.text_impTrajFiles);
+imphist = isfield(h,'text_impHistFiles') && ishandle(h.text_impHistFiles);
 
 % set video file
-if imptraj
+if ~imphist
     if h.radio_impFileMulti.Value==1
         set([h.edit_impFileMulti,h.push_impFileMulti],'visible','on');
         set([h.push_addChan,h.push_remChan],'visible','off');
@@ -65,7 +66,7 @@ else
 end
 
 % control trajectory import
-if ~imptraj
+if imphist
     ishistfile = isfield(proj,'hist_file') && ~isempty(proj.hist_file);
     if ishistfile
         set(h.edit_impHistFiles,'string',proj.hist_file{2},'enable','on');
@@ -74,6 +75,8 @@ if ~imptraj
         set(h.edit_impHistFiles,'string','','enable','off');
         set(h.push_nextImp,'enable','off');
     end
+end
+if ~imptraj
     return
 end
 
