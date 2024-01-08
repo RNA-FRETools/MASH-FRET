@@ -27,7 +27,7 @@ if isempty(prm.plot{2})
 end
 
 % determine whether histogram is imported from files
-fromfile = isfield(p.proj{proj},'histdat') & ...
+fromfile = isfield(p.proj{proj},'histdat') && ...
     ~isempty(p.proj{proj}.histdat);
 
 ovrfl = prm.plot{1}(1,4);
