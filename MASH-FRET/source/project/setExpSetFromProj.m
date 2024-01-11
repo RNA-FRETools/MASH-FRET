@@ -22,3 +22,6 @@ es.tagClr = proj.molTagClr;
 if isfield(proj,'traj_import_opt') && ~isempty(proj.traj_import_opt)
     es.impTrajPrm{1} = proj.traj_import_opt{1};
 end
+if isfield(proj,'hist_import_opt') && ~isempty(proj.hist_import_opt)
+    es.impHistPrm = proj.hist_import_opt;
+end

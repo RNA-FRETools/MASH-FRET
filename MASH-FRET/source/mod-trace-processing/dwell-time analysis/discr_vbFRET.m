@@ -120,7 +120,8 @@ for n = 1:N
                     mix.centres = gmmprm0{k}.states'; % [1-by-k]
                 end
                 out = vbFRET_VBEM(trace,mix,PriorPar,vb_opts);
-            catch
+            catch err
+                rs = rs+1;
                 continue
             end
 

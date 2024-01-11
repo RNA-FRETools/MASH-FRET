@@ -26,6 +26,10 @@ if isempty(prm.plot{2})
     return
 end
 
+% determine whether histogram is imported from files
+fromfile = isfield(p.proj{proj},'histdat') && ...
+    ~isempty(p.proj{proj}.histdat);
+
 ovrfl = prm.plot{1}(1,4);
 x_bin = curr.plot{1}(1,1);
 x_lim = curr.plot{1}(1,2:3);
@@ -54,4 +58,8 @@ set(h.edit_thm_xbin, 'String', num2str(x_bin));
 set(h.edit_thm_xlim1, 'String', num2str(x_lim(1)));
 set(h.edit_thm_xlim2, 'String', num2str(x_lim(2)));
 set(h.checkbox_thm_ovrfl, 'Enable', 'on', 'Value', ovrfl);
+
+if fromfile
+     setProp(get(h_pan,'children'),'enable','off');
+end
 

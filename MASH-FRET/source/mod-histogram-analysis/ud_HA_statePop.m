@@ -27,6 +27,10 @@ if ~(isfield(prm,'plot') && size(prm.plot,2>=2) && ~isempty(prm.plot{2}))
     return
 end
 
+% determine whether histogram is imported from files
+fromfile = isfield(p.proj{proj},'histdat') && ...
+    ~isempty(p.proj{proj}.histdat);
+
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
 perSec = p.proj{proj}.cnt_p_sec;
@@ -45,6 +49,11 @@ BOBA = start{1}(2);
 rplNb = start{1}(3);
 splNb = start{1}(4);
 weight = start{1}(5);
+
+% adjust parameters for imported histograms
+if fromfile
+    BOBA = 0;
+end
 
 set([h.checkbox_thm_BS h.radiobutton_thm_gaussFit ...
     h.radiobutton_thm_thresh], 'Enable', 'on');

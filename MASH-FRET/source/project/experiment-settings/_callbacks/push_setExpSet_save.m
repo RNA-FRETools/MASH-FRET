@@ -7,16 +7,13 @@ if strcmp(dat2import,'sim')
     proj.sim.from = 'S'; % tag project
     
     mod = 'S';
-end
-
-if strcmp(dat2import,'video')
+    
+elseif strcmp(dat2import,'video')
     proj.VP.from = 'VP'; % tag project
     
     mod = 'VP';
-end
 
-if strcmp(dat2import,'trajectories')
-    
+elseif strcmp(dat2import,'trajectories')
     % read data from trajectory file
     setContPan('Read trajectories from files...','process',h_fig0);
     proj = h_fig.UserData;
@@ -35,6 +32,21 @@ if strcmp(dat2import,'trajectories')
     proj.TA.from = 'TP';
     
     mod = 'TP';
+    
+elseif strcmp(dat2import,'histogram')
+    % read data from histogram file
+    setContPan('Read histogram from file...','process',h_fig0);
+    proj = h_fig.UserData;
+    [proj,ok] = loadProj(proj.hist_file{1},proj.hist_file{2},proj,...
+        h_fig0);
+    if ~ok
+        return
+    end
+    
+    % tag project
+    proj.HA.from = 'HA';
+    
+    mod = 'HA';
 end
 
 % retrieve interface's content
@@ -65,7 +77,7 @@ if ~strcmp(dat2import,'edit') && proj.is_movie && numel(proj.movie_file)==1 ...
 end
 
 if strcmp(dat2import,'sim') || strcmp(dat2import,'video') || ...
-        strcmp(dat2import,'trajectories')
+        strcmp(dat2import,'trajectories') || strcmp(dat2import,'histogram')
     % add project to list and initialize list indexes
     proj_id = numel(p.proj)+1;
     p.proj = [p.proj,proj];

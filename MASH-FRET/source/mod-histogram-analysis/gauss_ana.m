@@ -19,7 +19,11 @@ prm_plot = prm.plot;
 ovrfl = prm_plot{1}(1,4); % remove (or not) first and last bin
 
 prm.thm_start([1,3]) = curr.thm_start([1,3]);
-prm.thm_res(2,:) = def.thm_res(2,:);
+if ~isfield(prm,'thm_res')
+    prm.thm_res = def.thm_res;
+else
+    prm.thm_res(2,:) = def.thm_res(2,:);
+end
 
 prm_start = prm.thm_start;
 boba = prm_start{1}(2); % apply (or not) bootstraping

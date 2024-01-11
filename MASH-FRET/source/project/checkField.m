@@ -1,13 +1,5 @@
 function [s,ok] = checkField(s_in, fname, h_fig)
 
-%%
-% update by MH, 11.1.2020: add "ES" field
-% update by MH, 7.1.2020: correct frame rate for dwell-time calculations when using ALEX data
-% update by MH, 25.4.2019: (1) correct random generation of tag colors, (2) fetch default tag names and colors in interface's default parameters (default_param.ini)
-% update by MH, 24.4.2019: (1) modify molecule tag names by removing label 'unlabelled', (2) modify molecule tag structure to allow multiple tags per molecule, by using the first dimension for molecule idexes and the second dimension for label indexes, (3) add tag's default colors to project, (4) adjust tags from older projects to new format
-% update by MH, 3.4.2019: if labels are empty (ASCII import), set default labels
-%%
-
 % defaults
 ok = 1;
 vidfmt = {'.sif','.vsi','.ets','.sira','.tif','.gif','.png','.spe','.pma',...
@@ -18,8 +10,6 @@ s = s_in;
 % added by MH, 25.4.2019
 h = guidata(h_fig);
 p = h.param;
-
-%% load data
 
 % project
 s.date_creation = adjustParam('date_creation', datestr(now), s_in);
@@ -132,8 +122,6 @@ s.molTag = adjustParam('molTag', false(nMol,nTag), s_in);
 %     {'#4298B5','#DD5F32','#92B06A','#ADC4CC','#E19D29'}, s_in);
 s.molTagClr = adjustParam('molTagClr',p.es.tagClr,s_in);
 
-
-%% check video entries
 % check machine-dependent path for test video files
 if all(~cellfun('isempty',s.movie_file)) && ...
         all(cellfun(@istestfile,s.movie_file))
@@ -271,7 +259,7 @@ if s.is_movie
 end
 
 
-%% check emitter label entries
+% check emitter label entries
 if isempty(s.labels) || size(s.labels,2) < s.nb_channel
     h = guidata(h_fig);
     label_def = h.param.movPr.labels_def;
@@ -287,7 +275,7 @@ if isempty(s.labels) || size(s.labels,2) < s.nb_channel
     end
 end
 
-%% check emitter specificities
+% check emitter specificities
 if isempty(s.chanExc) || size(s.chanExc,2) < s.nb_channel
     s.chanExc = zeros(1,s.nb_channel);
     for c = 1:nChan
@@ -304,7 +292,7 @@ if isempty(s.chanExc) || size(s.chanExc,2) < s.nb_channel
     end
 end
 
-%% check experimental parameters
+% check experimental parameters
 if isempty(s.exp_parameters) || size(s.exp_parameters,2) ~= 3
     s.exp_parameters = {'Project title' '' ''
                         'Molecule name' '' ''
@@ -318,7 +306,7 @@ if isempty(s.exp_parameters) || size(s.exp_parameters,2) ~= 3
     end
 end
 
-%% check trajectroies
+% check trajectroies
 if isempty(s.intensities_bgCorr)
     s.intensities_bgCorr = nan(L,nMol*nChan,nExc);
 end
@@ -348,12 +336,12 @@ if isempty(s.bool_intensities)
     s.bool_intensities = true(L,nMol);
 end
 
-%% check molecule tags
+% check molecule tags
 if isempty(s.molTag)
     s.molTag = false(nMol,nTag);
 end
 
-%% check coordinates
+% check coordinates
 s.is_coord = ~isempty(s.coord);
 if s.is_coord
     if size(s.coord_incl,2) < size(s.coord,1)
@@ -366,7 +354,7 @@ if isempty(s.coord_incl)
 end
 
 
-%% check FRET and stoichiometry entries
+% check FRET and stoichiometry entries
 if size(s.FRET,2) > 2
     s.FRET = s.FRET(:,1:2);
 end
@@ -379,12 +367,12 @@ if nS>0 && size(s.S,2)~=2
     end
 end
 
-%% check colour entries
-if isempty(s.colours) || size(s.colours,2) ~=3
+% check colour entries
+if isempty(s.colours) || size(s.colours,2)~=3
     s.colours = getDefTrClr(nExc,s.excitations,nChan,nFRET,nS);
 end
 
-%% remove processing parameters
+% remove processing parameters
 if isfield(s, 'prm')
     s.prmTT = s.prm;
     s = rmfield(s, 'prm');
@@ -395,7 +383,7 @@ if isfield(s, 'exp')
 end
 
 
-%% check dwell-times entries
+% check dwell-times entries
 if ~s.dt_ascii
     s.dt_pname = [];
     s.dt_fname = [];
@@ -446,7 +434,7 @@ for m = 1:nMol
 end
 
 % added by MH, 24.4.2019
-%% check molecule tag entries
+% check molecule tag entries
 oldTag = cell2mat(strfind(s.molTagNames,'unlabeled'));
 if ~isempty(oldTag)
     newMolTag = false(nMol,numel(s.molTagNames));

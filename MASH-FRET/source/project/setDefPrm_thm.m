@@ -1,23 +1,37 @@
-function prm = setDefPrm_thm(prm_in, trace, isratio, clr)
+function prm = setDefPrm_thm(prm_in,dat,isratio,clr)
 
-% Last update: 28.3.2019 by MH
-% --> Take "isratio" as input argument to define ratio-specific histogram
-%     plot parameters: default x-axis is now -0.2:0.025:1.2
-
+% defaults
 K = 2;
+axisratio = [-0.2,0.025,1.2];
+boba = 1;
+Nrepl = 1;
+Nspl = 100;
+wght = 1;
 
-%% Histograms plot
+
+% determines data type
+dattype = dat{1};
+dat = dat{2};
+
+% Histograms plot
 if isratio
-    bin = 0.025;
-    minVal = -0.2;
-    maxVal = 1.2;
-else
-    tr_min = trace; tr_min(isnan(tr_min)) = Inf;
-    tr_max = trace; tr_max(isnan(tr_max)) = -Inf;
+    bin = axisratio(2);
+    minVal = axisratio(1);
+    maxVal = axisratio(3);
+    Nrepl = size(dat,2);
+elseif dattype==1 % trajectories
+    tr_min = dat; tr_min(isnan(tr_min)) = Inf;
+    tr_max = dat; tr_max(isnan(tr_max)) = -Inf;
     minVal = min(min(tr_min)); maxVal = max(max(tr_max));
     bin = (maxVal-minVal)/150;
     minVal = 0;
     maxVal = (maxVal+2*bin);
+    Nrepl = size(dat,2);
+elseif dattype==2 % histogram
+    bin = dat(2,1)-dat(1,1);
+    minVal = dat(1,1)-bin/2;
+    maxVal = dat(end,1)+bin/2;
+    boba = 0;
 end
 xy_axis = [bin minVal maxVal];
 xy_axis(~isfinite(xy_axis)) = 0;
@@ -34,9 +48,9 @@ plotPrm{3} = 0;
 
 prm.plot = adjustParam('plot', plotPrm, prm_in);
 
-%% strating parameters for thermodynamic analysis
+% starting parameters for thermodynamic analysis
 % thm{1} = [method, apply BOBA, repl. nb., sample nb., weighting]
-thm{1} = [1 1 size(trace,2) 100 1];
+thm{1} = [1 boba Nrepl Nspl wght];
 % thm{2} = threshold values
 thresh = linspace(0,1,K+1);
 thm{2} = thresh(2:end-1);
@@ -50,7 +64,7 @@ thm{4} = [0 1.2 10 1];
 prm.thm_start = adjustParam('thm_start', thm, prm_in);
 
 
-%% results for thermodynamic analysis
+% results for thermodynamic analysis
 % res{1,1} = [relative pop., sigma]
 % res{1,2} = bootstrap populations
 % res{1,3} = sampled histograms

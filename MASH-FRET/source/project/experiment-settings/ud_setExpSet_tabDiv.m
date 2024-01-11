@@ -27,8 +27,12 @@ tbldat(1:size(proj.exp_parameters(3:end,:),1),:) = ...
 set(h.table_cond,'data',tbldat);
 
 % refresh plot colors
-str_pop = getStrPop('DTA_chan',{proj.labels,proj.FRET,proj.S,...
-    proj.excitations,proj.colours});
+if isfield(proj,'hist_file') && ~isempty(proj.hist_file)
+    str_pop = getStrPopHAdat(proj);
+else
+    str_pop = getStrPop('DTA_chan',{proj.labels,proj.FRET,proj.S,...
+        proj.excitations,proj.colours});
+end
 chan = get(h.popup_chanClr,'value');
 if chan>numel(str_pop)
     chan = numel(str_pop);

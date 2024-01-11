@@ -9,6 +9,17 @@ proj = p.curr_proj;
 tpe = p.thm.curr_tpe(proj);
 tag = p.thm.curr_tag(proj);
 
+% abort if histogram is imported from files
+fromfile = isfield(p.proj{proj},'histdat') && ...
+    ~isempty(p.proj{proj}.histdat);
+if fromfile
+    setContPan('BOBA-FRET is not adapted to uniquely imported histograms.',...
+        'error',h_fig);
+    ud_HA_statePop(h_fig)
+    return
+end
+
+
 p.proj{proj}.HA.curr{tag,tpe}.thm_start{1}(2) = get(obj, 'Value');
 p.proj{proj}.HA.curr{tag,tpe}.thm_res(1,1:3) = {[] [] []};
 p.proj{proj}.HA.curr{tag,tpe}.thm_res(2,1:3) = {[] [] []};

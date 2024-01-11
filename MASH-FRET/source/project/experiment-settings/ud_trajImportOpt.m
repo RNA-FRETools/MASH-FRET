@@ -6,6 +6,9 @@ nChan = proj.nb_channel;
 nExc = proj.nb_excitations;
 nPair = size(proj.FRET,1);
 opt = proj.traj_import_opt;
+if isempty(opt)
+    return
+end
 
 % collect import options
 tcol = opt{1}{1}(4);

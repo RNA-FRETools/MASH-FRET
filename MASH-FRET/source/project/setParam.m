@@ -120,6 +120,7 @@ impTrajPrm = {{[1 1 1 1 1 0 1],ones(1,nExc),repmat([1,1,0],nChan,1),...
     [0,1] ... % coordinates in trajectory file
     [] ... % obsolete: old experimental parameters
     {0,'',{},0,'',{}}}; % gamma files, beta files
+impHistPrm = [0,1,1,2]; % histogram file structure
 
 p = p_input;
 
@@ -210,6 +211,9 @@ end
 if size(p.impTrajPrm{3}{3}{1},1)~=p.nChan % coordinates file structure
     p.impTrajPrm{3}{3}{1} = reshape(1:(2*p.nChan),2,p.nChan)';
 end
+
+% histogram import options
+p.impHistPrm = adjustParam('impHistPrm', impHistPrm, p_input);
 
 
 function p = setParamSim(p_input)

@@ -13,6 +13,7 @@ dlgtitle = 'New project';
 img0 = 'logo-simdat.png';
 img1 = 'logo-impvid.png';
 img2 = 'logo-imptraj.png';
+img3 = 'logo-imphist.png';
 
 % control existing figure
 h = guidata(h_fig0);
@@ -21,7 +22,7 @@ if isfield(h,'figure_datSlc') && ishandle(h.figure_datSlct)
 end
 
 % dimensions
-wfig = 4*mg+3*wbut;
+wfig = 5*mg+4*wbut;
 hfig = 3*mg+htxt+hbut;
 wtxt0 = wfig-2*mg;
 
@@ -30,6 +31,7 @@ pname = [fileparts(mfilename('fullpath')),filesep];
 cdat0 = imread([pname,img0]);
 cdat1 = imread([pname,img1]);
 cdat2 = imread([pname,img2]);
+cdat3 = imread([pname,img3]);
 
 % build dialog box
 pos0 = getPixPos(h_fig0);
@@ -64,6 +66,12 @@ x = x+wbut+mg;
 uicontrol('parent',h_fig,'style','pushbutton','units',un,'position',...
     [x,y,wbut,hbut],'cdata',cdat2,'callback',...
     {@figure_slctdatdlg_CloseRequestFcn,h_fig,h_fig0,3});
+
+x = x+wbut+mg;
+
+uicontrol('parent',h_fig,'style','pushbutton','units',un,'position',...
+    [x,y,wbut,hbut],'cdata',cdat3,'callback',...
+    {@figure_slctdatdlg_CloseRequestFcn,h_fig,h_fig0,4});
 
 % save figure handle
 h.figure_datSlct = h_fig;

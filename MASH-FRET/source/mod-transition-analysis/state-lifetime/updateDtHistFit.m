@@ -154,34 +154,33 @@ for v2 = vs
     end
 
     % fit
-    if isempty(prm.clst_res{4}{v,k})
-        if stchExp
-            ncol = 3;
-        else
-            ncol = 2;
-        end
-        subres.boba_mean = NaN(nExp,2*ncol);
-        subres.boba_inf = NaN(nExp,ncol);
-        subres.boba_sup = NaN(nExp,ncol);
-        subres.histspl = [];
-        subres.boba_fitres = [];
-        subres.fit_ref = NaN(nExp,ncol);
+    if stchExp
+        ncol = 3;
     else
+        ncol = 2;
+    end
+    subres.boba_mean = NaN(nExp,2*ncol);
+    subres.boba_inf = NaN(nExp,ncol);
+    subres.boba_sup = NaN(nExp,ncol);
+    subres.histspl = [];
+    subres.boba_fitres = [];
+    subres.fit_ref = NaN(nExp,ncol);
+    if ~isempty(prm.clst_res{4}{v,k})
         if auto % mute confirmation about number of replicates
             h = guidata(h_fig);
             prevMute = h.mute_actions;
             h.mute_actions = true;
             guidata(h_fig, h);
         end
-        subres = fitDt(dat,v,v2,excl,prm.clst_res{4}{v,k},p_fit,p_boba,...
+        fitres = fitDt(dat,v,v2,excl,prm.clst_res{4}{v,k},p_fit,p_boba,...
             h_fig,lb);
         if auto % reset action muting
             h = guidata(h_fig);
             h.mute_actions = prevMute;
             guidata(h_fig, h);
         end
-        if isempty(subres)
-            return
+        if ~isempty(fitres)
+            subres = fitres;
         end
     end
 

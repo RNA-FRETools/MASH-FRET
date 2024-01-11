@@ -18,6 +18,16 @@ perSec = p.proj{proj}.cnt_p_sec;
 expT = p.proj{proj}.frame_rate;
 curr = p.proj{proj}.HA.curr{tag,tpe};
 
+% abort if histogram is imported from files
+fromfile = isfield(p.proj{proj},'histdat') && ...
+    ~isempty(p.proj{proj}.histdat);
+if fromfile
+    setContPan('Binning of imported histograms can not be modified.',...
+        'error',h_fig);
+    ud_thmPlot(h_fig);
+    return
+end
+
 val = str2num(get(obj, 'String'));
 set(obj, 'String', num2str(val));
 

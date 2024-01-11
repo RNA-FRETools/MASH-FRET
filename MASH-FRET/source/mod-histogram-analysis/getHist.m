@@ -1,10 +1,24 @@
 function [Ptbl,L] = getHist(m,w,ovrfl,h_fig)
 
+% defaults
+ Ptbl = [];
+ L = 0;
+
 h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
 tpe = p.thm.curr_tpe(proj);
 tag = p.thm.curr_tag(proj);
+
+fromfile = isfield(p.proj{proj},'histdat') && ...
+    ~isempty(p.proj{proj}.histdat);
+
+if fromfile
+    if tag==1
+        Ptbl = [p.proj{proj}.histdat,cumsum(p.proj{proj}.histdat(:,2))];
+    end
+    return
+end
 
 allExc = p.proj{proj}.excitations;
 chanExc = p.proj{proj}.chanExc;

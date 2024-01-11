@@ -58,7 +58,7 @@ if ~isempty(rmse_res)
     set(h.popupmenu_thm_nTotGauss, 'String', ...
         cellstr(num2str((1:Kmax)')), 'Value', curr_gauss);
     if ~rmse_start(1)
-        [o,Kopt] = min(rmse_res(:,2));
+        [~,Kopt] = min(rmse_res(:,2));
     else
         Kopt = 1;
         for k = 2:Kmax
