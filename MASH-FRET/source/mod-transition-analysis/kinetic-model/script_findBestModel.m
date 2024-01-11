@@ -86,18 +86,8 @@ if ~isequal(schmD,ref.schmD) || ~isequal(schm_tp,ref.schm_tp)
     save(reffle,'schmD','schm_tp','-mat');
 end
 
-% show most sufficient state configuration
-id = [];
-D = zeros(1,V);
-for v = 1:V
-    D(v) = size(schm_opt{v},1)-2;
-    id = cat(2,id,repmat(v,[1,D(v)]));
-end
-fprintf(['Most sufficient state configuration:\n[%0.2f',...
-    repmat(',%0.2f',[1,numel(states(id))-1]),']\n'],states(id));
-
 % infer "true" DPH parameters
-fprintf('ML-optimization of DPH on authentic dwell time histograms...\n');
+fprintf('Test best fit on authentic dwell time histograms...\n');
 mdlopt.pi_fit = cell(1,V);
 mdlopt.tp_fit = cell(1,V);
 mdlopt.schm = cell(1,V);
@@ -105,12 +95,23 @@ mdlopt.logL = zeros(1,V);
 mdlopt.N = zeros(1,V);
 mdlopt.BIC = zeros(1,V);
 for v = 1:V
-    if ~isempty(savecurve)
-        ffile = [savecurve,sprintf('_dph_state%iD%i_dphplot',v,D(v))];
-    else
-        ffile = [];
+    cvg = false;
+    best = 0;
+    while ~cvg
+        best = best+1;
+        D_v = size(schm_opt{v}{best},1)-2;
+        if ~isempty(savecurve)
+            ffile = [savecurve,sprintf('_dph_state%iD%i_dphplot',v,D_v)];
+        else
+            ffile = [];
+        end
+        mdl_v = script_inferPH(dthist{v},1,schm_opt{v}{best},ffile);
+        cvg = isdphvalid(mdl_v.tp_fit) && ~isdoublon(mdl_v.tp_fit);
+        if ~cvg
+            mdl{v}(best).cvg = false;
+            mdl{v}(best).BIC = Inf;
+        end
     end
-    mdl_v = script_inferPH(dthist{v},T,schm_opt{v},ffile);
     mdlopt.pi_fit{v} = mdl_v.pi_fit;
     mdlopt.tp_fit{v} = mdl_v.tp_fit;
     mdlopt.schm{v} = mdl_v.schm;
@@ -119,6 +120,16 @@ for v = 1:V
     nfp = sum(sum(mdl_v.schm))-1;
     mdlopt.BIC(v) = nfp*log(mdl_v.N)-2*mdl_v.logL;
 end
+
+% show most sufficient state configuration
+id = [];
+D = zeros(1,V);
+for v = 1:V
+    D(v) = size(mdlopt.schm{v},1)-2;
+    id = cat(2,id,repmat(v,[1,D(v)]));
+end
+fprintf(['Most sufficient state configuration:\n[%0.2f',...
+    repmat(',%0.2f',[1,numel(states(id))-1]),']\n'],states(id));
 
 % save computation time
 mdlopt.t_dphtest = toc(t_comp);

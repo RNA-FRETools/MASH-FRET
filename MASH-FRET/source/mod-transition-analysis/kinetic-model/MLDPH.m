@@ -25,8 +25,14 @@ for D = 1:Dmax
         nfp = sum(sum(mdl_sD.schm))-1;
         mdl_sD.BIC = nfp*log(mdl_sD.N)-2*mdl_sD.logL;
         
-        % check model divergence and state doublons
-        mdl_sD.cvg = isdphvalid(mdl_sD.tp_fit) & ~isdoublon(mdl_sD.tp_fit);
+        % check model divergence
+        mdl_sD.cvg = isdphvalid(mdl_sD.tp_fit);
+        
+%         % check for state doublons
+%         mdl_sD.cvg = mdl_sD.cvg & ~isdoublon(mdl_sD.tp_fit);
+        if ~mdl_sD.cvg
+            mdl_sD.BIC = Inf;
+        end
         
         % append results
         mdl = cat(1,mdl,mdl_sD);
@@ -36,39 +42,14 @@ for D = 1:Dmax
 end
 
 % model selection
-sopt = find(BIC_all==min(BIC_all(~~cvg_all)));
-schmopt = mdl(sopt(1)).schm;
-
-
-function cvg = isdphvalid(tp)
-
-cvg = false;
-if isempty(tp) || any(tp(~~eye(size(tp)))<exp(-0.5))
-    return
-end
-
-cvg = true;
-
-
-function dbl = isdoublon(tp)
-
-% defaults
-maxdiff = 1E-4; % maximum transition probability gap between different states
-
-dbl = false;
-V = size(tp,1);
-for v1 = 1:V
-    for v2 = 1:V
-        if v2==v1
-            continue
-        end
-        vs = 1:V;
-        vs([v1,v2]) = [];
-        maxdiff12 = max(abs(tp(v1,[v1,vs])-tp(v2,[v2,vs])));
-        if maxdiff12<maxdiff
-            dbl = true;
-            return
-        end
+% sopt = find(BIC_all==min(BIC_all(~~cvg_all)));
+% schmopt = mdl(sopt(1)).schm;
+[~,ord] = sort(BIC_all);
+schmopt = {};
+mdl = mdl(ord,1);
+for j = 1:size(mdl,1)
+    if mdl(j).BIC<Inf
+        schmopt = cat(2,schmopt,mdl(j).schm);
     end
 end
 
