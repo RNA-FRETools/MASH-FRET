@@ -378,13 +378,13 @@ end
 def.mol{6}{2}(def.mol{6}{2}==2) = 0;
 
 % prevents use of "Imported" method when no discr. FRET are imported
-if def.mol{4}{1}(1)==7 && ~(isfield(p.proj{proj},'FRET_DTA_import') && ...
+if def.mol{4}{1}(1)==8 && ~(isfield(p.proj{proj},'FRET_DTA_import') && ...
         ~isempty(p.proj{proj}.FRET_DTA_import))
     def.mol{4}{1}(1) = 6; % STaSI
 end
 if isfield(p.proj{proj},'FRET_DTA_import') && ...
         ~isempty(p.proj{proj}.FRET_DTA_import)
-    def.mol{4}{1}(1) = 7;
+    def.mol{4}{1}(1) = 8;
     def.mol{4}{1}(2) = 1;
 end
 
