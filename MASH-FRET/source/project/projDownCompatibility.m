@@ -106,4 +106,11 @@ for i = projs
     if ~isfield(p.proj{i},'FRET_DTA_import')
         p.proj{i}.FRET_DTA_import = [];
     end
+    
+    % 28.11.2023: replace field "frame_rate" by "sampling_time" and add 
+    % field "resampling_time
+    if ~isfield(p.proj{i},'sampling_time')
+        p.proj{i}.sampling_time = p.proj{i}.frame_rate;
+        p.proj{i}.resampling_time = p.proj{i}.sampling_time;
+    end
 end
