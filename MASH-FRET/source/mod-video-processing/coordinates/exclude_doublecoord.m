@@ -16,10 +16,9 @@ for j = 1:size(coord,1)-1
     if ~ok(j,1)
         continue
     end
-    isdbl = id~=j & abs(coord(j,1:2:end)-coord(:,1:2:end))<tol & ...
-        abs(coord(j,2:2:end)-coord(:,2:2:end))<tol;
+    isdbl = id~=j & any(abs(coord(j,1:2:end)-coord(:,1:2:end))<tol & ...
+        abs(coord(j,2:2:end)-coord(:,2:2:end))<tol,2);
     if any(isdbl)
-        ok(j,1) = false;
         ok(isdbl',1) = false;
     end
 %     for i = j+1:size(coord,1)
