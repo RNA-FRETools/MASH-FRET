@@ -1,6 +1,6 @@
-function trace = getIntTrace(lim, aDim, nPix, fDat, varargin)
-% trace = getIntTrace(lim, aDim, nPix, fDat)
-% trace = getIntTrace(lim, aDim, nPix, fDat, mute)
+function [trace,err] = getIntTrace(lim, aDim, nPix, fDat, varargin)
+% [trace,err] = getIntTrace(lim, aDim, nPix, fDat)
+% [trace,err] = getIntTrace(lim, aDim, nPix, fDat, mute)
 %
 % Inegrate intensities for specific positions in the fDat{2}{2}eo and build up corresponding intensity-time traces.
 % Intensities are calculated as the sum of the brightest pixels in a square zone around the molecule coordinates.
@@ -16,6 +16,8 @@ function trace = getIntTrace(lim, aDim, nPix, fDat, varargin)
 %  fDat{3}: [1-by-2] fDat{2}{2}eo dimensions in the x- and y- directions
 %  fDat{4}: fDat{2}{2}eo length (in frames)
 % mute: (1) to mute actions, (0) otherwise
+% trace: [L-by-N] intensities
+% err: error message if any
 
 % defaults
 nbytes = 0;
@@ -85,6 +87,7 @@ switch fext
         end
         f = fopen(movFile, 'r');
         if f < 0 
+            err = 'Could not open the .sif file.';
             errordlg('Could not open the file.');
             return;
         end
@@ -290,6 +293,7 @@ switch fext
         end
         f = fopen(movFile, 'r');
         if f < 0 
+            err = 'Could not open the .pma file.';
             errordlg('Could not open the file.');
         else
             prev = 0;
@@ -332,8 +336,9 @@ switch fext
         return
         
     otherwise
-        disp(['Video format ',fext,...
-            ' is not supported for intensity integration.'])
+        err = ['Video format ',fext,...
+            ' is not supported for intensity integration.'];
+        disp(err)
         return
 end
 

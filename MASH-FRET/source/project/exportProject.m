@@ -44,6 +44,7 @@ for mov = 1:nMov
         guidata(h_fig,h);
         [dat,ok] = getFrames(vidfile{mov},'all',viddat{mov},h_fig,true);
         if ~ok
+            proj = [];
             return
         end
         h = guidata(h_fig);
@@ -72,10 +73,20 @@ for mov = 1:nMov
 
     % build traces
     if multichanvid
-        [coordsm,traces] = create_trace(coordsm0,pxdim,npix,fDat);
+        [coordsm,traces,err] = create_trace(coordsm0,pxdim,npix,fDat);
+        if isempty(traces)
+            setContPan(['No trace created: ',err],'error',h_fig);
+            proj = [];
+            return
+        end
     else
-        [coordsm_mv{mov},traces_mv{mov}] = create_trace(...
+        [coordsm_mv{mov},traces_mv{mov},err] = create_trace(...
             coordsm0(:,2*mov-1:2*mov),pxdim,npix,fDat);
+        if isempty(traces_mv{mov})
+            setContPan(['No trace created: ',err],'error',h_fig);
+            proj = [];
+            return
+        end
         ncoord = size(coordsm_mv{mov},1);
         idcoord{mov} = zeros(1,ncoord);
         for c = 1:ncoord
