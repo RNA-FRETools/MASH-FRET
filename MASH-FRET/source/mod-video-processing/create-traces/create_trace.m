@@ -1,6 +1,6 @@
-function [coord,trace] = create_trace(coord, aDim, nPix, fDat,varargin)
-% [coord,trace] = create_trace(coord, aDim, nPix, fDat)
-% [coord,trace] = create_trace(coord, aDim, nPix, fDat, mute)
+function [coord,trace,err] = create_trace(coord, aDim, nPix, fDat,varargin)
+% [coord,trace,err] = create_trace(coord, aDim, nPix, fDat)
+% [coord,trace,err] = create_trace(coord, aDim, nPix, fDat, mute)
 %
 % Sort out single molecule coordinates and create corresponding intensity-time trace.
 % Intensities are calculated as the sum of the brightest pixels in a square zone around the molecule coordinates.
@@ -15,6 +15,7 @@ function [coord,trace] = create_trace(coord, aDim, nPix, fDat,varargin)
 %  fDat{4}: video length (in frames)
 % mute: (1) to mute actions, (0) otherwise
 % trace: [L-by-N*nChan] intensity-time traces
+% err: error message if any
 
 res_y = fDat{3}(1);
 res_x = fDat{3}(2);
@@ -56,9 +57,9 @@ for c = 1:nCoord
 end
 if ~isempty(varargin)
     mute = varargin{1};
-    trace = getIntTrace(lim, aDim, nPix, fDat, mute);
+    [trace,err] = getIntTrace(lim, aDim, nPix, fDat, mute);
 else
-    trace = getIntTrace(lim, aDim, nPix, fDat);
+    [trace,err] = getIntTrace(lim, aDim, nPix, fDat);
 end
 
              
