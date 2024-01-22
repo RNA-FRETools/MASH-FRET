@@ -22,6 +22,7 @@ function [trace,err] = getIntTrace(lim, aDim, nPix, fDat, varargin)
 % defaults
 nbytes = 0;
 trace = [];
+err = '';
 
 movFile = fDat{1};
 fCurs = fDat{2}{1};
