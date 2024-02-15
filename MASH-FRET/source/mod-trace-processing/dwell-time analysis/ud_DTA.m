@@ -19,7 +19,7 @@ exc = p.proj{proj}.excitations;
 FRET = p.proj{proj}.FRET;
 S = p.proj{proj}.S;
 clr = p.proj{proj}.colours;
-rate = p.proj{proj}.frame_rate;
+splt = p.proj{proj}.resampling_time;
 perSec = p.proj{proj}.cnt_p_sec;
 fix = p.proj{proj}.TP.fix;
 curr = p.proj{proj}.TP.curr{mol};
@@ -51,9 +51,9 @@ states = p_panel{3}(chan,:);
 
 if chan > (nFRET + nS)
     if perSec
-        states = states/rate;
-        thresh = thresh/rate;
-        prm(6) = prm(6)/rate;
+        states = states/splt;
+        thresh = thresh/splt;
+        prm(6) = prm(6)/splt;
     end
 end
 

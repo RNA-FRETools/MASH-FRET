@@ -28,7 +28,7 @@ else
 end
 
 nExc = p.proj{p.curr_proj}.nb_excitations;
-expT = p.proj{p.curr_proj}.frame_rate;
+expT = p.proj{p.curr_proj}.sampling_time;
 persec = p.proj{p.curr_proj}.cnt_p_sec;
 vidfile = p.proj{p.curr_proj}.movie_file;
 viddat = p.proj{p.curr_proj}.movie_dat;

@@ -34,7 +34,7 @@ fromfile = isfield(p.proj{proj},'histdat') && ...
 nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
 perSec = p.proj{proj}.cnt_p_sec;
-expT = p.proj{proj}.frame_rate;
+expT = p.proj{proj}.resampling_time;
 
 start = curr.thm_start;
 if isfield(prm,'thm_res')

@@ -64,7 +64,7 @@ if opt(2) % optimized kinetic model parameters
         h = guidata(h_fig);
         p = h.param;
         proj = p.curr_proj;
-        expT = p.proj{proj}.frame_rate;
+        expT = p.proj{proj}.resampling_time;
         k = tp/expT;
         k(~~eye(J)) = 0;
         k_err = tp_err/expT;
@@ -113,7 +113,7 @@ if opt(3) % experimental vs simulated data
         h = guidata(h_fig);
         p = h.param;
         proj = p.curr_proj;
-        expT = p.proj{proj}.frame_rate;
+        expT = p.proj{proj}.resampling_time;
         simdat = prm.mdl_res{4};
         dt = simdat.dt;
         dt(:,1) = dt(:,1)*expT;

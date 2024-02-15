@@ -24,7 +24,7 @@ end
 if chan > nFRET + nS % threshold for intensities
     perSec = p.proj{proj}.cnt_p_sec;
     if perSec
-        expT = p.proj{proj}.frame_rate;
+        expT = p.proj{proj}.resampling_time;
         val = val*expT;
     end
 end

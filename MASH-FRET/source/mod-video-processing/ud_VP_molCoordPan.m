@@ -16,7 +16,7 @@ end
 % collect processing parameters
 proj = p.curr_proj;
 inSec = p.proj{proj}.time_in_sec;
-expT = p.proj{proj}.frame_rate;
+expT = p.proj{proj}.sampling_time;
 curr = p.proj{proj}.VP.curr;
 
 % set average image

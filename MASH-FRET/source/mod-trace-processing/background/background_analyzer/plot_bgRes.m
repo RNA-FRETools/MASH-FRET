@@ -4,7 +4,7 @@ g = guidata(h_fig);
 h = guidata(g.figure_MASH);
 p = h.param;
 proj = p.curr_proj;
-rate = p.proj{proj}.frame_rate;
+rate = p.proj{proj}.resampling_time;
 nPix = p.proj{proj}.pix_intgr(2);
 perSec = p.proj{proj}.cnt_p_sec;
 

@@ -10,7 +10,7 @@ proj = p.curr_proj;
 nExc = p.proj{proj}.nb_excitations;
 incl = p.proj{proj}.bool_intensities;
 inSec = p.proj{proj}.time_in_sec;
-expT = p.proj{proj}.frame_rate; % this is truely the exposure time
+expT = p.proj{proj}.resampling_time; % this is truely the exposure time
 
 if isfield(h.tm,'area_subpop')
     if ishandle(h.tm.area_subpop)

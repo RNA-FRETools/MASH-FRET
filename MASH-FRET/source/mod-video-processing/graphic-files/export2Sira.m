@@ -16,7 +16,7 @@ ok = 0;
 % collect video processing parameters
 h = guidata(h_fig);
 p = h.param;
-expT = p.proj{p.curr_proj}.frame_rate;
+expT = p.proj{p.curr_proj}.sampling_time;
 vidfile = p.proj{p.curr_proj}.movie_file;
 viddim = p.proj{p.curr_proj}.movie_dim;
 viddat = p.proj{p.curr_proj}.movie_dat;

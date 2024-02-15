@@ -12,7 +12,7 @@ p = h.param;
 proj = p.curr_proj;
 perSec = p.proj{proj}.cnt_p_sec;
 inSec = p.proj{proj}.time_in_sec;
-rate = p.proj{proj}.frame_rate;
+rate = p.proj{proj}.resampling_time;
 
 % collect option parameters
 q = guidata(h_fig2);

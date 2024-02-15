@@ -17,7 +17,7 @@ nExc = p.proj{proj}.nb_excitations;
 nMol = size(p.proj{proj}.intensities,2)/nChan;
 exc = p.proj{proj}.excitations;
 labels = p.proj{proj}.labels;
-rate = p.proj{proj}.frame_rate;
+rate = p.proj{proj}.resampling_time;
 perSec = p.proj{proj}.cnt_p_sec;
 
 if ~isempty(varargin)

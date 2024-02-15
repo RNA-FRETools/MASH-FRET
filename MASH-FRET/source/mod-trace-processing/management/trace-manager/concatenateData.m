@@ -41,7 +41,7 @@ nFRET = size(FRET,1);
 S = p.proj{proj}.S;
 nS = size(S,1);
 perSec = p.proj{proj}.cnt_p_sec;
-expt = p.proj{proj}.frame_rate;
+expt = p.proj{proj}.resampling_time;
 
 % get time traces
 intensities = p.proj{proj}.intensities_denoise;

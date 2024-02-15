@@ -8,7 +8,7 @@ end
 h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
-expT0 = p.proj{proj}.frame_rate;
+expT0 = p.proj{proj}.sampling_time;
 nChan = p.proj{proj}.nb_channel;
 nFRET = size(p.proj{proj}.FRET,1);
 nS =  size(p.proj{proj}.S,1);
@@ -30,7 +30,7 @@ N = ncol/nChan;
 
 p.proj{proj}.intensities = I;
 p.proj{proj}.intensities_bgCorr = NaN(L,ncol,nExc);
-p.proj{proj}.frame_rate = expT;
+p.proj{proj}.resampling_time = expT;
 p.proj{proj}.intensities_crossCorr = NaN(L,ncol,nExc);
 p.proj{proj}.intensities_denoise = NaN(L,ncol,nExc);
 p.proj{proj}.intensities_DTA = NaN(L,ncol,nExc);

@@ -24,7 +24,7 @@ end
 
 % get project parameters
 nL = p.proj{proj}.nb_excitations;
-expT = p.proj{proj}.frame_rate;
+expT = p.proj{proj}.resampling_time;
 
 V = prm.lft_start{2}(1);
 mat = prm.clst_start{1}(4);

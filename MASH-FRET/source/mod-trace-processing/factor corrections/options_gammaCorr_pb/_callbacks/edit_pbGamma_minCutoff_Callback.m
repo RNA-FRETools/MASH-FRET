@@ -7,7 +7,7 @@ proj = p.curr_proj;
 inSec = p.proj{proj}.time_in_sec;
 nExc = p.proj{proj}.nb_excitations;
 len = nExc*size(p.proj{proj}.intensities,1);
-rate = p.proj{proj}.frame_rate;
+rate = p.proj{proj}.resampling_time;
 
 q = guidata(h_fig2);
 start = q.prm{2}(5);

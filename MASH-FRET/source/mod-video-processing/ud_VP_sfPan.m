@@ -34,7 +34,7 @@ end
 
 % collect experiemnt settings and processing parameters
 proj = p.curr_proj;
-expT = p.proj{proj}.frame_rate;
+expT = p.proj{proj}.sampling_time;
 nC = p.proj{proj}.nb_channel;
 labels = p.proj{proj}.labels;
 persec = p.proj{p.curr_proj}.cnt_p_sec;

@@ -2,7 +2,7 @@ function edit_maxI_Callback(obj, evd, h_fig)
 
 h = guidata(h_fig);
 p = h.param;
-expT = p.proj{p.curr_proj}.frame_rate;
+expT = p.proj{p.curr_proj}.resampling_time;
 perSec = p.proj{p.curr_proj}.cnt_p_sec;
 min = p.proj{p.curr_proj}.TP.exp.hist{2}(1,2);
 
