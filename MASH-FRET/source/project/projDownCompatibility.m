@@ -109,8 +109,11 @@ for i = projs
     
     % 28.11.2023: replace field "frame_rate" by "sampling_time" and add 
     % field "resampling_time
-    if ~isfield(p.proj{i},'sampling_time')
+    if isfield(p.proj{i},'frame_rate')
         p.proj{i}.sampling_time = p.proj{i}.frame_rate;
+        p.proj{i} = rmfield(p.proj{i},'frame_rate');
+    end
+    if ~isfield(p.proj{i},'resampling_time')
         p.proj{i}.resampling_time = p.proj{i}.sampling_time;
     end
 end

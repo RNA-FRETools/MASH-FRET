@@ -67,7 +67,7 @@ catch err
 end
 
 s.folderRoot = pname;
-s.frame_rate = 1;
+s.sampling_time = 1;
 s.spltime_from_video = false;
 s.pix_intgr = [1 1]; % intgr. area dim. + nb of intgr pix
 

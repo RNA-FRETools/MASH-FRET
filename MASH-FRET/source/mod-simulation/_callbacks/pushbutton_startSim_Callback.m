@@ -13,7 +13,7 @@ end
 h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
-p.proj{proj}.frame_rate = 1/p.proj{proj}.sim.prm.gen_dt{1}(4);
+p.proj{proj}.sampling_time = 1/p.proj{proj}.sim.prm.gen_dt{1}(4);
 h.param = p;
 guidata(h_fig,h);
 

@@ -88,7 +88,7 @@ for j = 1:numel(Js)
     proj = h.param.proj{h.param.curr_proj};
     Idon = proj.intensities_denoise(:,1:2:end,1);
     Iacc = proj.intensities_denoise(:,2:2:end,1);
-    expT = proj.frame_rate;
+    expT = proj.resampling_time;
 
     pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
     

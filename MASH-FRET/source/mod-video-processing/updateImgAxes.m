@@ -29,7 +29,7 @@ end
 proj = p.curr_proj;
 n = p.movPr.curr_frame(proj);
 nChan = p.proj{proj}.nb_channel;
-expT = p.proj{proj}.frame_rate;
+expT = p.proj{proj}.sampling_time;
 persec = p.proj{proj}.cnt_p_sec;
 curr = p.proj{proj}.VP.curr;
 

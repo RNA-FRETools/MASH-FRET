@@ -10,7 +10,7 @@ end
 set(obj, 'BackgroundColor', [1 1 1]);
 perSec = h.param.proj{h.param.curr_proj}.cnt_p_sec;
 if perSec
-    rate = h.param.proj{h.param.curr_proj}.frame_rate;
+    rate = h.param.proj{h.param.curr_proj}.resampling_time;
     val = val*rate;
 end
 h.param.proj{h.param.curr_proj}.TP.exp.hist{2}(1,2) = val;

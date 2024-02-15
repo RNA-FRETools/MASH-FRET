@@ -15,7 +15,7 @@ p = h.param;
 proj = p.curr_proj;
 perSec = p.proj{proj}.cnt_p_sec;
 if perSec
-    rate = p.proj{proj}.frame_rate;
+    rate = p.proj{proj}.resampling_time;
     val = val*rate;
 end
 

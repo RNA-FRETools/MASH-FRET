@@ -101,7 +101,7 @@ guidata(h_fig, h);
 function p = setParamExp(p_input)
 
 % defaults
-frameRate = 1;
+splt = 1;
 nChan = 2;
 nExc = 1;
 excWl = 532;
@@ -170,7 +170,7 @@ p.expCondDef = expCond;
 p.expCond = adjustParam('expCond', expCond, p_input);
 
 % video frame rate
-p.frameRate = frameRate;
+p.splt = splt;
 
 % plot colors
 plotClr = getDefTrClr(p.nExc, p.excWl, p.nChan, size(p.FRETpairs,1), ...

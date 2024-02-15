@@ -87,7 +87,7 @@ s.coord_file = '';
 s.coord_imp_param = {[1 2] 1};
 s.is_coord = false;
 
-s.frame_rate = expT;
+s.sampling_time = expT;
 s.pix_intgr = p.proj{slct(1)}.pix_intgr;
 s.cnt_p_sec = p.proj{slct(1)}.cnt_p_sec;
 s.time_in_sec = p.proj{slct(1)}.time_in_sec;
@@ -345,7 +345,7 @@ allsplt = zeros(1,nProj);
 splt = allsplt(1);
 ok = 1;
 for n = 1:nProj
-    allsplt(n) = proj{n}.frame_rate;
+    allsplt(n) = proj{n}.sampling_time;
 end
 if ~all(allsplt==allsplt(1))
     strsplt = [];

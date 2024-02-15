@@ -22,7 +22,7 @@ proj = p.curr_proj;
 curr = p.proj{proj}.VP.curr;
 l = p.movPr.curr_frame(proj);
 inSec = p.proj{proj}.time_in_sec;
-expT = p.proj{proj}.frame_rate;
+expT = p.proj{proj}.sampling_time;
 chansplit = curr.plot{2};
 
 % control video

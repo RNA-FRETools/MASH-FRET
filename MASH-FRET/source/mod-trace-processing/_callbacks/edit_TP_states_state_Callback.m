@@ -36,7 +36,7 @@ end
 if chan_in > (nFRET + nS)
     perSec = p.proj{proj}.cnt_p_sec;
     if perSec
-        expTe = p.proj{proj}.frame_rate;
+        expTe = p.proj{proj}.resampling_time;
         val = val*expTe;
     end
 end

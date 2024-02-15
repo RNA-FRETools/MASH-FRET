@@ -36,8 +36,13 @@ s.spltime_from_video = adjustParam('spltime_from_video',s.is_movie,s_in);
 s.aveImg = adjustParam('aveImg',cell(numel(s.movie_file),s.nb_excitations),...
     s_in);
 
-s.frame_rate = adjustParam('frame_rate', 1, s_in);
-s.frame_rate(s.frame_rate<=0) = 1;
+if isfield(s,'frame_rate')
+    s.sampling_time = s_in.frame_rate; % historical mistake in field name
+else
+    s.sampling_time = adjustParam('sampling_time', 1, s_in);
+end
+s.sampling_time(s.sampling_time<=0) = 1;
+s.resampling_time = adjustParam('resampling_time',s.sampling_time,s_in);
 
 s.nb_channel = adjustParam('nb_channel', 1, s_in); % nb of channel
 s.nb_channel = ceil(abs(s.nb_channel));
@@ -401,7 +406,7 @@ for m = 1:nMol
             I = s.intensities_DTA(incl,(m-1)*s.nb_channel+i_c,i_l);
             if sum(double(~isnan(I)))
                 s.dt{m,j} = getDtFromDiscr(I,...
-                    s.nb_excitations*s.frame_rate);
+                    s.nb_excitations*s.resampling_time);
             else
                 s.dt{m,j} = [];
             end
@@ -414,7 +419,7 @@ for m = 1:nMol
         end
         tr = s.FRET_DTA(incl,(m-1)*nFRET+i_f);
         if sum(double(~isnan(tr)))
-            s.dt{m,j} = getDtFromDiscr(tr,s.nb_excitations*s.frame_rate);
+            s.dt{m,j} = getDtFromDiscr(tr,s.nb_excitations*s.resampling_time);
         else
             s.dt{m,j} = {};
         end
@@ -426,7 +431,7 @@ for m = 1:nMol
         end
         tr = s.S_DTA(incl,(m-1)*nS+i_s);
         if sum(double(~isnan(tr)))
-            s.dt{m,j} = getDtFromDiscr(tr,s.nb_excitations*s.frame_rate);
+            s.dt{m,j} = getDtFromDiscr(tr,s.nb_excitations*s.resampling_time);
         else
             s.dt{m,j} = {};
         end
