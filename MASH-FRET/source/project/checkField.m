@@ -13,6 +13,10 @@ h = guidata(h_fig);
 p = h.param;
 
 % project
+s.folderRoot = adjustParam('folderRoot', userpath, s_in);
+if ~exist(s.folderRoot,'dir')
+    s.folderRoot = userpath;
+end
 s.date_creation = adjustParam('date_creation', datestr(now), s_in);
 s.date_last_modif = adjustParam('date_last_modif', s.date_creation, s_in);
 figname = get(h_fig, 'Name');
