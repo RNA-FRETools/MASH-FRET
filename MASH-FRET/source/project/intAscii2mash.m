@@ -487,6 +487,7 @@ if exptime~=s.sampling_time
 end
 s.pix_intgr = [1 1]; % intgr. area dim. + nb of intgr pix
 
+s.folderRoot = pname;
 s.is_coord = ~isempty(coord);
 s.coord_file = coordfile; % coordinates path/file
 s.coord_imp_param = cip; % coordinates import parameters
