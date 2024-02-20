@@ -4,6 +4,7 @@ function [s,ok] = checkField(s_in, fname, h_fig)
 ok = 1;
 vidfmt = {'.sif','.vsi','.ets','.sira','.tif','.gif','.png','.spe','.pma',...
     '.avi'};
+L0 = 4000; % default nb. of frames
 
 s = s_in;
 
@@ -59,6 +60,10 @@ s.excitations = adjustParam('excitations', ...
 s.exp_parameters = adjustParam('exp_parameters', [], s_in);
 s.labels = adjustParam('labels', {}, s_in);
 s.chanExc = adjustParam('chanExc', {}, s_in);
+s.FRET = adjustParam('FRET', [], s_in);
+nFRET = size(s.FRET,1);
+s.S = adjustParam('S', [], s_in);
+nS = size(s.S,1);
 
 % coordinates
 s.coord = adjustParam('coord', [], s_in);
@@ -66,6 +71,7 @@ s.coord_file = adjustParam('coord_file', [], s_in);
 s.coord_imp_param = adjustParam('coord_imp_param', {[1 2] 1}, s_in);
 s.is_coord = adjustParam('is_coord', ~isempty(s.coord), s_in);
 s.coord_incl = adjustParam('coord_incl', [], s_in);
+N = numel(s.coord_incl);
 
 % intensity integration
 s.pix_intgr = adjustParam('pix_intgr', [1 1], s_in);
@@ -76,30 +82,25 @@ s.time_in_sec = adjustParam('time_in_sec', 0, s_in);
 
 % intensity-time traces processing
 s.spltime_from_traj = adjustParam('spltime_from_traj',~s.is_movie,s_in);
-s.intensities = adjustParam('intensities', nan(4000, ...
-    size(s.coord,1)*s.nb_channel, s.nb_excitations), s_in);
+s.intensities = adjustParam('intensities',nan(L0,N*nChan,nExc),s_in);
 L = size(s.intensities,1);
-nMol = size(s.intensities,2)/nChan;
-s.FRET = adjustParam('FRET', [], s_in);
-nFRET = size(s.FRET,1);
-s.S = adjustParam('S', [], s_in);
-nS = size(s.S,1);
-s.intensities_bgCorr = adjustParam('intensities_bgCorr',nan(L,nMol*nChan), ...
-    s_in);
-s.intensities_crossCorr = adjustParam('intensities_crossCorr', ...
-    nan(L,nMol*nChan), s_in);
-s.intensities_denoise = adjustParam('intensities_denoise', ...
-    nan(L,nMol*nChan), s_in);
+N = size(s.intensities,2)/nChan;
+
+s.intensities_bgCorr = adjustParam('intensities_bgCorr',[],s_in);
+s.intensities_bin = adjustParam('intensities_bin',[],s_in);
+s.bool_intensities = adjustParam('bool_intensities',[],s_in);
+s.intensities_crossCorr = adjustParam('intensities_crossCorr',[],s_in);
+s.intensities_denoise = adjustParam('intensities_denoise',[],s_in);
+s.intensities_DTA = adjustParam('intensities_DTA',[],s_in);
+
 if nFRET>0
     defES = cell(1,nFRET);
 else
     defES = {};
 end
 s.ES = adjustParam('ES',defES, s_in);
-s.intensities_DTA = adjustParam('intensities_DTA',nan(L,nMol*nChan), s_in);
-s.FRET_DTA = adjustParam('FRET_DTA', nan(L,nMol*nFRET), s_in);
-s.S_DTA = adjustParam('S_DTA', nan(L,nMol*nS), s_in);
-s.bool_intensities = adjustParam('bool_intensities', true(L,nMol), s_in);
+s.FRET_DTA = adjustParam('FRET_DTA',[],s_in);
+s.S_DTA = adjustParam('S_DTA',[],s_in);
 s.colours = adjustParam('colours', [], s_in); % plot colours
 s.traj_import_opt = adjustParam('traj_import_opt', [], s_in); % trajectory import options
 
@@ -119,7 +120,7 @@ s.dt = adjustParam('dt', {}, s_in);
 s.molTagNames = adjustParam('molTagNames',p.es.tagNames,s_in);
 
 nTag = numel(s.molTagNames);
-s.molTag = adjustParam('molTag', false(nMol,nTag), s_in);
+s.molTag = adjustParam('molTag', false(N,nTag), s_in);
 
 % added by MH, 24.4.2019
 % modified by MH, 25.4.2019: fetch tag colors in interface's defaults
@@ -313,20 +314,25 @@ end
 
 % check trajectroies
 if isempty(s.intensities_bgCorr)
-    s.intensities_bgCorr = nan(L,nMol*nChan,nExc);
+    s.intensities_bgCorr = nan(L,N*nChan,nExc);
 end
+if isempty(s.intensities_bin)
+    s.intensities_bin = nan(L,N*nChan,nExc);
+end
+L2 = size(s.intensities_bin,1);
+
 if isempty(s.intensities_crossCorr)
-    s.intensities_crossCorr = nan(L,nMol*nChan,nExc);
+    s.intensities_crossCorr = nan(L2,N*nChan,nExc);
 end
 if isempty(s.intensities_denoise)
-    s.intensities_denoise = nan(L,nMol*nChan,nExc);
+    s.intensities_denoise = nan(L2,N*nChan,nExc);
 end
 if isempty(s.intensities_DTA)
-    s.intensities_DTA = nan(L,nMol*nChan,nExc);
+    s.intensities_DTA = nan(L2,N*nChan,nExc);
 end
 if nFRET>0
     if isempty(s.FRET_DTA)
-        s.FRET_DTA = nan(L,nMol*nFRET);
+        s.FRET_DTA = nan(L2,N*nFRET);
     end
     if isempty(s.ES)
         s.ES = defES;
@@ -334,16 +340,16 @@ if nFRET>0
 end
 if nS>0
     if isempty(s.S_DTA)
-        s.S_DTA = nan(L,nMol*nS);
+        s.S_DTA = nan(L2,N*nS);
     end
 end
 if isempty(s.bool_intensities)
-    s.bool_intensities = true(L,nMol);
+    s.bool_intensities = true(L2,N);
 end
 
 % check molecule tags
 if isempty(s.molTag)
-    s.molTag = false(nMol,nTag);
+    s.molTag = false(N,nTag);
 end
 
 % check coordinates
@@ -355,7 +361,7 @@ if s.is_coord
     end
 end
 if isempty(s.coord_incl)
-    s.coord_incl = true(1,nMol);
+    s.coord_incl = true(1,N);
 end
 
 
@@ -368,7 +374,7 @@ if nS>0 && size(s.S,2)~=2
     s.S = S;
     nS = size(s.S,1);
     if ~isempty(s.S_DTA)
-        s.S_DTA = s.S_DTA(:,repmat(s_incl,[1,nMol]));
+        s.S_DTA = s.S_DTA(:,repmat(s_incl,[1,N]));
     end
 end
 
@@ -393,8 +399,8 @@ if ~s.dt_ascii
     s.dt_pname = [];
     s.dt_fname = [];
 end
-s.dt = cell(nMol, nChan*nExc+nFRET+nS);
-for m = 1:nMol
+s.dt = cell(N, nChan*nExc+nFRET+nS);
+for m = 1:N
     incl = s.bool_intensities(:,m);
     j = 0;
     for i_l = 1:s.nb_excitations
@@ -442,7 +448,7 @@ end
 % check molecule tag entries
 oldTag = cell2mat(strfind(s.molTagNames,'unlabeled'));
 if ~isempty(oldTag)
-    newMolTag = false(nMol,numel(s.molTagNames));
+    newMolTag = false(N,numel(s.molTagNames));
     for tag = 1:numel(s.molTagNames)
         newMolTag(s.molTag==tag,tag) = s.molTag(s.molTag==tag)';
     end

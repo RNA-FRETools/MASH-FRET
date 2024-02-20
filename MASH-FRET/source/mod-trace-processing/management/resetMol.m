@@ -8,12 +8,20 @@ nS = size(p.proj{proj}.S,1);
 curr = p.proj{proj}.TP.curr{m};
 prm = p.proj{proj}.TP.prm{m};
 
-if strcmp(opt1,'cross')
-    opt = 'cross';
-    p.proj{proj}.intensities_crossCorr = ...
-        nan(size(p.proj{proj}.intensities_crossCorr));
-    return
-end
+% if strcmp(opt1,'cross')
+%     opt = 'cross';
+%     p.proj{proj}.intensities_crossCorr = ...
+%         nan(size(p.proj{proj}.intensities_crossCorr));
+%     return
+% end
+
+% identify reset of intensity calculations using general parameters
+isCrossCorr = ~isempty(p.proj{proj}.intensities_crossCorr) && ...
+    ~all(sum(sum(isnan(p.proj{proj}.intensities_crossCorr(:,...
+    ((m-1)*nC+1):m*nC,:)),2),3));
+isReSpl = ~isempty(p.proj{proj}.intensities_bin) && ...
+    ~all(sum(sum(isnan(p.proj{proj}.intensities_bin(:,...
+    ((m-1)*nC+1):m*nC,:)),2),3));
 
 if isempty(prm)
     opt = 'ttPr';
@@ -24,6 +32,14 @@ elseif ~isequal(curr{3},prm{3})
     opt = 'ttBg';
     p.proj{proj}.ES = cell(1,nF);
     p.proj{proj}.intensities_bgCorr(:,((m-1)*nC+1):m*nC,:) = NaN;
+
+elseif ~isReSpl
+    opt = 'resample';
+    p.proj{proj}.ES = cell(1,nF);
+    
+elseif ~isCrossCorr
+    opt = 'cross';
+    p.proj{proj}.ES = cell(1,nF);
 
 % cancelled by MH, 16.1.2020
 % elseif ~isequal(curr{5},prm{5})
@@ -64,6 +80,7 @@ elseif ~isequaln(curr{6}, prm{6})
     if nS > 0
         p.proj{proj}.S_DTA(:,((m-1)*nS+1):m*nS) = NaN;
     end
+    
 elseif ~(~isempty(prm{4}) && ...
         isequaln(curr{4}([1 2 4]),prm{4}([1 2 4])))
     opt = 'DTA';

@@ -21,6 +21,7 @@ end
 def = p.ttPr.defProjPrm;
 
 nChan = p.proj{proj}.nb_channel;
+expt = p.proj{proj}.resampling_time;
 exc = p.proj{proj}.excitations;
 nExc = p.proj{proj}.nb_excitations;
 chanExc = p.proj{proj}.chanExc;
@@ -99,6 +100,9 @@ end
 if nExc==0
     gen{4}{2} = [];
 end
+
+% Time axis
+gen{5} = expt; % trajectory re-sampling time
 
 def.general = adjustVal(def.general, gen);
 

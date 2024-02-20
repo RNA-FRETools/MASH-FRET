@@ -25,16 +25,15 @@ prm = p.proj{proj}.TP.curr{mol}{2};
 
 apply = prm{1}(1);
 start = ceil(prm{1}(4)/nExc);
+    
+I_den = p.proj{proj}.intensities_denoise(:,((mol-1)*nChan+1):mol*nChan,:);
+lastData = sum(double(~isnan(I_den(:,1,1))));
 
 method = prm{1}(2);
 if method == 1
     cutOff = floor(prm{1}(4+method)/nExc);
 else
-    I_den = p.proj{proj}.intensities_denoise(:, ...
-        ((mol-1)*nChan+1):mol*nChan,:);
     chan = prm{1}(3);
-    
-    lastData = sum(double(~isnan(I_den(:,1,1))));
 
     if chan <= nFRET % single FRET channel
         i_f = chan;
@@ -116,19 +115,20 @@ else
         firstNan = 2;
     end
 end
+firstNan(firstNan>(lastData+1)) = lastData+1;
 
 if cutOff>firstNan-1
     disp(cat(2,'intensity-time traces have missing data: cutoff set to ',...
         'last intensity data.'));
 end
 cutOff = min([firstNan-1,cutOff]);
+cutOff(cutOff>lastData) = lastData;
 
 if apply
     incl(start:cutOff,1) = true;
 else
     incl(start:firstNan-1) = true;
 end
-
 p.proj{proj}.TP.prm{mol}{2}{1}(4+method) = cutOff*nExc;
 p.proj{proj}.bool_intensities(:,mol) = incl;
 

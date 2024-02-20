@@ -116,4 +116,9 @@ for i = projs
     if ~isfield(p.proj{i},'resampling_time')
         p.proj{i}.resampling_time = p.proj{i}.sampling_time;
     end
+    
+    % 16.02.2024: add field "intensities_bin"
+    if ~isfield(p.proj{i},'intensities_bin')
+        p.proj{i}.intensities_bin = p.proj{i}.intensities_bgCorr;
+    end
 end

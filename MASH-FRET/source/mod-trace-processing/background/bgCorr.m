@@ -50,5 +50,5 @@ end
 
 p.proj{proj}.intensities_bgCorr(:,((mol-1)*nC+1):mol*nC,:) = ...
     I_bgCorr;
-p.proj{proj}.intensities_crossCorr(:,((mol-1)*nC+1):mol*nC,:) = NaN;
+p.proj{proj}.intensities_bin(:,((mol-1)*nC+1):mol*nC,:) = NaN;
 

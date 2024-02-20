@@ -254,3 +254,9 @@ if size(p_proj.TP.prm{n},2)>=4 && size(p_proj.TP.prm{n}{4},2)>=2 && ...
         repmat([1,10,5,2,0,0,0],[1,1,size(p_proj.TP.prm{n}{4}{2},3)]),...
         p_proj.TP.prm{n}{4}{2}(7,:,:));
 end
+
+% added by MH, 19.2.2024: add re-sampling time
+if size(p_proj.TP.fix,2)<5 || ~(numel(p_proj.TP.fix{5})==1 && ...
+        isnumeric(p_proj.TP.fix{5}) && p_proj.TP.fix{5}>0)
+    p_proj.TP.fix{5} = p_proj.resampling_time;
+end

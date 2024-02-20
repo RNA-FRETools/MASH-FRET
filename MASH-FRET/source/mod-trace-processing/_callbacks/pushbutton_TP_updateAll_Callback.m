@@ -51,7 +51,8 @@ try
     for m = 1:nMol
         if strcmp(opt{m}, 'gamma') || strcmp(opt{m}, 'debleach') || ...
                 strcmp(opt{m}, 'denoise') || strcmp(opt{m}, 'cross') || ...
-                strcmp(opt{m}, 'ttBg') || strcmp(opt{m}, 'ttPr')
+                strcmp(opt{m}, 'resample') || strcmp(opt{m}, 'ttBg') || ...
+                strcmp(opt{m}, 'ttPr')
             p = updateGammaFactor(h_fig,m,p);
         end
         

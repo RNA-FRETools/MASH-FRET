@@ -10,7 +10,6 @@ function h = buildMenuTools(h)
 
 % default
 lbl0 = 'Restructure files';
-lbl1 = 'Bin time axis';
 lbl2 = 'Check toolbox dependencies';
 
 % parents
@@ -19,9 +18,6 @@ h_men = h.menu_tools;
 % GUI
 h.menu_restructFiles = uimenu(h_men,'label',lbl0,'callback',...
     @menu_restructFiles_Callback);
-
-h.menu_binTimeAxis = uimenu(h_men,'label',lbl1,'callback',...
-    {@menu_binTimeAxis_Callback});
 
 h.menu_toolboxDependency = uimenu(h_men,'label',lbl2);
 h = buildMenuToolboxDependency(h);

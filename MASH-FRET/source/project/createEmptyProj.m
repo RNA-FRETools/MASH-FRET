@@ -35,6 +35,7 @@ p.FRET = [];
 p.S = [];
 p.exp_parameters = es.expCond;
 p.sampling_time = 1;
+p.resampling_time = 1;
 p.colours = {};
 p.traj_import_opt = [];
 p.hist_import_opt = [];

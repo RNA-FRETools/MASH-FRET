@@ -21,10 +21,9 @@ if ~isCrossCorr
     
     nExc = p.proj{proj}.nb_excitations;
     
-    I_bgCorr = p.proj{proj}.intensities_bgCorr(:, ...
-        ((mol-1)*nChan+1):mol*nChan,:);
+    I_bin = p.proj{proj}.intensities_bin(:,((mol-1)*nChan+1):mol*nChan,:);
 
-    I_corr = I_bgCorr;
+    I_corr = I_bin;
 
     % added by MH, 29.3.2019
     % bleedthrough corr.
@@ -35,7 +34,7 @@ if ~isCrossCorr
                 if c ~= c2
                     n = n+1;
                     coeff = p.proj{proj}.TP.fix{4}{1}(c,n);
-                    I_corr(:,c2,:) = I_corr(:,c2,:)-coeff*I_bgCorr(:,c,:);
+                    I_corr(:,c2,:) = I_corr(:,c2,:)-coeff*I_bin(:,c,:);
                 end
             end
         end

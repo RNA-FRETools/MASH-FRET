@@ -21,6 +21,7 @@ ud_trSetTbl(h_fig);
 ud_plot(h_fig);
 ud_subImg(h_fig);
 ud_ttBg(h_fig);
+ud_sampling(h_fig);
 ud_cross(h_fig);
 ud_denoising(h_fig);
 ud_bleach(h_fig);

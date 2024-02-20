@@ -8,11 +8,12 @@ fact = 5;
 ttl1 = 'Plot';
 ttl2 = 'Sub-images';
 ttl3 = 'Background correction';
-ttl4 = 'Cross-talks';
-ttl5 = 'Factor corrections';
-ttl6 = 'Denoising';
-ttl7 = 'Photobleaching';
-ttl8 = 'Find states';
+ttl4 = 'Re-sampling';
+ttl5 = 'Cross-talks';
+ttl6 = 'Factor corrections';
+ttl7 = 'Denoising';
+ttl8 = 'Photobleaching';
+ttl9 = 'Find states';
 
 % parents
 h_pan = h.uipanel_TP_scroll;
@@ -25,11 +26,12 @@ hpan1 = p.mgpan+htxt0+hpop0+p.mg/fact+htxt0+hpop0+p.mg/fact+htxt0+hedit0+...
 hpan2 = p.mgpan+3*htxt0+p.mg/fact+htxt0+p.mg/fact+htxt0+hpop0+p.mg;
 hpan3 = p.mgpan+htxt0+hpop0+p.mg/fact+htxt0+hedit0+p.mg/fact+hedit0+...
     p.mg/fact+hedit0+p.mg;
-hpan4 = p.mgpan+hpop0+p.mg/2+2*(htxt0+hpop0+p.mg/2)+p.mg/2;
-hpan5 = p.mgpan+p.mg+p.mg/fact+hpop0+hedit0;
-hpan6 = p.mgpan+p.mg+p.mg/fact+2*hpop0+2*htxt0;
-hpan7 = p.mgpan+htxt0+hpop0+p.mg/fact+htxt0+hedit0+p.mg+p.mg/2;
-hpan8 = p.mgpan+3*(htxt0+hpop0+p.mg)+htxt0+hedit0+p.mg/fact+hedit0+p.mg+...
+hpan4 = p.mgpan+hedit0+p.mg/2;
+hpan5 = p.mgpan+hpop0+p.mg/2+2*(htxt0+hpop0+p.mg/2)+p.mg/2;
+hpan6 = p.mgpan+p.mg+p.mg/fact+hpop0+hedit0;
+hpan7 = p.mgpan+p.mg+p.mg/fact+2*hpop0+2*htxt0;
+hpan8 = p.mgpan+htxt0+hpop0+p.mg/fact+htxt0+hedit0+p.mg+p.mg/2;
+hpan9 = p.mgpan+3*(htxt0+hpop0+p.mg)+htxt0+hedit0+p.mg/fact+hedit0+p.mg+...
     htxt0+hpop0+p.mg;
 
 % GUI
@@ -57,35 +59,42 @@ h = buildPanelTPbackgroundCorrection(h,p);
 
 y = y-p.mg-hpan4;
 
-h.uipanel_TP_crossTalks = uipanel('parent',h_pan,'units',p.posun,...
+h.uipanel_TP_sampling = uipanel('parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
     [x,y,wpan0,hpan4],'title',ttl4);
-h = buildPanelTPcrossTalks(h,p);
+h = buildPanelTPsampling(h,p);
 
 y = y-p.mg-hpan5;
 
-h.uipanel_TP_denoising = uipanel('parent',h_pan,'units',p.posun,...
+h.uipanel_TP_crossTalks = uipanel('parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan0,hpan5],'title',ttl6);
-h = buildPanelTPdenoising(h,p);
+    [x,y,wpan0,hpan5],'title',ttl5);
+h = buildPanelTPcrossTalks(h,p);
 
 y = y-p.mg-hpan6;
 
-h.uipanel_TP_photobleaching = uipanel('parent',h_pan,'units',p.posun,...
+h.uipanel_TP_denoising = uipanel('parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
     [x,y,wpan0,hpan6],'title',ttl7);
-h = buildPanelTPphotobleaching(h,p);
+h = buildPanelTPdenoising(h,p);
 
 y = y-p.mg-hpan7;
 
-h.uipanel_TP_factorCorrections = uipanel('parent',h_pan,'units',p.posun,...
+h.uipanel_TP_photobleaching = uipanel('parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan0,hpan7],'title',ttl5);
-h = buildPanelTPfactorCorrections(h,p);
+    [x,y,wpan0,hpan7],'title',ttl8);
+h = buildPanelTPphotobleaching(h,p);
 
 y = y-p.mg-hpan8;
 
+h.uipanel_TP_factorCorrections = uipanel('parent',h_pan,'units',p.posun,...
+    'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
+    [x,y,wpan0,hpan8],'title',ttl6);
+h = buildPanelTPfactorCorrections(h,p);
+
+y = y-p.mg-hpan9;
+
 h.uipanel_TP_findStates = uipanel('parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
-    [x,y,wpan0,hpan8],'title',ttl8);
+    [x,y,wpan0,hpan9],'title',ttl9);
 h = buildPanelTPfindStates(h,p);

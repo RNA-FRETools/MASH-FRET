@@ -30,7 +30,8 @@ for i = 1:nMol
     % get gamma factors
     if strcmp(opt2, 'gamma') || strcmp(opt2, 'debleach') || ...
         strcmp(opt2, 'denoise') || strcmp(opt2, 'corr') || ...
-        strcmp(opt2, 'ttBg') || strcmp(opt2, 'ttPr')
+        strcmp(opt2, 'resample') || strcmp(opt2, 'ttBg') || ...
+        strcmp(opt2, 'ttPr')
             p = updateGammaFactor(h_fig,i,p);
     end
 
