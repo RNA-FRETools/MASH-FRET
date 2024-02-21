@@ -22,13 +22,16 @@ isCrossCorr = ~isempty(p.proj{proj}.intensities_crossCorr) && ...
 isReSpl = ~isempty(p.proj{proj}.intensities_bin) && ...
     ~all(sum(sum(isnan(p.proj{proj}.intensities_bin(:,...
     ((m-1)*nC+1):m*nC,:)),2),3));
+isBgCorr = ~isempty(p.proj{proj}.intensities_bgCorr) && ...
+    ~all(sum(sum(isnan(p.proj{proj}.intensities_bgCorr(:,...
+    ((m-1)*nC+1):m*nC,:)),2),3));
 
 if isempty(prm)
     opt = 'ttPr';
     p.proj{proj}.ES = cell(1,nF);
     p.proj{proj}.intensities_bgCorr(:,((m-1)*nC+1):m*nC,:) = NaN;
     
-elseif ~isequal(curr{3},prm{3})
+elseif ~isBgCorr || ~isequal(curr{3},prm{3})
     opt = 'ttBg';
     p.proj{proj}.ES = cell(1,nF);
     p.proj{proj}.intensities_bgCorr(:,((m-1)*nC+1):m*nC,:) = NaN;

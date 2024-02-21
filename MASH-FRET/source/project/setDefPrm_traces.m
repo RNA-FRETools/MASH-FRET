@@ -111,6 +111,7 @@ if def.general{1}(1) > nExc
 end
 def.general{2}([1:5,7]) = gen{2}([1:5,7]);
 def.general{3} = gen{3};
+def.general{5} = gen{5};
 
 
 % Molecule parameters
@@ -386,6 +387,8 @@ if def.mol{4}{1}(1)==8 && ~(isfield(p.proj{proj},'FRET_DTA_import') && ...
         ~isempty(p.proj{proj}.FRET_DTA_import))
     def.mol{4}{1}(1) = 6; % STaSI
 end
+
+% imposes use of "Imported" method when imported dicr. FRET are available
 if isfield(p.proj{proj},'FRET_DTA_import') && ...
         ~isempty(p.proj{proj}.FRET_DTA_import)
     def.mol{4}{1}(1) = 8;

@@ -12,7 +12,8 @@ chanExc = s.chanExc;
 labels = s.labels;
 tag = s.molTag;
 tagName = s.molTagNames;
-exptime = s.resampling_time;
+splt0 = s.sampling_time;
+splt = s.resampling_time;
 FRET = s.FRET; 
 S = s.S;
 projprm = s.exp_parameters;
@@ -185,7 +186,7 @@ for l = 1:nExc
             
             bgInt = prm_bg{3}{l,c}(prm_bg{2}(l,c),3);
             if perSec
-                bgInt = bgInt/exptime;
+                bgInt = bgInt/splt;
             end
             
             if prm_bg{1}(l,c,2)
@@ -364,7 +365,7 @@ end
 if prm_bleach{1}(1)
     if inSec
         str_bleach = cat(2,'\n\tcutoff time: ',...
-            num2str(prm_bleach{1}(5)*exptime),' seconds');
+            num2str(prm_bleach{1}(5)*splt),' seconds');
     else
         str_bleach = cat(2,'\n\tcutoff frame: ',num2str(prm_bleach{1}(5)));
     end
@@ -582,7 +583,8 @@ str_prm = cat(2,'PROJECT\n',...
     '> file exported with MASH-FRET version: ',vers,'\n\n', ... 
     'VIDEO PROCESSING\n',...
     '> movie file',movie_file,'\n', ...
-    '> frame rate: ',num2str(1/s.resampling_time),' s-1 \n', ...
+    '> frame rate: ',num2str(1/s.sampling_time),' s-1 \n', ...
+    '> frame rate after re-sampling: ',num2str(1/s.resampling_time),' s-1 \n', ...
     '> pixel integration area: ',num2str(s.pix_intgr(1)),' x ',num2str(s.pix_intgr(1)),'\n', ... 
     '> number of brightest pixels integrated: ',num2str(s.pix_intgr(2)),'\n', ...
     '> coordinates file: ',coord_file,'\n\n', ... 
