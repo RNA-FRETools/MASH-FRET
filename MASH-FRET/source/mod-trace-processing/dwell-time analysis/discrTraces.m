@@ -105,7 +105,7 @@ if toBottom
 %         incl_imp(1:L) = true;
         incl_imp = incl;
         prm = permute(prm_DTA{2}(meth,:,1:nF),[3,2,1]);
-        fret_DTA = (getDiscr(meth,cat(3,f_tr,fret_DTA_imp(incl_imp)),...
+        fret_DTA = (getDiscr(meth,cat(3,f_tr,fret_DTA_imp(:,incl_imp)),...
             true(nF,sum(incl_imp)),prm,[],calc,actstr,h_fig))';
         bot_DTA = fret_DTA;
         for s = 1:nS

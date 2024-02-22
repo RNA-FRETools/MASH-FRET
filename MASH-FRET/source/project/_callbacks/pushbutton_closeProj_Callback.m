@@ -59,7 +59,8 @@ str_act = str_act(1:end-2);
 
 % erase video store in memory
 for i = slct
-    if isempty(h.movie.movie)
+    if ~(isfield(h,'movie') && isfield(h.movie,'movie') && ...
+            ~isempty(h.movie.movie))
         break
     end
     for c = 1:numel(p.proj{i}.movie_file)
