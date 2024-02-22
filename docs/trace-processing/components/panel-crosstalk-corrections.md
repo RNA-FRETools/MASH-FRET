@@ -3,7 +3,7 @@ layout: default
 title: Cross-talk corrections
 parent: Components
 grand_parent: Trace processing
-nav_order: 4
+nav_order: 5
 ---
 
 <img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>

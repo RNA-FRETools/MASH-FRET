@@ -72,23 +72,28 @@ MASH-FRET project files consist in data structures with the following fields:
 ### Video-related fields
 {: .no_toc }
 
-| `is_movie`   | a video file is/isn't attached to the project     | 1/0           | 1                                           |
-| `movie_file` | path to video file                                | string        | `'C:\MyDataFolder\experiment_01\data.sira'` |
-| `movie_dim`  | video dimensions in pixel (width,height)          | 1-by-2 double | `[256,256]`                                 |
-| `movie_dat`  | parameters used to read pixel data in video file  | 1-by-3 cell   |                                             |
-| `frame_rate` | acquisition **time** of one video frame in second | double        | `0.1`                                       |
+| `is_movie`           | a video file is/isn't attached to the project        | 1/0           | 1                                           |
+| `movie_file`         | path to video file                                   | string        | `'C:\MyDataFolder\experiment_01\data.sira'` |
+| `movie_dim`          | video dimensions in pixel (width,height)             | 1-by-2 double | `[256,256]`                                 |
+| `movie_dat`          | parameters used to read pixel data in video file     | 1-by-3 cell   |                                             |
+| `sampling_time`      | acquisition time of one video frame in second        | double        | `0.1`                                       |
+| `resampling_time`    | sampling time in second after trajectory re-sampling | double        | `0.3`                                       |
 
 
 ### Experiment settings fields
 {: .no_toc }
 
-| `nb_channel`     | number of spectroscopic channel `nC`                                   | double           | `2`                                                                                                        |
-| `nb_excitations` | number of alternated lasers `nL`                                       | double           | `2`                                                                                                        |
-| `excitations`    | excitation wavelengths                                                 | 1-by-`nL` double | `[638,532]`                                                                                                |
-| `chanExc`        | laser indexes for channel direct excitation                            | 1-by-`nC` double | channel 1 is directly excited by 2nd laser: `[2,1]`                                                        |
-| `labels`         | labels for spectroscopic channel                                       | 1-by-`nC` cell   | `{ 'Cy3','Cy5' }`                                                                                          |
-| `colours`        | RGB colors used to plot trajectories and labels (intensities, FRET, S) | 1-by-3 cell      | for 2 channel and 2 alternated lasers: `{ {[0,0.5,0],[0.5,0.5,0];[0,1,0],[1,1,0]}, [0,0,0], [0,0,1] }`     |
-|`exp_parameters`  | a number `nP` of user-defined project parameters (name, value, units)  | `nP`-by-3 cell   | `{ 'Project title','data_D135_01',[]; 'Molecule name','D135',[]; '[Mg2+]','100','mM'; '[K+]','500','mM' }` |
+| `nb_channel`         | number of spectroscopic channel `nC`                                    | double           | `2`                                                                                                        |
+| `nb_excitations`     | number of alternated lasers `nL`                                        | double           | `2`                                                                                                        |
+| `excitations`        | excitation wavelengths                                                  | 1-by-`nL` double | `[638,532]`                                                                                                |
+| `chanExc`            | laser indexes for channel direct excitation                             | 1-by-`nC` double | channel 1 is directly excited by 2nd laser: `[2,1]`                                                        |
+| `labels`             | labels for spectroscopic channel                                        | 1-by-`nC` cell   | `{ 'Cy3','Cy5' }`                                                                                          |
+| `colours`            | RGB colors used to plot trajectories and labels (intensities, FRET, S)  | 1-by-3 cell      | for 2 channel and 2 alternated lasers: `{ {[0,0.5,0],[0.5,0.5,0];[0,1,0],[1,1,0]}, [0,0,0], [0,0,1] }`     |
+| `exp_parameters`     | a number `nP` of user-defined project parameters (name, value, units)   | `nP`-by-3 cell   | `{ 'Project title','data_D135_01',[]; 'Molecule name','D135',[]; '[Mg2+]','100','mM'; '[K+]','500','mM' }` |
+| `traj_import_opt`    | options for the import of trajectory files (trajectory-based projects)  | 1-by-6 cell      | see `setParam.m` for defaults																	             |
+| `hist_import_opt`    | options for the import of histogram files (histogram-based projects)    | 1-by-4 double    | `[0,1,1,2]`                                                                                                |
+| `spltime_from_video` | sampling time is/isn't determined from the video file or the simulation | 1/0              | 0                                                                                                          |
+| `spltime_from_traj`  | sampling time is/isn't determined from trajectory files                 | 1/0              | 0                                                                                                          |
 
 
 ### Molecule fields
@@ -107,36 +112,37 @@ MASH-FRET project files consist in data structures with the following fields:
 ### Intensity fields
 {: .no_toc }
 
-| `intensities`           | raw intensity trajectories with a number `L` of data point       | `L`-by-`nC*M` double  |         |
-| `pix_intgr`             | pixel area size and number of pixels used to integrate intensity | 1-by-2 double         | `[5,8]` |
-| `cnt_p_pix`             | units are/aren't counts per pixel                                | 1/0                   | `1`     |
-| `cnt_p_sec`             | units are/aren't counts per second                               | 1/0                   | `1`     |
-| `intensities_bgCorr`    | background-corrected intensity trajectories                      | `L`-by-`nC*M` double  |         |
-| `intensities_crossCorr` | background- & cross-talk-corrected intensity trajectories        | `L`-by-`nC*M` double  |         |
-| `intensities_denoise`   | corrected and smoothed intensity trajectories                    | `L`-by-`nC*M` double  |         |
-| `intensities_DTA`       | discretized intensity trajectories                               | `L`-by-`nC*M` double  |         |
-| `bool_intensities`      | included/ignored intensity data points                           | `L`-by-`M` true/false |         |
+| `intensities`           | raw intensity trajectories with a number `L` of data point       | `L`-by-`nC*M` double   |         |
+| `pix_intgr`             | pixel area size and number of pixels used to integrate intensity | 1-by-2 double          | `[5,8]` |
+| `cnt_p_pix`             | units are/aren't counts per pixel                                | 1/0                    | `1`     |
+| `cnt_p_sec`             | units are/aren't counts per second                               | 1/0                    | `1`     |
+| `intensities_bgCorr`    | background-corrected intensity trajectories                      | `L`-by-`nC*M` double   |         |
+| `intensities_bin`       | re-sampled intensity trajectories                                | `L'`-by-`nC*M` double  |         |
+| `intensities_crossCorr` | background- & cross-talk-corrected intensity trajectories        | `L'`-by-`nC*M` double  |         |
+| `intensities_denoise`   | corrected and smoothed intensity trajectories                    | `L'`-by-`nC*M` double  |         |
+| `intensities_DTA`       | discretized intensity trajectories                               | `L'`-by-`nC*M` double  |         |
+| `bool_intensities`      | included/ignored intensity data points                           | `L'`-by-`M` true/false |         |
 
 
 ### FRET- and stoichiometry- fields
 {: .no_toc }
 
-| `FRET` | a number `nF` of different FRET pair (don, acc) channel indexes for FRET calculations | `nF`-by-2 double | FRET from channel 1 to 2: `[1,2]` |
-| `FRET_DTA` | discretized FRET trajectories | `L`-by-`nF*M` double |  |
-| `FRET_DTA_import` | discretized FRET trajectories imported from ASCII files for trajectory-based projects, or form module Simulation for simulation-based projects | `L`-by-`nF*M` double |  |
-| `S` | a number `nS` of different FRET pair (don, acc) channel indexes for stoichiometry calculations | `nS`-by-2 double | S of FRET pair from channel 1 to 2: `[1,2]` |
-| `S_DTA` | discretized stoichiometry trajectories | `L`-by-`nS*M` double |                                   |
-| `ES` | 2D histograms of FRET-inverse of associated stoichiometry used for estimation of gamma and beta factors | 1-by-`nF` cell |  |
+| `FRET`            | a number `nF` of different FRET pair (don, acc) channel indexes for FRET calculations                                                          | `nF`-by-2 double     | FRET from channel 1 to 2: `[1,2]`           |
+| `FRET_DTA`        | discretized FRET trajectories                                                                                                                  | `L`-by-`nF*M` double |                                             |
+| `FRET_DTA_import` | discretized FRET trajectories imported from ASCII files for trajectory-based projects, or from module Simulation for simulation-based projects | `L`-by-`nF*M` double |                                             |
+| `S`               | a number `nS` of different FRET pair (don, acc) channel indexes for stoichiometry calculations                                                 | `nS`-by-2 double     | S of FRET pair from channel 1 to 2: `[1,2]` |
+| `S_DTA`           | discretized stoichiometry trajectories                                                                                                         | `L`-by-`nS*M` double |                                             |
+| `ES`              | 2D histograms of FRET-inverse of associated stoichiometry used for estimation of gamma and beta factors                                        | 1-by-`nF` cell       |                                             |
 
 
 ### Analysis settings
 {: .no_toc }
 
-| `sim` | parameter settings and simulation results of module Simulation | struct |  |
-| `VP` | parameter settings and processing outcome of module Video processing | struct |  |
-| `TP` | parameter settings and processing outcome of module Trace processing | struct |  |
-| `HA` | parameter settings and analysis results of module Histogram analysis | struct |  |
-| `TA` | parameter settings and analysis results of module Transition analysis | struct |  |
+| `sim` | parameter settings and simulation results of module Simulation        | struct |  |
+| `VP`  | parameter settings and processing outcome of module Video processing  | struct |  |
+| `TP`  | parameter settings and processing outcome of module Trace processing  | struct |  |
+| `HA`  | parameter settings and analysis results of module Histogram analysis  | struct |  |
+| `TA`  | parameter settings and analysis results of module Transition analysis | struct |  |
 
 For more information about how the analysis settings fields are structured, please refer to the respective function in the source code:
 

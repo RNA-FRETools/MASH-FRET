@@ -68,6 +68,7 @@ Video processing parameters common to all types of import are:
 
 ```
 > frame rate:
+> frame rate after re-sampling:
 > pixel integration area:
 > number of brightest pixels integrated:
 ```

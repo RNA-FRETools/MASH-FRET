@@ -3,7 +3,7 @@ layout: default
 title: Control area
 parent: Components
 grand_parent: Trace processing
-nav_order: 10
+nav_order: 11
 ---
 
 <img src="../../assets/images/logos/logo-video-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
@@ -57,6 +57,7 @@ Press
 
 Operations include all intensity corrections as configured in panels 
 [Background correction](panel-background-correction.html), 
+[Re-sampling](panel-resampling.html), 
 [Cross talks](panel-cross-talks.html), 
 [Denoising](panel-denoising.html), 
 [Photobleaching](panel-photobleaching.html) and 
@@ -81,6 +82,7 @@ Press
 
 Operations include all intensity corrections as configured in panels 
 [Background correction](panel-background-correction.html), 
+[Re-sampling](panel-resampling.html), 
 [Cross talks](panel-cross-talks.html), 
 [Denoising](panel-denoising.html), 
 [Photobleaching](panel-photobleaching.html) and 

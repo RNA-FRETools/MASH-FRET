@@ -55,8 +55,7 @@ When you start MASH-FRET the **main user interface** opens.
 <a href="assets/images/gui/interface-default.png"><img src="assets/images/gui/interface-default.png" /></a>
 
 The main user interface appears in its default layout and includes:
-* a **menu bar** that allows the execution of program <u>routines</u>, the setting of <u>file overwriting</u> options and <u>time/intensity units</u>, as well as the access to <u>external tools</u> 
-[Bin time axis](trace-processing/functionalities/bin-trajectories.html#bin-traces-and-export-ascii-files) and 
+* a **menu bar** that allows the execution of program <u>routines</u>, the setting of <u>file overwriting</u> options and <u>time/intensity units</u>, as well as the access to <u>external tool</u> 
 [Check toolbox dependencies](System_requirements.html).
 * a [**Project management area**](#project-management-area) for managing the opened projects,
 * a **tool bar** for accessing the different <u>modules</u>,
