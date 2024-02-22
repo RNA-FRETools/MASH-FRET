@@ -6,13 +6,13 @@ p = h.param;
 proj = p.curr_proj;
 inSec = p.proj{proj}.TP.fix{2}(7);
 nExc = p.proj{proj}.nb_excitations;
-len = nExc*size(p.proj{proj}.intensities,1);
-rate = p.proj{proj}.frame_rate;
+len = nExc*size(p.proj{proj}.intensities_denoise,1);
+splt = p.proj{proj}.resampling_time;
 
 val = str2double(get(obj, 'String'));
 if inSec
-    val = rate*round(val/rate);
-    maxVal = rate*len;
+    val = splt*round(val/splt);
+    maxVal = splt*len;
 else
     val = round(val);
     maxVal = len;
@@ -27,7 +27,7 @@ if ~(numel(val)==1 && ~isnan(val) && val>=0 && val<=maxVal)
 end
 
 if inSec
-    val = val/rate;
+    val = val/splt;
 end
 
 q = guidata(h_fig2);

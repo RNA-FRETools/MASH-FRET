@@ -10,9 +10,8 @@ function routinetest_TP_findStates(h_fig,p,prefix)
 h = guidata(h_fig);
 
 % open default project
-disp(cat(2,prefix,'import file ',p.mash_files{p.nL,p.nChan}));
-pushbutton_openProj_Callback({p.annexpth,p.mash_files{p.nL,p.nChan}},...
-    [],h_fig);
+disp(cat(2,prefix,'import file ',p.fsMashFle));
+pushbutton_openProj_Callback({p.annexpth,p.fsMashFle},[],h_fig);
 
 % set default parameters
 setDefault_TP(h_fig,p);
@@ -56,6 +55,7 @@ for meth = 1:nMeth
 end
 
 disp(cat(2,prefix,'test post-processing method "refine"...'));
+meth = 6;
 fsPrm = p.fsPrm;
 fsPrm(:,5,:) = true;
 set_TP_findStates(meth,trace,fsPrm,fsThresh,p.nChan,p.nL,h_fig);

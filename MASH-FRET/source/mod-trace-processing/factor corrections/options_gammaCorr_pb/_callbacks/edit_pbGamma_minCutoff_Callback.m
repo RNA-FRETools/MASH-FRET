@@ -6,17 +6,17 @@ p = h.param;
 proj = p.curr_proj;
 inSec = p.proj{proj}.time_in_sec;
 nExc = p.proj{proj}.nb_excitations;
-len = nExc*size(p.proj{proj}.intensities,1);
-rate = p.proj{proj}.resampling_time;
+len = nExc*size(p.proj{proj}.intensities_denoise,1);
+splt = p.proj{proj}.resampling_time;
 
 q = guidata(h_fig2);
 start = q.prm{2}(5);
 
 val = str2double(get(obj, 'String'));
 if inSec
-    val = rate*round(val/rate);
-    minVal = rate*start;
-    maxVal = rate*len;
+    val = splt*round(val/splt);
+    minVal = splt*start;
+    maxVal = splt*len;
 else
     val = round(val);
     minVal = start;
@@ -31,7 +31,7 @@ if ~(numel(val)==1 && ~isnan(val) && val>=minVal && val<=maxVal)
 end
 
 if inSec
-    val = val/rate;
+    val = val/splt;
 end
 
 q.prm{2}(4) = val;

@@ -18,7 +18,7 @@ if meth==3 && val~=1
     val = 1;
     disp(['2D analysis is available for intensity ratio  traces (bottom) ',...
         'only.']);
-elseif meth==7 && val~=1
+elseif meth==8 && val~=1
     disp(['"Imported" is available for FRET state sequences (bottom) ',...
         'only.']);
     val = 1;
