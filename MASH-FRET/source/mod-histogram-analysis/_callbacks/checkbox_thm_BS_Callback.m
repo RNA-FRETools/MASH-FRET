@@ -23,6 +23,8 @@ end
 p.proj{proj}.HA.curr{tag,tpe}.thm_start{1}(2) = get(obj, 'Value');
 p.proj{proj}.HA.curr{tag,tpe}.thm_res(1,1:3) = {[] [] []};
 p.proj{proj}.HA.curr{tag,tpe}.thm_res(2,1:3) = {[] [] []};
+p.proj{proj}.HA.prm{tag,tpe}.thm_res(1,1:3) = {[] [] []};
+p.proj{proj}.HA.prm{tag,tpe}.thm_res(2,1:3) = {[] [] []};
     
 h.param = p;
 guidata(h_fig, h);
