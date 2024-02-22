@@ -23,6 +23,50 @@ The procedure includes four steps:
 
 ---
 
+## Import histogram
+
+Initial histograms come from 
+[Trace processing](../trace-processing.html)'s output for simulation-, video-, and trajectory-based projects, or from an external ASCII file.
+
+In the three first cases, you can skip this step and go directly to the next one.
+
+In the latter case, a new histogram-based project must be created. 
+This implies to import the histogram file and define the data structure in the file.
+After the project creation is completed, it is recommended to save it to a 
+[.mash file](../output-files/mash-mash-project.html) that should regularly be overwritten in order to keep traceability and access to the results.
+
+To create a new histogram-based project:
+
+{: .procedure }
+1. Open the experiment settings window by pressing 
+   ![New project](../assets/images/gui/interface-but-newproj.png "New project") in the 
+   [project management area](../Getting_started#project-management-area) and selecting `import histogram`.  
+     
+1. Import the histogram file and define your experiment setup by configuring tabs:  
+     
+   [Import](../tutorials/set-experiment-settings/import-histogram.html#import)  
+   [Divers](../tutorials/set-experiment-settings/import-histogram.html#divers)  
+     
+   If necessary, modify settings in 
+   [Divers](../tutorials/set-experiment-settings/import-histogram.html#divers) any time after project creation.  
+     
+1. Define how data are structured in the file by configuring tab 
+   [File structure](../tutorials/set-experiment-settings/import-histogram.html#file-structure).  
+     
+1. Finalize the creation of your project by pressing 
+   ![Save](../assets/images/gui/newproj-but-save.png); the experiment settings window now closes and the interface switches to module Histogram analysis.  
+     
+1. Save modifications to a 
+   [.mash file](../output-files/mash-mash-project.html) by pressing 
+   ![Save project](../assets/images/gui/interface-but-saveproj.png "Save project") in the 
+   [project management area](../Getting_started#project-management-area).
+   
+***Notes:** Only one histogram can be imported in a histogram-based project. 
+Beside, histogram-based projects only have access to the module Histogram analysis.*
+
+
+---
+
 ## Build histogram
 
 To build an histogram, data are limited to specific boundaries and sorted into bins of specific size.

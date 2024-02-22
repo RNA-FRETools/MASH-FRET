@@ -75,7 +75,8 @@ You can start a project in three different ways:
 
 * [`Simulate data`](tutorials/set-experiment-settings/simulate-data.html#tutorials_steps): from scratch, by creating a single molecule video and/or trajectories, 
 * [`Import video`](tutorials/set-experiment-settings/import-video.html#tutorials_steps): from an existing single molecule video file, 
-* [`Import trajectories`](tutorials/set-experiment-settings/import-trajectories.html#tutorials_steps): from an existing set of trajectories written in files.
+* [`Import trajectories`](tutorials/set-experiment-settings/import-trajectories.html#tutorials_steps): from an existing set of trajectories written in files, 
+* [`Import histogram`](tutorials/set-experiment-settings/import-histogram.html#tutorials_steps): from an existing histogram file.
 
 Select the appropriate option and follow the instructions given in the corresponding section to inform MASH about your experiment settings.
 

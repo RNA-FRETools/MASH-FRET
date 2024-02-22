@@ -670,7 +670,7 @@ Use this panel to define the colors used to plot and identify the time traces.
 To set the RGB color of a specific trace, select the data in list **(a)** and press
 ![Set color](../../assets/images/gui/newproj-but-setcolor.png "Set color") to open the color picker.
 
-To use a predefined set of colors adapted to simulations, press 
+To use a predefined set of colors adapted to the experiment design, press 
 ![Apply default colors](../../assets/images/gui/newproj-but-applydefclr.png "Apply default colors").
 
 <u>default</u>: from green to red for intensities, shades of black for FRET ratios and shades of blue for stoichiometry ratios.

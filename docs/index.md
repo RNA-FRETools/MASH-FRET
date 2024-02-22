@@ -48,6 +48,6 @@ The functionalities of MASH-FRET have been described in several articles. If you
 
 ## About
 
-MASH-FRET was developed by Mélodie C.A.S. Hadzic in collaboration with Danny Kowerko, Sebastian L.B. König and Richard Börner in the group of [Prof. Roland Sigel](https://www.chem.uzh.ch/en/sigel/news.html) at the University of Zurich and is currently maintained by Mélodie C.A.S. Hadzic, Fabio D. Steffen and Richard Börner.
+MASH-FRET was developed by Mélodie C.A.S. Hadzic in collaboration with Danny Kowerko, Sebastian L.B. König, Richard Börner and Fabio D. Steffen in the group of [Prof. Roland Sigel](https://www.chem.uzh.ch/en/sigel/news.html) at the University of Zurich and is currently maintained by Mélodie C.A.S. Hadzic and Richard Börner.
 
 MASH-FRET is licensed under the **GNU General Public License (GPLv3)**
