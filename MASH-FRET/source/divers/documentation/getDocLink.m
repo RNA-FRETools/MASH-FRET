@@ -56,6 +56,8 @@ switch sect
         link_str = cat(2,base_tp,'panels/panel-subimage.html');
     case 'background correction'
         link_str = cat(2,base_tp,'panels/panel-background-correction.html');
+    case 'resampling'
+        link_str = cat(2,base_tp,'panels/panel-resampling.html');
     case 'cross-talks'
         link_str = cat(2,base_tp,'panels/panel-cross-talks.html');
     case 'denoising'

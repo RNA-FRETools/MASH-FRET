@@ -24,7 +24,7 @@ labels = p.proj{proj}.labels;
 exc = p.proj{proj}.excitations;
 nChan = p.proj{proj}.nb_channel;
 clr = p.proj{proj}.colours;
-rate = p.proj{proj}.frame_rate;
+splt = p.proj{proj}.resampling_time;
 perSec = p.proj{proj}.cnt_p_sec;
 fix = p.proj{proj}.TP.fix;
 curr = p.proj{proj}.TP.curr{mol};
@@ -134,7 +134,7 @@ switch method
             '0.5*(median(median_y)+median(median_x))']));
 end
 if perSec
-    prm(3) = prm(3)/rate;
+    prm(3) = prm(3)/splt;
 end
 if all(method~=[1,2])
     set(h.edit_trBgCorrParam_01, 'String', num2str(prm(1)));

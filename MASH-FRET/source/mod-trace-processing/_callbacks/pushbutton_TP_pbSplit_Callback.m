@@ -9,12 +9,16 @@ nC = p.proj{proj}.nb_channel;
 nL = p.proj{proj}.nb_excitations;
 nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
+expt0 = p.proj{proj}.sampling_time;
+expt = p.proj{proj}.resampling_time;
 meth = p.proj{proj}.TP.curr{n}{2}{1}(2);
-cutOff = round(p.proj{proj}.TP.curr{n}{2}{1}(4+meth)/nL);
-L = sum(p.proj{proj}.bool_intensities(:,n));
-if cutOff>=L
+cutOff0 = round(p.proj{proj}.TP.curr{n}{2}{1}(4+meth)/nL);
+if cutOff0>=sum(p.proj{proj}.bool_intensities(:,n))
     return
 end
+
+% convert cutoff to original sampling
+cutOff = ceil(cutOff0*expt/expt0);
 
 if ~h.mute_actions
     choice = questdlg({cat(2,'The right-side of the trace will be saved to ',...
@@ -22,7 +26,7 @@ if ~h.mute_actions
         cat(2,'After splitting, the following functionalites must not be used',...
         ' on molecule ',num2str(n+1),':'),...
         '-  "recenter" option in panel Sub-images',...
-        '-  "Dark trace" background correction',...
+        '-  dynamic background correction',...
         '',...
         'Do you want to continue?'},'Confirm trace split','Yes, split it',...
         'Cancel','Cancel');
@@ -52,6 +56,7 @@ p.proj{proj}.coord_incl = p.proj{proj}.coord_incl(mol_id);
 p.proj{proj}.intensities = p.proj{proj}.intensities(:,int_id,:);
 p.proj{proj}.intensities_bgCorr = ...
     p.proj{proj}.intensities_bgCorr(:,int_id,:);
+p.proj{proj}.intensities_bin = p.proj{proj}.intensities_bin(:,int_id,:);
 p.proj{proj}.intensities_crossCorr = ...
     p.proj{proj}.intensities_crossCorr(:,int_id,:);
 p.proj{proj}.intensities_denoise = ...
@@ -75,7 +80,8 @@ fret_id_n = ((n-1)*nFRET+1):n*nFRET;
 fret_id_dup = (n*nFRET+1):(n+1)*nFRET;
 s_id_n = ((n-1)*nS+1):n*nS;
 s_id_dup = (n*nS+1):(n+1)*nS;
-frames_right = (cutOff+1):size(p.proj{proj}.bool_intensities,1);
+L = size(p.proj{proj}.intensities,1);
+frames_right = (cutOff+1):L;
 L_right = numel(frames_right);
 
 p.proj{proj}.intensities(:,chan_id_dup,:) = NaN;
@@ -86,45 +92,60 @@ p.proj{proj}.intensities_bgCorr(:,chan_id_dup,:) = NaN;
 p.proj{proj}.intensities_bgCorr(1:L_right,chan_id_dup,:) = ...
     p.proj{proj}.intensities_bgCorr((cutOff+1):end,chan_id_n,:);
 
-p.proj{proj}.intensities_crossCorr(:,chan_id_dup,:) = NaN;
-p.proj{proj}.intensities_crossCorr(1:L_right,chan_id_dup,:) = ...
-    p.proj{proj}.intensities_crossCorr((cutOff+1):end,chan_id_n,:);
+% p.proj{proj}.intensities_crossCorr(:,chan_id_dup,:) = NaN;
+% p.proj{proj}.intensities_crossCorr(1:L_right,chan_id_dup,:) = ...
+%     p.proj{proj}.intensities_crossCorr((cutOff+1):end,chan_id_n,:);
+% 
+% p.proj{proj}.intensities_denoise(:,chan_id_dup,:) = NaN;
+% p.proj{proj}.intensities_denoise(1:L_right,chan_id_dup,:) = ...
+%     p.proj{proj}.intensities_denoise((cutOff+1):end,chan_id_n,:);
+% 
+% p.proj{proj}.intensities_DTA(:,chan_id_dup,:) = NaN;
+% p.proj{proj}.intensities_DTA(1:L_right,chan_id_dup,:) = ...
+%     p.proj{proj}.intensities_DTA((cutOff+1):end,chan_id_n,:);
+% 
+% p.proj{proj}.bool_intensities(:,n+1) = false;
+% p.proj{proj}.bool_intensities(1:L_right,n+1) = true;
+% 
+% if ~isempty(p.proj{proj}.FRET_DTA)
+%     p.proj{proj}.FRET_DTA(:,fret_id_dup,:) = NaN;
+%     p.proj{proj}.FRET_DTA(1:L_right,fret_id_dup,:) = ...
+%     	p.proj{proj}.FRET_DTA((cutOff+1):(cutOff+L_right),fret_id_n,:);
+% end
+% if ~isempty(p.proj{proj}.S_DTA)
+%     p.proj{proj}.S_DTA(:,s_id_dup,:) = NaN;
+%     p.proj{proj}.S_DTA(1:L_right,s_id_dup,:) = ...
+%         p.proj{proj}.S_DTA((cutOff+1):(cutOff+L_right),s_id_n,:);
+% end
 
-p.proj{proj}.intensities_denoise(:,chan_id_dup,:) = NaN;
-p.proj{proj}.intensities_denoise(1:L_right,chan_id_dup,:) = ...
-    p.proj{proj}.intensities_denoise((cutOff+1):end,chan_id_n,:);
-
-p.proj{proj}.intensities_DTA(:,chan_id_dup,:) = NaN;
-p.proj{proj}.intensities_DTA(1:L_right,chan_id_dup,:) = ...
-    p.proj{proj}.intensities_DTA((cutOff+1):end,chan_id_n,:);
-
-p.proj{proj}.bool_intensities(:,n+1) = false;
-p.proj{proj}.bool_intensities(1:L_right,n+1) = true;
-
+% set unprocessed duplicated traces to NaN
+p.proj{proj}.intensities_bin(:,[chan_id_n,chan_id_dup],:) = NaN;
+p.proj{proj}.intensities_crossCorr(:,[chan_id_n,chan_id_dup],:) = NaN;
+p.proj{proj}.intensities_denoise(:,[chan_id_n,chan_id_dup],:) = NaN;
+p.proj{proj}.intensities_DTA(:,[chan_id_n,chan_id_dup],:) = NaN;
+p.proj{proj}.bool_intensities(:,[n,n+1]) = false;
+p.proj{proj}.bool_intensities(1:cutOff0,n) = true;
+p.proj{proj}.bool_intensities((cutOff0+1):end,n+1) = true;
 if ~isempty(p.proj{proj}.FRET_DTA)
-    p.proj{proj}.FRET_DTA(:,fret_id_dup,:) = NaN;
-    p.proj{proj}.FRET_DTA(1:L_right,fret_id_dup,:) = ...
-    	p.proj{proj}.FRET_DTA((cutOff+1):(cutOff+L_right),fret_id_n,:);
+    p.proj{proj}.FRET_DTA(:,[fret_id_n,fret_id_dup],:) = NaN;
 end
 if ~isempty(p.proj{proj}.S_DTA)
-    p.proj{proj}.S_DTA(:,s_id_dup,:) = NaN;
-    p.proj{proj}.S_DTA(1:L_right,s_id_dup,:) = ...
-        p.proj{proj}.S_DTA((cutOff+1):(cutOff+L_right),s_id_n,:);
+    p.proj{proj}.S_DTA(:,[s_id_n,s_id_dup],:) = NaN;
 end
 
 % set right side of the original trace to NaN
 p.proj{proj}.intensities(frames_right,chan_id_n,:) = NaN;
 p.proj{proj}.intensities_bgCorr(frames_right,chan_id_n,:) = NaN;
-p.proj{proj}.intensities_crossCorr(frames_right,chan_id_n,:) = NaN;
-p.proj{proj}.intensities_denoise(frames_right,chan_id_n,:) = NaN;
-p.proj{proj}.intensities_DTA(frames_right,chan_id_n,:) = NaN;
-p.proj{proj}.bool_intensities(frames_right,chan_id_n,:) = false;
-if ~isempty(p.proj{proj}.FRET_DTA)
-    p.proj{proj}.FRET_DTA(frames_right,fret_id_n,:) = NaN;
-end
-if ~isempty(p.proj{proj}.S_DTA)
-    p.proj{proj}.S_DTA(frames_right,s_id_n,:) = NaN;
-end
+% p.proj{proj}.intensities_crossCorr(frames_right,chan_id_n,:) = NaN;
+% p.proj{proj}.intensities_denoise(frames_right,chan_id_n,:) = NaN;
+% p.proj{proj}.intensities_DTA(frames_right,chan_id_n,:) = NaN;
+% p.proj{proj}.bool_intensities(frames_right,chan_id_n,:) = false;
+% if ~isempty(p.proj{proj}.FRET_DTA)
+%     p.proj{proj}.FRET_DTA(frames_right,fret_id_n,:) = NaN;
+% end
+% if ~isempty(p.proj{proj}.S_DTA)
+%     p.proj{proj}.S_DTA(frames_right,s_id_n,:) = NaN;
+% end
 
 % update processing parameters
 p.proj{proj}.TP.prm = p.proj{proj}.TP.prm(mol_id);

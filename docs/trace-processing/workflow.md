@@ -157,6 +157,33 @@ To correct intensities from background:
 1. If desired, apply the same parameter settings to all molecules by pressing 
    ![all](../assets/images/gui/TP-but-all.png "all") in panel 
    [Background correction](components/panel-background-correction.html)
+   
+   
+---
+   
+### Trajectory re-sampling
+{: .no_toc }
+
+When the signal-to-noise ratio of the intensity trajectories is too low, the overlapping between FRET states becomes to large to be resolved and the determination of states and state transition kinetics becomes nearly impossible. 
+One way to remedy to such issue is to re-sample the intensity trajectories using a sampling time larger than the original one. 
+
+![Trajectory re-sampling](../assets/images/figures/TP-workflow-scheme-resampling.png "Trajectory re-sampling")
+
+Larger sampling times immediately produce higher SNRs but worsen the time resolution. 
+It is therefore to the user to determine the best compromise between SNR and the resolution of state transition kinetics to improve the separation between the states.
+
+To re-sample trajectories:
+
+{: .procedure }
+1. Set the 
+   [Trajectory sampling time](components/panel-resampling.html#trajectory-sampling-time)  
+     
+1. Update intensity calculation and display by pressing 
+   ![UPDATE](../assets/images/gui/TP-but-update.png "UPDATE") in the 
+   [Control area](components/area-control.html)
+
+**Note:** *The trajectory sampling time is used to re-sample all trajectories in the molecule set.*
+
 
 
 ---
@@ -220,6 +247,8 @@ To correct intensities from cross-talks:
 1. Update data correction and display by pressing 
    ![UPDATE](../assets/images/gui/TP-but-update.png "UPDATE") in the 
    [Control area](components/area-control.html)
+
+**Note:** *The set of cross-talk coefficients is used to correct all trajectories in the molecule set.*
 
 
 ---

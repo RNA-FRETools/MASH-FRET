@@ -8,7 +8,7 @@ p = h.param;
 proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
 perSec = p.proj{proj}.cnt_p_sec;
-rate = p.proj{proj}.frame_rate;
+rate = p.proj{proj}.resampling_time;
 
 % parameters from BG analyser
 m = g.curr_m;

@@ -7,7 +7,7 @@ spltime = str2double(get(obj,'string'));
 if ~(isnumeric(spltime) && ~isempty(spltime) && spltime>0)
     helpdlg('Video sampling time must be a strictly positive number.');
 else
-    proj.frame_rate = spltime;
+    proj.sampling_time = spltime;
     
     % save modifications
     h_fig.UserData = proj;

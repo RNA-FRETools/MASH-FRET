@@ -13,7 +13,7 @@ permalink: /trace-processing/components.html
 # Components
 {: .no_toc }
 
-Trace processing is composed of nine panels **(1-9)**, a control area **(10)**, and one visualization area **(11)**.
+Trace processing is composed of ten panels **(1-10)**, a control area **(11)**, and one visualization area **(12)**.
 
 To learn about individual components, please refer to the corresponding content:
 

@@ -38,7 +38,7 @@ end
 proj = p.curr_proj;
 nChan = p.proj{proj}.nb_channel;
 inSec = p.proj{proj}.time_in_sec;
-expT = p.proj{proj}.frame_rate;
+expT = p.proj{proj}.sampling_time;
 labels =  p.proj{proj}.labels;
 curr = p.proj{proj}.VP.curr;
 meth = curr.edit{1}{1}(1);

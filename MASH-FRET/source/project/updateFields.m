@@ -95,8 +95,7 @@ if strcmp(opt,'imgAxes') || strcmp(opt, 'movPr') || strcmp(opt, 'all')
 end
 
 % Trace processing module
-if strcmp(opt, 'ttPr') || strcmp(opt, 'subImg') || strcmp(opt, 'cross') || ...
-        strcmp(opt, 'all')
+if strcmp(opt, 'ttPr') || strcmp(opt, 'subImg') || strcmp(opt, 'all')
     
     p = h.param;
     if isModuleOn(p,'TP')

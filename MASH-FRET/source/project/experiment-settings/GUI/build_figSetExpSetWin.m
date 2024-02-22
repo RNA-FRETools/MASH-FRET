@@ -137,6 +137,10 @@ if isfield(h,'radio_impFileMulti') && ishandle(h.radio_impFileMulti)
     h_fig.UserData = proj;
 end
 
+% adjust trajectory import options to experiment
+ud_trajImportOpt(h_fig);
+
+% update window
 ud_expSetWin(h_fig);
 
 % set colormap

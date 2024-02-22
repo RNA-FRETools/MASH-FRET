@@ -16,7 +16,7 @@ nFRET = size(FRET,1);
 S = p.proj{proj}.S;
 nS = size(S,1);
 inSec = p.proj{proj}.time_in_sec;
-expT = p.proj{proj}.frame_rate; % this is truely the exposure time
+expT = p.proj{proj}.resampling_time; % this is truely the exposure time
 
 if h_axes==h.tm.axes_ovrAll_1
     fcn = fcn_ovrAll_1;

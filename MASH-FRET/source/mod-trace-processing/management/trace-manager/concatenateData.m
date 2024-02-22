@@ -1,5 +1,11 @@
 function ok = concatenateData(h_fig)
-% Concatenates traces and calculate new axis limits if necessary
+% ok = concatenateData(h_fig)
+%
+% Concatenates individual molecule data and calculate new axis limits if 
+% necessary.
+%
+% h_fig: handle to figure "Trace manager"
+% ok: logical 1 for success, 0 for failure
 
 % Last update by MH, 21.1.2020
 % >> change data organization by not storing histogram anymore (calculation
@@ -41,7 +47,7 @@ nFRET = size(FRET,1);
 S = p.proj{proj}.S;
 nS = size(S,1);
 perSec = p.proj{proj}.cnt_p_sec;
-expt = p.proj{proj}.frame_rate;
+expt = p.proj{proj}.resampling_time;
 
 % get time traces
 intensities = p.proj{proj}.intensities_denoise;

@@ -17,7 +17,7 @@ exc = p.proj{proj}.excitations;
 nChan = p.proj{proj}.nb_channel;
 chanExc = p.proj{proj}.chanExc;
 perSec = p.proj{proj}.cnt_p_sec;
-expT = p.proj{proj}.frame_rate;
+expT = p.proj{proj}.resampling_time;
 prm = p.proj{proj}.HA.prm{tag,tpe};
 curr = p.proj{proj}.HA.curr{tag,tpe};
 

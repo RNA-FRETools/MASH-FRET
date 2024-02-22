@@ -18,7 +18,7 @@ a = strfind(figname, 'MASH-FRET ');
 b = a + numel('MASH-FRET ');
 p.MASH_version = figname(b:end);
 p.proj_file = '';
-p.module = '';
+% p.module = '';
 
 % experiment settings
 folderRoot = h.param.folderRoot;
@@ -34,7 +34,7 @@ p.chanExc = [];
 p.FRET = [];
 p.S = [];
 p.exp_parameters = es.expCond;
-p.frame_rate = 1;
+p.sampling_time = 1;
 p.colours = {};
 p.traj_import_opt = [];
 p.hist_import_opt = [];
@@ -64,6 +64,7 @@ p.time_in_sec = false;
 p.cnt_p_sec = false;
 p.intensities = [];
 p.intensities_bgCorr = [];
+p.intensities_bin = [];
 p.intensities_crossCorr = [];
 p.intensities_denoise = [];
 p.bool_intensities = [];

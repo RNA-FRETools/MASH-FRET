@@ -62,4 +62,4 @@ elseif proj.is_movie
 end
 
 % store new sampling time
-proj.frame_rate = splt;
+proj.sampling_time = splt;

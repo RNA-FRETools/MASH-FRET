@@ -57,6 +57,22 @@ for i = slct
 end
 str_act = str_act(1:end-2);
 
+% erase video store in memory
+for i = slct
+    if ~(isfield(h,'movie') && isfield(h.movie,'movie') && ...
+            ~isempty(h.movie.movie))
+        break
+    end
+    for c = 1:numel(p.proj{i}.movie_file)
+        if ~isFullLengthVideo(p.proj{i}.movie_file{c},h_fig)
+            continue
+        end
+        h.movie.movie = [];
+        h.movie.file = '';
+        break
+    end
+end
+
 % update current project, molecule index, data type and molecule subgroup
 p.proj(slct) = [];
 p = adjustProjIndexLists(p,-slct,[]);

@@ -21,6 +21,7 @@ end
 def = p.ttPr.defProjPrm;
 
 nChan = p.proj{proj}.nb_channel;
+expt = p.proj{proj}.resampling_time;
 exc = p.proj{proj}.excitations;
 nExc = p.proj{proj}.nb_excitations;
 chanExc = p.proj{proj}.chanExc;
@@ -100,6 +101,9 @@ if nExc==0
     gen{4}{2} = [];
 end
 
+% Time axis
+gen{5} = expt; % trajectory re-sampling time
+
 def.general = adjustVal(def.general, gen);
 
 if def.general{1}(1) > nExc
@@ -107,6 +111,7 @@ if def.general{1}(1) > nExc
 end
 def.general{2}([1:5,7]) = gen{2}([1:5,7]);
 def.general{3} = gen{3};
+def.general{5} = gen{5};
 
 
 % Molecule parameters
@@ -382,6 +387,8 @@ if def.mol{4}{1}(1)==8 && ~(isfield(p.proj{proj},'FRET_DTA_import') && ...
         ~isempty(p.proj{proj}.FRET_DTA_import))
     def.mol{4}{1}(1) = 6; % STaSI
 end
+
+% imposes use of "Imported" method when imported dicr. FRET are available
 if isfield(p.proj{proj},'FRET_DTA_import') && ...
         ~isempty(p.proj{proj}.FRET_DTA_import)
     def.mol{4}{1}(1) = 8;

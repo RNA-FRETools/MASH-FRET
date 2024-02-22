@@ -1,7 +1,7 @@
 function s = intAscii2mash(pname, fname, s, p, h_fig)
 
 % Last update, 8.4.2019 by MH: fix errors occurring when improting discretized FRET traces
-% update, 3.4.2019 by MH: (1) correct boolean data according to each molecule's NaN (2) correct discretized FRET import for more than one laser excitation: import FRET data at donor excitation, fill missing discretized FRET data with NaNs instead of falses and manage import failure. (2) change "frame_rate" name to "exptime"
+% update, 3.4.2019 by MH: (1) correct boolean data according to each molecule's NaN (2) correct discretized FRET import for more than one laser excitation: import FRET data at donor excitation, fill missing discretized FRET data with NaNs instead of falses and manage import failure. (2) change "sampling_time" name to "exptime"
 % update 28.3.2019 by MH: (1) Display all function and code line when an error occurs (2) Fix error when importing coordinates from file (3) Manage error when importing a number of coordinates from file different from number of intensity-time traces
 
 % defaults
@@ -12,7 +12,7 @@ bufferSz = 1e3;
 islb = size(fname,2)>1;
 
 % collect project parameters
-exptime = s.frame_rate;
+exptime = s.sampling_time;
 nChan = s.nb_channel;
 nExc = s.nb_excitations;
 cip = s.coord_imp_param;
@@ -481,12 +481,13 @@ if isBet && size(p{6}{6},1)~=N
     p{6}{6} = [];
 end
 
-if exptime~=s.frame_rate
-    s.frame_rate = exptime;
+if exptime~=s.sampling_time
+    s.sampling_time = exptime;
     s.spltime_from_video = false;
 end
 s.pix_intgr = [1 1]; % intgr. area dim. + nb of intgr pix
 
+s.folderRoot = pname;
 s.is_coord = ~isempty(coord);
 s.coord_file = coordfile; % coordinates path/file
 s.coord_imp_param = cip; % coordinates import parameters

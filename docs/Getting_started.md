@@ -55,8 +55,7 @@ When you start MASH-FRET the **main user interface** opens.
 <a href="assets/images/gui/interface-default.png"><img src="assets/images/gui/interface-default.png" /></a>
 
 The main user interface appears in its default layout and includes:
-* a **menu bar** that allows the execution of program <u>routines</u>, the setting of <u>file overwriting</u> options and <u>time/intensity units</u>, as well as the access to <u>external tools</u> 
-[Bin time axis](trace-processing/functionalities/bin-trajectories.html#bin-traces-and-export-ascii-files) and 
+* a **menu bar** that allows the execution of program <u>routines</u>, the setting of <u>file overwriting</u> options and <u>time/intensity units</u>, as well as the access to <u>external tool</u> 
 [Check toolbox dependencies](System_requirements.html).
 * a [**Project management area**](#project-management-area) for managing the opened projects,
 * a **tool bar** for accessing the different <u>modules</u>,
@@ -76,7 +75,8 @@ You can start a project in three different ways:
 
 * [`Simulate data`](tutorials/set-experiment-settings/simulate-data.html#tutorials_steps): from scratch, by creating a single molecule video and/or trajectories, 
 * [`Import video`](tutorials/set-experiment-settings/import-video.html#tutorials_steps): from an existing single molecule video file, 
-* [`Import trajectories`](tutorials/set-experiment-settings/import-trajectories.html#tutorials_steps): from an existing set of trajectories written in files.
+* [`Import trajectories`](tutorials/set-experiment-settings/import-trajectories.html#tutorials_steps): from an existing set of trajectories written in files, 
+* [`Import histogram`](tutorials/set-experiment-settings/import-histogram.html#tutorials_steps): from an existing histogram file.
 
 Select the appropriate option and follow the instructions given in the corresponding section to inform MASH about your experiment settings.
 

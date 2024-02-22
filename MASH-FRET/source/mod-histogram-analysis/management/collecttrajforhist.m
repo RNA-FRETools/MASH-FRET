@@ -77,10 +77,10 @@ elseif tpe<=(2*nChan*nExc + nDE) % total intensity
     for n = 1:N
         I_n = sum(I_den(:,((n-1)*nChan+1):(n*nChan),l0),2);
         if all(isnan(I_n))
-            traj = cat(2,traj,...
+            traj = catwithdimextension(2,traj,...
                 sum(I(:,((n-1)*nChan+1):(n*nChan),l0),2));
         else
-            traj = cat(2,traj,I_n);
+            traj = catwithdimextension(2,traj,I_n);
         end
     end
 
@@ -91,10 +91,10 @@ elseif tpe<=(2*nChan*nExc + 2*nDE) % total discr. intensity
     for n = 1:N
         I_n = sum(I_discr(:,((n-1)*nChan+1):(n*nChan),l0),2);
         if all(isnan(I_n))
-            traj = cat(2,traj,...
+            traj = catwithdimextension(2,traj,...
                 sum(I(:,((n-1)*nChan+1):(n*nChan),l0),2));
         else
-            traj = cat(2,traj,I_n);
+            traj = catwithdimextension(2,traj,I_n);
         end
     end
 

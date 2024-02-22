@@ -410,7 +410,8 @@ dat.coord = []; % molecule coordinates in all channels
 dat.coord_incl = true(1,N);
 dat.is_coord = 0;
 
-dat.frame_rate = 1/rate;
+dat.sampling_time = 1/rate;
+dat.resampling_time = dat.sampling_time;
 dat.pix_intgr = [1 1]; % intgr. area dim. + nb of intgr pix
 
 dat.intensities_bgCorr = nan(L,2*N);

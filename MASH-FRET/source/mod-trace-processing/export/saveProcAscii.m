@@ -23,8 +23,7 @@ h = guidata(h_fig);
 % (openExpTtpr.m)--> can be called in a routine:
 fromTT = isequalwithequalnans(p, h.param);
 
-%% collect project parameters
-
+% collect project parameters
 proj = p.curr_proj;
 nC = p.proj{proj}.nb_channel;
 coord = p.proj{proj}.coord;
@@ -32,7 +31,7 @@ molTagNames = p.proj{proj}.molTagNames;
 molTag = p.proj{proj}.molTag;
 exc = p.proj{proj}.excitations;
 chanExc = p.proj{proj}.chanExc;
-expT = p.proj{proj}.frame_rate; % MH: this is the EXPOSURE TIME
+expT = p.proj{proj}.resampling_time; % MH: this is the EXPOSURE TIME
 FRET = p.proj{proj}.FRET;
 S = p.proj{proj}.S;
 FRET_DTA = p.proj{proj}.FRET_DTA;
@@ -82,7 +81,7 @@ if ~fromTT
 end
 
 
-%% collect export options: traces
+% collect export options: traces
 
 saveTr = xp.traces{1}(1);
 if saveTr
@@ -130,7 +129,7 @@ if saveTr
     pname_xp = setCorrectPath([pname 'parameters'], h_fig);
 end
 
-%% collect export options: histograms
+% collect export options: histograms
 
 saveHist = xp.hist{1}(1);
 if saveHist
@@ -152,7 +151,7 @@ if saveHist
     maxS = xp.hist{2}(3,4);
 end
 
-%% collect export options: dwell-times
+% collect export options: dwell-times
 
 saveDt = xp.dt{1};
 if saveDt
@@ -194,7 +193,7 @@ else
 end
 
 
-%% collect export options: figures
+% collect export options: figures
 
 saveFig = xp.fig{1}(1);
 if saveFig
@@ -233,7 +232,7 @@ if saveFig
     end
 end
 
-%% export data to files: 
+% export data to files: 
 
 setContPan('Export processed data for selected molecules ...','process',...
     h_fig);
@@ -324,7 +323,7 @@ try
             beta = ones(1,nFRET);
         end
 
-        %% export traces
+        % export traces
 
         if saveTr && saveAscii
             % initialize data to write in file
@@ -475,7 +474,7 @@ try
         end
 
 
-        %% histograms
+        % histograms
 
         if saveHist
             if saveHst_I
@@ -689,7 +688,7 @@ try
             end
         end
 
-        %% Dwell-times
+        % Dwell-times
 
         if saveDt
             if (saveDt_I  || saveKin) && discrInt
@@ -798,7 +797,7 @@ try
             end
         end
 
-        %% Figures
+        % Figures
         if saveFig
             if m == m_start
                 h_fig_mol = [];
@@ -945,7 +944,7 @@ if saveTr
 end
 
 
-%% Traces (complement) and build action
+% Traces (complement) and build action
 
 str = '';
 if saveTr
@@ -1134,7 +1133,7 @@ if saveDt
     end
 end
 
-%% Figure complement
+% Figure complement
 if saveFig && figFmt == 1 % *.pdf
     
     % build file name

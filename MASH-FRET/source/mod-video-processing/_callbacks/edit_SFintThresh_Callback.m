@@ -16,7 +16,7 @@ end
 % collect VP parameters
 p = h.param;
 curr = p.proj{p.curr_proj}.VP.curr;
-expT = p.proj{p.curr_proj}.frame_rate;
+expT = p.proj{p.curr_proj}.sampling_time;
 persec = p.proj{p.curr_proj}.cnt_p_sec;
 meth = curr.gen_crd{2}{1}(1);
 coordslct = curr.gen_crd{2}{5};

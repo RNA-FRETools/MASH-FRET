@@ -102,7 +102,7 @@ To correct intensities from background light:
    [Background correction settings](../../trace-processing/components/panel-background-correction.html#background-correction-settings) for each trace selected in menu **(a)**:  
      
    <u>default</u>: method `<N median values>`  
-   <u>default</u>: parameter **(d)** to 20 pixels  
+   <u>default</u>: option **(h)** activated and parameter **(d)** to 20 pixels  
      
 1. Activate option 
    [Apply background correction](../../trace-processing/components/panel-background-correction.html#apply-background-correction) for each trace selected in menu **(a)** of 
@@ -110,6 +110,14 @@ To correct intensities from background light:
      
 1. Press 
    ![all](../../assets/images/gui/TP-but-all.png "all") to apply the same settings to all molecules
+
+To re-sample trajectories and increase SNR:
+
+{: .procedure }
+1. Set the 
+    [Trajectory sampling time](../../trace-processing/components/panel-resampling.html#trajectory-sampling-time) to a larger value:  
+	  
+   <u>default</u>: [Trajectory sampling time](../../trace-processing/components/panel-resampling.html#trajectory-sampling-time) set to original video/trajectory sampling time  
 
 To correct intensities from cross-talks (if you are working with single detection channel and single laser illumination, ignore this step):
 

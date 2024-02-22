@@ -17,7 +17,7 @@ minInt = Inf;
 % collect video processing parameters
 h = guidata(h_fig);
 p = h.param;
-expT = p.proj{p.curr_proj}.frame_rate;
+expT = p.proj{p.curr_proj}.sampling_time;
 vidfile = p.proj{p.curr_proj}.movie_file;
 viddat = p.proj{p.curr_proj}.movie_dat;
 labels = p.proj{p.curr_proj}.labels;

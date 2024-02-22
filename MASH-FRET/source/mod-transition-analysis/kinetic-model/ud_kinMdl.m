@@ -16,7 +16,7 @@ end
 proj = p.curr_proj;
 tpe = p.TDP.curr_type(proj);
 tag = p.TDP.curr_tag(proj);
-expT = p.proj{proj}.frame_rate;
+expT = p.proj{proj}.resampling_time;
 curr = p.proj{proj}.TA.curr{tag,tpe};
 prm = p.proj{proj}.TA.prm{tag,tpe};
 

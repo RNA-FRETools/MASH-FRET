@@ -36,7 +36,7 @@ end
 dt = p_proj.dt(:,tpe);
 m_incl = p_proj.coord_incl;
 molTag = p_proj.molTag;
-expT = p_proj.frame_rate;
+expT = p_proj.resampling_time;
 
 % abort if no transitions are available
 if ~sum(~cellfun(@isempty,dt))

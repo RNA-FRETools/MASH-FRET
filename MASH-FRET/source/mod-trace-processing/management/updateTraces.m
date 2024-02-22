@@ -24,7 +24,7 @@ else
 end
 
 % reset traces according to changes in parameters
-[p, opt2] = resetMol(mol, opt1, p);
+[p,opt2] = resetMol(mol, opt1, p);
 
 p = plotSubImg(mol, p, axes_molImg);
 
@@ -42,7 +42,8 @@ end
 
 if strcmp(opt2, 'gamma') || strcmp(opt2, 'debleach') || ...
         strcmp(opt2, 'denoise') || strcmp(opt2, 'cross') || ...
-        strcmp(opt2, 'ttBg') || strcmp(opt2, 'ttPr')
+        strcmp(opt2, 'resample') || strcmp(opt2, 'ttBg') || ...
+        strcmp(opt2, 'ttPr')
     p = updateGammaFactor(h_fig,mol,p);
 end
 

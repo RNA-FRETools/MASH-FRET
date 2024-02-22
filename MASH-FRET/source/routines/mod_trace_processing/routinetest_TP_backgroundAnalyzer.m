@@ -57,11 +57,6 @@ for f = 1:numel(mash_files)
 
     % test sample navigation
     disp(cat(2,prefix,'>> test sample navigation...'));
-    h_but = getHandlePanelExpandButton(h.uipanel_TP_sampleManagement,...
-        h_fig);
-    if strcmp(h_but.String,char(9660))
-        pushbutton_panelCollapse_Callback(h_but,[],h_fig);
-    end
     N = numel(get(h.listbox_molNb,'string'));
     n = randsample(2:(N-1),1);
     set(q.edit_curmol,'string',num2str(n));

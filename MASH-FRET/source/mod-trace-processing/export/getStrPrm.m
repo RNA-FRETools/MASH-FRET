@@ -4,9 +4,6 @@ function str_prm = getStrPrm(s, m, incl, h_fig)
 % update by MH, 24.4.2019: adapt code to multiple molecule tags
 % update by MH, 3.4.2019: (1) fix error occuring when exporting ASCII: cross-talks section is adapted to new parameter formats (see project/setDefPrm_traces.m), (2) add new input argument "incl" to correct exported molecule index (m_i and N_i), (3) correct photobleaching method, (4) write to file new parameters: date of export, MASH version at project creation to file (in addition to version at last saving) and molecule tag, (5) compact dwell time analysis section, (6) improve file aesthetic and efficacity by replacing channel indexes by labels, removing html tags in data labels taken from popupmenus, replace sprintf(...) by num2str(...) to get pretty number formats, add categories "PROJECT", "VIDEO PROCESSING", "EXPERIMENT SETTINGS" and "MOLECULE"
 
-
-%% collect parameters
-
 % collect project parameters
 exc = s.excitations;
 nExc = numel(exc);
@@ -15,7 +12,8 @@ chanExc = s.chanExc;
 labels = s.labels;
 tag = s.molTag;
 tagName = s.molTagNames;
-exptime = s.frame_rate;
+splt0 = s.sampling_time;
+splt = s.resampling_time;
 FRET = s.FRET; 
 S = s.S;
 projprm = s.exp_parameters;
@@ -81,9 +79,6 @@ figname = get(h_fig, 'Name');
 a = strfind(figname, 'MASH-FRET ');
 b = a + numel('MASH-FRET ');
 vers = figname(b:end);
-
-
-%% build individual parameter strings
 
 % excitation wavelength
 str_wl = [];
@@ -179,7 +174,7 @@ else
     str_tags(end) = [];
 end
 
-%% background corrections
+% background corrections
 str_bg = '';
 for l = 1:nExc
     for c = 1:nChan
@@ -191,7 +186,7 @@ for l = 1:nExc
             
             bgInt = prm_bg{3}{l,c}(prm_bg{2}(l,c),3);
             if perSec
-                bgInt = bgInt/exptime;
+                bgInt = bgInt/splt;
             end
             
             if prm_bg{1}(l,c,2)
@@ -258,7 +253,7 @@ for l = 1:nExc
     end
 end
 
-%% cross-talks
+% cross-talks
 str_fact = '';
 if nChan>1
     for c = 1:nChan
@@ -314,7 +309,7 @@ else
 end
 
 
-%% factor corrections
+% factor corrections
 if nFRET>0
     for i = 1:nFRET
         str_fact = cat(2,str_fact,'\tcorrection factors for FRET_',...
@@ -326,7 +321,7 @@ else
     str_fact = cat(2,str_fact,'\tno gamma or beta correction possible\n');
 end
 
-%% denoising
+% denoising
 if prm_den{1}(2)
     str_den = cat(2,'\n\tmethod: "', str_meth_den{prm_den{1}(1)},'"');
     switch prm_den{1}(1)
@@ -366,11 +361,11 @@ else
     str_den = 'none\n';
 end
 
-%% photobleaching
+% photobleaching
 if prm_bleach{1}(1)
     if inSec
         str_bleach = cat(2,'\n\tcutoff time: ',...
-            num2str(prm_bleach{1}(5)*exptime),' seconds');
+            num2str(prm_bleach{1}(5)*splt),' seconds');
     else
         str_bleach = cat(2,'\n\tcutoff frame: ',num2str(prm_bleach{1}(5)));
     end
@@ -395,7 +390,7 @@ else
 end
 
 
-%% dwell-time analysis
+% dwell-time analysis
 if prm_dta{1}(2)==1 % to bottom only
     ids = 1:(nFRET+nS);
     str_dta = cat(2,'method "', str_meth_dta{prm_dta{1}(1)},...
@@ -578,7 +573,7 @@ for i = ids
 end
 
 
-%% build final parameter string
+% build final parameter string
 
 str_prm = cat(2,'PROJECT\n',...
     '> project file: ',proj_file,'\n', ...
@@ -588,7 +583,8 @@ str_prm = cat(2,'PROJECT\n',...
     '> file exported with MASH-FRET version: ',vers,'\n\n', ... 
     'VIDEO PROCESSING\n',...
     '> movie file',movie_file,'\n', ...
-    '> frame rate: ',num2str(1/s.frame_rate),' s-1 \n', ...
+    '> frame rate: ',num2str(1/s.sampling_time),' s-1 \n', ...
+    '> frame rate after re-sampling: ',num2str(1/s.resampling_time),' s-1 \n', ...
     '> pixel integration area: ',num2str(s.pix_intgr(1)),' x ',num2str(s.pix_intgr(1)),'\n', ... 
     '> number of brightest pixels integrated: ',num2str(s.pix_intgr(2)),'\n', ...
     '> coordinates file: ',coord_file,'\n\n', ... 

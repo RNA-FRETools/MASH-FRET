@@ -11,13 +11,13 @@ nav_order: 2
 # Histogram and plot
 {: .no_toc }
 
-Histogram and plot is the first panel of module Histograms analysis. 
+Histogram and plot is the first panel of module Histogram analysis. 
 Access the panel content by pressing 
 ![Bottom arrow](../../assets/images/gui/interface-but-bottomarrow.png). 
 The panel closes automatically after other panels open or after pressing 
 ![Top arrow](../../assets/images/gui/interface-but-toparrow.png). 
 
-Use this panel to select data and build histogram.
+Use this panel to build histograms in simulation-, video- or trajectory-based projects.
 
 <a class="plain" href="../../assets/images/gui/HA-panel-plot.png"><img src="../../assets/images/gui/HA-panel-plot.png" style="max-width: 365px;"/></a>
 

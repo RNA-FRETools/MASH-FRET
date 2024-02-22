@@ -13,7 +13,7 @@ end
 h = guidata(h_fig);
 p = h.param;
 nChan = p.proj{p.curr_proj}.nb_channel;
-expT = p.proj{p.curr_proj}.frame_rate;
+expT = p.proj{p.curr_proj}.sampling_time;
 persec = p.proj{p.curr_proj}.cnt_p_sec;
 curr = p.proj{p.curr_proj}.VP.curr;
 def = p.proj{p.curr_proj}.VP.def;

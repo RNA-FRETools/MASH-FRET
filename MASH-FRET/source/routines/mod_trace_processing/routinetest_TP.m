@@ -99,6 +99,12 @@ try
             routinetest_TP_backgroundAnalyzer(h_fig,p,[subprefix,'>> ']);
         end
     end
+    
+    % test panel sampling
+    if strcmp(opt,'all') || strcmp(opt,'re-sampling')
+        disp('test panel re-sampling...');
+        routinetest_TP_resampling(h_fig,p,subprefix);
+    end
 
     % test panel cross-talks
     if strcmp(opt,'all') || strcmp(opt,'cross-talks')
@@ -152,7 +158,7 @@ catch err
         close(h.tm.figure_traceMngr);
     end
     if isfield(h,'optExpTr') && isfield(h.optExpTr,'figure_optExpTr') && ...
-            ishande(h.optExpTr.figure_optExpTr)
+            ishandle(h.optExpTr.figure_optExpTr)
         close(h.optExpTr.figure_optExpTr);
     end
     if isfield(h,'figure_itgExpOpt') && ishandle(h.figure_itgExpOpt)

@@ -140,6 +140,9 @@ for o = 1:O
         case h.uipanel_TP_backgroundCorrection
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('background correction'),obj(o)));
+        case h.uipanel_TP_sampling
+            hBut = cat(2,hBut,mkbutton(cdata,...
+                getDocLink('resampling'),obj(o)));
         case h_pushbutton_bga_save
             hBut = cat(2,hBut,mkbutton(cdata,...
                 getDocLink('background analyzer'),obj(o),[2,1]));

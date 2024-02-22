@@ -6,7 +6,7 @@ proj = p.curr_proj;
 mol = p.ttPr.curr_mol(proj);
 nExc = p.proj{proj}.nb_excitations;
 len = nExc*size(p.proj{proj}.intensities,1);
-expT = p.proj{proj}.frame_rate;
+expT = p.proj{proj}.resampling_time;
 inSec = p.proj{proj}.time_in_sec;
 method = p.proj{proj}.TP.curr{mol}{2}{1}(2);
 

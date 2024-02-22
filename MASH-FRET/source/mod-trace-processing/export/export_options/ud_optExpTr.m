@@ -8,7 +8,7 @@ proj = p.curr_proj;
 prm = p.proj{proj}.TP.exp;
 nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
-expT = p.proj{proj}.frame_rate;
+expT = p.proj{proj}.resampling_time;
 perSec = p.proj{proj}.cnt_p_sec;
 
 set(h.optExpTr.checkbox_molValid, 'Value', prm.mol_valid);

@@ -29,7 +29,7 @@ else
     pname = proj.hist_file{1};
     fname = proj.hist_file{2};
 end
-delimchar = collectsdelimchar(proj.hist_import_opt(2));
+delimchar = collectsdelimchar(delim);
 fdat = readfirstflines(pname,fname,delimchar,maxflines);
 
 % store file content

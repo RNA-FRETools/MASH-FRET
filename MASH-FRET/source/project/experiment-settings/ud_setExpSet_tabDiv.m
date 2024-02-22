@@ -15,7 +15,7 @@ if proj.spltime_from_video || proj.spltime_from_traj
 else
     set(h.edit_splTime,'enable','on');
 end
-set(h.edit_splTime,'string',proj.frame_rate);
+set(h.edit_splTime,'string',proj.sampling_time);
 
 % refresh molecule name
 set(h.edit_molName,'string',proj.exp_parameters{2,2});

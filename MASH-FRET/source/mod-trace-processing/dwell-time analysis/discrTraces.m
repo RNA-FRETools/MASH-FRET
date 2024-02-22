@@ -52,7 +52,10 @@ if nF>0
     end
 end
 if isfretimp
-    fret_DTA_imp = p.proj{proj}.FRET_DTA_import(:,((m-1)*nF+1):m*nF)';
+    splt0 = p.proj{proj}.sampling_time*nExc;
+    splt = p.proj{proj}.resampling_time*nExc;
+    fret_DTA_imp = resample(...
+        p.proj{proj}.FRET_DTA_import(:,((m-1)*nF+1):m*nF),splt,splt0)';
 else
     fret_DTA_imp = NaN(size(p.proj{proj}.FRET_DTA(((m-1)*nF+1):m*nF)))';
 end
@@ -64,7 +67,6 @@ end
     
 % collect corrected,smoothed and cut intensity-time traces
 incl = p.proj{proj}.bool_intensities(:,m);
-L = size(incl,1);
 I_den = p.proj{proj}.intensities_denoise(incl,((m-1)*nC+1):m*nC,:);
 
 % initialize results
@@ -103,7 +105,7 @@ if toBottom
 %         incl_imp(1:L) = true;
         incl_imp = incl;
         prm = permute(prm_DTA{2}(meth,:,1:nF),[3,2,1]);
-        fret_DTA = (getDiscr(meth,cat(3,f_tr,fret_DTA_imp(incl_imp)),...
+        fret_DTA = (getDiscr(meth,cat(3,f_tr,fret_DTA_imp(:,incl_imp)),...
             true(nF,sum(incl_imp)),prm,[],calc,actstr,h_fig))';
         bot_DTA = fret_DTA;
         for s = 1:nS

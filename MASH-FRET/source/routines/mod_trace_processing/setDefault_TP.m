@@ -66,6 +66,13 @@ for dat = 1:nDat
 end
 pushbutton_applyAll_ttBg_Callback(h.pushbutton_applyAll_ttBg,[],h_fig);
 
+% set default resampling parameters
+h_but = getHandlePanelExpandButton(h.uipanel_TP_sampling,h_fig);
+if strcmp(h_but.String,char(9660))
+    pushbutton_panelCollapse_Callback(h_but,[],h_fig);
+end
+set_TP_resampling(proj.sampling_time,h_fig);
+
 % set default cross-talks parameters
 h_but = getHandlePanelExpandButton(h.uipanel_TP_crossTalks,h_fig);
 if strcmp(h_but.String,char(9660))
