@@ -42,5 +42,9 @@ kij = kij/expt;
 
 % calculates state lifetimes
 mu_lt = (1./sum(kij,2))';
+
+% use trajectory length as liftime for one-state trajectories
+mu_lt(isinf(mu_lt)) = sum(dt(:,1));
+
 dt(:,1) = mu_lt(t_mu)';
 lt = dt;

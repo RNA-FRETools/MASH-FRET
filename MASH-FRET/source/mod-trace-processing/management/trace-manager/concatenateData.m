@@ -1,5 +1,11 @@
 function ok = concatenateData(h_fig)
-% Concatenates traces and calculate new axis limits if necessary
+% ok = concatenateData(h_fig)
+%
+% Concatenates individual molecule data and calculate new axis limits if 
+% necessary.
+%
+% h_fig: handle to figure "Trace manager"
+% ok: logical 1 for success, 0 for failure
 
 % Last update by MH, 21.1.2020
 % >> change data organization by not storing histogram anymore (calculation
