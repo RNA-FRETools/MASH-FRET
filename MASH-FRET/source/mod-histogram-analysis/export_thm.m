@@ -29,7 +29,8 @@ P = pplot{2};
 
 % get file name
 str_tpe = get(h.popupmenu_thm_tpe, 'String');
-str_tpe = strrep(strrep(strrep(str_tpe{tpe}, ' ', ''),'>',''),'.','');
+str_tpe = strrep(strrep(strrep(removeHtml(str_tpe{tpe}), ' ', ''),'>',''),...
+    '.','');
 if tag>1
     str_tag = get(h.popupmenu_thm_tag, 'String');
     str_tag = cat(2,'_',strrep(strrep(strrep(removeHtml(str_tag{tag}),...
