@@ -8,7 +8,7 @@
 
 
 bool optDPH(double* T, double* t, double* a, double* logL, 
-        const double* cnts, int J, int nDt, int* nb);
+        const double* cnts, int J, int nDt, int* nb, const bool disp);
 
 void EstepDPH(double* B, double* Nij, double* Ni, const double* P, 
         const double* a, const double* T, const double* t, int nDt, int J, 

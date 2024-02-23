@@ -66,5 +66,11 @@ if isfield(prm,'betafile') && ~isempty(prm.betafile)
         h_fig0);
 end
 
+% set trajectory files
+if isfield(prm,'histfile') && ~isempty(prm.histfile)
+    push_setExpSet_impHistFiles({p.annexpth,prm.histfile},...
+        [],h_fig,h_fig0);
+end
+
 
 

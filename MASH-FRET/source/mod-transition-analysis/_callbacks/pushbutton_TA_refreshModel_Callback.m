@@ -226,7 +226,8 @@ tp = ones(J);
 iter = 1;
 while iter==1 || any(tp(schm)<eps)
     schm = schm & tp>=eps;
-    [tp,err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T_bw,schm); % transition prob
+    [tp,err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T_bw,schm,...
+        ~h.mute_actions); % transition prob
     iter = iter+1;
 end
 

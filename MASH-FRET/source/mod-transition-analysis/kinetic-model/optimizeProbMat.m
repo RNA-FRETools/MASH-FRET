@@ -1,6 +1,6 @@
 function [tp_iter,tp_err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T,...
-    schm)
-% [tp,tp_err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T,schm)
+    schm,dispaction)
+% [tp,tp_err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T,schm,mute)
 %
 % Find the probability matrix that describes the input dwell time set
 %
@@ -13,6 +13,7 @@ function [tp_iter,tp_err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T,...
 % tp0: [J-by-J] matrix starting guess
 % T: number of restart
 % schm: [J-by-J] allowing (1) or forbidding (0) transitions
+% dispaction: 1 to display progress, 0 otherwise
 % tp_iter: [J-by-J] best inferrence matrix
 % tp_err: [J-by-J-by-2] negative and positive absolute mean deviation
 % ip: [1-by-J] initial state probabilities
@@ -87,7 +88,8 @@ for restart = 1:T
         plotKinMdlSim(degen,tp_iter,ones(1,J)/J,expPrm,h_fig1);
     end
 
-    [cvg,tp_iter,ip,bestgof] = baumwelch(tp_iter,B0,expPrm.seq,ones(1,J)/J);
+    [cvg,tp_iter,ip,bestgof] = baumwelch(tp_iter,B0,expPrm.seq,ones(1,J)/J,...
+        ~~dispaction);
     if ~cvg
         bestgof = -Inf;
     end

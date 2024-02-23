@@ -158,7 +158,7 @@ if guessMeth==1 % determine guess from DPH fit & BIC model selection
     end    
 
     [D,mdl,allmdl,~] = script_findBestModel(dat(:,[1,4,7,8]),Dmax,states,...
-        nL*expT,dt_bin,T_mldph,sumexp,pname);
+        nL*expT,dt_bin,T_mldph,sumexp,pname,~h.mute_actions);
     
     % collect minimum BIC values for each degeneracy tested
     BIC = Inf(V,Dmax);

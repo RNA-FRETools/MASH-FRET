@@ -1,4 +1,4 @@
-function [schmopt,mdl] = MLDPH(dt,T,sumexp,Dmax)
+function [schmopt,mdl] = MLDPH(dt,T,sumexp,Dmax,dispaction)
 
 % defaults
 schmstr = {'hyper exponential','erlang'};
@@ -19,7 +19,7 @@ for D = 1:Dmax
     % test schemes one after the other
     for s = 1:size(schm_D,3)
         fprintf(['scheme ',schmstr{s},':\n']);
-        mdl_sD = script_inferPH(dt,T,schm_D(:,:,s),'');
+        mdl_sD = script_inferPH(dt,T,schm_D(:,:,s),'',dispaction);
 
         % calculate BIC
         nfp = sum(sum(mdl_sD.schm))-1;

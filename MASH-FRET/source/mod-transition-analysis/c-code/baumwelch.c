@@ -10,8 +10,9 @@
  * doubles (B0) as fixed event probabilities filled with 0 or 1, 
  * (3) a 1-by-N cell array (seq) containing the N observation 
  * sequences of various lengths, filled with state value indexes 
- * (corresponding to row indexes in B0), and (4) a [1-by-J] row 
- * vector of doubles as starting initial state probabilities.
+ * (corresponding to row indexes in B0), (4) a [1-by-J] row 
+ * vector of doubles as starting initial state probabilities, and (5) 
+ * logical 1 to show progress display, 0 to mute.
  * Returns (1) convergence boolean (1: converged, 0: failed) (2) 
  * the optimized transition porbability matrix (T), (3) the optimized 
  * initial probabilities (ip), and (4) the log-likelihood of the HMM 
@@ -20,7 +21,7 @@
  * baumwelch_matlab.m.
  *  
  * Corresponding MATLAB executing command:
- * [ok,T,ip,logL] = baumwelch(T0,B0,seq,ip0);
+ * [ok,T,ip,logL] = baumwelch(T0,B0,seq,ip0,disp);
  *
  * MEX-compilation command:
  * mex  -R2018a -O baumwelch.c vectop.c fwdbwd.c
@@ -57,6 +58,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	const double *T0 = (const double *) mxGetDoubles(prhs[0]);
 	const double *B = (const double *) mxGetDoubles(prhs[1]);
 	const double *ip0 = (const double *) mxGetDoubles(prhs[3]);
+    const bool *disp = (const bool *) mxGetLogicals(prhs[4]);
 	
 	// prepare output
 	plhs[0] = mxCreateDoubleScalar(0);
@@ -103,7 +105,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	setVect(ip,ip0,J);
 	
 	// optimize prob.
-	*cvg = (double) optBW(Tt,ip,logL,B,(const double*) seq,J,N,V,(const double*) L);
+	*cvg = (double) optBW(Tt,ip,logL,B,(const double*) seq,J,N,V,(const double*) L, *disp);
 	
 	// back-transpose T matrix for return
 	transposeMat(T,(const double*) Tt,J,J);
@@ -112,7 +114,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 }
 
 
-bool optBW(double* T, double* ip, double* logL, const double* B, const double* seq, int J, int N, int V, const double* L){
+bool optBW(double* T, double* ip, double* logL, const double* B, const double* seq, int J, int N, int V, const double* L, const bool disp){
 	
 	// intialization
 	int i = 0, j = 0, k = 0, n = 0, nb = 0;
@@ -222,7 +224,9 @@ bool optBW(double* T, double* ip, double* logL, const double* B, const double* s
 		dmax = getMaxDiff((const double*) T,(const double*) T_prev,(const double*) ip,(const double*) ip_prev,J);
 		
 		// displays results
-		nb = dispProb(m,*logL-logL_prev,dmax,(const double*) T,(const double*) ip,J,nb);
+        if (disp){
+            nb = dispProb(m,*logL-logL_prev,dmax,(const double*) T,(const double*) ip,J,nb);
+        }
 		
 		// checks for convergence
 		if (dmax<DMIN){ cvg = 1; }
@@ -308,8 +312,8 @@ bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	char str[1000];
 	
 	/* Check for proper number of input and output arguments. */    
-	if (nrhs!=4) {
-		mexErrMsgTxt("Four input arguments are required.");
+	if (nrhs!=5) {
+		mexErrMsgTxt("Five input arguments are required.");
 		return 0;
 	} 
 	if (nlhs>4) {
@@ -324,8 +328,13 @@ bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 			mexErrMsgTxt(str);
 			return 0;
 		}
-		else if (i!=2 && !(mxIsDouble(prhs[i]))){
+		else if (i!=2 && i!=4 && !(mxIsDouble(prhs[i]))){
 			sprintf(str,"Input argument %i must be of type double.",i+1);
+			mexErrMsgTxt(str);
+			return 0;
+		}
+		else if (i==4 && !(mxIsLogical(prhs[4]))){
+			sprintf(str,"Input argument %i must be of type logical.",i+1);
 			mexErrMsgTxt(str);
 			return 0;
 		}

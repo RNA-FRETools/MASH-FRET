@@ -31,8 +31,8 @@ nExp = 1;
 boba_lft = true;
 nspl_lft = 100;
 wght = false;
-excl = true;
-rearr_lft = false;
+excl = false;
+rearr_lft = true;
 auto_lft = true;
 bin_lft = 0.01;
 niter_mldph = 5;
@@ -106,24 +106,21 @@ for tpe = 1:nTpe
             xy_axis = ratioAxis;
         end
         
-        %% TDP parameters
+        % TDP parameters
         % bin    min        max
         % empty  empty      empty
         % empty  gconv      norm 
         % count  re-arrange diag
         def{tag,tpe}.plot{1} = [xy_axis; [0,0,0]; [0,gconv,norm]; ...
             [sglcnt,rearr_tdp,inclDiag]];
-        
         % TDP matrix
         def{tag,tpe}.plot{2} = [];
-        
         % dwells, ini. val., fin. val., molecule
         def{tag,tpe}.plot{3} = [];
-        
         % colormap
         def{tag,tpe}.plot{4} = cmap;
 
-        %% Clustering parameters
+        % Clustering parameters
         % method, shape, max. nb. of states, state-dependant, restart nb., 
         % BOBA FRET, sample nb., replicate nb., cluster diagonal
         % transitions
@@ -134,77 +131,62 @@ for tpe = 1:nTpe
         % cluster colors
         def{tag,tpe}.clst_start{3} = colList(1:K,:);
 
-        %% Clustering results
+        % Clustering results
         % struct.mu, struct.a, struct.o, struct.BIC, struct.clusters, 
         % struct.fract, struct.pop
         def{tag,tpe}.clst_res{1} = [];
-
         % Jopt mean, Jopt deviation
         def{tag,tpe}.clst_res{2} = [];
-
         % nb of states in plot
         def{tag,tpe}.clst_res{3} = 1;
-
         % dwells, occ., norm. occ(1)., cum. occ, 1-cum(P)
         def{tag,tpe}.clst_res{4} = [];
 
-        %% Default fitting parameters
+        % Default fitting parameters
         % stretch, exp nb, curr exp, apply BOBA, repl nb, smple nb,weigthing, excl, re-arrange
         % model selection,stretch,exp nb,curr exp,apply BOBA,repl nb,smple nb,weigthing
         def{tag,tpe}.lft_def{1} = ...
             [auto_lft 0 nExp 1 boba_lft 20 nspl_lft wght];
-        
         % low A, start A, up A, low tau, start tau, up tau, low beta, 
         % start beta, up beta]
         def{tag,tpe}.lft_def{2} = ...
             repmat([0 0.8 Inf 0 10 Inf 0 0.5 2],nExp,1);
 
         
-        %% Actual fitting parameters (depends on J and nb. of exponentials)
+        % Actual fitting parameters (depends on J and nb. of exponentials)
         def{tag,tpe}.lft_start{1} = cell(1,2);
-        
         % used model,current state value,state binning,excl,re-arrange
         def{tag,tpe}.lft_start{2} = [1,1,bin_lft,excl,rearr_lft]; 
 
-        %% Fitting results {v-by-5} 
+        % Fitting results {v-by-5} 
         % [nDegen-by-6-by-nTrs] boba fit: amp, sig_amp, dec, sig_dec, beta, sig_beta
         def{tag,tpe}.lft_res{1} = [];
-        
         % [nDegen-by-3-by-nTrs] reference fit: amp, dec, beta
         def{tag,tpe}.lft_res{2} = [];
-        
         % [nDegen-by-3-by-nTrs] lowest boba fit: amp, dec, beta
         def{tag,tpe}.lft_res{3} = [];
-        
         % [nDegen-by-3-by-nTrs] highest boba fit: amp, dec, beta
         def{tag,tpe}.lft_res{4} = [];
-        
         % {1-by-2} {1-by-nSpl}[nDt-by-2] sample dwell time histograms and [nSpl-by-3 or -nDegen*2] sample fit results
         def{tag,tpe}.lft_res{5} = [];
         
-        %% Kinetic model start parameters
+        % Kinetic model start parameters
         % degeneracy method, dwelltime bin size (in time steps), maximum degeneracy, number of MLDPH restart
         def{tag,tpe}.mdl_start{1} = [1,dtbin,Dmax,niter_mldph];
-        
         % number of BW restart
         def{tag,tpe}.mdl_start{2} = niter_bw;
         
-        %% Kinetic model results
+        % Kinetic model results
         % transition probabilities
         def{tag,tpe}.mdl_res{1} = []; 
-        
         % transtion probability deviations
         def{tag,tpe}.mdl_res{2} = []; 
-        
         % initial probabilities
         def{tag,tpe}.mdl_res{3} = []; 
-        
         % simulated data
         def{tag,tpe}.mdl_res{4} = []; 
-        
         % final state values (incl. degenerated levels)
         def{tag,tpe}.mdl_res{5} = []; 
-        
         % BIC combinations, BIC, optimum DPH fit param
         def{tag,tpe}.mdl_res{6} = []; 
         
