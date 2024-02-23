@@ -1,6 +1,6 @@
 function [D,mdlopt,mdl,dthist] = script_findBestModel(dt,Dmax,states,...
-    expT,bin,T,sumexp,savecurve)
-% [D,mdlopt,mdl,dthist] = script_findBestModel(dt,Dmax,states,expT,bin,T,sumexp,savecurve)
+    expT,bin,T,sumexp,savecurve,dispaction)
+% [D,mdlopt,mdl,dthist] = script_findBestModel(dt,Dmax,states,expT,bin,T,sumexp,savecurve,dispaction)
 %
 % Import dwell times from .clst file
 % Find and return most sufficient model complexities (in terms of number of degenerated levels) for each state value
@@ -14,6 +14,7 @@ function [D,mdlopt,mdl,dthist] = script_findBestModel(dt,Dmax,states,...
 % T: number of restart
 % sumexp: (1) to fit a sume of exponential (0) to fit DPH
 % savecurve: empty or destination folder to save best fit curves
+% dispaction: 1 to show progress, 0 to mute
 % D: [1-by-V] most sufficient model complexity (number of degenerated 
 %  levels per state value)
 % mdlopt: [V-by-1] structure array containing best DPH fit parameters for 
@@ -78,7 +79,7 @@ mdl = cell(1,V);
 schm_opt = cell(1,V);
 for v = 1:V
     fprintf('for state %i/%i:\n',v,V);
-    [schm_opt{v},mdl{v}] = MLDPH(dthist_bin{v},T,sumexp,Dmax);
+    [schm_opt{v},mdl{v}] = MLDPH(dthist_bin{v},T,sumexp,Dmax,dispaction);
 end
 
 % append reference file
@@ -105,7 +106,8 @@ for v = 1:V
         else
             ffile = [];
         end
-        mdl_v = script_inferPH(dthist{v},1,schm_opt{v}{best},ffile);
+        mdl_v = script_inferPH(dthist{v},1,schm_opt{v}{best},ffile,...
+            dispaction);
         cvg = isdphvalid(mdl_v.tp_fit) && ~isdoublon(mdl_v.tp_fit);
         if ~cvg
             mdl{v}(best).cvg = false;

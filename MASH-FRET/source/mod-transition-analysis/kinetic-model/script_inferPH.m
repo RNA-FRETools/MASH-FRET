@@ -1,5 +1,5 @@
-function mdl = script_inferPH(dt,n_rs,schm,savecurve)
-% mdl = script_inferPH(dt,n_rs,schm,savecurve)
+function mdl = script_inferPH(dt,n_rs,schm,savecurve,dispaction)
+% mdl = script_inferPH(dt,n_rs,schm,savecurve,dispaction)
 %
 % Trains DPH distributions of specific complexities (in terms of number of degenerated levels) on experimental dwell time histograms (one histogram per state value).
 % Returns best fit parameters
@@ -8,6 +8,7 @@ function mdl = script_inferPH(dt,n_rs,schm,savecurve)
 % n_rs: number of restarts
 % schm: [D+2-by-D+2] transition schemes to fit
 % savecurve: empty or destination folder to save best fit curves
+% dispaction: 1 to show progress, 0 to mute
 % mdl: structure containing fit DPH parameters
 %   mdl.pi_fit: [1-by-D] starting probabilities
 %   mdl.tp_fit: [D-by-D+1] transition probabilities among degenerated states of a same state value
@@ -81,7 +82,7 @@ while rs<=n_rs
 
     % train a PH model on experimental CDF
     [a_res,T_res,logL_res,nb_res] = ...
-        trainPH(a_start,T_start,t_start,[x(incl);P(incl)]);
+        trainPH(a_start,T_start,t_start,[x(incl);P(incl)],~~dispaction);
     if isinf(logL_res) || isempty(a_res) || isempty(T_res)
         dispProgress('',nb_res);
         continue

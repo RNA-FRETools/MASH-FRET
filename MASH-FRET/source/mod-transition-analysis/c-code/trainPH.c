@@ -4,7 +4,7 @@
  * Dwell time counts must be strictly positive
  *
  * Corresponding MATLAB executing command:
- * [a,T,logL] = trainPH(a0,T0,t0,cnts);
+ * [a,T,logL] = trainPH(a0,T0,t0,cnts,mute);
  *
  * MEX-compilation command:
  * mex  -R2018a -O trainPH.c vectop.c
@@ -39,6 +39,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,
 	const double *T0 = (const double *) mxGetDoubles(prhs[1]); // starting transition matrix
 	const double *t0 = (const double *) mxGetDoubles(prhs[2]); // starting exit prob
 	const double *cnts = (const double *) mxGetDoubles(prhs[3]); // dwell times and counts
+	const bool *disp = (const bool *) mxGetLogicals(prhs[4]); // show display of progress
 	
 	// prepare output
 	plhs[0] = mxCreateDoubleMatrix(1,J,mxREAL); // PH initial state prob.
@@ -55,7 +56,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,
 	setVect(T,T0,J*J);
 	setVect(a,a0,J);
 	setVect(t,t0,J);
-	bool cvg = optDPH(T,t,a,logL,cnts,J,nDt,&nb_int);
+	bool cvg = optDPH(T,t,a,logL,cnts,J,nDt,&nb_int,*disp);
     *nb = (double) nb_int;
 	
 	// return empty arrays if EM did not converge
@@ -71,7 +72,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,
 
 
 bool optDPH(double* T, double* t, double* a, double* logL, const 
-        double* cnts, int J, int nDt, int* nb){
+        double* cnts, int J, int nDt, int* nb, const bool disp){
 	
 	int i = 0, j = 0;
 	bool cvg = 0;
@@ -114,8 +115,10 @@ bool optDPH(double* T, double* t, double* a, double* logL, const
     if (!mxIsFinite(*logL)){ cvg = true; }
     
     // show initial fit
-	*nb = dispDPHres(m,*logL-logL_prev,dmax, (const double*) T, 
-            (const double*) a,J, (const int**) id_T,0);
+    if (disp){
+        *nb = dispDPHres(m,*logL-logL_prev,dmax, (const double*) T, 
+                (const double*) a,J, (const int**) id_T,0);
+    }
 
     // E-M iterations
 	while(!cvg && m<MAXITER){
@@ -155,8 +158,10 @@ bool optDPH(double* T, double* t, double* a, double* logL, const
 		if (m>1 && ((*logL-logL_prev)<DLMIN || dmax<DMIN)){ cvg = 1; }
 		
         // show progress
-		*nb = dispDPHres(m,*logL-logL_prev,dmax,(const double*) T,
-                (const double*) a,J,(const int**) id_T,*nb);
+        if (disp){
+            *nb = dispDPHres(m,*logL-logL_prev,dmax,(const double*) T,
+                    (const double*) a,J,(const int**) id_T,*nb);
+        }
 	}
 	
     // manage failure
@@ -452,8 +457,8 @@ bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	char str[100];
 	
 	/* Check for proper number of input and output arguments. */    
-	if (nrhs!=4) {
-		mexErrMsgTxt("Four input arguments are required.");
+	if (nrhs!=5) {
+		mexErrMsgTxt("Five input arguments are required.");
 		return 0;
 	} 
 	if (nlhs>4) {
@@ -463,11 +468,16 @@ bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 
 	/* Check for proper data type in input arguments. */
 	for (i==0; i<nrhs; i++){
-		if (!(mxIsDouble(prhs[i]))){
+		if (i<4 && !(mxIsDouble(prhs[i]))){
 			sprintf(str,"Input argument %i must be of type double.",i+1);
 			mexErrMsgTxt(str);
 			return 0;
 		}
+        else if (i==4 && !(mxIsLogical(prhs[4]))){
+			sprintf(str,"Input argument %i must be of type logical.",i+1);
+			mexErrMsgTxt(str);
+			return 0;
+        }
 	}
 	
 	/* Check for dimensions */
