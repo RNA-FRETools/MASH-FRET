@@ -31,7 +31,7 @@ try
     nCol = numel(str);
     frewind(f);
 
-    for line = 1:(row1-1)
+    for line = 1:row1
         fgetl(f);
     end
     scdat = reshape(fscanf(f,...

@@ -5,7 +5,7 @@ function routinetest_setExperimentSettings(h_fig0,p,opt,prefix)
 %
 % h_fig0: handle to main figure
 % p: structure containing experiment settings
-% opt: 'sim', 'video', 'trajectories' or 'edit'
+% opt: 'sim', 'video', 'trajectories', 'histogram' or 'edit'
 % prefix: string to add at the beginning of each action string (usually a apecific indent)
 
 % collect interface parameters
@@ -52,3 +52,5 @@ routinetest_setExpSet_divers(h_fig0,p);
 
 % save & close
 push_setExpSet_save(h.push_save,[],opt,h_fig,h_fig0);
+
+

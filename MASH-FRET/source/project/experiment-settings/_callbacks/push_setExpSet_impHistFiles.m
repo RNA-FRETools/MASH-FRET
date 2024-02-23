@@ -48,3 +48,4 @@ ud_setExpSet_tabDiv(h_fig);
 
 % display success
 setContPan('Histogram successfully imported!','success',h_fig0);
+

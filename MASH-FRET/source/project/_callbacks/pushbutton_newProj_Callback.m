@@ -3,7 +3,7 @@ function pushbutton_newProj_Callback(obj,evd,h_fig)
 % pushbutton_newProj_Callback([],act,h_fig)
 %
 % h_but: handle to "New project" pushbutton
-% act: 1 (simulation), 2 (import video), 3 (import trajectories)
+% act: 1 (simulation), 2 (import video), 3 (import trajectories), 4 (import histogram)
 % h_fig: handle to main figure
 
 % open data selector

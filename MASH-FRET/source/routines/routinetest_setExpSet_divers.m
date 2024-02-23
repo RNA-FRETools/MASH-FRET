@@ -32,10 +32,13 @@ end
 if isfield(prm,'expcond')
     tbldat = h.table_cond.Data;
     evd = [];
-    tbldat(3:end,:) = repmat({''},size(tbldat,1)-2,3);
-    for r = 3:(3+size(prm.expcond,1)-1)
-        for c = 1:3
-            tbldat{r,c} = prm.expcond{r-3+1,c};
+    tbldat = repmat({''},[max([size(tbldat,1),size(prm.expcond,1)-2]),...
+        max([size(tbldat,2),size(prm.expcond,2)])]); % erase table
+    for r = 1:size(tbldat,1)
+        for c = 1:size(tbldat,2)
+            if r<=(size(prm.expcond,1)-2) && c<=size(prm.expcond,2)
+                tbldat{r,c} = prm.expcond{r+2,c};
+            end
             set(h.table_cond,'Data',tbldat);
             evd.Indices = [r,c];
             table_setExpSet_cond(h.table_cond,evd,h_fig);

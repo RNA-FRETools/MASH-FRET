@@ -45,6 +45,12 @@ try
 
     subprefix = '>> ';
 
+    % test project management area
+    if strcmp(opt,'all') || strcmp(opt,'project management')
+        disp('test project management area...');
+        routinetest_HA_projectManagementArea(h_fig,p,subprefix);
+    end
+
     % test panel transition density plot
     if strcmp(opt,'all') || strcmp(opt,'histogram and plot')
         disp('test panel histogram and plot...');

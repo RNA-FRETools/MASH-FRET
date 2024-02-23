@@ -9,6 +9,10 @@ function p = getDefault_HA
 nChan_def = 2;
 nL_def = 2;
 nPop = 4;
+defprm = {'Movie name','','';
+       'Molecule name','','';
+       '[Mg2+]',[],'mM';
+       '[K+]',[],'mM'};
 
 % general parameters
 [pname,o,o] = fileparts(mfilename('fullpath'));
@@ -40,7 +44,17 @@ p.mash_file = sprintf('%ichan%iexc.mash',nChan_def,nL_def);
 chanExc = zeros(1,nChan_def);
 chanExc(1:min([nChan_def,nL_def])) = p.wl(1:min([nChan_def,nL_def]));
 nDE = sum(chanExc~=0);
-
+p.es{p.nChan,p.nL}.imp.histfile = 'histfile.hist';
+p.es{p.nChan,p.nL}.fstrct = [1,2,1,2];
+p.es{p.nChan,p.nL}.div.projttl = sprintf('test_histimport');
+p.es{p.nChan,p.nL}.div.molname = 'none';
+for l = 1:p.nL
+    defprm = cat(1,defprm,{['Power(',num2str(p.wl(l)),'nm)'],'','mW'});
+end
+p.es{p.nChan,p.nL}.div.expcond = defprm;
+p.es{p.nChan,p.nL}.div.splt = 0.2;
+p.es{p.nChan,p.nL}.div.plotclr = [1,repmat(rand(1),1,2)];
+p.exp_ascii2mash = 'mashfromascii.mash';
 
 % parameters for panel Histogram and plot
 p.histDat = 2*p.nChan*p.nL+2*nDE+1;
