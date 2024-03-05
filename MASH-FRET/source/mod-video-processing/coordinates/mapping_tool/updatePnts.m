@@ -9,6 +9,8 @@ crossDat = [0 0 1 0 0
             1 1 0 1 1
             0 0 1 0 0
             0 0 1 0 0];
+hlfy = floor(size(crossDat,1)/2);
+hlfx = floor(size(crossDat,2)/2);
 
 nChan = size(q.axes_bottom,2);
 
@@ -25,9 +27,9 @@ for i = 1:nChan
     img_raw = get(q.axes_bottom(i), 'UserData');
     img = img_raw;
     for n = 1:size(pntCoord{i},1)
-        for y = -2:2
-            for x = -2:2
-                if (crossDat(y+3,x+3) == 1 && ...
+        for y = -hlfy:hlfy
+            for x = -hlfx:hlfx
+                if (crossDat(y+hlfy+1,x+hlfx+1) == 1 && ...
                         (pntCoord{i}(n,2)+y+0.5)>0 && ...
                         (pntCoord{i}(n,2)+y+0.5)<=size(img,1) && ...
                         (pntCoord{i}(n,1)+x+0.5)>0 && ...
@@ -40,7 +42,7 @@ for i = 1:nChan
     end
 
     q.img(i) = imagesc(0.5:size(img,2)-0.5, 0.5:size(img,1)-0.5, img, ...
-        'Parent', q.axes_top(i));
+        'Parent', q.axes_top(i),q.axes_top(i).CLim);
     set(q.img(i),'ButtonDownFcn',{@axes_map_ButtonDownFcn,h_fig,i});
     posCurs = 1 - get(q.slider(i), 'Value');
     pos_closeUp = get(q.axes_top(i), 'Position');
@@ -50,7 +52,7 @@ for i = 1:nChan
     X = pos_closeUp(3);
     fract = 0.5*y*X/x;
     ylim(q.axes_top(i), ...
-    [0 fract*size(img,1)] + posCurs*(1-fract)*size(img,1));
+        [0 fract*size(img,1)] + posCurs*(1-fract)*size(img,1));
     
     q.txt{i} = [];
     q.txtFull{i} = [];
