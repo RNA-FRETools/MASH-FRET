@@ -32,12 +32,21 @@ for c = 1:nChan
     resy = size(img{c},1);
     
     % draw image in bottom axes
-    imagesc(img{c}, 'Parent', q.axes_bottom(c));
+    if isfield(q,'img') && numel(q.img)>=c && ishandle(q.img(c))
+        imagesc(q.axes_bottom(c), img{c}, q.axes_bottom(c).CLim);
+    else
+        imagesc(q.axes_bottom(c), img{c});
+    end
     axis(q.axes_bottom(c), 'image');
     
     % draw image in top axes
-    q.img(c) = imagesc(0.5:resx-0.5, 0.5:resy-0.5, img{c}, ...
-        'Parent', q.axes_top(c));
+    if isfield(q,'img') && numel(q.img)>=c && ishandle(q.img(c))
+        q.img(c) = imagesc(q.axes_top(c),0.5:resx-0.5, 0.5:resy-0.5, ...
+            img{c}, q.axes_top(c).CLim);
+    else
+        q.img(c) = imagesc(q.axes_top(c),0.5:resx-0.5, 0.5:resy-0.5, ...
+            img{c});
+    end
     set(q.img(c), 'ButtonDownFcn', {@axes_map_ButtonDownFcn, h_fig, c});
     
     % calculate rectangle dimensions and position
