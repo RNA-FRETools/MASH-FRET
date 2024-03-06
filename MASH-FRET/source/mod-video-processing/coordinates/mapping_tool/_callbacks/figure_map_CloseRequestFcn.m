@@ -50,7 +50,6 @@ else
     end
 end
 if ~strcmp(exit_choice, 'Yes')
-    beadsSelect(h_fig);
     return
 end
 
