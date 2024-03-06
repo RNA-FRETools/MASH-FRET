@@ -60,7 +60,10 @@ The image display is divided horizontally according to the number of video chann
 Full-length images of each channel are shown on the bottom and close-ups of the respective images are shown on the top.
 Parts of the images shown in close-ups are indicated by a red rectangle on the full-length images.
 
-You can slide the rectangle along the full-length image with the sliding bars located on the right-hand side of the close-ups.
+Zoom magnification within the field of view can be increased/decreased using the top sliding bar "Zoom".
+
+The close-up field of view is indicated by a rectangle in the full-length image.
+Shift the position of the field of view using the horizontal and vertical sliding bars located on the top and right-hand side of the close-ups.
 
 Any graphics in MASH can be exported to an image file by right-clicking on the axes and selecting `Export graph`.
 
