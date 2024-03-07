@@ -18,9 +18,7 @@ wsldy = 20;
 htxt = 14;
 winratio = 0.75;
 zoomsldratio = 0.3;
-stpbig = 1/4;
-stpzoomsmall = 1/20;
-zoomfactmax = 5;
+zoomfactmax = 10;
 figttl = 'Mapping tool';
 menulbl0 = 'Delete last point';
 menulbl1 = 'Delete last set';
@@ -145,7 +143,7 @@ q.text_zoom = uicontrol('style', 'text', 'units', un, 'position', ...
 y = y+htxt;
 q.slider_zoom = uicontrol('Style', 'slider', 'Units', un, 'Position', ...
     [x y wtxt hsld], 'Min', 1, 'Max', zoomfactmax, 'Value', 1, ...
-    'SliderStep', [stpzoomsmall stpbig], 'Callback', ...
+    'SliderStep', [1/(4*(zoomfactmax-1)) 1/(zoomfactmax-1)], 'Callback', ...
     {@slider_zoom_Callback, h_fig});
 
 
