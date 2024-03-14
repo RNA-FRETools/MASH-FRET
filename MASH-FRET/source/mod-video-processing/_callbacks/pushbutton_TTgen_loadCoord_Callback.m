@@ -37,11 +37,14 @@ cd(pname);
 setContPan('Import single molecule coordinates...','process',h_fig);
 
 % import coordinates
-fdat = {};
 f = fopen([pname,fname],'r');
 if f==-1
-    pouet = 0;
+    disp(['Could not open file ',pname,fname]);
+    return
 end
+
+% read file
+fdat = {};
 while ~feof(f)
     fdat = cat(1,fdat,fgetl_MASH(f));
 end

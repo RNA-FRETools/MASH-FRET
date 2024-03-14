@@ -14,7 +14,9 @@ clr_no = 'red';
 % collect interface parameters
 h = guidata(h_fig);
 p = h.param;
-curr = p.proj{p.curr_proj}.VP.curr;
+proj = p.curr_proj;
+nChan = p.proj{proj}.nb_channel;
+curr = p.proj{proj}.VP.curr;
 coord2tr = curr.res_crd{1};
 tr = curr.res_crd{2};
 coordref = curr.res_crd{3};
@@ -45,5 +47,14 @@ if ~isempty(coordref)
 else
     h.text_VP_checkCoordref.String = str_no;
     h.text_VP_checkCoordref.ForegroundColor = clr_no;
+end
+
+if nChan==1
+    set([h.pushbutton_impCoord,h.pushbutton_trGo,h.pushbutton_expTrsfCoord,...
+        h.text_VP_checkTrsf,h.text_VP_checkTrsf,h.text_VP_transfFile,...
+        h.pushbutton_trLoad,h.pushbutton_calcTfr,h.pushbutton_checkTr,...
+        h.pushbutton_saveTfr,h.text_VP_checkCoordref,h.text_VP_calcTransfo,...
+        h.pushbutton_trLoadRef,h.pushbutton_trMap,h.pushbutton_trSaveRef,...
+        h.pushbutton_trOpt],'visible','off','enable','off');
 end
 

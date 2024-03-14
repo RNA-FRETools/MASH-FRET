@@ -41,7 +41,7 @@ The availability of single moelcule coordinates are indicated by the icon locate
 
 In case single molecule coordinates are unavailable:
 * Start a spot finding procedure with 
-[Spotfinder](panel-molecule-coordinates.html#spotfinder) and transform spots coordinates in 
+[Spotfinder](panel-molecule-coordinates.html#spotfinder) and, for multi-channel video projects, transform spots coordinates in 
 [Coordinates transformation](panel-molecule-coordinates.html#coordinates-transformation).
 * Or, import molecule coordinates from an external file by pressing 
 ![Open](../../assets/images/gui/VP-but-open.png "Open") and selecting the corresponding file; coordinates are read according to the 

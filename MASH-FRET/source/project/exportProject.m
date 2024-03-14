@@ -150,6 +150,7 @@ if ~isempty(I)
   
     proj.intensities = I;
     proj.intensities_bgCorr = nan(size(I));
+    proj.intensities_bin = nan(size(I));
     proj.intensities_crossCorr = nan(size(I));
     proj.intensities_denoise = nan(size(I));
     proj.ES = defES;

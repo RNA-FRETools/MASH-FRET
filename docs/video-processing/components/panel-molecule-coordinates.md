@@ -84,7 +84,8 @@ Spots are subsequently sorted according to user-defined criteria, like the numbe
 The number of spots found after applying the exclusion rules is displayed in **(p)**.
 
 The final set of spot coordinates is immedialtely made available for 
-[Coordinates transformation](#coordinates-transformation) and highlighted in the 
+[Coordinates transformation](#coordinates-transformation) for multi-channel or intensity-time trace calculation in panel 
+[Intensity integration](panel-intensity-integration.html) for single-channel video projects, and located in the 
 [Video plot](area-visualization.html#video-visualization) and 
 [Average image plot](area-visualization.html#average-image) with red circles. 
 Spots coordinates can be exported to a 

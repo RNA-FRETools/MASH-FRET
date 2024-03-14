@@ -58,6 +58,12 @@ curr.res_crd{1} = spots;
 % reset coordinates file to transform
 curr.gen_crd{3}{1}{2} = '';
 
+% reset single molecule coordinates file for one channel videos
+if nChan==1
+    curr.res_crd{4} = spots{1};
+    curr.gen_int{2}{2} = '';
+end
+
 % save modifications
 p.proj{p.curr_proj}.VP.curr = curr;
 p.proj{p.curr_proj}.VP.prm.gen_crd{2} = curr.gen_crd{2};
