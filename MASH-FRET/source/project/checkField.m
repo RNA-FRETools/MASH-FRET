@@ -317,25 +317,25 @@ if isempty(s.exp_parameters) || size(s.exp_parameters,2) ~= 3
 end
 
 % check trajectroies
-if isempty(s.intensities_bgCorr)
+if ~isequal(size(s.intensities_bgCorr),[L,N*nChan,nExc])
     s.intensities_bgCorr = nan(L,N*nChan,nExc);
 end
-if isempty(s.intensities_bin)
+if ~isequal(size(s.intensities_bin(1,:,:)),[N*nChan,nExc])
     s.intensities_bin = nan(L,N*nChan,nExc);
 end
 L2 = size(s.intensities_bin,1);
 
-if isempty(s.intensities_crossCorr)
+if ~isequal(size(s.intensities_crossCorr),[L2,N*nChan,nExc])
     s.intensities_crossCorr = nan(L2,N*nChan,nExc);
 end
-if isempty(s.intensities_denoise)
+if ~isequal(size(s.intensities_denoise),[L2,N*nChan,nExc])
     s.intensities_denoise = nan(L2,N*nChan,nExc);
 end
-if isempty(s.intensities_DTA)
+if ~isequal(size(s.intensities_DTA),[L2,N*nChan,nExc])
     s.intensities_DTA = nan(L2,N*nChan,nExc);
 end
 if nFRET>0
-    if isempty(s.FRET_DTA)
+    if ~isequal(size(s.FRET_DTA),[L2,N*nFRET])
         s.FRET_DTA = nan(L2,N*nFRET);
     end
     if isempty(s.ES)
@@ -343,11 +343,11 @@ if nFRET>0
     end
 end
 if nS>0
-    if isempty(s.S_DTA)
+    if ~isequal(size(s.S_DTA),[L2,N*nS])
         s.S_DTA = nan(L2,N*nS);
     end
 end
-if isempty(s.bool_intensities)
+if ~isequal(size(s.bool_intensities),[L2,N])
     s.bool_intensities = true(L2,N);
 end
 
@@ -364,7 +364,7 @@ if s.is_coord
             true(1,(size(s.coord,1)-size(s.coord_incl,2)));
     end
 end
-if isempty(s.coord_incl)
+if ~isequal(size(s.coord_incl),[1,N])
     s.coord_incl = true(1,N);
 end
 
