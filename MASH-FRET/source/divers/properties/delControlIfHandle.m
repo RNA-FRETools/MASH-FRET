@@ -10,8 +10,10 @@ if ~iscell(name)
     name = {name};
 end
 for n = 1:numel(name)
-    if isfield(h,name{n}) && any(any(ishandle(eval(['h.',name{n}]))))
-        delete(eval(['h.',name{n}]));
+    if isfield(h,name{n}) 
+        if any(any(ishandle(eval(['h.',name{n}]))))
+            delete(eval(['h.',name{n}]));
+        end
         h = rmfield(h,name{n});
     end
 end

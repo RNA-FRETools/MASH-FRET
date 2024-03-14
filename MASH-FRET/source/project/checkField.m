@@ -320,7 +320,7 @@ end
 if ~isequal(size(s.intensities_bgCorr),[L,N*nChan,nExc])
     s.intensities_bgCorr = nan(L,N*nChan,nExc);
 end
-if ~isequal(size(s.intensities_bin(1,:,:)),[N*nChan,nExc])
+if ~isequal(size(s.intensities_bin,[2,3]),[N*nChan,nExc])
     s.intensities_bin = nan(L,N*nChan,nExc);
 end
 L2 = size(s.intensities_bin,1);
