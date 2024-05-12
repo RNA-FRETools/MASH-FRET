@@ -243,7 +243,7 @@ end
 
 % added by MH, 31.10.2023: add intensity axis scale
 if size(p_proj.TP.fix,2)>=2 && numel(p_proj.TP.fix{2})==7 && ...
-        p_proj.TP.fix{2}(4)==p_proj.TP.fix{2}(5)
+        any(p_proj.TP.fix{2}(4)==[0,1]) && any(p_proj.TP.fix{2}(5)==[0,1])
     p_proj.TP.fix{2}([4,5,7]) = p_proj.TP.def.general{2}([4,5,7]);
 end
 
