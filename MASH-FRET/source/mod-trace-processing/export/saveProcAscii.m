@@ -21,7 +21,7 @@ h = guidata(h_fig);
 
 % saveProcAscii is/isn't called from trace processing export window
 % (openExpTtpr.m)--> can be called in a routine:
-fromTT = isequalwithequalnans(p, h.param);
+fromTT = isequaln(p,h.param);
 
 % collect project parameters
 proj = p.curr_proj;
