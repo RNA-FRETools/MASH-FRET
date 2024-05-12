@@ -27,7 +27,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Project file(s)**
-If applicable, attatch the `.mash` files concerned by the bug.
+If applicable, send the `.mash` files concerned by the bug to melodiehadzic@protonmail.com.
 
 **Desktop (please complete the following information):**
  - OS [e.g. Windows 10]

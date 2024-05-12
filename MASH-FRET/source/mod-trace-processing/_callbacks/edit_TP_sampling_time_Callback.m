@@ -29,4 +29,4 @@ p.proj{proj}.intensities_bin = NaN(size(p.proj{proj}.intensities_bgCorr));
 h.param = p;
 guidata(h_fig, h);
 
-ud_sampling(h_fig);
+updateFields(h_fig, 'ttPr');
