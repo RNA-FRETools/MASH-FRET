@@ -17,8 +17,8 @@ function [coord,trace,err] = create_trace(coord, aDim, nPix, fDat,varargin)
 % trace: [L-by-N*nChan] intensity-time traces
 % err: error message if any
 
-res_y = fDat{3}(1);
-res_x = fDat{3}(2);
+res_x = fDat{3}(1);
+res_y = fDat{3}(2);
 
 % Sum up pixel intensities in the integration areas
 lim.Xinf = []; lim.Yinf = [];
