@@ -160,7 +160,8 @@ for n = 1:N
     if ~isempty(x_hat{n,best})
         x_res{n} = x_hat{n,best};
     else
-        x_res{n} = ones(size(data{n}))*mean(data{n});
+        sz = size(data{n},2);
+        x_res{n} = ones(sz,1)*mean(data{n});
     end
 end
 if ~mute
