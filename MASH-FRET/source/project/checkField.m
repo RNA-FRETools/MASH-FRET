@@ -317,7 +317,7 @@ if isempty(s.exp_parameters) || size(s.exp_parameters,2) ~= 3
 end
 
 % check trajectroies
-if ~isequal(size(s.intensities_bgCorr),[L,N*nChan,nExc])
+if ~isequal(size(s.intensities_bgCorr,[1,2,3]),[L,N*nChan,nExc])
     s.intensities_bgCorr = nan(L,N*nChan,nExc);
 end
 if ~isequal(size(s.intensities_bin,[2,3]),[N*nChan,nExc])
@@ -325,13 +325,13 @@ if ~isequal(size(s.intensities_bin,[2,3]),[N*nChan,nExc])
 end
 L2 = size(s.intensities_bin,1);
 
-if ~isequal(size(s.intensities_crossCorr),[L2,N*nChan,nExc])
+if ~isequal(size(s.intensities_crossCorr,[1,2,3]),[L2,N*nChan,nExc])
     s.intensities_crossCorr = nan(L2,N*nChan,nExc);
 end
-if ~isequal(size(s.intensities_denoise),[L2,N*nChan,nExc])
+if ~isequal(size(s.intensities_denoise,[1,2,3]),[L2,N*nChan,nExc])
     s.intensities_denoise = nan(L2,N*nChan,nExc);
 end
-if ~isequal(size(s.intensities_DTA),[L2,N*nChan,nExc])
+if ~isequal(size(s.intensities_DTA,[1,2,3]),[L2,N*nChan,nExc])
     s.intensities_DTA = nan(L2,N*nChan,nExc);
 end
 if nFRET>0
