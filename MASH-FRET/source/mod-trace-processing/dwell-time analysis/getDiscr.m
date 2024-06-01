@@ -123,21 +123,30 @@ for n = 1:N
             maxK = numel(MDL);
             K = find(MDL==min(MDL(min([minK,maxK]):maxK)));
             
+            % normalizes signal
             data = cell(1,1);
             data{1} = prepdatforvbfret(traces(n,incl(n,:)));
             
+            % determine starting model parameters
             gmmprm0 = cell(1,K);
             gmmprm0{K}.states = unique(dat(K,:));
             gmmprm0{K}.pop = zeros(1,K);
             gmmprm0{K}.stdev = zeros(1,K);
+            normstates = NaN(1,K);
             for k = 1:K
                 isstatek = dat(K,:)==gmmprm0{K}.states(k);
+                normstates(k) = mean(data{1}(incl(n,isstatek)));
                 gmmprm0{K}.pop(k) = sum(isstatek);
                 gmmprm0{K}.stdev(k) = std(data{1}(incl(n,isstatek)));
             end
-            gmmprm0{K}.pop= gmmprm0{K}.pop/sum(gmmprm0{K}.pop);
+            gmmprm0{K}.pop= gmmprm0{K}.pop/sum(gmmprm0{K}.pop); 
+            gmmprm0{K}.states = normstates;
+            
+            % run constrained vbFRET on normalized signal values
             [vbres,~] = discr_vbFRET(K,K,n_iter,data,h_fig,lb,mute,1,...
                 gmmprm0);
+            
+            % restore original signal values
             d_traces(n,incl(n,:)) = trajkernel(traces(n,incl(n,:)),...
                 true(size(data{1})),vbres{1}');
             
