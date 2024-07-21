@@ -153,13 +153,13 @@ for c = 1:nChan
     for l = 1:nExc
         if isCoord && isMov
             mol{3}{2}(l,c) = 2; % method
-            mol{3}{3}{l,c} = [0   20 0  0  0 0  % Manual
-                              0   20 0  0  0 0  % 20 darkest
-                              0   20 0  0  0 0  % Mean value
-                              100 20 0  0  0 0  % Most frequent value
-                              0.5 20 0  0  0 0  % Histotresh
-                              10  20 0  1  1 1  % Dark coordinates
-                              2   20 0  0  0 0];% Median
+            mol{3}{3}{l,c} = [0   20 0  0  0 0  % Manual [011000]
+                              0   20 0  0  0 0  % 20 darkest [011000]
+                              0   20 0  0  0 0  % Mean value [111000]
+                              100 20 0  0  0 0  % Most frequent value [111000]
+                              0.5 20 0  0  0 0  % Histotresh [111000]
+                              10  20 0  1  1 1  % Dark coordinates [111111]
+                              2   20 0  0  0 0];% Median [111000]
                           
         else
             mol{3}{2}(l,c) = 1; % method Manual
@@ -320,7 +320,7 @@ if ~(isCoord && isMov)
     for c = 1:nChan
         for l = 1:nExc
             def.mol{3}{2}(l,c) = 1;
-            def.mol{3}{3}{l,c} = [0,20,0,0,0,0,0];
+            def.mol{3}{3}{l,c} = [0,20,0,0,0,0];
         end
     end
 end

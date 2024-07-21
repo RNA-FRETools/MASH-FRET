@@ -496,17 +496,23 @@ prm{2}{1}(3) = chan;
 prm{2}{2}(1:(nFRET+nS+nL*nChan),:) = prm{2}{2}(datOrder,:);
 
 % Background correction
-prm{3}{1} = prm{3}{1}(laserOrder,:);
-prm{3}{2} = prm{3}{2}(laserOrder,:);
-prm{3}{3} = prm{3}{3}(laserOrder,:);
-for l = 1:nL % set background to manual
+prm{3}{1} = prm{3}{1}(laserOrder,:,:); % apply & dynamic
+prm{3}{2} = prm{3}{2}(laserOrder,:); % method
+prm{3}{3} = prm{3}{3}(laserOrder,:); % parameters
+for l = 1:nL % set unique background correction
     for c = 1:nChan
-        if  prm{3}{1}(l,c)
-            prm{3}{3}{l,c}(1,3) = prm{3}{3}{l,c}(prm{3}{2}(l,c),3);
-        else
+%         if  prm{3}{1}(l,c,1) % apply
+%             prm{3}{3}{l,c}(1,3) = prm{3}{3}{l,c}(prm{3}{2}(l,c),3);
+%         else
+%             prm{3}{3}{l,c}(1,3) = 0;
+%         end
+%         prm{3}{2}(l,c) = 1;
+%         prm{3}{3}{l,c} = prm{3}{3}{l,c}(1,:);
+        if  ~prm{3}{1}(l,c,1) % apply
             prm{3}{3}{l,c}(1,3) = 0;
+            prm{3}{2}(l,c) = 1;
         end
-        prm{3}{2}(l,c) = 1;
+        prm{3}{3}{l,c} = prm{3}{3}{l,c}(prm{3}{2}(l,c),:);
     end
 end
 

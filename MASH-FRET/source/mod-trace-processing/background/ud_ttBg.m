@@ -48,9 +48,31 @@ p_panel = curr{3};
 apply = p_panel{1}(l,c,1);
 dynbg = p_panel{1}(l,c,2);
 method = p_panel{2}(l,c);
-prm = p_panel{3}{l,c}(method,:);
-autoDark = prm(6);
-set(h.popupmenu_trBgCorr, 'Value', method);
+
+% determine if data are from merged projects
+if size(p_panel{3}{l,c},1)==1 && method~=1
+    ismerged = true;
+    appmethod = 1;
+else
+    ismerged = false;
+    appmethod = method;
+end
+prm = p_panel{3}{l,c}(appmethod,:);
+
+% get autodetermination of dark coordinates
+if method==6
+    autoDark = prm(6);
+else
+    autoDark = false;
+end
+
+set(h.popupmenu_trBgCorr, 'Value', appmethod);
+if ismerged
+    set(h.popupmenu_trBgCorr, 'Enable', 'off', 'String', ...
+        getdefbgcorrpopstr(method));
+else
+    set(h.popupmenu_trBgCorr, 'String', h.popupmenu_trBgCorr.UserData);
+end
 
 set(h.popupmenu_trBgCorr_data, 'String', getStrPop('bg_corr', ...
     {labels exc clr}));
@@ -149,3 +171,11 @@ set(h.edit_trBgCorr_bgInt, 'String', num2str(prm(3)));
 set(h.checkbox_TP_bgdyn, 'Value', dynbg);
 set(h.checkbox_trBgCorr, 'Value', apply);
 set(h.checkbox_autoDark, 'Value', autoDark);
+
+% off-enable all activable controls if merged project
+if ismerged
+    set([h.edit_subImg_dim,h.edit_trBgCorr_bgInt,h.checkbox_trBgCorr,...
+        h.checkbox_autoDark,h.edit_xDark,h.edit_yDark,h.checkbox_TP_bgdyn,...
+        h.edit_trBgCorrParam_01,h.pushbutton_showDark,h.pushbutton_optBg],...
+        'enable','off');
+end

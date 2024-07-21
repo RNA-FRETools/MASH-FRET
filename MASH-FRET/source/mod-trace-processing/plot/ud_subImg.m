@@ -37,6 +37,9 @@ end
 if isCoord
     p_panel = fix{1};
     meth = prm{3}{2}(l,c);
+    if size(prm{3}{3}{l,c},1)<meth
+        meth = 1;
+    end
     subdim = prm{3}{3}{l,c}(meth,2);
     set(h.popupmenu_subImg_exc, 'Value', p_panel(1));
 %         set(h.checkbox_refocus, 'Value', refocus);
