@@ -10,7 +10,7 @@ info = imfinfo(fullFname); % information array of .tif file
 % stored in ImageDescription field of structure info.
 if isfield(info,'ImageDescription')
     descr = info(1,1).ImageDescription;
-    if strcmp(descr(1:5),'<?xml')
+    if length(descr)>=5 && strcmp(descr(1:5),'<?xml')
         isome = true;
     end
 end
