@@ -15,7 +15,7 @@ incl = true(1,length(str));
 for c1 = c_op
     c2 = find(c_cl>c1);
     if ~isempty(c2)
-        incl(c1:c_cl(c2)) = false;
+        incl(c1:c_cl(c2(1))) = false;
     end
 end
 
