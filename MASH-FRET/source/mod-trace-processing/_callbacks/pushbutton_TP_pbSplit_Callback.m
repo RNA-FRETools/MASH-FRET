@@ -69,6 +69,9 @@ end
 if ~isempty(p.proj{proj}.S_DTA)
     p.proj{proj}.S_DTA = p.proj{proj}.S_DTA(:,s_id);
 end
+if ~isempty(p.proj{proj}.FRET_DTA_import)
+    p.proj{proj}.FRET_DTA_import = p.proj{proj}.FRET_DTA_import(:,fret_id);
+end
 p.proj{proj}.bool_intensities = p.proj{proj}.bool_intensities(:,mol_id);
 p.proj{proj}.dt = {};
 p.proj{proj}.molTag = p.proj{proj}.molTag(mol_id,:);
@@ -131,6 +134,9 @@ if ~isempty(p.proj{proj}.FRET_DTA)
 end
 if ~isempty(p.proj{proj}.S_DTA)
     p.proj{proj}.S_DTA(:,[s_id_n,s_id_dup],:) = NaN;
+end
+if ~isempty(p.proj{proj}.FRET_DTA_import)
+    p.proj{proj}.FRET_DTA_import(:,[fret_id_n,fret_id_dup],:) = NaN;
 end
 
 % set right side of the original trace to NaN
