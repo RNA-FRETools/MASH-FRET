@@ -447,12 +447,12 @@ In homogenous systems (no state degeneracy), states
 Therefore, transitions can be counted directly in transition clusters and lifetimes can be estimated with a simple exponential fit on each normalized complementary cumulative dwell time hisotgram, such as:
 
 {: .equation }
-<img src="../../assets/images/equations/TA-kin-ana-01.gif" alt="k_{j,j'} = \frac{w_{j,j'}}{\sum_{k \neq j}^{J} w_{j,k}} \times \frac{1}{\tau_{j,j'}}">
+<img src="../assets/images/equations/TA-kin-ana-01.gif" alt="k_{j,j'} = \frac{w_{j,j'}}{\sum_{k \neq j}^{J} w_{j,k}} \times \frac{1}{\tau_{j,j'}}">
 
 In this case, transition rate coefficients can be calculated with the following equation:
 
 {: .equation }
-<img src="../../assets/images/equations/TA-kin-ana-04.gif" alt="k_{j,j'} = \frac{w_{j,j'}}{\sum_{k \neq j}^{J} w_{j,k}} \times \frac{1}{\tau_{j}}">
+<img src="../assets/images/equations/TA-kin-ana-04.gif" alt="k_{j,j'} = \frac{w_{j,j'}}{\sum_{k \neq j}^{J} w_{j,k}} \times \frac{1}{\tau_{j}}">
 
 where 
 [*w*<sub>*j*,*j'*</sub>](){: .math_var } is the cluster population for transition 
@@ -469,7 +469,7 @@ The variability can then be propagated to
 [*k<sub>j,j'</sub>*](){: .math_var } such as:
 
 {: .equation }
-<img src="../../assets/images/equations/TA-kin-ana-11.gif" alt="\Delta k_{jj'} = \frac{\sigma_{\tau,j}}{\tau_{j}} \times k_{jj'}">
+<img src="../assets/images/equations/TA-kin-ana-11.gif" alt="\Delta k_{jj'} = \frac{\sigma_{\tau,j}}{\tau_{j}} \times k_{jj'}">
 
 where 
 [&Delta;*k<sub>jj'</sub>*](){: .math_var } is the error on rate coefficient 
