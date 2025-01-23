@@ -1,9 +1,9 @@
 function edit_bgInt_don_Callback(obj, evd, h_fig)
 
 % retrieve donor background intensity from edit field
-val = str2num(get(obj, 'String'));
+val = str2double(get(obj, 'String'));
 set(obj, 'String', num2str(val));
-if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && val >= 0)
+if ~(~isempty(val) && isscalar(val) && ~isnan(val) && val >= 0)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
     setContPan('Intensities must be >= 0', 'error', h_fig);
     return
@@ -22,7 +22,11 @@ noiseprm = curr.gen_dat{1}{2}{5};
 % convert intensity units
 if strcmp(inun, 'electron')
     [offset,K,eta] = getCamParam(noisetype,noiseprm);
-    val = ele2phtn(val,K,eta);
+    pc = ele2phtn(val,K,eta);
+    setContPan(['given the camera settings, ',num2str(val),' electron counts ',...
+        'approaches ',num2str(pc),' photon counts, which is exactly ',...
+        'converted to ',num2str(phtn2ele(pc,K,eta)),'.'],'success',h_fig);
+    val = pc;
 end
 if perSec
     val = val/rate;
