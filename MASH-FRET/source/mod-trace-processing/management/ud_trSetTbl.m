@@ -34,7 +34,7 @@ addOn = get(h.togglebutton_TP_addTag,'value');
 if addOn
     str_lst = getStrPopTags(tagNames,colorlist);
     set(h.listbox_TP_defaultTags,'visible','on','string',str_lst);
-    if numel(str_lst)==1 && strcmp(str_lst{1},'no default tag')
+    if isscalar(str_lst) && strcmp(str_lst{1},'no default tag')
         set(h.listbox_TP_defaultTags,'value',1);
     else
         currTag = get(h.listbox_TP_defaultTags,'value');
@@ -63,9 +63,9 @@ for t = 1:nTag
         else
             fntClr = 'white';
         end
-        str_pop = [str_pop,cat(2,'<html><body  bgcolor="',colorlist{t},...
+        str_pop = cat(2,str_pop,cat(2,'<html><body  bgcolor="',colorlist{t},...
             '"><font color=',fntClr,'>',tagNames{t},...
-            '</font></body></html>')];
+            '</font></body></html>'));
     end
 end
 if isempty(str_pop)
