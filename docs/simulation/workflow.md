@@ -204,7 +204,7 @@ To create intensity trajectories and images:
      
    [Video dimensions](components/panel-video-parameters.html#video-dimensions)  
    [Pixel size](components/panel-video-parameters.html#pixel-size)  
-   [Bit rate](components/panel-video-parameters.html#bit-rate)  
+   [Bit depth](components/panel-video-parameters.html#bit-depth)  
    [Camera SNR characteristics](components/panel-video-parameters.html#camera-snr-characteristics)  
    [Molecule coordinates](components/panel-molecules.html#molecule-coordinates)  
    [Donor emission](components/panel-molecules.html#donor-emission)  
