@@ -79,8 +79,8 @@ end
 if strcmp(dat2import,'sim') || strcmp(dat2import,'video') || ...
         strcmp(dat2import,'trajectories') || strcmp(dat2import,'histogram')
     % add project to list and initialize list indexes
-    proj_id = numel(p.proj)+1;
     p.proj = [p.proj,proj];
+    proj_id = numel(p.proj);
     p.curr_proj = proj_id;
     p = adjustProjIndexLists(p,proj_id,{mod});
 
