@@ -5,6 +5,10 @@ function pushbutton_expTraces_Callback(obj, evd, h_fig)
 % h_fig: handle to main figure
 % makeVisible = {1-by-1} (1) make option figure visible, (0) otherwise
 
+% adjust current project index in case it is out of list range (can happen 
+% when project import failed)
+setcurrproj(h_fig);
+
 % show process
 setContPan('Opening export options...','process',h_fig);
 
