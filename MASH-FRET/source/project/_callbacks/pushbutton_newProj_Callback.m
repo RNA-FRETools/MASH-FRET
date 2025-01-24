@@ -6,6 +6,10 @@ function pushbutton_newProj_Callback(obj,evd,h_fig)
 % act: 1 (simulation), 2 (import video), 3 (import trajectories), 4 (import histogram)
 % h_fig: handle to main figure
 
+% adjust current project index in case it is out of list range (can happen 
+% when project import failed)
+setcurrproj(h_fig);
+
 % open data selector
 if isnumeric(evd) % call from test routine
     act = slctdatdlg(h_fig,evd);

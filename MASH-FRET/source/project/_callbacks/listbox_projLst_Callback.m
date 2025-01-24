@@ -1,12 +1,16 @@
 function listbox_projLst_Callback(obj, evd, h_fig)
 
+% adjust current project index in case it is out of list range (can happen 
+% when project import failed)
+setcurrproj(h_fig);
+
 h = guidata(h_fig);
 p = h.param;
 if isempty(p.proj)
     return
 end
 val = get(obj, 'Value');
-if numel(val)>1 || (numel(val)==1 && val==p.curr_proj)
+if ~isscalar(val) || (isscalar(val) && val==p.curr_proj)
     return
 end
 
@@ -27,7 +31,7 @@ cla(h.axes_hist1);
 cla(h.axes_hist2);
 
 % switch to proper module
-switchPan(eval(['h.togglebutton_',p.curr_mod{p.curr_proj}]),[],h_fig);
+switchPan(h.(['togglebutton_',p.curr_mod{p.curr_proj}]),[],h_fig);
 
 % bring project's current plot front
 bringPlotTabFront([p.sim.curr_plot(p.curr_proj),...
