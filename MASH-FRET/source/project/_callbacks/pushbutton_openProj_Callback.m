@@ -1,4 +1,4 @@
-function pushbutton_openProj_Callback(obj, evd, h_fig)
+function pushbutton_openProj_Callback(files, merged, h_fig)
 % pushbutton_openProj_Callback([],[],h_fig)
 % pushbutton_openProj_Callback(files,[],h_fig)
 % pushbutton_openProj_Callback([],merged,h_fig)
@@ -9,22 +9,26 @@ function pushbutton_openProj_Callback(obj, evd, h_fig)
 
 % created by MH, 23.2.2021
 
+% adjust current project index in case it is out of list range (can happen 
+% when project import failed)
+setcurrproj(h_fig);
+
 % get interface parameters
 h = guidata(h_fig);
 p = h.param;
 
 % get project data
-if iscell(evd) % from project merging
-    dat = evd{1};
+if iscell(merged) % from project merging
+    dat = merged{1};
     [dat,ok] = checkField(dat,'',h_fig);
     if ~ok
         return
     end
     
 else % from file
-    if iscell(obj) % called by test routine
-        pname = obj{1};
-        fname = obj{2};
+    if iscell(files) % called by test routine
+        pname = files{1};
+        fname = files{2};
         if ~strcmp(pname,filesep)
             pname = [pname,filesep];
         end
@@ -37,7 +41,7 @@ else % from file
         else
             defPth = p.folderRoot;
         end
-        [fname,pname,o] = uigetfile({'*.mash','MASH-FRET project files';...
+        [fname,pname,~] = uigetfile({'*.mash','MASH-FRET project files';...
             '*.*', 'All files(*.*)'},'Select project',defPth,'MultiSelect',...
             'on');
     end
@@ -69,7 +73,7 @@ else % from file
     end
     
     % display process
-    if numel(fname)==1
+    if isscalar(fname)
         setContPan(['Importing project from file: ',fname{1},' ...'],...
             'process',h_fig);
     else
@@ -142,7 +146,7 @@ guidata(h_fig,h);
 ud_TTprojPrm(h_fig);
 
 % switch to proper module
-switchPan(eval(['h.togglebutton_',p.curr_mod{p.curr_proj}]),[],h_fig);
+switchPan(h.(['togglebutton_',p.curr_mod{p.curr_proj}]),[],h_fig);
 
 % bring project's current plot front
 bringPlotTabFront([p.sim.curr_plot(p.curr_proj),...
@@ -153,7 +157,7 @@ bringPlotTabFront([p.sim.curr_plot(p.curr_proj),...
 updateFields(h_fig);
 
 % display action
-if ~iscell(evd)
+if ~iscell(merged)
     if size(fname,2) > 1
         str_files = 'files: ';
     else

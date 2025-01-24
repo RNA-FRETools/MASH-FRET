@@ -13,6 +13,13 @@ function p = adjustProjIndexLists(p,xn,mod)
 
 excl = false(size(p.sim.curr_plot));
 for x = 1:numel(xn)
+    
+    % handle case where project index is out of list range (can happen when
+    % project import failed)
+    if abs(xn(x))>numel(p.proj)
+        continue
+    end
+
     if xn(x)<0
         excl(-xn(x)) = true;
     else

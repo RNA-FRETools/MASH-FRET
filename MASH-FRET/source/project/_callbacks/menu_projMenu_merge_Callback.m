@@ -1,5 +1,9 @@
 function menu_projMenu_merge_Callback(obj,evd,h_fig)
 
+% adjust current project index in case it is out of list range (can happen 
+% when project import failed)
+setcurrproj(h_fig);
+
 h = guidata(h_fig);
 p = h.param;
 if ~isModuleOn(p,'TP')

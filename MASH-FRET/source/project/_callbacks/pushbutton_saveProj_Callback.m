@@ -5,6 +5,10 @@ function pushbutton_saveProj_Callback(obj, evd, h_fig)
 % h_fig: handle to main figure
 % file_out: {1-by-2} destination folder and file name
 
+% adjust current project index in case it is out of list range (can happen 
+% when project import failed)
+setcurrproj(h_fig);
+
 h = guidata(h_fig);
 p = h.param;
 if isempty(p.proj)
