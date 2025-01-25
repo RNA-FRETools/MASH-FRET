@@ -19,7 +19,7 @@ The panel closes automatically after other panels open or after pressing
 
 Use this panel to define the settings of data acquisition like camera noise and video characteristics.
 
-<a class="plain" href="../../assets/images/gui/sim-panel-video-parameters.png"><img src="../../assets/images/gui/sim-panel-video-parameters.png" style="max-width: 325px;"/></a>
+<a class="plain" href="../../assets/images/gui/sim-panel-video-parameters.png"><img src="../../assets/images/gui/sim-panel-video-parameters.png" style="max-width: 306px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
