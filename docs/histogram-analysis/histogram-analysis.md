@@ -11,7 +11,7 @@ permalink: /histogram-analysis.html
 # Histogram analysis
 
 Histogram analysis is the fourth module of MASH-FRET and is accessed by pressing 
-![Histogram analysis](assets/images/gui/HA-but-histogram analysis.png "Histogram analysis") in the main 
+![Histogram analysis](assets/images/gui/HA-but-histogram-analysis.png "Histogram analysis") in the main 
 [tool bar](Getting_started.html#interface).
 
 Use this module to identify the most probable state configuration and quantify state relative populations. 
