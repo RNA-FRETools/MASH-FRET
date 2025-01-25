@@ -19,7 +19,7 @@ The panel closes automatically after other panels open or after pressing
 
 Use this panel to define the settings of data acquisition like camera noise and video characteristics.
 
-<a class="plain" href="../../assets/images/gui/sim-panel-video-parameters.png"><img src="../../assets/images/gui/sim-panel-video-parameters.png" style="max-width: 325px;"/></a>
+<a class="plain" href="../../assets/images/gui/sim-panel-video-parameters.png"><img src="../../assets/images/gui/sim-panel-video-parameters.png" style="max-width: 306px;"/></a>
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -39,6 +39,14 @@ It is usually noted
 
 <u>default</u>: 
 [*L*](){: .math_var } = 4000 frames
+---
+
+
+## Video dimensions
+
+Define the dimensions of video frames in pixels , following the x- **(a)** and y- **(b)** directions.
+
+<u>default</u>: 256-by-256 pixels
 
 ---
 
@@ -74,22 +82,14 @@ It is used in the conversion of PSF widths from micrometers to pixels.
 ---
 
 
-## Bit rate
+## Bit depth
 
-Defines the camera digitization bit depth in bit/pixel and defines the range of pixel values. 
+Defines the camera digitization bit depth in bit/pixel that sets the range of pixel values. 
 
 It is used to calculate the saturation pixel value in the video.
 
 <u>default</u>: 14 bit/pixel
 
----
-
-
-## Video dimensions
-
-Define the dimensions of video frames in pixels , following the x- **(a)** and y- **(b)** directions.
-
-<u>default</u>: 256-by-256 pixels
 
 ---
 
