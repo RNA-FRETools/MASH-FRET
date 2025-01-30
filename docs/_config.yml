@@ -3,3 +3,4 @@ search_enabled: true
 repository: MASH-FRET/RNA-FRETools.github.io
 compress_html:
   blanklines: true
+favicon_ico: "/assets/images/favicon.ico"
