@@ -6,11 +6,13 @@ proj = p.curr_proj;
 
 indx = get(h.tm.popupmenu_selectXdata,'Value');
 indy = get(h.tm.popupmenu_selectYdata,'Value')-1;
-jx = get(h.tm.popupmenu_selectXval,'value')-1;
-jy = get(h.tm.popupmenu_selectYval,'value')-1;
+datid = getASdataindex;
+jx = datid(get(h.tm.popupmenu_selectXval,'value'));
+jy = datid(get(h.tm.popupmenu_selectYval,'value'));
 
 is2D = indy>0;
-needDiscr = sum(jx==[1,6:9]) || sum(jy==[1,6:9]);
+needDiscr = sum(jx==getASdataindex('discr')) || ...
+    sum(jy==getASdataindex('discr'));
 
 % control the presence of discretized data
 if needDiscr

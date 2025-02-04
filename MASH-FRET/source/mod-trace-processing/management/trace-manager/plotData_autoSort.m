@@ -18,8 +18,9 @@ end
 indx = get(h.tm.popupmenu_selectXdata,'value');
 indy = get(h.tm.popupmenu_selectYdata,'value')-1;
 is2D = indy>0;
-jx = get(h.tm.popupmenu_selectXval,'value')-1;
-jy = get(h.tm.popupmenu_selectYval,'value')-1;
+datid = getASdataindex;
+jx = datid(get(h.tm.popupmenu_selectXval,'value'));
+jy = datid(get(h.tm.popupmenu_selectYval,'value'));
 isTDP = (indx==indy & jx==9 & jy==9);
 
 if ~is2D % 1D histograms

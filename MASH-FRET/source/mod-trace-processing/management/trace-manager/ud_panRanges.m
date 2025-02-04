@@ -4,8 +4,9 @@ h = guidata(h_fig);
 
 dat3 = get(h.tm.axes_histSort,'userdata');
 datay = get(h.tm.popupmenu_selectYdata,'value')-1;
-jx = get(h.tm.popupmenu_selectXval,'value')-1;
-jy = get(h.tm.popupmenu_selectYval,'value')-1;
+datid = getASdataindex;
+jx = datid(get(h.tm.popupmenu_selectXval,'value'));
+jy = datid(get(h.tm.popupmenu_selectYval,'value'));
 
 is2D = datay>0;
 
