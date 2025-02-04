@@ -14,7 +14,7 @@ if isCoord && isMov
     viddim = proj.movie_dim;
     viddat = proj.movie_dat;
     vidfile = proj.movie_file;
-    multichanvid = numel(viddim)==1;
+    multichanvid = isscalar(viddim);
     if multichanvid
         vidfile_mv = vidfile{1};
         viddat_mv = viddat{1};
