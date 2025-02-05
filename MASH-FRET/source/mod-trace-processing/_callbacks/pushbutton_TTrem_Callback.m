@@ -77,7 +77,7 @@ p.ttPr.curr_mol(proj) = curr_mol;
 p.proj{proj}.coord_incl = incl(incl);
 
 % modified by MH, 24.4.2019
-%         p.proj{proj}.molTag = p.proj{proj}.molTag(incl); % added by FS, 27.6.2018
+% p.proj{proj}.molTag = p.proj{proj}.molTag(incl); % added by FS, 27.6.2018
 p.proj{proj}.molTag = p.proj{proj}.molTag(incl,:);
 
 h.param = p;

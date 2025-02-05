@@ -106,7 +106,6 @@ for i = 1:nMol
                 I_DTA = intensities_DTA(incl,nChan*(i-1)+c,l);
                 dt = getDtFromDiscr(I_DTA,nExc*expt);
                 lt = calcStateLifetimes(dt,nExc*expt);
-                nTrs = size(dt,1);
                 if perSec
                     I = I/expt;
                     I_DTA = I_DTA/expt;
@@ -115,23 +114,10 @@ for i = 1:nMol
                 % concatenate traces
                 dat1.trace{ind} = ...
                     [dat1.trace{ind};I,repmat(i,size(I,1),1)]; % intensity-time trace
-                dat3.val{ind,1} = ...
-                    [dat3.val{ind,1};I_DTA,repmat(i,size(I_DTA,1),1)]; % state trajectories
-
-                % concatenate mean, max, min, median and states
-                dat3.val{ind,2} = [dat3.val{ind,2};mean(I)]; % mean intensity
-                dat3.val{ind,3} = [dat3.val{ind,3};min(I)]; % minimum intensity
-                dat3.val{ind,4} = [dat3.val{ind,4};max(I)]; % maximum intensity
-                dat3.val{ind,5} = [dat3.val{ind,5};median(I)]; % median intensity
-                dat3.val{ind,6} = [dat3.val{ind,6};numel(unique(I_DTA))]; % number of states
-                dat3.val{ind,7} = [dat3.val{ind,7};size(dt,1)]; % number of transitions
-                dat3.val{ind,8} = [dat3.val{ind,8};mean(dt(:,1))]; % mean state dwell time
-                dat3.val{ind,9} = [dat3.val{ind,9};...
-                    dt(:,2),repmat(i,nTrs,1)]; % state values
-                dat3.val{ind,10} = [dat3.val{ind,10};...
-                    dt(:,1),repmat(i,nTrs,1)]; % state dwell times
-                dat3.val{ind,11} = [dat3.val{ind,11};...
-                    lt(:,1),repmat(i,nTrs,1)]; % state lifetimes
+                calcdat = calcASdata(i,I,I_DTA,dt,lt);
+                for j = 1:nCalc
+                    dat3.val{ind,j} = [dat3.val{ind,j};calcdat{j}];
+                end
             end
         end
         
@@ -148,7 +134,6 @@ for i = 1:nMol
                     intensities_DTA(incl,(nChan*(i-1)+1):nChan*i,l),2);
                 dt = getDtFromDiscr(I0_DTA,nExc*expt);
                 lt = calcStateLifetimes(dt,nExc*expt);
-                nTrs = size(dt,1);
                 if perSec
                     I0 = I0/expt;
                     I0_DTA = I0_DTA/expt;
@@ -157,23 +142,10 @@ for i = 1:nMol
                 % concatenate traces
                 dat1.trace{ind} = ...
                     [dat1.trace{ind};I0,repmat(i,size(I0,1),1)]; % intensits-time trace
-                dat3.val{ind,1} = ...
-                    [dat3.val{ind,1};I0_DTA,repmat(i,size(I0_DTA,1),1)]; % state trajectories
-
-                % concatenate mean, max, min, median and states
-                dat3.val{ind,2} = [dat3.val{ind,2};mean(I0)]; % mean intensity
-                dat3.val{ind,3} = [dat3.val{ind,3};min(I0)]; % minimum intensity
-                dat3.val{ind,4} = [dat3.val{ind,4};max(I0)]; % maximum intensity
-                dat3.val{ind,5} = [dat3.val{ind,5};median(I0)]; % median intensity
-                dat3.val{ind,6} = [dat3.val{ind,6};numel(unique(I0_DTA))]; % number of states
-                dat3.val{ind,7} = [dat3.val{ind,7};size(dt,1)]; % number of transitions
-                dat3.val{ind,8} = [dat3.val{ind,8};mean(dt(:,1))]; % mean state dwell time
-                dat3.val{ind,9} = [dat3.val{ind,9};...
-                    dt(:,2),repmat(i,nTrs,1)]; % state values
-                dat3.val{ind,10} = [dat3.val{ind,10};...
-                    dt(:,1),repmat(i,nTrs,1)]; % state dwell times
-                dat3.val{ind,11} = [dat3.val{ind,11};...
-                    lt(:,1),repmat(i,nTrs,1)]; % state lifetimes
+                calcdat = calcASdata(i,I0,I0_DTA,dt,lt);
+                for j = 1:nCalc
+                    dat3.val{ind,j} = [dat3.val{ind,j};calcdat{j}];
+                end
             end
         end
         
@@ -193,25 +165,14 @@ for i = 1:nMol
             fret_DTA =  FRET_DTA(incl,nFRET*(i-1)+n);
             dt = getDtFromDiscr(fret_DTA,nExc*expt);
             lt = calcStateLifetimes(dt,nExc*expt);
-            nTrs = size(dt,1);
 
             % concatenate traces
             dat1.trace{ind} = ...
                 [dat1.trace{ind};FRET_tr,repmat(i,[size(FRET_tr,1),1])];
-            dat3.val{ind,1} = ...
-                [dat3.val{ind,1};fret_DTA,repmat(i,[size(fret_DTA,1),1])];
-
-            % concatenate mean, max, min, median and states
-            dat3.val{ind,2} = [dat3.val{ind,2};mean(FRET_tr)];
-            dat3.val{ind,3} = [dat3.val{ind,3};min(FRET_tr)];
-            dat3.val{ind,4} = [dat3.val{ind,4};max(FRET_tr)];
-            dat3.val{ind,5} = [dat3.val{ind,5};median(FRET_tr)];
-            dat3.val{ind,6} = [dat3.val{ind,6};numel(unique(fret_DTA))]; % number of states
-            dat3.val{ind,7} = [dat3.val{ind,7};size(dt,1)]; % number of transitions
-            dat3.val{ind,8} = [dat3.val{ind,8};mean(dt(:,1))]; % mean state lifetime
-            dat3.val{ind,9} = [dat3.val{ind,9};dt(:,2),repmat(i,nTrs,1)]; % state values
-            dat3.val{ind,10} = [dat3.val{ind,10};dt(:,1),repmat(i,nTrs,1)]; % state dwell times
-            dat3.val{ind,11} = [dat3.val{ind,11};lt(:,1),repmat(i,nTrs,1)]; % state lifetimes
+                calcdat = calcASdata(i,FRET_tr,fret_DTA,dt,lt);
+            for j = 1:nCalc
+                dat3.val{ind,j} = [dat3.val{ind,j};calcdat{j}];
+            end
         end
         if nS==0
             continue
@@ -226,25 +187,14 @@ for i = 1:nMol
             s_DTA = S_DTA(incl,nS*(i-1)+n);
             dt = getDtFromDiscr(s_DTA,nExc*expt);
             lt = calcStateLifetimes(dt,nExc*expt);
-            nTrs = size(dt,1);
 
             % concatenate traces
             dat1.trace{ind} = ...
                 [dat1.trace{ind};S_tr,repmat(i,[size(S_tr,1),1])];
-            dat3.val{ind,1} = ...
-                [dat3.val{ind,1};s_DTA,repmat(i,[size(s_DTA,1),1])];
-
-           % concatenate mean, max, min, median and states
-            dat3.val{ind,2} = [dat3.val{ind,2};mean(S_tr)];
-            dat3.val{ind,3} = [dat3.val{ind,3};min(S_tr)];
-            dat3.val{ind,4} = [dat3.val{ind,4};max(S_tr)];
-            dat3.val{ind,5} = [dat3.val{ind,5};median(S_tr)];
-            dat3.val{ind,6} = [dat3.val{ind,6};numel(unique(s_DTA))]; % number of states
-            dat3.val{ind,7} = [dat3.val{ind,7};size(dt,1)]; % number of transitions
-            dat3.val{ind,8} = [dat3.val{ind,8};mean(dt(:,1))]; % mean state lifetime
-            dat3.val{ind,9} = [dat3.val{ind,9};dt(:,2),repmat(i,nTrs,1)]; % state values
-            dat3.val{ind,10} = [dat3.val{ind,10};dt(:,1),repmat(i,nTrs,1)]; % state dwell times
-            dat3.val{ind,11} = [dat3.val{ind,11};lt(:,1),repmat(i,nTrs,1)]; % state lifetimes
+            calcdat = calcASdata(i,S_tr,s_DTA,dt,lt);
+            for j = 1:nCalc
+                dat3.val{ind,j} = [dat3.val{ind,j};calcdat{j}];
+            end
         end
     end
 
@@ -262,14 +212,6 @@ loading_bar('close', h_fig);
 
 % RB 2018-01-04: adapted for FRET-S-Histogram, hist2 is rather slow
 % RB 2018-01-05: hist2 replaced by hist2D
-
-% modified by MH, 21.1.2020
-% % corrected by MH, 27.3.2019
-% % % loading bar parameters-----------------------------------------------
-% %     err = loading_bar('init', h_fig , (nChan*nExc+nFRET+nS+nFRET), ...
-% % loading bar parameters-----------------------------------------------
-% err = loading_bar('init', h_fig , (nChan*nExc+nFRET+nS+nFRET*nS), ...
-%     'Histogram data ...');
 % loading bar parameters-----------------------------------------------
 err = loading_bar('init', h_fig , (nChan*nExc+nI0+nFRET+nS),...
     'Store data limits ...');
@@ -283,16 +225,6 @@ h.barData.prev_var = h.barData.curr_var;
 guidata(h_fig, h);
 % ---------------------------------------------------------------------
 
-% cancelled by MH, 21.1.2020
-% % RB 2018-01-04: adapted for FRET-S-Histogram
-% % MH 2019-03-27: collect ES indexes
-% %     for ind = 1:(size(dat1.trace,2)+nS)
-% ind_es = [];
-% for fret = 1:nFRET
-%     for s = 1:nS
-%         ind_es = cat(1,ind_es,[fret,s]);
-%     end
-% end
 for ind = 1:(nChan*nExc+nI0+nFRET+nS)
 
     if ind<=(nChan*nExc+nI0) % intensity
@@ -321,71 +253,6 @@ for ind = 1:(nChan*nExc+nI0+nFRET+nS)
         end
     end
         
-        % cancelled by MH, 21.1.2020
-%         dat1.lim{ind} = [min(dat1.trace{ind}) max(dat1.trace{ind})];
-%         [dat2.hist{ind},dat2.iv{ind}] = getHistTM(dat1.trace{ind},...
-%             dat1.lim{ind},dat1.niv(ind,1));
-%         
-%         % overflow first & last bins
-%         if  numel(dat2.hist{ind})>2
-%             dat2.hist{ind}([1 end]) = [];
-%             dat2.iv{ind}([1 end]) = [];
-%         end
-% 
-%         % build histogram with mean,max,min,median and states
-%         for j = 1:nCalc
-%             dat3.lim{ind,j} = [min(dat3.val{ind,j}) max(dat3.val{ind,j})];
-%             [dat3.hist{ind,j},dat3.iv{ind,j}] = getHistTM(dat3.val{ind,j},...
-%                 dat3.lim{ind,j},dat3.niv(ind,1,j));
-%             
-%             % overflow first & last bins
-%             if ~isempty(dat3.hist{ind,j}) && numel(dat3.hist{ind,j})>2
-%                 dat3.hist{ind,j}([1,end]) = [];
-%                 dat3.iv{ind,j}([1,end]) = [];
-%             end
-%         end
-% 
-%     else % FRET and S
-%         dat1.lim{ind} = [defMin defMax];
-%         [dat2.hist{ind},dat2.iv{ind}] = getHistTM(dat1.trace{ind},...
-%             dat1.lim{ind},dat1.niv(ind,1));
-%         
-%         % overflow first & last bins
-%         if  numel(dat2.hist{ind})>2
-%             dat2.hist{ind}([1 end]) = [];
-%             dat2.iv{ind}([1 end]) = [];
-%         end
-% 
-%         for j = 1:nCalc
-%             dat3.lim{ind,j} = [defMin defMax];
-%             [dat3.hist{ind,j},dat3.iv{ind,j}] = getHistTM(dat3.val{ind,j},...
-%                 dat3.lim{ind,j},dat3.niv(ind,1,j));
-%             
-%             % overflow first & last bins
-%             if ~isempty(dat3.hist{ind,j}) && numel(dat3.hist{ind,j})>2
-%                 dat3.hist{ind,j}([1 end]) = [];
-%                 dat3.iv{ind,j}([1 end]) = [];
-%             end
-%         end
-%     else  % FRET-S histogram 2D, adapted from getTDPmat.m
-%         ind_fret = ind_es(ind-nChan*nExc-nFRET-nS,1) + nChan*nExc;
-%         ind_s = ind_es(ind-nChan*nExc-nFRET-nS,2) + nChan*nExc + nFRET;
-%         
-%         dat1.lim{ind} = repmat([defMin defMax],[2,1]);
-%         ES = [dat1.trace{ind_fret},dat1.trace{ind_s}]; 
-%         [dat2.hist{ind},dat2.iv{ind}] = ...
-%             getHistTM(ES,dat1.lim{ind},dat1.niv(ind,:));
-% 
-%         % build ES histograms with mean,max,min and median values
-%         for j = 1:nCalc
-%             dat3.lim{ind,j} = repmat([defMin defMax],[2,1]);
-%             ES = [dat3.val{ind_fret,j},dat3.val{ind_s,j}]; 
-%             [dat3.hist{ind,j},dat3.iv{ind,j}] = getHistTM(ES,...
-%                 dat3.lim{ind,j},dat3.niv(ind,[1 2],j));
-%         end
-% 
-%     end
-    
     % loading bar update-----------------------------------
     err = loading_bar('update', h_fig);
     % -----------------------------------------------------

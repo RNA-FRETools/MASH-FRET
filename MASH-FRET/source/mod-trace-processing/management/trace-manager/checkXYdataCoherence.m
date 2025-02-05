@@ -16,18 +16,18 @@ function ok = checkCoherence(ind1,ind2,j1,j2)
 
 ok = false;
 
-if sum(j1==[0,1]) % frame-wise data
-    if ~sum(j2==[0,1])
+if sum(j1==getASdataindex('framewise')) % frame-wise data
+    if ~sum(j2==getASdataindex('framewise'))
         return
     end
 end
-if sum(j1==(2:8)) % molecule-wise
-    if ~sum(j2==(2:8))
+if sum(j1==getASdataindex('molwise')) % molecule-wise
+    if ~sum(j2==getASdataindex('molwise'))
         return
     end
 end
-if sum(j1==(9:11)) % state-wise
-    if ~sum(j2==(9:11))
+if sum(j1==getASdataindex('statewise')) % state-wise
+    if ~sum(j2==getASdataindex('statewise'))
         return
     end
     if ind1~=ind2

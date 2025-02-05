@@ -81,6 +81,7 @@ The type of data sets can be selected in menu **(b)** (x-axis) and **(g)** (y-ax
 * `minima (molecule-wise)` for the maxima of the data-time traces
 * `maxima (molecule-wise)` for the minima of the data-time traces
 * `medians (molecule-wise)` for the medians of the data-time traces
+* `SNR (molecule-wise)` for the signal-to-noise ratio of the data-time traces $$data(t)$$, calculated from mean value $$\langle data\rangle$$ and trajectory length $$L$$ with: $$SNR=\frac{\langle data \rangle }{\sqrt{\frac{1}{L-1}\sum_t{data(t)-\langle data\rangle}}}$$
 * `nb. of states (molecule-wise)` for the number of states in state trajectories
 * `nb. of transitions (molecule-wise)` for the number of state transitions in state trajectories
 * `mean dwell time (molecule-wise)` for the average state dwell times of the state trajectories

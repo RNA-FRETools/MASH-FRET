@@ -15,8 +15,9 @@ molIncl = false(1,N);
 % get method settings
 datax = get(h.tm.popupmenu_selectXdata,'value');
 datay = get(h.tm.popupmenu_selectYdata,'value')-1;
-jx = get(h.tm.popupmenu_selectXval,'value')-1;
-jy = get(h.tm.popupmenu_selectYval,'value')-1;
+datid = getASdataindex;
+jx = datid(get(h.tm.popupmenu_selectXval,'value'));
+jy = datid(get(h.tm.popupmenu_selectYval,'value'));
 
 is2D = datay>0;
 isTDP = (datax==datay & jx==9 & jy==9);
@@ -70,14 +71,17 @@ else
     end
 end
 
-if (is2D && sum(jx==[0,1]) && sum(jy==[0,1])) || ...
-        (~is2D && sum(jx==[0,1])) % frame-wise data
+if (is2D && sum(jx==getASdataindex('framewise')) && ...
+        sum(jy==getASdataindex('framewise'))) || ...
+        (~is2D && sum(jx==getASdataindex('framewise'))) % frame-wise data
     molIncl = molsWithConf(trace(:,1:2:end),'trace',prm,incl);
-elseif (is2D && sum(jx==(2:8)) && sum(jy==(2:8))) || ...
-        (~is2D && sum(jx==(2:8))) % molecule-wise
+elseif (is2D && sum(jx==getASdataindex('molwise')) && ...
+        sum(jy==getASdataindex('molwise'))) || ...
+        (~is2D && sum(jx==getASdataindex('molwise'))) % molecule-wise
     molIncl = molsWithConf(trace(:,1:2:end),'value',prm);
-elseif (is2D && sum(jx==(9:11)) && sum(jy==(9:11))) || ...
-        (~is2D && sum(jx==(9:11))) % state-wise
+elseif (is2D && sum(jx==getASdataindex('statewise')) && ...
+        sum(jy==getASdataindex('statewise'))) || ...
+        (~is2D && sum(jx==getASdataindex('statewise'))) % state-wise
     molIncl = molsWithConf(trace,'state',prm);
 end
     
