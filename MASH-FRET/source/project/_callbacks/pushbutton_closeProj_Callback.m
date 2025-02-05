@@ -7,7 +7,6 @@ function pushbutton_closeProj_Callback(obj, evd, h_fig, varargin)
 
 % adjust current project index in case it is out of list range (can happen 
 % when project import failed)
-setcurrproj(h_fig);
 
 h = guidata(h_fig);
 p = h.param;
@@ -78,8 +77,8 @@ for i = slct
 end
 
 % update current project, molecule index, data type and molecule subgroup
-p.proj(slct) = [];
 p = adjustProjIndexLists(p,-slct,[]);
+p.proj(slct) = [];
 
 % set new current project
 if size(p.proj,2) <= 1
