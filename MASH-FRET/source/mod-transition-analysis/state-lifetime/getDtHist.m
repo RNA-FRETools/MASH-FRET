@@ -3,6 +3,9 @@ function hist_ref = getDtHist(clust_dat, j1, j2, mols, excl, wght)
 hist_ref = [];
 
 % check for at least one/two transition in histogram
+if isempty(clust_dat)
+    return
+end
 if j2==0
     clust_k = clust_dat(clust_dat(:,7)==j1,:);
 else
