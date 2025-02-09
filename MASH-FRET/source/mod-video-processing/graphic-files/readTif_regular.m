@@ -79,7 +79,7 @@ if strcmp(n,'all')
             disp(sprintf(str));
         end
 
-        [data,ok] = readTif(fullFname,1,fDat,h_fig,0);
+        [data,ok] = readTif_regular(fullFname,1,fDat,h_fig,0);
         frameCur = data.frameCur;
 
     else
