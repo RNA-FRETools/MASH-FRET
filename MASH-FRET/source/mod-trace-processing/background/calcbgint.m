@@ -75,7 +75,7 @@ if isCoord && isMov
         else
             fDat{2}{2} = [];
         end
-        fDat{3} = [res_y res_x];
+        fDat{3} = [res_x res_y];
         fDat{4} = viddat_mv{3};
 
         if meth~=6
