@@ -7,10 +7,11 @@ h = guidata(h_fig);
 
 dat1 = get(h.tm.axes_ovrAll_1,'userdata');
 dat3 = get(h.tm.axes_histSort,'userdata');
+datid = getASdataindex;
 indx = get(h.tm.popupmenu_selectXdata,'value');
-jx = get(h.tm.popupmenu_selectXval,'value')-1;
+jx = datid(get(h.tm.popupmenu_selectXval,'value'));
 indy = get(h.tm.popupmenu_selectYdata,'value')-1;
-jy = get(h.tm.popupmenu_selectYval,'value')-1;
+jy = datid(get(h.tm.popupmenu_selectYval,'value'));
 isTDP = (indx==indy & jx==9 & jy==9);
 
 if jx==0 || isTDP
