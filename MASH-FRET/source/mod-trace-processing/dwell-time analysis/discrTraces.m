@@ -159,16 +159,37 @@ if toBottom==2 || ~toBottom
         end
     end
 
-    % discretize intensity-time traces
-    prm = permute(prm_DTA{2}(meth,:,nF+nS+1:end),[3,2,1]);
-    thresh = prm_DTA{4}(:,:,nF+nS+1:end);
     if mute
         actstr = 0;
     else
         actstr = 'Discretisation of top traces...';
     end
-    top = (getDiscr(meth, I_tr, [], prm, thresh, calc, actstr, h_fig))';
 
+    
+    if meth==8 % import FRET discr and calculates S discr
+%         incl_imp = false(size(fret_DTA_imp));
+%         incl_imp(1:L) = true;
+        incl_imp = incl;
+        prm = permute(prm_DTA{2}(meth,:,1:nF),[3,2,1]);
+        fret_DTA = (getDiscr(meth,cat(3,f_tr,fret_DTA_imp(:,incl_imp)),...
+            true(nF,sum(incl_imp)),prm,[],calc,actstr,h_fig))';
+        top = NaN(flip(size(I_tr)));
+        for pair = 1:size(FRET,1)
+            don = FRET(pair,1); ldon = find(exc==chanExc(don));
+            acc = FRET(pair,2);
+            top(:,(ldon-1)*nC+don) = trajkernel(I_tr((ldon-1)*nC+don,:)',...
+                true(1,size(fret_DTA,1)),fret_DTA(:,pair)');
+            top(:,(ldon-1)*nC+acc) = trajkernel(I_tr((ldon-1)*nC+acc,:)',...
+                true(1,size(fret_DTA,1)),fret_DTA(:,pair)');
+        end
+
+    else
+        % discretize intensity-time traces
+        prm = permute(prm_DTA{2}(meth,:,nF+nS+1:end),[3,2,1]);
+        thresh = prm_DTA{4}(:,:,nF+nS+1:end);
+        top = (getDiscr(meth, I_tr, [], prm, thresh, calc, actstr, h_fig))';
+    end
+    
     % format resulting discretized traces
     for l = 1:nExc
         top_DTA(:,:,l) = top(:,((l-1)*nC+1):l*nC);
