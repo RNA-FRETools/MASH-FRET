@@ -47,7 +47,7 @@ for i = id
             continue
         end
 
-        [I_DA,stop,gamma,ok,str] = gammaCorr_pb(i,I_den,prm{3}(i,1:6),...
+        [I_DA,stop,gamma,ok,str] = gammaCorr_pb(i,I_den,m,prm{3}(i,1:6),...
             prm_dta,p.proj{proj},h_fig);
 
         p.proj{proj}.TP.prm{m}{6}{3}(i,7) = stop*nExc;

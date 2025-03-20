@@ -20,7 +20,7 @@ incl = p.proj{proj}.bool_intensities(:,m);
 I_den = p.proj{proj}.intensities_denoise(incl,((m-1)*nChan+1):m*nChan,:);
 prm_dta = p.proj{proj}.TP.curr{m}{4};
 
-[I_dta,cutOff,gamma,ok,str] = gammaCorr_pb(fret,I_den,prm,prm_dta,...
+[I_dta,cutOff,gamma,ok,str] = gammaCorr_pb(fret,I_den,m,prm,prm_dta,...
     p.proj{proj},h_fig);
 if ~ok
     setContPan(str,'warning',h_fig);
