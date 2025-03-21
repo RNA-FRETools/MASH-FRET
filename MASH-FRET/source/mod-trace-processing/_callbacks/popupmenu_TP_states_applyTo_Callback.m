@@ -16,11 +16,17 @@ chan = p.proj{proj}.TP.fix{3}(4);
 val = get(obj, 'Value');
 if meth==3 && val~=1
     val = 1;
-    disp(['2D analysis is available for intensity ratio  traces (bottom) ',...
+    disp(['2D analysis is available for intensity ratio traces (bottom) ',...
         'only.']);
-elseif meth==8 && val~=1
-    disp(['Intensity state sequences will be derived from imported FRET ',...
-        'state sequences.']);
+elseif meth==8 
+    switch val
+        case 1
+            disp(['Intensity ratio (bottom) state sequences will be ',...
+                'derived from imported FRET state sequences.']);
+        otherwise
+            disp(['Intensity (top) state sequences will be derived from ',...
+                'imported FRET state sequences.']);
+    end
 end
 
 switch val

@@ -6,7 +6,7 @@ function d_traces = getDiscr(method, traces, incl, prm, thresh, calc, ...
 % update by MH, 30.3.2019: fix error for ratio data: if all data points were excluded because out-of-range [-0.2;1.2], include all data point back and discretize out-of-range data.
 
 mute = false;
-if numel(str_discr)==1 && str_discr==0
+if isscalar(str_discr) && str_discr==0
     mute = true;
 end
 
