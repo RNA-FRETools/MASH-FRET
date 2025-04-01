@@ -176,7 +176,7 @@ switch menu
             end
         end
         if nChan > 1
-            str_pop = [str_pop 'All intensities' 'Summed intensities'];
+            str_pop = [str_pop 'First emitter' 'All emitters'];
         end
         
     case 'exc'
