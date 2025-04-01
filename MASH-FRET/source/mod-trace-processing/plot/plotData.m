@@ -31,6 +31,7 @@ timeLab = 'time (s)';
 frameLab = 'frame';
 xLab2 = 'norm. freq.';
 nbins = 100; % nb of histogram bins
+alphaval = 0.85;
 
 % collect experiment settings and processing parameters
 proj = p.curr_proj;
@@ -55,15 +56,16 @@ fix = p.proj{proj}.TP.fix;
 % collect y-data for current molecule
 nFRET = size(FRET,1);
 nS = size(S,1);
+nandat = any(isnan(int_den(:,((mol-1)*nChan+1):mol*nChan,:)),[2,3])';
 incl = ~~incl(:,mol)';
-I = int_den(incl,((mol-1)*nChan+1):mol*nChan,:);
+I = int_den(~nandat,((mol-1)*nChan+1):mol*nChan,:);
 if plotDscr
-    discrI = int_dta(incl,((mol-1)*nChan+1):mol*nChan,:);
+    discrI = int_dta(~nandat,((mol-1)*nChan+1):mol*nChan,:);
     if nFRET > 0
-        discrFRET = FRET_dta(incl,((mol-1)*nFRET+1):mol*nFRET,:);
+        discrFRET = FRET_dta(~nandat,((mol-1)*nFRET+1):mol*nFRET,:);
     end
     if nS > 0
-        discrS = S_dta(incl,((mol-1)*nS+1):mol*nS,:);
+        discrS = S_dta(~nandat,((mol-1)*nS+1):mol*nS,:);
     end
 end
 if perSec
@@ -85,7 +87,7 @@ end
 FRETlim = [-0.2 1.2];
 
 % get time data and x-axis limits
-frames = find(incl);
+frames = 1:size(int_den,1);
 x_lim = [((frames(1)-1)*nExc+1) frames(end)*nExc];
 if ~isempty(prm)
     cutIt = prm{2}{1}(1);
@@ -142,8 +144,11 @@ setPropIfField(ax,axnm(exclax),'Visible','off');
 if all(exclax)
     return
 end
-setPropIfField(ax, axnm(~exclax), 'NextPlot', 'add', 'Visible', 'on', ...
-    'YLimMode', 'auto', 'XLimMode', 'auto');
+setPropIfField(ax, axnm(~exclax), 'NextPlot', 'replace', 'Visible', 'on');
+
+% set axis limits free
+ylim(axhdl(~exclax),'auto');
+xlim(axhdl(~exclax),'auto');
 
 % identify trajectory and histogram axes to plot on
 ishist = getaxbool(exclax,histid);
@@ -172,7 +177,7 @@ for c = 1:nChan
     plotData_traj(ax, 'axes_traceTop0', x_axis(l:nExc:end)',...
         sum(I(:,:,l),2), clr{1}{l,c}, plotDscr, sum(discrI(:,:,l),2), 'k');
 
-    plotData_hist(ax, 'axes_histTop0', sum(I(:,:,l),2), [], nbins, ...
+    plotData_hist(ax, 'axes_histTop0', sum(I(incl,:,l),2), [], nbins, ...
         clr{1}{l,c});
 end
 
@@ -183,7 +188,7 @@ if curr_chan_top > 0
             plotData_traj(ax, 'axes_traceTop', x_axis(l:nExc:end)',...
                 I(:,c,l), clr{1}{l,c}, plotDscr, discrI(:,c,l), 'k');
 
-            plotData_hist(ax, 'axes_histTop', I(:,c,l), [], nbins, ...
+            plotData_hist(ax, 'axes_histTop', I(incl,c,l), [], nbins, ...
                 clr{1}{l,c});
         end
     end
@@ -207,7 +212,7 @@ if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
             plotData_traj(ax, 'axes_traceBottom', x_axis(l:nExc:end)',...
                 f_tr(:,c), clr{2}(c,:), plotDscr, discrFRET(:,c), 'r');
 
-            plotData_hist(ax, 'axes_histBottom', f_tr(:,c), FRETlim, nbins, ...
+            plotData_hist(ax, 'axes_histBottom', f_tr(incl,c), FRETlim, nbins, ...
                 clr{2}(c,:));
             
         else
@@ -218,7 +223,7 @@ if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
             plotData_traj(ax, 'axes_traceBottom', x_axis(l:nExc:end)',...
                 s_tr(:,i_s), clr{3}(i_s,:), plotDscr, discrS(:,i_s), 'r');
 
-            plotData_hist(ax, 'axes_histBottom', s_tr(:,i_s), FRETlim, nbins, ...
+            plotData_hist(ax, 'axes_histBottom', s_tr(incl,i_s), FRETlim, nbins, ...
                 clr{3}(i_s,:));
         end
     end
@@ -234,27 +239,46 @@ if any(ishist)
     xlim(axhdl(ishist),xlim_all);
 end
 
+% background-colored outlier portions of trajectories
+if any(istraj)
+    for hdl = axhdl(istraj)
+        yaxis = [-1000,1000]*max(abs(hdl.YLim));
+        xdata = x_axis(1:nExc:end);
+        ydata = ones(size(xdata))*yaxis(2);
+        ydata(incl) = yaxis(1);
+
+        ylim_top = hdl.YLim;
+        area(hdl,xdata,ydata,'linestyle','none','facecolor',[0,0,0],...
+            'facealpha',1-alphaval,'basevalue',yaxis(1));
+        set(hdl, 'YLim', ylim_top);
+    end
+end
+
 % show time cutoff on trajectory axes
 if any(istraj) && (~cutIt && cutOff<numel(incl)*nExc)
     for hdl = axhdl(istraj)
         ylim_top = hdl.YLim;
-        plot(hdl,[cutOff cutOff],ylim_top,'-c');
+        plot(hdl,[cutOff cutOff],ylim_top,'color','c','linewidth',2);
         set(hdl, 'YLim', ylim_top);
     end
 end
 
 % finalize all axes
 if ~valid(mol)
-    shad = [0.85 0.85 0.85];
+    bg = repmat(alphaval,1,3);
 else
-    shad = [1 1 1];
+    bg = [1 1 1];
 end
 grid(axhdl(~exclax),'on');
-set(axhdl(~exclax),'NextPlot','replace','Color',shad);
+set(axhdl(~exclax),'NextPlot','replace','Color',bg);
 
 % set axis limits and labels
 if any(istraj)
-    xlim(axhdl(istraj),x_axis([1,end]));  
+    if cutIt
+        xlim(axhdl(istraj),[x_axis(1),cutOff]);  
+    else
+        xlim(axhdl(istraj),x_axis([1,end]));  
+    end
     xlabel(axhdl(istraj),xLab1);
     if any(istraj&(istop|istop0))
         if ~isempty(Ilim)
@@ -270,6 +294,11 @@ end
 
 % finalize histogram axes
 if any(ishist)
+    for a = find(ishist)
+        if istraj(a-1)
+            axhdl(a).YLim = axhdl(a-1).YLim;
+        end
+    end
     set(axhdl(ishist),'YAxisLocation','right');
     xlabel(axhdl(ishist),xLab2);
 end
@@ -281,8 +310,10 @@ function plotData_traj(ax,axnm,x,y1,clr1,is2,y2,clr2)
 if ~isfield(ax,axnm)
     return
 end
-
 plot(ax.(axnm), x(~isnan(y1)), y1(~isnan(y1)), 'Color', clr1);
+if ~strcmp(ax.(axnm).NextPlot,'add')
+    ax.(axnm).NextPlot = 'add';
+end
 if ~is2
     return
 end
@@ -292,7 +323,7 @@ plot(ax.(axnm), x(~isnan(y2)), y2(~isnan(y2)), 'Color',clr2);
 function plotData_hist(ax,axnm,dat,lim,nbins,clr)
 % plotData_hist(ax,axnm,dat,lim,nbins,clr)
 
-if ~isfield(ax,axnm)
+if ~isfield(ax,axnm) || isempty(dat)
     return
 end
 if ~isempty(lim)
@@ -300,10 +331,16 @@ if ~isempty(lim)
 else
     [cnts,edg] = histcounts(dat, nbins);
 end
+if sum(cnts)==0
+    return
+end
 cnts = cnts/sum(cnts);
 
 histogram(ax.(axnm),'binedges',edg,'bincounts',cnts, 'FaceColor',...
     clr,'EdgeColor',clr,'orientation','horizontal');
+if ~strcmp(ax.(axnm).NextPlot,'add')
+    ax.(axnm).NextPlot = 'add';
+end
 
 
 function isid = getaxbool(excl,id)
