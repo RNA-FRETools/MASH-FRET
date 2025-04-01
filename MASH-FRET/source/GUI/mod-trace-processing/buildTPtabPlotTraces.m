@@ -71,6 +71,7 @@ y = y-posaxes(4)-p.mg/fact;
 h.axes_bottom = axes('parent',h_tab,'units',p.posun,'fontunits',p.fntun,...
     'fontsize',p.fntsz1,'position',[x,y,posaxes(3:4)],'xlim',limAx0,'ylim',...
     limAx0);
+ylabel(h.axes_bottom,ylbl0);
 
 x = x+posaxes(3)+p.mg/fact;
 
