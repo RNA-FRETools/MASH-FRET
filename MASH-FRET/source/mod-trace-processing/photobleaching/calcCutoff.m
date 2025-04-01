@@ -1,8 +1,5 @@
 function p = calcCutoff(mol, p)
 
-% Last update 17.5.2019 by MH: (1) For now on, "summed intensities" and "all intensities" concern only intensities collected at emitter-specific excitations because zero-signals collected at unspecific illuminations are constantly "photobleached" and make the method unsuable (2) "all intensities" uses intensities summed over all channels; this allows to detect true photobleaching and not 0 FRET
-% update 3.4.2019 by MH: manage missing intensities when loading ASCII traces with different lengths: cut-off frame is automatically set to last number in trace and saved no matter if photobleaching correction is applied or not
-
 proj = p.curr_proj;
 
 nChan = p.proj{proj}.nb_channel;
@@ -44,11 +41,6 @@ else
     elseif chan <= (nFRET+nS) % single stoichiometry channel
         
         i_s = chan-nFRET;
-        
-        % modified by MH, 14.1.2020
-%         S_chan = S(i_s,:);
-%         [o,l_s,o] = find(exc==chanExc(S_chan));
-%         trace = sum(I_den(:,:,S_chan(1)),2)./sum(sum(I_den(:,:,:),2),3);
         s = calcS(exc, chanExc, S, FRET, I_den, gamma, beta);
         trace = s(:,S(i_s));
 
@@ -65,6 +57,7 @@ else
                     2);
             end
         end
+
     else % all emitters
         trace = zeros(size(I_den,1),1);
         for c = 1:nChan
@@ -87,11 +80,10 @@ else
 
     incl(trace<thresh) = false;
 
-    cutOff = find(trace>=thresh,1,'last') + start - 1;
-    % cutOff = find(trace<thresh) + start - 1;
+    cutOff = find(trace>=thresh,1,'last')+start-1;
     if ~isempty(cutOff)
-        cutOff2 = frames(cutOff) - extra;
-        [r,o,o] = find(cutOff2 > minCut);
+        cutOff2 = frames(cutOff)-extra;
+        [r,~,~] = find(cutOff2>minCut);
         if ~isempty(r) &&  cutOff2(r(1),1)<lastData
             cutOff = cutOff2(r(1),1);
         else
@@ -100,7 +92,6 @@ else
     else
         cutOff = lastData;
     end
-
 end
 
 firstNan = find(isnan(sum(sum(intensities,3),2)),1);
