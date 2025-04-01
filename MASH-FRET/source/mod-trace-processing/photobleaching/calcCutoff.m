@@ -9,7 +9,7 @@ nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
 exc = p.proj{proj}.excitations;
 chanExc = p.proj{proj}.chanExc;
-incl = false(size(p.proj{proj}.bool_intensities(:,mol)));
+incl = true(size(p.proj{proj}.bool_intensities(:,mol)));
 intensities = p.proj{proj}.intensities(:,(mol-1)*nChan+1:mol*nChan,:);
 FRET = p.proj{proj}.FRET;
 nFRET = size(p.proj{proj}.FRET,1);
@@ -23,7 +23,8 @@ if nFRET>0
 end
 prm = p.proj{proj}.TP.curr{mol}{2};
 
-apply = prm{1}(1);
+% apply = prm{1}(1);
+timethresh = prm{1}(1);
 start = ceil(prm{1}(4)/nExc);
     
 I_den = p.proj{proj}.intensities_denoise(:,((mol-1)*nChan+1):mol*nChan,:);
@@ -56,14 +57,7 @@ else
         i_c = (chan - nFRET - nS)-(i_exc-1)*nChan;
         trace = I_den(:,i_c,i_exc);
 
-    % modified by MH, 17.5.2019
-%     elseif chan == (nFRET+nS+nExc*nChan+1) % all intensities
-%         trace = min(min(I_den, [], 3), [], 2);
-% 
-%     else % summed intensities
-%         trace = sum(sum(I_den,3),2);
-%     end
-    elseif chan == (nFRET+nS+nExc*nChan+1) % all intensities
+    elseif chan == (nFRET+nS+nExc*nChan+1) % first emitter
         trace = Inf(size(I_den,1),1);
         for c = 1:nChan
             if chanExc(c)>0
@@ -71,7 +65,7 @@ else
                     2);
             end
         end
-    else % summed intensities
+    else % all emitters
         trace = zeros(size(I_den,1),1);
         for c = 1:nChan
             if chanExc>0
@@ -83,6 +77,7 @@ else
     nbFrames = numel(trace);
     
     trace = trace(start:end,:);
+    trace = discrtrace4pbdetect(trace');
     frames = (1:nbFrames)';
     
     thresh = prm{2}(chan,1);
@@ -90,8 +85,10 @@ else
     extra = ceil(extra/nExc);
     minCut = ceil(max([prm{2}(chan,3) prm{1}(1)+start-1])/nExc);
 
-    
-    cutOff = find(trace < thresh) + start - 1;
+    incl(trace<thresh) = false;
+
+    cutOff = find(trace>=thresh,1,'last') + start - 1;
+    % cutOff = find(trace<thresh) + start - 1;
     if ~isempty(cutOff)
         cutOff2 = frames(cutOff) - extra;
         [r,o,o] = find(cutOff2 > minCut);
@@ -124,12 +121,16 @@ end
 cutOff = min([firstNan-1,cutOff]);
 cutOff(cutOff>lastData) = lastData;
 
-if apply
-    incl(start:cutOff,1) = true;
-else
-    incl(start:firstNan-1) = true;
-end
+incl(cutOff+1:end,1) = false;
 p.proj{proj}.TP.prm{mol}{2}{1}(4+method) = cutOff*nExc;
 p.proj{proj}.bool_intensities(:,mol) = incl;
+
+
+function trace = discrtrace4pbdetect(trace)
+prm(1) = 1;
+prm(2) = 3;
+prm(3) = 5;
+prm([7,6,5]) = [1,0,0];
+trace = getDiscr(2,trace,~isnan(trace),prm,[],false,0,[]);
 
 
