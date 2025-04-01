@@ -42,16 +42,18 @@ else
     nSlopes = N;
 end
 
-h = guidata(h_fig);
 lb = 0;
-if ~isfield(h, 'barData') && sum(method == [2,3,5,6])
-    if loading_bar('init', h_fig, nSlopes, str_discr)
-        return
-    end
+if ~isempty(h_fig)
     h = guidata(h_fig);
-    h.barData.prev_var = h.barData.curr_var;
-    guidata(h_fig, h);
-    lb = 1;
+    if ~isfield(h, 'barData') && sum(method == [2,3,5,6])
+        if loading_bar('init', h_fig, nSlopes, str_discr)
+            return
+        end
+        h = guidata(h_fig);
+        h.barData.prev_var = h.barData.curr_var;
+        guidata(h_fig, h);
+        lb = 1;
+    end
 end
 
 warning('verbose', 'on');

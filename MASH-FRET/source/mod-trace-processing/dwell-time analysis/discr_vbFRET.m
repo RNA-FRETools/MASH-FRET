@@ -136,7 +136,7 @@ for n = 1:N
             rs = rs+1;
             
             % update loading bar in MASH-FRET
-            if islb &&  loading_bar('update',fig)
+            if ~isempty(fig) && islb &&  loading_bar('update',fig)
                 return
             end
         end
