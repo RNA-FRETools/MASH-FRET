@@ -26,7 +26,8 @@ err = '';
 
 movFile = fDat{1};
 fCurs = fDat{2}{1};
-if iscell(fCurs)
+if iscell(fCurs) && numel(fCurs)>=2 && iscell(fCurs{2}) && ...
+        numel(fCurs{2})>=3 && isscalar(fCurs{2}{1})
     vers = fCurs{2}{1};
     is_os = fCurs{2}{2};
     is_sgl = fCurs{2}{3};
