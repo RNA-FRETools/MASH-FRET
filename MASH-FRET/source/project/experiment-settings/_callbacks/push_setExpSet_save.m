@@ -55,24 +55,24 @@ p = h.param;
 
 % load full-length video data in memory if possible
 if ~strcmp(dat2import,'edit') && proj.is_movie && numel(proj.movie_file)==1 ...
-        && ~isFullLengthVideo(proj.movie_file{1},h_fig)
+        && ~isFullLengthVideo(proj.movie_file{1},h_fig0)
     h.movie.movie = [];
     h.movie.file = '';
-    guidata(h_fig,h);
-    [dat,ok] = getFrames(proj.movie_file{1},'all',proj.movie_dat{1},h_fig,...
+    guidata(h_fig0,h);
+    [dat,ok] = getFrames(proj.movie_file{1},'all',proj.movie_dat{1},h_fig0,...
         true);
     if ~ok
         return
     end
-    h = guidata(h_fig);
+    h = guidata(h_fig0);
     if ~isempty(dat.movie)
         h.movie.movie = dat.movie;
         h.movie.file = proj.movie_file{1};
-        guidata(h_fig,h);
+        guidata(h_fig0,h);
         
     elseif ~isempty(h.movie.movie)
         h.movie.file = proj.movie_file{1};
-        guidata(h_fig,h);
+        guidata(h_fig0,h);
     end
 end
 
