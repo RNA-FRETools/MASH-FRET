@@ -19,9 +19,6 @@ if nFRET>0
     end
 end
 prm = p.proj{proj}.TP.curr{mol}{2};
-
-% apply = prm{1}(1);
-timethresh = prm{1}(1);
 start = ceil(prm{1}(4)/nExc);
     
 I_den = p.proj{proj}.intensities_denoise(:,((mol-1)*nChan+1):mol*nChan,:);
@@ -50,11 +47,10 @@ else
         trace = I_den(:,i_c,i_exc);
 
     elseif chan == (nFRET+nS+nExc*nChan+1) % first emitter
-        trace = Inf(size(I_den,1),1);
+        trace = [];
         for c = 1:nChan
             if chanExc(c)>0
-                trace = min([trace,sum(I_den(:,:,exc==chanExc(c)),2)],[],...
-                    2);
+                trace = cat(2,trace,sum(I_den(:,:,exc==chanExc(c)),2));
             end
         end
 
@@ -71,21 +67,25 @@ else
     
     trace = trace(start:end,:);
     trace = discrtrace4pbdetect(trace');
-    frames = (1:nbFrames)';
+    if size(trace,1)>1
+        trace = min(trace,[],1);
+    end
     
     thresh = prm{2}(chan,1);
     extra = prm{2}(chan,2);
     extra = ceil(extra/nExc);
-    minCut = ceil(max([prm{2}(chan,3) prm{1}(1)+start-1])/nExc);
+    minCut = ceil(max([prm{2}(chan,3) prm{1}(1)+nExc*start-1])/nExc);
 
-    incl(trace<thresh) = false;
+    frames = (start:nbFrames)';
+    incl(frames(trace<thresh)) = false;
+    prc = cumsum(double(trace<thresh),'reverse')./(numel(trace):-1:1);
 
-    cutOff = find(trace>=thresh,1,'last')+start-1;
+    % cutOff = find(trace>=thresh,1,'last')+start-1;
+    cutOff = find(prc>=0.99,1,'first')+start-1;
     if ~isempty(cutOff)
-        cutOff2 = frames(cutOff)-extra;
-        [r,~,~] = find(cutOff2>minCut);
-        if ~isempty(r) &&  cutOff2(r(1),1)<lastData
-            cutOff = cutOff2(r(1),1);
+        cutOff2 = cutOff-extra;
+        if cutOff2>=minCut &&  cutOff2<lastData
+            cutOff = cutOff2;
         else
             cutOff = lastData;
         end
@@ -112,16 +112,17 @@ end
 cutOff = min([firstNan-1,cutOff]);
 cutOff(cutOff>lastData) = lastData;
 
-incl(cutOff+1:end,1) = false;
+incl([1:(start-1),cutOff+1:end],1) = false;
 p.proj{proj}.TP.prm{mol}{2}{1}(4+method) = cutOff*nExc;
 p.proj{proj}.bool_intensities(:,mol) = incl;
 
 
 function trace = discrtrace4pbdetect(trace)
 prm(1) = 1;
-prm(2) = 3;
+prm(2) = 5;
 prm(3) = 5;
-prm([7,6,5]) = [1,0,0];
+prm([7,6,5]) = [0,0,0];
+prm = repmat(prm,size(trace,2),1);
 trace = getDiscr(2,trace,~isnan(trace),prm,[],false,0,[]);
 
 
