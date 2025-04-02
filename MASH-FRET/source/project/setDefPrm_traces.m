@@ -124,7 +124,7 @@ mol{1}{2} = [3 0 0
              3 2 1]; % denoising parameters
              
 % Photobleaching
-mol{2}{1}(1) = 0; % apply cutoff
+mol{2}{1}(1) = 0; % clip time points overflowing first frame and cutoff (old: apply cutoff)
 mol{2}{1}(2) = 1; % method
 mol{2}{1}(3) = 1; % channel
 mol{2}{1}(4) = 1; % starting frame

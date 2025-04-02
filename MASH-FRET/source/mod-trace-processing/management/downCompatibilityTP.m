@@ -15,8 +15,10 @@ nChan = p_proj.nb_channel;
 exc = p_proj.excitations;
 nExc = p_proj.nb_excitations;
 chanExc = p_proj.chanExc;
+incl = p_proj.bool_intensities;
 nFRET = size(p_proj.FRET,1);
 nS = size(p_proj.S,1);
+L = size(p_proj.intensities,1);
 
 % added by MH, 29.3.2019 reorder already-existing Bt coefficient values 
 % into new format: sum Bt coefficients over the different excitations and 
@@ -256,7 +258,18 @@ if size(p_proj.TP.prm{n},2)>=4 && size(p_proj.TP.prm{n}{4},2)>=2 && ...
 end
 
 % added by MH, 19.2.2024: add re-sampling time
-if size(p_proj.TP.fix,2)<5 || ~(numel(p_proj.TP.fix{5})==1 && ...
+if size(p_proj.TP.fix,2)<5 || ~(isscalar(p_proj.TP.fix{5}) && ...
         isnumeric(p_proj.TP.fix{5}) && p_proj.TP.fix{5}>0)
     p_proj.TP.fix{5} = p_proj.resampling_time;
+end
+
+% added by MH, 01.04.2025: run photobleaching/blinking detection
+if size(p_proj.TP.prm{n},2)>=2 && size(p_proj.TP.prm{n}{2},2)>=1 && ...
+        numel(p_proj.TP.prm{n}{2}{1})>=6
+    meth = p_proj.TP.prm{n}{2}{1}(2);
+    cutOff = p_proj.TP.prm{n}{2}{1}(4+meth);
+    if meth==2 && cutOff<(L*nExc) && nExc*find(incl(:,n)',1,'last')~=cutOff
+        p_proj.TP.prm{n}{2} = [];
+        disp('Photobleaching detection is obsolete: results were reset.');
+    end
 end
