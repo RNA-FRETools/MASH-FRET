@@ -12,7 +12,7 @@ ttl4 = 'Re-sampling';
 ttl5 = 'Cross-talks';
 ttl6 = 'Factor corrections';
 ttl7 = 'Denoising';
-ttl8 = 'Photobleaching';
+ttl8 = 'Photobleaching/blinking';
 ttl9 = 'Find states';
 
 % parents
@@ -22,7 +22,7 @@ h_pan = h.uipanel_TP_scroll;
 pospan = get(h_pan,'position');
 wpan0 = pospan(3);
 hpan1 = p.mgpan+htxt0+hpop0+p.mg/fact+htxt0+hpop0+p.mg/fact+htxt0+hedit0+...
-    p.mg+hedit0+p.mg;
+    p.mg+htxt0+hedit0+p.mg;
 hpan2 = p.mgpan+3*htxt0+p.mg/fact+htxt0+p.mg/fact+htxt0+hpop0+p.mg;
 hpan3 = p.mgpan+htxt0+hpop0+p.mg/fact+htxt0+hedit0+p.mg/fact+hedit0+...
     p.mg/fact+hedit0+p.mg;
