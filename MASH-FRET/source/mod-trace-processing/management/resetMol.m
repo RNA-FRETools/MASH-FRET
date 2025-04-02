@@ -55,7 +55,8 @@ elseif ~isequal(curr{1},prm{1})
     p.proj{proj}.ES = cell(1,nF);
     p.proj{proj}.intensities_denoise(:,((m-1)*nC+1):m*nC,:) = NaN;
     
-elseif ~isequal(curr{2},prm{2})
+elseif isempty(prm{2}) || ~isequal(curr{2}{1}(2:end),prm{2}{1}(2:end)) || ...
+        ~isequal(curr{2}{2},prm{2}{2})
     opt = 'debleach';
     p.proj{proj}.ES = cell(1,nF);
     p.proj{proj}.intensities_DTA(:,((m-1)*nC+1):m*nC,:) = NaN;
