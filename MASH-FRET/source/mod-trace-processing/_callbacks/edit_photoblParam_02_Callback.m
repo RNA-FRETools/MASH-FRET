@@ -23,7 +23,7 @@ else
     maxVal = len;
 end
 set(obj, 'String', num2str(val));
-if ~(numel(val)==1 && ~isnan(val) && val>=0 && val<=maxVal)
+if ~(isscalar(val) && ~isnan(val) && val>=0 && val<=maxVal)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
     updateActPan(['Extra cutoff must be >= 0 and <= ' num2str(maxVal)],...
         h_fig, 'error');
