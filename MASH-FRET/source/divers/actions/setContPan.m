@@ -20,6 +20,9 @@ if h.mute_actions
     end
     return
 end
+if ~isfield(h,'edit_actPan')
+    return
+end
 
 switch state
     case 'error'
