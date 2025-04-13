@@ -105,18 +105,18 @@ if isSubImg
     yNext = yNext - dimImg;
     xNext = extr_w + mg;
     
-    img = zeros(1,nChan);
+    ax_img = [];
     
     for c = 1:nChan
-        img(c) = axes('Parent',h_fig,'Units','pixels','FontUnits', ...
-            'pixels','FontSize',fntSize,'ActivePositionProperty', ...
-            'OuterPosition');
+        ax_img = cat(2,ax_img,...
+            axes('Parent',h_fig,'Units','pixels','FontUnits','pixels',...
+            'FontSize',fntSize,'ActivePositionProperty','OuterPosition'));
         pos = getRealPosAxes([xNext yNext dimImg dimImg], ...
-            get(img(c),'TightInset'), 'traces');
-        set(img(c), 'Position', pos);
+            get(ax_img(c),'TightInset'), 'traces');
+        set(ax_img(c), 'Position', pos);
         xNext = xNext + dimImg;
     end
-    p_mol = plotSubImg(m, p_mol, img);
+    p_mol = plotSubImg(m, p_mol, ax_img);
 end
 
 if isTop
@@ -209,7 +209,7 @@ if ~isempty(a)
 end
 
 if isSubImg
-    title(img(1), ['molecule n:°' num2str(m)]);
+    title(ax_img(1), ['molecule n:°' num2str(m)]);
 elseif isTop
     title(a.axes_traceTop, ['molecule n:°' num2str(m)]);
 elseif isBot
