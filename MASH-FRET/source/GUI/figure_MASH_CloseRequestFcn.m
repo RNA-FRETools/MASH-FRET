@@ -18,6 +18,9 @@ end
 if isfield(h, 'figure_optBg') && ishandle(h.figure_optBg)
     delete(h.figure_optBg)
 end
+if isfield(h, 'figure_pbStats') && ishandle(h.figure_pbStats)
+    delete(h.figure_pbStats)
+end
 if isfield(h, 'figure_dummy') && ~isempty(h.figure_dummy) && ...
         ishandle(h.figure_dummy)
     delete(h.figure_dummy)
