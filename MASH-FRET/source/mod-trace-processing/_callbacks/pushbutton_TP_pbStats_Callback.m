@@ -1,4 +1,12 @@
-function pushbutton_TP_pbStats_Callback(obj,evd,h_fig0)
+function pushbutton_TP_pbStats_Callback(obj,evd,fig0)
 
-h_fig = buildPbStatsFig(h_fig0);
-ud_pbstats([],[],h_fig);
+% build Photobleaching/blinking figure
+fig = buildPbStatsFig(fig0);
+
+% store handle to Photobleaching/blinking figure in main structure
+h = guidata(fig0);
+h.figure_pbStats = fig;
+guidata(fig0,h);
+
+% update Photobleaching/blinking stats and plot
+ud_pbstats([],[],fig);

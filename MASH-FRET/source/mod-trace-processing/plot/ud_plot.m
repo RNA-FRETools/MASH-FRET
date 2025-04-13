@@ -24,6 +24,7 @@ persec = p.proj{proj}.cnt_p_sec;
 p_fix = p.proj{proj}.TP.fix;
 start = p.proj{proj}.TP.curr{mol}{2}{1}(4);
 holdx = p_fix{2}(6);
+clipx = p_fix{2}(8);
 holdint = p_fix{2}(7);
 limI = p_fix{2}([4,5]);
 
@@ -60,3 +61,4 @@ end
 
 % set checkboxes
 set(h.checkbox_photobl_fixStart,'value',holdx);
+set(h.checkbox_cutOff, 'Value', clipx);
