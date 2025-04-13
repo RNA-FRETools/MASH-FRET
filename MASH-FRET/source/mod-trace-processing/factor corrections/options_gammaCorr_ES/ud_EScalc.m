@@ -13,7 +13,7 @@ p.proj{proj}.ES = q.prm{4}; % modify temporary ES field in project
 [p,ES,gamma,beta,ok,str] = gammaCorr_ES(fret,p,curr,prev_fact,h_fig);
 
 q.prm{4}{fret} = ES;
-if numel(ES)==1 && isnan(ES)
+if isscalar(ES) && isnan(ES)
     q.prm{5} = NaN;
 end
 guidata(h_fig2,q);

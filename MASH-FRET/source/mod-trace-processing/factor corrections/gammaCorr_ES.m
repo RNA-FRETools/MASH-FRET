@@ -30,13 +30,13 @@ elseif isempty(p_proj.ES{i})
     if ~ok
         return
     end
-    if numel(ES)==1 && isnan(ES)
+    if isscalar(ES) && isnan(ES)
         ok = false;
         str = 'no stoichiometry available';
         return
     end
     
-elseif numel(p_proj.ES{i})==1 && isnan(p_proj.ES{i})
+elseif isscalar(p_proj.ES{i}) && isnan(p_proj.ES{i})
     ES = p_proj.ES{i};
     str = 'no stoichiometry available';
     ok = false;
