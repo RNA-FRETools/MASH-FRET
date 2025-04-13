@@ -6,7 +6,7 @@ function d_traces = getDiscr(method, traces, incl, prm, thresh, calc, ...
 % update by MH, 30.3.2019: fix error for ratio data: if all data points were excluded because out-of-range [-0.2;1.2], include all data point back and discretize out-of-range data.
 
 mute = false;
-if numel(str_discr)==1 && str_discr==0
+if isscalar(str_discr) && str_discr==0
     mute = true;
 end
 
@@ -114,43 +114,47 @@ for n = 1:N
         case 6 % STaSI
             maxK = prm(n,1);
             [MDL,dat] = discr_stasi(traces(n,incl(n,:)),maxK,mute);
-            [~,idx] = min(MDL);
-            d_traces(n,incl(n,:)) = dat(idx,:)';
+            if ~isempty(dat)
+                [~,idx] = min(MDL);
+                d_traces(n,incl(n,:)) = dat(idx,:)';
+            end
             
         case 7 % STaSI+vbFRET-1D
             minK = prm(n,1);
             maxK = prm(n,2);
             n_iter = prm(n,3);
             [MDL,dat] = discr_stasi(traces(n,incl(n,:)),maxK,mute);
-            maxK = numel(MDL);
-            K = find(MDL==min(MDL(min([minK,maxK]):maxK)));
-            
-            % normalizes signal
-            data = cell(1,1);
-            data{1} = prepdatforvbfret(traces(n,incl(n,:)));
-            
-            % determine starting model parameters
-            gmmprm0 = cell(1,K);
-            gmmprm0{K}.states = unique(dat(K,:));
-            gmmprm0{K}.pop = zeros(1,K);
-            gmmprm0{K}.stdev = zeros(1,K);
-            normstates = NaN(1,K);
-            for k = 1:K
-                isstatek = dat(K,:)==gmmprm0{K}.states(k);
-                normstates(k) = mean(data{1}(incl(n,isstatek)));
-                gmmprm0{K}.pop(k) = sum(isstatek);
-                gmmprm0{K}.stdev(k) = std(data{1}(incl(n,isstatek)));
+            if ~isempty(dat)
+                maxK = numel(MDL);
+                K = find(MDL==min(MDL(min([minK,maxK]):maxK)));
+                
+                % normalizes signal
+                data = cell(1,1);
+                data{1} = prepdatforvbfret(traces(n,incl(n,:)));
+                
+                % determine starting model parameters
+                gmmprm0 = cell(1,K);
+                gmmprm0{K}.states = unique(dat(K,:));
+                gmmprm0{K}.pop = zeros(1,K);
+                gmmprm0{K}.stdev = zeros(1,K);
+                normstates = NaN(1,K);
+                for k = 1:K
+                    isstatek = dat(K,:)==gmmprm0{K}.states(k);
+                    normstates(k) = mean(data{1}(incl(n,isstatek)));
+                    gmmprm0{K}.pop(k) = sum(isstatek);
+                    gmmprm0{K}.stdev(k) = std(data{1}(incl(n,isstatek)));
+                end
+                gmmprm0{K}.pop= gmmprm0{K}.pop/sum(gmmprm0{K}.pop); 
+                gmmprm0{K}.states = normstates;
+                
+                % run constrained vbFRET on normalized signal values
+                [vbres,~] = discr_vbFRET(K,K,n_iter,data,h_fig,lb,mute,1,...
+                    gmmprm0);
+                
+                % restore original signal values
+                d_traces(n,incl(n,:)) = trajkernel(traces(n,incl(n,:)),...
+                    true(size(data{1})),vbres{1}');
             end
-            gmmprm0{K}.pop= gmmprm0{K}.pop/sum(gmmprm0{K}.pop); 
-            gmmprm0{K}.states = normstates;
-            
-            % run constrained vbFRET on normalized signal values
-            [vbres,~] = discr_vbFRET(K,K,n_iter,data,h_fig,lb,mute,1,...
-                gmmprm0);
-            
-            % restore original signal values
-            d_traces(n,incl(n,:)) = trajkernel(traces(n,incl(n,:)),...
-                true(size(data{1})),vbres{1}');
             
         case 8 % imported
             d_traces(n,incl(n,:)) = traces(n,incl(n,:),2);
