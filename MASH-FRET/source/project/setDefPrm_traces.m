@@ -79,6 +79,7 @@ gen{2}(4) = Imean-Isig; % lower intensity (prev: intensity units per second)
 gen{2}(5) = Imean+3*Isig; % upper intensity (prev: intensity units per pixel)
 gen{2}(6) = 0; % fix first frame for all molecules
 gen{2}(7) = 0; % fix intensity scale (prev: time units in second)
+gen{2}(8) = 0; % clip traj plot between user-defined starting point and cutoff
 
 % Main popupmenu values
 gen{3}(1) = 1; % laser for direct excitation
@@ -124,21 +125,12 @@ mol{1}{2} = [3 0 0
              3 2 1]; % denoising parameters
              
 % Photobleaching
-mol{2}{1}(1) = 0; % clip time points overflowing first frame and cutoff (old: apply cutoff)
-mol{2}{1}(2) = 1; % method
-mol{2}{1}(3) = 1; % channel
+mol{2}{1}(1) = 0; % obsolete (old: apply cutoff)
+mol{2}{1}(2) = 2; % method
+mol{2}{1}(3) = 1; % global cutoff definitiion (old: channel)
 mol{2}{1}(4) = 1; % starting frame
-mol{2}{1}(5:6) = [nFrames nFrames]; % cutoff frames
-
-if nChan == 1
-    % Threshold param for channel 1
-    mol{2}{2} = [0 0 100];
-else
-    % Threshold param for the n FRET, all channels, sum channels and ...
-    % the m channels
-    mol{2}{2} = [[-0.2*ones(nFRET+nS,1); zeros(2+nExc*nChan,1)] ...
-        zeros(2+nFRET+nS+nExc*nChan,1) 100*ones(2+nFRET+nS+nExc*nChan,1)];
-end
+mol{2}{1}(5:6) = [nFrames,nFrames]; % global cutoff frames
+mol{2}{2} = repmat([0.5,0,nFrames],nnz(chanExc>0),1); % (relative) data threshold, time threshold (old: extra frames), cutoff (old: min. cutoff)
 
 % Background correction
 if isCoord && isMov
@@ -282,11 +274,15 @@ mol{6}{2} = zeros(1,nFRET);  % method (0: manual, 1: photobleaching, 2: linear r
 % % mol{5}{5} = [zeros(nFRET,1), 1000*ones(nFRET,1) ...
 % %     zeros(nFRET,1), 100*ones(nFRET,1), ones(nFRET,1), nFrames*ones(nFRET,1), zeros(nFRET,1)];
 % mol{6}{3} = repmat([1000,0,100,1,nFrames,0],nFRET,1);
-ldon = ones(nFRET,1);
+lpb = ones(nFRET,1);
 for i = 1:nFRET
-    ldon(i,1) = find(exc==chanExc(FRET(i,1)));
+    if chanExc(FRET(i,2))>0
+        lpb(i,1) = find(exc==chanExc(FRET(i,2)));
+    else
+        lpb(i,1) = find(exc==chanExc(FRET(i,1)));
+    end
 end
-mol{6}{3} = [ldon,repmat([1000,0,100,1,3,nFrames,0],nFRET,1)];
+mol{6}{3} = [lpb,repmat([0.5,0,0,0,3,nFrames,0],nFRET,1)];
 
 % added by MH, 10.1.2020: ES regression
 % [nFRET-by-7] subgroup,E limits, E intervals, 1/S limits, 1/S intervals
@@ -307,11 +303,6 @@ def.mol = adjustVal(def.mol, mol);
 if size(mol,2)>=6
     % set null gamma factors to 1
     def.mol{6}{1}(def.mol{6}{1}==0) = 1;
-    % adjust channel for photobleaching cutoff calculation
-    if def.mol{2}{1}(3) > nFRET+nS*(1 + 2*double(nFRET>1|nS>1)) + ...
-            nExc*nChan*(1 + 2*double(nChan>1|nExc>1))
-        def.mol{2}{1}(3) = 1;
-    end
 end
 
 % if no movie, set BG corrections to manual
@@ -344,14 +335,15 @@ if (nFRET + nS) == 0
 end
 
 % reset trace truncations
-def.mol{2}{1}(1) = 0; % apply cutoff
 def.mol{2}{1}(2) = 1; % method
 def.mol{2}{1}(4) = 1; % starting frame
-def.mol{2}{1}(5:6) = [nFrames nFrames]; % cutoff frames
+def.mol{2}{1}([5,6]) = [nFrames,nFrames]; % global cutoff frame
+for c = 1:size(def.mol{2}{2},1)
+    def.mol{2}{2}(c,3) = nFrames; % cutoff frames
+end
 
-% if photobleaching threshold is calculated a channel larger than the
-% number of channel
-if def.mol{2}{1}(3) > (2+nFRET+nS+nExc*nChan)
+% if cutoff event index is out of range
+if def.mol{2}{1}(3) > 2
     def.mol{2}{1}(3) = 1;
 end
 

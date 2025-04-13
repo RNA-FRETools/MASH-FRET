@@ -93,6 +93,7 @@ N = size(s.intensities,2)/nChan;
 s.intensities_bgCorr = adjustParam('intensities_bgCorr',[],s_in);
 s.intensities_bin = adjustParam('intensities_bin',[],s_in);
 s.bool_intensities = adjustParam('bool_intensities',[],s_in);
+s.emitter_is_on = adjustParam('emitter_is_on',[],s_in);
 s.intensities_crossCorr = adjustParam('intensities_crossCorr',[],s_in);
 s.intensities_denoise = adjustParam('intensities_denoise',[],s_in);
 s.intensities_DTA = adjustParam('intensities_DTA',[],s_in);
@@ -349,6 +350,9 @@ if nS>0
 end
 if ~isequal(size(s.bool_intensities),[L2,N])
     s.bool_intensities = true(L2,N);
+end
+if ~isequal(size(s.emitter_is_on),[L2,N*nChan])
+    s.emitter_is_on = true(L2,N*nChan);
 end
 
 % check molecule tags

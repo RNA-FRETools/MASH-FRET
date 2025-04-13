@@ -4,8 +4,6 @@ h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
 mol = p.ttPr.curr_mol(proj);
-nExc = p.proj{proj}.nb_excitations;
-len = nExc*size(p.proj{proj}.intensities,1);
 expT = p.proj{proj}.resampling_time;
 inSec = p.proj{proj}.time_in_sec;
 method = p.proj{proj}.TP.curr{mol}{2}{1}(2);
@@ -17,23 +15,20 @@ end
 val = str2num(get(obj, 'String'));
 if inSec
     val = expT*round(val/expT);
-    maxVal = expT*len;
 else
     val = round(val);
-    maxVal = len;
 end
 set(obj, 'String', num2str(val));
-if ~(isscalar(val) && ~isnan(val) && val>=0 && val<=maxVal)
+if ~(isscalar(val) && ~isnan(val) && val>=0)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    updateActPan(['Extra cutoff must be >= 0 and <= ' num2str(maxVal)],...
-        h_fig, 'error');
+    updateActPan('Time threshold must be >= 0',h_fig, 'error');
     return
 end
 
 if inSec
     val = val/expT;
 end
-chan = p.proj{proj}.TP.curr{mol}{2}{1}(3);
+chan = h.popupmenu_bleachChan.Value;
 p.proj{proj}.TP.curr{mol}{2}{2}(chan,2) = val;
 
 h.param = p;

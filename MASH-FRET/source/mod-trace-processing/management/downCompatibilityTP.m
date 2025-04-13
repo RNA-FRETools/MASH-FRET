@@ -264,12 +264,12 @@ if size(p_proj.TP.fix,2)<5 || ~(isscalar(p_proj.TP.fix{5}) && ...
 end
 
 % added by MH, 01.04.2025: run photobleaching/blinking detection
-if size(p_proj.TP.prm{n},2)>=2 && size(p_proj.TP.prm{n}{2},2)>=1 && ...
-        numel(p_proj.TP.prm{n}{2}{1})>=6
-    meth = p_proj.TP.prm{n}{2}{1}(2);
-    cutOff = p_proj.TP.prm{n}{2}{1}(4+meth);
-    if meth==2 && cutOff<(L*nExc) && nExc*find(incl(:,n)',1,'last')~=cutOff
-        p_proj.TP.prm{n}{2} = [];
-        disp('Photobleaching detection is obsolete: results were reset.');
+if size(p_proj.TP.fix,2)>=2 && numel(p_proj.TP.fix{2})==7
+    p_proj.TP.fix{2} = [p_proj.TP.fix{2},0]; % add "clip" plot parameter
+    if size(p_proj.TP.prm{n},2)>=2 && size(p_proj.TP.prm{n}{2},2)>=1
+        p_proj.TP.curr{n}{2} = p_proj.TP.def{2}; % reset cutoff detection parameters
+        p_proj.TP.prm{n}{2} = []; % reset cutoff detection results
+            fprintf(['Photobleaching detection is obsolete for molecule %i: ',...
+                'results were reset.\n'],n);
     end
 end

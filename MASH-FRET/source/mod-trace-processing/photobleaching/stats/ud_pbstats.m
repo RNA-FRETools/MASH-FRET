@@ -28,11 +28,27 @@ h0 = guidata(h.fig_MASH);
 p = h0.param;
 proj = p.curr_proj;
 incl = p.proj{proj}.bool_intensities';
+incl_em = p.proj{proj}.emitter_is_on';
+molincl = p.proj{proj}.coord_incl;
 nExc = p.proj{proj}.nb_excitations;
 insec = p.proj{proj}.time_in_sec;
 expt = p.proj{proj}.resampling_time;
+chanExc = p.proj{proj}.chanExc;
+nChan = p.proj{proj}.nb_channel;
 if ~insec
     expt = 1;
+end
+
+% clear axes
+if contains(dattype,{'bleach','all'})
+    for c = h.axes_bleachstats.Children
+        delete(c); 
+    end
+end
+if contains(dattype,{'blink','all'})
+    for c = h.axes_blinkstats.Children
+        delete(c); 
+    end
 end
 
 % collect dwell times
@@ -40,7 +56,12 @@ survt = [];
 offt = [];
 [N,L] = size(incl);
 trajlen = L*nExc;
+em = h.popup_emitter.Value;
+emlst = find(chanExc>0);
 for n = 1:N
+    if ~molincl(n)
+        continue
+    end
     if ~(numel(p.proj{proj}.TP.prm)>=n && ...
             numel(p.proj{proj}.TP.prm{n})>=2 && ...
             numel(p.proj{proj}.TP.prm{n}{2})>=1 && ...
@@ -49,7 +70,7 @@ for n = 1:N
     end
     meth = p.proj{proj}.TP.prm{n}{2}{1}(2);
     start = p.proj{proj}.TP.prm{n}{2}{1}(4);
-    cutoff = p.proj{proj}.TP.prm{n}{2}{1}(4+meth);
+    cutoff = p.proj{proj}.TP.prm{n}{2}{2}(em,3);
     if cutoff<trajlen
         survt = cat(2,survt,[cutoff;n]);
     end
@@ -57,31 +78,34 @@ for n = 1:N
     if meth~=2
         continue
     end
-    dt = getDtFromDiscr(double(incl(n,start:cutoff))',1);
-    offt = cat(2,offt,[dt(dt(:,2)==0,1)';repmat(n,1,nnz(dt(:,2)==0))]);
+    dt = getDtFromDiscr(...
+        double(incl_em(nChan*(n-1)+emlst(em),start:ceil(cutoff/nExc)))',1);
+    offt = cat(2,offt,...
+        [dt(dt(:,2)==0,1)'*nExc;repmat(n,1,nnz(dt(:,2)==0))]);
 end
 
 % plot survival time histogram
 if any(strcmp(dattype,{'bleach','all'}))
     h.axes_bleachstats.UserData = plotbleachnblinkstats(h.axes_bleachstats,...
-        h.popup_bleachscale.Value,survt,nbins,expt,xlbl0,nSpl);
+        h.popup_bleachscale.Value,survt,nbins,expt,xlbl0,nSpl,h.fig_MASH);
 end
 
 % plot blink-off time histogram
 if any(strcmp(dattype,{'blink','all'}))
     h.axes_blinkstats.UserData = plotbleachnblinkstats(h.axes_blinkstats,...
-        h.popup_blinkscale.Value,offt,nbins,expt,xlbl1,nSpl);
+        h.popup_blinkscale.Value,offt,nbins,expt,xlbl1,nSpl,h.fig_MASH);
 end
 
+% show success
+setContPan('Photobleaching/blinking stats are up to date!','success',...
+    h.fig_MASH);
 
-function res = plotbleachnblinkstats(ax,sc,dt,nbins,expt,xlbl,nSpl)
+
+function res = plotbleachnblinkstats(ax,sc,dt,nbins,expt,xlbl,nSpl,fig0)
 % init output
 res = struct('bincenter',[],'binedges',[],'cnt',[],'cmplP',[],'fit',[],...
     'lowfit',[],'upfit',[],'A',[],'dA',[],'tau',[],'dtau',[]);
 
-for c = ax.Children
-    delete(c); 
-end
 if size(dt,2)>1
     % collect data and fit results
     if isstruct(ax.UserData) && isfield(ax.UserData,'cnt') && ...
@@ -99,7 +123,7 @@ if size(dt,2)>1
         dtau = res.dtau;
     else
         [cnt,edg,x,y,yfit,yfit_low,yfit_up,amp,damp,tau,dtau] = ...
-            calcandfit(dt,nbins,expt,nSpl);
+            calcandfit(dt,nbins,expt,nSpl,fig0);
 
         % store results in output
         res.cnt = cnt;
@@ -120,6 +144,9 @@ if size(dt,2)>1
     setaxisscale(ax,sc);
 
     % plot fit
+    if isempty(yfit)
+        return
+    end
     ax.NextPlot = 'add';
     plot(ax,x(cnt>0),yfit(cnt>0),'linewidth',2,'color','r');
     plot(ax,x(cnt>0),yfit_low(cnt>0),'linestyle','--','linewidth',2,...
@@ -160,7 +187,15 @@ end
 
 
 function [cnt,edg,x,y,yfit,ylow,yup,A,dA,tau,dtau] = calcandfit(dt,nbins,...
-    expt,nSpl)
+    expt,nSpl,fig0)
+% initialize output
+yfit = [];
+ylow = [];
+yup = [];
+A = [];
+dA = [];
+tau = [];
+dtau = [];
 
 % calc hist ref
 [cnt,edg] = histcounts(dt(1,:),linspace(1,max(dt(1,:)),nbins));
@@ -169,7 +204,8 @@ y = 1-y/sum(cnt);
 x = mean([edg(1:end-1);edg(2:end)])*expt;
 
 % bootstrap fit data
-disp('Perform bootstrap fit...');
+setContPan('Photobleaching/blinking stats: perform bootstrap fit...',...
+    'process',fig0);
 amp_spl = [];
 tau_spl = [];
 dtcell = dtarr2cell(dt);
@@ -178,12 +214,18 @@ for spl = 1:nSpl
     dtspl = dtcell2arr(dtcell(randsample(1:N,N,true)));
     [cntspl,edgspl] = ...
         histcounts(dtspl(1,:),linspace(1,max(dtspl(1,:)),nbins));
+    if nnz(cntspl>0)<2
+        continue
+    end
     yspl = cumsum(cntspl);
     yspl = 1-yspl/sum(cntspl);
     xspl = mean([edgspl(1:end-1);edgspl(2:end)])*expt;
     fitres = fit(xspl(cntspl>0)', yspl(cntspl>0)', 'exp1');
     amp_spl = cat(1,amp_spl,fitres.a);
     tau_spl = cat(1,tau_spl,-1/fitres.b);
+end
+if isempty(amp_spl)
+    return
 end
 A = mean(amp_spl);
 dA = std(amp_spl);

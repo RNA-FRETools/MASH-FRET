@@ -47,7 +47,7 @@ for i = id
             continue
         end
 
-        [I_DA,stop,gamma,ok,str] = gammaCorr_pb(i,I_den,prm{3}(i,1:6),...
+        [discr,~,stop,gamma,ok,str] = gammaCorr_pb(i,I_den,prm{3}(i,1:6),...
             prm_dta,p.proj{proj},h_fig);
 
         p.proj{proj}.TP.prm{m}{6}{3}(i,7) = stop*nExc;
@@ -66,7 +66,7 @@ for i = id
             p.proj{proj}.FRET_DTA(:,(m-1)*nFRET+i) = NaN;
 
             % store D-A state sequences
-            I_dta(:,[don,acc],ldon) = I_DA;
+            I_dta(:,[don,acc],ldon) = discr;
             p.proj{proj}.intensities_DTA(incl,((m-1)*nC+1):m*nC,:) = I_dta;
         end
 
