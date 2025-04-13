@@ -102,6 +102,9 @@ dt = [];
 l2 = 0;
 for n = 1:N
     L = Ls(n);
+    if L<=1
+        continue
+    end
     l1 = l2+1;
     l2 = l2+L;
     dt_n = getDtFromDiscr(seq(l1:l2),1);
