@@ -9,6 +9,9 @@ function ud_pbstats(~,~,fig,varargin)
 %
 % fig: handle to Photobleaching/blinking stats figure
 
+% turn off fit warning
+warning off curvefit:fit:invalidStartPoint;
+
 % defaults
 nbins = 100;
 nSpl = 100;
