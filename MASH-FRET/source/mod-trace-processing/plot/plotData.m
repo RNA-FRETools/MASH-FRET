@@ -25,7 +25,8 @@ histid = 2:2:6; % indexes in ax structure of histogram axes
 topid = [1,2]; % indexes in ax structure of top-most axes
 midid = [3,4]; % indexes in ax structure of middle axes
 botid = [5,6]; % indexes in ax structure of bottom axes
-intyLab =  'counts';
+topyLab =  'total counts';
+midyLab =  'counts';
 ratyLab = 'FRET / S';
 timeLab = 'time (s)';
 frameLab = 'frame';
@@ -53,6 +54,7 @@ expT = p.proj{proj}.resampling_time;
 perSec = p.proj{proj}.cnt_p_sec;
 inSec = p.proj{proj}.time_in_sec;
 clr = p.proj{proj}.colours;
+lbl = p.proj{proj}.labels;
 fix = p.proj{proj}.TP.fix;
 
 % collect y-data for current molecule
@@ -166,7 +168,8 @@ isbot = getaxbool(exclax,botid);
 
 % define axis labels
 if perSec
-    intyLab = [intyLab ' per s.'];
+    topyLab = [topyLab ' per s.'];
+    midyLab = [midyLab ' per s.'];
 end
 if inSec
     trajxLab = timeLab;
@@ -174,34 +177,48 @@ else
     trajxLab = frameLab;
 end
 
-% plot total intensity trajectories and histogram
-if nFRET>0
-    gamma = prm{6}{1}(1,:);
-end
-gammamat = ones(size(I,1),nChan,nChan);
-for pair = 1:nFRET
-    gammamat(:,FRET(pair,1),FRET(pair,2)) = gamma(pair);
-    gammamat(:,FRET(pair,2),FRET(pair,1)) = 1/gamma(pair);
-end
-for c = 1:nChan
-    l = find(exc==chanExc(c));
-    if isempty(l)
-        continue
+% intiialize legends' data
+leg_top = cell(1,2);
+leg_mid = cell(1,2);
+leg_bot = cell(1,2);
+
+% plot in top and middle axes
+if chan2plot>0
+
+    % plot total intensity trajectories and histogram
+    if nFRET>0
+        gamma = prm{6}{1}(1,:);
+    end
+    gammamat = ones(size(I,1),nChan,nChan);
+    for pair = 1:nFRET
+        gammamat(:,FRET(pair,1),FRET(pair,2)) = gamma(pair);
+        gammamat(:,FRET(pair,2),FRET(pair,1)) = 1/gamma(pair);
+    end
+    for c = chan2plot
+        l = find(exc==chanExc(c));
+        if isempty(l)
+            continue
+        end
+        
+        I0 = calccorrtotalint(c,chanExc,exc,I,gammamat);
+        discrI0 = calccorrtotalint(c,chanExc,exc,discrI,gammamat);
+    
+        x_atwl = x_axis(l:nExc:end);
+        plotData_traj(ax,axnm{istop&istraj},x_atwl(~nandat)',I0,...
+            clr{1}{l,c}',plotDscr,discrI0,brightoffset);
+    
+        hp = plotData_hist(ax,axnm{istop&ishist},I0(incl(~nandat)),[],nbins,...
+            clr{1}{l,c}');
+            if isempty(hp)
+                continue
+            end
+
+        % increment legend
+        leg_top{1} = cat(2,leg_top{1},hp);
+        leg_top{2} = cat(2,leg_top{2},lbl(c));
     end
     
-    I0 = calccorrtotalint(c,chanExc,exc,I,gammamat);
-    discrI0 = calccorrtotalint(c,chanExc,exc,discrI,gammamat);
-
-    x_atwl = x_axis(l:nExc:end);
-    plotData_traj(ax,axnm{istop&istraj},x_atwl(~nandat)',I0,...
-        clr{1}{l,c}',plotDscr,discrI0,brightoffset);
-
-    plotData_hist(ax,axnm{istop&ishist},I0(incl(~nandat)),[],nbins,...
-        clr{1}{l,c}');
-end
-
-% plot intensity trajectories and histogram
-if chan2plot > 0
+    % plot intensity trajectories and histogram
     for l = wl2plot
         for c = chan2plot
             Ipl = I(:,c,l);
@@ -213,8 +230,16 @@ if chan2plot > 0
             plotData_traj(ax,axnm{ismid&istraj},x_atwl(~nandat)',...
                 Ipl,clr{1}{l,c}',plotDscr,discrIpl,brightoffset);
 
-            plotData_hist(ax,axnm{ismid&ishist},I(incl(~nandat),c,l),[], ...
+            hp = plotData_hist(ax,axnm{ismid&ishist},I(incl(~nandat),c,l),[], ...
                 nbins,clr{1}{l,c}');
+            if isempty(hp)
+                continue
+            end
+
+            % increment legend
+            leg_mid{1} = cat(2,leg_mid{1},hp);
+            leg_mid{2} = ...
+                cat(2,leg_mid{2},{[lbl{c},'@',num2str(exc(l))]});
         end
     end
 end
@@ -243,8 +268,16 @@ if (nFRET>0 || nS>0) && (numel(rat2plot)>1 ||rat2plot>0)
             plotData_traj(ax,axnm{isbot&istraj}, x_atwl(~nandat)',...
                 Epl,clr{2}(c,:),plotDscr,discrEpl,brightoffset);
 
-            plotData_hist(ax,axnm{isbot&ishist},f_tr(incl(~nandat),c),...
+            hp = plotData_hist(ax,axnm{isbot&ishist},f_tr(incl(~nandat),c),...
                 FRETlim,nbins,clr{2}(c,:));
+            if isempty(hp)
+                continue
+            end
+
+            % increment legend
+            leg_bot{1} = cat(2,leg_bot{1},hp);
+            leg_bot{2} = cat(2,leg_bot{2},...
+                {['FRET ',lbl{FRET(c,1)},'>',lbl{FRET(c,2)}]});
             
         else
             i_s = c-nFRET;
@@ -259,8 +292,16 @@ if (nFRET>0 || nS>0) && (numel(rat2plot)>1 ||rat2plot>0)
             plotData_traj(ax,axnm{isbot&istraj},x_atwl(~nandat)',...
                 Spl,clr{3}(i_s,:),plotDscr,discrSpl,brightoffset);
 
-            plotData_hist(ax,axnm{isbot&ishist},s_tr(incl(~nandat),i_s),...
+            hp = plotData_hist(ax,axnm{isbot&ishist},s_tr(incl(~nandat),i_s),...
                 FRETlim,nbins,clr{3}(i_s,:));
+            if isempty(hp)
+                continue
+            end
+
+            % increment legend
+            leg_bot{1} = cat(2,leg_bot{1},hp);
+            leg_bot{2} = cat(2,leg_bot{2},...
+                {['S ',lbl{FRET(i_s,1)},'/',lbl{FRET(i_s,2)}]});
         end
     end
 end
@@ -319,7 +360,7 @@ end
 grid(axhdl(~exclax),'on');
 set(axhdl(~exclax),'NextPlot','replace','Color',bg);
 
-% set axis limits and labels
+% set axis limits, labels and legends
 if any(istraj)
     if clipit
         xlim(axhdl(istraj),[start,cutOff]);  
@@ -331,12 +372,14 @@ if any(istraj)
         if ~isempty(Ilim)
             ylim(axhdl(istraj&(ismid|istop)), Ilim);
         end
-        ylabel(axhdl(istraj&(ismid|istop)), intyLab);
+        ylabel(axhdl(istraj&istop), topyLab);
+        ylabel(axhdl(istraj&ismid), midyLab);
     end
     if any(istraj&isbot)
         ylim(axhdl(istraj&isbot), FRETlim);
         ylabel(axhdl(istraj&isbot), ratyLab);
     end
+    addleg2plot(leg_top,leg_mid,leg_bot);
 end
 
 % finalize histogram axes
@@ -351,13 +394,14 @@ if any(ishist)
 end
 
 
-function plotData_traj(ax,axnm,x,y1,clr,is2,y2,brightoffset)
+function hp = plotData_traj(ax,axnm,x,y1,clr,is2,y2,brightoffset)
 % plotData_traj(ax,axnm,x,y1,clr1,is2,y2,brightoffset)
 
+hp = [];
 if ~isfield(ax,axnm)
     return
 end
-plot(ax.(axnm), x, y1, 'Color', clr);
+hp = plot(ax.(axnm), x, y1, 'Color', clr);
 if ~strcmp(ax.(axnm).NextPlot,'add')
     ax.(axnm).NextPlot = 'add';
 end
@@ -368,9 +412,10 @@ end
 plot(ax.(axnm),x,y2,'Color',shiftbright(clr,brightoffset),'linewidth',2);
 
 
-function plotData_hist(ax,axnm,dat,lim,nbins,clr)
+function hp = plotData_hist(ax,axnm,dat,lim,nbins,clr)
 % plotData_hist(ax,axnm,dat,lim,nbins,clr)
 
+hp = [];
 if ~isfield(ax,axnm) || isempty(dat)
     return
 end
@@ -384,7 +429,7 @@ if sum(cnts)==0
 end
 cnts = cnts/sum(cnts);
 
-histogram(ax.(axnm),'binedges',edg,'bincounts',cnts, 'FaceColor',...
+hp = histogram(ax.(axnm),'binedges',edg,'bincounts',cnts, 'FaceColor',...
     clr,'EdgeColor',clr,'orientation','horizontal');
 if ~strcmp(ax.(axnm).NextPlot,'add')
     ax.(axnm).NextPlot = 'add';
@@ -404,6 +449,17 @@ function isid = getaxbool(excl,id)
 isid = false(size(excl));
 isid(id) = true;
 isid(excl) = false;
+
+
+function addleg2plot(varargin)
+for n = 1:nargin
+    legdat = varargin{n};
+    if ~isempty(legdat{1})
+        legend(legdat{1},legdat{2},'box','on','location','northeast',...
+            'fontsize',6,'iconcolumnwidth',3,'orientation','horizontal',...
+            'backgroundalpha',0.5);
+    end
+end
 
 
 
