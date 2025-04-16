@@ -50,6 +50,7 @@ end
 if size(p.proj{proj}.intensities_bin,1)~=nRow
     p.proj{proj}.intensities_bin = NaN(nRow,N*nC,nExc);
     p.proj{proj}.bool_intensities = true(nRow,N);
+    p.proj{proj}.emitter_is_on = true(nRow,N*nC);
     p.proj{proj}.intensities_crossCorr = nan(nRow,N*nC,nExc);
     p.proj{proj}.intensities_denoise = nan(nRow,N*nC,nExc);
     p.proj{proj}.intensities_DTA = nan(nRow,N*nC,nExc);
@@ -61,6 +62,5 @@ if size(p.proj{proj}.intensities_bin,1)~=nRow
     end
 end
 p.proj{proj}.intensities_bin(:,((m-1)*nC+1):m*nC,:) = I;
-% p.proj{proj}.bool_intensities(:,m) = ~~incl;
 p.proj{proj}.resampling_time = splt;
 p.proj{proj}.intensities_crossCorr(:,((m-1)*nC+1):m*nC,:) = NaN;
