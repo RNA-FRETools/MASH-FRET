@@ -195,14 +195,13 @@ end
 
 % remove impossible stoichiometry calculations (accroding to new
 % stoichiometry definition)
-if size(p_proj.TP.prm{n},2)>=2 && ...
-        size(p_proj.TP.prm{n}{2}{2},1)~=(nFRET+nS+2+nExc*nChan)
-    sz = size(p_proj.TP.prm{n}{2}{2},1);
-    diffsz = sz-(nFRET+nS+2+nExc*nChan);
-    id_s = (nFRET+1):(sz-2-nExc*nChan);
+if size(p_proj.TP.prm{n},2)>=4 && size(p_proj.TP.prm{n}{4},2)>=4 && ...
+        size(p_proj.TP.prm{n}{4}{4},3)~=(nFRET+nS+nExc*nChan)
+    sz = size(p_proj.TP.prm{n}{4}{4},3);
+    diffsz = sz-(nFRET+nS+nExc*nChan);
+    id_s = (nFRET+1):(sz-nExc*nChan);
     id_excl = id_s((end-diffsz+1):end);
     if ~isempty(id_excl)
-        p_proj.TP.prm{n}{2}{2}(id_excl,:) = []; % re-arrange photobleaching
         p_proj.TP.prm{n}{4}{2}(:,:,id_excl) = []; % rearrange DTA (param)
         p_proj.TP.prm{n}{4}{3}(id_excl,:) = []; % rearrange DTA (states)
         p_proj.TP.prm{n}{4}{4}(:,:,id_excl) = []; % rearrange DTA (thresh)
@@ -267,9 +266,10 @@ end
 if size(p_proj.TP.fix,2)>=2 && numel(p_proj.TP.fix{2})==7
     p_proj.TP.fix{2} = [p_proj.TP.fix{2},0]; % add "clip" plot parameter
     if size(p_proj.TP.prm{n},2)>=2 && size(p_proj.TP.prm{n}{2},2)>=1
-        p_proj.TP.curr{n}{2} = p_proj.TP.def{2}; % reset cutoff detection parameters
-        p_proj.TP.prm{n}{2} = []; % reset cutoff detection results
-            fprintf(['Photobleaching detection is obsolete for molecule %i: ',...
-                'results were reset.\n'],n);
+        disp('Photobleaching detection is obsolete: results were reset.');
+        for n = 1:numel(p_proj.TP.curr)
+            p_proj.TP.curr{n}{2} = p_proj.TP.def.mol{2}; % reset cutoff detection parameters
+            p_proj.TP.prm{n}{2} = []; % reset cutoff detection results
+        end
     end
 end
