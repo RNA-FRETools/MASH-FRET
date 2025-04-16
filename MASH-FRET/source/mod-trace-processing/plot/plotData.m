@@ -192,10 +192,12 @@ for c = 1:nChan
     I0 = calccorrtotalint(c,chanExc,exc,I,gammamat);
     discrI0 = calccorrtotalint(c,chanExc,exc,discrI,gammamat);
 
-    plotData_traj(ax,axnm{istop&istraj},x_axis(l:nExc:end)',I0,...
+    x_atwl = x_axis(l:nExc:end);
+    plotData_traj(ax,axnm{istop&istraj},x_atwl(~nandat)',I0,...
         clr{1}{l,c}',plotDscr,discrI0,brightoffset);
 
-    plotData_hist(ax,axnm{istop&ishist},I0(incl),[],nbins,clr{1}{l,c}');
+    plotData_hist(ax,axnm{istop&ishist},I0(incl(~nandat)),[],nbins,...
+        clr{1}{l,c}');
 end
 
 % plot intensity trajectories and histogram
@@ -204,13 +206,15 @@ if chan2plot > 0
         for c = chan2plot
             Ipl = I(:,c,l);
             discrIpl = discrI(:,c,l);
-            Ipl(~incl) = NaN;
-            discrIpl(~incl) = NaN;
-            plotData_traj(ax,axnm{ismid&istraj}, x_axis(l:nExc:end)',...
-                Ipl, clr{1}{l,c}', plotDscr, discrIpl, brightoffset);
+            Ipl(~incl(~nandat)) = NaN;
+            discrIpl(~incl(~nandat)) = NaN;
 
-            plotData_hist(ax,axnm{ismid&ishist}, I(incl,c,l), [], nbins, ...
-                clr{1}{l,c}');
+            x_atwl = x_axis(l:nExc:end);
+            plotData_traj(ax,axnm{ismid&istraj},x_atwl(~nandat)',...
+                Ipl,clr{1}{l,c}',plotDscr,discrIpl,brightoffset);
+
+            plotData_hist(ax,axnm{ismid&ishist},I(incl(~nandat),c,l),[], ...
+                nbins,clr{1}{l,c}');
         end
     end
 end
@@ -232,14 +236,15 @@ if (nFRET>0 || nS>0) && (numel(rat2plot)>1 ||rat2plot>0)
             [~,l,~] = find(exc==chanExc(FRET(c,1)));
             Epl = f_tr(:,c);
             discrEpl = discrFRET(:,c);
-            Epl(~incl) = NaN;
-            discrEpl(~incl) = NaN;
+            Epl(~incl(~nandat)) = NaN;
+            discrEpl(~incl(~nandat)) = NaN;
 
-            plotData_traj(ax,axnm{isbot&istraj}, x_axis(l:nExc:end)',...
+            x_atwl = x_axis(l:nExc:end);
+            plotData_traj(ax,axnm{isbot&istraj}, x_atwl(~nandat)',...
                 Epl,clr{2}(c,:),plotDscr,discrEpl,brightoffset);
 
-            plotData_hist(ax,axnm{isbot&ishist},f_tr(incl,c),FRETlim,nbins, ...
-                clr{2}(c,:));
+            plotData_hist(ax,axnm{isbot&ishist},f_tr(incl(~nandat),c),...
+                FRETlim,nbins,clr{2}(c,:));
             
         else
             i_s = c-nFRET;
@@ -247,14 +252,15 @@ if (nFRET>0 || nS>0) && (numel(rat2plot)>1 ||rat2plot>0)
             [~,l,~] = find(exc==chanExc(s),1);
             Spl = s_tr(:,i_s);
             discrSpl = discrS(:,i_s);
-            Spl(~incl) = NaN;
-            discrSpl(~incl) = NaN;
+            Spl(~incl(~nandat)) = NaN;
+            discrSpl(~incl(~nandat)) = NaN;
 
-            plotData_traj(ax,axnm{isbot&istraj},x_axis(l:nExc:end)',...
+            x_atwl = x_axis(l:nExc:end);
+            plotData_traj(ax,axnm{isbot&istraj},x_atwl(~nandat)',...
                 Spl,clr{3}(i_s,:),plotDscr,discrSpl,brightoffset);
 
-            plotData_hist(ax,axnm{isbot&ishist},s_tr(incl,i_s),FRETlim, ...
-                nbins,clr{3}(i_s,:));
+            plotData_hist(ax,axnm{isbot&ishist},s_tr(incl(~nandat),i_s),...
+                FRETlim,nbins,clr{3}(i_s,:));
         end
     end
 end
