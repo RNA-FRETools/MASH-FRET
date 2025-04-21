@@ -28,7 +28,7 @@ else
 end
 
 if s.is_movie
-    if numel(s.movie_file)==1
+    if isscalar(s.movie_file)
         movie_file = ':';
     else
         movie_file = 's:';
@@ -67,10 +67,11 @@ prm_dta = s.TP.prm{m}{4};
 % collect infos from GUI
 h = guidata(h_fig);
 str_meth_bg = getdefbgcorrpopstr;
-str_meth_den = get(h.popupmenu_denoising, 'String');
-str_meth_pb = get(h.popupmenu_debleachtype, 'String');
-str_meth_dta = get(h.popupmenu_TP_states_method, 'String');
-str_chan_pb = removeHtml(get(h.popupmenu_bleachChan, 'String'));
+str_meth_den = h.popupmenu_denoising.String;
+str_meth_pb = h.popupmenu_debleachtype.String;
+str_ev_pb = h.popupmenu_TP_pbEvent.String;
+str_em_pb = removeHtml(h.popupmenu_bleachChan.String);
+str_meth_dta = h.popupmenu_TP_states_method.String;
 str_chan_dta = removeHtml(getStrPop('DTA_chan', ...
     {labels FRET S exc s.colours}));
 
@@ -359,32 +360,28 @@ else
 end
 
 % photobleaching
-if prm_bleach{1}(1)
-    if inSec
-        str_bleach = cat(2,'\n\tcutoff time: ',...
-            num2str(prm_bleach{1}(5)*splt),' seconds');
-    else
-        str_bleach = cat(2,'\n\tcutoff frame: ',num2str(prm_bleach{1}(5)));
-    end
-    str_bleach = cat(2,str_bleach,' (method: "', ...
-        str_meth_pb{prm_bleach{1}(2)},'"');
-    
-    if prm_bleach{1}(2) == 2
-        str_bleach = cat(2,str_bleach,', processed data: ', ...
-            str_chan_pb{prm_bleach{1}(3)}, ...
-            ', threshold at: ', ...
-            num2str(prm_bleach{2}(prm_bleach{1}(3),1)), ...
-            ', extra frames to cut: ', ...
-            num2str(prm_bleach{2}(prm_bleach{1}(3),2)),...
-            ', min. cutoff frame: ', ...
-            num2str(prm_bleach{2}(prm_bleach{1}(3),3)));
-    end
-    
-    str_bleach = cat(2,str_bleach,')\n');
-    
+if inSec
+    str_bleach = cat(2,'\n\tcutoff time: ',...
+        num2str(prm_bleach{1}(5)*splt),' seconds');
 else
-    str_bleach = 'none\n';
+    str_bleach = cat(2,'\n\tcutoff frame: ',num2str(prm_bleach{1}(5)));
 end
+str_bleach = cat(2,str_bleach,' (method: "', ...
+    str_meth_pb{prm_bleach{1}(2)},'"');
+if prm_bleach{1}(2) == 2
+    str_bleach = cat(2,str_bleach,', event: ',str_ev_pb{prm_bleach{1}(3)});
+    for em = 1:size(str_em_pb,2)
+        str_bleach = cat(2,str_bleach,...
+            ', data thresholds (',str_em_pb{em},'): ', ...
+            num2str(prm_bleach{2}(em,1)), ...
+            ', time thresholds (',str_em_pb{em},'): ', ...
+            num2str(prm_bleach{2}(em,2)), ...
+            ', detected cutoff (',str_em_pb{em},'): ', ...
+            num2str(prm_bleach{2}(em,3)));
+    end
+end
+
+str_bleach = cat(2,str_bleach,')\n');
 
 
 % dwell-time analysis

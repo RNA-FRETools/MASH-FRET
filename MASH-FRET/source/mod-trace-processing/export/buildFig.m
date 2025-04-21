@@ -6,23 +6,21 @@ function h_fig = buildFig(p_mol, m, m_i, N, p_fig, h_fig)
 % "N" >> number of molecule per figure
 % "h_fig" >> handle of already existing figure
 
+% defaults
+wbar = 150; % window's bar height in pixel
+
 %% Create figure
 
 if isempty(h_fig)
-    units_0 = get(0, 'Units');
-    set(0, 'Units', 'pixels');
-    pos_0 = get(0, 'ScreenSize');
-    set(0, 'Units', units_0);
-    hFig = pos_0(4); % A4 format
+    pos_0 = getPixPos(0);
+    hFig = pos_0(4)-wbar; % A4 format
     wFig = hFig*21/29.7;
     xFig = (pos_0(3) - wFig)/2;
     yFig = (pos_0(4) - hFig)/2;
 
     h_fig = figure('Visible', 'off', 'Units', 'pixels', 'Position', ...
         [xFig yFig wFig hFig], 'Color', [1 1 1], 'Name', 'Preview', ...
-        'NumberTitle', 'off', 'MenuBar', 'none', 'PaperOrientation', ...
-        'portrait', 'PaperType', 'A4');
-    drawnow;
+        'NumberTitle', 'off', 'MenuBar', 'none', 'Resize', 'off');
 end
 
 posFig = get(h_fig, 'Position');
@@ -55,14 +53,14 @@ else
     prm = p_mol.proj{p_mol.curr_proj}.TP.curr{m};
 end
 
-nAxes = isBot + isTop;
+nAxes = isBot + 2*isTop;
 sup3 = N > 3;
 
 h_txt = 14;
 fntSize = 10.66666;
 mg = 10;
 
-hMol = hFig/ceil(N/(1+sup3));
+hMol = (hFig-2*mg)/ceil(N/(1+sup3));
 h_axes = (hMol-h_txt)/(nAxes+isSubImg);
 w_full = (wFig/(1+sup3));
 
@@ -81,22 +79,18 @@ a = [];
 
 if sup3 && ~mod(m_i,2)
     extr_w = w_full;
-    yNext = hFig - ((m_i/2)-1)*hMol - h_txt;
+    yNext = hFig - mg - ((m_i/2)-1)*hMol - h_txt;
     
 elseif sup3 && mod(m_i,2)
     extr_w = 0;
-    yNext = hFig - (((m_i+1)/2)-1)*hMol - h_txt;
+    yNext = hFig - mg - (((m_i+1)/2)-1)*hMol - h_txt;
     
 else
     extr_w = 0;
-    yNext = hFig - (m_i-1)*hMol - h_txt;
+    yNext = hFig - mg - (m_i-1)*hMol - h_txt;
 end
 
-
-
-
 %% Add molecule axes
-
 if isSubImg
     nChan = p_mol.proj{p_mol.curr_proj}.nb_channel;
     dimImg = (w_full-mg)/nChan;
@@ -123,6 +117,15 @@ if isTop
     xNext = extr_w + mg;
     yNext = yNext - h_axes;
     
+    a.axes_traceTop0 = axes('Parent',h_fig,'Units','pixels', ...
+        'FontUnits','pixels','FontSize',fntSize,'ActivePositionProperty', ...
+        'OuterPosition','XTickLabel',[]);
+    pos = getRealPosAxes([xNext yNext w_axes_tr h_axes], ...
+        get(a.axes_traceTop0,'TightInset'),'traces');
+    set(a.axes_traceTop0, 'Position', pos);
+
+    yNext = yNext - h_axes;
+    
     a.axes_traceTop = axes('Parent',h_fig,'Units','pixels', ...
         'FontUnits','pixels','FontSize',fntSize,'ActivePositionProperty', ...
         'OuterPosition');
@@ -135,6 +138,18 @@ if isTop
     
     if isHist
         xNext = xNext + w_axes_tr;
+        yNext = yNext + h_axes;
+    
+        a.axes_histTop0 = axes('Parent',h_fig,'Units','pixels', ...
+            'FontUnits','pixels','FontSize',fntSize,'ActivePositionProperty', ...
+            'OuterPosition','YTick',[],'XTickLabel',[]);
+        pos = getRealPosAxes([xNext yNext w_axes_hist h_axes], ...
+            get(a.axes_histTop0,'TightInset'), 'hist');
+        posTop = get(a.axes_traceTop0, 'Position');
+        pos([2 4]) = posTop([2 4]);
+        set(a.axes_histTop0, 'Position', pos);
+
+        yNext = yNext - h_axes;
     
         a.axes_histTop = axes('Parent',h_fig,'Units','pixels', ...
             'FontUnits','pixels','FontSize',fntSize,'ActivePositionProperty', ...
@@ -191,19 +206,19 @@ if ~isempty(a)
     plotData(m, p_mol, a, prm, isDiscr);
     
     if isTop
-        set([get(a.axes_traceTop,'XLabel') get(a.axes_traceTop,'YLabel')], ...
-            'String',[]);
+        set([a.axes_traceTop.XLabel,a.axes_traceTop.YLabel,...
+            a.axes_traceTop0.XLabel,a.axes_traceTop0.YLabel], 'String',[]);
         if isHist
-            set([get(a.axes_histTop,'XLabel') get(a.axes_histTop, ...
-                'YLabel')],'String',[]);
+            set([a.axes_histTop.XLabel,a.axes_histTop.YLabel,...
+                a.axes_histTop0.XLabel,a.axes_histTop0.YLabel],'String',[]);
         end
     end
     if isBot
-        set([get(a.axes_traceBottom,'XLabel') get(a.axes_traceBottom, ...
-            'YLabel')],'String',[]);
+        set([a.axes_traceBottom.XLabel,a.axes_traceBottom.YLabel],'String',...
+            []);
         if isHist
-            set([get(a.axes_histBottom,'XLabel') get(a.axes_histBottom, ...
-                'YLabel')],'String',[]);
+            set([a.axes_histBottom.XLabel,a.axes_histBottom.YLabel],...
+                'String',[]);
         end
     end
 end
@@ -211,7 +226,7 @@ end
 if isSubImg
     title(ax_img(1), ['molecule n:°' num2str(m)]);
 elseif isTop
-    title(a.axes_traceTop, ['molecule n:°' num2str(m)]);
+    title(a.axes_traceTop0, ['molecule n:°' num2str(m)]);
 elseif isBot
     title(a.axes_traceBottom, ['molecule n:°' num2str(m)]);
 end
