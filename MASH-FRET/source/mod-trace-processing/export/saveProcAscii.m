@@ -289,7 +289,9 @@ try
         % build frame and time column
         incl = p.proj{proj}.bool_intensities(:,m);
         [frames,o,o] = find(incl);
-        frames = ((nExc*(frames(1)-1)+1):nExc*frames(end))';
+        if ~isempty(frames)
+            frames = ((nExc*(frames(1)-1)+1):nExc*frames(end))';
+        end
         times = frames*expT;
 
         % build molecule file name
@@ -829,7 +831,7 @@ try
                 pos = [0 0 (21-2*mg) (29.7-2*mg*29.7/21)];
                 set(h_fig_mol,'Position',pos, ...
                     'PaperPositionMode','manual','PaperUnits', ...
-                    'centimeters','PaperSize',[pos(3)+2 pos(4)+2], ...
+                    'centimeters','PaperSize',[2*mg+pos(3) 2*mg*29.7/21+pos(4)], ...
                     'PaperPosition',[mg mg pos(3) pos(4)]);
 
                 switch figFmt

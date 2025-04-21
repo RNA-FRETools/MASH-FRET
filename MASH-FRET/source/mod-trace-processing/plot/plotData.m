@@ -33,7 +33,7 @@ frameLab = 'frame';
 histxLab = 'norm. freq.';
 nbins = 100; % nb of histogram bins
 alphaval = 0.85; % transparency value for off-state
-brightoffset = -0.15; % brightness offset for trajectory plot 
+brightoffset = -0.4; % brightness offset for trajectory plot 
 clr_cutoff = [0.3,0.3,0.3]; % color of cutoff bar
 
 % collect experiment settings and processing parameters
@@ -401,6 +401,9 @@ hp = [];
 if ~isfield(ax,axnm)
     return
 end
+if is2
+    [darkclr,clr] = shiftbright(clr,brightoffset);
+end
 hp = plot(ax.(axnm), x, y1, 'Color', clr);
 if ~strcmp(ax.(axnm).NextPlot,'add')
     ax.(axnm).NextPlot = 'add';
@@ -409,7 +412,7 @@ end
 if ~is2
     return
 end
-plot(ax.(axnm),x,y2,'Color',shiftbright(clr,brightoffset),'linewidth',2);
+plot(ax.(axnm),x,y2,'Color',darkclr,'linewidth',2);
 
 
 function hp = plotData_hist(ax,axnm,dat,lim,nbins,clr)

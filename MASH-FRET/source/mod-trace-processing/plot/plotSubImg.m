@@ -106,6 +106,7 @@ lim_img_y = lim(2,:);
 imagesc([lim_x(1)+0.5 lim_x(2)-0.5], [lim_y(1)+0.5 lim_y(2)-0.5], ...
     img, 'Parent', h_axes);
 set(h_axes, 'NextPlot', 'add');
+colormap(h_axes, [r r r]);
 
 % draw integration area of current molecule ...
 crdCenter = ceil(coord) - 0.5; % center of the rectangle
@@ -135,7 +136,7 @@ ylim(h_axes, lim_img_y);
 % add text with channel label and wavelength
 text(h_axes, mean(lim_img_x), lim_img_y(1), sprintf('%s %inm',lbl,exc), ...
     'horizontalalignment', 'center', 'verticalalignment','top', 'color', ...
-    clr, 'backgroundcolor', 'w');
+    clr, 'backgroundcolor', 'none');
 
 % finialize axes
 set(h_axes, 'NextPlot', 'replacechildren');
