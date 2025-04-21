@@ -17,6 +17,7 @@ nbins = 100;
 nSpl = 100;
 xlbl0 = 'survival times';
 xlbl1 = 'blink-off times';
+xlbl2 = 'blink-on times';
 
 % determine which plot to update
 if ~isempty(varargin)
@@ -49,7 +50,8 @@ if contains(dattype,{'bleach','all'})
     end
 end
 if contains(dattype,{'blink','all'})
-    for c = h.axes_blinkstats.Children
+    for c = [h.axes_blinkon.Children(:)',h.axes_blinkoff.Children(:)',...
+            h.axes_blinkschm.UserData(:)']
         delete(c); 
     end
 end
@@ -57,6 +59,7 @@ end
 % collect dwell times
 survt = [];
 offt = [];
+ont = [];
 [N,L] = size(incl);
 trajlen = L*nExc;
 em = h.popup_emitter.Value;
@@ -85,18 +88,45 @@ for n = 1:N
         double(incl_em(nChan*(n-1)+emlst(em),start:ceil(cutoff/nExc)))',1);
     offt = cat(2,offt,...
         [dt(dt(:,2)==0,1)'*nExc;repmat(n,1,nnz(dt(:,2)==0))]);
+    ont = cat(2,ont,...
+        [dt(dt(:,2)==1,1)'*nExc;repmat(n,1,nnz(dt(:,2)==1))]);
 end
 
 % plot survival time histogram
 if any(strcmp(dattype,{'bleach','all'}))
-    h.axes_bleachstats.UserData = plotbleachnblinkstats(h.axes_bleachstats,...
-        h.popup_bleachscale.Value,survt,nbins,expt,xlbl0,nSpl,h.fig_MASH);
+    h.axes_bleachstats.UserData{em} = plotbleachnblinkstats(...
+        h.axes_bleachstats,h.popup_scale.Value,survt,nbins,expt,xlbl0,nSpl,...
+        h.fig_MASH,h.axes_bleachstats.UserData{em});
 end
 
-% plot blink-off time histogram
+% plot blinking time histogram
 if any(strcmp(dattype,{'blink','all'}))
-    h.axes_blinkstats.UserData = plotbleachnblinkstats(h.axes_blinkstats,...
-        h.popup_blinkscale.Value,offt,nbins,expt,xlbl1,nSpl,h.fig_MASH);
+    h.axes_blinkoff.UserData{em} = plotbleachnblinkstats(h.axes_blinkoff,...
+        h.popup_scale.Value,offt,nbins,expt,xlbl1,nSpl,h.fig_MASH,...
+        h.axes_blinkoff.UserData{em});
+    h.axes_blinkon.UserData{em} = plotbleachnblinkstats(h.axes_blinkon,...
+        h.popup_scale.Value,ont,nbins,expt,xlbl2,nSpl,h.fig_MASH,...
+        h.axes_blinkon.UserData{em});
+
+    % draw blinking reaction diagram
+    tauoff = h.axes_blinkoff.UserData{em}.tau;
+    tauon = h.axes_blinkon.UserData{em}.tau;
+    if ~isempty(tauoff) && ~isempty(tauon)
+        tp = [1-1/tauoff,1/tauoff;1/tauon,1-1/tauon];
+        q.clr = [0,0,0;1,1,1];
+        q.theta0 = 135;
+        q.fntszprob = 8;
+        q.useletter = {'off','on'};
+        q.radius = [sum(offt(1,:))/sum([offt(1,:),ont(1,:)]),...
+            sum(ont(1,:))/sum([offt(1,:),ont(1,:)])];
+        q.hdlgth = 5;
+        q.insec = insec;
+        if insec
+            q.signb = 2;
+        end
+        h.axes_blinkschm.UserData = ...
+            drawtransscheme(h.axes_blinkschm,[0,1],tp,q);
+    end
 end
 
 % show success
@@ -104,16 +134,15 @@ setContPan('Photobleaching/blinking stats are up to date!','success',...
     h.fig_MASH);
 
 
-function res = plotbleachnblinkstats(ax,sc,dt,nbins,expt,xlbl,nSpl,fig0)
+function res = plotbleachnblinkstats(ax,sc,dt,nbins,expt,xlbl,nSpl,fig0,ud)
 % init output
 res = struct('bincenter',[],'binedges',[],'cnt',[],'cmplP',[],'fit',[],...
     'lowfit',[],'upfit',[],'A',[],'dA',[],'tau',[],'dtau',[]);
 
 if size(dt,2)>1
     % collect data and fit results
-    if isstruct(ax.UserData) && isfield(ax.UserData,'cnt') && ...
-            ~isempty(ax.UserData.cnt)
-        res = ax.UserData;
+    if isstruct(ud) && isfield(ud,'cnt') && ~isempty(ud.cnt)
+        res = ud;
         cnt = res.cnt;
         y = res.cmplP;
         x = res.bincenter;
@@ -158,26 +187,19 @@ if size(dt,2)>1
         'color','r');
 
     % show fit results
-    if strcmp(ax.XScale,'log')
-        xtxt = 10^(mean(log10(ax.XLim)));
-    else
-        xtxt = mean(ax.XLim);
-    end
-    if strcmp(ax.YScale,'log')
-        ytxt = 10^(mean(log10(ax.YLim)));
-    else
-        ytxt = mean(ax.YLim);
-    end
+    xtxt = ax.XLim(2);
+    ytxt = ax.YLim(2);
     if expt~=1
-        tau_str = ' seconds';
+        tau_str = ' s';
         xlbl = [xlbl, ' in seconds'];
     else
-        tau_str = ' time steps';
+        tau_str = '';
         xlbl = [xlbl, ' in time steps'];
     end
     text(ax,xtxt,ytxt,sprintf(['A=(%.2f',char(177),'%.2f)\ntau=(%.2f',...
         char(177),'%.2f)',tau_str],amp,damp,tau,dtau),'color','red',...
-        'horizontalalignment','left','verticalalignment','middle');
+        'horizontalalignment','right','verticalalignment','top',...
+        'fontunits','points','fontsize',8);
     ax.NextPlot = 'replacechildren';
     xlabel(ax,xlbl);
 
