@@ -17,6 +17,8 @@ end
 
 proj = p.curr_proj;
 projtitle = p.proj{proj}.exp_parameters{1,2};
+nExc = p.proj{proj}.nb_excitations;
+nChan = p.proj{proj}.nb_channel;
 if iscell(obj)
     pname = obj{1};
     fname = obj{2};
@@ -83,29 +85,30 @@ save([pname fname_proj], '-struct', 'dat');
 
 % set interface default param. to project's param.
 if ~isempty(p.proj{proj}.sim)
-    p.sim.defProjPrm = p.proj{proj}.sim.curr;
-    p.sim.defProjPrm.res_dt = p.proj{proj}.sim.def.res_dt;
-    p.sim.defProjPrm.res_dat = p.proj{proj}.sim.def.res_dat;
-    p.sim.defProjPrm.res_plot = p.proj{proj}.sim.def.res_plot;
+    p.sim.defProjPrm{nExc,nChan} = p.proj{proj}.sim.curr;
+    p.sim.defProjPrm{nExc,nChan}.res_dt = p.proj{proj}.sim.def.res_dt;
+    p.sim.defProjPrm{nExc,nChan}.res_dat = p.proj{proj}.sim.def.res_dat;
+    p.sim.defProjPrm{nExc,nChan}.res_plot = p.proj{proj}.sim.def.res_plot;
 end
 if ~isempty(p.proj{proj}.VP)
-    p.VP.defProjPrm = p.proj{proj}.VP.curr;
-    p.VP.defProjPrm.res_crd = p.proj{proj}.VP.def.res_crd;
-    p.VP.defProjPrm.res_plot = p.proj{proj}.VP.def.res_plot;
+    p.VP.defProjPrm{nExc,nChan} = p.proj{proj}.VP.curr;
+    p.VP.defProjPrm{nExc,nChan}.res_crd = p.proj{proj}.VP.def.res_crd;
+    p.VP.defProjPrm{nExc,nChan}.res_plot = p.proj{proj}.VP.def.res_plot;
 end
 if ~isempty(p.proj{proj}.TP)
-    p.ttPr.defProjPrm = p.proj{proj}.TP.def;
+    p.ttPr.defProjPrm{nExc,nChan} = p.proj{proj}.TP.def;
     
     % save current molecule's parameters
-    p.ttPr.defProjPrm.mol = p.proj{proj}.TP.curr{p.ttPr.curr_mol(proj)};
-    p.ttPr.defProjPrm.general = p.proj{proj}.TP.fix;
-    p.ttPr.defProjPrm.exp = p.proj{proj}.TP.exp;
+    p.ttPr.defProjPrm{nExc,nChan}.mol = ...
+        p.proj{proj}.TP.curr{p.ttPr.curr_mol(proj)};
+    p.ttPr.defProjPrm{nExc,nChan}.general = p.proj{proj}.TP.fix;
+    p.ttPr.defProjPrm{nExc,nChan}.exp = p.proj{proj}.TP.exp;
     
     % save current project's cross-talks as default
-    p.ttPr.defProjPrm.general{4} = p.proj{proj}.TP.fix{4};
+    p.ttPr.defProjPrm{nExc,nChan}.general{4} = p.proj{proj}.TP.fix{4};
 
     % reorder DE coefficients according to laser chromatic order
-    cf_bywl = p.ttPr.defProjPrm.general{4}{2};
+    cf_bywl = p.ttPr.defProjPrm{nExc,nChan}.general{4}{2};
     if size(cf_bywl,1)>0
         for c = 1:dat.nb_channel
             if sum(p.proj{proj}.excitations==p.proj{proj}.chanExc(c))
@@ -115,7 +118,8 @@ if ~isempty(p.proj{proj}.TP)
                     continue
                 end
                 [o,id] = sort(exc_but_c,'ascend'); % chronological index sorted as wl
-                p.ttPr.defProjPrm.general{4}{2}(:,c) = cf_bywl(id,c);
+                p.ttPr.defProjPrm{nExc,nChan}.general{4}{2}(:,c) = ...
+                    cf_bywl(id,c);
             end
         end
     end

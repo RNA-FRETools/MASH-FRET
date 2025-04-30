@@ -30,19 +30,22 @@ u = {[0 0] % image filter parameters
      [0 0]};
 filtlist = {'','gauss','mean','median','ggf','lwf','gwf','outlier',...
     'histotresh','simpletresh'};
- 
-% initializes fields
-p.VP = adjustParam('VP',[],p);
-p.VP.defProjPrm = adjustParam('defProjPrm',[],p.VP);
-p.VP.defProjPrm = initDefPrmFields_VP(p.VP.defProjPrm);
-def = p.VP.defProjPrm;
 
 % get project parameters
 nChan = proj.nb_channel;
+nExc = proj.nb_excitations;
 nMov = numel(proj.movie_file);
 L = proj.movie_dat{1}{3};
 avimg = proj.aveImg(:,1)';
 coordsm = proj.coord;
+ 
+% initializes fields
+p.VP = adjustParam('VP',[],p);
+p.VP.defProjPrm = adjustcellsize(...
+    adjustParam('defProjPrm',cell(nExc,nChan),p.VP),nExc,nChan);
+p.VP.defProjPrm{nExc,nChan} = ...
+    initDefPrmFields_VP(p.VP.defProjPrm{nExc,nChan});
+def = p.VP.defProjPrm{nExc,nChan};
 
 sub_w = floor(proj.movie_dim{1}(1)/nChan);
 coord2plot = 0;

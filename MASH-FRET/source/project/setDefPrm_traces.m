@@ -8,18 +8,6 @@ function def = setDefPrm_traces(p, proj)
 % proj: project index in list
 % def: adjusted default TP processing parameters
 
-if ~isfield(p.ttPr, 'defProjPrm')
-    p.ttPr.defProjPrm = [];
-end
-if ~isfield(p.ttPr.defProjPrm, 'general')
-    p.ttPr.defProjPrm.general = cell(1,3);
-end
-if ~isfield(p.ttPr.defProjPrm, 'mol')
-    p.ttPr.defProjPrm.mol = cell(1,6);
-end
-
-def = p.ttPr.defProjPrm;
-
 nChan = p.proj{proj}.nb_channel;
 expt = p.proj{proj}.resampling_time;
 exc = p.proj{proj}.excitations;
@@ -31,6 +19,15 @@ nS = size(p.proj{proj}.S,1);
 nFrames = size(p.proj{proj}.intensities,1)*nExc;
 isCoord = p.proj{proj}.is_coord;
 isMov = p.proj{proj}.is_movie;
+
+if ~isfield(p.ttPr.defProjPrm{nExc,nChan},'general')
+    p.ttPr.defProjPrm{nExc,nChan}.general = cell(1,3);
+end
+if ~isfield(p.ttPr.defProjPrm{nExc,nChan},'mol')
+    p.ttPr.defProjPrm{nExc,nChan}.mol = cell(1,6);
+end
+
+def = p.ttPr.defProjPrm{nExc,nChan};
 
 % General parameters
 
