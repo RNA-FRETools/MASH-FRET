@@ -139,6 +139,7 @@ s.intensities_bgCorr = [];
 s.intensities_crossCorr = [];
 s.intensities_denoise = [];
 s.bool_intensities = [];
+s.emitter_is_on = [];
 s.intensities_DTA = [];
 s.FRET_DTA = [];
 s.FRET_DTA_import = [];
@@ -197,6 +198,9 @@ for proj = slct
     
     s.bool_intensities = cat(2,s.bool_intensities,...
         extendTrace(p.proj{proj}.bool_intensities,L,false));
+    
+    s.emitter_is_on = cat(2,s.emitter_is_on,...
+        extendTrace(p.proj{proj}.emitter_is_on,L,false));
 
     % state sequences
     I_DTA = extendTrace(p.proj{proj}.intensities_DTA,L,NaN);
@@ -242,6 +246,7 @@ for proj = slct
     end
 end
 s.bool_intensities = ~~s.bool_intensities;
+s.emitter_is_on = ~~s.emitter_is_on;
 s.coord_incl = ~~s.coord_incl;
 
 % remove VP and/or sim parameters
@@ -490,14 +495,6 @@ for l = 1:nL
         cat(2,lcOrder,lc(((laserOrder(l)-1)*nChan+1):laserOrder(l)*nChan));
 end
 datOrder = [fretOrder,nFRET+sOrder,nFRET+nS+lcOrder];
-
-% Photobleaching
-chan = prm{2}{1}(3);
-if chan<=(nFRET+nS+nL*nChan)
-    chan = datOrder(chan);
-end
-prm{2}{1}(3) = chan;
-prm{2}{2}(1:(nFRET+nS+nL*nChan),:) = prm{2}{2}(datOrder,:);
 
 % Background correction
 prm{3}{1} = prm{3}{1}(laserOrder,:,:); % apply & dynamic
