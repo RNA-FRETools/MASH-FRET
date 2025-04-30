@@ -16,9 +16,7 @@ if ~strcmp(file(1),filesep)
 
 % if file path is absolute, check location
 else
-    if contains(file,[src0,filesep,'source',filesep,'routines',filesep]) && ...
-            contains(file,[filesep,'assets',filesep])
-        ok = true;
-    end
+    ok = contains(file,[src0,filesep,'source',filesep,'routines',filesep]) ...
+        && contains(file,[filesep,'assets',filesep]);
 end
 

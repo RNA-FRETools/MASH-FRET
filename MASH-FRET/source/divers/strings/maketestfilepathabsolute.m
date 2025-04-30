@@ -9,9 +9,14 @@ function dat = maketestfilepathabsolute(dat)
 if isempty(dat)
     return
 elseif isstruct(dat)
-    fldnm = fieldnames(dat);
-    for n = 1:numel(fldnm)
-        dat.(fldnm{n}) = maketestfilepathabsolute(dat.(fldnm{n}));
+    for r = 1:size(dat,1)
+        for c = 1:size(dat,2)
+            fldnm = fieldnames(dat(r,c));
+            for n = 1:numel(fldnm)
+                dat(r,c).(fldnm{n}) = ...
+                    maketestfilepathabsolute(dat(r,c).(fldnm{n}));
+            end
+        end
     end
 elseif iscell(dat)
     for r = 1:size(dat,1)
