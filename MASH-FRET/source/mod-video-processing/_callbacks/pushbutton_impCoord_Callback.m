@@ -13,7 +13,7 @@ vidfile = p.proj{p.curr_proj}.movie_file;
 viddim = p.proj{p.curr_proj}.movie_dim;
 curr = p.proj{p.curr_proj}.VP.curr;
 impprm = curr.gen_crd{3}{1}{3};
-multichanvid = numel(vidfile)==1;
+multichanvid = isscalar(vidfile);
 
 chansplit = cell(1,nChan);
 if multichanvid
@@ -42,7 +42,7 @@ if iscell(obj)
         pname = [pname,filesep];
     end
 else
-    defPname = setCorrectPath('spotfinder', h_fig);
+    [~,defPname] = getCorrectPath('spotfinder', h_fig);
     [fname,pname,o] = uigetfile({'*.spots','Coordinates File(*.spots)'; ...
         '*.*',  'All Files (*.*)'}, 'Select a coordinates file', defPname);
 end
