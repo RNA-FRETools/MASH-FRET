@@ -43,7 +43,7 @@ end
 
 % test axis settings
 disp(cat(2,prefix,'test axis settings'));
-set_TP_xyAxis(~p.fixX0,p.x0,true,p.intlim,h_fig);
+set_TP_xyAxis(~p.fixX0,p.x0,p.clipx,true,p.intlim,h_fig);
 
 pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
 

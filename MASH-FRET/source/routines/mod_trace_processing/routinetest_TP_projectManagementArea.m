@@ -27,8 +27,9 @@ for nL = 1:p.nL_max
         
         % test multi-channel video-based .mash file import 
         disp(cat(2,prefix,'>> import file ',p.mash_files{nChan,nL}));
-        pushbutton_openProj_Callback({p.annexpth,p.mash_files{nChan,nL}},...
-            [],h_fig);
+            [~,name,ext] = fileparts(p.mash_files{nChan,nL});
+        pushbutton_openProj_Callback({[p.annexpth,name,filesep],...
+            p.mash_files{nChan,nL}},[],h_fig);
 
         switchPan(h.togglebutton_TP,[],h_fig);
 
@@ -37,10 +38,10 @@ for nL = 1:p.nL_max
         
         % test single-channel video-based .mash file import
         if nChan>1
-            [~,name,ext] = fileparts(p.mash_files{nChan,nL});
             mash_file = [name,'_sgl',ext];
             disp(cat(2,prefix,'>> import file ',mash_file));
-            pushbutton_openProj_Callback({p.annexpth,mash_file},[],h_fig);
+            pushbutton_openProj_Callback({[p.annexpth,name,'_sgl',filesep],...
+                mash_file},[],h_fig);
 
             switchPan(h.togglebutton_TP,[],h_fig);
 
