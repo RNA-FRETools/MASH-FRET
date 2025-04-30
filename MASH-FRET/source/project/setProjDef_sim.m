@@ -24,7 +24,7 @@ proj.excitations = exc;
 proj.chanExc = chanExc;
 proj.FRET = FRET;
 proj.S = S;
-proj.exp_parameters = p.es.expCond;
+proj.exp_parameters = getDefExpCond;
 proj.exp_parameters{1,2} = projtitle;
 proj.colours = getDefTrClr(nExc,exc,nChan,size(FRET,1),size(S,1));
 

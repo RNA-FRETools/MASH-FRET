@@ -158,13 +158,14 @@ elseif strcmp(dat2import,'edit')
 
     if isModuleOn(p,'TP')
         % resize default TP parameters
-        p.ttPr.defProjPrm = setDefPrm_traces(p, p.curr_proj);
+        p.ttPr.defProjPrm{nExc,nChan} = setDefPrm_traces(p,p.curr_proj); % interface default
         p.proj{p.curr_proj}.TP.def.mol = adjustVal(...
-            p.proj{p.curr_proj}.TP.def.mol,p.ttPr.defProjPrm.mol);
+            p.proj{p.curr_proj}.TP.def.mol,...
+            p.ttPr.defProjPrm{nExc,nChan}.mol); % project default
 
         % resize general TP parameters
         p.proj{p.curr_proj}.TP.fix = adjustVal(p.proj{p.curr_proj}.TP.fix, ...
-            p.ttPr.defProjPrm.general);
+            p.ttPr.defProjPrm{nExc,nChan}.general);
 
         % adjust selection in the list of bottom traces in "Plot" panel
         if (nFRET+nS)>0
