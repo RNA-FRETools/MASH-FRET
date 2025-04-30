@@ -32,6 +32,9 @@ limI = p_fix{2}([4,5]);
 if (nFRET+nS) > 0
     set(h.popupmenu_plotBottom, 'String', getStrPop('plot_botChan', ...
         {FRET S exc clr labels}), 'Value', p_fix{2}(3));
+else
+    set(h.popupmenu_plotBottom,'String',{''},'Value',1);
+    set([h.popupmenu_plotBottom,h.text_plotBottom],'enable','off');
 end
 set(h.popupmenu_plotTop, 'String', getStrPop('plot_topChan', {labels ...
     p_fix{2}(1) clr{1}}), 'Value', p_fix{2}(2));
