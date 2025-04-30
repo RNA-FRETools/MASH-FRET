@@ -31,21 +31,35 @@ setContPan('save interface parameters in default_param.ini file ...',...
 
 p = h.param;
 if ~isempty(p.proj) && isfield(p.ttPr,'defProjPrm')
-    % remove background intensities
-    for c = 1:size(p.ttPr.defProjPrm.mol{3}{3},2)
-        for l = 1:size(p.ttPr.defProjPrm.mol{3}{3},1)
-            p.ttPr.defProjPrm.mol{3}{3}{l,c}(3) = 0;
+    
+    for nChan = 1:size(p.ttPr.defProjPrm,2)
+        for nExc = 1:size(p.ttPr.defProjPrm,1)
+            if ~isfield(p.ttPr.defProjPrm{nExc,nChan},'mol')
+                continue
+            end
+
+            % remove background intensities
+            for c = 1:size(p.ttPr.defProjPrm{nExc,nChan}.mol{3}{3},2)
+                for l = 1:size(p.ttPr.defProjPrm{nExc,nChan}.mol{3}{3},1)
+                    p.ttPr.defProjPrm{nExc,nChan}.mol{3}{3}{l,c}(3) = 0;
+                end
+            end
+        
+            % remove discretisation results
+            p.ttPr.defProjPrm{nExc,nChan}.mol{3}{4} = [];
         end
     end
 
-    % remove discretisation results
-    p.ttPr.defProjPrm.mol{3}{4} = [];
-    p.folderRoot = p.proj{p.curr_proj}.folderRoot;
+    % make path to test file root folder absolute
+    p.folderRoot = maketestfilepathabsolute(...
+        p.proj{p.curr_proj}.folderRoot);
 end
 p = rmfield(p,{'proj','curr_proj'});
 [mfile_path,o,o] = fileparts(which('MASH'));
 save([mfile_path filesep 'default_param.ini'], '-struct', 'p');
 
-setContPan('closing MASH-FRET ...','process',obj);
+setContPan('deleting MASH-FRET window...','process',obj);
 
 delete(obj);
+
+setContPan('MASH-FRET succesfully closed, goodbye!','process',obj);
