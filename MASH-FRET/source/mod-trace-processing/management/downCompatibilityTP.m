@@ -162,7 +162,7 @@ end
 
 % if the molecule parameter "window size" does not belong to 
 % the background correction parameters
-if p_proj.is_movie && size(p_proj.TP.prm{n},2)>=3
+if p_proj.is_movie && p_proj.is_coord && size(p_proj.TP.prm{n},2)>=3
     for l = 1:nExc
         for c = 1:nChan
             if size(p_proj.TP.prm{n}{3},2)>=4 && p_proj.TP.prm{n}{3}(4)>0
