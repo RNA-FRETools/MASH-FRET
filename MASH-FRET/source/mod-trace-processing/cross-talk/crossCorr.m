@@ -56,12 +56,13 @@ if ~isCrossCorr
             l0 = l0(1);
             
             n = 0;
-            for l = 1:nExc
+            em = find(chanExc>=exc(l0));
+            for l = find(exc<exc(l0))
                 if l ~= l0
                     n = n+1;
 
                     coeff = p.proj{proj}.TP.fix{4}{2}(n,c);
-                    I_corr(:,c,l) = I_corr(:,c,l) - coeff*I_corr(:,c,l0);
+                    I_corr(:,em,l) = I_corr(:,em,l) - coeff*I_corr(:,em,l0);
                 end
             end
         end
