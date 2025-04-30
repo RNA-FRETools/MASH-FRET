@@ -68,7 +68,8 @@ for nL = 1:nL_max
             p.es{nChan,nL}.imp.tfiles = cat(2,p.es{nChan,nL}.imp.tfiles,...
                 dir_content(n,1).name);
         end
-        p.es{nChan,nL}.imp.coordfile = '';
+        p.es{nChan,nL}.imp.coordfile = ...
+            sprintf('%ichan%iexc.coord',nChan,nL);
         p.es{nChan,nL}.imp.coordopt = [];
         
         p.es{nChan,nL}.chan.nchan = nChan;
@@ -98,6 +99,11 @@ for nL = 1:nL_max
             end
         end
         
+        % {1}: [headlines, delim, is time data, row-wise time col, row/colwise, is state data, one or multiple mol]
+        % {2}: [1-by-nL] col-wise time cols
+        % {3}: [nChan-by-3] row-wise intensity cols
+        % {4}: [nChan-by-3-by-nL] col-wise intensity cols
+        % {5}: [nPair-by-3] state columns
         p.es{nChan,nL}.fstrct = {[2 2 1 1 1 0 1],ones(1,nL),...
             [1+(1:nChan)',1+(1:nChan)',zeros(nChan,1)],...
             ones(nChan,3,nL),ones(size(FRET,1),3)};
@@ -159,6 +165,7 @@ p.perSec = true;
 p.inSec = false;
 p.fixX0 = false;
 p.x0 = 10;
+p.clipx = 0;
 p.intlim = [-1000,1E5];
 
 % parameters for panel Sub-images
@@ -225,17 +232,10 @@ p.denPrm = [3,0,0 % denosiing method settings
 
 % parameters for panel Photobleaching
 p.pbMeth = 1; % index in list of photobleaching detection method
-p.pbApply = false; % (1) clip traces (0) otherwise
-p.pbDat = 1; % index in list of data to use in threshold method
 p.pbPrm{1} = 7; % manual cutoff frame
-p.pbPrm{2} = [0 1 6 % threshold settings for FRET
-    0 1 6 % ... for S
-    0 1 6 % ... for I1_1
-    0 1 6 % ... for I2_1
-    0 1 6 % ... for I1_2
-    0 1 6 % ... for I2_2
-    0 1 6 % ... for all I
-    0 1 6]; % ... for summed I
+p.pbPrm{2} = [0.7 0 % threshold settings for emitter 1
+    0.7 0]; % threshold settings for emitter 2
+p.pbStatsFile = 'pbstats.txt';
 
 % parameters for panel Factor corrections
 p.factMeth = 1; % index in list of factor calculation method
