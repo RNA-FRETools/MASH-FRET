@@ -1,4 +1,4 @@
-function pth = setCorrectPath(folder, h_fig)
+function pth = setCorrectPath(folder, fig)
 % | Create directory and return correct path.
 % |
 % | pth = setCorrectPath(folder, h_fig)
@@ -13,60 +13,7 @@ function pth = setCorrectPath(folder, h_fig)
 % --> modify "thermodynamic" folder request in "histogram_analysis" and
 %     "tdp_analysis" to "transition_analysis" to be consistent with the GUI
 
-h = guidata(h_fig);
-p = h.param;
-if isempty(p.proj)
-    folderRoot = p.folderRoot;
-else
-    proj = p.curr_proj;
-    folderRoot = p.proj{proj}.folderRoot;
-end
-
-% --> modify "movie_processing" folder request into "video_processing"
-if strcmp(folder, 'movie_processing')
-    folder = 'video_processing';
-end
-% --> modify "thermodynamic" folder request into "histogram_analysis"
-if strcmp(folder, 'thermodynamics')
-    folder = 'histogram_analysis';
-end
-% --> modify "tdp_analysis" folder request into "transition_analysis"
-if strcmp(folder, 'tdp_analysis')
-    folder = 'transition_analysis';
-end
-
-if (strcmp(folder, 'simulations') || ...
-        strcmp(folder, 'video_processing') || ...
-        strcmp(folder, 'traces_processing') || ...
-        strcmp(folder, 'transition_analysis') || ...
-        strcmp(folder, 'histogram_analysis'))
-    pth = [folderRoot filesep folder];
-
-elseif (strcmp(folder, 'average_images') || ...
-       strcmp(folder, 'coordinates') || ...
-        strcmp(folder, 'exported_graphics') || ...
-        strcmp(folder, 'intensities'))
-
-    pth1 = setCorrectPath('video_processing', h_fig);
-    pth = [pth1 folder];
-
-elseif (strcmp(folder, 'spotfinder') || ...
-        strcmp(folder, 'mapping') || ...
-        strcmp(folder, 'transformed'))
-
-    pth1 = setCorrectPath('coordinates', h_fig);
-    pth = [pth1 folder];
-
-elseif (strcmp(folder, 'clustering') || ...
-        strcmp(folder, 'lifetimes') || ...
-        strcmp(folder, 'kinetic model'))
-
-    pth1 = setCorrectPath('transition_analysis', h_fig);
-    pth = [pth1 folder];
-
-else
-    pth = folder;
-end
+[pth,~] = getCorrectPath(folder,fig);
 
 if ~isempty(pth) && ~exist(pth, 'dir')
     try
@@ -83,5 +30,3 @@ if ~isempty(pth) && ~exist(pth, 'dir')
         end
     end
 end
-
-pth = [pth filesep];
