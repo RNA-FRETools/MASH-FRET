@@ -73,6 +73,11 @@ p.proj{proj}.date_last_modif = dat.date_last_modif;
 p.proj{proj}.cnt_p_sec = dat.cnt_p_sec;
 p.proj{proj}.time_in_sec = dat.time_in_sec;
 
+% make all test file paths relative to main MASH-FRET folder
+if istestfile(dat.proj_file)
+    dat = maketestfilepathrelative(dat);
+end
+
 % save to file
 save([pname fname_proj], '-struct', 'dat');
 
