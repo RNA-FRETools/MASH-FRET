@@ -63,20 +63,16 @@ nS = size(S,1);
 nandat = any(isnan(int_den(:,((mol-1)*nChan+1):mol*nChan,:)),[2,3])';
 incl = ~~incl(:,mol)';
 I = int_den(~nandat,((mol-1)*nChan+1):mol*nChan,:);
-if plotDscr
-    discrI = int_dta(~nandat,((mol-1)*nChan+1):mol*nChan,:);
-    if nFRET > 0
-        discrFRET = FRET_dta(~nandat,((mol-1)*nFRET+1):mol*nFRET,:);
-    end
-    if nS > 0
-        discrS = S_dta(~nandat,((mol-1)*nS+1):mol*nS,:);
-    end
+discrI = int_dta(~nandat,((mol-1)*nChan+1):mol*nChan,:);
+if nFRET > 0
+    discrFRET = FRET_dta(~nandat,((mol-1)*nFRET+1):mol*nFRET,:);
+end
+if nS > 0
+    discrS = S_dta(~nandat,((mol-1)*nS+1):mol*nS,:);
 end
 if perSec
     I = I/expT;
-    if plotDscr
-        discrI = discrI/expT;
-    end
+    discrI = discrI/expT;
 end
 
 % get y-axis limits
@@ -134,26 +130,44 @@ end
 % clear and prep axes
 A = numel(axnm);
 exclax = false(1,A);
+isax = false(1,A);
 axhdl = repmat(gca,1,A);
 if chan2plot<=0
+    exclax([3,4]) = true;
+end
+if nChan==1 && nExc==1
     exclax([3,4]) = true;
 end
 if ~((nFRET>0 || nS>0) && (numel(rat2plot)>1 || rat2plot>0))
     exclax([5,6]) = true;
 end
 for a = 1:A
-    if isfield(ax, axnm{a})
+    if isfield(ax,axnm{a})
         axhdl(a) = ax.(axnm{a});
         cla(ax.(axnm{a}));
+        isax(a) = true;
     else
         exclax(a) = true;
     end
 end
-setPropIfField(ax,axnm(exclax),'Visible','off');
+
+% hide unused axes
+setPropIfField(ax,axnm(exclax),'Visible','off'); 
+
+% delete old legends if axes' belong to "traces" tab (to differentitate with figure export)
+if any(isax&exclax)
+    hpar = axhdl(find(isax&exclax,1)).Parent;
+    if strcmp(hpar.Type,'uitab')
+        for chld = getHandleWithPropVal(hpar.Children,'Type','legend')
+            delete(chld);
+        end
+    end
+end
+
 if all(exclax)
     return
 end
-setPropIfField(ax, axnm(~exclax), 'NextPlot', 'replace', 'Visible', 'on');
+setPropIfField(ax,axnm(~exclax), 'NextPlot', 'replace', 'Visible', 'on');
 
 % set axis limits free
 ylim(axhdl(~exclax),'auto');
