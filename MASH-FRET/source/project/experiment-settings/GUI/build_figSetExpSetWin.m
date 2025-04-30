@@ -68,6 +68,7 @@ h_fig = figure('units',un,'numbertitle','off','menubar','none','name',...
 h.figure = h_fig;
 h0.figure_setExpSet = h_fig;
 guidata(h_fig0,h0);
+h_fig.SizeChangedFcn = @figure_setExpSet_SizeChangedFcn;
 h_fig.CloseRequestFcn = ...
     {@figure_setExpSet_CloseRequestFcn,h_fig,h_fig0,h0,0};
 
