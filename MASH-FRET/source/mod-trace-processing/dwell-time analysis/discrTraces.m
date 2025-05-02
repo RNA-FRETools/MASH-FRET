@@ -30,10 +30,10 @@ isDiscrTop = ~isempty(p.proj{proj}.intensities_DTA) && ~all(all(all(isnan(...
 
 % check for already-discretized bottom traces
 isDiscrBot = ~isempty(p.proj{proj}.FRET_DTA) && ...
-    ~all(all(isnan(p.proj{proj}.FRET_DTA(:,((m-1)*nF+1):m*nF))));
+    ~all(isnan(p.proj{proj}.FRET_DTA(:,((m-1)*nF+1):m*nF)),[1,2]);
 if nS>0
 	isDiscrBot = isDiscrBot && ~isempty(p.proj{proj}.S_DTA) && ...
-        ~all(all(isnan(p.proj{proj}.S_DTA(:,((m-1)*nS+1):m*nS))));
+        ~all(isnan(p.proj{proj}.S_DTA(:,((m-1)*nS+1):m*nS)),[1,2]);
 end
 
 % collect processing parameters

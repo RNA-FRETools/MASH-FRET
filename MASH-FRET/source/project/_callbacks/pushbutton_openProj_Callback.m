@@ -29,7 +29,7 @@ else % from file
     if iscell(files) % called by test routine
         pname = files{1};
         fname = files{2};
-        if ~strcmp(pname,filesep)
+        if pname(end)~=filesep
             pname = [pname,filesep];
         end
         

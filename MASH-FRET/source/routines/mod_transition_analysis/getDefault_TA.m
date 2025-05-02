@@ -62,7 +62,7 @@ for nL = 1:nL_max
     end
     for nChan = nChan_min:nChan_max
         p.es{nChan,nL}.imp.vfile = {''};
-        p.es{nChan,nL}.imp.tdir = sprintf('%ichan%iexc',nChan,nL);
+        p.es{nChan,nL}.imp.tdir = [filesep,sprintf('%ichan%iexc',nChan,nL)];
         dir_content = dir(...
             [p.annexpth,filesep,p.es{nChan,nL}.imp.tdir,filesep,'*.txt']);
         p.es{nChan,nL}.imp.tfiles = {};

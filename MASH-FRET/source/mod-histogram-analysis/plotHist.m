@@ -33,7 +33,7 @@ meth = start{1}(1);
 
 % plot state configuration
 if numel(h_axes)>2
-    if ~isempty(res{3,1})
+    if size(res,1)>=3 && ~isempty(res{3,1})
         L = res{3,1}(:,1);
         Jmax = size(L,1);
         isBIC = ~start{4}(1);
@@ -116,7 +116,7 @@ switch meth
         end
         
         % plot fitting results
-        if ~isempty(res{2,1})
+        if size(res,1)>=2 && ~isempty(res{2,1})
             fitprm = res{2,1};
             K = size(fitprm,1);
             set(h_axes(1), 'NextPlot', 'add');
@@ -171,7 +171,7 @@ switch meth
             set(h_axes(1), 'NextPlot', 'replacechildren');
         
         % plot most probable configuration
-        elseif ~isempty(res{3,1})
+        elseif size(res,1)>=3 && ~isempty(res{3,1})
             h = guidata(h_fig);
             K = get(h.popupmenu_thm_nTotGauss, 'Value');
             fitprm = res{3,2}{K};

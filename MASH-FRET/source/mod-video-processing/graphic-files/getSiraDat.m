@@ -8,13 +8,12 @@ is_os = false;
 f = fopen(fullFname, 'r');
 if f < 0
     if ~isempty(h_fig)
-        updateActPan('Could not open the file, no file loaded.',h_fig,...
+        updateActPan(['Error: can not open file: ',fullFname],h_fig,...
             'error');
     else
-        disp('Error: could not open the file, no file loaded.');
+        disp(['Error: can not open file: ',fullFname]);
     end
-    fclose(f);
-    return;
+    return
 end
 
 tline = fgetl_MASH(f);

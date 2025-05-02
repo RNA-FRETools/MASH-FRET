@@ -27,7 +27,7 @@ for nL = 1:p.nL_max
         
         % test multi-channel video-based .mash file import 
         disp(cat(2,prefix,'>> import file ',p.mash_files{nChan,nL}));
-            [~,name,ext] = fileparts(p.mash_files{nChan,nL});
+        [~,name,ext] = fileparts(p.mash_files{nChan,nL});
         pushbutton_openProj_Callback({[p.annexpth,name,filesep],...
             p.mash_files{nChan,nL}},[],h_fig);
 
@@ -70,6 +70,7 @@ end
 
 % test coordinates import from external file
 disp(cat(2,prefix,'test import of coordinates from external file...'));
+p.es{p.nChan,p.nL}.imp.coorddir = p.coord_dir;
 p.es{p.nChan,p.nL}.imp.coordfile = p.coord_file;
 p.es{p.nChan,p.nL}.imp.coordopt = {reshape(1:2*p.nChan,2,p.nChan)',1};
 
@@ -80,12 +81,14 @@ setDefault_TP(h_fig,p);
 pushbutton_saveProj_Callback({p.dumpdir,p.exp_coord1},[],h_fig);
 pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
 
+p.es{p.nChan,p.nL}.imp.coorddir = '';
 p.es{p.nChan,p.nL}.imp.coordfile = '';
 p.es{p.nChan,p.nL}.imp.coordopt = [];
 
 % test video import from file
 disp(cat(2,prefix,...
     'test import of multi-channel video from external file...'));
+p.es{p.nChan,p.nL}.imp.vdir = p.vid_dir;
 p.es{p.nChan,p.nL}.imp.vfile = {p.vid_file};
 
 routinetest_TP_createProj(p,h_fig,[prefix,'>> ']);
@@ -97,7 +100,8 @@ pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
 
 disp(cat(2,prefix,...
     'test import of single-channel video from external file...'));
-p.es{p.nChan,p.nL}.imp.vfile = repmat({p.vid_file},1,p.nChan);
+p.es{p.nChan,p.nL}.imp.vdir = p.vidsgl_dir;
+p.es{p.nChan,p.nL}.imp.vfile = p.vidsgl_files;
 
 routinetest_TP_createProj(p,h_fig,[prefix,'>> ']);
 
@@ -108,11 +112,13 @@ exp_vid = [name,'_sgl',ext];
 pushbutton_saveProj_Callback({p.dumpdir,exp_vid},[],h_fig);
 pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
 
+p.es{p.nChan,p.nL}.imp.vdir = '';
 p.es{p.nChan,p.nL}.imp.vfile = {''};
 
 % test gamma factor import from files
 disp(cat(2,prefix,'test import of gamma factors from external files...'));
-p.es{p.nChan,p.nL}.imp.gammafile = p.gamma_files;
+p.es{p.nChan,p.nL}.imp.gammadir = p.fact_dir;
+p.es{p.nChan,p.nL}.imp.gammafile = p.gamma_file;
 
 routinetest_TP_createProj(p,h_fig,[prefix,'>> ']);
 
@@ -121,11 +127,13 @@ setDefault_TP(h_fig,p);
 pushbutton_saveProj_Callback({p.dumpdir,p.exp_gam},[],h_fig);
 pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
 
+p.es{p.nChan,p.nL}.imp.gammadir = '';
 p.es{p.nChan,p.nL}.imp.gammafile = '';
 
 % test beta factor import from files
 disp(cat(2,prefix,'test import of beta factors from external files...'));
-p.es{p.nChan,p.nL}.imp.betafile = p.beta_files;
+p.es{p.nChan,p.nL}.imp.betadir = p.fact_dir;
+p.es{p.nChan,p.nL}.imp.betafile = p.beta_file;
 
 routinetest_TP_createProj(p,h_fig,[prefix,'>> ']);
 
@@ -133,13 +141,15 @@ setDefault_TP(h_fig,p);
 
 pushbutton_saveProj_Callback({p.dumpdir,p.exp_bet},[],h_fig);
 
+p.es{p.nChan,p.nL}.imp.betadir = '';
 p.es{p.nChan,p.nL}.imp.betafile = '';
 
 % test project merging
 disp(cat(2,prefix,'test project merging...'));
 
-pushbutton_openProj_Callback({p.annexpth,p.mash_files{p.nL,p.nChan}},[],...
-    h_fig);
+[~,name,~] = fileparts(p.mash_files{p.nChan,p.nL});
+pushbutton_openProj_Callback({[p.annexpth,name,filesep],...
+    p.mash_files{p.nL,p.nChan}},[],h_fig);
 
 set(h.listbox_proj,'value',[1,2]);
 menu_projMenu_merge_Callback([],[],h_fig);
