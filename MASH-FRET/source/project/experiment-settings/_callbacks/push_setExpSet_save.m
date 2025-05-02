@@ -54,7 +54,7 @@ h = guidata(h_fig0);
 p = h.param;
 
 % load full-length video data in memory if possible
-if ~strcmp(dat2import,'edit') && proj.is_movie && numel(proj.movie_file)==1 ...
+if ~strcmp(dat2import,'edit') && proj.is_movie && isscalar(proj.movie_file) ...
         && ~isFullLengthVideo(proj.movie_file{1},h_fig0)
     h.movie.movie = [];
     h.movie.file = '';

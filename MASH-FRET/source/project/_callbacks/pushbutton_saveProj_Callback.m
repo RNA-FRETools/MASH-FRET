@@ -130,7 +130,7 @@ end
 if ~isempty(p.proj{proj}.TA)
     p.TDP.defProjPrm = p.proj{proj}.TA.def;
 end
-p.folderRoot = dat.folderRoot;
+p.folderRoot = maketestfilepathabsolute(dat.folderRoot);
 
 % save interface default and current project's new file name
 h.param = p;

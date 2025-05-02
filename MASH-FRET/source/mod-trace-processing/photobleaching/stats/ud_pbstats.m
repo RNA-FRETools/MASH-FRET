@@ -11,6 +11,7 @@ function ud_pbstats(~,~,fig,varargin)
 
 % turn off fit warning
 warning off curvefit:fit:invalidStartPoint;
+warning off MATLAB:Axes:NegativeDataInLogAxis;
 
 % defaults
 nbins = 100;

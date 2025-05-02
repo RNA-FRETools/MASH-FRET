@@ -15,7 +15,7 @@ slct = get(h.listbox_proj, 'Value');
 
 % check project compatibility
 [comp,errmsg,expT,wl,lbl] = projectCompatibility(p.proj(slct),...
-    [h.figure_dummy,h.text_dummy]);
+    [h.figure_dummy,h.text_dummy],h.mute_actions);
 if ~comp
     if h.mute_actions
         disp(cat(2,'Merging is impossible: ',errmsg));
@@ -265,7 +265,7 @@ end
 setContPan('Projects successfully merged!','success',h_fig);
 
 
-function [ok,errmsg,expT,wl,lbl] = projectCompatibility(p_proj,hdl)
+function [ok,errmsg,expT,wl,lbl] = projectCompatibility(p_proj,hdl,mute)
 
 % initializes output
 ok = false;
@@ -287,7 +287,7 @@ chanExc = p_proj{1}.chanExc;
 FRET = p_proj{1}.FRET;
 S = p_proj{1}.S;
 
-[ok,expT] = checkvidframerate(p_proj);
+[ok,expT] = checkvidframerate(p_proj,mute);
 if ~ok
     errmsg = 'Projects have different frame rates.';
     return
@@ -305,7 +305,7 @@ for proj = 2:nProj
     end
 end
 
-[ok,wl] = checklaserwavelength(p_proj,hdl);
+[ok,wl] = checklaserwavelength(p_proj,hdl,mute);
 if ~ok
     errmsg = 'Projects have different laser wavelengths.';
     return
@@ -341,14 +341,14 @@ for proj = 2:nProj
     end
 end
 
-[ok,lbl] = checkemitterlbl(p_proj,hdl);
+[ok,lbl] = checkemitterlbl(p_proj,hdl,mute);
 if ~ok
     errmsg = 'Projects have different emitter labels.';
     return
 end
 
 
-function [ok,splt] = checkvidframerate(proj)
+function [ok,splt] = checkvidframerate(proj,mute)
 nProj = numel(proj);
 allsplt = zeros(1,nProj);
 splt = allsplt(1);
@@ -357,34 +357,38 @@ for n = 1:nProj
     allsplt(n) = proj{n}.sampling_time;
 end
 if ~all(allsplt==allsplt(1))
-    strsplt = [];
-    for n = 1:nProj
-        if n==nProj-1
-            strsplt = cat(2,strsplt,num2str(allsplt(n)),' and ');
-        else
-            strsplt = cat(2,strsplt,num2str(allsplt(n)),', ');
+    if ~mute
+        strsplt = [];
+        for n = 1:nProj
+            if n==nProj-1
+                strsplt = cat(2,strsplt,num2str(allsplt(n)),' and ');
+            else
+                strsplt = cat(2,strsplt,num2str(allsplt(n)),', ');
+            end
         end
-    end
-    strsplt = ['(',strsplt(1:end-2),' seconds)'];
-    prompt = {['Projects have different video sampling times ',strsplt,'.',...
-        'Please enter a common sampling time (in seconds) or abort the ',...
-        'merging process:']};
-    opts.Interpreter = 'tex';
-    dlgtitle = 'Video sampling time';
-    dims = 1;
-    definput = {''};
-    answ = inputdlg(prompt,dlgtitle,dims,definput,opts);
-    if isempty(answ) || isempty(str2num(answ{1}))
-        ok = 0;
+        strsplt = ['(',strsplt(1:end-2),' seconds)'];
+        prompt = {['Projects have different video sampling times ',strsplt,...
+            '.Please enter a common sampling time (in seconds) or abort ',...
+            'the merging process:']};
+        opts.Interpreter = 'tex';
+        dlgtitle = 'Video sampling time';
+        dims = 1;
+        definput = {''};
+        answ = inputdlg(prompt,dlgtitle,dims,definput,opts);
+        if isempty(answ) || isempty(str2num(answ{1}))
+            ok = 0;
+        else
+            splt = str2num(answ{1});
+        end
     else
-        splt = str2num(answ{1});
+        splt = allsplt(1);
     end
 else
     splt = allsplt(1);
 end
 
 
-function [ok,wl] = checklaserwavelength(proj,hdl)
+function [ok,wl] = checklaserwavelength(proj,hdl,mute)
 
 % defaults
 w = 350;
@@ -399,26 +403,30 @@ for n = 1:nProj
     allwl(n,:) = sort(proj{n}.excitations);
 end
 if ~all(all(allwl==repmat(allwl(1,:),nProj,1)))
-    strwl = cell(1,nProj);
-    for n = 1:nProj
-        strwl{n} = num2str(allwl(n,:));
-    end
-    prompt = ['Projects have different laser ',...
-        'wavelengths. Please select a common set of wavelengths (in nm) ',...
-        'or abort the merging process:'];
-    [prompt,~] = wrapStrToWidth(prompt,'points',10,'normal',w,'gui',...
-        hdl);
-    [id,ok] = listdlg('PromptString',prompt,'ListString',strwl,...
-        'SelectionMode','single','ListSize',[w,h]);
-    if ok
-        wl = allwl(id,:);
+    if ~mute
+        strwl = cell(1,nProj);
+        for n = 1:nProj
+            strwl{n} = num2str(allwl(n,:));
+        end
+        prompt = ['Projects have different laser ',...
+            'wavelengths. Please select a common set of wavelengths ',...
+            '(in nm) or abort the merging process:'];
+        [prompt,~] = wrapStrToWidth(prompt,'points',10,'normal',w,'gui',...
+            hdl);
+        [id,ok] = listdlg('PromptString',prompt,'ListString',strwl,...
+            'SelectionMode','single','ListSize',[w,h]);
+        if ok
+            wl = allwl(id,:);
+        end
+    else
+        wl = allwl(1,:);
     end
 else
     wl = allwl(1,:);
 end
 
 
-function [ok,lbl] = checkemitterlbl(proj,hdl)
+function [ok,lbl] = checkemitterlbl(proj,hdl,mute)
 
 % defaults
 w = 350;
@@ -433,21 +441,25 @@ for n = 1:nProj
     alllbl(n,:) = proj{n}.labels;
 end
 if ~isequal(alllbl,repmat(alllbl(1,:),nProj,1))
-    strlbl = cell(1,nProj);
-    for n = 1:nProj
-        for c = 1:nChan
-            strlbl{n} = [strlbl{n},alllbl{n,c},' '];
+    if ~mute
+        strlbl = cell(1,nProj);
+        for n = 1:nProj
+            for c = 1:nChan
+                strlbl{n} = [strlbl{n},alllbl{n,c},' '];
+            end
+            strlbl{n} = strlbl{n}(1:end-1);
         end
-        strlbl{n} = strlbl{n}(1:end-1);
-    end
-    prompt = ['Projects have different emitter labels. Please select a ',...
-        'common set of labels or abort the merging process:'];
-    [prompt,~] = wrapStrToWidth(prompt,'points',10,'normal',w,'gui',...
-        hdl);
-    [id,ok] = listdlg('PromptString',prompt,'ListString',strlbl,...
-        'SelectionMode','single','ListSize',[w,h]);
-    if ok
-        lbl = alllbl(id,:);
+        prompt = ['Projects have different emitter labels. Please select ',...
+            'a common set of labels or abort the merging process:'];
+        [prompt,~] = wrapStrToWidth(prompt,'points',10,'normal',w,'gui',...
+            hdl);
+        [id,ok] = listdlg('PromptString',prompt,'ListString',strlbl,...
+            'SelectionMode','single','ListSize',[w,h]);
+        if ok
+            lbl = alllbl(id,:);
+        end
+    else
+        lbl = alllbl(1,:);
     end
 else
     lbl = alllbl(1,:);

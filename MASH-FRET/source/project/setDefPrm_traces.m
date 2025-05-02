@@ -19,6 +19,8 @@ nS = size(p.proj{proj}.S,1);
 nFrames = size(p.proj{proj}.intensities,1)*nExc;
 isCoord = p.proj{proj}.is_coord;
 isMov = p.proj{proj}.is_movie;
+trajproj = isfield(p.proj{proj}.TP,'from') && ...
+    strcmp(p.proj{proj}.TP.from,'TP'); % project is trajectory-based
 
 if ~isfield(p.ttPr.defProjPrm{nExc,nChan},'general')
     p.ttPr.defProjPrm{nExc,nChan}.general = cell(1,3);
@@ -130,7 +132,7 @@ mol{2}{1}(5:6) = [nFrames,nFrames]; % global cutoff frames
 mol{2}{2} = repmat([0.5,0,nFrames],nnz(chanExc>0),1); % (relative) data threshold, time threshold (old: extra frames), cutoff (old: min. cutoff)
 
 % Background correction
-if isCoord && isMov
+if ~trajproj && isCoord && isMov
     % apply correction and dynamic background
     mol{3}{1} = ones(nExc,nChan,2); 
 else
@@ -141,7 +143,11 @@ mol{3}{3} = cell(nExc,nChan); % parameters
 for c = 1:nChan
     for l = 1:nExc
         if isCoord && isMov
-            mol{3}{2}(l,c) = 2; % method
+            if ~trajproj
+                mol{3}{2}(l,c) = 2; % 20 darkest method
+            else
+                mol{3}{2}(l,c) = 1; % maual method
+            end
             mol{3}{3}{l,c} = [0   20 0  0  0 0  % Manual [011000]
                               0   20 0  0  0 0  % 20 darkest [011000]
                               0   20 0  0  0 0  % Mean value [111000]
@@ -151,7 +157,7 @@ for c = 1:nChan
                               2   20 0  0  0 0];% Median [111000]
                           
         else
-            mol{3}{2}(l,c) = 1; % method Manual
+            mol{3}{2}(l,c) = 1; % only manual method available
             mol{3}{3}{l,c} = [0   20 0  0  0 0];
         end
     end
@@ -302,13 +308,21 @@ if size(mol,2)>=6
     def.mol{6}{1}(def.mol{6}{1}==0) = 1;
 end
 
-% if no movie, set BG corrections to manual
+% if no video and/or no coordinates, restrict BG corrections to manual
 if ~(isCoord && isMov)
     def.mol{3}{1} = zeros(nExc,nChan,2);
     for c = 1:nChan
         for l = 1:nExc
             def.mol{3}{2}(l,c) = 1;
             def.mol{3}{3}{l,c} = [0,20,0,0,0,0];
+        end
+    end
+
+% if trajectory-based project with video and coordinates, set BG correction to manual
+elseif trajproj
+    for c = 1:nChan
+        for l = 1:nExc
+            def.mol{3}{2}(l,c) = 1;
         end
     end
 end

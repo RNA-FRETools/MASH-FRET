@@ -11,7 +11,8 @@ h = guidata(h_fig);
 
 % open default project
 disp(cat(2,prefix,'import file ',p.mash_files{p.nL,p.nChan}));
-pushbutton_openProj_Callback({p.annexpth,p.mash_files{p.nL,p.nChan}},...
+[~,name,~] = fileparts(p.mash_files{p.nL,p.nChan});
+pushbutton_openProj_Callback({[p.annexpth,name],p.mash_files{p.nL,p.nChan}},...
     [],h_fig);
 
 % set default parameters

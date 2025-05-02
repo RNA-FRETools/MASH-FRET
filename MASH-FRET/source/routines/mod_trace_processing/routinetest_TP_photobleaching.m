@@ -11,7 +11,8 @@ h = guidata(h_fig);
 
 % open default project
 disp(cat(2,prefix,'import file ',p.mash_files{p.nL,p.nChan}));
-pushbutton_openProj_Callback({p.annexpth,p.mash_files{p.nL,p.nChan}},...
+[~,name,~] = fileparts(p.mash_files{p.nL,p.nChan});
+pushbutton_openProj_Callback({[p.annexpth,name],p.mash_files{p.nL,p.nChan}},...
     [],h_fig);
 
 % set default parameters
@@ -44,7 +45,7 @@ pushbutton_TP_pbStats_Callback(h.pushbutton_TP_pbStats,[],h_fig);
 
 h = guidata(h_fig);
 q = guidata(h.figure_pbStats);
-for sc = 1:numel(h.popup_scale.String)
+for sc = 1:numel(q.popup_scale.String)
     q.popup_scale.Value = sc;
     ud_pbstats([],[],h.figure_pbStats,'all');
 end
