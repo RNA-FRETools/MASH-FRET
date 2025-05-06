@@ -42,6 +42,7 @@ p.nL_max = nL_max;
 p.vers = vers;
 
 % parameters for visualization area (video length = [20,100])
+p.vid_dir = '';
 p.vid_files = {sprintf('%i.sira',vers(end-1)),... % .spe missing
     sprintf('%i.sif',vers(1))...
     sprintf('%i.png',vers(end-1))...

@@ -61,6 +61,7 @@ try
 
         p.es{p.nChan,p.nL}.div.projttl = ...
             sprintf(name,'_%ichan%iexc',p.nChan,p.nL);
+        p.es{p.nChan,p.nL}.imp.vdir = p.vid_dir;
         p.es{p.nChan,p.nL}.imp.vfile = p.vid_files(f);
         routinetest_VP_createProj(p,h_fig,subprefix);
         
@@ -121,6 +122,7 @@ try
                 strcmp(opt,'edit and export video')
             p.es{p.nChan,p.nL}.div.projttl = ...
                 sprintf(name,'_%ichan%iexc',p.nChan,p.nL);
+            p.es{p.nChan,p.nL}.imp.vdir = '';
             if v==2
                 p.es{p.nChan,p.nL}.imp.vfile = repmat(vids(v),1,p.nChan);
             else
@@ -169,6 +171,7 @@ try
 
                 p.es{p.nChan,p.nL}.div.projttl = ...
                     sprintf(name,'_%ichan%',p.nChan);
+                 p.es{p.nChan,p.nL}.imp.vdir = '';
                 if v==2
                     p.es{p.nChan,p.nL}.imp.vfile = repmat(vids(v),1,...
                         p.nChan);
@@ -200,7 +203,8 @@ try
                         ' lasers...']);
                     p.es{p.nChan,p.nL}.div.projttl = ...
                         sprintf(name,'_%ichan%iexc',p.nChan,p.nL);
-
+                    
+                    p.es{p.nChan,p.nL}.imp.vdir = '';
                     if v==2
                         p.es{p.nChan,p.nL}.imp.vfile = repmat(vids(v),1,...
                             p.nChan);

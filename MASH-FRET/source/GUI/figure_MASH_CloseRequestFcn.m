@@ -62,4 +62,4 @@ setContPan('deleting MASH-FRET window...','process',obj);
 
 delete(obj);
 
-setContPan('MASH-FRET succesfully closed, goodbye!','process',obj);
+disp('MASH-FRET succesfully closed, goodbye!');
