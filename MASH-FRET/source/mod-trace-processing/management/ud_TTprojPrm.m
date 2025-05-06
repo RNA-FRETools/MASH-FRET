@@ -31,14 +31,7 @@ set(h.togglebutton_TP_addTag,'value',0,'backgroundcolor',...
     [240/255 240/255 240/255]);
 
 % delete existing sub-image axes
-if isfield(h, 'axes_subImg')
-    for i = 1:numel(h.axes_subImg)
-        if ishandle(h.axes_subImg(i))
-            delete(h.axes_subImg(i));
-        end
-    end
-    h = rmfield(h, 'axes_subImg');
-end
+h = delControlIfHandle(h,'axes_subImg');
 
 if isModuleOn(p,'TP')
     proj = p.curr_proj;
@@ -261,12 +254,14 @@ else
 end
 
 % clear and set off-visible all axes
+cla(h.axes_top0);
+cla(h.axes_topRight0);
 cla(h.axes_top);
 cla(h.axes_topRight);
 cla(h.axes_bottom);
 cla(h.axes_bottomRight);
-set([h.axes_top,h.axes_topRight,h.axes_bottom,h.axes_bottomRight],...
-    'visible','off');
+set([h.axes_top0,h.axes_topRight0,h.axes_top,h.axes_topRight,h.axes_bottom,...
+    h.axes_bottomRight],'visible','off');
 
 % save changes in h (delete/creation of sub-image axes)
 guidata(h_fig, h);
