@@ -28,6 +28,7 @@ str9 = 'y max';
 str10 = 'nbins';
 str11 = 'gauss.';
 str12 = 'single count';
+str13 = 'Export to .txt file';
 ttstr0 = wrapHtmlTooltipString('Select the <b>data</b> to represent on <b>the x-axis</b> of the histogram');
 ttstr1 = wrapHtmlTooltipString('Select the <b>value</b> to histogram on the <b>x-axis</b> of the histogram');
 ttstr2 = wrapHtmlTooltipString('<b>Lower</b> bound of <b>x-axis</b>');
@@ -40,6 +41,7 @@ ttstr8 = wrapHtmlTooltipString('<b>Upper</b> bound of <b>y-axis</b>');
 ttstr9 = wrapHtmlTooltipString('<b>Number of binning</b> intervals in <b>y-axis</b>');
 ttstr10 = wrapHtmlTooltipString('<b>Data count:</b> when activated, data values appearing multiple times in the same trajectories are counted once, otherwise it is counted as many times as it appear in each trajectory; single data count allows to scale equally the rapid and slow state interconversions in the TDP.');
 ttstr11 = wrapHtmlTooltipString('<b>Gaussian filter:</b> when activated, the TDP is convoluted with a 2D Gaussian; Gaussian convolution eases the identification of transition clusters.');
+ttstr12 = wrapHtmlTooltipString('<b>Export histogram</b> data to a text file.');
 
 % parent
 h_pan = q.uipanel_data;
@@ -50,6 +52,7 @@ wpop2 = (pospan(3)-2*p.mg-p.mg/fact)/2;
 wedit2 = (pospan(3)-2*p.mg-2*p.mg/fact)/3;
 wcb0 = getUItextWidth(str11,p.fntun,p.fntsz,'normal',p.tbl)+p.wbox;
 wcb1 = pospan(3)-wcb0-2*p.mg;
+wbut = pospan(3)-2*p.mg;
 
 % list strings
 str_pop = getStrPlot_overall(h_fig);
@@ -208,5 +211,13 @@ q.checkbox_AS_datcnt = uicontrol('style','checkbox','parent',h_pan,'units',...
     p.posun,'string',str12,'tooltipstring',ttstr11,'position',...
     [x,y,wcb1,p.hcb],'fontunits',p.fntun,'fontsize',p.fntsz,'enable','off',...
     'callback',{@checkbox_AS_datcnt_Callback,h_fig});
+
+x = p.mg;
+y = y-p.mg/2-p.hbut;
+
+q.push_AS_export = uicontrol('style','pushbutton','parent',h_pan,'units',...
+    p.posun,'string',str13,'tooltipstring',ttstr12,'position',...
+    [x,y,wbut,p.hbut],'fontunits',p.fntun,'fontsize',p.fntsz,'callback',...
+    {@push_AS_export_Callback,h_fig});
 
 
