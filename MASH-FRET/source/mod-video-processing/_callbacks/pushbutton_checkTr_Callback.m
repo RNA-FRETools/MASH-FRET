@@ -46,7 +46,7 @@ if iscell(obj)
     fromRoutine = true;
 else
     % ask user for image to transform
-    cd(setCorrectPath('average_images', h_fig));
+    [~,pth] = getCorrectPath('average_images', h_fig);
 
     str0 = ['*',vidfmt{1}];
     str1 = ['(*',vidfmt{1}];
@@ -62,7 +62,7 @@ else
     end
     [fname,pname,o] = uigetfile({str0,...
         ['Supported Graphic File Format',str1]; ...
-        '*.*','All File Format(*.*)'},'Select an image to transform',...
+        '*.*','All File Format(*.*)'},'Select an image to transform',pth,...
         'multiselect',mltslct);
     fromRoutine = false;
 end

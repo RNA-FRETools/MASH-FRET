@@ -20,10 +20,22 @@ function [MDL,eff_fit] = discr_stasi(eff, maxN, mute_action)
 
 % step 1: change-points detection
 % load each trace and detect change points
+
+% initialize output
+N = numel(eff);
+MDL = zeros(1,maxN);
+eff_fit = NaN(maxN,N);
+if N<2
+    if ~mute_action
+        disp('STaSI: not enough data points.');
+    end
+    return
+end
+
 if ~mute_action
     disp('STaSI: Student t test...');
 end
-N = numel(eff);
+
 sd = w1_noise(diff(eff))/1.4;% estimate the noise level
 points = change_point_detection(eff);% change points detection
 groups = [1, points+1; points, N];

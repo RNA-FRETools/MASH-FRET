@@ -15,7 +15,9 @@ curr = p.proj{proj}.HA.curr{tag,tpe};
 prm = p.proj{proj}.HA.prm{tag,tpe};
 
 curr.thm_start{4}(1,1) = ~get(obj,'Value');
-prm.thm_start{4}(1,1) = ~get(obj,'Value');
+if isfield(prm,'thm_start')
+    prm.thm_start{4}(1,1) = ~get(obj,'Value');
+end
 
 p.proj{proj}.HA.curr{tag,tpe} = curr;
 p.proj{proj}.HA.prm{tag,tpe} = prm;

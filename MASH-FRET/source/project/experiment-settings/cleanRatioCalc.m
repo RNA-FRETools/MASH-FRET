@@ -18,6 +18,9 @@ for fret = 1:nFRET
     end
 end
 proj.FRET = proj.FRET(incl,:);
+if all(~incl)
+    proj.FRET = [];
+end
 
 % sort out ill-defined stoichiometry calculations
 nS = size(proj.S,1);
@@ -25,10 +28,14 @@ incl = false(1,nS);
 for s = 1:nS
     don = proj.S(s,1);
     acc = proj.S(s,2);
-    if any(proj.FRET(proj.FRET(:,1)==don,2)==acc) && proj.chanExc(acc)>0
+    if ~isempty(proj.FRET) && any(proj.FRET(proj.FRET(:,1)==don,2)==acc) && ...
+            proj.chanExc(acc)>0
         incl(s) = true;
     end
 end
 proj.S = proj.S(incl,:);
+if all(~incl)
+    proj.S = [];
+end
 
 h_fig.UserData = proj;

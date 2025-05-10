@@ -65,9 +65,11 @@ elseif ~isempty(h0.movie.movie)
 end
 vinfo = {dat.fCurs,[dat.pixelX,dat.pixelY],dat.frameLen};
 vfile = [pname,fname];
+[~,vidname,~] = fileparts(fname);
 
 % set project video infos
 proj.folderRoot = pname;
+proj.exp_parameters{1,2} = vidname;
 proj.movie_file{chan} = vfile;
 proj.is_movie = true;
 proj.movie_dim{chan} = vinfo{2};

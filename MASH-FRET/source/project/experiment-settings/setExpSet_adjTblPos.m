@@ -35,7 +35,7 @@ else
     wtbl0 = sum(wcol+wbrd);
 end
 hmax = h.tbl_intCol.UserData;
-htbl0 = min([hmax,R*hrow+hrow0+2*wbrd]);
+htbl0 = min([hmax,(R+1)*hrow+hrow0+2*wbrd]);
 
 % get state sequence table dimensions
 wcol = cell2mat(h.tbl_seqCol.ColumnWidth);
@@ -46,7 +46,7 @@ else
     wtbl1 = sum(wcol+wbrd);
 end
 hmax = h.tbl_seqCol.UserData;
-htbl1 = min([hmax,R*hrow+hrow0+2*wbrd]);
+htbl1 = min([hmax,(R+1)*hrow+hrow0+2*wbrd]);
 
 % get file preview table dimensions
 htbl2 = htot-max([htbl0,htbl1]);

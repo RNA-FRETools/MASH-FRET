@@ -19,7 +19,7 @@ multichanvid = nMov==1;
 
 % get destination image file
 if ~iscell(obj)
-    cd(setCorrectPath('average_images', h_fig));
+    [~,pth] = getCorrectPath('average_images', h_fig);
 
     str0 = ['*',vidfmt{1}];
     str1 = ['(*',vidfmt{1}];
@@ -35,8 +35,8 @@ if ~iscell(obj)
     end
     [fname,pname,o] = uigetfile({str0,...
         ['Supported Graphic File Format',str1]; ...
-        '*.*','All File Format(*.*)'},'Select an image file','multiselect',...
-        mltslct);
+        '*.*','All File Format(*.*)'},'Select an image file',pth,...
+        'multiselect',mltslct);
 else
     pname = obj{1}; % ex: C:\Users\MASH\Documents\MATLAB\
     fname = obj{2}; % ex: movie.sif

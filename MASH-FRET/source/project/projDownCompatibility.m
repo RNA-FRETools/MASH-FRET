@@ -121,4 +121,11 @@ for i = projs
     if ~isfield(p.proj{i},'intensities_bin')
         p.proj{i}.intensities_bin = p.proj{i}.intensities_bgCorr;
     end
+
+    % 12.04.2025: add field "emitter_is_on"
+    if ~isfield(p.proj{i},'emitter_is_on')
+        p.proj{i}.emitter_is_on = reshape(...
+            repmat(p.proj{i}.bool_intensities,nChan,1),...
+            [size(p.proj{i}.bool_intensities,1),[]]);
+    end
 end

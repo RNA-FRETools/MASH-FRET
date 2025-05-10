@@ -11,10 +11,15 @@ for i = projs
     if isempty(p.proj{i}.sim)
         continue
     end
+
+    nChan = p.proj{i}.nb_channel;
+    nExc = p.proj{i}.nb_excitations;
     
     % set default processing parameters
-    p.sim.defProjPrm = setDefPrm_sim(p);
-    p.proj{i}.sim.def = p.sim.defProjPrm; 
+    p.sim.defProjPrm = adjustcellsize(...
+        adjustParam('defProjPrm',cell(nExc,nChan),p.sim),nExc,nChan);
+    p.sim.defProjPrm{nExc,nChan} = setDefPrm_sim(p);
+    p.proj{i}.sim.def = p.sim.defProjPrm{nExc,nChan}; 
     
     % initializes applied processing parameters 
     if ~isfield(p.proj{i}.sim, 'prm')
