@@ -169,7 +169,7 @@ for i = 1:nMol
             % concatenate traces
             dat1.trace{ind} = ...
                 [dat1.trace{ind};FRET_tr,repmat(i,[size(FRET_tr,1),1])];
-                calcdat = calcASdata(i,FRET_tr,fret_DTA,dt,lt);
+            calcdat = calcASdata(i,FRET_tr,fret_DTA,dt,lt);
             for j = 1:nCalc
                 dat3.val{ind,j} = [dat3.val{ind,j};calcdat{j}];
             end
