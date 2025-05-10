@@ -29,9 +29,9 @@ nCalc = numel(get(h.tm.popupmenu_selectXval,'string'))-1;
 dat1.niv = repmat(def_niv,1,nChan*nExc+nI0+nFRET+nS); % traces
 dat3.niv = repmat(def_niv,nCalc,nChan*nExc+nI0+nFRET+nS);
 dat3.label = cell(nChan*nExc+nI0+nFRET+nS,nCalc);
-label_calc = {'%s','%s','%s','%s','%s','SNR','number of states',...
+label_calc = {'%s','%s','%s','%s','%s','number of states',...
     'number of state transitions','dwell time (s)','%s','dwell time (s)',...
-    'lifetime (s)'};
+    'lifetime (s)','SNR'};
 
 % initializes plot parameters
 dat1.color = cell(1,nChan*nExc+nI0+nFRET+nS);
