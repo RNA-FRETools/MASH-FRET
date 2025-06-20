@@ -11,7 +11,8 @@ h = guidata(h_fig);
 
 % open default project
 disp(cat(2,prefix,'import file ',p.fsMashFle));
-pushbutton_openProj_Callback({p.annexpth,p.fsMashFle},[],h_fig);
+pushbutton_openProj_Callback({[p.annexpth,p.fsMashDir],p.fsMashFle},[],...
+    h_fig);
 
 % set default parameters
 setDefault_TP(h_fig,p);

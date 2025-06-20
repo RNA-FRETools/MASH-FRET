@@ -13,7 +13,7 @@ curr = p.proj{proj}.HA.curr{tag,tpe};
 
 val = round(str2num(get(obj, 'String')));
 set(obj, 'String', num2str(val));
-if ~(numel(val)==1 && ~isnan(val) && val>0)
+if ~(isscalar(val) && ~isnan(val) && val>0)
     setContPan(['The max. number of Gaussians should be a positive' ...
         ' integer'], 'error', h_fig);
     set(obj, 'BackgroundColor', [1 0.75 0.75]);

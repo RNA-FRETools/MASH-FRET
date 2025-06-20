@@ -8,21 +8,26 @@ if bin0>bin
     return
 end
 
+% determine trace length after binning
 binRatio = bin/bin0;
 L0 = size(data0,1);
+binedg = 0:binRatio:L0;
+if (L0-binedg(end-1))<binRatio
+    binedg(end) = [];
+end
+L = numel(binedg)-1;
 
 firstTimePoint = sort(unique(data0(1,timeCols)));
 nExc = numel(firstTimePoint);
 nTimeCols = numel(timeCols);
 for col = 1:nTimeCols
     
-    % determine laser position associated to current time column
-    laserOrder = find(firstTimePoint==data0(1,timeCols(col)));
+    % % determine laser position associated to current time column
+    % laserOrder = find(firstTimePoint==data0(1,timeCols(col)));
     
-    % determine trace length after binning
-    bins = [((laserOrder-1)*binRatio/nExc),...
-        (laserOrder*binRatio/nExc):binRatio:L0];
-    L = numel(bins)-1;
+    % % determine trace length after binning
+    % binedg = [((laserOrder-1)*binRatio/nExc),...
+    %     (laserOrder*binRatio/nExc):binRatio:L0];
 
     % get column indexes associated to current time column
     if col<nTimeCols
@@ -39,7 +44,7 @@ for col = 1:nTimeCols
     d_col([t_col,l_col]) = [];
     
     % start binning
-    curs = bins(1);
+    curs = binedg(1);
     l_1 = 1;
     while l_1<=L
         % determine l_0 from cursor position

@@ -1,7 +1,40 @@
-function plotData(mol, p, axes, prm, plotDscr)
+function plotData(mol, p, ax, prm, plotDscr)
+% plotData(mol, p, ax, prm, plotDscr)
+%
+% Plot intensity and intensity ratio trajectories and histograms for
+% specified molecule.
+%
+% mol: molecule index
+% p: main data structure containing experiment parameters and trajectory 
+%    data.
+% ax: structure containing optional fields:
+%  ax.axes_traceTop0: handle to total intensity trajectory axes
+%  ax.axes_histTop0: handle to total intensity histogram axes
+%  ax.axes_traceTop: handle to intensity trajectory axes
+%  ax.axes_histTop: handle to intensity histogram axes
+%  ax.axes_traceBottom: handle to intensity ratio trajectory axes
+%  ax.axes_histBottom: handle to intensity ratio histogram axes
+% prm: cell array containing trace processing parameters
+% plotDscr: logical 1 to plot discretized traces, 0 not to.
 
-% update 29.11.2019 by MH: remove double axis labels when both axes (intensity & ratio) are used
-% update 3.4.2019 by MH: correct data selection for plotting in bottom axes (curr_chan_bottom)
+% defaults
+axnm = {'axes_traceTop0','axes_histTop0','axes_traceTop','axes_histTop',...
+    'axes_traceBottom','axes_histBottom'};
+trajid = 1:2:6; % indexes in ax structure of trajectory axes
+histid = 2:2:6; % indexes in ax structure of histogram axes
+topid = [1,2]; % indexes in ax structure of top-most axes
+midid = [3,4]; % indexes in ax structure of middle axes
+botid = [5,6]; % indexes in ax structure of bottom axes
+topyLab =  'total counts';
+midyLab =  'counts';
+ratyLab = 'FRET / S';
+timeLab = 'time (s)';
+frameLab = 'frame';
+histxLab = 'norm. freq.';
+nbins = 100; % nb of histogram bins
+alphaval = 0.85; % transparency value for off-state
+brightoffset = -0.4; % brightness offset for trajectory plot 
+clr_cutoff = [0.3,0.3,0.3]; % color of cutoff bar
 
 % collect experiment settings and processing parameters
 proj = p.curr_proj;
@@ -21,23 +54,28 @@ expT = p.proj{proj}.resampling_time;
 perSec = p.proj{proj}.cnt_p_sec;
 inSec = p.proj{proj}.time_in_sec;
 clr = p.proj{proj}.colours;
+lbl = p.proj{proj}.labels;
 fix = p.proj{proj}.TP.fix;
 
+% collect y-data for current molecule
 nFRET = size(FRET,1);
 nS = size(S,1);
+nandat = any(isnan(int_den(:,((mol-1)*nChan+1):mol*nChan,:)),[2,3])';
 incl = ~~incl(:,mol)';
-I = int_den(incl,((mol-1)*nChan+1):mol*nChan,:);
-if plotDscr
-    discrI = int_dta(incl,((mol-1)*nChan+1):mol*nChan,:);
-    if nFRET > 0
-        discrFRET = FRET_dta(incl,((mol-1)*nFRET+1):mol*nFRET,:);
-    end
-    if nS > 0
-        discrS = S_dta(incl,((mol-1)*nS+1):mol*nS,:);
-    end
+I = int_den(~nandat,((mol-1)*nChan+1):mol*nChan,:);
+discrI = int_dta(~nandat,((mol-1)*nChan+1):mol*nChan,:);
+if nFRET > 0
+    discrFRET = FRET_dta(~nandat,((mol-1)*nFRET+1):mol*nFRET,:);
 end
-frames = find(incl);
-x_lim = [((frames(1)-1)*nExc+1) frames(end)*nExc];
+if nS > 0
+    discrS = S_dta(~nandat,((mol-1)*nS+1):mol*nS,:);
+end
+if perSec
+    I = I/expT;
+    discrI = discrI/expT;
+end
+
+% get y-axis limits
 if fix{2}(7)
     Ilim = fix{2}([4,5]);
     if perSec
@@ -48,142 +86,180 @@ else
 end
 FRETlim = [-0.2 1.2];
 
-curr_exc = fix{2}(1);
-if curr_exc > nExc
-    curr_exc = 1:nExc;
-end
-curr_chan_top = fix{2}(2) - 1; % "none" in first position
-if curr_chan_top > nChan
-    curr_chan_top = 1:nChan;
-end
-curr_chan_bottom = fix{2}(3) - 1; % "none" in first position
-is_allfret = double(nFRET>1);
-is_alls = double(nS>1);
-is_all = double(nFRET>0 & nS>0);
-if is_allfret && curr_chan_bottom==(nFRET+nS+is_allfret)
-    curr_chan_bottom = 1:nFRET;
-elseif is_alls && curr_chan_bottom==(nFRET+nS+is_allfret+is_alls)
-    curr_chan_bottom = nFRET+1:nFRET+nS;
-elseif is_all && curr_chan_bottom==(nFRET+nS+is_allfret+is_alls+is_all) % all
-    curr_chan_bottom = 1:(nFRET+nS);
-end
-
-if perSec
-    I = I/expT;
-    if plotDscr
-        discrI = discrI/expT;
-    end
-end
-
-if ~isempty(prm)
-    cutIt = prm{2}{1}(1);
-    method = prm{2}{1}(2);
-    cutOff = prm{2}{1}(4+method);
+% get time data and x-axis limits
+x_lim = [1 size(int_den,1)*nExc];
+clipit = fix{2}(8);
+if ~isempty(prm) && size(prm,2)>=2
+    pbmethod = prm{2}{1}(2);
+    cutOff = prm{2}{1}(4+pbmethod);
+    start = prm{2}{1}(4);
 else
-    cutIt = 0;
+    pbmethod = 1;
     cutOff = x_lim(2);
+    start = x_lim(1);
 end
-
 x_axis = x_lim(1):x_lim(2);
 if inSec
+    start = start*expT;
     cutOff = cutOff*expT;
     x_axis = x_axis*expT;
 end
+firstnandat = find(~nandat,1,'last')*nExc;
 
-if isfield(axes, 'axes_traceTop')
-    cla(axes.axes_traceTop);
-    ylim(axes.axes_traceTop, 'auto');
+% determine which data to plot
+wl2plot = fix{2}(1);
+if wl2plot > nExc
+    wl2plot = 1:nExc;
 end
-if isfield(axes, 'axes_histTop')
-    cla(axes.axes_histTop);
-    ylim(axes.axes_histTop, 'auto');
+chan2plot = fix{2}(2) - 1; % "none" in first position
+if chan2plot > nChan
+    chan2plot = 1:nChan;
 end
-if curr_chan_top > 0
-    if isfield(axes, 'axes_traceTop')
-        set(axes.axes_traceTop, 'NextPlot', 'add');
-    end
-    if isfield(axes, 'axes_histTop')
-        set(axes.axes_histTop, 'NextPlot', 'add');
-    end
+rat2plot = fix{2}(3) - 1; % "none" in first position
+is_allfret = double(nFRET>1);
+is_alls = double(nS>1);
+is_all = double(nFRET>0 & nS>0);
+if is_allfret && rat2plot==(nFRET+nS+is_allfret)
+    rat2plot = 1:nFRET;
+elseif is_alls && rat2plot==(nFRET+nS+is_allfret+is_alls)
+    rat2plot = nFRET+1:nFRET+nS;
+elseif is_all && rat2plot==(nFRET+nS+is_allfret+is_alls+is_all) % all
+    rat2plot = 1:(nFRET+nS);
+end
 
-    for l = curr_exc
-        x = x_axis(l:nExc:end)';
-        for c = curr_chan_top
-            colr = clr{1}{l,c};
-            if isfield(axes, 'axes_traceTop')
-                plot(axes.axes_traceTop, x, I(:,c,l), 'Color', colr);
-                if plotDscr
-                    plot(axes.axes_traceTop, x(~isnan(discrI(:,c,l))), ...
-                        discrI(~isnan(discrI(:,c,l)),c,l), '-k');
-                end
-            end
-            if isfield(axes, 'axes_histTop')
-                [histI x_I] = hist(I(:,c,l),100);
-                histI = histI/sum(histI);
-                barh(axes.axes_histTop,x_I,histI,'FaceColor',colr,...
-                    'EdgeColor',colr);
-            end
+% clear and prep axes
+A = numel(axnm);
+exclax = false(1,A);
+isax = false(1,A);
+axhdl = repmat(gca,1,A);
+if chan2plot<=0
+    exclax([3,4]) = true;
+end
+if nChan==1 && nExc==1
+    exclax([3,4]) = true;
+end
+if ~((nFRET>0 || nS>0) && (numel(rat2plot)>1 || rat2plot>0))
+    exclax([5,6]) = true;
+end
+for a = 1:A
+    if isfield(ax,axnm{a})
+        axhdl(a) = ax.(axnm{a});
+        cla(ax.(axnm{a}));
+        isax(a) = true;
+    else
+        exclax(a) = true;
+    end
+end
+
+% hide unused axes
+setPropIfField(ax,axnm(exclax),'Visible','off'); 
+
+% delete old legends if axes' belong to "traces" tab (to differentitate with figure export)
+if any(isax&exclax)
+    hpar = axhdl(find(isax&exclax,1)).Parent;
+    if strcmp(hpar.Type,'uitab')
+        for chld = getHandleWithPropVal(hpar.Children,'Type','legend')
+            delete(chld);
         end
     end
-    if isfield(axes, 'axes_traceTop')
-        set(axes.axes_traceTop, 'NextPlot', 'replace', 'Visible', 'on');
-    end
-    if isfield(axes, 'axes_histTop')
-        set(axes.axes_histTop, 'NextPlot', 'replace', 'Visible', 'on', ...
-            'YAxisLocation', 'right');
-    end
-    
-    if isfield(axes, 'axes_traceTop')
-        xlim(axes.axes_traceTop, [x_axis(1) x_axis(end)]);
-        if ~isempty(Ilim)
-            ylim(axes.axes_traceTop, Ilim);
-        else
-            ylim(axes.axes_traceTop, 'auto');
-        end
-    end
+end
 
-    yLab =  'counts';
-    if perSec
-        yLab = [yLab ' per s.'];
+if all(exclax)
+    return
+end
+setPropIfField(ax,axnm(~exclax), 'NextPlot', 'replace', 'Visible', 'on');
+
+% set axis limits free
+ylim(axhdl(~exclax),'auto');
+xlim(axhdl(~exclax),'auto');
+
+% identify trajectory and histogram axes to plot on
+ishist = getaxbool(exclax,histid);
+istraj = getaxbool(exclax,trajid);
+istop = getaxbool(exclax,topid);
+ismid = getaxbool(exclax,midid);
+isbot = getaxbool(exclax,botid);
+
+% define axis labels
+if perSec
+    topyLab = [topyLab ' per s.'];
+    midyLab = [midyLab ' per s.'];
+end
+if inSec
+    trajxLab = timeLab;
+else
+    trajxLab = frameLab;
+end
+
+% intiialize legends' data
+leg_top = cell(1,2);
+leg_mid = cell(1,2);
+leg_bot = cell(1,2);
+
+% plot in top and middle axes
+if chan2plot>0
+
+    % plot total intensity trajectories and histogram
+    if nFRET>0
+        gamma = prm{6}{1}(1,:);
+    end
+    gammamat = ones(size(I,1),nChan,nChan);
+    for pair = 1:nFRET
+        gammamat(:,FRET(pair,1),FRET(pair,2)) = gamma(pair);
+        gammamat(:,FRET(pair,2),FRET(pair,1)) = 1/gamma(pair);
+    end
+    for c = chan2plot
+        l = find(exc==chanExc(c));
+        if isempty(l)
+            continue
+        end
         
+        I0 = calccorrtotalint(c,chanExc,exc,I,gammamat);
+        discrI0 = calccorrtotalint(c,chanExc,exc,discrI,gammamat);
+    
+        x_atwl = x_axis(l:nExc:end);
+        plotData_traj(ax,axnm{istop&istraj},x_atwl(~nandat)',I0,...
+            clr{1}{l,c}',plotDscr,discrI0,brightoffset);
+    
+        hp = plotData_hist(ax,axnm{istop&ishist},I0(incl(~nandat)),[],nbins,...
+            clr{1}{l,c}');
+            if isempty(hp)
+                continue
+            end
+
+        % increment legend
+        leg_top{1} = cat(2,leg_top{1},hp);
+        leg_top{2} = cat(2,leg_top{2},lbl(c));
     end
-    if isfield(axes, 'axes_traceTop')
-        ylabel(axes.axes_traceTop, yLab);
-        if inSec
-            xlabel(axes.axes_traceTop, 'time (s)');
-        else
-            xlabel(axes.axes_traceTop, 'frames');
+    
+    % plot intensity trajectories and histogram
+    for l = wl2plot
+        for c = chan2plot
+            Ipl = I(:,c,l);
+            discrIpl = discrI(:,c,l);
+            Ipl(~incl(~nandat)) = NaN;
+            discrIpl(~incl(~nandat)) = NaN;
+
+            x_atwl = x_axis(l:nExc:end);
+            plotData_traj(ax,axnm{ismid&istraj},x_atwl(~nandat)',...
+                Ipl,clr{1}{l,c}',plotDscr,discrIpl,brightoffset);
+
+            hp = plotData_hist(ax,axnm{ismid&ishist},I(incl(~nandat),c,l),[], ...
+                nbins,clr{1}{l,c}');
+            if isempty(hp)
+                continue
+            end
+
+            % increment legend
+            leg_mid{1} = cat(2,leg_mid{1},hp);
+            leg_mid{2} = ...
+                cat(2,leg_mid{2},{[lbl{c},'@',num2str(exc(l))]});
         end
-        grid(axes.axes_traceTop, 'on');
-    end
-    
-    if isfield(axes, 'axes_histTop')
-        xlim(axes.axes_histTop, 'auto');
-        ylim(axes.axes_histTop, get(axes.axes_traceTop, 'YLim'));
-        xlabel(axes.axes_histTop, 'norm. freq.');
-        grid(axes.axes_histTop, 'on');
     end
 end
 
-if isfield(axes, 'axes_traceBottom')
-    cla(axes.axes_traceBottom);
-    ylim(axes.axes_traceBottom, 'auto');
-end
-if isfield(axes, 'axes_histBottom')
-    cla(axes.axes_histBottom);
-    ylim(axes.axes_histBottom, 'auto');
-end
-
-% modified by MH, 3.4.2019
-% if curr_chan_bottom > 0
-if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
-    if isfield(axes, 'axes_traceBottom')
-        set(axes.axes_traceBottom, 'NextPlot', 'add');
-    end
-    if isfield(axes, 'axes_histBottom')
-        set(axes.axes_histBottom, 'NextPlot', 'add');
-    end
-    
+% plot intensity-ratio trajectories and histogram
+if (nFRET>0 || nS>0) && (numel(rat2plot)>1 ||rat2plot>0)    
     if nFRET > 0
         gamma = prm{6}{1}(1,:);
         f_tr = calcFRET(nChan, nExc, exc, chanExc, FRET, I, gamma);
@@ -194,142 +270,214 @@ if (nFRET>0 || nS>0) && (numel(curr_chan_bottom)>1 ||curr_chan_bottom>0)
         s_tr = calcS(exc, chanExc, S, FRET, I, gamma, beta);
     end
 
-    for c = curr_chan_bottom
+    for c = rat2plot
         if c <= nFRET
-            FRET_tr = f_tr(:,c);
-            [o,l,o] = find(exc==chanExc(FRET(c,1)));
-            [histF,x_F] = hist(FRET_tr, linspace(-0.3,1.3,160));
-            histF = histF(x_F>=FRETlim(1) & x_F<=FRETlim(2))/sum(histF);
-            x_F = x_F(x_F>=FRETlim(1) & x_F<=FRETlim(2));
-            x = (x_axis(l:nExc:end))';
-            colr = clr{2}(c,:);
-            if isfield(axes, 'axes_traceBottom')
-                plot(axes.axes_traceBottom, x, FRET_tr, 'Color', colr);
-                if plotDscr
-                    FRET_dr = discrFRET(:,c);
-                    plot(axes.axes_traceBottom, x(~isnan(FRET_dr)), ...
-                        FRET_dr(~isnan(FRET_dr)), '-r');
-                end
+            [~,l,~] = find(exc==chanExc(FRET(c,1)));
+            Epl = f_tr(:,c);
+            discrEpl = discrFRET(:,c);
+            Epl(~incl(~nandat)) = NaN;
+            discrEpl(~incl(~nandat)) = NaN;
+
+            x_atwl = x_axis(l:nExc:end);
+            plotData_traj(ax,axnm{isbot&istraj}, x_atwl(~nandat)',...
+                Epl,clr{2}(c,:),plotDscr,discrEpl,brightoffset);
+
+            hp = plotData_hist(ax,axnm{isbot&ishist},f_tr(incl(~nandat),c),...
+                FRETlim,nbins,clr{2}(c,:));
+            if isempty(hp)
+                continue
             end
-            if isfield(axes, 'axes_histBottom')
-                barh(axes.axes_histBottom, x_F, histF, 'FaceColor', ...
-                    colr, 'EdgeColor', colr);
-            end
+
+            % increment legend
+            leg_bot{1} = cat(2,leg_bot{1},hp);
+            leg_bot{2} = cat(2,leg_bot{2},...
+                {['FRET ',lbl{FRET(c,1)},'>',lbl{FRET(c,2)}]});
             
         else
             i_s = c-nFRET;
-            S_tr = s_tr(:,i_s);
             s = p.proj{proj}.S(i_s,1);
-            [o,l,o] = find(exc==chanExc(s),1);
-            [histS,x_S] = hist(S_tr, linspace(-0.3,1.3,160));
-            histS = histS(x_S>=FRETlim(1) & x_S<=FRETlim(2))/sum(histS);
-            x_S = x_S(x_S>=FRETlim(1) & x_S<=FRETlim(2));
-            colr = clr{3}(i_s,:);
-            x = (x_axis(l:nExc:end))';
-            if isfield(axes, 'axes_traceBottom')
-                plot(axes.axes_traceBottom, x, S_tr, 'Color', colr);
-                if plotDscr
-                    S_dr = discrS(:,i_s);
-                    plot(axes.axes_traceBottom, x(~isnan(S_dr)), ...
-                        S_dr(~isnan(S_dr)), '-r');
+            [~,l,~] = find(exc==chanExc(s),1);
+            Spl = s_tr(:,i_s);
+            discrSpl = discrS(:,i_s);
+            Spl(~incl(~nandat)) = NaN;
+            discrSpl(~incl(~nandat)) = NaN;
+
+            x_atwl = x_axis(l:nExc:end);
+            plotData_traj(ax,axnm{isbot&istraj},x_atwl(~nandat)',...
+                Spl,clr{3}(i_s,:),plotDscr,discrSpl,brightoffset);
+
+            hp = plotData_hist(ax,axnm{isbot&ishist},s_tr(incl(~nandat),i_s),...
+                FRETlim,nbins,clr{3}(i_s,:));
+            if isempty(hp)
+                continue
+            end
+
+            % increment legend
+            leg_bot{1} = cat(2,leg_bot{1},hp);
+            leg_bot{2} = cat(2,leg_bot{2},...
+                {['S ',lbl{FRET(i_s,1)},'/',lbl{FRET(i_s,2)}]});
+        end
+    end
+end
+    
+% use same scale for histogram counts
+if any(ishist)
+    xlim_hist = [];
+    for hdl = axhdl(ishist)
+        xlim_hist = cat(1,xlim_hist,hdl.XLim);
+    end
+    xlim_all = [min(xlim_hist(:,1)),max(xlim_hist(:,2))];
+    xlim(axhdl(ishist),xlim_all);
+end
+
+% background-colored outlier portions of trajectories
+if any(istraj)
+    for hdl = axhdl(istraj)
+        yaxis = [-1000,1000]*max(abs(hdl.YLim));
+        xdata = x_axis(1:nExc:end);
+        ydata = ones(size(xdata))*yaxis(2);
+        ydata(incl) = yaxis(1);
+
+        ylim_top = hdl.YLim;
+        area(hdl,xdata,ydata,'linestyle','none','facecolor',[0,0,0],...
+            'facealpha',1-alphaval,'basevalue',yaxis(1));
+        set(hdl, 'YLim', ylim_top);
+    end
+end
+
+% show time cutoff on trajectory axes
+if any(istraj) 
+    for hdl = axhdl(istraj)
+        if (~clipit && (cutOff+1)<firstnandat)
+            drawcutoff(hdl,cutOff,'-',clr_cutoff);
+        end
+        if pbmethod==2
+            for em = 1:size(prm{2}{2},1)
+                if (clipit && (prm{2}{2}(em,3)+1)>=firstnandat)
+                    continue
                 end
+                drawcutoff(hdl,prm{2}{2}(em,3),'--',clr_cutoff);
             end
-            if isfield(axes, 'axes_histBottom')
-                barh(axes.axes_histBottom, x_S, histS, 'FaceColor', colr, ...
-                    'EdgeColor', colr);
-            end
-        end
-    end
-    
-    if isfield(axes, 'axes_traceBottom')
-        set(axes.axes_traceBottom, 'NextPlot', 'replace', 'Visible', 'on');
-    end
-    if isfield(axes, 'axes_histBottom')
-        set(axes.axes_histBottom, 'NextPlot', 'replace', 'Visible', 'on', ...
-            'YAxisLocation', 'right');
-    end
-    
-    if isfield(axes, 'axes_traceBottom')
-        ylim(axes.axes_traceBottom, FRETlim);
-    end
-    if isfield(axes, 'axes_traceBottom') && isfield(axes, 'axes_traceTop')
-        xlim(axes.axes_traceBottom, get(axes.axes_traceTop, 'XLim'));
-    elseif isfield(axes, 'axes_traceBottom')
-        xlim(axes.axes_traceBottom, [x_axis(1) x_axis(end)]);
-    end
-    
-    if isfield(axes,'axes_histBottom') && isfield(axes,'axes_traceBottom')
-        ylim(axes.axes_histBottom, get(axes.axes_traceBottom, 'YLim'));
-    elseif isfield(axes,'axes_histBottom')
-        ylim(axes.axes_histBottom, 'auto');
-    end
-    if isfield(axes,'axes_histBottom')
-        xlim(axes.axes_histBottom, 'auto');
-        xlabel(axes.axes_histBottom, 'norm. freq.');
-        grid(axes.axes_histBottom, 'on');
-        
-        % added by MH, 3.4.2019
-        if isfield(axes,'axes_histTop')
-            xlabel(axes.axes_histTop, '');
-        end
-    end
-    if isfield(axes,'axes_traceBottom')
-        if inSec
-            xlabel(axes.axes_traceBottom, 'time (s)');
-        else
-            xlabel(axes.axes_traceBottom, 'frames');
-        end
-        ylabel(axes.axes_traceBottom, 'FRET / S');
-        grid(axes.axes_traceBottom, 'on');
-        
-        % added by MH, 3.4.2019
-        if isfield(axes, 'axes_traceTop')
-            xlabel(axes.axes_traceTop, '');
-        end
-    end
-
-    if isfield(axes,'axes_histTop') && isfield(axes,'axes_histBottom')
-        xlim_bot = get(axes.axes_histBottom, 'XLim');
-        xlim_top = get(axes.axes_histTop, 'XLim');
-        xlim_all(1) = min([xlim_bot(1) xlim_top(1)]);
-        xlim_all(2) = max([xlim_bot(2) xlim_top(2)]);
-        xlim(axes.axes_histTop, xlim_all);
-        xlim(axes.axes_histBottom, xlim_all);
-    end
-
-    if ~cutIt && cutOff < numel(incl)*nExc
-        if isfield(axes,'axes_traceTop')
-            set(axes.axes_traceTop, 'NextPlot', 'add');
-            plot(axes.axes_traceTop, [cutOff cutOff], ...
-                get(axes.axes_traceTop, 'YLim'), '-c');
-            set(axes.axes_traceTop, 'NextPlot', 'replace');
-        end
-        if isfield(axes,'axes_traceBottom')
-            set(axes.axes_traceBottom, 'NextPlot', 'add');
-            plot(axes.axes_traceBottom, [cutOff cutOff], ...
-                get(axes.axes_traceBottom, 'YLim'), '-c');
-            set(axes.axes_traceBottom, 'NextPlot', 'replace');
         end
     end
 end
 
+% finalize all axes
 if ~valid(mol)
-    shad = [0.85 0.85 0.85];
+    for a = axhdl(~exclax)
+        alpha(a,0);
+    end
+    bg = repmat(alphaval,1,3);
 else
-    shad = [1 1 1];
+    bg = [1 1 1];
 end
-if isfield(axes,'axes_traceTop')
-    set(axes.axes_traceTop, 'Color', shad);
+grid(axhdl(~exclax),'on');
+set(axhdl(~exclax),'NextPlot','replace','Color',bg);
+
+% set axis limits, labels and legends
+if any(istraj)
+    if clipit
+        xlim(axhdl(istraj),[start,cutOff]);  
+    else
+        xlim(axhdl(istraj),x_axis([1,firstnandat]));  
+    end
+    xlabel(axhdl(istraj),trajxLab);
+    if any(istraj&(ismid|istop))
+        if ~isempty(Ilim)
+            ylim(axhdl(istraj&(ismid|istop)), Ilim);
+        end
+        ylabel(axhdl(istraj&istop), topyLab);
+        ylabel(axhdl(istraj&ismid), midyLab);
+    end
+    if any(istraj&isbot)
+        ylim(axhdl(istraj&isbot), FRETlim);
+        ylabel(axhdl(istraj&isbot), ratyLab);
+    end
+    addleg2plot(leg_top,leg_mid,leg_bot);
 end
-if isfield(axes,'axes_traceBottom')
-    set(axes.axes_traceBottom, 'Color', shad);
+
+% finalize histogram axes
+if any(ishist)
+    for a = find(ishist)
+        if istraj(a-1)
+            axhdl(a).YLim = axhdl(a-1).YLim;
+        end
+    end
+    set(axhdl(ishist),'YAxisLocation','right');
+    xlabel(axhdl(ishist),histxLab);
 end
-if isfield(axes,'axes_histTop')
-    set(axes.axes_histTop, 'Color', shad);
+
+
+function hp = plotData_traj(ax,axnm,x,y1,clr,is2,y2,brightoffset)
+% plotData_traj(ax,axnm,x,y1,clr1,is2,y2,brightoffset)
+
+hp = [];
+if ~isfield(ax,axnm)
+    return
 end
-if isfield(axes,'axes_histBottom')
-    set(axes.axes_histBottom, 'Color', shad);
+if is2
+    [darkclr,clr] = shiftbright(clr,brightoffset);
 end
+hp = plot(ax.(axnm), x, y1, 'Color', clr);
+if ~strcmp(ax.(axnm).NextPlot,'add')
+    ax.(axnm).NextPlot = 'add';
+end
+
+if ~is2
+    return
+end
+plot(ax.(axnm),x,y2,'Color',darkclr,'linewidth',2);
+
+
+function hp = plotData_hist(ax,axnm,dat,lim,nbins,clr)
+% plotData_hist(ax,axnm,dat,lim,nbins,clr)
+
+hp = [];
+if ~isfield(ax,axnm) || isempty(dat)
+    return
+end
+if ~isempty(lim)
+    [cnts,edg] = histcounts(dat, linspace(lim(1),lim(2),nbins+1));
+else
+    [cnts,edg] = histcounts(dat, nbins);
+end
+if sum(cnts)==0
+    return
+end
+cnts = cnts/sum(cnts);
+
+hp = histogram(ax.(axnm),'binedges',edg,'bincounts',cnts, 'FaceColor',...
+    clr,'EdgeColor',clr,'orientation','horizontal');
+if ~strcmp(ax.(axnm).NextPlot,'add')
+    ax.(axnm).NextPlot = 'add';
+end
+
+
+function drawcutoff(hdl,cutOff,ls,clr)
+ylim_top = hdl.YLim;
+plot(hdl,[cutOff cutOff],[-1000,1000]*max(abs(ylim_top)),'color',...
+    clr,'linewidth',2,'linestyle',ls);
+set(hdl, 'YLim', ylim_top);
+
+
+function isid = getaxbool(excl,id)
+% isid = getaxbool(excl,id)
+
+isid = false(size(excl));
+isid(id) = true;
+isid(excl) = false;
+
+
+function addleg2plot(varargin)
+for n = 1:nargin
+    legdat = varargin{n};
+    if ~isempty(legdat{1})
+        legend(legdat{1},legdat{2},'box','on','location','northeast',...
+            'fontsize',6,'iconcolumnwidth',3,'orientation','horizontal',...
+            'backgroundalpha',0.5);
+    end
+end
+
 
 
 

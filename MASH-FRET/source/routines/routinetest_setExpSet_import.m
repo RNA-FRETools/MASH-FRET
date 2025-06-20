@@ -31,19 +31,20 @@ if isfield(prm,'vfile') && ~any(cellfun('isempty',prm.vfile))
         end
         h = guidata(h_fig);
         for mov = 1:nMov
-            push_setExpSet_impFile({p.annexpth,prm.vfile{mov}},[],h_fig,...
-                h_fig0,mov);
+            push_setExpSet_impFile({[p.annexpth,prm.vdir],...
+                prm.vfile{mov}},[],h_fig,h_fig0,mov);
         end
     else
         set(h.radio_impFileMulti,'value',1);
         radio_setExpSet_impFile(h.radio_impFileMulti,[],h_fig);
-        push_setExpSet_impFile({p.annexpth,prm.vfile{1}},[],h_fig,h_fig0);
+        push_setExpSet_impFile({[p.annexpth,prm.vdir],...
+            prm.vfile{1}},[],h_fig,h_fig0);
     end
 end
 
 % set trajectory files
 if isfield(prm,'tfiles') && ~isempty(prm.tfiles)
-    push_setExpSet_impTrajFiles({[p.annexpth,filesep,prm.tdir],prm.tfiles},...
+    push_setExpSet_impTrajFiles({[p.annexpth,prm.tdir],prm.tfiles},...
         [],h_fig,h_fig0);
 end
 
@@ -51,25 +52,25 @@ end
 if isfield(prm,'coordfile') && ~isempty(prm.coordfile)
     prm.coordopt = {[(1:2:2*p.nChan)',(2:2:2*p.nChan)'],1};
     set_VP_impIntgrOpt(prm.coordopt,h.push_impCoordOpt,h_fig0);
-    push_setExpSet_impCoordFile({p.annexpth,prm.coordfile},[],h_fig,h_fig0);
+    push_setExpSet_impCoordFile({[p.annexpth,prm.coorddir],...
+        prm.coordfile},[],h_fig,h_fig0);
 end
 
 % set gamma factor file
 if isfield(prm,'gammafile') && ~isempty(prm.gammafile)
-    push_setExpSet_impGammaFile({p.annexpth,prm.gammafile},[],h_fig,...
-        h_fig0);
+    push_setExpSet_impGammaFile({[p.annexpth,prm.gammadir],...
+        prm.gammafile},[],h_fig,h_fig0);
 end
 
 % set beta factor file
 if isfield(prm,'betafile') && ~isempty(prm.betafile)
-    push_setExpSet_impBetaFile({p.annexpth,prm.betafile},[],h_fig,...
-        h_fig0);
+    push_setExpSet_impBetaFile({[p.annexpth,prm.betadir],...
+        prm.betafile},[],h_fig,h_fig0);
 end
 
-% set trajectory files
+% set histogram files
 if isfield(prm,'histfile') && ~isempty(prm.histfile)
-    push_setExpSet_impHistFiles({p.annexpth,prm.histfile},...
-        [],h_fig,h_fig0);
+    push_setExpSet_impHistFiles({p.annexpth,prm.histfile},[],h_fig,h_fig0);
 end
 
 

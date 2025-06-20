@@ -26,9 +26,9 @@ if iscell(obj)
         pname = [pname,filesep];
     end
 else
+    [~,pth] = getCorrectPath('transformed',h_fig);
     [fname, pname, o] = uigetfile({'*.mat','Matlab files(*.mat)'; ...
-        '*.*',  'All Files (*.*)'}, 'Select a transformation file:', ...
-        setCorrectPath('transformed', h_fig));
+        '*.*',  'All Files (*.*)'}, 'Select a transformation file:',pth);
 end
 if ~sum(fname)
     return

@@ -17,6 +17,8 @@ tcol_exc = opt{1}{2};
 icol = opt{1}{3};
 icol_exc = opt{1}{4};
 fretcol = opt{1}{5};
+coordcol = opt{3}{3}{1};
+vidw = opt{3}{4};
 
 % adjust ALEX import format
 if nExc==1
@@ -80,6 +82,14 @@ for l = 1:nExc
         icol_exc(icol_exc(:,1,l)>icol_exc(:,2,l),1,l);
 end
 
+% adjust coordinate import
+if ~isequal(size(coordcol),[nChan,2])
+    coordcol = reshape(1:2*nChan,2,nChan)';
+end
+if proj.is_movie
+    vidw = proj.movie_dim{1}(1);
+end
+
 % save modifications
 opt{1}{1}(4) = tcol;
 opt{1}{1}(5) = rowwise; 
@@ -87,6 +97,8 @@ opt{1}{2} = tcol_exc(1:nExc);
 opt{1}{3} = icol(1:nChan,:);
 opt{1}{4} = icol_exc(1:nChan,:,1:nExc);
 opt{1}{5} = fretcol(1:nPair,:);
+opt{3}{3}{1} = coordcol;
+opt{3}{4} = vidw;
 
 % adjust sampling time
 proj = getExpSetSamplingTime(opt,proj,h_fig);

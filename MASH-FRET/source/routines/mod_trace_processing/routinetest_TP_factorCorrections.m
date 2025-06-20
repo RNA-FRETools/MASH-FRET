@@ -11,7 +11,8 @@ h = guidata(h_fig);
 
 % open default project
 disp(cat(2,prefix,'import file ',p.mash_files{p.nL,p.nChan}));
-pushbutton_openProj_Callback({p.annexpth,p.mash_files{p.nL,p.nChan}},...
+[~,name,~] = fileparts(p.mash_files{p.nL,p.nChan});
+pushbutton_openProj_Callback({[p.annexpth,name],p.mash_files{p.nL,p.nChan}},...
     [],h_fig);
 
 % set default parameters
@@ -27,7 +28,7 @@ str_meth = get(h.popupmenu_TP_factors_method,'string');
 nMeth = numel(str_meth);
 nPair = numel(get(h.popupmenu_gammaFRET,'string'))-1;
 factPrm = p.factPrm;
-factPrm{1} = {p.dumpdir,p.factFiles};
+factPrm{1} = {[p.annexpth,filesep,p.fact_dir],p.factFiles};
 for meth = 1:nMeth
     disp(cat(2,prefix,'test ',str_meth{meth},'...'));
     for pair = 1:nPair

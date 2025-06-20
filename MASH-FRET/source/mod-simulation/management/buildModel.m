@@ -74,173 +74,39 @@ else % initial prob. calculated from state lifetimes
 end
 
 % initializes results
-mix = -ones(J,L,N);
-discr_seq = -ones(L,N);
+mix = repmat(-1,[J,L,N]);
+discr_seq = repmat(-1,[L,N]);
 dt_final = cell(1,N);
-
-% generate dwell times
-isTrans = prod(double(sum(sum(~~kx_all(1:J,1:J,1:N),1),2)),3);
-if J>1 && isTrans
-    n = 1;
-    while n <= N
-        wx = wx_all(:,:,n);
-        ip = ip_all(n,:);
-        tau = tau_all(:,n)';
-
-%         % MH 19.12.2019: identify zero sums in rate matrix
-%         if sum(sum(kx,1)>0)~=J || sum(sum(kx,2)>0)~=J
-%             setContPan(cat(2,'Simulation aborted: at least one ',...
-%                 'transition from and to each state must be defined ',...
-%                 '(rate non-null).'),'error',h_fig);
-% 
-%             % clear any results to avoid conflict
-%             if isfield(h,'results') && isfield(h.results,'sim')
-%                 h.results = rmfield(h.results,'sim');
-%             end
-%             guidata(h_fig,h);
-%             return
-%         end
-        
-        if isblch
-            Ln = round(ceil(random('exp',blch_cst)));
-            if Ln>L
-                Ln = L;
-            end
-            if Ln<Lmin
-                Ln = Lmin;
-            end
-        else
+for n = 1:N
+    if isblch
+        Ln = ceil(random('exp',blch_cst));
+        if Ln > L
             Ln = L;
         end
-
-        if n <= N
-            stes = zeros(J,L);
-            state1 = randsample(1:J, 1, true, ip); % pick a first state
-            
-            l = 0;
-            while l<Ln
-                
-                curr_l = ceil(l);
-                if curr_l==0
-                    curr_l = 1;
-                elseif curr_l>Ln
-                    curr_l = Ln;
-                elseif sum(stes(:,curr_l),1)==1
-                    curr_l = curr_l+1;
-                end
-                
-                % pick a first state
-                if sum(wx(state1,:))==0
-                    state2 = state1;
-                else
-                    state2 = randsample(1:J, 1, true, wx(state1,:)); % pick a next state
-                end
-                
-                % dwell in numer of time bins
-                if isinf(tau) % kinetic trap
-                    dl = Ln-l;
-                else
-                    dl = random('exp',tau(state1));
-                end
-                
-                % truncate dwell if larger than remaining time
-                if (l+dl)>Ln
-                    dl = Ln-l;
-                end
-                
-                dt_final{n} = [dt_final{n}; [dl state1 state2]];
-
-                if l>0 && sum(stes(:,curr_l),1)<=1
-                    
-                    % the cumulation of the dt generated overflows or 
-                    % reaches the integration time limit
-                    if dl>=(1-sum(stes(:,curr_l),1))
-                        dl = dl - (1 - sum(stes(:,curr_l),1));
-                        l = l + (1 - sum(stes(:,curr_l),1));
-                        stes(state1,curr_l) = stes(state1,curr_l) + 1 - ...
-                            sum(stes(:,curr_l),1);
-                        curr_l = curr_l + 1;
-                    
-                    % the cumulation of the dt generated does not reach the
-                    % integration time limit
-                    else
-                        stes(state1,curr_l) = stes(state1,curr_l) + dl;
-                        l = l + dl;
-                        state1 = state2;
-                        continue
-                    end
-                end
-
-                addl = fix(dl);
-                if dl>0
-                    stes(state1,(curr_l):(curr_l+addl-1)) = 1;
-                end
-                
-                fract_end = dl-addl;
-                % the cumulation of the dt generated overflows the 
-                % integration time limit
-                if fract_end>0
-                    stes(state1,curr_l+addl) = fract_end;
-                end
-                
-                l = l + fract_end + addl;
-                state1 = state2;
-            end
-            
-            stes = stes(:,1:L);
-            mix(:,:,n) = stes./repmat(sum(stes,1),[J,1]);
-            [o,max_ste] = max(stes,[],1);
-            discr_seq(:,n) = max_ste';
-            
-            if Ln < L
-                discr_seq(1+Ln:L,n) = -1;
-                mix(1,1+Ln:L,n) = -1;
-            end
-            n = n+1;
+        if Ln<Lmin
+            Ln = Lmin;
         end
+    else
+        Ln = L;
     end
-    
-else
-    for n = 1:N
-        ip = ip_all(n,:);
-        if J > 1
-            if sum(sum(kx,1)>0)~=J || sum(sum(kx,2)>0)~=J
-                % MH 19.12.2019: identify zero sums in rate matrix
-                setContPan(cat(2,'Simulation aborted: when no transition ',...
-                    'is defined (null rates), initial state probabilities',...
-                    ' must be pre-defined.'),'error',h_fig);
+    w = wx_all(:,:,n);
+    ip = ip_all(n,:);
+    tau = tau_all(:,n)';
+    k = kx_all(:,:,n);
 
-                % clear any results to avoid conflict
-                if isfield(h,'results') && isfield(h.results,'sim')
-                    h.results = rmfield(h.results,'sim');
-                end
-                guidata(h_fig,h);
-                return
-            end
-            
-            % pick a "first state" randomly
-            state1 = randsample(1:J, 1, true, sum(ip));
-        else
-            state1 = 1;
+    [mixn,seqn,dtn] = genstateseq(Ln,k,J,w,ip,tau);
+    if isempty(mixn)
+        % clear any results to avoid conflict
+        if isfield(h,'results') && isfield(h.results,'sim')
+            h.results = rmfield(h.results,'sim');
         end
-        
-        if isblch
-            Ln = ceil(random('exp',blch_cst));
-            if Ln > L
-                Ln = L;
-            end
-        else
-            Ln = L;
-        end
-        
-        mix(state1,:,n) = 1;
-        dt_final{n} = [L state1 NaN];
-        discr_seq(:,n) = state1*ones(L,1);
-        if Ln < L
-            discr_seq(1+Ln:L,n) = -1;
-            mix(1,1+Ln:L,n) = -1;
-        end
+        guidata(h_fig,h);
+        return
     end
+
+    mix(:,1:Ln,n) = mixn;
+    discr_seq(1:Ln,n) = seqn;
+    dt_final{n} = dtn;
 end
 
 % save results in project parameters
@@ -261,3 +127,6 @@ guidata(h_fig,h);
 
 % return execution success
 ok = 1;
+
+
+

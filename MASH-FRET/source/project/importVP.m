@@ -16,8 +16,13 @@ for i = projs
     end
     
     % set default processing parameters
-    p.VP.defProjPrm = setDefPrm_VP(p.proj{i},p); % interface default
-    p.proj{i}.VP.def = p.VP.defProjPrm; % project default
+    nExc = p.proj{i}.nb_excitations;
+    nChan = p.proj{i}.nb_channel;
+    p.VP = adjustParam('VP',[],p);
+    p.VP.defProjPrm = adjustcellsize(...
+        adjustParam('defProjPrm',cell(nExc,nChan),p.VP),nExc,nChan);
+    p.VP.defProjPrm{nExc,nChan} = setDefPrm_VP(p.proj{i},p); % interface default
+    p.proj{i}.VP.def = p.VP.defProjPrm{nExc,nChan}; % project default
     
     % initializes applied processing parameters 
     if ~isfield(p.proj{i}.VP, 'prm')
