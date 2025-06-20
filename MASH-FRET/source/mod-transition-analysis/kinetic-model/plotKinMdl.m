@@ -90,37 +90,26 @@ if ~isempty(BICres)
     h_axes(5).Visible = 'on';
     nCmb = size(BICres,1);
     BIC = BICres(:,end)';
-    incl = ~isinf(BIC);
-    BIC = BIC(incl);
     cmbs = 1:nCmb;
-    cmbs = cmbs(incl);
     scatter(h_axes(5),cmbs,BIC,'+');
 
-    cmb = BICres(:,1:end-1);
-    cmb = cmb(incl,:);
     [BICmin,cmbopt] = min(BIC);
     h_axes(5).NextPlot = 'add';
     scatter(h_axes(5),cmbs(cmbopt),BIC(cmbopt),'+','linewidth',2);
     h_axes(5).NextPlot = 'replacechildren';
-    cmblow = cmbopt-3;
-    if cmblow<1
-        cmblow = 1;
-    end
-    nCmb = numel(cmbs);
-    cmbup = cmbopt+6-(cmbopt-cmblow);
-    if cmbup>nCmb
-        cmbup = nCmb;
-    end
-    BICmax = max(BIC(cmblow:cmbup));
+    
+    BICmax = max(BIC(~isinf(BIC)));
     if BICmin==BICmax
         ylim(h_axes(5),BICmin+[-1,1]);
     else
         ylim(h_axes(5),[BICmin,BICmax]);
     end
-    h_axes(5).XTick = 1:nCmb;
+
+    h_axes(5).XTick = cmbs;
+    cmb = BICres(:,1:end-1);
     xlbl = compose(repmat('%i',1,size(cmb,2)),cmb)';
     h_axes(5).XTickLabel = xlbl(1:nCmb);
-    h_axes(5).XLim = [cmblow-0.5,cmbup+0.5];
+    h_axes(5).XLim = [0,nCmb+1];
 else
     h_axes(5).Visible = 'off';
 end
