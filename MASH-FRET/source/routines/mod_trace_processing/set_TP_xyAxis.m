@@ -1,10 +1,11 @@
-function set_TP_xyAxis(fixX0,x0,fixY,y,h_fig)
-% sset_TP_xyAxis(fixX0,x0,fixY,y,h_fig)
+function set_TP_xyAxis(fixX0,x0,clipX,fixY,y,h_fig)
+% sset_TP_xyAxis(fixX0,x0,clipX,fixY,y,h_fig)
 %
 % Set x- and y-axis parameters to proper values
 %
 % fixX0: (1) to maintain current starting point for all molecules, (0) otherwise
 % x0: x-axis starting point
+% clipX: (1) to clip axis bounds to cutoff, (0) otherwise
 % fixY: (1) to maintain intensity limits for all molecules, (0) to adjust
 %       automatically
 % y: [1-by-2] lower and upper limits of intensity axis
@@ -29,4 +30,6 @@ if fixX0
     set(h.edit_photobl_start,'string',num2str(x0));
     edit_photobl_start_Callback(h.edit_photobl_start,[],h_fig);
 end
+set(h.checkbox_cutOff,'value',clipX);
+checkbox_cutOff_Callback(h.checkbox_cutOff,[],h_fig);
 

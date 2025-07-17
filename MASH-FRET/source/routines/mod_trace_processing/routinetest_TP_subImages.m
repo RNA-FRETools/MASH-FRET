@@ -14,6 +14,7 @@ vid_type = {'multi-channel', 'single-channel'};
 
 [~,name,ext] = fileparts(p.mash_files{p.nL,p.nChan});
 mash_files = {p.mash_files{p.nL,p.nChan},[name,'_sgl',ext]};
+mash_dir = {name,[name,'_sgl']};
 
 for f = 1:numel(mash_files)
     
@@ -21,7 +22,8 @@ for f = 1:numel(mash_files)
     
     % open default project
     disp(cat(2,prefix,'>> import file ',mash_files{f}));
-    pushbutton_openProj_Callback({p.annexpth,mash_files{f}},[],h_fig);
+    pushbutton_openProj_Callback({[p.annexpth,mash_dir{f}],mash_files{f}},...
+        [],h_fig);
 
     % set default parameters
     setDefault_TP(h_fig,p);

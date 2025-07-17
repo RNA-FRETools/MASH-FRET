@@ -8,6 +8,8 @@ function def = setDefPrm_sim(p)
 % def: adjusted project's defaults
 
 % defaults
+nChan = 2;
+nExc = 1;
 L = 4000; % video length
 rate = 10; % frame rate (s-1)
 br = 14; % bit rate (bit/s)
@@ -44,10 +46,12 @@ isPSF = true;
 PSFw = [0.35260 0.38306]; % PSF width (um)
 outun = 'electron';
 
+% get project 
+
 % initializes fields
-p.sim.defProjPrm = adjustParam('defProjPrm',[],p.sim);
-p.sim.defProjPrm = initDefPrmFields_sim(p.sim.defProjPrm);
-def = p.sim.defProjPrm;
+p.sim.defProjPrm{nExc,nChan} = ...
+    initDefPrmFields_sim(p.sim.defProjPrm{nExc,nChan});
+def = p.sim.defProjPrm{nExc,nChan};
 
 % parameters for plot
 plotprm{1} = 2;

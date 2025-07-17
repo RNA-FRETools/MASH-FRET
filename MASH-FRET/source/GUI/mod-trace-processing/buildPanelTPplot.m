@@ -19,29 +19,33 @@ function h = buildPanelTPplot(h,p)
 % created by MH, 19.10.2019
 
 % default
+wedit0 = 50;
 hedit0 = 20;
 htxt0 = 13;
 hpop0 = 22;
 fact = 5;
-str0 = 'top laser';
-str1 = 'top data';
-str2 = {'Select a laser'};
-str3 = {'Select a channel'};
-str4 = 'bottom data';
-str5 = {'Select a trace'};
+str0 = 'laser';
+str1 = 'channel';
+str2 = {'Select upon which laser illumination intensity trajectories are shown.'};
+str3 = {'Select for which recording channel intensity trajectories are shown'};
+str4 = 'ratio data';
+str5 = {'Select which intensity-ratio trajectories are shown.'};
 str6 = 'hold scale';
 str7 = 'min';
 str8 = 'max';
 str9 = 'x-axis:';
-str10 = 'hold start';
+str10 = 'start';
+str11 = 'hold';
+str12 = 'clip axis';
 ttstr0 = wrapHtmlTooltipString('Select a <b>laser wavelength</b> to show intensity-time traces from, in the top plot.');
 ttstr1 = wrapHtmlTooltipString('Select an <b>emission channel</b> to show ntensity-time traces from, in the top plot.');
 ttstr2 = wrapHtmlTooltipString('Select the <b>ratio-time traces</b> to show in the bottom plot.');
 ttstr3 = wrapHtmlTooltipString('<b>Hold</b> limits of intensity axis for <b>all molecules</b> to the defined intensities.');
 ttstr4 = wrapHtmlTooltipString('<b>Lower limit</b> of intensity axis.');
 ttstr5 = wrapHtmlTooltipString('<b>Upper limit</b> of intensity axis.');
-ttstr6 = wrapHtmlTooltipString('<b>Clip</b> time axis of traces for <b>all molecules</b> to the defined starting point: data points prior this time point will be ignored.');
-ttstr7 = wrapHtmlTooltipString('<b>Starting point</b> in time traces: data points below this frame will be ignored.');
+ttstr6 = wrapHtmlTooltipString('<b>Hold</b> starting point for <b>all molecules</b>: data points prior this time point will be ignored.');
+ttstr7 = wrapHtmlTooltipString('<b>Starting point</b> in time traces: data points prior this time point will be ignored.');
+ttstr8 = wrapHtmlTooltipString('<b>Clip traces</b> to time limits: when activated, time axis is bound to starting point and photobleaching cutoff.');
 
 % parents
 h_fig = h.figure_MASH;
@@ -51,11 +55,12 @@ h_pan = h.uipanel_TP_plot;
 pospan = get(h_pan,'position');
 wtxt0 = (pospan(3)-2*p.mg-p.mg/fact)/2;
 wtxt1 = pospan(3)-2*p.mg;
-wtxt3 = getUItextWidth(str9,p.fntun,p.fntsz1,'bold',p.tbl);
+wtxt3 = getUItextWidth(str9,p.fntun,p.fntsz1,'normal',p.tbl);
 wcb0 = getUItextWidth(str6,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
-wedit0 = (pospan(3)-2*p.mg-2*p.mg/fact-wcb0)/2;
-wcb1 = getUItextWidth(str10,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
-wedit1 = pospan(3)-2*p.mg-2*p.mg/fact-wcb1-wtxt3;
+wedit1 = (pospan(3)-2*p.mg-2*p.mg/fact-wcb0)/2;
+wcb1 = getUItextWidth(str11,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
+wcb2 = getUItextWidth(str12,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
+mgspec = pospan(3)-2*p.mg-2*p.mg/fact-wcb1-wtxt3-wedit0-wcb2;
 
 % GUI
 x = p.mg;
@@ -98,28 +103,28 @@ x = x+wcb0+p.mg/fact;
 
 h.edit_plot_minint = uicontrol('style','edit','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,hedit0],'tooltipstring',ttstr4,'callback',...
+    [x,y,wedit1,hedit0],'tooltipstring',ttstr4,'callback',...
     {@edit_plot_minint_Callback,h_fig});
 
 y = y+hedit0;
 
 h.text_plot_minint = uicontrol('style','text','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,htxt0],'string',str7);
+    [x,y,wedit1,htxt0],'string',str7);
 
-x = x+wedit0+p.mg/fact;
+x = x+wedit1+p.mg/fact;
 y = y-hedit0;
 
 h.edit_plot_maxint = uicontrol('style','edit','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,hedit0],'tooltipstring',ttstr5,'callback',...
+    [x,y,wedit1,hedit0],'tooltipstring',ttstr5,'callback',...
     {@edit_plot_maxint_Callback,h_fig});
 
 y = y+hedit0;
 
 h.text_plot_maxint = uicontrol('style','text','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,htxt0],'string',str8);
+    [x,y,wedit1,htxt0],'string',str8);
 
 x = p.mg;
 y = y-hedit0-p.mg/fact-htxt0;
@@ -136,24 +141,37 @@ h.popupmenu_plotBottom = uicontrol('style','popupmenu','parent',h_pan,...
     {@popupmenu_plotBottom_Callback,h_fig});
 
 x = p.mg;
-y = y-p.mg-hedit0+(hedit0-htxt0)/2;
+y = y-p.mg-htxt0-hedit0+(hedit0-htxt0)/2;
 
 h.text_TP_xaxis = uicontrol('style','text','parent',h_pan,'units',p.posun,...
     'fontunits',p.fntun,'fontsize',p.fntsz1,'fontweight','bold','position',...
     [x,y,wtxt3,htxt0],'string',str9,'horizontalalignment','left');
 
 x = x+wtxt3+p.mg/fact;
-y = y-(hedit0-htxt0)/2;
+y = y-(hedit0-htxt0)/2+hedit0;
 
-h.checkbox_photobl_fixStart = uicontrol('style','checkbox','parent',h_pan,...
-    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wcb1,hedit0],'string',str10,'tooltipstring',ttstr6,'callback',...
-    {@checkbox_photobl_fixStart_Callback,h_fig});
+h.text_TP_plot_start = uicontrol('style','text','parent',h_pan,'units',...
+    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wedit0,htxt0],'string',str10);
 
-x = x+wcb1+p.mg/fact;
+y = y-hedit0;
 
 h.edit_photobl_start = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit1,hedit0],'callback',{@edit_photobl_start_Callback,h_fig},...
+    [x,y,wedit0,hedit0],'callback',{@edit_photobl_start_Callback,h_fig},...
     'tooltipstring',ttstr7);
+
+x = x+wedit0+p.mg/fact;
+
+h.checkbox_photobl_fixStart = uicontrol('style','checkbox','parent',h_pan,...
+    'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wcb1,hedit0],'string',str11,'tooltipstring',ttstr6,'callback',...
+    {@checkbox_photobl_fixStart_Callback,h_fig});
+
+x = x+wcb1+mgspec;
+
+h.checkbox_cutOff = uicontrol('style','checkbox','parent',h_pan,'units',...
+    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
+    [x,y,wcb2,hedit0],'string',str12,'tooltipstring',ttstr8,'callback',...
+    {@checkbox_cutOff_Callback,h_fig});
 

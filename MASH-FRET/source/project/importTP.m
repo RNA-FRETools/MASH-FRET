@@ -15,6 +15,7 @@ for i = projs
     % collect experiment settings
     N = numel(p.proj{i}.coord_incl);
     nChan = p.proj{i}.nb_channel;
+    nExc = p.proj{i}.nb_excitations;
     exc = p.proj{i}.excitations;
     chanExc = p.proj{i}.chanExc;
     
@@ -31,8 +32,10 @@ for i = projs
     end
 
     % set default processing parameters
-    p.ttPr.defProjPrm = setDefPrm_traces(p,i); % interface default
-    p.proj{i}.TP.def = p.ttPr.defProjPrm; % project default
+    p.ttPr.defProjPrm = adjustcellsize(...
+        adjustParam('defProjPrm',cell(nExc,nChan),p.ttPr),nExc,nChan);
+    p.ttPr.defProjPrm{nExc,nChan} = setDefPrm_traces(p,i); % interface default
+    p.proj{i}.TP.def = p.ttPr.defProjPrm{nExc,nChan}; % project default
     
     % reorder DE coefficients according to laser chronological order
     de_bywl = p.proj{i}.TP.def.general{4}{2};
@@ -51,7 +54,7 @@ for i = projs
     
     % set global TP processing parameters
     if ~isfield(p.proj{i}.TP,'fix')
-        p.proj{i}.TP.fix = p.ttPr.defProjPrm.general;
+        p.proj{i}.TP.fix = p.ttPr.defProjPrm{nExc,nChan}.general;
     end
     
     % initializes export options
