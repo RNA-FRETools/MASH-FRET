@@ -261,6 +261,13 @@ if isRes && tdp_clust
             clstDiag);
         K = getClusterNb(J,mat,clstDiag);
         [j1,j2] = getStatesFromTransIndexes(1:K,J,mat,clstDiag);
+
+        % calculate state deviations
+        val_std = zeros(1,J);
+        for j = 1:J
+            val_std(j) = std(prm.clst_res{1}.clusters{J}(...
+                prm.clst_res{1}.clusters{J}(:,end-1)==j,2));
+        end
         
         h = guidata(h_fig);
         str_like = get(h.popupmenu_TDPlike,'String');
@@ -410,7 +417,8 @@ if isRes && tdp_clust
         tj = res{1}.fract{J};
         for j = 1:size(val,2)
             str_prm = cat(2,str_prm,'\tstate ',num2str(j),': ',...
-                num2str(val(j)),', time fraction: ',num2str(tj(j)),'\n');
+                num2str(val(j)),char(177),num2str(val_std(j)),...
+                ', time fraction: ',num2str(tj(j)),'\n');
         end
         for k = 1:K
             str_prm = cat(2,str_prm,'\tcluster ',num2str(k),' (state ',...
