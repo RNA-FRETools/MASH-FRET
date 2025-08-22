@@ -407,6 +407,12 @@ where
 [*j'*](){: .math_var } and 
 [*t*<sub>exp</sub>](){: .math_var } is the bin time in trajectories (in seconds).
 
+In the case when transition probabilities lower than a certain threshold are found, a new inference process is ran where these transitions are constrained to 0 probability.
+Process inferences stop when all transition probabilities are higher than this threshold.
+This intends to yield the most simple model.
+This threshold is calculated as $\frac{1}{\sum_{n=1}^N L_n - 2N}$, where $N$ is the number of trajectories and $L_n$ is the length of trajectory $n$.
+
+
 The negative and positive errors 
 [&Delta;*k<sub>jj'</sub>*<sup>-</sup>](){: .math_var } and 
 [&Delta;*k<sub>jj'</sub>*<sup>+</sup>](){: .math_var } on rate coefficients are estimated via a 95% confidence likelihood ratio test, giving an estimated range delimited by the lower bound 
