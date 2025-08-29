@@ -263,10 +263,10 @@ if isRes && tdp_clust
         [j1,j2] = getStatesFromTransIndexes(1:K,J,mat,clstDiag);
 
         % calculate state deviations
-        val_std = zeros(1,J);
-        for j = 1:J
-            val_std(j) = std(prm.clst_res{1}.clusters{J}(...
-                prm.clst_res{1}.clusters{J}(:,end-1)==j,2));
+        val_std = zeros(1,K);
+        for k = 1:K
+            val_std(k) = std(prm.clst_res{1}.clusters{K}(...
+                prm.clst_res{1}.clusters{K}(:,end-1)==k,2));
         end
         
         h = guidata(h_fig);
