@@ -118,12 +118,17 @@ else % 2D histograms
             nivy = dat1.niv(indy);
             limy = dat1.lim(indy,:);
         else
-            trace_y = dat3.val{indy,jy}(:,1);
+            if ~isempty(dat3.val{indy,jy})        % cutoffs exist only for 
+                trace_y = dat3.val{indy,jy}(:,1); % total intensities, 
+            else                                  % empty otherwise
+                trace_y = [];
+                trace_x = []; % cancel calculations when no data
+            end
             nivy = dat3.niv(jy,indy);
             limy = dat3.lim(indy,:,jy);
         end
     end
-    if h.tm.checkbox_AS_datcnt.Value
+    if h.tm.checkbox_AS_datcnt.Value % one count per molecule
         P2D = [];
         for m = unique(mols)'
             id = (mols==m)';

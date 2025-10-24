@@ -17,25 +17,26 @@ function id = getASdataindex(varargin)
 % 5: maxima (molecule-wise): 4 in dat3
 % 6: medians (molecule-wise): 5 in dat3
 % 7: SNR (molecule-wise): 12 in dat3
-% 8: nb. of states (molecule-wise): 6 in dat3
-% 9: nb. of transitions (molecule-wise): 7 in dat3
-% 10: mean state dwell time (molecule-wise): 8 in dat3
-% 11: state values (state-wise): 9 in dat3
-% 12: state dwell times (state-wise): 10 in dat3
-% 13: state lifetimes (state-wise): 11 in dat3
+% 8: photobleaching cutoff (molecule-wise): 13 in dat3
+% 9: nb. of states (molecule-wise): 6 in dat3
+% 10: nb. of transitions (molecule-wise): 7 in dat3
+% 11: mean state dwell time (molecule-wise): 8 in dat3
+% 12: state values (state-wise): 9 in dat3
+% 13: state dwell times (state-wise): 10 in dat3
+% 14: state lifetimes (state-wise): 11 in dat3
 
-id = [0,1,2,3,4,5,12,6,7,8,9,10,11];
+id = [0,1,2,3,4,5,12,13,6,7,8,9,10,11];
 
 if nargin>0
     switch varargin{1}
         case 'framewise'
             id = id(1:2);
         case 'molwise'
-            id = id(3:10);
+            id = id(3:11);
         case 'statewise'
-            id = id(11:13);
+            id = id(12:14);
         case 'discr'
-            id = id([2,8:13]);
+            id = id([2,9:14]);
         otherwise
             disp(['getASdataindex: input argument must be ''framewise'',',...
                 ' ''molwise'' or ''statewise''.']);
