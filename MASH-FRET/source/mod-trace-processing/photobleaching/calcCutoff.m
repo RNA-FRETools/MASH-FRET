@@ -52,10 +52,13 @@ end
 incl([1:(start-1),cutOff0+1:end],1) = false;
 p.proj{proj}.TP.prm{mol}{2}{1}(4+method) = cutOff0*nExc;
 p.proj{proj}.bool_intensities(:,mol) = incl;
+c_tot = find(chanExc>0);
 if method==2
     p.proj{proj}.TP.prm{mol}{2}{2}(:,3) = cutOff'*nExc;
-    p.proj{proj}.emitter_is_on(:,nChan*(mol-1)+find(chanExc>0)) = incl_em;
+    p.proj{proj}.emitter_is_on(:,nChan*(mol-1)+c_tot) = incl_em;
+else
+    p.proj{proj}.emitter_is_on(:,nChan*(mol-1)+c_tot) = ...
+        repmat(incl,1,numel(c_tot));
 end
-p.proj{proj}.bool_intensities(:,mol) = incl;
 
 
