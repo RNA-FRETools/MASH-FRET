@@ -168,14 +168,18 @@ if w
     for n = 1:numel(m)
         L = L + numel(trace(incl(:,m(n))',n));
         Pn(n,:) = histcounts(trace(incl(:,m(n))',n),x_edge);
-        Pn(n,:) = Pn(n,:)/sum(Pn(n,:));
+        if sum(Pn(n,:))>0
+            Pn(n,:) = Pn(n,:)/sum(Pn(n,:));
+        end
     end
     if ~ovrfl
         Pn(:,[1 end]) = [];
         x_axis([1 end]) = [];
     end
     P = sum(Pn,1);
-    P = P/sum(P);
+    if sum(P)>0
+        P = P/sum(P);
+    end
 else
     P = 0;
     for n = 1:numel(m)
