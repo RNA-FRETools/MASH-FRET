@@ -397,7 +397,8 @@ for m = 1:N
             if isempty(s.intensities_DTA)
                 continue
             end
-            I = s.intensities_DTA(incl,(m-1)*s.nb_channel+i_c,i_l);
+            I = s.intensities_DTA(:,(m-1)*s.nb_channel+i_c,i_l);
+            I = I(~incl,:);
             if sum(double(~isnan(I)))
                 s.dt{m,j} = getDtFromDiscr(I,...
                     s.nb_excitations*s.resampling_time);
@@ -411,7 +412,8 @@ for m = 1:N
         if isempty(s.FRET_DTA)
             continue
         end
-        tr = s.FRET_DTA(incl,(m-1)*nFRET+i_f);
+        tr = s.FRET_DTA(:,(m-1)*nFRET+i_f);
+        tr(~incl,:) = NaN;
         if sum(double(~isnan(tr)))
             s.dt{m,j} = getDtFromDiscr(tr,s.nb_excitations*s.resampling_time);
         else
@@ -423,7 +425,8 @@ for m = 1:N
         if isempty(s.S_DTA)
             continue
         end
-        tr = s.S_DTA(incl,(m-1)*nS+i_s);
+        tr = s.S_DTA(:,(m-1)*nS+i_s);
+        tr(~incl,:) = NaN;
         if sum(double(~isnan(tr)))
             s.dt{m,j} = getDtFromDiscr(tr,s.nb_excitations*s.resampling_time);
         else
