@@ -14,7 +14,7 @@ end
 slct = get(h.listbox_proj, 'Value');
 
 % check project compatibility
-[comp,errmsg,expT,wl,lbl] = projectCompatibility(p.proj(slct),...
+[comp,errmsg,splt0,splt,wl,lbl] = projectCompatibility(p.proj(slct),...
     [h.figure_dummy,h.text_dummy],h.mute_actions);
 if ~comp
     if h.mute_actions
@@ -91,7 +91,8 @@ s.coord_file = '';
 s.coord_imp_param = {[1 2] 1};
 s.is_coord = false;
 
-s.sampling_time = expT;
+s.sampling_time = splt0;
+s.resampling_time = splt;
 s.pix_intgr = p.proj{slct(1)}.pix_intgr;
 s.cnt_p_sec = p.proj{slct(1)}.cnt_p_sec;
 s.time_in_sec = p.proj{slct(1)}.time_in_sec;
@@ -107,14 +108,16 @@ s.dt_pname = [];
 s.dt_fname = [];
 s.dt = {};
 
+L0 = -Inf;
 L = -Inf;
 s.traj_import_opt = [];
 s.molTagNames = {};
 s.molTagClr = {};
 for proj = slct
     % get maximum length
-    if size(p.proj{proj}.intensities,1)>L
-        L = size(p.proj{proj}.intensities,1);
+    L0 = max([L0,size(p.proj{proj}.intensities,1)]);
+    if p.proj{proj}.resampling_time==splt
+        L = max([L,size(p.proj{proj}.intensities_bin,1)]);
     end
     
     % concatenate molecule tag names and colors
@@ -136,6 +139,7 @@ s.coord = [];
 s.coord_incl = [];
 s.intensities = [];
 s.intensities_bgCorr = [];
+s.intensities_bin = [];
 s.intensities_crossCorr = [];
 s.intensities_denoise = [];
 s.bool_intensities = [];
@@ -181,49 +185,62 @@ for proj = slct
     end
 
     % intensities
-    I = extendTrace(p.proj{proj}.intensities,L,NaN);
+    I = extendTrace(p.proj{proj}.intensities,L0,NaN);
     s.intensities = cat(2,s.intensities,I(:,:,laserOrder));
     
-    I_bgCorr = extendTrace(p.proj{proj}.intensities_bgCorr,L,NaN);
+    I_bgCorr = extendTrace(p.proj{proj}.intensities_bgCorr,L0,NaN);
     s.intensities_bgCorr = ...
         cat(2,s.intensities_bgCorr,I_bgCorr(:,:,laserOrder));
     
-    I_crossCorr = extendTrace(p.proj{proj}.intensities_crossCorr,L,NaN);
+    if p.proj{proj}.resampling_time==splt
+        I_bin = extendTrace(p.proj{proj}.intensities_bin,L,NaN);
+        I_crossCorr = extendTrace(p.proj{proj}.intensities_crossCorr,L,NaN);
+        I_denoise = extendTrace(p.proj{proj}.intensities_denoise,L,NaN);
+        bool_I = extendTrace(p.proj{proj}.bool_intensities,L,false);
+        em_is_on = extendTrace(p.proj{proj}.emitter_is_on,L,false);
+        I_DTA = extendTrace(p.proj{proj}.intensities_DTA,L,NaN);
+        if nFRET>0
+            FRET_DTA = extendTrace(p.proj{proj}.FRET_DTA,L,NaN);
+        end
+        if nS>0
+            S_DTA = extendTrace(p.proj{proj}.S_DTA,L,NaN);
+        end
+    else
+        I_bin = NaN([L,size(s.intensities,[2,3])]);
+        I_crossCorr = I_bin;
+        I_denoise = I_bin;
+        I_DTA = I_bin;
+        bool_I = true(L,N);
+        em_is_on = true(L,size(I_bin,2));
+        if nFRET>0
+            FRET_DTA = NaN(L,nFRET);
+        end
+        if nS>0
+            S_DTA = NaN(L,nS);
+        end
+    end
+    s.intensities_bin = cat(2,s.intensities_bin,I_bin(:,:,laserOrder));
     s.intensities_crossCorr = ...
         cat(2,s.intensities_crossCorr,I_crossCorr(:,:,laserOrder));
-    
-    I_denoise = extendTrace(p.proj{proj}.intensities_denoise,L,NaN);
     s.intensities_denoise = ...
         cat(2,s.intensities_denoise,I_denoise(:,:,laserOrder));
-    
-    s.bool_intensities = cat(2,s.bool_intensities,...
-        extendTrace(p.proj{proj}.bool_intensities,L,false));
-    
-    s.emitter_is_on = cat(2,s.emitter_is_on,...
-        extendTrace(p.proj{proj}.emitter_is_on,L,false));
-
-    % state sequences
-    I_DTA = extendTrace(p.proj{proj}.intensities_DTA,L,NaN);
+    s.bool_intensities = cat(2,s.bool_intensities,bool_I);
+    s.emitter_is_on = cat(2,s.emitter_is_on,em_is_on);
     s.intensities_DTA = cat(2,s.intensities_DTA,I_DTA(:,:,laserOrder));
-    
     if nFRET>0
         fret_id = repmat(fretOrder',[1,N]);
         fret_id = reshape((mols-1)*nFRET+fret_id,[1,nFRET*N]);
-        
-        FRET_DTA = extendTrace(p.proj{proj}.FRET_DTA,L,NaN);
         s.FRET_DTA = cat(2,s.FRET_DTA,FRET_DTA(:,fret_id));
         
         FRET_DTA_import = p.proj{proj}.FRET_DTA_import;
         if isempty(FRET_DTA_import)
             FRET_DTA_import = NaN(size(p.proj{proj}.FRET_DTA));
         end
-        FRET_DTA_import = extendTrace(FRET_DTA_import,L,NaN);
+        FRET_DTA_import = extendTrace(FRET_DTA_import,L0,NaN);
         s.FRET_DTA_import = ...
             cat(2,s.FRET_DTA_import,FRET_DTA_import(:,fret_id));
     end
-    
     if nS>0
-        S_DTA = extendTrace(p.proj{proj}.S_DTA,L,NaN);
         s_id = repmat(sOrder',[1,N]);
         s_id = reshape((mols-1)*nS+s_id,[1,nS*N]);
         s.S_DTA = cat(2,s.S_DTA,S_DTA(:,s_id));
@@ -234,11 +251,10 @@ for proj = slct
         p.proj{proj}.molTagNames,s.molTagNames));
     
     % processing parameters
-    N = size(p.proj{proj}.coord_incl,2);
     for n = 1:N
         if ~isempty(p.proj{proj}.TP.prm{n})
             prm_n = rearrangeProcPrm(p.proj{proj}.TP.prm{n},...
-                laserOrder,fretOrder,sOrder);
+                laserOrder,fretOrder,sOrder,s.nb_channel);
         else
             prm_n = {};
         end
@@ -265,47 +281,54 @@ end
 setContPan('Projects successfully merged!','success',h_fig);
 
 
-function [ok,errmsg,expT,wl,lbl] = projectCompatibility(p_proj,hdl,mute)
+function [ok,errmsg,splt0,splt,wl,lbl] = projectCompatibility(proj,h,mute)
 
 % initializes output
 ok = false;
 errmsg = '';
-expT = [];
+splt0 = [];
+splt = [];
 wl = [];
 lbl = [];
 
-nProj = numel(p_proj);
+nProj = numel(proj);
 if nProj<=1
     errmsg = 'Only one project is selected.';
     return
 end
 
-nChan = p_proj{1}.nb_channel;
-nL = p_proj{1}.nb_excitations;
-exc = p_proj{1}.excitations;
-chanExc = p_proj{1}.chanExc;
-FRET = p_proj{1}.FRET;
-S = p_proj{1}.S;
+nChan = proj{1}.nb_channel;
+nL = proj{1}.nb_excitations;
+exc = proj{1}.excitations;
+chanExc = proj{1}.chanExc;
+FRET = proj{1}.FRET;
+S = proj{1}.S;
 
-[ok,expT] = checkvidframerate(p_proj,mute);
+[ok,splt0] = checkvidframerate(proj,'sampling_time',mute);
 if ~ok
     errmsg = 'Projects have different frame rates.';
     return
 end
 
+[ok,splt] = checkvidframerate(proj,'resampling_time',mute);
+if ~ok
+    errmsg = 'Projects have different resampling times.';
+    return
+end
+
 ok = false;
-for proj = 2:nProj
-    if p_proj{proj}.nb_channel~=nChan
+for p = 2:nProj
+    if proj{p}.nb_channel~=nChan
         errmsg = 'Projects have different number of channels.';
         return
     end
-    if p_proj{proj}.nb_excitations~=nL
+    if proj{p}.nb_excitations~=nL
         errmsg = 'Projects have different number of lasers.';
         return
     end
 end
 
-[ok,wl] = checklaserwavelength(p_proj,hdl,mute);
+[ok,wl] = checklaserwavelength(proj,h,mute);
 if ~ok
     errmsg = 'Projects have different laser wavelengths.';
     return
@@ -318,73 +341,70 @@ for c = 1:numel(chanExc)
 end
 
 ok = false;
-for proj = 2:nProj
-    [~,lasid] = sort(p_proj{proj}.excitations);
-    for c = 1:numel(p_proj{proj}.chanExc)
-        if p_proj{proj}.chanExc(c)>0
-            p_proj{proj}.chanExc(c) = wl(lasid(p_proj{proj}.excitations==...
-                p_proj{proj}.chanExc(c)));
+for p = 2:nProj
+    [~,lasid] = sort(proj{p}.excitations);
+    for c = 1:numel(proj{p}.chanExc)
+        if proj{p}.chanExc(c)>0
+            proj{p}.chanExc(c) = wl(lasid(proj{p}.excitations==...
+                proj{p}.chanExc(c)));
         end
     end
-    if ~isequal(p_proj{proj}.chanExc,chanExc)
+    if ~isequal(proj{p}.chanExc,chanExc)
         errmsg = cat(2,'Projects have different emitter-specific ',...
             'excitation wavelength.');
         return
     end
-    if ~isequal(sortrows(p_proj{proj}.FRET),sortrows(FRET))
+    if ~isequal(sortrows(proj{p}.FRET),sortrows(FRET))
         errmsg = 'Projects have different FRET pairs.';
         return
     end
-    if ~isequal(sortrows(p_proj{proj}.S),sortrows(S))
+    if ~isequal(sortrows(proj{p}.S),sortrows(S))
         errmsg = 'Projects have different stochiometry calculations.';
         return
     end
 end
 
-[ok,lbl] = checkemitterlbl(p_proj,hdl,mute);
+[ok,lbl] = checkemitterlbl(proj,h,mute);
 if ~ok
     errmsg = 'Projects have different emitter labels.';
     return
 end
 
 
-function [ok,splt] = checkvidframerate(proj,mute)
+function [ok,splt] = checkvidframerate(proj,field,mute)
 nProj = numel(proj);
 allsplt = zeros(1,nProj);
-splt = allsplt(1);
 ok = 1;
 for n = 1:nProj
-    allsplt(n) = proj{n}.sampling_time;
+    allsplt(n) = proj{n}.(field);
 end
-if ~all(allsplt==allsplt(1))
-    if ~mute
-        strsplt = [];
-        for n = 1:nProj
-            if n==nProj-1
-                strsplt = cat(2,strsplt,num2str(allsplt(n)),' and ');
-            else
-                strsplt = cat(2,strsplt,num2str(allsplt(n)),', ');
-            end
-        end
-        strsplt = ['(',strsplt(1:end-2),' seconds)'];
-        prompt = {['Projects have different video sampling times ',strsplt,...
-            '.Please enter a common sampling time (in seconds) or abort ',...
-            'the merging process:']};
-        opts.Interpreter = 'tex';
-        dlgtitle = 'Video sampling time';
-        dims = 1;
-        definput = {''};
-        answ = inputdlg(prompt,dlgtitle,dims,definput,opts);
-        if isempty(answ) || isempty(str2num(answ{1}))
-            ok = 0;
+
+name = strrep('field','_',' ');
+
+splt = allsplt(1);
+if ~all(allsplt==allsplt(1)) && ~mute
+    strsplt = [];
+    for n = 1:nProj
+        if n==nProj-1
+            strsplt = cat(2,strsplt,num2str(allsplt(n)),' and ');
         else
-            splt = str2num(answ{1});
+            strsplt = cat(2,strsplt,num2str(allsplt(n)),', ');
         end
-    else
-        splt = allsplt(1);
     end
-else
-    splt = allsplt(1);
+    strsplt = ['(',strsplt(1:end-2),' seconds)'];
+    prompt = {['Projects have different video ',name,'s ',strsplt,...
+        '.Please define a common ',name,' (in seconds) or abort ',...
+        'the merging process:']};
+    opts.Interpreter = 'tex';
+    dlgtitle = ['Video ',name];
+    dims = 1;
+    definput = {''};
+    answ = inputdlg(prompt,dlgtitle,dims,definput,opts);
+    if isempty(answ) || isempty(str2num(answ{1}))
+        ok = 0;
+    else
+        splt = str2num(answ{1});
+    end
 end
 
 
@@ -397,32 +417,26 @@ h = 100;
 nProj = numel(proj);
 nExc = proj{1}.nb_excitations;
 allwl = zeros(nProj,nExc);
-wl = sort(allwl(1,:));
 ok = 1;
 for n = 1:nProj
     allwl(n,:) = sort(proj{n}.excitations);
 end
-if ~all(all(allwl==repmat(allwl(1,:),nProj,1)))
-    if ~mute
-        strwl = cell(1,nProj);
-        for n = 1:nProj
-            strwl{n} = num2str(allwl(n,:));
-        end
-        prompt = ['Projects have different laser ',...
-            'wavelengths. Please select a common set of wavelengths ',...
-            '(in nm) or abort the merging process:'];
-        [prompt,~] = wrapStrToWidth(prompt,'points',10,'normal',w,'gui',...
-            hdl);
-        [id,ok] = listdlg('PromptString',prompt,'ListString',strwl,...
-            'SelectionMode','single','ListSize',[w,h]);
-        if ok
-            wl = allwl(id,:);
-        end
-    else
-        wl = allwl(1,:);
+wl = sort(allwl(1,:));
+if ~all(all(allwl==repmat(allwl(1,:),nProj,1))) && ~mute
+    strwl = cell(1,nProj);
+    for n = 1:nProj
+        strwl{n} = num2str(allwl(n,:));
     end
-else
-    wl = allwl(1,:);
+    prompt = ['Projects have different laser ',...
+        'wavelengths. Please select a common set of wavelengths ',...
+        '(in nm) or abort the merging process:'];
+    [prompt,~] = wrapStrToWidth(prompt,'points',10,'normal',w,'gui',...
+        hdl);
+    [id,ok] = listdlg('PromptString',prompt,'ListString',strwl,...
+        'SelectionMode','single','ListSize',[w,h]);
+    if ok
+        wl = allwl(id,:);
+    end
 end
 
 
@@ -436,33 +450,27 @@ nProj = numel(proj);
 nChan = proj{1}.nb_channel;
 alllbl = cell(nProj,nChan);
 ok = 1;
-lbl = alllbl(1,:);
 for n = 1:nProj
     alllbl(n,:) = proj{n}.labels;
 end
-if ~isequal(alllbl,repmat(alllbl(1,:),nProj,1))
-    if ~mute
-        strlbl = cell(1,nProj);
-        for n = 1:nProj
-            for c = 1:nChan
-                strlbl{n} = [strlbl{n},alllbl{n,c},' '];
-            end
-            strlbl{n} = strlbl{n}(1:end-1);
+lbl = alllbl(1,:);
+if ~isequal(alllbl,repmat(alllbl(1,:),nProj,1)) && ~mute
+    strlbl = cell(1,nProj);
+    for n = 1:nProj
+        for c = 1:nChan
+            strlbl{n} = [strlbl{n},alllbl{n,c},' '];
         end
-        prompt = ['Projects have different emitter labels. Please select ',...
-            'a common set of labels or abort the merging process:'];
-        [prompt,~] = wrapStrToWidth(prompt,'points',10,'normal',w,'gui',...
-            hdl);
-        [id,ok] = listdlg('PromptString',prompt,'ListString',strlbl,...
-            'SelectionMode','single','ListSize',[w,h]);
-        if ok
-            lbl = alllbl(id,:);
-        end
-    else
-        lbl = alllbl(1,:);
+        strlbl{n} = strlbl{n}(1:end-1);
     end
-else
-    lbl = alllbl(1,:);
+    prompt = ['Projects have different emitter labels. Please select ',...
+        'a common set of labels or abort the merging process:'];
+    [prompt,~] = wrapStrToWidth(prompt,'points',10,'normal',w,'gui',...
+        hdl);
+    [id,ok] = listdlg('PromptString',prompt,'ListString',strlbl,...
+        'SelectionMode','single','ListSize',[w,h]);
+    if ok
+        lbl = alllbl(id,:);
+    end
 end
 
 
@@ -493,12 +501,11 @@ for tag = 1:nTag
 end
 
 
-function prm = rearrangeProcPrm(prm,laserOrder,fretOrder,sOrder)
+function prm = rearrangeProcPrm(prm,laserOrder,fretOrder,sOrder,nChan)
 
 nL = numel(laserOrder);
 nFRET = numel(fretOrder);
 nS = numel(sOrder);
-nChan = (size(prm{2}{2},1)-nFRET-nS-2)/nL;
 
 lc = 1:nChan*nL;
 lcOrder = [];
@@ -514,13 +521,6 @@ prm{3}{2} = prm{3}{2}(laserOrder,:); % method
 prm{3}{3} = prm{3}{3}(laserOrder,:); % parameters
 for l = 1:nL % set unique background correction
     for c = 1:nChan
-%         if  prm{3}{1}(l,c,1) % apply
-%             prm{3}{3}{l,c}(1,3) = prm{3}{3}{l,c}(prm{3}{2}(l,c),3);
-%         else
-%             prm{3}{3}{l,c}(1,3) = 0;
-%         end
-%         prm{3}{2}(l,c) = 1;
-%         prm{3}{3}{l,c} = prm{3}{3}{l,c}(1,:);
         if  ~prm{3}{1}(l,c,1) % apply
             prm{3}{3}{l,c}(1,3) = 0;
             prm{3}{2}(l,c) = 1;
