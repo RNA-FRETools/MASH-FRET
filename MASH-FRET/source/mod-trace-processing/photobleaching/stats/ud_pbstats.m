@@ -41,7 +41,7 @@ expt = p.proj{proj}.resampling_time;
 chanExc = p.proj{proj}.chanExc;
 nChan = p.proj{proj}.nb_channel;
 if ~insec
-    expt = 1;
+    expt = [];
 end
 
 % clear axes
@@ -59,38 +59,45 @@ end
 
 % collect dwell times
 survt = [];
-offt = [];
-ont = [];
+toff = [];
+ton = [];
 [N,L] = size(incl);
 trajlen = L*nExc;
 em = h.popup_emitter.Value;
 emlst = find(chanExc>0);
 for n = 1:N
     if ~molincl(n)
-        continue
+        continue % skip molecules excluded from the list
     end
     if ~(numel(p.proj{proj}.TP.prm)>=n && ...
             numel(p.proj{proj}.TP.prm{n})>=2 && ...
             numel(p.proj{proj}.TP.prm{n}{2})>=1 && ...
             numel(p.proj{proj}.TP.prm{n}{2}{1})>=6)
-        continue
+        continue % skip molecules that were not processed
     end
+
+    % retrieve processing parameters/results
     meth = p.proj{proj}.TP.prm{n}{2}{1}(2);
     start = p.proj{proj}.TP.prm{n}{2}{1}(4);
     cutoff = p.proj{proj}.TP.prm{n}{2}{2}(em,3);
+
+    % collect survival times only when bleaching is detected
     if cutoff<trajlen
         survt = cat(2,survt,[cutoff;n]);
     end
-
+    
+    % skip molecules without bliking detection ("Threshold" method)
     if meth~=2
         continue
     end
+
+    % collect blink-on and -off dwell times
     dt = getDtFromDiscr(double(incl_em(nChan*(n-1)+emlst(em),...
         ceil(start/nExc):ceil(cutoff/nExc)))',1);
-    offt = cat(2,offt,...
-        [dt(dt(:,2)==0,1)'*nExc;repmat(n,1,nnz(dt(:,2)==0))]);
-    ont = cat(2,ont,...
-        [dt(dt(:,2)==1,1)'*nExc;repmat(n,1,nnz(dt(:,2)==1))]);
+    isoff = dt(:,2)==0;
+    ison = dt(:,2)==1;
+    toff = cat(2,toff,[dt(isoff,1)'*nExc;repmat(n,1,nnz(isoff))]);
+    ton = cat(2,ton,[dt(ison,1)'*nExc;repmat(n,1,nnz(ison))]);
 end
 
 % plot survival time histogram
@@ -103,10 +110,10 @@ end
 % plot blinking time histogram
 if any(strcmp(dattype,{'blink','all'}))
     h.axes_blinkoff.UserData{em} = plotbleachnblinkstats(h.axes_blinkoff,...
-        h.popup_scale.Value,offt,nbins,expt,xlbl1,nSpl,h.fig_MASH,...
+        h.popup_scale.Value,toff,nbins,expt,xlbl1,nSpl,h.fig_MASH,...
         h.axes_blinkoff.UserData{em});
     h.axes_blinkon.UserData{em} = plotbleachnblinkstats(h.axes_blinkon,...
-        h.popup_scale.Value,ont,nbins,expt,xlbl2,nSpl,h.fig_MASH,...
+        h.popup_scale.Value,ton,nbins,expt,xlbl2,nSpl,h.fig_MASH,...
         h.axes_blinkon.UserData{em});
 
     % draw blinking reaction diagram
@@ -118,12 +125,13 @@ if any(strcmp(dattype,{'blink','all'}))
         q.theta0 = 135;
         q.fntszprob = 8;
         q.useletter = {'off','on'};
-        q.radius = [sum(offt(1,:))/sum([offt(1,:),ont(1,:)]),...
-            sum(ont(1,:))/sum([offt(1,:),ont(1,:)])];
+        q.radius = [sum(toff(1,:))/sum([toff(1,:),ton(1,:)]),...
+            sum(ton(1,:))/sum([toff(1,:),ton(1,:)])];
         q.hdlgth = 5;
         q.insec = insec;
         if insec
             q.signb = 2;
+            tp = tp/expt;
         end
         h.axes_blinkschm.UserData = ...
             drawtransscheme(h.axes_blinkschm,[0,1],tp,q);
@@ -136,9 +144,31 @@ setContPan('Photobleaching/blinking stats are up to date!','success',...
 
 
 function res = plotbleachnblinkstats(ax,sc,dt,nbins,expt,xlbl,nSpl,fig0,ud)
+% res = plotbleachnblinkstats(ax,sc,dt,nbins,expt,xlbl,nSpl,fig0,ud)
+% res = plotbleachnblinkstats(ax,sc,dt,nbins,[],xlbl,nSpl,fig0,ud)
+%
+% Calculate dwell time histogram, bootstrap fit with single exponential 
+% decay and plot results.
+%
+% ax: axes handle where to plot results
+% sc: axis scale (1: x- and y-linear, 2: x-linear y-log, 3: y-linear x-log, 
+%     4: x- and y-log)
+% dt: [nDt-by-2] dwell times and state values
+% nbins: nb. of histogram bins
+% expt: video sampling time (in second) to display times in seconds, or
+%       empty to display times in nb. of sampling steps
+% xlbl: string for x-axis label
+% nSpl: nb. of bootstrap samples
+% fig0: handle to main MASH figure
+% ud: previous fit results if any (stored in axes' UserData for specific 
+%     emitter)
+
 % init output
 res = struct('bincenter',[],'binedges',[],'cnt',[],'cmplP',[],'fit',[],...
     'lowfit',[],'upfit',[],'A',[],'dA',[],'tau',[],'dtau',[]);
+
+% check time units for display
+insec = ~isempty(expt);
 
 if size(dt,2)>1
     % collect data and fit results
@@ -156,7 +186,7 @@ if size(dt,2)>1
         dtau = res.dtau;
     else
         [cnt,edg,x,y,yfit,yfit_low,yfit_up,amp,damp,tau,dtau] = ...
-            calcandfit(dt,nbins,expt,nSpl,fig0);
+            calcandfit(dt,nbins,nSpl,fig0);
 
         % store results in output
         res.cnt = cnt;
@@ -170,6 +200,17 @@ if size(dt,2)>1
         res.dA = damp;
         res.tau = tau;
         res.dtau = dtau;
+    end
+
+    if insec
+        x = x*expt;
+        tau = tau*expt;
+        dtau = dtau*expt;
+        tau_str = ' s';
+        xlbl = [xlbl, ' in seconds'];
+    else
+        tau_str = '';
+        xlbl = [xlbl, ' in time steps'];
     end
 
     % plot ref hist
@@ -190,13 +231,6 @@ if size(dt,2)>1
     % show fit results
     xtxt = ax.XLim(2);
     ytxt = ax.YLim(2);
-    if expt~=1
-        tau_str = ' s';
-        xlbl = [xlbl, ' in seconds'];
-    else
-        tau_str = '';
-        xlbl = [xlbl, ' in time steps'];
-    end
     text(ax,xtxt,ytxt,sprintf(['A=(%.2f',char(177),'%.2f)\ntau=(%.2f',...
         char(177),'%.2f)',tau_str],amp,damp,tau,dtau),'color','red',...
         'horizontalalignment','right','verticalalignment','top',...
@@ -213,7 +247,7 @@ end
 
 
 function [cnt,edg,x,y,yfit,ylow,yup,A,dA,tau,dtau] = calcandfit(dt,nbins,...
-    expt,nSpl,fig0)
+    nSpl,fig0)
 % initialize output
 yfit = [];
 ylow = [];
@@ -227,7 +261,7 @@ dtau = [];
 [cnt,edg] = histcounts(dt(1,:),linspace(1,max(dt(1,:)),nbins));
 y = cumsum(cnt);
 y = 1-y/sum(cnt);
-x = mean([edg(1:end-1);edg(2:end)])*expt;
+x = mean([edg(1:end-1);edg(2:end)]);
 
 % bootstrap fit data
 setContPan('Photobleaching/blinking stats: perform bootstrap fit...',...
@@ -245,8 +279,10 @@ for spl = 1:nSpl
     end
     yspl = cumsum(cntspl);
     yspl = 1-yspl/sum(cntspl);
-    xspl = mean([edgspl(1:end-1);edgspl(2:end)])*expt;
-    fitres = fit(xspl(cntspl>0)', yspl(cntspl>0)', 'exp1');
+    xspl = mean([edgspl(1:end-1);edgspl(2:end)]);
+    fitres = fit(xspl(cntspl>0)', yspl(cntspl>0)', 'exp1', 'lower',...
+        [1E-6,-Inf], 'upper', [2,0], 'startpoint', ...
+        [1,-1/mean(dtspl(1,:))]);
     amp_spl = cat(1,amp_spl,fitres.a);
     tau_spl = cat(1,tau_spl,-1/fitres.b);
 end
