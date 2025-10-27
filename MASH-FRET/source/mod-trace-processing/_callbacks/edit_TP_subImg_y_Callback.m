@@ -4,20 +4,13 @@ h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
 mol = p.ttPr.curr_mol(proj);
-refocus = p.proj{proj}.TP.fix{1}(5);
 nC = p.proj{proj}.nb_channel;
 itg_dim = p.proj{proj}.pix_intgr(1);
 viddat = p.proj{proj}.movie_dat;
 vidfile = p.proj{proj}.movie_file;
 viddim = p.proj{proj}.movie_dim;
 
-multichanvid = numel(viddim)==1;
-
-if refocus
-    updateActPan('Impossible to modify coordinates in "recenter" mode', ...
-        h_fig, 'error');
-    return
-end
+multichanvid = isscalar(viddim);
 
 chan = get(h.popupmenu_TP_subImg_channel,'value');
 
@@ -29,7 +22,7 @@ end
 lim = [0,viddim{mov}(1)];
 
 val = str2num(get(obj,'string'));
-if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
+if ~(~isempty(val) && isscalar(val) && ~isnan(val) && ...
         (ceil(val) - floor(itg_dim/2)) > lim(1) && ...
         (ceil(val) + floor(itg_dim/2)) < lim(2))
 

@@ -9,15 +9,8 @@ itg_dim = p.proj{proj}.pix_intgr(1);
 viddat = p.proj{proj}.movie_dat;
 vidfile = p.proj{proj}.movie_file;
 viddim = p.proj{proj}.movie_dim;
-refocus = p.proj{proj}.TP.fix{1}(5);
 
-multichanvid = numel(viddim)==1;
-
-if refocus
-    setContPan('Impossible to modify coordinates in "recenter" mode',...
-        'error',h_fig);
-    return
-end
+multichanvid = isscalar(viddim);
 
 chan = get(h.popupmenu_TP_subImg_channel,'value');
 if multichanvid
@@ -32,7 +25,7 @@ end
     
 val = str2num(get(obj,'string'));
 
-if ~(~isempty(val) && numel(val) == 1 && ~isnan(val) && ...
+if ~(~isempty(val) && isscalar(val) && ~isnan(val) && ...
         (ceil(val) - floor(itg_dim/2)) > lim(1) && ...
         (ceil(val) + floor(itg_dim/2)) < lim(2))
 
