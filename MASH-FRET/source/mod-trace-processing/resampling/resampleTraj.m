@@ -27,10 +27,10 @@ expt0_alex = splt0*nExc; % multiple time bin for ALEX data
 framenb = reshape(1:L,nExc,nRow)';
 dat = [];
 colt = [];
-for e = 1:nExc
+for exc = 1:nExc
     colt = cat(2,colt,size(dat,2)+1);
-    dat = cat(2,dat,[expt0_alex*framenb(:,e),framenb(:,e),...
-        I0(:,((m-1)*nC+1):(nC*m),e)]);
+    dat = cat(2,dat,[expt0_alex*framenb(:,exc),framenb(:,exc),...
+        I0(:,((m-1)*nC+1):(nC*m),exc)]);
 end
 
 % bins data
@@ -41,8 +41,8 @@ end
 
 % formats binned data and appends project data
 I = [];
-for e = 1:nExc
-    I = cat(3,I,dat(:,((e-1)*(nC+2)+3):(e*(nC+2))));
+for exc = 1:nExc
+    I = cat(3,I,dat(:,((exc-1)*(nC+2)+3):(exc*(nC+2))));
 end
 
 % resets data in projects and processing parameters
