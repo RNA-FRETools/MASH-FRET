@@ -24,7 +24,7 @@ if val==p.proj{proj}.TP.fix{5}
 end
 
 p.proj{proj}.TP.fix{5} = val;
-p.proj{proj}.intensities_bin = NaN(size(p.proj{proj}.intensities_bgCorr));
+p.proj{proj}.intensities_bin = [];
 
 h.param = p;
 guidata(h_fig, h);
