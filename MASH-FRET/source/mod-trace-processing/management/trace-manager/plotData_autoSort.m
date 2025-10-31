@@ -29,8 +29,13 @@ if ~is2D % 1D histograms
         limx = dat1.lim(indx,:);
         nivx = dat1.niv(indx);
     else
-        trace_x = dat3.val{indx,jx}(:,1);
-        limx = dat3.lim(indx,:,jx);
+        if ~isempty(dat3.val{indx,jx})
+            trace_x = dat3.val{indx,jx}(:,1);
+            limx = dat3.lim(indx,:,jx);
+        else
+            trace_x = [];
+            limx = [0,1];
+        end
         nivx = dat3.niv(jx,indx);
     end
     [P,iv] = getHistTM(trace_x,limx,nivx,xlogbin);
@@ -38,12 +43,13 @@ if ~is2D % 1D histograms
     if isempty(P)
         setContPan(cat(2,'No calculated data available: start calculation',...
             ' or select another type of calculation.'),'error',h_fig);
+    else
+        % plot histogram
+        histogram(h.tm.axes_histSort,'binedges',iv,'bincounts',P,...
+            'edgecolor',dat1.color{indx},'facecolor',dat1.color{indx},...
+            'hittest','off','pickableparts','none');
     end
     
-    % plot histogram
-    histogram(h.tm.axes_histSort,'binedges',iv,'bincounts',P,'edgecolor',...
-        dat1.color{indx},'facecolor',dat1.color{indx},'hittest','off',...
-        'pickableparts','none');
     
     % set axis scales
     if xlogbin
@@ -104,14 +110,19 @@ else % 2D histograms
             nivx = dat1.niv(indx);
             limx = dat1.lim(indx,:);
         else
-            trace_x = dat3.val{indx,jx}(:,1);
+            if ~isempty(dat3.val{indx,jx})        % cutoffs exist only for 
+                trace_x = dat3.val{indx,jx}(:,1); % total intensities, 
+                limx = dat3.lim(indx,:,jx);       % empty otherwise
+            else                                  
+                trace_x = [];
+                limx = [0,1];
+            end
             if size(dat3.val{indx,jx},2)>=2
                 mols = dat3.val{indx,jx}(:,2);
             else
                 mols = (1:size(dat3.val{indx,jx},1))';
             end
             nivx = dat3.niv(jx,indx);
-            limx = dat3.lim(indx,:,jx);
         end
         if jy==0 
             trace_y = dat1.trace{indy}(:,1);
@@ -120,47 +131,51 @@ else % 2D histograms
         else
             if ~isempty(dat3.val{indy,jy})        % cutoffs exist only for 
                 trace_y = dat3.val{indy,jy}(:,1); % total intensities, 
-            else                                  % empty otherwise
+                limy = dat3.lim(indy,:,jy);       % empty otherwise
+            else                           
                 trace_y = [];
-                trace_x = []; % cancel calculations when no data
+                limy = [0,1];
             end
             nivy = dat3.niv(jy,indy);
-            limy = dat3.lim(indy,:,jy);
         end
     end
-    if h.tm.checkbox_AS_datcnt.Value % one count per molecule
-        P2D = [];
-        for m = unique(mols)'
-            id = (mols==m)';
-            [P2D_m,iv] = getHistTM([trace_x(id,:),trace_y(id,:)],...
-                [limx;limy],[nivx,nivy],[xlogbin,ylogbin]);
-            if isempty(P2D)
-                P2D = double(~~P2D_m);
-            else
-                P2D = P2D+double(~~P2D_m);
+
+    % compute 2D histogram
+    P2D = [];
+    if ~(isempty(trace_x) || isempty(trace_y))
+        if h.tm.checkbox_AS_datcnt.Value % one count per molecule
+            for m = unique(mols)'
+                id = (mols==m)';
+                [P2D_m,iv] = getHistTM([trace_x(id,:),trace_y(id,:)],...
+                    [limx;limy],[nivx,nivy],[xlogbin,ylogbin]);
+                if isempty(P2D)
+                    P2D = double(~~P2D_m);
+                else
+                    P2D = P2D+double(~~P2D_m);
+                end
             end
+            ivx = iv{1};
+            ivy = iv{2};
+        else
+            [P2D,iv] = getHistTM([trace_x,trace_y],[limx;limy],[nivx,nivy],...
+                [xlogbin,ylogbin]);
+            ivx = iv{1};
+            ivy = iv{2};
         end
-        ivx = iv{1};
-        ivy = iv{2};
-    else
-        [P2D,iv] = getHistTM([trace_x,trace_y],[limx;limy],[nivx,nivy],...
-            [xlogbin,ylogbin]);
-        ivx = iv{1};
-        ivy = iv{2};
-    end
-    
-    if h.tm.checkbox_AS_gauss.Value
-        P2D = gconvTDP(P2D,[-0.2,1.2],0.01);
+
+        if h.tm.checkbox_AS_gauss.Value
+            P2D = gconvTDP(P2D,[-0.2,1.2],0.01);
+        end
     end
 
     if isempty(P2D)
         setContPan(cat(2,'No calculated data available: start calculation',...
             ' or select another type of calculation.'),'error',h_fig);
+    else
+        histogram2(h.tm.axes_histSort,'xbinedges',ivx,'ybinedges',...
+            ivy,'bincounts',P2D','DisplayStyle','tile');
     end
-    
-    histogram2(h.tm.axes_histSort,'xbinedges',ivx,'ybinedges',...
-        ivy,'bincounts',P2D','DisplayStyle','tile');
-    
+   
     % set axis scales
     if xlogbin
         h.tm.axes_histSort.XScale = 'log';
@@ -192,7 +207,7 @@ else % 2D histograms
     else
         ylabel(h.tm.axes_histSort,dat3.label{indy,jy});
     end
-
+    
     xlim(h.tm.axes_histSort,limx);
     ylim(h.tm.axes_histSort,limy);
     
