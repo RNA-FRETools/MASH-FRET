@@ -53,12 +53,16 @@ if isempty(kx_all) % from presets
     wx_all = presets.wx./sum(presets.wx,2);
     wx_all(isnan(wx_all)) = 0;
     tau_all = presets.tau; % [J-by-N]
+    for n = 1:N
+        k_n = wx_all(:,:,n).*repmat(1./(tau_all(:,n)),[1,J]);
+        kx_all = cat(3,kx_all,k_n);
+    end
 else % from transition rates
     kx_all = kx_all(1:J,1:J,:);
-    for n = 1:size(kx_all,3)
-        kn = kx_all(:,:,n);
-        kn(~~eye(J)) = 0;
-        kx_all(:,:,n) = kn;
+    for n = 1:N
+        k_n = kx_all(:,:,n);
+        k_n(~~eye(J)) = 0;
+        kx_all(:,:,n) = k_n;
     end
     wx_all =  kx_all./repmat(sum(kx_all,2),[1,J]);
     wx_all(isnan(wx_all)) = 0;
@@ -68,9 +72,20 @@ end
 % get proper starting probabilities
 if isPresets && isfield(presets, 'p0') % initial state prob. from presets
     ip_all = presets.p0;
-else % initial prob. calculated from state lifetimes
-    ip_all = tau_all./repmat(sum(tau_all,1),[J,1,1]); % [J-by-N]
-    ip_all = ip_all';
+% else % initial prob. calculated from state lifetimes
+%     ip_all = tau_all./repmat(sum(tau_all,1),[J,1,1]); % [J-by-N]
+%     ip_all = ip_all';
+else % initial prob. calculated from transition matrix eigenvectors
+    ip_all = [];
+    for n = 1:N
+        tp_n = kx_all(:,:,n);
+        tp_n(~~eye(J)) = 1-sum(tp_n,2);
+        [V,D] = eig(tp_n');
+        idx = find(abs(diag(D) - 1) < 1e-10,1);
+        ip_n = V(:,idx)'; 
+        ip_n = ip_n/sum(ip_n); 
+        ip_all = cat(1,ip_all,ip_n); % [N-by-J]
+    end
 end
 
 % initializes results
