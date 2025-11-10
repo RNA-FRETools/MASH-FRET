@@ -185,62 +185,44 @@ for proj = slct
     end
 
     % intensities
-    I = extendTrace(p.proj{proj}.intensities,L0,NaN);
+    I = extendMat(p.proj{proj}.intensities,L,NaN);
     s.intensities = cat(2,s.intensities,I(:,:,laserOrder));
     
-    I_bgCorr = extendTrace(p.proj{proj}.intensities_bgCorr,L0,NaN);
+    I_bgCorr = extendMat(p.proj{proj}.intensities_bgCorr,L,NaN);
     s.intensities_bgCorr = ...
         cat(2,s.intensities_bgCorr,I_bgCorr(:,:,laserOrder));
     
-    if p.proj{proj}.resampling_time==splt
-        I_bin = extendTrace(p.proj{proj}.intensities_bin,L,NaN);
-        I_crossCorr = extendTrace(p.proj{proj}.intensities_crossCorr,L,NaN);
-        I_denoise = extendTrace(p.proj{proj}.intensities_denoise,L,NaN);
-        bool_I = extendTrace(p.proj{proj}.bool_intensities,L,false);
-        em_is_on = extendTrace(p.proj{proj}.emitter_is_on,L,false);
-        I_DTA = extendTrace(p.proj{proj}.intensities_DTA,L,NaN);
-        if nFRET>0
-            FRET_DTA = extendTrace(p.proj{proj}.FRET_DTA,L,NaN);
-        end
-        if nS>0
-            S_DTA = extendTrace(p.proj{proj}.S_DTA,L,NaN);
-        end
-    else
-        I_bin = NaN([L,size(s.intensities,[2,3])]);
-        I_crossCorr = I_bin;
-        I_denoise = I_bin;
-        I_DTA = I_bin;
-        bool_I = true(L,N);
-        em_is_on = true(L,size(I_bin,2));
-        if nFRET>0
-            FRET_DTA = NaN(L,nFRET);
-        end
-        if nS>0
-            S_DTA = NaN(L,nS);
-        end
-    end
-    s.intensities_bin = cat(2,s.intensities_bin,I_bin(:,:,laserOrder));
+    I_crossCorr = extendMat(p.proj{proj}.intensities_crossCorr,L,NaN);
     s.intensities_crossCorr = ...
         cat(2,s.intensities_crossCorr,I_crossCorr(:,:,laserOrder));
+    
+    I_denoise = extendMat(p.proj{proj}.intensities_denoise,L,NaN);
     s.intensities_denoise = ...
         cat(2,s.intensities_denoise,I_denoise(:,:,laserOrder));
-    s.bool_intensities = cat(2,s.bool_intensities,bool_I);
-    s.emitter_is_on = cat(2,s.emitter_is_on,em_is_on);
+    
+    s.bool_intensities = cat(2,s.bool_intensities,...
+        extendMat(p.proj{proj}.bool_intensities,L,false));
+
+    % state sequences
+    I_DTA = extendMat(p.proj{proj}.intensities_DTA,L,NaN);
     s.intensities_DTA = cat(2,s.intensities_DTA,I_DTA(:,:,laserOrder));
     if nFRET>0
         fret_id = repmat(fretOrder',[1,N]);
         fret_id = reshape((mols-1)*nFRET+fret_id,[1,nFRET*N]);
+        
+        FRET_DTA = extendMat(p.proj{proj}.FRET_DTA,L,NaN);
         s.FRET_DTA = cat(2,s.FRET_DTA,FRET_DTA(:,fret_id));
         
         FRET_DTA_import = p.proj{proj}.FRET_DTA_import;
         if isempty(FRET_DTA_import)
             FRET_DTA_import = NaN(size(p.proj{proj}.FRET_DTA));
         end
-        FRET_DTA_import = extendTrace(FRET_DTA_import,L0,NaN);
+        FRET_DTA_import = extendMat(FRET_DTA_import,L,NaN);
         s.FRET_DTA_import = ...
             cat(2,s.FRET_DTA_import,FRET_DTA_import(:,fret_id));
     end
     if nS>0
+        S_DTA = extendMat(p.proj{proj}.S_DTA,L,NaN);
         s_id = repmat(sOrder',[1,N]);
         s_id = reshape((mols-1)*nS+s_id,[1,nS*N]);
         s.S_DTA = cat(2,s.S_DTA,S_DTA(:,s_id));
@@ -471,22 +453,6 @@ if ~isequal(alllbl,repmat(alllbl(1,:),nProj,1)) && ~mute
     if ok
         lbl = alllbl(id,:);
     end
-end
-
-
-function trace = extendTrace(trace,L,val)
-
-if isa(val,'logical')
-    if val
-        trace = ...
-            cat(1,trace,true(L-size(trace,1),size(trace,2),size(trace,3)));
-    else
-        trace = cat(1,trace,...
-            false(L-size(trace,1),size(trace,2),size(trace,3)));
-    end
-else
-    trace = ...
-        cat(1,trace,val*ones(L-size(trace,1),size(trace,2),size(trace,3)));
 end
 
 
