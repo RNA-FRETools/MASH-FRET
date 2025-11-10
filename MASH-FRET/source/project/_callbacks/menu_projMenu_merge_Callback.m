@@ -180,46 +180,46 @@ for proj = slct
     end
 
     % intensities
-    I = extendTrace(p.proj{proj}.intensities,L,NaN);
+    I = extendMat(p.proj{proj}.intensities,L,NaN);
     s.intensities = cat(2,s.intensities,I(:,:,laserOrder));
     
-    I_bgCorr = extendTrace(p.proj{proj}.intensities_bgCorr,L,NaN);
+    I_bgCorr = extendMat(p.proj{proj}.intensities_bgCorr,L,NaN);
     s.intensities_bgCorr = ...
         cat(2,s.intensities_bgCorr,I_bgCorr(:,:,laserOrder));
     
-    I_crossCorr = extendTrace(p.proj{proj}.intensities_crossCorr,L,NaN);
+    I_crossCorr = extendMat(p.proj{proj}.intensities_crossCorr,L,NaN);
     s.intensities_crossCorr = ...
         cat(2,s.intensities_crossCorr,I_crossCorr(:,:,laserOrder));
     
-    I_denoise = extendTrace(p.proj{proj}.intensities_denoise,L,NaN);
+    I_denoise = extendMat(p.proj{proj}.intensities_denoise,L,NaN);
     s.intensities_denoise = ...
         cat(2,s.intensities_denoise,I_denoise(:,:,laserOrder));
     
     s.bool_intensities = cat(2,s.bool_intensities,...
-        extendTrace(p.proj{proj}.bool_intensities,L,false));
+        extendMat(p.proj{proj}.bool_intensities,L,false));
 
     % state sequences
-    I_DTA = extendTrace(p.proj{proj}.intensities_DTA,L,NaN);
+    I_DTA = extendMat(p.proj{proj}.intensities_DTA,L,NaN);
     s.intensities_DTA = cat(2,s.intensities_DTA,I_DTA(:,:,laserOrder));
     
     if nFRET>0
         fret_id = repmat(fretOrder',[1,N]);
         fret_id = reshape((mols-1)*nFRET+fret_id,[1,nFRET*N]);
         
-        FRET_DTA = extendTrace(p.proj{proj}.FRET_DTA,L,NaN);
+        FRET_DTA = extendMat(p.proj{proj}.FRET_DTA,L,NaN);
         s.FRET_DTA = cat(2,s.FRET_DTA,FRET_DTA(:,fret_id));
         
         FRET_DTA_import = p.proj{proj}.FRET_DTA_import;
         if isempty(FRET_DTA_import)
             FRET_DTA_import = NaN(size(p.proj{proj}.FRET_DTA));
         end
-        FRET_DTA_import = extendTrace(FRET_DTA_import,L,NaN);
+        FRET_DTA_import = extendMat(FRET_DTA_import,L,NaN);
         s.FRET_DTA_import = ...
             cat(2,s.FRET_DTA_import,FRET_DTA_import(:,fret_id));
     end
     
     if nS>0
-        S_DTA = extendTrace(p.proj{proj}.S_DTA,L,NaN);
+        S_DTA = extendMat(p.proj{proj}.S_DTA,L,NaN);
         s_id = repmat(sOrder',[1,N]);
         s_id = reshape((mols-1)*nS+s_id,[1,nS*N]);
         s.S_DTA = cat(2,s.S_DTA,S_DTA(:,s_id));
@@ -446,22 +446,6 @@ if ~isequal(alllbl,repmat(alllbl(1,:),nProj,1))
     end
 else
     lbl = alllbl(1,:);
-end
-
-
-function trace = extendTrace(trace,L,val)
-
-if isa(val,'logical')
-    if val
-        trace = ...
-            cat(1,trace,true(L-size(trace,1),size(trace,2),size(trace,3)));
-    else
-        trace = cat(1,trace,...
-            false(L-size(trace,1),size(trace,2),size(trace,3)));
-    end
-else
-    trace = ...
-        cat(1,trace,val*ones(L-size(trace,1),size(trace,2),size(trace,3)));
 end
 
 
