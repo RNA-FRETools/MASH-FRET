@@ -67,17 +67,30 @@ w(isnan(w)) = 0;
 % generate state sequence in a dwell time-wise fashion
 dt = [];
 l = 0;
-draw0 = rand(1);
+n = 1;
+draw0 = rand(1); % draw a first state
 id = find(cumsum(ip)>draw0);
 state1 = id(1);
-while l<sum(Ls)
+while n<=N && l<sum(Ls)
     if ~isinf(r(state1))
         % draw a dwell time (in number of data points)
         dl = random('exp',1/(r(state1)));
-        if (l+dl)>sum(Ls)
-            dl = sum(Ls)-l;
+
+        if (l+dl)>sum(Ls(1:n))
+            dl = sum(Ls(1:n))-l;
+            l = l+dl;
+
+            dt = cat(1,dt,[dl,state1,state1]);
+
+            n = n+1;
+            draw0 = rand(1); % draw a first state
+            id = find(cumsum(ip)>draw0);
+            state1 = id(1);
+            continue
+
+        else
+            l = l+dl;
         end
-        l = l+dl;
     end
     if sum(w(state1,:))==0
         state2 = state1;
