@@ -126,7 +126,7 @@ mol{1}{2} = [3 0 0
 % Photobleaching
 mol{2}{1}(1) = 0; % obsolete (old: apply cutoff)
 mol{2}{1}(2) = 2; % method
-mol{2}{1}(3) = 1; % global cutoff definitiion (old: channel)
+mol{2}{1}(3) = 0; % obsolete (old: channel)
 mol{2}{1}(4) = 1; % starting frame
 mol{2}{1}(5:6) = [nFrames,nFrames]; % global cutoff frames
 mol{2}{2} = repmat([0.5,0,nFrames],nnz(chanExc>0),1); % (relative) data threshold, time threshold (old: extra frames), cutoff (old: min. cutoff)
