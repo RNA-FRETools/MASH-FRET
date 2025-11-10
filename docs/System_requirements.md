@@ -7,6 +7,8 @@ nav_order: 9
 # System requirements
 
 The different versions of MASH-FRET were developped with different versions of MATLAB and on different operating systems. The correct functioning of MASH-FRET can only be guaranteed for these working environments:
+- MASH-FRET **1.3.5** with MATLAB 24.2 (2024b) on Linux-Unbuntu 24.04.
+- MASH-FRET **1.3.4** with MATLAB 23.2 (2023b) on Linux-Unbuntu 22.04.
 - MASH-FRET **1.3.3** with MATLAB 9.12 (2022a) on Linux-Unbuntu 22.04.
 - MASH-FRET **1.3.2** with MATLAB 9.10 (2021a) on Linux-Unbuntu 20.04.
 - MASH-FRET **1.3.1** with MATLAB 9.9 (2020b) on Windows 8.1 and Linux-Unbuntu 20.04.
