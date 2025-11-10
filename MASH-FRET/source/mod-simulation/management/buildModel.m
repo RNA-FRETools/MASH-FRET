@@ -48,7 +48,7 @@ elseif ~(isPresets && isfield(presets, 'wx')) % transition rate coefficients fro
     kx_all  = repmat(kx,[1,1,N]);
 end
 
-% get proper transition partition factors and state lifetimes
+% get proper exit distribution and state lifetimes
 if isempty(kx_all) % from presets
     wx_all = presets.wx./sum(presets.wx,2);
     wx_all(isnan(wx_all)) = 0;
@@ -72,18 +72,40 @@ end
 % get proper starting probabilities
 if isPresets && isfield(presets, 'p0') % initial state prob. from presets
     ip_all = presets.p0;
-% else % initial prob. calculated from state lifetimes
-%     ip_all = tau_all./repmat(sum(tau_all,1),[J,1,1]); % [J-by-N]
-%     ip_all = ip_all';
-else % initial prob. calculated from transition matrix eigenvectors
+    
+else % initial prob. from stationary eigen vector (stationary distrib)
     ip_all = [];
     for n = 1:N
-        tp_n = kx_all(:,:,n);
+        tau_n = tau_all(:,n);
+        k_n = kx_all(:,:,n);
+        tp_n = k_n;
         tp_n(~~eye(J)) = 1-sum(tp_n,2);
         [V,D] = eig(tp_n');
-        idx = find(abs(diag(D) - 1) < 1e-10,1);
-        ip_n = V(:,idx)'; 
-        ip_n = ip_n/sum(ip_n); 
+        idx = find(abs(real(diag(D)) - 1) < 1e-10);
+        isirred = isscalar(idx) & all(sum(k_n,2)>0) & all(~isinf(tau_n)); 
+        if isirred % irreducible systems
+            ip_n = real(V(:,idx))'; 
+            ip_n = ip_n/sum(ip_n);
+        else
+            ip_n = NaN(1,J);
+        end
+
+        % for non stationary system, initial prob. etimated from lifetimes
+        isnonstat = any(isnan(ip_n)) || any(isinf(ip_n)) || ...
+            any(abs(ip_n*tp_n-ip_n) > 1e-12);
+        if isnonstat
+            ip_n = tau_all(:,n)'./sum(tau_all(:,n));
+            if all(~isnan(ip_n) & ~isinf(ip_n))
+                setContPan(sprintf(['state transition network of molecule',...
+                    ' %i is reducible: initial state probabilities are ',...
+                    'estimated from state lifetimes.'],n),'warning',h_fig);
+            else
+                ip_n = ones(1,J)/J;
+                setContPan(sprintf(['state transition network of molecule',...
+                    ' %i is reducible: uniform initial state ',...
+                    'probabilities are used.'],n),'warning',h_fig);
+            end
+        end
         ip_all = cat(1,ip_all,ip_n); % [N-by-J]
     end
 end
