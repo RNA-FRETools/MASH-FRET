@@ -45,17 +45,7 @@ else
     for j = 1:J
         pop0(j) = sum(simdat.dt(simdat.dt(:,3)==j,1))/dtSum;
     end
-    ntrs0 = zeros(J);
-    for j1 = 1:J
-        for j2 = 1:J
-            if j1==j2
-                continue
-            end
-            ntrs0(j1,j2) = sum(simdat.dt(:,3)==j1 & simdat.dt(:,4)==j2);
-        end
-    end
-    ntrs0(tp<simdat.tpmin) = 0;
-    
+
     % order states by value and lifetime
     stateval = sort(unique(states));
     tp = prm.mdl_res{1};
@@ -74,13 +64,10 @@ else
         lt(j_v) = lt_v(id_v);
     end
     pop = pop0(id_j);
-    ntrs = zeros(J);
-    for j1 = 1:J
-        for j2 = 1:J
-            ntrs(j1,j2) = ntrs0(id_j(j1),id_j(j2));
-        end
-    end
     
+    kin = tp;
+    kin(~~eye(size(kin))) = 0;
+    ntrs = kin;
     drawDiagram(h_axes(1),states,ntrs,pop,lt);
 end
 
