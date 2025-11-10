@@ -122,9 +122,6 @@ else
 end
 
 try
-    if isTime
-        times = [];
-    end
     switch delim
         case 1
             delimchar = {sprintf('\t'),' '};
@@ -141,47 +138,21 @@ try
     end
     for i = 1:size(fname,2)
         
-        % read file
-        dat = [];
+        % read file columns into cells
         f = fopen([pname fname{i}], 'r');
-        if i==1
-            for line = 1:(row1-1)
-                fgetl(f);
-            end
-            str = split(fgetl(f),delimchar)';
-            excl = false(1,numel(str));
-            for col = 1:numel(str)
-                chars = unique(str{col});
-                if numel(chars)==0 || (numel(chars)==1 && chars==' ')
-                    excl(col) = true;
-                end
-            end
-            str(excl) = [];
-            nCol = numel(str);
-            frewind(f);
-        end
-        for line = 1:(row1-1)
-            fgetl(f);
-        end
-        scdat = reshape(fscanf(f,...
-            ['%f',repmat(' %f',[1,nCol-1]),'\n'],nCol*bufferSz),nCol,...
-            [])' ;
-        while ~isempty(scdat)
-            if ~isempty(dat) && size(scdat,2)~=size(dat,2)
-                if size(scdat,2)<size(dat,2)
-                    scdat = cat(2,scdat,...
-                        cell(1,size(dat,2)-size(scdat,2)));
-                else
-                    dat = cat(2,dat,...
-                        cell(size(dat,1),size(scdat,2)-size(dat,2)));
-                end
-            end
-            dat = cat(1,dat,scdat);
-            scdat = reshape(fscanf(f,...
-                ['%f',repmat(' %f',[1,nCol-1]),'\n'],nCol*bufferSz),...
-                nCol,[])' ;
-        end
+        dat = readFileDataToCell(f,row1,delimchar);
         fclose(f);
+
+        % determine maximum length
+        Lmax = max(cellfun(@numel,dat));
+
+        % extend each column to maximum length
+        for col = 1:size(dat,2)
+            dat{col} = extendMat(dat{col},Lmax,NaN);
+        end
+
+        % convert to matrix
+        dat = cell2mat(dat);
         
         % collect import parameters
         nCol = size(dat,2);
@@ -251,7 +222,7 @@ try
                     if ~isempty(colIl) && numel(colIrange)~=size(colIl,2)
                         setContPan(['Unable to load intensity trajectories ',...
                             'from file: ' fname{i} '\nThe numbers of ',...
-                            'trajectories for each channel are different ',...
+                            'trajectories in each channel are different ',...
                             'when they should all be equal to the number ',...
                             'of molecules in the file.\nPlease correct ',...
                             'the import options and try again.'],'error',...
@@ -405,40 +376,6 @@ try
             s = [];
             return
         end
-        
-%         % import molecule coordinates from file's header
-%         coord_n = [];
-%         if coordintrace
-%             coordTxt = dat(row_coord,:);
-%             coord_raw = [];
-%             for j = 1:size(coordTxt,1)
-%                 c = str2double(coordTxt{j,1});
-%                 if ~isempty(c) && size(c,2)==2
-%                     coord_raw = cat(1,coord_raw,c);
-%                 end
-%             end
-%             for chan = 1:nChan
-%                 coord_n(:,(2*chan-1):2*chan) = coord_raw(chan:nChan:end,:);
-%             end
-%             if isempty(coord_n)
-%                 loading_bar('close', h_fig);
-%                 updateActPan(['Molecule coordinates not found in file: ' ...
-%                     fname{i}], h_fig, 'error');
-%                 s = [];
-%                 return
-%             end
-%             
-%             if size(I,2)/nChan ~= size(coord_n,1)
-%                 loading_bar('close', h_fig);
-%                 updateActPan(['Number of intensity-time traces inconsistent ' ...
-%                     'with number of coordinates'], h_fig, 'error');
-%                 s = [];
-%                 return
-%             end
-%         end
-%         
-%         % add file's coordinates to existing coordinates
-%         coord = cat(1,coord,coord_n);
 
         if islb && loading_bar('update', h_fig)
             return
