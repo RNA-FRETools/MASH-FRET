@@ -111,7 +111,7 @@ end
 tp_iter = tp_all(:,:,bestrestart(1));
 ip = ip_all(bestrestart(1),:);
 tp_sim = tp_iter;
-tp_sim(tp_sim<tpmin) = 0;
+% tp_sim(tp_sim<tpmin) = 0;
 simdat = plotKinMdlSim(degen,tp_sim,ip,expPrm,h_fig1);
 simdat.tpmin = tpmin;
 
