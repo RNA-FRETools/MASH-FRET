@@ -24,7 +24,7 @@ while ~feof(f)
 end
 
 % format cell array as a cell vector
-datarrnum = cellfun(@str2num,datarr);
+datarrnum = cellfun(@str2num,datarr,'UniformOutput',false);
 nCols = size(datarrnum,2);
 datvect = cell(1,nCols);
 for col = 1:nCols

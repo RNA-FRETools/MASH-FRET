@@ -162,16 +162,21 @@ try
         colseq2(colseq2==0) = nCol;
         
         % get time information from first file
-        if isTime && i==1
-            times = dat(:,colt);
-        
-            % get exposure time and laser order
-            if rowwise==1
-                exptime = abs(times(2)-times(1));
-                lasord = 1:nExc;
+        if i==1
+            if isTime
+                times = dat(:,colt);
+            
+                % get exposure time and laser order
+                if rowwise==1
+                    exptime = abs(times(2)-times(1));
+                    lasord = 1:nExc;
+                else
+                    [tfirstexc,lasord] = sort(times(1,:));
+                    exptime = abs(tfirstexc(2)-tfirstexc(1));
+                end
             else
-                [tfirstexc,lasord] = sort(times(1,:));
-                exptime = abs(tfirstexc(2)-tfirstexc(1));
+                lasord = 1:nExc;
+                exptime = 1;
             end
         end
         
