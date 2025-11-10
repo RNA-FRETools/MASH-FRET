@@ -3,6 +3,8 @@ function p = calcCutoff(mol, p)
 % defaults
 extra0 = 0; % old parameter prm{2}(chan,2)
 mincut0 = 1; % old parameter prm{2}(chan,3)
+minprc = 1; % percentage of the traj in the off state after cutoff
+cutev = 1; % 1 to cut trajectory at first pb event, 2 for last
 
 proj = p.curr_proj;
 
@@ -30,9 +32,9 @@ else
     end
     minofft = prm{2}(:,2);
     thresh = prm{2}(:,1);
-    cutev = prm{1}(3);
     [incl_em,cutOff] = calcCutoff_thresh(trace,minofft,start,thresh,...
-        repmat(extra0,size(trace,1),1),repmat(mincut0,size(trace,1),1),mol);
+        repmat(extra0,size(trace,1),1),repmat(mincut0,size(trace,1),1),...
+        minprc,mol);
     incl = all(incl_em,2);
     switch cutev
         case 1

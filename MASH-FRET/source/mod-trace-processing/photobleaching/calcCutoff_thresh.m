@@ -1,5 +1,5 @@
 function [incl,cutOff] = calcCutoff_thresh(trace,minofft,start,thresh,...
-    extra,mincut,mol)
+    extra,mincut,minprc,mol)
 
 % determine last valid data
 lastN = find(all(~isnan(trace),[3,2]),1,'last');
@@ -32,7 +32,7 @@ prc = cumsum(double(trace<repmat(thresh,1,Ltrunc)),2,'reverse')./...
     repmat((Ltrunc:-1:1),[ntraj,1]);
 cutOff = repmat(lastN,1,ntraj);
 for n = 1:ntraj
-    cutOff_n = find(prc(n,:)>=0.99,1,'first')+start-1-extra(n);
+    cutOff_n = find(prc(n,:)>=minprc,1,'first')+start-1-extra(n);
     if ~isempty(cutOff_n) && cutOff_n<lastN && cutOff_n>=mincut(n) && ...
             (lastN-cutOff_n)>=minofft(n)
         cutOff(n) = cutOff_n;

@@ -22,7 +22,9 @@ if start==0
 end
 extra = ceil(extra/nExc);
 mincut = ceil(mincut/nExc);
+minprc = 1;
 
-[~,cutOff] = calcCutoff_thresh(I_a,minofft,start,thresh,extra,mincut,1);
+[~,cutOff] = calcCutoff_thresh(I_a,minofft,start,thresh,extra,mincut,...
+    minprc,1);
 
 
