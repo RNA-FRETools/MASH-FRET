@@ -37,10 +37,9 @@ if ~isempty(varargin)
 end
 Ls = expPrm.Ls;
 expT = expPrm.expT;
-dt_exp0 = expPrm.dt;
+dt_exp = expPrm.dt;
 excl = expPrm.excl;
 V = numel(degen);
-dt_exp = dt_exp0;
 
 % simulate state sequences with actual model parameters
 res = simStateSequences(tp,ip,Ls);
