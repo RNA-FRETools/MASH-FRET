@@ -294,32 +294,57 @@ To sort molecules and save a particular subgroup:
 It can happen that emitters get photochemically destroyed after absorbing a certain amount of photons. 
 This phenomenon is called photobleaching and results in the permanent loss of signal in the dye-specific emission channel, which in turn translates into a drop of the corresponding intensity-time trace to zero.
 
-![Effect of photobleaching of intensity ratio](../assets/images/figures/TP-workflow-scheme-photobleaching.png "Effect of photobleaching of intensity ratio")
+![Effect of photobleaching on intensity ratio](../assets/images/figures/TP-workflow-scheme-photobleaching.png "Effect of photobleaching on intensity ratio")
 
 On the other hand, reversible changes in the structure or environment of the emitters can induce temporary interruption of dye emission, which results in short-lived drops of intensity-time traces to zero. 
 
+![Effect of blinking on intensity ratio](../assets/images/figures/TP-workflow-scheme-blinking.png "Effect of blinking on intensity ratio")
+
 These zero-intensity portions of the time trace may bias the following histogram and transition analysis by creating irrelevantly fluctuating FRET data. 
-To prevent such bias, it is necessary to detect and ignore intensity interruptions by truncating the time traces.
+To prevent such bias, it is necessary to detect intensity interruptions in time traces and ignore them in the following analysis.
 
-Photobleaching is corrected by simply truncating the end of the trajectory.
+The most efficient way to do so is to inspect the so-called total emission intensity trace of each emitter, meaning the intensity trajectory that would be collected if no other fluorophore were around. In this way, all intensity fluctuations due to conformational changes are cancelled and ideally only remains a noisy signal dwelling at a single-dye emission level interrupted by blinking events and terminated by a photobleaching event.
+These trajectories are obtained by summing up background- and crosstalks-corrected intensities accross all emission channels when the emitter-specific excitation laser is used:
 
-For temporary intensity interruptions, simply excising zero-intensity portions from the trace would cause the continuity of the time sequence to be disrupted, and thus, would falsify state lifetimes and state transition rates. 
-Therefore, intensity interruptions are corrected by dividing the trajectory in two separate traces at the time when the intensity interruption ends, and by subsequently truncating the end of the left-trajectory by applying photobleaching correction.
+$$
+I_{k,\mathrm{tot}}\!\left(t \right) = \sum_{i}I_{i,\mathrm{em}}^{k,\mathrm{ex}}\!\left(t \right)
+$$
 
-To truncate temporary intensity interruptions:
+where $$I_{k,\mathrm{tot}}$$ is the total emission intensity trajectory of emitter $$k$$, and $$I_{i,\mathrm{em}}^{k,\mathrm{ex}}$$ is the intensity collected in emission channel $$i$$ upon illumination with laser exciting specifically emitter $$k$$.
 
-{: .procedure }
-1. Set parameters  
-     
-   [Photobleaching detection method](components/panel-photobleaching.html#photobleaching-detection-method) (to `Manual`)  
-   [Photobleaching cutoff](components/panel-photobleaching.html#photobleaching-cutoff) (to the ending of intensity interruption)  
-     
-1. Split traces in two by pressing 
-   ![Split](../assets/images/gui/TP-but-split.png "Split").
-     
-1. Correct the original molecule for photobleaching (as described below)
+The portions of the total emission trajectory that are in a off state can be automatically detected via discretization and relative thresholding.
+Off-state data is ignored from the rest of the analysis (state-finding, histogram analysis, transition analysis).
 
-To detect and truncate photobleached data:
+Rigorous characterization of dye photophysics in the molecule sample is possible by looking at detailed statistics on photobleaching and blinking time distribution.
+The mean survival time $$\tau_{\mathrm{bleach},k}$$ for emitter $$k$$ can be obtained by fitting a single exponential decay to the distribution of times until photobleaching $$\Delta t_{\mathrm{bleach}}$$:
+
+$$
+\Delta t_{\mathrm{bleach},k} \sim \mathrm{Exp}\!\left( \frac{1}{\tau_{\mathrm{bleach},k}} \right)
+$$
+
+In the same manner, blinking kinetics can be obtained by fitting single exponential decays to distributions of "on" and "off" times:
+
+$$
+\Delta t_{\mathrm{on},k} \sim \mathrm{Exp}\!\left( \frac{1}{\tau_{\mathrm{on},k}} \right)
+$$
+
+$$
+\Delta t_{\mathrm{off},k} \sim \mathrm{Exp}\!\left( \frac{1}{\tau_{\mathrm{off},k}} \right)
+$$
+
+and converting mean "off" and "on" times $$\tau_{\mathrm{on},k}$$ and $$\tau_{\mathrm{off},k}$$ into rate constants, such as:
+
+$$
+k_{\mathrm{on},k} = \frac{1}{\tau_{\mathrm{off},k}}
+$$
+
+$$
+k_{\mathrm{off},k} = \frac{1}{\tau_{\mathrm{on},k}}
+$$
+
+where $$k_{\mathrm{on},k}$$ and $$k_{\mathrm{off},k}$$ are the rate constants governing transitions to the "on" and "off" states of emitter $$k$$, respectively.
+
+To detect blinking and photobleaching:
 
 {: .procedure }
 1. If not already done, select the molecule index in the 
@@ -327,9 +352,8 @@ To detect and truncate photobleached data:
      
 1. Set parameters  
      
-   [Photobleaching detection method](components/panel-photobleaching.html#photobleaching-detection-method)  
-   [Method parameters](components/panel-photobleaching.html#method-parameters)  
-   [Truncate trajectories](components/panel-photobleaching.html#truncate-trajectories)  
+   [Photobleaching/blinking detection method](components/panel-photobleaching.html#photobleachingblinking-detection-method) to `Threshold`  
+   [Threshold detection settings](components/panel-photobleaching.html#threshold-detection-settings)  
      
 1. Update data correction and display by pressing 
    ![UPDATE](../assets/images/gui/TP-but-update.png "UPDATE") in the 
@@ -337,6 +361,27 @@ To detect and truncate photobleached data:
      
 1. If desired, apply the same parameter settings to all molecules by pressing 
    ![all](../assets/images/gui/TP-but-all.png "all") in panel  
+   [Photobleaching](components/panel-photobleaching.html) 
+
+
+To obtain statistics on photobleaching and blinking:
+
+{: .procedure }
+1. Set parameters  
+     
+   [Photobleaching/blinking detection method](components/panel-photobleaching.html#photobleachingblinking-detection-method) to `Threshold`  
+   [Threshold detection settings](components/panel-photobleaching.html#threshold-detection-settings)  
+     
+1. Apply the same parameter settings to all molecules by pressing 
+   ![all](../assets/images/gui/TP-but-all.png "all") in panel  
+   [Photobleaching](components/panel-photobleaching.html)  
+     
+1. Update correction for all molecues by pressing 
+   ![UPDATE ALL](../assets/images/gui/TP-but-update-all.png "UPDATE ALL") in the 
+   [Control area](components/area-control.html)  
+     
+1. Open statistics window by pressing 
+   ![Stats](../assets/images/gui/TP-but-stats.png "Stats") in panel 
    [Photobleaching](components/panel-photobleaching.html) 
 
 
