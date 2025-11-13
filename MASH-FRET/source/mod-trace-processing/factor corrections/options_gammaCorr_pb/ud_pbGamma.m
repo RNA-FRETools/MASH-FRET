@@ -26,26 +26,11 @@ end
 
 % update GUI
 set(q.popupmenu_data, 'Value', prm(1));
-set([q.edit_stop,q.edit_threshold,q.edit_extraSubstract,q.edit_minCutoff], ...
-    'BackgroundColor', [1,1,1]);
+set([q.edit_stop,q.edit_threshold,q.edit_tol],'BackgroundColor', [1,1,1]);
 set(q.edit_stop, 'String', num2str(cutOff));
 set(q.edit_threshold, 'String', num2str(prm(2)));
-set(q.edit_extraSubstract, 'String', num2str(prm(3)));
-set(q.edit_minCutoff, 'String', num2str(prm(4)));
 set(q.edit_tol, 'String', num2str(prm(6)));
 set(q.edit_gamma, 'String', num2str(q.prm{1}));
-
-% update the toolstrings depending on the x-axis unit (frames/s)
-if inSec
-    set(q.edit_extraSubstract, 'TooltipString', ...
-        'Extra time to subtract (s)');
-    set(q.edit_minCutoff, 'TooltipString', ...
-        'Min. cutoff time (s)');
-else
-    set(q.edit_extraSubstract, 'TooltipString', ...
-        'Extra frames to subtract');
-    set(q.edit_minCutoff, 'TooltipString', 'Min. cutoff frame');
-end
 
 % update cross
 drawCheck(h_fig2);
