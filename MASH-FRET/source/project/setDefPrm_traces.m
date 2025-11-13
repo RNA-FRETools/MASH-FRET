@@ -129,7 +129,7 @@ mol{2}{1}(2) = 2; % method
 mol{2}{1}(3) = 0; % obsolete (old: channel)
 mol{2}{1}(4) = 1; % starting frame
 mol{2}{1}(5:6) = [nFrames,nFrames]; % global cutoff frames
-mol{2}{2} = repmat([0.5,0,nFrames],nnz(chanExc>0),1); % (relative) data threshold, time threshold (old: extra frames), cutoff (old: min. cutoff)
+mol{2}{2} = repmat([0.25,0,nFrames],nnz(chanExc>0),1); % (relative) data threshold, time threshold (old: extra frames), cutoff (old: min. cutoff)
 
 % Background correction
 if ~trajproj && isCoord && isMov
@@ -285,7 +285,7 @@ for i = 1:nFRET
         lpb(i,1) = find(exc==chanExc(FRET(i,1)));
     end
 end
-mol{6}{3} = [lpb,repmat([0.5,0,0,0,3,nFrames,0],nFRET,1)];
+mol{6}{3} = [lpb,repmat([0.25,0,0,0,10,nFrames,0],nFRET,1)];
 
 % added by MH, 10.1.2020: ES regression
 % [nFRET-by-7] subgroup,E limits, E intervals, 1/S limits, 1/S intervals
