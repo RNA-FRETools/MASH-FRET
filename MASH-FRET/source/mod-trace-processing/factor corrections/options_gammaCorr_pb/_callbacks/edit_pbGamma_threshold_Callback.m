@@ -4,19 +4,10 @@ function edit_pbGamma_threshold_Callback(obj, ~, h_fig, h_fig2)
 val = str2double(get(obj, 'String'));
 set(obj, 'String', num2str(val));
 
-if ~(numel(val)==1 && ~isnan(val))
+if ~(isscalar(val) && ~isnan(val) && val<=1)
     set(obj, 'BackgroundColor', [1 0.75 0.75]);
-    updateActPan('Data threshold must be a number.', h_fig, 'error');
+    updateActPan('Relative data threshold must be <=1.', h_fig, 'error');
     return
-end
-
-h = guidata(h_fig);
-p = h.param;
-proj = p.curr_proj;
-perSec = p.proj{proj}.cnt_p_sec;
-if perSec
-    splt = p.proj{proj}.resampling_time;
-    val = val*splt;
 end
 
 q = guidata(h_fig2);

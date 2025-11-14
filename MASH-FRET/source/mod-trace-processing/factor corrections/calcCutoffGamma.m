@@ -7,34 +7,24 @@
 % combined function "gammaCorr.m" which is called by "updateTraces.m" (and
 % thus "updateFields.m")
 
-function cutOff = calcCutoffGamma(prm, trace, nExc)
+function cutOff = calcCutoffGamma(prm, I_a, nExc)
+
+% default
+minofft = 0;
 
 thresh = prm(1);
 extra = prm(2);
-minCut = prm(3);
+mincut = prm(3);
 start = prm(4);
-lastData = sum(double(~isnan(trace)));
 start = ceil(start/nExc);
-if start == 0
+if start==0
     start = 1;
 end
-
-nbFrames = numel(trace);
-trace = trace(start:nbFrames,:);
-frames = (1:nbFrames)';
 extra = ceil(extra/nExc);
-minCut = ceil(minCut/nExc);
-cutOff = find(trace < thresh) + start - 1;
-if ~isempty(cutOff)
-    cutOff2 = frames(cutOff) - extra;
-    [r,~,~] = find(cutOff2 > minCut);
-    if ~isempty(r) &&  cutOff2(r(1),1)<lastData
-        cutOff = cutOff2(r(1),1);
-    else
-        cutOff = lastData;
-    end
-else
-    cutOff = lastData;
-end
+mincut = ceil(mincut/nExc);
+minprc = 1;
+
+[~,cutOff] = calcCutoff_thresh(I_a,minofft,start,thresh,extra,mincut,...
+    minprc,1);
 
 

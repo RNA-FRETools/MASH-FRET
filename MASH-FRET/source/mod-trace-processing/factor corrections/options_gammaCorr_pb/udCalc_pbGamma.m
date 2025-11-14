@@ -16,11 +16,12 @@ q = guidata(h_fig2);
 prm = q.prm{2}(1:6);
 
 % collect molecule traces
-incl = p.proj{proj}.bool_intensities(:,m);
+% incl = p.proj{proj}.bool_intensities(:,m);
+incl = true(size(p.proj{proj}.bool_intensities(:,m)));
 I_den = p.proj{proj}.intensities_denoise(incl,((m-1)*nChan+1):m*nChan,:);
 prm_dta = p.proj{proj}.TP.curr{m}{4};
 
-[I_dta,cutOff,gamma,ok,str] = gammaCorr_pb(fret,I_den,prm,prm_dta,...
+[I_dta,I_DA,cutOff,gamma,ok,str] = gammaCorr_pb(fret,I_den,prm,prm_dta,...
     p.proj{proj},h_fig);
 if ~ok
     setContPan(str,'warning',h_fig);
@@ -28,7 +29,7 @@ end
 start = find(incl,1);
 cutOff = (start-1+cutOff)*nExc;
 
-q.prm{3} = I_dta;
+q.prm{3} = {I_dta,I_DA};
 q.prm{2}(8) = ok;
 q.prm{2}(7) = cutOff;
 q.prm{1} = round(gamma,2);

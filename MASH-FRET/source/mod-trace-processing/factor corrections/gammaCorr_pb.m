@@ -1,4 +1,4 @@
-function [I_DTA,stop,gamma,ok,str] = gammaCorr_pb(i,I_den,prm,prm_dta,...
+function [I_DTA,I_DA,stop,gamma,ok,str] = gammaCorr_pb(i,I_den,prm,prm_dta,...
     p_proj,h_fig)
 
 % collect project parameters
@@ -18,15 +18,15 @@ calc = prm_dta{1}(3);
 don = FRET(i,1);
 acc = FRET(i,2);
 ldon = find(exc==chanExc(don),1);
-I_AA = I_den(:,acc,prm(1));
 
 % calculate and save cutoff on acceptor trace
-stop = calcCutoffGamma(prm(2:end),I_AA,nExc);
+stop = calcCutoffGamma(prm(2:end),I_den(:,acc,prm(1)),nExc);
 
 % discretize donor and acceptor traces
 is2D = method_dta==3;
 id_don = nC*(ldon-1)+don;
 id_acc = nC*(ldon-1)+acc;
+I_DA = I_den(:,[don,acc],ldon)';
 
 if is2D 
     I_tr = {[I_den(:,don,ldon)';I_den(:,acc,ldon)']};

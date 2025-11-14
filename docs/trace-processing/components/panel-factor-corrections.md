@@ -88,37 +88,28 @@ Factors of all molecules can also be loaded from an external file by pressing
 Photobleaching-based gamma calculation works with intensity state trajectories; see 
 [Method parameters](panel-find-states.html#method-parameters) to configure the state-finding algorithm for donor and acceptor intensity-time traces.
 
-The gamma factor 
-[*&#947;*<sub>*D*,*A*</sub>(*n*)](){: .math_var } correcting apparent FRET values for the donor-acceptor pair 
-([*D*](){: .math_var },[*A*](){: .math_var }) on molecule 
-[*n*](){: .math_var } can be calculated from intensity state trajectories 
-[*state*<sub>*A*,em</sub><sup>*D*,ex</sup>](){: .math_var } and 
-[*state*<sub>*D*,em</sub><sup>*D*,ex</sup>](){: .math_var }, before and after acceptor photobleaching such as:
+The gamma factor $$\gamma_{D,A}\!\left( n \right)$$ correcting apparent FRET values for the donor-acceptor pair ($$D$$,$$A$$) on molecule $$n$$ can be calculated from intensity state trajectories $$IS_{A,\mathrm{em}}^{D,\mathrm{ex}}$$ and $$IS_{D,\mathrm{em}}^{D,\mathrm{ex}}$$, before and after acceptor photobleaching such as:
 
-{: .equation }
-<img src="../../assets/images/equations/TP-eq-gamma-pb.gif" alt="\gamma_{D,A}(n) = \frac{state_{A,em}^{D,ex}(n,t_{0}-tol)-state_{A,em}^{D,ex}(n,t_{0}+tol)}{state_{D,em}^{D,ex}(n,t_{0}-tol)-state_{D,em}^{D,ex}(n,t_{0}+tol)}">
+$$
+\gamma_{D,A}\!\left( n \right) = \frac{IS_{A,\mathrm{em}}^{D,\mathrm{ex}}\!\left(n, t_0 - tol \right) - IS_{A,\mathrm{em}}^{D,\mathrm{ex}}\!\left(n, t_0 + tol \right)}{IS_{D,\mathrm{em}}^{D,\mathrm{ex}}\!\left(n, t_0 - tol \right) - IS_{D,\mathrm{em}}^{D,\mathrm{ex}}\!\left(n, t_0 + tol \right)}
+$$
 
-with 
-[*t*<sub>0</sub>](){: .math_var } the detected photobleaching cutoff and 
-[*tol*](){: .math_var } the tolerance window (in data points) around the photobleaching cutoff.
+with $$t_0$$ the time point where acceptor photobleaching was detected and $$tol$$ the tolerance window (in time points) around the photobleaching cutoff.
 
-Acceptor photobleaching is detected in the acceptor intensity-time trace using the options accessed by pressing 
+Photobleaching detection settings are accessible by pressing 
 ![Opt.](../../assets/images/gui/TP-but-optp.png); options are specific to the FRET pair shown in **(a)**.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-factors-gamma-opt-pb.png"><img src="../../assets/images/gui/TP-panel-factors-gamma-opt-pb.png" style="max-width: 419px;"/></a>
+<a class="plain" href="../../assets/images/gui/TP-panel-factors-gamma-opt-pb.png"><img src="../../assets/images/gui/TP-panel-factors-gamma-opt-pb.png"/></a>
 
 Any acceptor-time trace listed in menu **(b)** can be used for photobleaching detection.
 
-Acceptor photobleaching is detected when the corresponding intensity-time trace drops below a certain intensity threshold defined in **(d)** providing a minimum cutoff value set in **(f)**.
-To ensure detection at the very beginning of acceptor photobleaching, the detected cutoff position can be shifted downwards by a certain number of frames set in **(e)**. 
-Photobleaching cutoff is shown in **(c)** and is indicated on the plot with a blue cursor.
+Acceptor photobleaching is detected when the corresponding intensity state trajectory drops below a certain threshold relative to maximum intensity defined in **(d)**.
+Detected photobleaching cutoff is given in **(c)** in time units defined in menu `Units` of the 
+[menu bar](Getting_started.html#interface), and is indicated on the plot with a blue cursor.
 
-The tolerance window defined around the photobleaching cutoff and used in the gamma factor calculation is set in **(g)** and is shown in the plot by a transparent blue zone around the cursor.
+The tolerance window defined around the photobleaching cutoff and used in the gamma factor calculation is set in **(e)** and is shown in the plot by a transparent blue zone around the cursor.
 
-Parameters **(c)**, **(e)** and **(f)** are given in frame number or in second according to time units defined in menu `Units` of the 
-[menu bar](Getting_started.html#interface), whereas the intensity threshold **(d)** is given in counts or counts per seconds according to the intensity units defined in the same menu.
-
-When photobleaching was successfully detected and when donor and acceptor intensity states are different before and after photobleaching, the resulting gamma factor is shown in **(h)** and the icon 
+When photobleaching was successfully detected and when donor and acceptor intensity states have different values before and after photobleaching, the resulting gamma factor is shown in **(f)** and the icon 
 ![valid](../../assets/images/gui/TP-panel-factors-gamma-opt-valid.png "Valid") appears, otherwise the icon 
 ![invalid](../../assets/images/gui/TP-panel-factors-gamma-opt-invalid.png "Invalid") is shown instead to inform that gamma factors can not be computed.
 
@@ -132,24 +123,21 @@ To save settings and FRET-pair-specific gamma factor, press
 ES linear regression uses corrected intensity-time traces of <u>correctly labelled molecules</u> (with one donor and one acceptor).
 Factor calculations will be reset every time these corrections change.
 
-The gamma and beta factors 
-[*&#947;*<sub>*D*,*A*</sub>(*n*)](){: .math_var } and 
-[*&#946;*<sub>*D*,*A*</sub>(*n*)](){: .math_var } correcting apparent FRET and stoichiometry values for the donor-acceptor pair 
-([*D*](){: .math_var },[*A*](){: .math_var }) on molecule 
-[*n*](){: .math_var } can be calculated from the 2D representation of apparent FRET (x-axis) and inverse apparent stoichiometry (y-axis) values that are linked by the linear equation:
+The gamma and beta factors $$\gamma_{D,A}\!\left( n \right)$$ and $$\beta_{D,A}\!\left( n \right)$$ correcting apparent FRET and stoichiometry values for the donor-acceptor pair ($$D$$,$$A$$) on molecule $$n$$ can be calculated from the 2D representation of apparent FRET (x-axis) and inverse apparent stoichiometry (y-axis) values that are linked by the linear equation:
 
-{: .equation }
-<img src="../../assets/images/equations/TP-eq-gamma-es-01.gif" alt="\frac{1}{S_{D,A}^{*}} = \Omega + \Sigma \times FRET_{D,A}^{*}">
+$$
+\frac{1}{S_{D,A}^*} = \Omega + \Sigma \times FRET_{D,A}^*
+$$
 
-with 
-[&#931;](){: .math_var } the linear coefficient and 
-[&#937;](){: .math_var } the intercept in function of which gamma and beta factors can be expressed, such as:
+with $$\Sigma$$ the linear coefficient and $$\Omega$$ the intercept in function of which gamma and beta factors can be expressed, such as:
 
-{: .equation }
-<img src="../../assets/images/equations/TP-eq-gamma-es-02.gif" alt="\gamma_{D,A} = \frac{\Omega - 1}{\Omega + \Sigma - 1}">
+$$
+\gamma_{D,A} = \frac{\Omega-1}{\Omega+\Sigma-1}
+$$
 
-{: .equation }
-<img src="../../assets/images/equations/TP-eq-gamma-es-03.gif" alt="\beta_{D,A} = \Omega + \Sigma - 1">
+$$
+\beta_{D,A} = \Omega+\Sigma-1
+$$
 
 To increase calculation speed and obtain better data representation, FRET and inverse stoichiometry values are sorted into 2D bins giving the ES histogram.
 The ES histogram is built using the options accessed by pressing 

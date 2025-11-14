@@ -27,19 +27,20 @@ hpop0 = 22;
 wedit0 = 40;
 fact = 5;
 str0 = 'method';
-str1 = 'stop';
+str1 = 'cutoff';
 str2 = {'Manual','Threshold'};
-str3 = 'Clip';
-str4 = 'Split';
+str4 = 'Stats';
 str5 = 'data';
 str6 = 'Select the data to process';
 str7 = 'all';
-ttstr0 = wrapHtmlTooltipString('Select a photobleaching <b>detection method</b>.');
-ttstr1 = wrapHtmlTooltipString('<b>Cutoff time/frame:</b> position on the x-axis where photobleaching was detected; the cutoff is shown by a cyan vertical bar in top and bottom plots.');
-ttstr2 = wrapHtmlTooltipString('<b>Clip traces</b> to cutoff time/frame: when activated, data points beyond the cutoff position are ignored.');
-ttstr3 = wrapHtmlTooltipString('<b>Split trace in two</b> at cutoff position: the molecule will be duplicated in the molecule list and will be given a starting point set to the cutoff position, whereas the original trace will be clip at the cutoff position.');
-ttstr4 = wrapHtmlTooltipString('<b>Select data</b> to analyze for photobleaching detection.');
-ttstr5 = wrapHtmlTooltipString('Apply current photobleaching settings to all molecules.');
+ttstr0 = wrapHtmlTooltipString('Select a photobleaching <b>detection method</b>: <b>Manual</b> when the photobleaching cutoff is defined by the user (blinking detection is not available), <b>Threshold</b> when the photobleaching cutoff and blink-off events are automatically detected on discretized trajectories using a relative intensity threshold.');
+ttstr1 = wrapHtmlTooltipString('<b>Global cutoff time point:</b> time point at which the first photobleaching event was detected; the cutoff is shown by a solid vertical bar in trajectory. The "Clip" option in panel Plot uses this time point to rescale the time axis.');
+ttstr3 = wrapHtmlTooltipString('<b>Bleaching and blinking statistics</b>: opens a tool to visualize and fit survival or blinking time distributions.');
+ttstr4 = wrapHtmlTooltipString('<b>Select an emitter</b> to configure <b>Threshold</b> photobleaching/blinking detection for.');
+ttstr5 = wrapHtmlTooltipString('Apply current photobleaching/blinking settings to all molecules.');
+ttstr6 = wrapHtmlTooltipString('<b>Emitter''s cutoff time point</b>: time point at which photobleaching was detected for this particular emitter; the cutoff is shown by a dotted vertical bar in trajectory plots.');
+ttstr7 = wrapHtmlTooltipString('<b>Data threshold</b>: data value (relative to max. signal value) below which the discretized trajectory is considered to be in the <b>"off" state</b>. The "off" state is represented with a gray-background in the trajectory plots. <b>Photobleaching</b> cutoff is determined when the discretized data dwells 100%% of the remaining time in the "off" state.');
+ttstr8 = wrapHtmlTooltipString('<b>Minimum bleaching time</b>: minimum duration for the last "off" dwell time to be considered as photobleaching instead of blinking.');
 
 % parents
 h_fig = h.figure_MASH;
@@ -47,11 +48,11 @@ h_pan = h.uipanel_TP_photobleaching;
 
 % dimensions
 pospan = get(h_pan,'position');
-wcb0 = getUItextWidth(str3,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbox;
 wbut0 = getUItextWidth(str4,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
 wbut1 = getUItextWidth(str7,p.fntun,p.fntsz1,'normal',p.tbl)+p.wbrd;
-wpop1 = pospan(3)-2*p.mg-4*p.mg/fact-3*wedit0-wbut1;
-wpop0 = pospan(3)-2*p.mg-3*p.mg/fact-wedit0-wcb0-wbut0;
+wpop2 = pospan(3)-2*p.mg-4*p.mg/fact-3*wedit0-wbut1;
+wpop0 = getUItextWidth(str2{2},p.fntun,p.fntsz1,'normal',p.tbl)+p.warr;
+wedit1 = pospan(3)-2*p.mg-2*p.mg/fact-wpop0-wbut0;
 
 % GUI
 x = p.mg;
@@ -65,7 +66,7 @@ x = x+wpop0+p.mg/fact;
 
 h.text_photobl_stop = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,htxt0],'string',str1);
+    [x,y,wedit1,htxt0],'string',str1);
 
 x = p.mg;
 y = y-hpop0;
@@ -80,55 +81,51 @@ y = y+(hpop0-hedit0)/2;
 
 h.edit_photobl_stop = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,hedit0],'callback',{@edit_photobl_stop_Callback,h_fig},...
+    [x,y,wedit1,hedit0],'callback',{@edit_photobl_stop_Callback,h_fig},...
     'tooltipstring',ttstr1);
 
-x = x+wedit0+p.mg/fact;
+x = x+wedit1+p.mg/fact;
 
-h.checkbox_cutOff = uicontrol('style','checkbox','parent',h_pan,'units',...
-    p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wcb0,hedit0],'string',str3,'tooltipstring',ttstr2,'callback',...
-    {@checkbox_cutOff_Callback,h_fig});
-
-x = x+wcb0+p.mg/fact;
-
-h.pushbutton_TP_pbSplit = uicontrol('style','pushbutton','parent',h_pan,...
+h.pushbutton_TP_pbStats = uicontrol('style','pushbutton','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
     [x,y,wbut0,hedit0],'string',str4,'tooltipstring',ttstr3,'callback',...
-    {@pushbutton_TP_pbSplit_Callback,h_fig});
+    {@pushbutton_TP_pbStats_Callback,h_fig});
 
 x = p.mg;
 y = y-p.mg/fact-htxt0;
 
 h.text_bleachChan = uicontrol('style','text','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wpop1,htxt0],'string',str5);
+    [x,y,wpop2,htxt0],'string',str5);
 
 y = y-hpop0;
 
 h.popupmenu_bleachChan = uicontrol('style','popupmenu','parent',h_pan,...
     'units',p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wpop1,hpop0],'string',str6,'tooltipstring',ttstr4,'callback',...
+    [x,y,wpop2,hpop0],'string',str6,'tooltipstring',ttstr4,'callback',...
     {@popupmenu_bleachChan_Callback,h_fig});
 
-x = x+wpop1+p.mg/fact;
+x = x+wpop2+p.mg/fact;
 y = y+(hpop0-hedit0)/2;
 
 h.edit_photoblParam_01 = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,hedit0],'callback',{@edit_photoblParam_01_Callback,h_fig});
+    [x,y,wedit0,hedit0],'tooltipstring',ttstr7,'callback',...
+    {@edit_photoblParam_01_Callback,h_fig});
 
 x = x+wedit0+p.mg/fact;
 
 h.edit_photoblParam_02 = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,hedit0],'callback',{@edit_photoblParam_02_Callback,h_fig});
+    [x,y,wedit0,hedit0],'tooltipstring',ttstr8,'callback',...
+    {@edit_photoblParam_02_Callback,h_fig});
 
 x = x+wedit0+p.mg/fact;
 
 h.edit_photoblParam_03 = uicontrol('style','edit','parent',h_pan,'units',...
     p.posun,'fontunits',p.fntun,'fontsize',p.fntsz1,'position',...
-    [x,y,wedit0,hedit0],'callback',{@edit_photoblParam_03_Callback,h_fig});
+    [x,y,wedit0,hedit0],'callback',{@edit_photoblParam_03_Callback,h_fig},...
+    'tooltipstring',ttstr6);
 
 x = pospan(3)-p.mg-wbut1;
 

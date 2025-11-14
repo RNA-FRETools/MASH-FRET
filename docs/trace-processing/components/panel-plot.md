@@ -71,11 +71,14 @@ Use this interface to define the time axis of time-traces.
 
 <a class="plain" href="../../assets/images/gui/TP-panel-plot-xaxis.png"><img src="../../assets/images/gui/TP-panel-plot-xaxis.png" style="max-width: 236px;"/></a>
 
-If needed, intensity-time traces can be truncated at the beginning of the time axis by setting the new starting point in **(b)**. 
-To keep the starting point fixed for all single molecules, activate the option in **(a)**.
+If needed, the begining of intensity-time traces can be ignored by setting the new starting point in **(a)**. 
+To keep the starting point fixed for all single molecules, activate the option in **(b)**.
 
 The starting point is given in time units defined in the menu `Units` of the 
 [menu bar](Getting_started.html#interface).
+
+For a better visualization, the time axis of trajectories can be rescaled using the new starting point and the 
+[photobleaching cutoff](panel-photobleaching.html#photobleaching-cutoff) as an ending point by activating the option in **(c)**.
 
 
 

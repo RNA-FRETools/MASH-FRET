@@ -23,7 +23,11 @@ for i = 2:size(discr,1)
     end
 end
 if isempty(dt)
-    dt = [rate discr(1) NaN];
+    if isempty(discr)
+        dt = [rate NaN NaN];
+    else
+        dt = [rate discr(1) NaN];
+    end
 else
     dt(:,1) = dt(:,1)*rate;
 end

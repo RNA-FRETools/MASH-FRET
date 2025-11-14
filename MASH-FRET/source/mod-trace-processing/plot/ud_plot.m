@@ -24,6 +24,7 @@ persec = p.proj{proj}.cnt_p_sec;
 p_fix = p.proj{proj}.TP.fix;
 start = p.proj{proj}.TP.curr{mol}{2}{1}(4);
 holdx = p_fix{2}(6);
+clipx = p_fix{2}(8);
 holdint = p_fix{2}(7);
 limI = p_fix{2}([4,5]);
 
@@ -31,6 +32,9 @@ limI = p_fix{2}([4,5]);
 if (nFRET+nS) > 0
     set(h.popupmenu_plotBottom, 'String', getStrPop('plot_botChan', ...
         {FRET S exc clr labels}), 'Value', p_fix{2}(3));
+else
+    set(h.popupmenu_plotBottom,'String',{''},'Value',1);
+    set([h.popupmenu_plotBottom,h.text_plotBottom],'enable','off');
 end
 set(h.popupmenu_plotTop, 'String', getStrPop('plot_topChan', {labels ...
     p_fix{2}(1) clr{1}}), 'Value', p_fix{2}(2));
@@ -60,3 +64,4 @@ end
 
 % set checkboxes
 set(h.checkbox_photobl_fixStart,'value',holdx);
+set(h.checkbox_cutOff, 'Value', clipx);

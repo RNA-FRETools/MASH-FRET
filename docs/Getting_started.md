@@ -71,7 +71,7 @@ To create a new MASH project, press ![New project](assets/images/gui/interface-b
 
  <a href="assets/images/gui/newproj-interface.png"><img src="assets/images/gui/newproj-interface.png" /></a>
  
-You can start a project in three different ways:
+You can start a project in four different ways:
 
 * [`Simulate data`](tutorials/set-experiment-settings/simulate-data.html#tutorials_steps): from scratch, by creating a single molecule video and/or trajectories, 
 * [`Import video`](tutorials/set-experiment-settings/import-video.html#tutorials_steps): from an existing single molecule video file, 

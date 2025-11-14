@@ -11,7 +11,8 @@ h = guidata(h_fig);
 
 % open default project
 disp(cat(2,prefix,'import file ',p.mash_files{p.nL,p.nChan}));
-pushbutton_openProj_Callback({p.annexpth,p.mash_files{p.nL,p.nChan}},...
+[~,name,~] = fileparts(p.mash_files{p.nL,p.nChan});
+pushbutton_openProj_Callback({[p.annexpth,name],p.mash_files{p.nL,p.nChan}},...
     [],h_fig);
 
 % set default parameters
@@ -43,7 +44,7 @@ end
 
 % test axis settings
 disp(cat(2,prefix,'test axis settings'));
-set_TP_xyAxis(~p.fixX0,p.x0,true,p.intlim,h_fig);
+set_TP_xyAxis(~p.fixX0,p.x0,p.clipx,true,p.intlim,h_fig);
 
 pushbutton_closeProj_Callback(h.pushbutton_closeProj,[],h_fig);
 

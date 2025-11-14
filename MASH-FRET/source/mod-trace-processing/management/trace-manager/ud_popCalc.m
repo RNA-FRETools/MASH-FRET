@@ -65,10 +65,18 @@ else
         else
             trace_y = dat3.val{datay,jy};
         end
-        trace = [trace_x trace_y];
+        if isempty(trace_x) || isempty(trace_y)
+            trace = [];
+        else
+            trace = [trace_x trace_y];
+        end
     else
         trace = trace_x;
     end
+end
+if isempty(trace)
+    molIncl = [];
+    return
 end
 
 if (is2D && sum(jx==getASdataindex('framewise')) && ...

@@ -125,19 +125,13 @@ It consists mainly of the dark count of the detector and background light, like 
 The background signal is usually distributed over the single molecule image and is therefore more accurately estimated in the local environments of single molecules. 
 MASH offers a set of local background estimators that can be used for such purpose.
 
-The intensity 
-[*I*<sub>*em*</sub><sup>*ex*</sup>(*n*,*t*)](){: .math_var } of molecule 
-[*n*](){: .math_var } detected in emission channel 
-[*em*](){: .math_var } upon illumination with laser 
-[*ex*](){: .math_var } at time 
-[*t*](){: .math_var } is background-corrected such as:
+The intensity $$I_{em}^{ex}\!\left( n,t \right)$$ of molecule $$n$$ detected in emission channel $$em$$ upon illumination with laser wavelength $$ex$$ at time $$t$$ is background-corrected such as:
 
-{: .equation }
-<img src="../assets/images/equations/TP-eq-trace-corr-01.gif" alt="\left I_{em}^{ex}(n,t)^{*} = I_{em}^{ex}(n,t) - bg_{em}^{ex}(n,t)">
+$$
+I_{em}^{ex}\!\left( n,t \right)^* = I_{em}^{ex}\!\left( n,t \right) - bg_{em}^{ex}\!\left( n,t \right)
+$$
 
-with 
-[*I*<sub>*em*</sub><sup>*ex*</sup>(*n*,*t*)<sup>\*</sup>](){: .math_var } the background-corrected intensity and 
-[*bg*<sub>*em*</sub><sup>*ex*</sup>(*n*,*t*)](){: .math_var } the estimated background intensity.
+with $$I_{em}^{ex}\!\left( n,t \right)^*$$ the background-corrected intensity and $$bg_{em}^{ex}\!\left( n,t \right)$$ the estimated background intensity.
 
 To correct intensities from background:
 
@@ -198,42 +192,31 @@ Cross-talks are due to instrumental imperfections and include two phenomena:
 ![Instrumental imperfections](../assets/images/figures/TP-workflow-scheme-cross-talks.png "Instrumental imperfections")
 
 The bleedthrough and direct excitation coefficient can be determined from control experiments involving single-labelled species.
-The bleedthrough coefficient 
-[*bt*<sub>*em*,*em*0</sub>](){: .math_var } of an emitter 
-[*em*](){: .math_var } into detection channel of an emitter 
-[*em*<sub>0</sub>](){: .math_var } is calculated with intensities measured from species carrying only emitter 
-[*em*](){: .math_var } and after background correction, such as:
+The bleedthrough coefficient $$bt_{em,em0}$$ of an emitter $$em$$ into detection channel of an emitter $$em0$$ is calculated with intensities measured from species carrying only emitter $$em$$ and after background correction, such as:
 
-{: .equation }
-<img src="../assets/images/equations/TP-eq-trace-corr-02.gif" alt="bt_{em,em0} = {}\frac{I_{em0}^{ex}^{*}}{I_{em}^{ex}^{*}}">
+$$
+bt_{em,em0} = \frac{I_{em0}^{ex,*}}{I_{em}^{ex,*}}
+$$
 
-The direct excitation coefficient 
-[*dE*<sub>*em*0</sub><sup>*ex*&#8800;*ex*0</sup>](){: .math_var } of an emitter 
-[*em*<sub>0</sub>](){: .math_var } upon unspecific illumination 
-[*ex*](){: .math_var } is calculated with intensities measured from species carrying only emitter 
-[*em*<sub>0</sub>](){: .math_var } and after background correction, such as:
+The direct excitation coefficient $$dE_{em0}^{ex \neq ex0}$$ of an emitter $$em0$$ upon unspecific illumination $$ex$$ is calculated with intensities measured from species carrying only emitter $$em0$$ and after background correction, such as:
 
-{: .equation }
-<img src="../assets/images/equations/TP-eq-trace-corr-03.gif" alt="dE_{em0}^{ex\neq ex0} = {}\frac{I_{em0}^{ex}^{*}}{I_{em0}^{ex0}^{*}}">
+$$
+dE_{em0}^{ex \neq ex0} = \frac{I_{em0}^{ex,*}}{I_{em0}^{ex0,*}}
+$$
 
-with 
-[*ex*<sub>0</sub>](){: .math_var } the specific illumination of emitter 
-[*em*<sub>0</sub>](){: .math_var }.
+with $$ex0$$ the specific illumination of emitter $$em0$$.
 
-The background-corrected intensity 
-[*I*<sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*)<sup>\*</sup>](){: .math_var } of molecule 
-[*n*](){: .math_var } detected in emission channel 
-[*em*<sub>0</sub>](){: .math_var } upon illumination with laser 
-[*ex*](){: .math_var } at time 
-[*t*](){: .math_var } is corrected from cross-talks such as:
+The background-corrected intensity $$I_{em0}^{ex}\!\left( n,t \right)$$ of molecule $$n$$ detected in emission channel $$em0$$ upon illumination with laser $$ex$$ at time $$t$$ is corrected from cross-talks such as:
 
-{: .equation }
-<img src="../assets/images/equations/TP-eq-trace-corr-04.gif" alt="I_{em0}^{ex}(n,t)^{**} = I_{em0}^{ex}(n,t)^{*} - \sum_{em\not\equiv em0}\left ( bt_{em,em0}(n) × I_{em}^{ex}(n,t)^{*} \right )"><br>
-<img src="../assets/images/equations/TP-eq-trace-corr-05.gif" alt="I_{em0}^{ex\neq ex0}(n,t)^{***} = I_{em0}^{ex\neq ex0}(n,t)^{**} - dE_{em0}^{ex\neq ex0}(n) × I_{em0}^{ex0}(n,t)^{**}">
+$$
+I_{em0}^{ex}\!\left( n,t \right)^{**} = I_{em0}^{ex}\!\left( n,t \right)^* - \sum_{em \neq em0} bt_{em,em0} \times I_{em}^{ex}\!\left( n,t \right)^*
+$$
 
-with 
-[*I*<sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*)<sup>\*\*</sup>](){: .math_var } and 
-[*I*<sub>*em*0</sub><sup>*ex*</sup>(*n*,*t*)<sup>\*\*\*</sup>](){: .math_var }, the intensities corrected from bleedthrough-only and from both cross-talks respectively.
+$$
+I_{em0}^{ex \neq ex0}\!\left( n,t \right)^{***} = I_{em0}^{ex \neq ex0}\!\left( n,t \right) - dE_{em0}^{ex \neq ex0} \times I_{em0}^{ex0}\!\left( n,t \right)^{**}
+$$
+
+with $$I_{em0}^{ex}\!\left( n,t \right)^{**}$$ and $$I_{em0}^{ex}\!\left( n,t \right)^{***}$$, the intensities corrected from bleedthrough-only and from both cross-talks respectively.
 
 To correct intensities from cross-talks:
 
@@ -294,32 +277,57 @@ To sort molecules and save a particular subgroup:
 It can happen that emitters get photochemically destroyed after absorbing a certain amount of photons. 
 This phenomenon is called photobleaching and results in the permanent loss of signal in the dye-specific emission channel, which in turn translates into a drop of the corresponding intensity-time trace to zero.
 
-![Effect of photobleaching of intensity ratio](../assets/images/figures/TP-workflow-scheme-photobleaching.png "Effect of photobleaching of intensity ratio")
+![Effect of photobleaching on intensity ratio](../assets/images/figures/TP-workflow-scheme-photobleaching.png "Effect of photobleaching on intensity ratio")
 
 On the other hand, reversible changes in the structure or environment of the emitters can induce temporary interruption of dye emission, which results in short-lived drops of intensity-time traces to zero. 
 
+![Effect of blinking on intensity ratio](../assets/images/figures/TP-workflow-scheme-blinking.png "Effect of blinking on intensity ratio")
+
 These zero-intensity portions of the time trace may bias the following histogram and transition analysis by creating irrelevantly fluctuating FRET data. 
-To prevent such bias, it is necessary to detect and ignore intensity interruptions by truncating the time traces.
+To prevent such bias, it is necessary to detect intensity interruptions in time traces and ignore them in the following analysis.
 
-Photobleaching is corrected by simply truncating the end of the trajectory.
+The most efficient way to do so is to inspect the so-called total emission intensity trace of each emitter, meaning the intensity trajectory that would be collected if no other fluorophore were around. In this way, all intensity fluctuations due to conformational changes are cancelled and ideally only remains a noisy signal dwelling at a single-dye emission level interrupted by blinking events and terminated by a photobleaching event.
+These trajectories are obtained by summing up background- and crosstalks-corrected intensities accross all emission channels when the emitter-specific excitation laser is used:
 
-For temporary intensity interruptions, simply excising zero-intensity portions from the trace would cause the continuity of the time sequence to be disrupted, and thus, would falsify state lifetimes and state transition rates. 
-Therefore, intensity interruptions are corrected by dividing the trajectory in two separate traces at the time when the intensity interruption ends, and by subsequently truncating the end of the left-trajectory by applying photobleaching correction.
+$$
+I_{k,\mathrm{tot}}\!\left(t \right) = \sum_{i}I_{i,\mathrm{em}}^{k,\mathrm{ex}}\!\left(t \right)
+$$
 
-To truncate temporary intensity interruptions:
+where $$I_{k,\mathrm{tot}}$$ is the total emission intensity trajectory of emitter $$k$$, and $$I_{i,\mathrm{em}}^{k,\mathrm{ex}}$$ is the intensity collected in emission channel $$i$$ upon illumination with laser exciting specifically emitter $$k$$.
 
-{: .procedure }
-1. Set parameters  
-     
-   [Photobleaching detection method](components/panel-photobleaching.html#photobleaching-detection-method) (to `Manual`)  
-   [Photobleaching cutoff](components/panel-photobleaching.html#photobleaching-cutoff) (to the ending of intensity interruption)  
-     
-1. Split traces in two by pressing 
-   ![Split](../assets/images/gui/TP-but-split.png "Split").
-     
-1. Correct the original molecule for photobleaching (as described below)
+The portions of the total emission trajectory that are in a off state can be automatically detected via discretization and relative thresholding.
+Off-state data is ignored from the rest of the analysis (state-finding, histogram analysis, transition analysis).
 
-To detect and truncate photobleached data:
+Rigorous characterization of dye photophysics in the molecule sample is possible by looking at detailed statistics on photobleaching and blinking time distribution.
+The mean survival time $$\tau_{\mathrm{bleach},k}$$ for emitter $$k$$ can be obtained by fitting a single exponential decay to the distribution of times until photobleaching $$\Delta t_{\mathrm{bleach}}$$:
+
+$$
+\Delta t_{\mathrm{bleach},k} \sim \mathrm{Exp}\!\left( \frac{1}{\tau_{\mathrm{bleach},k}} \right)
+$$
+
+In the same manner, blinking kinetics can be obtained by fitting single exponential decays to distributions of "on" and "off" times:
+
+$$
+\Delta t_{\mathrm{on},k} \sim \mathrm{Exp}\!\left( \frac{1}{\tau_{\mathrm{on},k}} \right)
+$$
+
+$$
+\Delta t_{\mathrm{off},k} \sim \mathrm{Exp}\!\left( \frac{1}{\tau_{\mathrm{off},k}} \right)
+$$
+
+and converting mean "off" and "on" times $$\tau_{\mathrm{on},k}$$ and $$\tau_{\mathrm{off},k}$$ into rate constants, such as:
+
+$$
+k_{\mathrm{on},k} = \frac{1}{\tau_{\mathrm{off},k}}
+$$
+
+$$
+k_{\mathrm{off},k} = \frac{1}{\tau_{\mathrm{on},k}}
+$$
+
+where $$k_{\mathrm{on},k}$$ and $$k_{\mathrm{off},k}$$ are the rate constants governing transitions to the "on" and "off" states of emitter $$k$$, respectively.
+
+To detect blinking and photobleaching:
 
 {: .procedure }
 1. If not already done, select the molecule index in the 
@@ -327,9 +335,8 @@ To detect and truncate photobleached data:
      
 1. Set parameters  
      
-   [Photobleaching detection method](components/panel-photobleaching.html#photobleaching-detection-method)  
-   [Method parameters](components/panel-photobleaching.html#method-parameters)  
-   [Truncate trajectories](components/panel-photobleaching.html#truncate-trajectories)  
+   [Photobleaching/blinking detection method](components/panel-photobleaching.html#photobleachingblinking-detection-method) to `Threshold`  
+   [Threshold detection settings](components/panel-photobleaching.html#threshold-detection-settings)  
      
 1. Update data correction and display by pressing 
    ![UPDATE](../assets/images/gui/TP-but-update.png "UPDATE") in the 
@@ -340,27 +347,43 @@ To detect and truncate photobleached data:
    [Photobleaching](components/panel-photobleaching.html) 
 
 
+To obtain statistics on photobleaching and blinking:
+
+{: .procedure }
+1. Set parameters  
+     
+   [Photobleaching/blinking detection method](components/panel-photobleaching.html#photobleachingblinking-detection-method) to `Threshold`  
+   [Threshold detection settings](components/panel-photobleaching.html#threshold-detection-settings)  
+     
+1. Apply the same parameter settings to all molecules by pressing 
+   ![all](../assets/images/gui/TP-but-all.png "all") in panel  
+   [Photobleaching](components/panel-photobleaching.html)  
+     
+1. Update correction for all molecues by pressing 
+   ![UPDATE ALL](../assets/images/gui/TP-but-update-all.png "UPDATE ALL") in the 
+   [Control area](components/area-control.html)  
+     
+1. Open statistics window by pressing 
+   ![Stats](../assets/images/gui/TP-but-stats.png "Stats") in panel 
+   [Photobleaching](components/panel-photobleaching.html) 
+
+
 ---
 
 ## Smooth trajectories
 
 Intensity-time traces are naturally noisy due to the stochastic nature of photon emission but also of camera detection, signal amplification and signal conversion.
-The noise magnitude in a background- and cross-talk-corrected intensity-time trace 
-[*I*<sub>em</sub><sup>ex</sup>(*n*,*t*)<sup>\*\*\*</sup>](){: .math_var } is characterized by the signal-to-noise ratio 
-[*SNR*<sub>em</sub><sup>ex</sup>(*n*)](){: .math_var } calculated as:
+The noise magnitude in a background- and cross-talk-corrected intensity-time trace $$I_{em}^{ex}\!\left( n,t \right)^{***}$$ is characterized by the signal-to-noise ratio $$SNR_{em}^{ex}\!\left( n \right)$$ calculated as:
 
-{: .equation }
-<img src="../assets/images/equations/TP-eq-trace-corr-06.gif" alt="SNR_{em}^{ex}(n) = \frac{\mu_{em}^{ex}(n)^{***}}{\sigma_{em}^{ex}(n)^{***}}"> 
+$$
+SNR_{em}^{ex}\!\left( n \right) = \frac{\mu_{em}^{ex}\!\left( n \right)^{***}}{\sigma_{em}^{ex}\!\left( n \right)^{***}}
+$$
 
-with 
-[*&#956;*<sub>em</sub><sup>ex</sup>(*n*)<sup>\*\*\*</sup>](){: .math_var } and 
-[*&#963;*<sub>em</sub><sup>ex</sup>(*n*)<sup>\*\*\*</sup>](){: .math_var }, the respective mean and standard deviation of the intensities over the observation time.
+with $$\mu_{em}^{ex}\!\left( n \right)^{***}$$ and $$\sigma_{em}^{ex}\!\left( n \right)^{***}$$, the respective mean and standard deviation of the intensities over the observation time.
 
-The lower the intensity, the lower the 
-[*SNR*](){: .math_var } and the noisier the intensity-time traces.
+The lower the intensity, the lower the $$SNR$$ and the noisier the intensity-time traces.
 
-A low 
-[*SNR*](){: .math_var } creates a large broadening in intensity histograms and even larger in intensity ratio histograms, *e. g.* in FRET histograms.
+A low $$SNR$$ creates a large broadening in intensity histograms and even larger in intensity ratio histograms, *e. g.* in FRET histograms.
 Large broadening in FRET histograms implies greater overlaps between FRET populations which make the identification of the state configuration more difficult.
 
 One way to minimize the population overlap in histograms is to artificially reduce the noise magnitude, or to "smooth" intensity-time traces.
@@ -392,58 +415,39 @@ To smooth trajectories:
 ## Correct ratio values
 
 To recover the labelling efficiencies and absolute distances between the donor and the acceptor of a FRET pair, it is necessary, but not sufficient, to put donor and acceptor intensities on the same scale.
-For this, the differences in detection efficiencies, quantum yields, extinction coefficients and excitation intensities between donor 
-[*D*](){: .math_var } and acceptor 
-[*A*](){: .math_var } must be corrected.
+For this, the differences in detection efficiencies, quantum yields, extinction coefficients and excitation intensities between donor $$D$$ and acceptor $$A$$ must be corrected.
 
-The differences in detection efficiencies and quantum yields are accounted for in the FRET pair-specific
-[*&#947;*<sub>*D*,*A*</sub>](){: .math_var } factor such as:
+The differences in detection efficiencies and quantum yields are accounted for in the FRET pair-specific $$\gamma_{D,A}$$ factor such as:
 
-{: .equation }
-<img src="../assets/images/equations/TP-eq-trace-corr-07.gif" alt="\gamma _{D,A} = \frac{\eta_{A}\phi_{A}}{\eta_{D}\phi_{D}}">
+$$
+\gamma_{D,A} = \frac{\eta_A \phi_A}{\eta_D \phi_D}
+$$
 
-with 
-[*&#934;*<sub>A</sub>](){: .math_var } and 
-[*&#934;*<sub>D</sub>](){: .math_var } the acceptor and donor quantum yield respectively, and 
-[*&#951;*<sub>A</sub>](){: .math_var } and 
-[*&#951;*<sub>D</sub>](){: .math_var } the photon detection efficiency in the respective emission channels.
+with $$\phi_A$$ and $$\phi_D$$ the acceptor and donor quantum yield respectively, and $$\eta_A$$ and $$\eta_D$$ the photon detection efficiency in the respective emission channels.
 
-The differences in extinction coefficients and excitation intensities are accounted for in the FRET pair-specific
-[*&#946;*<sub>*D*,*A*</sub>](){: .math_var } factor such as:
+The differences in extinction coefficients and excitation intensities are accounted for in the FRET pair-specific $$\beta_{A,D}$$ factor such as:
 
-{: .equation }
-<img src="../assets/images/equations/TP-eq-trace-corr-08.gif" alt="\beta _{D,A} = \beta_{D,A} = \frac{I_{A,ex}\sigma_{A,ex}^{A}}{I_{D,ex}\sigma_{D,ex}^{D}}">
+$$
+\beta_{D,A} = \frac{I_{A,ex} \sigma_{A,ex}^A}{I_{D,ex} \sigma_{D,ex}^D}
+$$
 
-with 
-[*I*<sub>*A*,ex</sub>](){: .math_var } and 
-[*I*<sub>*D*,ex</sub>](){: .math_var } the intensities of acceptor- and donor-specific excitations respectively, and 
-[*&#963;*<sub>A,ex</sub><sup>A</sup>](){: .math_var } and 
-[*&#963;*<sub>D,ex</sub><sup>D</sup>](){: .math_var } the respective absorption cross-sections at specific excitation.
+with $$I_{A,ex}$$ and $$I_{D,ex}$$ the intensities of acceptor- and donor-specific excitations respectively, and $$\sigma_{A,ex}^A$$ and $$\sigma_{D,ex}^D$$ the respective absorption cross-sections at specific excitation.
 
-Apparent FRET 
-[*E*<sup>\*</sup><sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } of a donor-acceptor pair 
-[*D*](){: .math_var }-[*A*](){: .math_var } is calculated according to 
-[FRET calculations](../tutorials/set-experiment-settings/import-trajectories.html#fret-calculations) and is 
-[*&#947;*](){: .math_var }-corrected into 
-[*E*<sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } such as:
+Apparent FRET $$E_{D,A}^*\!\left( n,t \right)$$ of a donor-acceptor pair $$D$$-$$A$$ is calculated according to 
+[FRET calculations](../tutorials/set-experiment-settings/import-trajectories.html#fret-calculations) and its gamma-corrected version $$E_{D,A}\!\left( n,t \right)$$ is calculated as:
 
-{: .equation }
-<img src="../assets/images/equations/TP-eq-trace-corr-09.gif" alt="E_{D,A}(n,t) = \left \{ 1+\frac{\gamma_{D,A}(n) I_{D,em}^{D,ex}(n,t)^{***}}{ I_{A,em}^{D,ex}(n,t)^{***} + \sum_{i>A}\left [\frac{E_{A,i}}{1-E_{A,i}}I_{A,em}^{D,ex}(n,t)^{***} \right ] -\sum_{D<i<A}\left[ \frac{E_{i,A}}{1-E_{i,A}}\gamma_{i,A}(n)I_{i,em}^{D,ex}(n,t)^{***}\right ]}  \right \}^{-1}">
+$$
+E_{D,A}\!\left( n,t \right) = \left \{ 1+\frac{\gamma_{D,A}\!\left( n \right) I_{D,em}^{D,ex}\!\left( n,t \right)^{***}}{ I_{A,em}^{D,ex}\!\left( n,t \right)^{***} + \sum_{i>A}\left [\frac{E_{A,i}}{1-E_{A,i}}I_{A,em}^{D,ex}\!\left( n,t \right)^{***} \right ] -\sum_{D<i<A}\left[ \frac{E_{i,A}}{1-E_{i,A}}\gamma_{i,A}\!\left( n \right) I_{i,em}^{D,ex}\!\left( n,t \right)^{***}\right ]}  \right \}^{-1}
+$$
 
-Apparent stoichiometry 
-[*S*<sup>\*</sup><sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } of a donor-acceptor pair 
-[*D*](){: .math_var }-[*A*](){: .math_var } is calculated according to 
-[Stoichiometry calculations](../tutorials/set-experiment-settings/import-trajectories.html#stoichiometry-calculations) and is 
-[*&#947;*](){: .math_var }- and 
-[*&#946;*](){: .math_var }-corrected into 
-[*S*<sub>*D*,*A*</sub>(*n*,*t*)](){: .math_var } such as:
+Apparent stoichiometry $$S_{D,A}\!\left( n,t \right)^*$$ of a donor-acceptor pair $$D$$-$$A$$ is calculated according to 
+[Stoichiometry calculations](../tutorials/set-experiment-settings/import-trajectories.html#stoichiometry-calculations) and its gamma-corrected version $$S_{D,A}\!\left( n,t \right)$$ is calculated as:
 
-{: .equation }
-<img src="../assets/images/equations/TP-eq-trace-corr-10.gif" alt="S_{D,A}(n,t) = \left |1+\frac{ I_{A,em}^{A,ex}(n,t)^{***} + \sum_{i>A}\left [ I_{i,em}^{A,ex}(n,t)^{***} \Big/ \gamma_{A,i}(n) \right] }{\beta_{D,A} \left \{ I_{A,em}^{D,ex}(n,t)^{***} + \sum_{D\leq i<A}\left [\gamma_{i,A}(n) I_{i,em}^{D,ex}(n,t)^{***} \right ] + \sum_{i>A}\left [I_{i,em}^{D,ex}(n,t)^{***} \Big/ \gamma_{A,i}(n) \right ] \right \} }  \right |^{-1}">
+$$
+S_{D,A}\!\left( n,t \right) = \left |1+\frac{ I_{A,em}^{A,ex}\!\left( n,t \right)^{***} + \sum_{i>A}\left [ I_{i,em}^{A,ex}\!\left( n,t \right)^{***} \Big/ \gamma_{A,i}\!\left( n \right) \right] }{\beta_{D,A} \left \{ I_{A,em}^{D,ex}\!\left( n,t \right)^{***} + \sum_{D\leq i<A}\left [\gamma_{i,A}\!\left( n \right) I_{i,em}^{D,ex}\!\left( n,t \right)^{***} \right ] + \sum_{i>A}\left [I_{i,em}^{D,ex}\!\left( n,t \right)^{***} \Big/ \gamma_{A,i}\!\left( n \right) \right ] \right \} }  \right |^{-1}
+$$
 
-To correct apparent FRET- and stoichiometry-time traces with 
-[*&#947;*](){: .math_var } and 
-[*&#946;*](){: .math_var } factors:
+To correct apparent FRET- and stoichiometry-time traces with $$\gamma$$ and $$\beta$$ factors:
 
 {: .procedure }
 1. If not already done, select the molecule index in the 

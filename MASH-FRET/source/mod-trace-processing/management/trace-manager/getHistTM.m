@@ -10,26 +10,23 @@ function [P,iv] = getHistTM(trace,lim,niv,logbin)
 % RB 2018-01-05: hist2 replaced by hist2D
 % RB 2018-01-04: adapted for FRET-S-Histogram
 
-if sum(sum(isnan(trace),2),1)
-    P = [];
-    iv = [];
-    return;
-end
+is1D = isscalar(niv);
+nodata = isempty(trace) || any(isnan(trace(:)));
 
-if size(trace,2)==1 % 1D histogram
+if is1D % 1D histogram
     if logbin(1)
         ivx = logspace(log10(lim(1,1)),log10(lim(1,2)),niv(1)+1);
     else
         ivx = linspace(lim(1,1),lim(1,2),niv(1)+1);
     end
+    if nodata
+        iv = [];
+        P = [];
+        return
+    end
     [P,iv] = histcounts(trace,ivx);
 
 else % 2D histogram
-    if sum(sum(isnan(trace)))
-        P = [];
-        iv = [];
-        return
-    end
     if logbin(1)
         ivx = logspace(log10(lim(1,1)),log10(lim(1,2)),niv(1)+1);
     else
@@ -39,6 +36,11 @@ else % 2D histogram
         ivy = logspace(log10(lim(2,1)),log10(lim(2,2)),niv(2)+1);
     else
         ivy = linspace(lim(2,1),lim(2,2),niv(2)+1);
+    end
+    if nodata
+        iv = {[],[]};
+        P = [];
+        return
     end
     [P,iv{2},iv{1}] = histcounts2(trace(:,2),trace(:,1),ivy,ivx);
 end

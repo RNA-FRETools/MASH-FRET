@@ -104,22 +104,9 @@ function p = setParamExp(p_input)
 splt = 1;
 nChan = 2;
 nExc = 1;
-excWl = 532;
-chanExc = [532,0];
-chanLabel = {'chan1','chan2'};
-expCond = {'Title','new project','';...
-    'Molecule','','';...
-    '[Mg2+]',[],'mM';...
-    '[K+]',[],'mM'};
+expCond = getDefExpCond;
 tagNames = {'D','A','static','dynamic'};
 tagClr = {'#3CB371','#FFA500','#0000FF','#EE82EE'};
-impTrajPrm = {{[1 1 1 1 1 0 1],ones(1,nExc),repmat([1,1,0],nChan,1),...
-    repmat([1,1,0],nChan,1,nExc),[]} ... % trajectory file structure
-    {0,''} ... % video file
-    {0,'',{reshape(1:2*nChan,2,nChan)',1},256} ... % coordinates file, file structure, video width
-    [0,1] ... % coordinates in trajectory file
-    [] ... % obsolete: old experimental parameters
-    {0,'',{},0,'',{}}}; % gamma files, beta files
 impHistPrm = [0,1,1,2]; % histogram file structure
 
 p = p_input;
@@ -127,64 +114,132 @@ p = p_input;
 % nb of channels
 p.nChan = adjustParam('nChan', nChan, p_input);
 
-% channel labels/emitter names
-p.chanLabel = adjustParam('chanLabel', chanLabel, p_input); 
-if numel(p.chanLabel)~=p.nChan
-    p.chanLabel = split(sprintf(repmat('chan%i ',[1,p.nChan]),1:p.nChan));
-    p.chanLabel = p.chanLabel(1:p.nChan)';
-end
-
- % nb of alternating lasers
+% nb of alternating lasers
 p.nExc = adjustParam('nExc', nExc, p_input);
 
+% channel- and laser-dependant parameters
+p.chanLabel = adjustcellsize(adjustParam('chanLabel',cell(p.nExc,p.nChan),...
+    p_input),p.nExc,p.nChan);
+p.excWl = adjustcellsize(adjustParam('excWl',cell(p.nExc,p.nChan),p_input),...
+    p.nExc,p.nChan);
+p.chanExc = adjustcellsize(adjustParam('chanExc',cell(p.nExc,p.nChan),...
+    p_input),p.nExc,p.nChan); 
+p.FRETpairs = adjustcellsize(adjustParam('FRETpairs',cell(p.nExc,p.nChan),...
+    p_input),p.nExc,p.nChan); 
+p.Spairs = adjustcellsize(adjustParam('Spairs',cell(p.nExc,p.nChan),...
+    p_input),p.nExc,p.nChan); 
+p.expCond = adjustcellsize(adjustParam('expCond',cell(p.nExc,p.nChan),...
+    p_input),p.nExc,p.nChan);
+p.plotClr = adjustcellsize(adjustParam('plotClr',cell(p.nExc,p.nChan),...
+    p_input),p.nExc,p.nChan);
+p.impTrajPrm = adjustcellsize(adjustParam('impTrajPrm',...
+    cell(p.nExc,p.nChan),p_input),p.nExc,p.nChan);
+p.expCond = adjustcellsize(adjustParam('expCond',cell(p.nExc,p.nChan),...
+    p_input),p.nExc,p.nChan);
+[p.chanLabel,p.excWl,p.chanExc,p.FRETpairs,p.Spairs,p.expCond,p.plotClr,...
+    p.impTrajPrm,p.expCond] = trunc2minsize(p.chanLabel,p.excWl,p.chanExc,...
+    p.FRETpairs,p.Spairs,p.expCond,p.plotClr,p.impTrajPrm,p.expCond);
+
+% channel labels/emitter names
+for nChan = 1:size(p.chanLabel,2)
+    for nExc = 1:size(p.chanLabel,1)
+        if numel(p.chanLabel{nExc,nChan})~=nChan
+            p.chanLabel{nExc,nChan} = ...
+                split(sprintf(repmat('chan%i ',[1,nChan]),1:nChan));
+            p.chanLabel{nExc,nChan} = p.chanLabel{nExc,nChan}(1:nChan)';
+        end
+    end
+end
+
 % laser wavelength
-p.excWl = adjustParam('excWl', excWl, p_input); 
-if numel(p.excWl)~=p.nExc
-    p.excWl = round(532*(1+0.2*(0:p.nExc-1)));
+for nChan = 1:size(p.excWl,2)
+    for nExc = 1:size(p.excWl,1)
+        if numel(p.excWl{nExc,nChan})~=nExc
+            p.excWl{nExc,nChan} = round(532*(1+0.2*(0:nExc-1)));
+        end
+    end
 end
 
 % channel-specific laser wavelength
-p.chanExc = adjustParam('chanExc', chanExc, p_input); 
-if numel(p.chanExc)~=p.nChan
-    p.chanExc = zeros(1,p.nChan);
-    p.chanExc(1:min([p.nChan,p.nExc])) = p.excWl(1:min([p.nChan,p.nExc]));
-end
-for c = 1:p.nChan
-    if ~any(p.excWl==p.chanExc(c)) 
-        if c<p.nExc && ~any(p.chanExc==p.excWl(c))
-            p.chanExc(c) = p.excWl(c);
-        else
-            p.chanExc(c) = 0;
+for nChan = 1:size(p.chanExc,2)
+    for nExc = 1:size(p.chanExc,1)
+        if ~(numel(p.chanExc{nExc,nChan})==p.nChan && ...
+                nnz(p.chanExc{p.nExc,p.nChan}>0)<=p.nExc)
+            p.chanExc{nExc,nChan} = zeros(1,nChan);
+            p.chanExc{nExc,nChan}(1:min([nExc,nChan])) = ...
+                p.excWl{nExc,nChan}(1:min([nExc,nChan]));
         end
     end
 end
 
 % FRET and stoichiometry pairs
-p.FRETpairs = adjustParam('FRETpairs', [], p_input);
-p.FRETpairs(~isValidFRETpair(p.FRETpairs,p.chanExc)) = [];
-p.Spairs = adjustParam('Spairs', [], p_input);
-p.Spairs(~isValidSpair(p.Spairs,p.FRETpairs,p.chanExc),:) = [];
+for nChan = 1:size(p.FRETpairs,2)
+    for nExc = 1:size(p.FRETpairs,1)
+        if isempty(p.FRETpairs{nExc,nChan})
+            continue
+        end
+        p.FRETpairs{nExc,nChan}(~isValidFRETpair(p.FRETpairs{nExc,nChan},...
+            p.chanExc{nExc,nChan}),:) = [];
+    end
+end
+for nChan = 1:size(p.Spairs,2)
+    for nExc = 1:size(p.Spairs,1)
+        if isempty(p.Spairs{nExc,nChan})
+            continue
+        end
+        p.Spairs{nExc,nChan}(~isValidSpair(p.Spairs{nExc,nChan},...
+            p.FRETpairs{nExc,nChan},p.chanExc{nExc,nChan}),:) = [];
+    end
+end
 
 % experimental conditions
 p.expCondDef = expCond;
-p.expCond = adjustParam('expCond', expCond, p_input);
+for nChan = 1:size(p.expCond,2)
+    for nExc = 1:size(p.expCond,1)
+        p.expCond{nExc,nChan} = adjustVal(p.expCond{nExc,nChan},expCond);
+    end
+end
 
 % video frame rate
 p.splt = splt;
 
 % plot colors
-plotClr = getDefTrClr(p.nExc, p.excWl, p.nChan, size(p.FRETpairs,1), ...
-    size(p.Spairs,1));
-p.plotClr = adjustParam('plotClr', plotClr, p_input);
-if size(p.plotClr{1},1)~=p.nExc || size(p.plotClr{1},2)~=p.nChan
-    p.plotClr{1} = plotClr{1};
+for nChan = 1:size(p.plotClr,2)
+    for nExc = 1:size(p.plotClr,1)
+        plotClr = getDefTrClr(nExc,p.excWl{nExc,nChan},nChan,...
+            size(p.FRETpairs{nExc,nChan},1),size(p.Spairs{nExc,nChan},1));
+        p.plotClr{nExc,nChan} = adjustVal(p.plotClr{nExc,nChan},plotClr);
+    end
 end
-if size(p.plotClr{2},1)~=size(p.FRETpairs,1)
-    p.plotClr{2} = plotClr{2};
+
+% trajectory import options
+for nChan = 1:size(p.impTrajPrm,2)
+    for nExc = 1:size(p.impTrajPrm,1)
+        p.impTrajPrm{nExc,nChan} = ...
+            adjustVal(p.impTrajPrm{nExc,nChan},getDefTrajImpPrm(nChan,nExc));
+        if numel(p.impTrajPrm{nExc,nChan}{1}{2})~=nExc % ALEX time columns
+            p.impTrajPrm{nExc,nChan}{1}{2} = ones(1,nExc);
+        end
+        if ~isequal(size(p.impTrajPrm{nExc,nChan}{1}{3}),[nChan,3]) % intensity columns
+            p.impTrajPrm{nExc,nChan}{1}{4} = repmat([1,1,0],nChan,1);
+        end
+        if ~isequal(size(p.impTrajPrm{nExc,nChan}{1}{4}),[nChan,3,nExc]) % ALEX intensity columns
+            p.impTrajPrm{nExc,nChan}{1}{4} = repmat([1,1,0],nChan,1,nExc);
+        end
+        if ~isequal(size(p.impTrajPrm{nExc,nChan}{1}{5}),...
+                [size(p.FRETpairs{nExc,nChan},1),3]) % FRET states columns
+            p.impTrajPrm{nExc,nChan}{1}{5} = ...
+                repmat([1,1,0],size(p.FRETpairs{nExc,nChan},1),1);
+        end
+        if size(p.impTrajPrm{nExc,nChan}{3}{3}{1},1)~=nChan % coordinates file structure
+            p.impTrajPrm{nExc,nChan}{3}{3}{1} = ...
+                reshape(1:(2*nChan),2,nChan)';
+        end
+    end
 end
-if size(p.plotClr{3},1)~=size(p.Spairs,1)
-    p.plotClr{3} = plotClr{3};
-end
+
+% histogram import options
+p.impHistPrm = adjustParam('impHistPrm', impHistPrm, p_input);
 
 % molecule tags
 p.tagNames = adjustParam('tagNames',tagNames,p_input);
@@ -193,27 +248,6 @@ if numel(p.tagClr)~=numel(p.tagNames)
     p.tagClr = p.tagClr(1:min([numel(p.tagClr),numel(p.tagNames)]));
     p.tagNames = p.tagNames(1:min([numel(p.tagClr),numel(p.tagNames)]));
 end
-
-% trajectory import options
-p.impTrajPrm = adjustParam('impTrajPrm', impTrajPrm, p_input);
-if numel(p.impTrajPrm{1}{2})~=p.nExc % ALEX time columns
-    p.impTrajPrm{1}{2} = ones(1,p.nExc);
-end
-if ~isequal(size(p.impTrajPrm{1}{3}),[p.nChan,3]) % intensity columns
-    p.impTrajPrm{1}{4} = repmat([1,1,0],p.nChan,1);
-end
-if ~isequal(size(p.impTrajPrm{1}{4}),[p.nChan,3,p.nExc]) % ALEX intensity columns
-    p.impTrajPrm{1}{4} = repmat([1,1,0],p.nChan,1,p.nExc);
-end
-if ~isequal(size(p.impTrajPrm{1}{5}),[size(p.FRETpairs,1),3]) % FRET states columns
-    p.impTrajPrm{1}{5} = repmat([1,1,0],size(p.FRETpairs,1),1);
-end
-if size(p.impTrajPrm{3}{3}{1},1)~=p.nChan % coordinates file structure
-    p.impTrajPrm{3}{3}{1} = reshape(1:(2*p.nChan),2,p.nChan)';
-end
-
-% histogram import options
-p.impHistPrm = adjustParam('impHistPrm', impHistPrm, p_input);
 
 
 function p = setParamSim(p_input)

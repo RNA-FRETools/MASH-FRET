@@ -287,9 +287,16 @@ try
         end
 
         % build frame and time column
-        incl = p.proj{proj}.bool_intensities(:,m);
+        ison = p.proj{proj}.bool_intensities(:,m);
+        incl = false(size(p.proj{proj}.bool_intensities(:,m)));
+        pbmeth = p.proj{proj}.TP.prm{m}{2}{1}(2);
+        cutoff = ceil(p.proj{proj}.TP.prm{m}{2}{1}(4+pbmeth)/nExc);
+        start = ceil(p.proj{proj}.TP.prm{m}{2}{1}(4)/nExc);
+        incl(start:cutoff) = true;
         [frames,o,o] = find(incl);
-        frames = ((nExc*(frames(1)-1)+1):nExc*frames(end))';
+        if ~isempty(frames)
+            frames = ((nExc*(frames(1)-1)+1):nExc*frames(end))';
+        end
         times = frames*expT;
 
         % build molecule file name
@@ -485,7 +492,7 @@ try
                     for c = 1:nC
 
                         % format intensity histogram data
-                        I = intensities(incl,(m-1)*nC+c,l);
+                        I = intensities(ison,(m-1)*nC+c,l);
                         histI = [];
                         histI(:,1) = x_I';
                         histI(:,2) = (hist(I,x_I))';
@@ -515,7 +522,7 @@ try
                         if inclDiscr && discrInt
                             % format discrete intensity histogram
                             discrI = ...
-                                intensities_DTA(incl,(m-1)*nC+c,l);
+                                intensities_DTA(ison,(m-1)*nC+c,l);
                             histdI = [];
                             histdI(:,1) = x_I';
                             histdI(:,2) = (hist(discrI,x_I))';
@@ -554,7 +561,7 @@ try
 
                 % calculate FRET data
                 FRET_all = calcFRET(nC, nExc, exc, chanExc,FRET, ...
-                    intensities(incl,(((m-1)*nC+1):m*nC),:),gamma);
+                    intensities(ison,(((m-1)*nC+1):m*nC),:),gamma);
 
                 for i = 1:nFRET
                     % format FRET histogram
@@ -587,7 +594,7 @@ try
 
                     if inclDiscr
                         % format discrete FRET histogram
-                        discrFRET = FRET_DTA(incl,(m-1)*nFRET+i);
+                        discrFRET = FRET_DTA(ison,(m-1)*nFRET+i);
                         histdF = [];
                         histdF(:,1) = x_fret';
                         histdF(:,2) = (hist(discrFRET,x_fret))';
@@ -622,7 +629,7 @@ try
                 x_s = minS:binS:maxS;
 
                 % calculate stoichiometry data
-                S_all = calcS(exc,chanExc,S,FRET,intensities(incl,...
+                S_all = calcS(exc,chanExc,S,FRET,intensities(ison,...
                     (((m-1)*nC+1):m*nC),:),gamma,beta);
 
                 for i = 1:nS
@@ -657,7 +664,7 @@ try
 
                     if inclDiscr
                         % format discrete stoichiometry histogram
-                        discrS = S_DTA(incl,(m-1)*nS+i);
+                        discrS = S_DTA(ison,(m-1)*nS+i);
                         histdS = [];
                         histdS(:,1) = x_s';
                         histdS(:,2) = (hist(discrS,x_s))';
@@ -829,7 +836,7 @@ try
                 pos = [0 0 (21-2*mg) (29.7-2*mg*29.7/21)];
                 set(h_fig_mol,'Position',pos, ...
                     'PaperPositionMode','manual','PaperUnits', ...
-                    'centimeters','PaperSize',[pos(3)+2 pos(4)+2], ...
+                    'centimeters','PaperSize',[2*mg+pos(3) 2*mg*29.7/21+pos(4)], ...
                     'PaperPosition',[mg mg pos(3) pos(4)]);
 
                 switch figFmt

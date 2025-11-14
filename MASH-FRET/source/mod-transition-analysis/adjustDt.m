@@ -1,9 +1,14 @@
 function dat = adjustDt(dat0)
 % dat = adjustDt_mod(dat0)
 %
-% Remove exlcuded states and link neighbouring states together by prolongating the duration of the previous state in the sequence. If there is no previous state, the duration of th enext state is prolongated.
+% Remove exlcuded states and link neighbouring states together by 
+% prolongating the duration of the previous state in the sequence. If there 
+% is no previous state, the duration of th enext state is prolongated.
 %
-% dat0: [N-by-6 or 8] dwell time table (duration,value before transition,value after transition,molecule index,state index before transition, state index after transition) with state index=0 if state is out-of-TDP range
+% dat0: [N-by-6 or 8] dwell time table (duration,value before transition,
+%       value after transition,molecule index,state index before 
+%       transition, state index after transition) with state index=0 if 
+%       state is out-of-TDP range
 % dat: [N-by-6 or 8] re-arranged dwell time table 
 
 dat = [];

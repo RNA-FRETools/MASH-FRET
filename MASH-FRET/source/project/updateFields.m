@@ -102,6 +102,8 @@ if strcmp(opt, 'ttPr') || strcmp(opt, 'subImg') || strcmp(opt, 'all')
         % refresh data processing and plot
         proj = p.curr_proj;
         mol = p.ttPr.curr_mol(proj);
+        axes.axes_traceTop0 = h.axes_top0;
+        axes.axes_histTop0 = h.axes_topRight0;
         axes.axes_traceTop = h.axes_top;
         axes.axes_histTop = h.axes_topRight;
         axes.axes_traceBottom = h.axes_bottom;

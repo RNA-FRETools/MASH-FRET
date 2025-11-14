@@ -54,25 +54,25 @@ h = guidata(h_fig0);
 p = h.param;
 
 % load full-length video data in memory if possible
-if ~strcmp(dat2import,'edit') && proj.is_movie && numel(proj.movie_file)==1 ...
-        && ~isFullLengthVideo(proj.movie_file{1},h_fig)
+if ~strcmp(dat2import,'edit') && proj.is_movie && isscalar(proj.movie_file) ...
+        && ~isFullLengthVideo(proj.movie_file{1},h_fig0)
     h.movie.movie = [];
     h.movie.file = '';
-    guidata(h_fig,h);
-    [dat,ok] = getFrames(proj.movie_file{1},'all',proj.movie_dat{1},h_fig,...
+    guidata(h_fig0,h);
+    [dat,ok] = getFrames(proj.movie_file{1},'all',proj.movie_dat{1},h_fig0,...
         true);
     if ~ok
         return
     end
-    h = guidata(h_fig);
+    h = guidata(h_fig0);
     if ~isempty(dat.movie)
         h.movie.movie = dat.movie;
         h.movie.file = proj.movie_file{1};
-        guidata(h_fig,h);
+        guidata(h_fig0,h);
         
     elseif ~isempty(h.movie.movie)
         h.movie.file = proj.movie_file{1};
-        guidata(h_fig,h);
+        guidata(h_fig0,h);
     end
 end
 
@@ -158,13 +158,14 @@ elseif strcmp(dat2import,'edit')
 
     if isModuleOn(p,'TP')
         % resize default TP parameters
-        p.ttPr.defProjPrm = setDefPrm_traces(p, p.curr_proj);
+        p.ttPr.defProjPrm{nExc,nChan} = setDefPrm_traces(p,p.curr_proj); % interface default
         p.proj{p.curr_proj}.TP.def.mol = adjustVal(...
-            p.proj{p.curr_proj}.TP.def.mol,p.ttPr.defProjPrm.mol);
+            p.proj{p.curr_proj}.TP.def.mol,...
+            p.ttPr.defProjPrm{nExc,nChan}.mol); % project default
 
         % resize general TP parameters
         p.proj{p.curr_proj}.TP.fix = adjustVal(p.proj{p.curr_proj}.TP.fix, ...
-            p.ttPr.defProjPrm.general);
+            p.ttPr.defProjPrm{nExc,nChan}.general);
 
         % adjust selection in the list of bottom traces in "Plot" panel
         if (nFRET+nS)>0

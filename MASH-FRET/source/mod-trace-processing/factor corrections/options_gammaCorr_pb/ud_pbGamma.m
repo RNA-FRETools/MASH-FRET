@@ -10,7 +10,6 @@ udCalc_pbGamma(h_fig,h_fig2);
 h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
-perSec = p.proj{proj}.cnt_p_sec;
 inSec = p.proj{proj}.time_in_sec;
 rate = p.proj{proj}.resampling_time;
 
@@ -24,32 +23,14 @@ if inSec
     cutOff = cutOff*rate;
     prm(3:4) = prm(3:4)*rate;
 end
-if perSec
-    prm(2) = prm(2)/rate;
-end
 
 % update GUI
 set(q.popupmenu_data, 'Value', prm(1));
-set([q.edit_stop,q.edit_threshold,q.edit_extraSubstract,q.edit_minCutoff], ...
-    'BackgroundColor', [1,1,1]);
+set([q.edit_stop,q.edit_threshold,q.edit_tol],'BackgroundColor', [1,1,1]);
 set(q.edit_stop, 'String', num2str(cutOff));
 set(q.edit_threshold, 'String', num2str(prm(2)));
-set(q.edit_extraSubstract, 'String', num2str(prm(3)));
-set(q.edit_minCutoff, 'String', num2str(prm(4)));
 set(q.edit_tol, 'String', num2str(prm(6)));
 set(q.edit_gamma, 'String', num2str(q.prm{1}));
-
-% update the toolstrings depending on the x-axis unit (frames/s)
-if inSec
-    set(q.edit_extraSubstract, 'TooltipString', ...
-        'Extra time to subtract (s)');
-    set(q.edit_minCutoff, 'TooltipString', ...
-        'Min. cutoff time (s)');
-else
-    set(q.edit_extraSubstract, 'TooltipString', ...
-        'Extra frames to subtract');
-    set(q.edit_minCutoff, 'TooltipString', 'Min. cutoff frame');
-end
 
 % update cross
 drawCheck(h_fig2);
@@ -61,7 +42,8 @@ fret = p.proj{proj}.TP.fix{3}(8);
 don = p.proj{proj}.FRET(fret,1);
 acc = p.proj{proj}.FRET(fret,2);
 I_a = p.proj{proj}.intensities_denoise(:,(m-1)*nC+acc,prm(1));
-incl = p.proj{proj}.bool_intensities(:,m);
+% incl = p.proj{proj}.bool_intensities(:,m);
+incl = true(size(p.proj{proj}.bool_intensities(:,m)));
 clr0 = p.proj{proj}.colours{1};
 nExc = p.proj{proj}.nb_excitations;
 ldon = find(p.proj{proj}.excitations==p.proj{proj}.chanExc(don));

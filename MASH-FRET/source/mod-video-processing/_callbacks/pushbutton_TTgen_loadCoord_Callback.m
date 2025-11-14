@@ -20,10 +20,10 @@ if iscell(obj)
     pname = obj{1};
     fname = obj{2};
 else
+    [~,pth] = getCorrectPath('coordinates', h_fig);
     [fname,pname,o] = uigetfile({...
         '*.coord;*.spots;*.map','Coordinates File(*.coord;*.spots;*.map)'; ...
-        '*.*', 'All Files (*.*)'},'Select a coordinates file', ...
-        setCorrectPath('coordinates', h_fig));
+        '*.*', 'All Files (*.*)'},'Select a coordinates file', pth);
 end
 if ~sum(fname)
     return

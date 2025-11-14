@@ -20,7 +20,6 @@ lbl = p.proj{p.curr_proj}.labels;
 
 % get image file to map
 if ~iscell(obj)
-    cd(setCorrectPath('average_images', h_fig));
 
     str0 = ['*',vidfmt{1}];
     str1 = ['(*',vidfmt{1}];
@@ -34,9 +33,10 @@ if ~iscell(obj)
     else
         mltslct = 'on';
     end
+    [~,pth] = getCorrectPath('average_images',h_fig);
     [fname,pname,o] = uigetfile({...
         str0,['Supported Graphic File Format',str1]; ...
-        '*.*','All File Format(*.*)'},'Select a reference video file',...
+        '*.*','All File Format(*.*)'},'Select a reference video file',pth,...
         'multiselect',mltslct);
 else
     pname = obj{1}; % ex: C:\Users\MASH\Documents\MATLAB\
@@ -59,7 +59,7 @@ if ~multichanvid
     for mov = 1:nMov
         [~,rname,~] = fileparts(fname{mov});
         strprt = split(rname,'_');
-        if numel(strprt)==1
+        if isscalar(strprt)
             suffx{mov} = '';
         else
             suffx{mov} = strprt{end};

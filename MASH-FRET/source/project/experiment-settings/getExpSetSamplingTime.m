@@ -7,17 +7,17 @@ function proj = getExpSetSamplingTime(opt,proj,h_fig)
 % proj: data structure
 % h_fig: handle to figure "Experiment settings"
 
-% defaults
-splt = 1;
-
 % retrieve interface content
 h = guidata(h_fig);
 h_fig0 = h.figure_MASH;
+splt = proj.sampling_time;
 
 % determine sampling time
-proj.spltime_from_video = false;
-proj.spltime_from_traj = false;
-if ~isempty(opt) && opt{1}{1}(3)
+% check existence of "File structure" tab to differenciate with "edit" mode
+if isfield(h,'tab_fstrct') && ishandle(h.tab_fstrct) && ~isempty(opt) && ...
+        opt{1}{1}(3) 
+    proj.spltime_from_video = false;
+    proj.spltime_from_traj = false;
     rowwise = opt{1}{1}(5);
     fdat = h.table_fstrct.UserData;
     if ~isempty(fdat)
@@ -53,7 +53,10 @@ if ~isempty(opt) && opt{1}{1}(3)
         end
     end
     
-elseif proj.is_movie
+% check existence of "video" tab to differenciate with "edit" mode
+elseif isfield(h,'tab_imp') && ishandle(h.tab_imp) && proj.is_movie 
+    proj.spltime_from_video = false;
+    proj.spltime_from_traj = false;
     [dat,ok] = getFrames(proj.movie_file{1},1,[],h_fig0,true);
     if ok && dat.cycleTime~=1
         splt = dat.cycleTime;

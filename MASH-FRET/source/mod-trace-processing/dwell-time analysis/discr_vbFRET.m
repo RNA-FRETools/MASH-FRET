@@ -136,7 +136,7 @@ for n = 1:N
             rs = rs+1;
             
             % update loading bar in MASH-FRET
-            if islb &&  loading_bar('update',fig)
+            if ~isempty(fig) && islb &&  loading_bar('update',fig)
                 return
             end
         end
@@ -161,7 +161,7 @@ for n = 1:N
         x_res{n} = x_hat{n,best};
     else
         sz = size(data{n},2);
-        x_res{n} = ones(sz,1)*mean(data{n});
+        x_res{n} = repmat(mean(data{n},2),sz,1);
     end
 end
 if ~mute

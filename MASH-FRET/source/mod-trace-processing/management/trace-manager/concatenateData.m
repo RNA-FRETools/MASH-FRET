@@ -122,10 +122,12 @@ for i = 1:nMol
         end
         
         if nI0>0
+            c0 = 0;
             for c = 1:nChan
                 if chanExc(c)==0
                     continue
                 end
+                c0 = c0+1;
                 ind = ind+1;
                 incl = p.proj{proj}.bool_intensities(:,i);
                 l = find(exc==chanExc(c),1);
@@ -134,6 +136,7 @@ for i = 1:nMol
                     intensities_DTA(incl,(nChan*(i-1)+1):nChan*i,l),2);
                 dt = getDtFromDiscr(I0_DTA,nExc*expt);
                 lt = calcStateLifetimes(dt,nExc*expt);
+                cutoff = p.proj{proj}.TP.prm{i}{2}{2}(c0,3);
                 if perSec
                     I0 = I0/expt;
                     I0_DTA = I0_DTA/expt;
@@ -142,7 +145,7 @@ for i = 1:nMol
                 % concatenate traces
                 dat1.trace{ind} = ...
                     [dat1.trace{ind};I0,repmat(i,size(I0,1),1)]; % intensits-time trace
-                calcdat = calcASdata(i,I0,I0_DTA,dt,lt);
+                calcdat = calcASdata(i,I0,I0_DTA,dt,lt,cutoff);
                 for j = 1:nCalc
                     dat3.val{ind,j} = [dat3.val{ind,j};calcdat{j}];
                 end
@@ -242,7 +245,7 @@ for ind = 1:(nChan*nExc+nI0+nFRET+nS)
     for j = 1:nCalc
         if ind>(nChan*nExc+nI0) && j<=5 % FRET/S values
             dat3.lim(ind,:,j) = [defMin defMax];
-        else
+        elseif ~isempty(dat3.val{ind,j})
             minval = min(dat3.val{ind,j}(:,1));
             maxval = max(dat3.val{ind,j}(:,1));
             if minval==maxval

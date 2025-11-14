@@ -1,4 +1,4 @@
-function area_slct = plot_pbGamma(h_axes, x_axis, I_a, I_dta, clr, cutOff, ...
+function area_slct = plot_pbGamma(h_axes, x_axis, I_a, traj, clr, cutOff, ...
     tol, area_slct)
 
 % default
@@ -15,8 +15,14 @@ plot(h_axes, x_axis(1,:), I_a, 'Color', clr{1});
 
 set(h_axes, 'NextPlot', 'add');
 
-plot(h_axes, x_axis(2,:), I_dta(:,1), 'Color', clr{2}, 'LineWidth', 2);
-plot(h_axes, x_axis(2,:), I_dta(:,2), 'Color', clr{3}, 'LineWidth', 2);
+I_dta = traj{1};
+I_DA = traj{2};
+plot(h_axes, x_axis(2,:), I_DA(1,:), 'Color', clr{2});
+plot(h_axes, x_axis(2,:), I_DA(2,:), 'Color', clr{3});
+plot(h_axes, x_axis(2,:), I_dta(:,1), 'Color', shiftbright(clr{2},-0.2),...
+    'LineWidth', 2);
+plot(h_axes, x_axis(2,:), I_dta(:,2), 'Color', shiftbright(clr{3},-0.2),...
+    'LineWidth', 2);
 
 xlim(h_axes,[min(x_axis(:,1)),max(x_axis(:,end))]);
 ylim(h_axes,'auto');

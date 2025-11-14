@@ -1,7 +1,10 @@
 function p = calcCutoff(mol, p)
 
-% Last update 17.5.2019 by MH: (1) For now on, "summed intensities" and "all intensities" concern only intensities collected at emitter-specific excitations because zero-signals collected at unspecific illuminations are constantly "photobleached" and make the method unsuable (2) "all intensities" uses intensities summed over all channels; this allows to detect true photobleaching and not 0 FRET
-% update 3.4.2019 by MH: manage missing intensities when loading ASCII traces with different lengths: cut-off frame is automatically set to last number in trace and saved no matter if photobleaching correction is applied or not
+% defaults
+extra0 = 0; % old parameter prm{2}(chan,2)
+mincut0 = 1; % old parameter prm{2}(chan,3)
+minprc = 1; % percentage of the traj in the off state after cutoff
+cutev = 1; % 1 to cut trajectory at first pb event, 2 for last
 
 proj = p.curr_proj;
 
@@ -9,127 +12,55 @@ nChan = p.proj{proj}.nb_channel;
 nExc = p.proj{proj}.nb_excitations;
 exc = p.proj{proj}.excitations;
 chanExc = p.proj{proj}.chanExc;
-incl = false(size(p.proj{proj}.bool_intensities(:,mol)));
-intensities = p.proj{proj}.intensities(:,(mol-1)*nChan+1:mol*nChan,:);
-FRET = p.proj{proj}.FRET;
-nFRET = size(p.proj{proj}.FRET,1);
-S = p.proj{proj}.S;
-nS = size(S,1);
-if nFRET>0
-    gamma = p.proj{proj}.TP.curr{mol}{6}{1}(1,:);
-    if nS>0
-        beta = p.proj{proj}.TP.curr{mol}{6}{1}(2,:);
-    end
-end
+I0 = p.proj{proj}.intensities_bin(:,(mol-1)*nChan+1:mol*nChan,:);
 prm = p.proj{proj}.TP.curr{mol}{2};
-
-apply = prm{1}(1);
 start = ceil(prm{1}(4)/nExc);
     
 I_den = p.proj{proj}.intensities_denoise(:,((mol-1)*nChan+1):mol*nChan,:);
-lastData = sum(double(~isnan(I_den(:,1,1))));
+L = size(I_den,1);
 
 method = prm{1}(2);
 if method == 1
-    cutOff = floor(prm{1}(4+method)/nExc);
+    cutOff0 = floor(prm{1}(4+method)/nExc);
+    incl = true(L,1);
 else
-    chan = prm{1}(3);
-
-    if chan <= nFRET % single FRET channel
-        i_f = chan;
-        fret = calcFRET(nChan, nExc, exc, chanExc, FRET, I_den, gamma);
-        trace = fret(:,i_f);
-
-    elseif chan <= (nFRET+nS) % single stoichiometry channel
-        
-        i_s = chan-nFRET;
-        
-        % modified by MH, 14.1.2020
-%         S_chan = S(i_s,:);
-%         [o,l_s,o] = find(exc==chanExc(S_chan));
-%         trace = sum(I_den(:,:,S_chan(1)),2)./sum(sum(I_den(:,:,:),2),3);
-        s = calcS(exc, chanExc, S, FRET, I_den, gamma, beta);
-        trace = s(:,S(i_s));
-
-    elseif chan <= (nFRET+nS+nExc*nChan) % single intensity channel
-        i_exc = ceil((chan - nFRET - nS)/nChan);
-        i_c = (chan - nFRET - nS)-(i_exc-1)*nChan;
-        trace = I_den(:,i_c,i_exc);
-
-    % modified by MH, 17.5.2019
-%     elseif chan == (nFRET+nS+nExc*nChan+1) % all intensities
-%         trace = min(min(I_den, [], 3), [], 2);
-% 
-%     else % summed intensities
-%         trace = sum(sum(I_den,3),2);
-%     end
-    elseif chan == (nFRET+nS+nExc*nChan+1) % all intensities
-        trace = Inf(size(I_den,1),1);
-        for c = 1:nChan
-            if chanExc(c)>0
-                trace = min([trace,sum(I_den(:,:,exc==chanExc(c)),2)],[],...
-                    2);
-            end
-        end
-    else % summed intensities
-        trace = zeros(size(I_den,1),1);
-        for c = 1:nChan
-            if chanExc>0
-                trace = trace + sum(I_den(:,:,exc==chanExc(c)),2);
-            end
+    trace = [];
+    for c = 1:numel(chanExc)
+        if chanExc(c)>0
+            trace = cat(2,trace,sum(I_den(:,:,exc==chanExc(c)),2));
         end
     end
-    
-    nbFrames = numel(trace);
-    
-    trace = trace(start:end,:);
-    frames = (1:nbFrames)';
-    
-    thresh = prm{2}(chan,1);
-    extra = prm{2}(chan,2);
-    extra = ceil(extra/nExc);
-    minCut = ceil(max([prm{2}(chan,3) prm{1}(1)+start-1])/nExc);
-
-    
-    cutOff = find(trace < thresh) + start - 1;
-    if ~isempty(cutOff)
-        cutOff2 = frames(cutOff) - extra;
-        [r,o,o] = find(cutOff2 > minCut);
-        if ~isempty(r) &&  cutOff2(r(1),1)<lastData
-            cutOff = cutOff2(r(1),1);
-        else
-            cutOff = lastData;
-        end
-    else
-        cutOff = lastData;
-    end
-
-end
-
-firstNan = find(isnan(sum(sum(intensities,3),2)),1);
-if isempty(firstNan)
-    firstNan = size(intensities,1)+1;
-else
-    firstNan = firstNan(1);
-    if firstNan==1
-        firstNan = 2;
+    minofft = prm{2}(:,2);
+    thresh = prm{2}(:,1);
+    [incl_em,cutOff] = calcCutoff_thresh(trace,minofft,start,thresh,...
+        repmat(extra0,size(trace,1),1),repmat(mincut0,size(trace,1),1),...
+        minprc,mol);
+    incl = all(incl_em,2);
+    switch cutev
+        case 1
+            cutOff0 = min(cutOff);
+        case 2
+            cutOff0 = max(cutOff);
     end
 end
-firstNan(firstNan>(lastData+1)) = lastData+1;
 
-if cutOff>firstNan-1
-    disp(cat(2,'intensity-time traces have missing data: cutoff set to ',...
-        'last intensity data.'));
+lastN = find(all(~isnan(I0),[3,2]),1,'last');
+if cutOff0>lastN
+    fprintf(['Cutoff detection of mol %i: traces have missing data; ',...
+        'cutoff set to latest valid data.\n'],mol);
+    cutOff0 = lastN;
 end
-cutOff = min([firstNan-1,cutOff]);
-cutOff(cutOff>lastData) = lastData;
 
-if apply
-    incl(start:cutOff,1) = true;
-else
-    incl(start:firstNan-1) = true;
-end
-p.proj{proj}.TP.prm{mol}{2}{1}(4+method) = cutOff*nExc;
+incl([1:(start-1),cutOff0+1:end],1) = false;
+p.proj{proj}.TP.prm{mol}{2}{1}(4+method) = cutOff0*nExc;
 p.proj{proj}.bool_intensities(:,mol) = incl;
+c_tot = find(chanExc>0);
+if method==2
+    p.proj{proj}.TP.prm{mol}{2}{2}(:,3) = cutOff'*nExc;
+    p.proj{proj}.emitter_is_on(:,nChan*(mol-1)+c_tot) = incl_em;
+else
+    p.proj{proj}.emitter_is_on(:,nChan*(mol-1)+c_tot) = ...
+        repmat(incl,1,numel(c_tot));
+end
 
 

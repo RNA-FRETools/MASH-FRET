@@ -14,7 +14,7 @@ p = h.param;
 
 % project
 s.folderRoot = adjustParam('folderRoot', userpath, s_in);
-if ~exist(s.folderRoot,'dir')
+if ~exist(maketestfilepathabsolute(s.folderRoot),'dir')
     [s.folderRoot,~,~] = fileparts(fname);
 end
 s.date_creation = adjustParam('date_creation', datestr(now), s_in);
@@ -24,7 +24,6 @@ a = strfind(figname, 'MASH-FRET ');
 b = a + numel('MASH-FRET ');
 s.MASH_version = adjustParam('MASH_version', figname(b:end), s_in);
 s.proj_file = fname;
-% s.uptodate = adjustParam('uptodate', initUptodateArr, s_in);
 
 % movie
 s.movie_file = adjustParam('movie_file', {[]}, s_in); % movie path/file
@@ -93,6 +92,7 @@ N = size(s.intensities,2)/nChan;
 s.intensities_bgCorr = adjustParam('intensities_bgCorr',[],s_in);
 s.intensities_bin = adjustParam('intensities_bin',[],s_in);
 s.bool_intensities = adjustParam('bool_intensities',[],s_in);
+s.emitter_is_on = adjustParam('emitter_is_on',[],s_in);
 s.intensities_crossCorr = adjustParam('intensities_crossCorr',[],s_in);
 s.intensities_denoise = adjustParam('intensities_denoise',[],s_in);
 s.intensities_DTA = adjustParam('intensities_DTA',[],s_in);
@@ -115,32 +115,13 @@ s.dt_fname = adjustParam('dt_fname', [], s_in);
 s.dt = adjustParam('dt', {}, s_in);
 
 % molecule tags; added by FS, 24.4.2018
-% modified by MH, 24.4.2019: remove label 'unlabelled', use second 
-% dimension for label indexes and first dimension for molecule idexes
-% s.molTag = adjustParam('molTag', ones(1,size(s.intensities,2)/s.nb_channel), s_in);
-% s.molTagNames = adjustParam('molTagNames', {'unlabeled', 'static', 'dynamic'}, s_in);
-% modified by MH, 25.4.2019: fetch tag names in interface's defaults
-% s.molTagNames = adjustParam('molTagNames', {'static', 'dynamic'}, s_in);
 s.molTagNames = adjustParam('molTagNames',p.es.tagNames,s_in);
-
 nTag = numel(s.molTagNames);
 s.molTag = adjustParam('molTag', false(N,nTag), s_in);
-
-% added by MH, 24.4.2019
-% modified by MH, 25.4.2019: fetch tag colors in interface's defaults
-% s.molTagClr = adjustParam('molTagClr', ...
-%     {'#4298B5','#DD5F32','#92B06A','#ADC4CC','#E19D29'}, s_in);
 s.molTagClr = adjustParam('molTagClr',p.es.tagClr,s_in);
 
-% check machine-dependent path for test video files
-if all(~cellfun('isempty',s.movie_file)) && ...
-        all(cellfun(@istestfile,s.movie_file))
-    for c = 1:numel(s.movie_file)
-        s.movie_file{c} = strrep(strrep(s.movie_file{c},'\',filesep),'/',...
-            filesep);
-        s.movie_file{c} = which(s.movie_file{c}); 
-    end
-end
+% make all relative path absolute for test files
+s = maketestfilepathabsolute(s);
 
 % check existence of video file
 str0 = ['*',vidfmt{1}];
@@ -350,6 +331,9 @@ end
 if ~isequal(size(s.bool_intensities),[L2,N])
     s.bool_intensities = true(L2,N);
 end
+if ~isequal(size(s.emitter_is_on),[L2,N*nChan])
+    s.emitter_is_on = true(L2,N*nChan);
+end
 
 % check molecule tags
 if isempty(s.molTag)
@@ -413,7 +397,8 @@ for m = 1:N
             if isempty(s.intensities_DTA)
                 continue
             end
-            I = s.intensities_DTA(incl,(m-1)*s.nb_channel+i_c,i_l);
+            I = s.intensities_DTA(:,(m-1)*s.nb_channel+i_c,i_l);
+            I = I(~incl,:);
             if sum(double(~isnan(I)))
                 s.dt{m,j} = getDtFromDiscr(I,...
                     s.nb_excitations*s.resampling_time);
@@ -427,7 +412,8 @@ for m = 1:N
         if isempty(s.FRET_DTA)
             continue
         end
-        tr = s.FRET_DTA(incl,(m-1)*nFRET+i_f);
+        tr = s.FRET_DTA(:,(m-1)*nFRET+i_f);
+        tr(~incl,:) = NaN;
         if sum(double(~isnan(tr)))
             s.dt{m,j} = getDtFromDiscr(tr,s.nb_excitations*s.resampling_time);
         else
@@ -439,7 +425,8 @@ for m = 1:N
         if isempty(s.S_DTA)
             continue
         end
-        tr = s.S_DTA(incl,(m-1)*nS+i_s);
+        tr = s.S_DTA(:,(m-1)*nS+i_s);
+        tr(~incl,:) = NaN;
         if sum(double(~isnan(tr)))
             s.dt{m,j} = getDtFromDiscr(tr,s.nb_excitations*s.resampling_time);
         else

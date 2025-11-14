@@ -38,6 +38,7 @@ end
 p.proj{proj}.bool_intensities = p.proj{proj}.bool_intensities(:,incl);
 
 incl_c = reshape(repmat(incl, [nChan,1]),1,nChan*numel(incl));
+p.proj{proj}.emitter_is_on = p.proj{proj}.emitter_is_on(:,incl_c);
 p.proj{proj}.intensities = p.proj{proj}.intensities(:,incl_c,:);
 p.proj{proj}.intensities_bgCorr = ...
     p.proj{proj}.intensities_bgCorr(:,incl_c,:);

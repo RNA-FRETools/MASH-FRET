@@ -4,3 +4,7 @@ repository: MASH-FRET/RNA-FRETools.github.io
 compress_html:
   blanklines: true
 favicon_ico: "/assets/images/favicon.ico"
+defaults:
+  -
+    values:
+      math: mathjax3

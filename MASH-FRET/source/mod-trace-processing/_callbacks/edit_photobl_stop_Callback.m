@@ -11,7 +11,8 @@ inSec = p.proj{proj}.time_in_sec;
 method = p.proj{proj}.TP.curr{mol}{2}{1}(2);
 start = p.proj{proj}.TP.curr{mol}{2}{1}(4);
 
-if method~=1 % Manual
+if method==2 % Threshold
+    set(obj,'string',num2str(p.proj{proj}.TP.curr{mol}{2}{1}(4+method)))
     return
 end
 

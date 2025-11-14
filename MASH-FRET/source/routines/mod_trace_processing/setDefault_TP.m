@@ -43,7 +43,7 @@ nDat_bot = numel(get(h.popupmenu_plotBottom,'string'));
 set(h.popupmenu_plotBottom,'value',nDat_bot);
 popupmenu_plotBottom_Callback(h.popupmenu_plotBottom,[],h_fig);
 
-set_TP_xyAxis(p.fixX0,p.x0,false,[],h_fig);
+set_TP_xyAxis(p.fixX0,p.x0,p.clipx,false,[],h_fig);
 
 % set default sub-images parameters
 h_but = getHandlePanelExpandButton(h.uipanel_TP_subImages,h_fig);
@@ -93,6 +93,7 @@ h_but = getHandlePanelExpandButton(h.uipanel_TP_photobleaching,h_fig);
 if strcmp(h_but.String,char(9660))
     pushbutton_panelCollapse_Callback(h_but,[],h_fig);
 end
+set_TP_photobleaching(p.pbMeth,p.pbPrm,h_fig);
 pushbutton_applyAll_debl_Callback(h.pushbutton_applyAll_debl,[],h_fig);
 
 % set default factor corrections parameters
@@ -100,6 +101,7 @@ h_but = getHandlePanelExpandButton(h.uipanel_TP_factorCorrections,h_fig);
 if strcmp(h_but.String,char(9660))
     pushbutton_panelCollapse_Callback(h_but,[],h_fig);
 end
+set_TP_corrFactor(p.factMeth,p.fact,p.factPrm,h_fig)
 pushbutton_applyAll_corr_Callback(h.pushbutton_applyAll_corr,[],h_fig);
 
 % set default find states parameters
@@ -107,4 +109,5 @@ h_but = getHandlePanelExpandButton(h.uipanel_TP_findStates,h_fig);
 if strcmp(h_but.String,char(9660))
     pushbutton_panelCollapse_Callback(h_but,[],h_fig);
 end
+set_TP_findStates(p.fsMeth,p.fsDat,p.fsPrm,p.fsThresh,p.nChan,p.nL,h_fig)
 pushbutton_applyAll_DTA_Callback(h.pushbutton_applyAll_DTA,[],h_fig);

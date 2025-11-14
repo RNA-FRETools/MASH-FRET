@@ -112,16 +112,17 @@ MASH-FRET project files consist in data structures with the following fields:
 ### Intensity fields
 {: .no_toc }
 
-| `intensities`           | raw intensity trajectories with a number `L` of data point       | `L`-by-`nC*M` double   |         |
-| `pix_intgr`             | pixel area size and number of pixels used to integrate intensity | 1-by-2 double          | `[5,8]` |
-| `cnt_p_pix`             | units are/aren't counts per pixel                                | 1/0                    | `1`     |
-| `cnt_p_sec`             | units are/aren't counts per second                               | 1/0                    | `1`     |
-| `intensities_bgCorr`    | background-corrected intensity trajectories                      | `L`-by-`nC*M` double   |         |
-| `intensities_bin`       | re-sampled intensity trajectories                                | `L'`-by-`nC*M` double  |         |
-| `intensities_crossCorr` | background- & cross-talk-corrected intensity trajectories        | `L'`-by-`nC*M` double  |         |
-| `intensities_denoise`   | corrected and smoothed intensity trajectories                    | `L'`-by-`nC*M` double  |         |
-| `intensities_DTA`       | discretized intensity trajectories                               | `L'`-by-`nC*M` double  |         |
-| `bool_intensities`      | included/ignored intensity data points                           | `L'`-by-`M` true/false |         |
+| `intensities`           | raw intensity trajectories with a number `L` of data point                      | `L`-by-`nC*M` double      |         |
+| `pix_intgr`             | pixel area size and number of pixels used to integrate intensity                | 1-by-2 double             | `[5,8]` |
+| `cnt_p_pix`             | units are/aren't counts per pixel                                               | 1/0                       | `1`     |
+| `cnt_p_sec`             | units are/aren't counts per second                                              | 1/0                       | `1`     |
+| `intensities_bgCorr`    | background-corrected intensity trajectories                                     | `L`-by-`nC*M` double      |         |
+| `intensities_bin`       | re-sampled intensity trajectories                                               | `L'`-by-`nC*M` double     |         |
+| `intensities_crossCorr` | background- & cross-talk-corrected intensity trajectories                       | `L'`-by-`nC*M` double     |         |
+| `intensities_denoise`   | corrected and smoothed intensity trajectories                                   | `L'`-by-`nC*M` double     |         |
+| `intensities_DTA`       | discretized intensity trajectories                                              | `L'`-by-`nC*M` double     |         |
+| `bool_intensities`      | included/ignored intensity data points                                          | `L'`-by-`M` true/false    |         |
+| `emitter_is_on`         | on/off trajectories for each emitter whose specific laser excitation is defined | `L'`-by-`nC*M` true/false |         |
 
 
 ### FRET- and stoichiometry- fields

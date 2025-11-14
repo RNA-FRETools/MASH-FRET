@@ -28,10 +28,11 @@ if iscell(obj)
         pname = [pname,filesep];
     end
 else
+    [~,pth] = getCorrectPath('mapping',h_fig);
     [fname,pname,o] = uigetfile(...
         {'*.map;*.cpSelect','Coordinates File(*.map;*.cpSelect)'; ...
          '*.*','All Files (*.*)'},'Pick a co-localized coordinates file', ...
-         setCorrectPath('mapping', h_fig));
+         pth);
 end
 if ~sum(fname)
     return
