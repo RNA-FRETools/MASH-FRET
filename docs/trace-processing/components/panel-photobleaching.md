@@ -8,25 +8,25 @@ nav_order: 7
 
 <img src="../../assets/images/logos/logo-trace-processing_400px.png" width="170" style="float:right; margin-left: 15px;"/>
 
-# Photobleaching
+# Photobleaching/blinking
 {: .no_toc }
 
-Photobleaching is the seventh panel of module Trace processing. 
+Photobleaching/blinking is the seventh panel of module Trace processing. 
 Access the panel content by pressing 
 ![Bottom arrow](../../assets/images/gui/interface-but-bottomarrow.png). 
 The panel closes automatically after other panels open or after pressing 
 ![Top arrow](../../assets/images/gui/interface-but-toparrow.png). 
 
-Photobleaching settings are specific to each molecule. 
+Photobleaching/blinking detection settings are specific to each molecule. 
 Press 
 ![all](../../assets/images/gui/TP-but-all.png "all") to apply current settings to all molecules. 
 Corrections will be applied only after processing data by pressing 
 ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL"); see 
 [Process all molecules data](area-control.html#process-all-molecules-data) for more information.
 
-Use this panel to detect dye photobleaching and suppress photobleached data.
+Use this panel to detect and correct for dye blinking and photobleaching.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-pb.png"><img src="../../assets/images/gui/TP-panel-pb.png" style="max-width: 258px;"/></a>
+![Photobleaching/blinking panel](../../assets/images/gui/TP-panel-pb.png "Photobleaching/blinking panel")
 
 ## Panel components
 {: .no_toc .text-delta }
@@ -37,102 +37,118 @@ Use this panel to detect dye photobleaching and suppress photobleached data.
 
 ---
 
-## Photobleaching detection method
+## Photobleaching/blinking detection method
 
-Use this list to select the appropriate method for photobleaching detection.
+Use this list to select the appropriate method for photobleaching/blinking detection.
 
 Emitter photobleaching can either be detected visually or automatically, by respectively selecting `Manual` or `Threshold` in the list.
 
 For `Manual` detection, the photobleaching cutoff must be set by hand in 
 [Photobleaching cutoff](#photobleaching-cutoff).
 
-`Threshold` detection is performed by thresholding using the settings defined in 
-[Automatic detection settings](#automatic-detection-settings).
+For `Threshold`, automatic detection of blinking and photobleaching is performed by using the settings defined in 
+[Threshold detection settings](#threshold-detection-settings).
 
 
 ---
 
 ## Photobleaching cutoff
 
-Shows the photobleaching position given in seconds or frame according to time-axis units defined in menu `Units` of the 
+Shows the time point at which the photobleaching event was detected. 
+It is given in seconds or frame according to the time-axis units defined in menu `Units` of the 
 [menu bar](../../Getting_started.html#interface).
 
-For method `Threshold`, the photobleaching cutoff detected with 
-[Automatic detection settings](#automatic-detection-settings) is shown here.
+For method `Threshold`, the earliest photobleaching cutoff detected with 
+[Automatic detection settings](#threshold-detection-settings) is shown here.
 
 For method `Manual`, the photobleaching cutoff must be set here.
 
 
 ---
 
-## Truncate trajectories
+## Stats
 
-Activate this option to truncate time traces at the 
-[Photobleaching cutoff](#photobleaching-cutoff), or deactivate this option to visualize a blue cursor at the cutoff position in 
-[Intensity-time traces](visualization-area.html#intensity-time-traces-and-histograms) and 
-[Ratio-time traces](visualization-area.html#ratio-time-traces-and-histograms).
+After applying `Threshold` photobleaching/blinking detection to all molecules with ![All](../../assets/images/gui/TP-but-all.png "All") and updating calculations with ![UPDATE ALL](../../assets/images/gui/TP-but-update-all.png "UPDATE ALL"), press ![Stats](../../assets/images/gui/TP-but-stats.png "stats") to open statistics on photobleaching and blinking.
 
-<img src="../../assets/images/figures/TP-panel-photobleaching-disp.png" style="max-width:538px;">
+![Stats window](../../assets/images/gui/TP-panel-pb-stats.png "Stats on blinking and photobleaching")
 
-<img src="../../assets/images/figures/TP-panel-photobleaching-truncate.png" style="max-width:538px;">
+In order to access lifetimes until photobleaching, as well as "on" and "off" state lifetimes for each emitter $$k$$, survival distributions $$S$$ are fit with single exponential functions:
 
-For more information about how photobleaching correction is used in smFRET data analysis, see 
-[Correct for photobleaching](../workflow.html#correct-for-photobleaching) in Trace processing workflow.
+$$
+S\!\left( \Delta t_{\mathrm{bleach},k} \right) = 1-CDF\!\left( \Delta t_{\mathrm{bleach},k} \right) = A_{\mathrm{bleach},k}\exp\!\left( -\frac{\Delta t_{\mathrm{bleach},k}}{\tau_{\mathrm{bleach},k}} \right)
+$$
+
+$$
+S\!\left( \Delta t_{\mathrm{on},k} \right) = A_{\mathrm{on},k}\exp\!\left( -\frac{\Delta t_{\mathrm{on},k}}{\tau_{\mathrm{on},k}} \right)
+$$
+
+$$
+S\!\left( \Delta t_{\mathrm{off},k} \right) = A_{\mathrm{off},k}\exp\!\left( -\frac{\Delta t_{\mathrm{off},k}}{\tau_{\mathrm{off},k}} \right)
+$$
+
+where $$\Delta t_{\mathrm{bleach}}$$ are the measured times until photobleaching, $$\Delta t_{\mathrm{on}}$$ and $$\Delta t_{\mathrm{off}}$$ are the dwell times in the "off" and "on" states, and where parameters $$A$$ are the exponential amplitudes and $$\tau$$ the state lifetimes.
+
+Confidence intervals on fit parameters $$A$$ and $$\tau$$ are obtained by calculating the standard deviations over 100 bootstrap molecule samples.
+
+Survival distributions of times until photobleaching, blink-off and blink-on dwell times are plot with blue circles in **(d)**, **(e)** and **(f)**, respectively, for the emitter selected in list **(a)** using the axis scale selected in list **(b)**.
+The available axis scales are:
+* `linear-linear`: time and probability axis are scaled linearly
+* `log-linear`: time axis is scaled logarithmically and probability axis linearly
+* `linear-log`: time axis is scaled linearly and probability axis logarithmically
+* `log-log`: time and probability axis are scaled logarithmically
+
+Bootstrap fit results are plot in red, with the mean fitting curve being represented by in solid line and 1$$\sigma$$ confidence interval by dotted lines.
+Fit parameters and 1$$\sigma$$ confidence interval are written in the top-right corner of the plots.
+
+To characterize blinking kinetics, rate constants $$k_{\mathrm{off},k}$$ and  $$k_{\mathrm{on},k}$$ that respectively govern transitions to the "off" or to the "on" state for emitter $$k$$ are calculated from "on" and "off" state lifetimes such as:
+
+$$
+k_{\mathrm{off},k} = \frac{1}{\tau_{\mathrm{on},k}}
+$$
+
+$$
+k_{\mathrm{on},k} = \frac{1}{\tau_{\mathrm{off},k}}
+$$
+
+A state diagram summarizing blinking kinetics is drawn in **(g)**.
+
+Press ![Export](../../assets/images/gui/TP-but-export.png) to save statistics for emitter selected in **(a)** to a .txt file.
 
 
 ---
 
-## Split trajectories
+## Threshold detection settings
 
-Intensity interruptions occurring in the middle of a trace (e. g., blinking) can be corrected by splitting intensity-time traces in two and truncating the end of the first trace (see 
-[Truncate trajectories](#truncate-trajectories)) and the beginning of the second (see 
-[Time axis](panel-plot.html#time-axis)).
+Use this interface to define the settings for automatic detection of photobleaching.
 
-Press 
-![Split](../../assets/images/gui/TP-but-split.png "all") to split time traces in two at the 
-[Photobleaching cutoff](#photobleaching-cutoff).
-In this case, the right-side of the cutoff is saved as a separate molecule, which is added to the 
-[Molecule list](panel-sample-management.html#molecule-list).
-Both molecules will be given a "Split" tag in order to easily identify them in the list.
+![Threshold settings](../../assets/images/gui/TP-panel-pb-param.png "Threshold detection settings")
 
-For more information about how blinking correction is used in smFRET data analysis, see 
-[Correct for photobleaching](../workflow.html#correct-for-photobleaching) in Trace processing workflow.
+Settings are specific to the emitter selected in **(a)**, where only the emitters having a specific laser illumination defined in 
+[Lasers](../../tutorials/set-experiment-settings/import-trajectories.html#lasers) are listed.
 
+The algorithm for automatic detection of photobleaching inspects the total emission trajectory $$I_{\mathrm{tot}}$$ of each of the $$K$$ emitters in order to look for blinking and photobleaching events.
+Total emissions are obtained by summing up intensities accross all emission channels collected upon the emitter's specific laser illumination:
 
----
+$$
+I_{\mathrm{tot},k} = \sum_{i=1}^K I_{i,\mathrm{em}}^{k,\mathrm{ex}} 
+$$
 
-## Automatic detection settings
+where $$I_{i,\mathrm{em}}^{k,\mathrm{ex}}$$ is the intensity collected in emission channel $$i$$ upon illumination with laser specific to emitter $$k$$.
 
-Us this interface to define the settings for automatic detection of photobleaching.
+To counteract the undesirable effects of noisy fluctuations on threshold detection and make the algorithm more robust, trajectories are discretized using [`STaSI+vbFRET`](panel-find-states.html#stasivbfret) prior analysis, and a threshold **(b)** relative to the maximum discrete intensity is used.
 
-<a class="plain" href="../../assets/images/gui/TP-panel-pb-param.png"><img src="../../assets/images/gui/TP-panel-pb-param.png" style="max-width: 204px;"/></a>
+Then, an “off” state is identified when the discretized trajectory falls below the threshold, and an “on” state when it rises back above it.
+Portions of the trajectories that were detected in a "off" state are indicated with a gray background in in trajectory plots of the [Visualization area](area-visu.html) and the associated data is intentionally not plotted as it is ignored from the rest of the analysis.
 
-Photobleaching is detected when the time trace selected in menu **(a)** drops below a certain threshold defined in **(b)** and providing a minimum cutoff value set in **(d)**.
+![Off states in trajectories](../../assets/images/figures/TP-panel-pb-traj.png)
 
-Traces available for photobleaching detection are:
-
-* `FRET [D]>[A]` the FRET-time trace of the pair donor emitter `[D]` -acceptor emitter `[A]`
-* `S [D]>[A]` the Stoichiometry-time trace associated to the FRET pair donor emitter `[D]` -acceptor emitter `[A]`
-* `[E] at [L]nm` the single intensity-time trace of emitter `[E]` upon illumination with laser wavelength `[L]` (in nm)
-* `all intensities` the minimum values found in all intensity-time traces
-* `summed intensities` the sum of all intensity-time traces
-
-In case of intensity-time traces, the threshold is given in counts or counts per second according to intensity units defined in menu `Units` of the 
+Photobleaching is declared when 100% of the remaining trajectory is below the threshold providing a minimum photobleached duration set in **(c)** and given in time units defined in menu `Units` of the 
 [menu bar](../../Getting_started.html#interface).
-
-Traces `all intensities` and `summed intensities` are calculated from intensities in absence of any acceptors, *i. e.* summed over all channels at emitter-specific illumination.
-This allows to exclude the zero-intensity signals collected at unspecific illuminations that are constantly "photobleached" and prevent the automatic photobleaching detection to function.
-Only emitters having a specific illumination defined in 
-[Channels](../../tutorials/set-experiment-settings/import-trajectories.html#channels) are considered in these calculations.
-
-To ensure detection at the very beginning of acceptor photobleaching, the detected cutoff position can be shifted downwards by a certain number of frames set in **(c)**.
-
-Parameters **(b)** and **(c)** are given in frame number or in second according to time units defined in menu `Units` of the 
-[menu bar](../../Getting_started.html#interface).
-
-The resulting photobleaching cutoff displayed in 
-[Photobleaching cutoff](#photobleaching-cutoff) only after processing the current molecule, *i.e.*, when pressing 
-![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE"); see 
+The resulting photobleaching time point is given in **(d)** and can be refreshed by pressing ![UPDATE](../../assets/images/gui/TP-but-update.png "UPDATE"); see 
 [Process current molecule data](panel-sample-management.html#process-current-molecule-data) for more information.
 
+Detected photobleaching events are represented by vertical dotted lines in trajectory plots of the [Visualization area](area-visu.html).
+
+The photobleaching time point of the emitter that photobleached first is given as the global [Photobleaching cutoff](#photobleaching-cutoff) of the molecule that defines the end of the observation time.
+Global molecule cutoff is represented by a vertical solid line in trajectory plots of the [Visualization area](area-visu.html).
 
