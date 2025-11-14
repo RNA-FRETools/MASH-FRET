@@ -10,10 +10,17 @@ maxI = str2double(obj.String);
 h = guidata(h_fig);
 p = h.param;
 proj = p.curr_proj;
+expT = p.proj{proj}.resampling_time;
+perSec = p.proj{proj}.cnt_p_sec;
 minI = p.proj{proj}.TP.fix{2}(4);
 
+% convert intensity units
+if perSec
+    maxI = maxI*expT;
+end
+
 % check for proper format
-if ~(numel(maxI)==1 && ~isnan(maxI))
+if ~(isscalar(maxI) && ~isnan(maxI))
     set(obj,'backgroundcolor',red);
     setContPan('Upper intensity must be a number.','error',h_fig);
     return
