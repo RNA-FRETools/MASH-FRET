@@ -112,7 +112,7 @@ $$
 
 A state diagram summarizing blinking kinetics is drawn in **(g)**.
 
-Press ![Export](../../assets/images/gui/TP-but-export.png) to save statistics for emitter selected in **(a)** to a .txt file.
+Press ![Export](../../assets/images/gui/TP-but-export.png) to save statistics for emitter selected in **(a)** to a [.txt file](../../output-files/txt-photobleaching-blinking-stats.html).
 
 
 ---
