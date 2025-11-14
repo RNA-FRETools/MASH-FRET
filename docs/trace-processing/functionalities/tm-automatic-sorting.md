@@ -82,6 +82,7 @@ The type of data sets can be selected in menu **(b)** (x-axis) and **(g)** (y-ax
 * `maxima (molecule-wise)` for the minima of the data-time traces
 * `medians (molecule-wise)` for the medians of the data-time traces
 * `SNR (molecule-wise)` for the signal-to-noise ratio of the data-time traces $$data(t)$$, calculated from mean value $$\langle data\rangle$$ and trajectory length $$L$$ with: $$SNR=\frac{\langle data \rangle }{\sqrt{\frac{1}{L-1}\sum_t{data(t)-\langle data\rangle}}}$$
+* `bleaching cutoff (molecule-wise)` for the time point at which photobleaching of emitter `[E]` was detected
 * `nb. of states (molecule-wise)` for the number of states in state trajectories
 * `nb. of transitions (molecule-wise)` for the number of state transitions in state trajectories
 * `mean dwell time (molecule-wise)` for the average state dwell times of the state trajectories
@@ -98,8 +99,7 @@ If some state trajectories are missing, a warning pops up.
 
 To perform 2D-sorting on the transition density plot, x-axis and y-axis data must be identical and the `state values` set must be chosen for both.
 
-Resulting 1D- or 2D-data histogram is plotted in 
-[Histogram plot](#histogram-plot).
+Resulting 1D- or 2D-data histogram is plotted in [Histogram plot](#histogram-plot) and can be exported to a [.txt file](../../output-files/txt-autosort-data.html) by pressing ![Export to .txt file](../../assets/images/gui/TP-but-export-to-txt-file.png)
 
 
 ---
