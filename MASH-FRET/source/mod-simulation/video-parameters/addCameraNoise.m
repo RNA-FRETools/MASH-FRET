@@ -1,4 +1,4 @@
-function [dat_noisy,err] = addCameraNoise(dat,prm)
+function [n_ic,err] = addCameraNoise(I,prm)
 % [dat_noisy,err] = addCameraNoise(dat,prm)
 %
 % Add camera noise to input data vector or matrix (photon count coming from the fluorophors and background). 
@@ -20,7 +20,7 @@ function [dat_noisy,err] = addCameraNoise(dat,prm)
 % update 7.3.2018 by Richard Börner: (1) Comments adapted for Boerner et al 2017 (2) Noise models adapted for Boerner et al 2017. (3) Simulation default parameters adapted for Boerner et al 2017.
 
 % initialize returned arguments
-dat_noisy = [];
+n_ic = [];
 err = '';
 
 % collect parameters
@@ -46,97 +46,97 @@ switch noisetype
 end
 noisePrm = noiseprm(noiseCamInd,:);
 
-[mu_y_dark,K,eta] = getCamParam(noisetype,noiseprm);
+[b,K,q] = getCamParam(noisetype,noiseprm);
 
 switch noisetype
 
     case 'poiss' % Poisson or P-model from Börner et al. 2017
         
         % EDIT MH: if I understood correctly, the Poisson noise regards only the
-        % production of photoelectrons, therefore, the mu_y_dark should not be
+        % production of photoelectrons, therefore, the offset_ic should not be
         % taken into account for the generation of Poisson noise.
-        % add noise for photoelectrons (no mu_y_dark here)
+        % add noise for photoelectrons (no offset_ic here)
         % (PC-->EC)
-        dat_noisy = random('poiss', eta*dat);
+        n_pc = random('poiss', q*I);
         
         % convert to EC (conversion yields basically wrong ec or ic as the 
         % conversion factor photons to imagecounts is only valid for N, 
         % NExpN and PGN model)
-        % EDIT MH: add mu_y_dark for conversion to IC
-        % add camera mu_y_dark
+        % EDIT MH: add offset_ic for conversion to IC
+        % add camera offset_ic
         % (EC-->IC)
-        dat_noisy = K*dat_noisy + mu_y_dark;
+        n_ic = K*n_pc + b;
 
     case 'norm' % Gaussian, Normal or N-model from Börner et al. 2017
         % PC are not Poisson distributed here.
         % model parameters
-        % EDIT MH: Here the mu_y_dark participates to the generation of noise 
+        % EDIT MH: Here the offset_ic participates to the generation of noise 
         % (according to PONE)
-        sig_d = noisePrm(2);
-        sig_q = noisePrm(4);
+        sig_pc_d = noisePrm(2);
+        sig_ic_q = noisePrm(4);
         
         % (PC-->IC)
-        mu_y = phtn2arb(dat,mu_y_dark,K,eta);
+        mu_ic = phtn2arb(I,b,K,q);
         
         % calculate noise width in EC, Gaussian width
         % ASSUMPTION (no units conversion, just value assignment)
         % (EC) 
-        sig_pe = sqrt(eta*dat); 
+        sig_pc = sqrt(q*I); 
         
         % (EC-->IC)
-        sig_y = sqrt((K*sig_d)^2 + (sig_q^2) + (K*sig_pe).^2);
+        sig_ic = sqrt((K*sig_pc_d)^2 + (sig_ic_q^2) + (K*sig_pc).^2);
         
         % add Gaussian noise
         % (IC)
-        dat_noisy = random('norm', mu_y, sig_y);
+        n_ic = random('norm', mu_ic, sig_ic);
         
     case 'user' % User defined or NExpN-model from Börner et al. 2017
         
         % model parameters
-        % EDIT MH: Here the mu_y_dark participates to the generation of noise 
+        % EDIT MH: Here the offset_ic participates to the generation of noise 
         % (according to PONE)
         A = noisePrm(2); % CIC contribution
-        sig0 = noisePrm(4); % read-out noise width
-        tau = noisePrm(6); % CIC decay
+        sig_ic = noisePrm(4); % read-out noise width
+        tau_ic = noisePrm(6); % CIC decay
 
         % convert to IC (PC-->IC)
-        dat_noisy = phtn2arb(dat, mu_y_dark, K, eta);
+        n_ic = phtn2arb(I, b, K, q);
 
         % calculate noise distribution and add noise (IC)
-        dat_noisy = rand_NexpN(dat_noisy, A, tau, sig0);
+        n_ic = rand_NexpN(n_ic, A, tau_ic, sig_ic);
         
-    case 'none' % None, no camera noise but possible camera mu_y_dark value
+    case 'none' % None, no camera noise but possible camera offset_ic value
 
-        % no noise but mu_y_dark in IC (accroding to PONE) 
+        % no noise but offset_ic in IC (accroding to PONE) 
         % (PC-->IC)
-        dat_noisy = phtn2arb(dat, mu_y_dark, K, eta);
+        n_ic = phtn2arb(I, b, K, q);
         
     case 'hirsch' % Hirsch or PGN- Model from Hirsch et al. 2011
        
-        % model parameters
-        % EDIT MH: Here the mu_y_dark participates to the generation of noise 
-        % (according to PONE)
+        % model parameters (notation as in Hirsh et. al. 2011)
+        % I light intensity (pc)
+        % b bias offset (ic)
+        % q detector quantum efficiency (ec/pc)
+        r = noisePrm(2); % readout noise (ec) s_d
+        c = noisePrm(4); % spurious charge (ec) CIC
+        g = noisePrm(5); % EM register gain (ec/pc)
+        f = noisePrm(6); % analog-to-digital factor (ec/ic) s
         
-        s_d = noisePrm(2); 
-        CIC = noisePrm(4);
-        g = noisePrm(5); % change 2018-08-03
-        s = noisePrm(6);
-        
-        % Poisson noise of photo-electrons + CIC 
+        % Poisson noise of photo-electrons + poisson noise of supurious charge 
         % (PC-->EC)
-        dat_noisy = random('poiss', eta*dat+CIC);
+        n_ie = random('poiss', q*I+c); % nb. of input e- in the EM register
         
         % Gamma amplification noise, composition 
         % (EC)
-        dat_noisy = random('gamma', dat_noisy, g);
+        n_oe = random('gamma', n_ie, g); % nb. of output e- from the EM register
         
         % Gausian read-out noise, composition 
         % (EC-->IC)
-        dat_noisy = random('norm', dat_noisy/s + mu_y_dark, s_d*K);
+        n_ic = random('norm', n_oe/f + b, r*K);
         
 end
 
 % Correction of out-of-range values.
 % Due to noise calculated values out of the detection range 0 <= 0I <= bitrate. 
-dat_noisy(dat_noisy<0) = 0;
-dat_noisy(dat_noisy>sat) = sat;
+n_ic(n_ic<0) = 0;
+n_ic(n_ic>sat) = sat;
