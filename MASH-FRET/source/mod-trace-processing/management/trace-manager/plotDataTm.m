@@ -10,9 +10,6 @@ proj = p.curr_proj;
 nFRET = size(p.proj{proj}.FRET,1);
 nS = size(p.proj{proj}.S,1);
 isBot = nFRET | nS;
-
-mol = p.ttPr.curr_mol(proj);
-prm = p.proj{proj}.TP.prm{mol};
 nDisp = size(h.tm.checkbox_molNb,2);
 
 for i = 1:nDisp
@@ -23,8 +20,8 @@ for i = 1:nDisp
         cla(h.tm.axes_hist(i));
     end
     
-    mol_nb = str2num(get(h.tm.checkbox_molNb(i),'String'));
-    if h.tm.molValid(mol_nb)
+    mol = str2num(get(h.tm.checkbox_molNb(i),'String'));
+    if h.tm.molValid(mol)
         shad = 'white';
     else
         shad = get(h.tm.checkbox_molNb(i),'BackgroundColor');
@@ -36,14 +33,14 @@ for i = 1:nDisp
 end
 drawnow;
 
-for i = 1:nDisp
-    
+for i = 1:nDisp    
     % MH, 26.7.2019
     if ~ishandle(h.tm.checkbox_molNb(i))
         break;
     end
     
-    mol_nb = str2num(get(h.tm.checkbox_molNb(i), 'String'));
+    mol = str2num(get(h.tm.checkbox_molNb(i), 'String'));
+    prm = p.proj{proj}.TP.prm{mol};
 
     axes.axes_traceTop = h.tm.axes_itt(i);
     axes.axes_histTop = h.tm.axes_itt_hist(i);
@@ -52,9 +49,9 @@ for i = 1:nDisp
         axes.axes_histBottom = h.tm.axes_hist(i);
     end
 
-    plotData(mol_nb, p, axes, prm, 0);
+    plotData(mol, p, axes, prm, 0);
     
-    if h.tm.molValid(mol_nb)
+    if h.tm.molValid(mol)
         shad = 'white';
     else
         shad = get(h.tm.checkbox_molNb(i),'BackgroundColor');
@@ -70,6 +67,6 @@ for i = 1:nDisp
         set(get(h.tm.axes_itt(i), 'Xlabel'), 'String', '');
         set(get(axes.axes_histTop, 'Xlabel'), 'String', '');
     end
-    set(h.tm.checkbox_molNb(i), 'Value', h.tm.molValid(mol_nb));
+    set(h.tm.checkbox_molNb(i), 'Value', h.tm.molValid(mol));
     drawnow;
 end

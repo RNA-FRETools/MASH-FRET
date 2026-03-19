@@ -472,9 +472,11 @@ function addleg2plot(varargin)
 for n = 1:nargin
     legdat = varargin{n};
     if ~isempty(legdat{1})
-        legend(legdat{1},legdat{2},'box','on','location','northeast',...
-            'fontsize',6,'iconcolumnwidth',3,'orientation','horizontal',...
-            'backgroundalpha',0.5);
+        leg = legend(legdat{1},legdat{2},'box','on','location','northeast',...
+            'fontsize',6,'orientation','horizontal','backgroundalpha',0.5);
+        if ~isMATLABReleaseOlderThan('R2024b')
+            leg.IconColumnWidth = 3;
+        end
     end
 end
 
