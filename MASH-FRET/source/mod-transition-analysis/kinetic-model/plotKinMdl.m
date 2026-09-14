@@ -51,24 +51,24 @@ else
     tp = prm.mdl_res{1};
     V = numel(stateval);
     id_j = 1:J;
-    lt = 1/(1-tp(~~eye(J)));
-    for v = 1:V
-        j_v = find(states==stateval(v));
-        D_v = numel(j_v);
-        lt_v = zeros(1,D_v);
-        for d = 1:D_v
-            lt_v(d) = 1/(1-tp(j_v(d),j_v(d)));
-        end
-        [~,id_v] = sort(lt_v);
-        id_j(j_v) = j_v(id_v);
-        lt(j_v) = lt_v(id_v);
-    end
-    pop = pop0(id_j);
+    lt = 1./(1-tp(~~eye(J)));
+    % for v = 1:V
+    %     j_v = find(states==stateval(v));
+    %     D_v = numel(j_v);
+    %     lt_v = zeros(1,D_v);
+    %     for d = 1:D_v
+    %         lt_v(d) = 1/(1-tp(j_v(d),j_v(d)));
+    %     end
+    %     [~,id_v] = sort(lt_v);
+    %     id_j(j_v) = j_v(id_v);
+    %     lt(j_v) = lt_v(id_v);
+    % end
+    % pop = pop0(id_j);
     
     kin = tp;
     kin(~~eye(size(kin))) = 0;
     ntrs = kin;
-    drawDiagram(h_axes(1),states,ntrs,pop,lt);
+    drawDiagram(h_axes(1),states,ntrs,pop0,lt);
 end
 
 
