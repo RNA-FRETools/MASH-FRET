@@ -265,8 +265,8 @@ if isRes && tdp_clust
         % calculate state deviations
         val_std = zeros(1,K);
         for k = 1:K
-            val_std(k) = std(prm.clst_res{1}.clusters{K}(...
-                prm.clst_res{1}.clusters{K}(:,end-1)==k,2));
+            val_std(k) = std(prm.clst_res{1}.clusters{J}(...
+                prm.clst_res{1}.clusters{J}(:,end-1)==k,2));
         end
         
         h = guidata(h_fig);
