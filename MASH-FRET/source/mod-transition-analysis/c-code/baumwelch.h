@@ -2,13 +2,19 @@
 #define BAUMWELCH_H
 
 // DEFAULTS
+#define DLMIN 0.000001 // convergence criterion of log-likelihood
 #define DMIN 0.00000001 // convergence criterion on parameters (from SMACKS)
 #define MAXITER 100000 // maximum number of EM iterations
 
 
-double getMaxDiff(const double* T, const double* T_prev, const double* ip, const double* ip_prev, int J);
-int dispProb(double m, double dL, double dmax, const double* T, const double* ip, int J, int nb);
-bool optBW(double* T, double* ip, double *logL, const double* B, const double* seq, int J, int N, int V, const double* L, const bool disp);
+double getMaxDiff(const double* T, const double* T_prev, const double* ip, 
+        const double* ip_prev, int J);
+int eraseAndWrite(char* str, int nb);
+int dispProb(double m, double dL, double dmax, const double* T, 
+        const double* ip, int J, int nb);
+bool optBW(double* T, double* ip, double *logL, const double* B, 
+        const uint8_t* seq, int J, int N, int V, const double* L, 
+        int* nb, const bool disp);
 bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]);
 
 #endif

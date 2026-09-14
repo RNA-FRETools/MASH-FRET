@@ -217,6 +217,12 @@ expPrm.expT = nL*expT;
 expPrm.Ls = sum(p.proj{proj}.bool_intensities,1);
 expPrm.dt = dat(:,[1,4,end-1,end]);
 expPrm.excl = excl;
+
+
+% convert state sequences to uint8 to save memory
+for n = 1:numel(seq)
+    seq{n} = uint8(seq{n});
+end
 expPrm.seq = seq;
 
 % % eps = minpercent*nMol/sum(expPrm.Ls);
@@ -226,7 +232,7 @@ schm = true(J);
 % iter = 1;
 % while iter==1 || any(tp(schm)<eps)
 %     schm = schm & tp>=eps;
-    [tp,err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T_bw,schm,...
+    [tp,err,ip,simdat] = optimizeProbMat(states,expPrm,[],T_bw,schm,...
         ~h.mute_actions); % transition prob
 %     iter = iter+1;
 % end

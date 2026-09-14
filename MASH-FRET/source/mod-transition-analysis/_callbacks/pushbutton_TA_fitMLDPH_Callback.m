@@ -6,6 +6,11 @@ function pushbutton_TA_fitMLDPH_Callback(obj,evd,h_fig)
 % sumexp: (1) to fit sum of exponential, (0) for DPH
 % saveit: (1) to save fit curves and parameters to files, (0) otherwise
 
+% CONSTANTS
+MAX_ITER = 1e5;
+CVG_CRITER_PRM = 1E-8;
+CVG_CRITER_LL = 1E-6;
+
 % get interface parameters
 h = guidata(h_fig);
 p = h.param;
@@ -13,14 +18,12 @@ if ~isModuleOn(p,'TA')
     return
 end
 
-sumexp = false;
 saveit = false;
 if iscell(obj)
-    sumexp = obj{1};
     saveit = obj{2};
 end
 
- proj = p.curr_proj;
+proj = p.curr_proj;
 tag = p.TDP.curr_tag(proj);
 tpe = p.TDP.curr_type(proj);
 prm = p.proj{proj}.TA.prm{tag,tpe};
@@ -157,8 +160,13 @@ if guessMeth==1 % determine guess from DPH fit & BIC model selection
         pname = '';
     end    
 
-    [D,mdl,allmdl,~] = script_findBestModel(dat(:,[1,4,7,8]),Dmax,states,...
-        nL*expT,dt_bin,T_mldph,sumexp,pname,~h.mute_actions);
+    [D,mdl,allmdl,~] = script_findBestModel(dat(:,[1,4,7,8]),1,ones(1,V),...
+        ones(1,V)*Dmax,...
+        states,1/(nL*expT),dt_bin,T_mldph,CVG_CRITER_LL,CVG_CRITER_PRM,...
+        MAX_ITER,pname,6,0,~h.mute_actions);
+
+    % [D,mdl,allmdl,~] = script_findBestModel(dat(:,[1,4,7,8]),Dmax,states,...
+    %     nL*expT,dt_bin,T_mldph,sumexp,pname,~h.mute_actions);
     
     % collect minimum BIC values for each degeneracy tested
     BIC = Inf(V,Dmax);

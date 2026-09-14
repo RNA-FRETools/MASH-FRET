@@ -22,7 +22,7 @@
  * calcRateConfIv.m.
  *  
  * Corresponding MATLAB executing command:
- * [posiv,negiv] = calcmdlconfiv(T0,seq,B,ip);
+ * [posiv,negiv,nb] = calcmdlconfiv(T0,seq,B,ip,disp);
  *
  * MEX-compilation comand:
  * mex  -R2018a -O calcmdlconfiv.c vectop.c fwdbwd.c
@@ -33,6 +33,7 @@
  */
 
 #include <stdio.h>
+#include <stdint.h> // to use data type uint8_t
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -54,17 +55,21 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	const mwSize *seqDim = mxGetDimensions(prhs[1]);
 	int N = (int) seqDim[1];
 	int V = (int) mxGetM(prhs[2]);
+    int nb_int = 0;
 	
 	// get input values
 	const double *T0 = (const double *) mxGetDoubles(prhs[0]);
 	const double *B = (const double *) mxGetDoubles(prhs[2]);
 	const double *ip = (const double *) mxGetDoubles(prhs[3]);
+    const bool *disp = (const bool *) mxGetLogicals(prhs[4])[0]; // show display of progress
 	
 	// prepare output
 	plhs[0] = mxCreateDoubleMatrix(J,J,mxREAL);
 	plhs[1] = mxCreateDoubleMatrix(J,J,mxREAL);
+	plhs[2] = mxCreateDoubleScalar(0);
 	double *posiv = mxGetDoubles(plhs[0]);
 	double *negiv = mxGetDoubles(plhs[1]);
+	double *nb = mxGetDoubles(plhs[2]);
 	
 	// get trajectory lentghs
 	double L[N];
@@ -76,10 +81,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	}
 
 	// store sequences in a linear vector (for speed)
-	double seq[Lsum], *tmp;
+	
+	uint8_t seq[Lsum], *tmp;
 	long i = 0, j = 0, k = 0;
 	for (n=0; n<seqDim[1]; n++){
-		tmp = (double *) mxGetDoubles(mxGetCell(prhs[1],n));
+		tmp = (uint8_t *) mxGetUint8s(mxGetCell(prhs[1],n));
 		k = 0;
 		for (j=i; j<(i+((long) L[n])); j++){
 			seq[j] = tmp[k];
@@ -89,11 +95,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	}
 	
 	// print data characteristics
-	mexPrintf("Calculate rate coefficient confidence intervals (%i states, %i values) for %i trajectories (lengths:",J,V,N);
-	for (i=0; i<N; i++){
-		mexPrintf(" %.0f",L[i]);
-	}
-	mexPrintf(")\n");
+    if (disp){
+        *nb = mexPrintf("Calculate rate coefficient confidence intervals (%i states, %i values) for %i trajectories\n",
+                J,V,N);
+    }
 	
 	// transpose transition matrix (for speed)
 	double T0t[J*J], posivt[J*J], negivt[J*J];
@@ -104,18 +109,23 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	initVect_double(negivt,J*J,0);
 	
 	// calculate intervals
-	calcRateIv(posivt,negivt,T0t,ip,B,(const double*) seq,J,N,V,L);
+	calcRateIv(posivt,negivt,T0t,ip,B,(const uint8_t*) seq,J,N,V,L,&nb_int,
+            disp);
 	
 	// transpose error matrices to be returned
 	transposeMat(posiv,posivt,J,J);
 	transposeMat(negiv,negivt,J,J);
+    
+    *nb = *nb + (double) nb_int;
 	
 	return;
 }
 
 
 void calcRateIv(double* posiv, double* negiv, 
-		const double* T0, const double* ip, const double* B, const double* seq, int J, int N, int V, double* L){
+		const double* T0, const double* ip, const double* B, 
+        const uint8_t* seq, int J, int N, int V, double* L, int* nb, 
+        const bool disp){
 	
 	int i = 0, k = 0, k2 = 0;
 	int k0[J];
@@ -184,9 +194,11 @@ void calcRateIv(double* posiv, double* negiv,
 	for (i=0; i<J; i++){
 		for (j=0; j<J; j++){
 			if (i!=j){
-			
-				mexPrintf(">> interval for transition %i->%i...\n",i,j);
-				mexEvalString("drawnow;");
+                if (disp){
+                    *nb = *nb + mexPrintf(">> interval for transition %i->%i...\n",
+                            i,j);
+                    mexEvalString("drawnow;");
+                }
 
 				if (T0[k]>0){
 					// increases rate coefficient
@@ -214,7 +226,7 @@ void calcRateIv(double* posiv, double* negiv,
 
 
 double getRateBound(double* T, int id_ij, int id_ii, double tpMax, double step, double logL0, double* fwd, double* coeff, 
-		const double* ip, const double* B, const double* seq, int J, int N, int V, double* L, const int** id_B){
+		const double* ip, const double* B, const uint8_t* seq, int J, int N, int V, double* L, const int** id_B){
 	
 	int n = 0;
 	long i = 0, o = 0;
@@ -282,11 +294,11 @@ bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	char str[1000];
 	
 	// Check for proper number of input and output arguments.
-	if (nrhs!=4) {
-		mexErrMsgTxt("Four input arguments are required.");
+	if (nrhs!=5) {
+		mexErrMsgTxt("Five input arguments are required.");
 		return 0;
 	} 
-	if (nlhs>2) {
+	if (nlhs>3) {
 		mexErrMsgTxt("Too many output arguments.");
 		return 0;
 	}
@@ -298,8 +310,13 @@ bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 			mexErrMsgTxt(str);
 			return 0;
 		}
-		else if (i!=1 && !(mxIsDouble(prhs[i]))){
+		else if (i!=1 && i!=4 && !(mxIsDouble(prhs[i]))){
 			sprintf(str,"Input argument %i must be of type double.",i+1);
+			mexErrMsgTxt(str);
+			return 0;
+		}
+		else if (i==4 && !(mxIsLogical(prhs[i]))){
+			sprintf(str,"Input argument %i must be of type logical.",i+1);
 			mexErrMsgTxt(str);
 			return 0;
 		}

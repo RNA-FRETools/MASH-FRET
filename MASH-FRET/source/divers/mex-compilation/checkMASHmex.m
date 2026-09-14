@@ -66,32 +66,26 @@ if exist('SPEImport','file')~=3
 end
 
 % compile DPH training algorithm
-if exist('trainPH','file')~=3
-    cd(fileparts(which('trainPH.c')));
-    try
-        mex -R2018a -O trainPH.c vectop.c
-    catch err
-        dispMatlabErr(err);
-    end
+cd(fileparts(which('trainPH.c')));
+try
+    mex -R2018a -O trainPH.c vectop.c
+catch err
+    dispMatlabErr(err);
 end
 
 % compile Baum-Welch algorithm
-if exist('baumwelch','file')~=3
-    cd(fileparts(which('baumwelch.c')));
-    try
-        mex -R2018a -O baumwelch.c vectop.c fwdbwd.c
-    catch err
-        dispMatlabErr(err);
-    end
+cd(fileparts(which('baumwelch.c')));
+try
+    mex -R2018a -O baumwelch.c vectop.c fwdbwd.c
+catch err
+    dispMatlabErr(err);
 end
 
 % compile model error calculation
-if exist('calcmdlconfiv','file')~=3
-    cd(fileparts(which('calcmdlconfiv.c')));
-    try
-        mex -R2018a -O calcmdlconfiv.c vectop.c fwdbwd.c
-    catch err
-        dispMatlabErr(err);
-    end
+cd(fileparts(which('calcmdlconfiv.c')));
+try
+    mex -R2018a -O calcmdlconfiv.c vectop.c fwdbwd.c
+catch err
+    dispMatlabErr(err);
 end
     

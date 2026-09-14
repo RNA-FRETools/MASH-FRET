@@ -12,7 +12,8 @@
  * sequences of various lengths, filled with state value indexes 
  * (corresponding to row indexes in B0), (4) a [1-by-J] row 
  * vector of doubles as starting initial state probabilities, and (5) 
- * logical 1 to show progress display, 0 to mute.
+ * logical of 1 to show transition probabilities in the command window 
+ * or 0 to mute.
  * Returns (1) convergence boolean (1: converged, 0: failed) (2) 
  * the optimized transition porbability matrix (T), (3) the optimized 
  * initial probabilities (ip), and (4) the log-likelihood of the HMM 
@@ -21,7 +22,7 @@
  * baumwelch_matlab.m.
  *  
  * Corresponding MATLAB executing command:
- * [ok,T,ip,logL] = baumwelch(T0,B0,seq,ip0,disp);
+ * [ok,T,ip,logL,nb] = baumwelch(T0,B0,seq,ip0,disp);
  *
  * MEX-compilation command:
  * mex  -R2018a -O baumwelch.c vectop.c fwdbwd.c
@@ -32,6 +33,7 @@
  */
 
 #include <stdio.h>
+#include <stdint.h> // to use data type uint8_t
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
@@ -53,22 +55,25 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	int V = (int) mxGetM(prhs[1]);
 	const mwSize *seqDim = mxGetDimensions(prhs[2]);
 	int N = (int) seqDim[1];
+    int nb_int = 0;
 	
 	// get input values
 	const double *T0 = (const double *) mxGetDoubles(prhs[0]);
 	const double *B = (const double *) mxGetDoubles(prhs[1]);
 	const double *ip0 = (const double *) mxGetDoubles(prhs[3]);
-    const bool *disp = (const bool *) mxGetLogicals(prhs[4]);
+    const bool *disp = (const bool *) mxGetLogicals(prhs[4]); // show display of progress
 	
 	// prepare output
 	plhs[0] = mxCreateDoubleScalar(0);
 	plhs[1] = mxCreateDoubleMatrix(J,J,mxREAL);
 	plhs[2] = mxCreateDoubleMatrix(1,J,mxREAL);
 	plhs[3] = mxCreateDoubleScalar(0);
+	plhs[4] = mxCreateDoubleScalar(0);
 	double *cvg = mxGetDoubles(plhs[0]);
 	double *T = mxGetDoubles(plhs[1]);
 	double *ip = mxGetDoubles(plhs[2]);
 	double *logL = mxGetDoubles(plhs[3]);
+    double *nb = mxGetDoubles(plhs[4]);
 	
 	// get trajectory lentghs
 	double L[N];
@@ -80,10 +85,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	}
 
 	// store sequences in a linear vector (for speed)
-	double seq[Lsum], *tmp;
+	uint8_t seq[Lsum], *tmp;
 	long i = 0, j = 0, k = 0;
 	for (n=0; n<seqDim[1]; n++){
-		tmp = (double *) mxGetDoubles(mxGetCell(prhs[2],n));
+		tmp = (uint8_t *) mxGetUint8s(mxGetCell(prhs[2],n));
 		k = 0;
 		for (j=i; j<(i+((long) L[n])); j++){
 			seq[j] = tmp[k];
@@ -93,11 +98,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	}
 	
 	// print data characteristics
-	mexPrintf("Optimize HMM (%i states, %i values) for %i trajectories (lengths:",J,V,N);
-	for (i=0; i<N; i++){
-		mexPrintf(" %i",((long) L[i]));
-	}
-	mexPrintf(")\n");
+    if (*disp){
+        *nb = (double) mexPrintf("Optimize HMM (%i states, %i values) for %i trajectories\n",J,V,N);
+    }
 	
 	// transpose T matrix (for speed) and initialize prob.
 	double Tt[J*J];
@@ -105,7 +108,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	setVect(ip,ip0,J);
 	
 	// optimize prob.
-	*cvg = (double) optBW(Tt,ip,logL,B,(const double*) seq,J,N,V,(const double*) L, *disp);
+	*cvg = (double) optBW(Tt,ip,logL,B,(const uint8_t*) seq,J,N,V,
+            (const double*) L, &nb_int, *disp);
+    *nb = *nb + (double) nb_int;
 	
 	// back-transpose T matrix for return
 	transposeMat(T,(const double*) Tt,J,J);
@@ -114,14 +119,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 }
 
 
-bool optBW(double* T, double* ip, double* logL, const double* B, const double* seq, int J, int N, int V, const double* L, const bool disp){
+bool optBW(double* T, double* ip, double* logL, const double* B, 
+        const uint8_t* seq, int J, int N, int V, const double* L, 
+        int* nb, const bool disp){
 	
 	// intialization
-	int i = 0, j = 0, k = 0, n = 0, nb = 0;
-	long o = 0, p_i = 0, p_j = 0, l = 0; // large indexes
+	int i = 0, j = 0, k = 0, n = 0;
+	long o = 0, p_i = 0, p_j = 0, l = 0, m = 0; // large indexes
 	long Lmax = (long) maxVal(L,N);
-	double Nij[J*J], Ni[J], N0[J], xi[J*J], gamma[J], fwd[J*Lmax], bwd[J*Lmax], coeff[Lmax], T_prev[J*J], ip_prev[J];
-	double sum_gam = 0, sum_xi = 0, logL_prev = -pow(10,9), dmax = 0, m = 0;
+	double Nij[J*J], Ni[J], N0[J], xi[J*J], gamma[J], fwd[J*Lmax], 
+            bwd[J*Lmax], coeff[Lmax], T_prev[J*J], ip_prev[J];
+	double sum_gam=0, sum_xi=0, logL_prev=0, dmax=0, dL=0;
 	bool cvg = 0;
 	
 	// builds index matrix
@@ -133,7 +141,6 @@ bool optBW(double* T, double* ip, double* logL, const double* B, const double* s
 	
 	// E-M cycles
 	while (!cvg && m<MAXITER){
-		
 		logL_prev = *logL;
 		setVect(T_prev,(const double*) T,J*J);
 		setVect(ip_prev,(const double*) ip,J);
@@ -155,8 +162,10 @@ bool optBW(double* T, double* ip, double* logL, const double* B, const double* s
 		for (n=0; n<N; n++){
 			
 			// updates forward & backward probabilities
-			fwdprob(fwd,coeff,J,(long) L[n],V,seq,o,(const double*) T,B,(const double*) ip,(const int**) id_B);
-			bwdprob(bwd,(const double*) coeff,J,(long) L[n],V,seq,o,(const double*) T,B,(const int**) id_B);
+			fwdprob(fwd,coeff,J,(long) L[n],V,seq,o,(const double*) T,B,
+                    (const double*) ip,(const int**) id_B);
+			bwdprob(bwd,(const double*) coeff,J,(long) L[n],V,seq,o,
+                    (const double*) T,B,(const int**) id_B);
 			
 			p_i = 0; // initializes 1st probability running index
 			p_j = J; // initializes 2nd probability running index
@@ -173,7 +182,8 @@ bool optBW(double* T, double* ip, double* logL, const double* B, const double* s
 					sum_gam = sum_gam + gamma[i];
 					for (j=0; j<J; j++){
 						if (l<((long) L[n]-1)){
-							xi[k] = fwd[p_i] * T[k] * bwd[p_j] * B[id_B[(int) (seq[o+1]-1)][j]];
+							xi[k] = fwd[p_i] * T[k] * bwd[p_j] * 
+                                    B[id_B[seq[o+1]-1][j]];
 							sum_xi = sum_xi + xi[k];
 						}
 						
@@ -219,24 +229,29 @@ bool optBW(double* T, double* ip, double* logL, const double* B, const double* s
 				k++; // increment transition matrix running index
 			}
 		}
+        
+        // calculates change in log-likelihood
+        dL = (*logL-logL_prev)/((double) N);
 		
 		// calculates maximum parameter deviation
-		dmax = getMaxDiff((const double*) T,(const double*) T_prev,(const double*) ip,(const double*) ip_prev,J);
+		dmax = getMaxDiff((const double*) T,(const double*) T_prev,
+                (const double*) ip,(const double*) ip_prev,J);
 		
 		// displays results
-        if (disp){
-            nb = dispProb(m,*logL-logL_prev,dmax,(const double*) T,(const double*) ip,J,nb);
+        if(disp){
+            *nb = dispProb(m,dL,dmax,(const double*) T,(const double*) ip,
+                    J,*nb);
         }
 		
 		// checks for convergence
-		if (dmax<DMIN){ cvg = 1; }
+		if (m>0 && (dL<DLMIN || dmax<DMIN)){ cvg = 1; }
 		
 		// increases iteration count
 		m = m+1;
 	}
 	
-	if (!cvg){
-		mexPrintf("The model failed to converged: maximum number of iterations has been reached.\n");
+	if (!cvg && disp){
+        *nb = eraseAndWrite("The model failed to converged: maximum number of iterations has been reached.\n",*nb);
 	}
 	
 	// free memory
@@ -249,7 +264,8 @@ bool optBW(double* T, double* ip, double* logL, const double* B, const double* s
 }
 
 
-double getMaxDiff(const double* T, const double* T_prev, const double* ip,const double*  ip_prev, int J){
+double getMaxDiff(const double* T, const double* T_prev, const double* ip,
+        const double*  ip_prev, int J){
 	
 	double dmax = 0;
 	int i = 0;
@@ -266,8 +282,28 @@ double getMaxDiff(const double* T, const double* T_prev, const double* ip,const 
 	return dmax;
 }
 
+int eraseAndWrite(char* str, int nb){
+	char strb[nb+1];
+	int i = 0;
+	
+	// erase previous message
+	if (nb>0){
+		for (i=0; i<nb; i++){
+			strb[i] = '\b';
+		}
+		strb[nb] = '\0';
+		mexPrintf(strb);
+	}
+	
+	// write iteration
+	nb = mexPrintf(str);
+    
+    return nb;
+}
 
-int dispProb(double m, double dL, double dmax, const double* T, const double* ip, int J, int nb){
+
+int dispProb(double m, double dL, double dmax, const double* T, 
+        const double* ip, int J, int nb){
 	char str[nb+1];
 	int i = 0, j = 0, k = 0;
 	
@@ -281,7 +317,8 @@ int dispProb(double m, double dL, double dmax, const double* T, const double* ip
 	}
 	
 	// write iteration
-	nb = mexPrintf("iteration %.0f: d=%.3e (dmin=%.0e) dL=%.3e\n",m,dmax,DMIN,dL);
+	nb = mexPrintf("iteration %.0f: d=%.3e (dmin=%.0e) dL=%.3e (dLmin=%.0e)\n",
+            m,dmax,DMIN,dL,DLMIN);
 	
 	// write probabilities
 	nb = nb + mexPrintf("Initial probabilities:\n");
@@ -316,7 +353,7 @@ bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 		mexErrMsgTxt("Five input arguments are required.");
 		return 0;
 	} 
-	if (nlhs>4) {
+	if (nlhs>5) {
 		mexErrMsgTxt("Too many output arguments.");
 		return 0;
 	}
@@ -328,13 +365,13 @@ bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 			mexErrMsgTxt(str);
 			return 0;
 		}
-		else if (i!=2 && i!=4 && !(mxIsDouble(prhs[i]))){
-			sprintf(str,"Input argument %i must be of type double.",i+1);
+		else if (i==4 && !(mxIsLogical(prhs[4]))){
+			sprintf(str,"Input argument %i must be of type logical.",i+1);
 			mexErrMsgTxt(str);
 			return 0;
 		}
-		else if (i==4 && !(mxIsLogical(prhs[4]))){
-			sprintf(str,"Input argument %i must be of type logical.",i+1);
+		else if ( i!=2 && i!=4 && !(mxIsDouble(prhs[i]))){
+			sprintf(str,"Input argument %i must be of type double.",i+1);
 			mexErrMsgTxt(str);
 			return 0;
 		}

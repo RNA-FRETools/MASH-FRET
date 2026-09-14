@@ -10,6 +10,7 @@
  */
  
 #include <stdio.h>
+#include <stdint.h> // to use data type uint8_t
 #include <stdlib.h>
 #include <math.h>
 #include "vectop.h"
@@ -17,7 +18,7 @@
 #include "mex.h"
  
  
-void fwdprob(double* fwd, double* coeff, int J, long L, int V, const double* seq, long l1,
+void fwdprob(double* fwd, double* coeff, int J, long L, int V, const uint8_t* seq, long l1,
 				const double* T, const double* B, const double* ip, const int** id_B){
 					
 	long l = 0, fi = 0, fj = 0;
@@ -27,7 +28,7 @@ void fwdprob(double* fwd, double* coeff, int J, long L, int V, const double* seq
 	// initialization
 	coeff[0] = 0;
 	for (i=0; i<J; i++){
-		fwd[fi] = ip[i] * B[id_B[(int) (seq[l1]-1)][i]];
+		fwd[fi] = ip[i] * B[id_B[seq[l1]-1][i]];
 		coeff[0] = coeff[0] + fwd[fi];
 		fi++; // increment 1st probability running index
 	}
@@ -46,7 +47,7 @@ void fwdprob(double* fwd, double* coeff, int J, long L, int V, const double* seq
 		
 		// calculate prob.
 		for (i=0; i<J; i++){
-
+			
 			sum_j = 0;
 			for (j=0; j<J; j++){
 				sum_j = sum_j + fwd[fj] * T[linid(i,j,0,J,J)]; // T_ji
@@ -54,7 +55,7 @@ void fwdprob(double* fwd, double* coeff, int J, long L, int V, const double* seq
 				fj++; // increment 2nd probability running index
 			}
 			
-			fwd[fi] = B[id_B[(int) (seq[l1+l]-1)][i]] * sum_j;
+			fwd[fi] = B[id_B[seq[l1+l]-1][i]] * sum_j;
 			coeff[l] = coeff[l] + fwd[fi];
 			
 			fj = fj-J; // reset 2nd probability running index
@@ -73,7 +74,7 @@ void fwdprob(double* fwd, double* coeff, int J, long L, int V, const double* seq
 }
 
 
-void bwdprob(double* bwd, const double* coeff, int J, long L, int V, const double* seq, long l1,
+void bwdprob(double* bwd, const double* coeff, int J, long L, int V, const uint8_t* seq, long l1,
 				const double* T, const double* B, const int** id_B){
 					
 	long l = 0, fi = J*(L-1), fj = J*(L-1);
@@ -94,7 +95,7 @@ void bwdprob(double* bwd, const double* coeff, int J, long L, int V, const doubl
 		for (i=0; i<J; i++){
 			sum_j = 0;
 			for (j=0; j<J; j++){
-				sum_j = sum_j + bwd[fj] * T[k] * B[id_B[(int) (seq[l1+l+1]-1)][j]];
+				sum_j = sum_j + bwd[fj] * T[k] * B[id_B[seq[l1+l+1]-1][j]];
 
 				k++; // increment trans. prob. running index
 				fj++; // decrement 2nd probability running index

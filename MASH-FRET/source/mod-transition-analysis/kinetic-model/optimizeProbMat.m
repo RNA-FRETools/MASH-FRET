@@ -1,6 +1,6 @@
-function [tp_iter,tp_err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T,...
-    schm,dispaction)
-% [tp,tp_err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T,schm,mute)
+function [tp_iter,tp_err,ip,simdat,nb] = optimizeProbMat(states,expPrm,tp0,...
+    T,schm,verbose)
+% [tp,tp_err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T,schm)
 %
 % Find the probability matrix that describes the input dwell time set
 %
@@ -13,7 +13,7 @@ function [tp_iter,tp_err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T,...
 % tp0: [J-by-J] matrix starting guess
 % T: number of restart
 % schm: [J-by-J] allowing (1) or forbidding (0) transitions
-% dispaction: 1 to display progress, 0 otherwise
+% dispaction: 1 to show progress in command window, 0 to mute
 % tp_iter: [J-by-J] best inferrence matrix
 % tp_err: [J-by-J-by-2] negative and positive absolute mean deviation
 % ip: [1-by-J] initial state probabilities
@@ -24,6 +24,7 @@ function [tp_iter,tp_err,ip,simdat] = optimizeProbMat(states,expPrm,tp0,T,...
 %   simdat.n_exp number of transitions
 %   simdat.w_exp transition probabiltiies
 %   simdat.tp_exp transition matrix
+% nb: nb. of characters printed in command window
 
 % default
 % tpmin = 1E-5; % minimum transition probability
@@ -65,14 +66,15 @@ end
 % minimum transition probability possible
 tpmin = 1/sum(expPrm.Ls);
 
-disp('infer kinetic model...');
-
 tp_all = NaN(J,J,T);
 ip_all = NaN(T,J);
 gof_all = -Inf(1,T);
+nb = 0;
 for restart = 1:T
     
-    fprintf('restart %i/%i:\n',restart,T);
+    if verbose
+        nb = dispProgress(sprintf('restart %i/%i:\n',restart,T),nb);
+    end
     
     % generate new random matrix
     if restart>1
@@ -88,8 +90,9 @@ for restart = 1:T
         plotKinMdlSim(degen,tp_iter,ones(1,J)/J,expPrm,h_fig1);
     end
 
-    [cvg,tp_iter,ip,bestgof] = baumwelch(tp_iter,B0,expPrm.seq,ones(1,J)/J,...
-        ~~dispaction);
+    [cvg,tp_iter,ip,bestgof,nb2] = baumwelch(tp_iter,B0,expPrm.seq,...
+        ones(1,J)/J,~~verbose);
+    nb = nb+nb2;
     if ~cvg
         bestgof = -Inf;
     end
@@ -107,28 +110,29 @@ for restart = 1:T
 end
 
 % get best fit
-[bestgof,bestrestart] = max(gof_all);
+[~,bestrestart] = max(gof_all);
 tp_iter = tp_all(:,:,bestrestart(1));
 ip = ip_all(bestrestart(1),:);
 tp_sim = tp_iter;
-% tp_sim(tp_sim<tpmin) = 0;
+tp_sim(tp_sim<tpmin) = 0;
 simdat = plotKinMdlSim(degen,tp_sim,ip,expPrm,h_fig1);
 simdat.tpmin = tpmin;
 
 % calculate confidence interval for each coefficient (SMACKS)
-disp('calculate confidence intervals...');
-[posiv,negiv] = calcmdlconfiv(tp_iter,expPrm.seq,B0,ip);
+if verbose
+    nb = dispProgress(' calculate confidence intervals...',nb);
+end
+[posiv,negiv,nb2] = calcmdlconfiv(tp_iter,expPrm.seq,B0,ip,verbose);
+nb = nb+nb2;
 tp_err = cat(3,posiv,negiv);
+
 % remove ill defined intervals due to too small number operations
 tp_err(isnan(tp_err) | isinf(tp_err) | tp_err<0) = 0; 
 
-% display best fit
-disp(['best fit: ',num2str(bestgof)]);
-disp(tp_iter);
-disp(tp_err);
-
 % display processing time
 t_toc = toc(t);
-disp(['total processing time: ',num2str(t_toc)]);
+if verbose
+    nb = dispProgress([' total processing time: ',num2str(t_toc)],nb);
+end
 
 

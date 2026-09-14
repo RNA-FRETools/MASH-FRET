@@ -4,7 +4,11 @@
  * Dwell time counts must be strictly positive
  *
  * Corresponding MATLAB executing command:
- * [a,T,logL] = trainPH(a0,T0,t0,cnts,mute);
+ * [a,T,logL,nb,m_last,cvg] = trainPH(a0,T0,t0,histcounts);
+ * ... = trainPH(a0,T0,t0,histcounts,dlmin);
+ * ... = trainPH(a0,T0,t0,histcounts,dlmin,dpmin);
+ * ... = trainPH(a0,T0,t0,histcounts,dlmin,dpmin,mmax);
+ * ... = trainPH(a0,T0,t0,histcounts,dlmin,dpmin,mmax,disp);
  *
  * MEX-compilation command:
  * mex  -R2018a -O trainPH.c vectop.c
@@ -31,52 +35,79 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs,
 	
 	// get input dimensions
 	int J = (int) mxGetN(prhs[1]);
-	int nDt = (int) mxGetN(prhs[3]);
+	int nBin = (int) mxGetN(prhs[3]);
     int nb_int = 0;
+    int m_last_int = 0;
 	
 	// get input values
 	const double *a0 = (const double *) mxGetDoubles(prhs[0]); // starting initial state prob.
 	const double *T0 = (const double *) mxGetDoubles(prhs[1]); // starting transition matrix
 	const double *t0 = (const double *) mxGetDoubles(prhs[2]); // starting exit prob
 	const double *cnts = (const double *) mxGetDoubles(prhs[3]); // dwell times and counts
-	const bool *disp = (const bool *) mxGetLogicals(prhs[4]); // show display of progress
+    double dlmin = DLMIN; // convergence criterion on log-likelihood ratio
+    if(nrhs>=5){
+        dlmin = (double) *mxGetDoubles(prhs[4]); 
+    }
+    double dpmin = DMIN; // convergence criterion on parameters
+    if(nrhs>=6){
+        dpmin = (double) *mxGetDoubles(prhs[5]); 
+    }
+    double mmax = MAXITER; // maximum number of EM iterations
+    if(nrhs>=7){
+        mmax = (double) *mxGetDoubles(prhs[6]); 
+    }
+    bool disp = DISP; // show progress in prompt
+    if(nrhs==8){
+        disp = (bool) *mxGetLogicals(prhs[7]);
+    }
 	
 	// prepare output
 	plhs[0] = mxCreateDoubleMatrix(1,J,mxREAL); // PH initial state prob.
 	plhs[1] = mxCreateDoubleMatrix(J,J,mxREAL); // PH transition matrix
 	plhs[2] = mxCreateDoubleScalar(0); // Likelihood of PH given the dwell times
-    plhs[3] = mxCreateDoubleScalar(0); // Number of printed characters
+    plhs[3] = mxCreateDoubleScalar(0); // Last iteration
+    plhs[4] = mxCreateDoubleScalar(0); // Number of printed characters
+    plhs[5] = mxCreateLogicalScalar(0); // Convergence status
 	double *a = mxGetDoubles(plhs[0]);
 	double *T = mxGetDoubles(plhs[1]);
 	double *logL = mxGetDoubles(plhs[2]);
-    double *nb = mxGetDoubles(plhs[3]);
+    double *m_last = mxGetDoubles(plhs[3]);
+    double *nb = mxGetDoubles(plhs[4]);
+    bool *cvg = mxGetLogicals(plhs[5]);
     double t[J];
+    
+    // adjust convergence criterion on log-likelihood
+    /*if(dlmin==0){
+		double totCnt = 0;
+		int n = 0;
+		for(n==0;n<nBin;n++){
+			totCnt = totCnt+cnts[nBin+n];
+		}
+		dlmin = 1/totCnt;
+	}*/
 
 	// train PH
 	setVect(T,T0,J*J);
 	setVect(a,a0,J);
 	setVect(t,t0,J);
-	bool cvg = optDPH(T,t,a,logL,cnts,J,nDt,&nb_int,*disp);
+	*cvg = optDPH(T, t, a, logL, cnts, J, nBin, &nb_int, &m_last_int,
+                  (const double) dlmin, (const double) dpmin, 
+                  (const double) mmax,(const bool) disp);
     *nb = (double) nb_int;
-	
-	// return empty arrays if EM did not converge
-	if (!cvg){
-		const mwSize dims[] = {0,0};
-		mxSetDimensions(plhs[0],dims,2);
-		mxSetDimensions(plhs[1],dims,2);
-		*logL = 0;
-	}
-	
+    *m_last = (double) m_last_int;
+
 	return;
 }
 
 
 bool optDPH(double* T, double* t, double* a, double* logL, const 
-        double* cnts, int J, int nDt, int* nb, const bool disp){
+            double* cnts, int J, int nBin, int* nb, int* m_last, 
+            const double dlmin, 
+        const double dpmin, const double mmax, const bool disp){
 	
 	int i = 0, j = 0;
 	bool cvg = 0;
-	double m = 0, dmax = 0, logL_prev = 0, totCnt = 0;
+	double m = 0, mprev = 0, dmax = 0, logL_prev = 0, totCnt = 0;
 	double T_prev[J*J], a_prev[J], B[J], Ni[J], Nij[J*J];
 
 	// build vectorized matrix indexes outside the while loop for speed
@@ -86,7 +117,7 @@ bool optDPH(double* T, double* t, double* a, double* logL, const
 	}
 	int** id_P = (int **)malloc(2 * sizeof(int *));
 	for (i=0; i<2; i++){
-		id_P[i] = (int *)malloc(nDt * sizeof(int));
+		id_P[i] = (int *)malloc(nBin * sizeof(int));
 	}
 	int** id_mat = (int **)malloc(2*J * sizeof(int *));
 	for (i=0; i<2*J; i++){
@@ -100,28 +131,16 @@ bool optDPH(double* T, double* t, double* a, double* logL, const
 	id_Jh[0] = (int *)malloc(J * sizeof(int));
 	
 	buildIdMat(id_T,J,J);
-	buildIdMat(id_P,2,nDt);
+	buildIdMat(id_P,2,nBin);
 	buildIdMat(id_mat,2*J,2*J);
 	buildIdMat(id_Jv,J,1);
 	buildIdMat(id_Jh,1,J);
     
-//     // calculate initial likelihood (discrete PH)
-//     *logL = 0;
-	
-	// calculate initial likelihood (continuous PH)
-	*logL = calcDPHlogL( (const double*) T, (const double*) a, 
-            (const double*) t, cnts,J,nDt, (const int**) id_T, 
-            (const int**) id_P, (const int**) id_Jv);
-    if (!mxIsFinite(*logL)){ cvg = true; }
-    
-    // show initial fit
-    if (disp){
-        *nb = dispDPHres(m,*logL-logL_prev,dmax, (const double*) T, 
-                (const double*) a,J, (const int**) id_T,0);
-    }
+    // dummy likelihood initialization, overwritten after 1st iteration
+    *logL = 0;
 
     // E-M iterations
-	while(!cvg && m<MAXITER){
+	while(!cvg && m<mmax){
 		
 		m = m+1;
 		
@@ -132,7 +151,7 @@ bool optDPH(double* T, double* t, double* a, double* logL, const
 		
 		// E-step
 		EstepDPH(B,Nij,Ni,cnts,(const double*) a,(const double*) T,
-                (const double*) t,nDt,J,(const int**) id_T,
+                (const double*) t,nBin,J,(const int**) id_T,
                 (const int**) id_P,(const int**) id_Jh,(const int**) id_Jv,
                 (const int**) id_mat, &totCnt);
         
@@ -148,35 +167,40 @@ bool optDPH(double* T, double* t, double* a, double* logL, const
 		
 		// calculates likelihood (continuous PH)
 		*logL = calcDPHlogL((const double*) T,(const double*) a,
-                (const double*) t,cnts,J,nDt,(const int**) id_T,
+                (const double*) t,cnts,J,nBin,(const int**) id_T,
                 (const int**) id_P,(const int**) id_Jv);
         if (!mxIsFinite(*logL)){ break; }
 
 		// check for convergence
 		dmax = calcMaxDev((const double*) T,(const double*) T_prev,
                 (const double*) a,(const double*) a_prev,J);
-		if (m>1 && ((*logL-logL_prev)<DLMIN || dmax<DMIN)){ cvg = 1; }
+		if (m>1 && (((*logL-logL_prev)/totCnt)<dlmin || dmax<dpmin)){ 
+            cvg = 1; 
+        }
 		
         // show progress
-        if (disp){
-            *nb = dispDPHres(m,*logL-logL_prev,dmax,(const double*) T,
-                    (const double*) a,J,(const int**) id_T,*nb);
+        if (disp && (cvg || (m-mprev)>=DISPITER)){
+            *nb = dispDPHres(m,(*logL-logL_prev)/totCnt,dlmin,dmax,dpmin,
+                    (const double*) T,(const double*) a,J,
+                    (const int**) id_T,*nb);
+            mprev = m;
         }
 	}
 	
     // manage failure
-	if (!cvg){
-        if (m>=MAXITER){
+    if (!cvg){
+        if (m>=mmax){
             *nb = eraseAndWrite(
                     "maximum number of iterations has been reached\n",*nb);
         }
         else { 
             *nb = eraseAndWrite("infinite log-likelihood\n",*nb); 
         }
-	}
+    }
     else if (m==0){
         *nb = eraseAndWrite("ill-defined starting guess\n",*nb); 
     }
+    *m_last = m;
 	
 	// free memory outside the while loop for speed
 	for (i=0; i<J; i++){ free(id_T[i]); }
@@ -195,7 +219,7 @@ bool optDPH(double* T, double* t, double* a, double* logL, const
 
 
 void EstepDPH(double* B, double* Nij, double* Ni, const double* P, 
-        const double* a, const double* T, const double* t, int nDt, int J, 
+        const double* a, const double* T, const double* t, int nBin, int J, 
 		const int** id_T, const int** id_P, const int** id_Jh, 
         const int** id_Jv, const int** id_mat, double* totCount){
 	
@@ -229,7 +253,7 @@ void EstepDPH(double* B, double* Nij, double* Ni, const double* P,
 	
 	// expectation calculations
     *totCount = 0;
-	for (n=0; n<nDt; n++){
+	for (n=0; n<nBin; n++){
 		
 		dt = P[id_P[0][n]];
 		cnt = P[id_P[1][n]];
@@ -338,14 +362,14 @@ double calcMaxDev(const double* T, const double* T_prev, const double* a,
 
 
  double calcDPHlogL(const double* T, const double* a, const double* t, 
-         const double* P, int J, int nDt, const int** id_T, 
+         const double* P, int J, int nBin, const int** id_T, 
          const int** id_P, const int** id_v){
 	
 	int i = 0, j = 0;
 	double logL = 0, Li = 0;
 	double Tpow[J*J], Tt[J];
 
-	for (i=0; i<nDt; i++){
+	for (i=0; i<nBin; i++){
         
         // matrix {T^(x-1)} = {T}^(x-1)
 		matpow(Tpow,T,J,(P[id_P[0][i]]-1),id_T);
@@ -413,8 +437,9 @@ int eraseAndWrite(char* str, int nb){
 }
 
 
-int dispDPHres(double m,double dL, double dmax, const double* T, 
-        const double* a, int J, const int** id_T, int nb){
+int dispDPHres(double m,double dL, const double dlmin, double dmax, 
+        const double dpmin, const double* T, const double* a, int J, 
+        const int** id_T, int nb){
 	char str[nb+1];
 	int i = 0, j = 0;
 	
@@ -428,8 +453,7 @@ int dispDPHres(double m,double dL, double dmax, const double* T,
 	}
 	
 	// write iteration
-	nb = mexPrintf("iteration %.0f: dL=%.3e (dLmin=%.0e) d=%.3e\n",m,dL,
-            DLMIN,dmax);
+	nb = mexPrintf("iteration %.0f: dL=%.3e (dLmin=%.0e) d=%.3e (dmin=%.0e)\n",m,dL,dlmin,dmax,DMIN);
 	
 // 	// write probabilities
 // 	nb = nb + mexPrintf("Initial probabilities:\n");
@@ -453,63 +477,16 @@ int dispDPHres(double m,double dL, double dmax, const double* T,
 
 bool validArg(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]){
 	
-	int i = 0;
+	int i, J, nEl, M, N;
 	char str[100];
 	
 	/* Check for proper number of input and output arguments. */    
-	if (nrhs!=5) {
-		mexErrMsgTxt("Five input arguments are required.");
+	if (nrhs<4 || nrhs>8) {
+		mexErrMsgTxt("Four to eight input arguments are required.");
 		return 0;
 	} 
-	if (nlhs>4) {
+	if (nlhs>6) {
 		mexErrMsgTxt("Too many output arguments.");
-		return 0;
-	}
-
-	/* Check for proper data type in input arguments. */
-	for (i==0; i<nrhs; i++){
-		if (i<4 && !(mxIsDouble(prhs[i]))){
-			sprintf(str,"Input argument %i must be of type double.",i+1);
-			mexErrMsgTxt(str);
-			return 0;
-		}
-        else if (i==4 && !(mxIsLogical(prhs[4]))){
-			sprintf(str,"Input argument %i must be of type logical.",i+1);
-			mexErrMsgTxt(str);
-			return 0;
-        }
-	}
-	
-	/* Check for dimensions */
-	
-	int J = (int) mxGetNumberOfElements(prhs[0]);
-	if (J<=0){
-		mexErrMsgTxt("Input (1) must contain at least one element.");
-		return 0;
-	}int K = (int) mxGetNumberOfElements(prhs[2]);
-	if (K!=J){
-		mexErrMsgTxt("Input (1) and (3) must contain the same number of elements.");
-		return 0;
-	}
-	int J1 = (int) mxGetM(prhs[1]);
-	if (J1!=J){
-		mexErrMsgTxt("The numbers of elements in inputs (1) and (3) must be equal to the number of rows in input (2).");
-		return 0;
-	}
-	int J2 = (int) mxGetN(prhs[1]);
-	if (J2!=J1){
-		mexErrMsgTxt("The numbers of columns and rows in input (2) must be equal.");
-		return 0;
-	}
-	
-	int nRows = (int) mxGetM(prhs[3]);
-	int nDt = (int) mxGetN(prhs[3]);
-	if (nRows!=2){
-		mexErrMsgTxt("Input(4) must have 2 rows.");
-		return 0;
-	}
-	if (nDt<1){
-		mexErrMsgTxt("Input(4) must have at least 1 column.");
 		return 0;
 	}
 
