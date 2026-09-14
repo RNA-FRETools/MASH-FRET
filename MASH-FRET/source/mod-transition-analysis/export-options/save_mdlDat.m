@@ -110,12 +110,13 @@ if opt(3) % experimental vs simulated data
         end
         
         % collect data
+        simdat = prm.mdl_res{4};
+        dt = simdat.dt;
         h = guidata(h_fig);
         p = h.param;
         proj = p.curr_proj;
-        expT = p.proj{proj}.resampling_time;
-        simdat = prm.mdl_res{4};
-        dt = simdat.dt;
+        expT = p.proj{proj}.nb_excitations*p.proj{proj}.resampling_time;
+
         dt(:,1) = dt(:,1)*expT;
         
         % write data to file
