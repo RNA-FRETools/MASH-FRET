@@ -1,4 +1,4 @@
-function str_clr = getClrStrPop(str_pop,clr)
+function str_clr = getClrStrPop(str_pop, clr)
 % str_clr = getClrStrPop(str_pop,clr)
 %
 % Return HTML-tagged string for colored menu

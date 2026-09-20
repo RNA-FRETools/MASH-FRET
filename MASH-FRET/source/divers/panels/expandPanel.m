@@ -99,7 +99,7 @@ hchlp = hchlp(ord);
 for c = 1:nChld
     % set button arrow and panel color
     if hcpan(c)==hpan
-        set(hpan,'bordertype','etchedin','backgroundcolor',clr_expnd);
+        set(hpan,'bordertype','line','backgroundcolor',clr_expnd);
         hght = hght_pan;
         hcbut(c).String = char(9650);
         if c>1 && (hcpan(c-1).Position(2)-mg-hght)<0

@@ -55,19 +55,7 @@ end
 
 % update molecule tag popupmenu
 set(h.popupmenu_TP_molLabel,'enable','on');
-str_pop = {};
-for t = 1:nTag
-    if molTag(mol,t)
-        if sum(double((hex2rgb(colorlist{t})/255)>0.5))==3
-            fntClr = 'black';
-        else
-            fntClr = 'white';
-        end
-        str_pop = cat(2,str_pop,cat(2,'<html><body  bgcolor="',colorlist{t},...
-            '"><font color=',fntClr,'>',tagNames{t},...
-            '</font></body></html>'));
-    end
-end
+str_pop = getStrPopTags(tagNames, colorlist);
 if isempty(str_pop)
     set(h.popupmenu_TP_molLabel,'string',{'no tag'},'value',1);
 else
