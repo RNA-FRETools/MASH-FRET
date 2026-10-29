@@ -117,6 +117,9 @@ y = y-h.mg-hlst;
 h.list_S = uicontrol('parent',h_tab,'style','listbox','units',h.un,...
     'fontunits',h.fun,'fontsize',h.fsz,'position',[x,y,wlst,hlst]);
 
+% Pause one sec to prevent misplacement of "Add" and "Remove" buttons
+pause(1)
+
 x = x+wlst+h.mg;
 y = y+hlst-h.hedit;
 
