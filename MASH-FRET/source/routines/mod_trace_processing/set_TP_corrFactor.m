@@ -51,14 +51,6 @@ else
             edit_pbGamma_threshold_Callback(q.edit_threshold,[],h_fig,...
                 h_fig2);
             
-            set(q.edit_extraSubstract,'string',num2str(prm{2}(3)));
-            edit_pbGamma_extraSubstract_Callback(q.edit_extraSubstract,[],...
-                h_fig,h_fig2);
-            
-            set(q.edit_minCutoff,'string',num2str(prm{2}(4)));
-            edit_pbGamma_minCutoff_Callback(q.edit_minCutoff,[],h_fig,...
-                h_fig2);
-            
             set(q.edit_tol,'string',num2str(prm{2}(5)));
             edit_pbGamma_tol_Callback(q.edit_tol,[],h_fig,h_fig2);
             

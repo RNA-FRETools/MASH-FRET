@@ -101,8 +101,8 @@ while ~ok && (n<N || (N==0 && n==N))
         % Calculation of mean squared distances from 
         % centres (a,b)
         % dist = sqrt((a - x)^2 + (b - y)^2);
-        dist(k,c) = (sum(z)./z(1,c)).* ...
-            sqrt(((mu(k,1)-xy(1,c)).^2)+((mu(k,2)-xy(2,c)).^2));
+        dist(k,c) = (sum(z) ./ z(1, c)) .* ...
+            sqrt(((mu(k,1) - xy(1,c)).^2) + ((mu(k,2) - xy(2,c)).^2));
     end
     
     % Cluster where data pnts have the minimum distance
@@ -146,7 +146,7 @@ while ~ok && (n<N || (N==0 && n==N))
         
     else % free
         for k = 1:nTrs
-            if ~isempty(find(isnan(tol(k,:)),1))
+            if any(isnan(tol(k,:)))
                 continue
             end
             xy_k = xy(:,id_k==k); z_k = z(:,id_k==k);
@@ -172,7 +172,7 @@ end
 
 clust = reshape(clust, numel(unique(y)), numel(unique(x)));
 
-[j_excl,o,o] = find(isnan(mu));
+[j_excl,o,o] = find(any(isnan(mu),2));
 k_excl = [];
 if mat==1 % matrix
     for k = 1:nTrs

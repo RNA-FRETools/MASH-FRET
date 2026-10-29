@@ -254,20 +254,13 @@ if isRes && tdp_clust
         clstDiag = prm.clst_start{1}(9);
         logl = prm.clst_start{1}(10);
         guess = prm.clst_start{2};
-        J = prm.lft_start{2}(1);
+        J_res = prm.lft_start{2}(1);
         res = prm.clst_res;
         Kmax = getClusterNb(Jmax,mat,clstDiag);
         [j1_start,j2_start] = getStatesFromTransIndexes(1:Kmax,Jmax,mat,...
             clstDiag);
-        K = getClusterNb(J,mat,clstDiag);
-        [j1,j2] = getStatesFromTransIndexes(1:K,J,mat,clstDiag);
-
-        % calculate state deviations
-        val_std = zeros(1,K);
-        for k = 1:K
-            val_std(k) = std(prm.clst_res{1}.clusters{J}(...
-                prm.clst_res{1}.clusters{J}(:,end-1)==k,2));
-        end
+        K_res = getClusterNb(J_res,mat,clstDiag);
+        [j1,j2] = getStatesFromTransIndexes(1:K_res,J_res,mat,clstDiag);
         
         h = guidata(h_fig);
         str_like = get(h.popupmenu_TDPlike,'String');
@@ -374,17 +367,17 @@ if isRes && tdp_clust
         str_prm = cat(2,str_prm,'\nclustering results:\n');
         if mat==1
             str_prm = cat(2,str_prm,...
-                '\tnumber of states in model: ',num2str(J),'\n');
+                '\tnumber of states in model: ',num2str(J_res),'\n');
         elseif mat==2
             str_prm = cat(2,str_prm,...
                 '\tnumber of clusters in model for half-TDP: ',...
-                num2str(J),'\n');
+                num2str(J_res),'\n');
         else
             str_prm = cat(2,str_prm,...
-                '\tnumber of clusters in model: ',num2str(K),'\n');
+                '\tnumber of clusters in model: ',num2str(K_res),'\n');
         end
         if meth==2
-            str_prm = cat(2,str_prm,' (BIC=',num2str(res{1}.BIC(J)),')\n');
+            str_prm = cat(2,str_prm,' (BIC=',num2str(res{1}.BIC(J_res)),')\n');
         end
         
         % BOBA FRET results
@@ -403,39 +396,48 @@ if isRes && tdp_clust
                 sprintf('%2.2f',res{2}(1)),' +/- ',...
                 sprintf('%2.2f',res{2}(2)),'\n');
         end
-        
+
         % cluster parameters
         if mat==1
-            val = unique(res{1}.mu{J}(:,1),'stable')';
+            val = unique(res{1}.mu{J_res}(:,1),'stable')';
         elseif mat==2
-            val = res{1}.mu{J}(1:J,[1,2])';
+            val = res{1}.mu{J_res}(1:J_res,[1,2])';
             val = val(:)';
         else
-            val = res{1}.mu{J}(:,[1,2])';
+            val = res{1}.mu{J_res}(:,[1,2])';
             val = val(:)';
         end
-        tj = res{1}.fract{J};
+        V_res = length(val);
+        val_std = zeros(1, V_res);
+        for v = 1:V_res
+            val_std(v) = std([prm.clst_res{1}.clusters{J_res}(...
+                prm.clst_res{1}.clusters{J_res}(:,end-1)==v, 2); ...
+                prm.clst_res{1}.clusters{J_res}(...
+                prm.clst_res{1}.clusters{J_res}(:,end)==v, 3)]);
+        end
+
+        tj = res{1}.fract{J_res};
         for j = 1:size(val,2)
             str_prm = cat(2,str_prm,'\tstate ',num2str(j),': ',...
                 num2str(val(j)),char(177),num2str(val_std(j)),...
                 ', time fraction: ',num2str(tj(j)),'\n');
         end
-        for k = 1:K
+        for k = 1:K_res
             str_prm = cat(2,str_prm,'\tcluster ',num2str(k),' (state ',...
                 num2str(j1(k)),' to ',num2str(j2(k)),'), ',...
-                'relative population: ',num2str(res{1}.pop{J}(k)),'\n');
+                'relative population: ',num2str(res{1}.pop{J_res}(k)),'\n');
         end
         
         % optimum model
         if meth==2
             str_prm = strcat(str_prm, '\toptimum model parameters:\n');
-            for k = 1:K
+            for k = 1:K_res
                 str_prm = cat(2,str_prm,'\t\t',...
                     sprintf('alpha_%i%i',j1(k),j2(k)),'\t',...
-                    num2str(res{1}.a{J}(k)),'\n');
+                    num2str(res{1}.a{J_res}(k)),'\n');
             end
-            for k = 1:K
-                sig = res{1}.o{J}(:,:,k);
+            for k = 1:K_res
+                sig = res{1}.o{J_res}(:,:,k);
                 str_prm = strcat(str_prm,'\t\t',...
                     sprintf('sigma_%i%i',j1(k),j2(k)),...
                     '\t',num2str(sig(1,1)),'\t',num2str(sig(1,2)),...
@@ -450,7 +452,7 @@ if isRes && tdp_clust
         fprintf(f, ['dwell-times(s)\tm\tm*\tmolecule\tx(m)\ty(m*)\ts_i' ...
             '\ts_j\n']);
         fprintf(f, '%d\t%d\t%d\t%i\t%i\t%i\t%i\t%i\n', ...
-            prm.clst_res{1}.clusters{J}');
+            prm.clst_res{1}.clusters{J_res}');
         fclose(f);
 
         % update action
