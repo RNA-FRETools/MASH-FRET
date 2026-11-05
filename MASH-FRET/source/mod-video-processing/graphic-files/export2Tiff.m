@@ -108,7 +108,7 @@ for mov = 1:nMov
         end
 
         imwrite(img_16,[pname fname],'tif','WriteMode',writeMode,...
-            'Description',sprintf('%d\t%d',expT,min_img));
+            'Description', sprintf('%d\t%d', expT, min_img));
 
         % increment loading bar
         if loading_bar('update', h_fig)

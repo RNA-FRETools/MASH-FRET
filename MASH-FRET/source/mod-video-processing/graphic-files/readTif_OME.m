@@ -2,7 +2,7 @@ function [data,ok] = readTif_OME(fullFname, n, fDat, h_fig, useMov)
 
 % defaults
 ok = 1;
-cycleTime = 1; % arbitrary time delay between each frame
+cycleTime0 = 1; % arbitrary time delay between each frame
 data = [];
 movie = [];
 exc = [];
@@ -27,41 +27,46 @@ end
 islb = isfield(h,'barData');
 
 if isempty(fDat)
+
+    % Initialize BF reader and retrieve OME metadata
+    reader = bfGetReader(fullFname);
+    omeMeta = reader.getMetadataStore();
+    reader.close();
+
+    % Retrieve acquisition time, frame's laser ids and laser wavelengths
+    [cycleTime, lord, exc] = getTIFOME_metadata(omeMeta);
+    if cycleTime==0
+        cycleTime = cycleTime0;
+        txt = ['arbitrary ' num2str(cycleTime)];
+        txt_exc = '';
+    else
+        txt = num2str(cycleTime);
+        txt_exc = 'Lasers = ';
+        for l = 1:numel(exc)
+            if l==1
+                txt_exc = cat(2,txt_exc,num2str(exc(l)),'nm');
+            else
+                txt_exc = cat(2,txt_exc,', ',num2str(exc(l)),'nm');
+            end
+        end
+        txt_exc = cat(2,txt_exc,'\n');
+    end
+
     % get video infos
     fCurs = imfinfo(fullFname); % information array of .tif file
-    frameLen = numel(fCurs); % number total of frames    
-    txt = ['arbitrary ' num2str(cycleTime)];
-    txt_exc = '';
-    if isfield(fCurs(1,1),'ImageDescription')
-        descr = fCurs(1,1).ImageDescription;
-        [cycleTime,lord,exc] = getTIFOME_metadata(descr);
-        if ~isempty(cycleTime) && ~isnan(cycleTime)
-            txt = num2str(cycleTime);
-        end
-        if ~isempty(exc)
-            txt_exc = 'Lasers = ';
-            for l = 1:numel(exc)
-                if l==1
-                    txt_exc = cat(2,txt_exc,num2str(exc(l)),'nm');
-                else
-                    txt_exc = cat(2,txt_exc,', ',num2str(exc(l)),'nm');
-                end
-            end
-            txt_exc = cat(2,txt_exc,'\n');
-        end
-    end
+    frameLen = numel(fCurs); % number total of frames
     pixelY = fCurs(1,1).Width; % height of the movie after 90° rotation
     pixelX = fCurs(1,1).Height; % width of the movie after 90° rotation
     
     if ~isempty(h_fig)
-        updateActPan(['Tagged Image File Format(*.tiff)\n' ...
+        updateActPan(['OME Tagged Image File Format(*.tiff)\n' ...
             'Cycle time = ' txt 's-1\n' ...
             'Movie dimensions = ' num2str(pixelX) 'x' num2str(pixelY) ...
             ' pixels\n' ...
             'Movie length = ' num2str(frameLen) ' frames\n' ...
             txt_exc], h_fig);
     else
-        fprintf(['\nTagged Image File Format(*.tiff)\n' ...
+        fprintf(['\nOME Tagged Image File Format(*.tiff)\n' ...
             'Cycle time = ' txt 's-1\n' ...
             'Movie dimensions = ' num2str(pixelX) 'x' num2str(pixelY) ...
             ' pixels\n' ...
@@ -116,7 +121,9 @@ if strcmp(n,'all')
                     return
                 end
             end
-            movie = movie(:,:,lord);
+            if ~isempty(lord)
+                movie = movie(:,:,lord);
+            end
             frameCur = movie(:,:,1);
             
         else
@@ -128,7 +135,11 @@ if strcmp(n,'all')
                 if size(img,3)>1
                     img = sum(img,3);
                 end
-                h.movie.movie(:,:,lord==i) = img';
+                if ~isemty(lord)
+                    h.movie.movie(:,:,lord==i) = img';
+                else
+                    h.movie.movie(:,:,i) = img';
+                end
                 if ~islb && loading_bar('update', h_fig)
                     ok = 0;
                     return
@@ -146,7 +157,11 @@ else
     if isMov==2
         frameCur = h.movie.movie(:,:,n);
     else
-        frameCur = imread(fullFname,'Index',lord(n),'Info',fCurs)';
+        if ~isempty(lord)
+            frameCur = imread(fullFname,'Index',lord(n),'Info',fCurs)';
+        else
+            frameCur = imread(fullFname,'Index',n,'Info',fCurs)';
+        end
         if size(frameCur,3)>1
             frameCur = sum(frameCur,3);
         end
