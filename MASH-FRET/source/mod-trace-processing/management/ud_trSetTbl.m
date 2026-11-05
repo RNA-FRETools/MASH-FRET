@@ -56,14 +56,15 @@ end
 % update molecule tag popupmenu
 set(h.popupmenu_TP_molLabel,'enable','on');
 str_pop = getStrPopTags(tagNames, colorlist);
+str_pop = str_pop(molTag(mol,:));
 if isempty(str_pop)
-    set(h.popupmenu_TP_molLabel,'string',{'no tag'},'value',1);
+    set(h.popupmenu_TP_molLabel, 'string', {'no tag'}, 'value', 1);
 else
     currTag = get(h.popupmenu_TP_molLabel,'Value');
     if currTag>sum(molTag(mol,:))
         currTag = sum(molTag(mol,:));
     end
-    set(h.popupmenu_TP_molLabel,'string',str_pop,'value',currTag);
+    set(h.popupmenu_TP_molLabel, 'string', str_pop, 'value', currTag);
 end
 
 ud_lstMolStr(p, h.listbox_molNb);
