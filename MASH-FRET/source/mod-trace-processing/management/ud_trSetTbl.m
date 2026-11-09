@@ -56,7 +56,7 @@ end
 % update molecule tag popupmenu
 set(h.popupmenu_TP_molLabel,'enable','on');
 str_pop = getStrPopTags(tagNames, colorlist);
-str_pop = str_pop(molTag(mol,:));
+str_pop = str_pop(~~molTag(mol,:));
 if isempty(str_pop)
     set(h.popupmenu_TP_molLabel, 'string', {'no tag'}, 'value', 1);
 else

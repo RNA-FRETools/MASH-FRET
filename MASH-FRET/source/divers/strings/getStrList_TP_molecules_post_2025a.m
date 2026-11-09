@@ -10,8 +10,8 @@ str_lst = cell(1,N);
 for m = 1:N
     if incl(m)
         str_lst{m} = num2str(m); 
-        if any(molTag(m,:))
-            str_tag = join(tagNames(molTag(m,:)));
+        if any(~~molTag(m,:))
+            str_tag = join(tagNames(~~molTag(m,:)));
             str_tag = [' ', str_tag{1}];
         else
             str_tag = '';
